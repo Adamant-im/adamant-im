@@ -3,11 +3,18 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import VueI18n from 'vue-i18n'
+import VueResource from 'vue-resource'
+import VueClipboards from 'vue-clipboards'
+
 import 'vue-material/dist/vue-material.css'
 
 var VueMaterial = require('vue-material')
 
 Vue.use(VueMaterial)
+Vue.use(VueResource)
+Vue.use(VueClipboards)
+Vue.use(VueI18n)
 
 Vue.config.productionTip = false
 
