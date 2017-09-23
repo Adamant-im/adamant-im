@@ -8,14 +8,16 @@ import VueResource from 'vue-resource'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 import VueMaterial from 'vue-material'
+import VueHazeServerApi from './lib/hazeServerApi'
 
 import 'vue-material/dist/vue-material.css'
 
+Vue.use(Vuex)
 Vue.use(VueMaterial)
 Vue.use(VueResource)
 Vue.use(VueClipboards)
 Vue.use(VueI18n)
-Vue.use(Vuex)
+Vue.use(VueHazeServerApi)
 
 Vue.config.productionTip = false
 
@@ -47,12 +49,16 @@ Vue.material.registerTheme({
 const store = new Vuex.Store({
   state: {
     address: '',
-    passPhrase: ''
+    passPhrase: '',
+    connectionString: ''
   },
   mutations: {
     login (state, payload) {
       state.address = payload.address
       state.passPhrase = payload.passPhrase
+    },
+    connect (state, payload) {
+      state.connectionString = payload.string
     }
   }
 })
