@@ -7,10 +7,9 @@ import VueI18n from 'vue-i18n'
 import VueResource from 'vue-resource'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
+import VueMaterial from 'vue-material'
 
 import 'vue-material/dist/vue-material.css'
-
-var VueMaterial = require('vue-material')
 
 Vue.use(VueMaterial)
 Vue.use(VueResource)
