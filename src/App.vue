@@ -1,24 +1,47 @@
 <template>
   <div id="app">
-    <header>
-      <span>Vue.js PWA</span>
-    </header>
+      <md-theme md-name="purple">
+          <md-toolbar>
+            <h1 class="md-title">Haze</h1>
+          </md-toolbar>
     <main>
-      <img src="./assets/logo.png" alt="Vue.js PWA">
       <router-view></router-view>
     </main>
+      <footer>
+          <div class="bottom-fixed">
+              <md-bottom-bar v-if="logged">
+                  <md-bottom-bar-item md-icon="account_balance_wallet" md-active>{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
+                  <md-bottom-bar-item md-icon="forum" >{{$t('bottom.chats_button')}}</md-bottom-bar-item>
+                  <md-bottom-bar-item md-icon="settings">{{$t('bottom.settings_button')}}</md-bottom-bar-item>
+              </md-bottom-bar>
+          </div>
+      </footer>
+      </md-theme>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  computed: {
+    logged () {
+      return this.$store.state.passPhrase
+    }
+  }
 }
 </script>
 
 <style>
 body {
   margin: 0;
+}
+footer {
+    height: 100px;
+}
+.bottom-fixed{
+    position:fixed;
+    bottom:0;
+    width:100%;
 }
 
 #app {

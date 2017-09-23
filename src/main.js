@@ -44,10 +44,24 @@ Vue.material.registerTheme({
   }
 })
 
+const store = new Vuex.Store({
+  state: {
+    address: '',
+    passPhrase: ''
+  },
+  mutations: {
+    login (state, payload) {
+      state.address = payload.address
+      state.passPhrase = payload.passPhrase
+    }
+  }
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App },
   i18n: i18n
