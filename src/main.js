@@ -6,6 +6,7 @@ import router from './router'
 import VueI18n from 'vue-i18n'
 import VueResource from 'vue-resource'
 import VueClipboards from 'vue-clipboards'
+import Vuex from 'vuex'
 
 import 'vue-material/dist/vue-material.css'
 
@@ -15,8 +16,16 @@ Vue.use(VueMaterial)
 Vue.use(VueResource)
 Vue.use(VueClipboards)
 Vue.use(VueI18n)
+Vue.use(Vuex)
 
 Vue.config.productionTip = false
+
+var messages = require('./i18n').default
+
+var i18n = new VueI18n({
+  locale: 'en', // set locale
+  messages // set locale messages
+})
 
 Vue.material.registerTheme({
   default: {
@@ -41,5 +50,6 @@ new Vue({
   el: '#app',
   router,
   template: '<App/>',
-  components: { App }
+  components: { App },
+  i18n: i18n
 })
