@@ -1,4 +1,6 @@
 var config = require('../config.json')
+var secu = require('./secu.js')
+
 function install (Vue) {
   Vue.prototype.localStorageSupported = function () {
     var supported = true
@@ -28,7 +30,32 @@ function install (Vue) {
     this.$store.commit('connect', {'string': connectString})
     return connectString
   }
+  Vue.prototype.getPublicKeyFromPassPhrase = function (passPhrase) {
+    var hash = secu.createPassPhraseHash(passPhrase)
+    var keypair = secu.makeKeypair(hash)
+    return keypair.publicKey.toString('hex')
+  }
+  Vue.prototype.getAccountByPublicKey = function (publicKey, callback) {
+    this.$http.get(this.getAddressString() + '/api/accounts?publicKey=' + publicKey).then(response => {
+      if (response.body.success) {
+        response.body.account.balance = response.body.account.balance / 100000000
+        response.body.account.unconfirmedBalance = response.body.account.unconfirmedBalance / 100000000
+        response.body.account.publicKey = publicKey
+        this.$store.commit('login', response.body.account)
+        if (callback) {
+          callback.call(this)
+        }
+      }
+    }, response => {
+      // error callback
+    })
+  }
+  Vue.prototype.getAccountByPassPhrase = function (passPhrase, callback) {
+    var publicKey = this.getPublicKeyFromPassPhrase(passPhrase)
+    this.getAccountByPublicKey(publicKey, callback)
+  }
 }
+
 export default install
 
 if (typeof window !== 'undefined' && window.Vue) {

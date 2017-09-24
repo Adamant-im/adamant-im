@@ -5,7 +5,7 @@
 
           <md-input-container>
               <label>{{ $t('login.password_label') }}</label>
-              <md-textarea></md-textarea>
+              <md-textarea v-model="passPhrase"></md-textarea>
           </md-input-container>
           <md-layout md-align="center" md-gutter="16">
           <md-button class="md-raised md-primary" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
@@ -44,7 +44,12 @@ export default {
   name: 'login',
   methods: {
     logme () {
-      this.$store.commit('login', {'address': 'U333', 'passPhrase': 'blabla'})
+      console.log(this.passPhrase)
+      this.getAccountByPassPhrase(this.passPhrase, function (context) {
+        this.$store.commit('save_passphrase', {'passPhrase': this.passPhrase})
+        this.$root._router.push('/home/')
+      })
+      // this.$store.commit('login', {'address': 'U333', 'passPhrase': 'blabla'})
     }
   },
   computed: {
@@ -65,6 +70,7 @@ export default {
   },
   data () {
     return {
+      passPhrase: '',
       language: 'en',
       showCreate: false
     }
