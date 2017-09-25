@@ -35,6 +35,24 @@ function install (Vue) {
     var keypair = secu.makeKeypair(hash)
     return keypair.publicKey.toString('hex')
   }
+  Vue.prototype.createNewAccount = function (publicKey, callback) {
+    this.$http.post(this.getAddressString() + '/api/accounts/new', { publicKey: publicKey }).then(response => {
+      if (response.body.success) {
+        response.body.account.balance = response.body.account.balance / 100000000
+        response.body.account.unconfirmedBalance = response.body.account.unconfirmedBalance / 100000000
+        response.body.account.publicKey = publicKey
+        response.body.account.is_new_account = true
+        this.$store.commit('login', response.body.account)
+        if (callback) {
+          callback.call(this)
+        }
+      } else {
+        alert(response.body.error)
+      }
+    }, response => {
+      // error callback
+    })
+  }
   Vue.prototype.getAccountByPublicKey = function (publicKey, callback) {
     this.$http.get(this.getAddressString() + '/api/accounts?publicKey=' + publicKey).then(response => {
       if (response.body.success) {
@@ -45,6 +63,8 @@ function install (Vue) {
         if (callback) {
           callback.call(this)
         }
+      } else if (response.body.error === 'Account not found') {
+        this.createNewAccount(publicKey, callback)
       }
     }, response => {
       // error callback

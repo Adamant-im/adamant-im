@@ -51,7 +51,8 @@ const store = new Vuex.Store({
     address: '',
     passPhrase: '',
     connectionString: '',
-    balance: 0
+    balance: 0,
+    is_new_account: false
   },
   mutations: {
     save_passphrase (state, payload) {
@@ -63,6 +64,9 @@ const store = new Vuex.Store({
         state.passPhrase = payload.passPhrase
       }
       state.balance = payload.balance
+      if (payload.is_new_account) {
+        state.is_new_account = payload.is_new_account
+      }
     },
     connect (state, payload) {
       state.connectionString = payload.string

@@ -49,7 +49,6 @@ export default {
         this.$store.commit('save_passphrase', {'passPhrase': this.passPhrase})
         this.$root._router.push('/home/')
       })
-      // this.$store.commit('login', {'address': 'U333', 'passPhrase': 'blabla'})
     }
   },
   computed: {
