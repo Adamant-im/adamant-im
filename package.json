@@ -14,6 +14,7 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "bignumber.js": "^4.0.4",
     "bitcore-mnemonic": "^1.2.5",
     "bytebuffer": "^5.0.1",
