@@ -7,9 +7,18 @@ export default {
     'login_button': 'Login',
     'new_button': 'Create'
   },
+  'transfer': {
+    'send_button': 'Send Funds',
+    'to_address_label': 'To Address',
+    'amount_label': 'Amount',
+    'final_amount_label': 'Amount with commission',
+    'commission_label': 'Transfer commission'
+  },
   'bottom': {
     'wallet_button': 'Wallet',
+    'send_button': 'Send Money',
     'chats_button': 'Chats',
-    'settings_button': 'Settings'
+    'settings_button': 'Settings',
+    'exit_button': 'Exit'
   }
 }

@@ -52,11 +52,32 @@ const store = new Vuex.Store({
     passPhrase: '',
     connectionString: '',
     balance: 0,
-    is_new_account: false
+    is_new_account: false,
+    ajaxIsOngoing: false,
+    lastErrorMsg: ''
   },
   mutations: {
     save_passphrase (state, payload) {
       state.passPhrase = payload.passPhrase
+    },
+    ajax_start (state) {
+      state.ajaxIsOngoing = true
+    },
+    ajax_end (state) {
+      state.ajaxIsOngoing = false
+    },
+    ajax_end_with_error (state) {
+      state.ajaxIsOngoing = false
+      state.lastErrorMsg = 'CONNECT PROBLEM'
+    },
+    send_error (state, payload) {
+      state.lastErrorMsg = payload.msg
+    },
+    logout (state) {
+      state.passPhrase = ''
+      state.address = ''
+      state.balance = 0
+      state.is_new_account = false
     },
     login (state, payload) {
       state.address = payload.address

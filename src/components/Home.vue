@@ -2,6 +2,7 @@
   <div class="home">
         <div>Your address is <span v-html="this.$store.state.address"></span></div>
         <div>Your balance is <span v-html="this.$store.state.balance"></span> HZ</div>
+        <div v-if="isNewUser">Hello, you are new user, so may be you need some help with your new wallet ?</div>
   </div>
 </template>
 
@@ -11,6 +12,9 @@ export default {
   methods: {
   },
   computed: {
+    isNewUser: function () {
+      return this.$store.state.is_new_account
+    },
     languageList: function () {
       var messages = require('../i18n').default
       console.log(messages)

@@ -74,6 +74,74 @@ function install (Vue) {
     var publicKey = this.getPublicKeyFromPassPhrase(passPhrase)
     this.getAccountByPublicKey(publicKey, callback)
   }
+
+  Vue.prototype.transferFunds = function (amount, recipient) {
+    this.$store.commit('ajax_start')
+    if (this.$store.state.passPhrase) {
+      var hash = secu.createPassPhraseHash(this.$store.state.passPhrase)
+      var keypair = secu.makeKeypair(hash)
+      var transaction = {}
+      transaction.type = 0
+      amount = amount * 100000000
+      transaction.amount = Math.round(amount)
+      transaction.recipientId = recipient
+      transaction.publicKey = keypair.publicKey.toString('hex')
+      transaction.senderId = this.$store.state.address
+      this.normalizeTransaction(transaction)
+    }
+  }
+  Vue.prototype.processTransaction = function (transaction) {
+    this.$http.post(this.getAddressString() + '/api/transactions/process', {
+      transaction: transaction
+    }).then(response => {
+      if (response.body.success) {
+        if (response.body.transactionId) {
+          this.$root._router.push('/transactions/' + response.body.transactionId + '/')
+        }
+      } else {
+      }
+      this.$store.commit('ajax_end')
+    },
+    response => {
+      this.$store.commit('ajax_end_with_error')
+    })
+  }
+  Vue.prototype.normalizeTransaction = function (transaction) {
+    this.$http.post(this.getAddressString() + '/api/transactions/normalize', {
+      type: transaction.type,
+      amount: transaction.amount,
+      recipientId: transaction.recipientId,
+      publicKey: transaction.publicKey,
+      senderId: transaction.senderId
+    }).then(response => {
+      if (response.body.success) {
+        var newTransaction = response.body.transaction
+        var hash = secu.createPassPhraseHash(this.$store.state.passPhrase)
+        var keypair = secu.makeKeypair(hash)
+        newTransaction.senderId = transaction.senderId
+        newTransaction.signature = secu.transactionSign(newTransaction, keypair)
+        this.processTransaction(newTransaction)
+      } else {
+        this.$store.commit('send_error', {msg: response.body.error})
+        this.$store.commit('ajax_end')
+      }
+    }, response => {
+      // error callback
+      this.$store.commit('ajax_end_with_error')
+    })
+  }
+
+  Vue.prototype.getTransactionInfo = function (txid) {
+    this.$http.get(this.getAddressString() + '/api/transactions/get?id=' + txid).then(response => {
+      if (response.body.success) {
+        response.body.transaction.amount = response.body.transaction.amount / 100000000
+        this.$store.commit('ajax_end')
+        return response.body.transaction
+      }
+    }, response => {
+      this.$store.commit('ajax_end_with_error')
+    })
+  }
 }
 
 export default install

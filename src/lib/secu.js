@@ -4,7 +4,7 @@
 var sodium = require('sodium-browserify-tweetnacl')
 var crypto = require('crypto')
 var Mnemonic = require('bitcore-mnemonic')
-var bignum = require('bignumber.js')
+var bignum = require('./bignumber.js')
 var ByteBuffer = require('bytebuffer')
 
 /**
