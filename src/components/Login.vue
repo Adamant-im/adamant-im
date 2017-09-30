@@ -30,7 +30,7 @@
                   <md-icon>g_translate</md-icon>
                   <label for="language">{{ $t('login.language_label') }}</label>
                   <md-select name="language" id="language" v-model="language">
-                      <md-option  v-for="(language, code) in languageList" :value="code">{{ language.title }}</md-option>
+                      <md-option  v-for="(language, code) in languageList" :value="code" :key="code">{{ language.title }}</md-option>
                   </md-select>
               </md-input-container>
               </div>
