@@ -5,7 +5,9 @@
             <h1 class="md-title">Haze</h1>
           </md-toolbar>
     <main>
-      <router-view></router-view>
+        <md-progress md-indeterminate v-if="isAjax"></md-progress>
+
+        <router-view></router-view>
     </main>
       <footer>
           <div class="bottom-fixed">
@@ -25,6 +27,16 @@
 <script>
 export default {
   name: 'app',
+  mounted: function () {
+    setInterval(
+      (function (self) {
+        return function () {
+          self.updateCurrentValues() // Thing you wanted to run as non-window 'this'
+        }
+      })(this),
+      50000
+    )
+  },
   methods: {
     exitme () {
       this.$store.commit('logout')
@@ -32,6 +44,9 @@ export default {
     }
   },
   computed: {
+    isAjax () {
+      return this.$store.state.ajaxIsOngoing
+    },
     logged () {
       return this.$store.state.passPhrase
     }

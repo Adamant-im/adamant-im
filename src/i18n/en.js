@@ -7,6 +7,15 @@ export default {
     'login_button': 'Login',
     'new_button': 'Create'
   },
+  'transaction': {
+    'amount': 'Amount',
+    'date': 'Date',
+    'confirmations': 'Confirmations',
+    'commission': 'Commission',
+    'txid': 'Transaction No',
+    'sender': 'From',
+    'recipient': 'To'
+  },
   'transfer': {
     'send_button': 'Send Funds',
     'to_address_label': 'To Address',

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Hello from '@/components/Hello'
 import Login from '@/components/Login'
 import Transfer from '@/components/Transfer'
+import Transaction from '@/components/Transaction'
 import Options from '@/components/Options'
 import Home from '@/components/Home'
 
@@ -10,6 +11,7 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
+    { path: '/transactions/:tx_id', component: Transaction },
     {
       path: '/hello',
       name: 'Hello',

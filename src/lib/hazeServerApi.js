@@ -36,6 +36,7 @@ function install (Vue) {
     return keypair.publicKey.toString('hex')
   }
   Vue.prototype.createNewAccount = function (publicKey, callback) {
+    this.$store.commit('ajax_start')
     this.$http.post(this.getAddressString() + '/api/accounts/new', { publicKey: publicKey }).then(response => {
       if (response.body.success) {
         response.body.account.balance = response.body.account.balance / 100000000
@@ -46,14 +47,17 @@ function install (Vue) {
         if (callback) {
           callback.call(this)
         }
+        this.$store.commit('ajax_end')
       } else {
         alert(response.body.error)
+        this.$store.commit('ajax_end_with_error')
       }
     }, response => {
       // error callback
     })
   }
   Vue.prototype.getAccountByPublicKey = function (publicKey, callback) {
+    this.$store.commit('ajax_start')
     this.$http.get(this.getAddressString() + '/api/accounts?publicKey=' + publicKey).then(response => {
       if (response.body.success) {
         response.body.account.balance = response.body.account.balance / 100000000
@@ -63,6 +67,7 @@ function install (Vue) {
         if (callback) {
           callback.call(this)
         }
+        this.$store.commit('ajax_end')
       } else if (response.body.error === 'Account not found') {
         this.createNewAccount(publicKey, callback)
       }
@@ -130,13 +135,36 @@ function install (Vue) {
       this.$store.commit('ajax_end_with_error')
     })
   }
-
+  Vue.prototype.updateCurrentValues = function () {
+    if (this.$store.state.passPhrase) {
+      // updating wallet balance
+      this.getAccountByPublicKey(this.getPublicKeyFromPassPhrase(this.$store.state.passPhrase))
+    }
+  }
+  Vue.prototype.getUncofirmedTransactionInfo = function (txid) {
+    this.$store.commit('ajax_start')
+    this.$http.get(this.getAddressString() + '/api/transactions/unconfirmed/get?id=' + txid).then(response => {
+      if (response.body.success) {
+        if (!response.body.transaction) {
+          response.body.transaction = 0
+        }
+        this.$store.commit('transaction_info', response.body.transaction)
+        this.$store.commit('ajax_end')
+      } else {
+        this.$store.commit('ajax_end_with_error')
+      }
+    }, response => {
+      this.$store.commit('ajax_end_with_error')
+    })
+  }
   Vue.prototype.getTransactionInfo = function (txid) {
+    this.$store.commit('ajax_start')
     this.$http.get(this.getAddressString() + '/api/transactions/get?id=' + txid).then(response => {
       if (response.body.success) {
-        response.body.transaction.amount = response.body.transaction.amount / 100000000
+        this.$store.commit('transaction_info', response.body.transaction)
         this.$store.commit('ajax_end')
-        return response.body.transaction
+      } else {
+        this.getUncofirmedTransactionInfo(txid)
       }
     }, response => {
       this.$store.commit('ajax_end_with_error')

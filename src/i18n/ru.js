@@ -7,6 +7,15 @@ export default {
     'login_button': 'Войти',
     'new_button': 'Создать'
   },
+  'transaction': {
+    'amount': 'Количество',
+    'date': 'Дата',
+    'confirmations': 'Подтверждений',
+    'commission': 'Комиссия за перевод',
+    'txid': 'Номер транзакции',
+    'sender': 'Отправитель',
+    'recipient': 'Получатель'
+  },
   'transfer': {
     'send_button': 'Отправить',
     'to_address_label': 'Адрес получателя',
