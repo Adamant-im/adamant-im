@@ -1,4 +1,4 @@
-# Haze
+# Adamant
 
 > Distributed chat
 

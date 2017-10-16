@@ -1,6 +1,11 @@
 <template>
   <div class="login">
-    <md-layout md-align="center" md-gutter="16">
+      <md-layout md-align="center" md-gutter="16">
+          <md-layout md-flex="66" sm-flex="90" sm-align="center" md-align="center">
+                <img src="http://adamant.im/wp-content/uploads/2017/10/adamant-logo-no-cap-256x256.png" />
+          </md-layout>
+      </md-layout>
+      <md-layout md-align="center" md-gutter="16">
       <md-layout md-flex="66" sm-flex="90">
 
           <md-input-container>
@@ -44,10 +49,10 @@ export default {
   name: 'login',
   methods: {
     logme () {
-      console.log(this.passPhrase)
       this.getAccountByPassPhrase(this.passPhrase, function (context) {
         this.$store.commit('save_passphrase', {'passPhrase': this.passPhrase})
         this.$root._router.push('/home/')
+        this.loadChats()
       })
     }
   },

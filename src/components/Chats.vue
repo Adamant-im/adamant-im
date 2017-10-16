@@ -1,54 +1,65 @@
 <template>
   <div class="chats">
     <md-layout md-align="center" md-gutter="16">
-      <md-layout md-flex="66" sm-flex="90">
+        <div class="md-toolbar-container">
 
-          <md-input-container>
-              <label>{{ $t('login.password_label') }}</label>
-              <md-textarea v-model="passPhrase"></md-textarea>
-          </md-input-container>
-          <md-layout md-align="center" md-gutter="16">
-          <md-button class="md-raised md-primary" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
-              <md-button class="md-raised md-secondary" v-on:click="showCreate = true">{{ $t('login.new_button') }}</md-button>
-          </md-layout>
-      </md-layout>
+        <h2 class="md-title">{{ $t('chats.title') }} </h2>
+        </div>
+    </md-layout>
+        <md-layout md-align="center" md-gutter="16">
+
+        <md-list class="md-double-line">
+            <md-list-item v-on:click="$router.push('/chats/new')">
+                <md-avatar class="md-avatar-icon">
+                    <md-icon>add</md-icon>
+                </md-avatar>
+
+                <div class="md-list-text-container">
+                    <span>{{ $t('chats.new_chat') }} </span>
+                    <p></p>
+                </div>
+
+
+            </md-list-item>
+            <md-list-item v-for="(chat, address) in chatList" :key="address" v-on:click="$router.push('/chats/' + address + '/')">
+                <md-avatar class="md-avatar-icon">
+                    <md-icon>library_books</md-icon>
+                </md-avatar>
+
+                <div class="md-list-text-container">
+                    <span>{{ address }}</span>
+                    <p>{{ chat.last_message.message }}</p>
+                </div>
+
+
+            </md-list-item>
+        </md-list>
     </md-layout>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'login',
+  name: 'chats',
   methods: {
-    logme () {
-      console.log(this.passPhrase)
-      this.getAccountByPassPhrase(this.passPhrase, function (context) {
-        this.$store.commit('save_passphrase', {'passPhrase': this.passPhrase})
-        this.$root._router.push('/home/')
-      })
+    load () {
+      this.loadChats()
+    },
+    send () {
+      this.encodeMessageForAddress(this.message, this.targetAddress)
     }
   },
   computed: {
-    languageList: function () {
-      var messages = require('../i18n').default
-      console.log(messages)
-      return messages
-    },
-    yourPassPhrase: function () {
-      var Mnemonic = require('bitcore-mnemonic')
-      return new Mnemonic(Mnemonic.Words.ENGLISH).toString()
+    chatList: function () {
+      return this.$store.state.chats
     }
   },
   watch: {
-    'language' (to, from) {
-      this.$i18n.locale = to
-    }
   },
   data () {
     return {
-      passPhrase: '',
-      language: 'en',
-      showCreate: false
+      targetAddress: '',
+      message: ''
     }
   }
 }

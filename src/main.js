@@ -8,7 +8,7 @@ import VueResource from 'vue-resource'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 import VueMaterial from 'vue-material'
-import VueHazeServerApi from './lib/hazeServerApi'
+import VueHazeServerApi from './lib/adamantServerApi'
 
 import 'vue-material/dist/vue-material.css'
 
@@ -55,7 +55,12 @@ const store = new Vuex.Store({
     is_new_account: false,
     ajaxIsOngoing: false,
     lastErrorMsg: '',
-    transactions: {}
+    transactions: {},
+    showPanel: false,
+    showBottom: true,
+    partnerName: 'MAXX',
+    chats: {},
+    currentChat: false
   },
   mutations: {
     save_passphrase (state, payload) {
@@ -95,12 +100,52 @@ const store = new Vuex.Store({
     },
     connect (state, payload) {
       state.connectionString = payload.string
+    },
+    select_chat (state, payload) {
+      state.currentChat = state.chats[payload]
+      Vue.set(state.currentChat, messages, state.chats[payload].messages)
+      state.partnerName = payload
+      state.showPanel = true
+      state.showBottom = false
+    },
+    leave_chat (state, payload) {
+      state.showPanel = false
+      state.showBottom = true
+    },
+    add_chat_message (state, payload) {
+      var me = state.address
+      var partner = ''
+      var direction = 'from'
+      if (payload.recipientId === me) {
+        direction = 'to'
+        partner = payload.senderId
+      } else {
+        partner = payload.recipientId
+      }
+      var currentDialogs = state.chats[partner]
+      if (!currentDialogs) {
+        currentDialogs = {
+          partner: partner,
+          messages: {},
+          last_message: {}
+        }
+      }
+      if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
+        currentDialogs.last_message = {
+          message: payload.message,
+          timestamp: payload.timestamp
+        }
+      }
+      console.log(payload)
+      Vue.set(state.chats, partner, currentDialogs)
+      payload.direction = direction
+      Vue.set(state.chats[partner].messages, payload.id, payload)
     }
   }
 })
 
 /* eslint-disable no-new */
-new Vue({
+window.ep = new Vue({
   el: '#app',
   router,
   store,

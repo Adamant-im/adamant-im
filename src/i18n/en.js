@@ -7,6 +7,10 @@ export default {
     'login_button': 'Login',
     'new_button': 'Create'
   },
+  'chats': {
+    'new_chat': 'Start new chat',
+    'title': 'Chats'
+  },
   'transaction': {
     'amount': 'Amount',
     'date': 'Date',

@@ -13,7 +13,7 @@ var ByteBuffer = require('bytebuffer')
  * @requires sodium
  * @namespace
  */
-var secu = {}
+var adamant = {}
 
 /**
  * Creates a hash based on a passphrase.
@@ -21,7 +21,7 @@ var secu = {}
  * @return {string} hash
  */
 
-secu.createPassPhraseHash = function (passPhrase) {
+adamant.createPassPhraseHash = function (passPhrase) {
   var secretMnemonic = new Mnemonic(passPhrase, Mnemonic.Words.ENGLISH)
   return crypto.createHash('sha256').update(secretMnemonic.toSeed().toString('hex'), 'hex').digest()
 }
@@ -32,7 +32,7 @@ secu.createPassPhraseHash = function (passPhrase) {
  * @param {hash} hash
  * @return {Object} publicKey, privateKey
  */
-secu.makeKeypair = function (hash) {
+adamant.makeKeypair = function (hash) {
   var keypair = sodium.crypto_sign_seed_keypair(hash)
 
   return {
@@ -47,7 +47,7 @@ secu.makeKeypair = function (hash) {
  * @param {transaction} trs
  * @return {hash} sha256 crypto hash
  */
-secu.getHash = function (trs) {
+adamant.getHash = function (trs) {
   return crypto.createHash('sha256').update(this.getBytes(trs)).digest()
 }
 
@@ -62,7 +62,7 @@ secu.getHash = function (trs) {
  * @throws {error} If buffer fails.
  */
 
-secu.getBytes = function (transaction) {
+adamant.getBytes = function (transaction) {
   var skipSignature = false
   var skipSecondSignature = true
   var assetSize = 0
@@ -70,6 +70,10 @@ secu.getBytes = function (transaction) {
 
   switch (transaction.type) {
     case 0:
+      break
+    case 8:
+      assetBytes = this.chatGetBytes(transaction)
+      assetSize = assetBytes.length
       break
     default:
       alert('Not supported yet')
@@ -140,11 +144,37 @@ secu.getBytes = function (transaction) {
   return new Buffer(buffer)
 }
 
-secu.transactionSign = function (trs, keypair) {
+adamant.transactionSign = function (trs, keypair) {
   var hash = this.getHash(trs)
   return this.sign(hash, keypair).toString('hex')
 }
+adamant.chatGetBytes = function (trs) {
+  var buf
 
+  try {
+    buf = Buffer.from([])
+    var messageBuf = Buffer.from(trs.asset.chat.message, 'hex')
+    buf = Buffer.concat([buf, messageBuf])
+
+    if (trs.asset.chat.own_message) {
+      var ownMessageBuf = Buffer.from(trs.asset.chat.own_message, 'hex')
+      buf = Buffer.concat([buf, ownMessageBuf])
+    }
+    var bb = new ByteBuffer(4 + 4, true)
+    console.log(bb)
+    bb.writeInt(trs.asset.chat.type)
+    bb.flip()
+    console.log(bb)
+    console.log(bb.toBuffer)
+    console.log(buf)
+    console.log([buf, Buffer.from(bb.toBuffer())])
+    buf = Buffer.concat([buf, Buffer.from(bb.toBuffer())])
+  } catch (e) {
+    throw e
+  }
+
+  return buf
+}
 /**
  * Creates a signature based on a hash and a keypair.
  * @implements {sodium}
@@ -152,7 +182,7 @@ secu.transactionSign = function (trs, keypair) {
  * @param {keypair} keypair
  * @return {signature} signature
  */
-secu.sign = function (hash, keypair) {
+adamant.sign = function (hash, keypair) {
   return sodium.crypto_sign_detached(hash, Buffer.from(keypair.privateKey, 'hex'))
 }
 
@@ -163,8 +193,8 @@ secu.sign = function (hash, keypair) {
  * @param {keypair} keypair
  * @return {Boolean} true id verified
  */
-secu.verify = function (hash, signatureBuffer, publicKeyBuffer) {
+adamant.verify = function (hash, signatureBuffer, publicKeyBuffer) {
   return sodium.crypto_sign_verify_detached(signatureBuffer, hash, publicKeyBuffer)
 }
 
-module.exports = secu
+module.exports = adamant

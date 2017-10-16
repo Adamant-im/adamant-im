@@ -1,8 +1,14 @@
 <template>
   <div id="app">
-      <md-theme md-name="purple">
-          <md-toolbar>
-            <h1 class="md-title">Haze</h1>
+      <md-theme md-name="grey">
+          <md-toolbar v-if="isTopPanelShown">
+              <md-button class="md-icon-button" v-on:click="gotochats">
+                  <md-icon >keyboard_backspace</md-icon>
+              </md-button>
+            <h1 class="md-title">{{ partnerName }}</h1>
+              <md-button class="md-icon-button">
+                  <md-icon >edit</md-icon>
+              </md-button>
           </md-toolbar>
     <main>
         <md-progress md-indeterminate v-if="isAjax"></md-progress>
@@ -11,7 +17,7 @@
     </main>
       <footer>
           <div class="bottom-fixed">
-              <md-bottom-bar v-if="logged">
+              <md-bottom-bar v-if="logged && isBottomPanelShown">
                   <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" md-active>{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="send" v-on:click="$router.push('/transfer/')">{{$t('bottom.send_button')}}</md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')">{{$t('bottom.chats_button')}}</md-bottom-bar-item>
@@ -38,12 +44,25 @@ export default {
     )
   },
   methods: {
+    gotochats () {
+      this.$store.commit('leave_chat')
+      this.$router.push('/chats/')
+    },
     exitme () {
       this.$store.commit('logout')
       this.$router.push('/')
     }
   },
   computed: {
+    partnerName () {
+      return this.$store.state.partnerName
+    },
+    isTopPanelShown () {
+      return this.$store.state.showPanel
+    },
+    isBottomPanelShown () {
+      return this.$store.state.showBottom
+    },
     isAjax () {
       return this.$store.state.ajaxIsOngoing
     },
@@ -83,10 +102,19 @@ header {
   margin: 0;
   height: 56px;
   padding: 0 16px 0 24px;
-  background-color: #35495E;
+  background-color: #484848;
   color: #ffffff;
 }
-
+.md-primary
+{
+    background-color: #484848;
+    color: #ffffff;
+}
+.md-toolbar.md-theme-grey
+{
+    background-color: #484848;
+    color: #ffffff;
+}
 header span {
   display: block;
   position: relative;
