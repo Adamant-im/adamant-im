@@ -307,7 +307,9 @@ function install (Vue) {
               var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
               var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
               currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
-              this.$store.commit('add_chat_message', currentTransaction)
+              if (currentTransaction.message && currentTransaction.message.length > 0) {
+                this.$store.commit('add_chat_message', currentTransaction)
+              }
             }
           }
         }
