@@ -99,11 +99,11 @@ export default {
 .container a{
     color: #000;
 }
-.md-shit {
+.md-layout .md-button.md-raised.md-shit, .md-shit {
     background: repeating-linear-gradient( 140deg, lightgray, lightgray 1px, #FEFEFE 1px, #FEFEFE 15px );
     color: #4A4A4A;
 }
-.md-shit:hover {
+.md-layout .md-button.md-raised.md-shit:hover,.md-shit:hover {
     background: none;
     background-color: rgba(0, 0, 0, 0.12);
 }
