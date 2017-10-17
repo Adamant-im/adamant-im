@@ -1,11 +1,6 @@
 <template>
   <div class="chats">
-    <md-layout md-align="center" md-gutter="16">
-        <div class="md-toolbar-container">
 
-        <h2 class="md-title">{{ $t('chats.title') }} </h2>
-        </div>
-    </md-layout>
         <md-layout md-align="center" md-gutter="16">
 
         <md-list class="md-double-line">

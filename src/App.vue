@@ -5,10 +5,12 @@
               <md-button class="md-icon-button" v-on:click="gotochats">
                   <md-icon >keyboard_backspace</md-icon>
               </md-button>
-            <h1 class="md-title">{{ partnerName }}</h1>
-              <md-button class="md-icon-button">
-                  <md-icon >edit</md-icon>
-              </md-button>
+            <h1 class="md-title">
+                <md-input-container>
+                    <label>{{ partnerName }}</label>
+                    <md-input></md-input>
+                </md-input-container>
+                </h1>
           </md-toolbar>
     <main>
         <md-progress md-indeterminate v-if="isAjax"></md-progress>
@@ -19,7 +21,6 @@
           <div class="bottom-fixed">
               <md-bottom-bar v-if="logged && isBottomPanelShown">
                   <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" md-active>{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
-                  <md-bottom-bar-item md-icon="send" v-on:click="$router.push('/transfer/')">{{$t('bottom.send_button')}}</md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')">{{$t('bottom.chats_button')}}</md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="settings" v-on:click="$router.push('/options/')">{{$t('bottom.settings_button')}}</md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="exit_to_app" v-on:click="exitme">{{$t('bottom.exit_button')}}</md-bottom-bar-item>
@@ -76,26 +77,90 @@ export default {
 <style>
 body {
   margin: 0;
+
+}
+html {
+    background-color: #fefefe;
+}
+body.md-theme-default {
+    background-color: #fefefe;
 }
 footer {
     height: 100px;
+}
+.md-toolbar .md-title
+{
+    min-width: 70%;
+}
+.md-toolbar .md-title .md-input-container:after {
+    background: none ;
+}
+.md-toolbar .md-title .md-input-container.md-input-focused:after {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+.md-toolbar .md-title .md-input-container
+{
+    padding-top: 16px;
+    min-height: 48px;
+}
+.md-toolbar .md-title .md-input-container label
+{
+    top: 13px;
+    font-size: 18px;
+}
+.md-toolbar .md-title .md-input-container.md-input-focused label, .md-toolbar .md-title .md-input-container.md-has-value label {
+    top: 0;
+    font-size: 12px;
 }
 .bottom-fixed{
     position:fixed;
     bottom:0;
     width:100%;
+    max-width: 800px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
 }
+
+.bottom-fixed .md-bottom-bar {
+    box-shadow: none;
+    border-top: 1px solid lightgray;
+}
+.chat, .home, .chats {
+    max-width: 800px;
+    margin: 0 auto;
+    margin-top: 25px;
+}
+
+.chats .md-list {
+    max-width: 90%;
+}
+
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: #4A4A4A;
+  font-family: 'Exo 2', sans-serif;
+    overflow: hidden;
+    max-width: 100%;
+    height: 100%;
+
+    max-width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.md-bottom-bar-item.md-active
+{
+    background-color: #BAD3FF;
+    background: repeating-linear-gradient( 140deg, lightgray, lightgray 1px, #FEFEFE 1px, #FEFEFE 15px );
+    color: #4A4A4A;
 }
 
 main {
   text-align: center;
-  margin-top: 40px;
+
 }
 
 header {
@@ -105,15 +170,20 @@ header {
   background-color: #484848;
   color: #ffffff;
 }
+.md-list-item.md-menu-item
+{
+    background-color:rgba(255,255,255,0.9);
+}
 .md-primary
 {
-    background-color: #484848;
+    background-color: #4A4A4A;
     color: #ffffff;
 }
 .md-toolbar.md-theme-grey
 {
-    background-color: #484848;
-    color: #ffffff;
+    color: #4A4A4A;
+    border-bottom: 1px solid #4A4A4A;
+    background-color: #ffffff;
 }
 header span {
   display: block;

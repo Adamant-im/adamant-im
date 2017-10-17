@@ -4,14 +4,14 @@
       <md-layout md-flex="66" sm-flex="90">
           <md-input-container>
               <label>Address</label>
-              <md-textarea v-model="targetAddress">U14345892393468009728</md-textarea>
+              <md-textarea v-model="targetAddress"></md-textarea>
           </md-input-container>
           <md-input-container>
               <label>MESSAGE</label>
               <md-textarea v-model="message"></md-textarea>
           </md-input-container>
           <md-layout md-align="center" md-gutter="16">
-          <md-button class="md-raised md-primary" v-on:click="send">SEND</md-button>
+          <md-button class="md-raised md-primary" v-on:click="send">{{ $t('send.send_button') }}</md-button>
 
           </md-layout>
       </md-layout>
@@ -33,7 +33,7 @@ export default {
   },
   data () {
     return {
-      targetAddress: 'U14345892393468009728',
+      targetAddress: '',
       message: ''
     }
   }

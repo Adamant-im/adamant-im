@@ -58,7 +58,7 @@ const store = new Vuex.Store({
     transactions: {},
     showPanel: false,
     showBottom: true,
-    partnerName: 'MAXX',
+    partnerName: '',
     chats: {},
     currentChat: false
   },

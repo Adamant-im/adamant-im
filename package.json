@@ -20,6 +20,7 @@
     "bitcore-mnemonic": "^1.2.5",
     "bytebuffer": "^5.0.1",
     "chloride": "^2.2.7",
+    "marked": "^0.3.6",
     "vue": "^2.3.3",
     "vue-clipboards": "^1.1.0",
     "vue-i18n": "^7.3.0",
