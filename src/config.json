@@ -1,9 +1,9 @@
 {
   "server": [
     {
-      "ip": "51.15.221.205",
-      "protocol": "http",
-      "port": "36666"
+      "ip": "clown.adamant.im",
+      "protocol": "https",
+      "port": ""
     }
   ]
 }
