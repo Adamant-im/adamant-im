@@ -50,7 +50,6 @@ export default {
     },
     languageList: function () {
       var messages = require('../i18n').default
-      console.log(messages)
       return messages
     }
   },

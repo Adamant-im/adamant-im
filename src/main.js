@@ -146,7 +146,6 @@ const store = new Vuex.Store({
       if (payload.height) {
         payload.confirm_class = 'confirmed'
       }
-      console.log(payload)
       Vue.set(state.chats, partner, currentDialogs)
       payload.direction = direction
       Vue.set(state.chats[partner].messages, payload.id, payload)

@@ -11,7 +11,7 @@
           <md-layout md-flex="90"   md-flex-xsmall="80" class="text_block">
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
-                  <md-textarea v-model="message" v-on:keyup.meta.enter="send" v-on:keyup.ctrl.enter="send"></md-textarea>
+                  <md-textarea v-model="message" @keyup.native="kp($event)"  maxlength="1024"></md-textarea>
               </md-input-container>
           </md-layout>
           <md-layout md-flex="10" >
@@ -27,6 +27,11 @@
 export default {
   name: 'chats',
   methods: {
+    kp: function (event) {
+      if (event.key === 'Enter' && event.ctrlKey) {
+        this.send()
+      }
+    },
     send () {
       if (this.message) {
         this.encodeMessageForAddress(this.message, this.$route.params.partner)

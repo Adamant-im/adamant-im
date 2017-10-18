@@ -23,7 +23,7 @@
 
                 <div class="md-list-text-container">
                     <span>{{ address }}</span>
-                    <p>{{ chat.last_message.message }}</p>
+                    <p v-html="chat.last_message.message"></p>
                 </div>
 
 

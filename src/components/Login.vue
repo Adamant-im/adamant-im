@@ -10,10 +10,9 @@
       </div>
       <md-layout md-align="center" md-gutter="16">
       <md-layout md-flex="66" sm-flex="90">
-
           <md-input-container>
               <label>{{ $t('login.password_label') }}</label>
-              <md-textarea v-model="passPhrase" type="password"></md-textarea>
+              <md-input v-model="passPhrase" type="password" @keyup.native="kp($event)"></md-input>
           </md-input-container>
           <md-layout md-align="center" md-gutter="16">
           <md-button class="md-raised md-shit" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
@@ -51,6 +50,11 @@
 export default {
   name: 'login',
   methods: {
+    kp: function (event) {
+      if (event.key === 'Enter') {
+        this.logme()
+      }
+    },
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
       if (this.passPhrase.split(' ').length !== 12) {
@@ -66,7 +70,6 @@ export default {
   computed: {
     languageList: function () {
       var messages = require('../i18n').default
-      console.log(messages)
       return messages
     },
     yourPassPhrase: function () {

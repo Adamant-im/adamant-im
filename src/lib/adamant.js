@@ -161,13 +161,8 @@ adamant.chatGetBytes = function (trs) {
       buf = Buffer.concat([buf, ownMessageBuf])
     }
     var bb = new ByteBuffer(4 + 4, true)
-    console.log(bb)
     bb.writeInt(trs.asset.chat.type)
     bb.flip()
-    console.log(bb)
-    console.log(bb.toBuffer)
-    console.log(buf)
-    console.log([buf, Buffer.from(bb.toBuffer())])
     buf = Buffer.concat([buf, Buffer.from(bb.toBuffer())])
   } catch (e) {
     throw e
