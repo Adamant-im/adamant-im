@@ -52,6 +52,10 @@ export default {
   name: 'login',
   methods: {
     logme () {
+      this.passPhrase = this.passPhrase.toLowerCase().trim()
+      if (this.passPhrase.split(' ').length !== 12) {
+        return
+      }
       this.getAccountByPassPhrase(this.passPhrase, function (context) {
         this.$store.commit('save_passphrase', {'passPhrase': this.passPhrase})
         this.$root._router.push('/chats/')

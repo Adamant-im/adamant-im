@@ -10,7 +10,9 @@ export default {
   'chats': {
     'new_chat': 'Создать чат',
     'title': 'Диалоги',
-    'send_button': 'Отправить'
+    'send_button': 'Отправить',
+    'recipient': 'Получатель',
+    'message': 'Сообщение'
   },
   'transaction': {
     'amount': 'Количество',

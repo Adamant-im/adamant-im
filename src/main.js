@@ -9,6 +9,7 @@ import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 import VueMaterial from 'vue-material'
 import VueHazeServerApi from './lib/adamantServerApi'
+import createPersistedState from 'vuex-persistedstate'
 
 import 'vue-material/dist/vue-material.css'
 
@@ -84,6 +85,11 @@ const store = new Vuex.Store({
       state.address = ''
       state.balance = 0
       state.is_new_account = false
+      state.showPanel = false
+      state.showBottom = true
+      state.transactions = {}
+      state.chats = {}
+      state.currentChat = false
     },
     login (state, payload) {
       state.address = payload.address
@@ -136,12 +142,17 @@ const store = new Vuex.Store({
           timestamp: payload.timestamp
         }
       }
+      payload.confirm_class = 'unconfirmed'
+      if (payload.height) {
+        payload.confirm_class = 'confirmed'
+      }
       console.log(payload)
       Vue.set(state.chats, partner, currentDialogs)
       payload.direction = direction
       Vue.set(state.chats[partner].messages, payload.id, payload)
     }
-  }
+  },
+  plugins: [createPersistedState()]
 })
 
 /* eslint-disable no-new */

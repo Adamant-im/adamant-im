@@ -10,7 +10,9 @@ export default {
   'chats': {
     'new_chat': 'Start new chat',
     'title': 'Chats',
-    'send_button': 'Send'
+    'send_button': 'Send',
+    'recipient': 'Recipient',
+    'message': 'Message'
   },
   'transaction': {
     'amount': 'Amount',

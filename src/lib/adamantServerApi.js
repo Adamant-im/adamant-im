@@ -94,7 +94,6 @@ function install (Vue) {
   }
 
   Vue.prototype.encodeMessage = function (msg, recipientPublicKey) {
-    console.log('start encoding')
     var sodium = require('sodium-browserify-tweetnacl')
     var nacl = require('tweetnacl/nacl-fast')
     var ed2curve = require('ed2curve')
@@ -154,10 +153,8 @@ function install (Vue) {
     })
   }
   Vue.prototype.sendMessage = function (msg, recipient) {
-    console.log('sendmessage')
     if (this.$store.state.passPhrase) {
       this.$store.commit('ajax_start')
-      console.log('starting ajax')
       var hash = adamant.createPassPhraseHash(this.$store.state.passPhrase)
       var keypair = adamant.makeKeypair(hash)
       var transaction = {}
@@ -168,7 +165,6 @@ function install (Vue) {
       transaction.senderId = this.$store.state.address
       transaction.asset = {}
       transaction.asset.chat = msg
-      console.log(transaction)
       this.normalizeMessageTransaction(transaction)
     }
   }
@@ -178,7 +174,9 @@ function install (Vue) {
     }).then(response => {
       if (response.body.success) {
         if (response.body.transactionId) {
-          this.loadChats()
+          transaction.id = response.body.transactionId
+          this.loadMessageTransaction(transaction)
+//          this.loadChats()
         }
       } else {
       }
@@ -189,7 +187,6 @@ function install (Vue) {
     })
   }
   Vue.prototype.normalizeMessageTransaction = function (transaction) {
-    console.log('normalizechat')
     this.$http.post(this.getAddressString() + '/api/chats/normalize', {
       type: transaction.type,
       message: transaction.asset.chat.message,
@@ -205,7 +202,6 @@ function install (Vue) {
         newTransaction.senderId = transaction.senderId
         newTransaction.signature = adamant.transactionSign(newTransaction, keypair)
         this.$store.commit('ajax_end')
-        console.log(newTransaction)
         this.processMessageTransaction(newTransaction)
       } else {
         this.$store.commit('send_error', {msg: response.body.error})
@@ -278,40 +274,41 @@ function install (Vue) {
       this.loadChats()
     }
   }
-
+  Vue.prototype.loadMessageTransaction = function (currentTransaction) {
+    var currentAddress = this.$store.state.address
+    var marked = require('marked')
+    if (currentTransaction.type > 0) {
+      var decodePublic = ''
+      if (currentTransaction.recipientId !== currentAddress) {
+        this.getAddressPublicKey(currentTransaction.recipientId).then(function (currentTransaction, decodePublic) {
+          decodePublic = Buffer.from(decodePublic, 'hex')
+          var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
+          var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
+          currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
+          currentTransaction.message = marked(currentTransaction.message)
+          if (currentTransaction.message && currentTransaction.message.length > 0) {
+            this.$store.commit('add_chat_message', currentTransaction)
+          }
+        }.bind(this, currentTransaction))
+      } else {
+        decodePublic = currentTransaction.senderPublicKey
+        decodePublic = new Uint8Array(this.hexToBytes(decodePublic))
+        var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
+        var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
+        currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
+        currentTransaction.message = marked(currentTransaction.message)
+        if (currentTransaction.message && currentTransaction.message.length > 0) {
+          this.$store.commit('add_chat_message', currentTransaction)
+        }
+      }
+    }
+  }
   Vue.prototype.loadChats = function () {
     this.$store.commit('ajax_start')
     this.$http.get(this.getAddressString() + '/api/chats/get/?isIn=' + this.$store.state.address).then(response => {
       if (response.body.success) {
         for (var i in response.body.transactions) {
-          if (response.body.transactions[i].type > 0) {
-            var currentAddress = this.$store.state.address
-            var currentTransaction = response.body.transactions[i]
-            var decodePublic = ''
-            if (currentTransaction.recipientId !== currentAddress) {
-              this.getAddressPublicKey(currentTransaction.recipientId).then(function (currentTransaction, decodePublic) {
-                decodePublic = Buffer.from(decodePublic, 'hex')
-                // decodePublic = new Uint8Array(this.hexToBytes(decodePublic))
-                // var message = new Uint8Array(Buffer.from(currentTransaction.asset.chat.message, 'hex'))
-                // var nonce = new Uint8Array(Buffer.from(currentTransaction.asset.chat.own_message, 'hex'))
-                var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
-                var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
-                currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
-                if (currentTransaction.message && currentTransaction.message.length > 0) {
-                  this.$store.commit('add_chat_message', currentTransaction)
-                }
-              }.bind(this, currentTransaction))
-            } else {
-              decodePublic = currentTransaction.senderPublicKey
-              decodePublic = new Uint8Array(this.hexToBytes(decodePublic))
-              var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
-              var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
-              currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
-              if (currentTransaction.message && currentTransaction.message.length > 0) {
-                this.$store.commit('add_chat_message', currentTransaction)
-              }
-            }
-          }
+          this.loadMessageTransaction(response.body.transactions[i])
         }
         this.$store.commit('ajax_end')
       } else {

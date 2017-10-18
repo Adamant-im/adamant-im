@@ -20,8 +20,8 @@
       <footer>
           <div class="bottom-fixed">
               <md-bottom-bar v-if="logged && isBottomPanelShown">
-                  <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" md-active>{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
-                  <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')">{{$t('bottom.chats_button')}}</md-bottom-bar-item>
+                  <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
+                  <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')" md-active>{{$t('bottom.chats_button')}}</md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="settings" v-on:click="$router.push('/options/')">{{$t('bottom.settings_button')}}</md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="exit_to_app" v-on:click="exitme">{{$t('bottom.exit_button')}}</md-bottom-bar-item>
               </md-bottom-bar>
@@ -41,7 +41,7 @@ export default {
           self.updateCurrentValues() // Thing you wanted to run as non-window 'this'
         }
       })(this),
-      50000
+      20000
     )
   },
   methods: {

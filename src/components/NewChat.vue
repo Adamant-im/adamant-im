@@ -3,15 +3,15 @@
     <md-layout md-align="center" md-gutter="16">
       <md-layout md-flex="66" sm-flex="90">
           <md-input-container>
-              <label>Address</label>
+              <label>{{ $t('chats.recipient') }}</label>
               <md-textarea v-model="targetAddress"></md-textarea>
           </md-input-container>
           <md-input-container>
-              <label>MESSAGE</label>
+              <label>{{ $t('chats.message') }}</label>
               <md-textarea v-model="message"></md-textarea>
           </md-input-container>
           <md-layout md-align="center" md-gutter="16">
-          <md-button class="md-raised md-primary" v-on:click="send">{{ $t('send.send_button') }}</md-button>
+          <md-button class="md-raised md-primary" v-on:click="send">{{ $t('chats.send_button') }}</md-button>
 
           </md-layout>
       </md-layout>
@@ -24,7 +24,9 @@ export default {
   name: 'chats',
   methods: {
     send () {
-      this.encodeMessageForAddress(this.message, this.targetAddress)
+      if (this.message) {
+        this.encodeMessageForAddress(this.message, this.targetAddress)
+      }
     }
   },
   computed: {
