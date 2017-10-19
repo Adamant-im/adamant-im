@@ -16,6 +16,9 @@
 
 
             </md-list-item>
+            <md-list-item v-if="firstLoading">
+                <md-spinner :md-size="150" :md-stroke="1" md-indeterminate class="md-accent"></md-spinner>
+            </md-list-item>
             <md-list-item v-for="(chat, address) in chatList" :key="address" v-on:click="$router.push('/chats/' + address + '/')">
                 <md-avatar class="md-avatar-icon">
                     <md-icon>library_books</md-icon>
@@ -45,6 +48,9 @@ export default {
     }
   },
   computed: {
+    firstLoading: function () {
+      return this.$store.state.firstChatLoad
+    },
     chatList: function () {
       return this.$store.state.chats
     }
@@ -62,5 +68,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-
+    .md-spinner.md-accent .md-spinner-path
+    {
+        stroke: #4A4A4A;
+    }
+    .md-list-text-container p p
+    {
+        padding: 0;
+        margin: 0;
+    }
 </style>

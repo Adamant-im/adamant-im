@@ -55,12 +55,14 @@ const store = new Vuex.Store({
     balance: 0,
     is_new_account: false,
     ajaxIsOngoing: false,
+    firstChatLoad: true,
     lastErrorMsg: '',
     transactions: {},
     showPanel: false,
     showBottom: true,
     partnerName: '',
     chats: {},
+    lastChatHeight: 0,
     currentChat: false
   },
   mutations: {
@@ -90,6 +92,8 @@ const store = new Vuex.Store({
       state.transactions = {}
       state.chats = {}
       state.currentChat = false
+      state.firstChatLoad = true
+      state.lastChatHeight = 0
     },
     login (state, payload) {
       state.address = payload.address
@@ -118,7 +122,11 @@ const store = new Vuex.Store({
       state.showPanel = false
       state.showBottom = true
     },
+    have_loaded_chats (state) {
+      state.firstChatLoad = false
+    },
     add_chat_message (state, payload) {
+      state.firstChatLoad = false
       var me = state.address
       var partner = ''
       var direction = 'from'
@@ -145,6 +153,9 @@ const store = new Vuex.Store({
       payload.confirm_class = 'unconfirmed'
       if (payload.height) {
         payload.confirm_class = 'confirmed'
+      }
+      if (payload.height && payload.height > state.lastChatHeight) {
+        state.lastChatHeight = payload.height
       }
       Vue.set(state.chats, partner, currentDialogs)
       payload.direction = direction

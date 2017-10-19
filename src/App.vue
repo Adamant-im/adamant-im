@@ -41,7 +41,7 @@ export default {
           self.updateCurrentValues() // Thing you wanted to run as non-window 'this'
         }
       })(this),
-      20000
+      5000
     )
   },
   methods: {

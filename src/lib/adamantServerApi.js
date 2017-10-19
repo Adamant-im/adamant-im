@@ -275,6 +275,9 @@ function install (Vue) {
     }
   }
   Vue.prototype.loadMessageTransaction = function (currentTransaction) {
+    if (currentTransaction === null || !currentTransaction) {
+      return
+    }
     var currentAddress = this.$store.state.address
     var marked = require('marked')
     if (currentTransaction.type > 0) {
@@ -305,7 +308,11 @@ function install (Vue) {
   }
   Vue.prototype.loadChats = function () {
     this.$store.commit('ajax_start')
-    this.$http.get(this.getAddressString() + '/api/chats/get/?isIn=' + this.$store.state.address).then(response => {
+    var queryString = this.getAddressString() + '/api/chats/get/?isIn=' + this.$store.state.address
+    if (this.$store.state.lastChatHeight) {
+      queryString += '&fromHeight=' + this.$store.state.lastChatHeight
+    }
+    this.$http.get(queryString).then(response => {
       if (response.body.success) {
         for (var i in response.body.transactions) {
           this.loadMessageTransaction(response.body.transactions[i])
@@ -314,6 +321,7 @@ function install (Vue) {
       } else {
         this.$store.commit('ajax_end_with_error')
       }
+      this.$store.commit('have_loaded_chats')
     }, response => {
       this.$store.commit('ajax_end_with_error')
     })
