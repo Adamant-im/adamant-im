@@ -19,7 +19,7 @@
                   </md-avatar>
               <div class="md-list-text-container">
                   <span>Your balance </span>
-                  <p> <span v-html="this.$store.state.balance"></span> ADAMs</p>
+                  <p> <span v-html="this.$store.state.balance"></span> ADM</p>
               </div>
 
           </md-list-item>
