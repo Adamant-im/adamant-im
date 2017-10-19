@@ -67,6 +67,11 @@ export default {
       })
     }
   },
+  mounted: function () {
+    if (this.$store.state.passPhrase) {
+      this.$root._router.push('/chats/')
+    }
+  },
   computed: {
     languageList: function () {
       var messages = require('../i18n').default
