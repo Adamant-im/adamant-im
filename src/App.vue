@@ -8,12 +8,12 @@
             <h1 class="md-title">
                 <md-input-container>
                     <label>{{ partnerName }}</label>
-                    <md-input></md-input>
+                    <md-input :value="userDisplayName" @change="setUserName"></md-input>
                 </md-input-container>
                 </h1>
           </md-toolbar>
     <main>
-        <md-progress md-indeterminate v-if="isAjax"></md-progress>
+        <md-progress class="aloader" md-indeterminate v-if="isAjax"></md-progress>
 
         <router-view></router-view>
     </main>
@@ -38,13 +38,16 @@ export default {
     setInterval(
       (function (self) {
         return function () {
-          self.updateCurrentValues() // Thing you wanted to run as non-window 'this'
+          self.updateCurrentValues()
         }
       })(this),
       5000
     )
   },
   methods: {
+    setUserName (val) {
+      this.$store.commit('change_partner_name', val)
+    },
     gotochats () {
       this.$store.commit('leave_chat')
       this.$router.push('/chats/')
@@ -55,6 +58,9 @@ export default {
     }
   },
   computed: {
+    userDisplayName () {
+      return this.$store.state.partnerDisplayName
+    },
     partnerName () {
       return this.$store.state.partnerName
     },
@@ -69,6 +75,10 @@ export default {
     },
     logged () {
       return this.$store.state.passPhrase
+    }
+  },
+  data () {
+    return {
     }
   }
 }
@@ -87,6 +97,10 @@ body.md-theme-default {
 }
 footer {
     height: 100px;
+}
+.aloader {
+    position: fixed;
+    top: 0;
 }
 .md-toolbar .md-title
 {

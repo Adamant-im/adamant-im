@@ -61,6 +61,8 @@ const store = new Vuex.Store({
     showPanel: false,
     showBottom: true,
     partnerName: '',
+    partnerDisplayName: '',
+    partners: {},
     chats: {},
     lastChatHeight: 0,
     currentChat: false
@@ -94,6 +96,8 @@ const store = new Vuex.Store({
       state.currentChat = false
       state.firstChatLoad = true
       state.lastChatHeight = 0
+      state.partnerDisplayName = ''
+//      state.partners = {}
     },
     login (state, payload) {
       state.address = payload.address
@@ -103,6 +107,12 @@ const store = new Vuex.Store({
       state.balance = payload.balance
       if (payload.is_new_account) {
         state.is_new_account = payload.is_new_account
+      }
+    },
+    change_partner_name (state, payload) {
+      if (state.partnerName) {
+        state.partners[state.partnerName] = payload
+        state.partnerDisplayName = payload
       }
     },
     transaction_info (state, payload) {
@@ -115,11 +125,17 @@ const store = new Vuex.Store({
       state.currentChat = state.chats[payload]
       Vue.set(state.currentChat, messages, state.chats[payload].messages)
       state.partnerName = payload
+      state.partnerDisplaName = ''
+      if (state.partners[payload]) {
+        state.partnerDisplayName = state.partners[payload]
+      }
       state.showPanel = true
       state.showBottom = false
     },
     leave_chat (state, payload) {
       state.showPanel = false
+      state.partnerName = ''
+      state.partnerDisplaName = ''
       state.showBottom = true
     },
     have_loaded_chats (state) {
