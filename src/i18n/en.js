@@ -7,6 +7,9 @@ export default {
     'login_button': 'Login',
     'new_button': 'Create'
   },
+  'options': {
+    'version': 'Version: '
+  },
   'chats': {
     'new_chat': 'Start new chat',
     'title': 'Chats',

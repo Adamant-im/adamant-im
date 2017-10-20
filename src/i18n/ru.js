@@ -7,6 +7,9 @@ export default {
     'login_button': 'Войти',
     'new_button': 'Создать'
   },
+  'options': {
+    'version': 'Версия: '
+  },
   'chats': {
     'new_chat': 'Создать чат',
     'title': 'Диалоги',

@@ -140,7 +140,7 @@ footer {
     box-shadow: none;
     border-top: 1px solid lightgray;
 }
-.chat, .home, .chats {
+.chat, .home, .chats, .settings {
     max-width: 800px;
     margin: 0 auto;
     margin-top: 25px;
