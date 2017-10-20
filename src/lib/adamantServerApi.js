@@ -176,7 +176,12 @@ function install (Vue) {
         if (response.body.transactionId) {
           transaction.id = response.body.transactionId
           this.loadMessageTransaction(transaction)
-//          this.loadChats()
+          setTimeout((function (self) {
+            return function () {
+              self.needToScroll() // Thing you wanted to run as non-window 'this'
+            }
+          })(this),
+            1000)
         }
       } else {
       }
@@ -242,6 +247,23 @@ function install (Vue) {
     response => {
       this.$store.commit('ajax_end_with_error')
     })
+  }
+  Vue.prototype.isLastScroll = function () {
+    var element = document.getElementsByClassName('chat_messages')[0]
+    if (!element) {
+      return false
+    }
+    return (element.scrollHeight - element.scrollTop === element.clientHeight)
+  }
+  Vue.prototype.needToScroll = function () {
+    var element = document.getElementsByClassName('chat_messages')[0]
+    if (!element) {
+      return
+    }
+    if (element.scrollHeight - element.scrollTop === element.clientHeight) {
+      return
+    }
+    element.scrollTop = element.scrollHeight - element.clientHeight
   }
   Vue.prototype.normalizeTransaction = function (transaction) {
     this.$http.post(this.getAddressString() + '/api/transactions/normalize', {
@@ -312,10 +334,19 @@ function install (Vue) {
     if (this.$store.state.lastChatHeight) {
       queryString += '&fromHeight=' + this.$store.state.lastChatHeight
     }
+    var last = this.isLastScroll()
     this.$http.get(queryString).then(response => {
       if (response.body.success) {
         for (var i in response.body.transactions) {
           this.loadMessageTransaction(response.body.transactions[i])
+        }
+        if (last) {
+          setTimeout((function (self) {
+            return function () {
+              self.needToScroll() // Thing you wanted to run as non-window 'this'
+            }
+          })(this),
+            1000)
         }
         this.$store.commit('ajax_end')
       } else {
