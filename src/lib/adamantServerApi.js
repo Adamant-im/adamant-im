@@ -176,6 +176,10 @@ function install (Vue) {
         if (response.body.transactionId) {
           transaction.id = response.body.transactionId
           this.loadMessageTransaction(transaction)
+          if (!this.$store.state.partnerName) {
+            this.$root._router.push('/chats/' + transaction.recipientId + '/')
+            this.$store.commit('select_chat', transaction.recipientId)
+          }
           setTimeout((function (self) {
             return function () {
               self.needToScroll() // Thing you wanted to run as non-window 'this'
