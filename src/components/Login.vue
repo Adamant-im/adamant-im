@@ -69,6 +69,7 @@ export default {
   },
   mounted: function () {
     if (this.$store.state.passPhrase) {
+      this.$store.commit('leave_chat')
       this.$root._router.push('/chats/')
     }
   },
