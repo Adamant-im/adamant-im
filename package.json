@@ -1,6 +1,6 @@
 {
-  "name": "haze",
-  "version": "1.0.0",
+  "name": "adamant-im",
+  "version": "1.0.1",
   "description": "Distributed chat",
   "author": "Zyuhel <zyuhel@yandex.ru>",
   "private": true,
