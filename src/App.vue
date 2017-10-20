@@ -99,7 +99,7 @@ footer {
     height: 100px;
 }
 .aloader {
-    position: fixed;
+    position: fixed!important;
     top: 0;
 }
 .md-toolbar .md-title
