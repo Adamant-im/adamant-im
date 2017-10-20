@@ -46,6 +46,12 @@ export default {
   },
   mounted: function () {
     this.$store.commit('select_chat', this.$route.params.partner)
+    setTimeout((function (self) {
+      return function () {
+        self.needToScroll() // Thing you wanted to run as non-window 'this'
+      }
+    })(this),
+    10)
   },
   computed: {
     messages: function () {
@@ -68,6 +74,12 @@ export default {
     '$route': function (value) {
       // switch chat to value
       this.$store.commit('select_chat', value)
+      setTimeout((function (self) {
+        return function () {
+          self.needToScroll() // Thing you wanted to run as non-window 'this'
+        }
+      })(this),
+      10)
     }
   },
   data () {
@@ -121,7 +133,7 @@ export default {
 .chat_messages {
     overflow-y:scroll;
     max-height:100%;
-    height: calc(100vh - 180px);
+    max-height: calc(100vh - 180px);
     margin-top: 80px;
 }
 .message_form {

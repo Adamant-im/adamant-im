@@ -125,7 +125,7 @@ const store = new Vuex.Store({
       state.currentChat = state.chats[payload]
       Vue.set(state.currentChat, messages, state.chats[payload].messages)
       state.partnerName = payload
-      state.partnerDisplaName = ''
+      state.partnerDisplayName = ''
       if (state.partners[payload]) {
         state.partnerDisplayName = state.partners[payload]
       }

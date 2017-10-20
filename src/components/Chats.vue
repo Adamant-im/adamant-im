@@ -25,7 +25,7 @@
                 </md-avatar>
 
                 <div class="md-list-text-container">
-                    <span>{{ address }}</span>
+                    <span>{{ chatName(address) }}</span>
                     <p v-html="chat.last_message.message"></p>
                 </div>
 
@@ -45,6 +45,12 @@ export default {
     },
     send () {
       this.encodeMessageForAddress(this.message, this.targetAddress)
+    },
+    chatName (address) {
+      if (this.$store.state.partners[address]) {
+        return this.$store.state.partners[address]
+      }
+      return address
     }
   },
   computed: {
