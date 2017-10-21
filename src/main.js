@@ -97,6 +97,9 @@ const store = new Vuex.Store({
       state.firstChatLoad = true
       state.lastChatHeight = 0
       state.partnerDisplayName = ''
+      window.publicKey = false
+      window.privateKey = false
+      window.secretKey = false
 //      state.partners = {}
     },
     login (state, payload) {

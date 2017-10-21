@@ -30,9 +30,29 @@ function install (Vue) {
     this.$store.commit('connect', {'string': connectString})
     return connectString
   }
-  Vue.prototype.getPublicKeyFromPassPhrase = function (passPhrase) {
-    var hash = adamant.createPassPhraseHash(passPhrase)
+  Vue.prototype.getKeypair = function () {
+    if (window.privateKey) {
+      return {
+        publicKey: window.publicKey,
+        privateKey: window.privateKey
+      }
+    }
+    var hash = adamant.createPassPhraseHash(this.$store.state.passPhrase)
     var keypair = adamant.makeKeypair(hash)
+    window.privateKey = keypair.privateKey
+    window.publicKey = keypair.publicKey
+    return keypair
+  }
+  Vue.prototype.getPublicKeyFromPassPhrase = function (passPhrase) {
+    var keypair
+    if (this.$store.state.passPhrase) {
+      keypair = this.getKeypair()
+    } else {
+      var hash = adamant.createPassPhraseHash(passPhrase)
+      keypair = adamant.makeKeypair(hash)
+      window.privateKey = keypair.privateKey
+      window.publicKey = keypair.publicKey
+    }
     return keypair.publicKey.toString('hex')
   }
   Vue.prototype.createNewAccount = function (publicKey, callback) {
@@ -100,10 +120,16 @@ function install (Vue) {
     var nonce = Buffer.allocUnsafe(24)
     sodium.randombytes(nonce)
     var plainText = Buffer.from(msg)
-    var hash = adamant.createPassPhraseHash(this.$store.state.passPhrase)
-    var keypair = adamant.makeKeypair(hash)
+    var keypair = this.getKeypair()
     var DHPublicKey = ed2curve.convertPublicKey(new Uint8Array(this.hexToBytes(recipientPublicKey)))
-    var DHSecretKey = ed2curve.convertSecretKey(keypair.privateKey)
+    var DHSecretKey
+    if (window.secretKey) {
+      DHSecretKey = window.secretKey
+    } else {
+      DHSecretKey = ed2curve.convertSecretKey(keypair.privateKey)
+      window.secretKey = DHSecretKey
+    }
+
     var encrypted = nacl.box(plainText, nonce, DHPublicKey, DHSecretKey)
     return {
       message: this.bytesToHex(encrypted),
@@ -113,10 +139,15 @@ function install (Vue) {
   Vue.prototype.decodeMessage = function (msg, senderPublicKey, nonce) {
     var nacl = require('tweetnacl/nacl-fast')
     var ed2curve = require('ed2curve')
-    var hash = adamant.createPassPhraseHash(this.$store.state.passPhrase)
-    var keypair = adamant.makeKeypair(hash)
+    var keypair = this.getKeypair()
     var DHPublicKey = ed2curve.convertPublicKey(senderPublicKey)
-    var DHSecretKey = ed2curve.convertSecretKey(keypair.privateKey)
+    var DHSecretKey
+    if (window.secretKey) {
+      DHSecretKey = window.secretKey
+    } else {
+      DHSecretKey = ed2curve.convertSecretKey(keypair.privateKey)
+      window.secretKey = DHSecretKey
+    }
     var decrypted = nacl.box.open(msg, nonce, DHPublicKey, DHSecretKey)
     if (!decrypted) {
       return ''
@@ -155,8 +186,7 @@ function install (Vue) {
   Vue.prototype.sendMessage = function (msg, recipient) {
     if (this.$store.state.passPhrase) {
       this.$store.commit('ajax_start')
-      var hash = adamant.createPassPhraseHash(this.$store.state.passPhrase)
-      var keypair = adamant.makeKeypair(hash)
+      var keypair = this.getKeypair()
       var transaction = {}
       transaction.type = 8
       transaction.amount = 0
@@ -206,8 +236,7 @@ function install (Vue) {
     }).then(response => {
       if (response.body.success) {
         var newTransaction = response.body.transaction
-        var hash = adamant.createPassPhraseHash(this.$store.state.passPhrase)
-        var keypair = adamant.makeKeypair(hash)
+        var keypair = this.getKeypair()
         newTransaction.senderId = transaction.senderId
         newTransaction.signature = adamant.transactionSign(newTransaction, keypair)
         this.$store.commit('ajax_end')
@@ -224,8 +253,7 @@ function install (Vue) {
   Vue.prototype.transferFunds = function (amount, recipient) {
     this.$store.commit('ajax_start')
     if (this.$store.state.passPhrase) {
-      var hash = adamant.createPassPhraseHash(this.$store.state.passPhrase)
-      var keypair = adamant.makeKeypair(hash)
+      var keypair = this.getKeypair()
       var transaction = {}
       transaction.type = 0
       amount = amount * 100000000
@@ -279,8 +307,7 @@ function install (Vue) {
     }).then(response => {
       if (response.body.success) {
         var newTransaction = response.body.transaction
-        var hash = adamant.createPassPhraseHash(this.$store.state.passPhrase)
-        var keypair = adamant.makeKeypair(hash)
+        var keypair = this.getKeypair()
         newTransaction.senderId = transaction.senderId
         newTransaction.signature = adamant.transactionSign(newTransaction, keypair)
         this.processTransaction(newTransaction)

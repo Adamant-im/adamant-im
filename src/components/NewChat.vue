@@ -24,6 +24,10 @@ export default {
   name: 'chats',
   methods: {
     send () {
+      if (this.$store.state.balance < 0.1) {
+        alert(this.$t('chats.no_money'))
+        return
+      }
       if (this.message) {
         this.encodeMessageForAddress(this.message, this.targetAddress)
       }

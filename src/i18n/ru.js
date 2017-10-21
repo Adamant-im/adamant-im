@@ -12,6 +12,7 @@ export default {
   },
   'chats': {
     'new_chat': 'Создать чат',
+    'no_money': 'Недостаточно денег на счету',
     'title': 'Диалоги',
     'send_button': 'Отправить',
     'recipient': 'Получатель',

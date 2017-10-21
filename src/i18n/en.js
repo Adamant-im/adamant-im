@@ -12,6 +12,7 @@ export default {
   },
   'chats': {
     'new_chat': 'Start new chat',
+    'no_money': 'Not enough funds',
     'title': 'Chats',
     'send_button': 'Send',
     'recipient': 'Recipient',
