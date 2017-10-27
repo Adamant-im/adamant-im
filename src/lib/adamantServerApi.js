@@ -114,6 +114,7 @@ function install (Vue) {
   }
 
   Vue.prototype.encodeMessage = function (msg, recipientPublicKey) {
+    console.log('encoding')
     var sodium = require('sodium-browserify-tweetnacl')
     var nacl = require('tweetnacl/nacl-fast')
     var ed2curve = require('ed2curve')
@@ -207,8 +208,8 @@ function install (Vue) {
           transaction.id = response.body.transactionId
           this.loadMessageTransaction(transaction)
           if (!this.$store.state.partnerName) {
-            this.$root._router.push('/chats/' + transaction.recipientId + '/')
             this.$store.commit('select_chat', transaction.recipientId)
+            this.$root._router.push('/chats/' + transaction.recipientId + '/')
           }
           setTimeout((function (self) {
             return function () {
@@ -336,6 +337,7 @@ function install (Vue) {
     if (currentTransaction.type > 0) {
       var decodePublic = ''
       if (currentTransaction.recipientId !== currentAddress) {
+        this.$store.commit('create_chat', currentTransaction.recipientId)
         this.getAddressPublicKey(currentTransaction.recipientId).then(function (currentTransaction, decodePublic) {
           decodePublic = Buffer.from(decodePublic, 'hex')
           var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))

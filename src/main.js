@@ -144,6 +144,18 @@ const store = new Vuex.Store({
     have_loaded_chats (state) {
       state.firstChatLoad = false
     },
+    create_chat (state, payload) {
+      var partner = payload
+      var currentDialogs = state.chats[partner]
+      if (!currentDialogs) {
+        currentDialogs = {
+          partner: partner,
+          messages: {},
+          last_message: {}
+        }
+      }
+      Vue.set(state.chats, partner, currentDialogs)
+    },
     add_chat_message (state, payload) {
       state.firstChatLoad = false
       var me = state.address
