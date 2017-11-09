@@ -2,8 +2,8 @@
   <div class="chat">
       <md-layout md-align="start" md-gutter="16" class="chat_messages">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100">
-              <md-layout v-if="message.direction=='to'" md-flex="80" md-flex-xsmall="70" class="chat_message" :data-confirmation="message.confirm_class" md-flex-offset="5" ><span v-html="message.message"></span><div class="dt">{{ dateFormat(message.timestamp) }}</div></md-layout>
-              <md-layout v-if="message.direction=='from'" md-flex="80" md-flex-xsmall="70" :data-confirmation="message.confirm_class"  class=" chat_message md-own md-flex-xsmall-offset-20" md-flex-offset="15" ><span v-html="message.message"></span> <div class="dt">{{ dateFormat(message.timestamp) }}</div></md-layout>
+              <md-layout v-if="message.direction=='to'" md-flex="95" md-flex-xsmall="85" class="chat_message md-flex-xsmall-offset-10" :data-confirmation="message.confirm_class"  ><span v-html="message.message"></span><div class="dt">{{ dateFormat(message.timestamp) }}</div></md-layout>
+              <md-layout v-if="message.direction=='from'" md-flex="95" md-flex-xsmall="85" :data-confirmation="message.confirm_class"  class=" chat_message md-own md-flex-xsmall-offset-5" md-flex-offset="5" ><span v-html="message.message"></span> <div class="dt">{{ dateFormat(message.timestamp) }}</div></md-layout>
           </md-layout>
       </md-layout>
       <md-layout md-align="start" md-gutter="16" class="message_form">
@@ -102,7 +102,12 @@ export default {
         {
             margin-left: 25%;
         }
-
+        .md-flex-xsmall-offset-5 {
+            margin-left: 5%;
+        }
+        .md-flex-xsmall-offset-10 {
+            margin-left: 10%;
+        }
         .md-toolbar .md-title
         {
             font-size: 16px;
@@ -169,7 +174,7 @@ export default {
 }
 .chat_message .dt {
     position: absolute;
-    bottom: 0;
+    top: 0;
     right: 5px;
     font-size: 8px;
     font-style: italic;
