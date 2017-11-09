@@ -134,6 +134,8 @@ footer {
     margin: 0 auto;
     left: 0;
     right: 0;
+    z-index: 10;
+    background: white;
 }
 
 .bottom-fixed .md-bottom-bar {
