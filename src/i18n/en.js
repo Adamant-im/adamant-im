@@ -11,18 +11,18 @@ export default {
     'version': 'App Version: '
   },
   'chats': {
-    'new_chat': 'Start new chat',
-    'no_money': 'Not enough funds',
+    'new_chat': 'Start new Chat',
+    'no_money': 'Not enough funds. Top up your balance.',
     'title': 'Chats',
     'send_button': 'Send',
-    'recipient': 'Recipient',
-    'message': 'Message'
+    'recipient': 'Recipient address',
+    'message': 'Type your message'
   },
   'transaction': {
     'amount': 'Amount',
     'date': 'Date',
     'confirmations': 'Confirmations',
-    'commission': 'Commission',
+    'commission': 'Fee',
     'txid': 'Transaction No',
     'sender': 'From',
     'recipient': 'To'
@@ -30,13 +30,13 @@ export default {
   'transfer': {
     'send_button': 'Send Funds',
     'to_address_label': 'To Address',
-    'amount_label': 'Amount',
-    'final_amount_label': 'Amount with commission',
-    'commission_label': 'Transfer commission'
+    'amount_label': 'Amount to send',
+    'final_amount_label': 'Amount including transfer fee',
+    'commission_label': 'Transfer fee'
   },
   'bottom': {
     'wallet_button': 'Wallet',
-    'send_button': 'Send Money',
+    'send_button': 'Send Funds',
     'chats_button': 'Chats',
     'settings_button': 'Settings',
     'exit_button': 'Exit'
