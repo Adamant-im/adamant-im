@@ -1,14 +1,14 @@
 export default {
   'title': 'English',
   'login': {
-    'password_label': 'Please input your password',
-    'new_password_label': 'Your new wallet password',
+    'password_label': 'Input your passphrase to login',
+    'new_password_label': 'Here is the passphrase for new Wallet/ Messenger account. Save it! There is no way to recover it.',
     'language_label': 'Select your language',
     'login_button': 'Login',
-    'new_button': 'Create'
+    'new_button': 'Create new'
   },
   'options': {
-    'version': 'Version: '
+    'version': 'App Version: '
   },
   'chats': {
     'new_chat': 'Start new chat',
