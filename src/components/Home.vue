@@ -35,7 +35,7 @@
           </md-list-item>
       </md-list>
       </md-layout>
-        <div v-if="isNewUser">Hello, you are new user, so may be you need some help with your new wallet ?</div>
+        
   </div>
 </template>
 
