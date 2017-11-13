@@ -1,6 +1,5 @@
 <template>
   <div class="transfer">
-        <div>Your balance is <span v-html="this.$store.state.balance"></span> HAZE</div>
       <form novalidate @submit.stop.prevent="submit">
           <md-input-container>
               <label>{{ $t('transfer.to_address_label') }}</label>
