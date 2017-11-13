@@ -4,7 +4,7 @@
         <md-table-body>
           <md-table-row >
             <md-table-cell>{{ $t('transaction.amount') }}</md-table-cell>
-            <md-table-cell >{{ toFixed(transaction.amount / 100000000) }} HAZE</md-table-cell>
+            <md-table-cell >{{ toFixed(transaction.amount / 100000000) }} ADM</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell>{{ $t('transaction.date') }}</md-table-cell>
@@ -16,7 +16,7 @@
           </md-table-row>
           <md-table-row >
             <md-table-cell>{{ $t('transaction.commission') }}</md-table-cell>
-            <md-table-cell >{{ toFixed(transaction.fee / 100000000) }} HAZE</md-table-cell>
+            <md-table-cell >{{ toFixed(transaction.fee / 100000000) }} ADM</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell>{{ $t('transaction.txid') }}</md-table-cell>
