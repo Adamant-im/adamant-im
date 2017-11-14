@@ -14,7 +14,7 @@
           </md-table-body>
       </md-table>
 
-    <div class="version">{{ $t('options.version') }} 1.0.5</div>
+    <div class="version">{{ $t('options.version') }} 1.0.6</div>
   </div>
 </template>
 

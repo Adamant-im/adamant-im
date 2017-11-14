@@ -25,6 +25,9 @@
               <md-input-container>
                   <label>{{ $t('login.new_password_label') }}</label>
                   <md-textarea v-bind:value="yourPassPhrase" readonly></md-textarea>
+                  <md-icon v-clipboard="yourPassPhrase" style="cursor:pointer">content_copy</md-icon>
+                  <md-icon v-clipboard="yourPassPhrase" v-if=!iOS v-on:click.native="saveFile" style="cursor:pointer">archive</md-icon>
+
               </md-input-container>
 
           </md-layout>
@@ -65,6 +68,32 @@ export default {
         this.$root._router.push('/chats/')
         this.loadChats()
       })
+    },
+    'handleSuccess': function (e) {
+      this.snackbar = true
+    },
+    saveFile () {
+      var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
+      if (!iOS) {
+        this.download(this.yourPassPhrase, 'adm-' + btoa(new Date().getTime()).replace('==', '') + '.txt', 'text/plain')
+      }
+    },
+    download (data, filename, type) {
+      var file = new Blob([data], {type: type})
+      if (window.navigator.msSaveOrOpenBlob) { // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename)
+      } else { // Others
+        var a = document.createElement('a')
+        var url = URL.createObjectURL(file)
+        a.href = url
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
+        setTimeout(function () {
+          document.body.removeChild(a)
+          window.URL.revokeObjectURL(url)
+        }, 0)
+      }
     }
   },
   mounted: function () {
@@ -74,6 +103,9 @@ export default {
     }
   },
   computed: {
+    iOS: function () {
+      return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
+    },
     languageList: function () {
       var messages = require('../i18n').default
       return messages
