@@ -12,11 +12,11 @@ export default {
   },
   'chats': {
     'new_chat': 'Создать чат',
-    'no_money': 'Недостаточно денег на счету',
+    'no_money': 'Недостаточно средств. Пополните баланс.',
     'title': 'Диалоги',
     'send_button': 'Отправить',
-    'recipient': 'Получатель',
-    'message': 'Сообщение'
+    'recipient': 'Адрес получателя',
+    'message': 'Введите сообщение'
   },
   'transaction': {
     'amount': 'Количество',
@@ -28,15 +28,15 @@ export default {
     'recipient': 'Получатель'
   },
   'transfer': {
-    'send_button': 'Отправить',
+    'send_button': 'Передать токены',
     'to_address_label': 'Адрес получателя',
-    'amount_label': 'Количество',
-    'final_amount_label': 'Количество вместе с комиссией',
+    'amount_label': 'Количество для перевода',
+    'final_amount_label': 'Количество, включая комиссию',
     'commission_label': 'Комиссия за перевод'
   },
   'bottom': {
     'wallet_button': 'Кошелек',
-    'send_button': 'Послать денег',
+    'send_button': 'Перевести токены',
     'chats_button': 'Диалоги',
     'settings_button': 'Настройки',
     'exit_button': 'Выйти'
