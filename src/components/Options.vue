@@ -1,8 +1,6 @@
 <template>
   <div class="settings">
       <md-table>
-
-
           <md-table-body>
               <md-table-row>
                   <md-table-cell>{{ $t('login.language_label') }}</md-table-cell>
@@ -16,7 +14,7 @@
           </md-table-body>
       </md-table>
 
-    <div class="version">{{ $t('options.version') }} 1.0.4</div>
+    <div class="version">{{ $t('options.version') }} 1.0.5</div>
   </div>
 </template>
 
