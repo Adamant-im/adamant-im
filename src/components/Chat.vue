@@ -48,14 +48,6 @@ export default {
         this.errorMessage('no_empty')
         return
       }
-      if (!this.targetAddress) {
-        this.errorMessage('no_address')
-        return
-      }
-      if (!(/U([0-9]{6,})$/.test(this.targetAddress))) {
-        this.errorMessage('incorrect_address')
-        return
-      }
       if (this.message) {
         this.encodeMessageForAddress(this.message, this.$route.params.partner)
         this.message = ''
