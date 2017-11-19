@@ -46,6 +46,10 @@
               </div>
           </md-layout>
       </md-layout>
+      <md-snackbar md-position="bottom center" md-accent ref="snackbar" md-duration="2000">
+          <span>{{ $t('login.invalid_passphrase') }}</span>
+      </md-snackbar>
+
   </div>
 </template>
 
@@ -58,16 +62,23 @@ export default {
         this.logme()
       }
     },
+    snackOpen () {
+      this.$refs.snackbar.open()
+    },
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
       if (this.passPhrase.split(' ').length !== 12) {
+        this.snackOpen()
         return
       }
+      var errorFunction = function () {
+        this.snackOpen()
+      }.bind(this)
       this.getAccountByPassPhrase(this.passPhrase, function (context) {
         this.$store.commit('save_passphrase', {'passPhrase': this.passPhrase})
         this.$root._router.push('/chats/')
         this.loadChats()
-      })
+      }, errorFunction)
     },
     'handleSuccess': function (e) {
       this.snackbar = true

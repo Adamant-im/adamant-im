@@ -5,7 +5,8 @@ export default {
     'new_password_label': 'Here is the passphrase for new Wallet/ Messenger account. Save it! There is no way to recover it.',
     'language_label': 'Select your language',
     'login_button': 'Login',
-    'new_button': 'Create new'
+    'new_button': 'Create new',
+    'invalid_passphrase': 'Invalid Passphrase'
   },
   'options': {
     'version': 'App Version: '

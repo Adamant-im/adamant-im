@@ -95,8 +95,12 @@ function install (Vue) {
       // error callback
     })
   }
-  Vue.prototype.getAccountByPassPhrase = function (passPhrase, callback) {
-    var publicKey = this.getPublicKeyFromPassPhrase(passPhrase)
+  Vue.prototype.getAccountByPassPhrase = function (passPhrase, callback, errorCallBack) {
+    try {
+      var publicKey = this.getPublicKeyFromPassPhrase(passPhrase)
+    } catch (e) {
+      errorCallBack(e)
+    }
     this.getAccountByPublicKey(publicKey, callback)
   }
   Vue.prototype.hexToBytes = function (hex) {
