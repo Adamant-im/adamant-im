@@ -3,7 +3,7 @@
       <md-table>
           <md-table-body>
               <md-table-row>
-                  <md-table-cell>{{ $t('login.language_label') }}</md-table-cell>
+                  <md-table-cell>{{ $t('options.language_label') }}</md-table-cell>
                   <md-table-cell ><md-input-container class="language_select">
                       <md-select name="language" id="language" v-model="language">
                           <md-option  v-for="(language, code) in languageList" :value="code" :key="code">{{ language.title }}</md-option>
@@ -14,7 +14,7 @@
           </md-table-body>
       </md-table>
 
-    <div class="version">{{ $t('options.version') }} 1.0.6</div>
+    <div class="version">{{ $t('options.version') }} 1.0.7</div>
   </div>
 </template>
 
@@ -44,7 +44,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-
+    .settings .md-table .md-table-cell {
+        font-size: 16px;
+    }
+    .settings .md-table .md-select-value, .settings .md-table .md-option {
+        font-size: 16px;
+    }
     .version {
         position:absolute;
         bottom:0;
