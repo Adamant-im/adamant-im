@@ -7,7 +7,7 @@
           </md-input-container>
           <md-input-container>
               <label>{{ $t('transfer.amount_label') }} (max: {{ maxToTransfer }} ADM)</label>
-              <md-input type="number" v-model="targetAmount"></md-input>
+              <md-input type="number" min=0 :max="maxToTransfer" v-model="targetAmount"></md-input>
           </md-input-container>
           <md-input-container>
               <label>{{ $t('transfer.commission_label') }}</label>
@@ -47,6 +47,10 @@ export default {
       }
       if (!this.targetAmount) {
         this.errorMessage('error_no_amount')
+        return
+      }
+      if (this.targetAmount < 0) {
+        this.errorMessage('error_incorrect_amount')
         return
       }
       if ((parseFloat(this.targetAmount) + this.commission) > parseFloat(this.$store.state.balance)) {

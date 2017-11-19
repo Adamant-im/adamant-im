@@ -9,7 +9,8 @@ export default {
     'invalid_passphrase': 'Invalid Passphrase'
   },
   'options': {
-    'version': 'App Version: '
+    'version': 'App Version: ',
+    'language_label': 'Language: '
   },
   'chats': {
     'new_chat': 'Start new Chat',
@@ -36,6 +37,7 @@ export default {
     'commission_label': 'Transfer fee',
     'error_no_address': 'Please provide wallet address',
     'error_incorrect_address': 'Incorrect wallet address',
+    'error_incorrect_amount': 'Incorrect amount',
     'error_no_amount': 'Please provide amount',
     'error_not_enough': 'Not enough tokens'
   },
