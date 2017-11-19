@@ -142,12 +142,14 @@ footer {
     box-shadow: none;
     border-top: 1px solid lightgray;
 }
-.chat, .home, .chats, .settings {
+.chat, .home, .chats, .settings, .transaction, .transfer {
     max-width: 800px;
     margin: 0 auto;
     margin-top: 25px;
 }
-
+.settings .md-table tbody .md-table-row {
+    border:none;
+}
 .chats .md-list {
     max-width: 90%;
 }
