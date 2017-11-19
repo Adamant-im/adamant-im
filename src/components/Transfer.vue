@@ -6,7 +6,7 @@
               <md-input v-model="targetAddress"></md-input>
           </md-input-container>
           <md-input-container>
-              <label>{{ $t('transfer.amount_label') }}</label>
+              <label>{{ $t('transfer.amount_label') }} (max: {{ maxToTransfer }} ADM)</label>
               <md-input type="number" v-model="targetAmount"></md-input>
           </md-input-container>
           <md-input-container>
@@ -34,10 +34,17 @@ export default {
     }
   },
   computed: {
+    maxToTransfer: function () {
+      this.amountToTransfer = (parseFloat(this.$store.state.balance) - this.commission).toFixed(2)
+      if (this.amountToTransfer < 0) {
+        this.amountToTransfer = 0
+      }
+      return this.amountToTransfer
+    }
   },
   watch: {
     targetAmount (to, from) {
-      this.finalAmount = (parseFloat(to) + 0.1).toFixed(2)
+      this.finalAmount = (parseFloat(to) + 0.5).toFixed(2)
     },
     'language' (to, from) {
       this.$i18n.locale = to
@@ -46,7 +53,8 @@ export default {
   data () {
     return {
       finalAmount: 0,
-      commission: 0.1,
+      commission: 0.5,
+      amountToTransfer: 0,
       targetAddress: '',
       targetAmount: ''
     }
