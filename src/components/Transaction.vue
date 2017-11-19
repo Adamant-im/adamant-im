@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="transaction">
       <md-table v-if="transaction">
         <md-table-body>
           <md-table-row >
