@@ -19,6 +19,9 @@
           </md-layout>
       </md-layout>
     </md-layout>
+      <md-snackbar md-position="bottom center" md-accent ref="chatsSnackbar" md-duration="2000">
+          <span>{{ formErrorMessage }}</span>
+      </md-snackbar>
   </div>
 </template>
 
@@ -32,9 +35,25 @@ export default {
         this.send()
       }
     },
+    errorMessage (message) {
+      this.formErrorMessage = this.$t('chats.' + message)
+      this.$refs.chatsSnackbar.open()
+    },
     send () {
-      if (this.$store.state.balance < 0.1) {
-        alert(this.$t('chats.no_money'))
+      if (this.$store.state.balance < 0.005) {
+        this.errorMessage('no_money')
+        return
+      }
+      if (!this.message) {
+        this.errorMessage('no_empty')
+        return
+      }
+      if (!this.targetAddress) {
+        this.errorMessage('no_address')
+        return
+      }
+      if (!(/U([0-9]{6,})$/.test(this.targetAddress))) {
+        this.errorMessage('incorrect_address')
         return
       }
       if (this.message) {

@@ -15,6 +15,9 @@ export default {
   'chats': {
     'new_chat': 'Start new Chat',
     'no_money': 'Not enough funds. Top up your balance.',
+    'no_empty': 'Message can\'t be empty',
+    'no_address': 'Please specify recipient address',
+    'incorrect_address': 'Incorrect recipient address',
     'title': 'Chats',
     'send_button': 'Send',
     'recipient': 'Recipient address',
