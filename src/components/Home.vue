@@ -13,7 +13,7 @@
               </div>
           </md-list-item>
 
-              <md-list-item>
+              <md-list-item  v-on:click="$router.push('/transactions/')">
                   <md-avatar class="md-avatar-icon">
                       <md-icon>account_balance_wallet</md-icon>
                   </md-avatar>
