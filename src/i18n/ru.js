@@ -33,7 +33,11 @@ export default {
     'to_address_label': 'Адрес получателя',
     'amount_label': 'Количество для перевода',
     'final_amount_label': 'Количество, включая комиссию',
-    'commission_label': 'Комиссия за перевод'
+    'commission_label': 'Комиссия за перевод',
+    'error_no_address': 'Укажите адрес кошелька получателя',
+    'error_incorrect_address': 'Неверный адрес кошелька',
+    'error_no_amount': 'Укажите сумму для перевода',
+    'error_not_enough': 'Недостаточно токенов для перевода'
   },
   'bottom': {
     'wallet_button': 'Кошелек',

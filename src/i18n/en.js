@@ -33,7 +33,11 @@ export default {
     'to_address_label': 'To Address',
     'amount_label': 'Amount to send',
     'final_amount_label': 'Amount including transfer fee',
-    'commission_label': 'Transfer fee'
+    'commission_label': 'Transfer fee',
+    'error_no_address': 'Please provide wallet address',
+    'error_incorrect_address': 'Incorrect wallet address',
+    'error_no_amount': 'Please provide amount',
+    'error_not_enough': 'Not enough tokens'
   },
   'bottom': {
     'wallet_button': 'Wallet',
