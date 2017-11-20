@@ -338,6 +338,9 @@ function install (Vue) {
     }
     var currentAddress = this.$store.state.address
     var marked = require('marked')
+    marked.setOptions({
+      sanitize: true
+    })
     if (currentTransaction.type > 0) {
       var decodePublic = ''
       if (currentTransaction.recipientId !== currentAddress) {
