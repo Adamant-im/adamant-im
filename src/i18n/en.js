@@ -21,7 +21,8 @@ export default {
     'title': 'Chats',
     'send_button': 'Send',
     'recipient': 'Recipient address',
-    'message': 'Type your message'
+    'message': 'Type your message',
+    'estimate_fee': 'Estimate Fee'
   },
   'transaction': {
     'amount': 'Amount',

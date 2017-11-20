@@ -21,7 +21,8 @@ export default {
     'title': 'Диалоги',
     'send_button': 'Отправить',
     'recipient': 'Адрес получателя',
-    'message': 'Введите сообщение'
+    'message': 'Введите сообщение',
+    'estimate_fee': 'Ориентировочная комиссия'
   },
   'transaction': {
     'amount': 'Количество',

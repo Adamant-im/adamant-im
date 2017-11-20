@@ -12,7 +12,7 @@
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
                   <md-textarea v-model="message" @keydown.native="kp($event)" ></md-textarea>
-                  <span v-if="message_fee" class="md-count">Estimate Fee: {{message_fee}}</span>
+                  <span v-if="message_fee" class="md-count">{{ $t('chats.estimate_fee') }}: {{message_fee}}</span>
               </md-input-container>
           </md-layout>
           <md-layout md-flex="10" >
@@ -156,9 +156,8 @@ export default {
     font-size: 8px;
 }
 .chat_messages {
-    overflow-y:auto;
-    overflow-x:none;
-    max-height:100%;
+    overflow-y: auto;
+    max-height: 100%;
     max-height: calc(100vh - 180px);
     margin-top: 80px;
 }
