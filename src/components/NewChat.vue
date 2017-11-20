@@ -9,6 +9,7 @@
           <md-input-container>
               <label>{{ $t('chats.message') }}</label>
               <md-textarea v-model="message"></md-textarea>
+              <span v-if="message_fee" class="md-count">{{ $t('chats.estimate_fee') }}: {{message_fee}}</span>
           </md-input-container>
           <md-layout md-align="center" md-gutter="16">
           <md-button class="md-raised md-primary" v-on:click="send">{{ $t('chats.send_button') }}</md-button>
@@ -55,9 +56,13 @@ export default {
   computed: {
   },
   watch: {
+    message: function (value) {
+      this.message_fee = Math.ceil(value.length / 255) * 0.005
+    }
   },
   data () {
     return {
+      message_fee: 0,
       formErrorMessage: '',
       targetAddress: '',
       message: ''
