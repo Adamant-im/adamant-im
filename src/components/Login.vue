@@ -1,7 +1,7 @@
 <template>
   <div class="login">
       <div class="site-branding container">
-          <a href="#" class="custom-logo-link" rel="home" itemprop="url"><img width="256" height="256" src="https://adamant.im/wp-content/uploads/2017/10/adamant-logo-raw-256x256-bigger.png" class="custom-logo" alt="ADAMANT" itemprop="logo"></a>				<a href="#">
+          <a href="#" class="custom-logo-link" rel="home" itemprop="url"><img width="256" height="256" src="/static/img/adamant-logo-transparent-512x512.png" class="custom-logo" alt="ADAMANT" itemprop="logo"></a>				<a href="#">
 					<span class="site-title">
 						ADAMANT					</span>
       </a>
