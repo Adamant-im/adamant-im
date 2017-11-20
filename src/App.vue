@@ -13,8 +13,6 @@
                 </h1>
           </md-toolbar>
     <main>
-        <md-progress class="aloader" md-indeterminate v-if="isAjax"></md-progress>
-
         <router-view></router-view>
     </main>
       <footer>
