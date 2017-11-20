@@ -2,8 +2,8 @@
   <div class="chat">
       <md-layout md-align="start" md-gutter="16" class="chat_messages">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100">
-              <md-layout v-if="message.direction=='to'" md-flex="95" md-flex-xsmall="85" class="chat_message md-flex-xsmall-offset-10" :data-confirmation="message.confirm_class"  ><span v-html="message.message"></span><div class="dt">{{ dateFormat(message.timestamp) }}</div></md-layout>
-              <md-layout v-if="message.direction=='from'" md-flex="95" md-flex-xsmall="85" :data-confirmation="message.confirm_class"  class=" chat_message md-own md-flex-xsmall-offset-5" md-flex-offset="5" ><span v-html="message.message"></span> <div class="dt">{{ dateFormat(message.timestamp) }}</div></md-layout>
+              <md-layout v-if="message.direction=='to'" md-flex="95" md-flex-xsmall="85" class="chat_message  md-whiteframe md-whiteframe-1dp md-flex-xsmall-offset-10" :data-confirmation="message.confirm_class"  md-flex-offset="5" ><span class="avatar-holder"></span><span v-html="message.message"></span><div class="dt">{{ dateFormat(message.timestamp) }}</div></md-layout>
+              <md-layout v-if="message.direction=='from'" md-flex="95" md-flex-xsmall="85" :data-confirmation="message.confirm_class"  class=" chat_message md-own md-flex-xsmall-offset-5 md-whiteframe md-whiteframe-1dp" ><span class="avatar-holder"></span><span v-html="message.message"></span> <div class="dt">{{ dateFormat(message.timestamp) }}</div></md-layout>
           </md-layout>
       </md-layout>
       <md-layout md-align="start" md-gutter="16" class="message_form">
@@ -104,6 +104,7 @@ export default {
   data () {
     return {
       message_fee: 0,
+      formErrorMessage: '',
       message: ''
     }
   }
@@ -114,6 +115,9 @@ export default {
 <style>
 
     @media (max-width: 600px) {
+        .chat_messages {
+            margin-left: -8px!important;
+        }
         .md-flex-xsmall-offset-20
         {
             margin-left: 25%;
@@ -155,11 +159,42 @@ export default {
     left: 1px;
     font-size: 8px;
 }
+
+.avatar-holder {
+    width: 45px;
+    height: 45px;
+    position: absolute;
+    top: 20px;
+    right: 0;
+    left:auto;
+}
+
+    .md-own .avatar-holder{
+        position: absolute;
+        left:10px;
+        right:auto;
+
+        top: 20px;
+    }
+    .md-own.chat_message {
+        padding-left:55px;
+        padding-right: 10px;
+    }
+.avatar-holder:before {
+    content: 'assignment_ind';
+    font-family: "Material Icons";
+    text-rendering: optimizeLegibility;
+    font-size: 40px;
+    vertical-align: middle;
+    line-height: 40px;
+}
 .chat_messages {
     overflow-y: auto;
     max-height: 100%;
     max-height: calc(100vh - 180px);
     margin-top: 80px;
+    padding-top: 10px;
+    margin-left: 0!important;
 }
 .message_form {
     position: fixed;
@@ -183,12 +218,12 @@ export default {
     border-bottom: none;
 }
 .chat_message {
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid lightgray;
+    margin-bottom: 20px;
+    padding: 25px 10px;
+
     text-align: left;
     position:relative;
+    padding-right: 50px;
 }
 .chat_message .dt {
     position: absolute;
@@ -197,9 +232,7 @@ export default {
     font-size: 8px;
     font-style: italic;
 }
-.md-own {
-    border: 1px solid #BAD3FF!important;
-}
+
 .chat_messagej:after{
     content: ' ';
     position: absolute;
