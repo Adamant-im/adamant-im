@@ -156,7 +156,8 @@ export default {
     font-size: 8px;
 }
 .chat_messages {
-    overflow-y:scroll;
+    overflow-y:auto;
+    overflow-x:none;
     max-height:100%;
     max-height: calc(100vh - 180px);
     margin-top: 80px;
@@ -165,7 +166,7 @@ export default {
     position: fixed;
     bottom: 0;
     width: 100%;
-    border-top: 3px solid #4A4A4A;
+    border-top: 3px solid rgba(153, 153, 153, 0.2);
     background-color: #fefefe;
     margin: 0 auto;
     max-width: 800px;
@@ -179,6 +180,8 @@ export default {
     left: 0;
     right: 0;
     z-index: 10;
+    background: rgba(153, 153, 153, 0.2);
+    border-bottom: none;
 }
 .chat_message {
     margin-bottom: 10px;
