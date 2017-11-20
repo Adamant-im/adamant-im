@@ -11,7 +11,8 @@
           <md-layout md-flex="90"   md-flex-xsmall="80" class="text_block">
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
-                  <md-textarea v-model="message" @keyup.native="kp($event)"  maxlength="1024"></md-textarea>
+                  <md-textarea v-model="message" @keydown.native="kp($event)" ></md-textarea>
+                  <span v-if="message_fee" class="md-count">Estimate Fee: {{message_fee}}</span>
               </md-input-container>
           </md-layout>
           <md-layout md-flex="10" >
@@ -86,6 +87,9 @@ export default {
     }
   },
   watch: {
+    message: function (value) {
+      this.message_fee = Math.ceil(value.length / 255) * 0.005
+    },
     '$route': function (value) {
       // switch chat to value
       this.$store.commit('select_chat', value)
@@ -99,6 +103,7 @@ export default {
   },
   data () {
     return {
+      message_fee: 0,
       message: ''
     }
   }
@@ -160,7 +165,7 @@ export default {
     position: fixed;
     bottom: 0;
     width: 100%;
-    border-top: 1px solid #484848;
+    border-top: 3px solid #4A4A4A;
     background-color: #fefefe;
     margin: 0 auto;
     max-width: 800px;
