@@ -26,7 +26,7 @@
                   <label>{{ $t('login.new_password_label') }}</label>
                   <md-textarea v-bind:value="yourPassPhrase" readonly></md-textarea>
                   <md-icon v-clipboard="yourPassPhrase" style="cursor:pointer">content_copy</md-icon>
-                  <md-icon v-clipboard="yourPassPhrase" v-if=!iOS v-on:click.native="saveFile" style="cursor:pointer">archive</md-icon>
+                  <md-icon v-if=!iOS v-on:click.native="saveFile" style="cursor:pointer">archive</md-icon>
 
               </md-input-container>
 
