@@ -100,6 +100,9 @@ const store = new Vuex.Store({
       window.publicKey = false
       window.privateKey = false
       window.secretKey = false
+      state.publicKey = false
+      state.privateKey = false
+      state.secretKey = false
 //      state.partners = {}
     },
     login (state, payload) {
