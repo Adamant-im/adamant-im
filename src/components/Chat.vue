@@ -6,7 +6,7 @@
               <md-layout v-if="message.direction=='from'" md-flex="95" md-flex-xsmall="85" :data-confirmation="message.confirm_class"  class=" chat_message md-own md-flex-xsmall-offset-5 md-whiteframe md-whiteframe-1dp" ><span class="avatar-holder"></span><span v-html="message.message"></span> <div class="dt">{{ dateFormat(message.timestamp) }}</div></md-layout>
           </md-layout>
       </md-layout>
-      <md-layout md-align="start" md-gutter="16" class="message_form">
+      <md-layout md-align="start" md-gutter="16" class="message_form" style="z-index: 10;">
       <md-layout>
           <md-layout md-flex="90"   md-flex-xsmall="80" class="text_block">
               <md-input-container md-inline>
