@@ -78,6 +78,9 @@ export default {
     {
         stroke: #4A4A4A;
     }
+    .md-list-text-container p {
+        max-height:50px;
+    }
     .md-list-text-container p p
     {
         padding: 0;
