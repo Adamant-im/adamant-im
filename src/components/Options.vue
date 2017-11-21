@@ -50,11 +50,7 @@ export default {
     .settings .md-table .md-select-value, .settings .md-table .md-option {
         font-size: 16px;
     }
-    .version {
-        position:absolute;
-        bottom:0;
-        right:0;
-    }
+
   .settings {
     position:relative;
     height: calc(100vh - 130px);

@@ -152,6 +152,11 @@ footer {
     max-width: 90%;
 }
 
+.version {
+    position:absolute;
+    bottom:0;
+    right:0;
+}
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
