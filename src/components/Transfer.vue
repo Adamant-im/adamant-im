@@ -1,5 +1,6 @@
 <template>
   <div class="transfer">
+
       <form novalidate @submit.stop.prevent="submit">
           <md-input-container>
               <label>{{ $t('transfer.to_address_label') }}</label>
@@ -25,6 +26,7 @@
       <md-snackbar md-position="bottom center" md-accent ref="transferSnackbar" md-duration="2000">
           <span>{{ formErrorMessage }}</span>
       </md-snackbar>
+
   </div>
 </template>
 
@@ -101,5 +103,11 @@ export default {
 <style>
     input.md-input[readonly] {
         color: rgba(0, 0, 0, 0.54);
+    }
+    @media (max-width: 480px) {
+        .transfer {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
     }
 </style>

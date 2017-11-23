@@ -56,4 +56,13 @@ export default {
     height: calc(100vh - 130px);
     width:100%;
   }
+    @media (max-width: 480px) {
+        .settings {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        .settings .version {
+            right: 1rem;
+        }
+    }
 </style>
