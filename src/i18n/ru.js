@@ -24,6 +24,9 @@ export default {
     'message': 'Введите сообщение',
     'estimate_fee': 'Ориентировочная комиссия'
   },
+  'home': {
+    'copied': 'Скопировано'
+  },
   'transaction': {
     'amount': 'Количество',
     'date': 'Дата',

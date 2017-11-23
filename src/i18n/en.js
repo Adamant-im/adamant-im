@@ -24,6 +24,9 @@ export default {
     'message': 'Type your message',
     'estimate_fee': 'Estimate Fee'
   },
+  'home': {
+    'copied': 'Copied'
+  },
   'transaction': {
     'amount': 'Amount',
     'date': 'Date',

@@ -2,7 +2,7 @@
   <div class="home">
       <md-layout md-align="center" md-gutter="16">
       <md-list class="md-double-line">
-          <md-list-item>
+          <md-list-item v-on:click="copy" v-clipboard="this.$store.state.address" @success="copySuccess">
               <md-avatar class="md-avatar-icon">
                   <md-icon>account_circle</md-icon>
               </md-avatar>
@@ -35,7 +35,9 @@
           </md-list-item>
       </md-list>
       </md-layout>
-        
+      <md-snackbar md-position="bottom center" md-accent ref="homeSnackbar" md-duration="2000">
+          <span>{{ $t('home.copied') }}</span>
+      </md-snackbar>
   </div>
 </template>
 
@@ -43,6 +45,11 @@
 export default {
   name: 'home',
   methods: {
+    copySuccess (e) {
+      this.$refs.homeSnackbar.open()
+    },
+    copy () {
+    }
   },
   computed: {
     isNewUser: function () {
