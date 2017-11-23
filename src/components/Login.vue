@@ -9,31 +9,33 @@
               A top-notch anonymous messenger encrypted with a Blockchain</p>
       </div>
       <md-layout md-align="center" md-gutter="16">
-      <md-layout md-flex="66" sm-flex="90">
+      <md-layout md-flex="66" md-flex-xsmall="90">
           <md-input-container>
               <label>{{ $t('login.password_label') }}</label>
               <md-input v-model="passPhrase" type="password" @keyup.native="kp($event)"></md-input>
           </md-input-container>
-          <md-layout md-align="center" md-gutter="16">
-          <md-button class="md-raised md-shit" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
-              <md-button class="md-raised md-secondary" v-on:click="showCreate = true">{{ $t('login.new_button') }}</md-button>
-          </md-layout>
       </md-layout>
+          <md-layout md-flex="66" md-flex-xsmall="90">
+              <md-layout md-align="center" md-gutter="16">
+                  <md-button class="md-raised md-shit" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
+                  <md-button class="md-raised md-secondary" v-on:click="showCreate = true">{{ $t('login.new_button') }}</md-button>
+              </md-layout>
+          </md-layout>
     </md-layout>
       <md-layout v-if="showCreate" md-align="center" md-gutter="16">
-          <md-layout md-flex="66" sm-flex="90">
+          <md-layout md-flex="66" md-flex-xsmall="90" class="newpass_field">
               <md-input-container>
                   <label>{{ $t('login.new_password_label') }}</label>
                   <md-textarea v-bind:value="yourPassPhrase" readonly></md-textarea>
-                  <md-icon v-clipboard="yourPassPhrase" style="cursor:pointer">content_copy</md-icon>
-                  <md-icon v-if=!iOS v-on:click.native="saveFile" style="cursor:pointer">archive</md-icon>
+                  <md-icon v-clipboard="yourPassPhrase" style="cursor:pointer;z-index:20;">content_copy</md-icon>
+                  <md-icon v-if=!iOS v-on:click.native="saveFile" style="cursor:pointer;z-index:20;">archive</md-icon>
 
               </md-input-container>
 
           </md-layout>
       </md-layout>
       <md-layout md-align="center" md-gutter="16" style="margin-top: 40px;">
-          <md-layout md-flex="66" sm-flex="90">
+          <md-layout md-flex="66" md-flex-xsmall="90">
               <div class="field-group">
 
               <md-input-container class="language_select">
@@ -243,6 +245,15 @@ a.custom-logo-link img {
 }
 
 @media (max-width: 480px) {
+    .newpass_field .md-icon{
+        padding-top: 40px;
+    }
+
+    .newpass_field textarea{
+        height: 100px;
+        padding-top: 30px;
+    }
+
     .container {
         width: 95%;
     }
