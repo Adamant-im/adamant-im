@@ -99,5 +99,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-
+    input.md-input[readonly] {
+        color: rgba(0, 0, 0, 0.54);
+    }
 </style>
