@@ -12,6 +12,7 @@ import VueHazeServerApi from './lib/adamantServerApi'
 import createPersistedState from 'vuex-persistedstate'
 
 import 'vue-material/dist/vue-material.css'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 Vue.use(Vuex)
 Vue.use(VueMaterial)
