@@ -27,7 +27,7 @@
               <md-input-container>
                   <label>{{ $t('login.new_password_label') }}</label>
                   <md-textarea v-bind:value="yourPassPhrase" readonly></md-textarea>
-                  <md-icon v-clipboard="yourPassPhrase" style="cursor:pointer;z-index:20;">content_copy</md-icon>
+                  <md-icon v-clipboard="yourPassPhrase"  @success="copySuccess" style="cursor:pointer;z-index:20;">content_copy</md-icon>
                   <md-icon v-if=!iOS v-on:click.native="saveFile" style="cursor:pointer;z-index:20;">archive</md-icon>
 
               </md-input-container>
@@ -51,7 +51,10 @@
       <md-snackbar md-position="bottom center" md-accent ref="snackbar" md-duration="2000">
           <span>{{ $t('login.invalid_passphrase') }}</span>
       </md-snackbar>
-      <div class="version" style="position:fixed">{{ $t('options.version') }} 1.0.10</div>
+      <md-snackbar md-position="bottom center" md-accent ref="loginSnackbar" md-duration="2000">
+          <span>{{ $t('home.copied') }}</span>
+      </md-snackbar>
+      <div class="version" style="position:fixed; opacity:0.3; ">{{ $t('options.version') }} 1.0.10</div>
   </div>
 
 </template>
@@ -60,6 +63,9 @@
 export default {
   name: 'login',
   methods: {
+    copySuccess (e) {
+      this.$refs.loginSnackbar.open()
+    },
     kp: function (event) {
       if (event.key === 'Enter') {
         this.logme()
@@ -249,7 +255,9 @@ a.custom-logo-link img {
     .newpass_field .md-icon{
         padding-top: 40px;
     }
-
+    .version {
+        right:8px;
+    }
     .newpass_field textarea{
         height: 100px;
         padding-top: 30px;
