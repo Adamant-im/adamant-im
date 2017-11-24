@@ -24,11 +24,6 @@ Vue.config.productionTip = false
 
 var messages = require('./i18n').default
 
-var i18n = new VueI18n({
-  locale: 'en', // set locale
-  messages // set locale messages
-})
-
 Vue.material.registerTheme({
   default: {
     primary: {
@@ -47,12 +42,31 @@ Vue.material.registerTheme({
   }
 })
 
+function deviceIsDisabled () {
+  try {
+    if (/iP(hone|od|ad)/.test(navigator.platform)) {
+      // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
+      var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/)
+      if (parseInt(v[1], 10) < 8) {
+        return true
+      }
+    }
+    if (/BlackBerry/.test(navigator.platform)) {
+      return true
+    }
+  } catch (e) {
+  }
+  return false
+}
+
 const store = new Vuex.Store({
   state: {
     address: '',
+    language: 'en',
     passPhrase: '',
     connectionString: '',
     balance: 0,
+    disabled: deviceIsDisabled(),
     is_new_account: false,
     ajaxIsOngoing: false,
     firstChatLoad: true,
@@ -68,6 +82,9 @@ const store = new Vuex.Store({
     currentChat: false
   },
   mutations: {
+    change_lang (state, payload) {
+      state.language = payload
+    },
     save_passphrase (state, payload) {
       state.passPhrase = payload.passPhrase
     },
@@ -197,6 +214,11 @@ const store = new Vuex.Store({
     }
   },
   plugins: [createPersistedState()]
+})
+
+var i18n = new VueI18n({
+  locale: store.state.language, // set locale
+  messages // set locale messages
 })
 
 /* eslint-disable no-new */

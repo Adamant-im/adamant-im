@@ -26,6 +26,7 @@
           </div>
       </footer>
       </md-theme>
+      <div class="forbid" v-if="disabled" style="display: table;"><div style="display: table-cell; vertical-align: middle;">{{ $t('login.device_unsupported') }}</div></div>
   </div>
 </template>
 
@@ -56,6 +57,9 @@ export default {
     }
   },
   computed: {
+    disabled () {
+      return this.$store.state.disabled
+    },
     userDisplayName () {
       return this.$store.state.partnerDisplayName
     },
@@ -157,7 +161,18 @@ footer {
     bottom:0;
     right:0;
 }
-
+.forbid {
+    position:fixed;
+    height:100%;
+    width:100%;
+    top:0;
+    left:0;
+    background-color: white;
+    text-align: center;
+    z-index: 100;
+    font-size: 2rem;
+    line-height: 2rem;
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

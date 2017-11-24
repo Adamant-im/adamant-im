@@ -6,7 +6,8 @@ export default {
     'language_label': 'Выберите ваш язык',
     'login_button': 'Войти',
     'new_button': 'Создать новый',
-    'invalid_passphrase': 'Неправильный пароль'
+    'invalid_passphrase': 'Неправильный пароль',
+    'device_unsupported': 'Ваше устройство не поддерживается'
   },
   'options': {
     'version': 'Версия приложения: ',

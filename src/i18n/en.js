@@ -6,7 +6,8 @@ export default {
     'language_label': 'Select your language',
     'login_button': 'Login',
     'new_button': 'Create new',
-    'invalid_passphrase': 'Invalid Passphrase'
+    'invalid_passphrase': 'Invalid Passphrase',
+    'device_unsupported': 'Your device is unsupported'
   },
   'options': {
     'version': 'App Version: ',

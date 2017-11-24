@@ -132,12 +132,13 @@ export default {
   watch: {
     'language' (to, from) {
       this.$i18n.locale = to
+      this.$store.commit('change_lang', to)
     }
   },
   data () {
     return {
       passPhrase: '',
-      language: 'en',
+      language: this.$i18n.locale,
       showCreate: false
     }
   }
