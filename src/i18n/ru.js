@@ -46,7 +46,11 @@ export default {
     'error_incorrect_address': 'Неверный адрес кошелька',
     'error_incorrect_amount': 'Неверное количество',
     'error_no_amount': 'Укажите сумму для перевода',
-    'error_not_enough': 'Недостаточно токенов для перевода'
+    'error_not_enough': 'Недостаточно токенов для перевода',
+    'confirm_title': 'Подтверждение перевода',
+    'confirm_message': 'Подтвердите перевод <b>{amount} ADM</b> на кошелек {target}.',
+    'confirm_approve': 'Подтвердить',
+    'confirm_cancel': 'Отмена'
   },
   'bottom': {
     'wallet_button': 'Кошелек',

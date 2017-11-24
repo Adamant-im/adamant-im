@@ -46,7 +46,11 @@ export default {
     'error_incorrect_address': 'Incorrect wallet address',
     'error_incorrect_amount': 'Incorrect amount',
     'error_no_amount': 'Please provide amount',
-    'error_not_enough': 'Not enough tokens'
+    'error_not_enough': 'Not enough tokens',
+    'confirm_title': 'Transfer confirmation',
+    'confirm_message': 'Confirm transfer of <b>{amount} ADM</b> to address {target}.',
+    'confirm_approve': 'Confirm',
+    'confirm_cancel': 'Cancel'
   },
   'bottom': {
     'wallet_button': 'Wallet',

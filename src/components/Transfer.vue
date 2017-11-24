@@ -26,6 +26,14 @@
       <md-snackbar md-position="bottom center" md-accent ref="transferSnackbar" md-duration="2000">
           <span>{{ formErrorMessage }}</span>
       </md-snackbar>
+      <md-dialog-confirm
+              :md-title="$t('transfer.confirm_title')"
+              :md-content-html="$t('transfer.confirm_message', {amount: targetAmount, target: targetAddress })"
+              :md-ok-text="$t('transfer.confirm_approve')"
+              :md-cancel-text="$t('transfer.confirm_cancel')"
+              @close="onClose"
+              ref="confirm_transfer_dialog">
+      </md-dialog-confirm>
 
   </div>
 </template>
@@ -37,6 +45,11 @@ export default {
     errorMessage (message) {
       this.formErrorMessage = this.$t('transfer.' + message)
       this.$refs.transferSnackbar.open()
+    },
+    onClose (type) {
+      if (type === 'ok') {
+        this.transferFunds(this.targetAmount, this.targetAddress)
+      }
     },
     transfer: function () {
       if (!this.targetAddress) {
@@ -59,7 +72,7 @@ export default {
         this.errorMessage('error_not_enough')
         return
       }
-      this.transferFunds(this.targetAmount, this.targetAddress)
+      this.$refs['confirm_transfer_dialog'].open()
     }
   },
   computed: {
@@ -101,6 +114,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+    .md-dialog-container.md-active .md-dialog {
+        background: white;
+    }
     .md-input-container.md-has-value input.md-input[readonly] {
         color: rgba(0, 0, 0, 0.54);
     }
