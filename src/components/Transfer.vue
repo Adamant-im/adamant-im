@@ -101,7 +101,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-    input.md-input[readonly] {
+    .md-input-container.md-has-value input.md-input[readonly] {
         color: rgba(0, 0, 0, 0.54);
     }
     @media (max-width: 480px) {
