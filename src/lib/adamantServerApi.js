@@ -354,7 +354,11 @@ function install (Vue) {
           var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
           var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
           currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
-          currentTransaction.message = marked(currentTransaction.message, { renderer: renderer })
+          if (currentTransaction.message === 'chats.welcome_message') {
+            currentTransaction.message = this.$i18n.t('chats.welcome_message')
+          } else {
+            currentTransaction.message = marked(currentTransaction.message, {renderer: renderer})
+          }
           if (currentTransaction.message && currentTransaction.message.length > 0) {
             this.$store.commit('add_chat_message', currentTransaction)
           }
@@ -365,7 +369,11 @@ function install (Vue) {
         var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
         var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
         currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
-        currentTransaction.message = marked(currentTransaction.message, { renderer: renderer })
+        if (currentTransaction.message === 'chats.welcome_message') {
+          currentTransaction.message = this.$i18n.t('chats.welcome_message')
+        } else {
+          currentTransaction.message = marked(currentTransaction.message, {renderer: renderer})
+        }
         if (currentTransaction.message && currentTransaction.message.length > 0) {
           this.$store.commit('add_chat_message', currentTransaction)
         }

@@ -23,7 +23,8 @@ export default {
     'send_button': 'Send',
     'recipient': 'Recipient address',
     'message': 'Type your message',
-    'estimate_fee': 'Estimate Fee'
+    'estimate_fee': 'Estimate Fee',
+    'welcome_message': '<p>Welcome to the most secure and anonymous messenger - Adamant.</p><p>Remember, your security and anonymity is up to you. Do not follow links you receive, so that your ip was not detected. Do not trust browser extensions. Better to give your ADM address personally, not using other messengers. Keep your ADAMANT secret pass phrase secure. Put a password on your device or logout before leaving.</p><p>You can get more info on  <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p>'
   },
   'home': {
     'copied': 'Copied'
