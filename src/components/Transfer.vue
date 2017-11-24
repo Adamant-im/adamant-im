@@ -115,7 +115,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
     .md-dialog-container.md-active .md-dialog {
-        background: white;
+        background: #fefefe;
     }
     .md-input-container.md-has-value input.md-input[readonly] {
         color: rgba(0, 0, 0, 0.54);
