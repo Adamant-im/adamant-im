@@ -7,6 +7,7 @@ import Chat from '@/components/Chat'
 import NewChat from '@/components/NewChat'
 import Transfer from '@/components/Transfer'
 import Transaction from '@/components/Transaction'
+import Transactions from '@/components/Transactions'
 import Options from '@/components/Options'
 import Home from '@/components/Home'
 
@@ -15,6 +16,11 @@ Vue.use(Router)
 export default new Router({
   routes: [
     { path: '/transactions/:tx_id', component: Transaction },
+    {
+      path: '/transactions',
+      name: 'Transactions',
+      component: Transactions
+    },
     {
       path: '/hello',
       name: 'Hello',

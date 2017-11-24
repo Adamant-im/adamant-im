@@ -425,6 +425,18 @@ function install (Vue) {
       this.$store.commit('ajax_end_with_error')
     })
   }
+  Vue.prototype.getTransactions = function () {
+    this.$http.get(this.getAddressString() + '/api/transactions/?senderId=' + this.$store.state.address + '&recipientId=' + this.$store.state.address + '&limit=50').then(response => {
+      if (response.body.success) {
+        for (var i in response.body.transactions) {
+          if (response.body.transactions[i].type === 0) {
+            this.$store.commit('transaction_info', response.body.transactions[i])
+          }
+        }
+      }
+    }, response => {
+    })
+  }
   Vue.prototype.getTransactionInfo = function (txid) {
     this.$store.commit('ajax_start')
     this.$http.get(this.getAddressString() + '/api/transactions/get?id=' + txid).then(response => {
