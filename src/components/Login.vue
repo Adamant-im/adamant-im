@@ -51,7 +51,7 @@
       <md-snackbar md-position="bottom center" md-accent ref="snackbar" md-duration="2000">
           <span>{{ $t('login.invalid_passphrase') }}</span>
       </md-snackbar>
-      <div class="version" style="position:fixed">{{ $t('options.version') }} 1.0.9</div>
+      <div class="version" style="position:fixed">{{ $t('options.version') }} 1.0.10</div>
   </div>
 
 </template>
