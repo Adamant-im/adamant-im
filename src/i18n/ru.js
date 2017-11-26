@@ -7,7 +7,8 @@ export default {
     'login_button': 'Войти',
     'new_button': 'Создать новый',
     'invalid_passphrase': 'Неправильный пароль',
-    'device_unsupported': 'Ваше устройство не поддерживается'
+    'device_unsupported': 'Ваше устройство не поддерживается',
+    'subheader': 'Самый анонимный мессенджер, зашифрованный в Blockchain'
   },
   'options': {
     'version': 'Версия приложения: ',

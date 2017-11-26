@@ -6,7 +6,7 @@
 						ADAMANT					</span>
       </a>
           <p class="site-description">
-              A top-notch anonymous messenger encrypted with a Blockchain</p>
+              {{ $t('login.subheader') }}</p>
       </div>
       <md-layout md-align="center" md-gutter="16">
       <md-layout md-flex="66" md-flex-xsmall="90">

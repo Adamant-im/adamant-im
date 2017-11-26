@@ -7,7 +7,8 @@ export default {
     'login_button': 'Login',
     'new_button': 'Create new',
     'invalid_passphrase': 'Invalid Passphrase',
-    'device_unsupported': 'Your device is unsupported'
+    'device_unsupported': 'Your device is unsupported',
+    'subheader': 'A top-notch anonymous messenger encrypted with a Blockchain'
   },
   'options': {
     'version': 'App Version: ',
