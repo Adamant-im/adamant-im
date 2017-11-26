@@ -9,8 +9,7 @@ import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 import VueMaterial from 'vue-material'
 import VueHazeServerApi from './lib/adamantServerApi'
-import createPersistedState from 'vuex-persistedstate'
-
+import storeData from './lib/lsStore.js'
 import 'vue-material/dist/vue-material.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
@@ -80,11 +79,15 @@ const store = new Vuex.Store({
     partners: {},
     chats: {},
     lastChatHeight: 0,
-    currentChat: false
+    currentChat: false,
+    storeInLocalStorage: false
   },
   mutations: {
     change_lang (state, payload) {
       state.language = payload
+    },
+    change_storage_method (state, payload) {
+      state.storeInLocalStorage = payload
     },
     save_passphrase (state, payload) {
       state.passPhrase = payload.passPhrase
@@ -214,7 +217,7 @@ const store = new Vuex.Store({
       Vue.set(state.chats[partner].messages, payload.id, payload)
     }
   },
-  plugins: [createPersistedState()]
+  plugins: [storeData()]
 })
 
 var i18n = new VueI18n({
