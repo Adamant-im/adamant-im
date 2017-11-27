@@ -260,7 +260,7 @@ a.custom-logo-link img {
     }
     .newpass_field textarea{
         height: 100px!important;
-        padding-top: 30px;
+        padding-top: 30px!important;
     }
 
     .container {
