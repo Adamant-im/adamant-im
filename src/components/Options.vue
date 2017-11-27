@@ -13,8 +13,8 @@
               </md-table-row>
 
               <md-table-row>
-                  <md-table-cell></md-table-cell>
-                  <md-table-cell ><md-checkbox  v-model="storeInLS" >{{ $t('options.exit_on_close') }}</md-checkbox>
+                  <md-table-cell class="hide_on_mobile"></md-table-cell>
+                  <md-table-cell colspan="2"><md-checkbox  v-model="storeInLS" >{{ $t('options.exit_on_close') }}</md-checkbox>
                   </md-table-cell>
               </md-table-row>
           </md-table-body>
@@ -72,6 +72,9 @@ export default {
     width:100%;
   }
     @media (max-width: 480px) {
+        .hide_on_mobile {
+            display:none;
+        }
         .settings {
             padding-left: 1rem;
             padding-right: 1rem;
