@@ -79,7 +79,7 @@ export default {
         stroke: #4A4A4A;
     }
     .md-list-text-container p {
-        max-height:50px;
+        max-height:45px;
     }
     .md-list-text-container p p
     {
