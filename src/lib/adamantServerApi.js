@@ -328,6 +328,11 @@ function install (Vue) {
   Vue.prototype.updateCurrentValues = function () {
     if (this.$store.state.passPhrase) {
       // updating wallet balance
+      if (this.$route.path.indexOf('/transactions/') > -1) {
+        if (this.$route.params.tx_id) {
+          this.getTransactionInfo(this.$route.params.tx_id)
+        }
+      }
       this.getAccountByPublicKey(this.getPublicKeyFromPassPhrase(this.$store.state.passPhrase))
       this.loadChats()
     }

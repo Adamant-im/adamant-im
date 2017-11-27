@@ -12,7 +12,7 @@
           </md-table-row>
           <md-table-row >
             <md-table-cell>{{ $t('transaction.confirmations') }}</md-table-cell>
-            <md-table-cell >{{ transaction.confirmations }}</md-table-cell>
+            <md-table-cell >{{ confirmations }}</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell>{{ $t('transaction.commission') }}</md-table-cell>
@@ -72,6 +72,12 @@
       }
     },
     computed: {
+      confirmations: function () {
+        if (!this.transaction.confirmations) {
+          return '⏱'
+        }
+        return this.transaction.confirmations
+      },
       transaction: function () {
         if (this.$store.state.transactions[this.$route.params.tx_id]) {
           return this.$store.state.transactions[this.$route.params.tx_id]
