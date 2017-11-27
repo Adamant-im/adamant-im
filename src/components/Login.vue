@@ -250,7 +250,12 @@ a.custom-logo-link img {
         font-size: 30px;
     }
 }
-
+@media (max-width: 600px) {
+    .newpass_field textarea{
+        height: 70px!important;
+        padding-top: 20px!important;
+    }
+}
 @media (max-width: 480px) {
     .newpass_field .md-icon{
         padding-top: 40px;
