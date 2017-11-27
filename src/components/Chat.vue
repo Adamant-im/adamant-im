@@ -240,6 +240,7 @@ export default {
     text-align: left;
     position:relative;
     padding-right: 50px;
+    min-height: 0;
 }
 .chat_message .dt {
     position: absolute;
