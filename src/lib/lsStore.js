@@ -27,11 +27,15 @@ export default function storeData () {
     if (mainStorage.getItem('language')) {
       store.commit('change_lang', mainStorage.getItem('language'))
     }
-    if (mainStorage.getItem('storeInLocalStorage')) {
-      store.commit('change_storage_method', mainStorage.getItem('storeInLocalStorage'))
+    var storeInLocalStorage = mainStorage.getItem('storeInLocalStorage')
+    if (storeInLocalStorage === 'false') {
+      storeInLocalStorage = false
+    }
+    if (storeInLocalStorage) {
+      store.commit('change_storage_method', storeInLocalStorage)
     }
     var useStorage = gsStorage
-    if (mainStorage.getItem('storeInLocalStorage') && lsStorage) {
+    if (storeInLocalStorage && lsStorage) {
       useStorage = lsStorage
     }
     var value = useStorage.getItem('adm-persist')

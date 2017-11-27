@@ -12,7 +12,8 @@ export default {
   },
   'options': {
     'version': 'Версия приложения: ',
-    'language_label': 'Язык'
+    'language_label': 'Язык',
+    'exit_on_close': 'Выходить из кошелька по закрытии вкладки'
   },
   'chats': {
     'new_chat': 'Создать чат',

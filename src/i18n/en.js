@@ -12,7 +12,8 @@ export default {
   },
   'options': {
     'version': 'App Version: ',
-    'language_label': 'Language: '
+    'language_label': 'Language: ',
+    'exit_on_close': 'Exit messenger on tab close'
   },
   'chats': {
     'new_chat': 'Start new Chat',

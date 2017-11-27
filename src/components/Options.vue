@@ -11,6 +11,12 @@
                   </md-input-container>
                   </md-table-cell>
               </md-table-row>
+
+              <md-table-row>
+                  <md-table-cell></md-table-cell>
+                  <md-table-cell ><md-checkbox  v-model="storeInLS" >{{ $t('options.exit_on_close') }}</md-checkbox>
+                  </md-table-cell>
+              </md-table-row>
           </md-table-body>
       </md-table>
 
@@ -30,6 +36,9 @@ export default {
     }
   },
   watch: {
+    'storeInLS' (to, from) {
+      this.$store.commit('change_storage_method', !to)
+    },
     'language' (to, from) {
       this.$i18n.locale = to
       this.$store.commit('change_lang', to)
@@ -37,6 +46,7 @@ export default {
   },
   data () {
     return {
+      storeInLS: !this.$store.state.storeInLocalStorage,
       language: this.$i18n.locale
     }
   }
@@ -51,7 +61,11 @@ export default {
     .settings .md-table .md-select-value, .settings .md-table .md-option {
         font-size: 16px;
     }
-
+  .settings .md-checkbox .md-checkbox-container:after {
+      border: 2px solid gray;
+      border-top: 0;
+      border-left: 0;
+  }
   .settings {
     position:relative;
     height: calc(100vh - 130px);
