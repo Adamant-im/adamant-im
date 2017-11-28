@@ -360,12 +360,16 @@ function install (Vue) {
           var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
           currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
           if (currentTransaction.message === 'chats.welcome_message') {
-            currentTransaction.message = this.$i18n.t('chats.welcome_message')
+//            currentTransaction.message = this.$i18n.t('chats.welcome_message')
           } else {
             currentTransaction.message = marked(currentTransaction.message, {renderer: renderer})
           }
           if (currentTransaction.message && currentTransaction.message.length > 0) {
-            this.$store.commit('add_chat_message', currentTransaction)
+            if (currentTransaction.message === 'chats.welcome_message') {
+              this.$store.dispatch('add_chat_i18n_message', currentTransaction)
+            } else {
+              this.$store.commit('add_chat_message', currentTransaction)
+            }
           }
         }.bind(this, currentTransaction))
       } else {
@@ -375,12 +379,16 @@ function install (Vue) {
         var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
         currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
         if (currentTransaction.message === 'chats.welcome_message') {
-          currentTransaction.message = this.$i18n.t('chats.welcome_message')
+//          currentTransaction.message = this.$i18n.t('chats.welcome_message')
         } else {
           currentTransaction.message = marked(currentTransaction.message, {renderer: renderer})
         }
         if (currentTransaction.message && currentTransaction.message.length > 0) {
-          this.$store.commit('add_chat_message', currentTransaction)
+          if (currentTransaction.message === 'chats.welcome_message') {
+            this.$store.dispatch('add_chat_i18n_message', currentTransaction)
+          } else {
+            this.$store.commit('add_chat_message', currentTransaction)
+          }
         }
       }
     }

@@ -82,6 +82,12 @@ const store = new Vuex.Store({
     currentChat: false,
     storeInLocalStorage: false
   },
+  actions: {
+    add_chat_i18n_message ({commit}, payload) {
+      payload.message = window.ep.$i18n.t(payload.message)
+      commit('add_chat_message', payload)
+    }
+  },
   mutations: {
     change_lang (state, payload) {
       state.language = payload
