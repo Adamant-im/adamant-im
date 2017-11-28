@@ -20,6 +20,7 @@ export default {
     'no_money': 'Not enough funds. Top up your balance.',
     'no_empty': 'Message can\'t be empty',
     'no_address': 'Please specify recipient address',
+    'too_long': 'Message is too long',
     'incorrect_address': 'Incorrect recipient address',
     'title': 'Chats',
     'send_button': 'Send',

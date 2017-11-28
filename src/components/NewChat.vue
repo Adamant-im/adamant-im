@@ -46,6 +46,10 @@ export default {
         this.errorMessage('no_address')
         return
       }
+      if ((this.message.length * 1.5) > 20000) {
+        this.errorMessage('too_long')
+        return
+      }
       if (!(/U([0-9]{6,})$/.test(this.targetAddress))) {
         this.errorMessage('incorrect_address')
         return

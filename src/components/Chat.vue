@@ -49,6 +49,10 @@ export default {
         this.errorMessage('no_empty')
         return
       }
+      if ((this.message.length * 1.5) > 20000) {
+        this.errorMessage('too_long')
+        return
+      }
       if (this.message) {
         this.encodeMessageForAddress(this.message, this.$route.params.partner)
         this.message = ''
