@@ -74,6 +74,22 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+    .md-avatar .new-icon {
+        position: absolute;
+        right: -5px;
+        bottom: -5px;
+        color: #4A4A4A;
+        width: 20px;
+        height: 20px;
+        background: #BAD3FF;
+        border-radius: 10px;
+        line-height: 20px;
+        text-align: center;
+        z-index: 100;
+    }
+    .md-avatar {
+        overflow: visible;
+    }
     .md-spinner.md-accent .md-spinner-path
     {
         stroke: #4A4A4A;

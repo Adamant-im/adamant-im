@@ -128,6 +128,19 @@ footer {
     top: 0;
     font-size: 12px;
 }
+.md-bottom-bar .new-icon {
+    position: absolute;
+    right: -5px;
+    top: -30px;
+    color: #4A4A4A;
+    width: 20px;
+    height: 20px;
+    background: #BAD3FF;
+    border-radius: 10px;
+    line-height: 20px;
+    text-align: center;
+    z-index: 100;
+}
 .bottom-fixed{
     position:fixed;
     bottom:0;
