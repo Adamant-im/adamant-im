@@ -73,10 +73,12 @@ const store = new Vuex.Store({
     lastErrorMsg: '',
     transactions: {},
     showPanel: false,
+    trackNewMessages: false,
     showBottom: true,
     partnerName: '',
     partnerDisplayName: '',
     partners: {},
+    newChats: {},
     chats: {},
     lastChatHeight: 0,
     currentChat: false,
@@ -120,7 +122,9 @@ const store = new Vuex.Store({
       state.showBottom = true
       state.transactions = {}
       state.chats = {}
+      state.newChats = {}
       state.currentChat = false
+      state.trackNewMessages = false
       state.firstChatLoad = true
       state.lastChatHeight = 0
       state.partnerDisplayName = ''
@@ -131,6 +135,19 @@ const store = new Vuex.Store({
       state.privateKey = false
       state.secretKey = false
 //      state.partners = {}
+    },
+    stop_tracking_new (state) {
+      state.trackNewMessages = false
+    },
+    start_tracking_new (state) {
+      state.trackNewMessages = true
+    },
+    mark_as_read (state, payload) {
+      if (state.newChats[payload]) {
+        var wasNew = state.newChats[payload]
+        Vue.set(state.newChats, payload, 0)
+        Vue.set(state.newChats, 'total', state.newChats['total'] - wasNew)
+      }
     },
     login (state, payload) {
       state.address = payload.address
@@ -168,7 +185,7 @@ const store = new Vuex.Store({
     leave_chat (state, payload) {
       state.showPanel = false
       state.partnerName = ''
-      state.partnerDisplaName = ''
+      state.partnerDisplayName = ''
       state.showBottom = true
     },
     have_loaded_chats (state) {
@@ -196,6 +213,17 @@ const store = new Vuex.Store({
         partner = payload.senderId
       } else {
         partner = payload.recipientId
+      }
+      if (direction === 'to' && state.trackNewMessages && state.partnerName !== partner) {
+        if (state.newChats[partner]) {
+          Vue.set(state.newChats, partner, state.newChats[partner] + 1)
+        } else {
+          Vue.set(state.newChats, partner, 1)
+        }
+        if (!state.newChats['total']) {
+          state.newChats['total'] = 0
+        }
+        Vue.set(state.newChats, 'total', state.newChats['total'] + 1)
       }
       var currentDialogs = state.chats[partner]
       if (!currentDialogs) {

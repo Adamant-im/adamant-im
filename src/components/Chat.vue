@@ -66,9 +66,10 @@ export default {
   },
   mounted: function () {
     this.$store.commit('select_chat', this.$route.params.partner)
+    this.$store.commit('mark_as_read', this.$route.params.partner)
     setTimeout((function (self) {
       return function () {
-        self.needToScroll() // Thing you wanted to run as non-window 'this'
+        self.needToScroll()
       }
     })(this),
     10)
@@ -97,9 +98,10 @@ export default {
     '$route': function (value) {
       // switch chat to value
       this.$store.commit('select_chat', value)
+      this.$store.commit('mark_as_read', value)
       setTimeout((function (self) {
         return function () {
-          self.needToScroll() // Thing you wanted to run as non-window 'this'
+          self.needToScroll()
         }
       })(this),
       10)

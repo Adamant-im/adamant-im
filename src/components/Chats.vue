@@ -22,6 +22,7 @@
             <md-list-item v-for="(chat, address) in chatList" :key="chat.partner" v-on:click="$router.push('/chats/' + chat.partner + '/')">
                 <md-avatar class="md-avatar-icon">
                     <md-icon>library_books</md-icon>
+                    <div class="new-icon" v-if="newMessages(chat.partner)">{{ newMessages(chat.partner) }}</div>
                 </md-avatar>
 
                 <div class="md-list-text-container">
@@ -46,6 +47,12 @@ export default {
     },
     send () {
       this.encodeMessageForAddress(this.message, this.targetAddress)
+    },
+    newMessages (address) {
+      if (this.$store.state.newChats[address]) {
+        return this.$store.state.newChats[address]
+      }
+      return 0
     },
     chatName (address) {
       if (this.$store.state.partners[address]) {

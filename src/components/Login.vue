@@ -87,6 +87,7 @@ export default {
         this.$store.commit('save_passphrase', {'passPhrase': this.passPhrase})
         this.$root._router.push('/chats/')
         this.loadChats()
+        this.$store.commit('stop_tracking_new')
       }, errorFunction)
     },
     'handleSuccess': function (e) {
