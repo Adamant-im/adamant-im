@@ -42,6 +42,9 @@ export default {
       })(this),
       5000
     )
+    if (!this.$store.state.passPhrase && this.$route.path !== '/') {
+      this.$router.push('/')
+    }
   },
   methods: {
     setUserName (val) {
