@@ -74,6 +74,7 @@ const store = new Vuex.Store({
     transactions: {},
     showPanel: false,
     trackNewMessages: false,
+    notificationMethod: 'only_sound',
     showBottom: true,
     partnerName: '',
     partnerDisplayName: '',
@@ -91,6 +92,9 @@ const store = new Vuex.Store({
     }
   },
   mutations: {
+    change_notification (state, payload) {
+      state.notificationMethod = payload
+    },
     change_lang (state, payload) {
       state.language = payload
     },
@@ -224,6 +228,12 @@ const store = new Vuex.Store({
           state.newChats['total'] = 0
         }
         Vue.set(state.newChats, 'total', state.newChats['total'] + 1)
+        if (state.notificationMethod === 'only_sound') {
+          try {
+            document.getElementById('messageSound').play()
+          } catch (e) {
+          }
+        }
       }
       var currentDialogs = state.chats[partner]
       if (!currentDialogs) {

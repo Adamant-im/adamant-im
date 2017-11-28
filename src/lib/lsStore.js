@@ -27,6 +27,9 @@ export default function storeData () {
     if (mainStorage.getItem('language')) {
       store.commit('change_lang', mainStorage.getItem('language'))
     }
+    if (mainStorage.getItem('notification')) {
+      store.commit('change_notification', mainStorage.getItem('notification'))
+    }
     var storeInLocalStorage = mainStorage.getItem('storeInLocalStorage')
     if (storeInLocalStorage === 'false') {
       storeInLocalStorage = false
@@ -64,6 +67,8 @@ export default function storeData () {
         mainStorage.setItem('storeInLocalStorage', mutation.payload)
       } else if (mutation.type === 'change_lang') {
         mainStorage.setItem('language', mutation.payload)
+      } else if (mutation.type === 'change_notification') {
+        mainStorage.setItem('notification', mutation.payload)
       }
       useStorage.setItem('adm-persist', JSON.stringify(state))
     })
