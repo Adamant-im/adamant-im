@@ -20,7 +20,7 @@
                 <md-spinner :md-size="150" :md-stroke="1" md-indeterminate class="md-accent"></md-spinner>
             </md-list-item>
             <md-list-item v-for="(chat, address) in chatList" :key="chat.partner" v-on:click="$router.push('/chats/' + chat.partner + '/')">
-                <md-avatar class="md-avatar-icon">
+                <md-avatar class="md-avatar-icon" style="overflow: visible;">
                     <md-icon>library_books</md-icon>
                     <div class="new-icon" v-if="newMessages(chat.partner)">{{ newMessages(chat.partner) }}</div>
                 </md-avatar>
