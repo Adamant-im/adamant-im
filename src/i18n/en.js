@@ -13,7 +13,13 @@ export default {
   'options': {
     'version': 'App Version: ',
     'language_label': 'Language: ',
-    'exit_on_close': 'Exit messenger on tab close'
+    'exit_on_close': 'Exit messenger on tab close',
+    'notification_label': 'Notify about messages',
+    'no_notification': 'No notification',
+    'only_sound': 'Only sound',
+    'only_title': 'Only window title',
+    'sound_and_title': 'Sound and window title',
+    'desktop_notification': 'Browser notifications'
   },
   'chats': {
     'new_chat': 'Start new Chat',
@@ -27,7 +33,8 @@ export default {
     'recipient': 'Recipient address',
     'message': 'Type your message',
     'estimate_fee': 'Estimate Fee',
-    'welcome_message': '<p>Welcome to the most secure and anonymous messenger - Adamant.</p><p>Remember, your security and anonymity is up to you. Do not follow links you receive, so that your ip was not detected. Do not trust browser extensions. Better to give your ADM address personally, not using other messengers. Keep your ADAMANT secret pass phrase secure. Put a password on your device or logout before leaving.</p><p>You can get more info on  <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p>'
+    'welcome_message': '<p>Welcome to the most secure and anonymous messenger - Adamant.</p><p>Remember, your security and anonymity is up to you. Do not follow links you receive, so that your ip was not detected. Do not trust browser extensions. Better to give your ADM address personally, not using other messengers. Keep your ADAMANT secret pass phrase secure. Put a password on your device or logout before leaving.</p><p>You can get more info on  <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p>',
+    'preico_message': '<p>You can invest in pre-ico of the most secure messenger - Adamant. Now it is best for investors. More accurate info on Adamant.im website and in projects whitepaper. To participate answer to this message and we will contact you. We are eager to answer quickly, but sometimes delays for a couple of hours are possible. </p>'
   },
   'home': {
     'copied': 'Copied'
