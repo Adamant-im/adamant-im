@@ -222,6 +222,12 @@ a.custom-logo-link img {
     height: auto;
     max-width: 100%
 }
+.newpass_field label {
+    text-align: left;
+}
+.newpass_field textarea{
+    padding-top: 20px!important;
+}
 @media (max-width: 1100px) {
     .container {
         width: 95%;
