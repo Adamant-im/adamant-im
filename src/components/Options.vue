@@ -11,7 +11,19 @@
                   </md-input-container>
                   </md-table-cell>
               </md-table-row>
-
+              <md-table-row>
+                  <md-table-cell>{{ $t('options.notification_label') }}</md-table-cell>
+                  <md-table-cell ><md-input-container >
+                      <md-select name="notification" id="notification" v-model="notification">
+                          <md-option value="desktop_notification">{{ $t('options.desktop_notification') }}</md-option>
+                          <md-option value="sound_and_title">{{ $t('options.sound_and_title') }}</md-option>
+                          <md-option value="only_title">{{ $t('options.only_title') }}</md-option>
+                          <md-option value="only_sound">{{ $t('options.only_sound') }}</md-option>
+                          <md-option value="none">{{ $t('options.no_notification') }}</md-option>
+                      </md-select>
+                  </md-input-container>
+                  </md-table-cell>
+              </md-table-row>
               <md-table-row>
                   <md-table-cell class="hide_on_mobile"></md-table-cell>
                   <md-table-cell colspan="2"><md-checkbox  v-model="storeInLS" >{{ $t('options.exit_on_close') }}</md-checkbox>
@@ -42,12 +54,16 @@ export default {
     'language' (to, from) {
       this.$i18n.locale = to
       this.$store.commit('change_lang', to)
+    },
+    'notification' (to, from) {
+      this.$store.commit('change_notification', to)
     }
   },
   data () {
     return {
       storeInLS: !this.$store.state.storeInLocalStorage,
-      language: this.$i18n.locale
+      language: this.$i18n.locale,
+      notification: this.$store.state.notificationMethod
     }
   }
 }
