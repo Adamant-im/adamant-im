@@ -148,7 +148,7 @@ const store = new Vuex.Store({
     },
     mark_as_read (state, payload) {
       if (state.newChats[payload]) {
-        var wasNew = state.newChats[payload]
+        var wasNew = parseInt(state.newChats[payload])
         Vue.set(state.newChats, payload, 0)
         Vue.set(state.newChats, 'total', state.newChats['total'] - wasNew)
       }
@@ -228,7 +228,7 @@ const store = new Vuex.Store({
           state.newChats['total'] = 0
         }
         Vue.set(state.newChats, 'total', state.newChats['total'] + 1)
-        if (state.notificationMethod === 'only_sound') {
+        if (state.notificationMethod === 'only_sound' || state.notificationMethod === 'sound_and_title') {
           try {
             document.getElementById('messageSound').play()
           } catch (e) {
