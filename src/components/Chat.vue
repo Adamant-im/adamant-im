@@ -123,6 +123,7 @@ export default {
     @media (max-width: 600px) {
         .chat_messages {
             margin-left: -8px!important;
+
         }
         .md-flex-xsmall-offset-20
         {
@@ -212,6 +213,7 @@ export default {
 }
 .chat_messages {
     overflow-y: auto;
+    overflow-x: hidden;
     max-height: 100%;
     max-height: calc(100vh - 180px);
     margin-top: 80px;
