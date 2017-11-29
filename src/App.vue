@@ -108,6 +108,9 @@ body.md-theme-default {
 footer {
     height: 100px;
 }
+.login {
+    position:relative;
+}
 .aloader {
     position: fixed!important;
     top: 0;
@@ -165,7 +168,7 @@ footer {
     box-shadow: none;
     border-top: 1px solid lightgray;
 }
-.chat, .home, .chats, .settings, .transaction, .transfer {
+.chat, .home, .chats, .settings, .transaction, .transfer, .login {
     max-width: 800px;
     margin: 0 auto;
     margin-top: 25px;
