@@ -54,7 +54,7 @@
       <md-snackbar md-position="bottom center" md-accent ref="loginSnackbar" md-duration="2000">
           <span>{{ $t('home.copied') }}</span>
       </md-snackbar>
-      <div class="version" style=" opacity:0.3; ">{{ $t('options.version') }} 1.0.13</div>
+      <div class="version" style=" opacity:0.3; ">{{ $t('options.version') }} 1.0.14</div>
   </div>
 
 </template>
