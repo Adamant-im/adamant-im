@@ -150,7 +150,7 @@ const store = new Vuex.Store({
       if (state.newChats[payload]) {
         var wasNew = parseInt(state.newChats[payload])
         Vue.set(state.newChats, payload, 0)
-        Vue.set(state.newChats, 'total', state.newChats['total'] - wasNew)
+        Vue.set(state.newChats, 'total', parseInt(state.newChats['total']) - wasNew)
       }
     },
     login (state, payload) {
