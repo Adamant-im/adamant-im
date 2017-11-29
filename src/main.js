@@ -234,6 +234,13 @@ const store = new Vuex.Store({
           } catch (e) {
           }
         }
+      } else if (direction === 'to' && state.trackNewMessages && document.hidden) {
+        if (state.notificationMethod === 'only_sound' || state.notificationMethod === 'sound_and_title') {
+          try {
+            document.getElementById('messageSound').play()
+          } catch (e) {
+          }
+        }
       }
       var currentDialogs = state.chats[partner]
       if (!currentDialogs) {
