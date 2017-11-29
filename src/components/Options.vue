@@ -15,7 +15,7 @@
                   <md-table-cell>{{ $t('options.notification_label') }}</md-table-cell>
                   <md-table-cell ><md-input-container >
                       <md-select name="notification" id="notification" v-model="notification">
-                          <md-option value="desktop_notification">{{ $t('options.desktop_notification') }}</md-option>
+                          <md-option value="desktop_notification" disabled>{{ $t('options.desktop_notification') }}</md-option>
                           <md-option value="sound_and_title">{{ $t('options.sound_and_title') }}</md-option>
                           <md-option value="only_title">{{ $t('options.only_title') }}</md-option>
                           <md-option value="only_sound">{{ $t('options.only_sound') }}</md-option>
