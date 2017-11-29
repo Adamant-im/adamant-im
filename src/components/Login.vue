@@ -12,7 +12,7 @@
       <md-layout md-flex="66" md-flex-xsmall="90">
           <md-input-container>
               <label>{{ $t('login.password_label') }}</label>
-              <md-input v-model="passPhrase" type="password" @keyup.native="kp($event)"></md-input>
+              <md-input v-model="passPhrase" type="password" autocomplete="new-password" @keyup.native="kp($event)"></md-input>
           </md-input-container>
       </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="90">
