@@ -27,7 +27,7 @@
       </footer>
       </md-theme>
       <div class="forbid" v-if="disabled" style="display: table;"><div style="display: table-cell; vertical-align: middle;">{{ $t('login.device_unsupported') }}</div></div>
-      <audio ref="messageSound" id="messageSound" src="/static/sound/icq.mp3"></audio>
+      <audio ref="messageSound" id="messageSound" src="/static/sound/bbpro_link.mp3"></audio>
 
   </div>
 </template>
