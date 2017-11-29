@@ -34,7 +34,8 @@ export default {
     'message': 'Type your message',
     'estimate_fee': 'Estimate Fee',
     'welcome_message': '<p>Welcome to the most secure and anonymous messenger - Adamant.</p><p>Remember, your security and anonymity is up to you. Do not follow links you receive, so that your ip was not detected. Do not trust browser extensions. Better to give your ADM address personally, not using other messengers. Keep your ADAMANT secret pass phrase secure. Put a password on your device or logout before leaving.</p><p>You can get more info on  <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p>',
-    'preico_message': '<p>You can invest in pre-ico of the most secure messenger - Adamant. Now it is best for investors. More accurate info on Adamant.im website and in projects whitepaper. To participate answer to this message and we will contact you. We are eager to answer quickly, but sometimes delays for a couple of hours are possible. </p>'
+    'preico_message': '<p>You can invest in pre-ico of the most secure messenger - Adamant. Now it is best for investors. More accurate info on Adamant.im website and in project whitepaper. To participate answer to this message and we will contact you. We are eager to answer quickly, but sometimes delays for a couple of hours are possible. </p>',
+    'ico_message': '<p>You can invest in ICO of the most secure messenger - Adamant. Earlier you participate better offer you will get. More info on Adamant.im and in project whitepaper. You can invest using Wallet-Invest or on website  Adamant.im/ico/. Token sell is automatical . If you still have any questions you can ask them by replying to this message.  We are eager to answer quickly, but sometimes delays for a couple of hours are possible. </p>'
   },
   'home': {
     'copied': 'Copied'
