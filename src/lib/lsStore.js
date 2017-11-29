@@ -58,11 +58,9 @@ export default function storeData () {
         if (mutation.payload) {
           useStorage = lsStorage
           lsStorage.setItem('adm-persist', gsStorage.getItem('adm-persist'))
-          console.log('using localstorage')
         } else {
           useStorage = gsStorage
           lsStorage.removeItem('adm-persist')
-          console.log('using sessionstorage')
         }
         mainStorage.setItem('storeInLocalStorage', mutation.payload)
       } else if (mutation.type === 'change_lang') {

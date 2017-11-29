@@ -118,7 +118,6 @@ function install (Vue) {
   }
 
   Vue.prototype.encodeMessage = function (msg, recipientPublicKey) {
-    console.log('encoding')
     var sodium = require('sodium-browserify-tweetnacl')
     var nacl = require('tweetnacl/nacl-fast')
     var ed2curve = require('ed2curve')
