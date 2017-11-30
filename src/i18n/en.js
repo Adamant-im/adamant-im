@@ -15,12 +15,12 @@ export default {
     'version': 'App Version: ',
     'language_label': 'Language: ',
     'exit_on_close': 'Exit messenger on tab close',
-    'notification_label': 'Notify about messages',
-    'no_notification': 'No notification',
-    'only_sound': 'Only sound',
-    'only_title': 'Only window title',
-    'sound_and_title': 'Sound and window title',
-    'desktop_notification': 'Browser notifications'
+    'general_title': 'General',
+    'security_title': 'Security',
+    'notification_title': 'Notifications',
+    'enable_sound': 'Notify with sound',
+    'enable_bar': 'Notify with Title Bar',
+    'enable_desktop': 'Notify with Browser Notifications'
   },
   'chats': {
     'new_chat': 'Start new Chat',

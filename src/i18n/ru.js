@@ -15,12 +15,12 @@ export default {
     'version': 'Версия приложения: ',
     'language_label': 'Язык',
     'exit_on_close': 'Выходить из кошелька по закрытии вкладки',
-    'notification_label': 'Уведомления',
-    'no_notification': 'Не уведомлять',
-    'only_sound': 'Только звук',
-    'only_title': 'Только заголовок вкладки',
-    'sound_and_title': 'Звук и заголовок вкладки',
-    'desktop_notification': 'Уведомления браузера'
+    'general_title': 'Общие',
+    'security_title': 'Безопасность',
+    'notification_title': 'Уведомления',
+    'enable_sound': 'Уведомлять звуков',
+    'enable_bar': 'Уведомлять заголовком окна',
+    'enable_desktop': 'Использовать уведомления браузера'
   },
   'chats': {
     'new_chat': 'Создать чат',

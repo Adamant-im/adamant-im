@@ -27,8 +27,14 @@ export default function storeData () {
     if (mainStorage.getItem('language')) {
       store.commit('change_lang', mainStorage.getItem('language'))
     }
-    if (mainStorage.getItem('notification')) {
-      store.commit('change_notification', mainStorage.getItem('notification'))
+    if (mainStorage.getItem('notify_sound')) {
+      store.commit('change_notify_sound', mainStorage.getItem('notify_sound'))
+    }
+    if (mainStorage.getItem('notify_bar')) {
+      store.commit('change_notify_bar', mainStorage.getItem('notify_bar'))
+    }
+    if (mainStorage.getItem('notify_desktop')) {
+      store.commit('change_notify_desktop', mainStorage.getItem('notify_desktop'))
     }
     var storeInLocalStorage = mainStorage.getItem('storeInLocalStorage')
     if (storeInLocalStorage === 'false') {
@@ -65,9 +71,14 @@ export default function storeData () {
         mainStorage.setItem('storeInLocalStorage', mutation.payload)
       } else if (mutation.type === 'change_lang') {
         mainStorage.setItem('language', mutation.payload)
-      } else if (mutation.type === 'change_notification') {
-        mainStorage.setItem('notification', mutation.payload)
+      } else if (mutation.type === 'change_notify_sound') {
+        mainStorage.setItem('notify_sound', mutation.payload)
+      } else if (mutation.type === 'change_notify_bar') {
+        mainStorage.setItem('notify_bar', mutation.payload)
+      } else if (mutation.type === 'change_notify_desktop') {
+        mainStorage.setItem('notify_desktop', mutation.payload)
       }
+
       useStorage.setItem('adm-persist', JSON.stringify(state))
     })
   }

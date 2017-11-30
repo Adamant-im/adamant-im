@@ -74,7 +74,9 @@ const store = new Vuex.Store({
     transactions: {},
     showPanel: false,
     trackNewMessages: false,
-    notificationMethod: 'only_sound',
+    notifySound: true,
+    notifyBar: true,
+    notifyDesktop: false,
     showBottom: true,
     partnerName: '',
     partnerDisplayName: '',
@@ -92,8 +94,14 @@ const store = new Vuex.Store({
     }
   },
   mutations: {
-    change_notification (state, payload) {
-      state.notificationMethod = payload
+    change_notify_sound (state, payload) {
+      state.notifySound = payload
+    },
+    change_notify_bar (state, payload) {
+      state.notifyBar = payload
+    },
+    change_notify_desktop (state, payload) {
+      state.notifyDesktop = payload
     },
     change_lang (state, payload) {
       state.language = payload
