@@ -238,14 +238,16 @@ const store = new Vuex.Store({
         Vue.set(state.newChats, 'total', state.newChats['total'] + 1)
         if (state.notifySound) {
           try {
-            document.getElementById('messageSound').play()
+            window.audio.playSound('newMessageNotification')
+            // document.getElementById('messageSound').play()
           } catch (e) {
           }
         }
       } else if (direction === 'to' && state.trackNewMessages && document.hidden) {
         if (state.notifySound) {
           try {
-            document.getElementById('messageSound').play()
+            window.audio.playSound('newMessageNotification')
+            // document.getElementById('messageSound').play()
           } catch (e) {
           }
         }
