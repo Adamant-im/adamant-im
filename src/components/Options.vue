@@ -1,6 +1,6 @@
 <template>
   <div class="settings">
-      <div style="max-width:90%; margin:auto;">
+      <div style="max-width:93%; margin:auto;">
       <md-card class='settings-card' style="box-shadow:none">
           <md-card-area md-inset>
               <md-card-header>
