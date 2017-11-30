@@ -16,6 +16,8 @@
         <router-view></router-view>
     </main>
       <footer>
+          <div class="version" style=" opacity:0.3; padding-bottom: 17px;
+  padding-right: 3px;">{{ $t('options.version') }} 1.0.14</div>
           <div class="bottom-fixed">
               <md-bottom-bar v-if="logged && isBottomPanelShown">
                   <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" :md-active="!!$router.currentRoute.path.match(/\/home\//) || !!$router.currentRoute.path.match(/\/transactions\//) || !!$router.currentRoute.path.match(/\/transfer\//)">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
@@ -276,5 +278,10 @@ header span {
   font-weight: 400;
   box-sizing: border-box;
   padding-top: 16px;
+}
+@media (max-width: 480px) {
+    .version {
+        right:8px;
+    }
 }
 </style>
