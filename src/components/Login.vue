@@ -224,7 +224,13 @@ a.custom-logo-link img {
 }
 .newpass_field label {
     text-align: left;
+
+}
+.newpass_field {
     padding-top: 20px!important;
+}
+.newpass_field textarea {
+    padding-top: 20px !important;
 }
 
 @media (max-width: 1100px) {
@@ -258,7 +264,7 @@ a.custom-logo-link img {
 @media (max-width: 600px) {
     .newpass_field textarea{
         height: 70px!important;
-        padding-top: 40px!important;
+        padding-top: 20px!important;
     }
 }
 @media (max-width: 480px) {
@@ -267,7 +273,7 @@ a.custom-logo-link img {
     }
     .newpass_field textarea{
         height: 100px!important;
-        padding-top: 50px!important;
+        padding-top: 30px!important;
     }
 
     .container {
