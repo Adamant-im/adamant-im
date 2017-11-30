@@ -1,5 +1,6 @@
 export default {
   'title': 'Русский',
+  'region': 'ru-RU',
   'login': {
     'password_label': 'Введите пароль, чтобы войти',
     'new_password_label': 'Это пароль для нового аккаунта Кошелька и Мессенджера. Сохраните его! Восстановить его будет невозможно.',
@@ -14,7 +15,7 @@ export default {
     'version': 'Версия приложения: ',
     'language_label': 'Язык',
     'exit_on_close': 'Выходить из кошелька по закрытии вкладки',
-    'notification_label': 'Уведомлять о сообщениях',
+    'notification_label': 'Уведомления',
     'no_notification': 'Не уведомлять',
     'only_sound': 'Только звук',
     'only_title': 'Только заголовок вкладки',

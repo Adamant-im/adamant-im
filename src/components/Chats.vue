@@ -63,7 +63,10 @@ export default {
     dateFormat: function (timestamp) {
       var date = new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))
       var options = {'weekday': 'short'}
-      return date.toLocaleDateString('ru-RU', options) + ', ' + date.toLocaleTimeString().substring(0, 5)
+      if ((Date.now() - (parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))) > (4 * 3600 * 24 * 1000)) {
+        options = {'day': 'numeric', 'month': 'short'}
+      }
+      return date.toLocaleDateString(this.$t('region'), options) + ', ' + date.toLocaleTimeString().substring(0, 5).replace(/:$/, '')
     }
   },
   computed: {

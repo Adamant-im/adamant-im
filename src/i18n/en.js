@@ -1,5 +1,6 @@
 export default {
   'title': 'English',
+  'region': 'en-US',
   'login': {
     'password_label': 'Input your passphrase to login',
     'new_password_label': 'Here is the passphrase for new Wallet/ Messenger account. Save it! There is no way to recover it.',
