@@ -9,7 +9,7 @@
       </md-layout>
       <md-layout md-align="start" md-gutter="16" class="message_form" style="z-index: 10;">
       <md-layout>
-          <md-layout md-flex="90"   md-flex-xsmall="80" class="text_block">
+          <md-layout md-flex="90"   md-flex-xsmall="85" class="text_block">
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
                   <md-textarea v-model="message" @keydown.native="kp($event)" ></md-textarea>
@@ -17,7 +17,7 @@
               </md-input-container>
           </md-layout>
           <md-layout md-flex="10" >
-              <md-button class="" v-on:click="send" style="min-width: 76px;min-height: 20px;max-height: 45px;"><md-icon>send</md-icon></md-button>
+              <md-button class="send_button" v-on:click="send" style="min-width: 76px;min-height: 20px;max-height: 45px;"><md-icon>send</md-icon></md-button>
           </md-layout>
       </md-layout>
     </md-layout>
@@ -126,6 +126,12 @@ export default {
             margin-left: -8px!important;
 
         }
+
+        .send_button {
+            min-width: 40px!important;
+            padding: 0!important;
+            margin: 6px 0px!important;
+        }
         .md-flex-xsmall-offset-20
         {
             margin-left: 25%;
@@ -229,6 +235,7 @@ export default {
     background-color: #fefefe;
     margin: 0 auto;
     max-width: 800px;
+    margin-left:0!important;
 }
 .md-toolbar.md-theme-grey {
     position: fixed;
