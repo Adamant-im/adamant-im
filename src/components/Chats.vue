@@ -101,10 +101,11 @@ export default {
 <style>
     .md-list-text-container .dt {
         position: absolute;
-        top: 0;
+        top: 3px;
         right: 5px;
-        font-size: 8px;
+        font-size: 8px!important;
         font-style: italic;
+        line-height:10px;
     }
     .md-avatar .new-icon {
         position: absolute;
@@ -127,7 +128,7 @@ export default {
         stroke: #4A4A4A;
     }
     .md-list-text-container p {
-        max-height:45px;
+        max-height:25px;
     }
     .md-list-text-container p p
     {
