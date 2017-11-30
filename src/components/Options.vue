@@ -1,5 +1,6 @@
 <template>
   <div class="settings">
+      <div style="max-width:90%">
       <md-card class='settings-card' style="box-shadow:none">
           <md-card-area md-inset>
               <md-card-header>
@@ -73,6 +74,8 @@
 
 
     <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} 1.0.15</div>
+      </div>
+
   </div>
 </template>
 
