@@ -41,7 +41,7 @@ export default {
     setInterval(
       (function (self) {
         return function () {
-          if (self.$store.state.newChats.total > 0 && (self.$store.state.notificationMethod === 'sound_and_title' || self.$store.state.notificationMethod === 'only_title')) {
+          if (self.$store.state.newChats.total > 0 && (self.$store.state.notifyBar)) {
             if (window.notify_amount !== self.$store.state.newChats.total) {
               if (window.notify_interval) {
                 clearInterval(window.notify_interval)
