@@ -37,7 +37,7 @@
                   <md-table-body>
                       <md-table-row>
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
-                          <md-table-cell colspan="2"><md-checkbox  v-model="storeInLS" >{{ $t('options.exit_on_close') }}</md-checkbox></md-table-cell>
+                          <md-table-cell colspan="2"  style="text-align:left;"><md-checkbox  v-model="storeInLS" >{{ $t('options.exit_on_close') }}</md-checkbox></md-table-cell>
                       </md-table-row>
                   </md-table-body>
               </md-table>
@@ -56,15 +56,15 @@
                   <md-table-body>
                       <md-table-row>
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
-                          <md-table-cell colspan="2"><md-checkbox  v-model="notifySound" >{{ $t('options.enable_sound') }}</md-checkbox></md-table-cell>
+                          <md-table-cell style="text-align:left;" colspan="2"><md-checkbox  v-model="notifySound" >{{ $t('options.enable_sound') }}</md-checkbox></md-table-cell>
                       </md-table-row>
                       <md-table-row>
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
-                          <md-table-cell colspan="2"><md-checkbox  v-model="notifyBar" >{{ $t('options.enable_bar') }}</md-checkbox></md-table-cell>
+                          <md-table-cell style="text-align:left;" colspan="2"><md-checkbox  v-model="notifyBar" >{{ $t('options.enable_bar') }}</md-checkbox></md-table-cell>
                       </md-table-row>
                       <md-table-row>
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
-                          <md-table-cell colspan="2"><md-checkbox  v-model="notifyDesktop" disabled>{{ $t('options.enable_desktop') }}</md-checkbox></md-table-cell>
+                          <md-table-cell style="text-align:left;" colspan="2"><md-checkbox  v-model="notifyDesktop" disabled>{{ $t('options.enable_desktop') }}</md-checkbox></md-table-cell>
                       </md-table-row>
                   </md-table-body>
               </md-table>
