@@ -1,7 +1,7 @@
 <template>
   <div class="chats">
     <md-layout md-align="center" md-gutter="16">
-      <md-layout md-flex="66" sm-flex="90">
+      <md-layout md-flex="90" sm-flex="90">
           <md-input-container>
               <label>{{ $t('chats.recipient') }}</label>
               <md-textarea v-model="targetAddress"></md-textarea>
@@ -12,7 +12,7 @@
               <span v-if="message_fee" class="md-count">{{ $t('chats.estimate_fee') }}: {{message_fee}}</span>
           </md-input-container>
       </md-layout>
-      <md-layout md-flex="66" sm-flex="90">
+      <md-layout md-flex="66" sm-flex="90" style="margin-top: 10px;">
           <md-layout md-align="center" md-gutter="16">
           <md-button class="md-raised md-primary" v-on:click="send">{{ $t('chats.send_button') }}</md-button>
 
