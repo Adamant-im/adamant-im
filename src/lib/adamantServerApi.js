@@ -442,7 +442,7 @@ function install (Vue) {
     })
   }
   Vue.prototype.getTransactions = function () {
-    this.$http.get(this.getAddressString() + '/api/transactions/?senderId=' + this.$store.state.address + '&recipientId=' + this.$store.state.address + '&limit=50').then(response => {
+    this.$http.get(this.getAddressString() + '/api/transactions/?inId=' + this.$store.state.address + '&and:type=0' + '&limit=50').then(response => {
       if (response.body.success) {
         for (var i in response.body.transactions) {
           if (response.body.transactions[i].type === 0) {
