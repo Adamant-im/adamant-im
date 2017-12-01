@@ -1,26 +1,23 @@
 <template>
     <div class="transaction">
-      <md-table v-once>
-        <md-table-header>
-          <md-table-row>
-            <md-table-head>{{ $t('transaction.sender') }}</md-table-head>
-            <md-table-head>{{ $t('transaction.recipient') }}</md-table-head>
-            <md-table-head md-numeric>{{ $t('transaction.amount') }}</md-table-head>
-            <md-table-head>{{ $t('transaction.date') }}</md-table-head>
+      <md-list class="custom-list md-triple-line">
+        <md-list-item v-for="(transaction, index) in transactions" :key="index" style="cursor:pointer">
+          <md-avatar>
+            <md-icon v-if="transaction.senderId !== currentAddress">flight_land</md-icon>
+            <md-icon v-if="transaction.senderId === currentAddress">flight_takeoff</md-icon>
+          </md-avatar>
 
-          </md-table-row>
-        </md-table-header>
+          <div class="md-list-text-container" v-on:click="$router.push('/transactions/' + transaction.id + '/')">
+            <span v-if="transaction.senderId !== currentAddress">{{ transaction.senderId.toString().toUpperCase() }}</span>
+            <span v-else>{{ transaction.recipientId.toString().toUpperCase() }}</span>
+            <span>{{ toFixed(transaction.amount / 100000000) }} ADM</span>
+            <p>{{ dateFormat(transaction.timestamp) }}</p>
+          </div>
 
-        <md-table-body>
-          <md-table-row v-for="(transaction, index) in transactions" :key="index">
-            <md-table-cell>{{ transaction.senderId.toString().toUpperCase() }}</md-table-cell>
-            <md-table-cell>{{ transaction.recipientId.toString().toUpperCase() }}</md-table-cell>
-            <md-table-cell>{{ toFixed(transaction.amount / 100000000) }} ADM</md-table-cell>
-            <md-table-cell>{{ dateFormat(transaction.timestamp) }}</md-table-cell>
-          </md-table-row>
-        </md-table-body>
-      </md-table>
 
+          <md-divider class="md-inset"></md-divider>
+        </md-list-item>
+      </md-list>
 
     </div>
 </template>
@@ -61,6 +58,9 @@
       }
     },
     computed: {
+      currentAddress: function () {
+        return this.$store.state.address
+      },
       transactions: function () {
         this.getTransactions()
         if (this.$store.state.transactions) {
