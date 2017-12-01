@@ -120,7 +120,7 @@ export default {
     .md-input-container.md-has-value input.md-input[readonly] {
         color: rgba(0, 0, 0, 0.54);
     }
-    @media (max-width: 480px) {
+    @media (max-width: 800px) {
         .transfer {
             padding-left: 1rem;
             padding-right: 1rem;
