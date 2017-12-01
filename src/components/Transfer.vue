@@ -15,7 +15,7 @@
               <md-input type="number" readonly v-model="commission"></md-input>
           </md-input-container>
           <md-input-container>
-              <label>{{ $t('transfer.final_amount_label') }}</label>
+              <label style="text-align:left">{{ $t('transfer.final_amount_label') }}</label>
               <md-input type="number" readonly v-model="finalAmount"></md-input>
           </md-input-container>
           <md-layout md-align="center" md-gutter="16">
