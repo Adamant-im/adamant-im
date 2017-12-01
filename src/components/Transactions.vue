@@ -64,10 +64,10 @@
       transactions: function () {
         this.getTransactions()
         function compare (a, b) {
-          if (a.last_message.timestamp < b.last_message.timestamp) {
+          if (a.timestamp < b.timestamp) {
             return 1
           }
-          if (a.last_message.timestamp > b.last_message.timestamp) {
+          if (a.timestamp > b.timestamp) {
             return -1
           }
           return 0
