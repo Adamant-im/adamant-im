@@ -156,7 +156,7 @@ export default {
     }
     .chat_message p {
         margin: 0;
-        padding: 0;
+        padding: 5px 0;
 
         overflow-wrap: break-word;
         word-wrap: break-word;
