@@ -39,7 +39,10 @@ export default {
     'ico_message': '<p>You can invest in ICO of the most secure messenger - Adamant. Earlier you participate better offer you will get. More info on Adamant.im and in project whitepaper. You can invest using Wallet-Invest or on website  Adamant.im/ico/. Token sell is automatical . If you still have any questions you can ask them by replying to this message.  We are eager to answer quickly, but sometimes delays for a couple of hours are possible. </p>'
   },
   'home': {
-    'copied': 'Copied'
+    'copied': 'Copied',
+    'your_address': 'Your address',
+    'your_balance': 'Your balance',
+    'send_btn': 'Click to send tokens'
   },
   'transaction': {
     'amount': 'Amount',

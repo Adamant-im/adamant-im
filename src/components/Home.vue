@@ -8,7 +8,7 @@
               </md-avatar>
 
               <div class="md-list-text-container">
-                  <span>Your address </span>
+                  <span>{{ $t('home.your_address') }} </span>
                   <p> {{ this.$store.state.address }}</p>
               </div>
           </md-list-item>
@@ -18,7 +18,7 @@
                       <md-icon>account_balance_wallet</md-icon>
                   </md-avatar>
               <div class="md-list-text-container">
-                  <span>Your balance </span>
+                  <span>{{ $t('home.your_balance') }}  </span>
                   <p> <span v-html="this.$store.state.balance"></span> ADM</p>
               </div>
 
@@ -28,7 +28,7 @@
                   <md-icon>send</md-icon>
               </md-avatar>
               <div class="md-list-text-container">
-                  <span>Click to send tokens </span>
+                  <span>{{ $t('home.send_btn') }}</span>
                   <p></p>
               </div>
 
