@@ -1,7 +1,7 @@
 <template>
     <div class="transaction">
       <md-list class="custom-list md-triple-line">
-        <md-list-item v-for="(transaction, index) in transactions" :key="index" style="cursor:pointer">
+        <md-list-item v-for="(transaction, index) in transactions" :key="transaction.id" style="cursor:pointer">
           <md-avatar>
             <md-icon v-if="transaction.senderId !== currentAddress">flight_land</md-icon>
             <md-icon v-if="transaction.senderId === currentAddress">flight_takeoff</md-icon>
@@ -63,8 +63,17 @@
       },
       transactions: function () {
         this.getTransactions()
+        function compare (a, b) {
+          if (a.last_message.timestamp < b.last_message.timestamp) {
+            return 1
+          }
+          if (a.last_message.timestamp > b.last_message.timestamp) {
+            return -1
+          }
+          return 0
+        }
         if (this.$store.state.transactions) {
-          return this.$store.state.transactions
+          return Object.values(this.$store.state.transactions).sort(compare)
         }
 //        this.getTransactionInfo(this.$route.params.tx_id)
 //        return false

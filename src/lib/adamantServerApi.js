@@ -331,6 +331,8 @@ function install (Vue) {
       if (this.$route.path.indexOf('/transactions/') > -1) {
         if (this.$route.params.tx_id) {
           this.getTransactionInfo(this.$route.params.tx_id)
+        } else {
+          this.getTransactions()
         }
       }
       this.getAccountByPublicKey(this.getPublicKeyFromPassPhrase(this.$store.state.passPhrase))
