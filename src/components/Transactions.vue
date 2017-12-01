@@ -1,5 +1,5 @@
 <template>
-    <div class="transaction">
+    <div class="transaction transaction_list">
       <md-list class="custom-list md-triple-line">
         <md-list-item v-for="(transaction, index) in transactions" :key="transaction.id" style="cursor:pointer">
           <md-avatar>

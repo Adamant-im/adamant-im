@@ -1,34 +1,34 @@
 <template>
-    <div class="transaction">
+    <div class="transaction transaction_detail">
       <md-table v-if="transaction">
         <md-table-body>
           <md-table-row >
-            <md-table-cell>{{ $t('transaction.amount') }}</md-table-cell>
+            <md-table-cell class='label_td'>{{ $t('transaction.amount') }}</md-table-cell>
             <md-table-cell >{{ toFixed(transaction.amount / 100000000) }} ADM</md-table-cell>
           </md-table-row>
           <md-table-row >
-            <md-table-cell>{{ $t('transaction.date') }}</md-table-cell>
+            <md-table-cell  class='label_td'>{{ $t('transaction.date') }}</md-table-cell>
             <md-table-cell >{{ dateFormat(transaction.timestamp) }}</md-table-cell>
           </md-table-row>
           <md-table-row >
-            <md-table-cell>{{ $t('transaction.confirmations') }}</md-table-cell>
+            <md-table-cell  class='label_td'>{{ $t('transaction.confirmations') }}</md-table-cell>
             <md-table-cell >{{ confirmations }}</md-table-cell>
           </md-table-row>
           <md-table-row >
-            <md-table-cell>{{ $t('transaction.commission') }}</md-table-cell>
+            <md-table-cell  class='label_td'>{{ $t('transaction.commission') }}</md-table-cell>
             <md-table-cell >{{ toFixed(transaction.fee / 100000000) }} ADM</md-table-cell>
           </md-table-row>
           <md-table-row >
-            <md-table-cell>{{ $t('transaction.txid') }}</md-table-cell>
-            <md-table-cell >{{ $route.params.tx_id }}</md-table-cell>
+            <md-table-cell  class='label_td'>{{ $t('transaction.txid') }}</md-table-cell>
+            <md-table-cell class='data_td'>{{ $route.params.tx_id }}</md-table-cell>
           </md-table-row>
           <md-table-row >
-            <md-table-cell>{{ $t('transaction.sender') }}</md-table-cell>
-            <md-table-cell >{{ transaction.senderId.toString().toUpperCase() }}</md-table-cell>
+            <md-table-cell  class='label_td'>{{ $t('transaction.sender') }}</md-table-cell>
+            <md-table-cell class='data_td'>{{ transaction.senderId.toString().toUpperCase() }}</md-table-cell>
           </md-table-row>
           <md-table-row >
-            <md-table-cell>{{ $t('transaction.recipient') }}</md-table-cell>
-            <md-table-cell >{{ transaction.recipientId.toString().toUpperCase() }} </md-table-cell>
+            <md-table-cell  class='label_td'>{{ $t('transaction.recipient') }}</md-table-cell>
+            <md-table-cell class='data_td'>{{ transaction.recipientId.toString().toUpperCase() }} </md-table-cell>
           </md-table-row>
         </md-table-body>
       </md-table>
@@ -88,4 +88,23 @@
     }
   }
 </script>
+<style>
+  .label_td {
+    text-align: left;
+  }
+  .transaction_detail {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  @media (max-width: 380px) {
+    .data_td {
+      font-size: 10px!important;
+    }
+    .label_td {
+      text-align:left;
+      max-width:100px;
+    }
+
+  }
+</style>
 
