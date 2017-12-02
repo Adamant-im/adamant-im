@@ -78,8 +78,9 @@ export default function storeData () {
       } else if (mutation.type === 'change_notify_desktop') {
         mainStorage.setItem('notify_desktop', mutation.payload)
       }
-
-      useStorage.setItem('adm-persist', JSON.stringify(state))
+      if (mutation.type !== 'transaction_info') {
+        useStorage.setItem('adm-persist', JSON.stringify(state))
+      }
     })
   }
 }
