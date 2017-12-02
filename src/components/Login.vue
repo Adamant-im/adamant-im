@@ -25,7 +25,7 @@
       <md-layout v-if="showCreate" md-align="center" md-gutter="16">
           <md-layout md-flex="66" md-flex-xsmall="90" class="newpass_field">
               <md-input-container>
-                  <label>{{ $t('login.new_password_label') }}</label>
+                  <label v-html="$t('login.new_password_label')"></label>
                   <md-textarea v-bind:value="yourPassPhrase" readonly></md-textarea>
                   <md-icon v-clipboard="yourPassPhrase"  @success="copySuccess" style="cursor:pointer;z-index:20;">content_copy</md-icon>
                   <md-icon v-if=!iOS v-on:click.native="saveFile" style="cursor:pointer;z-index:20;">archive</md-icon>
