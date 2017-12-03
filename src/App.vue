@@ -16,7 +16,7 @@
         <router-view></router-view>
     </main>
       <footer>
-          <div class="version" v-if="$router.currentRoute==='/'" style=" opacity:0.3; padding-bottom: 17px;
+          <div class="version" v-if="!logged" style=" opacity:0.3; padding-bottom: 17px;
   padding-right: 3px;">{{ $t('options.version') }} 1.0.17</div>
           <div class="bottom-fixed">
               <md-bottom-bar v-if="logged && isBottomPanelShown">
