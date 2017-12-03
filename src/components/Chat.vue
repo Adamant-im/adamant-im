@@ -12,7 +12,7 @@
           <md-layout md-flex="90"   md-flex-xsmall="85" class="text_block">
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
-                  <md-textarea v-model="message" @keydown.native="kp($event)" ></md-textarea>
+                  <md-textarea ref="messageField" v-model="message" @keydown.native="kp($event)" ></md-textarea>
                   <span v-if="message_fee" class="md-count">{{ $t('chats.estimate_fee') }}: {{message_fee}}</span>
               </md-input-container>
           </md-layout>
@@ -42,6 +42,7 @@ export default {
       this.$refs.chatsSnackbar.open()
     },
     send () {
+      this.$refs.messageField.$el.focus()
       if (this.$store.state.balance < 0.005) {
         this.errorMessage('no_money')
         return
