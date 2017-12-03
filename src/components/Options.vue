@@ -62,7 +62,7 @@
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
                           <md-table-cell style="text-align:left;" colspan="2"><md-checkbox  v-model="notifyBar" >{{ $t('options.enable_bar') }}</md-checkbox></md-table-cell>
                       </md-table-row>
-                      <md-table-row>
+                      <md-table-row style="display:none">
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
                           <md-table-cell style="text-align:left;" colspan="2"><md-checkbox  v-model="notifyDesktop" disabled>{{ $t('options.enable_desktop') }}</md-checkbox></md-table-cell>
                       </md-table-row>
