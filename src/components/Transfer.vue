@@ -7,7 +7,7 @@
               <md-input v-model="targetAddress"></md-input>
           </md-input-container>
           <md-input-container>
-              <label>{{ $t('transfer.amount_label') }} (max: {{ maxToTransfer }} ADM)</label>
+              <label style="text-align:left">{{ $t('transfer.amount_label') }} (max: {{ maxToTransfer }} ADM)</label>
               <md-input type="number" min=0 :max="maxToTransfer" v-model="targetAmount"></md-input>
           </md-input-container>
           <md-input-container>
