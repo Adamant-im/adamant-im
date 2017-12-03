@@ -347,7 +347,9 @@ function install (Vue) {
     var currentAddress = this.$store.state.address
     var marked = require('marked')
     marked.setOptions({
-      sanitize: true
+      sanitize: true,
+      gfm: true,
+      breaks: true
     })
     var renderer = new marked.Renderer()
     renderer.image = function (href, title, text) {
