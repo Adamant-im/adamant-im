@@ -59,7 +59,11 @@ export default function storeData () {
         clone: false
       }))
     }
+    window.onbeforeunload = function () {
+      window.ep.$store.commit('force_update')
+    }
     store.subscribe((mutation, state) => {
+      var storeNow = false
       if (mutation.type === 'change_storage_method') {
         if (mutation.payload) {
           useStorage = lsStorage
@@ -69,17 +73,40 @@ export default function storeData () {
           lsStorage.removeItem('adm-persist')
         }
         mainStorage.setItem('storeInLocalStorage', mutation.payload)
+        storeNow = true
       } else if (mutation.type === 'change_lang') {
         mainStorage.setItem('language', mutation.payload)
+        storeNow = true
       } else if (mutation.type === 'change_notify_sound') {
         mainStorage.setItem('notify_sound', mutation.payload)
+        storeNow = true
       } else if (mutation.type === 'change_notify_bar') {
         mainStorage.setItem('notify_bar', mutation.payload)
+        storeNow = true
       } else if (mutation.type === 'change_notify_desktop') {
         mainStorage.setItem('notify_desktop', mutation.payload)
+        storeNow = true
       }
-      if (mutation.type !== 'transaction_info') {
+      if (mutation.type === 'save_passphrase') {
+        storeNow = true
+      }
+      if (mutation.type === 'force_update') {
+        storeNow = true
+      }
+      if (mutation.type === 'ajax_start' || mutation.type === 'ajax_end' || mutation.type === 'ajax_end_with_error' || mutation.type === 'start_tracking_new' || mutation.type === 'have_loaded_chats' || mutation.type === 'connect' || mutation.type === 'login') {
+        return
+      }
+      if (storeNow) {
         useStorage.setItem('adm-persist', JSON.stringify(state))
+      } else {
+        if (window.storeTimer) {
+          window.clearTimeout(window.storeTimer)
+        }
+        var storeTimer = window.setTimeout(function () {
+          window.ep.$store.commit('force_update')
+          window.storeTimer = undefined
+        }, 10000)
+        window.storeTimer = storeTimer
       }
     })
   }

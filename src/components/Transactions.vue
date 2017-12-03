@@ -29,6 +29,9 @@
       return {
       }
     },
+    mounted: function () {
+      this.getTransactions()
+    },
     watch: {
       '$route': function (value) {
         this.getTransactionInfo(value.params.tx_id)
@@ -62,7 +65,6 @@
         return this.$store.state.address
       },
       transactions: function () {
-        this.getTransactions()
         function compare (a, b) {
           if (a.timestamp < b.timestamp) {
             return 1
@@ -75,8 +77,6 @@
         if (this.$store.state.transactions) {
           return Object.values(this.$store.state.transactions).sort(compare)
         }
-//        this.getTransactionInfo(this.$route.params.tx_id)
-//        return false
       }
     }
   }

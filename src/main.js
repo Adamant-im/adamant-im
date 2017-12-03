@@ -94,6 +94,8 @@ const store = new Vuex.Store({
     }
   },
   mutations: {
+    force_update (state) {
+    },
     change_notify_sound (state, payload) {
       state.notifySound = payload
     },
