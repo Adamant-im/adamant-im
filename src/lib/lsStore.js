@@ -87,6 +87,9 @@ export default function storeData () {
         mainStorage.setItem('notify_desktop', mutation.payload)
         storeNow = true
       }
+      if (mutation.type === 'logout') {
+        storeNow = true
+      }
       if (mutation.type === 'save_passphrase') {
         storeNow = true
       }
