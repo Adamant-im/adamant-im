@@ -250,7 +250,8 @@ export default {
     left: 0;
     right: 0;
     z-index: 10;
-    background: rgba(153, 153, 153, 0.2);
+    /* background: rgba(153, 153, 153, 0.2); */
+    background: #ebebeb;
     border-bottom: none;
 }
 .chat_message {
