@@ -198,10 +198,6 @@ const store = new Vuex.Store({
       state.connectionString = payload.string
     },
     select_chat (state, payload) {
-      var body = document.getElementsByTagName('body')[0]
-      body.style.width = '100%'
-      body.style.height = '100%'
-      body.style.position = 'fixed'
       state.currentChat = state.chats[payload]
       Vue.set(state.currentChat, messages, state.chats[payload].messages)
       state.partnerName = payload
@@ -217,10 +213,6 @@ const store = new Vuex.Store({
       state.partnerName = ''
       state.partnerDisplayName = ''
       state.showBottom = true
-      var body = document.getElementsByTagName('body')[0]
-      body.style.width = 'auto'
-      body.style.height = 'auto'
-      body.style.position = 'relative'
     },
     have_loaded_chats (state) {
       state.firstChatLoad = false
