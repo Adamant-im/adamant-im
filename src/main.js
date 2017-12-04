@@ -82,6 +82,7 @@ const store = new Vuex.Store({
     partnerDisplayName: '',
     partners: {},
     newChats: {},
+    totalNewChats: 0,
     chats: {},
     lastChatHeight: 0,
     currentChat: false,
@@ -137,6 +138,7 @@ const store = new Vuex.Store({
       state.transactions = {}
       state.chats = {}
       state.newChats = {}
+      state.totalNewChats = 0
       state.currentChat = false
       state.trackNewMessages = false
       state.firstChatLoad = true
@@ -158,8 +160,11 @@ const store = new Vuex.Store({
     },
     mark_as_read_total (state, payload) {
       if (state.newChats[payload]) {
-        var newTotal = parseInt(state.newChats['total']) - parseInt(state.newChats[payload])
-        Vue.set(state.newChats, 'total', newTotal)
+        var newTotal = parseInt(state.totalNewChats) - parseInt(state.newChats[payload])
+        state.totalNewChats = newTotal
+        if (state.totalNewChats < 0) {
+          state.totalNewChats = 0
+        }
       }
     },
     mark_as_read (state, payload) {
@@ -249,10 +254,10 @@ const store = new Vuex.Store({
         } else {
           Vue.set(state.newChats, partner, 1)
         }
-        if (!state.newChats['total']) {
-          state.newChats['total'] = 0
+        if (!state.totalNewChats) {
+          state.totalNewChats = 0
         }
-        Vue.set(state.newChats, 'total', state.newChats['total'] + 1)
+        state.totalNewChats = state.totalNewChats + 1
         if (state.notifySound) {
           try {
             window.audio.playSound('newMessageNotification')
@@ -264,7 +269,6 @@ const store = new Vuex.Store({
         if (state.notifySound) {
           try {
             window.audio.playSound('newMessageNotification')
-            // document.getElementById('messageSound').play()
           } catch (e) {
           }
         }

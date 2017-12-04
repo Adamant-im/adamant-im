@@ -21,7 +21,7 @@
           <div class="bottom-fixed">
               <md-bottom-bar v-if="logged && isBottomPanelShown">
                   <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" :md-active="!!$router.currentRoute.path.match(/\/home\//) || !!$router.currentRoute.path.match(/\/transactions\//) || !!$router.currentRoute.path.match(/\/transfer\//)">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
-                  <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')" :md-active="!!$router.currentRoute.path.match(/\/chats\//)">{{$t('bottom.chats_button')}}<div class="new-icon" v-if="total_new">{{ total_new }}</div></md-bottom-bar-item>
+                  <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')" :md-active="!!$router.currentRoute.path.match(/\/chats\//)">{{$t('bottom.chats_button')}}<div class="new-icon" v-if="totalNew">{{ totalNew }}</div></md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="settings" v-on:click="$router.push('/options/')" :md-active="!!$router.currentRoute.path.match(/\/options\//)">{{$t('bottom.settings_button')}}</md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="exit_to_app" v-on:click="exitme">{{$t('bottom.exit_button')}}</md-bottom-bar-item>
               </md-bottom-bar>
@@ -41,13 +41,13 @@ export default {
     setInterval(
       (function (self) {
         return function () {
-          if (self.$store.state.newChats.total > 0 && (self.$store.state.notifyBar)) {
-            if (window.notify_amount !== self.$store.state.newChats.total) {
+          if (self.$store.state.totalNewChats > 0 && (self.$store.state.notifyBar)) {
+            if (window.notify_amount !== self.$store.state.totalNewChats) {
               if (window.notify_interval) {
                 clearInterval(window.notify_interval)
               }
               window.notify_toggle = false
-              window.notify_amount = self.$store.state.newChats.total
+              window.notify_amount = self.$store.state.totalNewChats
               window.notify_interval = setInterval(function () {
                 if (window.notify_toggle) {
                   document.title = 'Adamant.im Messenger'
@@ -88,10 +88,9 @@ export default {
     }
   },
   computed: {
-    total_new () {
-      var newChats = this.$store.state.newChats
-      console.log('triggered update')
-      return parseInt(newChats.total)
+    totalNew () {
+      console.log(this.$store.state.totalNewChats)
+      return this.$store.state.totalNewChats
     },
     disabled () {
       return this.$store.state.disabled
