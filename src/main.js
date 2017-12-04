@@ -156,12 +156,18 @@ const store = new Vuex.Store({
     start_tracking_new (state) {
       state.trackNewMessages = true
     },
+    mark_as_read_total (state, payload) {
+      if (state.newChats[payload]) {
+        var newTotal = parseInt(state.newChats['total']) - parseInt(state.newChats[payload])
+        Vue.set(state.newChats, 'total', newTotal)
+      }
+    },
     mark_as_read (state, payload) {
       if (state.newChats[payload]) {
-        var wasNew = parseInt(state.newChats[payload])
+        // var wasNew = parseInt(state.newChats[payload])
         Vue.set(state.newChats, payload, 0)
-        var newTotal = parseInt(state.newChats['total']) - wasNew
-        Vue.set(state.newChats, 'total', newTotal)
+        // var newTotal = parseInt(state.newChats['total']) - wasNew
+        // Vue.set(state.newChats, 'total', newTotal)
       }
     },
     login (state, payload) {

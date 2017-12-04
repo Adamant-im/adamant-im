@@ -212,6 +212,7 @@ function install (Vue) {
           this.loadMessageTransaction(transaction)
           if (!this.$store.state.partnerName) {
             this.$store.commit('select_chat', transaction.recipientId)
+            this.$store.commit('mark_as_read_total', transaction.recipientId)
             this.$store.commit('mark_as_read', transaction.recipientId)
             this.$root._router.push('/chats/' + transaction.recipientId + '/')
           }
