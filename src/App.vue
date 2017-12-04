@@ -89,7 +89,9 @@ export default {
   },
   computed: {
     total_new () {
-      return parseInt(this.$store.state.newChats.total)
+      var newChats = this.$store.state.newChats
+      console.log('triggered update')
+      return parseInt(newChats.total)
     },
     disabled () {
       return this.$store.state.disabled
