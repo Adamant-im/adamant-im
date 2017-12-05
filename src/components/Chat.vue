@@ -12,7 +12,7 @@
           <md-layout md-flex="90"   md-flex-xsmall="85" class="text_block">
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
-                  <md-textarea ref="messageField" v-model="message" @keydown.native="kp($event)" ></md-textarea>
+                  <md-textarea ref="messageField" v-model="message" @keydown.native="kp($event)" @focus="focusHandler" @blur.native="blurHandler"></md-textarea>
                   <span v-if="message_fee" class="md-count">{{ $t('chats.estimate_fee') }}: {{message_fee}}</span>
               </md-input-container>
           </md-layout>
@@ -32,7 +32,38 @@
 export default {
   name: 'chats',
   methods: {
+    blurHandler: function (event) {
+      if (/iP(hone|od|ad)/.test(navigator.platform)) {
+        var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/)
+        if (parseInt(v[1], 10) === 11) {
+          var form = document.getElementsByClassName('message_form')[0]
+          form.style.position = 'fixed'
+          form.style.bottom = '0'
+        }
+      }
+    },
+    focusHandler: function (event) {
+      if (/iP(hone|od|ad)/.test(navigator.platform)) {
+        var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/)
+        if (parseInt(v[1], 10) === 11) {
+          var form = document.getElementsByClassName('message_form')[0]
+          form.style.position = 'absolute'
+        }
+      }
+    },
     kp: function (event) {
+      if (/iP(hone|od|ad)/.test(navigator.platform)) {
+        var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/)
+        if (parseInt(v[1], 10) === 11) {
+          var form = document.getElementsByClassName('message_form')[0]
+          form.style.position = 'absolute'
+          var keyboardHeight = '220px'
+          if (window.innerHeight > window.innerWidth) {
+            keyboardHeight = '250px'
+          }
+          form.style.bottom = keyboardHeight
+        }
+      }
       if (event.key === 'Enter' && event.ctrlKey) {
         this.send()
       }
