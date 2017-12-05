@@ -327,7 +327,7 @@ function install (Vue) {
     })
   }
   Vue.prototype.updateCurrentValues = function () {
-    if (this.$store.state.passPhrase) {
+    if (this.$store.state.passPhrase && !this.$store.state.ajaxIsOngoing) {
       // updating wallet balance
       if (this.$route.path.indexOf('/transactions/') > -1) {
         if (this.$route.params.tx_id) {
