@@ -89,7 +89,6 @@ export default {
   },
   computed: {
     totalNew () {
-      console.log(this.$store.state.totalNewChats)
       return this.$store.state.totalNewChats
     },
     disabled () {
