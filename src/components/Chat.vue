@@ -97,6 +97,7 @@ export default {
       if (this.message) {
         this.encodeMessageForAddress(this.message, this.$route.params.partner)
         this.message = ''
+        this.$refs.messageField.$el.value = ''
       }
     },
     dateFormat: function (timestamp) {
