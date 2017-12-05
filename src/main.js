@@ -80,7 +80,10 @@ const store = new Vuex.Store({
     showBottom: true,
     partnerName: '',
     partnerDisplayName: '',
-    partners: {},
+    partners: {
+      'U7047165086065693428': 'ADAMANT ICO',
+      'U15423595369615486571': 'ADAMANT Bounty Wallet'
+    },
     newChats: {},
     totalNewChats: 0,
     chats: {},
