@@ -96,6 +96,12 @@ export default function storeData () {
       if (mutation.type === 'force_update') {
         storeNow = true
       }
+      if (mutation.type === 'change_partner_name') {
+        storeNow = true
+      }
+      if (mutation.type === 'leave_chat') {
+        storeNow = true
+      }
       if (mutation.type === 'ajax_start' || mutation.type === 'ajax_end' || mutation.type === 'ajax_end_with_error' || mutation.type === 'start_tracking_new' || mutation.type === 'have_loaded_chats' || mutation.type === 'connect' || mutation.type === 'login') {
         return
       }
