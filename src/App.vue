@@ -124,7 +124,7 @@ export default {
 <style>
 body {
   margin: 0;
-
+  min-height: 100%;
 }
 html {
     background-color: #fefefe;

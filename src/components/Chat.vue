@@ -57,11 +57,19 @@ export default {
         if (parseInt(v[1], 10) === 11) {
           var form = document.getElementsByClassName('message_form')[0]
           form.style.position = 'absolute'
-          var keyboardHeight = '220px'
+          var keyboardHeight = 220
           if (window.innerHeight > window.innerWidth) {
-            keyboardHeight = '250px'
+            keyboardHeight = 250
           }
-          form.style.bottom = keyboardHeight
+          if (navigator.userAgent.indexOf('CriOS/') > 0) {
+            keyboardHeight += 50
+          }
+          form.style.bottom = keyboardHeight + 'px'
+          var body = document.getElementByTagName('body')[0]
+          body.style.position = 'fixed'
+          body.style.height = '100%'
+          body.style.width = '100%'
+          body.style.overflow = 'hidden'
         }
       }
       if (event.key === 'Enter' && event.ctrlKey) {
