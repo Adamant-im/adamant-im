@@ -58,11 +58,16 @@ function deviceIsDisabled () {
   }
   return false
 }
+var defaultLanguage = navigator.language || navigator.userLanguage
+defaultLanguage = defaultLanguage.toLowerCase().substring(0, 2)
 
+if (defaultLanguage !== 'ru' && defaultLanguage !== 'en') {
+  defaultLanguage = 'en'
+}
 const store = new Vuex.Store({
   state: {
     address: '',
-    language: 'en',
+    language: defaultLanguage,
     passPhrase: '',
     connectionString: '',
     balance: 0,
