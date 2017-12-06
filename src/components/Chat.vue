@@ -95,7 +95,9 @@ export default {
         return
       }
       if (this.message) {
-        this.encodeMessageForAddress(this.message, this.$route.params.partner)
+        var message = this.message
+        var partner = this.$route.params.partner
+        this.encodeMessageForAddress(message, partner)
         this.message = ''
         this.$refs.messageField.$el.value = ''
       }
