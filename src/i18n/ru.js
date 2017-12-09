@@ -9,7 +9,8 @@ export default {
     'new_button': 'Создать новый',
     'invalid_passphrase': 'Неправильный пароль',
     'device_unsupported': 'Ваше устройство не поддерживается',
-    'subheader': 'Самый анонимный мессенджер, зашифрованный в Blockchain'
+    'subheader': 'Самый анонимный мессенджер, зашифрованный в Blockchain',
+    'create_address_label': 'Или создайте новый анонимный адрес:'
   },
   'options': {
     'version': 'Версия приложения: ',

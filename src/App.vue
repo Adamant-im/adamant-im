@@ -199,6 +199,9 @@ footer {
     margin: 0 auto;
     margin-top: 25px;
 }
+.login {
+    margin-top:0px;
+}
 .settings .md-table tbody .md-table-row {
     border:none;
 }

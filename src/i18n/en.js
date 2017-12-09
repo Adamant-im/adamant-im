@@ -9,7 +9,8 @@ export default {
     'new_button': 'Create new',
     'invalid_passphrase': 'Invalid passphrase',
     'device_unsupported': 'Your device is not supported',
-    'subheader': 'A top-notch anonymous messenger encrypted with a Blockchain'
+    'subheader': 'A top-notch anonymous messenger encrypted with a Blockchain',
+    'create_address_label': 'Or create a new anonymous address:'
   },
   'options': {
     'version': 'App Version: ',

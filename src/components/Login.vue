@@ -1,24 +1,33 @@
 <template>
   <div class="login">
+      <md-input-container class="language_select">
+          <md-select name="language" id="language" v-model="language">
+              <md-option  v-for="(language, code) in languageList" :value="code" :key="code">{{ language.title }}</md-option>
+          </md-select>
+      </md-input-container>
       <div class="site-branding container">
           <a href="#" class="custom-logo-link" rel="home" itemprop="url"><img width="256" height="256" src="/static/img/adamant-logo-transparent-512x512.png" class="custom-logo" alt="ADAMANT" itemprop="logo"></a>				<a href="#">
 					<span class="site-title">
 						ADAMANT					</span>
       </a>
-          <p class="site-description">
-              {{ $t('login.subheader') }}</p>
       </div>
       <md-layout md-align="center" md-gutter="16">
-      <md-layout md-flex="66" md-flex-xsmall="90">
-          <md-input-container>
+      <md-layout md-flex="66" md-flex-xsmall="80">
+          <md-input-container class="password_input">
               <label>{{ $t('login.password_label') }}</label>
               <md-input v-model="passPhrase" type="password" autocomplete="new-password" @keyup.native="kp($event)"></md-input>
           </md-input-container>
       </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="90">
+          <md-layout md-flex="66" md-flex-xsmall="80">
               <md-layout md-align="center" md-gutter="16">
-                  <md-button class="md-raised md-shit" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
-                  <md-button class="md-raised md-secondary" v-on:click="showCreate = true">{{ $t('login.new_button') }}</md-button>
+                  <md-button class="md-raised md-short" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
+
+              </md-layout>
+          </md-layout>
+          <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top:20px">
+              <md-layout md-align="center" md-gutter="16">
+                  <p>{{$t('login.create_address_label')}}</p>
+                  <a class='create_link' v-on:click="showCreate = true">{{ $t('login.new_button') }}</a>
               </md-layout>
           </md-layout>
     </md-layout>
@@ -32,20 +41,6 @@
 
               </md-input-container>
 
-          </md-layout>
-      </md-layout>
-      <md-layout md-align="center" md-gutter="16" style="margin-top: 40px;">
-          <md-layout md-flex="66" md-flex-xsmall="90">
-              <div class="field-group">
-
-              <md-input-container class="language_select">
-                  <md-icon>g_translate</md-icon>
-                  <label for="language">{{ $t('login.language_label') }}</label>
-                  <md-select name="language" id="language" v-model="language">
-                      <md-option  v-for="(language, code) in languageList" :value="code" :key="code">{{ language.title }}</md-option>
-                  </md-select>
-              </md-input-container>
-              </div>
           </md-layout>
       </md-layout>
       <md-snackbar md-position="bottom center" md-accent ref="snackbar" md-duration="2000">
@@ -158,12 +153,16 @@ export default {
     text-align: center;
     padding: 40px 0 40px;
 }
+
 .container {
     width: 800px;
     margin: 0 auto;
 }
 .container a{
     color: #000;
+}
+.md-layout .md-button.md-raised.md-short, .md-short {
+    min-width: 126px;
 }
 .md-layout .md-button.md-raised.md-shit, .md-shit {
     background: repeating-linear-gradient( 140deg, lightgray, lightgray 1px, #FEFEFE 1px, #FEFEFE 15px );
@@ -241,7 +240,7 @@ a.custom-logo-link img {
 }
 @media (max-width: 991px) {
     .site-branding {
-        padding: 60px 0;
+        padding: 60px 0 10px;
     }
     .container {
         width: 95%;
@@ -258,7 +257,7 @@ a.custom-logo-link img {
     }
     .site-title
     {
-        font-size: 30px;
+        font-size: 36px;
     }
 }
 @media (max-width: 600px) {
@@ -288,5 +287,38 @@ a.custom-logo-link img {
     min-width:150px;
 }
 
+.language_select .md-select:not(.md-select-icon):after {
+    left: 0;
+    transform: translateY(-50%) rotateZ(270deg) scaleY(0.45) scaleX(0.85);
+    right:auto;
+}
+.language_select.md-input-container:after {
+    background-color: transparent;
+}
+.md-input-container.password_input {
+    margin-bottom:10px;
+}
+.language_select {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-top: 0;
+    padding-top: 0;
+    width: 90px;
+}
+.language_select .md-select .md-menu {
 
+}
+.language_select .md-select .md-select-value
+{
+    padding-right: 0px;
+}
+.language_select .md-select {
+    min-width:90px;
+}
+a.create_link{
+   text-decoration: underline!important;
+   color: #4a4a4a!important;
+   font-weight: 500;
+}
 </style>
