@@ -14,7 +14,7 @@
       <md-layout md-align="center" md-gutter="16">
       <md-layout md-flex="66" md-flex-xsmall="80">
           <md-input-container class="password_input">
-              <label>{{ $t('login.password_label') }}</label>
+              <label style="text-align: center;width: 100%;">{{ $t('login.password_label') }}</label>
               <md-input v-model="passPhrase" type="password" autocomplete="new-password" @keyup.native="kp($event)"></md-input>
           </md-input-container>
       </md-layout>
@@ -24,9 +24,9 @@
 
               </md-layout>
           </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top:20px">
+          <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top:30px">
               <md-layout md-align="center" md-gutter="16">
-                  <p>{{$t('login.create_address_label')}}</p>
+                  <p style="font-weight: 300;">{{$t('login.create_address_label')}}</p>
                   <a class='create_link' v-on:click="showCreate = true">{{ $t('login.new_button') }}</a>
               </md-layout>
           </md-layout>
@@ -298,7 +298,7 @@ a.custom-logo-link img {
 .md-input-container.password_input {
     margin-bottom:10px;
 }
-.language_select {
+.md-input-container.language_select {
     position: absolute;
     right: 0;
     top: 0;
@@ -309,11 +309,11 @@ a.custom-logo-link img {
 .language_select .md-select .md-menu {
 
 }
-.language_select .md-select .md-select-value
+.md-input-container.language_select .md-select .md-select-value
 {
     padding-right: 0px;
 }
-.language_select .md-select {
+.md-input-container.language_select .md-select {
     min-width:90px;
 }
 a.create_link{
