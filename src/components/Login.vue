@@ -10,6 +10,7 @@
 					<span class="site-title">
 						ADAMANT					</span>
       </a>
+          <p class="site-description">{{ $t('login.subheader') }}</p>
       </div>
       <md-layout md-align="center" md-gutter="16">
       <md-layout md-flex="66" md-flex-xsmall="80">
@@ -190,6 +191,7 @@ p.site-description {
     margin-top: 10px;
     margin: 10px 0;
     padding: 0px 20px;
+    font-size: 18px;
 }
 
 p.site-description {
@@ -199,16 +201,7 @@ p.site-description {
 p.site-description {
     color: #4a4a4a;
 }
-p.site-description:before {
-    content: ' ';
-    display: block;
-    margin: auto;
-    background: #fff;
-    margin-bottom: 10px;
-    height: 1px;
-    max-width: 470px;
-    background: #4a4a4a;
-}
+
 .site-title {
     color: #4a4a4a;
     line-height: 40px;
@@ -278,6 +271,9 @@ a.custom-logo-link img {
         height: 70px!important;
         padding-top: 20px!important;
     }
+    .site-description {
+        display:none;
+    }
 }
 @media (max-width: 480px) {
     .newpass_field .md-icon{
@@ -287,9 +283,11 @@ a.custom-logo-link img {
         height: 100px!important;
         padding-top: 30px!important;
     }
-
     .container {
         width: 95%;
+    }
+    .site-description {
+        display:none;
     }
 }
 
