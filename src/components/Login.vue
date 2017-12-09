@@ -31,8 +31,7 @@
           </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" style="">
               <md-layout md-align="center" md-gutter="16">
-                  <a class='create_link' v-on:click="showCreate = true scrollToBottom()">{{ $t('login.new_button')
-                      }}</a>
+                  <a class='create_link' v-on:click="showCreate = true; scrollToBottom()">{{ $t('login.new_button') }}</a>
               </md-layout>
           </md-layout>
     </md-layout>
