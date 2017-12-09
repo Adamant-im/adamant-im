@@ -208,6 +208,7 @@ p.site-description:before {
     display: inline-block;
     width: 100%;
     padding: 0px 10px;
+    padding-bottom: 15px;
 }
 a.custom-logo-link {
     width: 100%;
@@ -258,6 +259,7 @@ a.custom-logo-link img {
     .site-title
     {
         font-size: 36px;
+
     }
 }
 @media (max-width: 600px) {
@@ -300,11 +302,12 @@ a.custom-logo-link img {
 }
 .md-input-container.language_select {
     position: absolute;
-    right: 0;
+    right: 20px;
     top: 0;
-    margin-top: 0;
+    margin-top: 10px;
     padding-top: 0;
     width: 90px;
+    font-weight: 300;
 }
 .language_select .md-select .md-menu {
 
