@@ -27,6 +27,10 @@
           <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top:30px">
               <md-layout md-align="center" md-gutter="16">
                   <p style="font-weight: 300;">{{$t('login.create_address_label')}}</p>
+              </md-layout>
+          </md-layout>
+          <md-layout md-flex="66" md-flex-xsmall="80" style="">
+              <md-layout md-align="center" md-gutter="16">
                   <a class='create_link' v-on:click="showCreate = true">{{ $t('login.new_button') }}</a>
               </md-layout>
           </md-layout>
