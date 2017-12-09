@@ -17,7 +17,7 @@
     </main>
       <footer>
           <div class="version" v-if="!logged" style=" opacity:0.3; padding-bottom: 17px;
-  padding-right: 3px;">{{ $t('options.version') }} 1.0.19</div>
+  padding-right: 20px;">{{ $t('options.version') }} 1.0.19</div>
           <div class="bottom-fixed">
               <md-bottom-bar v-if="logged && isBottomPanelShown">
                   <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" :md-active="!!$router.currentRoute.path.match(/\/home\//) || !!$router.currentRoute.path.match(/\/transactions\//) || !!$router.currentRoute.path.match(/\/transfer\//)">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
@@ -27,6 +27,7 @@
               </md-bottom-bar>
           </div>
       </footer>
+          <a name="bottom"></a>
       </md-theme>
       <div class="forbid" v-if="disabled" style="display: table;"><div style="display: table-cell; vertical-align: middle;">{{ $t('login.device_unsupported') }}</div></div>
       <audio ref="messageSound" class="newMessageNotification" id="messageSound" src="/static/sound/bbpro_link.mp3"></audio>

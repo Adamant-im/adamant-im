@@ -26,17 +26,19 @@
           </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top:30px">
               <md-layout md-align="center" md-gutter="16">
-                  <p style="font-weight: 300;">{{$t('login.create_address_label')}}</p>
+                  <p style="font-weight: 300;margin-bottom: 10px;">{{$t('login.create_address_label')}}</p>
               </md-layout>
           </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" style="">
               <md-layout md-align="center" md-gutter="16">
-                  <a class='create_link' v-on:click="showCreate = true">{{ $t('login.new_button') }}</a>
+                  <a class='create_link' v-on:click="showCreate = true scrollToBottom()">{{ $t('login.new_button')
+                      }}</a>
               </md-layout>
           </md-layout>
     </md-layout>
       <md-layout v-if="showCreate" md-align="center" md-gutter="16">
           <md-layout md-flex="66" md-flex-xsmall="90" class="newpass_field">
+
               <md-input-container>
                   <label v-html="$t('login.new_password_label')"></label>
                   <md-textarea v-bind:value="yourPassPhrase" readonly></md-textarea>
@@ -47,6 +49,7 @@
 
           </md-layout>
       </md-layout>
+
       <md-snackbar md-position="bottom center" md-accent ref="snackbar" md-duration="2000">
           <span>{{ $t('login.invalid_passphrase') }}</span>
       </md-snackbar>
@@ -61,6 +64,11 @@
 export default {
   name: 'login',
   methods: {
+    scrollToBottom: function () {
+      this.$root.$nextTick(function () {
+        window.scrollTo(0, document.body.scrollHeight)
+      })
+    },
     copySuccess (e) {
       this.$refs.loginSnackbar.open()
     },
@@ -327,5 +335,6 @@ a.create_link{
    text-decoration: underline!important;
    color: #4a4a4a!important;
    font-weight: 500;
+   cursor:pointer;
 }
 </style>
