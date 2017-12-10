@@ -339,6 +339,16 @@ function install (Vue) {
       this.getAccountByPublicKey(this.getPublicKeyFromPassPhrase(this.$store.state.passPhrase))
       this.$store.commit('start_tracking_new')
       this.loadChats()
+    } else if (this.$store.state.ajaxIsOngoing && !window.resetAjaxState) {
+      window.resetAjaxState = setTimeout(
+        (function (self) {
+          return function () {
+            window.resetAjaxState = false
+            self.$store.commit('ajax_end')
+          }
+        })(this),
+        10000
+      )
     }
   }
   Vue.prototype.loadMessageTransaction = function (currentTransaction) {

@@ -60,7 +60,7 @@ function deviceIsDisabled () {
 }
 var defaultLanguage = navigator.language || navigator.userLanguage
 defaultLanguage = defaultLanguage.toLowerCase().substring(0, 2)
-
+window.refreshTime = new Date().getTime()
 if (defaultLanguage !== 'ru' && defaultLanguage !== 'en') {
   defaultLanguage = 'en'
 }
@@ -241,6 +241,7 @@ const store = new Vuex.Store({
       state.firstChatLoad = false
       var me = state.address
       var partner = ''
+      payload.real_timestamp = parseInt(payload.timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0)
       var direction = 'from'
       if (payload.recipientId === me) {
         direction = 'to'
@@ -248,7 +249,14 @@ const store = new Vuex.Store({
       } else {
         partner = payload.recipientId
       }
-      if (direction === 'to' && state.trackNewMessages && state.partnerName !== partner) {
+      var trackThisMessage = state.trackNewMessages
+      if (payload.real_timestamp < window.refreshTime) {
+        trackThisMessage = false
+      }
+      if (state.chats[partner].messages[payload.id]) {
+        trackThisMessage = false
+      }
+      if (direction === 'to' && trackThisMessage && state.partnerName !== partner) {
         if (state.newChats[partner]) {
           Vue.set(state.newChats, partner, state.newChats[partner] + 1)
         } else {
@@ -265,7 +273,7 @@ const store = new Vuex.Store({
           } catch (e) {
           }
         }
-      } else if (direction === 'to' && state.trackNewMessages && document.hidden) {
+      } else if (direction === 'to' && trackThisMessage && document.hidden) {
         if (state.notifySound) {
           try {
             window.audio.playSound('newMessageNotification')
