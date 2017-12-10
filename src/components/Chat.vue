@@ -102,13 +102,30 @@ export default {
         this.$refs.messageField.$el.value = ''
       }
     },
+    getTime: function (date) {
+      var hours = date.getHours()
+      var time = ''
+      if (hours < 10) {
+        time = '0' + hours
+      } else {
+        time = '' + hours
+      }
+      time = time + ':'
+      var minutes = date.getMinutes()
+      if (minutes < 10) {
+        time = time + '0' + minutes
+      } else {
+        time = time + '' + minutes
+      }
+      return time
+    },
     dateFormat: function (timestamp) {
       var date = new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))
       var options = {'weekday': 'short'}
       if ((Date.now() - (parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))) > (4 * 3600 * 24 * 1000)) {
         options = {'day': 'numeric', 'month': 'short'}
       }
-      return date.toLocaleDateString(this.$t('region'), options) + ', ' + date.toLocaleTimeString().substring(0, 5).replace(/:$/, '')
+      return date.toLocaleDateString(this.$t('region'), options) + ', ' + this.getTime(date)
     }
   },
   mounted: function () {
