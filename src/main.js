@@ -253,8 +253,10 @@ const store = new Vuex.Store({
       if (payload.real_timestamp < window.refreshTime) {
         trackThisMessage = false
       }
-      if (state.chats[partner].messages[payload.id]) {
-        trackThisMessage = false
+      if (state.chats[partner]) {
+        if (state.chats[partner].messages[payload.id]) {
+          trackThisMessage = false
+        }
       }
       if (direction === 'to' && trackThisMessage && state.partnerName !== partner) {
         if (state.newChats[partner]) {
