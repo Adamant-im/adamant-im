@@ -409,17 +409,28 @@ function install (Vue) {
       }
     }
   }
-  Vue.prototype.loadChats = function () {
+  Vue.prototype.loadChats = function (initialCall, offset) {
     this.$store.commit('ajax_start')
     var queryString = this.getAddressString() + '/api/chats/get/?isIn=' + this.$store.state.address
-    if (this.$store.state.lastChatHeight) {
+    if (this.$store.state.lastChatHeight && !offset) {
       queryString += '&fromHeight=' + this.$store.state.lastChatHeight
+    }
+    if (offset) {
+      queryString += '&offset=' + offset
     }
     var last = this.isLastScroll()
     this.$http.get(queryString).then(response => {
       if (response.body.success) {
         for (var i in response.body.transactions) {
           this.loadMessageTransaction(response.body.transactions[i])
+        }
+        if (response.body.transactions.length === 100) {
+          var newOffset = offset
+          if (!newOffset) {
+            newOffset = 0
+          }
+          newOffset = newOffset + 100
+          this.loadChats(initialCall, newOffset)
         }
         if (last) {
           setTimeout((function (self) {
