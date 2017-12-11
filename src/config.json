@@ -4,6 +4,16 @@
       "ip": "clown.adamant.im",
       "protocol": "https",
       "port": ""
+    },
+    {
+      "ip": "lake.adamant.im",
+      "protocol": "https",
+      "port": ""
+    },
+    {
+      "ip": "endless.adamant.im",
+      "protocol": "https",
+      "port": ""
     }
   ]
 }
