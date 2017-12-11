@@ -78,6 +78,9 @@ export default {
       return time
     },
     dateFormat: function (timestamp) {
+      if (!parseInt(timestamp)) {
+        return ''
+      }
       var date = new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))
       var options = {'weekday': 'short'}
       if ((Date.now() - (parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))) > (4 * 3600 * 24 * 1000)) {
