@@ -43,7 +43,7 @@ export default {
   name: 'chats',
   methods: {
     load () {
-      this.loadChats()
+      this.loadChats(true)
     },
     send () {
       this.encodeMessageForAddress(this.message, this.targetAddress)

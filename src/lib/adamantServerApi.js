@@ -78,7 +78,7 @@ function install (Vue) {
   }
   Vue.prototype.getAccountByPublicKey = function (publicKey, callback) {
     this.$store.commit('ajax_start')
-    this.$http.get(this.getAddressString() + '/api/accounts?publicKey=' + publicKey).then(response => {
+    this.$http.get(this.getAddressString(true) + '/api/accounts?publicKey=' + publicKey).then(response => {
       if (response.body.success) {
         response.body.account.balance = response.body.account.balance / 100000000
         response.body.account.unconfirmedBalance = response.body.account.unconfirmedBalance / 100000000
@@ -411,8 +411,8 @@ function install (Vue) {
   }
   Vue.prototype.loadChats = function (initialCall, offset) {
     this.$store.commit('ajax_start')
-    var queryString = this.getAddressString() + '/api/chats/get/?isIn=' + this.$store.state.address
-    if (this.$store.state.lastChatHeight && !offset) {
+    var queryString = this.getAddressString(true) + '/api/chats/get/?isIn=' + this.$store.state.address
+    if (this.$store.state.lastChatHeight && !offset && !initialCall) {
       queryString += '&fromHeight=' + this.$store.state.lastChatHeight
     }
     if (offset) {
