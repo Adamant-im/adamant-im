@@ -73,7 +73,7 @@
       </md-card>
 
 
-    <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} 1.0.19</div>
+    <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} 1.0.20</div>
       </div>
 
   </div>
