@@ -143,6 +143,9 @@ export default {
     position:relative;
     width:100%;
   }
+  .settings .md-card .md-card-header:last-child {
+      margin-bottom: 0px;
+  }
     @media (max-width: 480px) {
         .hide_on_mobile {
             display:none;
