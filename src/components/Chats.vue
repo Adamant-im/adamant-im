@@ -103,8 +103,14 @@ export default {
         }
         return 0
       }
+      function removeEmpty (element, index, array) {
+        if (!element.last_message) {
+          return false
+        }
+        return false
+      }
       if (this.$store.state.chats) {
-        return Object.values(this.$store.state.chats).sort(compare)
+        return Object.values(this.$store.state.chats).filter(removeEmpty).sort(compare)
       }
       return this.$store.state.chats
     }
