@@ -1,7 +1,7 @@
 <template>
   <div class="chats" style="position:relative">
       <md-layout class='chat_loads' v-if="firstLoading">
-          <md-spinner :md-size="150" :md-stroke="1" md-indeterminate class="md-accent" style="margin: 0 auto"></md-spinner>
+          <md-spinner :md-size="150" :md-stroke="1" md-indeterminate class="md-accent" style="margin: 0px -75px;position: fixed;left: 50%;"></md-spinner>
       </md-layout>
         <md-layout md-align="center" md-gutter="16">
 
@@ -127,11 +127,12 @@ export default {
         background: rgba(0,0,0,0.3);
         height: 100%;
         width: 100%;
-        top: 0;
+
         left: 0;
-        height: 100vh;
+
         padding-top: 15%;
         z-index: 10;
+        top: -25px;
     }
     .md-list-text-container .dt {
         position: absolute;
