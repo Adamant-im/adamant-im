@@ -1,6 +1,8 @@
 <template>
-  <div class="chats">
-
+  <div class="chats" style="position:relative">
+      <md-layout class='chat_loads' v-if="firstLoading">
+          <md-spinner :md-size="150" :md-stroke="1" md-indeterminate class="md-accent" style="margin: 0 auto"></md-spinner>
+      </md-layout>
         <md-layout md-align="center" md-gutter="16">
 
         <md-list class="md-double-line">
@@ -16,9 +18,7 @@
 
 
             </md-list-item>
-            <md-list-item v-if="firstLoading">
-                <md-spinner :md-size="150" :md-stroke="1" md-indeterminate class="md-accent"></md-spinner>
-            </md-list-item>
+
             <md-list-item v-for="(chat, address) in chatList" :key="chat.partner" v-on:click="$router.push('/chats/' + chat.partner + '/')">
                 <md-avatar class="md-avatar-icon" style="overflow: visible;">
                     <md-icon>library_books</md-icon>
@@ -103,14 +103,8 @@ export default {
         }
         return 0
       }
-      function removeEmpty (element, index, array) {
-        if (!element.last_message) {
-          return false
-        }
-        return false
-      }
       if (this.$store.state.chats) {
-        return Object.values(this.$store.state.chats).filter(removeEmpty).sort(compare)
+        return Object.values(this.$store.state.chats).sort(compare)
       }
       return this.$store.state.chats
     }
@@ -128,6 +122,17 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+    .chat_loads {
+        position: absolute;
+        background: rgba(0,0,0,0.3);
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        padding-top: 15%;
+        z-index: 10;
+    }
     .md-list-text-container .dt {
         position: absolute;
         top: 3px;

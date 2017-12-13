@@ -353,6 +353,7 @@ function install (Vue) {
   }
   Vue.prototype.loadMessageTransaction = function (currentTransaction) {
     if (currentTransaction === null || !currentTransaction) {
+      this.messageProcessed()
       return
     }
     var currentAddress = this.$store.state.address
@@ -387,6 +388,7 @@ function install (Vue) {
               this.$store.commit('add_chat_message', currentTransaction)
             }
           }
+          this.messageProcessed()
         }.bind(this, currentTransaction))
       } else {
         decodePublic = currentTransaction.senderPublicKey
@@ -406,6 +408,7 @@ function install (Vue) {
             this.$store.commit('add_chat_message', currentTransaction)
           }
         }
+        this.messageProcessed()
       }
     }
   }
@@ -420,8 +423,13 @@ function install (Vue) {
     }
     var last = this.isLastScroll()
     this.$http.get(queryString).then(response => {
+      var haveSubseqs = false
       if (response.body.success) {
         for (var i in response.body.transactions) {
+          if (!window.queuedMessages) {
+            window.queuedMessages = 0
+          }
+          window.queuedMessages++
           this.loadMessageTransaction(response.body.transactions[i])
         }
         if (response.body.transactions.length === 100) {
@@ -430,6 +438,7 @@ function install (Vue) {
             newOffset = 0
           }
           newOffset = newOffset + 100
+          haveSubseqs = true
           this.loadChats(initialCall, newOffset)
         }
         if (last) {
@@ -444,10 +453,29 @@ function install (Vue) {
       } else {
         this.$store.commit('ajax_end_with_error')
       }
-      this.$store.commit('have_loaded_chats')
+      if (!haveSubseqs && initialCall) {
+        this.timeoutLoader()
+      }
     }, response => {
       this.$store.commit('ajax_end_with_error')
     })
+  }
+  Vue.prototype.timeoutLoader = function () {
+    if (this.$store.state.firstChatLoad) {
+      if (window.loadTimeout) {
+        clearTimeout(window.loadTimeout)
+      }
+      window.loadTimeout = setTimeout(function () {
+        window.ep.$store.commit('have_loaded_chats')
+      }, 5000)
+    }
+  }
+  Vue.prototype.messageProcessed = function () {
+    window.queuedMessages--
+    this.timeoutLoader()
+    if (window.queuedMessages < 1 && this.$store.state.firstChatLoad) {
+      this.$store.commit('have_loaded_chats')
+    }
   }
   Vue.prototype.getUncofirmedTransactionInfo = function (txid) {
     this.$store.commit('ajax_start')

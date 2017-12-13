@@ -125,6 +125,10 @@ export default {
 body {
   margin: 0;
   min-height: 100%;
+
+}
+#app {
+    min-height: 100vh;
 }
 html {
     background-color: #fefefe;

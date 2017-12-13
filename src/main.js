@@ -238,7 +238,6 @@ const store = new Vuex.Store({
       Vue.set(state.chats, partner, currentDialogs)
     },
     add_chat_message (state, payload) {
-      state.firstChatLoad = false
       var me = state.address
       var partner = ''
       payload.real_timestamp = parseInt(payload.timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0)

@@ -92,7 +92,7 @@ export default {
       this.getAccountByPassPhrase(this.passPhrase, function (context) {
         this.$store.commit('save_passphrase', {'passPhrase': this.passPhrase})
         this.$root._router.push('/chats/')
-        this.loadChats()
+        this.loadChats(true)
         this.$store.commit('stop_tracking_new')
       }, errorFunction)
     },
