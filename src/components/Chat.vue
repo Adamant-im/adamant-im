@@ -120,7 +120,16 @@ export default {
       return time
     },
     dateFormat: function (timestamp) {
+      var startToday = new Date()
+      startToday.setHours(0, 0, 0, 0)
       var date = new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))
+      if (date.getTime() > startToday.getTime()) {
+        return this.$t('chats.date_today') + ', ' + this.getTime(date)
+      }
+      var startYesterday = new Date(startToday.getTime() - 86400000)
+      if (date.getTime() > startYesterday.getTime()) {
+        return this.$t('chats.date_yesterday') + ', ' + this.getTime(date)
+      }
       var options = {'weekday': 'short'}
       if ((Date.now() - (parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))) > (4 * 3600 * 24 * 1000)) {
         options = {'day': 'numeric', 'month': 'short'}
@@ -158,7 +167,14 @@ export default {
   },
   watch: {
     message: function (value) {
-      this.message_fee = Math.ceil(value.length / 255) * 0.005
+      if (window.feeCalcTimeout) {
+        clearTimeout(window.feeCalcTimeout)
+      }
+      window.feeCalcTimeout = setTimeout((function (self) {
+        return function () {
+          self.message_fee = Math.ceil(value.length / 255) * 0.005
+        }
+      })(this), 1000)
     },
     '$route': function (value) {
       // switch chat to value

@@ -81,7 +81,16 @@ export default {
       if (!parseInt(timestamp)) {
         return ''
       }
+      var startToday = new Date()
+      startToday.setHours(0, 0, 0, 0)
       var date = new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))
+      if (date.getTime() > startToday.getTime()) {
+        return this.$t('chats.date_today') + ', ' + this.getTime(date)
+      }
+      var startYesterday = new Date(startToday.getTime() - 86400000)
+      if (date.getTime() > startYesterday.getTime()) {
+        return this.$t('chats.date_yesterday') + ', ' + this.getTime(date)
+      }
       var options = {'weekday': 'short'}
       if ((Date.now() - (parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))) > (4 * 3600 * 24 * 1000)) {
         options = {'day': 'numeric', 'month': 'short'}

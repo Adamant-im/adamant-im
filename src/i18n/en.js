@@ -37,7 +37,10 @@ export default {
     'estimate_fee': 'Estimate Fee',
     'welcome_message': '<p>Welcome to ADAMANT, the most secure and anonymous messenger. You are credited with bounty tokens, which you can use to get acquainted with the messenger.</p><p>Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.</p><p>Learn more about security and anonymity at <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>Do not reply to this message, it is a system account.</p>',
     'preico_message': '<p>You have a possibility to invest in ADAMANT, the most secure and anonymous messenger. Now is a Pre-ICO stage — the most profitable for investors. Learn more on Adamant.im website or in the Whitepaper. To participate just reply to this message and we will assist. We are eager to answer quickly, but sometimes delays for a couple of hours are possible.</p>',
-    'ico_message': '<p>You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger.Earlier you participate, better offer you will get. Learn more on Adamant.im website or in the Whitepaper. To invest, go to Wallet→Invest in the ICO, or follow a website page Adamant.im/ico/. If you still have any questions, you can ask them by replying to this message.  We are eager to answer quickly, but sometimes delays for a couple of hours are possible.</p>'
+    'ico_message': '<p>You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger.Earlier you participate, better offer you will get. Learn more on Adamant.im website or in the Whitepaper. To invest, go to Wallet→Invest in the ICO, or follow a website page Adamant.im/ico/. If you still have any questions, you can ask them by replying to this message.  We are eager to answer quickly, but sometimes delays for a couple of hours are possible.</p>',
+    'date_today': 'Today',
+    'date_yesterday': 'Yesterday',
+    'date_tomorrow': 'Tomorrow'
   },
   'home': {
     'copied': 'Copied',
