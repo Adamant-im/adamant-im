@@ -444,9 +444,7 @@ function install (Vue) {
             window.queuedMessages = 0
           }
           window.queuedMessages++
-          // window.queue.add(function () {
           this.loadMessageTransaction(response.body.transactions[i])
-          // }.bind(this))
         }
         if (response.body.transactions.length === 100) {
           var newOffset = offset
@@ -483,7 +481,7 @@ function install (Vue) {
       }
       window.loadTimeout = setTimeout(function () {
         window.ep.$store.commit('have_loaded_chats')
-      }, 5000)
+      }, 7000)
     }
   }
   Vue.prototype.messageProcessed = function () {
