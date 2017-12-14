@@ -16,7 +16,7 @@
                   <span v-if="message_fee" class="md-count">{{ $t('chats.estimate_fee') }}: {{message_fee}}</span>
               </md-input-container>
           </md-layout>
-          <md-layout md-flex="10" >
+          <md-layout md-flex="10">
               <md-button class="send_button" v-on:click="send" style="min-width: 76px;min-height: 20px;max-height: 45px;"><md-icon>send</md-icon></md-button>
           </md-layout>
       </md-layout>

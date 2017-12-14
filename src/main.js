@@ -237,6 +237,11 @@ const store = new Vuex.Store({
       }
       Vue.set(state.chats, partner, currentDialogs)
     },
+    set_last_height (state, payload) {
+      if (state.lastChatHeight < payload) {
+        state.lastChatHeight = payload
+      }
+    },
     add_chat_message (state, payload) {
       var me = state.address
       var partner = ''

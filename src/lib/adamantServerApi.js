@@ -1,5 +1,12 @@
+import Queue from 'promise-queue'
+
 var config = require('../config.json')
 var adamant = require('./adamant.js')
+Queue.configure(window.Promise)
+window.queue = new Queue(1, Infinity)
+if (!window.pk_cache) {
+  window.pk_cache = {}
+}
 
 function install (Vue) {
   Vue.prototype.localStorageSupported = function () {
@@ -159,11 +166,9 @@ function install (Vue) {
     return require('@stablelib/utf8').decode(decrypted)
   }
   Vue.prototype.getAddressPublicKey = function (recipientAddress) {
-    if (!window.pk_cache) {
-      window.pk_cache = {}
-    }
-    if (!window.pk_cache[recipientAddress]) {
-      Promise.resolve(window.pk_cache[recipientAddress])
+    if (window.pk_cache[recipientAddress]) {
+      // return Promise.resolve(window.pk_cache[recipientAddress])
+      return window.pk_cache[recipientAddress]
     }
     return this.$http.get(this.getAddressString() + '/api/accounts/getPublicKey?address=' + recipientAddress).then(response => {
       if (response.body.success) {
@@ -371,7 +376,10 @@ function install (Vue) {
       var decodePublic = ''
       if (currentTransaction.recipientId !== currentAddress) {
         this.$store.commit('create_chat', currentTransaction.recipientId)
-        this.getAddressPublicKey(currentTransaction.recipientId).then(function (currentTransaction, decodePublic) {
+        window.queue.add(function () {
+          return this.getAddressPublicKey(currentTransaction.recipientId)
+        }.bind(this)
+        ).then(function (currentTransaction, decodePublic) {
           decodePublic = Buffer.from(decodePublic, 'hex')
           var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
           var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
@@ -426,11 +434,17 @@ function install (Vue) {
       var haveSubseqs = false
       if (response.body.success) {
         for (var i in response.body.transactions) {
+          if (response.body.transactions[i] === null || !response.body.transactions[i]) {
+            continue
+          }
+          this.$store.commit('set_last_height', response.body.transactions[i].height)
           if (!window.queuedMessages) {
             window.queuedMessages = 0
           }
           window.queuedMessages++
+          // window.queue.add(function () {
           this.loadMessageTransaction(response.body.transactions[i])
+          // }.bind(this))
         }
         if (response.body.transactions.length === 100) {
           var newOffset = offset
