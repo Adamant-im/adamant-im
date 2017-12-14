@@ -127,7 +127,7 @@ export default {
         background: rgba(0,0,0,0.3);
         height: 100%;
         width: 100%;
-
+        min-height: 100vh;
         left: 0;
 
         padding-top: 15%;
