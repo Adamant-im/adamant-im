@@ -167,7 +167,6 @@ function install (Vue) {
   }
   Vue.prototype.getAddressPublicKey = function (recipientAddress) {
     if (window.pk_cache[recipientAddress]) {
-      // return Promise.resolve(window.pk_cache[recipientAddress])
       return window.pk_cache[recipientAddress]
     }
     return this.$http.get(this.getAddressString() + '/api/accounts/getPublicKey?address=' + recipientAddress).then(response => {
@@ -179,8 +178,7 @@ function install (Vue) {
       // error callback
     })
   }
-  Vue.prototype.encodeMessageForAddress = function (msg, recipientAddress) {
-    // recipientAddress = 'U14345892393468009728'
+  Vue.prototype.encodeMessageForAddress = function (msg, recipientAddress, caller) {
     this.$http.get(this.getAddressString() + '/api/accounts/getPublicKey?address=' + recipientAddress).then(response => {
       if (response.body.success) {
         var msgObject = this.encodeMessage(msg, response.body.publicKey)
@@ -189,6 +187,10 @@ function install (Vue) {
         this.sendMessage(msgObject, recipientAddress)
       }
     }, response => {
+      if (caller) {
+        caller.message = msg
+        caller.errorMessage('no_connection')
+      }
       // error callback
     })
   }
