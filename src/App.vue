@@ -81,7 +81,11 @@ export default {
     },
     gotochats () {
       this.$store.commit('leave_chat')
-      this.$router.push('/chats/')
+      if (history.length > 2) {
+        this.$router.back()
+      } else {
+        this.$router.push('/chats/')
+      }
     },
     exitme () {
       this.$store.commit('logout')
