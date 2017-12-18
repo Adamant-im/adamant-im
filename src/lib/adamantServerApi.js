@@ -507,8 +507,8 @@ function install (Vue) {
       this.$store.commit('ajax_end_with_error')
     })
   }
-  Vue.prototype.getTransactions = function () {
-    this.$http.get(this.getAddressString() + '/api/transactions/?inId=' + this.$store.state.address + '&and:type=0' + '&limit=50').then(response => {
+  Vue.prototype.getTransactions = function (offset) {
+    this.$http.get(this.getAddressString() + '/api/transactions/?inId=' + this.$store.state.address + '&and:type=0').then(response => {
       if (response.body.success) {
         for (var i in response.body.transactions) {
           if (response.body.transactions[i].type === 0) {
