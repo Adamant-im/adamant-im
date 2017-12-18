@@ -15,9 +15,7 @@
     <main>
         <router-view></router-view>
     </main>
-      <footer>
-          <div class="version" v-if="!logged" style=" opacity:0.3; padding-bottom: 17px;
-  padding-right: 20px;">{{ $t('options.version') }} 1.0.22</div>
+      <footer :style="footerCss">
           <div class="bottom-fixed">
               <md-bottom-bar v-if="logged && isBottomPanelShown">
                   <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" :md-active="!!$router.currentRoute.path.match(/\/home\//) || !!$router.currentRoute.path.match(/\/transactions\//) || !!$router.currentRoute.path.match(/\/transfer\//)">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
@@ -93,6 +91,12 @@ export default {
     }
   },
   computed: {
+    footerCss () {
+      if (this.$store.state.passPhrase) {
+        return 'display:block'
+      }
+      return 'display:none'
+    },
     totalNew () {
       return this.$store.state.totalNewChats
     },

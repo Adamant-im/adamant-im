@@ -6,7 +6,7 @@
           </md-select>
       </md-input-container>
       <div class="site-branding container">
-          <a href="#" class="custom-logo-link" rel="home" itemprop="url"><img width="256" height="256" src="/static/img/adamant-logo-transparent-512x512.png" class="custom-logo" alt="ADAMANT" itemprop="logo"></a>				<a href="#">
+          <a href="#" class="custom-logo-link" rel="home" itemprop="url"><img  src="/static/img/adamant-logo-transparent-512x512.png" class="custom-logo" alt="ADAMANT" itemprop="logo"></a>				<a href="#">
 					<span class="site-title">
 						ADAMANT					</span>
       </a>
@@ -188,8 +188,8 @@ p.site-description {
     font-family: 'Exo 2'!important;
     font-style: normal!important;
     font-weight: 100!important;
-    margin-top: 10px;
     margin: 10px 0;
+    margin-top: 0px;
     padding: 0px 20px;
     font-size: 18px;
 }
@@ -237,6 +237,14 @@ a.custom-logo-link img {
     padding-top: 20px !important;
 }
 
+.custom-logo-link img {
+    width: 301px;
+    height: 301px;
+}
+
+.site-branding {
+    padding: 66px 0 10px;
+}
 @media (max-width: 1100px) {
     .container {
         width: 95%;
@@ -245,7 +253,7 @@ a.custom-logo-link img {
 }
 @media (max-width: 991px) {
     .site-branding {
-        padding: 60px 0 10px;
+        padding: 61px 0 10px;
     }
     .container {
         width: 95%;
@@ -266,6 +274,7 @@ a.custom-logo-link img {
 
     }
 }
+
 @media (max-width: 600px) {
     .newpass_field textarea{
         height: 70px!important;
@@ -279,6 +288,11 @@ a.custom-logo-link img {
     .newpass_field .md-icon{
         padding-top: 40px;
     }
+    .custom-logo-link img {
+        width: 213px;
+        height: 213px;
+    }
+
     .newpass_field textarea{
         height: 100px!important;
         padding-top: 30px!important;
@@ -309,15 +323,31 @@ a.custom-logo-link img {
 .md-input-container.password_input {
     margin-bottom:10px;
 }
+
+.login .md-input-container.language_select .md-select .md-select-value {
+    padding-right: 0px;
+}
+
+
 .md-input-container.language_select {
     position: absolute;
-    right: 20px;
+    right: 13px;
     top: 0;
-    margin-top: 10px;
+    margin-top: 9px;
     padding-top: 0;
-    width: 90px;
+    width: auto;
     font-weight: 300;
+    max-width: 120px;
+    min-width: 70px;
 }
+.password_input input {
+    text-align: center;
+}
+.login .md-input-container.language_select .md-select .md-select-value
+{
+    text-align: right;
+}
+
 .language_select .md-select .md-menu {
 
 }
@@ -326,12 +356,16 @@ a.custom-logo-link img {
     padding-right: 0px;
 }
 .md-input-container.language_select .md-select {
-    min-width:90px;
+    min-width: 70px;
+    max-width: 120px;
 }
-a.create_link{
+a.create_link {
    text-decoration: underline!important;
    color: #4a4a4a!important;
    font-weight: 500;
    cursor:pointer;
+    font-size: 16px;
+    font-family:  'Exo 2'!important;
+    letter-spacing: 0;
 }
 </style>
