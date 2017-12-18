@@ -367,5 +367,6 @@ a.create_link {
     font-size: 16px;
     font-family:  'Exo 2'!important;
     letter-spacing: 0;
+    margin-bottom: 40px;
 }
 </style>
