@@ -1,5 +1,9 @@
 export default {
   'title': 'Русский',
+  'app_title': 'АДАМАНТ Мессенджер',
+  'new_messages_1': 'новое сообщение',
+  'new_messages_2': 'новых сообщения',
+  'new_messages_5': 'новых сообщений',
   'region': 'ru-RU',
   'login': {
     'password_label': 'Введите пароль, чтобы войти',

@@ -49,9 +49,17 @@ export default {
               window.notify_amount = self.$store.state.totalNewChats
               window.notify_interval = setInterval(function () {
                 if (window.notify_toggle) {
-                  document.title = 'Adamant.im Messenger'
+                  document.title = self.$i18n.t('app_title')
                 } else {
-                  document.title = window.notify_amount + ' new messages'
+                  var newTitle = ''
+                  if (window.notify_amount % 10 === 1 && window.notify_amount % 100 !== 11) {
+                    newTitle = window.notify_amount + ' ' + self.$i18n.t('new_messages_1')
+                  } else if (window.notify_amount % 10 >= 2 && window.notify_amount % 10 <= 4 && (window.notify_amount % 100 < 10 || window.notify_amount % 100 >= 20)) {
+                    newTitle = window.notify_amount + ' ' + self.$i18n.t('new_messages_2')
+                  } else {
+                    newTitle = window.notify_amount + ' ' + self.$i18n.t('new_messages_5')
+                  }
+                  document.title = newTitle
                 }
                 window.notify_toggle = !window.notify_toggle
               }, 1000)
@@ -59,7 +67,10 @@ export default {
           } else {
             if (window.notify_interval) {
               clearInterval(window.notify_interval)
-              document.title = 'Adamant.im Messenger'
+              document.title = self.$i18n.t('app_title')
+            }
+            if (document.title !== self.$i18n.t('app_title')) {
+              document.title = self.$i18n.t('app_title')
             }
           }
           self.updateCurrentValues()

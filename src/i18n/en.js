@@ -1,5 +1,9 @@
 export default {
   'title': 'English',
+  'app_title': 'ADAMANT Messenger',
+  'new_messages_1': 'new message',
+  'new_messages_2': 'new messages',
+  'new_messages_5': 'new messages',
   'region': 'en-US',
   'login': {
     'password_label': 'Input your passphrase to login',

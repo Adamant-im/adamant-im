@@ -321,6 +321,8 @@ var i18n = new VueI18n({
   messages // set locale messages
 })
 
+document.title = i18n.t('app_title')
+
 /* eslint-disable no-new */
 window.ep = new Vue({
   el: '#app',

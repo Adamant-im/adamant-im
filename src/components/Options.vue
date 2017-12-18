@@ -106,6 +106,7 @@ export default {
     'language' (to, from) {
       this.$i18n.locale = to
       this.$store.commit('change_lang', to)
+      document.title = this.$i18n.t('app_title')
     }
   },
   data () {
