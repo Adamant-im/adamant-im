@@ -78,6 +78,7 @@ export default {
     'send_button': 'Send Funds',
     'send_button_tooltip': 'After you click the button, you\'ll see a confirmation request.',
     'to_address_label': 'To Address',
+    'to_address_label_tooltip': 'Enter a recepient identifier, like U1234567890',
     'amount_label': 'Amount to send',
     'final_amount_label': 'Amount including transfer fee',
     'commission_label': 'Transfer fee',
@@ -96,6 +97,7 @@ export default {
     'send_button': 'Send Funds',
     'chats_button': 'Chats',
     'settings_button': 'Settings',
-    'exit_button': 'Logout'
+    'exit_button': 'Logout',
+    'exit_button_tooltip': 'Despite of application settings, your passphrase will be cleared from browser storage. We recommend to perform exit every time after you are done with chats.'    
   }
 }
