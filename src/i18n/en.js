@@ -22,7 +22,7 @@ export default {
     'version': 'App Version: ',
     'language_label': 'Language: ',
     'exit_on_close': 'Logout on tab close',
-    'exit_on_close_tooltip': 'For your wallet security we recommend you keep this checked. In case you\'ll uncheck it, your passphrase will be saved in browser storage, and next time you open the wallet it will be decripted with no need to enter a passphrase. It is acceptable only in case noone else can access your device.',    
+    'exit_on_close_tooltip': 'For your wallet security we recommend you keep this checked. In case you\'ll uncheck it, your passphrase will be saved in browser storage, and next time you open the wallet it will be decripted with no need to enter a passphrase. It is acceptable only in case noone else can access your device.',
     'general_title': 'General',
     'security_title': 'Security',
     'notification_title': 'Notifications',
@@ -30,7 +30,7 @@ export default {
     'enable_sound_tooltip': 'Play a sound when new message arrives. It works not on all of devices. Mobile browsers will not play a sound when browser is not active.',
     'enable_bar': 'Change browser tab title',
     'enable_bar_tooltip': 'Shows new message counter in the tab title when new message arrives. Works for desktop browsers.',
-    'enable_desktop': 'Browser notifications'
+    'enable_desktop': 'Browser notifications',
     'enable_desktop_tooltip': 'Use integrated browser notifications (need your acceptance)'
   },
   'chats': {
@@ -62,7 +62,7 @@ export default {
     'your_address_tooltip': 'This is your ADAMANT unique identifier. Click to copy it in the clipboard.',
     'your_balance': 'Your balance',
     'your_balance_tooltip': 'It is your ADAMANT balance. Click to see all of input and output transactions.',
-    'send_btn': 'Click to send tokens'
+    'send_btn': 'Click to send tokens',
     'send_btn_tooltip': 'Click to transfer ADM tokens to other ADAMANT user'
   },
   'transaction': {
@@ -98,6 +98,6 @@ export default {
     'chats_button': 'Chats',
     'settings_button': 'Settings',
     'exit_button': 'Logout',
-    'exit_button_tooltip': 'Despite of application settings, your passphrase will be cleared from browser storage. We recommend to perform exit every time after you are done with chats.'    
+    'exit_button_tooltip': 'Despite of application settings, your passphrase will be cleared from browser storage. We recommend to perform exit every time after you are done with chats.'
   }
 }

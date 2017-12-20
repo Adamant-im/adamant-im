@@ -228,6 +228,7 @@ a.custom-logo-link img {
 }
 .newpass_field label {
     text-align: left;
+    line-height: 18px;
 
 }
 .newpass_field {
@@ -245,6 +246,13 @@ a.custom-logo-link img {
 .site-branding {
     padding: 66px 0 10px;
 }
+.newpass_field textarea{
+    height: 90px!important;
+    padding-top: 30px!important;
+}
+.newpass_field .md-icon{
+    padding-top: 40px;
+}
 @media (max-width: 1100px) {
     .container {
         width: 95%;
@@ -258,6 +266,13 @@ a.custom-logo-link img {
     .container {
         width: 95%;
         margin: 0 auto;
+    }
+    .newpass_field textarea{
+        height: 90px!important;
+        padding-top: 30px!important;
+    }
+    .newpass_field .md-icon{
+        padding-top: 40px;
     }
 }
 @media (max-width: 767px) {
@@ -273,20 +288,30 @@ a.custom-logo-link img {
         font-size: 36px;
 
     }
+    .newpass_field textarea{
+        height: 100px!important;
+        padding-top: 40px!important;
+    }
+    .newpass_field .md-icon{
+        padding-top: 50px;
+    }
 }
 
 @media (max-width: 600px) {
     .newpass_field textarea{
-        height: 70px!important;
-        padding-top: 20px!important;
+        height: 90px!important;
+        padding-top: 30px!important;
     }
     .site-description {
         display:none;
     }
+    .newpass_field .md-icon{
+        padding-top: 30px;
+    }
 }
 @media (max-width: 480px) {
     .newpass_field .md-icon{
-        padding-top: 40px;
+        padding-top: 50px;
     }
     .custom-logo-link img {
         width: 213px;
@@ -294,8 +319,8 @@ a.custom-logo-link img {
     }
 
     .newpass_field textarea{
-        height: 100px!important;
-        padding-top: 30px!important;
+        height: 115px!important;
+        padding-top: 50px!important;
     }
     .container {
         width: 95%;
