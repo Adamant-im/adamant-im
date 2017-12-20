@@ -2,7 +2,7 @@
   <div class="home">
       <md-layout md-align="center" md-gutter="16">
       <md-list class="md-double-line">
-          <md-list-item v-on:click="copy" v-clipboard="this.$store.state.address" @success="copySuccess">
+          <md-list-item v-on:click="copy" v-clipboard="this.$store.state.address" @success="copySuccess" :title="$t('home.your_address_tooltip')">
               <md-avatar class="md-avatar-icon">
                   <md-icon>account_circle</md-icon>
               </md-avatar>
@@ -13,7 +13,7 @@
               </div>
           </md-list-item>
 
-              <md-list-item  v-on:click="$router.push('/transactions/')">
+              <md-list-item  v-on:click="$router.push('/transactions/')" :title="$t('home.your_balance_tooltip')">
                   <md-avatar class="md-avatar-icon">
                       <md-icon>account_balance_wallet</md-icon>
                   </md-avatar>
@@ -23,7 +23,7 @@
               </div>
 
           </md-list-item>
-          <md-list-item v-on:click="$router.push('/transfer/')">
+          <md-list-item v-on:click="$router.push('/transfer/')" :title="$t('home.send_btn_tooltip')">
               <md-avatar class="md-avatar-icon">
                   <md-icon>send</md-icon>
               </md-avatar>

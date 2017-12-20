@@ -2,7 +2,7 @@
   <div class="transfer">
 
       <form novalidate @submit.stop.prevent="submit">
-          <md-input-container>
+          <md-input-container  :title="$t('transfer.to_address_label_tooltip')">
               <label>{{ $t('transfer.to_address_label') }}</label>
               <md-input v-model="targetAddress"></md-input>
           </md-input-container>
@@ -19,7 +19,7 @@
               <md-input type="number" readonly v-model="finalAmount"></md-input>
           </md-input-container>
           <md-layout md-align="center" md-gutter="16">
-              <md-button class="md-raised md-primary" v-on:click="transfer">{{ $t('transfer.send_button') }}</md-button>
+              <md-button class="md-raised md-primary" :title="$t('transfer.send_button_tooltip')" v-on:click="transfer">{{ $t('transfer.send_button') }}</md-button>
 
           </md-layout>
       </form>

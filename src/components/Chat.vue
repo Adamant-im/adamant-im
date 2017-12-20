@@ -17,7 +17,7 @@
               </md-input-container>
           </md-layout>
           <md-layout md-flex="10">
-              <md-button class="send_button" v-on:click="send" style="min-width: 76px;min-height: 20px;max-height: 45px;"><md-icon>send</md-icon></md-button>
+              <md-button class="send_button" :title="$t('chats.send_button_tooltip')" v-on:click="send" style="min-width: 76px;min-height: 20px;max-height: 45px;"><md-icon>send</md-icon></md-button>
           </md-layout>
       </md-layout>
     </md-layout>
