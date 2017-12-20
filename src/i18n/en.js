@@ -22,15 +22,20 @@ export default {
     'version': 'App Version: ',
     'language_label': 'Language: ',
     'exit_on_close': 'Logout on tab close',
+    'exit_on_close_tooltip': 'For your wallet security we recommend you keep this checked. In case you\'ll uncheck it, your passphrase will be saved in browser storage, and next time you open the wallet it will be decripted with no need to enter a passphrase. It is acceptable only in case noone else can access your device.',    
     'general_title': 'General',
     'security_title': 'Security',
     'notification_title': 'Notifications',
     'enable_sound': 'Sound',
+    'enable_sound_tooltip': 'Play a sound when new message arrives. It works not on all of devices. Mobile browsers will not play a sound when browser is not active.',
     'enable_bar': 'Change browser tab title',
+    'enable_bar_tooltip': 'Shows new message counter in the tab title when new message arrives. Works for desktop browsers.',
     'enable_desktop': 'Browser notifications'
+    'enable_desktop_tooltip': 'Use integrated browser notifications (need your acceptance)'
   },
   'chats': {
     'new_chat': 'Start new Chat',
+    'new_chat_tooltip': 'Click to start a chat with new interlocutor',
     'no_money': 'Not enough funds. Top up your balance.',
     'no_empty': 'Message can\'t be empty',
     'no_address': 'Please specify recipient address',
@@ -39,12 +44,14 @@ export default {
     'incorrect_address': 'Incorrect recipient address',
     'title': 'Chats',
     'send_button': 'Send',
+    'send_button_tooltip': 'Click to send a message',
     'recipient': 'Recipient address',
+    'recipient_tooltip': 'Enter a recepient identifier, like U1234567890',
     'message': 'Type your message',
     'estimate_fee': 'Estimate Fee',
     'welcome_message': '<p>Welcome to ADAMANT, the most secure and anonymous messenger. You are credited with bounty tokens, which you can use to get acquainted with the messenger.</p><p>Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.</p><p>Learn more about security and anonymity at <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>Do not reply to this message, it is a system account.</p>',
-    'preico_message': '<p>You have a possibility to invest in ADAMANT, the most secure and anonymous messenger. Now is a Pre-ICO stage — the most profitable for investors. Learn more on Adamant.im website or in the Whitepaper. To participate just reply to this message and we will assist. We are eager to answer quickly, but sometimes delays for a couple of hours are possible.</p>',
-    'ico_message': '<p>You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger.Earlier you participate, better offer you will get. Learn more on Adamant.im website or in the Whitepaper. To invest, go to Wallet→Invest in the ICO, or follow a website page Adamant.im/ico/. If you still have any questions, you can ask them by replying to this message.  We are eager to answer quickly, but sometimes delays for a couple of hours are possible.</p>',
+    'preico_message': '<p>You have a possibility to invest in ADAMANT, the most secure and anonymous messenger. Now is a Pre-ICO stage — the most profitable for investors. Learn more on Adamant.im website or in the Whitepaper. To participate just reply to this message and we will assist. We are eager to answer quickly, but sometimes delays for a couple of hours are possible.</p><p>After you invest and receive ADM tokens, we recommend to keep them as long as possible. All of unsold tokens during ICO will be distributed among users\' wallets, adding 5% monthly. Additional info is on Adamant.im website and in the Whitepaper.</p>',
+    'ico_message': '<p>You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Earlier you participate, better offer you will get. Learn more on Adamant.im website or in the Whitepaper. To invest, go to Wallet→Invest in the ICO, or follow a website page Adamant.im/ico/. If you still have any questions, you can ask them by replying to this message.  We are eager to answer quickly, but sometimes delays for a couple of hours are possible.</p><p>After you invest and receive ADM tokens, we recommend to keep them as long as possible. All of unsold tokens during ICO will be distributed among users\' wallets, adding 5% monthly. Additional info is on Adamant.im website and in the Whitepaper.</p>',
     'date_today': 'Today',
     'date_yesterday': 'Yesterday',
     'date_tomorrow': 'Tomorrow'
@@ -52,8 +59,11 @@ export default {
   'home': {
     'copied': 'Copied',
     'your_address': 'Your address',
+    'your_address_tooltip': 'This is your ADAMANT unique identifier. Click to copy it in the clipboard.',
     'your_balance': 'Your balance',
+    'your_balance_tooltip': 'It is your ADAMANT balance. Click to see all of input and output transactions.',
     'send_btn': 'Click to send tokens'
+    'send_btn_tooltip': 'Click to transfer ADM tokens to other ADAMANT user'
   },
   'transaction': {
     'amount': 'Amount',
@@ -66,6 +76,7 @@ export default {
   },
   'transfer': {
     'send_button': 'Send Funds',
+    'send_button_tooltip': 'After you click the button, you\'ll see a confirmation request.',
     'to_address_label': 'To Address',
     'amount_label': 'Amount to send',
     'final_amount_label': 'Amount including transfer fee',
