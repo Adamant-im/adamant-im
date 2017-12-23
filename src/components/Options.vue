@@ -13,7 +13,7 @@
                   <md-table-body>
                       <md-table-row>
                           <md-table-cell style="text-align: left;">{{ $t('options.language_label') }}</md-table-cell>
-                          <md-table-cell ><md-input-container class="language_select">
+                          <md-table-cell ><md-input-container class="language_selector">
                               <md-select name="language" id="language" v-model="language">
                                   <md-option  v-for="(language, code) in languageList" :value="code" :key="code">{{ language.title }}</md-option>
                               </md-select>
