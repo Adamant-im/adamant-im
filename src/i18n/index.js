@@ -2,6 +2,7 @@ import en from './en'
 import ru from './ru'
 import hi from './hi'
 import ph from './ph'
+import tr from './tr'
 import zhtw from './zh-tw'
 
 export default {
@@ -9,5 +10,6 @@ export default {
   'zh-tw': zhtw,
   'ru': ru,
   'ph': ph,
-  'hi': hi
+  'hi': hi,
+  'tr': tr
 }
