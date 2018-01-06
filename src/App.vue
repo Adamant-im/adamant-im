@@ -67,10 +67,15 @@ export default {
           } else {
             if (window.notify_interval) {
               clearInterval(window.notify_interval)
-              document.title = self.$i18n.t('app_title')
+              setTimeout(function () {
+                document.title = self.$i18n.t('app_title')
+              }, 100)
             }
+
             if (document.title !== self.$i18n.t('app_title')) {
-              document.title = self.$i18n.t('app_title')
+              setTimeout(function () {
+                document.title = self.$i18n.t('app_title')
+              }, 100)
             }
           }
           self.updateCurrentValues()
