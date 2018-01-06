@@ -467,10 +467,10 @@ function install (Vue) {
           haveSubseqs = true
           this.loadChats(initialCall, newOffset)
         }
-        if (last) {
+        if (last || this.isLastScroll()) {
           setTimeout((function (self) {
             return function () {
-              self.needToScroll() // Thing you wanted to run as non-window 'this'
+              self.needToScroll()
             }
           })(this),
             1000)
