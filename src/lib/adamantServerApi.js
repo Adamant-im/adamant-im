@@ -298,7 +298,11 @@ function install (Vue) {
     if (!element) {
       return false
     }
-    return (element.scrollHeight - element.scrollTop === element.clientHeight)
+    var scrollDiff = element.scrollHeight - element.scrollTop - element.clientHeight
+    if (scrollDiff > 5 || scrollDiff < -5) {
+      return false
+    }
+    return true
   }
   Vue.prototype.needToScroll = function () {
     var element = document.getElementsByClassName('chat_messages')[0]
