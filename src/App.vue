@@ -69,13 +69,13 @@ export default {
               clearInterval(window.notify_interval)
               setTimeout(function () {
                 document.title = self.$i18n.t('app_title')
-              }, 100)
+              }, 200)
             }
 
             if (document.title !== self.$i18n.t('app_title')) {
               setTimeout(function () {
                 document.title = self.$i18n.t('app_title')
-              }, 100)
+              }, 200)
             }
           }
           self.updateCurrentValues()
