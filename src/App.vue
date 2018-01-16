@@ -81,7 +81,7 @@ export default {
           self.updateCurrentValues()
         }
       })(this),
-      5000
+      3000
     )
     window.audio = require('simple-audio')
 
