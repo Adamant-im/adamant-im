@@ -67,12 +67,18 @@ export default function storeData () {
       if (mutation.type === 'change_storage_method') {
         if (mutation.payload) {
           useStorage = lsStorage
-          lsStorage.setItem('adm-persist', gsStorage.getItem('adm-persist'))
+          try {
+            lsStorage.setItem('adm-persist', gsStorage.getItem('adm-persist'))
+          } catch (e) {
+          }
         } else {
           useStorage = gsStorage
           lsStorage.removeItem('adm-persist')
         }
-        mainStorage.setItem('storeInLocalStorage', mutation.payload)
+        try {
+          mainStorage.setItem('storeInLocalStorage', mutation.payload)
+        } catch (e) {
+        }
         storeNow = true
       } else if (mutation.type === 'change_lang') {
         mainStorage.setItem('language', mutation.payload)
@@ -106,7 +112,10 @@ export default function storeData () {
         return
       }
       if (storeNow) {
-        useStorage.setItem('adm-persist', JSON.stringify(state))
+        try {
+          useStorage.setItem('adm-persist', JSON.stringify(state))
+        } catch (e) {
+        }
       } else {
         if (window.storeTimer) {
           window.clearTimeout(window.storeTimer)
