@@ -378,6 +378,22 @@ function install (Vue) {
     renderer.image = function (href, title, text) {
       return ''
     }
+    renderer.link = function (href, title, text) {
+      try {
+        var prot = decodeURIComponent(unescape(href))
+          .replace(/[^\w:]/g, '')
+          .toLowerCase()
+      } catch (e) {
+        return text
+      }
+      if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
+        return text
+      }
+      text = href
+      var out = '<a href="' + href + '"'
+      out += '>' + text + '</a>'
+      return out
+    }
     if (currentTransaction.type > 0) {
       var decodePublic = ''
       if (currentTransaction.recipientId !== currentAddress) {
