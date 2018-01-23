@@ -5,6 +5,7 @@ import ph from './ph'
 import tr from './tr'
 import zhtw from './zh-tw'
 import vi from './vi'
+import pt from './pt'
 
 export default {
   'en': en,
@@ -13,5 +14,6 @@ export default {
   'ph': ph,
   'hi': hi,
   'tr': tr,
-  'vi': vi
+  'vi': vi,
+  'pt': pt
 }
