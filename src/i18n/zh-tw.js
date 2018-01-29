@@ -63,7 +63,9 @@ export default {
     'your_balance': '您的余额',
     'your_balance_tooltip': '这是您的ADAMANT余额. 点此查看所有的进出明细.',
     'send_btn': '点此发送代币',
-    'send_btn_tooltip': '点此发送ADM代币给其他的ADAMANT用户'
+    'send_btn_tooltip': '点此发送ADM代币给其他的ADAMANT用户',
+    'invest_btn': 'Invest in the ICO',
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
   },
   'transaction': {
     'amount': '数量',
