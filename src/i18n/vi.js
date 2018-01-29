@@ -63,7 +63,9 @@ export default {
     'your_balance': 'Số dư của bạn',
     'your_balance_tooltip': 'Đây là số dư ADAMANT của bạn. Nhấp để xem tất cả các giao dịch.',
     'send_btn': 'Nhấp vào để gửi token',
-    'send_btn_tooltip': 'Nhấp để chuyển token ADM sang người dùng ADAMANT khác'
+    'send_btn_tooltip': 'Nhấp để chuyển token ADM sang người dùng ADAMANT khác',
+    'invest_btn': 'Đầu tư ICO',
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
   },
   'transaction': {
     'amount': 'Số tiền',
