@@ -63,7 +63,9 @@ export default {
     'your_balance': 'Ang iyong balanse',
     'your_balance_tooltip': 'Ito ang iyong balanse sa ADAMANT. Pindutin para makita lahat ng pumasok at lumabas na mga transaksyon.',
     'send_btn': 'Pindutin para magpadala ng mga token',
-    'send_btn_tooltip': 'Pindutin para maglipat ng mga ADM token sa ibang gumagamit ng ADAMANT'
+    'send_btn_tooltip': 'Pindutin para maglipat ng mga ADM token sa ibang gumagamit ng ADAMANT',
+    'invest_btn': 'Mag-invest sa ICO',
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
   },
   'transaction': {
     'amount': 'Dami',
