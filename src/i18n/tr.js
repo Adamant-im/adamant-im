@@ -63,7 +63,9 @@ export default {
     'your_balance': 'Bakiyeniz',
     'your_balance_tooltip': 'ADAMANT bakiyeniz. Gelen ve Giden islem bilgilerini görmek için tiklayin.',
     'send_btn': 'Jeton göndermek için tiklayin',
-    'send_btn_tooltip': 'ADM jetonunu transfer etmek için tiklayin'
+    'send_btn_tooltip': 'ADM jetonunu transfer etmek için tiklayin',
+    'invest_btn': 'Satışa Katılın',
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
   },
   'transaction': {
     'amount': 'Tutar',
