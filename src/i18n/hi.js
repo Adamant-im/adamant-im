@@ -63,7 +63,9 @@ export default {
     'your_balance': 'आपका बैलेंस',
     'your_balance_tooltip': 'यह आपका ADAMANT बैलेंस है सभी इनपुट और आउटपुट लेनदेन देखने के लिए क्लिक करें.',
     'send_btn': 'टोकन भेजेने के लिए क्लिक करे ',
-    'send_btn_tooltip': 'ADM टोकन को अन्य ADAMANT इस्तेमाल करता को स्थानांतरित करने के लिए क्लिक करें'
+    'send_btn_tooltip': 'ADM टोकन को अन्य ADAMANT इस्तेमाल करता को स्थानांतरित करने के लिए क्लिक करें',
+    'invest_btn': 'ICO में निवेश करें',
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
   },
   'transaction': {
     'amount': 'राशी',
