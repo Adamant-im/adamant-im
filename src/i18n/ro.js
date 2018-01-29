@@ -63,7 +63,9 @@ export default {
     'your_balance': 'Balanța ta: ',
     'your_balance_tooltip': 'Este balanța ta ADAMANT. Apăsați pentru a vedea toate tranzacțiile trimise și primite.',
     'send_btn': 'Apasă pentru a trimite token-uri',
-    'send_btn_tooltip': 'Apăsați pentru a transfera token-uri ADM altui utilizator'
+    'send_btn_tooltip': 'Apăsați pentru a transfera token-uri ADM altui utilizator',
+    'invest_btn': 'Investește în ICO',
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
   },
   'tranzaction': {
     'amount': 'Suma',
