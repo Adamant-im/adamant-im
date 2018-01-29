@@ -33,6 +33,17 @@
               </div>
 
           </md-list-item>
+          <md-list-item :href="icoAddress" target="_blank" :title="$t('home.invest_btn_tooltip')">
+
+              <md-avatar class="md-avatar-icon">
+                  <md-icon>monetization_on</md-icon>
+              </md-avatar>
+
+              <div class="md-list-text-container">
+                  <span>{{ $t('home.invest_btn') }} </span>
+                  <p></p>
+              </div>
+          </md-list-item>
       </md-list>
       </md-layout>
       <md-snackbar md-position="bottom center" md-accent ref="homeSnackbar" md-duration="2000">
@@ -52,6 +63,12 @@ export default {
     }
   },
   computed: {
+    icoAddress: function () {
+      if (this.$i18n.locale === 'ru') {
+        return 'https://adamant.im/ru-ico/?wallet=' + this.$store.state.address
+      }
+      return 'https://adamant.im/ico/?wallet=' + this.$store.state.address
+    },
     isNewUser: function () {
       return this.$store.state.is_new_account
     },
