@@ -406,18 +406,18 @@ function install (Vue) {
           var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
           var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
           currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
-          if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
+          if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
 //            currentTransaction.message = this.$i18n.t('chats.welcome_message')
           } else {
             currentTransaction.message = marked(currentTransaction.message, {renderer: renderer})
           }
           if (currentTransaction.message && currentTransaction.message.length > 0) {
-            if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
+            if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
               if (currentTransaction.senderId === 'U15423595369615486571') {
                 currentTransaction.message = 'chats.welcome_message'
               }
               if (currentTransaction.senderId === 'U7047165086065693428') {
-                currentTransaction.message = 'chats.preico_message'
+                currentTransaction.message = 'chats.ico_message'
               }
               this.$store.dispatch('add_chat_i18n_message', currentTransaction)
             } else {
@@ -432,18 +432,18 @@ function install (Vue) {
         var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
         var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
         currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
-        if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
+        if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
 //          currentTransaction.message = this.$i18n.t('chats.welcome_message')
         } else {
           currentTransaction.message = marked(currentTransaction.message, {renderer: renderer})
         }
         if (currentTransaction.message && currentTransaction.message.length > 0) {
-          if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
+          if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
             if (currentTransaction.senderId === 'U15423595369615486571') {
               currentTransaction.message = 'chats.welcome_message'
             }
             if (currentTransaction.senderId === 'U7047165086065693428') {
-              currentTransaction.message = 'chats.preico_message'
+              currentTransaction.message = 'chats.ico_message'
             }
             this.$store.dispatch('add_chat_i18n_message', currentTransaction)
           } else {
