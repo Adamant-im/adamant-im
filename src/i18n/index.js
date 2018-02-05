@@ -7,6 +7,7 @@ import zhtw from './zh-tw'
 import vi from './vi'
 import pt from './pt'
 import ro from './ro'
+import de from './de'
 
 export default {
   'en': en,
@@ -17,5 +18,6 @@ export default {
   'tr': tr,
   'vi': vi,
   'pt': pt,
-  'ro': ro
+  'ro': ro,
+  'de': de
 }
