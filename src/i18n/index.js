@@ -8,6 +8,7 @@ import vi from './vi'
 import pt from './pt'
 import ro from './ro'
 import de from './de'
+import ar from './ar'
 
 export default {
   'en': en,
@@ -19,5 +20,6 @@ export default {
   'vi': vi,
   'pt': pt,
   'ro': ro,
-  'de': de
+  'de': de,
+  'ar': ar
 }
