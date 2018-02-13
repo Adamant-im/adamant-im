@@ -12,6 +12,7 @@ import VueHazeServerApi from './lib/adamantServerApi'
 import storeData from './lib/lsStore.js'
 import 'vue-material/dist/vue-material.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import packageJSON from '../package.json'
 
 Vue.use(Vuex)
 Vue.use(VueMaterial)
@@ -326,6 +327,7 @@ document.title = i18n.t('app_title')
 /* eslint-disable no-new */
 window.ep = new Vue({
   el: '#app',
+  version: packageJSON.version,
   router,
   store,
   template: '<App/>',
