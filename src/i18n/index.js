@@ -9,6 +9,7 @@ import pt from './pt'
 import ro from './ro'
 import de from './de'
 import ar from './ar'
+import sv from './sv'
 
 export default {
   'en': en,
@@ -21,5 +22,6 @@ export default {
   'pt': pt,
   'ro': ro,
   'de': de,
-  'ar': ar
+  'ar': ar,
+  'sv': sv
 }
