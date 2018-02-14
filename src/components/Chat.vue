@@ -82,7 +82,7 @@ export default {
     },
     send () {
       this.$refs.messageField.$el.focus()
-      if (this.$store.state.balance < 0.005) {
+      if (this.$store.state.balance < 0.001) {
         this.errorMessage('no_money')
         return
       }
@@ -172,7 +172,7 @@ export default {
       }
       window.feeCalcTimeout = setTimeout((function (self) {
         return function () {
-          self.message_fee = Math.ceil(value.length / 255) * 0.005
+          self.message_fee = Math.ceil(value.length / 255) * 0.001
         }
       })(this), 1000)
     },

@@ -34,7 +34,7 @@ export default {
       this.$refs.chatSnackbar.open()
     },
     send () {
-      if (this.$store.state.balance < 0.005) {
+      if (this.$store.state.balance < 0.001) {
         this.errorMessage('no_money')
         return
       }
@@ -63,7 +63,7 @@ export default {
   },
   watch: {
     message: function (value) {
-      this.message_fee = Math.ceil(value.length / 255) * 0.005
+      this.message_fee = Math.ceil(value.length / 255) * 0.001
     }
   },
   data () {
