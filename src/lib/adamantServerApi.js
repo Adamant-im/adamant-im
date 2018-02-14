@@ -243,6 +243,7 @@ function install (Vue) {
       type: transaction.type,
       message: transaction.asset.chat.message,
       own_message: transaction.asset.chat.own_message,
+      message_type: 1,
       recipientId: transaction.recipientId,
       publicKey: transaction.publicKey,
       senderId: transaction.senderId
