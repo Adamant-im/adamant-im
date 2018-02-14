@@ -464,6 +464,7 @@ function install (Vue) {
     if (offset) {
       queryString += '&offset=' + offset
     }
+    queryString += '&orderBy=timestamp:desc'
     var last = this.isLastScroll()
     this.$http.get(queryString).then(response => {
       var haveSubseqs = false
