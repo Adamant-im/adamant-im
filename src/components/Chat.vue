@@ -72,7 +72,7 @@ export default {
           body.style.overflow = 'hidden'
         }
       }
-      if (event.key === 'Enter' && event.ctrlKey) {
+      if ((event.key === 'Enter' && event.ctrlKey) || (event.metaKey === true && event.key === 'Enter')) {
         this.send()
       }
     },
