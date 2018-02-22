@@ -10,6 +10,7 @@ import ro from './ro'
 import de from './de'
 import ar from './ar'
 import sv from './sv'
+import uk from './uk'
 
 export default {
   'en': en,
@@ -23,5 +24,6 @@ export default {
   'ro': ro,
   'de': de,
   'ar': ar,
-  'sv': sv
+  'sv': sv,
+  'uk': uk
 }
