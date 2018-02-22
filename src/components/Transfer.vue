@@ -77,7 +77,7 @@ export default {
   },
   computed: {
     maxToTransfer: function () {
-      this.amountToTransfer = (parseFloat(this.$store.state.balance) - this.commission).toFixed(2)
+      this.amountToTransfer = (Math.floor((parseFloat(this.$store.state.balance) - this.commission) * 100) / 100).toFixed(2)
       if (this.amountToTransfer < 0) {
         this.amountToTransfer = 0
       }
