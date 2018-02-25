@@ -14,13 +14,36 @@ var ByteBuffer = require('bytebuffer')
  * @namespace
  */
 var adamant = {}
+/**
+ * Parses URI, return false on fails or object with fields if valid
+ * @param uri
+ * @returns {*}
+ */
+adamant.parseURI = function (uri) {
+  var r = /^adm:(U[0-9]{17,22})(?:\?(.*))?$/
+  var match = r.exec(uri)
+  if (!match) {
+    return false
+  }
+  var parsed = { url: uri }
+  if (match[2]) {
+    var queries = match[2].split('&')
+    for (var i = 0; i < queries.length; i++) {
+      var query = queries[i].split('=')
+      if (query.length === 2) {
+        parsed[query[0]] = decodeURIComponent(query[1].replace(/\+/g, '%20'))
+      }
+    }
+  }
+  parsed.address = match[1]
+  return parsed
+}
 
 /**
  * Creates a hash based on a passphrase.
  * @param {string} passPhrase
  * @return {string} hash
  */
-
 adamant.createPassPhraseHash = function (passPhrase) {
   var secretMnemonic = new Mnemonic(passPhrase, Mnemonic.Words.ENGLISH)
   return crypto.createHash('sha256').update(secretMnemonic.toSeed().toString('hex'), 'hex').digest()

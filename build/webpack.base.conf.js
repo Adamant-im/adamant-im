@@ -19,6 +19,9 @@ module.exports = {
       ? config.build.assetsPublicPath
       : config.dev.assetsPublicPath
   },
+  node: {
+    fs: 'empty',
+  },
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {

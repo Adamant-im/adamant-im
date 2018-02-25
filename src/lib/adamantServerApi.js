@@ -21,6 +21,9 @@ function install (Vue) {
     }
     return supported
   }
+  Vue.prototype.parseURI = function (uri) {
+    return adamant.parseURI(uri)
+  }
   Vue.prototype.getAddressString = function (cached) {
     // TODO: add health check
     if (cached && this.$store.state.connectionString && this.$store.state.connectionString !== 'undefined' && this.$store.state.connectionString !== undefined) {

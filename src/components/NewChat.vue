@@ -15,7 +15,7 @@
       <md-layout md-flex="66" sm-flex="90" style="margin-top: 10px;">
           <md-layout md-align="center" md-gutter="16">
           <md-button class="md-raised md-primary" :title="$t('chats.send_button_tooltip')" v-on:click="send">{{ $t('chats.send_button') }}</md-button>
-
+              <md-button class="md-raised md-primary" v-on:click="$router.push('/scan/')"><md-icon>camera_rear</md-icon></md-button>
           </md-layout>
       </md-layout>
     </md-layout>

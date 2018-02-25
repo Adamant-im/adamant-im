@@ -21,6 +21,7 @@
     "bytebuffer": "^5.0.1",
     "chloride": "^2.2.7",
     "deepmerge": "^2.0.1",
+    "instascan": "^1.0.0",
     "marked": "^0.3.6",
     "material-design-icons-iconfont": "^3.0.3",
     "promise-queue": "^2.2.3",

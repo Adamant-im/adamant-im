@@ -194,6 +194,11 @@ const store = new Vuex.Store({
         state.is_new_account = payload.is_new_account
       }
     },
+    change_display_name (state, payload) {
+      if (payload.partnerName) {
+        Vue.set(state.partners, payload.partnerName, payload.partnerDisplayName)
+      }
+    },
     change_partner_name (state, payload) {
       if (state.partnerName) {
         state.partners[state.partnerName] = payload
@@ -208,6 +213,9 @@ const store = new Vuex.Store({
     },
     select_chat (state, payload) {
       state.currentChat = state.chats[payload]
+      if (!state.chats[payload]) {
+        state.chats[payload] = {messages: [], last_message: {}, partner: payload}
+      }
       Vue.set(state.currentChat, messages, state.chats[payload].messages)
       state.partnerName = payload
       state.partnerDisplayName = ''

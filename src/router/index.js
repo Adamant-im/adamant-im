@@ -10,6 +10,7 @@ import Transaction from '@/components/Transaction'
 import Transactions from '@/components/Transactions'
 import Options from '@/components/Options'
 import Home from '@/components/Home'
+import QRScan from '@/components/QRScan'
 
 Vue.use(Router)
 
@@ -20,6 +21,11 @@ export default new Router({
       path: '/transactions',
       name: 'Transactions',
       component: Transactions
+    },
+    {
+      path: '/scan',
+      name: 'QRScanner',
+      component: QRScan
     },
     {
       path: '/hello',
