@@ -34,10 +34,16 @@ export default {
       }
     }
   },
+  beforeDestroy: function () {
+    if (this.scanner) {
+      this.scanner.stop()
+    }
+  },
   mounted: function () {
-    var Instascan = require('instascan')
+// eslint-disable-next-line no-undef
     this.scanner = new Instascan.Scanner({ video: document.getElementById('preview') })
     this.scanner.addListener('scan', this.parseHandler)
+// eslint-disable-next-line no-undef
     Instascan.Camera.getCameras().then(this.getCameras).catch(function (e) {
       console.error(e)
     })
