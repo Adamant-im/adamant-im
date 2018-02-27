@@ -16,18 +16,18 @@ import ja from './ja'
 
 export default {
   'en': en,
-  'zh-tw': zhtw,
   'ru': ru,
+  'jp': ja,
+  'zh-tw': zhtw,
+  'de': de,
+  'it': it,
+  'uk': uk,
+  'sv': sv,
   'ph': ph,
   'hi': hi,
   'tr': tr,
   'vi': vi,
   'pt': pt,
   'ro': ro,
-  'de': de,
-  'ar': ar,
-  'sv': sv,
-  'uk': uk,
-  'it': it,
-  'jp': ja
+  'ar': ar
 }
