@@ -39,8 +39,13 @@ export default {
     },
     getCameras (cameras) {
       this.cameraList = cameras
+      for (var i in cameras) {
+        if (cameras[i].name.indexOf('ack') > 0) {
+          this.currentCamera = i
+        }
+      }
       if (this.currentCamera === false) {
-        this.currentCamera = 0
+        this.currentCamera = this.cameraList.length - 1
       }
       if (cameras.length > 0) {
         this.scanner.start(cameras[this.currentCamera])
