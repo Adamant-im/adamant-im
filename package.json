@@ -1,8 +1,8 @@
 {
   "name": "adamant-im",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "Distributed chat",
-  "author": "Zyuhel <zyuhel@yandex.ru>",
+  "author": "ADAMANT Tech Labs <devs@adamant.im>",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
