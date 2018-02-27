@@ -63,7 +63,7 @@ export default {
   },
   watch: {
     message: function (value) {
-      this.message_fee = Math.ceil(value.length / 255) * 0.001
+      this.message_fee = Math.ceil(value.length / 255) * 100000 / 100000000
     }
   },
   data () {

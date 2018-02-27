@@ -177,7 +177,7 @@ export default {
       }
       window.feeCalcTimeout = setTimeout((function (self) {
         return function () {
-          self.message_fee = Math.ceil(value.length / 255) * 0.001
+          self.message_fee = Math.ceil(value.length / 255) * 100000 / 100000000
         }
       })(this), 1000)
     },
