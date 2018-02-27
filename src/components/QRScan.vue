@@ -1,6 +1,7 @@
 <template>
   <div class="qrscan">
       <video id="preview"></video>
+      <div class="switch_camera" v-if="this.cameraList.length>1" v-on:click="switch_camera"><md-icon>switch_camera</md-icon></div>
   </div>
 </template>
 
@@ -8,9 +9,19 @@
 export default {
   name: 'qrscan',
   methods: {
-    errorMessage (message) {
-      this.formErrorMessage = this.$t('chats.' + message)
-      this.$refs.chatSnackbar.open()
+    selectCamera (camera) {
+      console.log(camera.id)
+      this.scanner.start(camera)
+    },
+    switch_camera () {
+      if (this.scanner) {
+        this.currentCamera ++
+        if (this.cameraList.length <= this.currentCamera) {
+          this.currentCamera = 0
+        }
+        var camera = this.cameraList[this.currentCamera]
+        this.selectCamera(camera)
+      }
     },
     parseHandler (content) {
       var addressData = this.parseURI(content)
@@ -27,10 +38,14 @@ export default {
       }
     },
     getCameras (cameras) {
+      this.cameraList = cameras
+      if (this.currentCamera === false) {
+        this.currentCamera = 0
+      }
       if (cameras.length > 0) {
-        this.scanner.start(cameras[0])
+        this.scanner.start(cameras[this.currentCamera])
       } else {
-        console.error('No cameras found.')
+        this.$router.push('/chats/')
       }
     }
   },
@@ -40,8 +55,9 @@ export default {
     }
   },
   mounted: function () {
+    // var Instascan = require('instascan/src/index.js')
 // eslint-disable-next-line no-undef
-    this.scanner = new Instascan.Scanner({ video: document.getElementById('preview') })
+    this.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5, mirror: false })
     this.scanner.addListener('scan', this.parseHandler)
 // eslint-disable-next-line no-undef
     Instascan.Camera.getCameras().then(this.getCameras).catch(function (e) {
@@ -54,7 +70,8 @@ export default {
   },
   data () {
     return {
-      message: '',
+      cameraList: [],
+      currentCamera: false,
       scanner: false
     }
   }
@@ -63,5 +80,18 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-
+    .qrscan {
+        position: relative;
+    }
+    #preview {
+        max-height:100%;
+        max-width:100%;
+    }
+.switch_camera
+{
+    position:absolute;
+    z-index:1000;
+    right: 15%;
+    bottom:20%;
+}
 </style>
