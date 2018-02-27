@@ -30,6 +30,9 @@ export default function storeData () {
     if (mainStorage.getItem('notify_sound')) {
       store.commit('change_notify_sound', mainStorage.getItem('notify_sound'))
     }
+    if (mainStorage.getItem('send_on_enter')) {
+      store.commit('change_send_on_enter', mainStorage.getItem('send_on_enter'))
+    }
     if (mainStorage.getItem('notify_bar')) {
       store.commit('change_notify_bar', mainStorage.getItem('notify_bar'))
     }
@@ -91,6 +94,9 @@ export default function storeData () {
         storeNow = true
       } else if (mutation.type === 'change_notify_desktop') {
         mainStorage.setItem('notify_desktop', mutation.payload)
+        storeNow = true
+      } else if (mutation.type === 'change_send_on_enter') {
+        mainStorage.setItem('send_on_enter', mutation.payload)
         storeNow = true
       }
       if (mutation.type === 'logout') {

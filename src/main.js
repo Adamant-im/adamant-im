@@ -83,6 +83,7 @@ const store = new Vuex.Store({
     notifySound: true,
     notifyBar: true,
     notifyDesktop: false,
+    sendOnEnter: false,
     showBottom: true,
     partnerName: '',
     partnerDisplayName: '',
@@ -105,6 +106,9 @@ const store = new Vuex.Store({
   },
   mutations: {
     force_update (state) {
+    },
+    change_send_on_enter (state, payload) {
+      state.sendOnEnter = payload
     },
     change_notify_sound (state, payload) {
       state.notifySound = payload

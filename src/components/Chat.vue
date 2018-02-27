@@ -72,8 +72,13 @@ export default {
           body.style.overflow = 'hidden'
         }
       }
-      if ((event.key === 'Enter' && event.ctrlKey) || (event.metaKey === true && event.key === 'Enter')) {
+      if (this.$store.state.sendOnEnter && event.key === 'Enter' && !event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) {
         this.send()
+      }
+      if (!this.$store.state.sendOnEnter) {
+        if ((event.key === 'Enter' && event.ctrlKey) || (event.metaKey === true && event.key === 'Enter')) {
+          this.send()
+        }
       }
     },
     errorMessage (message) {

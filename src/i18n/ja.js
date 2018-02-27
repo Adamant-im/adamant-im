@@ -1,6 +1,6 @@
 export default {
   'title': '日本語',
-  'app_title': 'アダマントメッセンジャー',
+  'app_title': 'ADAMANT Messenger',
   'new_messages_1': '新しいメッセージ',
   'new_messages_2': '新しいメッセージ',
   'new_messages_5': '新しいメッセージ',
@@ -16,15 +16,18 @@ export default {
     'invalid_passphrase': '間違ったパスワード',
     'device_unsupported': 'あなたのデバイスはサポートされていません ',
     'subheader': 'Blockchainで暗号化された最も匿名のメッセンジャー、「アドレスラベルを作成する」：「新しい匿名アドレスを作成する」',
-    'create_address_label': 'Or create a new anonymous address:'
+    'create_address_label': '新しい匿名アドレスを作成する'
   },
   'options': {
     'version': 'アプリのバージョン',
     'language_label': '言語',
     'exit_on_close': 'ブラウザのタブを閉じるときにウォレットを終了するには、',
     'exit_on_close_tooltip': 'ウォレットのセキュリティを確保するため、このチェックボックスをインストールすることをお勧めします。 これをクリアすると、パスワードはブラウザのストレージに保存され、ウォレットを開くと、パスワードを入力せずに自動的にログインします。 これは、第三者によるデバイスへのアクセスが不可能な場合にのみ許可されます。',
+    'send_on_enter': 'Send message on Enter',
+    'send_on_enter_tooltip': 'Send message on Enter key, by default combination Ctrl (Cmd) + Enter is used',
     'general_title': '一般',
     'security_title': '安全',
+    'chats_title': '対話',
     'notification_title': '通知',
     'enable_sound': 'サウンド 通知',
     'enable_sound_tooltip': 'すべてのデバイスで動作しないでください。 モバイルブラウザが非アクティブのときに音声を再生しない.',

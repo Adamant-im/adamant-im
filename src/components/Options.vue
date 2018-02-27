@@ -44,6 +44,26 @@
           </md-card-content>
 
       </md-card>
+          <md-card class='settings-card' style="box-shadow:none">
+              <md-card-area md-inset>
+                  <md-card-header>
+                      <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.chats_title') }}</h2>
+                  </md-card-header>
+              </md-card-area>
+
+              <md-card-content>
+                  <md-table>
+                      <md-table-body>
+                          <md-table-row>
+                              <md-table-cell class="hide_on_mobile"></md-table-cell>
+                              <md-table-cell colspan="2"  style="text-align:left;"><md-checkbox  v-model="sendOnEnter" :title="$t('options.send_on_enter_tooltip')">{{ $t('options.send_on_enter') }}</md-checkbox></md-table-cell>
+                          </md-table-row>
+                      </md-table-body>
+                  </md-table>
+              </md-card-content>
+
+          </md-card>
+
       <md-card class='settings-card' style="box-shadow:none">
           <md-card-area md-inset>
               <md-card-header>
@@ -91,6 +111,9 @@ export default {
     }
   },
   watch: {
+    'sendOnEnter' (to, from) {
+      this.$store.commit('change_send_on_enter', to)
+    },
     'storeInLS' (to, from) {
       this.$store.commit('change_storage_method', !to)
     },
@@ -113,6 +136,7 @@ export default {
     return {
       storeInLS: !this.$store.state.storeInLocalStorage,
       notifySound: this.$store.state.notifySound,
+      sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
       language: this.$i18n.locale
