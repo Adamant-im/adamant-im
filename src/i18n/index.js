@@ -13,6 +13,7 @@ import sv from './sv'
 import uk from './uk'
 import it from './it'
 import ja from './ja'
+import es from './es'
 
 export default {
   'en': en,
@@ -29,5 +30,6 @@ export default {
   'vi': vi,
   'pt': pt,
   'ro': ro,
-  'ar': ar
+  'ar': ar,
+  'es': es
 }
