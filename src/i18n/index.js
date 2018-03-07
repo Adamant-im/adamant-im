@@ -14,6 +14,7 @@ import uk from './uk'
 import it from './it'
 import ja from './ja'
 import es from './es'
+import ko from './ko'
 
 export default {
   'en': en,
@@ -31,5 +32,6 @@ export default {
   'pt': pt,
   'ro': ro,
   'ar': ar,
-  'es': es
+  'es': es,
+  'ko': ko
 }
