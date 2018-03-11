@@ -23,6 +23,7 @@ export default {
     'language_label': '言語',
     'exit_on_close': 'ブラウザのタブを閉じるときにログアウトします',
     'exit_on_close_tooltip': 'ウォレットのセキュリティのため、チェックすることを推奨します。 チェックしていない場合、パスワードはブラウザのストレージに保存され、ウォレットを開くと、パスワードを入力せずに自動的にログインします。 これは、第三者によるデバイスの使用がない場合、安全です。',
+    'chats_title': 'チャット',
     'send_on_enter': 'Send message on Enter',
     'send_on_enter_tooltip': 'Send message on Enter key, by default combination Ctrl (Cmd) + Enter is used',
     'general_title': '一般',
