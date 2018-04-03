@@ -4,7 +4,7 @@ export default {
   'new_messages_1': 'yeni mesaj',
   'new_messages_2': 'yeni mesajlar',
   'new_messages_5': 'yeni mesajlar',
-  'region': 'TR',
+  'region': 'tr-TR',
   'login': {
     'copy_button_tooltip': 'Sifrenizi panoya kopyalamak için tiklayin. Sifrenizi hatirlayacaginiz bir yere kaydedin. Yeni cüzdaniniza erismek için, sifrenizi ilgili alana girin.',
     'save_button_tooltip': 'Sifrenizi metin belgesi formatinda kaydetmek için tiklayin. Sifrenizi güvenli bir yerde saklayin!',

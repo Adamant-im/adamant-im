@@ -4,7 +4,7 @@ export default {
   'new_messages_1': 'नया सन्देश',
   'new_messages_2': 'नया सन्देश',
   'new_messages_5': 'नया सन्देश',
-  'region': 'hi',
+  'region': 'hi-IN',
   'login': {
     'copy_button_tooltip': 'passpharse को क्लिपबोर्ड पर कॉपी करने के लिए क्लिक करें। इसे पासवर्ड कीपर आवेदन में सहेजें अपना नया वॉलेट दर्ज करने के लिए, उसे passpharse फ़ील्ड पेस्ट करें.',
     'save_button_tooltip': 'टेक्स्ट फ़ाइल में अपना passpharse सहेजने के लिए क्लिक करें। इसे सुरक्षित स्थान पर सहेजें!',

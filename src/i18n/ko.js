@@ -4,7 +4,7 @@ export default {
   'new_messages_1': '새 메신저',
   'new_messages_2': '새 메신저',
   'new_messages_5': '새 메신저',
-  'region': 'en-US',
+  'region': 'ko-KR',
   'login': {
     'copy_button_tooltip': '패스 코드를 클립 보드로 복사하려면 클릭하십시오. 암호 키퍼 응용 프로그램에 저장하십시오. 새 월렛을 입력하려면 암호문을 붙여 넣으십시오.',
     'save_button_tooltip': '암호를 텍스트 파일에 저장하려면 클릭하십시오. 안전한 장소에 보관하십시오!',
