@@ -65,6 +65,34 @@ function install (Vue) {
     }
     return keypair.publicKey.toString('hex')
   }
+  Vue.prorotype.getStored = function (address, key, callback) {
+    this.$http.get(this.getAddressString() + '/api/states/gets?senderId=' + this.$store.state.address).then(response => {
+      if (response.body.success) {
+      }
+    }, response => {
+      // error callback
+    })
+  }
+  Vue.prototype.formStoreTransaction = function (key, value) {
+    return {}
+  }
+  Vue.prototype.storeValue = function (key, value, callback) {
+    this.$store.commit('ajax_start')
+    this.$http.post(this.getAddressString() + '/api/states/store', {transaction: this.formStoreTransaction(key, value)}).then(response => {
+      if (response.body.success) {
+        this.$store.commit('saved_key')
+        if (callback) {
+          callback.call(this)
+        }
+        this.$store.commit('ajax_end')
+      } else {
+        alert(response.body.error)
+        this.$store.commit('ajax_end_with_error')
+      }
+    }, response => {
+      // error callback
+    })
+  }
   Vue.prototype.createNewAccount = function (publicKey, callback) {
     this.$store.commit('ajax_start')
     this.$http.post(this.getAddressString() + '/api/accounts/new', { publicKey: publicKey }).then(response => {
