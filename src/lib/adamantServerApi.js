@@ -65,7 +65,7 @@ function install (Vue) {
     }
     return keypair.publicKey.toString('hex')
   }
-  Vue.prorotype.getStored = function (address, key, callback) {
+  Vue.prototype.getStored = function (address, key, callback) {
     this.$http.get(this.getAddressString() + '/api/states/gets?senderId=' + this.$store.state.address).then(response => {
       if (response.body.success) {
       }
