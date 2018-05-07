@@ -2,8 +2,26 @@
   <div class="chat">
       <md-layout md-align="start" md-gutter="16" class="chat_messages">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
-              <md-layout v-if="message.direction=='from'" md-flex="90" md-flex-xsmall="85" class="chat_message  md-whiteframe md-whiteframe-1dp md-flex-xsmall-offset-10" :data-confirmation="message.confirm_class"  ><span class="avatar-holder"></span><span v-html="message.message" class="msg-holder"></span><div class="dt">{{ dateFormat(message.timestamp) }}</div></md-layout>
-              <md-layout v-if="message.direction=='to'" md-flex="90" md-flex-xsmall="85" :data-confirmation="message.confirm_class"  class=" chat_message md-own md-flex-xsmall-offset-5 md-whiteframe md-whiteframe-1dp" ><span class="avatar-holder"></span><span v-html="message.message" class="msg-holder"></span> <div class="dt">{{ dateFormat(message.timestamp) }}</div></md-layout>
+              <md-layout
+                md-flex="90" 
+                md-flex-xsmall="85" 
+                class="chat_message md-whiteframe md-whiteframe-1dp" 
+                :data-confirmation="message.confirm_class"
+                v-bind:class="{
+                  'md-flex-xsmall-offset-10': message.direction === 'from',
+                  'md-own md-flex-xsmall-offset-5': message.direction === 'to'
+                }"
+              >
+                <span class="avatar-holder"></span>
+                <span v-if="message.type !== 0" v-html="message.message" class="msg-holder"></span>
+                <span v-if="message.type === 0" class="msg-holder">
+                  <p>Отправлено</p>
+                  <p class='transaction-amount' v-on:click="goToTransaction(message.id)">
+                    <span v-html="$formatAmount(message.amount)"></span> ADM
+                  </p>
+                </span>
+                <div class="dt">{{ $formatDate(message.timestamp) }}</div>
+              </md-layout>
           </md-layout>
           <md-layout style="height:0" md-flex="100"></md-layout>
       </md-layout>
@@ -107,39 +125,9 @@ export default {
         this.$refs.messageField.$el.value = ''
       }
     },
-    getTime: function (date) {
-      var hours = date.getHours()
-      var time = ''
-      if (hours < 10) {
-        time = '0' + hours
-      } else {
-        time = '' + hours
-      }
-      time = time + ':'
-      var minutes = date.getMinutes()
-      if (minutes < 10) {
-        time = time + '0' + minutes
-      } else {
-        time = time + '' + minutes
-      }
-      return time
-    },
-    dateFormat: function (timestamp) {
-      var startToday = new Date()
-      startToday.setHours(0, 0, 0, 0)
-      var date = new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))
-      if (date.getTime() > startToday.getTime()) {
-        return this.$t('chats.date_today') + ', ' + this.getTime(date)
-      }
-      var startYesterday = new Date(startToday.getTime() - 86400000)
-      if (date.getTime() > startYesterday.getTime()) {
-        return this.$t('chats.date_yesterday') + ', ' + this.getTime(date)
-      }
-      var options = {'weekday': 'short'}
-      if ((Date.now() - (parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))) > (4 * 3600 * 24 * 1000)) {
-        options = {'day': 'numeric', 'month': 'short'}
-      }
-      return date.toLocaleDateString(this.$t('region'), options) + ', ' + this.getTime(date)
+    goToTransaction (id) {
+      this.$store.commit('leave_chat')
+      this.$router.push('/transactions/' + id + '/')
     }
   },
   mounted: function () {
@@ -164,10 +152,13 @@ export default {
         }
         return 0
       }
+
+      let messages = this.$store.getters.currentChatTransactions
       if (this.$store.state.currentChat.messages) {
-        return Object.values(this.$store.state.currentChat.messages).sort(compare)
+        messages = messages.concat(Object.values(this.$store.state.currentChat.messages))
       }
-      return []
+
+      return messages.sort(compare)
     }
   },
   watch: {
@@ -287,6 +278,10 @@ export default {
 .msg-holder {
     margin-top: -10px;
     margin-left: 2px;
+}
+.msg-holder .transaction-amount {
+  font-size: 24px;
+  cursor: pointer;
 }
 
     .md-own .avatar-holder{

@@ -375,13 +375,12 @@ function install (Vue) {
       if (this.$route.path.indexOf('/transactions/') > -1) {
         if (this.$route.params.tx_id) {
           this.getTransactionInfo(this.$route.params.tx_id)
-        } else {
-          this.getTransactions()
         }
       }
       this.getAccountByPublicKey(this.getPublicKeyFromPassPhrase(this.$store.state.passPhrase))
       this.$store.commit('start_tracking_new')
       this.loadChats()
+      this.getTransactions()
     } else if (this.$store.state.ajaxIsOngoing && !window.resetAjaxState) {
       window.resetAjaxState = setTimeout(
         (function (self) {
@@ -504,7 +503,7 @@ function install (Vue) {
           if (response.body.transactions[i] === null || !response.body.transactions[i]) {
             continue
           }
-          this.$store.commit('set_last_height', response.body.transactions[i].height)
+          this.$store.commit('set_last_chat_height', response.body.transactions[i].height)
           if (!window.queuedMessages) {
             window.queuedMessages = 0
           }
@@ -573,12 +572,17 @@ function install (Vue) {
     })
   }
   Vue.prototype.getTransactions = function (offset) {
-    this.$http.get(this.getAddressString() + '/api/transactions/?inId=' + this.$store.state.address + '&and:type=0').then(response => {
+    const uri = [this.getAddressString(), '/api/transactions/?inId=', this.$store.state.address, '&and:type=0']
+    if (this.$store.state.lastTransactionHeight) {
+      uri.push('&and:fromHeight=', this.$store.state.lastTransactionHeight + 1)
+    }
+    this.$http.get(uri.join('')).then(response => {
       if (response.body.success) {
         for (var i in response.body.transactions) {
           if (response.body.transactions[i].type === 0) {
             console.log('im here')
             this.$store.commit('transaction_info', response.body.transactions[i])
+            this.$store.commit('set_last_transaction_height', response.body.transactions[i].height)
           }
         }
       }

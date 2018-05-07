@@ -9,6 +9,7 @@ import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 import VueMaterial from 'vue-material'
 import VueHazeServerApi from './lib/adamantServerApi'
+import VueFormatters from './lib/formatters'
 import storeData from './lib/lsStore.js'
 import 'vue-material/dist/vue-material.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
@@ -20,6 +21,7 @@ Vue.use(VueResource)
 Vue.use(VueClipboards)
 Vue.use(VueI18n)
 Vue.use(VueHazeServerApi)
+Vue.use(VueFormatters)
 
 Vue.config.productionTip = false
 
@@ -95,6 +97,7 @@ const store = new Vuex.Store({
     totalNewChats: 0,
     chats: {},
     lastChatHeight: 0,
+    lastTransactionHeight: 0,
     currentChat: false,
     storeInLocalStorage: false
   },
@@ -156,6 +159,7 @@ const store = new Vuex.Store({
       state.trackNewMessages = false
       state.firstChatLoad = true
       state.lastChatHeight = 0
+      state.lastTransactionHeight = 0
       state.partnerDisplayName = ''
       window.publicKey = false
       window.privateKey = false
@@ -210,6 +214,7 @@ const store = new Vuex.Store({
       }
     },
     transaction_info (state, payload) {
+      payload.direction = (state.address === payload.recipientId) ? 'to' : 'from'
       Vue.set(state.transactions, payload.id, payload)
     },
     connect (state, payload) {
@@ -250,9 +255,14 @@ const store = new Vuex.Store({
       }
       Vue.set(state.chats, partner, currentDialogs)
     },
-    set_last_height (state, payload) {
+    set_last_chat_height (state, payload) {
       if (state.lastChatHeight < payload) {
         state.lastChatHeight = payload
+      }
+    },
+    set_last_transaction_height (state, payload) {
+      if (state.lastTransactionHeight < payload) {
+        state.lastTransactionHeight = payload
       }
     },
     add_chat_message (state, payload) {
@@ -326,7 +336,15 @@ const store = new Vuex.Store({
       Vue.set(state.chats[partner].messages, payload.id, payload)
     }
   },
-  plugins: [storeData()]
+  plugins: [storeData()],
+  getters: {
+    /** Returns transactions for the currently opened chat */
+    currentChatTransactions: state => {
+      const partner = state.currentChat && state.currentChat.partner
+      const transactions = Object.values(state.transactions) || []
+      return transactions.filter(x => x.senderId === partner || x.recipientId === partner)
+    }
+  }
 })
 
 var i18n = new VueI18n({
