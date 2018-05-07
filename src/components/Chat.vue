@@ -16,7 +16,7 @@
                 <span v-if="message.type !== 0" v-html="message.message" class="msg-holder"></span>
                 <span v-if="message.type === 0" class="msg-holder">
                   <p>Отправлено</p>
-                  <p class='transaction-amount' v-on:click="$router.push('/transactions/' + message.id + '/')">
+                  <p class='transaction-amount' v-on:click="goToTransaction(message.id)">
                     <span v-html="$formatAmount(message.amount)"></span> ADM
                   </p>
                 </span>
@@ -124,6 +124,10 @@ export default {
         this.message = ''
         this.$refs.messageField.$el.value = ''
       }
+    },
+    goToTransaction (id) {
+      this.$store.commit('leave_chat')
+      this.$router.push('/transactions/' + id + '/')
     }
   },
   mounted: function () {
