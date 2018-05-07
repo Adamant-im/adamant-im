@@ -338,7 +338,7 @@ const store = new Vuex.Store({
   },
   plugins: [storeData()],
   getters: {
-    /** Переводы для текущего чата */
+    /** Returns transactions for the currently opened chat */
     currentChatTransactions: state => {
       const partner = state.currentChat && state.currentChat.partner
       const transactions = Object.values(state.transactions) || []
