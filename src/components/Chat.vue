@@ -3,7 +3,7 @@
       <md-layout md-align="start" md-gutter="16" class="chat_messages">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
               <md-layout
-                :md-flex="message.type === 0 ? '30' : '90'" 
+                md-flex="90" 
                 md-flex-xsmall="85" 
                 class="chat_message md-whiteframe md-whiteframe-1dp" 
                 :data-confirmation="message.confirm_class"
@@ -16,7 +16,7 @@
                 <span v-if="message.type !== 0" v-html="message.message" class="msg-holder"></span>
                 <span v-if="message.type === 0" class="msg-holder">
                   <p>Отправлено</p>
-                  <p class='transaction-amount'>
+                  <p class='transaction-amount' v-on:click="$router.push('/transactions/' + message.id + '/')">
                     <span v-html="$formatAmount(message.amount)"></span> ADM
                   </p>
                 </span>
@@ -277,6 +277,7 @@ export default {
 }
 .msg-holder .transaction-amount {
   font-size: 24px;
+  cursor: pointer;
 }
 
     .md-own .avatar-holder{

@@ -28,7 +28,7 @@
                 <div class="md-list-text-container">
                     <span>{{ chatName(chat.partner) }}</span>
                     <p v-html="chat.last_message.message"></p>
-                    <span class="dt">{{ dateFormat(chat.last_message.timestamp) }}</span>
+                    <span class="dt">{{ $formatDate(chat.last_message.timestamp) }}</span>
                 </div>
 
 
@@ -59,43 +59,6 @@ export default {
         return this.$store.state.partners[address]
       }
       return address
-    },
-    getTime: function (date) {
-      var hours = date.getHours()
-      var time = ''
-      if (hours < 10) {
-        time = '0' + hours
-      } else {
-        time = '' + hours
-      }
-      time = time + ':'
-      var minutes = date.getMinutes()
-      if (minutes < 10) {
-        time = time + '0' + minutes
-      } else {
-        time = time + '' + minutes
-      }
-      return time
-    },
-    dateFormat: function (timestamp) {
-      if (!parseInt(timestamp)) {
-        return ''
-      }
-      var startToday = new Date()
-      startToday.setHours(0, 0, 0, 0)
-      var date = new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))
-      if (date.getTime() > startToday.getTime()) {
-        return this.$t('chats.date_today') + ', ' + this.getTime(date)
-      }
-      var startYesterday = new Date(startToday.getTime() - 86400000)
-      if (date.getTime() > startYesterday.getTime()) {
-        return this.$t('chats.date_yesterday') + ', ' + this.getTime(date)
-      }
-      var options = {'weekday': 'short'}
-      if ((Date.now() - (parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))) > (4 * 3600 * 24 * 1000)) {
-        options = {'day': 'numeric', 'month': 'short'}
-      }
-      return date.toLocaleDateString(this.$t('region'), options) + ', ' + this.getTime(date)
     }
   },
   computed: {
