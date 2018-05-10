@@ -58,8 +58,8 @@ export default {
     'date_today': 'आज',
     'date_yesterday': 'बीता कल',
     'date_tomorrow': 'आने वाला कल',
-    'amount_sent': 'Sent',
-    'amount_received': 'Received'
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': 'कॉपी हुआ',

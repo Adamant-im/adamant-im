@@ -58,8 +58,8 @@ export default {
     'date_today': '오늘',
     'date_yesterday': '어제',
     'date_tomorrow': '내일',
-    'amount_sent': 'Sent',
-    'amount_received': 'Received'
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': '복사 됨',

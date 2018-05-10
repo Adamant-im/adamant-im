@@ -57,8 +57,8 @@ export default {
     'date_today': 'Today',
     'date_yesterday': 'Yesterday',
     'date_tomorrow': 'Tomorrow',
-    'amount_sent': 'Sent',
-    'amount_received': 'Received'
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': 'Copied',

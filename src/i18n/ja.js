@@ -57,8 +57,8 @@ export default {
     'date_today': '今日',
     'date_yesterday': '昨日',
     'date_tomorrow': '明日',
-    'amount_sent': 'Sent',
-    'amount_received': 'Received'
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': 'コピーされました',

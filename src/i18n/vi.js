@@ -58,8 +58,8 @@ export default {
     'date_today': 'Hôm nay',
     'date_yesterday': 'Hôm qua',
     'date_tomorrow': 'Ngày mai',
-    'amount_sent': 'Sent',
-    'amount_received': 'Received'
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': 'Đã sao chép',

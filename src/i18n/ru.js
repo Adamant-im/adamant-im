@@ -57,8 +57,8 @@ export default {
     'date_today': 'Сегодня',
     'date_yesterday': 'Вчера',
     'date_tomorrow': 'Завтра',
-    'amount_sent': 'Отправлено',
-    'amount_received': 'Получено'
+    'sent_label': 'Отправлено',
+    'received_label': 'Получено'
   },
   'home': {
     'copied': 'Скопировано',

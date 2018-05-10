@@ -58,8 +58,8 @@ export default {
     'date_today': 'ليوم',
     'date_yesterday': 'الأمس',
     'date_tomorrow': 'غدا',
-    'amount_sent': 'Sent',
-    'amount_received': 'Received'
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': 'منسخ',

@@ -58,8 +58,8 @@ export default {
     'date_today': 'Astăzi',
     'date_yesterday': 'Ieri',
     'date_tomorrow': 'Mâine',
-    'amount_sent': 'Sent',
-    'amount_received': 'Received'
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': 'Copiat',

@@ -58,8 +58,8 @@ export default {
     'date_today': 'Ngayon',
     'date_yesterday': 'Kahapon',
     'date_tomorrow': 'Bukas',
-    'amount_sent': 'Sent',
-    'amount_received': 'Received'
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': 'Nakopya',

@@ -58,8 +58,8 @@ export default {
     'date_today': 'Hoy',
     'date_yesterday': 'Ayer',
     'date_tomorrow': 'Mañana',
-    'amount_sent': 'Sent',
-    'amount_received': 'Received'
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': 'Copiado',

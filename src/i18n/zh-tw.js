@@ -58,8 +58,8 @@ export default {
     'date_today': '今天',
     'date_yesterday': '昨天',
     'date_tomorrow': '明天',
-    'amount_sent': 'Sent',
-    'amount_received': 'Received'
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': '已复制',
