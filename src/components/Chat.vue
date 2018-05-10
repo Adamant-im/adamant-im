@@ -15,7 +15,7 @@
                 <span class="avatar-holder"></span>
                 <span v-if="message.type !== 0" v-html="message.message" class="msg-holder"></span>
                 <span v-if="message.type === 0" class="msg-holder">
-                  <p>Отправлено</p>
+                  <p>{{ $t("chats.amount_" + (message.direction === "from" ? "sent" : "received")) }}</p>
                   <p class='transaction-amount' v-on:click="goToTransaction(message.id)">
                     <span v-html="$formatAmount(message.amount)"></span> ADM
                   </p>
