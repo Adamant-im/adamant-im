@@ -57,7 +57,9 @@ export default {
     'ico_message': '<p>Mayroon kang posibilidad na mamuhunan sa ADAMANT, ang pinakaligtas at pinakatagong messenger. Kapag mas maaga kang nakilahok, mas magandang alok ang iyong matatanggap. Matuto nang higit pa sa Adamant.im website o sa Whitepaper. Upang mamuhunan, pumunta sa Pitaka→Mamuhunan sa ICO, o sundan ang website page Adamant.im/ico/. Kung mayroon ka pang mga tanong, puwede mo silang tanungin sa pamamagitan ng pagtugon sa mensaheng ito.  Kami ay sabik na sumagot nang mabilis, pero minsan posible na magkaroon ng pagkakaantala ng ilang oras.</p><p>Pagkatapos mong mamuhunan at makatanggap ng ADM tokens, nirerekomenda namin na itabi mo sila nang matagal hangga\'t maaari. Ang lahat ng mga hindi nabentang token sa panahon ng ICO ay ipamamahagi sa mga pitaka ng mga gumagamit, na madadagdagan ng 5% buwan-buwan. Ang karagdagang impormasyon ay na sa Adamant.im website at na sa Whitepaper.</p>',
     'date_today': 'Ngayon',
     'date_yesterday': 'Kahapon',
-    'date_tomorrow': 'Bukas'
+    'date_tomorrow': 'Bukas',
+    'amount_sent': 'Sent',
+    'amount_received': 'Received'
   },
   'home': {
     'copied': 'Nakopya',

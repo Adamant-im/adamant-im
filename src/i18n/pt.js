@@ -57,7 +57,9 @@ export default {
     'ico_message': '<p>Tem a possibilidade de investir na ICO da ADAMANT, o messenger mais seguro e anónimo. Quanto mais cedo participar, melhor será a oferta que receberá. Saiba mais sobre o site Adamant.im ou no Whitepaper. Para investir, vá a Wallet → Invista no ICO, ou siga uma página do site Adamant.im/ico/. Se você ainda tiver alguma dúvida, pode perguntar-nos respondendo a esta mensagem. Estamos ansiosos para responder rapidamente, mas às vezes são possíveis atrasos por algumas horas.</p><p>Depois de investir e receber tokens do ADM, recomendamos mantê-los o maior tempo possível. Todos os tokens não vendidos durante a ICO serão distribuídos entre as wallets dos usuários, adicionando 5% mensalmente. Informações adicionais estão no site Adamant.im e no Whitepaper.</p>',
     'date_today': 'Hoje',
     'date_yesterday': 'Ontem',
-    'date_tomorrow': 'Amanhã'
+    'date_tomorrow': 'Amanhã',
+    'amount_sent': 'Sent',
+    'amount_received': 'Received'
   },
   'home': {
     'copied': 'Copiado',

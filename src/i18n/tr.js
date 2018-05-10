@@ -57,7 +57,9 @@ export default {
     'ico_message': '<p>En güvenli ve anonim mesajlasma uygulamasi ADAMANT\'in halka satisina katilip yatirim yapabilirsiniz. Ne kadar erken katilirsaniz o kadar avantajli fiyatlardan yararlanirsiniz. Daha fazla bilgi için web sitemizi Adamant.im veya Tanitim raporumuzu inceleyebilirsiniz. Yatirim yapmak için Cüzdaniniza gidin -> Halka Satisa katilin veya  web sitemize Adamant.im/ico/ gidin. Sorulariniz olursa, bu mesaja cevap olarak yazabilirsiniz. Çok hizli bir sekilde cevaplamak istiyoruz ama bazen yogunluktan dolayi birkaç saatlik geç dönüsler olabiliyor.</p><p>Yatirim yaptiktan ve ADM jetonlarinizi aldiktan sonra jetonlarinizi mümkün oldugunca uzun süre elde tutmanizi tavsiye ederiz. Halka satis bitiminden sonra satilamayan jetonlar mevcut jeton sahiplerine bakiyelerinin %5\'i oraninda aylik olarak dagitilacak. Detayli bilgi için web sitemizi Adamant.im veya Tanitim raporumuzu inceleyebilirsiniz.</p>',
     'date_today': 'Bugün',
     'date_yesterday': 'Dün',
-    'date_tomorrow': 'Yarin'
+    'date_tomorrow': 'Yarin',
+    'amount_sent': 'Sent',
+    'amount_received': 'Received'
   },
   'home': {
     'copied': 'Kopyalandi',
