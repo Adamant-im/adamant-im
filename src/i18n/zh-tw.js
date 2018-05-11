@@ -57,7 +57,9 @@ export default {
     'ico_message': '<p>ADAMANT是一款最安全的匿名聊天软件, 而您现在就可以参与该项目的ICO. 参与越早, 福利越好. 您可以在网站 Adamant.im website 或者白皮书中了解更多信息. 您可以在ICO的 钱包→投资 中进行投资, 也可以根据页面 Adamant.im/ico/上的提示进行操作. 如果您还有其他疑问, 可以通过回复此条信息来获取我们的帮助. 我们会给予快速的回复及帮助. 偶尔的回复延迟也属于正常状况.</p><p>在您完成投资并获得ADM代币后, 我们建议您尽可能持久的持有. 所有ICO阶段未售出的代币都会免费发放到代币持有者的钱包, 每月增加5%. 您可以在网站 Adamant.im 及白皮书中了解更多信息.</p>',
     'date_today': '今天',
     'date_yesterday': '昨天',
-    'date_tomorrow': '明天'
+    'date_tomorrow': '明天',
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': '已复制',

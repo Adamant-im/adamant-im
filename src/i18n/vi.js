@@ -57,7 +57,9 @@ export default {
     'ico_message': '<p>Bạn có thể đầu tư vào ICO của ADAMANT, ứng dụng nhắn tin an toàn và ẩn danh nhất. Bạn tham gia càng sớm thì lợi ích bạn nhận được càng nhiều. Tìm hiểu thêm trên trang web Adamant.im hoặc trong Sách trắng. Để đầu tư, đi tới Ví → Đầu tư vào ICO, hoặc truy cập vào trang web Adamant.im/ico/ và làm theo hướng dẫn. Nếu bạn có bất kỳ câu hỏi nào, bạn có thể hỏi họ bằng cách phản hồi tin nhắn này. Chúng tôi rất muốn trả lời nhanh chóng, nhưng đôi khi có thể chậm trễ trong một vài giờ.</p><p>Sau khi bạn đầu tư và nhận token ADM, chúng tôi khuyên bạn nên giữ chúng lâu nhất có thể. Tất cả token không bán được trong ICO sẽ được phân phối giữa các ví của người dùng, cộng thêm 5% mỗi tháng. Thông tin thêm trên trang web Adamant.im và trong Sách trắng.</p>',
     'date_today': 'Hôm nay',
     'date_yesterday': 'Hôm qua',
-    'date_tomorrow': 'Ngày mai'
+    'date_tomorrow': 'Ngày mai',
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': 'Đã sao chép',

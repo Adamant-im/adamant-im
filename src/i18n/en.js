@@ -56,7 +56,9 @@ export default {
     'ico_message': '<p>You have a possibility to Join the ICO of ADAMANT, the most secure and anonymous messenger. Learn more on Adamant.im website or in the Whitepaper. If you still have any questions, you can ask them by replying to this message. We are eager to answer quickly, but sometimes delays for a couple of hours are possible.</p><p>Please make sure your have saved the passphrase to this account — exit your account and open it again. Better save your password on a sheet of paper also. But remember, only you are responsible for the passphrase safety. It cannot be recovered. And if other person will get it, your money will be stolen. Treat this question as secure, as if tokens in your wallet will cost a billion dollars some time.</p><p>To buy ADM tokens, go to Wallet tab and click Join the ICO, or open the page Adamant.im/ico/ in the web browser. In the ICO form enter your ADAMANT address — you will receive ADM tokens there. If you moved from Messenger App, your ADM address will be filled already, other way go back to Messenger and click ADAMANT address to copy it to clipboard. Next, choose crypto you want to spend and its amount. You\'ll see how much ADM tokens you will receive, including volume bonus: 20–30 ETH: +20%, 30–50 ETH: +30%, 50–90 ETH: +40%, 90+ ETH: +50%. Click Buy ADAMANT tokens. You\'ll get unique address where you need to send crypto. As soon as your transaction will be confirmed, you\'ll receive ADM tokens. Transaction can be done from any wallet or exchange. It is not necessary to transfer exact amount including transaction fees, the payment will be processed anyway. Have questions still? Ask us.</p><p>After you receive ADM tokens, we recommend to keep them as long as possible. All of unsold tokens during ICO will be distributed among users\' wallets, adding 5% monthly. Additional info is on Adamant.im website and in the Whitepaper.</p>',
     'date_today': 'Today',
     'date_yesterday': 'Yesterday',
-    'date_tomorrow': 'Tomorrow'
+    'date_tomorrow': 'Tomorrow',
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': 'Copied',

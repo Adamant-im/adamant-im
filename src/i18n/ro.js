@@ -57,7 +57,9 @@ export default {
     'ico_message': '<p>Aveți posibilitatea de a investi în ICO-ul ADAMANT, cel mai sigur și anonim messenger din lume. Dacă participați mai repede, veți primi o ofertă mai bună. Aflați mai multe pe site-ul Adamant.im sau în Whitepaper. Pentru a participa, mergeți la Portofel→Investește în ICO, sau accesați pagina web Adamant.im/ico/. Dacă mai aveți întrebări, le puteți adresa răspunzând la acest mesaj. Dorim să îți răspundem cât mai repede, însă uneori apar întârzieri de câteva ore.</p><p>După ce investiți și vă primiți token-urile ADM, îți recomandăm să le păstrați cât de mult timp posibil. Toate token-urile nevândute în urma campaniei ICO vor fi distribuite în portofelele utilizatorilor, adăugând 5% pe lună. Mai multe informații găsiți pe site-ul Adamant.io și în Whitepaper.</p>',
     'date_today': 'Astăzi',
     'date_yesterday': 'Ieri',
-    'date_tomorrow': 'Mâine'
+    'date_tomorrow': 'Mâine',
+    'sent_label': 'Sent',
+    'received_label': 'Received'
   },
   'home': {
     'copied': 'Copiat',
