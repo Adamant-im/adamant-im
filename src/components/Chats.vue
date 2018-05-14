@@ -6,7 +6,7 @@
         <md-layout md-align="center" md-gutter="16">
 
         <md-list class="md-double-line" >
-            <md-list-item v-on:click="$router.push('/chats/new')" :title="$t('chats.new_chat_tooltip')">
+            <md-list-item v-on:click="startNewChat()" :title="$t('chats.new_chat_tooltip')" id="new_chat">
                 <md-avatar class="md-avatar-icon">
                     <md-icon>add</md-icon>
                 </md-avatar>
@@ -19,7 +19,7 @@
 
             </md-list-item>
 
-            <md-list-item v-for="(chat, address) in chatList" :key="chat.partner" v-on:click="$router.push('/chats/' + chat.partner + '/')">
+            <md-list-item v-for="(chat) in chatList" :key="chat.partner" v-on:click="$router.push('/chats/' + chat.partner + '/')">
                 <md-avatar class="md-avatar-icon" style="overflow: visible;">
                     <md-icon>library_books</md-icon>
                     <div class="new-icon" v-if="newMessages(chat.partner)">{{ newMessages(chat.partner) }}</div>
@@ -35,12 +35,16 @@
             </md-list-item>
         </md-list>
     </md-layout>
+    <new-chat openFrom="#new_chat" closeTo="#new_chat" ref="new-chat-dialog"></new-chat>
   </div>
 </template>
 
 <script>
+import NewChat from './NewChat.vue'
+
 export default {
   name: 'chats',
+  components: { NewChat },
   methods: {
     load () {
       this.loadChats(true)
@@ -59,6 +63,9 @@ export default {
         return this.$store.state.partners[address]
       }
       return address
+    },
+    startNewChat () {
+      this.$refs['new-chat-dialog'].open()
     }
   },
   computed: {
