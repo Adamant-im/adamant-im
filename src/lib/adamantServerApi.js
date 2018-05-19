@@ -382,6 +382,8 @@ function install (Vue) {
       this.$store.commit('start_tracking_new')
       this.loadChats()
       this.getTransactions()
+
+      this.$store.dispatch('eth/updateBalance')
     } else if (this.$store.state.ajaxIsOngoing && !window.resetAjaxState) {
       window.resetAjaxState = setTimeout(
         (function (self) {

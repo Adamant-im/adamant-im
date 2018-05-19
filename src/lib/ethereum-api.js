@@ -2,11 +2,9 @@ import Mnemonic from 'bitcore-mnemonic'
 import hdkey from 'hdkey'
 import Web3 from 'web3'
 
-import config from '../config.json'
-
 const HD_KEY_PATH = "m/44'/60'/3'/1/0"
 
-class EthereumApi {
+export default class EthereumApi {
   /**
    * Creates new instance of `EthereumApi`
    * @param {{protocol: String, ip: String, port: String, path: String}} endpoint ETH node endpoint
@@ -53,15 +51,4 @@ class EthereumApi {
     if (!acc) throw new Error('Account has not yet been unlocked')
     return acc
   }
-}
-
-export default function install (Vue) {
-  const endpoints = config.server.eth
-  const index = Math.floor(Math.random() * endpoints.length)
-
-  if (!Vue.prototype.api) {
-    Vue.prototype.api = { }
-  }
-
-  Vue.prototype.api.eth = new EthereumApi(endpoints[index])
 }

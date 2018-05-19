@@ -96,6 +96,9 @@ export default {
         this.$root._router.push('/chats/')
         this.loadChats(true)
         this.$store.commit('stop_tracking_new')
+
+        this.$store.dispatch('eth/login', this.passPhrase)
+        this.$store.dispatch('eth/updateBalance')
       }, errorFunction)
     },
     'handleSuccess': function (e) {
