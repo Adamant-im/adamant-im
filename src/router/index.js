@@ -4,7 +4,6 @@ import Hello from '@/components/Hello'
 import Login from '@/components/Login'
 import Chats from '@/components/Chats'
 import Chat from '@/components/Chat'
-import NewChat from '@/components/NewChat'
 import Transfer from '@/components/Transfer'
 import Transaction from '@/components/Transaction'
 import Transactions from '@/components/Transactions'
@@ -36,11 +35,6 @@ export default new Router({
       path: '/options',
       name: 'Options',
       component: Options
-    },
-    {
-      path: '/chats/new',
-      name: 'NewChat',
-      component: NewChat
     },
     { path: '/chats/:partner/', component: Chat },
     {

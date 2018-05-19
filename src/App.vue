@@ -318,4 +318,8 @@ header span {
         right:8px;
     }
 }
+
+.md-dialog {
+  box-shadow: initial;
+}
 </style>

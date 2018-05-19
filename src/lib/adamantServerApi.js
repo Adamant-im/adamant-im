@@ -198,15 +198,15 @@ function install (Vue) {
   }
   Vue.prototype.getAddressPublicKey = function (recipientAddress) {
     if (window.pk_cache[recipientAddress]) {
-      return window.pk_cache[recipientAddress]
+      return Promise.resolve(window.pk_cache[recipientAddress])
     }
     return this.$http.get(this.getAddressString() + '/api/accounts/getPublicKey?address=' + recipientAddress).then(response => {
       if (response.body.success) {
         window.pk_cache[recipientAddress] = response.body.publicKey
         return response.body.publicKey
       }
-    }, response => {
-      // error callback
+
+      return null
     })
   }
   Vue.prototype.encodeMessageForAddress = function (msg, recipientAddress, caller) {
@@ -430,7 +430,7 @@ function install (Vue) {
       if (currentTransaction.recipientId !== currentAddress) {
         this.$store.commit('create_chat', currentTransaction.recipientId)
         window.queue.add(function () {
-          return this.getAddressPublicKey(currentTransaction.recipientId)
+          return this.getAddressPublicKey(currentTransaction.recipientId).catch(() => { /* TODO: handle somehow */ })
         }.bind(this)
         ).then(function (currentTransaction, decodePublic) {
           decodePublic = Buffer.from(decodePublic, 'hex')
