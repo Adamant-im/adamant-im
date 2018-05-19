@@ -21,6 +21,8 @@
     "bytebuffer": "^5.0.1",
     "chloride": "^2.2.7",
     "deepmerge": "^2.0.1",
+    "ethereumjs-util": "^5.2.0",
+    "hdkey": "^0.8.0",
     "marked": "^0.3.6",
     "material-design-icons-iconfont": "^3.0.3",
     "promise-queue": "^2.2.3",
@@ -31,7 +33,8 @@
     "vue-material": "^0.8.1",
     "vue-resource": "^1.3.4",
     "vue-router": "^2.3.1",
-    "vuex": "^2.4.0"
+    "vuex": "^2.4.0",
+    "web3": "^1.0.0-beta.34"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

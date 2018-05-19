@@ -29,13 +29,14 @@ function install (Vue) {
     if (cached && this.$store.state.connectionString && this.$store.state.connectionString !== 'undefined' && this.$store.state.connectionString !== undefined) {
       return this.$store.state.connectionString
     }
-    var index = Math.floor(Math.random() * config.server.length)
-    if (!config.server[index].protocol) {
-      config.server[index].protocol = 'http'
+    const servers = config.server.adm
+    const server = servers[Math.floor(Math.random() * servers.length)]
+    if (!server.protocol) {
+      server.protocol = 'http'
     }
-    var connectString = config.server[index].protocol + '://' + config.server[index].ip
-    if (config.server[index].port) {
-      connectString += ':' + config.server[index].port
+    var connectString = server.protocol + '://' + server.ip
+    if (server.port) {
+      connectString += ':' + server.port
     }
     this.$store.commit('connect', {'string': connectString})
     return connectString

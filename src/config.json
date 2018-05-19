@@ -1,19 +1,29 @@
 {
-  "server": [
-    {
-      "ip": "clown.adamant.im",
-      "protocol": "https",
-      "port": ""
-    },
-    {
-      "ip": "lake.adamant.im",
-      "protocol": "https",
-      "port": ""
-    },
-    {
-      "ip": "endless.adamant.im",
-      "protocol": "https",
-      "port": ""
-    }
-  ]
+  "server": {
+    "adm": [
+      {
+        "ip": "clown.adamant.im",
+        "protocol": "https",
+        "port": ""
+      },
+      {
+        "ip": "lake.adamant.im",
+        "protocol": "https",
+        "port": ""
+      },
+      {
+        "ip": "endless.adamant.im",
+        "protocol": "https",
+        "port": ""
+      }
+    ],
+    "eth": [
+      {
+        "ip": "api.myetherapi.com",
+        "protocol": "https",
+        "port": "",
+        "path": "eth"
+      }
+    ]
+  }
 }
