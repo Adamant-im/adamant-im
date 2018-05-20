@@ -29,15 +29,19 @@ function install (Vue) {
       return this.$store.state.connectionString
     }
 
-    let serverList = this.getServerList().filter(o => o.online)
-    let index = Math.floor(Math.random() * serverList.length)
-    if (!serverList[index].protocol) {
-      serverList[index].protocol = 'http'
+    let server = this.getServerList()[0]
+    let onlineList = this.getServerList().filter(o => o.online)
+    if (onlineList.length > 0) {
+      server = onlineList[ Math.floor(Math.random() * onlineList.length) ]
     }
 
-    let connectString = serverList[index].protocol + '://' + serverList[index].ip
-    if (serverList[index].port) {
-      connectString += ':' + serverList[index].port
+    if (!server.protocol) {
+      server.protocol = 'http'
+    }
+
+    let connectString = server.protocol + '://' + server.ip
+    if (server.port) {
+      connectString += ':' + server.port
     }
 
     this.$store.commit('connect', {'string': connectString})
