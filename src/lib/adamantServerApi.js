@@ -1,6 +1,5 @@
 import Queue from 'promise-queue'
 
-var config = require('../config.json')
 var adamant = require('./adamant.js')
 Queue.configure(window.Promise)
 window.queue = new Queue(1, Infinity)
@@ -24,22 +23,27 @@ function install (Vue) {
   Vue.prototype.parseURI = function (uri) {
     return adamant.parseURI(uri)
   }
+
   Vue.prototype.getAddressString = function (cached) {
-    // TODO: add health check
     if (cached && this.$store.state.connectionString && this.$store.state.connectionString !== 'undefined' && this.$store.state.connectionString !== undefined) {
       return this.$store.state.connectionString
     }
-    var index = Math.floor(Math.random() * config.server.length)
-    if (!config.server[index].protocol) {
-      config.server[index].protocol = 'http'
+
+    let serverList = this.getServerList().filter(o => o.online)
+    let index = Math.floor(Math.random() * serverList.length)
+    if (!serverList[index].protocol) {
+      serverList[index].protocol = 'http'
     }
-    var connectString = config.server[index].protocol + '://' + config.server[index].ip
-    if (config.server[index].port) {
-      connectString += ':' + config.server[index].port
+
+    let connectString = serverList[index].protocol + '://' + serverList[index].ip
+    if (serverList[index].port) {
+      connectString += ':' + serverList[index].port
     }
+
     this.$store.commit('connect', {'string': connectString})
     return connectString
   }
+
   Vue.prototype.getKeypair = function () {
     if (window.privateKey) {
       return {

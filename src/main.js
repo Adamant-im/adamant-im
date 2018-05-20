@@ -14,6 +14,7 @@ import storeData from './lib/lsStore.js'
 import 'vue-material/dist/vue-material.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import packageJSON from '../package.json'
+import VueHealthCheck from './lib/healthCheckVue'
 
 Vue.use(Vuex)
 Vue.use(VueMaterial)
@@ -22,6 +23,7 @@ Vue.use(VueClipboards)
 Vue.use(VueI18n)
 Vue.use(VueHazeServerApi)
 Vue.use(VueFormatters)
+Vue.use(VueHealthCheck)
 
 Vue.config.productionTip = false
 
