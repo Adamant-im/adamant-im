@@ -184,7 +184,7 @@ const store = {
     select_chat (state, payload) {
       state.currentChat = state.chats[payload]
       if (!state.chats[payload]) {
-        state.chats[payload] = {messages: [], last_message: {}, partner: payload}
+        Vue.set(state.chats, payload, {messages: [], last_message: {}, partner: payload})
       }
       Vue.set(state.currentChat, 'messages', state.chats[payload].messages)
       state.partnerName = payload
