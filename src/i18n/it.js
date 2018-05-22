@@ -79,7 +79,8 @@ export default {
     'commission': 'Tassa',
     'txid': 'Transazione #',
     'sender': 'A partire dal',
-    'recipient': 'a'
+    'recipient': 'a',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'Invia fondi',

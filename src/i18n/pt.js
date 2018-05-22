@@ -79,7 +79,8 @@ export default {
     'commission': 'Taxa',
     'txid': 'Transação #',
     'sender': 'De',
-    'recipient': 'Para'
+    'recipient': 'Para',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'Enviar Fundos',

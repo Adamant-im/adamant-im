@@ -79,7 +79,8 @@ export default {
     'commission': 'Couts',
     'txid': 'Transaction #',
     'sender': 'De',
-    'recipient': 'A'
+    'recipient': 'A',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'Envoyez de l\'argent',

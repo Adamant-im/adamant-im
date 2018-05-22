@@ -79,7 +79,8 @@ export default {
     'commission': '수수료',
     'txid': '트랜잭션 #',
     'sender': 'From',
-    'recipient': 'To'
+    'recipient': 'To',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': '자금 송금',

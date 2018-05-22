@@ -78,7 +78,8 @@ export default {
     'commission': 'Комиссия за перевод',
     'txid': 'Номер транзакции',
     'sender': 'Отправитель',
-    'recipient': 'Получатель'
+    'recipient': 'Получатель',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'Передать токены',

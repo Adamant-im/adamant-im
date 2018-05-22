@@ -79,7 +79,8 @@ export default {
     'commission': 'الرسوم',
     'txid': 'التحويل #',
     'sender': 'من',
-    'recipient': 'إلى'
+    'recipient': 'إلى',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'إرسال رصيد',

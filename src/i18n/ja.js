@@ -78,7 +78,8 @@ export default {
     'commission': 'てすう量 ',
     'txid': 'トランザクション番号 ',
     'sender': '送信者 ',
-    'recipient': '受信者'
+    'recipient': '受信者',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': '送金する',
