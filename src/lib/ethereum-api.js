@@ -10,7 +10,13 @@ export default class EthereumApi {
    * @param {{protocol: String, ip: String, port: String, path: String}} endpoint ETH node endpoint
    */
   constructor (endpoint) {
-    const url = [endpoint.protocol, '://', endpoint.ip, endpoint.port ? (':' + endpoint.port) : '', endpoint.path].join('')
+    const url = [
+      endpoint.protocol,
+      '://',
+      endpoint.ip,
+      endpoint.port ? (':' + endpoint.port) : '',
+      endpoint.path ? ('/' + endpoint.path) : ''
+    ].join('')
     this._web3 = new Web3(new Web3.providers.HttpProvider(url))
   }
 

@@ -99,6 +99,10 @@ export default {
 
         this.$store.dispatch('eth/login', this.passPhrase)
         this.$store.dispatch('eth/updateBalance')
+
+        this.getStored('eth:address').then(address => {
+          if (!address) this.storeValue('eth:address', this.$store.state.eth.address)
+        })
       }, errorFunction)
     },
     'handleSuccess': function (e) {

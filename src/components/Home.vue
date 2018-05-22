@@ -20,7 +20,7 @@
             <div class="md-list-text-container">
                 <span>{{ $t('home.your_balance') }}  </span>
                 <p> <span v-html="this.$store.state.balance"></span> ADM</p>
-                <p> <span v-html="this.$store.state.eth.balance"></span> ETH</p>
+                <!-- <p> <span v-html="this.$store.state.eth.balance"></span> ETH</p> -->
             </div>
           </md-list-item>
 
