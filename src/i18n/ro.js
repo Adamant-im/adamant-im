@@ -79,7 +79,8 @@ export default {
     'commission': 'Taxă',
     'txid': '# Tranzacției',
     'sender': 'De la',
-    'recipient': 'Către'
+    'recipient': 'Către',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'Transferă fonduri',

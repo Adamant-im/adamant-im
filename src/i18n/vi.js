@@ -79,7 +79,8 @@ export default {
     'commission': 'Phí',
     'txid': 'Giao dịch #',
     'sender': 'Từ',
-    'recipient': 'Tới'
+    'recipient': 'Tới',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'Gửi tiền',

@@ -79,7 +79,8 @@ export default {
     'commission': 'Gebühr',
     'txid': 'Transaktion #',
     'sender': 'Von',
-    'recipient': 'Zu'
+    'recipient': 'Zu',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'Betrag senden',

@@ -79,7 +79,8 @@ export default {
     'commission': 'Avgift',
     'txid': 'Transaktion #',
     'sender': 'Från',
-    'recipient': 'Till'
+    'recipient': 'Till',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'Skicka Medel',

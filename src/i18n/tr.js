@@ -79,7 +79,8 @@ export default {
     'commission': 'Ücret',
     'txid': 'Islem #',
     'sender': 'Gönderen',
-    'recipient': 'Alici'
+    'recipient': 'Alici',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'Para gönder',

@@ -79,7 +79,8 @@ export default {
     'commission': 'Bayad',
     'txid': 'Transaksyon #',
     'sender': 'Mula kay',
-    'recipient': 'Para kay'
+    'recipient': 'Para kay',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'Magpadala ng mga pondo',

@@ -79,7 +79,8 @@ export default {
     'commission': 'शुल्क',
     'txid': 'लेनदेन  #',
     'sender': 'से',
-    'recipient': 'को'
+    'recipient': 'को',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'धन भेजे',

@@ -79,7 +79,8 @@ export default {
     'commission': 'Комісія',
     'txid': 'Транзакція #',
     'sender': 'Від',
-    'recipient': 'До'
+    'recipient': 'До',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'Надіслати кошти',

@@ -79,7 +79,8 @@ export default {
     'commission': '费用',
     'txid': '传送号 #',
     'sender': '从',
-    'recipient': '到'
+    'recipient': '到',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': '发送资金',

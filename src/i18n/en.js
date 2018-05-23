@@ -78,7 +78,8 @@ export default {
     'commission': 'Fee',
     'txid': 'Transaction #',
     'sender': 'From',
-    'recipient': 'To'
+    'recipient': 'To',
+    'explorer': 'Open in Explorer'
   },
   'transfer': {
     'send_button': 'Send Funds',
