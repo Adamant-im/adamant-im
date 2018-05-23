@@ -16,7 +16,7 @@ class HealthChecker {
     this.urls = p.urls || []
     this.onStatusChange = p.onStatusChange
     this.probeDelay = p.probeDelay || 60
-    this.lastStatusList = null
+    this.lastStatusList = this.urls.map(o => true)
     this.intId = null
   }
 
@@ -53,23 +53,21 @@ class HealthChecker {
       newStatusList - [bool]
   */
   compareStatus (newStatusList) {
-    if (this.lastStatusList) {
-      // Compare new status with last
-      let changed = false
-      for (let i = 0; i < newStatusList.length; i++) {
-        if (newStatusList[i] !== this.lastStatusList[i]) {
-          changed = true
-          break
-        }
+    // Compare new status with last
+    let changed = false
+    for (let i = 0; i < newStatusList.length; i++) {
+      if (newStatusList[i] !== this.lastStatusList[i]) {
+        changed = true
+        break
       }
+    }
 
-      if (changed) {
-        // Fire user callback
-        this.onStatusChange(this.urls.map((obj, i) => ({
-          ...obj,
-          online: newStatusList[i]
-        })))
-      }
+    if (changed) {
+      // Fire user callback
+      this.onStatusChange(this.urls.map((obj, i) => ({
+        ...obj,
+        online: newStatusList[i]
+      })))
     }
 
     this.lastStatusList = newStatusList

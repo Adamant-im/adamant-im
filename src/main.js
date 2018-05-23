@@ -87,6 +87,7 @@ const store = new Vuex.Store({
     notifySound: true,
     notifyBar: true,
     notifyDesktop: false,
+    healthCheck: true,
     sendOnEnter: false,
     showBottom: true,
     partnerName: '',
@@ -123,6 +124,9 @@ const store = new Vuex.Store({
     },
     change_notify_desktop (state, payload) {
       state.notifyDesktop = payload
+    },
+    change_health_check (state, payload) {
+      state.healthCheck = payload
     },
     change_lang (state, payload) {
       state.language = payload

@@ -39,6 +39,9 @@ export default function storeData () {
     if (mainStorage.getItem('notify_desktop')) {
       store.commit('change_notify_desktop', mainStorage.getItem('notify_desktop'))
     }
+    if (mainStorage.getItem('health_check')) {
+      store.commit('change_health_check', mainStorage.getItem('health_check'))
+    }
     var storeInLocalStorage = mainStorage.getItem('storeInLocalStorage')
     if (storeInLocalStorage === 'false') {
       storeInLocalStorage = false
@@ -94,6 +97,9 @@ export default function storeData () {
         storeNow = true
       } else if (mutation.type === 'change_notify_desktop') {
         mainStorage.setItem('notify_desktop', mutation.payload)
+        storeNow = true
+      } else if (mutation.type === 'change_health_check') {
+        mainStorage.setItem('health_check', mutation.payload)
         storeNow = true
       } else if (mutation.type === 'change_send_on_enter') {
         mainStorage.setItem('send_on_enter', mutation.payload)
