@@ -13,16 +13,19 @@
               </div>
           </md-list-item>
 
-              <md-list-item  v-on:click="$router.push('/transactions/')" :title="$t('home.your_balance_tooltip')">
-                  <md-avatar class="md-avatar-icon">
-                      <md-icon>account_balance_wallet</md-icon>
-                  </md-avatar>
-              <div class="md-list-text-container">
-                  <span>{{ $t('home.your_balance') }}  </span>
-                  <p> <span v-html="this.$store.state.balance"></span> ADM</p>
-              </div>
-
+          <md-list-item  v-on:click="$router.push('/transactions/')" :title="$t('home.your_balance_tooltip')">
+            <md-avatar class="md-avatar-icon">
+                <md-icon>account_balance_wallet</md-icon>
+            </md-avatar>
+            <div class="md-list-text-container">
+                <span>{{ $t('home.your_balance') }}  </span>
+                <p> <span v-html="this.$store.state.balance"></span> ADM</p>
+                <!-- <p> <span v-html="this.$store.state.eth.balance"></span> ETH</p> -->
+            </div>
           </md-list-item>
+
+
+
           <md-list-item v-on:click="$router.push('/transfer/')" :title="$t('home.send_btn_tooltip')">
               <md-avatar class="md-avatar-icon">
                   <md-icon>send</md-icon>

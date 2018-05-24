@@ -2,6 +2,8 @@ import Queue from 'promise-queue'
 
 var config = require('../config.json')
 var adamant = require('./adamant.js')
+const constants = require('./constants.js')
+
 Queue.configure(window.Promise)
 window.queue = new Queue(1, Infinity)
 if (!window.pk_cache) {
@@ -29,13 +31,14 @@ function install (Vue) {
     if (cached && this.$store.state.connectionString && this.$store.state.connectionString !== 'undefined' && this.$store.state.connectionString !== undefined) {
       return this.$store.state.connectionString
     }
-    var index = Math.floor(Math.random() * config.server.length)
-    if (!config.server[index].protocol) {
-      config.server[index].protocol = 'http'
+    const servers = config.server.adm
+    const server = servers[Math.floor(Math.random() * servers.length)]
+    if (!server.protocol) {
+      server.protocol = 'http'
     }
-    var connectString = config.server[index].protocol + '://' + config.server[index].ip
-    if (config.server[index].port) {
-      connectString += ':' + config.server[index].port
+    var connectString = server.protocol + '://' + server.ip
+    if (server.port) {
+      connectString += ':' + server.port
     }
     this.$store.commit('connect', {'string': connectString})
     return connectString
@@ -65,22 +68,38 @@ function install (Vue) {
     }
     return keypair.publicKey.toString('hex')
   }
-  Vue.prototype.getStored = function (address, key, callback) {
-    this.$http.get(this.getAddressString() + '/api/states/gets?senderId=' + this.$store.state.address).then(response => {
+  Vue.prototype.getStored = function (key, address) {
+    if (!address) {
+      address = this.$store.state.address
+    }
+
+    return this.$http.get(this.getAddressString() + '/api/states/get?senderId=' + address).then(response => {
       if (response.body.success) {
+        const trans = response.body.transactions.filter(x => key === (x.asset && x.asset.state && x.asset.state.key))[0]
+        return trans ? trans.asset.state.value : undefined
       }
-    }, response => {
-      // error callback
     })
   }
-  Vue.prototype.formStoreTransaction = function (key, value) {
-    return {}
-  }
+
   Vue.prototype.storeValue = function (key, value, callback) {
+    const keys = this.getKeypair()
+
+    const transaction = {
+      type: constants.Transactions.STATE,
+      amount: 0,
+      senderId: this.$store.state.address,
+      senderPublicKey: keys.publicKey.toString('hex'),
+      asset: {
+        state: { key, value, type: 0 }
+      },
+      timestamp: adamant.epochTime()
+    }
+
+    transaction.signature = adamant.transactionSign(transaction, keys)
+
     this.$store.commit('ajax_start')
-    this.$http.post(this.getAddressString() + '/api/states/store', {transaction: this.formStoreTransaction(key, value)}).then(response => {
+    this.$http.post(this.getAddressString() + '/api/states/store', { transaction }).then(response => {
       if (response.body.success) {
-        this.$store.commit('saved_key')
         if (callback) {
           callback.call(this)
         }
@@ -381,6 +400,8 @@ function install (Vue) {
       this.$store.commit('start_tracking_new')
       this.loadChats()
       this.getTransactions()
+
+      this.$store.dispatch('eth/updateBalance')
     } else if (this.$store.state.ajaxIsOngoing && !window.resetAjaxState) {
       window.resetAjaxState = setTimeout(
         (function (self) {

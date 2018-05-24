@@ -6,6 +6,7 @@ var crypto = require('crypto')
 var Mnemonic = require('bitcore-mnemonic')
 var bignum = require('./bignumber.js')
 var ByteBuffer = require('bytebuffer')
+const constants = require('./constants.js')
 
 /**
  * Crypto functions that implements sodium.
@@ -14,6 +15,20 @@ var ByteBuffer = require('bytebuffer')
  * @namespace
  */
 var adamant = {}
+
+/**
+ * Converts provided `time` to Adamant's epoch timestamp
+ * @param {number=} time timestamp to convert
+ * @returns {number}
+ */
+adamant.epochTime = function (time) {
+  if (!time) {
+    time = Date.now()
+  }
+
+  return Math.floor((time - constants.EPOCH) / 1000)
+}
+
 /**
  * Parses URI, return false on fails or object with fields if valid
  * @param uri
@@ -92,10 +107,14 @@ adamant.getBytes = function (transaction) {
   var assetBytes = null
 
   switch (transaction.type) {
-    case 0:
+    case constants.Transactions.SEND:
       break
-    case 8:
+    case constants.Transactions.CHAT_MESSAGE:
       assetBytes = this.chatGetBytes(transaction)
+      assetSize = assetBytes.length
+      break
+    case constants.Transactions.STATE:
+      assetBytes = this.stateGetBytes(transaction)
       assetSize = assetBytes.length
       break
     default:
@@ -193,6 +212,35 @@ adamant.chatGetBytes = function (trs) {
 
   return buf
 }
+
+adamant.stateGetBytes = function (trs) {
+  if (!trs.asset.state.value) {
+    return null
+  }
+  var buf
+
+  try {
+    buf = Buffer.from([])
+    var stateBuf = Buffer.from(trs.asset.state.value)
+    buf = Buffer.concat([buf, stateBuf])
+
+    if (trs.asset.state.key) {
+      var keyBuf = Buffer.from(trs.asset.state.key)
+      buf = Buffer.concat([buf, keyBuf])
+    }
+
+    var bb = new ByteBuffer(4 + 4, true)
+    bb.writeInt(trs.asset.state.type)
+    bb.flip()
+
+    buf = Buffer.concat([buf, Buffer.from(bb.toBuffer())])
+  } catch (e) {
+    throw e
+  }
+
+  return buf
+}
+
 /**
  * Creates a signature based on a hash and a keypair.
  * @implements {sodium}
