@@ -80,7 +80,9 @@ export default {
     'txid': 'लेनदेन  #',
     'sender': 'से',
     'recipient': 'को',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'धन भेजे',

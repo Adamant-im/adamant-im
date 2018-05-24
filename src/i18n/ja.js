@@ -79,7 +79,9 @@ export default {
     'txid': 'トランザクション番号 ',
     'sender': '送信者 ',
     'recipient': '受信者',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': '送金する',

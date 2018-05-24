@@ -80,7 +80,9 @@ export default {
     'txid': 'Transação #',
     'sender': 'De',
     'recipient': 'Para',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'Enviar Fundos',

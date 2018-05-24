@@ -80,7 +80,9 @@ export default {
     'txid': 'Transaction #',
     'sender': 'De',
     'recipient': 'A',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'Envoyez de l\'argent',

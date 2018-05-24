@@ -80,7 +80,9 @@ export default {
     'txid': 'Islem #',
     'sender': 'Gönderen',
     'recipient': 'Alici',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'Para gönder',

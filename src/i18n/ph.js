@@ -80,7 +80,9 @@ export default {
     'txid': 'Transaksyon #',
     'sender': 'Mula kay',
     'recipient': 'Para kay',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'Magpadala ng mga pondo',
