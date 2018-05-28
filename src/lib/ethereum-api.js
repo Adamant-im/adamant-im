@@ -43,9 +43,9 @@ export default class EthereumApi {
 
   /**
    * Returns ETH account address
-   * @returns {String}
+   * @type {String}
    */
-  getAddress () {
+  get address () {
     return this.account.address
   }
 
@@ -56,5 +56,13 @@ export default class EthereumApi {
     const acc = this._account
     if (!acc) throw new Error('Account has not yet been unlocked')
     return acc
+  }
+
+  /**
+   * Returns `true` if client is unlocked
+   * @type {boolean}
+   */
+  get isUnlocked () {
+    return !!this._account
   }
 }
