@@ -2,29 +2,42 @@
   <div class="home">
       <md-layout md-align="center" md-gutter="16">
       <md-list class="md-double-line">
-          <md-list-item v-on:click="copy" v-clipboard="this.$store.state.address" @success="copySuccess" :title="$t('home.your_address_tooltip')">
+          <md-list-item
+            v-for="addr in wallets"
+            v-bind:key="addr.system"
+            v-on:click="copy"
+            v-clipboard="addr.address"
+            @success="copySuccess"
+            :title="addr.tooltip ? $t(addr.tooltip) : ''"
+          >
               <md-avatar class="md-avatar-icon">
                   <md-icon>account_circle</md-icon>
               </md-avatar>
 
               <div class="md-list-text-container">
-                  <span>{{ $t('home.your_address') }} </span>
-                  <p> {{ this.$store.state.address }}</p>
+                  <span>{{ $t('home.your_address') }} {{ addr.system }}</span>
+                  <p> {{ addr.address }}</p>
+              </div>
+
+              <div class='md-list-action'>
+                <md-icon>content_copy</md-icon>
               </div>
           </md-list-item>
 
-          <md-list-item  v-on:click="$router.push('/transactions/')" :title="$t('home.your_balance_tooltip')">
+          <md-list-item
+            v-for="wallet in wallets"
+            v-bind:key="wallet.system"
+            v-on:click="goToTransactions(wallet.system)"
+            :title="wallet.balanceTooltip ? $t(wallet.balanceTooltip) : ''"
+          >
             <md-avatar class="md-avatar-icon">
                 <md-icon>account_balance_wallet</md-icon>
             </md-avatar>
             <div class="md-list-text-container">
-                <span>{{ $t('home.your_balance') }}  </span>
-                <p> <span v-html="this.$store.state.balance"></span> ADM</p>
-                <!-- <p> <span v-html="this.$store.state.eth.balance"></span> ETH</p> -->
+                <span>{{ $t('home.your_balance') }} {{ wallet.system }}</span>
+                <p> <span v-html="wallet.balance"></span> {{ wallet.system }}</p>
             </div>
           </md-list-item>
-
-
 
           <md-list-item v-on:click="$router.push('/transfer/')" :title="$t('home.send_btn_tooltip')">
               <md-avatar class="md-avatar-icon">
@@ -63,6 +76,11 @@ export default {
       this.$refs.homeSnackbar.open()
     },
     copy () {
+    },
+    goToTransactions (system) {
+      if (system === 'ADM') {
+        this.$router.push('/transactions/')
+      }
     }
   },
   computed: {
@@ -78,6 +96,22 @@ export default {
     languageList: function () {
       var messages = require('../i18n').default
       return messages
+    },
+    wallets: function () {
+      return [
+        {
+          system: 'ADM',
+          address: this.$store.state.address,
+          tooltip: 'home.your_address_tooltip',
+          balance: this.$store.state.balance,
+          balanceTooltip: ''
+        },
+        {
+          system: 'ETH',
+          address: this.$store.state.eth.address,
+          balance: this.$store.state.eth.balance
+        }
+      ]
     }
   },
   watch: {
