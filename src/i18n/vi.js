@@ -80,7 +80,9 @@ export default {
     'txid': 'Giao dịch #',
     'sender': 'Từ',
     'recipient': 'Tới',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'Gửi tiền',

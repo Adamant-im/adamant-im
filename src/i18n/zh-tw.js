@@ -80,7 +80,9 @@ export default {
     'txid': '传送号 #',
     'sender': '从',
     'recipient': '到',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': '发送资金',

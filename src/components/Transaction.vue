@@ -38,9 +38,17 @@
               <div v-on:click="openInExplorer">&gt;</div>
             </md-table-cell>
           </md-table-row>
+          <md-table-row class='open_chat'>
+            <md-table-cell class='label_td'>
+              <div v-on:click="openChat">
+                <md-icon class="md-size-2x">{{ hasMessages ? "chat" : "chat_bubble_outline" }}</md-icon>
+                <span>{{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}</span>
+              </div>
+            </md-table-cell>
+            <md-table-cell class='data_td'></md-table-cell>
+          </md-table-row>
         </md-table-body>
       </md-table>
-
     </div>
 </template>
 
@@ -62,6 +70,10 @@
       },
       openInExplorer: function () {
         window.open('https://explorer.adamant.im/tx/' + this.$route.params.tx_id, '_blank')
+      },
+      openChat: function () {
+        this.$store.commit('select_chat', this.partner)
+        this.$router.push('/chats/' + this.partner + '/')
       }
     },
     computed: {
@@ -77,6 +89,14 @@
         }
         this.getTransactionInfo(this.$route.params.tx_id)
         return false
+      },
+      partner: function () {
+        return this.transaction.senderId !== this.$store.state.address
+          ? this.transaction.senderId : this.transaction.recipientId
+      },
+      hasMessages: function () {
+        const chat = this.$store.state.chats[this.partner]
+        return chat && chat.messages && Object.keys(chat.messages).length > 0
       }
     }
   }
@@ -102,6 +122,16 @@
 
   .open_in_explorer {
     cursor: pointer;
+  }
+
+  .md-table .md-table-row.open_chat .md-table-cell.label_td .md-table-cell-container {
+    display: inherit;
+    cursor: pointer;
+  }
+
+  .md-table .md-table-row.open_chat .md-table-cell.label_td .md-icon {
+    margin-left: -2px;
+    margin-right: 8px;
   }
 </style>
 

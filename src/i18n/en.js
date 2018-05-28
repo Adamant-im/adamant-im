@@ -79,7 +79,9 @@ export default {
     'txid': 'Transaction #',
     'sender': 'From',
     'recipient': 'To',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'Send Funds',

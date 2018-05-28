@@ -80,7 +80,9 @@ export default {
     'txid': 'Transaktion #',
     'sender': 'Von',
     'recipient': 'Zu',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'Betrag senden',

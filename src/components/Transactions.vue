@@ -1,7 +1,7 @@
 <template>
     <div class="transaction transaction_list">
       <md-list class="custom-list md-triple-line">
-        <md-list-item v-for="(transaction, index) in transactions" :key="transaction.id" style="cursor:pointer">
+        <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
           <md-avatar>
             <md-icon v-if="transaction.senderId !== currentAddress">flight_land</md-icon>
             <md-icon v-if="transaction.senderId === currentAddress">flight_takeoff</md-icon>
@@ -10,10 +10,13 @@
           <div class="md-list-text-container" v-on:click="$router.push('/transactions/' + transaction.id + '/')">
             <span v-if="transaction.senderId !== currentAddress">{{ transaction.senderId.toString().toUpperCase() }}</span>
             <span v-else>{{ transaction.recipientId.toString().toUpperCase() }}</span>
-            <span>{{ toFixed(transaction.amount / 100000000) }} ADM</span>
+            <span>{{ $formatAmount(transaction.amount) }} ADM</span>
             <p>{{ dateFormat(transaction.timestamp) }}</p>
           </div>
 
+          <md-button class="md-icon-button md-list-action" v-on:click="openChat(transaction)">
+            <md-icon>{{ hasMessages(transaction) ? "chat" : "chat_bubble_outline" }}</md-icon>
+          </md-button>
 
           <md-divider class="md-inset"></md-divider>
         </md-list-item>
@@ -41,23 +44,18 @@
       dateFormat: function (timestamp) {
         return new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0)).toLocaleString()
       },
-      toFixed: function (x) {
-        var e
-        if (Math.abs(x) < 1.0) {
-          e = parseInt(x.toString().split('e-')[1])
-          if (e) {
-            x *= Math.pow(10, e - 1)
-            x = '0.' + (new Array(e)).join('0') + x.toString().substring(2)
-          }
-        } else {
-          e = parseInt(x.toString().split('+')[1])
-          if (e > 20) {
-            e -= 20
-            x /= Math.pow(10, e)
-            x += (new Array(e + 1)).join('0')
-          }
-        }
-        return x
+      getPartner (transaction) {
+        return transaction.senderId !== this.$store.state.address ? transaction.senderId : transaction.recipientId
+      },
+      hasMessages (transaction) {
+        const partner = this.getPartner(transaction)
+        const chat = this.$store.state.chats[partner]
+        return chat && chat.messages && Object.keys(chat.messages).length > 0
+      },
+      openChat (transaction) {
+        const partner = this.getPartner(transaction)
+        this.$store.commit('select_chat', partner)
+        this.$router.push('/chats/' + partner + '/')
       }
     },
     computed: {

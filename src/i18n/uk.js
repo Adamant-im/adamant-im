@@ -80,7 +80,9 @@ export default {
     'txid': 'Транзакція #',
     'sender': 'Від',
     'recipient': 'До',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'Надіслати кошти',
