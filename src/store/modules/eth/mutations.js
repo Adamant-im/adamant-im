@@ -19,13 +19,26 @@ export default {
     state.transactions.push(tx)
   },
 
-  /** Completes the pending transaction */
-  completeTransaction (state, payload) {
+  transactionConfirmation (state, payload) {
     const index = state.transactions.findIndex(x => x.hash === payload.hash)
-    if (index >= 0) {
-      const tx = state.transactions[index]
-      const status = payload.success ? 'SUCCESS' : 'FAILED'
-      Vue.set(state.transactions, index, { ...tx, status })
-    }
+    if (index < 0) return
+
+    const tx = state.transactions[index]
+    Vue.set(state.transactions, index, {
+      ...tx,
+      confirmations: payload.number,
+      status: payload.receipt.status ? 'SUCCESS' : 'ERROR'
+    })
+  },
+
+  transactionError (state, hash) {
+    const index = state.transactions.findIndex(x => x.hash === hash)
+    if (index < 0) return
+
+    const tx = state.transactions[index]
+    Vue.set(state.transactions, index, {
+      ...tx,
+      status: 'ERROR'
+    })
   }
 }

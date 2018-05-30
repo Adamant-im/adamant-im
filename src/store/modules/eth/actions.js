@@ -24,6 +24,14 @@ function getAccountFromPassphrase (passphrase) {
   return api.eth.accounts.privateKeyToAccount('0x' + privateKey.toString('hex'))
 }
 
+/**
+ * Returns current gas price. Defaults to 20 Gwei in case of error.
+ * @returns {Promise<number>}
+ */
+function getGasPrice () {
+  return api.eth.getGasPrice().catch(() => api.utils.toWei('20', 'Gwei'))
+}
+
 function toEther (wei) {
   return api.utils.fromWei(wei, 'ether')
 }
@@ -64,7 +72,7 @@ export default {
    * @param {string} receiver receiver ETH-address
    * @returns {Promise<string>} ETH transaction hash
    */
-  sendTokens (context, amount, receiver) {
+  sendTokens (context, { amount, receiver }) {
     const transaction = {
       from: context.state.address,
       to: receiver,
@@ -76,29 +84,36 @@ export default {
       return Promise.reject({ code: 'invalid_address' })
     }
 
-    return api.eth.accounts.signTransaction(transaction, context.state.privateKey, true)
+    return getGasPrice()
+      .then(price => {
+        transaction.gasPrice = price
+        api.eth.accounts.signTransaction(transaction, context.state.privateKey)
+      })
       .then(signed => {
         const tx = signed.rawTransaction
         const hash = api.utils.sha3(tx)
         console.log('ETH transaction', hash)
 
         const sendResult = api.eth.sendSignedTransaction(tx)
-        sendResult.on('receipt', receipt => {
+        sendResult.on('confirmation', (number, receipt) => {
           console.log('ETH receipt ', receipt)
-          context.commit('completeTransaction', { hash, success: true })
+          context.commit('transactionConfirmation', { hash, number, receipt })
         })
         sendResult.on('error', error => {
           console.error('ETH error', error)
-          context.commit('completeTransaction', { hash, success: false })
+          context.commit('transactionError', hash)
         })
 
         // TODO: not used so far, subject for future changes
         context.commit('addTransaction', {
           hash,
-          receiver,
+          senderId: transaction.from,
+          recipientId: transaction.to,
           amount,
+          fee: toEther(Number(transaction.gas) * transaction.gasPrice),
           status: 'PENDING',
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          confirmations: 0
         })
 
         return hash
