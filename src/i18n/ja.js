@@ -69,7 +69,8 @@ export default {
     'send_btn': 'トークンの送金 ',
     'send_btn_tooltip': 'クリックするとADMトークンがADAMANTの別のユーザーに送金されます。',
     'invest_btn': 'ICOに投資する',
-    'invest_btn_tooltip': 'ADAMANTの安全性と匿名性の高いメッセンジャーのICOに投資することができます。 クリックすると、Adamant.im/EN-ico/の投資ページに移動します。'
+    'invest_btn_tooltip': 'ADAMANTの安全性と匿名性の高いメッセンジャーのICOに投資することができます。 クリックすると、Adamant.im/EN-ico/の投資ページに移動します。',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': '金額',

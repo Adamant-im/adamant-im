@@ -70,7 +70,8 @@ export default {
     'send_btn': 'Clique para enviar tokens',
     'send_btn_tooltip': 'Clique para transferir ADM tokens para outro utilizador ADAMANT',
     'invest_btn': 'Invista na ICO',
-    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': 'Montante',
