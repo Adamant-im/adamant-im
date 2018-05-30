@@ -6,10 +6,23 @@
               <label>{{ $t('transfer.to_address_label') }}</label>
               <md-input v-model="targetAddress"></md-input>
           </md-input-container>
-          <md-input-container>
-              <label style="text-align:left">{{ $t('transfer.amount_label') }} (max: {{ maxToTransfer }} ADM)</label>
-              <md-input type="number" min=0 :max="maxToTransfer" v-model="targetAmount"></md-input>
-          </md-input-container>
+          <md-layout>
+            <md-layout>
+              <md-input-container>
+                <label style="text-align:left">{{ $t('transfer.amount_label') }} (max: {{ maxToTransfer }} {{ platform }})</label>
+                <md-input type="number" min=0 :max="maxToTransfer" v-model="targetAmount"></md-input>
+              </md-input-container>
+            </md-layout>
+            <md-layout md-flex="15">
+              <md-input-container>
+                <md-select v-model="platform">
+                  <md-option value='ADM'>ADM</md-option>
+                  <md-option value='ETH'>ETH</md-option>
+                </md-select>
+              </md-input-container>
+            </md-layout>
+          </md-layout>
+
           <md-input-container>
               <label>{{ $t('transfer.commission_label') }}</label>
               <md-input type="number" readonly v-model="commission"></md-input>
@@ -48,7 +61,14 @@ export default {
     },
     onClose (type) {
       if (type === 'ok') {
-        this.transferFunds(this.targetAmount, this.targetAddress)
+        if (this.platform === 'ADM') {
+          this.transferFunds(this.targetAmount, this.targetAddress)
+        } else if (this.platform === 'ETH') {
+          this.$store.dispatch('eth/sendTokens', {
+            amount: this.targetAmount,
+            receiver: this.targetAddress
+          })
+        }
       }
     },
     transfer: function () {
@@ -56,10 +76,10 @@ export default {
         this.errorMessage('error_no_address')
         return
       }
-      if (!(/U([0-9]{6,})$/.test(this.targetAddress))) {
-        this.errorMessage('error_incorrect_address')
-        return
-      }
+      // if (!(/U([0-9]{6,})$/.test(this.targetAddress))) {
+      //   this.errorMessage('error_incorrect_address')
+      //   return
+      // }
       if (!this.targetAmount) {
         this.errorMessage('error_no_amount')
         return
@@ -68,10 +88,10 @@ export default {
         this.errorMessage('error_incorrect_amount')
         return
       }
-      if ((parseFloat(this.targetAmount) + this.commission) > parseFloat(this.$store.state.balance)) {
-        this.errorMessage('error_not_enough')
-        return
-      }
+      // if ((parseFloat(this.targetAmount) + this.commission) > parseFloat(this.$store.state.balance)) {
+      //   this.errorMessage('error_not_enough')
+      //   return
+      // }
       this.$refs['confirm_transfer_dialog'].open()
     }
   },
@@ -106,7 +126,8 @@ export default {
       commission: 0.5,
       amountToTransfer: 0,
       targetAddress: '',
-      targetAmount: ''
+      targetAmount: '',
+      platform: 'ADM'
     }
   }
 }
