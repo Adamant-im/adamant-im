@@ -1,4 +1,7 @@
 export default {
   balance: 0,
-  address: ''
+  address: '',
+  publicKey: null,
+  privateKey: null,
+  transactions: []
 }

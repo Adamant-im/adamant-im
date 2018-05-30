@@ -3,6 +3,7 @@ import hdkey from 'hdkey'
 import Web3 from 'web3'
 
 const HD_KEY_PATH = "m/44'/60'/3'/1/0"
+const TRANSFER_GAS = '21000'
 
 export default class EthereumApi {
   /**
@@ -39,6 +40,39 @@ export default class EthereumApi {
   getBalance () {
     return this._web3.eth.getBalance(this.account.address)
       .then(balance => this._web3.utils.fromWei(balance, 'ether'))
+  }
+
+  /**
+   * Intiates ETH transfer.
+   *
+   * @param {String} address ETH-address to transfer tokens to
+   * @param {Number} amount Amount to transfer
+   * @returns {Promise<String>} transaction hash
+   */
+  transfer (address = '', amount = 0) {
+    const transaction = {
+      from: this.address,
+      to: address,
+      value: this._web3.utils.toWei(amount, 'ether'),
+      gas: TRANSFER_GAS
+    }
+
+    return this._web3.eth.accounts.signTransaction(transaction, this.account.privateKey)
+      .then((signed) => new Promise((resolve, reject) => {
+        const result = this._web3.eth.sendSignedTransaction(signed.rawTransaction)
+        result.on('transactionHash', hash => resolve(hash))
+        result.on('error', error => reject(error))
+      }))
+  }
+
+  /**
+   * Returns ETH transaction receipt or `null` if none is available
+   *
+   * @param {String} transactionHash ETH transaction hash
+   * @returns {{status: boolean}} transaction receipt (promised value can be null)
+   */
+  getReceipt (transactionHash) {
+    return this._web3.eth.getTransactionReceipt(transactionHash)
   }
 
   /**

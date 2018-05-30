@@ -97,8 +97,7 @@ export default {
         this.loadChats(true)
         this.$store.commit('stop_tracking_new')
 
-        this.$store.dispatch('eth/login', this.passPhrase)
-        this.$store.dispatch('eth/updateBalance')
+        this.$store.dispatch('login', this.passPhrase)
 
         this.getStored('eth:address').then(address => {
           if (!address) this.storeValue('eth:address', this.$store.state.eth.address)
