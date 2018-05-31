@@ -42,7 +42,7 @@
       </md-snackbar>
       <md-dialog-confirm
               :md-title="$t('transfer.confirm_title')"
-              :md-content-html="$t('transfer.confirm_message', {amount: targetAmount, target: targetAddress })"
+              :md-content-html="$t('transfer.confirm_message', { amount: targetAmount, target: targetAddress, crypto })"
               :md-ok-text="$t('transfer.confirm_approve')"
               :md-cancel-text="$t('transfer.confirm_cancel')"
               @close="onClose"
@@ -71,7 +71,7 @@ export default {
           this.$store.dispatch('eth/sendTokens', {
             amount: this.targetAmount,
             receiver: this.targetAddress
-          })
+          }).then(hash => this.$router.push('/transactions/ETH/' + hash))
         }
       }
     },

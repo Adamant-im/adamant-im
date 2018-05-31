@@ -5,5 +5,5 @@ export default {
   address: '',
   publicKey: null,
   privateKey: null,
-  transactions: []
+  transactions: { }
 }

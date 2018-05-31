@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'من فضلك أدخل المبلغ',
     'error_not_enough': 'قطع غير كافية',
     'confirm_title': 'تأكيد الإرسال',
-    'confirm_message': 'تأكيد إرسال <b>{amount} ADM</b> إلى العنوان {target}.',
+    'confirm_message': 'تأكيد إرسال <b>{amount} {crypto}</b> إلى العنوان {target}.',
     'confirm_approve': 'تأكيد',
     'confirm_cancel': 'إلغاء'
   },

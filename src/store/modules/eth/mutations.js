@@ -22,15 +22,14 @@ export default {
 
   /** Adds a new transaction */
   addTransaction (state, tx) {
-    state.transactions.push(tx)
+    Vue.set(state.transactions, tx.hash, tx)
   },
 
   transactionConfirmation (state, payload) {
-    const index = state.transactions.findIndex(x => x.hash === payload.hash)
-    if (index < 0) return
+    const tx = state.transactions[payload.hash]
+    if (!tx) return
 
-    const tx = state.transactions[index]
-    Vue.set(state.transactions, index, {
+    Vue.set(state.transactions, tx.hash, {
       ...tx,
       confirmations: payload.number,
       status: payload.receipt.status ? 'SUCCESS' : 'ERROR'
@@ -38,11 +37,10 @@ export default {
   },
 
   transactionError (state, hash) {
-    const index = state.transactions.findIndex(x => x.hash === hash)
-    if (index < 0) return
+    const tx = state.transactions[hash]
+    if (!tx) return
 
-    const tx = state.transactions[index]
-    Vue.set(state.transactions, index, {
+    Vue.set(state.transactions, tx.hash, {
       ...tx,
       status: 'ERROR'
     })

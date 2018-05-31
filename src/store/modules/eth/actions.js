@@ -24,14 +24,6 @@ function getAccountFromPassphrase (passphrase) {
   return api.eth.accounts.privateKeyToAccount('0x' + privateKey.toString('hex'))
 }
 
-/**
- * Returns current gas price. Defaults to 20 Gwei in case of error.
- * @returns {Promise<number>}
- */
-function getGasPrice () {
-  return api.eth.getGasPrice().catch(() => api.utils.toWei('20', 'Gwei'))
-}
-
 function toEther (wei) {
   return api.utils.fromWei(`${wei}`, 'ether')
 }
@@ -97,25 +89,22 @@ export default {
       from: context.state.address,
       to: receiver,
       value: toWei(amount),
-      gas: TRANSFER_GAS
+      gas: TRANSFER_GAS,
+      gasPrice: context.state.gasPrice || api.utils.toWei('20', 'Gwei')
     }
 
     if (!api.utils.isAddress(receiver)) {
       return Promise.reject({ code: 'invalid_address' })
     }
 
-    return getGasPrice()
-      .then(price => {
-        transaction.gasPrice = price
-        api.eth.accounts.signTransaction(transaction, context.state.privateKey)
-      })
+    return api.eth.accounts.signTransaction(transaction, context.state.privateKey)
       .then(signed => {
         const tx = signed.rawTransaction
         const hash = api.utils.sha3(tx)
         console.log('ETH transaction', hash)
 
         const sendResult = api.eth.sendSignedTransaction(tx)
-        sendResult.on('confirmation', (number, receipt) => {
+        sendResult.once('confirmation', (number, receipt) => {
           console.log('ETH receipt ', receipt)
           context.commit('transactionConfirmation', { hash, number, receipt })
         })
