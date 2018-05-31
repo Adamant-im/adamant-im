@@ -61,6 +61,8 @@ export default function storeData () {
         arrayMerge: function (store, saved) { return saved },
         clone: false
       }))
+
+      store.dispatch('rehydrate')
     }
     window.onbeforeunload = function () {
       window.ep.$store.commit('force_update')

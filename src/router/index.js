@@ -15,7 +15,7 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    { path: '/transactions/:tx_id', component: Transaction },
+    { path: '/transactions/:crypto/:tx_id', component: Transaction },
     {
       path: '/transactions',
       name: 'Transactions',

@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'Please provide amount',
     'error_not_enough': 'Not enough tokens',
     'confirm_title': 'Transfer confirmation',
-    'confirm_message': 'Confirm transfer of <b>{amount} ADM</b> to address {target}.',
+    'confirm_message': 'Confirm transfer of <b>{amount} {crypto}</b> to address {target}.',
     'confirm_approve': 'Confirm',
     'confirm_cancel': 'Cancel'
   },

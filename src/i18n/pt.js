@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'Por favor introduza montante',
     'error_not_enough': 'Não tem tokens suficientes',
     'confirm_title': 'Confirmar transferência',
-    'confirm_message': 'Confirmar transferência de <b>{amount} ADM</b> para o endereço {target}.',
+    'confirm_message': 'Confirmar transferência de <b>{amount} {crypto}</b> para o endereço {target}.',
     'confirm_approve': 'Confirmar',
     'confirm_cancel': 'Cancelar'
   },

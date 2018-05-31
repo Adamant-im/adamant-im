@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'Укажите сумму для перевода',
     'error_not_enough': 'Недостаточно токенов для перевода',
     'confirm_title': 'Подтверждение перевода',
-    'confirm_message': 'Подтвердите перевод <b>{amount} ADM</b> на кошелек {target}.',
+    'confirm_message': 'Подтвердите перевод <b>{amount} {crypto}</b> на кошелек {target}.',
     'confirm_approve': 'Подтвердить',
     'confirm_cancel': 'Отмена'
   },

@@ -12,3 +12,14 @@ export const Transactions = {
   CHAT_MESSAGE: 8,
   STATE: 9
 }
+
+export const Cryptos = {
+  ADM: 'ADM',
+  ETH: 'ETH'
+}
+
+/** Number of decimal places for the different crypto amounts */
+export const CryptoAmountPrecision = {
+  ADM: 2,
+  ETH: 6
+}

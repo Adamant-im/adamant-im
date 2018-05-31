@@ -4,19 +4,19 @@
         <md-table-body>
           <md-table-row >
             <md-table-cell class='label_td'>{{ $t('transaction.amount') }}</md-table-cell>
-            <md-table-cell >{{ $formatAmount(transaction.amount) }} ADM</md-table-cell>
+            <md-table-cell >{{ $formatAmount(transaction.amount, crypto) }} {{ crypto }}</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.date') }}</md-table-cell>
-            <md-table-cell >{{ dateFormat(transaction.timestamp) }}</md-table-cell>
+            <md-table-cell >{{ $formatDate(transaction.timestamp, crypto === 'ADM') }}</md-table-cell>
           </md-table-row>
-          <md-table-row >
+          <md-table-row v-if="crypto === 'ADM'">
             <md-table-cell  class='label_td'>{{ $t('transaction.confirmations') }}</md-table-cell>
             <md-table-cell >{{ confirmations }}</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.commission') }}</md-table-cell>
-            <md-table-cell >{{ $formatAmount(transaction.fee) }} ADM</md-table-cell>
+            <md-table-cell >{{ $formatAmount(transaction.fee, crypto) }} {{ crypto }}</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.txid') }}</md-table-cell>
@@ -38,7 +38,7 @@
               <div v-on:click="openInExplorer">&gt;</div>
             </md-table-cell>
           </md-table-row>
-          <md-table-row class='open_chat'>
+          <md-table-row class='open_chat' v-if="crypto === 'ADM'">
             <md-table-cell class='label_td'>
               <div v-on:click="openChat">
                 <md-icon class="md-size-2x">{{ hasMessages ? "chat" : "chat_bubble_outline" }}</md-icon>
@@ -53,6 +53,9 @@
 </template>
 
 <script>
+  import { Cryptos } from '../lib/constants'
+  import getExplorerUrl from '../lib/getExplorerUrl'
+
   export default {
     name: 'transaction',
     data () {
@@ -61,15 +64,14 @@
     },
     watch: {
       '$route': function (value) {
-        this.getTransactionInfo(value.params.tx_id)
+        if (value.params.crypto === Cryptos.ADM) {
+          this.getTransactionInfo(value.params.tx_id)
+        }
       }
     },
     methods: {
-      dateFormat: function (timestamp) {
-        return new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0)).toLocaleString()
-      },
       openInExplorer: function () {
-        window.open('https://explorer.adamant.im/tx/' + this.$route.params.tx_id, '_blank')
+        window.open(getExplorerUrl(this.crypto, this.$route.params.tx_id), '_blank')
       },
       openChat: function () {
         this.$store.commit('select_chat', this.partner)
@@ -77,6 +79,9 @@
       }
     },
     computed: {
+      crypto () {
+        return this.$route.params.crypto
+      },
       confirmations: function () {
         if (!this.transaction.confirmations) {
           return '⏱'
@@ -84,6 +89,10 @@
         return this.transaction.confirmations
       },
       transaction: function () {
+        if (this.$route.params.crypto === Cryptos.ETH) {
+          return this.$store.state.eth.transactions[this.$route.params.tx_id]
+        }
+
         if (this.$store.state.transactions[this.$route.params.tx_id]) {
           return this.$store.state.transactions[this.$route.params.tx_id]
         }

@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'S\'il vous plaît fournir une quantité',
     'error_not_enough': 'Pas assez de jetons',
     'confirm_title': 'confirmation de transfert',
-    'confirm_message': 'Confirmer le transfert de {montant} ADM pour répondre {But}.',
+    'confirm_message': 'Confirmer le transfert de {montant} {crypto} pour répondre {But}.',
     'confirm_approve': 'Confirmer',
     'confirm_cancel': 'Annuler'
   },

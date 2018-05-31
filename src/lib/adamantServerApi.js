@@ -334,7 +334,7 @@ function install (Vue) {
     }).then(response => {
       if (response.body.success) {
         if (response.body.transactionId) {
-          this.$root._router.push('/transactions/' + response.body.transactionId + '/')
+          this.$root._router.push('/transactions/ADM/' + response.body.transactionId + '/')
         }
       } else {
       }
@@ -401,7 +401,7 @@ function install (Vue) {
       this.loadChats()
       this.getTransactions()
 
-      this.$store.dispatch('eth/updateBalance')
+      this.$store.dispatch('eth/updateStatus')
     } else if (this.$store.state.ajaxIsOngoing && !window.resetAjaxState) {
       window.resetAjaxState = setTimeout(
         (function (self) {

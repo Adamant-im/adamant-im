@@ -98,7 +98,7 @@ export default {
     'error_no_amount': '금액을 입력하십시오.',
     'error_not_enough': '토큰이 충분하지 않습니다.',
     'confirm_title': '이동 확정',
-    'confirm_message': '<b>{amount}ADM </b>의 {target} 주소로의 이전을 확인하십시오.',
+    'confirm_message': '<b>{amount} {crypto} </b>의 {target} 주소로의 이전을 확인하십시오.',
     'confirm_approve': '확인',
     'confirm_cancel': '취소'
   },

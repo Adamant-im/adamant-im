@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'Lütfen bir miktar giriniz',
     'error_not_enough': 'Yeterli bakiyeniz yok',
     'confirm_title': 'Transfer onaylama',
-    'confirm_message': '<b>{amount} ADM Jetonunun</b> {target} adresine transfer edilmesini onaylayin.',
+    'confirm_message': '<b>{amount} {crypto} Jetonunun</b> {target} adresine transfer edilmesini onaylayin.',
     'confirm_approve': 'Onayla',
     'confirm_cancel': 'Iptal et'
   },
