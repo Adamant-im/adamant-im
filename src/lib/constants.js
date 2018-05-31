@@ -17,3 +17,9 @@ export const Cryptos = {
   ADM: 'ADM',
   ETH: 'ETH'
 }
+
+/** Number of decimal places for the different crypto amounts */
+export const CryptoAmountPrecision = {
+  ADM: 2,
+  ETH: 6
+}

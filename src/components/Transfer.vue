@@ -54,7 +54,7 @@
 
 <script>
 import validateAddress from '../lib/validateAddress'
-import { Cryptos } from '../lib/constants'
+import { Cryptos, CryptoAmountPrecision } from '../lib/constants'
 
 export default {
   name: 'home',
@@ -115,7 +115,7 @@ export default {
       return this.crypto === Cryptos.ETH ? this.$store.state.eth.balance : this.$store.state.balance
     },
     exponent () {
-      return this.crypto === Cryptos.ETH ? 6 : 2
+      return CryptoAmountPrecision[this.crypto]
     },
     cryptosList () {
       return Object.keys(Cryptos)
