@@ -45,6 +45,20 @@ export default {
     }
   },
 
+  /** Handles store rehydratation: generates an account if one is not ready yet */
+  rehydrate: {
+    root: true,
+    handler (context) {
+      const passphrase = context.rootState.passPhrase
+      const address = context.state.address
+
+      if (!address && passphrase) {
+        const account = getAccountFromPassphrase(passphrase)
+        context.commit('account', account)
+      }
+    }
+  },
+
   /**
    * Requests ETH account status: balance, gas price, etc.
    * @param {*} context Vuex action context
