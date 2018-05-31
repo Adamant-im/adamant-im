@@ -69,7 +69,8 @@ export default {
     'send_btn': 'Pindutin para magpadala ng mga token',
     'send_btn_tooltip': 'Pindutin para maglipat ng mga ADM token sa ibang gumagamit ng ADAMANT',
     'invest_btn': 'Mag-invest sa ICO',
-    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': 'Dami',

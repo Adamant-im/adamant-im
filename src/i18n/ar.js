@@ -69,7 +69,8 @@ export default {
     'send_btn': 'انقر لترسل القطع',
     'send_btn_tooltip': 'لنقر لتحول القطع لمستخدمي الاتطبيق الآخرين',
     'invest_btn': 'استثمر في الايكو',
-    'invest_btn_tooltip': 'لديك الامكانية في الاستثمار في ايكو التطبيق الاكثر سرية وأمانا ADAMANT. انقر لتذهب للاستثمار على  Adamant.im/ico/.'
+    'invest_btn_tooltip': 'لديك الامكانية في الاستثمار في ايكو التطبيق الاكثر سرية وأمانا ADAMANT. انقر لتذهب للاستثمار على  Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': 'المبلغ',

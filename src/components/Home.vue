@@ -49,6 +49,19 @@
               </div>
 
           </md-list-item>
+
+          <md-list-item :href="freeAdmAddress" target="_blank">
+
+              <md-avatar class="md-avatar-icon">
+                  <md-icon>monetization_on</md-icon>
+              </md-avatar>
+
+              <div class="md-list-text-container">
+                  <span>{{ $t('home.free_adm_btn') }} </span>
+                  <p></p>
+              </div>
+          </md-list-item>
+
           <md-list-item :href="icoAddress" target="_blank" :title="$t('home.invest_btn_tooltip')">
 
               <md-avatar class="md-avatar-icon">
@@ -89,6 +102,9 @@ export default {
         return 'https://adamant.im/ru-ico/?wallet=' + this.$store.state.address
       }
       return 'https://adamant.im/ico/?wallet=' + this.$store.state.address
+    },
+    freeAdmAddress () {
+      return 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
     },
     isNewUser: function () {
       return this.$store.state.is_new_account

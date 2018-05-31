@@ -69,7 +69,8 @@ export default {
     'send_btn': 'टोकन भेजेने के लिए क्लिक करे ',
     'send_btn_tooltip': 'ADM टोकन को अन्य ADAMANT इस्तेमाल करता को स्थानांतरित करने के लिए क्लिक करें',
     'invest_btn': 'ICO में निवेश करें',
-    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': 'राशी',

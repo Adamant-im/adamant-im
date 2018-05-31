@@ -69,7 +69,8 @@ export default {
     'send_btn': 'Apasă pentru a trimite token-uri',
     'send_btn_tooltip': 'Apăsați pentru a transfera token-uri ADM altui utilizator',
     'invest_btn': 'Investește în ICO',
-    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'tranzaction': {
     'amount': 'Suma',

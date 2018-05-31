@@ -69,7 +69,8 @@ export default {
     'send_btn': 'Clicca per inviare token',
     'send_btn_tooltip': 'Fare clic per trasferire token ADM ad altri utenti di ADAMANT',
     'invest_btn': 'Investire nell\'ICO',
-    'invest_btn_tooltip': 'Hai la possibilita di investire in ICO di ADAMANT, il messenger piu sicuro e anonimo. Clicca per andare a investire in forma Adamant.im/ico/. '
+    'invest_btn_tooltip': 'Hai la possibilita di investire in ICO di ADAMANT, il messenger piu sicuro e anonimo. Clicca per andare a investire in forma Adamant.im/ico/. ',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': 'Quantita',

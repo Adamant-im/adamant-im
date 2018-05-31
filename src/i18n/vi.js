@@ -69,7 +69,8 @@ export default {
     'send_btn': 'Nhấp vào để gửi token',
     'send_btn_tooltip': 'Nhấp để chuyển token ADM sang người dùng ADAMANT khác',
     'invest_btn': 'Đầu tư ICO',
-    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': 'Số tiền',

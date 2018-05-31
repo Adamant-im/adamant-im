@@ -69,7 +69,8 @@ export default {
     'send_btn': 'Jeton göndermek için tiklayin',
     'send_btn_tooltip': 'ADM jetonunu transfer etmek için tiklayin',
     'invest_btn': 'Satışa Katılın',
-    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': 'Tutar',

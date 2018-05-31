@@ -69,7 +69,8 @@ export default {
     'send_btn': '클릭해서 토큰보내기',
     'send_btn_tooltip': '다른 ADAMANT 사용자에게 ADM 토큰을 전송하려면 클릭하십시오.',
     'invest_btn': 'ICO에 투자하십시오.',
-    'invest_btn_tooltip': '가장 안전하고 익명의 메신저 인 ADAMANT의 ICO에 투자 할 수 있습니다. 클릭하여 Adamant.im/ico/ 양식에 투자하십시오.'
+    'invest_btn_tooltip': '가장 안전하고 익명의 메신저 인 ADAMANT의 ICO에 투자 할 수 있습니다. 클릭하여 Adamant.im/ico/ 양식에 투자하십시오.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': '수량',

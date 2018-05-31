@@ -69,7 +69,8 @@ export default {
     'send_btn': '点此发送代币',
     'send_btn_tooltip': '点此发送ADM代币给其他的ADAMANT用户',
     'invest_btn': 'Invest in the ICO',
-    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': '数量',
