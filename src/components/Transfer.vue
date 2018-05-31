@@ -9,15 +9,16 @@
           <md-layout>
             <md-layout>
               <md-input-container>
-                <label style="text-align:left">{{ $t('transfer.amount_label') }} (max: {{ maxToTransfer }} {{ platform }})</label>
+                <label style="text-align:left">{{ $t('transfer.amount_label') }} (max: {{ maxToTransfer }} {{ crypto }})</label>
                 <md-input type="number" min=0 :max="maxToTransfer" v-model="targetAmount"></md-input>
               </md-input-container>
             </md-layout>
             <md-layout md-flex="15">
               <md-input-container>
-                <md-select v-model="platform">
-                  <md-option value='ADM'>ADM</md-option>
-                  <md-option value='ETH'>ETH</md-option>
+                <md-select v-model="crypto">
+                  <md-option v-for="c in cryptosList" v-bind:key="c" :value="c">
+                    {{ c }}
+                  </md-option>
                 </md-select>
               </md-input-container>
             </md-layout>
@@ -52,6 +53,9 @@
 </template>
 
 <script>
+import validateAddress from '../lib/validateAddress'
+import { Cryptos } from '../lib/constants'
+
 export default {
   name: 'home',
   methods: {
@@ -61,9 +65,9 @@ export default {
     },
     onClose (type) {
       if (type === 'ok') {
-        if (this.platform === 'ADM') {
+        if (this.crypto === Cryptos.ADM) {
           this.transferFunds(this.targetAmount, this.targetAddress)
-        } else if (this.platform === 'ETH') {
+        } else if (this.crypto === Cryptos.ETH) {
           this.$store.dispatch('eth/sendTokens', {
             amount: this.targetAmount,
             receiver: this.targetAddress
@@ -76,10 +80,10 @@ export default {
         this.errorMessage('error_no_address')
         return
       }
-      // if (!(/U([0-9]{6,})$/.test(this.targetAddress))) {
-      //   this.errorMessage('error_incorrect_address')
-      //   return
-      // }
+      if (!validateAddress(this.crypto, this.targetAddress)) {
+        this.errorMessage('error_incorrect_address')
+        return
+      }
       if (!this.targetAmount) {
         this.errorMessage('error_no_amount')
         return
@@ -88,32 +92,45 @@ export default {
         this.errorMessage('error_incorrect_amount')
         return
       }
-      // if ((parseFloat(this.targetAmount) + this.commission) > parseFloat(this.$store.state.balance)) {
-      //   this.errorMessage('error_not_enough')
-      //   return
-      // }
+      if ((parseFloat(this.targetAmount) + this.commission) > parseFloat(this.balance)) {
+        this.errorMessage('error_not_enough')
+        return
+      }
       this.$refs['confirm_transfer_dialog'].open()
     }
   },
   computed: {
     maxToTransfer: function () {
-      this.amountToTransfer = (Math.floor((parseFloat(this.$store.state.balance) - this.commission) * 100) / 100).toFixed(2)
+      const multiplier = Math.pow(10, this.exponent)
+      this.amountToTransfer = (Math.floor((parseFloat(this.balance) - this.commission) * multiplier) / multiplier).toFixed(this.exponent)
       if (this.amountToTransfer < 0) {
         this.amountToTransfer = 0
       }
       return this.amountToTransfer
+    },
+    commission () {
+      return this.crypto === Cryptos.ETH ? this.$store.state.eth.fee : 0.5
+    },
+    balance () {
+      return this.crypto === Cryptos.ETH ? this.$store.state.eth.balance : this.$store.state.balance
+    },
+    exponent () {
+      return this.crypto === Cryptos.ETH ? 6 : 2
+    },
+    cryptosList () {
+      return Object.keys(Cryptos)
     }
   },
   watch: {
     targetAmount (to, from) {
-      var fixedPoint = 2
+      var fixedPoint = this.exponent
       if (to.toString().indexOf('.') > -1) {
         fixedPoint = to.toString().length - to.toString().indexOf('.') - 1
-        if (fixedPoint < 2) {
-          fixedPoint = 2
+        if (fixedPoint < this.exponent) {
+          fixedPoint = this.exponent
         }
       }
-      this.finalAmount = (parseFloat(to) + 0.5).toFixed(fixedPoint)
+      this.finalAmount = (parseFloat(to) + parseFloat(this.commission)).toFixed(fixedPoint)
     },
     'language' (to, from) {
       this.$i18n.locale = to
@@ -123,11 +140,10 @@ export default {
     return {
       finalAmount: 0,
       formErrorMessage: '',
-      commission: 0.5,
       amountToTransfer: 0,
       targetAddress: '',
       targetAmount: '',
-      platform: 'ADM'
+      crypto: Cryptos.ADM
     }
   }
 }

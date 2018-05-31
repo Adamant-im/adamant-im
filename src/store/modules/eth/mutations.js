@@ -7,6 +7,12 @@ export default {
     state.balance = balance
   },
 
+  /** Gas price and fee */
+  gasPrice (state, payload) {
+    state.gasPrice = payload.gasPrice
+    state.fee = payload.fee
+  },
+
   /** Set ETH account */
   account (state, account) {
     state.address = account.address

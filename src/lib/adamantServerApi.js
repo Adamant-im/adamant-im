@@ -401,7 +401,7 @@ function install (Vue) {
       this.loadChats()
       this.getTransactions()
 
-      this.$store.dispatch('eth/updateBalance')
+      this.$store.dispatch('eth/updateStatus')
     } else if (this.$store.state.ajaxIsOngoing && !window.resetAjaxState) {
       window.resetAjaxState = setTimeout(
         (function (self) {

@@ -12,3 +12,8 @@ export const Transactions = {
   CHAT_MESSAGE: 8,
   STATE: 9
 }
+
+export const Cryptos = {
+  ADM: 'ADM',
+  ETH: 'ETH'
+}

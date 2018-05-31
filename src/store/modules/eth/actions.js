@@ -33,11 +33,11 @@ function getGasPrice () {
 }
 
 function toEther (wei) {
-  return api.utils.fromWei(wei, 'ether')
+  return api.utils.fromWei(`${wei}`, 'ether')
 }
 
 function toWei (ether) {
-  return api.utils.toWei(ether, 'ether')
+  return api.utils.toWei(`${ether}`, 'ether')
 }
 
 export default {
@@ -49,19 +49,39 @@ export default {
     handler (context, passphrase) {
       const account = getAccountFromPassphrase(passphrase)
       context.commit('account', account)
-      context.dispatch('updateBalance')
+      context.dispatch('updateStatus')
     }
   },
 
   /**
-   * Requests ETH account balance.
+   * Requests ETH account status: balance, gas price, etc.
    * @param {*} context Vuex action context
    */
-  updateBalance (context) {
-    api.eth.getBalance(context.state.address).then(
-      balance => context.commit('balance', toEther(balance)),
-      error => console.error('Failed to update ETH balance', error)
-    )
+  updateStatus (context) {
+    const batch = new api.eth.BatchRequest()
+
+    // Balance
+    batch.add(api.eth.getBalance.request(context.state.address, 'latest', (err, balance) => {
+      if (err) {
+        console.error('Failed to get ETH balance', err)
+      } else {
+        context.commit('balance', toEther(balance))
+      }
+    }))
+
+    // Gas price
+    batch.add(api.eth.getGasPrice.request((err, price) => {
+      if (err) {
+        console.error('Failed to get ETH gas price', err)
+      } else {
+        context.commit('gasPrice', {
+          gasPrice: price,
+          fee: toEther(Number(TRANSFER_GAS) * price)
+        })
+      }
+    }))
+
+    batch.execute()
   },
 
   /**
