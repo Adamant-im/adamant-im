@@ -27,7 +27,32 @@
       </md-layout>
       <md-layout md-align="start" md-gutter="16" class="message_form" style="z-index: 10;">
       <md-layout>
-          <md-layout md-flex="90"   md-flex-xsmall="85" class="text_block">
+          <md-layout md-flex="10">
+            <md-menu md-align-trigger md-size="5">
+              <md-button class="attach_button" md-menu-trigger>
+                <md-icon>attach_file</md-icon>
+              </md-button>
+              <md-menu-content>
+                <md-menu-item v-on:click="sendTokens('ADM')">
+                  <md-icon class="md-size-2x" md-src="/static/img/adm-token.png">menu</md-icon>
+                  <span>Send ADM</span>
+                </md-menu-item>
+                <md-menu-item v-on:click="sendTokens('ETH')">
+                  <md-icon class="md-size-2x" md-src="/static/img/eth-token.png">menu</md-icon>
+                  <span>Send ETH</span>
+                </md-menu-item>
+                <md-menu-item :disabled="true">
+                  <md-icon class="md-size-2x">collections</md-icon>
+                  <span>Image</span>
+                </md-menu-item>
+                <md-menu-item :disabled="true">
+                  <md-icon class="md-size-2x">insert_drive_file</md-icon>
+                  <span>File</span>
+                </md-menu-item>
+              </md-menu-content>
+            </md-menu>
+          </md-layout>
+          <md-layout md-flex="80"   md-flex-xsmall="85" class="text_block">
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
                   <md-textarea ref="messageField" v-model="message" @keydown.native="kp($event)" @focus="focusHandler" @blur.native="blurHandler"></md-textarea>
@@ -131,6 +156,18 @@ export default {
       // TODO: other cryptos may appear here in future
       const params = { crypto: Cryptos.ADM, tx_id: id }
       this.$router.push({ name: 'Transaction', params })
+    },
+    sendTokens (crypto) {
+      const promise = crypto === Cryptos.ADM
+        ? Promise.resolve(this.$route.params.partner) : this.getStored('eth:address')
+
+      promise.then(address => {
+        if (address) {
+          this.$store.commit('leave_chat')
+          const params = { fixedCrypto: crypto, fixedAddress: address }
+          this.$router.push({ name: 'Transfer', params })
+        }
+      })
     }
   },
   mounted: function () {
@@ -207,7 +244,7 @@ export default {
 
         }
 
-        .send_button {
+        .send_button, .attach_button {
             min-width: 40px!important;
             padding: 0!important;
             margin: 6px 0px!important;

@@ -47,9 +47,10 @@ export default new Router({
       component: Chats
     },
     {
-      path: '/transfer',
+      path: '/transfer/:fixedCrypto?/:fixedAddress?',
       name: 'Transfer',
-      component: Transfer
+      component: Transfer,
+      props: true
     },
     {
       path: '/home',
