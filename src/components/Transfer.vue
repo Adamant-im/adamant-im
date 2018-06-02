@@ -54,7 +54,7 @@
 
 <script>
 import validateAddress from '../lib/validateAddress'
-import { Cryptos, CryptoAmountPrecision } from '../lib/constants'
+import { Cryptos, CryptoAmountPrecision, Fees } from '../lib/constants'
 
 export default {
   name: 'home',
@@ -109,7 +109,7 @@ export default {
       return this.amountToTransfer
     },
     commission () {
-      return this.crypto === Cryptos.ETH ? this.$store.state.eth.fee : 0.5
+      return this.crypto === Cryptos.ETH ? this.$store.state.eth.fee : Fees.TRANSFER
     },
     balance () {
       return this.crypto === Cryptos.ETH ? this.$store.state.eth.balance : this.$store.state.balance

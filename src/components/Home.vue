@@ -4,7 +4,7 @@
       <md-list class="md-double-line">
           <md-list-item
             v-for="addr in wallets"
-            v-bind:key="addr.system"
+            v-bind:key="'addr_' + addr.system"
             v-on:click="copy"
             v-clipboard="addr.address"
             @success="copySuccess"
@@ -26,7 +26,7 @@
 
           <md-list-item
             v-for="wallet in wallets"
-            v-bind:key="wallet.system"
+            v-bind:key="'bal_' + wallet.system"
             v-on:click="goToTransactions(wallet.system)"
             :title="wallet.balanceTooltip ? $t(wallet.balanceTooltip) : ''"
           >
