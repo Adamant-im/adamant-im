@@ -28,7 +28,7 @@ export default {
     'general_title': 'General',
     'security_title': 'Security',
     'chats_title': 'Chats',
-    'notification_title': 'Notifications', 
+    'notification_title': 'Notifications',
     'enable_sound': 'Sound',
     'enable_sound_tooltip': 'Play a sound when new message arrives. It works not on all of devices. Mobile browsers will not play a sound when browser is not active.',
     'enable_bar': 'Change browser tab title',

@@ -63,6 +63,8 @@
 </template>
 
 <script>
+import { Fees } from '../lib/constants'
+
 export default {
   name: 'login',
   methods: {
@@ -99,9 +101,13 @@ export default {
 
         this.$store.dispatch('login', this.passPhrase)
 
-        this.getStored('eth:address').then(address => {
-          if (!address) this.storeValue('eth:address', this.$store.state.eth.address)
-        })
+        // Store ETH address into the KVS if it's not there yet and user has
+        // enough ADM for this transaction
+        if (this.$store.state.balance >= Fees.KVS) {
+          this.getStored('eth:address').then(address => {
+            if (!address) this.storeValue('eth:address', this.$store.state.eth.address)
+          })
+        }
       }, errorFunction)
     },
     'handleSuccess': function (e) {
