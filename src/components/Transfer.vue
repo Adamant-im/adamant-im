@@ -9,7 +9,7 @@
           <md-layout>
             <md-layout>
               <md-input-container>
-                <label style="text-align:left">{{ $t('transfer.amount_label') }} (max: {{ maxToTransfer }} {{ crypto }})</label>
+                <label style="text-align:left" class="amount-label">{{ $t('transfer.amount_label') }} (max: {{ maxToTransfer }} {{ crypto }})</label>
                 <md-input type="number" min=0 :max="maxToTransfer" v-model="targetAmount"></md-input>
               </md-input-container>
             </md-layout>
@@ -167,6 +167,9 @@ export default {
         .transfer {
             padding-left: 1rem;
             padding-right: 1rem;
+        }
+        .amount-label {
+          font-size: 12px;
         }
     }
 </style>
