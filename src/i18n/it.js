@@ -24,7 +24,7 @@ export default {
     'exit_on_close': 'Disconnetti in fondo alla scheda',
     'exit_on_close_tooltip': 'Per la sicurezza del tuo portafoglio ti consigliamo di tenerlo selezionato. Se la deselezionerai, la passphrase verra salvata nella memoria del browser e la prossima volta che aprirai il wallet verra decifrato senza dover inserire una passphrase. E accettabile solo nel caso in cui nessun altro possa accedere al tuo dispositivo. ',
     'send_on_enter': 'Send message on Enter',
-    'send_on_enter_tooltip': 'Send message on Enter key, by default combination Ctrl (Cmd) + Enter is used',
+    'send_on_enter_tooltip': 'Invia un messaggio su Invio',
     'general_title': 'Generale',
     'security_title': 'Sicurezza',
     'chats_title': 'Chats',
