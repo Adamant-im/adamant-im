@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'Vă rugăm introduceți o sumă',
     'error_not_enough': 'Token-uri insuficiente',
     'confirm_title': 'Confirmare transfer',
-    'confirm_message': 'Confirmați transferul de <b>{amount} {crypto}</b> către adresa {target}.',
+    'confirm_message': 'Confirmați transferul de <b>{amount} {crypto}</b> către adresa <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confirmă',
     'confirm_cancel': 'Anulează'
   },
