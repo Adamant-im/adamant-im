@@ -63,18 +63,18 @@ export default {
   'home': {
     'copied': 'Скопировано',
     'your_address_ADM': 'Идентификатор кошелька ADM',
-    'your_address_ETH': 'Идентификатор кошелька ETH',
+    'your_address_ETH': 'Кошелек Ethereum',
     'your_address_tooltip_ADM': 'Это ваш уникальный идентификатор кошелька и мессенджера АДАМАНТ. Нажмите, чтобы скопировать его в буфер обмена.',
     'your_address_tooltip_ETH': 'Это ваш уникальный идентификатор кошелька ETH в мессенджере АДАМАНТ. Нажмите, чтобы скопировать его в буфер обмена.',
     'your_balance_ADM': 'Баланс ADM',
     'your_balance_ETH': 'Баланс ETH',
     'your_balance_tooltip_ADM': 'Ваш баланс токенов АДАМАНТа. Нажмите, чтобы посмотреть все входящие и исходящие транзакции.',
-    'your_balance_tooltip_ETH': 'Ваш баланс токенов АДАМАНТа.',
-    'send_btn': 'Передать токены',
-    'send_btn_tooltip': 'Нажмите, чтобы сделать перевод ADM-токенов другому пользователю АДАМАНТа',
+    'your_balance_tooltip_ETH': 'Ваш баланс кошелька Ethereum.',
+    'send_btn': 'Отправить средства',
+    'send_btn_tooltip': 'Нажмите, чтобы сделать перевод на другой аккуунт или другому пользователю АДАМАНТа',
     'invest_btn': 'Участвовать в ICO',
     'invest_btn_tooltip': 'У вас есть возможность принять участие в ICO самого защищенного мессенджера АДАМАНТ. Нажмите, чтобы перейти к странице покупки токенов Adamant.im/ru-ico/.',
-    'free_adm_btn': 'Free ADM tokens'
+    'free_adm_btn': 'Бесплатные токены'
   },
   'transaction': {
     'amount': 'Количество',
@@ -84,9 +84,9 @@ export default {
     'txid': 'Номер транзакции',
     'sender': 'Отправитель',
     'recipient': 'Получатель',
-    'explorer': 'Open in Explorer',
-    'startChat': 'Start chat',
-    'continueChat': 'Continue chat'
+    'explorer': 'Посмотреть в Explorer\'е',
+    'startChat': 'Начать чать',
+    'continueChat': 'Продолжить чат'
   },
   'transfer': {
     'send_button': 'Передать токены',
