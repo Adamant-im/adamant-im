@@ -151,6 +151,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+    .transfer form {
+        max-width: 90%;
+    }
     .md-dialog-container.md-active .md-dialog {
         background: #fefefe;
     }
