@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'Vänligen ange summa',
     'error_not_enough': 'Ej tillräckligt antal tokens',
     'confirm_title': 'Överföringsbekräftelse',
-    'confirm_message': 'Bekräfta transaktion med <b>{amount} {crypto}</b> till adress {target}.',
+    'confirm_message': 'Bekräfta transaktion med <b>{amount} {crypto}</b> till adress <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Bekräfta',
     'confirm_cancel': 'Avbryt'
   },
