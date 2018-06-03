@@ -15,7 +15,7 @@
               </md-avatar>
 
               <div class="md-list-text-container for-address">
-                  <span>{{ $t('home.your_address') }} {{ addr.system }}</span>
+                  <span>{{ $t('home.your_address_'+addr.system) }}</span>
                   <p> {{ addr.address }}</p>
               </div>
 
@@ -34,7 +34,7 @@
                 <md-icon>account_balance_wallet</md-icon>
             </md-avatar>
             <div class="md-list-text-container">
-                <span>{{ $t('home.your_balance') }} {{ wallet.system }}</span>
+                <span>{{ $t('home.your_balance_' + wallet.system) }}</span>
                 <p> <span v-html="wallet.balance"></span> {{ wallet.system }}</p>
             </div>
           </md-list-item>
@@ -118,14 +118,16 @@ export default {
         {
           system: 'ADM',
           address: this.$store.state.address,
-          tooltip: 'home.your_address_tooltip',
+          tooltip: 'home.your_address_tooltip_ADM',
           balance: this.$store.state.balance,
-          balanceTooltip: ''
+          balanceTooltip: 'home.your_balance_tooltip_ADM'
         },
         {
           system: 'ETH',
           address: this.$store.state.eth.address,
-          balance: this.$store.state.eth.balance
+          tooltip: 'home.your_address_tooltip_ETH',
+          balance: this.$store.state.eth.balance,
+          balanceTooltip: 'home.your_balance_tooltip_ETH'
         }
       ]
     }
