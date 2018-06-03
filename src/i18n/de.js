@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'Bitte gib hier einen Betrag ein',
     'error_not_enough': 'Nicht genug Token',
     'confirm_title': 'Transaktionsbestätigung',
-    'confirm_message': 'Transaktionsbestätigung von  <b>{amount} {crypto}</b> an die Adresse {target}.',
+    'confirm_message': 'Transaktionsbestätigung von  <b>{amount} {crypto}</b> an die Adresse <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Bestätigt',
     'confirm_cancel': 'Abbrechen'
   },
