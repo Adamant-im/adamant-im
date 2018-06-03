@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'Si prega di fornire l\'importo',
     'error_not_enough': 'Non abbastanza token',
     'confirm_title': 'Conferma di trasferimento',
-    'confirm_message': 'Conferma il trasferimento di <b>{amount} {crypto}</b> indirizzare {target}.',
+    'confirm_message': 'Conferma il trasferimento di <b>{amount} {crypto}</b> indirizzare <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confermare',
     'confirm_cancel': 'Annulla'
   },
