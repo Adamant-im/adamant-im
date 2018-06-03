@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'Pakiusap maglagay ng dami',
     'error_not_enough': 'Hindi sapat na mga token',
     'confirm_title': 'Pagkumpirma sa paglipat',
-    'confirm_message': 'Kumpirmahin ang paglipat ng <b>{dami} {crypto}</b> sa address {tudlaan}.',
+    'confirm_message': 'Kumpirmahin ang paglipat ng <b>{amount} {crypto}</b> sa address <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Kumpirmahin',
     'confirm_cancel': 'Kanselahin'
   },
