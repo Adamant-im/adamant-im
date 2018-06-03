@@ -5,8 +5,8 @@
   "author": "ADAMANT Tech Labs <devs@adamant.im>",
   "private": true,
   "scripts": {
-    "dev": "node build/dev-server.js",
-    "start": "node build/dev-server.js",
+    "dev": "nodemon build/dev-server.js",
+    "start": "npm run dev",
     "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "e2e": "node test/e2e/runner.js",
@@ -81,6 +81,7 @@
     "karma-webpack": "^2.0.2",
     "mocha": "^3.2.0",
     "nightwatch": "^0.9.12",
+    "nodemon": "^1.17.5",
     "opn": "^5.1.0",
     "optimize-css-assets-webpack-plugin": "^2.0.0",
     "ora": "^1.2.0",
