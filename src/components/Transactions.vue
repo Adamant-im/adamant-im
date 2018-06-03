@@ -7,7 +7,7 @@
             <md-icon v-if="transaction.senderId === currentAddress">flight_takeoff</md-icon>
           </md-avatar>
 
-          <div class="md-list-text-container" v-on:click="$router.push('/transactions/' + transaction.id + '/')">
+          <div class="md-list-text-container" v-on:click="goToTransaction(transaction.id)">
             <span v-if="transaction.senderId !== currentAddress">{{ transaction.senderId.toString().toUpperCase() }}</span>
             <span v-else>{{ transaction.recipientId.toString().toUpperCase() }}</span>
             <span>{{ $formatAmount(transaction.amount) }} ADM</span>
@@ -26,6 +26,8 @@
 </template>
 
 <script>
+  import { Cryptos } from '../lib/constants'
+
   export default {
     name: 'transaction',
     data () {
@@ -56,6 +58,10 @@
         const partner = this.getPartner(transaction)
         this.$store.commit('select_chat', partner)
         this.$router.push('/chats/' + partner + '/')
+      },
+      goToTransaction (id) {
+        const params = { crypto: Cryptos.ADM, tx_id: id }
+        this.$router.push({ name: 'Transaction', params })
       }
     },
     computed: {
