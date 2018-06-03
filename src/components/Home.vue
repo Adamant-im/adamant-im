@@ -14,7 +14,7 @@
                   <md-icon>account_circle</md-icon>
               </md-avatar>
 
-              <div class="md-list-text-container">
+              <div class="md-list-text-container for-address">
                   <span>{{ $t('home.your_address') }} {{ addr.system }}</span>
                   <p> {{ addr.address }}</p>
               </div>
@@ -147,6 +147,14 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+.home .md-list {
+    max-width: 100%;
+}
+.for-address p {
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: inline-block;
+}
 .home .md-list-text-container p
 {
     font-style: italic;
