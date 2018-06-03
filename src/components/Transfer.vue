@@ -154,6 +154,9 @@ export default {
     .transfer form {
         max-width: 90%;
     }
+    .address-in-confirm {
+        word-break: break-word;
+    }
     .md-dialog-container.md-active .md-dialog {
         background: #fefefe;
     }
