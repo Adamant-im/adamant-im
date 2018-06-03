@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'Будь ласка, введіть суму',
     'error_not_enough': 'Не достатньо токенів',
     'confirm_title': 'Підтвердження транзакції',
-    'confirm_message': 'Підтвердіть надсилання токенів<b>{amount} {crypto}</b> до адреси {target}.',
+    'confirm_message': 'Підтвердіть надсилання токенів<b>{amount} {crypto}</b> до адреси <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Підтвердити',
     'confirm_cancel': 'Відмінити'
   },

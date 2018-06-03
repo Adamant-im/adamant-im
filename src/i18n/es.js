@@ -98,7 +98,7 @@ export default {
     'error_no_amount': 'Favor proveer un monto',
     'error_not_enough': 'No tiene tokens suficientes',
     'confirm_title': 'Confirmación de transferencia',
-    'confirm_message': 'Confirmar transferencia de <b>{amount} {crypto}</b> a la dirección {target}.',
+    'confirm_message': 'Confirmar transferencia de <b>{amount} {crypto}</b> a la dirección <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confirmar',
     'confirm_cancel': 'Cancelar'
   },

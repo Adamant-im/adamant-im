@@ -148,7 +148,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 .home .md-list {
-    max-width: 100%;
+    max-width: 90%;
 }
 .for-address p {
     text-overflow: ellipsis;
