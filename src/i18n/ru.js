@@ -85,7 +85,7 @@ export default {
     'sender': 'Отправитель',
     'recipient': 'Получатель',
     'explorer': 'Посмотреть в Explorer\'е',
-    'startChat': 'Начать чать',
+    'startChat': 'Начать чат',
     'continueChat': 'Продолжить чат'
   },
   'transfer': {
