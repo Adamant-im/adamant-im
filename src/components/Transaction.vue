@@ -24,11 +24,11 @@
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.sender') }}</md-table-cell>
-            <md-table-cell class='data_td'>{{ transaction.senderId.toString().toUpperCase() }}</md-table-cell>
+            <md-table-cell class='data_td'>{{ transaction.senderId.toString() }}</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.recipient') }}</md-table-cell>
-            <md-table-cell class='data_td'>{{ transaction.recipientId.toString().toUpperCase() }} </md-table-cell>
+            <md-table-cell class='data_td'>{{ transaction.recipientId.toString() }} </md-table-cell>
           </md-table-row>
           <md-table-row class='open_in_explorer'>
             <md-table-cell  class='label_td'>
@@ -118,10 +118,10 @@
     padding-left: 1rem;
     padding-right: 1rem;
   }
+  .data_td {
+    word-break: break-all;
+  }
   @media (max-width: 380px) {
-    .data_td {
-      font-size: 10px!important;
-    }
     .label_td {
       text-align:left;
       max-width:100px;
