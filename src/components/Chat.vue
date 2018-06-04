@@ -35,11 +35,11 @@
               <md-menu-content>
                 <md-menu-item v-on:click="sendTokens('ADM')">
                   <md-icon class="md-size-2x" md-src="/static/img/adm-token.png">menu</md-icon>
-                  <span>{{ $t('chats.send_tokens', { crypto: 'ADM' }) }}</span>
+                  <span>{{ $t('chats.send_adm') }}</span>
                 </md-menu-item>
                 <md-menu-item v-on:click="sendTokens('ETH')">
                   <md-icon class="md-size-2x" md-src="/static/img/eth-token.png">menu</md-icon>
-                  <span>{{ $t('chats.send_tokens', { crypto: 'ETH' }) }}</span>
+                  <span>{{ $t('chats.send_eth') }}</span>
                 </md-menu-item>
                 <md-menu-item :disabled="true">
                   <md-icon class="md-size-2x">collections</md-icon>

@@ -59,7 +59,8 @@ export default {
     'date_tomorrow': 'Bukas',
     'sent_label': 'Sent',
     'received_label': 'Received',
-    'send_tokens': 'Send {crypto}',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
     'attach_image': 'Attach image',
     'attach_file': 'Attach file'
   },
