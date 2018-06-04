@@ -58,7 +58,10 @@ export default {
     'date_yesterday': 'Ieri',
     'date_tomorrow': 'Mâine',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_tokens': 'Send {crypto}',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Copiat',

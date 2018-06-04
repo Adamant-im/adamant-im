@@ -35,19 +35,19 @@
               <md-menu-content>
                 <md-menu-item v-on:click="sendTokens('ADM')">
                   <md-icon class="md-size-2x" md-src="/static/img/adm-token.png">menu</md-icon>
-                  <span>Send ADM</span>
+                  <span>{{ $t('chats.send_tokens', { crypto: 'ADM' }) }}</span>
                 </md-menu-item>
                 <md-menu-item v-on:click="sendTokens('ETH')">
                   <md-icon class="md-size-2x" md-src="/static/img/eth-token.png">menu</md-icon>
-                  <span>Send ETH</span>
+                  <span>{{ $t('chats.send_tokens', { crypto: 'ETH' }) }}</span>
                 </md-menu-item>
                 <md-menu-item :disabled="true">
                   <md-icon class="md-size-2x">collections</md-icon>
-                  <span>Image</span>
+                  <span>{{ $t('chats.attach_image') }}</span>
                 </md-menu-item>
                 <md-menu-item :disabled="true">
                   <md-icon class="md-size-2x">insert_drive_file</md-icon>
-                  <span>File</span>
+                  <span>{{ $t('chats.attach_file') }}</span>
                 </md-menu-item>
               </md-menu-content>
             </md-menu>
@@ -158,6 +158,7 @@ export default {
       this.$router.push({ name: 'Transaction', params })
     },
     sendTokens (crypto) {
+      // TODO: think of a more versatile way to get this address (store getter?)
       const promise = crypto === Cryptos.ADM
         ? Promise.resolve(this.$route.params.partner) : this.getStored('eth:address')
 

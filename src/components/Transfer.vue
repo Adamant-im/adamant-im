@@ -2,15 +2,6 @@
   <div class="transfer">
 
       <form novalidate @submit.stop.prevent="submit">
-          <md-layout md-flex="15">
-              <md-input-container>
-                  <md-select v-model="crypto" style="text-align: left;">
-                      <md-option v-for="c in cryptosList" v-bind:key="c" :value="c">
-                          {{ c }}
-                      </md-option>
-                  </md-select>
-              </md-input-container>
-          </md-layout>
           <md-input-container  :title="$t('transfer.to_address_label_tooltip')">
               <label>{{ $t('transfer.to_address_label') }}</label>
               <md-input v-model="targetAddress" :readonly="!!this.fixedAddress"></md-input>
@@ -18,9 +9,9 @@
           <md-layout>
             <md-layout>
               <md-input-container>
-                <label style="text-align:left" class="amount-label">{{ $t('transfer.amount_label') }} <span style="
-   font-size: 10px;
-">(max: {{ maxToTransfer }} {{ crypto }})</span></label>
+                <label style="text-align:left" class="amount-label">
+                  {{ $t('transfer.amount_label') }} <span style="font-size: 10px;">(max: {{ maxToTransfer }} {{ crypto }})</span>
+                </label>
                 <md-input type="number" min=0 :max="maxToTransfer" v-model="targetAmount"></md-input>
               </md-input-container>
             </md-layout>

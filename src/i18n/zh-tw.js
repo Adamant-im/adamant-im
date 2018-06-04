@@ -58,7 +58,10 @@ export default {
     'date_yesterday': '昨天',
     'date_tomorrow': '明天',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_tokens': 'Send {crypto}',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': '已复制',

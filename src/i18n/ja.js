@@ -58,7 +58,10 @@ export default {
     'date_yesterday': '昨日',
     'date_tomorrow': '明日',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_tokens': 'Send {crypto}',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'コピーされました',

@@ -58,7 +58,10 @@ export default {
     'date_yesterday': 'Вчера',
     'date_tomorrow': 'Завтра',
     'sent_label': 'Отправлено',
-    'received_label': 'Получено'
+    'received_label': 'Получено',
+    'send_tokens': 'Send {crypto}',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Скопировано',
