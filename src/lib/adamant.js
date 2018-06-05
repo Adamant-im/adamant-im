@@ -4,9 +4,13 @@
 var sodium = require('sodium-browserify-tweetnacl')
 var crypto = require('crypto')
 var Mnemonic = require('bitcore-mnemonic')
+const nacl = require('tweetnacl/nacl-fast')
+const ed2curve = require('ed2curve')
+const utf8 = require('@stablelib/utf8')
 var bignum = require('./bignumber.js')
 var ByteBuffer = require('bytebuffer')
 const constants = require('./constants.js')
+const { hexToBytes, bytesToHex } = require('./hex')
 
 /**
  * Crypto functions that implements sodium.
@@ -261,6 +265,45 @@ adamant.sign = function (hash, keypair) {
  */
 adamant.verify = function (hash, signatureBuffer, publicKeyBuffer) {
   return sodium.crypto_sign_verify_detached(signatureBuffer, hash, publicKeyBuffer)
+}
+
+/**
+ * Encodes a text message for sending to ADM
+ * @param {string} msg message to encode
+ * @param {*} recipientPublicKey recipient's public key
+ * @param {*} privateKey our private key
+ * @returns {{message: string, own_message: string}}
+ */
+adamant.encodeMessage = function (msg, recipientPublicKey, privateKey) {
+  const nonce = Buffer.allocUnsafe(24)
+  sodium.randombytes(nonce)
+
+  const plainText = Buffer.from(msg)
+  const DHPublicKey = ed2curve.convertPublicKey(hexToBytes(recipientPublicKey))
+  const DHSecretKey = ed2curve.convertSecretKey(privateKey)
+
+  const encrypted = nacl.box(plainText, nonce, DHPublicKey, DHSecretKey)
+
+  return {
+    message: bytesToHex(encrypted),
+    own_message: bytesToHex(nonce)
+  }
+}
+
+/**
+ * Decodes the incoming message
+ * @param {any} msg encoded message
+ * @param {string} senderPublicKey sender public key
+ * @param {string} privateKey our private key
+ * @param {any} nonce nonce
+ * @returns {string}
+ */
+adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
+  const DHPublicKey = ed2curve.convertPublicKey(senderPublicKey)
+  const DHSecretKey = ed2curve.convertSecretKey(privateKey)
+  const decrypted = nacl.box.open(msg, nonce, DHPublicKey, DHSecretKey)
+
+  return decrypted ? utf8.decode(decrypted) : ''
 }
 
 module.exports = adamant
