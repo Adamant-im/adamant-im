@@ -4,6 +4,7 @@ var config = require('../config.json')
 var adamant = require('./adamant.js')
 const constants = require('./constants.js')
 const renderMarkdown = require('./markdown').default
+const { hexToBytes, bytesToHex } = require('./hex')
 
 Queue.configure(window.Promise)
 window.queue = new Queue(1, Infinity)
@@ -161,19 +162,6 @@ function install (Vue) {
     }
     this.getAccountByPublicKey(publicKey, callback)
   }
-  Vue.prototype.hexToBytes = function (hex) {
-    for (var bytes = [], c = 0; c < hex.length; c += 2) {
-      bytes.push(parseInt(hex.substr(c, 2), 16))
-    }
-    return bytes
-  }
-  Vue.prototype.bytesToHex = function (bytes) {
-    for (var hex = [], i = 0; i < bytes.length; i++) {
-      hex.push((bytes[i] >>> 4).toString(16))
-      hex.push((bytes[i] & 0xF).toString(16))
-    }
-    return hex.join('')
-  }
 
   Vue.prototype.encodeMessage = function (msg, recipientPublicKey) {
     var sodium = require('sodium-browserify-tweetnacl')
@@ -183,7 +171,7 @@ function install (Vue) {
     sodium.randombytes(nonce)
     var plainText = Buffer.from(msg)
     var keypair = this.getKeypair()
-    var DHPublicKey = ed2curve.convertPublicKey(new Uint8Array(this.hexToBytes(recipientPublicKey)))
+    var DHPublicKey = ed2curve.convertPublicKey(hexToBytes(recipientPublicKey))
     var DHSecretKey
     if (window.secretKey) {
       DHSecretKey = window.secretKey
@@ -194,8 +182,8 @@ function install (Vue) {
 
     var encrypted = nacl.box(plainText, nonce, DHPublicKey, DHSecretKey)
     return {
-      message: this.bytesToHex(encrypted),
-      own_message: this.bytesToHex(nonce)
+      message: bytesToHex(encrypted),
+      own_message: bytesToHex(nonce)
     }
   }
   Vue.prototype.decodeMessage = function (msg, senderPublicKey, nonce) {
@@ -431,8 +419,8 @@ function install (Vue) {
         }.bind(this)
         ).then(function (currentTransaction, decodePublic) {
           decodePublic = Buffer.from(decodePublic, 'hex')
-          var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
-          var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
+          var message = hexToBytes(currentTransaction.asset.chat.message)
+          var nonce = hexToBytes(currentTransaction.asset.chat.own_message)
           currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
           if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
 //            currentTransaction.message = this.$i18n.t('chats.welcome_message')
@@ -456,9 +444,9 @@ function install (Vue) {
         }.bind(this, currentTransaction))
       } else {
         decodePublic = currentTransaction.senderPublicKey
-        decodePublic = new Uint8Array(this.hexToBytes(decodePublic))
-        var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
-        var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
+        decodePublic = hexToBytes(decodePublic)
+        var message = hexToBytes(currentTransaction.asset.chat.message)
+        var nonce = hexToBytes(currentTransaction.asset.chat.own_message)
         currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
         if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
 //          currentTransaction.message = this.$i18n.t('chats.welcome_message')
