@@ -3,6 +3,7 @@ import Queue from 'promise-queue'
 var config = require('../config.json')
 var adamant = require('./adamant.js')
 const constants = require('./constants.js')
+const renderMarkdown = require('./markdown').default
 
 Queue.configure(window.Promise)
 window.queue = new Queue(1, Infinity)
@@ -420,32 +421,7 @@ function install (Vue) {
       return
     }
     var currentAddress = this.$store.state.address
-    var marked = require('marked')
-    marked.setOptions({
-      sanitize: true,
-      gfm: true,
-      breaks: true
-    })
-    var renderer = new marked.Renderer()
-    renderer.image = function (href, title, text) {
-      return ''
-    }
-    renderer.link = function (href, title, text) {
-      try {
-        var prot = decodeURIComponent(unescape(href))
-          .replace(/[^\w:]/g, '')
-          .toLowerCase()
-      } catch (e) {
-        return text
-      }
-      if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
-        return text
-      }
-      text = href
-      var out = '<a href="' + href + '"'
-      out += '>' + text + '</a>'
-      return out
-    }
+
     if (currentTransaction.type > 0) {
       var decodePublic = ''
       if (currentTransaction.recipientId !== currentAddress) {
@@ -461,7 +437,7 @@ function install (Vue) {
           if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
 //            currentTransaction.message = this.$i18n.t('chats.welcome_message')
           } else {
-            currentTransaction.message = marked(currentTransaction.message, {renderer: renderer})
+            currentTransaction.message = renderMarkdown(currentTransaction.message)
           }
           if (currentTransaction.message && currentTransaction.message.length > 0) {
             if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
@@ -487,7 +463,7 @@ function install (Vue) {
         if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
 //          currentTransaction.message = this.$i18n.t('chats.welcome_message')
         } else {
-          currentTransaction.message = marked(currentTransaction.message, {renderer: renderer})
+          currentTransaction.message = renderMarkdown(currentTransaction.message)
         }
         if (currentTransaction.message && currentTransaction.message.length > 0) {
           if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
