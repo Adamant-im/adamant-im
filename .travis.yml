@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - 10
+os:
+  - linux
+install:
+  - npm install
+script: npm run build
+after_success:
+  - chmod ugo+x ./deploy.sh
+  - ./deploy.sh
