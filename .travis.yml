@@ -8,10 +8,12 @@ cache:
     - node_modules
 install:
   - npm install
+before_deploy:
+  - source ./deploy.sh
 deploy:
   provider: surge
   project: ./dist/
-  domain: $TRAVIS_BRANCH-adamant-im.surge.sh  
+  domain: $SUBDOMAIN-adamant-im.surge.sh  
   skip_cleanup: true
   on:
     all_branches: true
