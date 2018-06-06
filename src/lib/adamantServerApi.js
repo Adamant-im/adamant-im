@@ -412,36 +412,38 @@ function install (Vue) {
 
     if (currentTransaction.type > 0) {
       const promise = currentTransaction.recipientId !== currentAddress
-        ? window.queue.add(() => this.getAddressPublicKey(currentTransaction.recipientId).catch(() => { /* TODO: handle somehow */ }))
+        ? window.queue.add(() => this.getAddressPublicKey(currentTransaction.recipientId))
         : Promise.resolve(currentTransaction.senderPublicKey)
 
-      promise.then(decodePublic => {
-        decodePublic = hexToBytes(decodePublic)
-        var message = hexToBytes(currentTransaction.asset.chat.message)
-        var nonce = hexToBytes(currentTransaction.asset.chat.own_message)
-        currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
+      promise
+        .then(decodePublic => {
+          decodePublic = hexToBytes(decodePublic)
+          var message = hexToBytes(currentTransaction.asset.chat.message)
+          var nonce = hexToBytes(currentTransaction.asset.chat.own_message)
+          currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
 
-        if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
-//          currentTransaction.message = this.$i18n.t('chats.welcome_message')
-        } else {
-          currentTransaction.message = renderMarkdown(currentTransaction.message)
-        }
-
-        if (currentTransaction.message && currentTransaction.message.length > 0) {
           if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
-            if (currentTransaction.senderId === 'U15423595369615486571') {
-              currentTransaction.message = 'chats.welcome_message'
-            }
-            if (currentTransaction.senderId === 'U7047165086065693428') {
-              currentTransaction.message = 'chats.ico_message'
-            }
-            this.$store.dispatch('add_chat_i18n_message', currentTransaction)
+  //          currentTransaction.message = this.$i18n.t('chats.welcome_message')
           } else {
-            this.$store.commit('add_chat_message', currentTransaction)
+            currentTransaction.message = renderMarkdown(currentTransaction.message)
           }
-        }
-        this.messageProcessed()
-      })
+
+          if (currentTransaction.message && currentTransaction.message.length > 0) {
+            if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
+              if (currentTransaction.senderId === 'U15423595369615486571') {
+                currentTransaction.message = 'chats.welcome_message'
+              }
+              if (currentTransaction.senderId === 'U7047165086065693428') {
+                currentTransaction.message = 'chats.ico_message'
+              }
+              this.$store.dispatch('add_chat_i18n_message', currentTransaction)
+            } else {
+              this.$store.commit('add_chat_message', currentTransaction)
+            }
+          }
+        })
+        .catch(err => console.warn('Failed to parse incoming message', err))
+        .then(() => this.messageProcessed())
     }
   }
   Vue.prototype.loadChats = function (initialCall, offset) {
