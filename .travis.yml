@@ -3,11 +3,16 @@ node_js:
   - "node"
 os:
   - linux
+cache:
+  directories:
+    - node_modules
 install:
   - npm install
-before_script:
-  - npm install -g surge
+deploy:
+  provider: surge
+  project: ./dist/
+  domain: $TRAVIS_BRANCH-adamant-im.surge.sh  
+  skip_cleanup: true
+  on:
+    all_branches: true
 script: npm run build
-after_success:
-  - chmod ugo+x ./deploy.sh
-  - ./deploy.sh
