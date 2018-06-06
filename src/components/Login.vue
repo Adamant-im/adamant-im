@@ -106,12 +106,11 @@ export default {
         this.snackOpen()
       }.bind(this)
       this.getAccountByPassPhrase(this.passPhrase, function (context) {
-        this.$store.commit('save_passphrase', {'passPhrase': this.passPhrase})
+        this.$store.dispatch('afterLogin', this.passPhrase)
+
         this.$root._router.push('/chats/')
         this.loadChats(true)
         this.$store.commit('stop_tracking_new')
-
-        this.$store.dispatch('login', this.passPhrase)
 
         // Store ETH address into the KVS if it's not there yet and user has
         // enough ADM for this transaction

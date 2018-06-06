@@ -87,3 +87,41 @@ export function sendMessage (to, text, type = 1) {
 export function sendSpecialMessage (to, payload) {
   return sendMessage(to, JSON.stringify(payload), 2)
 }
+
+/**
+ * Stores the supplied value into the Adamant KVS under the specified key.
+ * @param {string} key key for the stored value
+ * @param {any} value value to store
+ * @returns {Promise<{success: boolean}>}
+ */
+export function storeValue (key, value) {
+  const transaction = {
+    type: Transactions.STATE,
+    amount: 0,
+    senderId: this.$store.state.address,
+    senderPublicKey: myKeypair.publicKey.toString('hex'),
+    asset: {
+      state: { key, value, type: 0 }
+    },
+    timestamp: utils.epochTime()
+  }
+
+  transaction.signature = utils.transactionSign(transaction, myKeypair)
+
+  return post('/api/states/store', { transaction }).then(response => response.body)
+}
+
+/**
+ * Retrieves the stored value from the Adamant KVS
+ * @param {string} key key in the KVS
+ * @param {string} ownerAddress address of the value owner
+ * @returns {Promise<any>}
+ */
+export function getStored (key, ownerAddress) {
+  return get('/api/states/get', { senderId: ownerAddress }).then(response => {
+    if (response.body.success) {
+      const trans = response.body.transactions.filter(x => key === (x.asset && x.asset.state && x.asset.state.key))[0]
+      return trans ? trans.asset.state.value : undefined
+    }
+  })
+}

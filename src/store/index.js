@@ -4,6 +4,8 @@ import Vue from 'vue'
 import storeData from '../lib/lsStore.js'
 import ethModule from './modules/eth'
 
+import * as admApi from '../lib/adamant-api'
+
 function deviceIsDisabled () {
   try {
     if (/iP(hone|od|ad)/.test(navigator.platform)) {
@@ -66,6 +68,13 @@ const store = {
     add_chat_i18n_message ({commit}, payload) {
       payload.message = window.ep.$i18n.t(payload.message)
       commit('add_chat_message', payload)
+    },
+    afterLogin ({ commit }, passPhrase) {
+      commit('save_passphrase', {'passPhrase': passPhrase})
+      admApi.unlock(passPhrase)
+    },
+    rehydrate ({ state }) {
+      admApi.unlock(state.passPhrase)
     }
   },
   mutations: {

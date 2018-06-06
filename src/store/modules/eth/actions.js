@@ -3,9 +3,14 @@ import hdkey from 'hdkey'
 import Web3 from 'web3'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
+import * as admApi from '../../../lib/adamant-api'
+
+import { Fees } from '../../../lib/constants'
 
 const HD_KEY_PATH = "m/44'/60'/3'/1/0"
 const TRANSFER_GAS = '21000'
+const KVS_ADDRESS = 'eth:address'
+const DEFAULT_GAS_PRICE = '20000000000' // 20 Gwei
 
 const endpoint = getEndpointUrl('ETH')
 const api = new Web3(new Web3.providers.HttpProvider(endpoint))
@@ -34,14 +39,22 @@ function toWei (ether) {
 
 export default {
   /**
-   * Handles `login` action: generates ETH-account and requests its balance.
+   * Handles `afterLogin` action: generates ETH-account and requests its balance.
    */
-  login: {
+  afterLogin: {
     root: true,
     handler (context, passphrase) {
       const account = getAccountFromPassphrase(passphrase)
       context.commit('account', account)
       context.dispatch('updateStatus')
+
+      // Store ETH address into the KVS if it's not there yet and user has
+      // enough ADM for this transaction
+      if (this.$store.state.balance >= Fees.KVS) {
+        admApi.getStored(KVS_ADDRESS).then(address => {
+          if (!address) admApi.storeValue(KVS_ADDRESS, account.address)
+        })
+      }
     }
   },
 
@@ -98,25 +111,40 @@ export default {
    * @param {string} receiver receiver ETH-address
    * @returns {Promise<string>} ETH transaction hash
    */
-  sendTokens (context, { amount, receiver }) {
-    const transaction = {
+  sendTokens (context, { amount, admAddress, ethAddress }) {
+    const ethTx = {
       from: context.state.address,
-      to: receiver,
+      to: ethAddress,
       value: toWei(amount),
       gas: TRANSFER_GAS,
-      gasPrice: context.state.gasPrice || api.utils.toWei('20', 'Gwei')
+      gasPrice: context.state.gasPrice || DEFAULT_GAS_PRICE
     }
 
-    if (!api.utils.isAddress(receiver)) {
+    if (!api.utils.isAddress(ethAddress)) {
       return Promise.reject({ code: 'invalid_address' })
     }
 
-    return api.eth.accounts.signTransaction(transaction, context.state.privateKey)
+    return api.eth.accounts.signTransaction(ethTx, context.state.privateKey)
       .then(signed => {
         const tx = signed.rawTransaction
         const hash = api.utils.sha3(tx)
         console.log('ETH transaction', hash)
 
+        const admMsg = {
+          type: 'eth_transaction',
+          amount,
+          hash
+        }
+
+        // Send a special message to indicate that we're performing an ETH transfer
+        return admApi.sendSpecialMessage(ethAddress, admMsg)
+          .then(() => ({ hash, tx }))
+          .catch((error) => {
+            console.log('Failed to send "eth_transaction"', error)
+            return Promise.reject({ code: 'adm_message' })
+          })
+      })
+      .then(({ tx, hash }) => {
         const sendResult = api.eth.sendSignedTransaction(tx)
         sendResult.once('confirmation', (number, receipt) => {
           console.log('ETH receipt ', receipt)
@@ -130,10 +158,10 @@ export default {
         // TODO: not used so far, subject for future changes
         context.commit('addTransaction', {
           hash,
-          senderId: transaction.from,
-          recipientId: transaction.to,
+          senderId: ethTx.from,
+          recipientId: ethTx.to,
           amount,
-          fee: toEther(Number(transaction.gas) * transaction.gasPrice),
+          fee: toEther(Number(ethTx.gas) * ethTx.gasPrice),
           status: 'PENDING',
           timestamp: Date.now(),
           confirmations: 0
