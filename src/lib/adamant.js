@@ -82,6 +82,23 @@ adamant.makeKeypair = function (hash) {
     privateKey: keypair.secretKey
   }
 }
+
+/**
+ * Calculates ADM address based on the public key specified
+ * @param {any} publicKey public key to derive ADM address from
+ * @returns {string}
+ */
+adamant.getAddressFromPublicKey = function (publicKey) {
+  const publicKeyHash = crypto.createHash('sha256').update(publicKey, 'hex').digest()
+  const temp = Buffer.alloc(8)
+
+  for (var i = 0; i < 8; i++) {
+    temp[i] = publicKeyHash[7 - i]
+  }
+
+  return 'U' + bignum.fromBuffer(temp).toString()
+}
+
 /**
  * Creates hash based on transaction bytes.
  * @implements {getBytes}

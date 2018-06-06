@@ -7,6 +7,7 @@ const endpoint = getEndpointUrl(Cryptos.ADM)
 
 /** @type {{privateKey: Buffer, publicKey: Buffer}} */
 let myKeypair = { }
+let myAddress = null
 
 const publicKeysCache = { }
 
@@ -14,12 +15,16 @@ function toAbsolute (url = '') {
   return endpoint + url
 }
 
+function parseResponse (response) {
+  return response.statusType() === 2 ? JSON.parse(response.body) : Promise.reject(response)
+}
+
 function get (url, query) {
   return popsicle({
     url: toAbsolute(url),
-    body: query,
+    query,
     method: 'get'
-  })
+  }).then(parseResponse)
 }
 
 function post (url, payload) {
@@ -27,12 +32,13 @@ function post (url, payload) {
     url: toAbsolute(url),
     body: payload,
     method: 'post'
-  })
+  }).use(parseResponse)
 }
 
 export function unlock (passphrase) {
   const hash = utils.createPassPhraseHash(passphrase)
   myKeypair = utils.makeKeypair(hash)
+  myAddress = utils.getAddressFromPublicKey(myKeypair.publicKey)
 }
 
 /**
@@ -47,7 +53,7 @@ export function getPublicKey (address = '') {
 
   return get('/api/accounts/getPublicKey', { address })
     .then(response => {
-      const key = response.body.publicKey
+      const key = response.publicKey
       publicKeysCache[address] = key
       return key
     })
@@ -98,7 +104,7 @@ export function storeValue (key, value) {
   const transaction = {
     type: Transactions.STATE,
     amount: 0,
-    senderId: this.$store.state.address,
+    senderId: myAddress,
     senderPublicKey: myKeypair.publicKey.toString('hex'),
     asset: {
       state: { key, value, type: 0 }
@@ -108,19 +114,23 @@ export function storeValue (key, value) {
 
   transaction.signature = utils.transactionSign(transaction, myKeypair)
 
-  return post('/api/states/store', { transaction }).then(response => response.body)
+  return post('/api/states/store', { transaction })
 }
 
 /**
  * Retrieves the stored value from the Adamant KVS
  * @param {string} key key in the KVS
- * @param {string} ownerAddress address of the value owner
+ * @param {string=} ownerAddress address of the value owner
  * @returns {Promise<any>}
  */
 export function getStored (key, ownerAddress) {
+  if (!ownerAddress) {
+    ownerAddress = myAddress
+  }
+
   return get('/api/states/get', { senderId: ownerAddress }).then(response => {
-    if (response.body.success) {
-      const trans = response.body.transactions.filter(x => key === (x.asset && x.asset.state && x.asset.state.key))[0]
+    if (response.success) {
+      const trans = response.transactions.filter(x => key === (x.asset && x.asset.state && x.asset.state.key))[0]
       return trans ? trans.asset.state.value : undefined
     }
   })
