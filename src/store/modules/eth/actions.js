@@ -50,7 +50,7 @@ export default {
 
       // Store ETH address into the KVS if it's not there yet and user has
       // enough ADM for this transaction
-      if (this.$store.state.balance >= Fees.KVS) {
+      if (context.rootState.balance >= Fees.KVS) {
         admApi.getStored(KVS_ADDRESS).then(address => {
           if (!address) admApi.storeValue(KVS_ADDRESS, account.address)
         })
