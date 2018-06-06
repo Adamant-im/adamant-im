@@ -5,6 +5,8 @@ os:
   - linux
 install:
   - npm install
+before_script:
+  - npm install -g surge
 script: npm run build
 after_success:
   - chmod ugo+x ./deploy.sh
