@@ -92,7 +92,7 @@ export default {
   methods: {
     setUserName (val) {
       // this.$store.commit('change_partner_name', val)
-      const partner = this.$store.state.parterName
+      const partner = this.$store.state.partnerName
       this.$store.commit('partners/setDisplayName', { partner, displayName: val })
     },
     gotochats () {
@@ -123,7 +123,7 @@ export default {
       return this.$store.state.disabled
     },
     userDisplayName () {
-      return this.$store.getters('partners/displayName')(this.$store.state.partnerName)
+      return this.$store.getters['partners/displayName'](this.$store.state.partnerName)
     },
     partnerName () {
       return this.$store.state.partnerName

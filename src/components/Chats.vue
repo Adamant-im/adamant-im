@@ -59,7 +59,7 @@ export default {
       return 0
     },
     chatName (address) {
-      return this.$store.getters('partners/displayName')(address) || address
+      return this.$store.getters['partners/displayName'](address) || address
     },
     startNewChat () {
       this.$refs['new-chat-dialog'].open()
