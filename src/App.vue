@@ -91,7 +91,9 @@ export default {
   },
   methods: {
     setUserName (val) {
-      this.$store.commit('change_partner_name', val)
+      // this.$store.commit('change_partner_name', val)
+      const partner = this.$store.state.parterName
+      this.$store.commit('partners/setDisplayName', { partner, displayName: val })
     },
     gotochats () {
       this.$store.commit('leave_chat')
@@ -103,6 +105,7 @@ export default {
     },
     exitme () {
       this.$store.commit('logout')
+      this.$store.dispatch('reset')
       this.$router.push('/')
     }
   },
@@ -120,7 +123,7 @@ export default {
       return this.$store.state.disabled
     },
     userDisplayName () {
-      return this.$store.state.partnerDisplayName
+      return this.$store.getters('partners/displayName')(this.$store.state.partnerName)
     },
     partnerName () {
       return this.$store.state.partnerName

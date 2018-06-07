@@ -32,7 +32,8 @@ export default {
         this.$router.push('/chats/')
         this.$store.commit('create_chat', addressData.address)
         if (addressData.label && !this.$store.state.partners[addressData.address]) {
-          this.$store.commit('change_display_name', {partnerName: addressData.address, partnerDisplayName: addressData.label})
+          // this.$store.commit('change_display_name', {partnerName: addressData.address, partnerDisplayName: addressData.label})
+          this.$store.commit('partners/setDisplayName', { partner: addressData.address, displayName: addressData.label })
         }
         this.$router.push('/chats/' + addressData.address + '/')
       } else {
