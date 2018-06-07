@@ -108,7 +108,9 @@ export default {
     'confirm_title': 'Pagkumpirma sa paglipat',
     'confirm_message': 'Kumpirmahin ang paglipat ng <b>{amount} {crypto}</b> sa address <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Kumpirmahin',
-    'confirm_cancel': 'Kanselahin'
+    'confirm_cancel': 'Kanselahin',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Pitaka',

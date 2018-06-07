@@ -18,8 +18,11 @@ export default {
 
     const key = `${payload.crypto}:address`.toLowerCase()
 
-    admApi.getStored(key, payload.partner).then(
-      address => context.commit('setAddress', { ...payload, address }),
+    return admApi.getStored(key, payload.partner).then(
+      address => {
+        context.commit('setAddress', { ...payload, address })
+        return address
+      },
       error => {
         console.error('Failed to fetch address', payload, error)
         return false

@@ -108,7 +108,9 @@ export default {
     'confirm_title': '发送确认',
     'confirm_message': '确认发送 <b>{amount} {crypto}</b> 到地址 <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': '确认',
-    'confirm_cancel': '取消'
+    'confirm_cancel': '取消',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': '钱包',

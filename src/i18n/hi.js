@@ -112,7 +112,9 @@ export default {
     'confirm_title': 'हस्तान्तार्ण पुष्टिकरण',
     'confirm_message': 'हस्तान्तार्ण का  पुष्टिकरण<b>{amount} {crypto}</b> इस पते पर <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'पुष्टिकरण',
-    'confirm_cancel': 'रद्द करे'
+    'confirm_cancel': 'रद्द करे',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'वॉलेट',

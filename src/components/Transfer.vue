@@ -50,7 +50,12 @@
               @close="onClose"
               ref="confirm_transfer_dialog">
       </md-dialog-confirm>
-
+      <md-dialog-alert
+        :md-title="$t('transfer.no_address_title', { crypto })"
+        :md-content-html="$t('transfer.no_address_text', { crypto })"
+        ref="no_address_dialog"
+      >
+      </md-dialog-alert>
   </div>
 </template>
 
@@ -123,6 +128,26 @@ export default {
       return Object.keys(Cryptos)
     }
   },
+  mounted () {
+    if (!this.fixedCrypto || !this.fixedAddress) return
+
+    if (this.fixedCrypto === Cryptos.ADM) {
+      this.targetAddress = this.fixedAddress
+    } else {
+      // For cryptos other than ADM we need to fetch the respective account address first
+      const params = {
+        crypto: this.fixedCrypto,
+        partner: this.fixedAddress
+      }
+      this.$store.dispatch('partners/fetchAddress', params).then(address => {
+        if (!address) {
+          this.$refs['no_address_dialog'].open()
+        } else {
+          this.targetAddress = address
+        }
+      })
+    }
+  },
   watch: {
     targetAmount (to, from) {
       var fixedPoint = this.exponent
@@ -143,9 +168,10 @@ export default {
       finalAmount: 0,
       formErrorMessage: '',
       amountToTransfer: 0,
-      targetAddress: this.fixedAddress || '',
+      targetAddress: '',
       targetAmount: '',
-      crypto: this.fixedCrypto || Cryptos.ADM
+      crypto: this.fixedCrypto || Cryptos.ADM,
+      noAddress: false
     }
   },
   props: ['fixedCrypto', 'fixedAddress']

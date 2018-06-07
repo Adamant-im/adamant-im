@@ -108,7 +108,9 @@ export default {
     'confirm_title': 'Transfer onaylama',
     'confirm_message': '<b>{amount} {crypto} Jetonunun</b> <span class="address-in-confirm">{target}</span> adresine transfer edilmesini onaylayin.',
     'confirm_approve': 'Onayla',
-    'confirm_cancel': 'Iptal et'
+    'confirm_cancel': 'Iptal et',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Cüzdan',

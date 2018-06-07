@@ -158,17 +158,9 @@ export default {
       this.$router.push({ name: 'Transaction', params })
     },
     sendTokens (crypto) {
-      // TODO: think of a more versatile way to get this address (store getter?)
-      const promise = crypto === Cryptos.ADM
-        ? Promise.resolve(this.$route.params.partner) : this.getStored('eth:address')
-
-      promise.then(address => {
-        if (address) {
-          this.$store.commit('leave_chat')
-          const params = { fixedCrypto: crypto, fixedAddress: address }
-          this.$router.push({ name: 'Transfer', params })
-        }
-      })
+      this.$store.commit('leave_chat')
+      const params = { fixedCrypto: crypto, fixedAddress: this.$route.params.partner }
+      this.$router.push({ name: 'Transfer', params })
     }
   },
   mounted: function () {

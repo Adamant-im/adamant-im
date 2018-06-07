@@ -108,7 +108,9 @@ export default {
     'confirm_title': 'Transfer confirmation',
     'confirm_message': 'Confirm transfer of <b>{amount} {crypto}</b> to address <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confirm',
-    'confirm_cancel': 'Cancel'
+    'confirm_cancel': 'Cancel',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Wallet',

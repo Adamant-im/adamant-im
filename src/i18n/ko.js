@@ -108,7 +108,9 @@ export default {
     'confirm_title': '이동 확정',
     'confirm_message': '<b>{amount} {crypto} </b>의 <span class="address-in-confirm">{target}</span> 주소로의 이전을 확인하십시오.',
     'confirm_approve': '확인',
-    'confirm_cancel': '취소'
+    'confirm_cancel': '취소',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': '지갑',

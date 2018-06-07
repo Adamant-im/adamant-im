@@ -108,7 +108,9 @@ export default {
     'confirm_title': 'Xác nhận giao dịch',
     'confirm_message': 'Xác nhận chuyển <b>{amount} {crypto}</b> tới địa chỉ <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Xác nhận',
-    'confirm_cancel': 'Hủy'
+    'confirm_cancel': 'Hủy',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Ví',
