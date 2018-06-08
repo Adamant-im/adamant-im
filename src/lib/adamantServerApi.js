@@ -654,7 +654,7 @@ function install (Vue) {
     this.$http.get(this.getAddressString() + '/api/accounts/delegates?address=' + this.$store.state.address).then(response => {
       if (response.body.success) {
         const votes = response.body.delegates.map(vote => vote.address)
-        this.$http.get(this.getAddressString() + '/api/delegates?limit=20').then(response => {
+        this.$http.get(this.getAddressString() + '/api/delegates').then(response => {
           if (response.body.success) {
             for (var i in response.body.delegates) {
               let delegate = response.body.delegates[i]
