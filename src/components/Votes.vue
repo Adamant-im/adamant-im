@@ -8,14 +8,14 @@
         <md-toolbar>
           <md-layout md-gutter="16">
             <md-layout md-flex="100">
-              <h2 class="md-title" style="text-align:left; font-size:20px">Votes</h2>
+              <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('votes.page_title') }}</h2>
             </md-layout>
             <md-layout md-flex="100">
               <md-input-container>
                 <md-button class="md-icon-button">
                   <md-icon>search</md-icon>
                 </md-button>
-                <md-input style="width:100%" v-model="filterString" placeholder="Name or ADAMANT ID"></md-input>
+                <md-input style="width:100%" v-model="filterString" v-bind:placeholder="$t('votes.filter_placeholder')"></md-input>
               </md-input-container>
             </md-layout>
           </md-layout>   
@@ -24,9 +24,9 @@
           <md-table md-sort="rank" md-sort-type="desc" @sort="onSort" v-bind:style="tableStyle">
             <md-table-header>
               <md-table-row>
-                <md-table-head>Vote</md-table-head>
-                <md-table-head md-sort-by="rank">Rank</md-table-head>
-                <md-table-head md-sort-by="username">Name</md-table-head>
+                <md-table-head>{{$t('votes.table_head_vote')}}</md-table-head>
+                <md-table-head md-sort-by="rank">{{$t('votes.table_head_rank')}}</md-table-head>
+                <md-table-head md-sort-by="username">{{$t('votes.table_head_name')}}</md-table-head>
                 <md-table-head></md-table-head>  
               </md-table-row>
             </md-table-header>
@@ -44,11 +44,10 @@
                       <span class="status-indicator" v-bind:style="delegate.style" v-bind:title="delegate.tooltip"></span>
                       <a target="_blank" v-bind:href="'https://explorer.adamant.im/delegate/'+delegate.address">{{ delegate.address }}</a>
                     </md-list-item>
-                    <md-list-item class="md-inset">Approval: <strong>{{ delegate.approval }}%</strong></md-list-item>
-                    <md-list-item class="md-inset">Uptime: <strong>{{ delegate.productivity }}%</strong></md-list-item>
-                    <md-list-item class="md-inset">Forged: <strong>{{ (delegate.forged  / 100000000).toFixed(4) }} ADM</strong></md-list-item>
-                    <md-list-item class="md-inset">Forging time: <strong>{{ formatForgingTime(delegate.forgingTime) }}</strong></md-list-item>
-                    <md-list-item class="md-inset">Status: <strong>{{ delegate.status }}</strong></md-list-item>
+                    <md-list-item class="md-inset">{{$t('votes.delegate_approval')}}: <strong>{{ delegate.approval }}%</strong></md-list-item>
+                    <md-list-item class="md-inset">{{$t('votes.delegate_uptime')}}: <strong>{{ delegate.productivity }}%</strong></md-list-item>
+                    <md-list-item class="md-inset">{{$t('votes.delegate_forged')}}: <strong>{{ (delegate.forged  / 100000000).toFixed(4) }} ADM</strong></md-list-item>
+                    <md-list-item class="md-inset">{{$t('votes.delegate_forging_time')}}: <strong>{{ formatForgingTime(delegate.forgingTime) }}</strong></md-list-item>
                   </md-list>
                 </md-table-cell>
               </md-table-row>
@@ -57,13 +56,13 @@
         </div>
         <md-layout md-gutter="16" class="table-summary">
           <md-layout md-gutter md-flex="100" md-align="center">
-            <span>Upvotes: <strong>{{ upvotedCount }}</strong></span> 
-            <span>Downvotes: <strong>{{ downvotedCount }}</strong></span>
-            <span>Total new votes: <strong>{{ downvotedCount + upvotedCount }}</strong> / {{ voteRequestLimit }}</span> 
-            <span>Total votes: <strong>{{ originVotesCount }} / {{ delegates.length }}</strong></span>
+            <span>{{$t('votes.upvotes')}}: <strong>{{ upvotedCount }}</strong></span> 
+            <span>{{$t('votes.downvotes')}}: <strong>{{ downvotedCount }}</strong></span>
+            <span>{{$t('votes.total_new_votes')}}: <strong>{{ downvotedCount + upvotedCount }}</strong> / {{ voteRequestLimit }}</span> 
+            <span>{{$t('votes.total_votes')}}: <strong>{{ originVotesCount }} / {{ delegates.length }}</strong></span>
           </md-layout>
           <md-layout md-flex="100" md-align="center">
-            Voting cost: 50 ADM
+            {{$t('votes.voting_cost')}}: 50 ADM
           </md-layout>
           <md-layout md-flex="100" md-align="center">
             <md-button style="width:100%" v-bind:disabled="upvotedCount + downvotedCount === 0" v-on:click="sendVotes">Vote</md-button>
