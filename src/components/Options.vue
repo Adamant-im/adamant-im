@@ -92,6 +92,20 @@
 
       </md-card>
 
+      <md-card class='settings-card' style="box-shadow:none">
+          <md-card-area md-inset>
+              <md-card-header>
+                <h2 class="md-title" style="text-align:left; font-size:20px">Delegates</h2>
+              </md-card-header>
+          </md-card-area>
+          <md-card-content>
+            <md-input-container>
+              <md-input style="width:50%" v-model="delegateName" placeholder="Enter delegate name"></md-input>
+              <md-button style="width:50%" v-on:click="delegateRequest" v-bind:disabled="!delegateOpen" >Become a delegate - 3000 ADM</md-button>
+            </md-input-container>
+            <md-button style="width:100%" v-on:click="$router.push('/votes/')">Vote for delegates</md-button>
+          </md-card-content>
+      </md-card>
 
     <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
       </div>
@@ -103,6 +117,10 @@
 export default {
   name: 'settings',
   methods: {
+    delegateRequest () {
+      this.registerDelegate('new-delegate-name')
+      return false
+    }
   },
   computed: {
     languageList: function () {
@@ -139,7 +157,8 @@ export default {
       sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
-      language: this.$i18n.locale
+      language: this.$i18n.locale,
+      delegateOpen: this.$store.state.balance >= 3000
     }
   }
 }

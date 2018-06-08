@@ -32,6 +32,7 @@ export default {
     'enable_sound': 'Sound',
     'enable_sound_tooltip': 'Play a sound when new message arrives. It works not on all of devices. Mobile browsers will not play a sound when browser is not active.',
     'enable_bar': 'Change browser tab title',
+    'delegates_title': 'Delegates',
     'enable_bar_tooltip': 'Shows new message counter in the tab title when new message arrives. Works for desktop browsers.',
     'enable_desktop': 'Browser notifications',
     'enable_desktop_tooltip': 'Use integrated browser notifications (need your acceptance)'
