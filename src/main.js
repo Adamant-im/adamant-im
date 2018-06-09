@@ -8,6 +8,7 @@ import VueResource from 'vue-resource'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 import VueMaterial from 'vue-material'
+import VueQRCodeComponent from 'vue-qrcode-component'
 import VueHazeServerApi from './lib/adamantServerApi'
 import VueFormatters from './lib/formatters'
 import 'vue-material/dist/vue-material.css'
@@ -22,6 +23,7 @@ Vue.use(VueClipboards)
 Vue.use(VueI18n)
 Vue.use(VueHazeServerApi)
 Vue.use(VueFormatters)
+Vue.component('qr-code', VueQRCodeComponent)
 
 Vue.config.productionTip = false
 
