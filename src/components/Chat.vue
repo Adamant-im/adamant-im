@@ -2,26 +2,7 @@
   <div class="chat">
       <md-layout md-align="start" md-gutter="16" class="chat_messages">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
-              <md-layout
-                md-flex="90"
-                md-flex-xsmall="85"
-                class="chat_message md-whiteframe md-whiteframe-1dp"
-                :data-confirmation="message.confirm_class"
-                v-bind:class="{
-                  'md-flex-xsmall-offset-10': message.direction === 'from',
-                  'md-own md-flex-xsmall-offset-5': message.direction === 'to'
-                }"
-              >
-                <span class="avatar-holder"></span>
-                <span v-if="message.type !== 0" v-html="message.message" class="msg-holder"></span>
-                <span v-if="message.type === 0" class="msg-holder">
-                  <p>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</p>
-                  <p class='transaction-amount' v-on:click="goToTransaction(message.id)">
-                    <span v-html="$formatAmount(message.amount)"></span> ADM
-                  </p>
-                </span>
-                <div class="dt">{{ $formatDate(message.timestamp) }}</div>
-              </md-layout>
+            <chat-entry :message="message"></chat-entry>
           </md-layout>
           <md-layout style="height:0" md-flex="100"></md-layout>
       </md-layout>
@@ -71,10 +52,11 @@
 </template>
 
 <script>
-import { Cryptos } from '../lib/constants'
+import ChatEntry from './chat/ChatEntry.vue'
 
 export default {
   name: 'chats',
+  components: { ChatEntry },
   methods: {
     blurHandler: function (event) {
       if (/iP(hone|od|ad)/.test(navigator.platform)) {
@@ -150,12 +132,6 @@ export default {
         this.message = ''
         this.$refs.messageField.$el.value = ''
       }
-    },
-    goToTransaction (id) {
-      this.$store.commit('leave_chat')
-      // TODO: other cryptos may appear here in future
-      const params = { crypto: Cryptos.ADM, tx_id: id }
-      this.$router.push({ name: 'Transaction', params })
     },
     sendTokens (crypto) {
       this.$store.commit('leave_chat')
@@ -261,44 +237,7 @@ export default {
             margin-left: 10px;
         }
     }
-    .chat_message p {
-        margin: 0;
-        padding: 5px 0;
 
-        overflow-wrap: break-word;
-        word-wrap: break-word;
-
-        -ms-word-break: break-all;
-        /* This is the dangerous one in WebKit, as it breaks things wherever */
-        word-break: break-all;
-        /* Instead use this non-standard one: */
-        word-break: break-word;
-
-        /* Adds a hyphen where the word breaks, if supported (No Blink) */
-        -ms-hyphens: auto;
-        -moz-hyphens: auto;
-        -webkit-hyphens: auto;
-        hyphens: auto;
-
-    }
-[data-confirmation=confirmed]:before {
-    content: 'done';
-    font-family: "Material Icons";
-    text-rendering: optimizeLegibility;
-    position: absolute;
-    bottom: 0;
-    left: 1px;
-    font-size: 8px;
-}
-[data-confirmation=unconfirmed]:before {
-        content: 'query_builder';
-    font-family: "Material Icons";
-    text-rendering: optimizeLegibility;
-    position: absolute;
-    bottom: 0;
-    left: 1px;
-    font-size: 8px;
-}
 
 .avatar-holder {
     width: 45px;
@@ -308,14 +247,7 @@ export default {
     right: 0;
     left:auto;
 }
-.msg-holder {
-    margin-top: -10px;
-    margin-left: 2px;
-}
-.msg-holder .transaction-amount {
-  font-size: 24px;
-  cursor: pointer;
-}
+
 
     .md-own .avatar-holder{
         position: absolute;
@@ -367,44 +299,5 @@ export default {
     /* background: rgba(153, 153, 153, 0.2); */
     background: #ebebeb;
     border-bottom: none;
-}
-.chat_message {
-    margin-bottom: 20px;
-    padding: 25px 10px;
-
-    text-align: left;
-    position:relative;
-    padding-right: 50px;
-    min-height: 0;
-}
-.chat_message .dt {
-    position: absolute;
-    top: 0;
-    right: 5px;
-    font-size: 8px;
-    font-style: italic;
-}
-
-.chat_message.md-own
-{
-    margin-left:2.5%;
-}
-.chat_message
-{
-    margin-left:7.5%;
-}
-
-.chat_messagej:after{
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: -20px;
-    right: auto;
-    top: 0px;
-    bottom: auto;
-    border: 22px solid;
-    border-color: #4A4A4A transparent transparent transparent;
-
 }
 </style>
