@@ -92,6 +92,24 @@
 
       </md-card>
 
+      <md-card class='settings-card' style="box-shadow:none">
+        <md-card-area md-inset>
+          <md-card-header>
+            <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.delegates_title') }}</h2>
+          </md-card-header>
+          </md-card-area>
+          <md-card-content>
+            <span v-if="delegate">
+              {{ $t('already_delegate_text') }} {{ delegate.username }}
+            </span> 
+            <md-input-container v-else>
+              <md-input style="width:50%" v-model="delegateName" v-bind:placeholder="$t('options.delegate_name_input')"></md-input>
+              <md-button style="width:50%" v-on:click="delegateRequest" v-bind:disabled="!delegateOpen" >
+              {{ $t('options.delegate_register_button') }} - 3000 ADM</md-button>
+            </md-input-container>
+            <md-button style="width:100%" v-on:click="$router.push('/votes/')">{{ $t('options.vote_for_delegates_button') }}</md-button>
+          </md-card-content>
+      </md-card>
 
     <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
       </div>
@@ -103,11 +121,21 @@
 export default {
   name: 'settings',
   methods: {
+    delegateRequest () {
+      this.registerDelegate('new-delegate-name')
+      return false
+    }
+  },
+  mounted: function () {
+    this.getDelegates()
   },
   computed: {
     languageList: function () {
       var messages = require('../i18n').default
       return messages
+    },
+    delegate () {
+      return Object.values(this.$store.state.delegates).find(x => x.address === this.$store.state.adress)
     }
   },
   watch: {
@@ -139,7 +167,8 @@ export default {
       sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
-      language: this.$i18n.locale
+      language: this.$i18n.locale,
+      delegateOpen: this.$store.state.balance >= 3000
     }
   }
 }
