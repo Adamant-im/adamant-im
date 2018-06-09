@@ -38,7 +38,8 @@ export default {
     'delegates_title': 'Delegates',
     'delegate_name_input': 'Enter delegate name',
     'delegate_register_button': 'Register delegate',
-    'vote_for_delegates_button': 'Vote for delegates'
+    'vote_for_delegates_button': 'Vote for delegates',
+    'already_delegate_text': 'You are already a delegate. Your delegate name is'
   },
   'chats': {
     'new_chat': 'Start new Chat',
