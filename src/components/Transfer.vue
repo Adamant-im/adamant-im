@@ -77,7 +77,8 @@ export default {
         } else if (this.crypto === Cryptos.ETH) {
           this.$store.dispatch('eth/sendTokens', {
             amount: this.targetAmount,
-            receiver: this.targetAddress
+            admAddress: this.fixedAddress,
+            ethAddress: this.targetAddress
           }).then(hash => this.$router.push('/transactions/ETH/' + hash))
         }
       }

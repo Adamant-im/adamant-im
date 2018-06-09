@@ -16,7 +16,11 @@ function toAbsolute (url = '') {
 }
 
 function parseResponse (response) {
-  return response.statusType() === 2 ? JSON.parse(response.body) : Promise.reject(response)
+  try {
+    return JSON.parse(response.body)
+  } catch (err) {
+    return Promise.reject(response)
+  }
 }
 
 function get (url, query) {
@@ -72,6 +76,7 @@ export function sendMessage (to, text, type = 1) {
 
       const transaction = {
         type: Transactions.CHAT_MESSAGE,
+        amount: 0,
         asset: {
           chat: { ...message, type }
         },

@@ -15,6 +15,9 @@ const DEFAULT_GAS_PRICE = '20000000000' // 20 Gwei
 const endpoint = getEndpointUrl('ETH')
 const api = new Web3(new Web3.providers.HttpProvider(endpoint))
 
+const backgroundRequests = []
+let backgroundTimer = null
+
 /**
  * Creates ETH account for the specified passphrase.
  *
@@ -37,6 +40,21 @@ function toWei (ether) {
   return api.utils.toWei(`${ether}`, 'ether')
 }
 
+function enqueueRequest (key, requestSupplier) {
+  if (backgroundRequests.some(x => x.key === key)) return
+  backgroundRequests.push({ key, request: requestSupplier() })
+}
+
+function executeRequests () {
+  const requests = backgroundRequests.splice(0, 20)
+  if (!requests.length) return
+
+  const batch = new api.eth.BatchRequest()
+  requests.forEach(x => batch.add(x.request))
+
+  batch.execute()
+}
+
 export default {
   /**
    * Handles `afterLogin` action: generates ETH-account and requests its balance.
@@ -55,6 +73,18 @@ export default {
           if (!address) admApi.storeValue(KVS_ADDRESS, account.address)
         })
       }
+
+      clearInterval(backgroundTimer)
+      setInterval(executeRequests, 5000)
+    }
+  },
+
+  /** Resets module state */
+  reset: {
+    root: true,
+    handler (context) {
+      clearInterval(backgroundTimer)
+      context.commit('reset')
     }
   },
 
@@ -69,6 +99,9 @@ export default {
         const account = getAccountFromPassphrase(passphrase)
         context.commit('account', account)
       }
+
+      clearInterval(backgroundTimer)
+      setInterval(executeRequests, 5000)
     }
   },
 
@@ -77,19 +110,17 @@ export default {
    * @param {*} context Vuex action context
    */
   updateStatus (context) {
-    const batch = new api.eth.BatchRequest()
-
-    // Balance
-    batch.add(api.eth.getBalance.request(context.state.address, 'latest', (err, balance) => {
+    enqueueRequest('balance', () => api.eth.getBalance.request(context.state.address, 'latest', (err, balance) => {
       if (err) {
         console.error('Failed to get ETH balance', err)
       } else {
         context.commit('balance', toEther(balance))
       }
+
+      context.dispatch('updateStatus')
     }))
 
-    // Gas price
-    batch.add(api.eth.getGasPrice.request((err, price) => {
+    enqueueRequest('gasPrice', () => api.eth.getGasPrice.request((err, price) => {
       if (err) {
         console.error('Failed to get ETH gas price', err)
       } else {
@@ -99,8 +130,6 @@ export default {
         })
       }
     }))
-
-    batch.execute()
   },
 
   /**
@@ -130,22 +159,27 @@ export default {
         const hash = api.utils.sha3(tx)
         console.log('ETH transaction', hash)
 
-        const admMsg = {
-          type: 'eth_transaction',
-          amount,
-          hash
-        }
+        const result = { hash, tx }
 
-        // Send a special message to indicate that we're performing an ETH transfer
-        return admApi.sendSpecialMessage(ethAddress, admMsg)
-          .then(() => ({ hash, tx }))
-          .catch((error) => {
-            console.log('Failed to send "eth_transaction"', error)
-            return Promise.reject({ code: 'adm_message' })
-          })
+        if (!admAddress) {
+          return result
+        } else {
+          // Send a special message to indicate that we're performing an ETH transfer
+          return admApi.sendSpecialMessage(admAddress, { type: 'eth_transaction', amount, hash })
+            .then(() => {
+              console.log('ADM message has been sent')
+              return result
+            })
+            .catch((error) => {
+              console.log('Failed to send "eth_transaction"', error)
+              return Promise.reject({ code: 'adm_message' })
+            })
+        }
       })
       .then(({ tx, hash }) => {
         const sendResult = api.eth.sendSignedTransaction(tx)
+        console.log('ETH transaction has been sent')
+
         sendResult.once('confirmation', (number, receipt) => {
           console.log('ETH receipt ', receipt)
           context.commit('transactionConfirmation', { hash, number, receipt })

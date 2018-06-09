@@ -1,6 +1,13 @@
 import Vue from 'vue'
 
+import { resetState } from '../../../lib/reset-state'
+import initialState from './state'
+
 export default {
+  /** Resets module state */
+  reset (state) {
+    resetState(state, initialState)
+  },
 
   /** Set ETH balance */
   balance (state, balance) {
