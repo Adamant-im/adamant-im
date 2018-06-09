@@ -13,7 +13,7 @@
     <span class="msg-holder">
       <slot></slot>
     </span>
-    <div class="dt">{{ timestamp }}</div>
+    <div class="dt">{{ $formatDate(timestamp) }}</div>
   </md-layout>
 </template>
 
