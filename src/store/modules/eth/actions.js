@@ -15,8 +15,15 @@ const DEFAULT_GAS_PRICE = '20000000000' // 20 Gwei
 const endpoint = getEndpointUrl('ETH')
 const api = new Web3(new Web3.providers.HttpProvider(endpoint))
 
+/** Background requests queue */
 const backgroundRequests = []
+/** Background requests timer */
 let backgroundTimer = null
+
+/** Timestamp of the most recent status update */
+let lastStatusUpdate = 0
+/** Status update interval */
+const STATUS_INTERVAL = 5000
 
 /**
  * Creates ETH account for the specified passphrase.
@@ -42,15 +49,27 @@ function toWei (ether) {
 
 function enqueueRequest (key, requestSupplier) {
   if (backgroundRequests.some(x => x.key === key)) return
-  backgroundRequests.push({ key, request: requestSupplier() })
+
+  let requests = requestSupplier()
+  backgroundRequests.push({ key, requests: Array.isArray(requests) ? requests : [requests] })
 }
 
 function executeRequests () {
   const requests = backgroundRequests.splice(0, 20)
+
+  // Delay status update if it's not time yet
+  if (Date.now() - lastStatusUpdate < STATUS_INTERVAL) {
+    const statusIndex = requests.findIndex(x => x.key === 'status')
+    if (status) {
+      const status = requests.splice(statusIndex, 1)
+      backgroundRequests.splice(0, 0, status)
+    }
+  }
+
   if (!requests.length) return
 
   const batch = new api.eth.BatchRequest()
-  requests.forEach(x => batch.add(x.request))
+  requests.forEach(x => x.requests.forEach(r => batch.add(r)))
 
   batch.execute()
 }
@@ -75,7 +94,7 @@ export default {
       }
 
       clearInterval(backgroundTimer)
-      setInterval(executeRequests, 5000)
+      setInterval(executeRequests, 1000)
     }
   },
 
@@ -100,8 +119,10 @@ export default {
         context.commit('account', account)
       }
 
+      context.dispatch('updateStatus')
+
       clearInterval(backgroundTimer)
-      setInterval(executeRequests, 5000)
+      setInterval(executeRequests, 1000)
     }
   },
 
@@ -110,26 +131,29 @@ export default {
    * @param {*} context Vuex action context
    */
   updateStatus (context) {
-    enqueueRequest('balance', () => api.eth.getBalance.request(context.state.address, 'latest', (err, balance) => {
-      if (err) {
-        console.error('Failed to get ETH balance', err)
-      } else {
-        context.commit('balance', toEther(balance))
-      }
+    const supplier = () => [
+      // Balance
+      api.eth.getBalance.request(context.state.address, 'latest', (err, balance) => {
+        if (!err) context.commit('balance', toEther(balance))
+        lastStatusUpdate = Date.now()
+        context.dispatch('updateStatus')
+      }),
+      // Current gas price
+      api.eth.getGasPrice.request((err, price) => {
+        if (!err) {
+          context.commit('gasPrice', {
+            gasPrice: price,
+            fee: toEther(Number(TRANSFER_GAS) * price)
+          })
+        }
+      }),
+      // Current block number
+      api.eth.getBlockNumber.request((err, number) => {
+        if (!err) context.commit('blockNumber', number)
+      })
+    ]
 
-      context.dispatch('updateStatus')
-    }))
-
-    enqueueRequest('gasPrice', () => api.eth.getGasPrice.request((err, price) => {
-      if (err) {
-        console.error('Failed to get ETH gas price', err)
-      } else {
-        context.commit('gasPrice', {
-          gasPrice: price,
-          fee: toEther(Number(TRANSFER_GAS) * price)
-        })
-      }
-    }))
+    enqueueRequest('status', supplier)
   },
 
   /**
@@ -203,5 +227,40 @@ export default {
 
         return hash
       })
+  },
+
+  /**
+   * Enqueues a background request to retrieve the transaction details
+   * @param {object} context Vuex action context
+   * @param {{hash: string, timestamp: number}} payload hash and timestamp of the transaction to fetch
+   */
+  getTransaction (context, payload) {
+    const existing = context.state.transactions[payload.hash]
+    if (existing && existing.status !== 'PENDING') return
+
+    const key = 'transaction:' + payload.hash
+    const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
+      if (!err) {
+        const transaction = {
+          hash: tx.hash,
+          senderId: tx.from,
+          recipientId: tx.to,
+          amount: toEther(tx.value),
+          fee: toEther(Number(tx.gas) * tx.gasPrice),
+          status: tx.blockNumber ? 'SUCCESS' : 'PENDING',
+          timestamp: payload.timestamp, // TODO: fetch from block?
+          confirmations: tx.blockNumber ? (context.state.blockNumber - tx.blockNumber) : 0
+        }
+
+        context.commit('addTransaction', transaction)
+      }
+
+      if (err || !tx.blockNumber) {
+        // In case of an error or a pending transaction fetch its details once again later
+        context.dispatch('getTransaction', payload)
+      }
+    })
+
+    enqueueRequest(key, supplier)
   }
 }

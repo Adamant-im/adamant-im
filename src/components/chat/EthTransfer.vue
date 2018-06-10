@@ -22,17 +22,23 @@
     methods: {
       goToTransaction () {
         this.$store.commit('leave_chat')
-        const params = { crypto: Cryptos.ETH, tx_id: this.message.id }
+        const params = { crypto: Cryptos.ETH, tx_id: this.hash }
         this.$router.push({ name: 'Transaction', params })
       }
     },
+    mounted () {
+      const timestamp = this.message.timestamp
+      this.$store.dispatch('eth/getTransaction', { hash: this.hash, timestamp })
+    },
     computed: {
+      hash () {
+        return this.message.message && this.message.message.hash
+      },
       amount () {
         return this.message.message && this.message.message.amount
       },
       confirm () {
-        const hash = this.message.message && this.message.message.hash
-        const tx = this.$store.state.eth.transactions[hash]
+        const tx = this.$store.state.eth.transactions[this.hash]
         const status = tx && tx.status
 
         if (status === 'SUCCESS') {

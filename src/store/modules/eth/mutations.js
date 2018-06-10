@@ -20,6 +20,11 @@ export default {
     state.fee = payload.fee
   },
 
+  /** Current block number */
+  blockNumber (state, number) {
+    state.blockNumber = number
+  },
+
   /** Set ETH account */
   account (state, account) {
     state.address = account.address
