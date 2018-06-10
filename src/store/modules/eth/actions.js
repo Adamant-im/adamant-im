@@ -60,13 +60,17 @@ function executeRequests () {
   // Delay status update if it's not time yet
   if (Date.now() - lastStatusUpdate < STATUS_INTERVAL) {
     const statusIndex = requests.findIndex(x => x.key === 'status')
-    if (status) {
-      const status = requests.splice(statusIndex, 1)
+    if (statusIndex >= 0) {
+      const status = requests.splice(statusIndex, 1)[0]
       backgroundRequests.splice(0, 0, status)
     }
   }
 
   if (!requests.length) return
+
+  if (requests.some(x => x.key === 'status')) {
+    lastStatusUpdate = Date.now()
+  }
 
   const batch = new api.eth.BatchRequest()
   requests.forEach(x => x.requests.forEach(r => batch.add(r)))
