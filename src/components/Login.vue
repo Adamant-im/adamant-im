@@ -24,8 +24,30 @@
           <md-layout md-flex="66" md-flex-xsmall="80">
               <md-layout md-align="center" md-gutter="16">
                   <md-button class="md-raised md-short" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
-
               </md-layout>
+          </md-layout>
+          <md-layout md-flex="66"
+                     md-flex-xsmall="80"
+                     md-align="center"
+                     class="qr-code-buttons">
+            <md-button classs="md-ripple md-disabled"
+                       @click.prevent="scanQRCode">
+              <Icon name="qrCodeLense" />
+            </md-button>
+            <md-button classs="md-ripple md-disabled"
+                       @click.prevent="saveQRCode">
+              <Icon name="qrCode" />
+            </md-button>
+          </md-layout>
+          <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
+            <p v-if="message">{{message}}</p>
+            <p>
+              <a href="#"
+                 @click.prevent="downloadQRCode"
+                 v-if="showQRCode">
+                <qr-code :text="passPhrase" ref="qrCode"></qr-code>
+              </a>
+            </p>
           </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top:30px">
               <md-layout md-align="center" md-gutter="16">
@@ -63,8 +85,16 @@
 </template>
 
 <script>
+import b64toBlob from 'b64-to-blob'
+import FileSaver from 'file-saver'
+import Icon from '@/components/Icon'
+import { Fees } from '../lib/constants'
+
 export default {
   name: 'login',
+  components: {
+    Icon
+  },
   methods: {
     scrollToBottom: function () {
       this.$root.$nextTick(function () {
@@ -82,6 +112,26 @@ export default {
     snackOpen () {
       this.$refs.snackbar.open()
     },
+    downloadQRCode () {
+      const imgUrl = this.$refs.qrCode.$el.querySelector('img').src
+      const base64Data = imgUrl.slice(22, imgUrl.length)
+      const byteCharacters = b64toBlob(base64Data)
+      const blob = new Blob([byteCharacters], {type: 'image/png'})
+
+      FileSaver.saveAs(blob, 'adamant-im.png')
+    },
+    saveQRCode () {
+      if (!this.passPhrase.length) {
+        this.message = 'Please enter passphrase first'
+        return
+      }
+
+      this.message = ''
+      this.showQRCode = true
+    },
+    scanQRCode () {
+      this.$router.push('/scan/')
+    },
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
       if (this.passPhrase.split(' ').length !== 12) {
@@ -96,6 +146,16 @@ export default {
         this.$root._router.push('/chats/')
         this.loadChats(true)
         this.$store.commit('stop_tracking_new')
+
+        this.$store.dispatch('login', this.passPhrase)
+
+        // Store ETH address into the KVS if it's not there yet and user has
+        // enough ADM for this transaction
+        if (this.$store.state.balance >= Fees.KVS) {
+          this.getStored('eth:address').then(address => {
+            if (!address) this.storeValue('eth:address', this.$store.state.eth.address)
+          })
+        }
       }, errorFunction)
     },
     'handleSuccess': function (e) {
@@ -142,6 +202,9 @@ export default {
     yourPassPhrase: function () {
       var Mnemonic = require('bitcore-mnemonic')
       return new Mnemonic(Mnemonic.Words.ENGLISH).toString()
+    },
+    qrCodePassPhrase: function () {
+      return this.$store.state.passPhrase
     }
   },
   watch: {
@@ -152,9 +215,11 @@ export default {
   },
   data () {
     return {
-      passPhrase: '',
+      passPhrase: this.qrCodePassPhrase || '',
       language: this.$i18n.locale,
-      showCreate: false
+      showCreate: false,
+      message: '',
+      showQRCode: false
     }
   }
 }
@@ -162,6 +227,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+
+.qr-code-buttons button {
+  min-width: auto;
+  padding: 0;
+}
+
 .site-branding
 {
     text-align: center;

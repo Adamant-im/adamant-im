@@ -1,4 +1,8 @@
-function formatAmount (amount) {
+import { EPOCH, Cryptos } from './constants'
+
+function formatAmount (amount, crypto = Cryptos.ADM) {
+  if (crypto !== Cryptos.ADM) return amount // TODO: formatting for other cryptos maybe?
+
   amount = amount / 100000000
   var e
   if (Math.abs(amount) < 1.0) {
@@ -36,10 +40,15 @@ function getTime (date) {
   return time
 }
 
-function formatDate (timestamp) {
+function formatDate (timestamp, withEpoch = true) {
+  timestamp = parseInt(timestamp)
+  if (withEpoch) {
+    timestamp = timestamp * 1000 + EPOCH
+  }
+
   var startToday = new Date()
   startToday.setHours(0, 0, 0, 0)
-  var date = new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))
+  var date = new Date(timestamp)
   if (date.getTime() > startToday.getTime()) {
     return this.$t('chats.date_today') + ', ' + getTime(date)
   }
@@ -48,7 +57,7 @@ function formatDate (timestamp) {
     return this.$t('chats.date_yesterday') + ', ' + getTime(date)
   }
   var options = {'weekday': 'short'}
-  if ((Date.now() - (parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0))) > (4 * 3600 * 24 * 1000)) {
+  if ((Date.now() - timestamp) > (4 * 3600 * 24 * 1000)) {
     options = {'day': 'numeric', 'month': 'short'}
   }
   return date.toLocaleDateString(this.$t('region'), options) + ', ' + getTime(date)

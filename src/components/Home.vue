@@ -2,27 +2,43 @@
   <div class="home">
       <md-layout md-align="center" md-gutter="16">
       <md-list class="md-double-line">
-          <md-list-item v-on:click="copy" v-clipboard="this.$store.state.address" @success="copySuccess" :title="$t('home.your_address_tooltip')">
+          <md-list-item
+            v-for="addr in wallets"
+            v-bind:key="'addr_' + addr.system"
+            v-on:click="copy"
+            v-clipboard="addr.address"
+            @success="copySuccess"
+            :title="addr.tooltip ? $t(addr.tooltip) : ''"
+          >
               <md-avatar class="md-avatar-icon">
                   <md-icon>account_circle</md-icon>
               </md-avatar>
 
-              <div class="md-list-text-container">
-                  <span>{{ $t('home.your_address') }} </span>
-                  <p> {{ this.$store.state.address }}</p>
+              <div class="md-list-text-container for-address">
+                  <span>{{ $t('home.your_address_'+addr.system) }}</span>
+                  <p> {{ addr.address }}</p>
+              </div>
+
+              <div class='md-list-action'>
+                <md-icon>content_copy</md-icon>
               </div>
           </md-list-item>
 
-              <md-list-item  v-on:click="$router.push('/transactions/')" :title="$t('home.your_balance_tooltip')">
-                  <md-avatar class="md-avatar-icon">
-                      <md-icon>account_balance_wallet</md-icon>
-                  </md-avatar>
-              <div class="md-list-text-container">
-                  <span>{{ $t('home.your_balance') }}  </span>
-                  <p> <span v-html="this.$store.state.balance"></span> ADM</p>
-              </div>
-
+          <md-list-item
+            v-for="wallet in wallets"
+            v-bind:key="'bal_' + wallet.system"
+            v-on:click="goToTransactions(wallet.system)"
+            :title="wallet.balanceTooltip ? $t(wallet.balanceTooltip) : ''"
+          >
+            <md-avatar class="md-avatar-icon">
+                <md-icon>account_balance_wallet</md-icon>
+            </md-avatar>
+            <div class="md-list-text-container">
+                <span>{{ $t('home.your_balance_' + wallet.system) }}</span>
+                <p> <span v-html="wallet.balance"></span> {{ wallet.system }}</p>
+            </div>
           </md-list-item>
+
           <md-list-item v-on:click="$router.push('/transfer/')" :title="$t('home.send_btn_tooltip')">
               <md-avatar class="md-avatar-icon">
                   <md-icon>send</md-icon>
@@ -33,6 +49,19 @@
               </div>
 
           </md-list-item>
+
+          <md-list-item :href="freeAdmAddress" target="_blank">
+
+              <md-avatar class="md-avatar-icon">
+                  <md-icon>monetization_on</md-icon>
+              </md-avatar>
+
+              <div class="md-list-text-container">
+                  <span>{{ $t('home.free_adm_btn') }} </span>
+                  <p></p>
+              </div>
+          </md-list-item>
+
           <md-list-item :href="icoAddress" target="_blank" :title="$t('home.invest_btn_tooltip')">
 
               <md-avatar class="md-avatar-icon">
@@ -60,6 +89,11 @@ export default {
       this.$refs.homeSnackbar.open()
     },
     copy () {
+    },
+    goToTransactions (system) {
+      if (system === 'ADM') {
+        this.$router.push('/transactions/')
+      }
     }
   },
   computed: {
@@ -69,12 +103,33 @@ export default {
       }
       return 'https://adamant.im/ico/?wallet=' + this.$store.state.address
     },
+    freeAdmAddress () {
+      return 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
+    },
     isNewUser: function () {
       return this.$store.state.is_new_account
     },
     languageList: function () {
       var messages = require('../i18n').default
       return messages
+    },
+    wallets: function () {
+      return [
+        {
+          system: 'ADM',
+          address: this.$store.state.address,
+          tooltip: 'home.your_address_tooltip_ADM',
+          balance: this.$store.state.balance,
+          balanceTooltip: 'home.your_balance_tooltip_ADM'
+        },
+        {
+          system: 'ETH',
+          address: this.$store.state.eth.address,
+          tooltip: 'home.your_address_tooltip_ETH',
+          balance: this.$store.state.eth.balance,
+          balanceTooltip: 'home.your_balance_tooltip_ETH'
+        }
+      ]
     }
   },
   watch: {
@@ -94,6 +149,14 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+.home .md-list {
+    max-width: 90%;
+}
+.for-address p {
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: inline-block;
+}
 .home .md-list-text-container p
 {
     font-style: italic;

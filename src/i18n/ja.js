@@ -52,8 +52,8 @@ export default {
     'recipient_tooltip': 'メッセージの送付先IDを次のように入力します、U1234567890',
     'message': 'メッセージを入力してください ',
     'estimate_fee': '見積もり手数料',
-    'welcome_message': '匿名で安全なメッセンジャー、ADAMANTをお使い頂きありがとうございます。 メッセンジャーをお試し頂けるようトークンを付与致します。 高いセキュリティと匿名性には、正しくお使い頂く必要があります。 チャットルームで受け取ったリンクはクリックしないでください。IPアドレスが特定される危険性があります。 ブラウザの拡張機能にはお気をつけください。 ADMアドレスを共有する際、他のメッセンジャーを使用せず、個別に送信することをお勧めします。 パスワードは大事に保管してください。 ダイアログが完了したら、デバイス自体にパスワードを設定するか、使用終了後ログアウトしてください。 セキュリティと匿名性について詳細は以下URLでご確認ください、<a href="https://adamant.im/ru-staysecured/" target= "_blank"> https://adamant.im/staysecured/</a> このメッセージに返信しないでください。このアドレスはシステムアカウントです.',
-    'ico_message': 'セキュリティと匿名性が高いメッセンジャーADAMANTのICOに投資することができます。早く投資することで、より有利な条件となります。条件の詳細については、ホワイトペーパーあるいはAdamant.imで参照してください。弊社のウェブサイトおよびホワイトペーパーをご確認頂き、不明点がある場合は、このメッセージにご質問ください。迅速に対応致しますが、遅れが生じることもあります。アカウントパスワードの保存を忘れないでください。ログアウトしてもう一度ログインしてください。パスワードは紙ベースで保管することも大切です。パスワードを安全に保つ責任はあなたにあります。紛失されると復元することはできません。パスワードが他の人の手に渡った場合、あなたのお金は盗まれる可能性があります。ウォレットにあるトークン価格が10億ドルであるかの如く、この問題を真剣に考えてください。投資をするには、メッセンジャーの[ウォレット]タブに移動し、ICOの[投資]ボタンをクリックするか、ブラウザに直接Adamant.im/ico/を入力してください。投資フォームで、ADAMANTのアドレスを入力してください。ADMトークンはそこに送付されます。メッセンジャーから移動するとAMDアドレスは自動的に入力され、もし入力されない場合はメッセンジャーに戻り、アドレスをクリックすると、クリップボードにコピーされます。次に、投資時に使用したい仮想通貨と金額を指定します。ボーナスを含め、ADMトークンをいくら受け取れるか表示されます: 20-30 ETH：+20％、30-50 ETH：+30％、50-90 ETH：+40％、90+ ETH：+50％。ADAMANTトークンを購入するをクリックします。ここで、仮想通貨の送付先アドレスが表示されます。送付が確認されると、すぐにADMトークンを受け取ることができます。トランザクションは、取引所あるいはウォレットから実行できます。手数料を考慮し正確な金額を振り込む必要はありませんが、支払いはこのように実行されます。他に質問がございましたら、ご連絡ください。 ADMトークン購入後、長期保有することをお勧めします。毎月、ICOで配布されなかったトークンがユーザーの財布に還元され、残高が5％増加します。詳細はホワイトペーパーあるいはAdamant.imウェブサイトで入手できます。',
+    'welcome_message': '<p>Welcome to ADAMANT, the most secure and anonymous messenger. Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.</p><p>Learn more about security and anonymity at <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>All the transactions within the blockchain do need to have their minimal fees. This is necessary to support the network infrastructure. To start messengning now, <b>get free tokens</b> — go to Wallet tab and click Free ADM tokens. Then click Start new chat on Chats tab and put your interlocutor\'s address. To copy your address, click on ADAMANT address on Wallet tab.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
+    'ico_message': '<p>You have a possibility to <b>Join the ICO</b> of ADAMANT, the most secure and anonymous messenger. Learn more on Adamant.im website or in the Whitepaper.</p><p>Please make sure your have saved the passphrase to this account — exit your account and open it again. Better save your password on a sheet of paper also. But remember, only <b>you are responsible for the passphrase safety</b>. It cannot be recovered. And if other person will get it, your money will be stolen. Treat this question as secure, as if tokens in your wallet will cost a billion dollars some time.</p><p>To buy ADM tokens, go to Wallet tab and click Join the ICO, or open the page Adamant.im/ico/ in the web browser. In the ICO form enter your ADAMANT address — you will receive ADM tokens there. If you moved from Messenger App, your ADM address will be filled already, other way go back to Messenger and click ADAMANT address to copy it to clipboard. Next, choose crypto you want to spend and its amount. You\'ll see how much ADM tokens you will receive, including volume bonus: 20–30 ETH: +20%, 30–50 ETH: +30%, 50–90 ETH: +40%, 90+ ETH: +50%. Click Buy ADAMANT tokens. You\'ll get unique address where you need to send crypto. As soon as your transaction will be confirmed, you\'ll receive ADM tokens. Transaction can be done <b>from any wallet or exchange</b>. It is not necessary to transfer exact amount including transaction fees, the payment will be processed anyway.</p><p>After you receive ADM tokens, we recommend to keep them as long as possible. All of unsold tokens during ICO will be distributed among users\' wallets, adding 5% monthly. Additional info is on Adamant.im website and in the Whitepaper.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
     'date_today': '今日',
     'date_yesterday': '昨日',
     'date_tomorrow': '明日',
@@ -62,14 +62,19 @@ export default {
   },
   'home': {
     'copied': 'コピーされました',
-    'your_address': 'アドレス',
-    'your_address_tooltip': 'これはADAMANT固有の識別子です。 クリックするとクリップボードにコピーされます。',
-    'your_balance': 'あなたの残高',
-    'your_balance_tooltip': 'これはADAMANTのトークン残高です。 すべての取引履歴を表示する場合はクリックしてください。',
-    'send_btn': 'トークンの送金 ',
-    'send_btn_tooltip': 'クリックするとADMトークンがADAMANTの別のユーザーに送金されます。',
+    'your_address_ADM': 'ADAMANT address',
+    'your_address_ETH': 'Ethereum address',
+    'your_address_tooltip_ADM': 'これはADAMANT固有の識別子です。 クリックするとクリップボードにコピーされます。',
+    'your_address_tooltip_ETH': 'This is your ADAMANT ETH wallet unique identifier. Click to copy it in the clipboard.',
+    'your_balance_ADM': 'ADAMANT Balance',
+    'your_balance_ETH': 'Ethereum Balance',
+    'your_balance_tooltip_ADM': 'これはADAMANTのトークン残高です。 すべての取引履歴を表示する場合はクリックしてください。',
+    'your_balance_tooltip_ETH': 'It is your ADAMANT ETH balance.',
+    'send_btn': 'Send funds',
+    'send_btn_tooltip': 'Click to transfer supported tokens to other account or ADAMANT user',
     'invest_btn': 'ICOに投資する',
-    'invest_btn_tooltip': 'ADAMANTの安全性と匿名性の高いメッセンジャーのICOに投資することができます。 クリックすると、Adamant.im/EN-ico/の投資ページに移動します。'
+    'invest_btn_tooltip': 'ADAMANTの安全性と匿名性の高いメッセンジャーのICOに投資することができます。 クリックすると、Adamant.im/EN-ico/の投資ページに移動します。',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': '金額',
@@ -78,7 +83,10 @@ export default {
     'commission': 'てすう量 ',
     'txid': 'トランザクション番号 ',
     'sender': '送信者 ',
-    'recipient': '受信者'
+    'recipient': '受信者',
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': '送金する',
@@ -94,7 +102,7 @@ export default {
     'error_no_amount': '送金額を入力してください ',
     'error_not_enough': 'トークンが足りません',
     'confirm_title': '送金確認 ',
-    'confirm_message': '送金の確認<b> {amount} ADM</b> to {target}送金先アドレス.',
+    'confirm_message': '送金の確認<b> {amount} {crypto}</b> to <span class="address-in-confirm">{target}</span>送金先アドレス.',
     'confirm_approve': '確認',
     'confirm_cancel': 'キャンセル'
   },

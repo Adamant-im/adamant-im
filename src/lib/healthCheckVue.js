@@ -6,7 +6,7 @@ const HealthChecker = require('./healthCheck').default
 
 function install (Vue) {
   // List of checking servers
-  let serverList = config.server.map(obj => ({
+  let serverList = config.server.adm.map(obj => ({
     ...obj,
     online: true
   }))
