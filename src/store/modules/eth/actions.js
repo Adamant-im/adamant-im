@@ -56,21 +56,7 @@ function enqueueRequest (key, requestSupplier) {
 
 function executeRequests () {
   const requests = backgroundRequests.splice(0, 20)
-
-  // Delay status update if it's not time yet
-  if (Date.now() - lastStatusUpdate < STATUS_INTERVAL) {
-    const statusIndex = requests.findIndex(x => x.key === 'status')
-    if (statusIndex >= 0) {
-      const status = requests.splice(statusIndex, 1)[0]
-      backgroundRequests.splice(0, 0, status)
-    }
-  }
-
   if (!requests.length) return
-
-  if (requests.some(x => x.key === 'status')) {
-    lastStatusUpdate = Date.now()
-  }
 
   const batch = new api.eth.BatchRequest()
   requests.forEach(x => x.requests.forEach(r => batch.add(r)))
@@ -98,7 +84,7 @@ export default {
       }
 
       clearInterval(backgroundTimer)
-      setInterval(executeRequests, 1000)
+      backgroundTimer = setInterval(executeRequests, 1000)
     }
   },
 
@@ -126,7 +112,7 @@ export default {
       context.dispatch('updateStatus')
 
       clearInterval(backgroundTimer)
-      setInterval(executeRequests, 1000)
+      backgroundTimer = setInterval(executeRequests, 1000)
     }
   },
 
@@ -135,12 +121,12 @@ export default {
    * @param {*} context Vuex action context
    */
   updateStatus (context) {
+    if (!context.state.address) return
+
     const supplier = () => [
       // Balance
       api.eth.getBalance.request(context.state.address, 'latest', (err, balance) => {
         if (!err) context.commit('balance', toEther(balance))
-        lastStatusUpdate = Date.now()
-        context.dispatch('updateStatus')
       }),
       // Current gas price
       api.eth.getGasPrice.request((err, price) => {
@@ -157,7 +143,12 @@ export default {
       })
     ]
 
-    enqueueRequest('status', supplier)
+    const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)
+    setTimeout(() => {
+      enqueueRequest('status', supplier)
+      lastStatusUpdate = Date.now()
+      context.dispatch('updateStatus')
+    }, delay)
   },
 
   /**

@@ -287,7 +287,8 @@ const store = {
       if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
         currentDialogs.last_message = {
           message: payload.message,
-          timestamp: payload.timestamp
+          timestamp: payload.timestamp,
+          direction
         }
       }
       payload.confirm_class = 'unconfirmed'

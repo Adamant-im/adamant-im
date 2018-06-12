@@ -1,30 +1,40 @@
 <template>
-  <md-layout
-    md-flex="90"
-    md-flex-xsmall="85"
-    class="chat_message md-whiteframe md-whiteframe-1dp"
-    :data-confirmation="confirm"
-    v-bind:class="{
-      'md-flex-xsmall-offset-10': direction === 'from',
-      'md-own md-flex-xsmall-offset-5': direction === 'to'
-    }"
-  >
-    <span class="avatar-holder"></span>
-    <span class="msg-holder">
-      <slot></slot>
+  <div class="chat_entry">
+    <md-layout
+      md-flex="90"
+      md-flex-xsmall="85"
+      class="chat_message md-whiteframe md-whiteframe-1dp"
+      :data-confirmation="confirm"
+      v-bind:class="{
+        'md-flex-xsmall-offset-10': direction === 'from',
+        'md-own md-flex-xsmall-offset-5': direction === 'to'
+      }"
+      v-if="!brief"
+    >
+      <span class="avatar-holder"></span>
+      <span class="msg-holder">
+        <slot></slot>
+      </span>
+      <div class="dt">{{ $formatDate(timestamp) }}</div>
+    </md-layout>
+    <span v-if="brief">
+      <slot name="brief-view"></slot>
     </span>
-    <div class="dt">{{ $formatDate(timestamp) }}</div>
-  </md-layout>
+  </div>
 </template>
 
 <script>
   export default {
     name: 'chat-entry-template',
-    props: ['confirm', 'direction', 'timestamp']
+    props: ['confirm', 'direction', 'timestamp', 'brief']
   }
 </script>
 
 <style>
+  .chat_entry {
+    width: 100%;
+  }
+
   .chat_message p {
     margin: 0;
     padding: 5px 0;

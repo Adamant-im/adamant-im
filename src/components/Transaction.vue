@@ -8,7 +8,7 @@
           </md-table-row>
           <md-table-row v-if="transaction.timestamp">
             <md-table-cell  class='label_td'>{{ $t('transaction.date') }}</md-table-cell>
-            <md-table-cell >{{ $formatDate(transaction.timestamp, crypto === 'ADM') }}</md-table-cell>
+            <md-table-cell >{{ $formatDate(transaction.timestamp) }}</md-table-cell>
           </md-table-row>
           <md-table-row v-if="crypto === 'ADM'">
             <md-table-cell  class='label_td'>{{ $t('transaction.confirmations') }}</md-table-cell>

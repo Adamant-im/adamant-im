@@ -1,5 +1,5 @@
 <template>
-  <component v-bind:is="entryComponent" :message="message"></component>
+  <component v-bind:is="entryComponent" :message="message" :brief="!!brief"></component>
 </template>
 
 <script>
@@ -9,7 +9,7 @@
 
   export default {
     name: 'chat-entry',
-    props: ['message'],
+    props: ['message', 'brief'],
     components: {
       TextMessage,
       AdmTransfer,

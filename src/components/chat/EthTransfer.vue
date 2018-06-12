@@ -3,11 +3,17 @@
     :confirm="confirm"
     :direction="message.direction"
     :timestamp="message.timestamp"
+    :brief="brief"
   >
     <p>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</p>
     <p class='transaction-amount' v-on:click="goToTransaction()">
-      <span v-html="$formatAmount(message.amount)"></span> ETH
+      <span v-html="message.message.amount"></span> ETH
     </p>
+
+    <template slot="brief-view">
+      <span>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</span>&nbsp;
+      <span v-html="message.message.amount"></span> ETH
+    </template>
   </chat-entry-template>
 </template>
 
@@ -18,7 +24,7 @@
   export default {
     name: 'eth-transfer',
     components: { ChatEntryTemplate },
-    props: ['message'],
+    props: ['message', 'brief'],
     methods: {
       goToTransaction () {
         this.$store.commit('leave_chat')
