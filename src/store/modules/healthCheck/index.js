@@ -10,6 +10,3 @@ export default {
   mutations,
   getters
 }
-
-// TODO Watch for the option changes
-
