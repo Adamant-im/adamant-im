@@ -2,7 +2,6 @@ import Queue from 'promise-queue'
 
 var config = require('../config.json')
 var adamant = require('./adamant.js')
-const constants = require('./constants.js')
 const renderMarkdown = require('./markdown').default
 const { hexToBytes, bytesToHex } = require('./hex')
 
@@ -69,50 +68,6 @@ function install (Vue) {
       window.publicKey = keypair.publicKey
     }
     return keypair.publicKey.toString('hex')
-  }
-  Vue.prototype.getStored = function (key, address) {
-    if (!address) {
-      address = this.$store.state.address
-    }
-
-    return this.$http.get(this.getAddressString() + '/api/states/get?senderId=' + address).then(response => {
-      if (response.body.success) {
-        const trans = response.body.transactions.filter(x => key === (x.asset && x.asset.state && x.asset.state.key))[0]
-        return trans ? trans.asset.state.value : undefined
-      }
-    })
-  }
-
-  Vue.prototype.storeValue = function (key, value, callback) {
-    const keys = this.getKeypair()
-
-    const transaction = {
-      type: constants.Transactions.STATE,
-      amount: 0,
-      senderId: this.$store.state.address,
-      senderPublicKey: keys.publicKey.toString('hex'),
-      asset: {
-        state: { key, value, type: 0 }
-      },
-      timestamp: adamant.epochTime()
-    }
-
-    transaction.signature = adamant.transactionSign(transaction, keys)
-
-    this.$store.commit('ajax_start')
-    this.$http.post(this.getAddressString() + '/api/states/store', { transaction }).then(response => {
-      if (response.body.success) {
-        if (callback) {
-          callback.call(this)
-        }
-        this.$store.commit('ajax_end')
-      } else {
-        alert(response.body.error)
-        this.$store.commit('ajax_end_with_error')
-      }
-    }, response => {
-      // error callback
-    })
   }
   Vue.prototype.createNewAccount = function (publicKey, callback) {
     this.$store.commit('ajax_start')

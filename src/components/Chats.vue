@@ -27,7 +27,6 @@
 
                 <div class="md-list-text-container">
                     <span>{{ chatName(chat.partner) }}</span>
-                    <!-- <p v-html="chat.last_message.message"></p> -->
                     <chat-entry :message="chat.last_message" :brief="true"></chat-entry>
                     <span class="dt" v-if="chat.last_message.timestamp">{{ $formatDate(chat.last_message.timestamp) }}</span>
                 </div>

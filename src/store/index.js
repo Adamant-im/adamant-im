@@ -52,11 +52,6 @@ const store = {
     sendOnEnter: false,
     showBottom: true,
     partnerName: '',
-    // partnerDisplayName: '',
-    // partners: {
-    //   'U7047165086065693428': 'ADAMANT ICO',
-    //   'U15423595369615486571': 'ADAMANT Bounty Wallet'
-    // },
     newChats: {},
     totalNewChats: 0,
     chats: {},
@@ -131,14 +126,12 @@ const store = {
       state.firstChatLoad = true
       state.lastChatHeight = 0
       state.lastTransactionHeight = 0
-      // state.partnerDisplayName = ''
       window.publicKey = false
       window.privateKey = false
       window.secretKey = false
       state.publicKey = false
       state.privateKey = false
       state.secretKey = false
-//      state.partners = {}
     },
     stop_tracking_new (state) {
       state.trackNewMessages = false
@@ -173,17 +166,6 @@ const store = {
         state.is_new_account = payload.is_new_account
       }
     },
-    // change_display_name (state, payload) {
-    //   if (payload.partnerName) {
-    //     Vue.set(state.partners, payload.partnerName, payload.partnerDisplayName)
-    //   }
-    // },
-    // change_partner_name (state, payload) {
-    //   if (state.partnerName) {
-    //     state.partners[state.partnerName] = payload
-    //     state.partnerDisplayName = payload
-    //   }
-    // },
     transaction_info (state, payload) {
       payload.direction = (state.address === payload.recipientId) ? 'to' : 'from'
       Vue.set(state.transactions, payload.id, payload)
