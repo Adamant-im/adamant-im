@@ -1,4 +1,5 @@
-import popsicle from 'popsicle'
+import sa from 'superagent'
+
 import getEndpointUrl from './getEndpointUrl'
 import { Cryptos, Transactions } from './constants'
 import utils from './adamant'
@@ -15,28 +16,16 @@ function toAbsolute (url = '') {
   return endpoint + url
 }
 
-function parseResponse (response) {
-  try {
-    return JSON.parse(response.body)
-  } catch (err) {
-    return Promise.reject(response)
-  }
-}
-
 function get (url, query) {
-  return popsicle({
-    url: toAbsolute(url),
-    query,
-    method: 'get'
-  }).then(parseResponse)
+  return sa.get(toAbsolute(url))
+    .query(query)
+    .then(response => response.body)
 }
 
 function post (url, payload) {
-  return popsicle({
-    url: toAbsolute(url),
-    body: payload,
-    method: 'post'
-  }).use(parseResponse)
+  return sa.post(toAbsolute(url))
+    .send(payload)
+    .then(response => response.body)
 }
 
 export function unlock (passphrase) {
@@ -81,7 +70,8 @@ export function sendMessage (to, text, type = 1) {
           chat: { ...message, type }
         },
         recipientId: to,
-        senderPublicKey: myKeypair.publicKey,
+        senderId: myAddress,
+        senderPublicKey: myKeypair.publicKey.toString('hex'),
         timestamp: utils.epochTime()
       }
       transaction.signature = utils.transactionSign(transaction, myKeypair)
@@ -119,7 +109,7 @@ export function storeValue (key, value) {
 
   transaction.signature = utils.transactionSign(transaction, myKeypair)
 
-  return post('/api/states/store', { transaction })
+  return post('/api/states/store', { transaction }).then(console.log, console.error)
 }
 
 /**
