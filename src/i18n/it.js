@@ -24,7 +24,7 @@ export default {
     'exit_on_close': 'Disconnetti in fondo alla scheda',
     'exit_on_close_tooltip': 'Per la sicurezza del tuo portafoglio ti consigliamo di tenerlo selezionato. Se la deselezionerai, la passphrase verra salvata nella memoria del browser e la prossima volta che aprirai il wallet verra decifrato senza dover inserire una passphrase. E accettabile solo nel caso in cui nessun altro possa accedere al tuo dispositivo. ',
     'send_on_enter': 'Send message on Enter',
-    'send_on_enter_tooltip': 'Send message on Enter key, by default combination Ctrl (Cmd) + Enter is used',
+    'send_on_enter_tooltip': 'Invia un messaggio su Invio',
     'general_title': 'Generale',
     'security_title': 'Sicurezza',
     'chats_title': 'Chats',
@@ -52,9 +52,8 @@ export default {
     'recipient_tooltip': 'Inserisci un identificativo del destinatario, piace U1234567890',
     'message': 'Scrivi il tuo messaggio',
     'estimate_fee': 'Commissione di stima',
-    'welcome_message': '<p>Benvenuto in ADAMANT, il messenger piu sicuro e anonimo. Ti vengono accreditati i token di taglie, che puoi utilizzare per familiarizzare con il messenger.</p><p>Ricorda, la tua sicurezza e il tuo anonimato dipendono anche da te. Non seguire i collegamenti che ricevi, altrimenti il tuo IP puo essere compromesso. Non fidarti delle estensioni del browser. Meglio condividere il tuo indirizzo ADM personalmente, ma non usare altri messenger. Mantieni sicura la tua passphrase segreta. Imposta una password sul dispositivo o disconnetti prima di uscire.</p><p>Ulteriori informazioni su sicurezza e anonimato a <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>Non rispondere a questo messaggio, e un account di sistema.</p>',
-    'preico_message': '<p>Oggi e l\'ultimo giorno in cui accettiamo investimenti con il prezzo piu basso 0.003 ETH per gettone ADM prima della vendita pubblica (01/30). Queste condizioni sono le piu redditizie. L\'investimento minimo e 2 ETH equivalente (non ci sara alcuna limitazione a ICO, ma il prezzo del token ADM e stato 0.002 ETH). Ulteriori informazioni sul progetto ADAMANT Messenger sul sito Web Adamant.im o nel white paper. Per partecipare basta rispondere a questo messaggio e noi assisteremo.</p>',
-    'ico_message': '<p>Hai la possibilita di investire in ICO di ADAMANT, il messenger piu sicuro e anonimo. Prima partecipavi, migliore offerta che otterrai. Ulteriori informazioni sul sito Web Adamant.im o nel white paper. Se hai ancora domande, puoi chiedere loro rispondendo a questo messaggio. Siamo ansiosi di rispondere rapidamente, ma a volte sono possibili ritardi per un paio d\'ore.</p><p>Assicurati di aver salvato la passphrase su questo account: esci dal tuo account e riaprilo. Meglio anche salvare la password su un foglio di carta. Ma ricorda, solo tu sei responsabile per la sicurezza della passphrase. Non puo essere recuperato. E se l\'altra persona lo otterra, i tuoi soldi verranno rubati. Tratta questa domanda come sicura, come se i token nel tuo portafoglio costassero un miliardo di dollari. </p> <p> Per investire, vai alla scheda Wallet e clicca su Invest in the ICO, o apri la pagina Adamant.im/ico / nel browser web. Nel modulo di richiesta inserisci il tuo indirizzo ADAMANT - riceverai token ADM li. Se ti sei spostato dall\'app Messenger, il tuo indirizzo ADM sara gia compilato, in altro modo torna a Messenger e fai clic sul tuo indirizzo per copiarlo negli appunti. Quindi, scegli la crittografia che desideri investire e il relativo importo. Vedrai la quantita di token ADM che riceverai, compreso il bonus del volume: 20-30 ETH: + 20%, 30-50 ETH: + 30%, 50-90 ETH: + 40%, 90+ ETH: +50 %. Fai clic su Acquista token ADAMANT. Riceverai un indirizzo univoco nel punto in cui dovrai inviare cripto. Non appena la transazione verra confermata, riceverai token ADM. La transazione puo essere effettuata da qualsiasi portafoglio o scambio. Non e necessario trasferire l\'importo esatto incluse le spese di transazione, il pagamento verra comunque elaborato. Hai ancora domande? Chiedici. </p> <p> Dopo aver investito e ricevuto i token ADM, ti consigliamo di mantenerli il piu a lungo possibile. Tutti i token invenduti durante ICO verranno distribuiti tra i portafogli degli utenti, aggiungendo il 5% al ??mese. Ulteriori informazioni sono disponibili sul sito Web Adamant.im e nel white paper.</p>',
+    'welcome_message': '<p>Welcome to ADAMANT, the most secure and anonymous messenger. Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.</p><p>Learn more about security and anonymity at <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>All the transactions within the blockchain do need to have their minimal fees. This is necessary to support the network infrastructure. To start messengning now, <b>get free tokens</b> — go to Wallet tab and click Free ADM tokens. Then click Start new chat on Chats tab and put your interlocutor\'s address. To copy your address, click on ADAMANT address on Wallet tab.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
+    'ico_message': '<p>You have a possibility to <b>Join the ICO</b> of ADAMANT, the most secure and anonymous messenger. Learn more on Adamant.im website or in the Whitepaper.</p><p>Please make sure your have saved the passphrase to this account — exit your account and open it again. Better save your password on a sheet of paper also. But remember, only <b>you are responsible for the passphrase safety</b>. It cannot be recovered. And if other person will get it, your money will be stolen. Treat this question as secure, as if tokens in your wallet will cost a billion dollars some time.</p><p>To buy ADM tokens, go to Wallet tab and click Join the ICO, or open the page Adamant.im/ico/ in the web browser. In the ICO form enter your ADAMANT address — you will receive ADM tokens there. If you moved from Messenger App, your ADM address will be filled already, other way go back to Messenger and click ADAMANT address to copy it to clipboard. Next, choose crypto you want to spend and its amount. You\'ll see how much ADM tokens you will receive, including volume bonus: 20–30 ETH: +20%, 30–50 ETH: +30%, 50–90 ETH: +40%, 90+ ETH: +50%. Click Buy ADAMANT tokens. You\'ll get unique address where you need to send crypto. As soon as your transaction will be confirmed, you\'ll receive ADM tokens. Transaction can be done <b>from any wallet or exchange</b>. It is not necessary to transfer exact amount including transaction fees, the payment will be processed anyway.</p><p>After you receive ADM tokens, we recommend to keep them as long as possible. All of unsold tokens during ICO will be distributed among users\' wallets, adding 5% monthly. Additional info is on Adamant.im website and in the Whitepaper.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
     'date_today': 'Oggi',
     'date_yesterday': 'Ieri',
     'date_tomorrow': 'Domani',
@@ -63,14 +62,19 @@ export default {
   },
   'home': {
     'copied': 'Copiato',
-    'your_address': 'Il tuo indirizzo',
-    'your_address_tooltip': 'Questo e l\'identificatore univoco di ADAMANT. Clicca per copiarlo negli appunti.',
-    'your_balance': 'Il tuo bilancio',
-    'your_balance_tooltip': 'E il tuo saldo ADAMANT. Clicca per vedere tutte le transazioni di input e output.',
-    'send_btn': 'Clicca per inviare token',
-    'send_btn_tooltip': 'Fare clic per trasferire token ADM ad altri utenti di ADAMANT',
+    'your_address_ADM': 'ADAMANT address',
+    'your_address_ETH': 'Ethereum address',
+    'your_address_tooltip_ADM': 'Questo e l\'identificatore univoco di ADAMANT. Clicca per copiarlo negli appunti.',
+    'your_address_tooltip_ETH': 'Questo e l\'identificatore univoco di Ethereum. Clicca per copiarlo negli appunti.',
+    'your_balance_ADM': 'ADAMANT Balance',
+    'your_balance_ETH': 'Ethereum Balance',
+    'your_balance_tooltip_ADM': 'E il tuo saldo ADAMANT. Clicca per vedere tutte le transazioni di input e output.',
+    'your_balance_tooltip_ETH': 'E il tuo saldo Ethereum.',
+    'send_btn': 'Send funds',
+    'send_btn_tooltip': 'Click to transfer supported tokens to other account or ADAMANT user',
     'invest_btn': 'Investire nell\'ICO',
-    'invest_btn_tooltip': 'Hai la possibilita di investire in ICO di ADAMANT, il messenger piu sicuro e anonimo. Clicca per andare a investire in forma Adamant.im/ico/. '
+    'invest_btn_tooltip': 'Hai la possibilita di investire in ICO di ADAMANT, il messenger piu sicuro e anonimo. Clicca per andare a investire in forma Adamant.im/ico/. ',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': 'Quantita',
@@ -80,7 +84,9 @@ export default {
     'txid': 'Transazione #',
     'sender': 'A partire dal',
     'recipient': 'a',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'Invia fondi',
@@ -96,7 +102,7 @@ export default {
     'error_no_amount': 'Si prega di fornire l\'importo',
     'error_not_enough': 'Non abbastanza token',
     'confirm_title': 'Conferma di trasferimento',
-    'confirm_message': 'Conferma il trasferimento di <b>{amount} ADM</b> indirizzare {target}.',
+    'confirm_message': 'Conferma il trasferimento di <b>{amount} {crypto}</b> indirizzare <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confermare',
     'confirm_cancel': 'Annulla'
   },

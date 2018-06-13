@@ -12,3 +12,22 @@ export const Transactions = {
   CHAT_MESSAGE: 8,
   STATE: 9
 }
+
+export const Cryptos = {
+  ADM: 'ADM',
+  ETH: 'ETH'
+}
+
+/** Number of decimal places for the different crypto amounts */
+export const CryptoAmountPrecision = {
+  ADM: 2,
+  ETH: 6
+}
+
+/** Fees for the misc ADM operations */
+export const Fees = {
+  /** Storing a value into the KVS */
+  KVS: 0.001,
+  /** Transfering tokens */
+  TRANSFER: 0.5
+}

@@ -52,9 +52,8 @@ export default {
     'recipient_tooltip': 'Bir alici adresi girin, örnegin U1234567890',
     'message': 'Mesajinizi yazin',
     'estimate_fee': 'Tahmini ücret',
-    'welcome_message': '<p>WelEn güvenli ve anonim mesajlasma uygulamasi ADAMANT\'a hosgeldiniz. Uygulamayi hemen kullanmaya baslayabilmeniz için hediye jetonlariniz cüzdaniniza tanimlandi.</p><p>Unutmayin, güvenliginiz ve anonimliginizden kendiniz de sorumlusunuz. Aldiginiz linklere tiklamayin, aski takdirde IP adresiniz tespit edilebilir. Tarayici eklentilerine güvenmeyin. ADM adresinizi kisisel olarak paylasabilirsiniz fakat sifrenizi güvende tutmalisiniz. Cihaziniza ayrica bir giris sifresi koyun veya ayrilmadan önce uygulamadan çikis yapin.</p><p>Güvenlik ve anonimlik hakkinda daha fazla bilgi için <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>Bu mesaji cevaplamayin, bu bir sistem hesabidir.</p>',
-    'preico_message': '<p>En güvenli ve anonim mesajlasma uygulamasi ADAMANT\'a yatirim yapabilirsiniz. Yatirimcilar için en cazip fiyatlarla Ön satislarimiz devam ediyor. Daha fazla bilgi için web sitemizi Adamant.im website veya Tanitim raporumuzu inceleyebilirsiniz. Ön satisa katilmak için bu mesaja cevap yazmaniz yeterli, size yardimci olacagiz. Çok hizli bir sekilde cevaplamak istiyoruz ama bazen yogunluktan dolayi birkaç saatlik geç dönüsler olabiliyor.</p><p> Yatirim yaptiktan ve ADM jetonlarinizi aldiktan sonra jetonlarinizi mümkün oldugunca uzun süre elde tutmanizi tavsiye ederiz. Halka satis bitiminden sonra satilamayan jetonlar mevcut jeton sahiplerine bakiyelerinin %5\'i oraninda aylik olarak dagitilacak. Detayli bilgi için web sitemizi Adamant.im veya Tanitim raporumuzu inceleyebilirsiniz.</p>',
-    'ico_message': '<p>En güvenli ve anonim mesajlasma uygulamasi ADAMANT\'in halka satisina katilip yatirim yapabilirsiniz. Ne kadar erken katilirsaniz o kadar avantajli fiyatlardan yararlanirsiniz. Daha fazla bilgi için web sitemizi Adamant.im veya Tanitim raporumuzu inceleyebilirsiniz. Yatirim yapmak için Cüzdaniniza gidin -> Halka Satisa katilin veya  web sitemize Adamant.im/ico/ gidin. Sorulariniz olursa, bu mesaja cevap olarak yazabilirsiniz. Çok hizli bir sekilde cevaplamak istiyoruz ama bazen yogunluktan dolayi birkaç saatlik geç dönüsler olabiliyor.</p><p>Yatirim yaptiktan ve ADM jetonlarinizi aldiktan sonra jetonlarinizi mümkün oldugunca uzun süre elde tutmanizi tavsiye ederiz. Halka satis bitiminden sonra satilamayan jetonlar mevcut jeton sahiplerine bakiyelerinin %5\'i oraninda aylik olarak dagitilacak. Detayli bilgi için web sitemizi Adamant.im veya Tanitim raporumuzu inceleyebilirsiniz.</p>',
+    'welcome_message': '<p>Welcome to ADAMANT, the most secure and anonymous messenger. Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.</p><p>Learn more about security and anonymity at <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>All the transactions within the blockchain do need to have their minimal fees. This is necessary to support the network infrastructure. To start messengning now, <b>get free tokens</b> — go to Wallet tab and click Free ADM tokens. Then click Start new chat on Chats tab and put your interlocutor\'s address. To copy your address, click on ADAMANT address on Wallet tab.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
+    'ico_message': '<p>You have a possibility to <b>Join the ICO</b> of ADAMANT, the most secure and anonymous messenger. Learn more on Adamant.im website or in the Whitepaper.</p><p>Please make sure your have saved the passphrase to this account — exit your account and open it again. Better save your password on a sheet of paper also. But remember, only <b>you are responsible for the passphrase safety</b>. It cannot be recovered. And if other person will get it, your money will be stolen. Treat this question as secure, as if tokens in your wallet will cost a billion dollars some time.</p><p>To buy ADM tokens, go to Wallet tab and click Join the ICO, or open the page Adamant.im/ico/ in the web browser. In the ICO form enter your ADAMANT address — you will receive ADM tokens there. If you moved from Messenger App, your ADM address will be filled already, other way go back to Messenger and click ADAMANT address to copy it to clipboard. Next, choose crypto you want to spend and its amount. You\'ll see how much ADM tokens you will receive, including volume bonus: 20–30 ETH: +20%, 30–50 ETH: +30%, 50–90 ETH: +40%, 90+ ETH: +50%. Click Buy ADAMANT tokens. You\'ll get unique address where you need to send crypto. As soon as your transaction will be confirmed, you\'ll receive ADM tokens. Transaction can be done <b>from any wallet or exchange</b>. It is not necessary to transfer exact amount including transaction fees, the payment will be processed anyway.</p><p>After you receive ADM tokens, we recommend to keep them as long as possible. All of unsold tokens during ICO will be distributed among users\' wallets, adding 5% monthly. Additional info is on Adamant.im website and in the Whitepaper.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
     'date_today': 'Bugün',
     'date_yesterday': 'Dün',
     'date_tomorrow': 'Yarin',
@@ -63,14 +62,19 @@ export default {
   },
   'home': {
     'copied': 'Kopyalandi',
-    'your_address': 'Adresiniz',
-    'your_address_tooltip': 'Bu size özel ADAMANT adresidir, panonuza kopyalamak için tiklayin.',
-    'your_balance': 'Bakiyeniz',
-    'your_balance_tooltip': 'ADAMANT bakiyeniz. Gelen ve Giden islem bilgilerini görmek için tiklayin.',
+    'your_address_ADM': 'ADM Adresiniz',
+    'your_address_ETH': 'ETH Adresiniz',
+    'your_address_tooltip_ADM': 'Bu size özel ADAMANT adresidir, panonuza kopyalamak için tiklayin.',
+    'your_address_tooltip_ETH': 'Bu size özel Ethereum adresidir, panonuza kopyalamak için tiklayin.',
+    'your_balance_ADM': 'ADM Bakiyeniz',
+    'your_balance_ETH': 'ETH Bakiyeniz',
+    'your_balance_tooltip_ADM': 'ADAMANT bakiyeniz. Gelen ve Giden islem bilgilerini görmek için tiklayin.',
+    'your_balance_tooltip_ETH': 'Ethereum bakiyeniz.',
     'send_btn': 'Jeton göndermek için tiklayin',
     'send_btn_tooltip': 'ADM jetonunu transfer etmek için tiklayin',
     'invest_btn': 'Satışa Katılın',
-    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': 'Tutar',
@@ -80,7 +84,9 @@ export default {
     'txid': 'Islem #',
     'sender': 'Gönderen',
     'recipient': 'Alici',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'Para gönder',
@@ -96,7 +102,7 @@ export default {
     'error_no_amount': 'Lütfen bir miktar giriniz',
     'error_not_enough': 'Yeterli bakiyeniz yok',
     'confirm_title': 'Transfer onaylama',
-    'confirm_message': '<b>{amount} ADM Jetonunun</b> {target} adresine transfer edilmesini onaylayin.',
+    'confirm_message': '<b>{amount} {crypto} Jetonunun</b> <span class="address-in-confirm">{target}</span> adresine transfer edilmesini onaylayin.',
     'confirm_approve': 'Onayla',
     'confirm_cancel': 'Iptal et'
   },

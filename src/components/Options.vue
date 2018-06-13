@@ -99,7 +99,10 @@
           </md-card-header>
           </md-card-area>
           <md-card-content>
-            <md-input-container>
+            <span v-if="delegate">
+              {{ $t('already_delegate_text') }} {{ delegate.username }}
+            </span> 
+            <md-input-container v-else>
               <md-input style="width:50%" v-model="delegateName" v-bind:placeholder="$t('options.delegate_name_input')"></md-input>
               <md-button style="width:50%" v-on:click="delegateRequest" v-bind:disabled="!delegateOpen" >
               {{ $t('options.delegate_register_button') }} - 3000 ADM</md-button>
@@ -123,10 +126,16 @@ export default {
       return false
     }
   },
+  mounted: function () {
+    this.getDelegates()
+  },
   computed: {
     languageList: function () {
       var messages = require('../i18n').default
       return messages
+    },
+    delegate () {
+      return Object.values(this.$store.state.delegates).find(x => x.address === this.$store.state.adress)
     }
   },
   watch: {

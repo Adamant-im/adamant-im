@@ -24,8 +24,13 @@
           <md-layout md-flex="66" md-flex-xsmall="80">
               <md-layout md-align="center" md-gutter="16">
                   <md-button class="md-raised md-short" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
-
               </md-layout>
+          </md-layout>
+          <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
+            <md-button classs="md-ripple md-disabled"
+                      @click.prevent="scanQRCode">
+              <Icon name="qrCode" />
+            </md-button>
           </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top:30px">
               <md-layout md-align="center" md-gutter="16">
@@ -63,8 +68,14 @@
 </template>
 
 <script>
+import Icon from '@/components/Icon'
+import { Fees } from '../lib/constants'
+
 export default {
   name: 'login',
+  components: {
+    Icon
+  },
   methods: {
     scrollToBottom: function () {
       this.$root.$nextTick(function () {
@@ -82,6 +93,9 @@ export default {
     snackOpen () {
       this.$refs.snackbar.open()
     },
+    scanQRCode () {
+      this.$router.push('/scan/')
+    },
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
       if (this.passPhrase.split(' ').length !== 12) {
@@ -97,12 +111,15 @@ export default {
         this.loadChats(true)
         this.$store.commit('stop_tracking_new')
 
-        this.$store.dispatch('eth/login', this.passPhrase)
-        this.$store.dispatch('eth/updateBalance')
+        this.$store.dispatch('login', this.passPhrase)
 
-        this.getStored('eth:address').then(address => {
-          if (!address) this.storeValue('eth:address', this.$store.state.eth.address)
-        })
+        // Store ETH address into the KVS if it's not there yet and user has
+        // enough ADM for this transaction
+        if (this.$store.state.balance >= Fees.KVS) {
+          this.getStored('eth:address').then(address => {
+            if (!address) this.storeValue('eth:address', this.$store.state.eth.address)
+          })
+        }
       }, errorFunction)
     },
     'handleSuccess': function (e) {
@@ -149,6 +166,9 @@ export default {
     yourPassPhrase: function () {
       var Mnemonic = require('bitcore-mnemonic')
       return new Mnemonic(Mnemonic.Words.ENGLISH).toString()
+    },
+    qrCodePassPhrase: function () {
+      return this.$store.state.passPhrase
     }
   },
   watch: {
@@ -159,7 +179,7 @@ export default {
   },
   data () {
     return {
-      passPhrase: '',
+      passPhrase: this.qrCodePassPhrase || '',
       language: this.$i18n.locale,
       showCreate: false
     }

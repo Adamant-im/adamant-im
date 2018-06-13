@@ -3,9 +3,9 @@
       <md-layout md-align="start" md-gutter="16" class="chat_messages">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
               <md-layout
-                md-flex="90" 
-                md-flex-xsmall="85" 
-                class="chat_message md-whiteframe md-whiteframe-1dp" 
+                md-flex="90"
+                md-flex-xsmall="85"
+                class="chat_message md-whiteframe md-whiteframe-1dp"
                 :data-confirmation="message.confirm_class"
                 v-bind:class="{
                   'md-flex-xsmall-offset-10': message.direction === 'from',
@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import { Cryptos } from '../lib/constants'
 
 export default {
   name: 'chats',
@@ -127,7 +128,9 @@ export default {
     },
     goToTransaction (id) {
       this.$store.commit('leave_chat')
-      this.$router.push('/transactions/' + id + '/')
+      // TODO: other cryptos may appear here in future
+      const params = { crypto: Cryptos.ADM, tx_id: id }
+      this.$router.push({ name: 'Transaction', params })
     }
   },
   mounted: function () {

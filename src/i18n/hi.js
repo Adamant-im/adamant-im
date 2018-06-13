@@ -52,9 +52,8 @@ export default {
     'recipient_tooltip': 'एक प्राप्य पहचानकर्ता दर्ज करें, जैसे U1234567890',
     'message': 'सन्देश लिखे',
     'estimate_fee': 'अनुमानित शुल्क ',
-    'welcome_message': '<p>ADAMANT में आपका स्वागत है, सबसे सुरक्षित और अज्ञात दूत आपको इनाम टोकनों का श्रेय दिया जाता है, जो आप मैसेंजर से परिचित होने के लिए उपयोग कर सकते हैं.</p><p>याद रखें, आपकी सुरक्षा और नाम न छापने का भी आप पर निर्भर है लिंक प्राप्त न करें, अन्यथा आपका IP से  समझौता किया जा सकता है ब्राउज़र एक्सटेंशन पर विश्वास न करें व्यक्तिगत रूप से अपने ADM पते को साझा करने के लिए बेहतर है, लेकिन अन्य दूतों का उपयोग नहीं करना। अपना गुप्त passpharse सुरक्षित रखें छोड़ने से पहले अपने डिवाइस या लॉगआउट पर पासवर्ड सेट करें। </p> <p> सुरक्षा और गुमनामी के बारे में अधिक जानें <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>इस संदेश का उत्तर न दें, यह एक सिस्टम खाता है.</p>',
-    'preico_message': '<p>आपके पास ADAMANT में निवेश करने की संभावना है, सबसे सुरक्षित और अनाम मैसेंजर अब एक पूर्व-आईसीओ चरण है - निवेशकों के लिए सबसे अधिक फायदेमंद Adamant.im वेबसाइट या श्वेतपत्र में अधिक जानें। इस संदेश का उत्तर देने के लिए भाग लेने के लिए और हम सहायता करेंगे। हम जल्दी से जवाब देने के लिए उत्सुक हैं, लेकिन कभी-कभी कुछ घंटों के लिए देरी संभव है.</p><p>आपके द्वारा ADM टोकन निवेश करने और प्राप्त करने के बाद, हम उन्हें यथासंभव लंबे समय तक रखने की सलाह देते हैं। आईसीओ के दौरान सभी बिकने वाले टोकन उपयोगकर्ताओं के पर्स में वितरित किए जाएंगे, जो 5% मासिक शामिल करते हैं। अतिरिक्त जानकारी Adamant.im वेबसाइट पर है और श्वेत पत्र में है.</p>',
-    'ico_message': '<p>आपके पास ADAMANT के आईसीओ में निवेश करने की संभावना है, सबसे सुरक्षित और अज्ञात मैसेंजर इससे पहले आप भाग लेते हैं, बेहतर पेशकश आपको मिलेगी। Adamant.im वेबसाइट या श्वेतपत्र में अधिक जानें। निवेश करने के लिए, ICO में वॉलेट → निवेश पर जाएं, या एक वेबसाइट पृष्ठ का अनुसरण करें Adamant.im/ico/ यदि आपके पास अभी कोई प्रश्न हैं, तो आप इस संदेश का उत्तर देकर उन्हें पूछ सकते हैं। हम जल्दी से जवाब देने के लिए उत्सुक हैं, लेकिन कुछ घंटों के लिए कभी-कभी देरी संभव है। </p> <p> आपके द्वारा ADM टोकन निवेश करने और प्राप्त करने के बाद, हम उन्हें यथासंभव लंबे समय तक रखने की सलाह देते हैं। आईसीओ के दौरान सभी बिकने वाले टोकन उपयोगकर्ताओं के पर्स में वितरित किए जाएंगे, जो 5% मासिक शामिल करते हैं। अतिरिक्त जानकारी Adamant.im वेबसाइट पर है और श्वेत पत्र  में है.</p>',
+    'welcome_message': '<p>Welcome to ADAMANT, the most secure and anonymous messenger. Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.</p><p>Learn more about security and anonymity at <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>All the transactions within the blockchain do need to have their minimal fees. This is necessary to support the network infrastructure. To start messengning now, <b>get free tokens</b> — go to Wallet tab and click Free ADM tokens. Then click Start new chat on Chats tab and put your interlocutor\'s address. To copy your address, click on ADAMANT address on Wallet tab.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
+    'ico_message': '<p>You have a possibility to <b>Join the ICO</b> of ADAMANT, the most secure and anonymous messenger. Learn more on Adamant.im website or in the Whitepaper.</p><p>Please make sure your have saved the passphrase to this account — exit your account and open it again. Better save your password on a sheet of paper also. But remember, only <b>you are responsible for the passphrase safety</b>. It cannot be recovered. And if other person will get it, your money will be stolen. Treat this question as secure, as if tokens in your wallet will cost a billion dollars some time.</p><p>To buy ADM tokens, go to Wallet tab and click Join the ICO, or open the page Adamant.im/ico/ in the web browser. In the ICO form enter your ADAMANT address — you will receive ADM tokens there. If you moved from Messenger App, your ADM address will be filled already, other way go back to Messenger and click ADAMANT address to copy it to clipboard. Next, choose crypto you want to spend and its amount. You\'ll see how much ADM tokens you will receive, including volume bonus: 20–30 ETH: +20%, 30–50 ETH: +30%, 50–90 ETH: +40%, 90+ ETH: +50%. Click Buy ADAMANT tokens. You\'ll get unique address where you need to send crypto. As soon as your transaction will be confirmed, you\'ll receive ADM tokens. Transaction can be done <b>from any wallet or exchange</b>. It is not necessary to transfer exact amount including transaction fees, the payment will be processed anyway.</p><p>After you receive ADM tokens, we recommend to keep them as long as possible. All of unsold tokens during ICO will be distributed among users\' wallets, adding 5% monthly. Additional info is on Adamant.im website and in the Whitepaper.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
     'date_today': 'आज',
     'date_yesterday': 'बीता कल',
     'date_tomorrow': 'आने वाला कल',
@@ -63,6 +62,14 @@ export default {
   },
   'home': {
     'copied': 'कॉपी हुआ',
+    'your_address_ADM': 'ADAMANT address ADM',
+    'your_address_ETH': 'ADAMANT address ETH',
+    'your_address_tooltip_ADM': 'This is your ADAMANT unique identifier. Click to copy it in the clipboard.',
+    'your_address_tooltip_ETH': 'This is your ADAMANT ETH wallet unique identifier. Click to copy it in the clipboard.',
+    'your_balance_ADM': 'Balance ADM',
+    'your_balance_ETH': 'Balance ETH',
+    'your_balance_tooltip_ADM': 'It is your ADAMANT balance. Click to see all of input and output transactions.',
+    'your_balance_tooltip_ETH': 'It is your ADAMANT ETH balance.',
     'your_address': 'आपका पता',
     'your_address_tooltip': 'यह आपका ADAMANT अद्वितीय पहचानकर्ता है क्लिपबोर्ड में इसे कॉपी करने के लिए क्लिक करें.',
     'your_balance': 'आपका बैलेंस',
@@ -70,7 +77,8 @@ export default {
     'send_btn': 'टोकन भेजेने के लिए क्लिक करे ',
     'send_btn_tooltip': 'ADM टोकन को अन्य ADAMANT इस्तेमाल करता को स्थानांतरित करने के लिए क्लिक करें',
     'invest_btn': 'ICO में निवेश करें',
-    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': 'राशी',
@@ -80,7 +88,9 @@ export default {
     'txid': 'लेनदेन  #',
     'sender': 'से',
     'recipient': 'को',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'धन भेजे',
@@ -96,7 +106,7 @@ export default {
     'error_no_amount': 'कृपया राशी डाले ',
     'error_not_enough': 'टोकन नाकाफी',
     'confirm_title': 'हस्तान्तार्ण पुष्टिकरण',
-    'confirm_message': 'हस्तान्तार्ण का  पुष्टिकरण<b>{amount} ADM</b> इस पते पर {target}.',
+    'confirm_message': 'हस्तान्तार्ण का  पुष्टिकरण<b>{amount} {crypto}</b> इस पते पर <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'पुष्टिकरण',
     'confirm_cancel': 'रद्द करे'
   },

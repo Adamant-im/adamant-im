@@ -35,6 +35,14 @@ export default {
           this.$store.commit('change_display_name', {partnerName: addressData.address, partnerDisplayName: addressData.label})
         }
         this.$router.push('/chats/' + addressData.address + '/')
+      } else {
+        // content is string data
+        const wordCount = content.split(' ').length
+
+        if (wordCount === 12) { // looks like a passphrase
+          this.$store.commit('save_passphrase', { passPhrase: content })
+          this.$router.push('/')
+        }
       }
     },
     getCameras (cameras) {

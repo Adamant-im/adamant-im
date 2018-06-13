@@ -52,9 +52,8 @@ export default {
     'recipient_tooltip': 'Nhập số định danh người nhận, ví dụ: U1234567890',
     'message': 'Nhập tin nhắn của bạn',
     'estimate_fee': 'Chi phí ước tính',
-    'welcome_message': '<p>Chào mừng bạn đến với ADAMANT, ứng dụng nhắn tin an toàn và ẩn danh nhất. Bạn nhận được một lượng token có thể sử dụng để làm quen với Messenger.</p><p> Hãy nhớ rằng, sự an toàn và ẩn danh cũng tùy thuộc vào bạn. Không nhấp vào liên kết bạn nhận được, nếu không IP của bạn có thể bị lộ. Không tin tưởng vào phần mở rộng của trình duyệt. Tốt nhất là chia sẻ địa chỉ ADM của bạn một cách cá nhân, không sử dụng các Messenger khác để gửi. Giữ Cụm từ mật khẩu bí mật của bạn an toàn. Đặt mật khẩu cho thiết bị của bạn hoặc đăng xuất trước khi rời khỏi.</p><p>Tìm hiểu thêm về Bảo mật và Ẩn danh tại <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>Vui lòng không trả lời tin nhắn này, đây là tài khoản hệ thống tự động</p>',
-    'preico_message': '<p>Bạn có thể đầu tư vào ADAMANT, ứng dụng nhắn tin an toàn và ẩn danh nhất. Bây giờ đang ở giai doạn pre-ICO - lợi nhuận cao nhất cho các nhà đầu tư. Tìm hiểu thêm trên trang web Adamant.im hoặc trong Sách trắng. Để tham gia hãy trả lời tin nhắn này và chúng tôi sẽ hỗ trợ. Chúng tôi rất muốn trả lời nhanh chóng, nhưng đôi khi có thể chậm trễ trong một vài giờ.</p><p>Sau khi bạn đầu tư và nhận token ADM, chúng tôi khuyên bạn nên giữ chúng lâu nhất có thể. Tất cả token không bán được trong ICO sẽ được phân phối giữa các ví của người dùng, cộng thêm 5% mỗi tháng. Thông tin thêm trên trang web Adamant.im và trong Sách trắng.</p>',
-    'ico_message': '<p>Bạn có thể đầu tư vào ICO của ADAMANT, ứng dụng nhắn tin an toàn và ẩn danh nhất. Bạn tham gia càng sớm thì lợi ích bạn nhận được càng nhiều. Tìm hiểu thêm trên trang web Adamant.im hoặc trong Sách trắng. Để đầu tư, đi tới Ví → Đầu tư vào ICO, hoặc truy cập vào trang web Adamant.im/ico/ và làm theo hướng dẫn. Nếu bạn có bất kỳ câu hỏi nào, bạn có thể hỏi họ bằng cách phản hồi tin nhắn này. Chúng tôi rất muốn trả lời nhanh chóng, nhưng đôi khi có thể chậm trễ trong một vài giờ.</p><p>Sau khi bạn đầu tư và nhận token ADM, chúng tôi khuyên bạn nên giữ chúng lâu nhất có thể. Tất cả token không bán được trong ICO sẽ được phân phối giữa các ví của người dùng, cộng thêm 5% mỗi tháng. Thông tin thêm trên trang web Adamant.im và trong Sách trắng.</p>',
+    'welcome_message': '<p>Welcome to ADAMANT, the most secure and anonymous messenger. Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.</p><p>Learn more about security and anonymity at <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>All the transactions within the blockchain do need to have their minimal fees. This is necessary to support the network infrastructure. To start messengning now, <b>get free tokens</b> — go to Wallet tab and click Free ADM tokens. Then click Start new chat on Chats tab and put your interlocutor\'s address. To copy your address, click on ADAMANT address on Wallet tab.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
+    'ico_message': '<p>You have a possibility to <b>Join the ICO</b> of ADAMANT, the most secure and anonymous messenger. Learn more on Adamant.im website or in the Whitepaper.</p><p>Please make sure your have saved the passphrase to this account — exit your account and open it again. Better save your password on a sheet of paper also. But remember, only <b>you are responsible for the passphrase safety</b>. It cannot be recovered. And if other person will get it, your money will be stolen. Treat this question as secure, as if tokens in your wallet will cost a billion dollars some time.</p><p>To buy ADM tokens, go to Wallet tab and click Join the ICO, or open the page Adamant.im/ico/ in the web browser. In the ICO form enter your ADAMANT address — you will receive ADM tokens there. If you moved from Messenger App, your ADM address will be filled already, other way go back to Messenger and click ADAMANT address to copy it to clipboard. Next, choose crypto you want to spend and its amount. You\'ll see how much ADM tokens you will receive, including volume bonus: 20–30 ETH: +20%, 30–50 ETH: +30%, 50–90 ETH: +40%, 90+ ETH: +50%. Click Buy ADAMANT tokens. You\'ll get unique address where you need to send crypto. As soon as your transaction will be confirmed, you\'ll receive ADM tokens. Transaction can be done <b>from any wallet or exchange</b>. It is not necessary to transfer exact amount including transaction fees, the payment will be processed anyway.</p><p>After you receive ADM tokens, we recommend to keep them as long as possible. All of unsold tokens during ICO will be distributed among users\' wallets, adding 5% monthly. Additional info is on Adamant.im website and in the Whitepaper.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
     'date_today': 'Hôm nay',
     'date_yesterday': 'Hôm qua',
     'date_tomorrow': 'Ngày mai',
@@ -63,14 +62,19 @@ export default {
   },
   'home': {
     'copied': 'Đã sao chép',
-    'your_address': 'Địa chỉ của bạn',
-    'your_address_tooltip': 'Đây là ADAMANT ID duy nhất của bạn. Nhấp để sao chép nó vào khay nhớ tạm.',
-    'your_balance': 'Số dư của bạn',
-    'your_balance_tooltip': 'Đây là số dư ADAMANT của bạn. Nhấp để xem tất cả các giao dịch.',
+    'your_address_ADM': 'Địa chỉ của bạn ADM',
+    'your_address_ETH': 'Địa chỉ của bạn ETH',
+    'your_address_tooltip_ADM': 'Đây là ADAMANT ID duy nhất của bạn. Nhấp để sao chép nó vào khay nhớ tạm.',
+    'your_address_tooltip_ETH': 'Đây là Ethereum ID duy nhất của bạn. Nhấp để sao chép nó vào khay nhớ tạm.',
+    'your_balance_ADM': 'Số dư của bạn ADM',
+    'your_balance_ETH': 'Số dư của bạn ETH',
+    'your_balance_tooltip_ADM': 'Đây là số dư ADAMANT của bạn. Nhấp để xem tất cả các giao dịch.',
+    'your_balance_tooltip_ETH': 'Đây là số dư Ethereum của bạn.',
     'send_btn': 'Nhấp vào để gửi token',
     'send_btn_tooltip': 'Nhấp để chuyển token ADM sang người dùng ADAMANT khác',
     'invest_btn': 'Đầu tư ICO',
-    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': 'Số tiền',
@@ -80,7 +84,9 @@ export default {
     'txid': 'Giao dịch #',
     'sender': 'Từ',
     'recipient': 'Tới',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'Gửi tiền',
@@ -96,7 +102,7 @@ export default {
     'error_no_amount': 'Vui lòng cung cấp số lượng',
     'error_not_enough': 'Không đủ token',
     'confirm_title': 'Xác nhận giao dịch',
-    'confirm_message': 'Xác nhận chuyển <b>{amount} ADM</b> tới địa chỉ {target}.',
+    'confirm_message': 'Xác nhận chuyển <b>{amount} {crypto}</b> tới địa chỉ <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Xác nhận',
     'confirm_cancel': 'Hủy'
   },

@@ -52,9 +52,8 @@ export default {
     'recipient_tooltip': '输入对方身份识别, 如 U1234567890',
     'message': '输入您的消息',
     'estimate_fee': '费用估算',
-    'welcome_message': '<p>欢迎使用ADAMANT, 最安全的匿名聊天软件. 您已获得免费的代币奖励, 可以用来熟悉使用本软件.</p><p>谨记: 您的安全及匿名性和您本身的操作有关. 不要胡乱点击聊天内容中的链接, 否则您的IP可能会被记录. 不要盲目相信浏览器插件. 只在私下个人之间分享您的ADM地址, 但不要用其他聊天软件来发送. 将您的密码短句保存在安全的地方. 为设备设置密码, 每次离开时请退出聊天.</p><p>访问网站 <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a> 了解更多有关安全及匿名的信息.</p><p>此条信息由系统账号发送, 无需回复.</p>',
-    'preico_message': '<p>ADAMANT是一款最安全的匿名聊天软件, 而您现在就可以投资该项目. 目前项目正处于ICO预售阶段, 也是最有利的投资阶段. 您可以在网站 Adamant.im 或者白皮书中了解更多信息. 您可以直接回复此消息来获取帮助, 进行投资. 我们会给予快速的回复及帮助. 偶尔的回复延迟也属于正常状况.</p><p>在您完成投资并获得ADM代币后, 我们建议您尽可能持久的持有. 所有ICO阶段未售出的代币都会免费发放到代币持有者的钱包, 每月增加5%. 您可以在网站 Adamant.im 及白皮书中了解更多信息.</p>',
-    'ico_message': '<p>ADAMANT是一款最安全的匿名聊天软件, 而您现在就可以参与该项目的ICO. 参与越早, 福利越好. 您可以在网站 Adamant.im website 或者白皮书中了解更多信息. 您可以在ICO的 钱包→投资 中进行投资, 也可以根据页面 Adamant.im/ico/上的提示进行操作. 如果您还有其他疑问, 可以通过回复此条信息来获取我们的帮助. 我们会给予快速的回复及帮助. 偶尔的回复延迟也属于正常状况.</p><p>在您完成投资并获得ADM代币后, 我们建议您尽可能持久的持有. 所有ICO阶段未售出的代币都会免费发放到代币持有者的钱包, 每月增加5%. 您可以在网站 Adamant.im 及白皮书中了解更多信息.</p>',
+    'welcome_message': '<p>Welcome to ADAMANT, the most secure and anonymous messenger. Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.</p><p>Learn more about security and anonymity at <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>All the transactions within the blockchain do need to have their minimal fees. This is necessary to support the network infrastructure. To start messengning now, <b>get free tokens</b> — go to Wallet tab and click Free ADM tokens. Then click Start new chat on Chats tab and put your interlocutor\'s address. To copy your address, click on ADAMANT address on Wallet tab.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
+    'ico_message': '<p>You have a possibility to <b>Join the ICO</b> of ADAMANT, the most secure and anonymous messenger. Learn more on Adamant.im website or in the Whitepaper.</p><p>Please make sure your have saved the passphrase to this account — exit your account and open it again. Better save your password on a sheet of paper also. But remember, only <b>you are responsible for the passphrase safety</b>. It cannot be recovered. And if other person will get it, your money will be stolen. Treat this question as secure, as if tokens in your wallet will cost a billion dollars some time.</p><p>To buy ADM tokens, go to Wallet tab and click Join the ICO, or open the page Adamant.im/ico/ in the web browser. In the ICO form enter your ADAMANT address — you will receive ADM tokens there. If you moved from Messenger App, your ADM address will be filled already, other way go back to Messenger and click ADAMANT address to copy it to clipboard. Next, choose crypto you want to spend and its amount. You\'ll see how much ADM tokens you will receive, including volume bonus: 20–30 ETH: +20%, 30–50 ETH: +30%, 50–90 ETH: +40%, 90+ ETH: +50%. Click Buy ADAMANT tokens. You\'ll get unique address where you need to send crypto. As soon as your transaction will be confirmed, you\'ll receive ADM tokens. Transaction can be done <b>from any wallet or exchange</b>. It is not necessary to transfer exact amount including transaction fees, the payment will be processed anyway.</p><p>After you receive ADM tokens, we recommend to keep them as long as possible. All of unsold tokens during ICO will be distributed among users\' wallets, adding 5% monthly. Additional info is on Adamant.im website and in the Whitepaper.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
     'date_today': '今天',
     'date_yesterday': '昨天',
     'date_tomorrow': '明天',
@@ -63,14 +62,19 @@ export default {
   },
   'home': {
     'copied': '已复制',
-    'your_address': '您的地址',
-    'your_address_tooltip': '这是您ADAMANT的唯一身份识别. 点此保存到剪切板.',
-    'your_balance': '您的余额',
-    'your_balance_tooltip': '这是您的ADAMANT余额. 点此查看所有的进出明细.',
-    'send_btn': '点此发送代币',
-    'send_btn_tooltip': '点此发送ADM代币给其他的ADAMANT用户',
+    'your_address_ADM': 'ADAMANT address',
+    'your_address_ETH': 'Ethereum address',
+    'your_address_tooltip_ADM': '这是您ADAMANT的唯一身份识别. 点此保存到剪切板.',
+    'your_address_tooltip_ETH': 'This is your ADAMANT ETH wallet unique identifier. Click to copy it in the clipboard.',
+    'your_balance_ADM': 'ADAMANT Balance',
+    'your_balance_ETH': 'Ethereum Balance',
+    'your_balance_tooltip_ADM': '这是您的ADAMANT余额. 点此查看所有的进出明细.',
+    'your_balance_tooltip_ETH': 'It is your ADAMANT ETH balance.',
+    'send_btn': 'Send funds',
+    'send_btn_tooltip': 'Click to transfer supported tokens to other account or ADAMANT user',
     'invest_btn': 'Invest in the ICO',
-    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': '数量',
@@ -80,7 +84,9 @@ export default {
     'txid': '传送号 #',
     'sender': '从',
     'recipient': '到',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': '发送资金',
@@ -96,7 +102,7 @@ export default {
     'error_no_amount': '请提供金额',
     'error_not_enough': '无足够代币',
     'confirm_title': '发送确认',
-    'confirm_message': '确认发送 <b>{amount} ADM</b> 到地址 {target}.',
+    'confirm_message': '确认发送 <b>{amount} {crypto}</b> 到地址 <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': '确认',
     'confirm_cancel': '取消'
   },

@@ -1,4 +1,9 @@
 export default {
   balance: 0,
-  address: ''
+  gasPrice: 0,
+  fee: 0,
+  address: '',
+  publicKey: null,
+  privateKey: null,
+  transactions: { }
 }

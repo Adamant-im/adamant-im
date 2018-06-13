@@ -52,9 +52,8 @@ export default {
     'recipient_tooltip': 'Maglagay ng makapagpapakilala ng tatanggap, gaya ng U1234567890',
     'message': 'Ilagay ang iyong mensahe',
     'estimate_fee': 'Magtantiya ng Bayad',
-    'welcome_message': '<p>Maligayang pagdating sa ADAMANT, ang pinakaligtas at pinakatagong messenger. Ikaw ay mabibigyan ng bounty tokens na magagamit mo upang makagamit ng messenger. </p><p>Tandaan, and seguridad at pagkawala ng lagda ay sayo nakasalalay. Huwag mong susundin ang mga link na iyong matatangpap, kung hindi ang iyong IP ay mailalagay sa kompromiso. Huwag kang magtitiwala sa mga extension ng browser. Mas mainam na sabihin sa personal ang iyong ADM address, hindi yung gagamit pa ng ibang messenger. Siguraduhin mong ligtas ang iyong sikretong passphrase. Maglagay ng password sa iyong device o kaya mag-logout bago umalis.</p><p>Matuto nang higit pa tungkol sa seguridad at pagkawala ng lagda sa <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>Huwag tumugon sa mensaheng ito, ito ay account ng sistema.</p>',
-    'preico_message': '<p>Mayroon kang posibilidad na mamuhunan sa ADAMANT, ang pinakaligtas at pinakatagong messenger. Ngayon ay yugto ng Pre-ICO — kung kailan ang mga mamumuhunan ay pinakakumikita. Matuto nang higit pa sa Adamant.im website o sa Whitepaper. Para makalahok, tumugon lamang sa mensaheng ito at kami ay tutulong. Kami ay sabik na sumagot nang mabilis, pero minsan posible na magkaroon ng pagkakaantala ng ilang oras.</p><p>Pagkatapos mong mamuhunan at makatanggap ng ADM tokens, nirerekomenda namin na itabi mo sila nang matagal hangga\'t maaari. Ang lahat ng mga hindi nabentang token sa panahon ng ICO ay ipamamahagi sa mga pitaka ng mga gumagamit, na madadagdagan ng 5% buwan-buwan. Ang karagdagang impormasyon ay na sa Adamant.im website at na sa Whitepaper.</p>',
-    'ico_message': '<p>Mayroon kang posibilidad na mamuhunan sa ADAMANT, ang pinakaligtas at pinakatagong messenger. Kapag mas maaga kang nakilahok, mas magandang alok ang iyong matatanggap. Matuto nang higit pa sa Adamant.im website o sa Whitepaper. Upang mamuhunan, pumunta sa Pitaka→Mamuhunan sa ICO, o sundan ang website page Adamant.im/ico/. Kung mayroon ka pang mga tanong, puwede mo silang tanungin sa pamamagitan ng pagtugon sa mensaheng ito.  Kami ay sabik na sumagot nang mabilis, pero minsan posible na magkaroon ng pagkakaantala ng ilang oras.</p><p>Pagkatapos mong mamuhunan at makatanggap ng ADM tokens, nirerekomenda namin na itabi mo sila nang matagal hangga\'t maaari. Ang lahat ng mga hindi nabentang token sa panahon ng ICO ay ipamamahagi sa mga pitaka ng mga gumagamit, na madadagdagan ng 5% buwan-buwan. Ang karagdagang impormasyon ay na sa Adamant.im website at na sa Whitepaper.</p>',
+    'welcome_message': '<p>Welcome to ADAMANT, the most secure and anonymous messenger. Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.</p><p>Learn more about security and anonymity at <a href="https://adamant.im/staysecured/" target="_blank">https://adamant.im/staysecured/</a>.</p><p>All the transactions within the blockchain do need to have their minimal fees. This is necessary to support the network infrastructure. To start messengning now, <b>get free tokens</b> — go to Wallet tab and click Free ADM tokens. Then click Start new chat on Chats tab and put your interlocutor\'s address. To copy your address, click on ADAMANT address on Wallet tab.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
+    'ico_message': '<p>You have a possibility to <b>Join the ICO</b> of ADAMANT, the most secure and anonymous messenger. Learn more on Adamant.im website or in the Whitepaper.</p><p>Please make sure your have saved the passphrase to this account — exit your account and open it again. Better save your password on a sheet of paper also. But remember, only <b>you are responsible for the passphrase safety</b>. It cannot be recovered. And if other person will get it, your money will be stolen. Treat this question as secure, as if tokens in your wallet will cost a billion dollars some time.</p><p>To buy ADM tokens, go to Wallet tab and click Join the ICO, or open the page Adamant.im/ico/ in the web browser. In the ICO form enter your ADAMANT address — you will receive ADM tokens there. If you moved from Messenger App, your ADM address will be filled already, other way go back to Messenger and click ADAMANT address to copy it to clipboard. Next, choose crypto you want to spend and its amount. You\'ll see how much ADM tokens you will receive, including volume bonus: 20–30 ETH: +20%, 30–50 ETH: +30%, 50–90 ETH: +40%, 90+ ETH: +50%. Click Buy ADAMANT tokens. You\'ll get unique address where you need to send crypto. As soon as your transaction will be confirmed, you\'ll receive ADM tokens. Transaction can be done <b>from any wallet or exchange</b>. It is not necessary to transfer exact amount including transaction fees, the payment will be processed anyway.</p><p>After you receive ADM tokens, we recommend to keep them as long as possible. All of unsold tokens during ICO will be distributed among users\' wallets, adding 5% monthly. Additional info is on Adamant.im website and in the Whitepaper.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>',
     'date_today': 'Ngayon',
     'date_yesterday': 'Kahapon',
     'date_tomorrow': 'Bukas',
@@ -63,14 +62,19 @@ export default {
   },
   'home': {
     'copied': 'Nakopya',
-    'your_address': 'Ang iyong address',
-    'your_address_tooltip': 'Ito ang iyong ADAMANT na kakaibang pagkakakilanlan. Pindutin para makopya ito sa clipboard.',
-    'your_balance': 'Ang iyong balanse',
-    'your_balance_tooltip': 'Ito ang iyong balanse sa ADAMANT. Pindutin para makita lahat ng pumasok at lumabas na mga transaksyon.',
+    'your_address_ADM': 'Ang iyong address ADM',
+    'your_address_ETH': 'Ang iyong address ETH',
+    'your_address_tooltip_ADM': 'Ito ang iyong ADAMANT na kakaibang pagkakakilanlan. Pindutin para makopya ito sa clipboard.',
+    'your_address_tooltip_ETH': 'Ito ang iyong ADAMANT ETH na kakaibang pagkakakilanlan. Pindutin para makopya ito sa clipboard.',
+    'your_balance_ADM': 'Ang iyong balanse ADM',
+    'your_balance_ETH': 'Ang iyong balanse ETH',
+    'your_balance_tooltip_ADM': 'Ito ang iyong balanse sa ADAMANT. Pindutin para makita lahat ng pumasok at lumabas na mga transaksyon.',
+    'your_balance_tooltip_ETH': 'It is your ADAMANT ETH balance.',
     'send_btn': 'Pindutin para magpadala ng mga token',
     'send_btn_tooltip': 'Pindutin para maglipat ng mga ADM token sa ibang gumagamit ng ADAMANT',
     'invest_btn': 'Mag-invest sa ICO',
-    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.'
+    'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
+    'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
     'amount': 'Dami',
@@ -80,7 +84,9 @@ export default {
     'txid': 'Transaksyon #',
     'sender': 'Mula kay',
     'recipient': 'Para kay',
-    'explorer': 'Open in Explorer'
+    'explorer': 'Open in Explorer',
+    'startChat': 'Start chat',
+    'continueChat': 'Continue chat'
   },
   'transfer': {
     'send_button': 'Magpadala ng mga pondo',
@@ -96,7 +102,7 @@ export default {
     'error_no_amount': 'Pakiusap maglagay ng dami',
     'error_not_enough': 'Hindi sapat na mga token',
     'confirm_title': 'Pagkumpirma sa paglipat',
-    'confirm_message': 'Kumpirmahin ang paglipat ng <b>{dami} ADM</b> sa address {tudlaan}.',
+    'confirm_message': 'Kumpirmahin ang paglipat ng <b>{amount} {crypto}</b> sa address <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Kumpirmahin',
     'confirm_cancel': 'Kanselahin'
   },
