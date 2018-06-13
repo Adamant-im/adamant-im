@@ -1,26 +1,34 @@
 export default {
   init (context) {
-    window.setTimeout(() => {
-      context.commit('initChecker', window.ep.$http)
+    return new Promise((resolve, reject) => {
+      window.setTimeout(() => {
+        context.commit('initCheckers', window.ep.$http)
 
-      // Watch for the option changes
-      window.ep.$store.subscribe(mutation => {
-        if (mutation.type === 'change_health_check') {
-          if (mutation.payload) {
-            context.dispatch('start')
-          } else {
-            context.dispatch('stop')
+        // Watch for the option changes
+        window.ep.$store.subscribe(mutation => {
+          if (mutation.type === 'change_health_check') {
+            if (mutation.payload) {
+              context.dispatch('start')
+            } else {
+              context.dispatch('stop')
+            }
           }
-        }
-      })
-    }, 0)
+        })
+
+        resolve(true)
+      }, 0)
+    })
   },
 
   start (context) {
-    context.state.checker.start()
+    for (let key in context.state) {
+      context.state[key].checker.start()
+    }
   },
 
   stop (context) {
-    context.state.checker.stop()
+    for (let key in context.state) {
+      context.state[key].checker.stop()
+    }
   }
 }
