@@ -117,6 +117,14 @@ adamant.getBytes = function (transaction) {
       assetBytes = this.stateGetBytes(transaction)
       assetSize = assetBytes.length
       break
+    case constants.Transactions.DELEGATE:
+      assetBytes = this.delegateGetBytes(transaction)
+      assetSize = assetBytes.length
+      break
+    case constants.Transactions.VOTE:
+      assetBytes = this.voteGetBytes(transaction)
+      assetSize = assetBytes.length
+      break
     default:
       alert('Not supported yet')
   }
@@ -210,6 +218,36 @@ adamant.chatGetBytes = function (trs) {
     throw e
   }
 
+  return buf
+}
+
+adamant.delegateGetBytes = function (trs) {
+  if (!trs.asset.delegate.username) {
+    return null
+  }
+  var buf
+
+  try {
+    buf = Buffer.from(trs.asset.delegate.username, 'utf8')
+  } catch (e) {
+    throw e
+  }
+  return buf
+}
+
+adamant.voteGetBytes = function (trs) {
+  if (!trs.asset.votes || trs.asset.votes.length === 0) {
+    return null
+  }
+  var buf
+  try {
+    buf = Buffer.from([])
+    for (let i in trs.asset.votes) {
+      buf = Buffer.concat([buf, Buffer.from(trs.asset.votes[i], 'utf8')])
+    }
+  } catch (e) {
+    throw e
+  }
   return buf
 }
 

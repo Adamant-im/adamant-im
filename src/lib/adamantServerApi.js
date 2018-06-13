@@ -400,6 +400,7 @@ function install (Vue) {
       this.$store.commit('start_tracking_new')
       this.loadChats()
       this.getTransactions()
+      // this.registerDelegate()
 
       this.$store.dispatch('eth/updateStatus')
     } else if (this.$store.state.ajaxIsOngoing && !window.resetAjaxState) {
@@ -618,6 +619,202 @@ function install (Vue) {
         this.$store.commit('ajax_end')
       } else {
         this.getUncofirmedTransactionInfo(txid)
+      }
+    }, response => {
+      this.$store.commit('ajax_end_with_error')
+    })
+  }
+
+  Vue.prototype.registerDelegate = function (delegateName) {
+    var keys = this.getKeypair()
+    var transaction = {
+      type: constants.Transactions.DELEGATE,
+      asset: {delegate: {username: delegateName, publicKey: keys.publicKey.toString('hex')}},
+      timestamp: adamant.epochTime(),
+      recipientId: null,
+      senderPublicKey: keys.publicKey.toString('hex'),
+      amount: 0,
+      senderId: this.$store.state.address
+    }
+    transaction.signature = adamant.transactionSign(transaction, keys)
+    this.$store.commit('ajax_start')
+    this.$http.post(this.getAddressString() + '/api/delegates/', transaction).then(response => {
+      if (response.body.success) {
+        alert('success')
+        this.$store.commit('ajax_end')
+      } else {
+        alert(response.body.error)
+        this.$store.commit('ajax_end_with_error')
+      }
+    }, response => { })
+  }
+
+  Vue.prototype.getDelegates = function () {
+    this.$store.commit('ajax_start')
+    this.$http.get(this.getAddressString() + '/api/accounts/delegates?address=' + this.$store.state.address).then(response => {
+      if (response.body.success) {
+        const votes = response.body.delegates.map(vote => vote.address)
+        this.$http.get(this.getAddressString() + '/api/delegates').then(response => {
+          if (response.body.success) {
+            for (var i in response.body.delegates) {
+              let delegate = response.body.delegates[i]
+              let voted = votes.includes(delegate.address)
+              delegate._voted = voted
+              delegate.voted = voted
+              delegate.upvoted = false
+              delegate.downvoted = false
+              delegate.showDetails = false
+              delegate.forged = 0
+              delegate.status = 5
+              this.$store.commit('delegate_info', delegate)
+            }
+            this.$store.commit('ajax_end')
+          } else {
+            this.$store.commit('ajax_end_with_error')
+          }
+        }, response => {
+          this.$store.commit('ajax_end_with_error')
+        })
+      } else {
+        this.$store.commit('ajax_end_with_error')
+      }
+    }, response => {
+      this.$store.commit('ajax_end_with_error')
+    })
+  }
+
+  Vue.prototype.voteForDelegates = function (votes) {
+    var keys = this.getKeypair()
+    var transaction = {
+      type: constants.Transactions.VOTE,
+      asset: {votes: votes},
+      timestamp: adamant.epochTime(),
+      recipientId: this.$store.state.address,
+      senderPublicKey: keys.publicKey.toString('hex'),
+      amount: 0,
+      senderId: this.$store.state.address
+    }
+    transaction.signature = adamant.transactionSign(transaction, keys)
+    this.$store.commit('clean_delegates')
+    this.$store.commit('ajax_start')
+    this.$http.post(this.getAddressString() + '/api/accounts/delegates', transaction).then(response => {
+      if (response.body.success) {
+        this.$store.commit('ajax_end')
+        this.getDelegates()
+      } else {
+        alert(response.body.error)
+        this.$store.commit('ajax_end_with_error')
+        this.getDelegates()
+      }
+    }, response => { })
+  }
+
+  Vue.prototype.getForgingTimeForDelegate = function (delegate) {
+    const getRoundDelegates = (delegates, height) => {
+      let currentRound = round(height)
+      return delegates.filter((delegate, index) => {
+        currentRound === round(height + index + 1)
+      })
+    }
+    const round = height => {
+      if (isNaN(height)) {
+        return 0
+      } else {
+        return Math.floor(height / 101) + (height % 101 > 0 ? 1 : 0)
+      }
+    }
+
+    this.$store.commit('ajax_start')
+    this.$http.get(this.getAddressString() + '/api/delegates/getNextForgers?limit=101').then(response => {
+      if (response.body.success) {
+        const nextForgers = response.body.delegates
+        const fIndex = nextForgers.indexOf(delegate.publicKey)
+        const forgingTime = fIndex === -1 ? -1 : fIndex * 10
+        this.$store.commit('update_delegate', {
+          address: delegate.address,
+          params: { forgingTime: forgingTime }
+        })
+        this.$http.get(this.getAddressString() + '/api/blocks?orderBy=height:desc&limit=100').then(response => {
+          if (response.body.success) {
+            let lastBlock = response.body.blocks[0]
+            let blocks = response.body.blocks.filter(x => x.generatorPublicKey === delegate.publicKey)
+            let time = Date.now()
+            let status = { updatedAt: time }
+            if (blocks.length > 0) {
+              status.lastBlock = blocks[0]
+              status.blockAt = new Date((((Date.UTC(2017, 8, 2, 17, 0, 0, 0) / 1000) + status.lastBlock.timestamp) * 1000))
+              var roundDelegates = getRoundDelegates(nextForgers, lastBlock.height)
+              var isRoundDelegate = roundDelegates.indexOf(delegate.publicKey) !== -1
+              status.networkRound = round(lastBlock.height)
+              status.delegateRound = round(status.lastBlock.height)
+              status.awaitingSlot = status.networkRound - status.delegateRound
+            } else {
+              status.lastBlock = null
+            }
+            if (status.awaitingSlot === 0) {
+              // Forged block in current round
+              status.code = 0
+            } else if (!isRoundDelegate && status.awaitingSlot === 1) {
+              // Missed block in current round
+              status.code = 1
+            } else if (!isRoundDelegate && status.awaitingSlot > 1) {
+              // Missed block in current and last round = not forging
+              status.code = 2
+            } else if (status.awaitingSlot === 1) {
+              // Awaiting slot, but forged in last round
+              status.code = 3
+            } else if (status.awaitingSlot === 2) {
+              // Awaiting slot, but missed block in last round
+              status.code = 4
+            } else if (!status.blockAt || !status.updatedAt || status.lastBlock === null) {
+              // Awaiting status or unprocessed
+              status.code = 5
+            // For delegates which not forged a signle block yet (statuses 0,3,5 not apply here)
+            } else if (!status.blockAt && status.updatedAt) {
+              if (!isRoundDelegate && delegate.missedblocks === 1) {
+                // Missed block in current round
+                status.code = 1
+              } else if (delegate.missedblocks > 1) {
+              // Missed more than 1 block = not forging
+                status.code = 2
+              } else if (delegate.missedblocks === 1) {
+              // Missed block in previous round
+                status.code = 4
+              }
+            } else {
+              // Not Forging
+              status.code = 2
+            }
+            this.$store.commit('update_delegate', {
+              address: delegate.address,
+              params: { status: status.code }
+            })
+            this.$store.commit('ajax_end')
+          } else {
+            this.$store.commit('ajax_end_with_error')
+          }
+        }, response => {
+          this.$store.commit('ajax_end_with_error')
+        })
+      } else {
+        this.$store.commit('ajax_end_with_error')
+      }
+    }, response => {
+      this.$store.commit('ajax_end_with_error')
+    })
+  }
+
+  Vue.prototype.getForgedByAccount = function (delegate) {
+    this.$store.commit('ajax_start')
+    this.$http.get(this.getAddressString() + '/api/delegates/forging/getForgedByAccount?generatorPublicKey=' + delegate.publicKey).then(response => {
+      if (response.body.success) {
+        this.$store.commit('update_delegate', {
+          address: delegate.address,
+          params: { forged: response.body.forged }
+        })
+        this.$store.commit('ajax_end')
+      } else {
+        this.$store.commit('ajax_end_with_error')
       }
     }, response => {
       this.$store.commit('ajax_end_with_error')
