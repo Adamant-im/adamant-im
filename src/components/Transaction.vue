@@ -6,11 +6,11 @@
             <md-table-cell class='label_td'>{{ $t('transaction.amount') }}</md-table-cell>
             <md-table-cell >{{ $formatAmount(transaction.amount, crypto) }} {{ crypto }}</md-table-cell>
           </md-table-row>
-          <md-table-row v-if="transaction.timestamp">
+          <md-table-row>
             <md-table-cell  class='label_td'>{{ $t('transaction.date') }}</md-table-cell>
-            <md-table-cell >{{ $formatDate(transaction.timestamp) }}</md-table-cell>
+            <md-table-cell >{{ transaction.timestamp ? $formatDate(transaction.timestamp) : '⏱' }}</md-table-cell>
           </md-table-row>
-          <md-table-row v-if="crypto === 'ADM'">
+          <md-table-row>
             <md-table-cell  class='label_td'>{{ $t('transaction.confirmations') }}</md-table-cell>
             <md-table-cell >{{ confirmations }}</md-table-cell>
           </md-table-row>

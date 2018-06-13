@@ -123,31 +123,37 @@ export default {
   updateStatus (context) {
     if (!context.state.address) return
 
-    const supplier = () => [
-      // Balance
-      api.eth.getBalance.request(context.state.address, 'latest', (err, balance) => {
-        if (!err) context.commit('balance', toEther(balance))
-      }),
-      // Current gas price
-      api.eth.getGasPrice.request((err, price) => {
-        if (!err) {
-          context.commit('gasPrice', {
-            gasPrice: price,
-            fee: toEther(Number(TRANSFER_GAS) * price)
-          })
-        }
-      }),
-      // Current block number
-      api.eth.getBlockNumber.request((err, number) => {
-        if (!err) context.commit('blockNumber', number)
-      })
-    ]
+    const supplier = () => {
+      if (!context.state.address) return []
+
+      return [
+        // Balance
+        api.eth.getBalance.request(context.state.address, 'latest', (err, balance) => {
+          if (!err) context.commit('balance', toEther(balance))
+        }),
+        // Current gas price
+        api.eth.getGasPrice.request((err, price) => {
+          if (!err) {
+            context.commit('gasPrice', {
+              gasPrice: price,
+              fee: toEther(Number(TRANSFER_GAS) * price)
+            })
+          }
+        }),
+        // Current block number
+        api.eth.getBlockNumber.request((err, number) => {
+          if (!err) context.commit('blockNumber', number)
+        })
+      ]
+    }
 
     const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)
     setTimeout(() => {
-      enqueueRequest('status', supplier)
-      lastStatusUpdate = Date.now()
-      context.dispatch('updateStatus')
+      if (context.state.address) {
+        enqueueRequest('status', supplier)
+        lastStatusUpdate = Date.now()
+        context.dispatch('updateStatus')
+      }
     }, delay)
   },
 
