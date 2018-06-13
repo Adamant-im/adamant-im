@@ -1,3 +1,5 @@
+// TODO Delete entire file
+
 /*
     Health check wrapper for Vue framework
 */

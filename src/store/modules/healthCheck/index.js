@@ -1,3 +1,6 @@
+/*
+    Health check support for Vuex
+*/
 import actions from './actions'
 import mutations from './mutations'
 import getters from './getters'
