@@ -12,12 +12,20 @@
                 </md-input-container>
                 </h1>
           </md-toolbar>
+          <md-toolbar v-if="isTransferBackShown">
+              <md-button class="md-icon-button" v-on:click="backOneStep">
+                  <md-icon >keyboard_backspace</md-icon>
+              </md-button>
+            <h1 class="md-title">
+		    {{ $t('home.send_btn') }}
+                </h1>
+          </md-toolbar>
     <main>
         <router-view></router-view>
     </main>
       <footer :style="footerCss">
           <div class="bottom-fixed">
-              <md-bottom-bar v-if="logged && isBottomPanelShown">
+              <md-bottom-bar v-if="logged && isBottomPanelShown && !isTransferBackShown">
                   <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" :md-active="!!$router.currentRoute.path.match(/\/home\//) || !!$router.currentRoute.path.match(/\/transactions\//) || !!$router.currentRoute.path.match(/\/transfer\//)">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')" :md-active="!!$router.currentRoute.path.match(/\/chats\//)">{{$t('bottom.chats_button')}}<div class="new-icon" v-if="totalNew">{{ totalNew }}</div></md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="settings" v-on:click="$router.push('/options/')" :md-active="!!$router.currentRoute.path.match(/\/options\//)">{{$t('bottom.settings_button')}}</md-bottom-bar-item>
@@ -95,6 +103,13 @@ export default {
       const partner = this.$store.state.partnerName
       this.$store.commit('partners/setDisplayName', { partner, displayName: val })
     },
+    backOneStep () {
+      if (history.length > 2) {
+        this.$router.back()
+      } else {
+        this.$router.push('/home/')
+      }
+    },
     gotochats () {
       this.$store.commit('leave_chat')
       if (history.length > 2) {
@@ -128,6 +143,9 @@ export default {
     partnerName () {
       return this.$store.state.partnerName
     },
+    isTransferBackShown () {
+      return this.transferBackShown
+    },
     isTopPanelShown () {
       return this.$store.state.showPanel
     },
@@ -141,8 +159,14 @@ export default {
       return this.$store.state.passPhrase
     }
   },
+  watch: {
+    '$route.name': function (name) {
+      this.transferBackShown = (this.$router.currentRoute.name === 'Transfer')
+    }
+  },
   data () {
     return {
+      transferBackShown: (this.$router.currentRoute.name === 'Transfer')
     }
   }
 }
@@ -324,5 +348,18 @@ header span {
 
 .md-dialog {
   box-shadow: initial;
+}
+.md-toolbar.md-theme-grey {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    max-width: 800px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    /* background: rgba(153, 153, 153, 0.2); */
+    background: #ebebeb;
+    border-bottom: none;
 }
 </style>

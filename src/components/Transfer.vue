@@ -191,6 +191,9 @@ export default {
     .md-input-container.md-has-value input.md-input[readonly] {
         color: rgba(0, 0, 0, 0.54);
     }
+    .transfer {
+	margin-top: 80px;
+    }
     .transfer form {
         max-width: 95%;
 	margin: auto;
