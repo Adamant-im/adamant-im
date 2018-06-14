@@ -178,7 +178,9 @@ export default {
       return Promise.reject({ code: 'invalid_address' })
     }
 
-    return api.eth.accounts.signTransaction(ethTx, context.state.privateKey)
+    return api.eth.getTransactionCount(context.state.address, 'pending')
+      .then(count => { ethTx.nonce = count })
+      .then(() => api.eth.accounts.signTransaction(ethTx, context.state.privateKey))
       .then(signed => {
         const tx = signed.rawTransaction
         const hash = api.utils.sha3(tx)
@@ -241,7 +243,7 @@ export default {
 
     const key = 'transaction:' + payload.hash
     const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
-      if (!err) {
+      if (!err && tx) {
         const transaction = {
           hash: tx.hash,
           senderId: tx.from,
@@ -256,7 +258,7 @@ export default {
         context.commit('addTransaction', transaction)
       }
 
-      if (err || !tx.blockNumber) {
+      if (err || tx && !tx.blockNumber) {
         // In case of an error or a pending transaction fetch its details once again later
         context.dispatch('getTransaction', payload)
       }
