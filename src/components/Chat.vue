@@ -48,11 +48,17 @@
       <md-snackbar md-position="bottom center" md-accent ref="chatsSnackbar" md-duration="2000">
           <span>{{ formErrorMessage }}</span>
       </md-snackbar>
+    <md-dialog-alert
+      :md-title="$t('transfer.no_address_title', { crypto: sendToCrypto })"
+      :md-content-html="$t('transfer.no_address_text', { crypto: sendToCrypto })"
+      ref="no_address_dialog"
+    />
   </div>
 </template>
 
 <script>
 import ChatEntry from './chat/ChatEntry.vue'
+import { Cryptos } from '../lib/constants'
 
 export default {
   name: 'chats',
@@ -134,9 +140,26 @@ export default {
       }
     },
     sendTokens (crypto) {
-      this.$store.commit('leave_chat')
-      const params = { fixedCrypto: crypto, fixedAddress: this.$route.params.partner }
-      this.$router.push({ name: 'Transfer', params })
+      this.sendToCrypto = crypto
+
+      let promise = Promise.resolve(true)
+      // For cryptos other than ADM we need to fetch the respective account address first
+      if (crypto !== Cryptos.ADM) {
+        const params = { crypto, partner: this.$route.params.partner }
+        promise = this.$store.dispatch('partners/fetchAddress', params).then(address => {
+          if (!address) this.$refs['no_address_dialog'].open()
+          return !!address
+        })
+      }
+
+      // If it's ADM or target address is available, we're good to go
+      promise.then(addressOk => {
+        if (!addressOk) return
+
+        this.$store.commit('leave_chat')
+        const params = { fixedCrypto: crypto, fixedAddress: this.$route.params.partner }
+        this.$router.push({ name: 'Transfer', params })
+      })
     }
   },
   mounted: function () {
@@ -198,7 +221,8 @@ export default {
     return {
       message_fee: 0,
       formErrorMessage: '',
-      message: ''
+      message: '',
+      sendToCrypto: ''
     }
   }
 }
@@ -311,5 +335,9 @@ export default {
 }
 .attach_menu {
     background: white;
+}
+
+.md-dialog-container.md-active .md-dialog {
+    background: #fefefe;
 }
 </style>
