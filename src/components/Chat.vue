@@ -9,31 +9,31 @@
       <md-layout md-align="start" md-gutter="16" class="message_form" style="z-index: 10;">
       <md-layout>
           <md-layout md-flex="10">
-            <md-menu md-align-trigger md-size="5">
-              <md-button class="attach_button" md-menu-trigger>
-                <md-icon>attach_file</md-icon>
+            <md-menu class="attach_menu" md-align-trigger md-size="4">
+              <md-button md-menu-trigger style="min-height: 45px;max-height: 45px; min-width: 60px;">
+                <md-icon md-src="static/img/Attach/attach.svg"></md-icon>
               </md-button>
-              <md-menu-content>
+              <md-menu-content class="attach_menu">
                 <md-menu-item v-on:click="sendTokens('ADM')">
-                  <md-icon class="md-size-2x" md-src="/static/img/adm-token.png">menu</md-icon>
+                  <md-icon md-src="static/img/Attach/adm.svg">menu</md-icon>
                   <span>{{ $t('chats.send_adm') }}</span>
                 </md-menu-item>
                 <md-menu-item v-on:click="sendTokens('ETH')">
-                  <md-icon class="md-size-2x" md-src="/static/img/eth-token.png">menu</md-icon>
+                  <md-icon  md-src="static/img/Attach/ethereum.svg">menu</md-icon>
                   <span>{{ $t('chats.send_eth') }}</span>
                 </md-menu-item>
                 <md-menu-item :disabled="true">
-                  <md-icon class="md-size-2x">collections</md-icon>
+                  <md-icon md-src="static/img/Attach/picture.svg">collections</md-icon>
                   <span>{{ $t('chats.attach_image') }}</span>
                 </md-menu-item>
                 <md-menu-item :disabled="true">
-                  <md-icon class="md-size-2x">insert_drive_file</md-icon>
+                  <md-icon  md-src="static/img/Attach/file.svg"></md-icon>
                   <span>{{ $t('chats.attach_file') }}</span>
                 </md-menu-item>
               </md-menu-content>
             </md-menu>
           </md-layout>
-          <md-layout md-flex="80"   md-flex-xsmall="85" class="text_block">
+          <md-layout md-flex="80"   md-flex-xsmall="75" class="text_block">
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
                   <md-textarea ref="messageField" v-model="message" @keydown.native="kp($event)" @focus="focusHandler" @blur.native="blurHandler"></md-textarea>
@@ -299,5 +299,14 @@ export default {
     /* background: rgba(153, 153, 153, 0.2); */
     background: #ebebeb;
     border-bottom: none;
+}
+.attach_menu .md-list-item.md-menu-item {
+    background-color: rgba(255,255,255,1);
+}
+.attach_menu .md-list-item.md-menu-item.md-disabled {
+    color: gray;
+}
+.attach_menu {
+    background: white;
 }
 </style>
