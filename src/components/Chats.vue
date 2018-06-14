@@ -99,6 +99,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+    .chats .chat_entry {
+	      max-height:25px;
+    }
+    .chats .chat_entry p {
+        margin-top: 0;
+    }
     .chat_loads {
         position: absolute;
         background: rgba(0,0,0,0.3);
