@@ -99,15 +99,7 @@
           </md-card-header>
           </md-card-area>
           <md-card-content>
-            <span v-if="delegate">
-              {{ $t('already_delegate_text') }} {{ delegate.username }}
-            </span> 
-            <md-input-container v-else>
-              <md-input style="width:50%" v-model="delegateName" v-bind:placeholder="$t('options.delegate_name_input')"></md-input>
-              <md-button style="width:50%" v-on:click="delegateRequest" v-bind:disabled="!delegateOpen" >
-              {{ $t('options.delegate_register_button') }} - 3000 ADM</md-button>
-            </md-input-container>
-            <md-button style="width:100%" v-on:click="$router.push('/votes/')">{{ $t('options.vote_for_delegates_button') }}</md-button>
+            <md-button class="votes-button" v-on:click="$router.push('/votes/')">{{ $t('options.vote_for_delegates_button') }}</md-button>
           </md-card-content>
       </md-card>
 
@@ -199,6 +191,15 @@ export default {
   }
   .settings .md-card .md-card-header:last-child {
       margin-bottom: 0px;
+  }
+  .votes-button {
+      width: 100%;
+      font-size: 16px;
+      font-weight: 400;
+      height: 48px;
+      text-transform: none;
+      padding: 0;
+      margin: 0;
   }
     @media (max-width: 480px) {
         .hide_on_mobile {
