@@ -106,6 +106,7 @@ export default {
     'error_incorrect_amount': 'Невірна сума',
     'error_no_amount': 'Будь ласка, введіть суму',
     'error_not_enough': 'Не достатньо токенів',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
     'confirm_title': 'Підтвердження транзакції',
     'confirm_message': 'Підтвердіть надсилання токенів<b>{amount} {crypto}</b> до адреси <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Підтвердити',

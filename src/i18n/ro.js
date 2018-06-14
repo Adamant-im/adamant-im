@@ -106,6 +106,7 @@ export default {
     'error_incorrect_amount': 'Sumă incorectă',
     'error_no_amount': 'Vă rugăm introduceți o sumă',
     'error_not_enough': 'Token-uri insuficiente',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
     'confirm_title': 'Confirmare transfer',
     'confirm_message': 'Confirmați transferul de <b>{amount} {crypto}</b> către adresa <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confirmă',

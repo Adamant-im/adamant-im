@@ -106,6 +106,7 @@ export default {
     'error_incorrect_amount': 'Incorrect amount',
     'error_no_amount': 'Please provide amount',
     'error_not_enough': 'Not enough tokens',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
     'confirm_title': 'Transfer confirmation',
     'confirm_message': 'Confirm transfer of <b>{amount} {crypto}</b> to address <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confirm',

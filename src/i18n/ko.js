@@ -106,6 +106,7 @@ export default {
     'error_incorrect_amount': '부정확한 금액',
     'error_no_amount': '금액을 입력하십시오.',
     'error_not_enough': '토큰이 충분하지 않습니다.',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
     'confirm_title': '이동 확정',
     'confirm_message': '<b>{amount} {crypto} </b>의 <span class="address-in-confirm">{target}</span> 주소로의 이전을 확인하십시오.',
     'confirm_approve': '확인',
