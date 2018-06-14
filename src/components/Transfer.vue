@@ -2,6 +2,15 @@
   <div class="transfer">
 
       <form novalidate @submit.stop.prevent="submit">
+    	  <md-layout md-flex="15">
+              <md-input-container>
+                  <md-select v-model="crypto" style="text-align: left;" :disabled="!!this.fixedCrypto">
+                      <md-option v-for="c in cryptosList" v-bind:key="c" :value="c">
+                          {{ c }}
+                      </md-option>
+                  </md-select>
+              </md-input-container>
+          </md-layout>
           <md-input-container  :title="$t('transfer.to_address_label_tooltip')">
               <label>{{ $t('transfer.to_address_label') }}</label>
               <md-input v-model="targetAddress" :readonly="!!this.fixedAddress"></md-input>
@@ -13,15 +22,6 @@
                   {{ $t('transfer.amount_label') }} <span style="font-size: 10px;">(max: {{ maxToTransfer }} {{ crypto }})</span>
                 </label>
                 <md-input type="number" min=0 :max="maxToTransfer" v-model="targetAmount"></md-input>
-              </md-input-container>
-            </md-layout>
-            <md-layout md-flex="15">
-              <md-input-container>
-                <md-select v-model="crypto" :disabled="!!this.fixedCrypto">
-                  <md-option v-for="c in cryptosList" v-bind:key="c" :value="c">
-                    {{ c }}
-                  </md-option>
-                </md-select>
               </md-input-container>
             </md-layout>
           </md-layout>
@@ -190,6 +190,10 @@ export default {
     }
     .md-input-container.md-has-value input.md-input[readonly] {
         color: rgba(0, 0, 0, 0.54);
+    }
+    .transfer form {
+        max-width: 95%;
+	margin: auto;
     }
     @media (max-width: 800px) {
         .transfer {
