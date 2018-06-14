@@ -7,10 +7,10 @@
           <md-layout style="height:0" md-flex="100"></md-layout>
       </md-layout>
       <md-layout md-align="start" md-gutter="16" class="message_form" style="z-index: 10;">
-      <md-layout>
+      <md-layout style='padding-left: 0;'>
           <md-layout md-flex="10">
             <md-menu class="attach_menu" md-align-trigger md-size="4">
-              <md-button md-menu-trigger style="min-height: 45px;max-height: 45px; min-width: 60px;">
+              <md-button md-menu-trigger style="min-height: 45px;max-height: 45px; min-width: 60px;margin-left:0;">
                 <md-icon md-src="static/img/Attach/attach.svg"></md-icon>
               </md-button>
               <md-menu-content class="attach_menu">
@@ -305,6 +305,9 @@ export default {
 }
 .attach_menu .md-list-item.md-menu-item.md-disabled {
     color: gray;
+}
+.chat_entry {
+    display: flex;
 }
 .attach_menu {
     background: white;
