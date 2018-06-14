@@ -66,8 +66,8 @@ import { Cryptos, CryptoAmountPrecision, Fees } from '../lib/constants'
 export default {
   name: 'home',
   methods: {
-    errorMessage (message) {
-      this.formErrorMessage = this.$t('transfer.' + message)
+    errorMessage (message, opts) {
+      this.formErrorMessage = this.$t('transfer.' + message, opts)
       this.$refs.transferSnackbar.open()
     },
     onClose (type) {
@@ -89,7 +89,7 @@ export default {
         return
       }
       if (!validateAddress(this.crypto, this.targetAddress)) {
-        this.errorMessage('error_incorrect_address')
+        this.errorMessage('error_incorrect_address', { crypto: this.crypto })
         return
       }
       if (!this.targetAmount) {

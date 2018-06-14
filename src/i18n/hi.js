@@ -105,7 +105,7 @@ export default {
     'final_amount_label': 'राशी में हस्तान्तार्ण शुल्क सम्मलित है ',
     'commission_label': 'हस्तान्तार्ण शुल्क ',
     'error_no_address': 'कृपया वॉलेट पता बताएं',
-    'error_incorrect_address': 'गलत वॉलेट पता ',
+    'error_incorrect_address': 'गलत {crypto} वॉलेट पता ',
     'error_incorrect_amount': 'गलत राशी ',
     'error_no_amount': 'कृपया राशी डाले ',
     'error_not_enough': 'टोकन नाकाफी',

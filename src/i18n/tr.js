@@ -101,7 +101,7 @@ export default {
     'final_amount_label': 'Transfer ücreti dahil toplam tutar',
     'commission_label': 'Transfer ücreti',
     'error_no_address': 'Lütfen cüzdan adresi yaziniz',
-    'error_incorrect_address': 'Geçersiz cüzdan adresi',
+    'error_incorrect_address': 'Geçersiz {crypto} cüzdan adresi',
     'error_incorrect_amount': 'Yanlis miktar',
     'error_no_amount': 'Lütfen bir miktar giriniz',
     'error_not_enough': 'Yeterli bakiyeniz yok',

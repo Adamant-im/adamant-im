@@ -101,7 +101,7 @@ export default {
     'final_amount_label': 'Summa inklusive överföringsavgift',
     'commission_label': 'Överföringsavgift',
     'error_no_address': 'Var god ange plånboksadress',
-    'error_incorrect_address': 'Ej giltig plånboksadress',
+    'error_incorrect_address': 'Ej giltig {crypto} plånboksadress',
     'error_incorrect_amount': 'Ej giltig summa',
     'error_no_amount': 'Vänligen ange summa',
     'error_not_enough': 'Ej tillräckligt antal tokens',

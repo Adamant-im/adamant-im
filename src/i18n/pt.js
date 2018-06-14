@@ -101,7 +101,7 @@ export default {
     'final_amount_label': 'Montante incluíndo taxa',
     'commission_label': 'Taxa de transferência',
     'error_no_address': 'Por favor introduza um endereço',
-    'error_incorrect_address': 'Endereço incorrecto',
+    'error_incorrect_address': '{crypto} endereço incorrecto',
     'error_incorrect_amount': 'Montante Incorrecto',
     'error_no_amount': 'Por favor introduza montante',
     'error_not_enough': 'Não tem tokens suficientes',

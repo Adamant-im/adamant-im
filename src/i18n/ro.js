@@ -101,7 +101,7 @@ export default {
     'final_amount_label': 'Suma, inclusiv taxa de transfer',
     'commission_label': 'Taxa de transfer',
     'error_no_address': 'Va rugăm introduceți adresa Portofelului',
-    'error_incorrect_address': 'Adresa Portofelului greșită',
+    'error_incorrect_address': 'Adresa {crypto} Portofelului greșită',
     'error_incorrect_amount': 'Sumă incorectă',
     'error_no_amount': 'Vă rugăm introduceți o sumă',
     'error_not_enough': 'Token-uri insuficiente',

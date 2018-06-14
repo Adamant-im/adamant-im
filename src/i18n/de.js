@@ -101,7 +101,7 @@ export default {
     'final_amount_label': 'Betrag inklusive Transaktionsgebühr',
     'commission_label': 'Transaktionsgebühr',
     'error_no_address': 'Bitte gib hier eine Wallet Adresse ein',
-    'error_incorrect_address': 'Keine gültige Wallet Adresse',
+    'error_incorrect_address': 'Keine gültige {crypto} Wallet Adresse',
     'error_incorrect_amount': 'Kein gültiger Betrag',
     'error_no_amount': 'Bitte gib hier einen Betrag ein',
     'error_not_enough': 'Nicht genug Token',

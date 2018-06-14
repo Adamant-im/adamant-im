@@ -101,7 +101,7 @@ export default {
     'final_amount_label': 'Montant incluant les frais de transfert',
     'commission_label': 'Frais de transfert',
     'error_no_address': 'S\'il vous plaît fournir l\'adresse de portefeuille',
-    'error_incorrect_address': 'Adresse de portefeuille incorrecte',
+    'error_incorrect_address': 'Adresse de {crypto} portefeuille incorrecte',
     'error_incorrect_amount': 'montant incorrect',
     'error_no_amount': 'S\'il vous plaît fournir une quantité',
     'error_not_enough': 'Pas assez de jetons',

@@ -101,7 +101,7 @@ export default {
     'final_amount_label': 'Monto con comisión des transferencia',
     'commission_label': 'Comisión des transferencia',
     'error_no_address': 'Por favor proveer dirección de billetera',
-    'error_incorrect_address': 'Dirección de la billetera incorrecta',
+    'error_incorrect_address': 'Dirección de la {crypto} billetera incorrecta',
     'error_incorrect_amount': 'Monto incorrecto',
     'error_no_amount': 'Favor proveer un monto',
     'error_not_enough': 'No tiene tokens suficientes',

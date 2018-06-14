@@ -101,7 +101,7 @@ export default {
     'final_amount_label': 'المبلغ بما فيه الرسوم',
     'commission_label': 'رسوم التحويل',
     'error_no_address': 'من فذلك أدخل عنوان المحفظة',
-    'error_incorrect_address': 'عنوان المحفظة غير صحيح',
+    'error_incorrect_address': 'عنوان المحفظة {crypto} غير صحيح',
     'error_incorrect_amount': 'مبلغ غير صحيح',
     'error_no_amount': 'من فضلك أدخل المبلغ',
     'error_not_enough': 'قطع غير كافية',

@@ -101,7 +101,7 @@ export default {
     'final_amount_label': 'Importo comprensivo della tassa di trasferimento',
     'commission_label': 'Tassa di trasferimento',
     'error_no_address': 'Si prega di fornire l\'indirizzo del portafogli',
-    'error_incorrect_address': 'Indirizzo del portafoglio errato',
+    'error_incorrect_address': 'Indirizzo del {crypto} portafoglio errato',
     'error_incorrect_amount': 'Quantita errata',
     'error_no_amount': 'Si prega di fornire l\'importo',
     'error_not_enough': 'Non abbastanza token',

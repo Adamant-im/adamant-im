@@ -101,7 +101,7 @@ export default {
     'final_amount_label': 'Сума включаючи комісію',
     'commission_label': 'Комісія надсилання',
     'error_no_address': 'Будь ласка, введіть адресу гаманця',
-    'error_incorrect_address': 'Невірна адреса',
+    'error_incorrect_address': 'Невірна {crypto} адреса',
     'error_incorrect_amount': 'Невірна сума',
     'error_no_amount': 'Будь ласка, введіть суму',
     'error_not_enough': 'Не достатньо токенів',
