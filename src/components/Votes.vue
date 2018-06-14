@@ -1,5 +1,5 @@
 <template>
-  <div class="votes" style="position: relative">
+  <div class="votes">
     <md-layout class='chat_loads' v-show="!delegatesLoaded">
       <md-spinner :md-size="150" :md-stroke="1" md-indeterminate class="md-accent" style="margin: 0px -75px;position: fixed;left: 50%;"></md-spinner>
     </md-layout>
@@ -7,9 +7,6 @@
       <md-table-card class='votes-card' style="box-shadow:none">
         <md-toolbar>
           <md-layout md-gutter="16">
-            <md-layout md-flex="100">
-              <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('votes.page_title') }}</h2>
-            </md-layout>
             <md-layout md-flex="100">
               <md-input-container>
                 <md-button class="md-icon-button">
@@ -21,7 +18,7 @@
           </md-layout>   
         </md-toolbar>
         <div style="width:100%; height:100%">
-          <md-table md-sort="rank" md-sort-type="desc" @sort="onSort" v-bind:style="tableStyle">
+          <md-table md-sort="rank" md-sort-type="desc" @sort="onSort">
             <md-table-header>
               <md-table-row>
                 <md-table-head>{{$t('votes.table_head_vote')}}</md-table-head>
@@ -30,7 +27,7 @@
                 <md-table-head></md-table-head>  
               </md-table-row>
             </md-table-header>
-            <md-table-body>
+            <md-table-body v-bind:style="tableStyle">
               <md-table-row v-for="(delegate, index) in delegates" :key="delegate.address" style="cursor:pointer" v-bind:class="{upvoted: delegate.upvoted, downvoted: delegate.downvoted}">
                 <md-table-cell>
                   <md-checkbox v-model="delegate.voted" title="vote" v-on:change="vote(delegate)"></md-checkbox>
@@ -237,6 +234,10 @@
   }
 </script>
 <style>
+.votes {
+  position: relative;
+  padding-top: 25px;
+}
 .votes .md-checkbox .md-checkbox-container:after {
   border: 2px solid gray;
   border-top: 0;
@@ -245,6 +246,36 @@
 .votes .md-table {
   display: block;
 }
+.votes .md-table table, .votes .md-table thead, .votes .md-table tbody, .votes .md-table tr {
+  width: 100%;
+  display: block;
+}
+.votes .md-table .md-table-row:hover .md-table-cell {
+  background-color: none;
+}
+.votes .md-table tr:hover {
+  background-color: #eee;
+}
+.votes .md-table td, .votes .md-table th {
+  width: 24%;
+  display: inline-block;
+  padding: 10px;
+}
+.votes .md-table tbody, .votes .md-table thead {
+  overflow: auto;
+}
+.votes .md-table tbody {
+  height: 300px;
+}
+
+.votes .md-checkbox {
+  margin: auto;
+}
+
+.votes .md-toolbar.md-theme-grey {
+  border-bottom: none;
+}
+
 .md-table-row.downvoted {
   background-color: antiquewhite;
 }
