@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': '버튼을 클릭하면 확인 요청이 표시됩니다.',
     'to_address_label': '주소',
     'to_address_label_tooltip': 'U 1234567890과 같은 수신자 식별자를 입력하십시오.',
+    'to_label': 'To',
     'amount_label': '보낼 금액',
     'final_amount_label': '송금 수수료 포함 금액',
     'commission_label': '환승요금',

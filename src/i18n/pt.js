@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'Depois de clicar no botão, verá um pedido de confirmação.',
     'to_address_label': 'Para Endereço',
     'to_address_label_tooltip': 'Introduza um recipiente, exemplo: U1234567890',
+    'to_label': 'To',
     'amount_label': 'Montante a enviar',
     'final_amount_label': 'Montante incluíndo taxa',
     'commission_label': 'Taxa de transferência',

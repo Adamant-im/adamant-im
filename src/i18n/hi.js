@@ -101,6 +101,7 @@ export default {
     'send_button_tooltip': 'आपके द्वारा बटन क्लिक करने के बाद, आपको एक पुष्टिकरण अनुरोध दिखाई देगा.',
     'to_address_label': 'पते को',
     'to_address_label_tooltip': 'एक प्राप्य पहचानकर्ता दर्ज करें, जैसे U1234567890',
+    'to_label': 'To',
     'amount_label': 'राशि भेजे',
     'final_amount_label': 'राशी में हस्तान्तार्ण शुल्क सम्मलित है ',
     'commission_label': 'हस्तान्तार्ण शुल्क ',

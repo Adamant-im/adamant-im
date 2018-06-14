@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': '点击此按钮后, 您会收到一个确认请求.',
     'to_address_label': '到地址',
     'to_address_label_tooltip': '输入对方身份识别, 如 U1234567890',
+    'to_label': 'To',
     'amount_label': '发送金额',
     'final_amount_label': '金额包含手续费',
     'commission_label': '手续费',

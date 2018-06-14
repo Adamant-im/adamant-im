@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'Nach klicken des Buttons, kannst du den Bestätigungsstatus sehen.',
     'to_address_label': 'An die Adresse',
     'to_address_label_tooltip': 'Gib hier die Empfänger ID ein, beginnt mit U1234567890',
+    'to_label': 'To',
     'amount_label': 'Betrag der gesendet wird',
     'final_amount_label': 'Betrag inklusive Transaktionsgebühr',
     'commission_label': 'Transaktionsgebühr',

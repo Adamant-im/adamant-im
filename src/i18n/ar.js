@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'بعد النقر على الزر، سترى طلب تأكيد.',
     'to_address_label': 'للعنوان',
     'to_address_label_tooltip': 'أدخل اسم دخول المستقبل، مثل U1234567890',
+    'to_label': 'To',
     'amount_label': 'المبلغ المراد تحويله',
     'final_amount_label': 'المبلغ بما فيه الرسوم',
     'commission_label': 'رسوم التحويل',

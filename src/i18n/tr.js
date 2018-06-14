@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'Butona tikladiktan sonra onaylama istegi göreceksiniz.',
     'to_address_label': 'Alici adresi',
     'to_address_label_tooltip': 'Alici adresi girin, örnegin U1234567890',
+    'to_label': 'To',
     'amount_label': 'GÖnderilen tutar',
     'final_amount_label': 'Transfer ücreti dahil toplam tutar',
     'commission_label': 'Transfer ücreti',

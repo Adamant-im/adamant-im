@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'After du klicka knappen kommer du att se en bekräftelseförfrågan.',
     'to_address_label': 'Till Adress',
     'to_address_label_tooltip': 'Ange en mottagares identifikation, t.ex. U1234567890',
+    'to_label': 'To',
     'amount_label': 'Summa att skicka',
     'final_amount_label': 'Summa inklusive överföringsavgift',
     'commission_label': 'Överföringsavgift',

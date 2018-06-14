@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'Після натискання кнопки, ви побачите запит на підтвердження.',
     'to_address_label': 'До адреси',
     'to_address_label_tooltip': 'Введіть ідентифікатор отримувача, наприклад U1234567890',
+    'to_label': 'To',
     'amount_label': 'Сума для надсилання',
     'final_amount_label': 'Сума включаючи комісію',
     'commission_label': 'Комісія надсилання',

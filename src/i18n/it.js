@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'Dopo aver fatto clic sul pulsante, verra visualizzata una richiesta di conferma.',
     'to_address_label': 'Indirizzare',
     'to_address_label_tooltip': 'Inserisci un identificativo del destinatario, piace U1234567890',
+    'to_label': 'To',
     'amount_label': 'Importo da inviare',
     'final_amount_label': 'Importo comprensivo della tassa di trasferimento',
     'commission_label': 'Tassa di trasferimento',

@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'このボタンをクリックすると、確認画面が表示されます。',
     'to_address_label': '受取人アドレス',
     'to_address_label_tooltip': 'トークンの受取人ウォレットのIDを次のように指定します。U1234567890',
+    'to_label': 'To',
     'amount_label': '送金額',
     'final_amount_label': '送金額(手数料込み)',
     'commission_label': '手数料 ',

@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'Sau khi nhấp vào nút, bạn sẽ thấy một yêu cầu xác nhận.',
     'to_address_label': 'Tới địa chỉ',
     'to_address_label_tooltip': 'Nhập định danh người nhận, ví dụ U1234567890',
+    'to_label': 'To',
     'amount_label': 'Số lượng gửi',
     'final_amount_label': 'Số lượng bao gồm phí giao dịch',
     'commission_label': 'Phí giao dịch',

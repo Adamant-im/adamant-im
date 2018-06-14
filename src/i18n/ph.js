@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'Pagkatapos mong mapindot ang pindutan, may makikita kang kahilingan sa pagkumpirma.',
     'to_address_label': 'Sa Address',
     'to_address_label_tooltip': 'Maglagay ng makapagpapakilala sa tatanggap, gaya ng U1234567890',
+    'to_label': 'To',
     'amount_label': 'Dami ng ipapadala',
     'final_amount_label': 'Dami kasama ang bayad sa paglipat',
     'commission_label': 'Bayad sa paglipat',

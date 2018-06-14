@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'Después de hacer clic en el botón, podrá ver una solicitud de confirmación.',
     'to_address_label': 'Dirección de Destinatario',
     'to_address_label_tooltip': 'Ingrese el identificador del destinatario, por ejemplo U1234567890',
+    'to_label': 'To',
     'amount_label': 'Monto a enviar',
     'final_amount_label': 'Monto con comisión des transferencia',
     'commission_label': 'Comisión des transferencia',

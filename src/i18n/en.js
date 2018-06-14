@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'After you click the button, you\'ll see a confirmation request.',
     'to_address_label': 'To Address',
     'to_address_label_tooltip': 'Enter a recepient identifier, like U1234567890',
+    'to_label': 'To',
     'amount_label': 'Amount to send',
     'final_amount_label': 'Amount including transfer fee',
     'commission_label': 'Transfer fee',

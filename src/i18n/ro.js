@@ -97,6 +97,7 @@ export default {
     'send_button_tooltip': 'După ce apăsați pe buton, veți vedea o cerere de confirmare.',
     'to_address_label': 'Către adresa',
     'to_address_label_tooltip': 'Introduceți identificatorul destinatarului, de exemplu U1234567890',
+    'to_label': 'To',
     'amount_label': 'Suma transferului',
     'final_amount_label': 'Suma, inclusiv taxa de transfer',
     'commission_label': 'Taxa de transfer',
