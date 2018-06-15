@@ -31,7 +31,8 @@
                      md-align="center"
                      class="qr-code-buttons">
             <md-button classs="md-ripple md-disabled"
-                       @click.prevent="scanQRCode">
+                       @click.prevent="scanQRCode"
+                       :title="$t('login.scan_qr_code_button_tooltip')">
               <Icon name="qrCodeLense" />
             </md-button>
             <md-button classs="md-ripple md-disabled"
@@ -81,7 +82,6 @@
           <span>{{ $t('home.copied') }}</span>
       </md-snackbar>
   </div>
-
 </template>
 
 <script>
