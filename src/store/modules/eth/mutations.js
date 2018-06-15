@@ -33,28 +33,7 @@ export default {
   },
 
   /** Adds a new transaction */
-  addTransaction (state, tx) {
+  setTransaction (state, tx) {
     Vue.set(state.transactions, tx.hash, tx)
-  },
-
-  transactionConfirmation (state, payload) {
-    const tx = state.transactions[payload.hash]
-    if (!tx) return
-
-    Vue.set(state.transactions, tx.hash, {
-      ...tx,
-      confirmations: payload.number,
-      status: payload.receipt.status ? 'SUCCESS' : 'ERROR'
-    })
-  },
-
-  transactionError (state, hash) {
-    const tx = state.transactions[hash]
-    if (!tx) return
-
-    Vue.set(state.transactions, tx.hash, {
-      ...tx,
-      status: 'ERROR'
-    })
   }
 }

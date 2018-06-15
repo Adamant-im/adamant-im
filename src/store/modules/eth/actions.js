@@ -13,7 +13,7 @@ const KVS_ADDRESS = 'eth:address'
 const DEFAULT_GAS_PRICE = '20000000000' // 20 Gwei
 
 const endpoint = getEndpointUrl('ETH')
-const api = new Web3(new Web3.providers.HttpProvider(endpoint))
+const api = new Web3(new Web3.providers.HttpProvider(endpoint, 2000))
 
 /** Background requests queue */
 const backgroundRequests = []
@@ -23,7 +23,7 @@ let backgroundTimer = null
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
 /** Status update interval */
-const STATUS_INTERVAL = 5000
+const STATUS_INTERVAL = 8000
 
 /**
  * Creates ETH account for the specified passphrase.
@@ -188,47 +188,44 @@ export default {
 
         const result = { hash, tx }
 
-        if (!admAddress) {
-          return result
-        } else {
-          // Send a special message to indicate that we're performing an ETH transfer
-          return admApi.sendSpecialMessage(admAddress, { type: 'eth_transaction', amount, hash })
-            .then(() => {
-              console.log('ADM message has been sent')
-              return result
-            })
-            .catch((error) => {
-              console.log('Failed to send "eth_transaction"', error)
-              return Promise.reject({ code: 'adm_message' })
-            })
-        }
+        if (!admAddress) return result
+
+        // Send a special message to indicate that we're performing an ETH transfer
+        return admApi.sendSpecialMessage(admAddress, { type: 'eth_transaction', amount, hash })
+          .then(() => {
+            console.log('ADM message has been sent')
+            return result
+          })
+          .catch((error) => {
+            console.log('Failed to send "eth_transaction"', error)
+            return Promise.reject({ code: 'adm_message' })
+          })
       })
-      .then(({ tx, hash }) => {
-        const sendResult = api.eth.sendSignedTransaction(tx)
-        console.log('ETH transaction has been sent')
+      .then(({ tx, hash }) => api.eth.sendSignedTransaction(tx).then(
+        _ => ({ hash }),
+        error => ({ hash, error })
+      ))
+      .then(({ hash, error }) => {
+        if (error) {
+          console.error('Failed to send ETH transaction', error)
+          context.commit('setTransaction', { hash, status: 'ERROR' })
+          throw error
+        } else {
+          console.log('ETH transaction has been sent')
 
-        sendResult.once('confirmation', (number, receipt) => {
-          console.log('ETH receipt ', receipt)
-          context.commit('transactionConfirmation', { hash, number, receipt })
-        })
-        sendResult.on('error', error => {
-          console.error('ETH error', error)
-          context.commit('transactionError', hash)
-        })
+          context.commit('setTransaction', {
+            hash,
+            senderId: ethTx.from,
+            recipientId: ethTx.to,
+            amount,
+            fee: toEther(Number(ethTx.gas) * ethTx.gasPrice),
+            status: 'PENDING',
+            timestamp: Date.now(),
+            confirmations: 0
+          })
 
-        // TODO: not used so far, subject for future changes
-        context.commit('addTransaction', {
-          hash,
-          senderId: ethTx.from,
-          recipientId: ethTx.to,
-          amount,
-          fee: toEther(Number(ethTx.gas) * ethTx.gasPrice),
-          status: 'PENDING',
-          timestamp: Date.now(),
-          confirmations: 0
-        })
-
-        return hash
+          return hash
+        }
       })
   },
 
@@ -255,7 +252,7 @@ export default {
           confirmations: tx.blockNumber ? (context.state.blockNumber - tx.blockNumber) : 0
         }
 
-        context.commit('addTransaction', transaction)
+        context.commit('setTransaction', transaction)
       }
 
       if (err || tx && !tx.blockNumber) {
