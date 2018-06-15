@@ -8,12 +8,15 @@ export default {
     return new Promise((resolve, reject) => {
       window.setTimeout(() => {
         Object.keys(config.server).forEach(key => {
-          context.commit('setServerList', key, config.server[key].map(obj => ({ ...obj, online: true })))
+          context.commit('setServerList', {
+            key,
+            list: config.server[key].map(obj => ({ ...obj, online: true }))
+          })
 
           checkers[key] = new HealthChecker({
             requester: window.ep.$http,
             urls: config.server[key],
-            onStatusChange: urls => context.commit('setServerList', key, urls)
+            onStatusChange: list => context.commit('setServerList', {key, list})
           })
         })
 

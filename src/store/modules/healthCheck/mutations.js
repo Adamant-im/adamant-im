@@ -1,8 +1,11 @@
 export default {
-  setServerList (state, key, list) {
-    if (!state.domain[key]) {
-      state.domain[key] = {}
+  setServerList (state, payload) {
+    // DEBUG
+    console.log(state, payload)
+
+    if (!state.domain[payload.key]) {
+      state.domain[payload.key] = {}
     }
-    state.domain[key].serverList = list
+    state.domain[payload.key].serverList = payload.list
   }
 }
