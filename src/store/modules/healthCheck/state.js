@@ -1,16 +1,15 @@
 /* State structure explained:
 {
-  adm: [{
-    ip,
-    protocol,
-    port,
-    online
-  }],
+  adm: {
+    serverList: [{
+      ip,
+      protocol,
+      port,
+      online
+    }]
+  },
   ...
 }
 */
 
-export default {
-  adm: [],
-  eth: []
-}
+export default { }

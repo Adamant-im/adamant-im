@@ -5,13 +5,10 @@ const checkers = {}
 
 export default {
   init (context) {
-    // DEBUG
-    console.log(1, context)
-
     return new Promise((resolve, reject) => {
       window.setTimeout(() => {
         // DEBUG
-        console.log(2, context)
+        console.log('init', context)
 
         Object.keys(config.server).forEach(key => {
           context.commit('setServerList', {
