@@ -129,10 +129,16 @@ export default {
     'delegate_uptime': 'Uptime',
     'delegate_forged': 'Forged',
     'delegate_forging_time': 'Forging time',
+    'delegate_description': 'Description',
+    'delegate_link': 'Link',
     'upvotes': 'Upvotes',
     'downvotes': 'Downvotes',
     'total_new_votes': 'Total new votes',
     'total_votes': 'Total votes',
-    'voting_cost': 'Voting cost'
+    'voting_cost': 'Voting cost',
+    'summary_title': 'Review voting',
+    'vote_button_text': 'Vote',
+    'summary_info': 'Voting cost: 50 ADM. More info on the ',
+    'summary_info_link_text': 'ADAMANT website'
   }
 }
