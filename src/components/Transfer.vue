@@ -54,6 +54,7 @@
 <script>
 import validateAddress from '../lib/validateAddress'
 import { Cryptos, CryptoAmountPrecision, Fees } from '../lib/constants'
+import { sendTokens } from '../lib/adamant-api'
 
 export default {
   name: 'home',
@@ -63,17 +64,35 @@ export default {
       this.$refs.transferSnackbar.open()
     },
     onClose (type) {
-      if (type === 'ok') {
-        if (this.crypto === Cryptos.ADM) {
-          this.transferFunds(this.targetAmount, this.targetAddress)
-        } else if (this.crypto === Cryptos.ETH) {
-          this.$store.dispatch('eth/sendTokens', {
-            amount: this.targetAmount,
-            admAddress: this.fixedAddress,
-            ethAddress: this.targetAddress
-          }).then(hash => this.$router.push('/transactions/ETH/' + hash))
-        }
+      if (type !== 'ok') return
+
+      this.sendTokens().then(
+        hash => {
+          if (!hash) return // TODO handle somehow
+          if (this.fixedAddress) {
+            // Go back to chat if we came from there
+            this.$router.push({ name: 'Chat', params: { partner: this.fixedAddress } })
+          } else {
+            // View the newly created transaction
+            const params = { crypto: this.crypto, tx_id: hash }
+            this.$router.push({ name: 'Transaction', params })
+          }
+        },
+        _ => this.errorMessage('error_transaction_send')
+      )
+    },
+    sendTokens () {
+      if (this.crypto === Cryptos.ADM) {
+        return sendTokens(this.targetAddress, this.targetAmount).then(result => result.transactionId)
+      } else if (this.crypto === Cryptos.ETH) {
+        return this.$store.dispatch('eth/sendTokens', {
+          amount: this.targetAmount,
+          admAddress: this.fixedAddress,
+          ethAddress: this.targetAddress
+        })
       }
+
+      return Promise.resolve(null)
     },
     transfer: function () {
       if (!this.targetAddress) {

@@ -107,6 +107,7 @@ export default {
     'error_no_amount': 'Pakiusap maglagay ng dami',
     'error_not_enough': 'Hindi sapat na mga token',
     'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Pagkumpirma sa paglipat',
     'confirm_message': 'Kumpirmahin ang paglipat ng <b>{amount} {crypto}</b> sa address <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Kumpirmahin',

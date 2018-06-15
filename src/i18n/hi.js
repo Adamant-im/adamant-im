@@ -111,6 +111,7 @@ export default {
     'error_no_amount': 'कृपया राशी डाले ',
     'error_not_enough': 'टोकन नाकाफी',
     'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'हस्तान्तार्ण पुष्टिकरण',
     'confirm_message': 'हस्तान्तार्ण का  पुष्टिकरण<b>{amount} {crypto}</b> इस पते पर <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'पुष्टिकरण',

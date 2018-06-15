@@ -40,7 +40,11 @@ export default new Router({
       name: 'Options',
       component: Options
     },
-    { path: '/chats/:partner/', component: Chat },
+    {
+      path: '/chats/:partner/',
+      component: Chat,
+      name: 'Chat'
+    },
     {
       path: '/chats',
       name: 'Chats',

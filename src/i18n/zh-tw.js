@@ -107,6 +107,7 @@ export default {
     'error_no_amount': '请提供金额',
     'error_not_enough': '无足够代币',
     'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': '发送确认',
     'confirm_message': '确认发送 <b>{amount} {crypto}</b> 到地址 <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': '确认',

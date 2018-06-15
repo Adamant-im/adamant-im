@@ -107,6 +107,7 @@ export default {
     'error_no_amount': 'Укажите сумму для перевода',
     'error_not_enough': 'Недостаточно токенов для перевода',
     'error_chat_fee': 'Чтобы отправить {crypto} в чате, вам также нужно 0.001 ADM',
+    'error_transaction_send': 'Ошибка при отправке транзакции',
     'confirm_title': 'Подтверждение перевода',
     'confirm_message': 'Подтвердите перевод <b>{amount} {crypto}</b> на кошелек <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Подтвердить',

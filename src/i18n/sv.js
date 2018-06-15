@@ -107,6 +107,7 @@ export default {
     'error_no_amount': 'Vänligen ange summa',
     'error_not_enough': 'Ej tillräckligt antal tokens',
     'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Överföringsbekräftelse',
     'confirm_message': 'Bekräfta transaktion med <b>{amount} {crypto}</b> till adress <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Bekräfta',

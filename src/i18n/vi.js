@@ -107,6 +107,7 @@ export default {
     'error_no_amount': 'Vui lòng cung cấp số lượng',
     'error_not_enough': 'Không đủ token',
     'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Xác nhận giao dịch',
     'confirm_message': 'Xác nhận chuyển <b>{amount} {crypto}</b> tới địa chỉ <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Xác nhận',

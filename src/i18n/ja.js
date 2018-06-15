@@ -107,6 +107,7 @@ export default {
     'error_no_amount': '送金額を入力してください ',
     'error_not_enough': 'トークンが足りません',
     'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': '送金確認 ',
     'confirm_message': '送金の確認<b> {amount} {crypto}</b> to <span class="address-in-confirm">{target}</span>送金先アドレス.',
     'confirm_approve': '確認',

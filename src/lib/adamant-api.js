@@ -130,3 +130,24 @@ export function getStored (key, ownerAddress) {
     }
   })
 }
+
+/**
+ * Sends the specified amount of ADM to the specified ADM address
+ * @param {string} to receiver address
+ * @param {number} amount amount of ADM to send
+ * @returns {Promise<{success: boolean, transactionId: string}>}
+ */
+export function sendTokens (to, amount) {
+  const transaction = {
+    type: Transactions.SEND,
+    amount: Math.round(amount * 100000000),
+    recipientId: to,
+    senderId: myAddress,
+    senderPublicKey: myKeypair.publicKey.toString('hex'),
+    timestamp: utils.epochTime()
+  }
+
+  transaction.signature = utils.transactionSign(transaction, myKeypair)
+
+  return post('/api/transactions/process', { transaction })
+}
