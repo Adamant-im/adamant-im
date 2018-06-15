@@ -89,7 +89,7 @@
                       <md-table-row>
                         <md-table-cell class="hide_on_mobile"></md-table-cell>
                         <md-table-cell style="text-align:left;" colspan="2">
-                            <md-checkbox  v-model="healthCheck" :title="$t('options.enable_health_check_tooltip')">
+                            <md-checkbox  v-model="healthCheckEnabled" :title="$t('options.enable_health_check_tooltip')">
                                 {{ $t('options.enable_health_check') }}
                             </md-checkbox>
                         </md-table-cell>
@@ -131,7 +131,7 @@ export default {
     'notifyBar' (to, from) {
       this.$store.commit('change_notify_bar', to)
     },
-    'healthCheck' (to, from) {
+    'healthCheckEnabled' (to, from) {
       this.$store.commit('change_health_check', to)
     },
     'notifyDesktop' (to, from) {
@@ -150,7 +150,7 @@ export default {
       sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
-      healthCheck: this.$store.state.healthCheck,
+      healthCheckEnabled: this.$store.state.healthCheckEnabled,
       language: this.$i18n.locale
     }
   }
