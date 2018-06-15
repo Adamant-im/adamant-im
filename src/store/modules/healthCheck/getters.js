@@ -4,7 +4,7 @@ export default {
       Returns {ip, protocol, port, online}
   */
   getAvailableServer: state => key => {
-    const serverList = state.domain[key].serverList
+    const serverList = state[key]
     let server = serverList[0]
     let onlineList = serverList.filter(o => o.online)
     if (onlineList.length > 0) {

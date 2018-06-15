@@ -69,4 +69,4 @@ window.ep = new Vue({
 
 console.log(window.ep)
 
-window.ep.$store.dispatch('healthCheck/init')
+store.dispatch('healthCheck/init')

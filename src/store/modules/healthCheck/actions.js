@@ -5,8 +5,14 @@ const checkers = {}
 
 export default {
   init (context) {
+    // DEBUG
+    console.log(1, context)
+
     return new Promise((resolve, reject) => {
       window.setTimeout(() => {
+        // DEBUG
+        console.log(2, context)
+
         Object.keys(config.server).forEach(key => {
           context.commit('setServerList', {
             key,
