@@ -3,6 +3,9 @@ const HealthChecker = require('../../../lib/healthCheck').default
 
 export default {
   initCheckers (state, requester) {
+    // DEBUG
+    console.log(state)
+
     Object.keys(config.server).forEach(key => {
       state[key] = {
         serverList: config.server[key].map(obj => ({ ...obj, online: true })),

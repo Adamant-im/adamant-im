@@ -31,12 +31,7 @@ function install (Vue) {
       return this.$store.state.connectionString
     }
 
-    let server = this.getServerList()[0]
-    let onlineList = this.getServerList().filter(o => o.online)
-    if (onlineList.length > 0) {
-      server = onlineList[ Math.floor(Math.random() * onlineList.length) ]
-    }
-
+    let server = this.$store.getters['healthCheck/getAvailableServer']('adm')
     if (!server.protocol) {
       server.protocol = 'http'
     }

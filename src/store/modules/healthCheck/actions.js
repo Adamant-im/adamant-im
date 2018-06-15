@@ -4,6 +4,11 @@ export default {
       window.setTimeout(() => {
         context.commit('initCheckers', window.ep.$http)
 
+        if (window.ep.$store.state.healthCheck) {
+          // Start health checking
+          context.dispatch('start')
+        }
+
         // Watch for the option changes
         window.ep.$store.subscribe(mutation => {
           if (mutation.type === 'change_health_check') {

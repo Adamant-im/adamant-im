@@ -15,7 +15,6 @@ import 'vue-material/dist/vue-material.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import packageJSON from '../package.json'
 import storeConfig from './store'
-import VueHealthCheck from './lib/healthCheckVue'
 
 Vue.use(Vuex)
 Vue.use(VueMaterial)
@@ -25,7 +24,6 @@ Vue.use(VueI18n)
 Vue.use(VueHazeServerApi)
 Vue.use(VueFormatters)
 Vue.component('qr-code', VueQRCodeComponent)
-Vue.use(VueHealthCheck)
 
 Vue.config.productionTip = false
 
@@ -66,5 +64,8 @@ window.ep = new Vue({
   store,
   template: '<App/>',
   components: { App },
-  i18n: i18n
+  i18n
 })
+
+console.log(window.ep)
+window.ep.$store.dispatch('healthCheck/init')

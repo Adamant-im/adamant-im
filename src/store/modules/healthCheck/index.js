@@ -4,25 +4,11 @@
 import actions from './actions'
 import mutations from './mutations'
 import getters from './getters'
-
-/* State structure explained:
-{
-  adm: {
-    serverList: [{
-      ip,
-      protocol,
-      port,
-      online
-    }],
-    checker: HealthChecker object
-  },
-  ...
-}
-*/
+import state from './state'
 
 export default {
   namespaced: true,
-  state: {},
+  state,
   actions,
   mutations,
   getters
