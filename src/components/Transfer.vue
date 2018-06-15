@@ -2,17 +2,15 @@
   <div class="transfer">
 
       <form novalidate @submit.stop.prevent="submit">
-    	  <md-layout md-flex="15">
-              <md-input-container>
-                  <md-select v-model="crypto" style="text-align: left;" :disabled="!!this.fixedCrypto">
-                      <md-option v-for="c in cryptosList" v-bind:key="c" :value="c">
-                          {{ c }}
-                      </md-option>
-                  </md-select>
-              </md-input-container>
-          </md-layout>
-          <md-input-container  :title="$t('transfer.to_address_label_tooltip')">
-              <label>{{ $t('transfer.to_address_label') }}</label>
+    	    <md-input-container>
+              <md-select v-model="crypto" style="text-align: left;" :disabled="!!this.fixedCrypto">
+                  <md-option v-for="c in cryptosList" v-bind:key="c" :value="c">
+                      {{ c }}
+                  </md-option>
+              </md-select>
+          </md-input-container>
+          <md-input-container :title="!this.fixedAddress ? $t('transfer.to_address_label_tooltip') : ''">
+              <label>{{ addressLabel }}</label>
               <md-input v-model="targetAddress" :readonly="!!this.fixedAddress"></md-input>
           </md-input-container>
           <md-layout>
@@ -44,18 +42,12 @@
       </md-snackbar>
       <md-dialog-confirm
               :md-title="$t('transfer.confirm_title')"
-              :md-content-html="$t('transfer.confirm_message', { amount: targetAmount, target: targetAddress, crypto })"
+              :md-content-html="$t('transfer.confirm_message', { amount: targetAmount, target: receiver, crypto })"
               :md-ok-text="$t('transfer.confirm_approve')"
               :md-cancel-text="$t('transfer.confirm_cancel')"
               @close="onClose"
               ref="confirm_transfer_dialog">
       </md-dialog-confirm>
-      <md-dialog-alert
-        :md-title="$t('transfer.no_address_title', { crypto })"
-        :md-content-html="$t('transfer.no_address_text', { crypto })"
-        ref="no_address_dialog"
-      >
-      </md-dialog-alert>
   </div>
 </template>
 
@@ -66,8 +58,8 @@ import { Cryptos, CryptoAmountPrecision, Fees } from '../lib/constants'
 export default {
   name: 'home',
   methods: {
-    errorMessage (message) {
-      this.formErrorMessage = this.$t('transfer.' + message)
+    errorMessage (message, opts) {
+      this.formErrorMessage = this.$t('transfer.' + message, opts)
       this.$refs.transferSnackbar.open()
     },
     onClose (type) {
@@ -89,7 +81,7 @@ export default {
         return
       }
       if (!validateAddress(this.crypto, this.targetAddress)) {
-        this.errorMessage('error_incorrect_address')
+        this.errorMessage('error_incorrect_address', { crypto: this.crypto })
         return
       }
       if (!this.targetAmount) {
@@ -102,6 +94,10 @@ export default {
       }
       if ((parseFloat(this.targetAmount) + this.commission) > parseFloat(this.balance)) {
         this.errorMessage('error_not_enough')
+        return
+      }
+      if (this.fixedAddress && this.crypto !== Cryptos.ADM && this.$store.state.balance < Fees.TRANSFER) {
+        this.errorMessage('error_chat_fee', { crypto: this.crypto })
         return
       }
       this.$refs['confirm_transfer_dialog'].open()
@@ -127,27 +123,38 @@ export default {
     },
     cryptosList () {
       return Object.keys(Cryptos)
+    },
+    displayName () {
+      return this.$store.getters['partners/displayName'](this.fixedAddress)
+    },
+    addressLabel () {
+      const displayName = this.displayName
+      if (displayName) {
+        return this.$t('transfer.to_label') + ' ' + displayName
+      }
+
+      if (this.fixedCrypto && this.fixedCrypto !== Cryptos.ADM) {
+        return this.$t('transfer.to_label') + ' ' + this.fixedAddress
+      }
+
+      return this.$t('transfer.to_address_label')
+    },
+    receiver () {
+      let name = this.displayName || this.fixedAddress
+
+      if (name !== this.targetAddress) {
+        name += ' (' + this.targetAddress + ')'
+      }
+
+      return name
     }
   },
   mounted () {
     if (!this.fixedCrypto || !this.fixedAddress) return
 
-    if (this.fixedCrypto === Cryptos.ADM) {
-      this.targetAddress = this.fixedAddress
-    } else {
-      // For cryptos other than ADM we need to fetch the respective account address first
-      const params = {
-        crypto: this.fixedCrypto,
-        partner: this.fixedAddress
-      }
-      this.$store.dispatch('partners/fetchAddress', params).then(address => {
-        if (!address) {
-          this.$refs['no_address_dialog'].open()
-        } else {
-          this.targetAddress = address
-        }
-      })
-    }
+    this.targetAddress = (this.fixedCrypto === Cryptos.ADM)
+      ? this.fixedAddress
+      : this.$store.getters['partners/cryptoAddress'](this.fixedAddress, this.fixedCrypto)
   },
   watch: {
     targetAmount (to, from) {
@@ -171,8 +178,7 @@ export default {
       amountToTransfer: 0,
       targetAddress: '',
       targetAmount: '',
-      crypto: this.fixedCrypto || Cryptos.ADM,
-      noAddress: false
+      crypto: this.fixedCrypto || Cryptos.ADM
     }
   },
   props: ['fixedCrypto', 'fixedAddress']

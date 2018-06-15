@@ -22,7 +22,7 @@ export default {
    * @param {{partner: string, crypto: string, address: string}} payload partner ADM address, crypto and crypto address
    */
   setAddress (state, payload) {
-    state[payload.partner] = Object.assign({ }, payload.partner,
+    state[payload.partner] = Object.assign({ }, state[payload.partner],
       { [payload.crypto]: payload.address })
   }
 }
