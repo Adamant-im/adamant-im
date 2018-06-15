@@ -7,9 +7,6 @@ export default {
   init (context) {
     return new Promise((resolve, reject) => {
       window.setTimeout(() => {
-        // DEBUG
-        console.log('init', context)
-
         Object.keys(config.server).forEach(key => {
           context.commit('setServerList', {
             key,
@@ -23,7 +20,7 @@ export default {
           })
         })
 
-        if (window.ep.$store.state.healthCheck) {
+        if (window.ep.$store.state.healthCheckEnabled) {
           // Start health checking
           context.dispatch('start')
         }

@@ -67,6 +67,4 @@ window.ep = new Vue({
   i18n
 })
 
-console.log(window.ep)
-
 store.dispatch('healthCheck/init')

@@ -84,7 +84,7 @@ const store = {
       state.notifyDesktop = payload
     },
     change_health_check (state, payload) {
-      state.healthCheck = payload
+      state.healthCheckEnabled = payload
     },
     change_lang (state, payload) {
       state.language = payload
