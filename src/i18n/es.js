@@ -115,4 +115,3 @@ export default {
     'exit_button_tooltip': 'Independientemente de su configuración, la frase de contraseña se borrará del almacenamiento del navegador. Recomendamos desconectarse cada vez que finalice sus chats.'
   }
 }
-

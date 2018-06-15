@@ -16,7 +16,6 @@
                     <p></p>
                 </div>
 
-
             </md-list-item>
 
             <md-list-item v-for="(chat) in chatList" :key="chat.partner" v-on:click="$router.push('/chats/' + chat.partner + '/')">
@@ -30,7 +29,6 @@
                     <p v-html="chat.last_message.message"></p>
                     <span class="dt" v-if="chat.last_message.timestamp">{{ $formatDate(chat.last_message.timestamp) }}</span>
                 </div>
-
 
             </md-list-item>
         </md-list>

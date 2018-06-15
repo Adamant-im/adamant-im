@@ -232,8 +232,8 @@ function install (Vue) {
     this.$http.get(this.getAddressString() + '/api/accounts/getPublicKey?address=' + recipientAddress).then(response => {
       if (response.body.success) {
         var msgObject = this.encodeMessage(msg, response.body.publicKey)
-//        msgObject.message = msgObject.message.toString('hex')
-//        msgObject.own_message = msgObject.own_message.toString('hex')
+        // msgObject.message = msgObject.message.toString('hex')
+        // msgObject.own_message = msgObject.own_message.toString('hex')
         this.sendMessage(msgObject, recipientAddress)
       }
     }, response => {
@@ -277,8 +277,7 @@ function install (Vue) {
             return function () {
               self.needToScroll() // Thing you wanted to run as non-window 'this'
             }
-          })(this),
-            1000)
+          })(this), 1000)
         }
       } else {
       }
@@ -459,7 +458,7 @@ function install (Vue) {
           var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
           currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
           if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
-//            currentTransaction.message = this.$i18n.t('chats.welcome_message')
+            // currentTransaction.message = this.$i18n.t('chats.welcome_message')
           } else {
             currentTransaction.message = marked(currentTransaction.message, {renderer: renderer})
           }
@@ -485,7 +484,7 @@ function install (Vue) {
         var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
         currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
         if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
-//          currentTransaction.message = this.$i18n.t('chats.welcome_message')
+          // currentTransaction.message = this.$i18n.t('chats.welcome_message')
         } else {
           currentTransaction.message = marked(currentTransaction.message, {renderer: renderer})
         }
@@ -545,8 +544,7 @@ function install (Vue) {
             return function () {
               self.needToScroll()
             }
-          })(this),
-            1000)
+          })(this), 1000)
         }
         this.$store.commit('ajax_end')
       } else {
@@ -633,4 +631,3 @@ if (typeof window !== 'undefined' && window.Vue) {
     install.installed = false
   }
 }
-

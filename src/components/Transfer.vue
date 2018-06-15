@@ -103,13 +103,15 @@ export default {
     }
   },
   computed: {
+    // TODO: !!!CHECK FOR POSSIBLE PROBLEMS
+    // TODO: HAS BEEN OVERWRITTEN TO AVOID POSSIBLE SIDE EFFECTS
     maxToTransfer: function () {
       const multiplier = Math.pow(10, this.exponent)
-      this.amountToTransfer = (Math.floor((parseFloat(this.balance) - this.commission) * multiplier) / multiplier).toFixed(this.exponent)
+      let localAmountToTransfer = (Math.floor((parseFloat(this.balance) - this.commission) * multiplier) / multiplier).toFixed(this.exponent)
       if (this.amountToTransfer < 0) {
-        this.amountToTransfer = 0
+        localAmountToTransfer = 0
       }
-      return this.amountToTransfer
+      return localAmountToTransfer
     },
     commission () {
       return this.crypto === Cryptos.ETH ? this.$store.state.eth.fee : Fees.TRANSFER
@@ -143,7 +145,7 @@ export default {
     return {
       finalAmount: 0,
       formErrorMessage: '',
-      amountToTransfer: 0,
+      // amountToTransfer: 0,
       targetAddress: '',
       targetAmount: '',
       crypto: Cryptos.ADM

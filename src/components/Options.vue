@@ -92,7 +92,6 @@
 
       </md-card>
 
-
     <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
       </div>
 

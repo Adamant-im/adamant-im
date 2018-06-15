@@ -108,7 +108,7 @@ export default {
     }
 
     if (!api.utils.isAddress(receiver)) {
-      return Promise.reject({ code: 'invalid_address' })
+      return Promise.reject(new Error('invalid_address'))
     }
 
     return api.eth.accounts.signTransaction(transaction, context.state.privateKey)

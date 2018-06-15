@@ -53,62 +53,62 @@
 </template>
 
 <script>
-  import { Cryptos } from '../lib/constants'
-  import getExplorerUrl from '../lib/getExplorerUrl'
+import { Cryptos } from '../lib/constants'
+import getExplorerUrl from '../lib/getExplorerUrl'
 
-  export default {
-    name: 'transaction',
-    data () {
-      return {
-      }
-    },
-    watch: {
-      '$route': function (value) {
-        if (value.params.crypto === Cryptos.ADM) {
-          this.getTransactionInfo(value.params.tx_id)
-        }
-      }
-    },
-    methods: {
-      openInExplorer: function () {
-        window.open(getExplorerUrl(this.crypto, this.$route.params.tx_id), '_blank')
-      },
-      openChat: function () {
-        this.$store.commit('select_chat', this.partner)
-        this.$router.push('/chats/' + this.partner + '/')
-      }
-    },
-    computed: {
-      crypto () {
-        return this.$route.params.crypto
-      },
-      confirmations: function () {
-        if (!this.transaction.confirmations) {
-          return '⏱'
-        }
-        return this.transaction.confirmations
-      },
-      transaction: function () {
-        if (this.$route.params.crypto === Cryptos.ETH) {
-          return this.$store.state.eth.transactions[this.$route.params.tx_id]
-        }
-
-        if (this.$store.state.transactions[this.$route.params.tx_id]) {
-          return this.$store.state.transactions[this.$route.params.tx_id]
-        }
-        this.getTransactionInfo(this.$route.params.tx_id)
-        return false
-      },
-      partner: function () {
-        return this.transaction.senderId !== this.$store.state.address
-          ? this.transaction.senderId : this.transaction.recipientId
-      },
-      hasMessages: function () {
-        const chat = this.$store.state.chats[this.partner]
-        return chat && chat.messages && Object.keys(chat.messages).length > 0
+export default {
+  name: 'transaction',
+  data () {
+    return {
+    }
+  },
+  watch: {
+    '$route': function (value) {
+      if (value.params.crypto === Cryptos.ADM) {
+        this.getTransactionInfo(value.params.tx_id)
       }
     }
+  },
+  methods: {
+    openInExplorer: function () {
+      window.open(getExplorerUrl(this.crypto, this.$route.params.tx_id), '_blank')
+    },
+    openChat: function () {
+      this.$store.commit('select_chat', this.partner)
+      this.$router.push('/chats/' + this.partner + '/')
+    }
+  },
+  computed: {
+    crypto () {
+      return this.$route.params.crypto
+    },
+    confirmations: function () {
+      if (!this.transaction.confirmations) {
+        return '⏱'
+      }
+      return this.transaction.confirmations
+    },
+    transaction: function () {
+      if (this.$route.params.crypto === Cryptos.ETH) {
+        return this.$store.state.eth.transactions[this.$route.params.tx_id]
+      }
+
+      if (this.$store.state.transactions[this.$route.params.tx_id]) {
+        return this.$store.state.transactions[this.$route.params.tx_id]
+      }
+      this.getTransactionInfo(this.$route.params.tx_id)
+      return false
+    },
+    partner: function () {
+      return this.transaction.senderId !== this.$store.state.address
+        ? this.transaction.senderId : this.transaction.recipientId
+    },
+    hasMessages: function () {
+      const chat = this.$store.state.chats[this.partner]
+      return chat && chat.messages && Object.keys(chat.messages).length > 0
+    }
   }
+}
 </script>
 <style>
   .label_td {
@@ -143,4 +143,3 @@
     margin-right: 8px;
   }
 </style>
-

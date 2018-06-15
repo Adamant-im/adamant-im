@@ -6,12 +6,12 @@
           </md-select>
       </md-input-container>
       <div class="site-branding container">
-          <span class="custom-logo-link" rel="home" itemprop="url"><img  src="/static/img/adamant-logo-transparent-512x512.png" class="custom-logo" alt="ADAMANT" itemprop="logo"></span>				<span href="#">
-					<span class="site-title" v-if="language=='ru'">
-						АДАМАНТ					</span>
-          <span class="site-title" v-else>
-						ADAMANT					</span>
-      </span>
+          <span class="custom-logo-link" rel="home" itemprop="url"><img  src="/static/img/adamant-logo-transparent-512x512.png" class="custom-logo" alt="ADAMANT" itemprop="logo"></span>
+            <span href="#">
+              <span class="site-title">
+                {{ language === 'ru' ? 'АДАМАНТ' : 'ADAMANT' }}
+              </span>
+            </span>
           <p class="site-description">{{ $t('login.subheader') }}</p>
       </div>
       <md-layout md-align="center" md-gutter="16">
@@ -403,8 +403,6 @@ a.custom-logo-link img {
     }
 }
 
-
-
 .language_select .md-select
 {
     min-width:150px;
@@ -425,7 +423,6 @@ a.custom-logo-link img {
 .login .md-input-container.language_select .md-select .md-select-value {
     padding-right: 0px;
 }
-
 
 .md-input-container.language_select {
     position: absolute;

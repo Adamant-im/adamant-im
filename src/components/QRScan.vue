@@ -15,7 +15,7 @@ export default {
     },
     switch_camera () {
       if (this.scanner) {
-        this.currentCamera ++
+        this.currentCamera++
         if (this.cameraList.length <= this.currentCamera) {
           this.currentCamera = 0
         }
@@ -69,10 +69,10 @@ export default {
   },
   mounted: function () {
     // var Instascan = require('instascan/src/index.js')
-// eslint-disable-next-line no-undef
+    // eslint-disable-next-line no-undef
     this.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5, mirror: false })
     this.scanner.addListener('scan', this.parseHandler)
-// eslint-disable-next-line no-undef
+    // eslint-disable-next-line no-undef
     Instascan.Camera.getCameras().then(this.getCameras).catch(function (e) {
       console.error(e)
     })

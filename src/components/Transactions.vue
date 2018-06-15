@@ -26,63 +26,62 @@
 </template>
 
 <script>
-  import { Cryptos } from '../lib/constants'
+import { Cryptos } from '../lib/constants'
 
-  export default {
-    name: 'transaction',
-    data () {
-      return {
-      }
+export default {
+  name: 'transaction',
+  data () {
+    return {
+    }
+  },
+  mounted: function () {
+    this.getTransactions()
+  },
+  watch: {
+    '$route': function (value) {
+      this.getTransactionInfo(value.params.tx_id)
+    }
+  },
+  methods: {
+    dateFormat: function (timestamp) {
+      return new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0)).toLocaleString()
     },
-    mounted: function () {
-      this.getTransactions()
+    getPartner (transaction) {
+      return transaction.senderId !== this.$store.state.address ? transaction.senderId : transaction.recipientId
     },
-    watch: {
-      '$route': function (value) {
-        this.getTransactionInfo(value.params.tx_id)
-      }
+    hasMessages (transaction) {
+      const partner = this.getPartner(transaction)
+      const chat = this.$store.state.chats[partner]
+      return chat && chat.messages && Object.keys(chat.messages).length > 0
     },
-    methods: {
-      dateFormat: function (timestamp) {
-        return new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0)).toLocaleString()
-      },
-      getPartner (transaction) {
-        return transaction.senderId !== this.$store.state.address ? transaction.senderId : transaction.recipientId
-      },
-      hasMessages (transaction) {
-        const partner = this.getPartner(transaction)
-        const chat = this.$store.state.chats[partner]
-        return chat && chat.messages && Object.keys(chat.messages).length > 0
-      },
-      openChat (transaction) {
-        const partner = this.getPartner(transaction)
-        this.$store.commit('select_chat', partner)
-        this.$router.push('/chats/' + partner + '/')
-      },
-      goToTransaction (id) {
-        const params = { crypto: Cryptos.ADM, tx_id: id }
-        this.$router.push({ name: 'Transaction', params })
-      }
+    openChat (transaction) {
+      const partner = this.getPartner(transaction)
+      this.$store.commit('select_chat', partner)
+      this.$router.push('/chats/' + partner + '/')
     },
-    computed: {
-      currentAddress: function () {
-        return this.$store.state.address
-      },
-      transactions: function () {
-        function compare (a, b) {
-          if (a.timestamp < b.timestamp) {
-            return 1
-          }
-          if (a.timestamp > b.timestamp) {
-            return -1
-          }
-          return 0
+    goToTransaction (id) {
+      const params = { crypto: Cryptos.ADM, tx_id: id }
+      this.$router.push({ name: 'Transaction', params })
+    }
+  },
+  computed: {
+    currentAddress: function () {
+      return this.$store.state.address
+    },
+    transactions: function () {
+      function compare (a, b) {
+        if (a.timestamp < b.timestamp) {
+          return 1
         }
-        if (this.$store.state.transactions) {
-          return Object.values(this.$store.state.transactions).sort(compare)
+        if (a.timestamp > b.timestamp) {
+          return -1
         }
+        return 0
+      }
+      if (this.$store.state.transactions) {
+        return Object.values(this.$store.state.transactions).sort(compare)
       }
     }
   }
+}
 </script>
-

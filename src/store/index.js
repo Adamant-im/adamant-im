@@ -128,7 +128,7 @@ const store = {
       state.publicKey = false
       state.privateKey = false
       state.secretKey = false
-//      state.partners = {}
+      // state.partners = {}
     },
     stop_tracking_new (state) {
       state.trackNewMessages = false
