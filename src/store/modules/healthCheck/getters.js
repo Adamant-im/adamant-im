@@ -4,8 +4,9 @@ export default {
       Returns {ip, protocol, port, online}
   */
   getAvailableServer: state => key => {
-    let server = state[key].serverList[0]
-    let onlineList = state[key].serverList.filter(o => o.online)
+    const serverList = state.domain[key].serverList
+    let server = serverList[0]
+    let onlineList = serverList.filter(o => o.online)
     if (onlineList.length > 0) {
       server = onlineList[ Math.floor(Math.random() * onlineList.length) ]
     }

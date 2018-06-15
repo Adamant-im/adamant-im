@@ -1,8 +1,21 @@
+const config = require('../../../config.json')
+const HealthChecker = require('../../../lib/healthCheck').default
+
+const checkers = {}
+
 export default {
   init (context) {
     return new Promise((resolve, reject) => {
       window.setTimeout(() => {
-        context.commit('initCheckers', window.ep.$http)
+        Object.keys(config.server).forEach(key => {
+          context.commit('setServerList', key, config.server[key].map(obj => ({ ...obj, online: true })))
+
+          checkers[key] = new HealthChecker({
+            requester: window.ep.$http,
+            urls: config.server[key],
+            onStatusChange: urls => context.commit('setServerList', key, urls)
+          })
+        })
 
         if (window.ep.$store.state.healthCheck) {
           // Start health checking
@@ -26,14 +39,14 @@ export default {
   },
 
   start (context) {
-    for (let key in context.state) {
-      context.state[key].checker.start()
+    for (let key in checkers) {
+      checkers[key].start()
     }
   },
 
   stop (context) {
-    for (let key in context.state) {
-      context.state[key].checker.stop()
+    for (let key in checkers) {
+      checkers[key].stop()
     }
   }
 }

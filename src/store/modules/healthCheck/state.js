@@ -1,16 +1,19 @@
 /* State structure explained:
 {
-  adm: {
-    serverList: [{
-      ip,
-      protocol,
-      port,
-      online
-    }],
-    checker: HealthChecker object
-  },
-  ...
+  domain: {
+    adm: {
+      serverList: [{
+        ip,
+        protocol,
+        port,
+        online
+      }]
+    },
+    ...
+  }
 }
 */
 
-export default { }
+export default {
+  domain: { }
+}
