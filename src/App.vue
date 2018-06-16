@@ -85,7 +85,7 @@ export default {
     )
     window.audio = require('simple-audio')
 
-    if (!this.$store.state.passPhrase && this.$route.path !== '/') {
+    if (!this.getPassPhrase() && this.$route.path !== '/') {
       this.$router.push('/')
     }
   },
@@ -108,7 +108,7 @@ export default {
   },
   computed: {
     footerCss () {
-      if (this.$store.state.passPhrase) {
+      if (this.getPassPhrase()) {
         return 'display:block'
       }
       return 'display:none'
@@ -135,7 +135,7 @@ export default {
       return this.$store.state.ajaxIsOngoing
     },
     logged () {
-      return this.$store.state.passPhrase
+      return this.getPassPhrase()
     }
   },
   data () {

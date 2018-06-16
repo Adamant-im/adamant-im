@@ -40,7 +40,7 @@ export default {
         const wordCount = content.split(' ').length
 
         if (wordCount === 12) { // looks like a passphrase
-          this.$store.commit('save_passphrase', { passPhrase: content })
+          this.savePassPhrase(content)
           this.$router.push('/')
         }
       }
