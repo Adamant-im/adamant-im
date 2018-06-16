@@ -25,6 +25,9 @@ let lastStatusUpdate = 0
 /** Status update interval */
 const STATUS_INTERVAL = 8000
 
+/** Last transaction nonce */
+let lastNonce = -1
+
 /**
  * Creates ETH account for the specified passphrase.
  *
@@ -62,6 +65,11 @@ function executeRequests () {
   requests.forEach(x => x.requests.forEach(r => batch.add(r)))
 
   batch.execute()
+}
+
+function getNonce (address) {
+  if (lastNonce >= 0) return Promise.resolve(lastNonce + 1)
+  return api.eth.getTransactionCount(address, 'pending')
 }
 
 export default {
@@ -178,8 +186,8 @@ export default {
       return Promise.reject({ code: 'invalid_address' })
     }
 
-    return api.eth.getTransactionCount(context.state.address, 'pending')
-      .then(count => { ethTx.nonce = count })
+    return getNonce(context.state.address)
+      .then(nonce => { ethTx.nonce = nonce })
       .then(() => api.eth.accounts.signTransaction(ethTx, context.state.privateKey))
       .then(signed => {
         const tx = signed.rawTransaction
@@ -201,10 +209,15 @@ export default {
             return Promise.reject({ code: 'adm_message' })
           })
       })
-      .then(({ tx, hash }) => api.eth.sendSignedTransaction(tx).then(
-        _ => ({ hash }),
-        error => ({ hash, error })
-      ))
+      .then(({ tx, hash }) => {
+        // https://github.com/ethereum/web3.js/issues/1255#issuecomment-356492134
+        const method = api.eth.sendSignedTransaction.method
+        const payload = method.toPayload([tx])
+
+        return new Promise((resolve) => {
+          method.requestManager.send(payload, error => ({ hash, error }))
+        })
+      })
       .then(({ hash, error }) => {
         if (error) {
           console.error('Failed to send ETH transaction', error)
@@ -212,6 +225,8 @@ export default {
           throw error
         } else {
           console.log('ETH transaction has been sent')
+
+          lastNonce = Math.max(lastNonce, ethTx.nonce)
 
           context.commit('setTransaction', {
             hash,
