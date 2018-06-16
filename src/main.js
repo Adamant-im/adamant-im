@@ -49,6 +49,7 @@ const store = new Vuex.Store(storeConfig)
 
 var i18n = new VueI18n({
   locale: store.state.language, // set locale
+  fallbackLocale: 'en',
   messages // set locale messages
 })
 

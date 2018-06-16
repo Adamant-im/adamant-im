@@ -101,6 +101,7 @@ export default {
     'amount_label': 'Amount to send',
     'final_amount_label': 'Amount including transfer fee',
     'commission_label': 'Transfer fee',
+    'comments_label': 'Comments',
     'error_no_address': 'Please provide wallet address',
     'error_incorrect_address': 'Incorrect {crypto} wallet address',
     'error_incorrect_amount': 'Incorrect amount',

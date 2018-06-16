@@ -323,4 +323,13 @@ adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
   return decrypted ? utf8.decode(decrypted) : ''
 }
 
+/**
+ * Converts ADM amount to its internal representation
+ * @param {number|string} admAmount amount to convert
+ * @returns {number}
+ */
+adamant.prepareAmount = function (admAmount) {
+  return Math.round(Number(admAmount) * 100000000)
+}
+
 module.exports = adamant

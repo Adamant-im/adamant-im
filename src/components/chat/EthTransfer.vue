@@ -5,6 +5,7 @@
     :timestamp="message.timestamp"
     :brief="brief"
   >
+    <p><span v-html="message.message.comments"></span></p>
     <p>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</p>
     <p class='transaction-amount' v-on:click="goToTransaction()">
       <span v-html="message.message.amount"></span> ETH

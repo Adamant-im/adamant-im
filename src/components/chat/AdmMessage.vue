@@ -4,10 +4,17 @@
     :direction="message.direction"
     :timestamp="message.timestamp"
   >
-    <p>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</p>
-    <p class='transaction-amount' v-on:click="goToTransaction()">
+    <p v-html="message.message"></p>
+    <p v-if="message.amount">
+      {{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}
+    </p>
+    <p v-if="message.amount" class='transaction-amount' v-on:click="goToTransaction()">
       <span v-html="$formatAmount(message.amount)"></span> ADM
     </p>
+
+    <template slot="brief-view">
+      <span v-html="message.message"></span>
+    </template>
   </chat-entry-template>
 </template>
 
@@ -16,9 +23,9 @@
   import { Cryptos } from '../../lib/constants'
 
   export default {
-    name: 'adm-transfer',
+    name: 'adm-message',
     components: { ChatEntryTemplate },
-    props: ['message'],
+    props: ['message', 'brief'],
     methods: {
       goToTransaction () {
         this.$store.commit('leave_chat')

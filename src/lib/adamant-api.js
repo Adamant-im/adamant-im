@@ -53,23 +53,33 @@ export function getPublicKey (address = '') {
 }
 
 /**
- * Sends message with the specified payload
- * @param {string} to recipient address
- * @param {string} text message text
- * @param {number=1} type 1 for a regular message, 2 for a special one
+ * @typedef {Object} MsgParams
+ * @property {string} to target address
+ * @property {string|object} message message to send (object value will be JSON-serialized)
+ * @property {number} type 1 for a regular message, 2 for a special one
+ * @property {number} amount ADMs to send with this message
  */
-export function sendMessage (to, text, type = 1) {
-  return getPublicKey(to)
+
+/**
+ * Sends message with the specified payload
+ * @param {MsgParams} params
+ * @returns {Promise<{success: boolean, transactionId: string}>}
+ */
+export function sendMessage (params) {
+  return getPublicKey(params.to)
     .then(publicKey => {
+      const text = typeof params.message === 'string'
+        ? params.message
+        : JSON.stringify(params.message)
       const message = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
 
       const transaction = {
         type: Transactions.CHAT_MESSAGE,
-        amount: 0,
+        amount: params.amount ? utils.prepareAmount(params.amount) : 0,
         asset: {
-          chat: { ...message, type }
+          chat: { ...message, type: params.type || 1 }
         },
-        recipientId: to,
+        recipientId: params.to,
         senderId: myAddress,
         senderPublicKey: myKeypair.publicKey.toString('hex'),
         timestamp: utils.epochTime()
@@ -86,7 +96,7 @@ export function sendMessage (to, text, type = 1) {
  * @param {object} payload message payload
  */
 export function sendSpecialMessage (to, payload) {
-  return sendMessage(to, JSON.stringify(payload), 2)
+  return sendMessage({ to, message: payload, type: 2 })
 }
 
 /**
@@ -140,7 +150,7 @@ export function getStored (key, ownerAddress) {
 export function sendTokens (to, amount) {
   const transaction = {
     type: Transactions.SEND,
-    amount: Math.round(amount * 100000000),
+    amount: utils.prepareAmount(amount),
     recipientId: to,
     senderId: myAddress,
     senderPublicKey: myKeypair.publicKey.toString('hex'),

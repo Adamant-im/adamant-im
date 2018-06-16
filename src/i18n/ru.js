@@ -101,6 +101,7 @@ export default {
     'amount_label': 'Количество для перевода',
     'final_amount_label': 'Количество, включая комиссию',
     'commission_label': 'Комиссия за перевод',
+    'comments_label': 'Комментарий',
     'error_no_address': 'Укажите адрес кошелька получателя',
     'error_incorrect_address': 'Неверный адрес {crypto} кошелька',
     'error_incorrect_amount': 'Неверное количество',

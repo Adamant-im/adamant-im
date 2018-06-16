@@ -32,6 +32,12 @@
               <label style="text-align:left">{{ $t('transfer.final_amount_label') }}</label>
               <md-input type="number" readonly v-model="finalAmount"></md-input>
           </md-input-container>
+
+          <md-input-container v-if="this.fixedAddress">
+            <label>{{ $t('transfer.comments_label') }}</label>
+            <md-input v-model="comments" maxlength='100'></md-input>
+          </md-input-container>
+
           <md-layout md-align="center" md-gutter="16">
               <md-button class="md-raised md-primary" :title="$t('transfer.send_button_tooltip')" v-on:click="transfer">{{ $t('transfer.send_button') }}</md-button>
 
@@ -54,7 +60,7 @@
 <script>
 import validateAddress from '../lib/validateAddress'
 import { Cryptos, CryptoAmountPrecision, Fees } from '../lib/constants'
-import { sendTokens } from '../lib/adamant-api'
+import { sendTokens, sendMessage } from '../lib/adamant-api'
 
 export default {
   name: 'home',
@@ -83,12 +89,16 @@ export default {
     },
     sendTokens () {
       if (this.crypto === Cryptos.ADM) {
-        return sendTokens(this.targetAddress, this.targetAmount).then(result => result.transactionId)
+        const promise = (this.comments && this.fixedAddress)
+          ? sendMessage({ to: this.targetAddress, message: this.comments, amount: this.targetAmount })
+          : sendTokens(this.targetAddress, this.targetAmount)
+        return promise.then(result => result.transactionId)
       } else if (this.crypto === Cryptos.ETH) {
         return this.$store.dispatch('eth/sendTokens', {
           amount: this.targetAmount,
           admAddress: this.fixedAddress,
-          ethAddress: this.targetAddress
+          ethAddress: this.targetAddress,
+          comments: this.comments
         })
       }
 
@@ -197,7 +207,8 @@ export default {
       amountToTransfer: 0,
       targetAddress: '',
       targetAmount: '',
-      crypto: this.fixedCrypto || Cryptos.ADM
+      crypto: this.fixedCrypto || Cryptos.ADM,
+      comments: ''
     }
   },
   props: ['fixedCrypto', 'fixedAddress']
