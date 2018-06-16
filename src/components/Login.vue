@@ -134,6 +134,7 @@ export default {
     },
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
+
       if (this.passPhrase.split(' ').length !== 12) {
         this.snackOpen()
         return
