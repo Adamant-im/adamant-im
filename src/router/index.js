@@ -14,6 +14,7 @@ import QRScan from '@/components/QRScan'
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/transactions/:crypto/:tx_id',
