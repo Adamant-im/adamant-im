@@ -9,7 +9,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const loadMinified = require('./load-minified')
 
 const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
@@ -62,7 +64,9 @@ const webpackConfig = merge(baseWebpackConfig, {
         // https://github.com/kangax/html-minifier#options-quick-reference
       },
       // necessary to consistently work with multiple chunks
-      chunksSortMode: 'dependency'
+      chunksSortMode: 'dependency',
+      serviceWorkerLoader: `<script>${loadMinified(path.join(__dirname,
+        './service-worker-prod.js'))}</script>`
     }),
     // keep module.id stable when vendor modules does not change
     new webpack.NamedChunksPlugin(),
@@ -75,32 +79,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       }
     ])
-  ],
-  optimization: {
-    concatenateModules: true,
-    splitChunks: {
-      chunks: 'all',
-      cacheGroups: {
-        vendor: {
-          name: 'vendor',
-          test: /[\\/]node_modules[\\/]/,
-          enforce: true,
-        },
-      },
-    },
-    runtimeChunk: 'single',
-    minimizer: [
-      new UglifyJsPlugin({
-        uglifyOptions: {
-          compress: {
-            warnings: false
-          }
-        },
-        sourceMap: config.build.productionSourceMap,
-        parallel: true
-      }),
-    ],
-  },
+  ]
 })
 
 if (config.build.productionGzip) {
@@ -119,6 +98,25 @@ if (config.build.productionGzip) {
       minRatio: 0.8
     })
   )
+
+  // service worker caching
+  new SWPrecacheWebpackPlugin({
+      cacheId: 'adamant-im',
+      filename: 'service-worker.js',
+      staticFileGlobs: ['dist/**/*.{js,html,css,woff,ttf,svg,png}'],
+      minify: true,
+      stripPrefix: 'dist/'
+  })
+
+  new UglifyJsPlugin({
+    uglifyOptions: {
+      compress: {
+        warnings: false
+      }
+    },
+    sourceMap: config.build.productionSourceMap,
+    parallel: true
+  })
 }
 
 if (config.build.bundleAnalyzerReport) {
