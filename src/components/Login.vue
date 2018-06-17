@@ -143,7 +143,7 @@ export default {
         this.snackOpen()
       }.bind(this)
       this.getAccountByPassPhrase(this.passPhrase, function (context) {
-        this.savePassPhrase(this.passPhrase)
+        this.$store.commit('save_passphrase', {'passPhrase': this.passPhrase})
         this.$root._router.push('/chats/')
         this.loadChats(true)
         this.$store.commit('stop_tracking_new')
@@ -186,7 +186,7 @@ export default {
     }
   },
   mounted: function () {
-    if (this.getPassPhrase()) {
+    if (this.$store.getters.getPassPhrase) {
       this.$store.commit('leave_chat')
       this.$root._router.push('/chats/')
     }
@@ -204,7 +204,7 @@ export default {
       return new Mnemonic(Mnemonic.Words.ENGLISH).toString()
     },
     qrCodePassPhrase: function () {
-      return this.getPassPhrase()
+      return this.$store.getters.getPassPhrase
     }
   },
   watch: {

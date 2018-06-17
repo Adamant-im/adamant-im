@@ -1,5 +1,4 @@
 import Queue from 'promise-queue'
-import { Base64 } from 'js-base64'
 
 var config = require('../config.json')
 var adamant = require('./adamant.js')
@@ -51,7 +50,7 @@ function install (Vue) {
         privateKey: window.privateKey
       }
     }
-    var hash = adamant.createPassPhraseHash(this.getPassPhrase())
+    var hash = adamant.createPassPhraseHash(this.$store.getters.getPassPhrase)
     var keypair = adamant.makeKeypair(hash)
     window.privateKey = keypair.privateKey
     window.publicKey = keypair.publicKey
@@ -59,7 +58,7 @@ function install (Vue) {
   }
   Vue.prototype.getPublicKeyFromPassPhrase = function (passPhrase) {
     var keypair
-    if (this.getPassPhrase()) {
+    if (this.$store.getters.getPassPhrase) {
       keypair = this.getKeypair()
     } else {
       var hash = adamant.createPassPhraseHash(passPhrase)
@@ -246,7 +245,7 @@ function install (Vue) {
     })
   }
   Vue.prototype.sendMessage = function (msg, recipient) {
-    if (this.getPassPhrase()) {
+    if (this.$store.getters.getPassPhrase) {
       this.$store.commit('ajax_start')
       var keypair = this.getKeypair()
       var transaction = {}
@@ -317,7 +316,7 @@ function install (Vue) {
   }
   Vue.prototype.transferFunds = function (amount, recipient) {
     this.$store.commit('ajax_start')
-    if (this.getPassPhrase()) {
+    if (this.$store.getters.getPassPhrase) {
       var keypair = this.getKeypair()
       var transaction = {}
       transaction.type = 0
@@ -390,14 +389,14 @@ function install (Vue) {
     })
   }
   Vue.prototype.updateCurrentValues = function () {
-    if (this.getPassPhrase() && !this.$store.state.ajaxIsOngoing) {
+    if (this.$store.getters.getPassPhrase && !this.$store.state.ajaxIsOngoing) {
       // updating wallet balance
       if (this.$route.path.indexOf('/transactions/') > -1) {
         if (this.$route.params.tx_id) {
           this.getTransactionInfo(this.$route.params.tx_id)
         }
       }
-      this.getAccountByPublicKey(this.getPublicKeyFromPassPhrase(this.getPassPhrase()))
+      this.getAccountByPublicKey(this.getPublicKeyFromPassPhrase(this.$store.getters.getPassPhrase))
       this.$store.commit('start_tracking_new')
       this.loadChats()
       this.getTransactions()
@@ -623,12 +622,6 @@ function install (Vue) {
     }, response => {
       this.$store.commit('ajax_end_with_error')
     })
-  }
-  Vue.prototype.getPassPhrase = function () {
-    return Base64.decode(this.$store.state.passPhrase)
-  }
-  Vue.prototype.savePassPhrase = function (passPhrase) {
-    this.$store.commit('save_passphrase', {'passPhrase': Base64.encode(passPhrase)})
   }
 }
 
