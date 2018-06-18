@@ -3,14 +3,15 @@
     :confirm="message.confirm_class"
     :direction="message.direction"
     :timestamp="message.timestamp"
+    :brief="brief"
   >
-    <p v-html="message.message"></p>
     <p v-if="message.amount">
       {{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}
     </p>
     <p v-if="message.amount" class='transaction-amount' v-on:click="goToTransaction()">
       <span v-html="$formatAmount(message.amount)"></span> ADM
     </p>
+    <p v-html="message.message" v-bind:class="{ transfer_comment: !!message.amount }" ></p>
 
     <template slot="brief-view">
       <span v-html="message.message"></span>
@@ -35,3 +36,9 @@
     }
   }
 </script>
+
+<style>
+  .transfer_comment {
+    font-style: italic;
+  }
+</style>

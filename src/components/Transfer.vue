@@ -39,8 +39,9 @@
           </md-input-container>
 
           <md-layout md-align="center" md-gutter="16">
-              <md-button class="md-raised md-primary" :title="$t('transfer.send_button_tooltip')" v-on:click="transfer">{{ $t('transfer.send_button') }}</md-button>
-
+            <md-button class="md-raised md-primary send_funds_button" :title="$t('transfer.send_button_tooltip')" v-on:click="transfer">
+              {{ $t('transfer.send_button') }}
+            </md-button>
           </md-layout>
       </form>
       <md-snackbar md-position="bottom center" md-accent ref="transferSnackbar" md-duration="2000">
@@ -242,5 +243,9 @@ export default {
         .amount-label {
           font-size: 12px;
         }
+    }
+
+    .send_funds_button {
+      margin-top: 20px;
     }
 </style>
