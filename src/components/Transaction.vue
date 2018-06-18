@@ -24,11 +24,11 @@
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.sender') }}</md-table-cell>
-            <md-table-cell class='data_td'>{{ transaction.senderId.toString() }}</md-table-cell>
+            <md-table-cell class='data_td'>{{ transaction.senderId }}</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.recipient') }}</md-table-cell>
-            <md-table-cell class='data_td'>{{ transaction.recipientId.toString() }} </md-table-cell>
+            <md-table-cell class='data_td'>{{ transaction.recipientId }} </md-table-cell>
           </md-table-row>
           <md-table-row class='open_in_explorer'>
             <md-table-cell  class='label_td'>

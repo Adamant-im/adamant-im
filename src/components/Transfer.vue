@@ -1,6 +1,6 @@
 <template>
   <div class="transfer">
-
+      <spinner v-if="isWaiting" />
       <form novalidate @submit.stop.prevent="submit">
     	    <md-input-container>
               <md-select v-model="crypto" style="text-align: left;" :disabled="!!this.fixedCrypto">
@@ -59,12 +59,15 @@
 </template>
 
 <script>
+import Spinner from './Spinner.vue'
+
 import validateAddress from '../lib/validateAddress'
 import { Cryptos, CryptoAmountPrecision, Fees } from '../lib/constants'
 import { sendTokens, sendMessage } from '../lib/adamant-api'
 
 export default {
   name: 'home',
+  components: { Spinner },
   methods: {
     errorMessage (message, opts) {
       this.formErrorMessage = this.$t('transfer.' + message, opts)
@@ -73,8 +76,11 @@ export default {
     onClose (type) {
       if (type !== 'ok') return
 
+      this.isWaiting = true
       this.sendTokens().then(
         hash => {
+          this.isWaiting = false
+
           if (!hash) return // TODO handle somehow
           if (this.fixedAddress) {
             // Go back to chat if we came from there
@@ -85,7 +91,10 @@ export default {
             this.$router.push({ name: 'Transaction', params })
           }
         },
-        _ => this.errorMessage('error_transaction_send')
+        _ => {
+          this.isWaiting = false
+          this.errorMessage('error_transaction_send')
+        }
       )
     },
     sendTokens () {
@@ -209,7 +218,8 @@ export default {
       targetAddress: '',
       targetAmount: '',
       crypto: this.fixedCrypto || Cryptos.ADM,
-      comments: ''
+      comments: '',
+      isWaiting: false
     }
   },
   props: ['fixedCrypto', 'fixedAddress']
