@@ -14,9 +14,11 @@ export default {
     'login_button': 'Login',
     'new_button': 'Create new',
     'invalid_passphrase': 'Invalid passphrase',
+    'invalid_qr_code': 'This QR code does not include valid passphrase',
     'device_unsupported': 'Your device is not supported',
     'subheader': 'A top-notch anonymous messenger encrypted with a Blockchain',
-    'create_address_label': 'Or create a new anonymous address:'
+    'create_address_label': 'Or create a new anonymous address:',
+    'scan_qr_code_button_tooltip': 'Scan QR with passphrase via device Camera'
   },
   'options': {
     'version': 'App Version: ',

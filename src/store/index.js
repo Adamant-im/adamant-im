@@ -1,8 +1,10 @@
+
 import Vue from 'vue'
 
 import storeData from '../lib/lsStore.js'
 import ethModule from './modules/eth'
 import healthCheck from './modules/healthCheck'
+import {Base64} from 'js-base64'
 
 function deviceIsDisabled () {
   try {
@@ -93,7 +95,7 @@ const store = {
       state.storeInLocalStorage = payload
     },
     save_passphrase (state, payload) {
-      state.passPhrase = payload.passPhrase
+      state.passPhrase = Base64.encode(payload.passPhrase)
     },
     ajax_start (state) {
       state.ajaxIsOngoing = true
@@ -307,11 +309,15 @@ const store = {
       const partner = state.currentChat && state.currentChat.partner
       const transactions = Object.values(state.transactions) || []
       return transactions.filter(x => x.senderId === partner || x.recipientId === partner)
+    },
+    // Returns decoded pass phrase from store
+    getPassPhrase: state => {
+      return Base64.decode(state.passPhrase)
     }
   },
   modules: {
-    eth: ethModule,     // Ethereum-related data
-    healthCheck         // Health check support
+    eth: ethModule, // Ethereum-related data
+    healthCheck     // Health check support
   }
 }
 
