@@ -134,6 +134,7 @@ export default {
     },
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
+
       if (this.passPhrase.split(' ').length !== 12) {
         this.snackOpen()
         return
@@ -146,7 +147,6 @@ export default {
         this.$root._router.push('/chats/')
         this.loadChats(true)
         this.$store.commit('stop_tracking_new')
-
         this.$store.dispatch('login', this.passPhrase)
 
         // Store ETH address into the KVS if it's not there yet and user has
@@ -186,7 +186,7 @@ export default {
     }
   },
   mounted: function () {
-    if (this.$store.state.passPhrase) {
+    if (this.$store.getters.getPassPhrase) {
       this.$store.commit('leave_chat')
       this.$root._router.push('/chats/')
     }
@@ -204,7 +204,7 @@ export default {
       return new Mnemonic(Mnemonic.Words.ENGLISH).toString()
     },
     qrCodePassPhrase: function () {
-      return this.$store.state.passPhrase
+      return this.$store.getters.getPassPhrase
     }
   },
   watch: {

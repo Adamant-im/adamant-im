@@ -50,7 +50,7 @@ function install (Vue) {
         privateKey: window.privateKey
       }
     }
-    var hash = adamant.createPassPhraseHash(this.$store.state.passPhrase)
+    var hash = adamant.createPassPhraseHash(this.$store.getters.getPassPhrase)
     var keypair = adamant.makeKeypair(hash)
     window.privateKey = keypair.privateKey
     window.publicKey = keypair.publicKey
@@ -58,7 +58,7 @@ function install (Vue) {
   }
   Vue.prototype.getPublicKeyFromPassPhrase = function (passPhrase) {
     var keypair
-    if (this.$store.state.passPhrase) {
+    if (this.$store.getters.getPassPhrase) {
       keypair = this.getKeypair()
     } else {
       var hash = adamant.createPassPhraseHash(passPhrase)
@@ -245,7 +245,7 @@ function install (Vue) {
     })
   }
   Vue.prototype.sendMessage = function (msg, recipient) {
-    if (this.$store.state.passPhrase) {
+    if (this.$store.getters.getPassPhrase) {
       this.$store.commit('ajax_start')
       var keypair = this.getKeypair()
       var transaction = {}
@@ -316,7 +316,7 @@ function install (Vue) {
   }
   Vue.prototype.transferFunds = function (amount, recipient) {
     this.$store.commit('ajax_start')
-    if (this.$store.state.passPhrase) {
+    if (this.$store.getters.getPassPhrase) {
       var keypair = this.getKeypair()
       var transaction = {}
       transaction.type = 0
@@ -389,14 +389,14 @@ function install (Vue) {
     })
   }
   Vue.prototype.updateCurrentValues = function () {
-    if (this.$store.state.passPhrase && !this.$store.state.ajaxIsOngoing) {
+    if (this.$store.getters.getPassPhrase && !this.$store.state.ajaxIsOngoing) {
       // updating wallet balance
       if (this.$route.path.indexOf('/transactions/') > -1) {
         if (this.$route.params.tx_id) {
           this.getTransactionInfo(this.$route.params.tx_id)
         }
       }
-      this.getAccountByPublicKey(this.getPublicKeyFromPassPhrase(this.$store.state.passPhrase))
+      this.getAccountByPublicKey(this.getPublicKeyFromPassPhrase(this.$store.getters.getPassPhrase))
       this.$store.commit('start_tracking_new')
       this.loadChats()
       this.getTransactions()
