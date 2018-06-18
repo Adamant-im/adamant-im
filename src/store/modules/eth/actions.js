@@ -134,9 +134,11 @@ export default {
     const supplier = () => {
       if (!context.state.address) return []
 
+      const block = context.state.blockNumber ? Math.max(0, context.state.blockNumber - 8) : 0
+
       return [
         // Balance
-        api.eth.getBalance.request(context.state.address, 'latest', (err, balance) => {
+        api.eth.getBalance.request(context.state.address, block || 'latest', (err, balance) => {
           if (!err) context.commit('balance', toEther(balance))
         }),
         // Current gas price
@@ -179,7 +181,7 @@ export default {
       to: ethAddress,
       value: toWei(amount),
       gas: TRANSFER_GAS,
-      gasPrice: context.state.gasPrice || DEFAULT_GAS_PRICE
+      gasPrice: Math.round(1.5 * context.state.gasPrice) || DEFAULT_GAS_PRICE
     }
 
     if (!api.utils.isAddress(ethAddress)) {
@@ -227,6 +229,7 @@ export default {
           console.log('ETH transaction has been sent')
 
           lastNonce = Math.max(lastNonce, ethTx.nonce)
+          const timestamp = Date.now()
 
           context.commit('setTransaction', {
             hash,
@@ -235,9 +238,11 @@ export default {
             amount,
             fee: toEther(Number(ethTx.gas) * ethTx.gasPrice),
             status: 'PENDING',
-            timestamp: Date.now(),
+            timestamp,
             confirmations: 0
           })
+
+          context.dispatch('getTransaction', { hash, timestamp, isNew: true })
 
           return hash
         }
@@ -270,8 +275,8 @@ export default {
         context.commit('setTransaction', transaction)
       }
 
-      if (err || tx && !tx.blockNumber) {
-        // In case of an error or a pending transaction fetch its details once again later
+      // In case of an error or a pending transaction fetch its details once again later
+      if (err || (tx && !tx.blockNumber) || (!tx && payload.isNew)) {
         context.dispatch('getTransaction', payload)
       }
     })
