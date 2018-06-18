@@ -25,9 +25,6 @@ let lastStatusUpdate = 0
 /** Status update interval */
 const STATUS_INTERVAL = 8000
 
-/** Last transaction nonce */
-let lastNonce = -1
-
 /**
  * Creates ETH account for the specified passphrase.
  *
@@ -65,11 +62,6 @@ function executeRequests () {
   requests.forEach(x => x.requests.forEach(r => batch.add(r)))
 
   batch.execute()
-}
-
-function getNonce (address) {
-  if (lastNonce >= 0) return Promise.resolve(lastNonce + 1)
-  return api.eth.getTransactionCount(address, 'pending')
 }
 
 export default {
@@ -167,6 +159,15 @@ export default {
     }, delay)
   },
 
+  /** Updates current nonce based on the transactions count */
+  updateNonce ({ state, commit }) {
+    if (state.nonce) return Promise.resolve(state.nonce)
+    return api.eth.getTransactionCount(state.address, 'latest').then(count => {
+      commit('nonce', count)
+      return state.nonce
+    })
+  },
+
   /**
    * Sends tokens to the specified ETH address.
    *
@@ -188,8 +189,8 @@ export default {
       return Promise.reject({ code: 'invalid_address' })
     }
 
-    return getNonce(context.state.address)
-      .then(nonce => { ethTx.nonce = nonce })
+    return context.dispatch('updateNonce')
+      .then(() => { if (context.state.nonce) ethTx.nonce = context.state.nonce })
       .then(() => api.eth.accounts.signTransaction(ethTx, context.state.privateKey))
       .then(signed => {
         const tx = signed.rawTransaction
@@ -228,7 +229,7 @@ export default {
         } else {
           console.log('ETH transaction has been sent')
 
-          lastNonce = Math.max(lastNonce, ethTx.nonce)
+          context.commit('nonce', ethTx.nonce + 1)
           const timestamp = Date.now()
 
           context.commit('setTransaction', {
