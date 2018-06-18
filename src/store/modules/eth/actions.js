@@ -215,7 +215,7 @@ export default {
         const payload = method.toPayload([tx])
 
         return new Promise((resolve) => {
-          method.requestManager.send(payload, error => ({ hash, error }))
+          method.requestManager.send(payload, error => resolve({ hash, error }))
         })
       })
       .then(({ hash, error }) => {
