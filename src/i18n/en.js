@@ -111,6 +111,7 @@ export default {
     'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Transfer confirmation',
     'confirm_message': 'Confirm transfer of <b>{amount} {crypto}</b> to address <span class="address-in-confirm">{target}</span>.',
+    'confirm_message_with_name': 'Confirm transfer of <b>{amount} {crypto}</b> to <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confirm',
     'confirm_cancel': 'Cancel',
     'no_address_title': 'Recipient has no {crypto} wallet yet',

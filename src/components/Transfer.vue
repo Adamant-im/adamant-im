@@ -49,7 +49,7 @@
       </md-snackbar>
       <md-dialog-confirm
               :md-title="$t('transfer.confirm_title')"
-              :md-content-html="$t('transfer.confirm_message', { amount: targetAmount, target: receiver, crypto })"
+              :md-content-html="confirmMessage"
               :md-ok-text="$t('transfer.confirm_approve')"
               :md-cancel-text="$t('transfer.confirm_cancel')"
               @close="onClose"
@@ -178,14 +178,16 @@ export default {
 
       return this.$t('transfer.to_address_label')
     },
-    receiver () {
-      let name = this.displayName || this.fixedAddress
+    confirmMessage () {
+      let target = this.displayName || this.fixedAddress
 
-      if (name !== this.targetAddress) {
-        name += ' (' + this.targetAddress + ')'
+      if (target !== this.targetAddress) {
+        target += ' (' + this.targetAddress + ')'
       }
 
-      return name
+      const msgType = this.displayName ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
+
+      return this.$t(msgType, { amount: this.targetAmount, target, crypto: this.crypto })
     }
   },
   mounted () {
