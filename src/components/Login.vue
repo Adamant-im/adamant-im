@@ -26,11 +26,29 @@
                   <md-button class="md-raised md-short" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
               </md-layout>
           </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
+          <md-layout md-flex="66"
+                     md-flex-xsmall="80"
+                     md-align="center"
+                     class="qr-code-buttons">
             <md-button classs="md-ripple md-disabled"
-                      @click.prevent="scanQRCode">
+                       @click.prevent="scanQRCode"
+                       :title="$t('login.scan_qr_code_button_tooltip')">
+              <Icon name="qrCodeLense" />
+            </md-button>
+            <md-button classs="md-ripple md-disabled"
+                       @click.prevent="saveQRCode">
               <Icon name="qrCode" />
             </md-button>
+          </md-layout>
+          <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
+            <p v-if="message">{{message}}</p>
+            <p>
+              <a href="#"
+                 @click.prevent="downloadQRCode"
+                 v-if="showQRCode">
+                <qr-code :text="passPhrase" ref="qrCode"></qr-code>
+              </a>
+            </p>
           </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top:30px">
               <md-layout md-align="center" md-gutter="16">
@@ -64,10 +82,11 @@
           <span>{{ $t('home.copied') }}</span>
       </md-snackbar>
   </div>
-
 </template>
 
 <script>
+import b64toBlob from 'b64-to-blob'
+import FileSaver from 'file-saver'
 import Icon from '@/components/Icon'
 
 export default {
@@ -92,11 +111,29 @@ export default {
     snackOpen () {
       this.$refs.snackbar.open()
     },
+    downloadQRCode () {
+      const imgUrl = this.$refs.qrCode.$el.querySelector('img').src
+      const base64Data = imgUrl.slice(22, imgUrl.length)
+      const byteCharacters = b64toBlob(base64Data)
+      const blob = new Blob([byteCharacters], {type: 'image/png'})
+
+      FileSaver.saveAs(blob, 'adamant-im.png')
+    },
+    saveQRCode () {
+      if (!this.passPhrase.length) {
+        this.message = 'Please enter passphrase first'
+        return
+      }
+
+      this.message = ''
+      this.showQRCode = true
+    },
     scanQRCode () {
       this.$router.push('/scan/')
     },
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
+
       if (this.passPhrase.split(' ').length !== 12) {
         this.snackOpen()
         return
@@ -140,7 +177,7 @@ export default {
     }
   },
   mounted: function () {
-    if (this.$store.state.passPhrase) {
+    if (this.$store.getters.getPassPhrase) {
       this.$store.commit('leave_chat')
       this.$root._router.push('/chats/')
     }
@@ -158,7 +195,7 @@ export default {
       return new Mnemonic(Mnemonic.Words.ENGLISH).toString()
     },
     qrCodePassPhrase: function () {
-      return this.$store.state.passPhrase
+      return this.$store.getters.getPassPhrase
     }
   },
   watch: {
@@ -171,7 +208,9 @@ export default {
     return {
       passPhrase: this.qrCodePassPhrase || '',
       language: this.$i18n.locale,
-      showCreate: false
+      showCreate: false,
+      message: '',
+      showQRCode: false
     }
   }
 }
@@ -179,6 +218,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+
+.qr-code-buttons button {
+  min-width: auto;
+  padding: 0;
+}
+
 .site-branding
 {
     text-align: center;

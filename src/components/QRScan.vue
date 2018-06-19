@@ -1,7 +1,14 @@
 <template>
   <div class="qrscan">
-      <video id="preview"></video>
-      <div class="switch_camera" v-if="this.cameraList.length>1" v-on:click="switch_camera"><md-icon>switch_camera</md-icon></div>
+    <video id="preview"></video>
+    <div class="switch_camera" v-if="this.cameraList.length>1" v-on:click="switch_camera"><md-icon>switch_camera</md-icon></div>
+    <md-snackbar md-position="bottom center"
+                 md-accent
+                 ref="scanQRCodeSnackbar"
+                 md-duration="3000"
+                 @close="navigateTo('/')">
+      <span>{{ $t('login.invalid_qr_code') }}</span>
+    </md-snackbar>
   </div>
 </template>
 
@@ -41,10 +48,15 @@ export default {
         const wordCount = content.split(' ').length
 
         if (wordCount === 12) { // looks like a passphrase
-          this.$store.commit('save_passphrase', { passPhrase: content })
+          this.$store.commit('save_passphrase', {'passPhrase': content})
           this.$router.push('/')
+        } else {
+          this.$refs.scanQRCodeSnackbar.open()
         }
       }
+    },
+    navigateTo (path) {
+      this.$router.push(path)
     },
     getCameras (cameras) {
       this.cameraList = cameras
