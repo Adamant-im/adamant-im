@@ -131,12 +131,12 @@ export default {
         this.errorMessage('error_incorrect_amount')
         return
       }
-      if (this.fixedAddress && this.crypto !== Cryptos.ADM && this.$store.state.balance < Fees.TRANSFER) {
-        this.errorMessage('error_chat_fee', { crypto: this.crypto })
-        return
-      }
       if ((parseFloat(this.targetAmount) + this.commission) > parseFloat(this.balance)) {
         this.errorMessage('error_not_enough')
+        return
+      }
+      if (this.fixedAddress && this.crypto !== Cryptos.ADM && this.$store.state.balance < Fees.TRANSFER) {
+        this.errorMessage('error_chat_fee', { crypto: this.crypto })
         return
       }
       this.$refs['confirm_transfer_dialog'].open()
