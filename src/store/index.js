@@ -38,17 +38,16 @@ function createMockMessage (state, newAccount, partner, message) {
   if (!currentDialogs) {
     currentDialogs = {
       partner: partner,
+      readOnly: true,
       messages: {
         0: {
           message: window.ep.$i18n.t('chats.' + message),
-          timestamp: 0,
-          mockMessage: true
+          timestamp: 0
         }
       },
       last_message: {
         message: window.ep.$i18n.t('chats.' + message),
-        timestamp: 0,
-        mockMessage: true
+        timestamp: 0
       }
     }
   }

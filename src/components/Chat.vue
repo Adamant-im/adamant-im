@@ -192,8 +192,7 @@ export default {
       return messages.sort(compare)
     },
     readOnly: function () {
-      const lastMessage = this.$store.state.currentChat.last_message
-      return lastMessage ? !lastMessage.mockMessage : false
+      return !this.$store.state.currentChat.readOnly
     }
   },
   watch: {
