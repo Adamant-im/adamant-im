@@ -146,6 +146,7 @@ export default {
 
         this.$root._router.push('/chats/')
         this.loadChats(true)
+        this.$store.commit('mock_messages')
         this.$store.commit('stop_tracking_new')
       }, errorFunction)
     },

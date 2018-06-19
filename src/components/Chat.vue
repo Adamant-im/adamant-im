@@ -190,6 +190,12 @@ export default {
       const messages = Object.values(chat).concat(transactions)
 
       return messages.sort(compare)
+    },
+    disableSending: function () {
+      const lastMessage = this.$store.state.currentChat.last_message
+      if (lastMessage) {
+        return !(lastMessage.timestamp === 0)
+      }
     }
   },
   watch: {
