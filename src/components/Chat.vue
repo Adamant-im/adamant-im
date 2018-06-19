@@ -193,9 +193,7 @@ export default {
     },
     disableSending: function () {
       const lastMessage = this.$store.state.currentChat.last_message
-      if (lastMessage) {
-        return !(lastMessage.timestamp === 0)
-      }
+      return lastMessage ? !lastMessage.readOnly : false
     }
   },
   watch: {

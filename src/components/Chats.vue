@@ -153,4 +153,7 @@ export default {
         padding: 0;
         margin: 0;
     }
+    .black-text {
+      color: rgba(0, 0, 0, 0.87) !important;
+    }
 </style>

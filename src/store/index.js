@@ -8,7 +8,6 @@ import ethModule from './modules/eth'
 import partnersModule from './modules/partners'
 
 import * as admApi from '../lib/adamant-api'
-import VueI18n from 'vue-i18n'
 
 function deviceIsDisabled () {
   try {
@@ -34,25 +33,26 @@ if (defaultLanguage !== 'ru' && defaultLanguage !== 'en') {
   defaultLanguage = 'en'
 }
 
-function createMockMessage (state, newAccount, i18n, partner, message) {
+function createMockMessage (state, newAccount, partner, message) {
   let currentDialogs = state.chats[partner]
   if (!currentDialogs) {
     currentDialogs = {
       partner: partner,
       messages: {
         0: {
-          message: i18n.t('chats.' + message),
-          timestamp: 0
+          message: window.ep.$i18n.t('chats.' + message),
+          timestamp: 0,
+          readOnly: true
         }
       },
       last_message: {
-        message: i18n.t('chats.' + message),
-        timestamp: 0
+        message: window.ep.$i18n.t('chats.' + message),
+        timestamp: 0,
+        readOnly: true
       }
     }
   }
   if (newAccount) {
-    console.log(newAccount)
     Vue.set(state.newChats, partner, 1)
   }
   Vue.set(state.chats, partner, currentDialogs)
@@ -224,14 +224,9 @@ const store = {
       state.firstChatLoad = false
     },
     mock_messages (state) {
-      const messages = require('../i18n').default
-      const i18n = new VueI18n({
-        locale: store.state.language, // set locale
-        messages // set locale messages
-      })
       const newAccount = store.state.is_new_account
-      createMockMessage(state, newAccount, i18n, 'ADAMANT ICO', 'ico_message')
-      createMockMessage(state, newAccount, i18n, 'ADAMANT Bounty', 'welcome_message')
+      createMockMessage(state, newAccount, 'ADAMANT ICO', 'ico_message')
+      createMockMessage(state, newAccount, 'ADAMANT Bounty', 'welcome_message')
     },
     create_chat (state, payload) {
       var partner = payload
