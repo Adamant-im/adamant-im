@@ -191,9 +191,9 @@ export default {
 
       return messages.sort(compare)
     },
-    disableSending: function () {
+    readOnly: function () {
       const lastMessage = this.$store.state.currentChat.last_message
-      return lastMessage ? !lastMessage.readOnly : false
+      return lastMessage ? !lastMessage.mockMessage : false
     }
   },
   watch: {

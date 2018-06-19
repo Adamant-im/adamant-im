@@ -42,13 +42,13 @@ function createMockMessage (state, newAccount, partner, message) {
         0: {
           message: window.ep.$i18n.t('chats.' + message),
           timestamp: 0,
-          readOnly: true
+          mockMessage: true
         }
       },
       last_message: {
         message: window.ep.$i18n.t('chats.' + message),
         timestamp: 0,
-        readOnly: true
+        mockMessage: true
       }
     }
   }
@@ -333,9 +333,6 @@ const store = {
     // Returns decoded pass phrase from store
     getPassPhrase: state => {
       return Base64.decode(state.passPhrase)
-    },
-    isNewAccount: state => {
-      return state.is_new_account
     }
   },
   modules: {
