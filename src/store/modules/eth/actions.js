@@ -138,7 +138,7 @@ export default {
           if (!err) {
             context.commit('gasPrice', {
               gasPrice: price,
-              fee: toEther(Number(TRANSFER_GAS) * price)
+              fee: toEther(1.5 * Number(TRANSFER_GAS) * price)
             })
           }
         }),
@@ -182,7 +182,7 @@ export default {
       to: ethAddress,
       value: toWei(amount),
       gas: TRANSFER_GAS,
-      gasPrice: Math.round(1.5 * context.state.gasPrice) || DEFAULT_GAS_PRICE
+      gasPrice: context.state.gasPrice || DEFAULT_GAS_PRICE
     }
 
     if (!api.utils.isAddress(ethAddress)) {
