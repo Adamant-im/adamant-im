@@ -176,7 +176,7 @@ export default {
    * @param {string} receiver receiver ETH-address
    * @returns {Promise<string>} ETH transaction hash
    */
-  sendTokens (context, { amount, admAddress, ethAddress }) {
+  sendTokens (context, { amount, admAddress, ethAddress, comments }) {
     const ethTx = {
       from: context.state.address,
       to: ethAddress,
@@ -202,7 +202,7 @@ export default {
         if (!admAddress) return result
 
         // Send a special message to indicate that we're performing an ETH transfer
-        return admApi.sendSpecialMessage(admAddress, { type: 'eth_transaction', amount, hash })
+        return admApi.sendSpecialMessage(admAddress, { type: 'eth_transaction', amount, hash, comments })
           .then(() => {
             console.log('ADM message has been sent')
             return result
