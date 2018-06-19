@@ -35,7 +35,7 @@
     },
     mounted () {
       const timestamp = this.message.timestamp
-      this.$store.dispatch('eth/getTransaction', { hash: this.hash, timestamp })
+      this.$store.dispatch('eth/getTransaction', { hash: this.hash, timestamp, amount: this.amount })
     },
     computed: {
       hash () {

@@ -4,7 +4,7 @@
         <md-table-body>
           <md-table-row >
             <md-table-cell class='label_td'>{{ $t('transaction.amount') }}</md-table-cell>
-            <md-table-cell >{{ $formatAmount(transaction.amount, crypto) }} {{ crypto }}</md-table-cell>
+            <md-table-cell >{{ isFinite(transaction.amount) ? $formatAmount(transaction.amount, crypto) + ' '  + crypto : '⏱' }}</md-table-cell>
           </md-table-row>
           <md-table-row>
             <md-table-cell  class='label_td'>{{ $t('transaction.date') }}</md-table-cell>
@@ -16,7 +16,7 @@
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.commission') }}</md-table-cell>
-            <md-table-cell >{{ $formatAmount(transaction.fee, crypto) }} {{ crypto }}</md-table-cell>
+            <md-table-cell >{{ isFinite(transaction.fee) ? $formatAmount(transaction.fee, crypto) + ' '  + crypto : '⏱' }}</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.txid') }}</md-table-cell>
@@ -24,11 +24,11 @@
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.sender') }}</md-table-cell>
-            <md-table-cell class='data_td'>{{ transaction.senderId }}</md-table-cell>
+            <md-table-cell class='data_td'>{{ transaction.senderId || '⏱' }}</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.recipient') }}</md-table-cell>
-            <md-table-cell class='data_td'>{{ transaction.recipientId }} </md-table-cell>
+            <md-table-cell class='data_td'>{{ transaction.recipientId || '⏱' }} </md-table-cell>
           </md-table-row>
           <md-table-row class='open_in_explorer'>
             <md-table-cell  class='label_td'>

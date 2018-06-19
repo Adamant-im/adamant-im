@@ -34,11 +34,7 @@ export default {
 
   /** Adds a new transaction */
   setTransaction (state, tx) {
-    Vue.set(state.transactions, tx.hash, tx)
-  },
-
-  /** Sets current nonce */
-  nonce (state, nonce) {
-    state.nonce = Math.max(state.nonce || 0, parseInt(nonce) || 0)
+    const newTx = Object.assign({ }, state.transactions[tx.hash], tx)
+    Vue.set(state.transactions, tx.hash, newTx)
   }
 }

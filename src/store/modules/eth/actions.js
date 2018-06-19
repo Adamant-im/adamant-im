@@ -11,6 +11,8 @@ const HD_KEY_PATH = "m/44'/60'/3'/1/0"
 const TRANSFER_GAS = '21000'
 const KVS_ADDRESS = 'eth:address'
 const DEFAULT_GAS_PRICE = '20000000000' // 20 Gwei
+/** Max number of attempts to retrieve the transaction details */
+const MAX_ATTEMPTS = 150
 
 const endpoint = getEndpointUrl('ETH')
 const api = new Web3(new Web3.providers.HttpProvider(endpoint, 2000))
@@ -84,7 +86,7 @@ export default {
       }
 
       clearInterval(backgroundTimer)
-      backgroundTimer = setInterval(executeRequests, 1000)
+      backgroundTimer = setInterval(executeRequests, 2000)
     }
   },
 
@@ -112,7 +114,7 @@ export default {
       context.dispatch('updateStatus')
 
       clearInterval(backgroundTimer)
-      backgroundTimer = setInterval(executeRequests, 1000)
+      backgroundTimer = setInterval(executeRequests, 2000)
     }
   },
 
@@ -126,7 +128,7 @@ export default {
     const supplier = () => {
       if (!context.state.address) return []
 
-      const block = context.state.blockNumber ? Math.max(0, context.state.blockNumber - 8) : 0
+      const block = context.state.blockNumber ? Math.max(0, context.state.blockNumber - 12) : 0
 
       return [
         // Balance
@@ -159,15 +161,6 @@ export default {
     }, delay)
   },
 
-  /** Updates current nonce based on the transactions count */
-  updateNonce ({ state, commit }) {
-    if (state.nonce) return Promise.resolve(state.nonce)
-    return api.eth.getTransactionCount(state.address, 'latest').then(count => {
-      commit('nonce', count)
-      return state.nonce
-    })
-  },
-
   /**
    * Sends tokens to the specified ETH address.
    *
@@ -177,35 +170,40 @@ export default {
    * @returns {Promise<string>} ETH transaction hash
    */
   sendTokens (context, { amount, admAddress, ethAddress, comments }) {
+    // A dirty trick: change gas price a little bit in randomly. This way two subsequent
+    // transactions with the same amount & recipient will have different hashes, thus preventing
+    // the "Transaction with the same hash has already been imported" error.
+    const gasPriceDelta = Math.round(100 * Math.random())
+    const gasPrice = new api.utils.BN(context.state.gasPrice || DEFAULT_GAS_PRICE).add(
+      new api.utils.BN(gasPriceDelta)).toString()
+
     const ethTx = {
       from: context.state.address,
       to: ethAddress,
       value: toWei(amount),
       gas: TRANSFER_GAS,
-      gasPrice: context.state.gasPrice || DEFAULT_GAS_PRICE
+      gasPrice
     }
 
     if (!api.utils.isAddress(ethAddress)) {
       return Promise.reject({ code: 'invalid_address' })
     }
 
-    return context.dispatch('updateNonce')
-      .then(() => { if (context.state.nonce) ethTx.nonce = context.state.nonce })
-      .then(() => api.eth.accounts.signTransaction(ethTx, context.state.privateKey))
+    return api.eth.accounts.signTransaction(ethTx, context.state.privateKey)
       .then(signed => {
         const tx = signed.rawTransaction
         const hash = api.utils.sha3(tx)
         console.log('ETH transaction', hash)
 
-        const result = { hash, tx }
-
-        if (!admAddress) return result
-
+        return { tx, hash }
+      })
+      .then(signedTx => {
+        if (!admAddress) return signedTx
         // Send a special message to indicate that we're performing an ETH transfer
-        return admApi.sendSpecialMessage(admAddress, { type: 'eth_transaction', amount, hash, comments })
+        return admApi.sendSpecialMessage(admAddress, { type: 'eth_transaction', amount, hash: signedTx.hash, comments })
           .then(() => {
             console.log('ADM message has been sent')
-            return result
+            return signedTx
           })
           .catch((error) => {
             console.log('Failed to send "eth_transaction"', error)
@@ -229,7 +227,6 @@ export default {
         } else {
           console.log('ETH transaction has been sent')
 
-          context.commit('nonce', ethTx.nonce + 1)
           const timestamp = Date.now()
 
           context.commit('setTransaction', {
@@ -253,11 +250,19 @@ export default {
   /**
    * Enqueues a background request to retrieve the transaction details
    * @param {object} context Vuex action context
-   * @param {{hash: string, timestamp: number}} payload hash and timestamp of the transaction to fetch
+   * @param {{hash: string, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
    */
   getTransaction (context, payload) {
     const existing = context.state.transactions[payload.hash]
     if (existing && existing.status !== 'PENDING') return
+
+    // Set a stub so far
+    context.commit('setTransaction', {
+      hash: payload.hash,
+      timestamp: payload.timestamp,
+      amount: payload.amount,
+      status: 'PENDING'
+    })
 
     const key = 'transaction:' + payload.hash
     const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
@@ -276,9 +281,14 @@ export default {
         context.commit('setTransaction', transaction)
       }
 
-      // In case of an error or a pending transaction fetch its details once again later
-      if (err || (tx && !tx.blockNumber) || (!tx && payload.isNew)) {
-        context.dispatch('getTransaction', payload)
+      if (!tx && payload.attempt === MAX_ATTEMPTS) {
+        // Give up, if transaction could not be found after so many attempts
+        context.commit('setTransaction', { hash: tx.hash, status: 'ERROR' })
+      } else if (err || (tx && !tx.blockNumber) || (!tx && payload.isNew)) {
+        // In case of an error or a pending transaction fetch its details once again later
+        // Increment attempt counter, if no transaction was found so far
+        const newPayload = tx ? payload : { ...payload, attempt: 1 + (payload.attempt || 0) }
+        context.dispatch('getTransaction', newPayload)
       }
     })
 
