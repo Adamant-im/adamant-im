@@ -8,9 +8,13 @@ const baseWebpackConfig = require('./webpack.base.conf')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 const portfinder = require('portfinder')
 const fs = require('fs')
 const ip = require('ip')
+const loadMinified = require('./load-minified')
+
+const SERVICE_WORKER_FILENAME = 'service-worker.js';
 
 const HOST = ip.address()
 const PORT = process.env.PORT && Number(process.env.PORT)
@@ -18,7 +22,8 @@ const PORT = process.env.PORT && Number(process.env.PORT)
 const devWebpackConfig = merge(baseWebpackConfig, {
   mode: 'development',
   module: {
-    rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
+    rules:
+      utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
   },
   // cheap-module-eval-source-map is faster for development
   devtool: config.dev.devtool,
@@ -42,7 +47,12 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       : false,
     publicPath: config.dev.assetsPublicPath,
     proxy: config.dev.proxyTable,
-    https: true,
+    disableHostCheck: true,
+    https: {
+      key: fs.readFileSync(path.join(__dirname, 'certs/dev.adamant.im.key')),
+      cert: fs.readFileSync(path.join(__dirname, 'certs/dev.adamant.im.crt')),
+      ca: fs.readFileSync(path.join(__dirname, './certs/dev.adamant.im.pem'))
+    },
     quiet: true, // necessary for FriendlyErrorsPlugin
     watchOptions: {
       poll: config.dev.poll,
@@ -57,9 +67,10 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'index.html',
-      serviceWorkerLoader: `<script>${fs.readFileSync(path.join(__dirname,
-        './service-worker-dev.js'), 'utf-8')}</script>`,
-      inject: true
+      inject: true,
+      serviceWorker: `/${SERVICE_WORKER_FILENAME}`,
+      serviceWorkerLoader: `<script>${loadMinified(path.join(__dirname,
+        './service-worker.js'))}</script>`
     }),
     // copy custom static assets
     new CopyWebpackPlugin([
@@ -68,7 +79,13 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         to: config.dev.assetsSubDirectory,
         ignore: ['.*']
       }
-    ])
+    ]),
+    new SWPrecacheWebpackPlugin({
+      cacheId: 'adamant-im',
+      filename: SERVICE_WORKER_FILENAME,
+      minify: true
+    })
+
   ],
   optimization: {
     namedModules: true,

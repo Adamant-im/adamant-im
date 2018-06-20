@@ -10,6 +10,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
 const fs = require('fs')
+
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
@@ -54,8 +55,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'index.html',
-      serviceWorkerLoader: `<script>${fs.readFileSync(path.join(__dirname,
-       './service-worker-dev.js'), 'utf-8')}</script>`,
       inject: true
     }),
     // copy custom static assets

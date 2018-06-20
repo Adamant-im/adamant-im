@@ -13,6 +13,8 @@ const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const loadMinified = require('./load-minified')
 
+const SERVICE_WORKER_FILENAME = 'service-worker.js';
+
 const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
   : require('../config/prod.env')
@@ -20,7 +22,8 @@ const env = process.env.NODE_ENV === 'testing'
 const webpackConfig = merge(baseWebpackConfig, {
   mode: 'production',
   module: {
-    rules: utils.styleLoaders({
+    rules:
+      utils.styleLoaders({
       sourceMap: config.build.productionSourceMap,
       extract: true,
       usePostCSS: true
@@ -65,8 +68,9 @@ const webpackConfig = merge(baseWebpackConfig, {
       },
       // necessary to consistently work with multiple chunks
       chunksSortMode: 'dependency',
+      serviceWorker: `/${SERVICE_WORKER_FILENAME}`,
       serviceWorkerLoader: `<script>${loadMinified(path.join(__dirname,
-        './service-worker-prod.js'))}</script>`
+        './service-worker.js'))}</script>`
     }),
     // keep module.id stable when vendor modules does not change
     new webpack.NamedChunksPlugin(),
@@ -78,7 +82,17 @@ const webpackConfig = merge(baseWebpackConfig, {
         to: config.build.assetsSubDirectory,
         ignore: ['.*']
       }
-    ])
+    ]),
+
+    // service worker caching
+    new SWPrecacheWebpackPlugin({
+      cacheId: 'adamant-im',
+      filename: SERVICE_WORKER_FILENAME,
+      staticFileGlobs: ['dist/**/*.{js,html,css,woff,ttf,svg,png}'],
+      minify: true,
+      stripPrefix: 'dist/',
+      staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/]
+    })
   ]
 })
 
@@ -98,15 +112,6 @@ if (config.build.productionGzip) {
       minRatio: 0.8
     })
   )
-
-  // service worker caching
-  new SWPrecacheWebpackPlugin({
-      cacheId: 'adamant-im',
-      filename: 'service-worker.js',
-      staticFileGlobs: ['dist/**/*.{js,html,css,woff,ttf,svg,png}'],
-      minify: true,
-      stripPrefix: 'dist/'
-  })
 
   new UglifyJsPlugin({
     uglifyOptions: {
