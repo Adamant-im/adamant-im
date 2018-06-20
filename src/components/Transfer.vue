@@ -131,7 +131,7 @@ export default {
         this.errorMessage('error_incorrect_amount')
         return
       }
-      if ((parseFloat(this.targetAmount) + this.commission) > parseFloat(this.balance)) {
+      if ((parseFloat(this.targetAmount) + parseFloat(this.commission)) > parseFloat(this.balance)) {
         this.errorMessage('error_not_enough')
         return
       }
@@ -179,7 +179,7 @@ export default {
       return this.$t('transfer.to_address_label')
     },
     confirmMessage () {
-      let target = this.displayName || this.fixedAddress
+      let target = this.displayName || this.fixedAddress || this.targetAddress
 
       if (target !== this.targetAddress) {
         target += ' (' + this.targetAddress + ')'
@@ -257,7 +257,7 @@ export default {
         }
     }
 
-    .send_funds_button {
-      margin-top: 20px;
-    }
+  .md-button.send_funds_button {
+    margin-top: 20px;
+  }
 </style>

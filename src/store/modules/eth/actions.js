@@ -103,7 +103,7 @@ export default {
   rehydrate: {
     root: true,
     handler (context) {
-      const passphrase = context.rootState.passPhrase
+      const passphrase = context.rootGetters.getPassPhrase
       const address = context.state.address
 
       if (!address && passphrase) {

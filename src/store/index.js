@@ -71,8 +71,8 @@ const store = {
       commit('save_passphrase', {'passPhrase': passPhrase})
       admApi.unlock(passPhrase)
     },
-    rehydrate ({ state }) {
-      admApi.unlock(state.passPhrase)
+    rehydrate ({ getters }) {
+      admApi.unlock(getters.getPassPhrase)
     }
   },
   mutations: {
