@@ -23,7 +23,7 @@ npm install
 # serve with hot reload at localhost:8082
 npm run dev
 
-# serve with https hot reload at localhost:8082
+# serve with https hot reload at 192.168.*.*/10.0.*.*:8082
 # Don't forget to add '${your_local_server_address} dev.adamant.im' into your /etc/hosts file on testing device
 # (usually 192.168.*.* dev.adamant.im).
 

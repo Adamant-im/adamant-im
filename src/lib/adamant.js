@@ -126,13 +126,13 @@ adamant.getBytes = function (transaction) {
   bb.writeByte(transaction.type)
   bb.writeInt(transaction.timestamp)
 
-  var senderPublicKeyBuffer = Buffer.alloc(transaction.senderPublicKey, 'hex')
+  var senderPublicKeyBuffer = Buffer.from(transaction.senderPublicKey, 'hex')
   for (var i = 0; i < senderPublicKeyBuffer.length; i++) {
     bb.writeByte(senderPublicKeyBuffer[i])
   }
 
   if (transaction.requesterPublicKey) {
-    var requesterPublicKey = Buffer.alloc(transaction.requesterPublicKey, 'hex')
+    var requesterPublicKey = Buffer.from(transaction.requesterPublicKey, 'hex')
 
     for (var i = 0; i < requesterPublicKey.length; i++) {
       bb.writeByte(requesterPublicKey[i])
@@ -162,14 +162,14 @@ adamant.getBytes = function (transaction) {
   }
 
   if (!skipSignature && transaction.signature) {
-    var signatureBuffer = Buffer.alloc(transaction.signature, 'hex')
+    var signatureBuffer = Buffer.from(transaction.signature, 'hex')
     for (var i = 0; i < signatureBuffer.length; i++) {
       bb.writeByte(signatureBuffer[i])
     }
   }
 
   if (!skipSecondSignature && transaction.signSignature) {
-    var signSignatureBuffer = Buffer.alloc(transaction.signSignature, 'hex')
+    var signSignatureBuffer = Buffer.from(transaction.signSignature, 'hex')
     for (var i = 0; i < signSignatureBuffer.length; i++) {
       bb.writeByte(signSignatureBuffer[i])
     }
@@ -183,7 +183,7 @@ adamant.getBytes = function (transaction) {
     buffer[i] = arrayBuffer[i]
   }
 
-  return Buffer.alloc(buffer)
+  return Buffer.from(buffer)
 }
 
 adamant.transactionSign = function (trs, keypair) {
