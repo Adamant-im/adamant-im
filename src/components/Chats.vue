@@ -27,7 +27,7 @@
 
                 <div class="md-list-text-container">
                     <span>{{ chatName(chat.partner) }}</span>
-                    <p v-html="chat.last_message.message"></p>
+                    <chat-entry :message="chat.last_message" :brief="true"></chat-entry>
                     <span class="dt" v-if="chat.last_message.timestamp">{{ $formatDate(chat.last_message.timestamp) }}</span>
                 </div>
 
@@ -41,10 +41,11 @@
 
 <script>
 import NewChat from './NewChat.vue'
+import ChatEntry from './chat/ChatEntry.vue'
 
 export default {
   name: 'chats',
-  components: { NewChat },
+  components: { NewChat, ChatEntry },
   methods: {
     load () {
       this.loadChats(true)
@@ -59,10 +60,7 @@ export default {
       return 0
     },
     chatName (address) {
-      if (this.$store.state.partners[address]) {
-        return this.$store.state.partners[address]
-      }
-      return address
+      return this.$store.getters['partners/displayName'](address) || address
     },
     startNewChat () {
       this.$refs['new-chat-dialog'].open()
@@ -101,6 +99,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+    .chats .chat_entry {
+	      max-height:25px;
+    }
+    .chats .chat_entry p {
+        margin-top: 0;
+    }
     .chat_loads {
         position: absolute;
         background: rgba(0,0,0,0.3);

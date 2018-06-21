@@ -58,7 +58,11 @@ export default {
     'date_yesterday': 'Ieri',
     'date_tomorrow': 'Mâine',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Copiat',
@@ -93,18 +97,23 @@ export default {
     'send_button_tooltip': 'După ce apăsați pe buton, veți vedea o cerere de confirmare.',
     'to_address_label': 'Către adresa',
     'to_address_label_tooltip': 'Introduceți identificatorul destinatarului, de exemplu U1234567890',
+    'to_label': 'To',
     'amount_label': 'Suma transferului',
     'final_amount_label': 'Suma, inclusiv taxa de transfer',
     'commission_label': 'Taxa de transfer',
     'error_no_address': 'Va rugăm introduceți adresa Portofelului',
-    'error_incorrect_address': 'Adresa Portofelului greșită',
+    'error_incorrect_address': 'Adresa {crypto} Portofelului greșită',
     'error_incorrect_amount': 'Sumă incorectă',
     'error_no_amount': 'Vă rugăm introduceți o sumă',
     'error_not_enough': 'Token-uri insuficiente',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Confirmare transfer',
     'confirm_message': 'Confirmați transferul de <b>{amount} {crypto}</b> către adresa <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confirmă',
-    'confirm_cancel': 'Anulează'
+    'confirm_cancel': 'Anulează',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Portofel',

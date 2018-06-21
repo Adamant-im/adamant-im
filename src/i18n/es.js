@@ -58,7 +58,11 @@ export default {
     'date_yesterday': 'Ayer',
     'date_tomorrow': 'Mañana',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Copiado',
@@ -93,18 +97,23 @@ export default {
     'send_button_tooltip': 'Después de hacer clic en el botón, podrá ver una solicitud de confirmación.',
     'to_address_label': 'Dirección de Destinatario',
     'to_address_label_tooltip': 'Ingrese el identificador del destinatario, por ejemplo U1234567890',
+    'to_label': 'To',
     'amount_label': 'Monto a enviar',
     'final_amount_label': 'Monto con comisión des transferencia',
     'commission_label': 'Comisión des transferencia',
     'error_no_address': 'Por favor proveer dirección de billetera',
-    'error_incorrect_address': 'Dirección de la billetera incorrecta',
+    'error_incorrect_address': 'Dirección de la {crypto} billetera incorrecta',
     'error_incorrect_amount': 'Monto incorrecto',
     'error_no_amount': 'Favor proveer un monto',
     'error_not_enough': 'No tiene tokens suficientes',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Confirmación de transferencia',
     'confirm_message': 'Confirmar transferencia de <b>{amount} {crypto}</b> a la dirección <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confirmar',
-    'confirm_cancel': 'Cancelar'
+    'confirm_cancel': 'Cancelar',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Billetera',

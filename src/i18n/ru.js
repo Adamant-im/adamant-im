@@ -58,7 +58,11 @@ export default {
     'date_yesterday': 'Вчера',
     'date_tomorrow': 'Завтра',
     'sent_label': 'Отправлено',
-    'received_label': 'Получено'
+    'received_label': 'Получено',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Скопировано',
@@ -93,18 +97,25 @@ export default {
     'send_button_tooltip': 'После нажатия на эту кнопку вы увидите запрос на подтверждение перевода',
     'to_address_label': 'Адрес получателя',
     'to_address_label_tooltip': 'Укажите идентификатор кошелька получателя токенов, как U1234567890',
+    'to_label': 'Получатель',
     'amount_label': 'Количество для перевода',
     'final_amount_label': 'Количество, включая комиссию',
     'commission_label': 'Комиссия за перевод',
+    'comments_label': 'Комментарий',
     'error_no_address': 'Укажите адрес кошелька получателя',
-    'error_incorrect_address': 'Неверный адрес кошелька',
+    'error_incorrect_address': 'Неверный адрес {crypto} кошелька',
     'error_incorrect_amount': 'Неверное количество',
     'error_no_amount': 'Укажите сумму для перевода',
     'error_not_enough': 'Недостаточно токенов для перевода',
+    'error_chat_fee': 'Чтобы отправить {crypto} в чате, вам также нужно 0.001 ADM',
+    'error_transaction_send': 'Ошибка при отправке транзакции',
     'confirm_title': 'Подтверждение перевода',
     'confirm_message': 'Подтвердите перевод <b>{amount} {crypto}</b> на кошелек <span class="address-in-confirm">{target}</span>.',
+    'confirm_message_with_name': 'Подтвердите перевод <b>{amount} {crypto}</b> <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Подтвердить',
-    'confirm_cancel': 'Отмена'
+    'confirm_cancel': 'Отмена',
+    'no_address_title': 'У получателя пока еще нет {crypto}-кошелька',
+    'no_address_text': 'Этот собеседник еще не получил публичный {crypto}-кошелек. Чтобы получить его, он должен зайти в мессенджер с балансом более 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Кошелек',

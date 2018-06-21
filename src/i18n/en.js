@@ -60,7 +60,11 @@ export default {
     'date_yesterday': 'Yesterday',
     'date_tomorrow': 'Tomorrow',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Copied',
@@ -95,18 +99,25 @@ export default {
     'send_button_tooltip': 'After you click the button, you\'ll see a confirmation request.',
     'to_address_label': 'To Address',
     'to_address_label_tooltip': 'Enter a recepient identifier, like U1234567890',
+    'to_label': 'To',
     'amount_label': 'Amount to send',
     'final_amount_label': 'Amount including transfer fee',
     'commission_label': 'Transfer fee',
+    'comments_label': 'Comments',
     'error_no_address': 'Please provide wallet address',
-    'error_incorrect_address': 'Incorrect wallet address',
+    'error_incorrect_address': 'Incorrect {crypto} wallet address',
     'error_incorrect_amount': 'Incorrect amount',
     'error_no_amount': 'Please provide amount',
     'error_not_enough': 'Not enough tokens',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Transfer confirmation',
     'confirm_message': 'Confirm transfer of <b>{amount} {crypto}</b> to address <span class="address-in-confirm">{target}</span>.',
+    'confirm_message_with_name': 'Confirm transfer of <b>{amount} {crypto}</b> to <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confirm',
-    'confirm_cancel': 'Cancel'
+    'confirm_cancel': 'Cancel',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Wallet',
