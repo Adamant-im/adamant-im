@@ -185,10 +185,9 @@ export default {
         return 0
       }
 
-      let messages = this.$store.getters.currentChatTransactions
-      if (this.$store.state.currentChat.messages) {
-        messages = messages.concat(Object.values(this.$store.state.currentChat.messages))
-      }
+      const chat = this.$store.state.currentChat.messages || { }
+      const transactions = this.$store.getters.currentChatTransactions.filter(x => !chat[x.id])
+      const messages = Object.values(chat).concat(transactions)
 
       return messages.sort(compare)
     }
