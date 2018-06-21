@@ -140,7 +140,7 @@ export default {
           if (!err) {
             context.commit('gasPrice', {
               gasPrice: price,
-              fee: toEther(1.5 * Number(TRANSFER_GAS) * price)
+              fee: toEther(2 * Number(TRANSFER_GAS) * price)
             })
           }
         }),
@@ -189,7 +189,11 @@ export default {
       return Promise.reject({ code: 'invalid_address' })
     }
 
-    return api.eth.accounts.signTransaction(ethTx, context.state.privateKey)
+    return api.eth.getTransactionCount(context.state.address, 'pending')
+      .then(count => {
+        if (count) ethTx.nonce = count
+        return api.eth.accounts.signTransaction(ethTx, context.state.privateKey)
+      })
       .then(signed => {
         const tx = signed.rawTransaction
         const hash = api.utils.sha3(tx)
@@ -200,9 +204,10 @@ export default {
       .then(signedTx => {
         if (!admAddress) return signedTx
         // Send a special message to indicate that we're performing an ETH transfer
-        return admApi.sendSpecialMessage(admAddress, { type: 'eth_transaction', amount, hash: signedTx.hash, comments })
+        const msg = { type: 'eth_transaction', amount, hash: signedTx.hash, comments }
+        return admApi.sendSpecialMessage(admAddress, msg)
           .then(() => {
-            console.log('ADM message has been sent')
+            console.log('ADM message has been sent', msg)
             return signedTx
           })
           .catch((error) => {
@@ -216,7 +221,10 @@ export default {
         const payload = method.toPayload([tx])
 
         return new Promise((resolve) => {
-          method.requestManager.send(payload, error => resolve({ hash, error }))
+          method.requestManager.send(payload, (error, result) => {
+            console.log('sendSignedTransaction', { error, result })
+            resolve({ hash: result, error })
+          })
         })
       })
       .then(({ hash, error }) => {
@@ -236,8 +244,7 @@ export default {
             amount,
             fee: toEther(Number(ethTx.gas) * ethTx.gasPrice),
             status: 'PENDING',
-            timestamp,
-            confirmations: 0
+            timestamp
           })
 
           context.dispatch('getTransaction', { hash, timestamp, isNew: true })
@@ -275,7 +282,7 @@ export default {
           fee: toEther(Number(tx.gas) * tx.gasPrice),
           status: tx.blockNumber ? 'SUCCESS' : 'PENDING',
           timestamp: payload.timestamp, // TODO: fetch from block?
-          confirmations: tx.blockNumber ? (context.state.blockNumber - tx.blockNumber) : 0
+          blockNumber: tx.blockNumber
         }
 
         context.commit('setTransaction', transaction)

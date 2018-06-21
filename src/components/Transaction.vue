@@ -4,7 +4,7 @@
         <md-table-body>
           <md-table-row >
             <md-table-cell class='label_td'>{{ $t('transaction.amount') }}</md-table-cell>
-            <md-table-cell >{{ isFinite(transaction.amount) ? $formatAmount(transaction.amount, crypto) + ' '  + crypto : '⏱' }}</md-table-cell>
+            <md-table-cell >{{ transaction.amount ? $formatAmount(transaction.amount, crypto) + ' '  + crypto : '⏱' }}</md-table-cell>
           </md-table-row>
           <md-table-row>
             <md-table-cell  class='label_td'>{{ $t('transaction.date') }}</md-table-cell>
@@ -16,7 +16,7 @@
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.commission') }}</md-table-cell>
-            <md-table-cell >{{ isFinite(transaction.fee) ? $formatAmount(transaction.fee, crypto) + ' '  + crypto : '⏱' }}</md-table-cell>
+            <md-table-cell >{{ transaction.fee ? $formatAmount(transaction.fee, crypto) + ' '  + crypto : '⏱' }}</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.txid') }}</md-table-cell>
@@ -86,10 +86,15 @@
         return this.$route.params.crypto
       },
       confirmations: function () {
-        if (!this.transaction.confirmations) {
-          return '⏱'
+        let num = 0
+
+        if (this.crypto === Cryptos.ADM) {
+          num = this.transaction.confirmations
+        } else if (this.crypto === Cryptos.ETH && this.transaction.blockNumber) {
+          num = Math.max(0, (this.$store.state.eth.blockNumber || 0) - this.transaction.blockNumber)
         }
-        return this.transaction.confirmations
+
+        return num || '⏱'
       },
       transaction: function () {
         if (this.$route.params.crypto === Cryptos.ETH) {
