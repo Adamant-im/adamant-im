@@ -31,3 +31,6 @@ export const Fees = {
   /** Transfering tokens */
   TRANSFER: 0.5
 }
+
+/** Regex for detecting of base64 encoded string */
+export const base64regex = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
