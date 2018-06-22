@@ -4,28 +4,52 @@ import getEndpointUrl from './getEndpointUrl'
 import { Cryptos, Transactions } from './constants'
 import utils from './adamant'
 
-const endpoint = getEndpointUrl(Cryptos.ADM)
-
 /** @type {{privateKey: Buffer, publicKey: Buffer}} */
 let myKeypair = { }
 let myAddress = null
 
+/** Delta between local time and server time (ADM timestamp) */
+let serverTimeDelta = 0
+
 const publicKeysCache = { }
 
 function toAbsolute (url = '') {
-  return endpoint + url
+  return getEndpointUrl(Cryptos.ADM) + url
+}
+
+function parseResponse (response) {
+  const body = response.body
+  if (body && isFinite(body.nodeTimestamp)) {
+    serverTimeDelta = utils.epochTime() - body.nodeTimestamp
+  }
+  return body
 }
 
 function get (url, query) {
   return sa.get(toAbsolute(url))
     .query(query)
-    .then(response => response.body)
+    .then(parseResponse)
 }
 
 function post (url, payload) {
   return sa.post(toAbsolute(url))
     .send(payload)
-    .then(response => response.body)
+    .then(parseResponse)
+}
+
+/**
+ * Creates a new transaction with the common fields pre-filled
+ * @param {number} type transaction type
+ * @returns {{type: number, senderId: string, senderPublicKey: string, timestamp: number}}
+ */
+function newTransaction (type) {
+  return {
+    type,
+    amount: 0,
+    senderId: myAddress,
+    senderPublicKey: myKeypair.publicKey.toString('hex'),
+    timestamp: utils.epochTime() - serverTimeDelta
+  }
 }
 
 export function unlock (passphrase) {
@@ -73,17 +97,10 @@ export function sendMessage (params) {
         : JSON.stringify(params.message)
       const message = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
 
-      const transaction = {
-        type: Transactions.CHAT_MESSAGE,
-        amount: params.amount ? utils.prepareAmount(params.amount) : 0,
-        asset: {
-          chat: { ...message, type: params.type || 1 }
-        },
-        recipientId: params.to,
-        senderId: myAddress,
-        senderPublicKey: myKeypair.publicKey.toString('hex'),
-        timestamp: utils.epochTime()
-      }
+      const transaction = newTransaction(Transactions.CHAT_MESSAGE)
+      transaction.amount = params.amount ? utils.prepareAmount(params.amount) : 0
+      transaction.asset = { chat: { ...message, type: params.type || 1 } }
+      transaction.recipientId = params.to
       transaction.signature = utils.transactionSign(transaction, myKeypair)
 
       return post('/api/chats/process', { transaction })
@@ -106,17 +123,8 @@ export function sendSpecialMessage (to, payload) {
  * @returns {Promise<{success: boolean}>}
  */
 export function storeValue (key, value) {
-  const transaction = {
-    type: Transactions.STATE,
-    amount: 0,
-    senderId: myAddress,
-    senderPublicKey: myKeypair.publicKey.toString('hex'),
-    asset: {
-      state: { key, value, type: 0 }
-    },
-    timestamp: utils.epochTime()
-  }
-
+  const transaction = newTransaction(Transactions.STATE)
+  transaction.asset = { state: { key, value, type: 0 } }
   transaction.signature = utils.transactionSign(transaction, myKeypair)
 
   return post('/api/states/store', { transaction }).then(console.log, console.error)
@@ -148,15 +156,9 @@ export function getStored (key, ownerAddress) {
  * @returns {Promise<{success: boolean, transactionId: string}>}
  */
 export function sendTokens (to, amount) {
-  const transaction = {
-    type: Transactions.SEND,
-    amount: utils.prepareAmount(amount),
-    recipientId: to,
-    senderId: myAddress,
-    senderPublicKey: myKeypair.publicKey.toString('hex'),
-    timestamp: utils.epochTime()
-  }
-
+  const transaction = newTransaction(Transactions.SEND)
+  transaction.amount = utils.prepareAmount(amount)
+  transaction.recipientId = to
   transaction.signature = utils.transactionSign(transaction, myKeypair)
 
   return post('/api/transactions/process', { transaction })
