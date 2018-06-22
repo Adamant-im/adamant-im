@@ -8,6 +8,7 @@ import ethModule from './modules/eth'
 import partnersModule from './modules/partners'
 
 import * as admApi from '../lib/adamant-api'
+import {base64regex} from '../lib/constants'
 
 function deviceIsDisabled () {
   try {
@@ -297,7 +298,11 @@ const store = {
     },
     // Returns decoded pass phrase from store
     getPassPhrase: state => {
-      return Base64.decode(state.passPhrase)
+      if (state.passPhrase.match(base64regex)) {
+        return Base64.decode(state.passPhrase)
+      } else {
+        return state.passPhrase
+      }
     }
   },
   modules: {
