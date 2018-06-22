@@ -1,5 +1,5 @@
 <template>
-  <component v-bind:is="entryComponent" :message="message" :brief="!!brief"></component>
+  <component v-bind:is="entryComponent" :readOnly="readOnly" :message="message" :brief="!!brief"></component>
 </template>
 
 <script>
@@ -8,7 +8,7 @@
 
   export default {
     name: 'chat-entry',
-    props: ['message', 'brief'],
+    props: ['message', 'brief', 'readOnly'],
     components: {
       AdmMessage,
       EthTransfer

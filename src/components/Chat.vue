@@ -2,12 +2,12 @@
   <div class="chat">
       <md-layout md-align="start" md-gutter="16" class="chat_messages">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
-            <chat-entry :message="message"></chat-entry>
+            <chat-entry :readOnly="readOnly" :message="message"></chat-entry>
           </md-layout>
           <md-layout style="height:0" md-flex="100"></md-layout>
       </md-layout>
       <md-layout md-align="start" md-gutter="16" class="message_form" style="z-index: 10;">
-      <md-layout style='padding-left: 0;'>
+      <md-layout style='padding-left: 0;' v-show="readOnly">
           <md-layout md-flex="10">
             <md-menu class="attach_menu" md-align-trigger md-size="4">
               <md-button md-menu-trigger style="min-height: 45px;max-height: 45px; min-width: 60px;margin-left:0;">
@@ -33,14 +33,14 @@
               </md-menu-content>
             </md-menu>
           </md-layout>
-          <md-layout md-flex="80"   md-flex-xsmall="75" class="text_block">
+          <md-layout md-flex="80" md-flex-xsmall="75" class="text_block" v-if="readOnly">
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
                   <md-textarea ref="messageField" v-model="message" @keydown.native="kp($event)" @focus="focusHandler" @blur.native="blurHandler"></md-textarea>
                   <span v-if="message_fee" class="md-count">{{ $t('chats.estimate_fee') }}: {{message_fee}}</span>
               </md-input-container>
           </md-layout>
-          <md-layout md-flex="10">
+          <md-layout md-flex="10" v-if="readOnly">
               <md-button class="send_button" :title="$t('chats.send_button_tooltip')" v-on:click="send" style="min-width: 76px;min-height: 20px;max-height: 45px;"><md-icon>send</md-icon></md-button>
           </md-layout>
       </md-layout>

@@ -19,7 +19,7 @@
 
             </md-list-item>
 
-            <md-list-item v-for="(chat) in chatList" :key="chat.partner" v-on:click="$router.push('/chats/' + chat.partner + '/')">
+            <md-list-item class="black-text" v-for="(chat) in chatList" :key="chat.partner" v-on:click="$router.push('/chats/' + chat.partner + '/')">
                 <md-avatar class="md-avatar-icon" style="overflow: visible;">
                     <md-icon>library_books</md-icon>
                     <div class="new-icon" v-if="newMessages(chat.partner)">{{ newMessages(chat.partner) }}</div>

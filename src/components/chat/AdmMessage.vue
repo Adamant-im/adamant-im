@@ -4,6 +4,7 @@
     :direction="message.direction"
     :timestamp="message.timestamp"
     :brief="brief"
+    :readOnly="readOnly"
   >
     <p v-if="message.amount">
       {{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}
@@ -26,7 +27,7 @@
   export default {
     name: 'adm-message',
     components: { ChatEntryTemplate },
-    props: ['message', 'brief'],
+    props: ['message', 'brief', 'readOnly', 'readOnly'],
     methods: {
       goToTransaction () {
         this.$store.commit('leave_chat')
