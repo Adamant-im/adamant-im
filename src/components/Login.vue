@@ -31,13 +31,14 @@
                      md-align="center"
                      class="qr-code-buttons">
             <md-button classs="md-ripple md-disabled"
-                       @click.prevent="scanQRCode">
+                       @click="scanQRCode">
               <Icon name="qrCodeLense" />
             </md-button>
             <md-button classs="md-ripple md-disabled"
                        @click.prevent="saveQRCode">
               <Icon name="qrCode" />
             </md-button>
+            <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
           </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
             <p v-if="message">{{message}}</p>
@@ -88,12 +89,14 @@
 import b64toBlob from 'b64-to-blob'
 import FileSaver from 'file-saver'
 import Icon from '@/components/Icon'
+import QRScan from '@/components/QRScan'
 import { Fees } from '../lib/constants'
 
 export default {
   name: 'login',
   components: {
-    Icon
+    Icon,
+    QRScan
   },
   methods: {
     scrollToBottom: function () {
@@ -130,7 +133,11 @@ export default {
       this.showQRCode = true
     },
     scanQRCode () {
-      this.$router.push('/scan/')
+      this.showModal = true
+    },
+    savePassPhrase (payload) {
+      this.passPhrase = payload
+      this.logme()
     },
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
@@ -204,7 +211,7 @@ export default {
       return new Mnemonic(Mnemonic.Words.ENGLISH).toString()
     },
     qrCodePassPhrase: function () {
-      return this.$store.state.passPhrase
+      return this.passPhrase
     }
   },
   watch: {
@@ -219,7 +226,8 @@ export default {
       language: this.$i18n.locale,
       showCreate: false,
       message: '',
-      showQRCode: false
+      showQRCode: false,
+      showModal: false
     }
   }
 }
