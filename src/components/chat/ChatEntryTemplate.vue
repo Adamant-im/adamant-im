@@ -15,7 +15,7 @@
       <span class="msg-holder">
         <slot></slot>
       </span>
-      <div v-if="readOnly" class="dt">{{ $formatDate(timestamp) }}</div>
+      <div v-if="!readOnly" class="dt">{{ $formatDate(timestamp) }}</div>
     </md-layout>
     <span v-if="brief">
       <slot name="brief-view"></slot>

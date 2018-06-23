@@ -27,7 +27,7 @@
   export default {
     name: 'adm-message',
     components: { ChatEntryTemplate },
-    props: ['message', 'brief', 'readOnly', 'readOnly'],
+    props: ['message', 'brief', 'readOnly'],
     methods: {
       goToTransaction () {
         this.$store.commit('leave_chat')
