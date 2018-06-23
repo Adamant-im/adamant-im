@@ -1,5 +1,5 @@
 <template>
-  <div class="chat_entry">
+  <div class="chat_entry black-text">
     <md-layout
       md-flex="90"
       md-flex-xsmall="85"
@@ -15,7 +15,7 @@
       <span class="msg-holder">
         <slot></slot>
       </span>
-      <div class="dt">{{ $formatDate(timestamp) }}</div>
+      <div v-if="!readOnly" class="dt">{{ $formatDate(timestamp) }}</div>
     </md-layout>
     <span v-if="brief">
       <slot name="brief-view"></slot>
@@ -26,7 +26,7 @@
 <script>
   export default {
     name: 'chat-entry-template',
-    props: ['confirm', 'direction', 'timestamp', 'brief']
+    props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly']
   }
 </script>
 
@@ -34,7 +34,9 @@
   .chat_entry {
     width: 100%;
   }
-
+  .black-text {
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
   .chat_message p {
     margin: 0;
     padding: 5px 0;

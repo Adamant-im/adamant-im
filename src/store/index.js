@@ -34,6 +34,30 @@ if (defaultLanguage !== 'ru' && defaultLanguage !== 'en') {
   defaultLanguage = 'en'
 }
 
+function createMockMessage (state, newAccount, partner, message) {
+  let currentDialogs = state.chats[partner]
+  if (!currentDialogs) {
+    currentDialogs = {
+      partner: partner,
+      readOnly: true,
+      messages: {
+        0: {
+          message: window.ep.$i18n.t('chats.' + message),
+          timestamp: 0
+        }
+      },
+      last_message: {
+        message: window.ep.$i18n.t('chats.' + message),
+        timestamp: 0
+      }
+    }
+  }
+  if (newAccount) {
+    Vue.set(state.newChats, partner, 1)
+  }
+  Vue.set(state.chats, partner, currentDialogs)
+}
+
 const store = {
   state: {
     address: '',
@@ -55,6 +79,11 @@ const store = {
     sendOnEnter: false,
     showBottom: true,
     partnerName: '',
+    partnerDisplayName: '',
+    partners: {
+      'U7047165086065693428': 'ADAMANT ICO',
+      'U15423595369615486571': 'ADAMANT Bounty Wallet'
+    },
     newChats: {},
     totalNewChats: 0,
     chats: {},
@@ -193,6 +222,11 @@ const store = {
     },
     have_loaded_chats (state) {
       state.firstChatLoad = false
+    },
+    mock_messages (state) {
+      const newAccount = store.state.is_new_account
+      createMockMessage(state, newAccount, 'ADAMANT ICO', 'ico_message')
+      createMockMessage(state, newAccount, 'ADAMANT Bounty', 'welcome_message')
     },
     create_chat (state, payload) {
       var partner = payload
