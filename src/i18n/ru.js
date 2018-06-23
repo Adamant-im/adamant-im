@@ -49,6 +49,7 @@ export default {
     'send_button': 'Отправить',
     'send_button_tooltip': 'Нажмите, чтобы отправить сообщение',
     'recipient': 'Адрес получателя',
+    'scan_recipient_button': 'Сканировать',
     'recipient_tooltip': 'Укажите идентификатор кошелька получателя сообщения, как U1234567890',
     'message': 'Введите сообщение',
     'estimate_fee': 'Ориентировочная комиссия',

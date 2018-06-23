@@ -1,24 +1,22 @@
 <template>
-  <div class="qrscan">
-    <div v-show="modalWindow" class="modal-wrapper" :class="modalWindow ? 'active' : ''">
-      <div class="modal-overlay"></div>
-      <div class="modal-container">
-        <div class="modal">
-          <div class="modal-body">
-            <h3>{{ $t('scan.modal_header') === 'scan.modal_header'? 'Scan your password from QR-code' : $t('scan.modal_header') }}</h3>
-            <video id="preview"></video>
+  <div v-show="modalWindow" class="modal-wrapper" :class="modalWindow ? 'active' : ''">
+    <div class="modal-overlay"></div>
+    <div class="modal-container">
+      <div class="modal">
+        <div class="modal-body">
+          <h3>{{ $t('scan.modal_header') === 'scan.modal_header'? 'Scan your password from QR-code' : $t('scan.modal_header') }}</h3>
+          <video id="preview"></video>
+        </div>
+        <div class="modal-footer">
+          <div class="buttons_container" v-if="cameras.length > 1" v-for="(camera, index) in cameras" :key="camera.id">
+            <md-button v-if="camera.id === activeCameraId" :title="camera.name" disabled class="md-raised md-short">
+              {{ $t('scan.camera_button') === 'scan.camera_button'? 'Camera' : $t('scan.camera_button') + index }}
+            </md-button>
+            <md-button class="md-raised md-short" v-if="camera.id !== activeCameraId" :title="camera.name" @click.stop="selectCamera(camera)">
+              {{ $t('scan.camera_button') === 'scan.camera_button'? 'Camera' : $t('scan.camera_button') + index }}
+            </md-button>
           </div>
-          <div class="modal-footer">
-            <div class="buttons_container" v-if="cameras.length > 1" v-for="(camera, index) in cameras" :key="camera.id">
-              <md-button v-if="camera.id === activeCameraId" :title="camera.name" disabled class="md-raised md-short">
-                {{ $t('scan.camera_button') === 'scan.camera_button'? 'Camera' : $t('scan.camera_button') + index }}
-              </md-button>
-              <md-button class="md-raised md-short" v-if="camera.id !== activeCameraId" :title="camera.name" @click.stop="selectCamera(camera)">
-                {{ $t('scan.camera_button') === 'scan.camera_button'? 'Camera' : $t('scan.camera_button') + index }}
-              </md-button>
-            </div>
-            <md-button class="md-raised md-short" @click="hideModal"> {{ $t('scan.close_button') === 'scan.close_button'? 'Close' : $t('scan.close_button') }} </md-button>
-          </div>
+          <md-button class="md-raised md-short" @click="hideModal"> {{ $t('scan.close_button') === 'scan.close_button'? 'Close' : $t('scan.close_button') }} </md-button>
         </div>
       </div>
     </div>
@@ -33,9 +31,6 @@ export default {
   methods: {
     hideModal () {
       this.$emit('hide-modal')
-    },
-    formatName: function (name) {
-      return name || '(unknown)'
     },
     selectCamera: function (camera) {
       this.activeCameraId = camera.id
@@ -79,7 +74,6 @@ export default {
     self.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5, mirror: false })
     self.scanner.addListener('scan', function (content, image) {
       self.parseHandler(content)
-      // self.scans.unshift({ date: +(Date.now()), content: content })
     })
     Instascan.Camera.getCameras().then(function (cameras) {
       self.cameras = cameras
