@@ -499,7 +499,6 @@ function install (Vue) {
       if (response.body.success) {
         for (var i in response.body.transactions) {
           if (response.body.transactions[i].type === 0) {
-            console.log('im here')
             this.$store.commit('transaction_info', response.body.transactions[i])
             this.$store.commit('set_last_transaction_height', response.body.transactions[i].height)
           }
