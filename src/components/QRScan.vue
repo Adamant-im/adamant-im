@@ -4,7 +4,6 @@
     <div class="modal-container">
       <div class="modal">
         <div class="modal-body">
-          <md-button @click="clickclick">Test</md-button>
           <!--TODO: check parent name with 'this.$parent.$vnode.tag'-->
           <!--<h3>{{ $t('scan.modal_header') === 'scan.modal_header'? 'Scan your password from QR-code' : $t('scan.modal_header') }}</h3>-->
           <video id="preview"></video>
