@@ -11,12 +11,12 @@
 </template>
 
 <script>
-  export default {
-    name: 'spinner',
-    data () {
-      return { }
-    }
+export default {
+  name: 'spinner',
+  data () {
+    return { }
   }
+}
 </script>
 
 <style>

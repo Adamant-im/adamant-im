@@ -232,69 +232,66 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+  @media (max-width: 600px) {
+    .chat_messages {
+      margin-left: -8px!important;
 
-    @media (max-width: 600px) {
-        .chat_messages {
-            margin-left: -8px!important;
-
-        }
-
-        .send_button, .attach_button {
-            min-width: 40px!important;
-            padding: 0!important;
-            margin: 6px 0px!important;
-        }
-        .md-flex-xsmall-offset-20
-        {
-            margin-left: 25%;
-        }
-        .md-flex-xsmall-offset-5 {
-            margin-left: 5%!important;
-        }
-        .md-flex-xsmall-offset-10 {
-            margin-left: 10%!important;
-        }
-        .md-toolbar .md-title
-        {
-            font-size: 16px;
-        }
-
-        .text_block {
-            margin-left: 10px;
-        }
     }
 
+    .send_button, .attach_button {
+      min-width: 40px!important;
+      padding: 0!important;
+      margin: 6px 0px!important;
+    }
+    .md-flex-xsmall-offset-20
+    {
+      margin-left: 25%;
+    }
+    .md-flex-xsmall-offset-5 {
+      margin-left: 5%!important;
+    }
+    .md-flex-xsmall-offset-10 {
+      margin-left: 10%!important;
+    }
+    .md-toolbar .md-title
+    {
+      font-size: 16px;
+    }
 
-.avatar-holder {
+    .text_block {
+      margin-left: 10px;
+    }
+  }
+
+  .avatar-holder {
     width: 45px;
     height: 45px;
     position: absolute;
     top: 20px;
     right: 0;
     left:auto;
-}
+  }
 
+  .md-own .avatar-holder{
+    position: absolute;
+    left:10px;
+    right:auto;
 
-    .md-own .avatar-holder{
-        position: absolute;
-        left:10px;
-        right:auto;
-
-        top: 20px;
-    }
-    .md-own.chat_message {
-        padding-left:55px;
-        padding-right: 10px;
-    }
-.avatar-holder:before {
+    top: 20px;
+  }
+  .md-own.chat_message {
+    padding-left:55px;
+    padding-right: 10px;
+  }
+  .avatar-holder:before {
     content: 'assignment_ind';
     font-family: "Material Icons";
     text-rendering: optimizeLegibility;
     font-size: 40px;
     vertical-align: middle;
     line-height: 40px;
-}
-.chat_messages {
+  }
+  .chat_messages {
     overflow-y: auto;
     overflow-x: hidden;
     max-height: 100%;
@@ -302,8 +299,8 @@ export default {
     margin-top: 80px;
     padding-top: 10px;
     margin-left: 0!important;
-}
-.message_form {
+  }
+  .message_form {
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -312,8 +309,8 @@ export default {
     margin: 0 auto;
     max-width: 800px;
     margin-left:0!important;
-}
-.md-toolbar.md-theme-grey {
+  }
+  .md-toolbar.md-theme-grey {
     position: fixed;
     width: 100%;
     top: 0;
@@ -325,21 +322,20 @@ export default {
     /* background: rgba(153, 153, 153, 0.2); */
     background: #ebebeb;
     border-bottom: none;
-}
-.attach_menu .md-list-item.md-menu-item {
+  }
+  .attach_menu .md-list-item.md-menu-item {
     background-color: rgba(255,255,255,1);
-}
-.attach_menu .md-list-item.md-menu-item.md-disabled {
+  }
+  .attach_menu .md-list-item.md-menu-item.md-disabled {
     color: gray;
-}
-.chat_entry {
+  }
+  .chat_entry {
     display: flex;
-}
-.attach_menu {
+  }
+  .attach_menu {
     background: white;
-}
-
-.md-dialog-container.md-active .md-dialog {
+  }
+  .md-dialog-container.md-active .md-dialog {
     background: #fefefe;
-}
+  }
 </style>

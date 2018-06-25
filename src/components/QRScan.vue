@@ -4,7 +4,9 @@
     <div class="modal-container">
       <div class="modal">
         <div class="modal-body">
-          <h3>{{ $t('scan.modal_header') === 'scan.modal_header'? 'Scan your password from QR-code' : $t('scan.modal_header') }}</h3>
+          <md-button @click="clickclick">Test</md-button>
+          <!--TODO: check parent name with 'this.$parent.$vnode.tag'-->
+          <!--<h3>{{ $t('scan.modal_header') === 'scan.modal_header'? 'Scan your password from QR-code' : $t('scan.modal_header') }}</h3>-->
           <video id="preview"></video>
         </div>
         <div class="modal-footer">
@@ -65,13 +67,17 @@ export default {
     }
   },
   beforeDestroy: function () {
-    if (this.scanner) {
-      this.scanner.stop()
+    let self = this
+    console.log(self.scanner)
+    if (self.scanner) {
+      self.scanner.stop()
+      console.log(self.scanner)
     }
   },
   mounted: function () {
     let self = this
     self.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5, mirror: false })
+    console.log(self.scanner)
     self.scanner.addListener('scan', function (content, image) {
       self.parseHandler(content)
     })

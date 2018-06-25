@@ -212,7 +212,7 @@ export default {
           })
           .catch((error) => {
             console.log('Failed to send "eth_transaction"', error)
-            return Promise.reject({ code: 'adm_message' })
+            return Promise.reject(new Error('adm_message'))
           })
       })
       .then(({ tx, hash }) => {

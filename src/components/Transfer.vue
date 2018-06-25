@@ -2,16 +2,16 @@
   <div class="transfer">
       <spinner v-if="isWaiting" />
       <form novalidate @submit.stop.prevent="submit">
-    	    <md-input-container>
-              <md-select v-model="crypto" style="text-align: left;" :disabled="!!this.fixedCrypto">
-                  <md-option v-for="c in cryptosList" v-bind:key="c" :value="c">
-                      {{ c }}
-                  </md-option>
-              </md-select>
-          </md-input-container>
+        <md-input-container>
+          <md-select v-model="crypto" style="text-align: left;" :disabled="!!this.fixedCrypto">
+            <md-option v-for="c in cryptosList" v-bind:key="c" :value="c">
+              {{ c }}
+            </md-option>
+          </md-select>
+        </md-input-container>
           <md-input-container :title="!this.fixedAddress ? $t('transfer.to_address_label_tooltip') : ''">
-              <label>{{ addressLabel }}</label>
-              <md-input v-model="targetAddress" :readonly="!!this.fixedAddress"></md-input>
+            <label>{{ addressLabel }}</label>
+            <md-input v-model="targetAddress" :readonly="!!this.fixedAddress"></md-input>
           </md-input-container>
           <md-layout>
             <md-layout>
@@ -232,32 +232,31 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-
-    .address-in-confirm {
-        word-break: break-word;
-    }
-    .md-dialog-container.md-active .md-dialog {
-        background: #fefefe;
-    }
-    .md-input-container.md-has-value input.md-input[readonly] {
-        color: rgba(0, 0, 0, 0.54);
-    }
+  .address-in-confirm {
+    word-break: break-word;
+  }
+  .md-dialog-container.md-active .md-dialog {
+    background: #fefefe;
+  }
+  .md-input-container.md-has-value input.md-input[readonly] {
+    color: rgba(0, 0, 0, 0.54);
+  }
+  .transfer {
+    margin-top: 80px;
+  }
+  .transfer form {
+    max-width: 95%;
+    margin: auto;
+  }
+  @media (max-width: 800px) {
     .transfer {
-	margin-top: 80px;
+      padding-left: 1rem;
+      padding-right: 1rem;
     }
-    .transfer form {
-        max-width: 95%;
-	margin: auto;
+    .amount-label {
+      font-size: 12px;
     }
-    @media (max-width: 800px) {
-        .transfer {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-        .amount-label {
-          font-size: 12px;
-        }
-    }
+  }
 
   .md-button.send_funds_button {
     margin-top: 20px;

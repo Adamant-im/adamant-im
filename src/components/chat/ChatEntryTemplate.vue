@@ -24,10 +24,10 @@
 </template>
 
 <script>
-  export default {
-    name: 'chat-entry-template',
-    props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly']
-  }
+export default {
+  name: 'chat-entry-template',
+  props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly']
+}
 </script>
 
 <style>

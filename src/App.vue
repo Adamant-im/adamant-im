@@ -17,8 +17,8 @@
                   <md-icon >keyboard_backspace</md-icon>
               </md-button>
             <h1 class="md-title">
-		    {{ $t('home.send_btn') }}
-                </h1>
+              {{ $t('home.send_btn') }}
+            </h1>
           </md-toolbar>
     <main>
         <router-view></router-view>

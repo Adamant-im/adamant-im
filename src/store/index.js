@@ -340,8 +340,8 @@ const store = {
     }
   },
   modules: {
-    eth: ethModule,             // Ethereum-related data
-    partners: partnersModule    // Partners: display names, crypto addresses and so on
+    eth: ethModule, // Ethereum-related data
+    partners: partnersModule // Partners: display names, crypto addresses and so on
   }
 }
 

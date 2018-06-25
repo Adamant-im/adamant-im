@@ -40,7 +40,12 @@ export default {
       this.showModal = true
     },
     saveTargetAddress (payload) {
-      this.targetAddress = payload
+      if (payload.match(/U\d*/)) {
+        this.targetAddress = payload.match(/U\d*/)[0]
+      } else {
+        this.errorMessage('incorrect_address')
+        return
+      }
       this.send()
     },
     errorMessage (message) {

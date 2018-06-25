@@ -21,21 +21,21 @@
 </template>
 
 <script>
-  import ChatEntryTemplate from './ChatEntryTemplate.vue'
-  import { Cryptos } from '../../lib/constants'
+import ChatEntryTemplate from './ChatEntryTemplate.vue'
+import { Cryptos } from '../../lib/constants'
 
-  export default {
-    name: 'adm-message',
-    components: { ChatEntryTemplate },
-    props: ['message', 'brief', 'readOnly'],
-    methods: {
-      goToTransaction () {
-        this.$store.commit('leave_chat')
-        const params = { crypto: Cryptos.ADM, tx_id: this.message.id }
-        this.$router.push({ name: 'Transaction', params })
-      }
+export default {
+  name: 'adm-message',
+  components: { ChatEntryTemplate },
+  props: ['message', 'brief', 'readOnly'],
+  methods: {
+    goToTransaction () {
+      this.$store.commit('leave_chat')
+      const params = { crypto: Cryptos.ADM, tx_id: this.message.id }
+      this.$router.push({ name: 'Transaction', params })
     }
   }
+}
 </script>
 
 <style>
