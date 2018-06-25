@@ -19,10 +19,9 @@
     ],
     "eth": [
       {
-        "ip": "api.myetherapi.com",
+        "ip": "ethnode1.adamant.im",
         "protocol": "https",
-        "port": "",
-        "path": "eth"
+        "port": ""
       }
     ]
   }

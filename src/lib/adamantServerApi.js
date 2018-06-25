@@ -2,7 +2,8 @@ import Queue from 'promise-queue'
 
 var config = require('../config.json')
 var adamant = require('./adamant.js')
-const constants = require('./constants.js')
+const renderMarkdown = require('./markdown').default
+const { hexToBytes, bytesToHex } = require('./hex')
 
 Queue.configure(window.Promise)
 window.queue = new Queue(1, Infinity)
@@ -50,7 +51,7 @@ function install (Vue) {
         privateKey: window.privateKey
       }
     }
-    var hash = adamant.createPassPhraseHash(this.$store.state.passPhrase)
+    var hash = adamant.createPassPhraseHash(this.$store.getters.getPassPhrase)
     var keypair = adamant.makeKeypair(hash)
     window.privateKey = keypair.privateKey
     window.publicKey = keypair.publicKey
@@ -58,7 +59,7 @@ function install (Vue) {
   }
   Vue.prototype.getPublicKeyFromPassPhrase = function (passPhrase) {
     var keypair
-    if (this.$store.state.passPhrase) {
+    if (this.$store.getters.getPassPhrase) {
       keypair = this.getKeypair()
     } else {
       var hash = adamant.createPassPhraseHash(passPhrase)
@@ -67,50 +68,6 @@ function install (Vue) {
       window.publicKey = keypair.publicKey
     }
     return keypair.publicKey.toString('hex')
-  }
-  Vue.prototype.getStored = function (key, address) {
-    if (!address) {
-      address = this.$store.state.address
-    }
-
-    return this.$http.get(this.getAddressString() + '/api/states/get?senderId=' + address).then(response => {
-      if (response.body.success) {
-        const trans = response.body.transactions.filter(x => key === (x.asset && x.asset.state && x.asset.state.key))[0]
-        return trans ? trans.asset.state.value : undefined
-      }
-    })
-  }
-
-  Vue.prototype.storeValue = function (key, value, callback) {
-    const keys = this.getKeypair()
-
-    const transaction = {
-      type: constants.Transactions.STATE,
-      amount: 0,
-      senderId: this.$store.state.address,
-      senderPublicKey: keys.publicKey.toString('hex'),
-      asset: {
-        state: { key, value, type: 0 }
-      },
-      timestamp: adamant.epochTime()
-    }
-
-    transaction.signature = adamant.transactionSign(transaction, keys)
-
-    this.$store.commit('ajax_start')
-    this.$http.post(this.getAddressString() + '/api/states/store', { transaction }).then(response => {
-      if (response.body.success) {
-        if (callback) {
-          callback.call(this)
-        }
-        this.$store.commit('ajax_end')
-      } else {
-        alert(response.body.error)
-        this.$store.commit('ajax_end_with_error')
-      }
-    }, response => {
-      // error callback
-    })
   }
   Vue.prototype.createNewAccount = function (publicKey, callback) {
     this.$store.commit('ajax_start')
@@ -160,19 +117,6 @@ function install (Vue) {
     }
     this.getAccountByPublicKey(publicKey, callback)
   }
-  Vue.prototype.hexToBytes = function (hex) {
-    for (var bytes = [], c = 0; c < hex.length; c += 2) {
-      bytes.push(parseInt(hex.substr(c, 2), 16))
-    }
-    return bytes
-  }
-  Vue.prototype.bytesToHex = function (bytes) {
-    for (var hex = [], i = 0; i < bytes.length; i++) {
-      hex.push((bytes[i] >>> 4).toString(16))
-      hex.push((bytes[i] & 0xF).toString(16))
-    }
-    return hex.join('')
-  }
 
   Vue.prototype.encodeMessage = function (msg, recipientPublicKey) {
     var sodium = require('sodium-browserify-tweetnacl')
@@ -182,7 +126,7 @@ function install (Vue) {
     sodium.randombytes(nonce)
     var plainText = Buffer.from(msg)
     var keypair = this.getKeypair()
-    var DHPublicKey = ed2curve.convertPublicKey(new Uint8Array(this.hexToBytes(recipientPublicKey)))
+    var DHPublicKey = ed2curve.convertPublicKey(hexToBytes(recipientPublicKey))
     var DHSecretKey
     if (window.secretKey) {
       DHSecretKey = window.secretKey
@@ -193,8 +137,8 @@ function install (Vue) {
 
     var encrypted = nacl.box(plainText, nonce, DHPublicKey, DHSecretKey)
     return {
-      message: this.bytesToHex(encrypted),
-      own_message: this.bytesToHex(nonce)
+      message: bytesToHex(encrypted),
+      own_message: bytesToHex(nonce)
     }
   }
   Vue.prototype.decodeMessage = function (msg, senderPublicKey, nonce) {
@@ -245,7 +189,7 @@ function install (Vue) {
     })
   }
   Vue.prototype.sendMessage = function (msg, recipient) {
-    if (this.$store.state.passPhrase) {
+    if (this.$store.getters.getPassPhrase) {
       this.$store.commit('ajax_start')
       var keypair = this.getKeypair()
       var transaction = {}
@@ -315,7 +259,7 @@ function install (Vue) {
   }
   Vue.prototype.transferFunds = function (amount, recipient) {
     this.$store.commit('ajax_start')
-    if (this.$store.state.passPhrase) {
+    if (this.$store.getters.getPassPhrase) {
       var keypair = this.getKeypair()
       var transaction = {}
       transaction.type = 0
@@ -388,19 +332,17 @@ function install (Vue) {
     })
   }
   Vue.prototype.updateCurrentValues = function () {
-    if (this.$store.state.passPhrase && !this.$store.state.ajaxIsOngoing) {
+    if (this.$store.getters.getPassPhrase && !this.$store.state.ajaxIsOngoing) {
       // updating wallet balance
       if (this.$route.path.indexOf('/transactions/') > -1) {
         if (this.$route.params.tx_id) {
           this.getTransactionInfo(this.$route.params.tx_id)
         }
       }
-      this.getAccountByPublicKey(this.getPublicKeyFromPassPhrase(this.$store.state.passPhrase))
+      this.getAccountByPublicKey(this.getPublicKeyFromPassPhrase(this.$store.getters.getPassPhrase))
       this.$store.commit('start_tracking_new')
       this.loadChats()
       this.getTransactions()
-
-      this.$store.dispatch('eth/updateStatus')
     } else if (this.$store.state.ajaxIsOngoing && !window.resetAjaxState) {
       window.resetAjaxState = setTimeout(
         (function (self) {
@@ -419,90 +361,47 @@ function install (Vue) {
       return
     }
     var currentAddress = this.$store.state.address
-    var marked = require('marked')
-    marked.setOptions({
-      sanitize: true,
-      gfm: true,
-      breaks: true
-    })
-    var renderer = new marked.Renderer()
-    renderer.image = function (href, title, text) {
-      return ''
-    }
-    renderer.link = function (href, title, text) {
-      try {
-        var prot = decodeURIComponent(unescape(href))
-          .replace(/[^\w:]/g, '')
-          .toLowerCase()
-      } catch (e) {
-        return text
-      }
-      if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
-        return text
-      }
-      text = href
-      var out = '<a href="' + href + '"'
-      out += '>' + text + '</a>'
-      return out
-    }
+
     if (currentTransaction.type > 0) {
-      var decodePublic = ''
-      if (currentTransaction.recipientId !== currentAddress) {
-        this.$store.commit('create_chat', currentTransaction.recipientId)
-        window.queue.add(function () {
-          return this.getAddressPublicKey(currentTransaction.recipientId).catch(() => { /* TODO: handle somehow */ })
-        }.bind(this)
-        ).then(function (currentTransaction, decodePublic) {
-          decodePublic = Buffer.from(decodePublic, 'hex')
-          var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
-          var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
+      const promise = currentTransaction.recipientId !== currentAddress
+        ? window.queue.add(() => this.getAddressPublicKey(currentTransaction.recipientId))
+        : Promise.resolve(currentTransaction.senderPublicKey)
+
+      promise
+        .then(decodePublic => {
+          decodePublic = hexToBytes(decodePublic)
+          var message = hexToBytes(currentTransaction.asset.chat.message)
+          var nonce = hexToBytes(currentTransaction.asset.chat.own_message)
           currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
-          if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
-            // currentTransaction.message = this.$i18n.t('chats.welcome_message')
-          } else {
-            currentTransaction.message = marked(currentTransaction.message, {renderer: renderer})
-          }
-          if (currentTransaction.message && currentTransaction.message.length > 0) {
-            if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
-              if (currentTransaction.senderId === 'U15423595369615486571') {
-                currentTransaction.message = 'chats.welcome_message'
-              }
-              if (currentTransaction.senderId === 'U7047165086065693428') {
-                currentTransaction.message = 'chats.ico_message'
-              }
-              this.$store.dispatch('add_chat_i18n_message', currentTransaction)
-            } else {
-              this.$store.commit('add_chat_message', currentTransaction)
-            }
-          }
-          this.messageProcessed()
-        }.bind(this, currentTransaction))
-      } else {
-        decodePublic = currentTransaction.senderPublicKey
-        decodePublic = new Uint8Array(this.hexToBytes(decodePublic))
-        var message = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.message))
-        var nonce = new Uint8Array(this.hexToBytes(currentTransaction.asset.chat.own_message))
-        currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
-        if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
-          // currentTransaction.message = this.$i18n.t('chats.welcome_message')
-        } else {
-          currentTransaction.message = marked(currentTransaction.message, {renderer: renderer})
-        }
-        if (currentTransaction.message && currentTransaction.message.length > 0) {
-          if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
-            if (currentTransaction.senderId === 'U15423595369615486571') {
-              currentTransaction.message = 'chats.welcome_message'
-            }
-            if (currentTransaction.senderId === 'U7047165086065693428') {
-              currentTransaction.message = 'chats.ico_message'
-            }
-            this.$store.dispatch('add_chat_i18n_message', currentTransaction)
-          } else {
+
+          if (currentTransaction.asset.chat.type === 2) {
+            currentTransaction.message = JSON.parse(currentTransaction.message)
             this.$store.commit('add_chat_message', currentTransaction)
+          } else {
+            if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
+              // TODO: is that 'if' condition required?
+              // currentTransaction.message = this.$i18n.t('chats.welcome_message')
+            } else {
+              currentTransaction.message = renderMarkdown(currentTransaction.message)
+            }
+
+            if (currentTransaction.message && currentTransaction.message.length > 0) {
+              if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
+                if (currentTransaction.senderId === 'U15423595369615486571') {
+                  currentTransaction.message = 'chats.welcome_message'
+                }
+                if (currentTransaction.senderId === 'U7047165086065693428') {
+                  currentTransaction.message = 'chats.ico_message'
+                }
+                this.$store.dispatch('add_chat_i18n_message', currentTransaction)
+              } else {
+                this.$store.commit('add_chat_message', currentTransaction)
+              }
+            }
           }
-        }
-        this.messageProcessed()
-      }
+        })
+        .catch(err => console.warn('Failed to parse incoming message', err))
+        .then(() => this.messageProcessed())
     }
   }
   Vue.prototype.loadChats = function (initialCall, offset) {
@@ -599,7 +498,6 @@ function install (Vue) {
       if (response.body.success) {
         for (var i in response.body.transactions) {
           if (response.body.transactions[i].type === 0) {
-            console.log('im here')
             this.$store.commit('transaction_info', response.body.transactions[i])
             this.$store.commit('set_last_transaction_height', response.body.transactions[i].height)
           }

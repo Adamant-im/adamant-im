@@ -41,16 +41,21 @@ export default new Router({
       name: 'Options',
       component: Options
     },
-    { path: '/chats/:partner/', component: Chat },
+    {
+      path: '/chats/:partner/',
+      component: Chat,
+      name: 'Chat'
+    },
     {
       path: '/chats',
       name: 'Chats',
       component: Chats
     },
     {
-      path: '/transfer',
+      path: '/transfer/:fixedCrypto?/:fixedAddress?',
       name: 'Transfer',
-      component: Transfer
+      component: Transfer,
+      props: true
     },
     {
       path: '/home',

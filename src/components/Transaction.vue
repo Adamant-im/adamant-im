@@ -4,19 +4,19 @@
         <md-table-body>
           <md-table-row >
             <md-table-cell class='label_td'>{{ $t('transaction.amount') }}</md-table-cell>
-            <md-table-cell >{{ $formatAmount(transaction.amount, crypto) }} {{ crypto }}</md-table-cell>
+            <md-table-cell >{{ transaction.amount ? $formatAmount(transaction.amount, crypto) + ' '  + crypto : '⏱' }}</md-table-cell>
           </md-table-row>
-          <md-table-row >
+          <md-table-row>
             <md-table-cell  class='label_td'>{{ $t('transaction.date') }}</md-table-cell>
-            <md-table-cell >{{ $formatDate(transaction.timestamp, crypto === 'ADM') }}</md-table-cell>
+            <md-table-cell >{{ transaction.timestamp ? $formatDate(transaction.timestamp) : '⏱' }}</md-table-cell>
           </md-table-row>
-          <md-table-row v-if="crypto === 'ADM'">
+          <md-table-row>
             <md-table-cell  class='label_td'>{{ $t('transaction.confirmations') }}</md-table-cell>
             <md-table-cell >{{ confirmations }}</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.commission') }}</md-table-cell>
-            <md-table-cell >{{ $formatAmount(transaction.fee, crypto) }} {{ crypto }}</md-table-cell>
+            <md-table-cell >{{ transaction.fee ? $formatAmount(transaction.fee, crypto) + ' '  + crypto : '⏱' }}</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.txid') }}</md-table-cell>
@@ -24,11 +24,11 @@
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.sender') }}</md-table-cell>
-            <md-table-cell class='data_td'>{{ transaction.senderId.toString() }}</md-table-cell>
+            <md-table-cell class='data_td'>{{ transaction.senderId || '⏱' }}</md-table-cell>
           </md-table-row>
           <md-table-row >
             <md-table-cell  class='label_td'>{{ $t('transaction.recipient') }}</md-table-cell>
-            <md-table-cell class='data_td'>{{ transaction.recipientId.toString() }} </md-table-cell>
+            <md-table-cell class='data_td'>{{ transaction.recipientId || '⏱' }} </md-table-cell>
           </md-table-row>
           <md-table-row class='open_in_explorer'>
             <md-table-cell  class='label_td'>
@@ -64,8 +64,11 @@ export default {
   },
   watch: {
     '$route': function (value) {
-      if (value.params.crypto === Cryptos.ADM) {
+      const crypto = value.params.crypto
+      if (crypto === Cryptos.ADM) {
         this.getTransactionInfo(value.params.tx_id)
+      } else if (crypto === Cryptos.ETH) {
+        this.$store.dispatch('eth/getTransaction', { hash: value.params.tx_id })
       }
     }
   },
@@ -83,10 +86,15 @@ export default {
       return this.$route.params.crypto
     },
     confirmations: function () {
-      if (!this.transaction.confirmations) {
-        return '⏱'
+      let num = 0
+
+      if (this.crypto === Cryptos.ADM) {
+        num = this.transaction.confirmations
+      } else if (this.crypto === Cryptos.ETH && this.transaction.blockNumber) {
+        num = Math.max(0, (this.$store.state.eth.blockNumber || 0) - this.transaction.blockNumber)
       }
-      return this.transaction.confirmations
+
+      return num || '⏱'
     },
     transaction: function () {
       if (this.$route.params.crypto === Cryptos.ETH) {

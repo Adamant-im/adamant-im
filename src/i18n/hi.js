@@ -58,7 +58,11 @@ export default {
     'date_yesterday': 'बीता कल',
     'date_tomorrow': 'आने वाला कल',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'कॉपी हुआ',
@@ -97,18 +101,23 @@ export default {
     'send_button_tooltip': 'आपके द्वारा बटन क्लिक करने के बाद, आपको एक पुष्टिकरण अनुरोध दिखाई देगा.',
     'to_address_label': 'पते को',
     'to_address_label_tooltip': 'एक प्राप्य पहचानकर्ता दर्ज करें, जैसे U1234567890',
+    'to_label': 'To',
     'amount_label': 'राशि भेजे',
     'final_amount_label': 'राशी में हस्तान्तार्ण शुल्क सम्मलित है ',
     'commission_label': 'हस्तान्तार्ण शुल्क ',
     'error_no_address': 'कृपया वॉलेट पता बताएं',
-    'error_incorrect_address': 'गलत वॉलेट पता ',
+    'error_incorrect_address': 'गलत {crypto} वॉलेट पता ',
     'error_incorrect_amount': 'गलत राशी ',
     'error_no_amount': 'कृपया राशी डाले ',
     'error_not_enough': 'टोकन नाकाफी',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'हस्तान्तार्ण पुष्टिकरण',
     'confirm_message': 'हस्तान्तार्ण का  पुष्टिकरण<b>{amount} {crypto}</b> इस पते पर <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'पुष्टिकरण',
-    'confirm_cancel': 'रद्द करे'
+    'confirm_cancel': 'रद्द करे',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'वॉलेट',

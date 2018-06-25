@@ -11,7 +11,7 @@
             :title="addr.tooltip ? $t(addr.tooltip) : ''"
           >
               <md-avatar class="md-avatar-icon">
-                  <md-icon>account_circle</md-icon>
+                  <md-icon :md-src="addr.addressIcon"></md-icon>
               </md-avatar>
 
               <div class="md-list-text-container for-address">
@@ -31,7 +31,7 @@
             :title="wallet.balanceTooltip ? $t(wallet.balanceTooltip) : ''"
           >
             <md-avatar class="md-avatar-icon">
-                <md-icon>account_balance_wallet</md-icon>
+                <md-icon :md-src="wallet.balanceIcon"></md-icon>
             </md-avatar>
             <div class="md-list-text-container">
                 <span>{{ $t('home.your_balance_' + wallet.system) }}</span>
@@ -41,7 +41,7 @@
 
           <md-list-item v-on:click="$router.push('/transfer/')" :title="$t('home.send_btn_tooltip')">
               <md-avatar class="md-avatar-icon">
-                  <md-icon>send</md-icon>
+                  <md-icon md-src="static/img/Wallet/send.svg"></md-icon>
               </md-avatar>
               <div class="md-list-text-container">
                   <span>{{ $t('home.send_btn') }}</span>
@@ -53,7 +53,7 @@
           <md-list-item :href="freeAdmAddress" target="_blank">
 
               <md-avatar class="md-avatar-icon">
-                  <md-icon>monetization_on</md-icon>
+                  <md-icon md-src="static/img/Wallet/free-tokens.svg"></md-icon>
               </md-avatar>
 
               <div class="md-list-text-container">
@@ -65,7 +65,7 @@
           <md-list-item :href="icoAddress" target="_blank" :title="$t('home.invest_btn_tooltip')">
 
               <md-avatar class="md-avatar-icon">
-                  <md-icon>monetization_on</md-icon>
+                  <md-icon md-src="static/img/Wallet/join-ico.svg"></md-icon>
               </md-avatar>
 
               <div class="md-list-text-container">
@@ -120,14 +120,18 @@ export default {
           address: this.$store.state.address,
           tooltip: 'home.your_address_tooltip_ADM',
           balance: this.$store.state.balance,
-          balanceTooltip: 'home.your_balance_tooltip_ADM'
+          balanceTooltip: 'home.your_balance_tooltip_ADM',
+          addressIcon: 'static/img/Wallet/adm-address.svg',
+          balanceIcon: 'static/img/Wallet/adm-balance.svg'
         },
         {
           system: 'ETH',
           address: this.$store.state.eth.address,
           tooltip: 'home.your_address_tooltip_ETH',
           balance: this.$store.state.eth.balance,
-          balanceTooltip: 'home.your_balance_tooltip_ETH'
+          balanceTooltip: 'home.your_balance_tooltip_ETH',
+          addressIcon: 'static/img/Wallet/eth-address.svg',
+          balanceIcon: 'static/img/Wallet/eth-balance.svg'
         }
       ]
     }

@@ -58,7 +58,11 @@ export default {
     'date_yesterday': 'Yesterday',
     'date_tomorrow': 'Tomorrow',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Скопійовано',
@@ -93,18 +97,23 @@ export default {
     'send_button_tooltip': 'Після натискання кнопки, ви побачите запит на підтвердження.',
     'to_address_label': 'До адреси',
     'to_address_label_tooltip': 'Введіть ідентифікатор отримувача, наприклад U1234567890',
+    'to_label': 'To',
     'amount_label': 'Сума для надсилання',
     'final_amount_label': 'Сума включаючи комісію',
     'commission_label': 'Комісія надсилання',
     'error_no_address': 'Будь ласка, введіть адресу гаманця',
-    'error_incorrect_address': 'Невірна адреса',
+    'error_incorrect_address': 'Невірна {crypto} адреса',
     'error_incorrect_amount': 'Невірна сума',
     'error_no_amount': 'Будь ласка, введіть суму',
     'error_not_enough': 'Не достатньо токенів',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Підтвердження транзакції',
     'confirm_message': 'Підтвердіть надсилання токенів<b>{amount} {crypto}</b> до адреси <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Підтвердити',
-    'confirm_cancel': 'Відмінити'
+    'confirm_cancel': 'Відмінити',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Гаманець',

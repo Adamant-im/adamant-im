@@ -2,39 +2,45 @@
   <div class="chat">
       <md-layout md-align="start" md-gutter="16" class="chat_messages">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
-              <md-layout
-                md-flex="90"
-                md-flex-xsmall="85"
-                class="chat_message md-whiteframe md-whiteframe-1dp"
-                :data-confirmation="message.confirm_class"
-                v-bind:class="{
-                  'md-flex-xsmall-offset-10': message.direction === 'from',
-                  'md-own md-flex-xsmall-offset-5': message.direction === 'to'
-                }"
-              >
-                <span class="avatar-holder"></span>
-                <span v-if="message.type !== 0" v-html="message.message" class="msg-holder"></span>
-                <span v-if="message.type === 0" class="msg-holder">
-                  <p>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</p>
-                  <p class='transaction-amount' v-on:click="goToTransaction(message.id)">
-                    <span v-html="$formatAmount(message.amount)"></span> ADM
-                  </p>
-                </span>
-                <div class="dt">{{ $formatDate(message.timestamp) }}</div>
-              </md-layout>
+            <chat-entry :readOnly="readOnly" :message="message"></chat-entry>
           </md-layout>
           <md-layout style="height:0" md-flex="100"></md-layout>
       </md-layout>
       <md-layout md-align="start" md-gutter="16" class="message_form" style="z-index: 10;">
-      <md-layout>
-          <md-layout md-flex="90"   md-flex-xsmall="85" class="text_block">
+      <md-layout style='padding-left: 0;' v-show="!readOnly">
+          <md-layout md-flex="10">
+            <md-menu class="attach_menu" md-align-trigger md-size="4">
+              <md-button md-menu-trigger style="min-height: 45px;max-height: 45px; min-width: 60px;margin-left:0;">
+                <md-icon md-src="static/img/Attach/attach.svg"></md-icon>
+              </md-button>
+              <md-menu-content class="attach_menu">
+                <md-menu-item v-on:click="sendTokens('ADM')">
+                  <md-icon md-src="static/img/Attach/adm.svg">menu</md-icon>
+                  <span>{{ $t('chats.send_adm') }}</span>
+                </md-menu-item>
+                <md-menu-item v-on:click="sendTokens('ETH')">
+                  <md-icon  md-src="static/img/Attach/ethereum.svg">menu</md-icon>
+                  <span>{{ $t('chats.send_eth') }}</span>
+                </md-menu-item>
+                <md-menu-item :disabled="true">
+                  <md-icon md-src="static/img/Attach/picture.svg">collections</md-icon>
+                  <span>{{ $t('chats.attach_image') }}</span>
+                </md-menu-item>
+                <md-menu-item :disabled="true">
+                  <md-icon  md-src="static/img/Attach/file.svg"></md-icon>
+                  <span>{{ $t('chats.attach_file') }}</span>
+                </md-menu-item>
+              </md-menu-content>
+            </md-menu>
+          </md-layout>
+          <md-layout md-flex="80" md-flex-xsmall="75" class="text_block" v-if="!readOnly">
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
                   <md-textarea ref="messageField" v-model="message" @keydown.native="kp($event)" @focus="focusHandler" @blur.native="blurHandler"></md-textarea>
                   <span v-if="message_fee" class="md-count">{{ $t('chats.estimate_fee') }}: {{message_fee}}</span>
               </md-input-container>
           </md-layout>
-          <md-layout md-flex="10">
+          <md-layout md-flex="10" v-if="!readOnly">
               <md-button class="send_button" :title="$t('chats.send_button_tooltip')" v-on:click="send" style="min-width: 76px;min-height: 20px;max-height: 45px;"><md-icon>send</md-icon></md-button>
           </md-layout>
       </md-layout>
@@ -42,14 +48,21 @@
       <md-snackbar md-position="bottom center" md-accent ref="chatsSnackbar" md-duration="2000">
           <span>{{ formErrorMessage }}</span>
       </md-snackbar>
+    <md-dialog-alert
+      :md-title="$t('transfer.no_address_title', { crypto: sendToCrypto })"
+      :md-content-html="$t('transfer.no_address_text', { crypto: sendToCrypto })"
+      ref="no_address_dialog"
+    />
   </div>
 </template>
 
 <script>
+import ChatEntry from './chat/ChatEntry.vue'
 import { Cryptos } from '../lib/constants'
 
 export default {
   name: 'chats',
+  components: { ChatEntry },
   methods: {
     blurHandler: function (event) {
       if (/iP(hone|od|ad)/.test(navigator.platform)) {
@@ -126,11 +139,27 @@ export default {
         this.$refs.messageField.$el.value = ''
       }
     },
-    goToTransaction (id) {
-      this.$store.commit('leave_chat')
-      // TODO: other cryptos may appear here in future
-      const params = { crypto: Cryptos.ADM, tx_id: id }
-      this.$router.push({ name: 'Transaction', params })
+    sendTokens (crypto) {
+      this.sendToCrypto = crypto
+
+      let promise = Promise.resolve(true)
+      // For cryptos other than ADM we need to fetch the respective account address first
+      if (crypto !== Cryptos.ADM) {
+        const params = { crypto, partner: this.$route.params.partner }
+        promise = this.$store.dispatch('partners/fetchAddress', params).then(address => {
+          if (!address) this.$refs['no_address_dialog'].open()
+          return !!address
+        })
+      }
+
+      // If it's ADM or target address is available, we're good to go
+      promise.then(addressOk => {
+        if (!addressOk) return
+
+        this.$store.commit('leave_chat')
+        const params = { fixedCrypto: crypto, fixedAddress: this.$route.params.partner }
+        this.$router.push({ name: 'Transfer', params })
+      })
     }
   },
   mounted: function () {
@@ -156,12 +185,14 @@ export default {
         return 0
       }
 
-      let messages = this.$store.getters.currentChatTransactions
-      if (this.$store.state.currentChat.messages) {
-        messages = messages.concat(Object.values(this.$store.state.currentChat.messages))
-      }
+      const chat = this.$store.state.currentChat.messages || { }
+      const transactions = this.$store.getters.currentChatTransactions.filter(x => !chat[x.id])
+      const messages = Object.values(chat).concat(transactions)
 
       return messages.sort(compare)
+    },
+    readOnly: function () {
+      return this.$store.state.currentChat.readOnly
     }
   },
   watch: {
@@ -192,7 +223,8 @@ export default {
     return {
       message_fee: 0,
       formErrorMessage: '',
-      message: ''
+      message: '',
+      sendToCrypto: ''
     }
   }
 }
@@ -207,7 +239,7 @@ export default {
 
         }
 
-        .send_button {
+        .send_button, .attach_button {
             min-width: 40px!important;
             padding: 0!important;
             margin: 6px 0px!important;
@@ -231,44 +263,7 @@ export default {
             margin-left: 10px;
         }
     }
-    .chat_message p {
-        margin: 0;
-        padding: 5px 0;
 
-        overflow-wrap: break-word;
-        word-wrap: break-word;
-
-        -ms-word-break: break-all;
-        /* This is the dangerous one in WebKit, as it breaks things wherever */
-        word-break: break-all;
-        /* Instead use this non-standard one: */
-        word-break: break-word;
-
-        /* Adds a hyphen where the word breaks, if supported (No Blink) */
-        -ms-hyphens: auto;
-        -moz-hyphens: auto;
-        -webkit-hyphens: auto;
-        hyphens: auto;
-
-    }
-[data-confirmation=confirmed]:before {
-    content: 'done';
-    font-family: "Material Icons";
-    text-rendering: optimizeLegibility;
-    position: absolute;
-    bottom: 0;
-    left: 1px;
-    font-size: 8px;
-}
-[data-confirmation=unconfirmed]:before {
-        content: 'query_builder';
-    font-family: "Material Icons";
-    text-rendering: optimizeLegibility;
-    position: absolute;
-    bottom: 0;
-    left: 1px;
-    font-size: 8px;
-}
 
 .avatar-holder {
     width: 45px;
@@ -278,14 +273,7 @@ export default {
     right: 0;
     left:auto;
 }
-.msg-holder {
-    margin-top: -10px;
-    margin-left: 2px;
-}
-.msg-holder .transaction-amount {
-  font-size: 24px;
-  cursor: pointer;
-}
+
 
     .md-own .avatar-holder{
         position: absolute;
@@ -338,43 +326,20 @@ export default {
     background: #ebebeb;
     border-bottom: none;
 }
-.chat_message {
-    margin-bottom: 20px;
-    padding: 25px 10px;
-
-    text-align: left;
-    position:relative;
-    padding-right: 50px;
-    min-height: 0;
+.attach_menu .md-list-item.md-menu-item {
+    background-color: rgba(255,255,255,1);
 }
-.chat_message .dt {
-    position: absolute;
-    top: 0;
-    right: 5px;
-    font-size: 8px;
-    font-style: italic;
+.attach_menu .md-list-item.md-menu-item.md-disabled {
+    color: gray;
+}
+.chat_entry {
+    display: flex;
+}
+.attach_menu {
+    background: white;
 }
 
-.chat_message.md-own
-{
-    margin-left:2.5%;
-}
-.chat_message
-{
-    margin-left:7.5%;
-}
-
-.chat_messagej:after{
-    content: ' ';
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: -20px;
-    right: auto;
-    top: 0px;
-    bottom: auto;
-    border: 22px solid;
-    border-color: #4A4A4A transparent transparent transparent;
-
+.md-dialog-container.md-active .md-dialog {
+    background: #fefefe;
 }
 </style>

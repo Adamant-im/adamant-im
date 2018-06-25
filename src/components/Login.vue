@@ -31,6 +31,7 @@
                      md-align="center"
                      class="qr-code-buttons">
             <md-button classs="md-ripple md-disabled"
+                       :title="$t('login.scan_qr_code_button_tooltip')"
                        @click="scanQRCode">
               <Icon name="qrCodeLense" />
             </md-button>
@@ -82,7 +83,6 @@
           <span>{{ $t('home.copied') }}</span>
       </md-snackbar>
   </div>
-
 </template>
 
 <script>
@@ -90,7 +90,6 @@ import b64toBlob from 'b64-to-blob'
 import FileSaver from 'file-saver'
 import Icon from '@/components/Icon'
 import QRScan from '@/components/QRScan'
-import { Fees } from '../lib/constants'
 
 export default {
   name: 'login',
@@ -141,6 +140,7 @@ export default {
     },
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
+
       if (this.passPhrase.split(' ').length !== 12) {
         this.snackOpen()
         return
@@ -149,20 +149,12 @@ export default {
         this.snackOpen()
       }.bind(this)
       this.getAccountByPassPhrase(this.passPhrase, function (context) {
-        this.$store.commit('save_passphrase', {'passPhrase': this.passPhrase})
+        this.$store.dispatch('afterLogin', this.passPhrase)
+
         this.$root._router.push('/chats/')
         this.loadChats(true)
+        this.$store.commit('mock_messages')
         this.$store.commit('stop_tracking_new')
-
-        this.$store.dispatch('login', this.passPhrase)
-
-        // Store ETH address into the KVS if it's not there yet and user has
-        // enough ADM for this transaction
-        if (this.$store.state.balance >= Fees.KVS) {
-          this.getStored('eth:address').then(address => {
-            if (!address) this.storeValue('eth:address', this.$store.state.eth.address)
-          })
-        }
       }, errorFunction)
     },
     'handleSuccess': function (e) {
@@ -193,7 +185,7 @@ export default {
     }
   },
   mounted: function () {
-    if (this.$store.state.passPhrase) {
+    if (this.$store.getters.getPassPhrase) {
       this.$store.commit('leave_chat')
       this.$root._router.push('/chats/')
     }
@@ -211,7 +203,8 @@ export default {
       return new Mnemonic(Mnemonic.Words.ENGLISH).toString()
     },
     qrCodePassPhrase: function () {
-      return this.passPhrase
+      // return this.passPhrase
+      return this.$store.getters.getPassPhrase
     }
   },
   watch: {

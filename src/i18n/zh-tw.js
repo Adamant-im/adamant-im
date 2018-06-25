@@ -58,7 +58,11 @@ export default {
     'date_yesterday': '昨天',
     'date_tomorrow': '明天',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': '已复制',
@@ -93,6 +97,7 @@ export default {
     'send_button_tooltip': '点击此按钮后, 您会收到一个确认请求.',
     'to_address_label': '到地址',
     'to_address_label_tooltip': '输入对方身份识别, 如 U1234567890',
+    'to_label': 'To',
     'amount_label': '发送金额',
     'final_amount_label': '金额包含手续费',
     'commission_label': '手续费',
@@ -101,10 +106,14 @@ export default {
     'error_incorrect_amount': '错误的金额',
     'error_no_amount': '请提供金额',
     'error_not_enough': '无足够代币',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': '发送确认',
     'confirm_message': '确认发送 <b>{amount} {crypto}</b> 到地址 <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': '确认',
-    'confirm_cancel': '取消'
+    'confirm_cancel': '取消',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': '钱包',
