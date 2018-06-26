@@ -28,7 +28,11 @@
             </md-table-header>
             <md-table-body>
               <template v-for="(delegate, index) in delegates">
-                <md-table-row style="cursor:pointer" :key="delegate.address" v-bind:class="{upvoted: delegate.upvoted, downvoted: delegate.downvoted}" @click.native="toggleDetails(delegate)">
+                <md-table-row style="cursor:pointer"
+                              class="delegate-row"
+                              :key="delegate.address"
+                              v-bind:class="{upvoted: delegate.upvoted, downvoted: delegate.downvoted, active: delegate.showDetails}"
+                              v-on:click.native="toggleDetails(delegate)">
                   <md-table-cell>
                     <md-checkbox v-model="delegate.voted" title="vote" v-on:change="vote(delegate)"></md-checkbox>
                   </md-table-cell>
@@ -38,11 +42,15 @@
                     <md-icon>{{ delegate.showDetails ? 'keyboard_arrow_down' : 'chevron_right' }}</md-icon>
                   </md-table-cell>
                 </md-table-row>
-                <md-table-row v-show="delegate.showDetails" style="border-top-width: 0; padding-bottom: 10px">
+                <md-table-row v-show="delegate.showDetails"
+                              style="border-top-width: 0; padding-bottom: 10px"
+                              class="delegate-row"
+                              v-bind:class="{upvoted: delegate.upvoted, downvoted: delegate.downvoted, active: delegate.showDetails}">
                   <md-table-cell collspan="4" class="delegate-details">
                     <md-layout md-column>
-                      <md-layout md-gutter="40">
-                        <md-layout>
+
+                      <md-layout md-gutter md-column-xsmall>
+                        <md-layout class="delegate-info-box">
                           <span class="status-indicator"
                                 v-bind:style="delegate.style"
                                 v-bind:title="delegate.tooltip"></span>
@@ -51,41 +59,49 @@
                             {{ delegate.address }}
                           </a>
                         </md-layout>
+                        <md-layout md-hide-xsmall></md-layout>
+                      </md-layout>
 
-                        <md-layout>
-                          {{ $t('votes.delegate_approval') }}:&nbsp;
-                          <strong>{{ delegate.approval }}%</strong>
-                        </md-layout>
+                      <md-layout md-gutter md-column-xsmall>
 
-                        <md-layout>
+                        <md-layout class="delegate-info-box">
                           {{ $t('votes.delegate_uptime') }}:&nbsp;
                           <strong>{{ delegate.productivity }}%</strong>
                         </md-layout>
 
-                      </md-layout>
-
-                      <md-layout md-gutter="40">
-
-                        <md-layout>
-                          {{ $t('votes.delegate_forged') }}:&nbsp;
-                          <strong>{{ (delegate.forged  / 100000000).toFixed(4) }}ADM</strong>
+                        <md-layout class="delegate-info-box">
+                          {{ $t('votes.delegate_approval') }}:&nbsp;
+                          <strong>{{ delegate.approval }}%</strong>
                         </md-layout>
 
-                        <md-layout>
+                      </md-layout>
+
+                      <md-layout md-gutter md-column-xsmall>
+
+                        <md-layout class="delegate-info-box">
                           {{ $t('votes.delegate_forging_time') }}:&nbsp;
                           <strong>{{ formatForgingTime(delegate.forgingTime) }}</strong>
                         </md-layout>
 
-                        <md-layout>
+                        <md-layout class="delegate-info-box">
+                          {{ $t('votes.delegate_forged') }}:&nbsp;
+                          <strong>{{ (delegate.forged  / 100000000).toFixed(4) }}ADM</strong>
+                        </md-layout>
+
+                      </md-layout>
+
+                      <md-layout md-gutter md-column-xsmall>
+                        <md-layout class="delegate-info-box">
                           {{ $t('votes.delegate_link') }}:&nbsp;
                           <strong>{{ delegate.link }}</strong>
                         </md-layout>
 
-                        <md-layout>
+                        <md-layout class="delegate-info-box">
                           {{ $t('votes.delegate_description') }}:&nbsp;
                           <strong>{{ delegate.description }}</strong>
                         </md-layout>
                       </md-layout>
+
                     </md-layout>
                   </md-table-cell>
                 </md-table-row>
@@ -112,7 +128,7 @@
                 <md-icon>keyboard_arrow_down</md-icon>
               </md-button>
             </md-card-actions>
-            <md-card-content>
+            <md-card-content style="text-align: left">
               {{$t('votes.summary_info')}} <a href="https://adamant.im" target="_blank">{{$t('votes.summary_info_link_text')}}</a>
             </md-card-content>
           </md-card-expand>
@@ -341,7 +357,8 @@
 }
 
 .votes .md-table tbody {
-  height: 90%;
+  height: calc(100% - 66px);
+  overflow-x: hidden;
 }
 
 .votes .md-checkbox {
@@ -358,12 +375,16 @@
 .votes .delegate-details ul {
   list-style: none;
 }
-.md-table-row.downvoted {
+.md-table-row.delegate-row.active {
+  background-color: #eee;
+}
+.md-table-row.delegate-row.downvoted,.md-table-row.delegate-row.downvoted:hover {
   background-color: antiquewhite;
 }
-.md-table-row.upvoted {
+.md-table-row.delegate-row.upvoted,.md-table-row.delegate-row.upvoted:hover {
   background-color: azure;
 }
+
 .table-summary span {
   padding: 5px;
   margin-top: 20px;
@@ -416,6 +437,12 @@
 .votes .md-card-header {
   text-align: left;
 }
+@media (max-width: 600px) {
+  .votes .md-column-xsmall .delegate-info-box {
+    padding: 0 3px 10px 0;
+  }
+}
+
 
 
 </style>
