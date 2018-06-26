@@ -39,7 +39,7 @@
                        @click.prevent="saveQRCode">
               <Icon name="qrCode" />
             </md-button>
-            <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
+
           </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
             <p v-if="message">{{message}}</p>
@@ -82,6 +82,7 @@
       <md-snackbar md-position="bottom center" md-accent ref="loginSnackbar" md-duration="2000">
           <span>{{ $t('home.copied') }}</span>
       </md-snackbar>
+    <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
   </div>
 </template>
 

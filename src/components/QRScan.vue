@@ -4,20 +4,18 @@
     <div class="modal-container">
       <div class="modal">
         <div class="modal-body">
-          <!--TODO: check parent name with 'this.$parent.$vnode.tag'-->
-          <!--<h3>{{ $t('scan.modal_header') === 'scan.modal_header'? 'Scan your password from QR-code' : $t('scan.modal_header') }}</h3>-->
+          <h3 v-if="this.checkParentName() === 'login'">{{ $t('scan.login.modal_header') === 'scan.login.modal_header'? 'Scan your password from QR-code' : $t('scan.login.modal_header') }}</h3>
+          <h3 v-else-if="this.checkParentName() === 'new-chat'">{{ $t('scan.new-chat.modal_header') === 'scan.new-chat.modal_header'? 'Scan UID from QR-code' : $t('scan.new-chat.modal_header') }}</h3>
           <video id="preview"></video>
         </div>
         <div class="modal-footer">
-          <div class="buttons_container" v-if="cameras.length > 1" v-for="(camera, index) in cameras" :key="camera.id">
-            <md-button v-if="camera.id === activeCameraId" :title="camera.name" disabled class="md-raised md-short">
-              {{ $t('scan.camera_button') === 'scan.camera_button'? 'Camera' : $t('scan.camera_button') + index }}
+            <md-button style="max-width: 40px; min-width: 40px; margin-right: 0; padding: 0" v-for="(camera) in cameras" :key="camera.id"
+                       v-if="cameras.length > 1 && camera.id !== activeCameraId"
+                       :title="camera.name" @click.stop="selectCamera(camera)">
+              <md-icon md-src="/static/img/Attach/rotate-cam.svg"></md-icon>
             </md-button>
-            <md-button class="md-raised md-short" v-if="camera.id !== activeCameraId" :title="camera.name" @click.stop="selectCamera(camera)">
-              {{ $t('scan.camera_button') === 'scan.camera_button'? 'Camera' : $t('scan.camera_button') + index }}
-            </md-button>
-          </div>
-          <md-button class="md-raised md-short" @click="hideModal"> {{ $t('scan.close_button') === 'scan.close_button'? 'Close' : $t('scan.close_button') }} </md-button>
+          <!--</div>-->
+          <md-button  @click="hideModal"> {{ $t('scan.close_button') === 'scan.close_button'? 'Close' : $t('scan.close_button') }} </md-button>
         </div>
       </div>
     </div>
@@ -30,6 +28,9 @@ import Instascan from 'instascan'
 export default {
   name: 'qrscan',
   methods: {
+    checkParentName () {
+      return this.$parent.$options._componentTag || this.$parent.$options.name || this.$parent.name
+    },
     hideModal () {
       this.$emit('hide-modal')
     },
@@ -67,16 +68,13 @@ export default {
   },
   beforeDestroy: function () {
     let self = this
-    console.log(self.scanner)
     if (self.scanner) {
       self.scanner.stop()
-      console.log(self.scanner)
     }
   },
   mounted: function () {
     let self = this
     self.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5, mirror: false })
-    console.log(self.scanner)
     self.scanner.addListener('scan', function (content, image) {
       self.parseHandler(content)
     })
@@ -145,6 +143,7 @@ export default {
       visibility: hidden;
       .modal {
         background: white;
+        width: 95%;
         max-width: 600px;
         max-height: 600px;
         box-shadow: 0 7px 8px -4px rgba(0,0,0,.2),0 13px 19px 2px rgba(0,0,0,.14),0 5px 24px 4px rgba(0,0,0,.12);
@@ -160,10 +159,7 @@ export default {
         }
         .modal-footer {
           display: inline-block;
-          padding: 0 2rem 1rem;
-          .buttons_container {
-            display: inline-block;
-          }
+          padding: 1em;
         }
       }
     }
