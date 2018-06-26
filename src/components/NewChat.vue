@@ -42,6 +42,9 @@ export default {
     saveTargetAddress (payload) {
       if (payload.match(/U\d*/)) {
         this.targetAddress = payload.match(/U\d*/)[0]
+        if (payload.match(/label=/)) {
+          this.targetLabel = payload.match(/label=(.*)/)[1].replace('+', ' ')
+        }
       } else {
         this.errorMessage('incorrect_address')
         return
@@ -68,6 +71,8 @@ export default {
           } else {
             this.$store.commit('create_chat', this.targetAddress)
             this.$store.commit('select_chat', this.targetAddress)
+            const partner = this.$store.state.partnerName
+            this.$store.commit('partners/setDisplayName', { partner, displayName: this.targetLabel })
             this.$router.push('/chats/' + this.targetAddress + '/')
           }
         },
@@ -85,6 +90,7 @@ export default {
     return {
       formErrorMessage: '',
       targetAddress: '',
+      targetLabel: '',
       showModal: false
     }
   }
