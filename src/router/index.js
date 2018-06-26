@@ -5,7 +5,7 @@ import Login from '@/components/Login'
 import Chats from '@/components/Chats'
 import Chat from '@/components/Chat'
 import Transfer from '@/components/Transfer'
-import Transaction from '@/components/Transaction'
+import Transaction from '@/components/transactions/Transaction'
 import Transactions from '@/components/Transactions'
 import Options from '@/components/Options'
 import Home from '@/components/Home'
@@ -19,7 +19,8 @@ export default new Router({
     {
       path: '/transactions/:crypto/:tx_id',
       component: Transaction,
-      name: 'Transaction'
+      name: 'Transaction',
+      props: true
     },
     {
       path: '/transactions',

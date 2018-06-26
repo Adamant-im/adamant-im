@@ -91,7 +91,8 @@ export default {
     'recipient': 'Получатель',
     'explorer': 'Посмотреть в Explorer\'е',
     'startChat': 'Начать чат',
-    'continueChat': 'Продолжить чат'
+    'continueChat': 'Продолжить чат',
+    'me': 'Мой'
   },
   'transfer': {
     'send_button': 'Передать токены',

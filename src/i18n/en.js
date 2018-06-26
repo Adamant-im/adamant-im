@@ -92,7 +92,8 @@ export default {
     'recipient': 'To',
     'explorer': 'Open in Explorer',
     'startChat': 'Start chat',
-    'continueChat': 'Continue chat'
+    'continueChat': 'Continue chat',
+    'me': 'Me'
   },
   'transfer': {
     'send_button': 'Send Funds',
