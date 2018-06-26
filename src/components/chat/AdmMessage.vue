@@ -5,6 +5,7 @@
     :timestamp="message.timestamp"
     :brief="brief"
     :readOnly="readOnly"
+    :message="message"
   >
     <p v-if="message.amount">
       {{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}

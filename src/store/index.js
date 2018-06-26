@@ -12,6 +12,13 @@ import delegatesModule from './modules/delegates'
 
 import * as admApi from '../lib/adamant-api'
 import {base64regex} from '../lib/constants'
+import Queue from 'promise-queue'
+import utils from '../lib/adamant'
+
+var maxConcurrent = 1
+var maxQueue = Infinity
+Queue.configure(window.Promise)
+var queue = new Queue(maxConcurrent, maxQueue)
 
 function deviceIsDisabled () {
   try {
@@ -63,6 +70,21 @@ function createMockMessage (state, newAccount, partner, message) {
   Vue.set(state.chats, partner, currentDialogs)
 }
 
+function replaceMessageAndDelete (messages, newMessageId, existMessageId, cssClass) {
+  Vue.set(messages, newMessageId, {
+    ...messages[existMessageId],
+    id: newMessageId,
+    confirm_class: cssClass
+  })
+  if (existMessageId != null) {
+    Vue.delete(messages, existMessageId)
+  }
+}
+
+function changeMessageClass (messages, id, cssClass) {
+  Vue.set(messages[id], 'confirm_class', cssClass)
+}
+
 const store = {
   state: {
     address: '',
@@ -110,6 +132,62 @@ const store = {
     },
     updateAccount ({ commit }, account) {
       commit('login', account)
+    },
+    add_message_to_queue ({ getters }, payload) {
+      let chats = getters.getChats
+      const partner = payload.recipientId
+      payload = {
+        message: payload.message,
+        recipientId: partner,
+        timestamp: utils.epochTime(),
+        id: getters.getCurrentChatMessageCount,
+        confirm_class: 'sent'
+      }
+      Vue.set(chats[partner].messages, payload.id, payload)
+      queue.add(() => {
+        const params = {
+          to: partner,
+          message: payload.message
+        }
+        return admApi.sendMessage(params).then(response => {
+          if (response.success) {
+            replaceMessageAndDelete(chats[partner].messages, response.transactionId, payload.id, 'sent')
+          } else {
+            changeMessageClass(chats[partner].messages, payload.id, 'rejected')
+          }
+        })
+      })
+    },
+    retry_message ({getters}, payload) {
+      const currentChat = getters.getCurrentChat
+      const partner = currentChat.partner
+      const message = currentChat.messages[payload]
+      const messageText = message.message.replace(/<\/?p>/g, '')
+      payload = {
+        recipientId: partner,
+        message: messageText,
+        transactionId: message.id,
+        timestamp: utils.epochTime()
+      }
+
+      let chats = getters.getChats
+      queue.add(() => {
+        const params = {
+          to: partner,
+          message: messageText
+        }
+        return admApi.sendMessage(params).then(response => {
+          if (response.success) {
+            Vue.delete(chats[partner].messages, payload.transactionId)
+            Vue.set(chats[partner].messages, response.transactionId, {
+              message: payload.message,
+              timestamp: payload.timestamp,
+              id: response.transactionId,
+              confirm_class: 'sent'
+            })
+          }
+        })
+      })
     }
   },
   mutations: {
@@ -177,6 +255,7 @@ const store = {
       state.publicKey = false
       state.privateKey = false
       state.secretKey = false
+      state.resentMessages = []
       state.lastVisitedChat = null
     },
     stop_tracking_new (state) {
@@ -326,8 +405,14 @@ const store = {
         }
       }
       payload.confirm_class = 'unconfirmed'
-      if (payload.height) {
+      if (payload.height && direction === 'from') {
         payload.confirm_class = 'confirmed'
+      }
+      if (payload.height && direction === 'to') {
+        payload.confirm_class = ''
+      }
+      if (!payload && direction === 'from') {
+        payload.confirm_class = 'rejected'
       }
       if (payload.height && payload.height > state.lastChatHeight) {
         state.lastChatHeight = payload.height
@@ -349,6 +434,15 @@ const store = {
     },
     lastVisitedChat: state => {
       return state.lastVisitedChat
+    },
+    getCurrentChatMessageCount: state => {
+      return Object.keys(state.currentChat.messages).length
+    },
+    getChats: state => {
+      return state.chats
+    },
+    getCurrentChat: state => {
+      return state.currentChat
     }
   },
   modules: {

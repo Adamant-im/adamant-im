@@ -14,10 +14,15 @@
       <div v-if="direction !== 'to'" class="message-tick" :data-confirmation="confirm"></div>
       <div v-if="readOnly" class="adamant-avatar"></div>
       <div v-else class="avatar-holder"></div>
-      <div class="msg-holder">
-        <slot></slot>
+      <div class="message-block">
+        <div class="msg-holder">
+          <slot></slot>
+        </div>
+        <div v-if="!readOnly" class="dt">{{ $formatDate(timestamp) }}</div>
+        <div v-if='retryMessageFlag'>
+          <div v-on:click='retryMessage'>{{getRetryMessage}}</div>
+        </div>
       </div>
-      <div v-if="!readOnly" class="dt">{{ $formatDate(timestamp) }}</div>
     </md-layout>
     <span v-if="brief">
       <slot name="brief-view"></slot>
@@ -26,9 +31,23 @@
 </template>
 
 <script>
+
 export default {
   name: 'chat-entry-template',
-  props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly']
+  props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly', 'message'],
+  methods: {
+    retryMessage () {
+      this.$store.dispatch('retry_message', this.message.id)
+    }
+  },
+  computed: {
+    retryMessageFlag () {
+      return this.confirm === 'rejected'
+    },
+    getRetryMessage () {
+      return this.$i18n.t('chats.retry_message')
+    }
+  }
 }
 </script>
 
@@ -76,6 +95,27 @@ export default {
     position: absolute;
     bottom: 0;
     left: 1px;
+    font-size: 8px;
+  }
+
+  [data-confirmation=sent]:before {
+    content: 'watch_later';
+    font-family: "Material Icons";
+    text-rendering: optimizeLegibility;
+    position: absolute;
+    bottom: 0;
+    left: 1px;
+    font-size: 8px;
+  }
+
+  [data-confirmation=rejected]:before {
+    content: 'cancel';
+    font-family: "Material Icons";
+    text-rendering: optimizeLegibility;
+    position: absolute;
+    bottom: 0;
+    left: 1px;
+    color: red;
     font-size: 8px;
   }
 

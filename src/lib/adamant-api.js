@@ -117,6 +117,8 @@ export function sendMessage (params) {
       transaction.signature = utils.transactionSign(transaction, myKeypair)
 
       return post('/api/chats/process', { transaction })
+    }).catch(reason => {
+      return reason
     })
 }
 

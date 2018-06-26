@@ -68,7 +68,8 @@ export default {
     'send_adm': 'Send ADM',
     'send_eth': 'Send ETH',
     'attach_image': 'Attach image',
-    'attach_file': 'Attach file'
+    'attach_file': 'Attach file',
+    'retry_message': 'Сообщение не было доставлено. Проблемы с соединением. Нажмите, чтобы отправить сообщение ещё раз'
   },
   'home': {
     'copied': 'Скопировано',

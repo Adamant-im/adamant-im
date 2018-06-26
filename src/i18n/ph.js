@@ -62,7 +62,8 @@ export default {
     'send_adm': 'Send ADM',
     'send_eth': 'Send ETH',
     'attach_image': 'Attach image',
-    'attach_file': 'Attach file'
+    'attach_file': 'Attach file',
+    'retry_message': 'Message was not delivered. Weak connection. Tap to retry.'
   },
   'home': {
     'copied': 'Nakopya',
