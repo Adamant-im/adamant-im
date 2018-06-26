@@ -77,7 +77,7 @@ function storeEthAddress (context) {
   if (!context.state.address) return
   if (context.rootState.balance < Fees.KVS) return
   if (context.state.isPublished) return
-console.log('CHECK', context.state.isPublished, isAddressBeingStored)
+
   isAddressBeingStored = true
   admApi.getStored(KVS_ADDRESS)
     .then(address => (address)
@@ -86,9 +86,8 @@ console.log('CHECK', context.state.isPublished, isAddressBeingStored)
     )
     .then(
       success => {
-        console.warn('STORED', success)
         isAddressBeingStored = false
-        context.commit('isPublished')
+        if (success) context.commit('isPublished')
       },
       () => { isAddressBeingStored = false }
     )

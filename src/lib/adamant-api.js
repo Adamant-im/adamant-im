@@ -134,7 +134,7 @@ export function storeValue (key, value) {
   const transaction = newTransaction(Transactions.STATE)
   transaction.asset = { state: { key, value, type: 0 } }
   transaction.signature = utils.transactionSign(transaction, myKeypair)
-  return post('/api/states/store', { transaction }).then(console.log, console.error)
+  return post('/api/states/store', { transaction })
 }
 
 /**
