@@ -36,7 +36,7 @@ export const Fees = {
 export const base64regex = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
 
 export const Symbols = {
-  CLOCK: '\u023f0', // ⏰
-  HOURGLASS: '\u23f3', // ⏳
-  CROSS: '\u274c' // ❌
+  CLOCK: String.fromCharCode(0x23f0), // ⏰
+  HOURGLASS: String.fromCharCode(0x23f3), // ⏳
+  CROSS: String.fromCharCode(0x274c) // ❌
 }

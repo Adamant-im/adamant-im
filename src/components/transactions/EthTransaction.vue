@@ -3,8 +3,8 @@
     <transaction-template
       :amount="amount"
       :timestamp="transaction.timestamp"
-      :id="transaction.id"
-      :fee="transaction.fee"
+      :id="transaction.hash"
+      :fee="fee"
       :confirmations="confirmations"
       :sender="sender"
       :recipient="recipient"
@@ -39,6 +39,10 @@ export default {
     amount () {
       if (!this.transaction.amount) return ''
       return this.transaction.amount + ' ' + Cryptos.ETH
+    },
+    fee () {
+      if (!this.transaction.fee) return ''
+      return this.transaction.fee + ' ' + Cryptos.ETH
     },
     sender () {
       return this.formatAddress(this.transaction.senderId)
@@ -98,7 +102,7 @@ export default {
       let admAddress = this.getAdmAddress(address)
       let name = this.$store.getters['partners/displayName'](admAddress)
 
-      let result = address
+      let result = address || ''
       if (admAddress) {
         result += ' (' + (name || admAddress) + ')'
       }

@@ -69,19 +69,6 @@ export default {
     'partner',
     'status'
   ],
-  data () {
-    return { }
-  },
-  // watch: {
-  //   '$route': function (value) {
-  //     const crypto = value.params.crypto
-  //     if (crypto === Cryptos.ADM) {
-  //       this.getTransactionInfo(value.params.tx_id)
-  //     } else if (crypto === Cryptos.ETH) {
-  //       this.$store.dispatch('eth/getTransaction', { hash: value.params.tx_id })
-  //     }
-  //   }
-  // },
   methods: {
     openInExplorer: function () {
       if (this.explorerLink) {

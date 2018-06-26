@@ -19,7 +19,8 @@ export default new Router({
     {
       path: '/transactions/:crypto/:tx_id',
       component: Transaction,
-      name: 'Transaction'
+      name: 'Transaction',
+      props: true
     },
     {
       path: '/transactions',

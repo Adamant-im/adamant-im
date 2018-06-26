@@ -42,6 +42,10 @@ export default {
       if (!this.transaction.amount) return ''
       return this.$formatAmount(this.transaction.amount) + ' ' + Cryptos.ADM
     },
+    fee () {
+      if (!this.transaction.fee) return ''
+      return this.$formatAmount(this.transaction.fee) + ' ' + Cryptos.ADM
+    },
     sender () {
       return this.formatAddress(this.transaction.senderId)
     },
