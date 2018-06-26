@@ -370,7 +370,7 @@
 }
 .votes .delegate-details {
   width: 100% !important;
-  height: auto;
+  height: auto !important;
 }
 .votes .delegate-details ul {
   list-style: none;

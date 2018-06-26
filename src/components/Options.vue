@@ -193,15 +193,15 @@ export default {
       margin-bottom: 0px;
   }
   .votes-button {
-      width: 100%;
-      font-size: 16px;
+      width: 100% !important;
+      font-size: 16px !important;
       /*font-weight: 400;*/
-      height: 48px;
-      text-transform: none;
-      padding: 0;
-      margin: 0;
-      text-align: left;
-      line-height: 48px;
+      height: 48px !important;
+      text-transform: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      text-align: left !important;
+      line-height: 48px !important;
   }
     @media (max-width: 480px) {
         .hide_on_mobile {
