@@ -195,11 +195,13 @@ export default {
   .votes-button {
       width: 100%;
       font-size: 16px;
-      font-weight: 400;
+      /*font-weight: 400;*/
       height: 48px;
       text-transform: none;
       padding: 0;
       margin: 0;
+      text-align: left;
+      line-height: 48px;
   }
     @media (max-width: 480px) {
         .hide_on_mobile {
