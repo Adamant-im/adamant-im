@@ -59,6 +59,14 @@ export function unlock (passphrase) {
 }
 
 /**
+ * Returns `true` if API client is unlocked and ready to process requests. *
+ * @returns {Boolean}
+ */
+export function isReady () {
+  return Boolean(myAddress && myKeypair)
+}
+
+/**
  * Retrieves user public key by his address
  * @param {string} address ADM address
  * @returns {Promise<string>}
@@ -126,7 +134,6 @@ export function storeValue (key, value) {
   const transaction = newTransaction(Transactions.STATE)
   transaction.asset = { state: { key, value, type: 0 } }
   transaction.signature = utils.transactionSign(transaction, myKeypair)
-
   return post('/api/states/store', { transaction }).then(console.log, console.error)
 }
 

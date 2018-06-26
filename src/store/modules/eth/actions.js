@@ -66,6 +66,34 @@ function executeRequests () {
   batch.execute()
 }
 
+let isAddressBeingStored = null
+/**
+ * Stores ETH address to the Adamant KVS if it's not there yet
+ * @param {*} context
+ */
+function storeEthAddress (context) {
+  if (isAddressBeingStored) return
+  if (!admApi.isReady()) return
+  if (!context.state.address) return
+  if (context.rootState.balance < Fees.KVS) return
+  if (context.state.isPublished) return
+console.log('CHECK', context.state.isPublished, isAddressBeingStored)
+  isAddressBeingStored = true
+  admApi.getStored(KVS_ADDRESS)
+    .then(address => (address)
+      ? true
+      : admApi.storeValue(KVS_ADDRESS, context.state.address).then(response => response.success)
+    )
+    .then(
+      success => {
+        console.warn('STORED', success)
+        isAddressBeingStored = false
+        context.commit('isPublished')
+      },
+      () => { isAddressBeingStored = false }
+    )
+}
+
 export default {
   /**
    * Handles `afterLogin` action: generates ETH-account and requests its balance.
@@ -79,11 +107,7 @@ export default {
 
       // Store ETH address into the KVS if it's not there yet and user has
       // enough ADM for this transaction
-      if (context.rootState.balance >= Fees.KVS) {
-        admApi.getStored(KVS_ADDRESS).then(address => {
-          if (!address) admApi.storeValue(KVS_ADDRESS, account.address)
-        })
-      }
+      storeEthAddress(context)
 
       clearInterval(backgroundTimer)
       backgroundTimer = setInterval(executeRequests, 2000)
@@ -109,12 +133,21 @@ export default {
       if (!address && passphrase) {
         const account = getAccountFromPassphrase(passphrase)
         context.commit('account', account)
+        storeEthAddress(context)
       }
 
       context.dispatch('updateStatus')
 
       clearInterval(backgroundTimer)
       backgroundTimer = setInterval(executeRequests, 2000)
+    }
+  },
+
+  /** On account update this handler ensures that ETH address is in the KVS */
+  updateAccount: {
+    root: true,
+    handler (context) {
+      storeEthAddress(context)
     }
   },
 

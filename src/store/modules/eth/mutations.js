@@ -32,6 +32,11 @@ export default {
     state.privateKey = account.privateKey
   },
 
+  /** ETH account has been published */
+  isPublished (state) {
+    state.isPublished = true
+  },
+
   /** Adds a new transaction */
   setTransaction (state, tx) {
     const newTx = Object.assign({ }, state.transactions[tx.hash], tx)
