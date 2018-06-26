@@ -119,7 +119,7 @@ export default {
     }
   },
   mounted: function () {
-    this.getDelegates()
+    this.getDelegatesWithVotes()
   },
   computed: {
     languageList: function () {

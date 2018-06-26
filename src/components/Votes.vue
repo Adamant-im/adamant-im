@@ -15,18 +15,18 @@
                 <md-input style="width:100%" v-model="filterString" v-bind:placeholder="$t('votes.filter_placeholder')"></md-input>
               </md-input-container>
             </md-layout>
-          </md-layout>   
+          </md-layout>
         </md-toolbar>
-          <md-table md-sort="rank" md-sort-type="desc" @sort="onSort">
+          <md-table md-sort="rank" md-sort-type="desc" @sort="onSort" v-bind:style="tableStyle">
             <md-table-header>
               <md-table-row>
                 <md-table-head>{{$t('votes.table_head_vote')}}</md-table-head>
                 <md-table-head md-sort-by="rank">{{$t('votes.table_head_rank')}}</md-table-head>
                 <md-table-head md-sort-by="username">{{$t('votes.table_head_name')}}</md-table-head>
-                <md-table-head></md-table-head>  
+                <md-table-head></md-table-head>
               </md-table-row>
             </md-table-header>
-            <md-table-body v-bind:style="tableStyle">
+            <md-table-body>
               <template v-for="(delegate, index) in delegates">
                 <md-table-row style="cursor:pointer" :key="delegate.address" v-bind:class="{upvoted: delegate.upvoted, downvoted: delegate.downvoted}" @click.native="toggleDetails(delegate)">
                   <md-table-cell>
@@ -40,36 +40,60 @@
                 </md-table-row>
                 <md-table-row v-show="delegate.showDetails" style="border-top-width: 0; padding-bottom: 10px">
                   <md-table-cell collspan="4" class="delegate-details">
-                    <ul>
-                      <li><span class="status-indicator" v-bind:style="delegate.style" v-bind:title="delegate.tooltip"></span>
-                      <a target="_blank" v-bind:href="'https://explorer.adamant.im/delegate/'+delegate.address">{{ delegate.address }}</a>
-                      </li>
-                      <li>
-                        {{$t('votes.delegate_approval')}}: <strong>{{ delegate.approval }}%</strong>  
-                      </li>
-                      <li>
-                        {{$t('votes.delegate_uptime')}}: <strong>{{ delegate.productivity }}%</strong>  
-                      </li>
-                      <li>
-                        {{$t('votes.delegate_forged')}}: <strong>{{ (delegate.forged  / 100000000).toFixed(4) }} ADM</strong>  
-                      </li>
-                      <li>
-                        {{$t('votes.delegate_forging_time')}}: <strong>{{ formatForgingTime(delegate.forgingTime) }}</strong>  
-                      </li>
-                      <li>
-                        {{$t('votes.delegate_description')}}: <strong>{{ delegate.description }}</strong>  
-                      </li>
-                      <li>
-                        {{$t('votes.delegate_link')}}: <strong>{{ delegate.link }}</strong>  
-                      </li>
-                    </ul>
+                    <md-layout md-column>
+                      <md-layout md-gutter="40">
+                        <md-layout>
+                          <span class="status-indicator"
+                                v-bind:style="delegate.style"
+                                v-bind:title="delegate.tooltip"></span>
+                          <a target="_blank"
+                             v-bind:href="'https://explorer.adamant.im/delegate/'+delegate.address">
+                            {{ delegate.address }}
+                          </a>
+                        </md-layout>
+
+                        <md-layout>
+                          {{ $t('votes.delegate_approval') }}:&nbsp;
+                          <strong>{{ delegate.approval }}%</strong>
+                        </md-layout>
+
+                        <md-layout>
+                          {{ $t('votes.delegate_uptime') }}:&nbsp;
+                          <strong>{{ delegate.productivity }}%</strong>
+                        </md-layout>
+
+                      </md-layout>
+
+                      <md-layout md-gutter="40">
+
+                        <md-layout>
+                          {{ $t('votes.delegate_forged') }}:&nbsp;
+                          <strong>{{ (delegate.forged  / 100000000).toFixed(4) }}ADM</strong>
+                        </md-layout>
+
+                        <md-layout>
+                          {{ $t('votes.delegate_forging_time') }}:&nbsp;
+                          <strong>{{ formatForgingTime(delegate.forgingTime) }}</strong>
+                        </md-layout>
+
+                        <md-layout>
+                          {{ $t('votes.delegate_link') }}:&nbsp;
+                          <strong>{{ delegate.link }}</strong>
+                        </md-layout>
+
+                        <md-layout>
+                          {{ $t('votes.delegate_description') }}:&nbsp;
+                          <strong>{{ delegate.description }}</strong>
+                        </md-layout>
+                      </md-layout>
+                    </md-layout>
                   </md-table-cell>
                 </md-table-row>
               </template>
             </md-table-body>
           </md-table>
       </md-table-card>
-      <md-card style="margin-top:10px">
+      <md-card>
           <md-card-header>
             <div class="md-title">{{ $t('votes.summary_title') }}</div>
             <div class="md-subhead">
@@ -79,15 +103,24 @@
               {{$t('votes.total_votes')}}: <strong>{{ originVotesCount }} / {{ delegates.length }}</strong>
             </div>
           </md-card-header>
-          <md-card-actions>
-            <md-button style="width:90%" v-bind:disabled="upvotedCount + downvotedCount === 0" v-on:click="sendVotes">{{$t('votes.vote_button_text')}}</md-button>
-            <span v-on:click="showSummaryInfo = !showSummaryInfo" style="cursor:pointer"><md-icon>{{ showSummaryInfo ? 'keyboard_arrow_down' : 'chevron_right' }}</md-icon></span>
-          </md-card-actions>
-          <md-card-content v-show="showSummaryInfo">
-             {{$t('votes.summary_info')}} <a href="adamant.im">{{$t('votes.summary_info_link_text')}}</a>
-          </md-card-content>
+          <md-card-expand>
+            <md-card-actions>
+              <md-button v-bind:disabled="upvotedCount + downvotedCount === 0"
+                         v-on:click="sendVotes">{{$t('votes.vote_button_text')}}</md-button>
+              <span style="flex: 1"></span>
+              <md-button class="md-icon-button" md-expand-trigger>
+                <md-icon>keyboard_arrow_down</md-icon>
+              </md-button>
+            </md-card-actions>
+            <md-card-content>
+              {{$t('votes.summary_info')}} <a href="https://adamant.im" target="_blank">{{$t('votes.summary_info_link_text')}}</a>
+            </md-card-content>
+          </md-card-expand>
       </md-card>
     </div>
+    <md-snackbar md-position="bottom center" md-accent ref="votesSnackbar" md-duration="5000">
+      <span>{{ votesErrorMsg}}</span>
+    </md-snackbar>
   </div>
 </template>
 
@@ -113,7 +146,7 @@
         tableStyle: {
           height: this.formatHeight(window.innerHeight)
         },
-        showSummaryInfo: false
+        votesErrorMsg: ''
       }
     },
     mounted: function () {
@@ -123,7 +156,7 @@
         })
       })
       this.$store.commit('clean_delegates')
-      this.getDelegates()
+      this.getDelegatesWithVotes()
     },
     methods: {
       vote (delegate) {
@@ -146,9 +179,14 @@
         this.sortParams = params
       },
       sendVotes () {
-        let votes = Array.concat(this.delegates.filter(x => x.downvoted).map(x => `-${x.address}`),
-          this.delegates.filter(x => x.upvoted).map(x => x.address))
-        this.voteForDelegates(votes)
+        if (this.$store.state.balance < 50) {
+          this.votesErrorMsg = this.$t('votes.no_money')
+          this.$refs.votesSnackbar.open()
+        } else {
+          let votes = Array.concat(this.delegates.filter(x => x.downvoted).map(x => `-${x.publicKey}`),
+            this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
+          this.voteForDelegates(votes)
+        }
       },
       toggleDetails (delegate) {
         if (!delegate.showDetails) {
@@ -181,7 +219,14 @@
         return this.status[delegate.status || 5].tooltip
       },
       formatHeight (height) {
-        return `${height * 0.45}px !important`
+        return `${height * 0.60}px !important`
+      }
+    },
+    watch: {
+      errorMsg (value) {
+        this.votesErrorMsg = value
+        this.$refs.votesSnackbar.open()
+        window.setTimeout(() => this.$store.commit('send_error', { msg: '' }), 5000) // cleanup error msg
       }
     },
     computed: {
@@ -248,6 +293,9 @@
       },
       delegatesLoaded () {
         return Object.keys(this.$store.state.delegates).length > 0
+      },
+      errorMsg () {
+        return this.$store.state.lastErrorMsg
       }
     }
   }
@@ -263,6 +311,7 @@
 }
 .votes .md-table {
   display: block;
+  overflow: hidden;
 }
 .votes .md-table table, .votes .md-table thead, .votes .md-table tbody, .votes .md-table tr {
   width: 100%;
@@ -282,8 +331,17 @@
 .votes .md-table tbody, .votes .md-table thead {
   overflow: auto;
 }
+
+.votes .md-table-head {
+  padding-bottom: 0 !important;
+}
+
+.votes .md-table table {
+  height: 100%;
+}
+
 .votes .md-table tbody {
-  height: 300px;
+  height: 90%;
 }
 
 .votes .md-checkbox {
@@ -291,6 +349,7 @@
 }
 .votes .md-toolbar.md-theme-grey {
   border-bottom: none;
+  padding-top: 25px;
 }
 .votes .delegate-details {
   width: 100% !important;
@@ -309,16 +368,14 @@
   padding: 5px;
   margin-top: 20px;
 }
-.ajax-loader {
-  background-color: gainsboro;
-}
+
 .status-indicator {
   width: 10px;
   height: 10px;
   border-radius: 10px;
   border: 2px solid gray;
   display: inline-block;
-  margin: 2px 5px 0;
+  margin: 5px 5px 0 0;
 }
 .chat_loads {
   position: absolute;
@@ -336,4 +393,29 @@
 {
   stroke: #4A4A4A;
 }
+
+.md-table {
+  padding-top: 35px;
+}
+
+.md-table-cell.delegate-details, .md-table-cell.delegate-details .md-table-cell-container {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-left: 5px;
+}
+.md-table-cell ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.votes .md-card {
+  margin-top: 30px;
+  padding-bottom: 10px;
+}
+
+.votes .md-card-header {
+  text-align: left;
+}
+
+
 </style>

@@ -31,3 +31,7 @@ export const Fees = {
   /** Transfering tokens */
   TRANSFER: 0.5
 }
+
+export const Delegates = {
+  ACTIVE_DELEGATES: 101
+}

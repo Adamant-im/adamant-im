@@ -5,6 +5,7 @@ export default {
   'new_messages_2': 'new messages',
   'new_messages_5': 'new messages',
   'region': 'en-US',
+  'error': 'Error',
   'login': {
     'copy_button_tooltip': 'Click to copy the passphrase to clipboard. Save it in a password keeper application. To enter your new Wallet, paste it the passphrase field.',
     'save_button_tooltip': 'Click to save your passphrase in a text file. Save it in the secure place!',
@@ -139,6 +140,7 @@ export default {
     'summary_title': 'Review voting',
     'vote_button_text': 'Vote',
     'summary_info': 'Voting cost: 50 ADM. More info on the ',
-    'summary_info_link_text': 'ADAMANT website'
+    'summary_info_link_text': 'ADAMANT website',
+    'no_money': 'You need 50 ADM to vote'
   }
 }

@@ -648,44 +648,56 @@ function install (Vue) {
       }
     }, response => { })
   }
-
-  Vue.prototype.getDelegates = function () {
+  Vue.prototype.getDelegates = function (limit = constants.Delegates.ACTIVE_DELEGATES, offset = 0, votes = []) {
+    this.$store.commit('ajax_start')
+    this.$http.get(this.getAddressString() + `/api/delegates?limit=${limit}&offset=${offset}`).then(response => {
+      if (response.body.success) {
+        for (let i in response.body.delegates) {
+          let delegate = response.body.delegates[i]
+          let voted = votes.includes(delegate.address)
+          delegate._voted = voted
+          delegate.voted = voted
+          delegate.upvoted = false
+          delegate.downvoted = false
+          delegate.showDetails = false
+          delegate.forged = 0
+          delegate.status = 5
+          this.$store.commit('delegate_info', delegate)
+        }
+        this.$store.commit('ajax_end')
+      } else {
+        this.$store.commit('ajax_end_with_error')
+      }
+    }, () => {
+      this.$store.commit('ajax_end_with_error')
+    })
+  }
+  Vue.prototype.getDelegatesWithVotes = function () {
     this.$store.commit('ajax_start')
     this.$http.get(this.getAddressString() + '/api/accounts/delegates?address=' + this.$store.state.address).then(response => {
       if (response.body.success) {
         const votes = response.body.delegates.map(vote => vote.address)
-        this.$http.get(this.getAddressString() + '/api/delegates').then(response => {
+        this.$http.get(this.getAddressString() + '/api/delegates/count').then(response => {
           if (response.body.success) {
-            for (var i in response.body.delegates) {
-              let delegate = response.body.delegates[i]
-              let voted = votes.includes(delegate.address)
-              delegate._voted = voted
-              delegate.voted = voted
-              delegate.upvoted = false
-              delegate.downvoted = false
-              delegate.showDetails = false
-              delegate.forged = 0
-              delegate.status = 5
-              this.$store.commit('delegate_info', delegate)
-            }
             this.$store.commit('ajax_end')
+            for (let i = 0; i < response.body.count % constants.Delegates.ACTIVE_DELEGATES; i++) {
+              this.getDelegates(constants.Delegates.ACTIVE_DELEGATES, i * constants.Delegates.ACTIVE_DELEGATES, votes)
+            }
           } else {
             this.$store.commit('ajax_end_with_error')
           }
-        }, response => {
-          this.$store.commit('ajax_end_with_error')
         })
       } else {
         this.$store.commit('ajax_end_with_error')
       }
-    }, response => {
+    }, () => {
       this.$store.commit('ajax_end_with_error')
     })
   }
 
   Vue.prototype.voteForDelegates = function (votes) {
-    var keys = this.getKeypair()
-    var transaction = {
+    let keys = this.getKeypair()
+    let transaction = {
       type: constants.Transactions.VOTE,
       asset: {votes: votes},
       timestamp: adamant.epochTime(),
@@ -700,13 +712,14 @@ function install (Vue) {
     this.$http.post(this.getAddressString() + '/api/accounts/delegates', transaction).then(response => {
       if (response.body.success) {
         this.$store.commit('ajax_end')
-        this.getDelegates()
+        this.getDelegatesWithVotes()
       } else {
-        alert(response.body.error)
-        this.$store.commit('ajax_end_with_error')
-        this.getDelegates()
+        this.$store.commit('send_error', { msg: `${this.$t('error')}: ${response.body.error}` })
+        this.getDelegatesWithVotes()
       }
-    }, response => { })
+    }, () => {
+      this.$store.commit('ajax_end_with_error')
+    })
   }
 
   Vue.prototype.getForgingTimeForDelegate = function (delegate) {
@@ -793,13 +806,13 @@ function install (Vue) {
           } else {
             this.$store.commit('ajax_end_with_error')
           }
-        }, response => {
+        }, () => {
           this.$store.commit('ajax_end_with_error')
         })
       } else {
         this.$store.commit('ajax_end_with_error')
       }
-    }, response => {
+    }, () => {
       this.$store.commit('ajax_end_with_error')
     })
   }
