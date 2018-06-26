@@ -97,7 +97,7 @@ function install (Vue) {
         response.body.account.balance = response.body.account.balance / 100000000
         response.body.account.unconfirmedBalance = response.body.account.unconfirmedBalance / 100000000
         response.body.account.publicKey = publicKey
-        this.$store.commit('login', response.body.account)
+        this.$store.dispatch('updateAccount', response.body.account)
         if (callback) {
           callback.call(this)
         }

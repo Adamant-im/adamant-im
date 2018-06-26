@@ -103,6 +103,9 @@ const store = {
     },
     rehydrate ({ getters }) {
       admApi.unlock(getters.getPassPhrase)
+    },
+    updateAccount ({ commit }, account) {
+      commit('login', account)
     }
   },
   mutations: {
