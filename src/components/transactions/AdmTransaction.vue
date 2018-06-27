@@ -4,7 +4,7 @@
       :amount="amount"
       :timestamp="transaction.timestamp"
       :id="transaction.id"
-      :fee="transaction.fee"
+      :fee="fee"
       :confirmations="transaction.confirmations"
       :sender="sender"
       :recipient="recipient"
