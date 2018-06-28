@@ -101,7 +101,7 @@ export default {
     setUserName (val) {
       // this.$store.commit('change_partner_name', val)
       const partner = this.$store.state.partnerName
-      this.$store.commit('partners/setDisplayName', { partner, displayName: val })
+      this.$store.commit('partners/displayName', { partner, displayName: val })
     },
     backOneStep () {
       if (history.length > 2) {
