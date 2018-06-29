@@ -11,6 +11,7 @@ export default {
   reset: {
     root: true,
     handler (context) {
+      context.dispatch('saveContactsList')
       context.commit('reset')
       clearInterval(bgTimer)
     }
@@ -91,6 +92,13 @@ export default {
     }, { })
 
     return admApi.storeValue(CONTACT_LIST_KEY, contacts)
+      .then(response => {
+        if (!response.success) {
+          console.warn('Contacts list save was rejected')
+        } else {
+          console.log('Contacts list saved', response.transactionId)
+        }
+      })
       .catch(err => {
         console.warn('Failed to save contact list', err)
         // Re-mark state as dirty to save on the next tick

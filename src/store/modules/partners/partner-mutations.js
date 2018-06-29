@@ -35,7 +35,7 @@ export default {
   contactList (state, contacts) {
     if (!contacts) return
     Object.keys(contacts).forEach(uid => {
-      state.list[uid] = Object.assign({ }, contacts[uid], state.list[uid])
+      state.list[uid] = Object.assign({ }, state.list[uid], contacts[uid])
     })
     state.lastUpdate = Date.now()
   }
