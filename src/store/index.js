@@ -157,7 +157,6 @@ const store = {
       state.showBottom = true
       state.transactions = {}
       state.delegates = {}
-      state.delegates = {}
       state.originDelegates = {}
       state.chats = {}
       state.newChats = {}

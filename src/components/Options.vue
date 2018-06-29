@@ -112,22 +112,12 @@
 <script>
 export default {
   name: 'settings',
-  methods: {
-    delegateRequest () {
-      this.registerDelegate('new-delegate-name')
-      return false
-    }
-  },
-  mounted: function () {
-    this.getDelegatesWithVotes()
-  },
+  methods: {},
+  mounted: {},
   computed: {
     languageList: function () {
       var messages = require('../i18n').default
       return messages
-    },
-    delegate () {
-      return Object.values(this.$store.state.delegates).find(x => x.address === this.$store.state.adress)
     }
   },
   watch: {
@@ -160,7 +150,6 @@ export default {
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
       language: this.$i18n.locale,
-      delegateOpen: this.$store.state.balance >= 3000
     }
   }
 }
