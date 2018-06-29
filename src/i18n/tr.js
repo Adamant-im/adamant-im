@@ -58,7 +58,11 @@ export default {
     'date_yesterday': 'Dün',
     'date_tomorrow': 'Yarin',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Kopyalandi',
@@ -93,18 +97,23 @@ export default {
     'send_button_tooltip': 'Butona tikladiktan sonra onaylama istegi göreceksiniz.',
     'to_address_label': 'Alici adresi',
     'to_address_label_tooltip': 'Alici adresi girin, örnegin U1234567890',
+    'to_label': 'To',
     'amount_label': 'GÖnderilen tutar',
     'final_amount_label': 'Transfer ücreti dahil toplam tutar',
     'commission_label': 'Transfer ücreti',
     'error_no_address': 'Lütfen cüzdan adresi yaziniz',
-    'error_incorrect_address': 'Geçersiz cüzdan adresi',
+    'error_incorrect_address': 'Geçersiz {crypto} cüzdan adresi',
     'error_incorrect_amount': 'Yanlis miktar',
     'error_no_amount': 'Lütfen bir miktar giriniz',
     'error_not_enough': 'Yeterli bakiyeniz yok',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Transfer onaylama',
     'confirm_message': '<b>{amount} {crypto} Jetonunun</b> <span class="address-in-confirm">{target}</span> adresine transfer edilmesini onaylayin.',
     'confirm_approve': 'Onayla',
-    'confirm_cancel': 'Iptal et'
+    'confirm_cancel': 'Iptal et',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Cüzdan',

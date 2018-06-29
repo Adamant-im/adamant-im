@@ -1,8 +1,14 @@
 
 import Vue from 'vue'
+import {Base64} from 'js-base64'
 
 import storeData from '../lib/lsStore.js'
 import ethModule from './modules/eth'
+
+import partnersModule from './modules/partners'
+
+import * as admApi from '../lib/adamant-api'
+import {base64regex} from '../lib/constants'
 
 function deviceIsDisabled () {
   try {
@@ -26,6 +32,30 @@ defaultLanguage = defaultLanguage.toLowerCase().substring(0, 2)
 window.refreshTime = new Date().getTime()
 if (defaultLanguage !== 'ru' && defaultLanguage !== 'en') {
   defaultLanguage = 'en'
+}
+
+function createMockMessage (state, newAccount, partner, message) {
+  let currentDialogs = state.chats[partner]
+  if (!currentDialogs) {
+    currentDialogs = {
+      partner: partner,
+      readOnly: true,
+      messages: {
+        0: {
+          message: window.ep.$i18n.t('chats.' + message),
+          timestamp: 0
+        }
+      },
+      last_message: {
+        message: window.ep.$i18n.t('chats.' + message),
+        timestamp: 0
+      }
+    }
+  }
+  if (newAccount) {
+    Vue.set(state.newChats, partner, 1)
+  }
+  Vue.set(state.chats, partner, currentDialogs)
 }
 
 const store = {
@@ -69,6 +99,16 @@ const store = {
     add_chat_i18n_message ({commit}, payload) {
       payload.message = window.ep.$i18n.t(payload.message)
       commit('add_chat_message', payload)
+    },
+    afterLogin ({ commit }, passPhrase) {
+      commit('save_passphrase', {'passPhrase': passPhrase})
+      admApi.unlock(passPhrase)
+    },
+    rehydrate ({ getters }) {
+      admApi.unlock(getters.getPassPhrase)
+    },
+    updateAccount ({ commit }, account) {
+      commit('login', account)
     }
   },
   mutations: {
@@ -93,7 +133,7 @@ const store = {
       state.storeInLocalStorage = payload
     },
     save_passphrase (state, payload) {
-      state.passPhrase = payload.passPhrase
+      state.passPhrase = Base64.encode(payload.passPhrase)
     },
     ajax_start (state) {
       state.ajaxIsOngoing = true
@@ -169,17 +209,6 @@ const store = {
         state.is_new_account = payload.is_new_account
       }
     },
-    change_display_name (state, payload) {
-      if (payload.partnerName) {
-        Vue.set(state.partners, payload.partnerName, payload.partnerDisplayName)
-      }
-    },
-    change_partner_name (state, payload) {
-      if (state.partnerName) {
-        state.partners[state.partnerName] = payload
-        state.partnerDisplayName = payload
-      }
-    },
     transaction_info (state, payload) {
       payload.direction = (state.address === payload.recipientId) ? 'to' : 'from'
       Vue.set(state.transactions, payload.id, payload)
@@ -194,10 +223,6 @@ const store = {
       }
       Vue.set(state.currentChat, 'messages', state.chats[payload].messages)
       state.partnerName = payload
-      state.partnerDisplayName = ''
-      if (state.partners[payload]) {
-        state.partnerDisplayName = state.partners[payload]
-      }
       state.showPanel = true
       state.showBottom = false
     },
@@ -209,6 +234,11 @@ const store = {
     },
     have_loaded_chats (state) {
       state.firstChatLoad = false
+    },
+    mock_messages (state) {
+      const newAccount = store.state.is_new_account
+      createMockMessage(state, newAccount, 'ADAMANT ICO', 'ico_message')
+      createMockMessage(state, newAccount, 'ADAMANT Bounty', 'welcome_message')
     },
     create_chat (state, payload) {
       var partner = payload
@@ -288,7 +318,8 @@ const store = {
       if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
         currentDialogs.last_message = {
           message: payload.message,
-          timestamp: payload.timestamp
+          timestamp: payload.timestamp,
+          direction
         }
       }
       payload.confirm_class = 'unconfirmed'
@@ -324,10 +355,19 @@ const store = {
       const partner = state.currentChat && state.currentChat.partner
       const transactions = Object.values(state.transactions) || []
       return transactions.filter(x => x.senderId === partner || x.recipientId === partner)
+    },
+    // Returns decoded pass phrase from store
+    getPassPhrase: state => {
+      if (state.passPhrase.match(base64regex)) {
+        return Base64.decode(state.passPhrase)
+      } else {
+        return state.passPhrase
+      }
     }
   },
   modules: {
-    eth: ethModule // Ethereum-related data
+    eth: ethModule, // Ethereum-related data
+    partners: partnersModule // Partners: display names, crypto addresses and so on
   }
 }
 

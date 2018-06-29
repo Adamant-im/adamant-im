@@ -58,7 +58,11 @@ export default {
     'date_yesterday': '어제',
     'date_tomorrow': '내일',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': '복사 됨',
@@ -93,6 +97,7 @@ export default {
     'send_button_tooltip': '버튼을 클릭하면 확인 요청이 표시됩니다.',
     'to_address_label': '주소',
     'to_address_label_tooltip': 'U 1234567890과 같은 수신자 식별자를 입력하십시오.',
+    'to_label': 'To',
     'amount_label': '보낼 금액',
     'final_amount_label': '송금 수수료 포함 금액',
     'commission_label': '환승요금',
@@ -101,10 +106,14 @@ export default {
     'error_incorrect_amount': '부정확한 금액',
     'error_no_amount': '금액을 입력하십시오.',
     'error_not_enough': '토큰이 충분하지 않습니다.',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': '이동 확정',
     'confirm_message': '<b>{amount} {crypto} </b>의 <span class="address-in-confirm">{target}</span> 주소로의 이전을 확인하십시오.',
     'confirm_approve': '확인',
-    'confirm_cancel': '취소'
+    'confirm_cancel': '취소',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': '지갑',

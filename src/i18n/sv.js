@@ -58,7 +58,11 @@ export default {
     'date_yesterday': 'Igår',
     'date_tomorrow': 'Imorgon',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Kopierad',
@@ -93,18 +97,23 @@ export default {
     'send_button_tooltip': 'After du klicka knappen kommer du att se en bekräftelseförfrågan.',
     'to_address_label': 'Till Adress',
     'to_address_label_tooltip': 'Ange en mottagares identifikation, t.ex. U1234567890',
+    'to_label': 'To',
     'amount_label': 'Summa att skicka',
     'final_amount_label': 'Summa inklusive överföringsavgift',
     'commission_label': 'Överföringsavgift',
     'error_no_address': 'Var god ange plånboksadress',
-    'error_incorrect_address': 'Ej giltig plånboksadress',
+    'error_incorrect_address': 'Ej giltig {crypto} plånboksadress',
     'error_incorrect_amount': 'Ej giltig summa',
     'error_no_amount': 'Vänligen ange summa',
     'error_not_enough': 'Ej tillräckligt antal tokens',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Överföringsbekräftelse',
     'confirm_message': 'Bekräfta transaktion med <b>{amount} {crypto}</b> till adress <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Bekräfta',
-    'confirm_cancel': 'Avbryt'
+    'confirm_cancel': 'Avbryt',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Plånbok',

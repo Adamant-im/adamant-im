@@ -1,32 +1,56 @@
 <template>
-  <md-dialog :md-open-from="openFrom" :md-close-to="closeTo" ref="new_chat_dialog">
-    <md-dialog-content>
-      <md-layout md-align="center" md-gutter="16" class="new-chat">
-        <md-layout md-flex="90" sm-flex="90">
+  <div class="new_chat">
+    <md-dialog :md-open-from="openFrom" :md-close-to="closeTo" ref="new_chat_dialog">
+      <md-dialog-content>
+        <md-layout md-align="center" md-gutter="16" class="new-chat">
+          <md-layout md-flex="90" sm-flex="90">
             <md-input-container>
-                <label>{{ $t('chats.recipient') }}</label>
-                <md-textarea v-model="targetAddress"></md-textarea>
+              <label>{{ $t('chats.recipient') }}</label>
+              <md-textarea v-model="targetAddress"></md-textarea>
             </md-input-container>
-        </md-layout>
-        <md-layout md-flex="66" sm-flex="90" style="margin-top: 10px;">
+          </md-layout>
+          <md-layout md-flex="66" sm-flex="90" style="margin-top: 10px;">
             <md-layout md-align="center" md-gutter="16">
-            <md-button class="md-raised md-primary" :title="$t('chats.new_chat_tooltip')" v-on:click="send">{{ $t('chats.new_chat') }}</md-button>
-            <md-button class="md-raised md-primary" v-on:click="$router.push('/scan/')"><md-icon>camera_rear</md-icon></md-button>
+              <md-button class="md-raised md-primary" :title="$t('chats.new_chat_tooltip')" @click="send">{{ $t('chats.new_chat') }}</md-button>
+              <md-button class="md-raised md-primary" @click="scanQRCode">
+                {{ $t('chats.scan_recipient_button') === 'chats.scan_recipient_button'? 'Scan' : $t('chats.scan_recipient_button') }}
+              </md-button>
             </md-layout>
+          </md-layout>
         </md-layout>
-      </md-layout>
-      <md-snackbar md-position="bottom center" md-accent ref="chatSnackbar" md-duration="2000">
+        <md-snackbar md-position="bottom center" md-accent ref="chatSnackbar" md-duration="2000">
           <span>{{ formErrorMessage }}</span>
-      </md-snackbar>
-    </md-dialog-content>
-  </md-dialog>
+        </md-snackbar>
+      </md-dialog-content>
+    </md-dialog>
+    <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="saveTargetAddress"/>
+  </div>
 </template>
 
 <script>
+import QRScan from '@/components/QRScan'
 export default {
   name: 'new-chat',
+  components: {
+    QRScan
+  },
   props: ['openFrom', 'closeTo'],
   methods: {
+    scanQRCode () {
+      this.showModal = true
+    },
+    saveTargetAddress (payload) {
+      if (payload.match(/U\d*/)) {
+        this.targetAddress = payload.match(/U\d*/)[0]
+        if (payload.match(/label=/)) {
+          this.targetLabel = payload.match(/label=(.*)/)[1].replace('+', ' ')
+        }
+      } else {
+        this.errorMessage('incorrect_address')
+        return
+      }
+      this.send()
+    },
     errorMessage (message) {
       this.formErrorMessage = this.$t('chats.' + message)
       this.$refs.chatSnackbar.open()
@@ -47,6 +71,8 @@ export default {
           } else {
             this.$store.commit('create_chat', this.targetAddress)
             this.$store.commit('select_chat', this.targetAddress)
+            const partner = this.$store.state.partnerName
+            this.$store.commit('partners/setDisplayName', { partner, displayName: this.targetLabel })
             this.$router.push('/chats/' + this.targetAddress + '/')
           }
         },
@@ -63,7 +89,9 @@ export default {
   data () {
     return {
       formErrorMessage: '',
-      targetAddress: ''
+      targetAddress: '',
+      targetLabel: '',
+      showModal: false
     }
   }
 }

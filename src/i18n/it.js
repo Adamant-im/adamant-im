@@ -58,7 +58,11 @@ export default {
     'date_yesterday': 'Ieri',
     'date_tomorrow': 'Domani',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Copiato',
@@ -93,18 +97,23 @@ export default {
     'send_button_tooltip': 'Dopo aver fatto clic sul pulsante, verra visualizzata una richiesta di conferma.',
     'to_address_label': 'Indirizzare',
     'to_address_label_tooltip': 'Inserisci un identificativo del destinatario, piace U1234567890',
+    'to_label': 'To',
     'amount_label': 'Importo da inviare',
     'final_amount_label': 'Importo comprensivo della tassa di trasferimento',
     'commission_label': 'Tassa di trasferimento',
     'error_no_address': 'Si prega di fornire l\'indirizzo del portafogli',
-    'error_incorrect_address': 'Indirizzo del portafoglio errato',
+    'error_incorrect_address': 'Indirizzo del {crypto} portafoglio errato',
     'error_incorrect_amount': 'Quantita errata',
     'error_no_amount': 'Si prega di fornire l\'importo',
     'error_not_enough': 'Non abbastanza token',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Conferma di trasferimento',
     'confirm_message': 'Conferma il trasferimento di <b>{amount} {crypto}</b> indirizzare <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confermare',
-    'confirm_cancel': 'Annulla'
+    'confirm_cancel': 'Annulla',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Portafoglio',

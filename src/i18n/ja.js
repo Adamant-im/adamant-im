@@ -58,7 +58,11 @@ export default {
     'date_yesterday': '昨日',
     'date_tomorrow': '明日',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'コピーされました',
@@ -93,6 +97,7 @@ export default {
     'send_button_tooltip': 'このボタンをクリックすると、確認画面が表示されます。',
     'to_address_label': '受取人アドレス',
     'to_address_label_tooltip': 'トークンの受取人ウォレットのIDを次のように指定します。U1234567890',
+    'to_label': 'To',
     'amount_label': '送金額',
     'final_amount_label': '送金額(手数料込み)',
     'commission_label': '手数料 ',
@@ -101,10 +106,14 @@ export default {
     'error_incorrect_amount': '金額が正しくありません ',
     'error_no_amount': '送金額を入力してください ',
     'error_not_enough': 'トークンが足りません',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': '送金確認 ',
     'confirm_message': '送金の確認<b> {amount} {crypto}</b> to <span class="address-in-confirm">{target}</span>送金先アドレス.',
     'confirm_approve': '確認',
-    'confirm_cancel': 'キャンセル'
+    'confirm_cancel': 'キャンセル',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'ウォレット',

@@ -58,7 +58,11 @@ export default {
     'date_yesterday': 'Hôm qua',
     'date_tomorrow': 'Ngày mai',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Đã sao chép',
@@ -93,6 +97,7 @@ export default {
     'send_button_tooltip': 'Sau khi nhấp vào nút, bạn sẽ thấy một yêu cầu xác nhận.',
     'to_address_label': 'Tới địa chỉ',
     'to_address_label_tooltip': 'Nhập định danh người nhận, ví dụ U1234567890',
+    'to_label': 'To',
     'amount_label': 'Số lượng gửi',
     'final_amount_label': 'Số lượng bao gồm phí giao dịch',
     'commission_label': 'Phí giao dịch',
@@ -101,10 +106,14 @@ export default {
     'error_incorrect_amount': 'Số lượng không chính xác',
     'error_no_amount': 'Vui lòng cung cấp số lượng',
     'error_not_enough': 'Không đủ token',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Xác nhận giao dịch',
     'confirm_message': 'Xác nhận chuyển <b>{amount} {crypto}</b> tới địa chỉ <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Xác nhận',
-    'confirm_cancel': 'Hủy'
+    'confirm_cancel': 'Hủy',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Ví',
