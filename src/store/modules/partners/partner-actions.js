@@ -62,8 +62,13 @@ export default {
    * @param {any} context Vuex action context
    */
   fetchContactsList (context) {
+    const lastUpdate = context.state.lastUpdate
+
+    // Check if it's time to update
+    if ((Date.now() - lastUpdate) < UPDATE_TIMEOUT) return
+
     return admApi.getStored(CONTACT_LIST_KEY)
-      .then(cl => context.commit('contactList', JSON.parse(cl)))
+      .then(cl => cl && context.commit('contactList', JSON.parse(cl)))
       .catch(err => console.warn('Failed to fetch contact list', err))
   },
 
@@ -72,10 +77,25 @@ export default {
    * @param {any} context Vuex action context
    */
   saveContactsList (context) {
-    const contacts = context.state.list
+    const lastChange = context.state.lastChange
+
+    // Check if it's time to save (and there are changes to save)
+    if (!lastChange || (Date.now() - lastChange) < SAVE_TIMEOUT) return
+    // Setting `lastChange` to 0 guards against redundant call while save transaction is being processed
+    context.state.lastChange = 0
+
+    const contacts = Object.keys(context.state.list).reduce((map, uid) => {
+      const item = context.state.list[uid]
+      map[uid] = { ...item }
+      return map
+    }, { })
+
     return admApi.storeValue(CONTACT_LIST_KEY, contacts)
-      .then(() => { context.state.lastChange = 0 })
-      .catch(err => console.warn('Failed to save contact list', err))
+      .catch(err => {
+        console.warn('Failed to save contact list', err)
+        // Re-mark state as dirty to save on the next tick
+        context.state.lastChange = lastChange
+      })
   },
 
   /**
@@ -83,17 +103,12 @@ export default {
    * @param {any} context Vuex action context
    */
   startSync (context) {
+    context.dispatch('fetchContactsList')
+
     clearInterval(bgTimer)
     bgTimer = setInterval(() => {
-      const { lastChange, lastUpdate } = context.state
-
-      if (lastChange && (Date.now() - lastChange) > SAVE_TIMEOUT) {
-        context.commit('saveContactsList')
-      }
-
-      if (lastUpdate && (Date.now() - lastUpdate) > UPDATE_TIMEOUT) {
-        context.commit('fetchContactsList')
-      }
+      context.dispatch('saveContactsList')
+      context.dispatch('fetchContactsList')
     }, 1000)
   }
 }

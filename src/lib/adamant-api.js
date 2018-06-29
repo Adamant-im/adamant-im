@@ -131,6 +131,10 @@ export function sendSpecialMessage (to, payload) {
  * @returns {Promise<{success: boolean}>}
  */
 export function storeValue (key, value) {
+  if (typeof value === 'object') {
+    value = JSON.stringify(value)
+  }
+
   const transaction = newTransaction(Transactions.STATE)
   transaction.asset = { state: { key, value, type: 0 } }
   transaction.signature = utils.transactionSign(transaction, myKeypair)
