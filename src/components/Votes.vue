@@ -430,7 +430,7 @@
 }
 
 .votes .md-card {
-  margin-top: 30px;
+  margin-top: 20px;
   padding-bottom: 10px;
 }
 

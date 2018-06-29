@@ -626,8 +626,8 @@ function install (Vue) {
   }
 
   Vue.prototype.registerDelegate = function (delegateName) {
-    var keys = this.getKeypair()
-    var transaction = {
+    let keys = this.getKeypair()
+    let transaction = {
       type: constants.Transactions.DELEGATE,
       asset: {delegate: {username: delegateName, publicKey: keys.publicKey.toString('hex')}},
       timestamp: adamant.epochTime(),
@@ -694,7 +694,23 @@ function install (Vue) {
       this.$store.commit('ajax_end_with_error')
     })
   }
-
+  Vue.prototype.checkUnconfirmedTransactions = function () {
+    this.$store.commit('ajax_start')
+    this.$http.get(this.getAddressString() + '/api/transactions/unconfirmed').then(response => {
+      if (response.body.success) {
+        if (response.body.count === 0) {
+          this.$store.commit('set_last_transaction_status', true)
+          // this.$store.commit('ajax_end')
+        } else {
+          this.checkUnconfirmedTransactions()
+        }
+      } else {
+        this.$store.commit('ajax_end_with_error')
+      }
+    }, () => {
+      this.$store.commit('ajax_end_with_error')
+    })
+  }
   Vue.prototype.voteForDelegates = function (votes) {
     let keys = this.getKeypair()
     let transaction = {
@@ -711,8 +727,16 @@ function install (Vue) {
     this.$store.commit('ajax_start')
     this.$http.post(this.getAddressString() + '/api/accounts/delegates', transaction).then(response => {
       if (response.body.success) {
-        this.$store.commit('ajax_end')
-        this.getDelegatesWithVotes()
+        this.$store.commit('set_last_transaction_status', false)
+        // removing an UI waiting state if transaction confirmation run to much time
+        window.setTimeout(() => {
+          if (!this.$store.state.lastTransactionConfirmed) {
+            this.$store.commit('send_error', { msg: this.$t('votes.transaction_confirm_await') })
+          }
+          this.$store.commit('ajax_end')
+          this.getDelegatesWithVotes()
+        }, 15000)
+        this.checkUnconfirmedTransactions()
       } else {
         this.$store.commit('send_error', { msg: `${this.$t('error')}: ${response.body.error}` })
         this.getDelegatesWithVotes()

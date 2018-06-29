@@ -190,18 +190,19 @@ export default {
     width:100%;
   }
   .settings .md-card .md-card-header:last-child {
-      margin-bottom: 0px;
+      margin-bottom: 0;
   }
   .votes-button {
       width: 100% !important;
       font-size: 16px !important;
-      /*font-weight: 400;*/
+      font-weight: 400 !important;
       height: 48px !important;
       text-transform: none !important;
       padding: 0 !important;
       margin: 0 !important;
       text-align: left !important;
       line-height: 48px !important;
+      color: rgba(0,0,0,.87) !important;
   }
     @media (max-width: 480px) {
         .hide_on_mobile {

@@ -141,6 +141,7 @@ export default {
     'vote_button_text': 'Vote',
     'summary_info': 'Voting cost: 50 ADM. More info on the ',
     'summary_info_link_text': 'ADAMANT website',
-    'no_money': 'You need 50 ADM to vote'
+    'no_money': 'You need 50 ADM to vote',
+    'transaction_confirm_await': 'Transaction confirmation run to much time, please be patient, it will be done'
   }
 }

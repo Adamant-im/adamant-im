@@ -62,7 +62,8 @@ const store = {
     currentChat: false,
     storeInLocalStorage: false,
     delegates: {},
-    originDelegates: {}
+    originDelegates: {},
+    lastTransactionConfirmed: true
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
@@ -311,6 +312,9 @@ const store = {
       for (let key in payload.params) {
         Vue.set(state.delegates[payload.address], key, payload.params[key])
       }
+    },
+    set_last_transaction_status (state, payload) {
+      state.lastTransactionConfirmed = payload
     }
   },
   plugins: [storeData()],
