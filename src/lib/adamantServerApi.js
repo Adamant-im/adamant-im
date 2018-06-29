@@ -646,7 +646,7 @@ function install (Vue) {
     const getRoundDelegates = (delegates, height) => {
       let currentRound = round(height)
       return delegates.filter((delegate, index) => {
-        currentRound === round(height + index + 1)
+        return currentRound === round(height + index + 1)
       })
     }
     const round = height => {
@@ -763,4 +763,3 @@ if (typeof window !== 'undefined' && window.Vue) {
     install.installed = false
   }
 }
-

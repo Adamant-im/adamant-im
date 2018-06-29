@@ -30,7 +30,7 @@
               <template v-for="(delegate, index) in delegates">
                 <md-table-row style="cursor:pointer"
                               class="delegate-row"
-                              :key="delegate.address"
+                              :key="delegate.address+index"
                               v-bind:class="{upvoted: delegate.upvoted, downvoted: delegate.downvoted, active: delegate.showDetails}"
                               v-on:click.native="toggleDetails(delegate)">
                   <md-table-cell>
@@ -45,6 +45,7 @@
                 <md-table-row v-show="delegate.showDetails"
                               style="border-top-width: 0; padding-bottom: 10px"
                               class="delegate-row"
+                              :key="index+delegate.address"
                               v-bind:class="{upvoted: delegate.upvoted, downvoted: delegate.downvoted, active: delegate.showDetails}">
                   <md-table-cell collspan="4" class="delegate-details">
                     <md-layout md-column>
@@ -141,180 +142,180 @@
 </template>
 
 <script>
-  export default {
-    name: 'votes',
-    data () {
-      return {
-        voteRequestLimit: 30,
-        sortParams: {
-          name: 'rank',
-          type: 'desc'
-        },
-        filterString: '',
-        status: [
-          { style: { 'background-color': 'green', 'border-color': 'green' }, tooltip: 'Forging' },
-          { style: { 'background-color': 'orange', 'border-color': 'orange' }, tooltip: 'Missed block' },
-          { style: { 'background-color': 'red', 'border-color': 'red' }, tooltip: 'Not forging' },
-          { style: { 'border-color': 'green' }, tooltip: 'Awaiting slot' },
-          { style: { 'border-color': 'orange' }, tooltip: 'Awaiting slot' },
-          { style: { 'border-color': 'gray' }, tooltip: 'Awaiting status' }
-        ],
-        tableStyle: {
-          height: this.formatHeight(window.innerHeight)
-        },
-        votesErrorMsg: ''
-      }
-    },
-    mounted: function () {
-      this.$nextTick(() => {
-        window.addEventListener('resize', () => {
-          this.tableStyle.height = this.formatHeight(window.innerHeight)
-        })
+export default {
+  name: 'votes',
+  data () {
+    return {
+      voteRequestLimit: 30,
+      sortParams: {
+        name: 'rank',
+        type: 'desc'
+      },
+      filterString: '',
+      status: [
+        { style: { 'background-color': 'green', 'border-color': 'green' }, tooltip: 'Forging' },
+        { style: { 'background-color': 'orange', 'border-color': 'orange' }, tooltip: 'Missed block' },
+        { style: { 'background-color': 'red', 'border-color': 'red' }, tooltip: 'Not forging' },
+        { style: { 'border-color': 'green' }, tooltip: 'Awaiting slot' },
+        { style: { 'border-color': 'orange' }, tooltip: 'Awaiting slot' },
+        { style: { 'border-color': 'gray' }, tooltip: 'Awaiting status' }
+      ],
+      tableStyle: {
+        height: this.formatHeight(window.innerHeight)
+      },
+      votesErrorMsg: ''
+    }
+  },
+  mounted: function () {
+    this.$nextTick(() => {
+      window.addEventListener('resize', () => {
+        this.tableStyle.height = this.formatHeight(window.innerHeight)
       })
-      this.$store.commit('clean_delegates')
-      this.getDelegatesWithVotes()
-    },
-    methods: {
-      vote (delegate) {
-        if (this.votedCount + this.unvotedCount > this.voteRequestLimit) {
-          return false
+    })
+    this.$store.commit('clean_delegates')
+    this.getDelegatesWithVotes()
+  },
+  methods: {
+    vote (delegate) {
+      if (this.votedCount + this.unvotedCount > this.voteRequestLimit) {
+        return false
+      }
+      if (delegate.voted) {
+        if (this.$store.state.delegates[delegate.address]._voted) {
+          delegate.downvoted = true
         }
-        if (delegate.voted) {
-          if (this.$store.state.delegates[delegate.address]._voted) {
-            delegate.downvoted = true
-          }
-          delegate.upvoted = false
-        } else {
-          if (!this.$store.state.delegates[delegate.address]._voted) {
-            delegate.upvoted = true
-          }
-          delegate.downvoted = false
+        delegate.upvoted = false
+      } else {
+        if (!this.$store.state.delegates[delegate.address]._voted) {
+          delegate.upvoted = true
         }
-      },
-      onSort (params) {
-        this.sortParams = params
-      },
-      sendVotes () {
-        if (this.$store.state.balance < 50) {
-          this.votesErrorMsg = this.$t('votes.no_money')
-          this.$refs.votesSnackbar.open()
-        } else {
-          let votes = Array.concat(this.delegates.filter(x => x.downvoted).map(x => `-${x.publicKey}`),
-            this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
-          this.voteForDelegates(votes)
-        }
-      },
-      toggleDetails (delegate) {
-        if (!delegate.showDetails) {
-          this.getForgedByAccount(delegate)
-          this.getForgingTimeForDelegate(delegate)
-        }
-        delegate.showDetails = !delegate.showDetails
-      },
-      formatForgingTime (seconds) {
-        if (!seconds) {
-          return '...'
-        }
-        if (seconds === 0) {
-          return 'Now!'
-        }
-        const minutes = Math.floor(seconds / 60)
-        seconds = seconds - (minutes * 60)
-        if (minutes && seconds) {
-          return `${minutes} min ${seconds} sec`
-        } else if (minutes) {
-          return `${minutes} min `
-        } else {
-          return `${seconds} sec`
-        }
-      },
-      statusStyle (delegate) {
-        return this.status[delegate.status || 5].style
-      },
-      statusTooltip (delegate) {
-        return this.status[delegate.status || 5].tooltip
-      },
-      formatHeight (height) {
-        return `${height * 0.60}px !important`
+        delegate.downvoted = false
       }
     },
-    watch: {
-      errorMsg (value) {
-        this.votesErrorMsg = value
+    onSort (params) {
+      this.sortParams = params
+    },
+    sendVotes () {
+      if (this.$store.state.balance < 50) {
+        this.votesErrorMsg = this.$t('votes.no_money')
         this.$refs.votesSnackbar.open()
-        window.setTimeout(() => this.$store.commit('send_error', { msg: '' }), 5000) // cleanup error msg
+      } else {
+        let votes = Array.concat(this.delegates.filter(x => x.downvoted).map(x => `-${x.publicKey}`),
+          this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
+        this.voteForDelegates(votes)
       }
     },
-    computed: {
-      delegates () {
-        const compare = (a, b) => {
-          const compareNumbers = (x, y) => this.sortParams.type === 'desc' ? x - y : y - x
-          const compareString = (x, y) => {
-            x = x.toUpperCase()
-            y = y.toUpperCase()
-            if (x < y) {
-              return this.sortParams.type === 'desc' ? -1 : 1
-            }
-            if (x > y) {
-              return this.sortParams.type === 'desc' ? 1 : -1
-            }
-            return 0
+    toggleDetails (delegate) {
+      if (!delegate.showDetails) {
+        this.getForgedByAccount(delegate)
+        this.getForgingTimeForDelegate(delegate)
+      }
+      delegate.showDetails = !delegate.showDetails
+    },
+    formatForgingTime (seconds) {
+      if (!seconds) {
+        return '...'
+      }
+      if (seconds === 0) {
+        return 'Now!'
+      }
+      const minutes = Math.floor(seconds / 60)
+      seconds = seconds - (minutes * 60)
+      if (minutes && seconds) {
+        return `${minutes} min ${seconds} sec`
+      } else if (minutes) {
+        return `${minutes} min `
+      } else {
+        return `${seconds} sec`
+      }
+    },
+    statusStyle (delegate) {
+      return this.status[delegate.status || 5].style
+    },
+    statusTooltip (delegate) {
+      return this.status[delegate.status || 5].tooltip
+    },
+    formatHeight (height) {
+      return `${height * 0.60}px !important`
+    }
+  },
+  watch: {
+    errorMsg (value) {
+      this.votesErrorMsg = value
+      this.$refs.votesSnackbar.open()
+      window.setTimeout(() => this.$store.commit('send_error', { msg: '' }), 5000) // cleanup error msg
+    }
+  },
+  computed: {
+    delegates () {
+      const compare = (a, b) => {
+        const compareNumbers = (x, y) => this.sortParams.type === 'desc' ? x - y : y - x
+        const compareString = (x, y) => {
+          x = x.toUpperCase()
+          y = y.toUpperCase()
+          if (x < y) {
+            return this.sortParams.type === 'desc' ? -1 : 1
           }
-          const lVal = a[this.sortParams.name]
-          const rVal = b[this.sortParams.name]
-          if (typeof lVal === 'string' && typeof rVal === 'string') {
-            // check for ADAMANT ID field
-            let [x, ...xs] = lVal
-            if (x === 'U') {
-              let [, ...ys] = rVal
-              return compareNumbers(parseInt(xs.join('')), parseInt(ys.join('')))
-            } else {
-              return compareString(lVal, rVal)
-            }
+          if (x > y) {
+            return this.sortParams.type === 'desc' ? 1 : -1
           }
-          if (typeof lVal === 'number' && typeof rVal === 'number') {
-            return compareNumbers(lVal, rVal)
-          }
-          console.log('uncompared values!', a, b)
           return 0
         }
-        const filterDelegates = (x) => {
-          const regexp = new RegExp(this.filterString, 'i')
-          return this.filterString !== '' ? (regexp.test(x.address) || regexp.test(x.username)) : true
+        const lVal = a[this.sortParams.name]
+        const rVal = b[this.sortParams.name]
+        if (typeof lVal === 'string' && typeof rVal === 'string') {
+          // check for ADAMANT ID field
+          let [x, ...xs] = lVal
+          if (x === 'U') {
+            let [, ...ys] = rVal
+            return compareNumbers(parseInt(xs.join('')), parseInt(ys.join('')))
+          } else {
+            return compareString(lVal, rVal)
+          }
         }
-
-        return Object.values(this.$store.state.delegates)
-          .filter(filterDelegates)
-          .sort(compare)
-          .map((x) => {
-            x.style = this.status[x.status].style
-            x.tooltip = this.status[x.status].tooltip
-            return x
-          })
-      },
-      delegatesCount () {
-        return this.delegates.length
-      },
-      upvotedCount () {
-        return this.delegates.filter(x => x.upvoted).length
-      },
-      downvotedCount () {
-        return this.delegates.filter(x => x.downvoted).length
-      },
-      originVotesCount () {
-        return Object.values(this.$store.state.delegates).filter(x => x._voted).length
-      },
-      totalVotes () {
-        return this.downvotedCount + this.originVotesCount - this.downvotedCount
-      },
-      delegatesLoaded () {
-        return Object.keys(this.$store.state.delegates).length > 0
-      },
-      errorMsg () {
-        return this.$store.state.lastErrorMsg
+        if (typeof lVal === 'number' && typeof rVal === 'number') {
+          return compareNumbers(lVal, rVal)
+        }
+        console.log('uncompared values!', a, b)
+        return 0
       }
+      const filterDelegates = (x) => {
+        const regexp = new RegExp(this.filterString, 'i')
+        return this.filterString !== '' ? (regexp.test(x.address) || regexp.test(x.username)) : true
+      }
+
+      return Object.values(this.$store.state.delegates)
+        .filter(filterDelegates)
+        .sort(compare)
+        .map((x) => {
+          x.style = this.status[x.status].style
+          x.tooltip = this.status[x.status].tooltip
+          return x
+        })
+    },
+    delegatesCount () {
+      return this.delegates.length
+    },
+    upvotedCount () {
+      return this.delegates.filter(x => x.upvoted).length
+    },
+    downvotedCount () {
+      return this.delegates.filter(x => x.downvoted).length
+    },
+    originVotesCount () {
+      return Object.values(this.$store.state.delegates).filter(x => x._voted).length
+    },
+    totalVotes () {
+      return this.downvotedCount + this.originVotesCount - this.downvotedCount
+    },
+    delegatesLoaded () {
+      return Object.keys(this.$store.state.delegates).length > 0
+    },
+    errorMsg () {
+      return this.$store.state.lastErrorMsg
     }
   }
+}
 </script>
 <style>
 .votes {
@@ -442,7 +443,5 @@
     padding: 0 3px 10px 0;
   }
 }
-
-
 
 </style>
