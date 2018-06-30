@@ -76,6 +76,7 @@ export default {
     'your_balance_tooltip_ETH': 'It is your ADAMANT ETH balance.',
     'send_btn': 'Send funds',
     'send_btn_tooltip': 'Click to transfer supported tokens to other account or ADAMANT user',
+    'invest_btn_link': 'https://adamant.im/buy-tokens/',
     'invest_btn': 'ICOに投資する',
     'invest_btn_tooltip': 'ADAMANTの安全性と匿名性の高いメッセンジャーのICOに投資することができます。 クリックすると、Adamant.im/EN-ico/の投資ページに移動します。',
     'free_adm_btn': 'Free ADM tokens'
