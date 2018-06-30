@@ -149,7 +149,7 @@ export default {
       sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
-      language: this.$i18n.locale,
+      language: this.$i18n.locale
     }
   }
 }

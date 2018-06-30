@@ -526,8 +526,8 @@ function install (Vue) {
     this.$http.get(this.getAddressString() + `/api/delegates?limit=${limit}&offset=${offset}`).then(response => {
       if (response.body.success) {
         for (let i in response.body.delegates) {
-          let delegate = response.body.delegates[i]
-          let voted = votes.includes(delegate.address)
+          const delegate = response.body.delegates[i]
+          const voted = votes.includes(delegate.address)
           delegate._voted = voted
           delegate.voted = voted
           delegate.upvoted = false
@@ -589,7 +589,7 @@ function install (Vue) {
     let transaction = {
       type: constants.Transactions.VOTE,
       asset: {votes: votes},
-      timestamp: adamant.epochTime(),
+      timestamp: adamant.epochTime(Date.now()),
       recipientId: this.$store.state.address,
       senderPublicKey: keys.publicKey.toString('hex'),
       amount: 0,
@@ -652,7 +652,7 @@ function install (Vue) {
             let status = { updatedAt: time }
             if (blocks.length > 0) {
               status.lastBlock = blocks[0]
-              status.blockAt = new Date((((Date.UTC(2017, 8, 2, 17, 0, 0, 0) / 1000) + status.lastBlock.timestamp) * 1000))
+              status.blockAt = new Date(((constants.EPOCH + status.lastBlock.timestamp) * 1000))
               var roundDelegates = getRoundDelegates(nextForgers, lastBlock.height)
               var isRoundDelegate = roundDelegates.indexOf(delegate.publicKey) !== -1
               status.networkRound = round(lastBlock.height)
