@@ -5,6 +5,7 @@ var adamant = require('./adamant.js')
 const renderMarkdown = require('./markdown').default
 const { hexToBytes, bytesToHex } = require('./hex')
 const constants = require('./constants.js')
+const adamantAPI = require('./adamant-api')
 
 Queue.configure(window.Promise)
 window.queue = new Queue(1, Infinity)
@@ -586,15 +587,12 @@ function install (Vue) {
   }
   Vue.prototype.voteForDelegates = function (votes) {
     let keys = this.getKeypair()
-    let transaction = {
-      type: constants.Transactions.VOTE,
+    let transaction = adamantAPI.newTransaction(constants.Transactions.VOTE)
+    transaction = Object.assign({
       asset: {votes: votes},
-      timestamp: adamant.epochTime(Date.now()),
       recipientId: this.$store.state.address,
-      senderPublicKey: keys.publicKey.toString('hex'),
-      amount: 0,
-      senderId: this.$store.state.address
-    }
+      amount: 0
+    }, transaction)
     transaction.signature = adamant.transactionSign(transaction, keys)
     this.$store.commit('clean_delegates')
     this.$store.commit('ajax_start')

@@ -42,7 +42,7 @@ function post (url, payload) {
  * @param {number} type transaction type
  * @returns {{type: number, senderId: string, senderPublicKey: string, timestamp: number}}
  */
-function newTransaction (type) {
+export function newTransaction (type) {
   return {
     type,
     amount: 0,
