@@ -5,6 +5,7 @@ export default {
   'new_messages_2': 'new messages',
   'new_messages_5': 'new messages',
   'region': 'en-US',
+  'error': 'Error',
   'login': {
     'copy_button_tooltip': 'Click to copy the passphrase to clipboard. Save it in a password keeper application. To enter your new Wallet, paste it the passphrase field.',
     'save_button_tooltip': 'Click to save your passphrase in a text file. Save it in the secure place!',
@@ -36,7 +37,12 @@ export default {
     'enable_bar': 'Change browser tab title',
     'enable_bar_tooltip': 'Shows new message counter in the tab title when new message arrives. Works for desktop browsers.',
     'enable_desktop': 'Browser notifications',
-    'enable_desktop_tooltip': 'Use integrated browser notifications (need your acceptance)'
+    'enable_desktop_tooltip': 'Use integrated browser notifications (need your acceptance)',
+    'delegates_title': 'Delegates',
+    'delegate_name_input': 'Enter delegate name',
+    'delegate_register_button': 'Register delegate',
+    'vote_for_delegates_button': 'Vote for delegates',
+    'already_delegate_text': 'You are already a delegate. Your delegate name is'
   },
   'chats': {
     'new_chat': 'Start new Chat',
@@ -127,5 +133,29 @@ export default {
     'settings_button': 'Settings',
     'exit_button': 'Logout',
     'exit_button_tooltip': 'Despite of application settings, your passphrase will be cleared from browser storage. We recommend to perform exit every time after you are done with chats.'
+  },
+  'votes': {
+    'page_title': 'Votes',
+    'filter_placeholder': 'Name or ADAMANT ID',
+    'table_head_vote': 'Vote',
+    'table_head_rank': 'Rank',
+    'table_head_name': 'Name',
+    'delegate_approval': 'Approval',
+    'delegate_uptime': 'Uptime',
+    'delegate_forged': 'Forged',
+    'delegate_forging_time': 'Forging time',
+    'delegate_description': 'Description',
+    'delegate_link': 'Link',
+    'upvotes': 'Upvotes',
+    'downvotes': 'Downvotes',
+    'total_new_votes': 'Total new votes',
+    'total_votes': 'Total votes',
+    'voting_cost': 'Voting cost',
+    'summary_title': 'Review voting',
+    'vote_button_text': 'Vote',
+    'summary_info': 'Voting cost: 50 ADM. More info on the ',
+    'summary_info_link_text': 'ADAMANT website',
+    'no_money': 'You need 50 ADM to vote',
+    'transaction_confirm_await': 'Transaction confirmation run to much time, please be patient, it will be done'
   }
 }

@@ -90,7 +90,10 @@ const store = {
     lastChatHeight: 0,
     lastTransactionHeight: 0,
     currentChat: false,
-    storeInLocalStorage: false
+    storeInLocalStorage: false,
+    delegates: {},
+    originDelegates: {},
+    lastTransactionConfirmed: true
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
@@ -153,6 +156,8 @@ const store = {
       state.showPanel = false
       state.showBottom = true
       state.transactions = {}
+      state.delegates = {}
+      state.originDelegates = {}
       state.chats = {}
       state.newChats = {}
       state.totalNewChats = 0
@@ -161,6 +166,7 @@ const store = {
       state.firstChatLoad = true
       state.lastChatHeight = 0
       state.lastTransactionHeight = 0
+      state.partnerDisplayName = ''
       window.publicKey = false
       window.privateKey = false
       window.secretKey = false
@@ -221,6 +227,7 @@ const store = {
     leave_chat (state, payload) {
       state.showPanel = false
       state.partnerName = ''
+      state.partnerDisplayName = ''
       state.showBottom = true
     },
     have_loaded_chats (state) {
@@ -323,6 +330,20 @@ const store = {
       Vue.set(state.chats, partner, currentDialogs)
       payload.direction = direction
       Vue.set(state.chats[partner].messages, payload.id, payload)
+    },
+    delegate_info (state, payload) {
+      Vue.set(state.delegates, payload.address, payload)
+    },
+    clean_delegates (state) {
+      state.delegates = {}
+    },
+    update_delegate (state, payload) {
+      for (let key in payload.params) {
+        Vue.set(state.delegates[payload.address], key, payload.params[key])
+      }
+    },
+    set_last_transaction_status (state, payload) {
+      state.lastTransactionConfirmed = payload
     }
   },
   plugins: [storeData()],

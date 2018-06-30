@@ -246,7 +246,7 @@ footer {
     box-shadow: none;
     border-top: 1px solid lightgray;
 }
-.chat, .home, .chats, .settings, .transaction, .transfer, .login {
+.chat, .home, .chats, .settings, .transaction, .transfer, .login, .votes {
     max-width: 800px;
     margin: 0 auto;
     margin-top: 25px;
