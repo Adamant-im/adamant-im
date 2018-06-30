@@ -78,6 +78,7 @@ export default {
     'your_balance_tooltip_ETH': 'It is your ADAMANT ETH balance.',
     'send_btn': 'Send funds',
     'send_btn_tooltip': 'Click to transfer supported tokens to other account or ADAMANT user',
+    'invest_btn_link': 'https://adamant.im/buy-tokens/',
     'invest_btn': 'Buy tokens',
     'invest_btn_tooltip': 'Now you have a possibility to buy tokens of ADAMANT, the most secure and anonymous messenger, with the cheapest price. Click to go to ICO form Adamant.im/buy-tokens/.',
     'free_adm_btn': 'Free ADM tokens'
@@ -127,5 +128,15 @@ export default {
     'settings_button': 'Settings',
     'exit_button': 'Logout',
     'exit_button_tooltip': 'Despite of application settings, your passphrase will be cleared from browser storage. We recommend to perform exit every time after you are done with chats.'
+  },
+  'scan': {
+    'camera_button': 'Camera',
+    'close_button': 'Close',
+    'login': {
+      'modal_header': 'Scan QR code with a passphrase'
+    },
+    'new-chat': {
+      'modal_header': 'Scan QR code with ADM address'
+    }
   }
 }
