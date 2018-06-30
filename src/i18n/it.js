@@ -76,6 +76,7 @@ export default {
     'your_balance_tooltip_ETH': 'E il tuo saldo Ethereum.',
     'send_btn': 'Send funds',
     'send_btn_tooltip': 'Click to transfer supported tokens to other account or ADAMANT user',
+    'invest_btn_link': 'https://adamant.im/buy-tokens/',
     'invest_btn': 'Investire nell\'ICO',
     'invest_btn_tooltip': 'Hai la possibilita di investire in ICO di ADAMANT, il messenger piu sicuro e anonimo. Clicca per andare a investire in forma Adamant.im/ico/. ',
     'free_adm_btn': 'Free ADM tokens'
