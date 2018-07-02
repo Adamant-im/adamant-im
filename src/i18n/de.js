@@ -147,15 +147,5 @@ export default {
     'summary_info_link_text': 'ADAMANT website',
     'no_money': 'You need 50 ADM to vote',
     'transaction_confirm_await': 'Transaction confirmation run to much time, please be patient, it will be done'
-  },
-  'scan': {
-    'camera_button': 'Камера',
-    'close_button': 'Закрыть',
-    'login': {
-      'modal_header': 'Отсканируйте QR-код с паролем'
-    },
-    'new-chat': {
-      'modal_header': 'Отсканируйте QR-код с ADM-адресом'
-    }
   }
 }
