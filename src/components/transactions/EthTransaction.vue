@@ -61,7 +61,8 @@ export default {
       return getExplorerUrl(Cryptos.ETH, this.id)
     },
     confirmations () {
-      return Math.max(0, (this.$store.state.eth.blockNumber || 0) - (this.transaction.blockNumber || 0))
+      if (!this.transaction.blockNumber || !this.$store.state.eth.blockNumber) return 0
+      return Math.max(0, this.$store.state.eth.blockNumber - this.transaction.blockNumber)
     }
   },
   methods: {

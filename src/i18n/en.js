@@ -84,8 +84,9 @@ export default {
     'your_balance_tooltip_ETH': 'It is your ADAMANT ETH balance.',
     'send_btn': 'Send funds',
     'send_btn_tooltip': 'Click to transfer supported tokens to other account or ADAMANT user',
-    'invest_btn': 'Join the ICO',
-    'invest_btn_tooltip': 'You have a possibility to participate in the ICO of ADAMANT, the most secure and anonymous messenger. Click to go to ICO form Adamant.im/ico/.',
+    'invest_btn_link': 'https://adamant.im/buy-tokens/',
+    'invest_btn': 'Buy tokens',
+    'invest_btn_tooltip': 'Now you have a possibility to buy tokens of ADAMANT, the most secure and anonymous messenger, with the cheapest price. Click to go to ICO form Adamant.im/buy-tokens/.',
     'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
@@ -157,5 +158,15 @@ export default {
     'summary_info_link_text': 'ADAMANT website',
     'no_money': 'You need 50 ADM to vote',
     'transaction_confirm_await': 'Transaction confirmation run to much time, please be patient, it will be done'
+  },
+  'scan': {
+    'camera_button': 'Camera',
+    'close_button': 'Close',
+    'login': {
+      'modal_header': 'Scan QR code with a passphrase'
+    },
+    'new-chat': {
+      'modal_header': 'Scan QR code with ADM address'
+    }
   }
 }

@@ -63,7 +63,7 @@
               </div>
           </md-list-item>
 
-          <md-list-item :href="icoAddress" target="_blank" :title="$t('home.invest_btn_tooltip')">
+          <md-list-item :href="$t('home.invest_btn_link')+'?wallet='+this.$store.state.address" target="_blank" :title="$t('home.invest_btn_tooltip')">
 
               <md-avatar class="md-avatar-icon">
                 <md-icon md-src="/static/img/Wallet/join-ico.svg"></md-icon>
@@ -98,12 +98,6 @@ export default {
     }
   },
   computed: {
-    icoAddress: function () {
-      if (this.$i18n.locale === 'ru') {
-        return 'https://adamant.im/ru-ico/?wallet=' + this.$store.state.address
-      }
-      return 'https://adamant.im/ico/?wallet=' + this.$store.state.address
-    },
     freeAdmAddress () {
       return 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
     },

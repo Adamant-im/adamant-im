@@ -81,7 +81,12 @@ export default {
         hash => {
           this.isWaiting = false
 
-          if (!hash) return // TODO handle somehow
+          if (!hash) {
+            // No hash: transaction has been rejected
+            this.errorMessage('error_transaction_send')
+            return
+          }
+
           if (this.fixedAddress) {
             // Go back to chat if we came from there
             this.$router.push({ name: 'Chat', params: { partner: this.fixedAddress } })
