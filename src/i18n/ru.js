@@ -160,6 +160,6 @@ export default {
     },
     'new-chat': {
       'modal_header': 'Отсканируйте QR-код с ADM-адресом'
-    } 
+    }
   }
-} 
+}
