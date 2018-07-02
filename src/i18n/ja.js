@@ -123,7 +123,8 @@ export default {
     'settings_button': '設定',
     'exit_button': 'ログアウトです',
     'exit_button_tooltip': 'アプリケーションの設定にかかわらず、パスワードはブラウザストレージから消去されます。 チャット終了後は常にログアウトすることをお勧めします.'
-  }  'votes': {
+  },
+  'votes': {
     'page_title': 'Votes',
     'filter_placeholder': 'Name or ADAMANT ID',
     'table_head_vote': 'Vote',
