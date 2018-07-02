@@ -12,8 +12,9 @@ export default {
    * @param {object} state current state
    * @param {{partner: string, displayName: string}} payload partner address and display name
    */
-  setDisplayName (state, { partner, displayName }) {
-    state[partner] = Object.assign({ }, state[partner], { displayName })
+  displayName (state, { partner, displayName }) {
+    state.list[partner] = Object.assign({ }, state.list[partner], { displayName })
+    state.lastChange = Date.now()
   },
 
   /**
@@ -21,8 +22,21 @@ export default {
    * @param {object} state current state
    * @param {{partner: string, crypto: string, address: string}} payload partner ADM address, crypto and crypto address
    */
-  setAddress (state, payload) {
-    state[payload.partner] = Object.assign({ }, state[payload.partner],
+  address (state, payload) {
+    state.list[payload.partner] = Object.assign({ }, state[payload.partner],
       { [payload.crypto]: payload.address })
+  },
+
+  /**
+   * Sets contact list data, retrieved from server
+   * @param {object} state current state
+   * @param {Object.<string, {displayName: string}>} contacts contacts list
+   */
+  contactList (state, contacts) {
+    if (!contacts) return
+    Object.keys(contacts).forEach(uid => {
+      state.list[uid] = Object.assign({ }, state.list[uid], contacts[uid])
+    })
+    state.lastUpdate = Date.now()
   }
 }
