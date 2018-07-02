@@ -123,7 +123,8 @@ export default {
     'settings_button': '설정',
     'exit_button': '로그아웃',
     'exit_button_tooltip': '응용 프로그램 설정에도 불구하고 암호는 브라우저 저장소에서 지워집니다. 채팅을 마친 후에는 언제든지 종료를 수행하는 것이 좋습니다.'
-  }  'votes': {
+  },
+  'votes': {
     'page_title': 'Votes',
     'filter_placeholder': 'Name or ADAMANT ID',
     'table_head_vote': 'Vote',
