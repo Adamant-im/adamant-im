@@ -123,5 +123,39 @@ export default {
     'settings_button': '设置',
     'exit_button': '退出',
     'exit_button_tooltip': '将无视浏览器设置, 您的密码短句会从您的浏览器彻底清除. 我们建议您在每次结束聊天后执行此操作.'
+  },
+  'votes': {
+    'page_title': 'Votes',
+    'filter_placeholder': 'Name or ADAMANT ID',
+    'table_head_vote': 'Vote',
+    'table_head_rank': 'Rank',
+    'table_head_name': 'Name',
+    'delegate_approval': 'Approval',
+    'delegate_uptime': 'Uptime',
+    'delegate_forged': 'Forged',
+    'delegate_forging_time': 'Forging time',
+    'delegate_description': 'Description',
+    'delegate_link': 'Link',
+    'upvotes': 'Upvotes',
+    'downvotes': 'Downvotes',
+    'total_new_votes': 'Total new votes',
+    'total_votes': 'Total votes',
+    'voting_cost': 'Voting cost',
+    'summary_title': 'Review voting',
+    'vote_button_text': 'Vote',
+    'summary_info': 'Voting cost: 50 ADM. More info on the ',
+    'summary_info_link_text': 'ADAMANT website',
+    'no_money': 'You need 50 ADM to vote',
+    'transaction_confirm_await': 'Transaction confirmation run to much time, please be patient, it will be done'
+  },
+  'scan': {
+    'camera_button': 'Камера',
+    'close_button': 'Закрыть',
+    'login': {
+      'modal_header': 'Отсканируйте QR-код с паролем'
+    },
+    'new-chat': {
+      'modal_header': 'Отсканируйте QR-код с ADM-адресом'
+    } 
   }
 }

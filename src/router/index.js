@@ -10,12 +10,14 @@ import Transactions from '@/components/Transactions'
 import Options from '@/components/Options'
 import Home from '@/components/Home'
 import QRScan from '@/components/QRScan'
+import Votes from '@/components/Votes'
 
 Vue.use(Router)
 
 export default new Router({
   mode: 'history',
   routes: [
+    { path: '/votes', name: 'Votes', component: Votes },
     {
       path: '/transactions/:crypto/:tx_id',
       component: Transaction,

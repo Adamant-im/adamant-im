@@ -40,3 +40,7 @@ export const Symbols = {
   HOURGLASS: String.fromCharCode(0x23f3), // ⏳
   CROSS: String.fromCharCode(0x274c) // ❌
 }
+
+export const Delegates = {
+  ACTIVE_DELEGATES: 101
+}

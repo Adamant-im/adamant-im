@@ -92,6 +92,17 @@
 
       </md-card>
 
+      <md-card class='settings-card' style="box-shadow:none">
+        <md-card-area md-inset>
+          <md-card-header>
+            <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.delegates_title') }}</h2>
+          </md-card-header>
+          </md-card-area>
+          <md-card-content>
+            <md-button class="votes-button" v-on:click="$router.push('/votes/')">{{ $t('options.vote_for_delegates_button') }}</md-button>
+          </md-card-content>
+      </md-card>
+
     <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
       </div>
 
@@ -101,8 +112,8 @@
 <script>
 export default {
   name: 'settings',
-  methods: {
-  },
+  methods: {},
+  mounted: {},
   computed: {
     languageList: function () {
       var messages = require('../i18n').default
@@ -168,7 +179,19 @@ export default {
     width:100%;
   }
   .settings .md-card .md-card-header:last-child {
-      margin-bottom: 0px;
+      margin-bottom: 0;
+  }
+  .votes-button {
+      width: 100% !important;
+      font-size: 16px !important;
+      font-weight: 400 !important;
+      height: 48px !important;
+      text-transform: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      text-align: left !important;
+      line-height: 48px !important;
+      color: rgba(0,0,0,.87) !important;
   }
     @media (max-width: 480px) {
         .hide_on_mobile {
