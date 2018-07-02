@@ -39,7 +39,7 @@ export default {
     'delegate_name_input': 'Введите имя делегата',
     'delegate_register_button': 'Зарегистрировать делегата',
     'vote_for_delegates_button': 'Голосовать за делегатов',
-    'already_delegate_text': 'Вы уже являетесь делегатом. Его имя: '    
+    'already_delegate_text': 'Вы уже являетесь делегатом. Его имя: '
   },
   'chats': {
     'new_chat': 'Новый чат',
