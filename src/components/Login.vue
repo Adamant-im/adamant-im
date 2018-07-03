@@ -148,16 +148,16 @@ export default {
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
       this.showSpinnerFlag = true
-      if (this.passPhrase.split(' ').length !== 12) {
-        this.snackOpen()
-        return
-      }
       var errorFunction = function () {
         this.snackOpen()
+        this.showSpinnerFlag = false
       }.bind(this)
+      if (this.passPhrase.split(' ').length !== 12) {
+        errorFunction()
+        return
+      }
       this.getAccountByPassPhrase(this.passPhrase, function (context) {
         this.$store.dispatch('afterLogin', this.passPhrase)
-
         this.$root._router.push('/chats/')
         this.loadChats(true)
         this.$store.commit('mock_messages')
