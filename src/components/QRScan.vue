@@ -4,8 +4,7 @@
     <div class="modal-container">
       <div class="modal">
         <div class="modal-body">
-          <h3 v-if="this.checkParentName() === 'login'">{{ $t('scan.login.modal_header') === 'scan.login.modal_header'? 'Scan your password from QR-code' : $t('scan.login.modal_header') }}</h3>
-          <h3 v-else-if="this.checkParentName() === 'new-chat'">{{ $t('scan.new-chat.modal_header') === 'scan.new-chat.modal_header'? 'Scan UID from QR-code' : $t('scan.new-chat.modal_header') }}</h3>
+          <h3>{{$t('scan.' + this.checkParentName() + '.modal_header') }}</h3>
           <video id="preview"></video>
         </div>
         <div class="modal-footer">

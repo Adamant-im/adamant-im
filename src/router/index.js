@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hello from '@/components/Hello'
 import Login from '@/components/Login'
 import Chats from '@/components/Chats'
 import Chat from '@/components/Chat'
@@ -33,11 +32,6 @@ export default new Router({
       path: '/scan',
       name: 'QRScanner',
       component: QRScan
-    },
-    {
-      path: '/hello',
-      name: 'Hello',
-      component: Hello
     },
     {
       path: '/options',
