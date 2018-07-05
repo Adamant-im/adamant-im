@@ -1,6 +1,23 @@
 import * as admApi from '../../../lib/adamant-api'
 
 export default {
+  /** Starts background sync after login */
+  afterLogin: {
+    root: true,
+    handler (context) {
+      const address = context.rootState.address
+      context.commit('address', address)
+    }
+  },
+
+  /** Resets module state */
+  reset: {
+    root: true,
+    handler (context) {
+      context.commit('reset')
+    }
+  },
+
   /**
    * Retrieves new transactions: those that follow the most recently retrieved one.
    * @param {any} context Vuex action context

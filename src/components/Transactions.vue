@@ -11,7 +11,7 @@
             <span v-if="transaction.senderId !== currentAddress">{{ transaction.senderId.toString().toUpperCase() }}</span>
             <span v-else>{{ transaction.recipientId.toString().toUpperCase() }}</span>
             <span>{{ $formatAmount(transaction.amount) }} ADM</span>
-            <p>{{ dateFormat(transaction.timestamp) }}</p>
+            <p>{{ $formatDate(transaction.timestamp) }}</p>
           </div>
 
           <md-button class="md-icon-button md-list-action" v-on:click="openChat(transaction)">
@@ -32,20 +32,19 @@ export default {
   name: 'transaction',
   data () {
     return {
+      bgTimer: null
     }
   },
-  mounted: function () {
-    this.getTransactions()
+  mounted () {
+    clearInterval(this.bgTimer)
+    this.bgTimer = setInterval(() => {
+      this.$store.dispatch('adm/getNewTransactions')
+    }, 5000)
   },
-  watch: {
-    '$route': function (value) {
-      this.getTransactionInfo(value.params.tx_id)
-    }
+  beforeDestroy () {
+    clearInterval(this.bgTimer)
   },
   methods: {
-    dateFormat: function (timestamp) {
-      return new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0)).toLocaleString()
-    },
     getPartner (transaction) {
       return transaction.senderId !== this.$store.state.address ? transaction.senderId : transaction.recipientId
     },
@@ -69,18 +68,7 @@ export default {
       return this.$store.state.address
     },
     transactions: function () {
-      function compare (a, b) {
-        if (a.timestamp < b.timestamp) {
-          return 1
-        }
-        if (a.timestamp > b.timestamp) {
-          return -1
-        }
-        return 0
-      }
-      if (this.$store.state.transactions) {
-        return Object.values(this.$store.state.transactions).sort(compare)
-      }
+      return this.$store.getters('adm/sortedTransactions')
     }
   }
 }

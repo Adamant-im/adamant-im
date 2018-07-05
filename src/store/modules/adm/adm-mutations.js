@@ -9,6 +9,11 @@ export default {
     resetState(state, initialState)
   },
 
+  /** Sets current ADM address */
+  address (state, address) {
+    state.address = address
+  },
+
   /**
    * Sets transactions list appending or replacing existing ones.
    * @param {{transactions: object, minHeight: number, maxHeight: number}} state current state
@@ -18,8 +23,14 @@ export default {
     let minHeight = Infinity
     let maxHeight = 0
 
+    const address = state.address
+
     transactions.forEach(tx => {
-      Vue.set(state.transactions, tx.id, tx)
+      Vue.set(state.transactions, tx.id, {
+        ...tx,
+        direction: tx.recipientId === address ? 'to' : 'from',
+        partner: tx.recipientId === address ? tx.senderId : tx.recipientId
+      })
       minHeight = Math.min(minHeight, tx.height)
       maxHeight = Math.max(maxHeight, tx.height)
     })
