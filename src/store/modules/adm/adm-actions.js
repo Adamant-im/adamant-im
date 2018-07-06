@@ -18,6 +18,15 @@ export default {
     }
   },
 
+  /** Handles store rehydratation */
+  rehydrate: {
+    root: true,
+    handler (context) {
+      const address = context.rootState.address
+      context.commit('address', address)
+    }
+  },
+
   /**
    * Retrieves new transactions: those that follow the most recently retrieved one.
    * @param {any} context Vuex action context
@@ -25,7 +34,7 @@ export default {
   getNewTransactions (context) {
     const options = { }
     if (context.state.maxHeight > 0) {
-      options.from = context.state.maxHeight
+      options.from = context.state.maxHeight + 1
     }
 
     return admApi.getTransactions(options).then(response => {
@@ -44,8 +53,8 @@ export default {
     if (context.state.bottomReached) return Promise.resolve()
 
     const options = { }
-    if (context.state.minHeight > 0) {
-      options.to = context.state.minHeight
+    if (context.state.minHeight > 1) {
+      options.to = context.state.minHeight - 1
     }
 
     return admApi.getTransactions(options).then(response => {
@@ -61,5 +70,16 @@ export default {
         context.commit('bottom')
       }
     })
+  },
+
+  /**
+   * Retrieves transaction info.
+   * @param {any} context Vuex action context
+   * @param {string} id transaction ID
+   */
+  getTransaction (context, id) {
+    admApi.getTransaction(id).then(
+      transaction => context.commit('transactions', [transaction])
+    )
   }
 }

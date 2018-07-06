@@ -3,9 +3,10 @@ import Vue from 'vue'
 import {Base64} from 'js-base64'
 
 import storeData from '../lib/lsStore.js'
-import ethModule from './modules/eth'
 
+import ethModule from './modules/eth'
 import partnersModule from './modules/partners'
+import admModule from './modules/adm'
 
 import * as admApi from '../lib/adamant-api'
 import {base64regex} from '../lib/constants'
@@ -88,7 +89,6 @@ const store = {
     totalNewChats: 0,
     chats: {},
     lastChatHeight: 0,
-    lastTransactionHeight: 0,
     currentChat: false,
     storeInLocalStorage: false,
     delegates: {},
@@ -207,10 +207,10 @@ const store = {
         state.is_new_account = payload.is_new_account
       }
     },
-    transaction_info (state, payload) {
-      payload.direction = (state.address === payload.recipientId) ? 'to' : 'from'
-      Vue.set(state.transactions, payload.id, payload)
-    },
+    // transaction_info (state, payload) {
+    //   payload.direction = (state.address === payload.recipientId) ? 'to' : 'from'
+    //   Vue.set(state.transactions, payload.id, payload)
+    // },
     connect (state, payload) {
       state.connectionString = payload.string
     },
@@ -255,11 +255,11 @@ const store = {
         state.lastChatHeight = payload
       }
     },
-    set_last_transaction_height (state, payload) {
-      if (state.lastTransactionHeight < payload) {
-        state.lastTransactionHeight = payload
-      }
-    },
+    // set_last_transaction_height (state, payload) {
+    //   if (state.lastTransactionHeight < payload) {
+    //     state.lastTransactionHeight = payload
+    //   }
+    // },
     add_chat_message (state, payload) {
       var me = state.address
       var partner = ''
@@ -348,12 +348,6 @@ const store = {
   },
   plugins: [storeData()],
   getters: {
-    /** Returns transactions for the currently opened chat */
-    currentChatTransactions: state => {
-      const partner = state.currentChat && state.currentChat.partner
-      const transactions = Object.values(state.transactions) || []
-      return transactions.filter(x => x.senderId === partner || x.recipientId === partner)
-    },
     // Returns decoded pass phrase from store
     getPassPhrase: state => {
       if (state.passPhrase.match(base64regex)) {
@@ -365,6 +359,7 @@ const store = {
   },
   modules: {
     eth: ethModule, // Ethereum-related data
+    adm: admModule, // ADM transfers
     partners: partnersModule // Partners: display names, crypto addresses and so on
   }
 }

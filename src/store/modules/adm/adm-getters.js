@@ -8,5 +8,12 @@ export default {
    */
   sortedTransactions (state) {
     return Object.values(state.transactions).sort(sortFunc)
-  }
+  },
+
+  /**
+   * Returns transactions with the specified partner.
+   * This getter was added to support transactions display in chats and supposed to be removed
+   * as soon as we add an endpoint to fetch transactions for chats.
+   */
+  partnerTransactions: state => partner => Object.values(state.transactions).filter(tx => tx.partner === partner)
 }
