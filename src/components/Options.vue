@@ -112,12 +112,9 @@
 <script>
 export default {
   name: 'settings',
-  methods: {},
-  mounted: {},
   computed: {
     languageList: function () {
-      var messages = require('../i18n').default
-      return messages
+      return require('../i18n').default
     }
   },
   watch: {
