@@ -25,7 +25,7 @@
                 </md-avatar>
 
                 <div class="md-list-text-container">
-                    <span>{{ chatName(chat.partner) }}</span>
+                    <div class="chat_entry_title">{{ chatName(chat.partner) }}</div>
                     <chat-entry :message="chat.last_message" :brief="true"></chat-entry>
                     <span class="dt" v-if="chat.last_message.timestamp">{{ $formatDate(chat.last_message.timestamp) }}</span>
                 </div>
@@ -153,5 +153,10 @@ export default {
     }
     .black-text {
       color: rgba(0, 0, 0, 0.87) !important;
+    }
+    .chat_entry_title {
+      font-weight: 500;
+      padding-top: 3px;
+      padding-bottom: 2px;
     }
 </style>
