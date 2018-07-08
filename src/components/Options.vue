@@ -99,7 +99,9 @@
           </md-card-header>
           </md-card-area>
           <md-card-content>
-            <md-button class="votes-button" v-on:click="$router.push('/votes/')">{{ $t('options.vote_for_delegates_button') }}</md-button>
+            <div class="md-table md-theme-grey">
+              <md-button class="votes-button" v-on:click="$router.push('/votes/')">{{ $t('options.vote_for_delegates_button') }}</md-button>
+            </div>
           </md-card-content>
       </md-card>
 
