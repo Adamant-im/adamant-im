@@ -152,11 +152,22 @@ export function getStored (key, ownerAddress) {
     ownerAddress = myAddress
   }
 
-  return get('/api/states/get', { senderId: ownerAddress }).then(response => {
-    if (response.success) {
-      const trans = response.transactions.filter(x => key === (x.asset && x.asset.state && x.asset.state.key))[0]
-      return trans ? trans.asset.state.value : undefined
+  const params = {
+    senderId: ownerAddress,
+    key,
+    orderBy: 'timestamp:desc',
+    limit: 1
+  }
+
+  return get('/api/states/get', params).then(response => {
+    let value = null
+
+    if (response.success && Array.isArray(response.transactions)) {
+      const tx = response.transactions[0]
+      value = tx && tx.asset && tx.asset.state && tx.asset.state.value
     }
+
+    return value
   })
 }
 
