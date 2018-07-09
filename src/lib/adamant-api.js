@@ -153,8 +153,16 @@ export function getStored (key, ownerAddress) {
   }
 
   return get('/api/states/get', { senderId: ownerAddress }).then(response => {
-    if (response.success) {
-      const trans = response.transactions.filter(x => key === (x.asset && x.asset.state && x.asset.state.key))[0]
+    if (response.success && Array.isArray(response.transactions)) {
+      // Search for the `STATE` transaction with the asset key specified.
+      // Take the latest transaction if several are available
+      const trans = response.transactions.reduce((prev, current) => {
+        const currentKey = current.asset && current.asset.state && current.asset.state.key
+        return (key === currentKey && (!prev || prev.timestamp < current.timestamp))
+          ? current
+          : prev
+      }, null)
+
       return trans ? trans.asset.state.value : undefined
     }
   })
