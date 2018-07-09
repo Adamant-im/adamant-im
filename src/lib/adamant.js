@@ -327,21 +327,25 @@ adamant.verify = function (hash, signatureBuffer, publicKeyBuffer) {
  * @param {string} msg message to encode
  * @param {*} recipientPublicKey recipient's public key
  * @param {*} privateKey our private key
- * @returns {{message: string, own_message: string}}
+ * @returns {{message: string, nonce: string}}
  */
 adamant.encodeMessage = function (msg, recipientPublicKey, privateKey) {
   const nonce = Buffer.allocUnsafe(24)
   sodium.randombytes(nonce)
 
+  if (typeof recipientPublicKey === 'string') {
+    recipientPublicKey = hexToBytes(recipientPublicKey)
+  }
+
   const plainText = Buffer.from(msg)
-  const DHPublicKey = ed2curve.convertPublicKey(hexToBytes(recipientPublicKey))
+  const DHPublicKey = ed2curve.convertPublicKey(recipientPublicKey)
   const DHSecretKey = ed2curve.convertSecretKey(privateKey)
 
   const encrypted = nacl.box(plainText, nonce, DHPublicKey, DHSecretKey)
 
   return {
     message: bytesToHex(encrypted),
-    own_message: bytesToHex(nonce)
+    nonce: bytesToHex(nonce)
   }
 }
 
@@ -354,6 +358,14 @@ adamant.encodeMessage = function (msg, recipientPublicKey, privateKey) {
  * @returns {string}
  */
 adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
+  if (typeof msg === 'string') {
+    msg = hexToBytes(msg)
+  }
+
+  if (typeof nonce === 'string') {
+    nonce = hexToBytes(nonce)
+  }
+
   const DHPublicKey = ed2curve.convertPublicKey(senderPublicKey)
   const DHSecretKey = ed2curve.convertSecretKey(privateKey)
   const decrypted = nacl.box.open(msg, nonce, DHPublicKey, DHSecretKey)
