@@ -99,7 +99,9 @@
           </md-card-header>
           </md-card-area>
           <md-card-content>
-            <md-button class="votes-button" v-on:click="$router.push('/votes/')">{{ $t('options.vote_for_delegates_button') }}</md-button>
+            <div class="md-table md-theme-grey">
+              <md-button class="votes-button" v-on:click="$router.push('/votes/')">{{ $t('options.vote_for_delegates_button') }}</md-button>
+            </div>
           </md-card-content>
       </md-card>
 
@@ -190,19 +192,22 @@ export default {
       line-height: 48px !important;
       color: rgba(0,0,0,.87) !important;
   }
-    @media (max-width: 480px) {
-        .hide_on_mobile {
-            display:none;
-        }
-        #notification {
-            max-width:150px;
-        }
-        .settings {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-        .settings .version {
-            right: 1rem;
-        }
-    }
+  @media (max-width: 480px) {
+      .hide_on_mobile {
+          display:none;
+      }
+      #notification {
+          max-width:150px;
+      }
+      .settings {
+          padding-left: 1rem;
+          padding-right: 1rem;
+      }
+      .settings .version {
+          right: 1rem;
+      }
+  }
+  .md-card .md-card-content {
+    padding: 0px 16px 16px 16px !important;
+  }
 </style>
