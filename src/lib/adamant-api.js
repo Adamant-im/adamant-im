@@ -165,7 +165,7 @@ function tryDecodeStoredValue (value) {
     }
   }
 
-  return value
+  return json
 }
 
 /**
