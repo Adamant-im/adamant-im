@@ -380,11 +380,16 @@ adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
  * @returns {{message: string, nonce: string}} encoded value and nonce (both as HEX-strings)
  */
 adamant.encodeValue = function (value, privateKey) {
+  const randomString = () => Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, Math.ceil(Math.random() * 10))
+
   const nonce = Buffer.allocUnsafe(24)
   sodium.randombytes(nonce)
 
-  const plainText = Buffer.from(value)
-  const secretKey = ed2curve.convertSecretKey(privateKey)
+  // for some reason calling `JSON.stringify` directly breaks the module compilation.
+  const padded = randomString() + JSON['stringify']({ payload: value }) + randomString()
+
+  const plainText = Buffer.from(padded)
+  const secretKey = ed2curve.convertSecretKey(sodium.crypto_hash_sha256(privateKey))
 
   const encrypted = nacl.secretbox(plainText, nonce, secretKey)
 
@@ -410,10 +415,21 @@ adamant.decodeValue = function (source, privateKey, nonce) {
     nonce = hexToBytes(nonce)
   }
 
-  const secretKey = ed2curve.convertSecretKey(privateKey)
+  const secretKey = ed2curve.convertSecretKey(sodium.crypto_hash_sha256(privateKey))
   const decrypted = nacl.secretbox.open(source, nonce, secretKey)
 
-  return decrypted ? utf8.decode(decrypted) : ''
+  const strValue = decrypted ? utf8.decode(decrypted) : ''
+  if (!strValue) return null
+
+  const from = strValue.indexOf('{')
+  const to = strValue.lastIndexOf('}')
+
+  if (from < 0 || to < 0) {
+    throw new Error('Could not determine JSON boundaries in the encoded value')
+  }
+
+  const json = JSON.parse(strValue.substr(from, to - from + 1))
+  return json.payload
 }
 
 /**

@@ -136,10 +136,6 @@ export function sendSpecialMessage (to, payload) {
  * @returns {Promise<{success: boolean}>}
  */
 export function storeValue (key, value, encode = false) {
-  if (typeof value === 'object') {
-    value = JSON.stringify(value)
-  }
-
   if (encode) {
     const encoded = utils.encodeValue(value, myKeypair.privateKey)
     value = JSON.stringify(encoded)
