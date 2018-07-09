@@ -141,7 +141,7 @@ export function storeValue (key, value, encode = false) {
   }
 
   if (encode) {
-    const encoded = utils.encodeMessage(value, myKeypair.publicKey, myKeypair.privateKey)
+    const encoded = utils.encodeValue(value, myKeypair.privateKey)
     value = JSON.stringify(encoded)
   }
 
@@ -162,7 +162,7 @@ function tryDecodeStoredValue (value) {
 
   if (json.nonce) {
     try {
-      return utils.decodeMessage(json.message, myKeypair.publicKey, myKeypair.privateKey, json.nonce)
+      return utils.decodeValue(json.message, myKeypair.privateKey, json.nonce)
     } catch (e) {
       console.warn('Failed to parse encoded value', e)
       throw e

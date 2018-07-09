@@ -374,6 +374,49 @@ adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
 }
 
 /**
+ * Encodes a secret value (available for the owner only)
+ * @param {string} value value to encode
+ * @param {Uint8Array} privateKey private key
+ * @returns {{message: string, nonce: string}} encoded value and nonce (both as HEX-strings)
+ */
+adamant.encodeValue = function (value, privateKey) {
+  const nonce = Buffer.allocUnsafe(24)
+  sodium.randombytes(nonce)
+
+  const plainText = Buffer.from(value)
+  const secretKey = ed2curve.convertSecretKey(privateKey)
+
+  const encrypted = nacl.secretbox(plainText, nonce, secretKey)
+
+  return {
+    message: bytesToHex(encrypted),
+    nonce: bytesToHex(nonce)
+  }
+}
+
+/**
+ * Decodes a secret value
+ * @param {string|Uint8Array} source source to decrypt
+ * @param {Uint8Array} privateKey private key
+ * @param {string|Uint8Array} nonce nonce
+ * @returns {string} decoded value
+ */
+adamant.decodeValue = function (source, privateKey, nonce) {
+  if (typeof source === 'string') {
+    source = hexToBytes(source)
+  }
+
+  if (typeof nonce === 'string') {
+    nonce = hexToBytes(nonce)
+  }
+
+  const secretKey = ed2curve.convertSecretKey(privateKey)
+  const decrypted = nacl.secretbox.open(source, nonce, secretKey)
+
+  return decrypted ? utf8.decode(decrypted) : ''
+}
+
+/**
  * Converts ADM amount to its internal representation
  * @param {number|string} admAmount amount to convert
  * @returns {number}
