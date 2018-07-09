@@ -211,6 +211,6 @@ export default {
       }
   }
   .md-card .md-card-content {
-    padding: 0px 16px 16px 16px;
+    padding: 0px 16px 16px 16px !important;
   }
 </style>
