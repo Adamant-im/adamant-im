@@ -172,8 +172,8 @@ export default {
         this.tableStyle.height = this.formatHeight(window.innerHeight)
       })
     })
-    this.$store.commit('clean_delegates')
-    this.getDelegatesWithVotes()
+    this.$store.dispatch('getDelegates')
+    
   },
   methods: {
     vote (delegate) {

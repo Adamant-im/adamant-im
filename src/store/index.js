@@ -7,6 +7,8 @@ import ethModule from './modules/eth'
 
 import partnersModule from './modules/partners'
 
+import delegatesModule from './modules/delegates'
+
 import * as admApi from '../lib/adamant-api'
 import {base64regex} from '../lib/constants'
 
@@ -90,10 +92,7 @@ const store = {
     lastChatHeight: 0,
     lastTransactionHeight: 0,
     currentChat: false,
-    storeInLocalStorage: false,
-    delegates: {},
-    originDelegates: {},
-    lastTransactionConfirmed: true
+    storeInLocalStorage: false
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
@@ -330,20 +329,6 @@ const store = {
       Vue.set(state.chats, partner, currentDialogs)
       payload.direction = direction
       Vue.set(state.chats[partner].messages, payload.id, payload)
-    },
-    delegate_info (state, payload) {
-      Vue.set(state.delegates, payload.address, payload)
-    },
-    clean_delegates (state) {
-      state.delegates = {}
-    },
-    update_delegate (state, payload) {
-      for (let key in payload.params) {
-        Vue.set(state.delegates[payload.address], key, payload.params[key])
-      }
-    },
-    set_last_transaction_status (state, payload) {
-      state.lastTransactionConfirmed = payload
     }
   },
   plugins: [storeData()],
@@ -365,7 +350,8 @@ const store = {
   },
   modules: {
     eth: ethModule, // Ethereum-related data
-    partners: partnersModule // Partners: display names, crypto addresses and so on
+    partners: partnersModule, // Partners: display names, crypto addresses and so on
+    delegates: delegatesModule // Voting for delegates screen 
   }
 }
 
