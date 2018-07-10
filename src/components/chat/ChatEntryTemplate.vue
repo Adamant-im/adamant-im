@@ -11,7 +11,8 @@
       }"
       v-if="!brief"
     >
-      <span class="avatar-holder"></span>
+      <div v-if="readOnly" class="adamant-avatar"></div>
+      <div v-else class="avatar-holder"></div>
       <span class="msg-holder">
         <slot></slot>
       </span>
@@ -134,5 +135,14 @@ export default {
     bottom: auto;
     border: 22px solid;
     border-color: #4A4A4A transparent transparent transparent;
+  }
+
+  .adamant-avatar {
+    width: 45px;
+    height: 45px;
+    position: absolute;
+    top: 5px;
+    right: 0;
+    background: url('/static/img/Wallet/adm-address.svg');
   }
 </style>

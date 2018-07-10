@@ -327,21 +327,25 @@ adamant.verify = function (hash, signatureBuffer, publicKeyBuffer) {
  * @param {string} msg message to encode
  * @param {*} recipientPublicKey recipient's public key
  * @param {*} privateKey our private key
- * @returns {{message: string, own_message: string}}
+ * @returns {{message: string, nonce: string}}
  */
 adamant.encodeMessage = function (msg, recipientPublicKey, privateKey) {
   const nonce = Buffer.allocUnsafe(24)
   sodium.randombytes(nonce)
 
+  if (typeof recipientPublicKey === 'string') {
+    recipientPublicKey = hexToBytes(recipientPublicKey)
+  }
+
   const plainText = Buffer.from(msg)
-  const DHPublicKey = ed2curve.convertPublicKey(hexToBytes(recipientPublicKey))
+  const DHPublicKey = ed2curve.convertPublicKey(recipientPublicKey)
   const DHSecretKey = ed2curve.convertSecretKey(privateKey)
 
   const encrypted = nacl.box(plainText, nonce, DHPublicKey, DHSecretKey)
 
   return {
     message: bytesToHex(encrypted),
-    own_message: bytesToHex(nonce)
+    nonce: bytesToHex(nonce)
   }
 }
 
@@ -354,11 +358,78 @@ adamant.encodeMessage = function (msg, recipientPublicKey, privateKey) {
  * @returns {string}
  */
 adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
+  if (typeof msg === 'string') {
+    msg = hexToBytes(msg)
+  }
+
+  if (typeof nonce === 'string') {
+    nonce = hexToBytes(nonce)
+  }
+
   const DHPublicKey = ed2curve.convertPublicKey(senderPublicKey)
   const DHSecretKey = ed2curve.convertSecretKey(privateKey)
   const decrypted = nacl.box.open(msg, nonce, DHPublicKey, DHSecretKey)
 
   return decrypted ? utf8.decode(decrypted) : ''
+}
+
+/**
+ * Encodes a secret value (available for the owner only)
+ * @param {string} value value to encode
+ * @param {Uint8Array} privateKey private key
+ * @returns {{message: string, nonce: string}} encoded value and nonce (both as HEX-strings)
+ */
+adamant.encodeValue = function (value, privateKey) {
+  const randomString = () => Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, Math.ceil(Math.random() * 10))
+
+  const nonce = Buffer.allocUnsafe(24)
+  sodium.randombytes(nonce)
+
+  // for some reason calling `JSON.stringify` directly breaks the module compilation.
+  const padded = randomString() + JSON['stringify']({ payload: value }) + randomString()
+
+  const plainText = Buffer.from(padded)
+  const secretKey = ed2curve.convertSecretKey(sodium.crypto_hash_sha256(privateKey))
+
+  const encrypted = nacl.secretbox(plainText, nonce, secretKey)
+
+  return {
+    message: bytesToHex(encrypted),
+    nonce: bytesToHex(nonce)
+  }
+}
+
+/**
+ * Decodes a secret value
+ * @param {string|Uint8Array} source source to decrypt
+ * @param {Uint8Array} privateKey private key
+ * @param {string|Uint8Array} nonce nonce
+ * @returns {string} decoded value
+ */
+adamant.decodeValue = function (source, privateKey, nonce) {
+  if (typeof source === 'string') {
+    source = hexToBytes(source)
+  }
+
+  if (typeof nonce === 'string') {
+    nonce = hexToBytes(nonce)
+  }
+
+  const secretKey = ed2curve.convertSecretKey(sodium.crypto_hash_sha256(privateKey))
+  const decrypted = nacl.secretbox.open(source, nonce, secretKey)
+
+  const strValue = decrypted ? utf8.decode(decrypted) : ''
+  if (!strValue) return null
+
+  const from = strValue.indexOf('{')
+  const to = strValue.lastIndexOf('}')
+
+  if (from < 0 || to < 0) {
+    throw new Error('Could not determine JSON boundaries in the encoded value')
+  }
+
+  const json = JSON.parse(strValue.substr(from, to - from + 1))
+  return json.payload
 }
 
 /**

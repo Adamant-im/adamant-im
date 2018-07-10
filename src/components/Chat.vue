@@ -193,7 +193,7 @@ export default {
       return messages.sort(compare)
     },
     readOnly: function () {
-      return this.$store.state.currentChat.readOnly
+      return this.$store.state.currentChat.readOnly === true
     }
   },
   watch: {

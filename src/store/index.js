@@ -45,12 +45,14 @@ function createMockMessage (state, newAccount, partner, message) {
       messages: {
         0: {
           message: window.ep.$i18n.t('chats.' + message),
-          timestamp: 0
+          timestamp: 0,
+          direction: 'to'
         }
       },
       last_message: {
         message: window.ep.$i18n.t('chats.' + message),
-        timestamp: 0
+        timestamp: 0,
+        direction: 'to'
       }
     }
   }

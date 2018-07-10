@@ -72,7 +72,7 @@ export default {
             this.$store.commit('create_chat', this.targetAddress)
             this.$store.commit('select_chat', this.targetAddress)
             const partner = this.$store.state.partnerName
-            this.$store.commit('partners/setDisplayName', { partner, displayName: this.targetLabel })
+            this.$store.commit('partners/displayName', { partner, displayName: this.targetLabel })
             this.$router.push('/chats/' + this.targetAddress + '/')
           }
         },

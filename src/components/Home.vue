@@ -16,7 +16,7 @@
               </md-avatar>
 
               <div class="md-list-text-container for-address">
-                  <span>{{ $t('home.your_address_'+addr.system) }}</span>
+                  <div class="block_entry_title">{{ $t('home.your_address_'+addr.system) }}</div>
                   <p> {{ addr.address }}</p>
               </div>
 
@@ -148,17 +148,20 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-.home .md-list {
-    max-width: 90%;
-}
-.for-address p {
-    text-overflow: ellipsis;
-    max-width: 100%;
-    display: inline-block;
-}
-.home .md-list-text-container p
-{
-    font-style: italic;
-}
+  .home .md-list {
+      max-width: 90%;
+  }
+  .for-address p {
+      text-overflow: ellipsis;
+      max-width: 100%;
+      display: inline-block;
+  }
+  .home .md-list-text-container p
+  {
+      font-style: italic;
+  }
+  .block_entry_title {
+    font-weight: 500;
+  }
 
 </style>

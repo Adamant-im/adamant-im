@@ -19,13 +19,15 @@
             </md-list-item>
 
             <md-list-item class="black-text" v-for="(chat) in chatList" :key="chat.partner" v-on:click="$router.push('/chats/' + chat.partner + '/')">
-                <md-avatar class="md-avatar-icon" style="overflow: visible;">
+                <md-avatar v-if="!chat.readOnly" class="md-avatar-icon" style="overflow: visible;">
                     <md-icon>library_books</md-icon>
                     <div class="new-icon" v-if="newMessages(chat.partner)">{{ newMessages(chat.partner) }}</div>
                 </md-avatar>
-
+                <md-avatar class="adamant-avatar-wrapper" v-else>
+                  <md-icon :md-src="adamantAvatarIcon" class="adamant-avatar"></md-icon>
+                </md-avatar>
                 <div class="md-list-text-container">
-                    <span>{{ chatName(chat.partner) }}</span>
+                    <div class="chat_entry_title">{{ chatName(chat.partner) }}</div>
                     <chat-entry :message="chat.last_message" :brief="true"></chat-entry>
                     <span class="dt" v-if="chat.last_message.timestamp">{{ $formatDate(chat.last_message.timestamp) }}</span>
                 </div>
@@ -65,6 +67,9 @@ export default {
     }
   },
   computed: {
+    adamantAvatarIcon: function () {
+      return '/static/img/Wallet/adm-address.svg'
+    },
     firstLoading: function () {
       return this.$store.state.firstChatLoad
     },
@@ -153,5 +158,18 @@ export default {
     }
     .black-text {
       color: rgba(0, 0, 0, 0.87) !important;
+    }
+    .chat_entry_title {
+      font-weight: 500;
+      padding-top: 3px;
+      padding-bottom: 2px;
+    }
+
+    .adamant-avatar-wrapper {
+      background-color: rgba(0, 0, 0, 0.38) !important;
+    }
+
+    .adamant-avatar {
+      color: #fff !important;
     }
 </style>

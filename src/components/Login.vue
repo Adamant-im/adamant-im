@@ -83,6 +83,7 @@
           <span>{{ $t('home.copied') }}</span>
       </md-snackbar>
     <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
+    <Spinner v-if="showSpinnerFlag"></Spinner>
   </div>
 </template>
 
@@ -91,14 +92,19 @@ import b64toBlob from 'b64-to-blob'
 import FileSaver from 'file-saver'
 import Icon from '@/components/Icon'
 import QRScan from '@/components/QRScan'
+import Spinner from '../components/Spinner'
 
 export default {
   name: 'login',
   components: {
     Icon,
-    QRScan
+    QRScan,
+    Spinner
   },
   methods: {
+    showSpinner: function () {
+      this.showSpinnerFlag = true
+    },
     scrollToBottom: function () {
       this.$root.$nextTick(function () {
         window.scrollTo(0, document.body.scrollHeight)
@@ -141,21 +147,22 @@ export default {
     },
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
-
-      if (this.passPhrase.split(' ').length !== 12) {
-        this.snackOpen()
-        return
-      }
+      this.showSpinnerFlag = true
       var errorFunction = function () {
         this.snackOpen()
+        this.showSpinnerFlag = false
       }.bind(this)
+      if (this.passPhrase.split(' ').length !== 12) {
+        errorFunction()
+        return
+      }
       this.getAccountByPassPhrase(this.passPhrase, function (context) {
         this.$store.dispatch('afterLogin', this.passPhrase)
-
         this.$root._router.push('/chats/')
         this.loadChats(true)
         this.$store.commit('mock_messages')
         this.$store.commit('stop_tracking_new')
+        this.showSpinner = false
       }, errorFunction)
     },
     'handleSuccess': function (e) {
@@ -221,7 +228,8 @@ export default {
       showCreate: false,
       message: '',
       showQRCode: false,
-      showModal: false
+      showModal: false,
+      showSpinnerFlag: false
     }
   }
 }
