@@ -50,9 +50,7 @@
               </div>
 
           </md-list-item>
-
-          <md-list-item :href="freeAdmAddress" target="_blank">
-
+        <md-list-item v-if="showFreeTokenButton" :href="freeAdmAddress" target="_blank">
               <md-avatar class="md-avatar-icon">
                 <md-icon md-src="/static/img/Wallet/free-tokens.svg"></md-icon>
               </md-avatar>
@@ -98,6 +96,9 @@ export default {
     }
   },
   computed: {
+    showFreeTokenButton () {
+      return this.$store.getters.getBalance <= 0
+    },
     freeAdmAddress () {
       return 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
     },

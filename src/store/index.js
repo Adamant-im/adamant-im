@@ -363,6 +363,9 @@ const store = {
       } else {
         return state.passPhrase
       }
+    },
+    getBalance: state => {
+      return state.balance
     }
   },
   modules: {
