@@ -97,7 +97,7 @@ export default {
   },
   computed: {
     showFreeTokenButton () {
-      return this.$store.getters.getBalance <= 0
+      return this.$store.state.balance <= 0
     },
     freeAdmAddress () {
       return 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
