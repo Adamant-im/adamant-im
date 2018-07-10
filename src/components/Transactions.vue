@@ -27,7 +27,7 @@
 import { Cryptos } from '../lib/constants'
 
 export default {
-  name: 'transaction',
+  name: 'transactions',
   data () {
     return {
       bgTimer: null
@@ -37,9 +37,11 @@ export default {
     this.update()
     clearInterval(this.bgTimer)
     this.bgTimer = setInterval(() => this.update(), 5000)
+    window.addEventListener('scroll', this.onScroll)
   },
   beforeDestroy () {
     clearInterval(this.bgTimer)
+    window.removeEventListener('scroll', this.onScroll)
   },
   methods: {
     hasMessages (transaction) {
@@ -61,6 +63,16 @@ export default {
     },
     update () {
       this.$store.dispatch('adm/getNewTransactions')
+    },
+    onScroll () {
+      const pageHeight = document.body.offsetHeight
+      const windowHeight = window.innerHeight
+      const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop + (document.documentElement.scrollTop || 0)
+
+      // If we've scrolled to the very bottom, fetch the older transactions from server
+      if (windowHeight + scrollPosition >= pageHeight) {
+        this.$store.dispatch('adm/getOldTransactions')
+      }
     }
   },
   computed: {
