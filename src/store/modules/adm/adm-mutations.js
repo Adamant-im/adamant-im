@@ -14,6 +14,11 @@ export default {
     state.address = address
   },
 
+  /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
+  bottom (state) {
+    state.bottomReached = true
+  },
+
   /**
    * Sets transactions list appending or replacing existing ones.
    * @param {{transactions: object, minHeight: number, maxHeight: number}} state current state
