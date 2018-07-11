@@ -189,7 +189,8 @@ html {
     background-color: #fefefe;
 }
 body.md-theme-default {
-    background-color: #fefefe;
+    /*background-color: #fefefe;*/
+    background: repeating-linear-gradient(140deg,#f6f6f6,#f6f6f6 1px,#fefefe 0,#fefefe 5px)
 }
 footer {
     height: 100px;

@@ -265,5 +265,10 @@ export default {
 
   .md-button.send_funds_button {
     margin-top: 20px;
+    background-color: #FFFFFF;
+  }
+
+  .md-button.send_funds_button:focus {
+    background-color: #dfdfdf !important;
   }
 </style>

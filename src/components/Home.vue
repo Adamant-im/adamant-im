@@ -21,7 +21,7 @@
               </div>
 
               <div class='md-list-action'>
-                <md-icon>content_copy</md-icon>
+                <md-icon class="custom-icon">content_copy</md-icon>
               </div>
           </md-list-item>
 
@@ -167,5 +167,7 @@ export default {
   .block_entry_title {
     font-weight: 500;
   }
-
+  .md-icon.custom-icon {
+    vertical-align: top !important;
+  }
 </style>

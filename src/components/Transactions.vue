@@ -87,6 +87,11 @@ export default {
   }
 }
 </script>
+<style>
+  .md-list-item .md-list-item-container .md-list-action:nth-child(3) {
+    margin: 0 -3px 0 16px !important;
+  }
+</style>
 
 <style>
   .partner_display_name {

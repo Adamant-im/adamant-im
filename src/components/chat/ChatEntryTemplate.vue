@@ -1,21 +1,22 @@
 <template>
-  <div class="chat_entry black-text">
+  <div class="chat_entry black-text"
+       v-bind:class="{
+        'right-align-block' :  direction === 'from'
+    }">
     <md-layout
-      md-flex="90"
-      md-flex-xsmall="85"
       class="chat_message md-whiteframe md-whiteframe-1dp"
-      :data-confirmation="confirm"
       v-bind:class="{
-        'md-flex-xsmall-offset-10': direction === 'from',
+        'md-flex-xsmall-offset-10 from-message': direction === 'from',
         'md-own md-flex-xsmall-offset-5': direction === 'to'
       }"
       v-if="!brief"
     >
+      <div v-if="direction !== 'to'" class="message-tick" :data-confirmation="confirm"></div>
       <div v-if="readOnly" class="adamant-avatar"></div>
       <div v-else class="avatar-holder"></div>
-      <span class="msg-holder">
+      <div class="msg-holder">
         <slot></slot>
-      </span>
+      </div>
       <div v-if="!readOnly" class="dt">{{ $formatDate(timestamp) }}</div>
     </md-layout>
     <span v-if="brief">
@@ -56,6 +57,16 @@ export default {
     -moz-hyphens: auto;
     -webkit-hyphens: auto;
     hyphens: auto;
+  }
+
+  .message-tick:before {
+    content: 'done';
+    font-family: "Material Icons";
+    text-rendering: optimizeLegibility;
+    position: absolute;
+    bottom: 0;
+    left: 1px;
+    font-size: 8px;
   }
 
   [data-confirmation=confirmed]:before {
@@ -100,12 +111,14 @@ export default {
 
   .chat_message {
     margin-bottom: 20px;
-    padding: 25px 10px;
-
+    padding: 15px 10px;
     text-align: left;
     position:relative;
     padding-right: 50px;
     min-height: 0;
+    flex: 0 1 auto !important;
+    min-width: 110px;
+    max-width: 70%;
   }
 
   .chat_message .dt {
@@ -117,11 +130,13 @@ export default {
   }
 
   .chat_message.md-own {
-    margin-left:2.5%;
+    margin-left: 5% !important;
   }
 
-  .chat_message {
-    margin-left:7.5%;
+  .from-message {
+    border-right: 3px #ebebeb solid;
+    margin-right: 5% !important;
+    margin-left: 5% !important;
   }
 
   .chat_messagej:after {
@@ -142,7 +157,17 @@ export default {
     height: 45px;
     position: absolute;
     top: 5px;
-    right: 0;
+    left: 0;
     background: url('/static/img/Wallet/adm-address.svg');
+  }
+
+  .md-whiteframe.md-whiteframe-1dp {
+    background: white !important;
+    border-radius: 4px !important;
+    box-shadow: 0 1px 10px rgba(100,100,100,.06), 0 1px 1px rgba(100,100,100,.04), 0 2px 10px -1px rgba(100,100,100,.02) !important;
+  }
+
+  .right-align-block {
+    justify-content: flex-end;
   }
 </style>

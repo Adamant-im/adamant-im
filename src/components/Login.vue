@@ -258,14 +258,17 @@ export default {
 }
 .md-layout .md-button.md-raised.md-short, .md-short {
     min-width: 126px;
+    background-color: #FFFFFF;
 }
 .md-layout .md-button.md-raised.md-shit, .md-shit {
     background: repeating-linear-gradient( 140deg, lightgray, lightgray 1px, #FEFEFE 1px, #FEFEFE 15px );
     color: #4A4A4A;
 }
+.md-button:hover:not([disabled]).md-raised {
+  background-color: #dfdfdf !important;
+}
 .md-layout .md-button.md-raised.md-shit:hover,.md-shit:hover {
-    background: none;
-    background-color: rgba(0, 0, 0, 0.12);
+    background-color: #dfdfdf !important;
 }
 p.site-description {
     font-family: 'Exo 2'!important;
