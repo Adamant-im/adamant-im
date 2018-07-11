@@ -215,10 +215,10 @@ const store = {
       state.connectionString = payload.string
     },
     select_chat (state, payload) {
-      state.currentChat = state.chats[payload]
       if (!state.chats[payload]) {
         Vue.set(state.chats, payload, {messages: [], last_message: {}, partner: payload})
       }
+      state.currentChat = state.chats[payload]
       Vue.set(state.currentChat, 'messages', state.chats[payload].messages)
       state.partnerName = payload
       state.showPanel = true

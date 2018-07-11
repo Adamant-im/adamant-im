@@ -31,6 +31,7 @@ export default {
     const address = state.address
 
     transactions.forEach(tx => {
+      if (!tx) return
       Vue.set(state.transactions, tx.id, {
         ...tx,
         direction: tx.recipientId === address ? 'to' : 'from',
