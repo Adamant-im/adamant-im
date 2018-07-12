@@ -1,13 +1,7 @@
 import Vue from 'vue'
 
-// import { resetState } from '../../../lib/reset-state'
-// import initialState from './state'
-
 export default {
   /** Resets module state */
-  // reset (state) {
-  //   resetState(state, initialState)
-  // },
   delegate_info (state, payload) {
     Vue.set(state.delegates, payload.address, payload)
   },

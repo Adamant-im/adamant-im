@@ -4,8 +4,6 @@ var config = require('../config.json')
 var adamant = require('./adamant.js')
 const renderMarkdown = require('./markdown').default
 const { hexToBytes, bytesToHex } = require('./hex')
-const constants = require('./constants.js')
-const adamantAPI = require('./adamant-api')
 
 Queue.configure(window.Promise)
 window.queue = new Queue(1, Infinity)
@@ -534,37 +532,6 @@ function install (Vue) {
         }
       } else {
         this.$store.commit('ajax_end_with_error')
-      }
-    }, () => {
-      this.$store.commit('ajax_end_with_error')
-    })
-  }
-  Vue.prototype.voteForDelegates = function (votes) {
-    let keys = this.getKeypair()
-    let transaction = adamantAPI.newTransaction(constants.Transactions.VOTE)
-    transaction = Object.assign({
-      asset: {votes: votes},
-      recipientId: this.$store.state.address,
-      amount: 0
-    }, transaction)
-    transaction.signature = adamant.transactionSign(transaction, keys)
-    this.$store.commit('clean_delegates')
-    this.$store.commit('ajax_start')
-    this.$http.post(this.getAddressString() + '/api/accounts/delegates', transaction).then(response => {
-      if (response.body.success) {
-        this.$store.commit('set_last_transaction_status', false)
-        // removing an UI waiting state if transaction confirmation run to much time
-        window.setTimeout(() => {
-          if (!this.$store.state.lastTransactionConfirmed) {
-            this.$store.commit('send_error', { msg: this.$t('votes.transaction_confirm_await') })
-          }
-          this.$store.commit('ajax_end')
-          this.getDelegatesWithVotes()
-        }, 15000)
-        this.checkUnconfirmedTransactions()
-      } else {
-        this.$store.commit('send_error', { msg: `${this.$t('error')}: ${response.body.error}` })
-        this.getDelegatesWithVotes()
       }
     }, () => {
       this.$store.commit('ajax_end_with_error')

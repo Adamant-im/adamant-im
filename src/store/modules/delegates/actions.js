@@ -2,7 +2,6 @@ import * as constants from '../../../lib/constants'
 import * as admApi from '../../../lib/adamant-api'
 
 function _getDelegates (context, limit = constants.Delegates.ACTIVE_DELEGATES, offset = 0, votes = []) {
-  // context.commit('ajax_start')
   admApi.getDelegates(limit, offset).then(response => {
     if (response.success) {
       for (let i in response.delegates) {
@@ -17,30 +16,19 @@ function _getDelegates (context, limit = constants.Delegates.ACTIVE_DELEGATES, o
         delegate.status = 5
         context.commit('delegate_info', delegate)
       }
-      // context.commit('ajax_end')
-    } else {
-      // context.commit('ajax_end_with_error')
     }
-  }, () => {
-    // context.commit('ajax_end_with_error')
   })
 }
 
 function checkUnconfirmedTransactions (context) {
-  // this.$store.commit('ajax_start')
   admApi.checkUnconfirmedTransactions().then(response => {
     if (response.success) {
       if (response.count === 0) {
         context.commit('set_last_transaction_status', true)
-        // this.$store.commit('ajax_end')
       } else {
         checkUnconfirmedTransactions()
       }
-    } else {
-      // this.$store.commit('ajax_end_with_error')
     }
-  }, () => {
-    // this.$store.commit('ajax_end_with_error')
   })
 }
 
@@ -61,26 +49,17 @@ function round (height) {
 
 export default {
   getDelegates (context, payload) {
-    // context.commit('ajax_start')
-    // console.log('state', context.state)
     admApi.getDelegatesWithVotes(payload.address).then(response => {
       if (response.success) {
         const votes = response.delegates.map(vote => vote.address)
         admApi.getDelegatesCount().then(response => {
           if (response.success) {
-            // context.commit('ajax_end')
             for (let i = 0; i < response.count % constants.Delegates.ACTIVE_DELEGATES; i++) {
               _getDelegates(context, constants.Delegates.ACTIVE_DELEGATES, i * constants.Delegates.ACTIVE_DELEGATES, votes)
             }
-          } else {
-            // context.commit('ajax_end_with_error')
           }
         })
-      } else {
-        // context.commit('ajax_end_with_error')
       }
-    }, () => {
-      // context.commit('ajax_end_with_error')
     })
   },
   voteForDelegates (context, payload) {
@@ -100,42 +79,9 @@ export default {
         context.commit('send_error', { msg: `${this.$t('error')}: ${response.body.error}` }, { root: true })
         context.dispatch('getDelegates', { address: payload.address })
       }
-    }, () => {
-      // this.$store.commit('ajax_end_with_error')
     })
-
-    // let keys = this.getKeypair()
-    // let transaction = adamantAPI.newTransaction(constants.Transactions.VOTE)
-    // transaction = Object.assign({
-    //   asset: {votes: votes},
-    //   recipientId: this.$store.state.address,
-    //   amount: 0
-    // }, transaction)
-    // transaction.signature = adamant.transactionSign(transaction, keys)
-    // this.$store.commit('clean_delegates')
-    // this.$store.commit('ajax_start')
-    // this.$http.post(this.getAddressString() + '/api/accounts/delegates', transaction).then(response => {
-    //   if (response.body.success) {
-    //     this.$store.commit('set_last_transaction_status', false)
-    //     // removing an UI waiting state if transaction confirmation run to much time
-    //     window.setTimeout(() => {
-    //       if (!this.$store.state.lastTransactionConfirmed) {
-    //         this.$store.commit('send_error', { msg: this.$t('votes.transaction_confirm_await') })
-    //       }
-    //       this.$store.commit('ajax_end')
-    //       this.getDelegatesWithVotes()
-    //     }, 15000)
-    //     this.checkUnconfirmedTransactions()
-    //   } else {
-    //     this.$store.commit('send_error', { msg: `${this.$t('error')}: ${response.body.error}` })
-    //     this.getDelegatesWithVotes()
-    //   }
-    // }, () => {
-    //   this.$store.commit('ajax_end_with_error')
-    // })
   },
   getForgingTimeForDelegate (context, delegate) {
-    // this.$store.commit('ajax_start')
     admApi.getNextForgers().then(response => {
       if (response.success) {
         const nextForgers = response.delegates
@@ -200,34 +146,20 @@ export default {
               address: delegate.address,
               params: { status: status.code }
             })
-            // this.$store.commit('ajax_end')
-          } else {
-            // this.$store.commit('ajax_end_with_error')
           }
-        }, () => {
-          // this.$store.commit('ajax_end_with_error')
         })
-      } else {
-        // this.$store.commit('ajax_end_with_error')
       }
-    }, () => {
-      // this.$store.commit('ajax_end_with_error')
     })
   },
   getForgedByAccount (context, delegate) {
-    // this.$store.commit('ajax_start')
     admApi.getForgedByAccount(delegate.publicKey).then(response => {
       if (response.success) {
         context.commit('update_delegate', {
           address: delegate.address,
           params: { forged: response.forged }
         })
-        // this.$store.commit('ajax_end')
       } else {
-        // this.$store.commit('ajax_end_with_error')
       }
-    }, response => {
-      // this.$store.commit('ajax_end_with_error')
     })
   }
 }
