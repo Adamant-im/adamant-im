@@ -7,7 +7,10 @@
           </md-avatar>
 
           <div class="md-list-text-container" v-on:click="goToTransaction(transaction.id)">
-            <span>{{ formatPartner(transaction.partner) }}</span>
+            <div>
+              {{ transaction.partner }}
+              <span class="partner_display_name">{{ displayName(transaction.partner) }}</span>
+            </div>
             <span>{{ $formatAmount(transaction.amount) }} ADM</span>
             <p>{{ $formatDate(transaction.timestamp) }}</p>
           </div>
@@ -57,9 +60,9 @@ export default {
       const params = { crypto: Cryptos.ADM, tx_id: id }
       this.$router.push({ name: 'Transaction', params })
     },
-    formatPartner (partner) {
+    displayName (partner) {
       const dispayName = this.$store.getters['partners/displayName'](partner)
-      return dispayName ? (partner + ' (' + dispayName + ')') : partner
+      return dispayName ? ' (' + dispayName + ')' : ''
     },
     update () {
       this.$store.dispatch('adm/getNewTransactions')
@@ -82,3 +85,10 @@ export default {
   }
 }
 </script>
+
+<style>
+  .partner_display_name {
+    color: rgba(0, 0, 0, .54);
+    font-size: 14px;
+  }
+</style>
