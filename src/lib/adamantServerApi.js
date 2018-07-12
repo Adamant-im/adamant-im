@@ -521,6 +521,55 @@ function install (Vue) {
       this.$store.commit('ajax_end_with_error')
     })
   }
+
+  Vue.prototype.checkUnconfirmedTransactions = function () {
+    this.$store.commit('ajax_start')
+    this.$http.get(this.getAddressString() + '/api/transactions/unconfirmed').then(response => {
+      if (response.body.success) {
+        if (response.body.count === 0) {
+          this.$store.commit('set_last_transaction_status', true)
+          // this.$store.commit('ajax_end')
+        } else {
+          this.checkUnconfirmedTransactions()
+        }
+      } else {
+        this.$store.commit('ajax_end_with_error')
+      }
+    }, () => {
+      this.$store.commit('ajax_end_with_error')
+    })
+  }
+  Vue.prototype.voteForDelegates = function (votes) {
+    let keys = this.getKeypair()
+    let transaction = adamantAPI.newTransaction(constants.Transactions.VOTE)
+    transaction = Object.assign({
+      asset: {votes: votes},
+      recipientId: this.$store.state.address,
+      amount: 0
+    }, transaction)
+    transaction.signature = adamant.transactionSign(transaction, keys)
+    this.$store.commit('clean_delegates')
+    this.$store.commit('ajax_start')
+    this.$http.post(this.getAddressString() + '/api/accounts/delegates', transaction).then(response => {
+      if (response.body.success) {
+        this.$store.commit('set_last_transaction_status', false)
+        // removing an UI waiting state if transaction confirmation run to much time
+        window.setTimeout(() => {
+          if (!this.$store.state.lastTransactionConfirmed) {
+            this.$store.commit('send_error', { msg: this.$t('votes.transaction_confirm_await') })
+          }
+          this.$store.commit('ajax_end')
+          this.getDelegatesWithVotes()
+        }, 15000)
+        this.checkUnconfirmedTransactions()
+      } else {
+        this.$store.commit('send_error', { msg: `${this.$t('error')}: ${response.body.error}` })
+        this.getDelegatesWithVotes()
+      }
+    }, () => {
+      this.$store.commit('ajax_end_with_error')
+    })
+  }
 }
 
 export default install

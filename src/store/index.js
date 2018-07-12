@@ -353,7 +353,7 @@ const store = {
   modules: {
     eth: ethModule, // Ethereum-related data
     partners: partnersModule, // Partners: display names, crypto addresses and so on
-    delegates: delegatesModule // Voting for delegates screen 
+    delegates: delegatesModule // Voting for delegates screen
   }
 }
 
