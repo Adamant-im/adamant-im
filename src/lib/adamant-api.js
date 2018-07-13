@@ -231,17 +231,13 @@ export function checkUnconfirmedTransactions () {
 
 export function voteForDelegates (votes) {
   let transaction = newTransaction(Transactions.VOTE)
-  // let keys = this.getKeypair()
-  // let transaction = adamantAPI.newTransaction(constants.Transactions.VOTE)
   transaction = Object.assign({
     asset: { votes: votes },
     recipientId: myAddress,
     amount: 0
   }, transaction)
   transaction.signature = utils.transactionSign(transaction, myKeypair)
-  // this.$store.commit('clean_delegates')
-  // this.$store.commit('ajax_start')
-  return post('/api/accounts/delegates', { transaction })
+  return post('/api/accounts/delegates', transaction)
 }
 
 export function getNextForgers () {

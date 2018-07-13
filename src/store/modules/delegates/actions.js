@@ -26,7 +26,7 @@ function checkUnconfirmedTransactions (context) {
       if (response.count === 0) {
         context.commit('set_last_transaction_status', true)
       } else {
-        checkUnconfirmedTransactions()
+        checkUnconfirmedTransactions(context)
       }
     }
   })
@@ -63,20 +63,22 @@ export default {
     })
   },
   voteForDelegates (context, payload) {
+    context.commit('clean_delegates')
+    context.commit('ajax_start', null, { root: true })
     admApi.voteForDelegates(payload.votes).then(response => {
       if (response.success) {
         context.commit('set_last_transaction_status', false)
         // removing an UI waiting state if transaction confirmation run to much time
         window.setTimeout(() => {
           if (!context.lastTransactionConfirmed) {
-            context.commit('send_error', { msg: this.$t('votes.transaction_confirm_await') }, { root: true })
+            console.log('transaction confirmation awaiting')
           }
           context.commit('ajax_end', null, { root: true })
           context.dispatch('getDelegates', { address: payload.address })
         }, 15000)
-        checkUnconfirmedTransactions()
+        checkUnconfirmedTransactions(context)
       } else {
-        context.commit('send_error', { msg: `${this.$t('error')}: ${response.body.error}` }, { root: true })
+        context.commit('send_error', { msg: response.body.error }, { root: true })
         context.dispatch('getDelegates', { address: payload.address })
       }
     })

@@ -302,7 +302,7 @@ export default {
       return this.delegates.filter(x => x.downvoted).length
     },
     originVotesCount () {
-      return Object.values(this.$store.state.delegates).filter(x => x._voted).length
+      return Object.values(this.$store.state.delegates.delegates).filter(x => x._voted).length
     },
     totalVotes () {
       return this.downvotedCount + this.originVotesCount - this.downvotedCount
