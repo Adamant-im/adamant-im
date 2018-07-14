@@ -8,8 +8,8 @@
 
           <div class="md-list-text-container" v-on:click="goToTransaction(transaction.id)">
             <div>
-              {{ transaction.partner }}
-              <span class="partner_display_name">{{ displayName(transaction.partner) }}</span>
+              {{ displayName(transaction.partner) }}
+              <span class="partner_display_name">{{ formatPartnerAddress(transaction.partner) }}</span>
             </div>
             <span>{{ $formatAmount(transaction.amount) }} ADM</span>
             <p>{{ $formatDate(transaction.timestamp) }}</p>
@@ -61,8 +61,10 @@ export default {
       this.$router.push({ name: 'Transaction', params })
     },
     displayName (partner) {
-      const dispayName = this.$store.getters['partners/displayName'](partner)
-      return dispayName ? ' (' + dispayName + ')' : ''
+      return this.$store.getters['partners/displayName'](partner) || ''
+    },
+    formatPartnerAddress (partner) {
+      return '(' + partner + ')'
     },
     update () {
       this.$store.dispatch('adm/getNewTransactions')
