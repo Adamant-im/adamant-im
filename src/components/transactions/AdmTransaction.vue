@@ -70,11 +70,10 @@ export default {
         return this.$t('transaction.me')
       }
 
-      let result = address
+      let result = this.$store.getters['partners/displayName'](address)
 
-      const name = this.$store.getters['partners/displayName'](address)
-      if (name) {
-        result += ' (' + name + ')'
+      if (result) {
+        result += ' (' + address + ')'
       }
 
       return result
