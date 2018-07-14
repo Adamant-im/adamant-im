@@ -114,6 +114,9 @@ const store = {
     }
   },
   mutations: {
+    last_visited_chat (state, payload) {
+      state.lastVisitedChat = payload
+    },
     force_update (state) {
     },
     change_send_on_enter (state, payload) {
@@ -175,6 +178,7 @@ const store = {
       state.publicKey = false
       state.privateKey = false
       state.secretKey = false
+      state.lastVisitedChat = null
     },
     stop_tracking_new (state) {
       state.trackNewMessages = false
@@ -363,6 +367,9 @@ const store = {
       } else {
         return state.passPhrase
       }
+    },
+    lastVisitedChat: state => {
+      return state.lastVisitedChat
     }
   },
   modules: {

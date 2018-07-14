@@ -164,6 +164,7 @@ export default {
     }
   },
   mounted: function () {
+    this.$store.commit('last_visited_chat', this.$route.params.partner)
     this.$store.commit('select_chat', this.$route.params.partner)
     this.$store.commit('mark_as_read_total', this.$route.params.partner)
     this.$store.commit('mark_as_read', this.$route.params.partner)
