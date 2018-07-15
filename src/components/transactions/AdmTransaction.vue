@@ -9,7 +9,7 @@
       :sender="sender"
       :recipient="recipient"
       :explorerLink="explorerLink"
-      :partner="partner"
+      :partner="transaction.partner"
       :status="status"
     />
   </div>
@@ -27,16 +27,21 @@ export default {
     TransactionTemplate
   },
   mounted () {
-    if (!this.$store.state.transactions[this.id]) {
-      this.getTransactionInfo(this.id)
-    }
+    this.update()
+    clearInterval(this.bgTimer)
+    this.bgTimer = setInterval(() => this.update(), 5000)
+  },
+  beforeDestroy () {
+    clearInterval(this.bgTimer)
   },
   data () {
-    return { }
+    return {
+      bgTimer: null
+    }
   },
   computed: {
     transaction () {
-      return this.$store.state.transactions[this.id] || { }
+      return this.$store.state.adm.transactions[this.id] || { }
     },
     amount () {
       if (!this.transaction.amount) return ''
@@ -52,10 +57,6 @@ export default {
     recipient () {
       return this.formatAddress(this.transaction.recipientId)
     },
-    partner () {
-      return this.transaction.senderId !== this.$store.state.address
-        ? this.transaction.senderId : this.transaction.recipientId
-    },
     explorerLink () {
       return getExplorerUrl(Cryptos.ADM, this.id)
     },
@@ -69,14 +70,16 @@ export default {
         return this.$t('transaction.me')
       }
 
-      let result = address
+      let result = this.$store.getters['partners/displayName'](address)
 
-      const name = this.$store.getters['partners/displayName'](address)
-      if (name) {
-        result += ' (' + name + ')'
+      if (result) {
+        result += ' (' + address + ')'
       }
 
       return result
+    },
+    update () {
+      this.$store.dispatch('adm/getTransaction', this.id)
     }
   }
 }

@@ -212,3 +212,41 @@ export function sendTokens (to, amount) {
 
   return post('/api/transactions/process', { transaction })
 }
+
+/**
+ * Retrieves ADM transactions.
+ * @param {{type: number, from: number, to: number}} options specifies height range
+ * @returns {Promise<{success: boolean, transactions: Array}>}
+ */
+export function getTransactions (options = { }) {
+  const query = {
+    inId: myAddress,
+    'and:type': options.type || Transactions.SEND,
+    orderBy: 'timestamp:desc'
+  }
+
+  if (options.to) {
+    query['and:toHeight'] = options.to
+  }
+
+  if (options.from) {
+    query['and:fromHeight'] = options.from
+  }
+
+  return get('/api/transactions', query)
+}
+
+/**
+ * Returns transaction with the specified ID.
+ * @param {string} id transaction ID
+ * @returns {Promise<{id: string, height: number, amount: number}>}
+ */
+export function getTransaction (id) {
+  const query = { id }
+  return get('/api/transactions/get', query)
+    .then(response => {
+      if (response.success) return response
+      return get('/api/transactions/unconfirmed/get', query)
+    })
+    .then(response => response.transaction || null)
+}

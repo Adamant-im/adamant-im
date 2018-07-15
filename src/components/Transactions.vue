@@ -3,15 +3,16 @@
       <md-list class="custom-list md-triple-line">
         <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
           <md-avatar>
-            <md-icon v-if="transaction.senderId !== currentAddress">flight_land</md-icon>
-            <md-icon v-if="transaction.senderId === currentAddress">flight_takeoff</md-icon>
+            <md-icon>{{ transaction.direction === 'from' ? 'flight_takeoff' : 'flight_land' }}</md-icon>
           </md-avatar>
 
           <div class="md-list-text-container" v-on:click="goToTransaction(transaction.id)">
-            <span v-if="transaction.senderId !== currentAddress">{{ transaction.senderId.toString().toUpperCase() }}</span>
-            <span v-else>{{ transaction.recipientId.toString().toUpperCase() }}</span>
+            <div>
+              {{ displayName(transaction.partner) }}
+              <span class="partner_display_name">{{ formatPartnerAddress(transaction.partner) }}</span>
+            </div>
             <span>{{ $formatAmount(transaction.amount) }} ADM</span>
-            <p>{{ dateFormat(transaction.timestamp) }}</p>
+            <p>{{ $formatDate(transaction.timestamp) }}</p>
           </div>
 
           <md-button class="md-icon-button md-list-action" v-on:click="openChat(transaction)">
@@ -29,59 +30,67 @@
 import { Cryptos } from '../lib/constants'
 
 export default {
-  name: 'transaction',
+  name: 'transactions',
   data () {
     return {
+      bgTimer: null
     }
   },
-  mounted: function () {
-    this.getTransactions()
+  mounted () {
+    this.update()
+    clearInterval(this.bgTimer)
+    this.bgTimer = setInterval(() => this.update(), 5000)
+    window.addEventListener('scroll', this.onScroll)
   },
-  watch: {
-    '$route': function (value) {
-      this.getTransactionInfo(value.params.tx_id)
-    }
+  beforeDestroy () {
+    clearInterval(this.bgTimer)
+    window.removeEventListener('scroll', this.onScroll)
   },
   methods: {
-    dateFormat: function (timestamp) {
-      return new Date(parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0)).toLocaleString()
-    },
-    getPartner (transaction) {
-      return transaction.senderId !== this.$store.state.address ? transaction.senderId : transaction.recipientId
-    },
     hasMessages (transaction) {
-      const partner = this.getPartner(transaction)
-      const chat = this.$store.state.chats[partner]
+      const chat = this.$store.state.chats[transaction.partner]
       return chat && chat.messages && Object.keys(chat.messages).length > 0
     },
     openChat (transaction) {
-      const partner = this.getPartner(transaction)
+      const partner = transaction.partner
       this.$store.commit('select_chat', partner)
       this.$router.push('/chats/' + partner + '/')
     },
     goToTransaction (id) {
       const params = { crypto: Cryptos.ADM, tx_id: id }
       this.$router.push({ name: 'Transaction', params })
+    },
+    displayName (partner) {
+      return this.$store.getters['partners/displayName'](partner) || ''
+    },
+    formatPartnerAddress (partner) {
+      return '(' + partner + ')'
+    },
+    update () {
+      this.$store.dispatch('adm/getNewTransactions')
+    },
+    onScroll () {
+      const pageHeight = document.body.offsetHeight
+      const windowHeight = window.innerHeight
+      const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop + (document.documentElement.scrollTop || 0)
+
+      // If we've scrolled to the very bottom, fetch the older transactions from server
+      if (windowHeight + scrollPosition >= pageHeight) {
+        this.$store.dispatch('adm/getOldTransactions')
+      }
     }
   },
   computed: {
-    currentAddress: function () {
-      return this.$store.state.address
-    },
     transactions: function () {
-      function compare (a, b) {
-        if (a.timestamp < b.timestamp) {
-          return 1
-        }
-        if (a.timestamp > b.timestamp) {
-          return -1
-        }
-        return 0
-      }
-      if (this.$store.state.transactions) {
-        return Object.values(this.$store.state.transactions).sort(compare)
-      }
+      return this.$store.getters['adm/sortedTransactions']
     }
   }
 }
 </script>
+
+<style>
+  .partner_display_name {
+    color: rgba(0, 0, 0, .54);
+    font-size: 14px;
+  }
+</style>
