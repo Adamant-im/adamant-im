@@ -257,36 +257,7 @@ function install (Vue) {
       this.$store.commit('ajax_end_with_error')
     })
   }
-  Vue.prototype.transferFunds = function (amount, recipient) {
-    this.$store.commit('ajax_start')
-    if (this.$store.getters.getPassPhrase) {
-      var keypair = this.getKeypair()
-      var transaction = {}
-      transaction.type = 0
-      amount = amount * 100000000
-      transaction.amount = Math.round(amount)
-      transaction.recipientId = recipient
-      transaction.publicKey = keypair.publicKey.toString('hex')
-      transaction.senderId = this.$store.state.address
-      this.normalizeTransaction(transaction)
-    }
-  }
-  Vue.prototype.processTransaction = function (transaction) {
-    this.$http.post(this.getAddressString() + '/api/transactions/process', {
-      transaction: transaction
-    }).then(response => {
-      if (response.body.success) {
-        if (response.body.transactionId) {
-          this.$root._router.push('/transactions/ADM/' + response.body.transactionId + '/')
-        }
-      } else {
-      }
-      this.$store.commit('ajax_end')
-    },
-    response => {
-      this.$store.commit('ajax_end_with_error')
-    })
-  }
+
   Vue.prototype.isLastScroll = function () {
     var element = document.getElementsByClassName('chat_messages')[0]
     if (!element) {
@@ -308,41 +279,14 @@ function install (Vue) {
     }
     element.scrollTop = element.scrollHeight - element.clientHeight
   }
-  Vue.prototype.normalizeTransaction = function (transaction) {
-    this.$http.post(this.getAddressString() + '/api/transactions/normalize', {
-      type: transaction.type,
-      amount: transaction.amount,
-      recipientId: transaction.recipientId,
-      publicKey: transaction.publicKey,
-      senderId: transaction.senderId
-    }).then(response => {
-      if (response.body.success) {
-        var newTransaction = response.body.transaction
-        var keypair = this.getKeypair()
-        newTransaction.senderId = transaction.senderId
-        newTransaction.signature = adamant.transactionSign(newTransaction, keypair)
-        this.processTransaction(newTransaction)
-      } else {
-        this.$store.commit('send_error', {msg: response.body.error})
-        this.$store.commit('ajax_end')
-      }
-    }, response => {
-      // error callback
-      this.$store.commit('ajax_end_with_error')
-    })
-  }
+
   Vue.prototype.updateCurrentValues = function () {
     if (this.$store.getters.getPassPhrase && !this.$store.state.ajaxIsOngoing) {
-      // updating wallet balance
-      if (this.$route.path.indexOf('/transactions/') > -1) {
-        if (this.$route.params.tx_id) {
-          this.getTransactionInfo(this.$route.params.tx_id)
-        }
-      }
       this.getAccountByPublicKey(this.getPublicKeyFromPassPhrase(this.$store.getters.getPassPhrase))
       this.$store.commit('start_tracking_new')
       this.loadChats()
-      this.getTransactions()
+      // TODO: Remove this, when it will be possible to fetch transactions together with the chat messages
+      this.$store.dispatch('adm/getNewTransactions')
     } else if (this.$store.state.ajaxIsOngoing && !window.resetAjaxState) {
       window.resetAjaxState = setTimeout(
         (function (self) {
@@ -472,52 +416,6 @@ function install (Vue) {
     if (window.queuedMessages < 1 && this.$store.state.firstChatLoad) {
       this.$store.commit('have_loaded_chats')
     }
-  }
-  Vue.prototype.getUncofirmedTransactionInfo = function (txid) {
-    this.$store.commit('ajax_start')
-    this.$http.get(this.getAddressString() + '/api/transactions/unconfirmed/get?id=' + txid).then(response => {
-      if (response.body.success) {
-        if (!response.body.transaction) {
-          response.body.transaction = 0
-        }
-        this.$store.commit('transaction_info', response.body.transaction)
-        this.$store.commit('ajax_end')
-      } else {
-        this.$store.commit('ajax_end_with_error')
-      }
-    }, response => {
-      this.$store.commit('ajax_end_with_error')
-    })
-  }
-  Vue.prototype.getTransactions = function (offset) {
-    const uri = [this.getAddressString(), '/api/transactions/?inId=', this.$store.state.address, '&and:type=0']
-    if (this.$store.state.lastTransactionHeight) {
-      uri.push('&and:fromHeight=', this.$store.state.lastTransactionHeight + 1)
-    }
-    this.$http.get(uri.join('')).then(response => {
-      if (response.body.success) {
-        for (var i in response.body.transactions) {
-          if (response.body.transactions[i].type === 0) {
-            this.$store.commit('transaction_info', response.body.transactions[i])
-            this.$store.commit('set_last_transaction_height', response.body.transactions[i].height)
-          }
-        }
-      }
-    }, response => {
-    })
-  }
-  Vue.prototype.getTransactionInfo = function (txid) {
-    this.$store.commit('ajax_start')
-    this.$http.get(this.getAddressString() + '/api/transactions/get?id=' + txid).then(response => {
-      if (response.body.success) {
-        this.$store.commit('transaction_info', response.body.transaction)
-        this.$store.commit('ajax_end')
-      } else {
-        this.getUncofirmedTransactionInfo(txid)
-      }
-    }, response => {
-      this.$store.commit('ajax_end_with_error')
-    })
   }
 
   Vue.prototype.checkUnconfirmedTransactions = function () {
