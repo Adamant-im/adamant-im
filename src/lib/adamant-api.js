@@ -1,7 +1,7 @@
 import sa from 'superagent'
 
 import getEndpointUrl from './getEndpointUrl'
-import { Cryptos, Transactions } from './constants'
+import { Cryptos, Transactions, Delegates } from './constants'
 import utils from './adamant'
 
 /** @type {{privateKey: Buffer, publicKey: Buffer}} */
@@ -42,7 +42,7 @@ function post (url, payload) {
  * @param {number} type transaction type
  * @returns {{type: number, senderId: string, senderPublicKey: string, timestamp: number}}
  */
-export function newTransaction (type) {
+function newTransaction (type) {
   return {
     type,
     amount: 0,
@@ -211,6 +211,45 @@ export function sendTokens (to, amount) {
   transaction.signature = utils.transactionSign(transaction, myKeypair)
 
   return post('/api/transactions/process', { transaction })
+}
+
+export function getDelegates (limit, offset) {
+  return get('/api/delegates', { limit, offset })
+}
+
+export function getDelegatesWithVotes (address) {
+  return get('/api/accounts/delegates', { address })
+}
+
+export function getDelegatesCount () {
+  return get('/api/delegates/count')
+}
+
+export function checkUnconfirmedTransactions () {
+  return get('/api/transactions/unconfirmed')
+}
+
+export function voteForDelegates (votes) {
+  let transaction = newTransaction(Transactions.VOTE)
+  transaction = Object.assign({
+    asset: { votes: votes },
+    recipientId: myAddress,
+    amount: 0
+  }, transaction)
+  transaction.signature = utils.transactionSign(transaction, myKeypair)
+  return post('/api/accounts/delegates', transaction)
+}
+
+export function getNextForgers () {
+  return get('/api/delegates/getNextForgers', { limit: Delegates.ACTIVE_DELEGATES })
+}
+
+export function getBlocks () {
+  return get('/api/blocks?orderBy=height:desc&limit=100')
+}
+
+export function getForgedByAccount (accountPublicKey) {
+  return get('/api/delegates/forging/getForgedByAccount', { generatorPublicKey: accountPublicKey })
 }
 
 /**

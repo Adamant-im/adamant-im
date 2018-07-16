@@ -172,8 +172,7 @@ export default {
         this.tableStyle.height = this.formatHeight(window.innerHeight)
       })
     })
-    this.$store.commit('clean_delegates')
-    this.getDelegatesWithVotes()
+    this.$store.dispatch('delegates/getDelegates', { address: this.$store.state.address })
   },
   methods: {
     vote (delegate) {
@@ -181,12 +180,12 @@ export default {
         return false
       }
       if (delegate.voted) {
-        if (this.$store.state.delegates[delegate.address]._voted) {
+        if (this.$store.state.delegates.delegates[delegate.address]._voted) {
           delegate.downvoted = true
         }
         delegate.upvoted = false
       } else {
-        if (!this.$store.state.delegates[delegate.address]._voted) {
+        if (!this.$store.state.delegates.delegates[delegate.address]._voted) {
           delegate.upvoted = true
         }
         delegate.downvoted = false
@@ -202,13 +201,13 @@ export default {
       } else {
         let votes = Array.concat(this.delegates.filter(x => x.downvoted).map(x => `-${x.publicKey}`),
           this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
-        this.voteForDelegates(votes)
+        this.$store.dispatch('delegates/voteForDelegates', { votes: votes, address: this.$store.state.address })
       }
     },
     toggleDetails (delegate) {
       if (!delegate.showDetails) {
-        this.getForgedByAccount(delegate)
-        this.getForgingTimeForDelegate(delegate)
+        this.$store.dispatch('delegates/getForgedByAccount', delegate)
+        this.$store.dispatch('delegates/getForgingTimeForDelegate', delegate)
       }
       delegate.showDetails = !delegate.showDetails
     },
@@ -284,7 +283,7 @@ export default {
         return this.filterString !== '' ? (regexp.test(x.address) || regexp.test(x.username)) : true
       }
 
-      return Object.values(this.$store.state.delegates)
+      return Object.values(this.$store.state.delegates.delegates)
         .filter(filterDelegates)
         .sort(compare)
         .map((x) => {
@@ -303,13 +302,13 @@ export default {
       return this.delegates.filter(x => x.downvoted).length
     },
     originVotesCount () {
-      return Object.values(this.$store.state.delegates).filter(x => x._voted).length
+      return Object.values(this.$store.state.delegates.delegates).filter(x => x._voted).length
     },
     totalVotes () {
       return this.downvotedCount + this.originVotesCount - this.downvotedCount
     },
     delegatesLoaded () {
-      return Object.keys(this.$store.state.delegates).length > 0
+      return Object.keys(this.$store.state.delegates.delegates).length > 0
     },
     errorMsg () {
       return this.$store.state.lastErrorMsg
