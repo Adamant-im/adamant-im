@@ -70,9 +70,6 @@ export default {
         context.commit('set_last_transaction_status', false)
         // removing an UI waiting state if transaction confirmation run to much time
         window.setTimeout(() => {
-          if (!context.lastTransactionConfirmed) {
-            console.log('transaction confirmation awaiting')
-          }
           context.commit('ajax_end', null, { root: true })
           context.dispatch('getDelegates', { address: payload.address })
         }, 15000)
