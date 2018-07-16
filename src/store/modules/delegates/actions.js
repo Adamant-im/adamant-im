@@ -160,7 +160,6 @@ export default {
           address: delegate.address,
           params: { forged: response.forged }
         })
-      } else {
       }
     })
   }
