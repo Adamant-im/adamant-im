@@ -5,6 +5,7 @@ export default {
   'new_messages_2': 'new messages',
   'new_messages_5': 'new messages',
   'region': 'en-US',
+  'error': 'Error',
   'login': {
     'copy_button_tooltip': 'Click to copy the passphrase to clipboard. Save it in a password keeper application. To enter your new Wallet, paste it the passphrase field.',
     'save_button_tooltip': 'Click to save your passphrase in a text file. Save it in the secure place!',
@@ -38,7 +39,12 @@ export default {
     'enable_desktop': 'Browser notifications',
     'enable_desktop_tooltip': 'Use integrated browser notifications (need your acceptance)',
     'enable_health_check': 'Server health check',
-    'enable_health_check_tooltip': 'While selecting a server, check for its availability'
+    'enable_health_check_tooltip': 'While selecting a server, check for its availability',
+    'delegates_title': 'Delegates',
+    'delegate_name_input': 'Enter delegate name',
+    'delegate_register_button': 'Register delegate',
+    'vote_for_delegates_button': 'Vote for delegates',
+    'already_delegate_text': 'You are already a delegate. Your delegate name is'
   },
   'chats': {
     'new_chat': 'Start new Chat',
@@ -62,7 +68,11 @@ export default {
     'date_yesterday': 'Yesterday',
     'date_tomorrow': 'Tomorrow',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Copied',
@@ -76,8 +86,9 @@ export default {
     'your_balance_tooltip_ETH': 'It is your ADAMANT ETH balance.',
     'send_btn': 'Send funds',
     'send_btn_tooltip': 'Click to transfer supported tokens to other account or ADAMANT user',
-    'invest_btn': 'Join the ICO',
-    'invest_btn_tooltip': 'You have a possibility to participate in the ICO of ADAMANT, the most secure and anonymous messenger. Click to go to ICO form Adamant.im/ico/.',
+    'invest_btn_link': 'https://adamant.im/buy-tokens/',
+    'invest_btn': 'Buy tokens',
+    'invest_btn_tooltip': 'Now you have a possibility to buy tokens of ADAMANT, the most secure and anonymous messenger, with the cheapest price. Click to go to ICO form Adamant.im/buy-tokens/.',
     'free_adm_btn': 'Free ADM tokens'
   },
   'transaction': {
@@ -90,25 +101,33 @@ export default {
     'recipient': 'To',
     'explorer': 'Open in Explorer',
     'startChat': 'Start chat',
-    'continueChat': 'Continue chat'
+    'continueChat': 'Continue chat',
+    'me': 'Me'
   },
   'transfer': {
     'send_button': 'Send Funds',
     'send_button_tooltip': 'After you click the button, you\'ll see a confirmation request.',
     'to_address_label': 'To Address',
     'to_address_label_tooltip': 'Enter a recepient identifier, like U1234567890',
+    'to_label': 'To',
     'amount_label': 'Amount to send',
     'final_amount_label': 'Amount including transfer fee',
     'commission_label': 'Transfer fee',
+    'comments_label': 'Comments',
     'error_no_address': 'Please provide wallet address',
-    'error_incorrect_address': 'Incorrect wallet address',
+    'error_incorrect_address': 'Incorrect {crypto} wallet address',
     'error_incorrect_amount': 'Incorrect amount',
     'error_no_amount': 'Please provide amount',
     'error_not_enough': 'Not enough tokens',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Transfer confirmation',
     'confirm_message': 'Confirm transfer of <b>{amount} {crypto}</b> to address <span class="address-in-confirm">{target}</span>.',
+    'confirm_message_with_name': 'Confirm transfer of <b>{amount} {crypto}</b> to <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confirm',
-    'confirm_cancel': 'Cancel'
+    'confirm_cancel': 'Cancel',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Wallet',
@@ -117,5 +136,39 @@ export default {
     'settings_button': 'Settings',
     'exit_button': 'Logout',
     'exit_button_tooltip': 'Despite of application settings, your passphrase will be cleared from browser storage. We recommend to perform exit every time after you are done with chats.'
+  },
+  'votes': {
+    'page_title': 'Votes',
+    'filter_placeholder': 'Name or ADAMANT ID',
+    'table_head_vote': 'Vote',
+    'table_head_rank': 'Rank',
+    'table_head_name': 'Name',
+    'delegate_approval': 'Approval',
+    'delegate_uptime': 'Uptime',
+    'delegate_forged': 'Forged',
+    'delegate_forging_time': 'Forging time',
+    'delegate_description': 'Description',
+    'delegate_link': 'Link',
+    'upvotes': 'Upvotes',
+    'downvotes': 'Downvotes',
+    'total_new_votes': 'Total new votes',
+    'total_votes': 'Total votes',
+    'voting_cost': 'Voting cost',
+    'summary_title': 'Review voting',
+    'vote_button_text': 'Vote',
+    'summary_info': 'Voting cost: 50 ADM. More info on the ',
+    'summary_info_link_text': 'ADAMANT website',
+    'no_money': 'You need 50 ADM to vote',
+    'transaction_confirm_await': 'Transaction is running yet, please be patient…'
+  },
+  'scan': {
+    'camera_button': 'Camera',
+    'close_button': 'Close',
+    'login': {
+      'modal_header': 'Scan QR code with a passphrase'
+    },
+    'new-chat': {
+      'modal_header': 'Scan QR code with ADM address'
+    }
   }
 }

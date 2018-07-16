@@ -58,7 +58,11 @@ export default {
     'date_yesterday': '어제',
     'date_tomorrow': '내일',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': '복사 됨',
@@ -72,6 +76,7 @@ export default {
     'your_balance_tooltip_ETH': 'It is your ADAMANT ETH balance.',
     'send_btn': 'Send funds',
     'send_btn_tooltip': 'Click to transfer supported tokens to other account or ADAMANT user',
+    'invest_btn_link': 'https://adamant.im/buy-tokens/',
     'invest_btn': 'ICO에 투자하십시오.',
     'invest_btn_tooltip': '가장 안전하고 익명의 메신저 인 ADAMANT의 ICO에 투자 할 수 있습니다. 클릭하여 Adamant.im/ico/ 양식에 투자하십시오.',
     'free_adm_btn': 'Free ADM tokens'
@@ -93,6 +98,7 @@ export default {
     'send_button_tooltip': '버튼을 클릭하면 확인 요청이 표시됩니다.',
     'to_address_label': '주소',
     'to_address_label_tooltip': 'U 1234567890과 같은 수신자 식별자를 입력하십시오.',
+    'to_label': 'To',
     'amount_label': '보낼 금액',
     'final_amount_label': '송금 수수료 포함 금액',
     'commission_label': '환승요금',
@@ -101,10 +107,14 @@ export default {
     'error_incorrect_amount': '부정확한 금액',
     'error_no_amount': '금액을 입력하십시오.',
     'error_not_enough': '토큰이 충분하지 않습니다.',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': '이동 확정',
     'confirm_message': '<b>{amount} {crypto} </b>의 <span class="address-in-confirm">{target}</span> 주소로의 이전을 확인하십시오.',
     'confirm_approve': '확인',
-    'confirm_cancel': '취소'
+    'confirm_cancel': '취소',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': '지갑',
@@ -113,5 +123,29 @@ export default {
     'settings_button': '설정',
     'exit_button': '로그아웃',
     'exit_button_tooltip': '응용 프로그램 설정에도 불구하고 암호는 브라우저 저장소에서 지워집니다. 채팅을 마친 후에는 언제든지 종료를 수행하는 것이 좋습니다.'
+  },
+  'votes': {
+    'page_title': 'Votes',
+    'filter_placeholder': 'Name or ADAMANT ID',
+    'table_head_vote': 'Vote',
+    'table_head_rank': 'Rank',
+    'table_head_name': 'Name',
+    'delegate_approval': 'Approval',
+    'delegate_uptime': 'Uptime',
+    'delegate_forged': 'Forged',
+    'delegate_forging_time': 'Forging time',
+    'delegate_description': 'Description',
+    'delegate_link': 'Link',
+    'upvotes': 'Upvotes',
+    'downvotes': 'Downvotes',
+    'total_new_votes': 'Total new votes',
+    'total_votes': 'Total votes',
+    'voting_cost': 'Voting cost',
+    'summary_title': 'Review voting',
+    'vote_button_text': 'Vote',
+    'summary_info': 'Voting cost: 50 ADM. More info on the ',
+    'summary_info_link_text': 'ADAMANT website',
+    'no_money': 'You need 50 ADM to vote',
+    'transaction_confirm_await': 'Transaction confirmation run to much time, please be patient, it will be done'
   }
 }

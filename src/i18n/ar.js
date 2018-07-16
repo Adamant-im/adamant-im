@@ -58,7 +58,11 @@ export default {
     'date_yesterday': 'الأمس',
     'date_tomorrow': 'غدا',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'منسخ',
@@ -93,18 +97,23 @@ export default {
     'send_button_tooltip': 'بعد النقر على الزر، سترى طلب تأكيد.',
     'to_address_label': 'للعنوان',
     'to_address_label_tooltip': 'أدخل اسم دخول المستقبل، مثل U1234567890',
+    'to_label': 'To',
     'amount_label': 'المبلغ المراد تحويله',
     'final_amount_label': 'المبلغ بما فيه الرسوم',
     'commission_label': 'رسوم التحويل',
     'error_no_address': 'من فذلك أدخل عنوان المحفظة',
-    'error_incorrect_address': 'عنوان المحفظة غير صحيح',
+    'error_incorrect_address': 'عنوان المحفظة {crypto} غير صحيح',
     'error_incorrect_amount': 'مبلغ غير صحيح',
     'error_no_amount': 'من فضلك أدخل المبلغ',
     'error_not_enough': 'قطع غير كافية',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'تأكيد الإرسال',
     'confirm_message': 'تأكيد إرسال <b>{amount} {crypto}</b> إلى العنوان <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'تأكيد',
-    'confirm_cancel': 'إلغاء'
+    'confirm_cancel': 'إلغاء',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'المحفظة',

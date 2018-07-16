@@ -58,7 +58,11 @@ export default {
     'date_yesterday': '昨日',
     'date_tomorrow': '明日',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'コピーされました',
@@ -72,6 +76,7 @@ export default {
     'your_balance_tooltip_ETH': 'It is your ADAMANT ETH balance.',
     'send_btn': 'Send funds',
     'send_btn_tooltip': 'Click to transfer supported tokens to other account or ADAMANT user',
+    'invest_btn_link': 'https://adamant.im/buy-tokens/',
     'invest_btn': 'ICOに投資する',
     'invest_btn_tooltip': 'ADAMANTの安全性と匿名性の高いメッセンジャーのICOに投資することができます。 クリックすると、Adamant.im/EN-ico/の投資ページに移動します。',
     'free_adm_btn': 'Free ADM tokens'
@@ -93,6 +98,7 @@ export default {
     'send_button_tooltip': 'このボタンをクリックすると、確認画面が表示されます。',
     'to_address_label': '受取人アドレス',
     'to_address_label_tooltip': 'トークンの受取人ウォレットのIDを次のように指定します。U1234567890',
+    'to_label': 'To',
     'amount_label': '送金額',
     'final_amount_label': '送金額(手数料込み)',
     'commission_label': '手数料 ',
@@ -101,10 +107,14 @@ export default {
     'error_incorrect_amount': '金額が正しくありません ',
     'error_no_amount': '送金額を入力してください ',
     'error_not_enough': 'トークンが足りません',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': '送金確認 ',
     'confirm_message': '送金の確認<b> {amount} {crypto}</b> to <span class="address-in-confirm">{target}</span>送金先アドレス.',
     'confirm_approve': '確認',
-    'confirm_cancel': 'キャンセル'
+    'confirm_cancel': 'キャンセル',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'ウォレット',
@@ -113,5 +123,29 @@ export default {
     'settings_button': '設定',
     'exit_button': 'ログアウトです',
     'exit_button_tooltip': 'アプリケーションの設定にかかわらず、パスワードはブラウザストレージから消去されます。 チャット終了後は常にログアウトすることをお勧めします.'
+  },
+  'votes': {
+    'page_title': 'Votes',
+    'filter_placeholder': 'Name or ADAMANT ID',
+    'table_head_vote': 'Vote',
+    'table_head_rank': 'Rank',
+    'table_head_name': 'Name',
+    'delegate_approval': 'Approval',
+    'delegate_uptime': 'Uptime',
+    'delegate_forged': 'Forged',
+    'delegate_forging_time': 'Forging time',
+    'delegate_description': 'Description',
+    'delegate_link': 'Link',
+    'upvotes': 'Upvotes',
+    'downvotes': 'Downvotes',
+    'total_new_votes': 'Total new votes',
+    'total_votes': 'Total votes',
+    'voting_cost': 'Voting cost',
+    'summary_title': 'Review voting',
+    'vote_button_text': 'Vote',
+    'summary_info': 'Voting cost: 50 ADM. More info on the ',
+    'summary_info_link_text': 'ADAMANT website',
+    'no_money': 'You need 50 ADM to vote',
+    'transaction_confirm_await': 'Transaction confirmation run to much time, please be patient, it will be done'
   }
 }

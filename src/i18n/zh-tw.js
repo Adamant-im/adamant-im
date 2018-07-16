@@ -58,7 +58,11 @@ export default {
     'date_yesterday': '昨天',
     'date_tomorrow': '明天',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': '已复制',
@@ -72,7 +76,8 @@ export default {
     'your_balance_tooltip_ETH': 'It is your ADAMANT ETH balance.',
     'send_btn': 'Send funds',
     'send_btn_tooltip': 'Click to transfer supported tokens to other account or ADAMANT user',
-    'invest_btn': 'Invest in the ICO',
+    'invest_btn_link': 'https://adamant.im/buy-tokens/',
+    'invest_btn': 'Buy tokens',
     'invest_btn_tooltip': 'You have a possibility to invest in ICO of ADAMANT, the most secure and anonymous messenger. Click to go to invest form Adamant.im/ico/.',
     'free_adm_btn': 'Free ADM tokens'
   },
@@ -93,6 +98,7 @@ export default {
     'send_button_tooltip': '点击此按钮后, 您会收到一个确认请求.',
     'to_address_label': '到地址',
     'to_address_label_tooltip': '输入对方身份识别, 如 U1234567890',
+    'to_label': 'To',
     'amount_label': '发送金额',
     'final_amount_label': '金额包含手续费',
     'commission_label': '手续费',
@@ -101,10 +107,14 @@ export default {
     'error_incorrect_amount': '错误的金额',
     'error_no_amount': '请提供金额',
     'error_not_enough': '无足够代币',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': '发送确认',
     'confirm_message': '确认发送 <b>{amount} {crypto}</b> 到地址 <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': '确认',
-    'confirm_cancel': '取消'
+    'confirm_cancel': '取消',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': '钱包',
@@ -113,5 +123,39 @@ export default {
     'settings_button': '设置',
     'exit_button': '退出',
     'exit_button_tooltip': '将无视浏览器设置, 您的密码短句会从您的浏览器彻底清除. 我们建议您在每次结束聊天后执行此操作.'
+  },
+  'votes': {
+    'page_title': 'Votes',
+    'filter_placeholder': 'Name or ADAMANT ID',
+    'table_head_vote': 'Vote',
+    'table_head_rank': 'Rank',
+    'table_head_name': 'Name',
+    'delegate_approval': 'Approval',
+    'delegate_uptime': 'Uptime',
+    'delegate_forged': 'Forged',
+    'delegate_forging_time': 'Forging time',
+    'delegate_description': 'Description',
+    'delegate_link': 'Link',
+    'upvotes': 'Upvotes',
+    'downvotes': 'Downvotes',
+    'total_new_votes': 'Total new votes',
+    'total_votes': 'Total votes',
+    'voting_cost': 'Voting cost',
+    'summary_title': 'Review voting',
+    'vote_button_text': 'Vote',
+    'summary_info': 'Voting cost: 50 ADM. More info on the ',
+    'summary_info_link_text': 'ADAMANT website',
+    'no_money': 'You need 50 ADM to vote',
+    'transaction_confirm_await': 'Transaction confirmation run to much time, please be patient, it will be done'
+  },
+  'scan': {
+    'camera_button': 'Камера',
+    'close_button': 'Закрыть',
+    'login': {
+      'modal_header': 'Отсканируйте QR-код с паролем'
+    },
+    'new-chat': {
+      'modal_header': 'Отсканируйте QR-код с ADM-адресом'
+    }
   }
 }

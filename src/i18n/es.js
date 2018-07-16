@@ -58,7 +58,11 @@ export default {
     'date_yesterday': 'Ayer',
     'date_tomorrow': 'Mañana',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Copiado',
@@ -72,6 +76,7 @@ export default {
     'your_balance_tooltip_ETH': 'It is your ADAMANT ETH balance.',
     'send_btn': 'Send funds',
     'send_btn_tooltip': 'Click to transfer supported tokens to other account or ADAMANT user',
+    'invest_btn_link': 'https://adamant.im/buy-tokens/',
     'invest_btn': 'Invetir en el ICO',
     'invest_btn_tooltip': 'Usted tiene la posibilidad de invertir en ICO de ADAMANT, el messenger más seguro y anónimo. Haga clic para ir a invertir desde Adamant.im/ico/.',
     'free_adm_btn': 'Free ADM tokens'
@@ -93,18 +98,23 @@ export default {
     'send_button_tooltip': 'Después de hacer clic en el botón, podrá ver una solicitud de confirmación.',
     'to_address_label': 'Dirección de Destinatario',
     'to_address_label_tooltip': 'Ingrese el identificador del destinatario, por ejemplo U1234567890',
+    'to_label': 'To',
     'amount_label': 'Monto a enviar',
     'final_amount_label': 'Monto con comisión des transferencia',
     'commission_label': 'Comisión des transferencia',
     'error_no_address': 'Por favor proveer dirección de billetera',
-    'error_incorrect_address': 'Dirección de la billetera incorrecta',
+    'error_incorrect_address': 'Dirección de la {crypto} billetera incorrecta',
     'error_incorrect_amount': 'Monto incorrecto',
     'error_no_amount': 'Favor proveer un monto',
     'error_not_enough': 'No tiene tokens suficientes',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Confirmación de transferencia',
     'confirm_message': 'Confirmar transferencia de <b>{amount} {crypto}</b> a la dirección <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Confirmar',
-    'confirm_cancel': 'Cancelar'
+    'confirm_cancel': 'Cancelar',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Billetera',
@@ -113,6 +123,29 @@ export default {
     'settings_button': 'Configuraciones',
     'exit_button': 'Desconectarse',
     'exit_button_tooltip': 'Independientemente de su configuración, la frase de contraseña se borrará del almacenamiento del navegador. Recomendamos desconectarse cada vez que finalice sus chats.'
+  },
+  'votes': {
+    'page_title': 'Votes',
+    'filter_placeholder': 'Name or ADAMANT ID',
+    'table_head_vote': 'Vote',
+    'table_head_rank': 'Rank',
+    'table_head_name': 'Name',
+    'delegate_approval': 'Approval',
+    'delegate_uptime': 'Uptime',
+    'delegate_forged': 'Forged',
+    'delegate_forging_time': 'Forging time',
+    'delegate_description': 'Description',
+    'delegate_link': 'Link',
+    'upvotes': 'Upvotes',
+    'downvotes': 'Downvotes',
+    'total_new_votes': 'Total new votes',
+    'total_votes': 'Total votes',
+    'voting_cost': 'Voting cost',
+    'summary_title': 'Review voting',
+    'vote_button_text': 'Vote',
+    'summary_info': 'Voting cost: 50 ADM. More info on the ',
+    'summary_info_link_text': 'ADAMANT website',
+    'no_money': 'You need 50 ADM to vote',
+    'transaction_confirm_await': 'Transaction confirmation run to much time, please be patient, it will be done'
   }
 }
-

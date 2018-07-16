@@ -6,12 +6,12 @@
           </md-select>
       </md-input-container>
       <div class="site-branding container">
-          <span class="custom-logo-link" rel="home" itemprop="url"><img  src="/static/img/adamant-logo-transparent-512x512.png" class="custom-logo" alt="ADAMANT" itemprop="logo"></span>				<span href="#">
-					<span class="site-title" v-if="language=='ru'">
-						АДАМАНТ					</span>
-          <span class="site-title" v-else>
-						ADAMANT					</span>
-      </span>
+          <span class="custom-logo-link" rel="home" itemprop="url"><img  src="/static/img/adamant-logo-transparent-512x512.png" class="custom-logo" alt="ADAMANT" itemprop="logo"></span>
+            <span href="#">
+              <span class="site-title">
+                {{ language === 'ru' ? 'АДАМАНТ' : 'ADAMANT' }}
+              </span>
+            </span>
           <p class="site-description">{{ $t('login.subheader') }}</p>
       </div>
       <md-layout md-align="center" md-gutter="16">
@@ -31,14 +31,15 @@
                      md-align="center"
                      class="qr-code-buttons">
             <md-button classs="md-ripple md-disabled"
-                       @click.prevent="scanQRCode"
-                       :title="$t('login.scan_qr_code_button_tooltip')">
+                       :title="$t('login.scan_qr_code_button_tooltip')"
+                       @click="scanQRCode">
               <Icon name="qrCodeLense" />
             </md-button>
             <md-button classs="md-ripple md-disabled"
                        @click.prevent="saveQRCode">
               <Icon name="qrCode" />
             </md-button>
+
           </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
             <p v-if="message">{{message}}</p>
@@ -81,6 +82,8 @@
       <md-snackbar md-position="bottom center" md-accent ref="loginSnackbar" md-duration="2000">
           <span>{{ $t('home.copied') }}</span>
       </md-snackbar>
+    <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
+    <Spinner v-if="showSpinnerFlag"></Spinner>
   </div>
 </template>
 
@@ -88,14 +91,20 @@
 import b64toBlob from 'b64-to-blob'
 import FileSaver from 'file-saver'
 import Icon from '@/components/Icon'
-import { Fees } from '../lib/constants'
+import QRScan from '@/components/QRScan'
+import Spinner from '../components/Spinner'
 
 export default {
   name: 'login',
   components: {
-    Icon
+    Icon,
+    QRScan,
+    Spinner
   },
   methods: {
+    showSpinner: function () {
+      this.showSpinnerFlag = true
+    },
     scrollToBottom: function () {
       this.$root.$nextTick(function () {
         window.scrollTo(0, document.body.scrollHeight)
@@ -130,32 +139,30 @@ export default {
       this.showQRCode = true
     },
     scanQRCode () {
-      this.$router.push('/scan/')
+      this.showModal = true
+    },
+    savePassPhrase (payload) {
+      this.passPhrase = payload
+      this.logme()
     },
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
-
-      if (this.passPhrase.split(' ').length !== 12) {
-        this.snackOpen()
-        return
-      }
+      this.showSpinnerFlag = true
       var errorFunction = function () {
         this.snackOpen()
+        this.showSpinnerFlag = false
       }.bind(this)
+      if (this.passPhrase.split(' ').length !== 12) {
+        errorFunction()
+        return
+      }
       this.getAccountByPassPhrase(this.passPhrase, function (context) {
-        this.$store.commit('save_passphrase', {'passPhrase': this.passPhrase})
+        this.$store.dispatch('afterLogin', this.passPhrase)
         this.$root._router.push('/chats/')
         this.loadChats(true)
+        this.$store.commit('mock_messages')
         this.$store.commit('stop_tracking_new')
-        this.$store.dispatch('login', this.passPhrase)
-
-        // Store ETH address into the KVS if it's not there yet and user has
-        // enough ADM for this transaction
-        if (this.$store.state.balance >= Fees.KVS) {
-          this.getStored('eth:address').then(address => {
-            if (!address) this.storeValue('eth:address', this.$store.state.eth.address)
-          })
-        }
+        this.showSpinner = false
       }, errorFunction)
     },
     'handleSuccess': function (e) {
@@ -204,6 +211,7 @@ export default {
       return new Mnemonic(Mnemonic.Words.ENGLISH).toString()
     },
     qrCodePassPhrase: function () {
+      // return this.passPhrase
       return this.$store.getters.getPassPhrase
     }
   },
@@ -219,7 +227,9 @@ export default {
       language: this.$i18n.locale,
       showCreate: false,
       message: '',
-      showQRCode: false
+      showQRCode: false,
+      showModal: false,
+      showSpinnerFlag: false
     }
   }
 }
@@ -403,8 +413,6 @@ a.custom-logo-link img {
     }
 }
 
-
-
 .language_select .md-select
 {
     min-width:150px;
@@ -425,7 +433,6 @@ a.custom-logo-link img {
 .login .md-input-container.language_select .md-select .md-select-value {
     padding-right: 0px;
 }
-
 
 .md-input-container.language_select {
     position: absolute;

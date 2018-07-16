@@ -40,26 +40,32 @@ function getTime (date) {
   return time
 }
 
-function formatDate (timestamp, withEpoch = true) {
+function formatDate (timestamp) {
   timestamp = parseInt(timestamp)
-  if (withEpoch) {
+  // That's for the ADM timestamps, which use EPOCH as a base.
+  // Other cryptos use normal timestamps
+  if (timestamp < EPOCH) {
     timestamp = timestamp * 1000 + EPOCH
   }
 
-  var startToday = new Date()
+  const startToday = new Date()
   startToday.setHours(0, 0, 0, 0)
-  var date = new Date(timestamp)
+
+  const date = new Date(timestamp)
   if (date.getTime() > startToday.getTime()) {
     return this.$t('chats.date_today') + ', ' + getTime(date)
   }
-  var startYesterday = new Date(startToday.getTime() - 86400000)
+
+  const startYesterday = new Date(startToday.getTime() - 86400000)
   if (date.getTime() > startYesterday.getTime()) {
     return this.$t('chats.date_yesterday') + ', ' + getTime(date)
   }
-  var options = {'weekday': 'short'}
+
+  let options = {'weekday': 'short'}
   if ((Date.now() - timestamp) > (4 * 3600 * 24 * 1000)) {
     options = {'day': 'numeric', 'month': 'short'}
   }
+
   return date.toLocaleDateString(this.$t('region'), options) + ', ' + getTime(date)
 }
 

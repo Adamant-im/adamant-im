@@ -58,7 +58,11 @@ export default {
     'date_yesterday': 'Kahapon',
     'date_tomorrow': 'Bukas',
     'sent_label': 'Sent',
-    'received_label': 'Received'
+    'received_label': 'Received',
+    'send_adm': 'Send ADM',
+    'send_eth': 'Send ETH',
+    'attach_image': 'Attach image',
+    'attach_file': 'Attach file'
   },
   'home': {
     'copied': 'Nakopya',
@@ -93,6 +97,7 @@ export default {
     'send_button_tooltip': 'Pagkatapos mong mapindot ang pindutan, may makikita kang kahilingan sa pagkumpirma.',
     'to_address_label': 'Sa Address',
     'to_address_label_tooltip': 'Maglagay ng makapagpapakilala sa tatanggap, gaya ng U1234567890',
+    'to_label': 'To',
     'amount_label': 'Dami ng ipapadala',
     'final_amount_label': 'Dami kasama ang bayad sa paglipat',
     'commission_label': 'Bayad sa paglipat',
@@ -101,10 +106,14 @@ export default {
     'error_incorrect_amount': 'Mali ang dami',
     'error_no_amount': 'Pakiusap maglagay ng dami',
     'error_not_enough': 'Hindi sapat na mga token',
+    'error_chat_fee': 'To send {crypto} from chat, you also need 0.001 ADM',
+    'error_transaction_send': 'Error while sending transaction',
     'confirm_title': 'Pagkumpirma sa paglipat',
     'confirm_message': 'Kumpirmahin ang paglipat ng <b>{amount} {crypto}</b> sa address <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Kumpirmahin',
-    'confirm_cancel': 'Kanselahin'
+    'confirm_cancel': 'Kanselahin',
+    'no_address_title': 'Recipient has no {crypto} wallet yet',
+    'no_address_text': 'This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.'
   },
   'bottom': {
     'wallet_button': 'Pitaka',

@@ -33,7 +33,6 @@
           if (file.match(/\.(js|css)$/)) { %>
     <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="<%= htmlWebpackPlugin.files.publicPath + file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>
     <script type="text/javascript" src="<%= htmlWebpackPlugin.files.publicPath  %>static/js/adapter.min.js"></script>
-    <script type="text/javascript" src="<%= htmlWebpackPlugin.files.publicPath  %>static/js/instascan.js"></script>
   </head>
   <body>
     <noscript>

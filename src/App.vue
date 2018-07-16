@@ -12,14 +12,22 @@
                 </md-input-container>
                 </h1>
           </md-toolbar>
+          <md-toolbar v-if="isTransferBackShown">
+              <md-button class="md-icon-button" v-on:click="backOneStep">
+                  <md-icon >keyboard_backspace</md-icon>
+              </md-button>
+            <h1 class="md-title">
+              {{ $t('home.send_btn') }}
+            </h1>
+          </md-toolbar>
     <main>
         <router-view></router-view>
     </main>
       <footer :style="footerCss">
           <div class="bottom-fixed">
-              <md-bottom-bar v-if="logged && isBottomPanelShown">
+              <md-bottom-bar v-if="logged && isBottomPanelShown && !isTransferBackShown">
                   <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" :md-active="!!$router.currentRoute.path.match(/\/home\//) || !!$router.currentRoute.path.match(/\/transactions\//) || !!$router.currentRoute.path.match(/\/transfer\//)">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
-                  <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')" :md-active="!!$router.currentRoute.path.match(/\/chats\//)">{{$t('bottom.chats_button')}}<div class="new-icon" v-if="totalNew">{{ totalNew }}</div></md-bottom-bar-item>
+                  <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')" :md-active="chatsPage">{{$t('bottom.chats_button')}}<div class="new-icon" v-if="totalNew">{{ totalNew }}</div></md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="settings" v-on:click="$router.push('/options/')" :md-active="!!$router.currentRoute.path.match(/\/options\//)">{{$t('bottom.settings_button')}}</md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="exit_to_app" v-on:click="exitme" :title="$t('bottom.exit_button_tooltip')">{{$t('bottom.exit_button')}}</md-bottom-bar-item>
               </md-bottom-bar>
@@ -37,6 +45,7 @@
 export default {
   name: 'app',
   mounted: function () {
+    this.checkChatPage(this.$router.currentRoute.path)
     setInterval(
       (function (self) {
         return function () {
@@ -91,19 +100,28 @@ export default {
   },
   methods: {
     setUserName (val) {
-      this.$store.commit('change_partner_name', val)
+      // this.$store.commit('change_partner_name', val)
+      const partner = this.$store.state.partnerName
+      this.$store.commit('partners/displayName', { partner, displayName: val })
     },
-    gotochats () {
-      this.$store.commit('leave_chat')
+    backOneStep () {
       if (history.length > 2) {
         this.$router.back()
       } else {
-        this.$router.push('/chats/')
+        this.$router.push('/home/')
       }
+    },
+    gotochats () {
+      this.$store.commit('leave_chat')
+      this.$router.push({ name: 'Chats' })
     },
     exitme () {
       this.$store.commit('logout')
+      this.$store.dispatch('reset')
       this.$router.push('/')
+    },
+    checkChatPage (path) {
+      this.chatsPage = path.includes('/chats')
     }
   },
   computed: {
@@ -120,10 +138,13 @@ export default {
       return this.$store.state.disabled
     },
     userDisplayName () {
-      return this.$store.state.partnerDisplayName
+      return this.$store.getters['partners/displayName'](this.$store.state.partnerName)
     },
     partnerName () {
       return this.$store.state.partnerName
+    },
+    isTransferBackShown () {
+      return this.transferBackShown
     },
     isTopPanelShown () {
       return this.$store.state.showPanel
@@ -138,8 +159,18 @@ export default {
       return this.$store.getters.getPassPhrase
     }
   },
+  watch: {
+    '$route.name': function (name) {
+      this.transferBackShown = (this.$router.currentRoute.name === 'Transfer')
+    }
+  },
+  updated () {
+    this.checkChatPage(this.$router.currentRoute.path)
+  },
   data () {
     return {
+      transferBackShown: (this.$router.currentRoute.name === 'Transfer'),
+      chatsPage: false
     }
   }
 }
@@ -223,7 +254,7 @@ footer {
     box-shadow: none;
     border-top: 1px solid lightgray;
 }
-.chat, .home, .chats, .settings, .transaction, .transfer, .login {
+.chat, .home, .chats, .settings, .transaction, .transfer, .login, .votes {
     max-width: 800px;
     margin: 0 auto;
     margin-top: 25px;
@@ -321,5 +352,18 @@ header span {
 
 .md-dialog {
   box-shadow: initial;
+}
+.md-toolbar.md-theme-grey {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    max-width: 800px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    /* background: rgba(153, 153, 153, 0.2); */
+    background: #ebebeb;
+    border-bottom: none;
 }
 </style>

@@ -78,7 +78,7 @@ BigNumber.prototype.toBuffer = function (opts) {
       }
     }
     ret[4] = (ret[4] & 0x7f) | (isNeg ? 0x80 : 0)
-    if (isNeg) ret[ret.length - 1] ++
+    if (isNeg) ret[ret.length - 1]++
 
     return ret
   }
@@ -90,8 +90,8 @@ BigNumber.prototype.toBuffer = function (opts) {
   var hex = this.toString(16)
   if (hex.charAt(0) === '-') {
     throw new Error(
-    'Converting negative numbers to Buffers not supported yet'
-  )
+      'Converting negative numbers to Buffers not supported yet'
+    )
   }
 
   var size = opts.size === 'auto' ? Math.ceil(hex.length / 2) : (opts.size || 1)

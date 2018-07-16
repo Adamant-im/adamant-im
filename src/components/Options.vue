@@ -100,6 +100,18 @@
 
       </md-card>
 
+      <md-card class='settings-card' style="box-shadow:none">
+        <md-card-area md-inset>
+          <md-card-header>
+            <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.delegates_title') }}</h2>
+          </md-card-header>
+          </md-card-area>
+          <md-card-content>
+            <div class="md-table md-theme-grey">
+              <md-button class="votes-button" v-on:click="$router.push('/votes/')">{{ $t('options.vote_for_delegates_button') }}</md-button>
+            </div>
+          </md-card-content>
+      </md-card>
 
         <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
       </div>
@@ -110,13 +122,13 @@
 <script>
 export default {
   name: 'settings',
-  methods: {
-  },
   computed: {
     languageList: function () {
-      var messages = require('../i18n').default
-      return messages
+      return require('../i18n').default
     }
+  },
+  mounted () {
+    this.$store.commit('last_visited_chat', null)
   },
   watch: {
     'sendOnEnter' (to, from) {
@@ -181,21 +193,36 @@ export default {
     width:100%;
   }
   .settings .md-card .md-card-header:last-child {
-      margin-bottom: 0px;
+      margin-bottom: 0;
   }
-    @media (max-width: 480px) {
-        .hide_on_mobile {
-            display:none;
-        }
-        #notification {
-            max-width:150px;
-        }
-        .settings {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-        .settings .version {
-            right: 1rem;
-        }
-    }
+  .votes-button {
+      width: 100% !important;
+      font-size: 16px !important;
+      font-weight: 400 !important;
+      height: 48px !important;
+      text-transform: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      text-align: left !important;
+      line-height: 48px !important;
+      color: rgba(0,0,0,.87) !important;
+  }
+  @media (max-width: 480px) {
+      .hide_on_mobile {
+          display:none;
+      }
+      #notification {
+          max-width:150px;
+      }
+      .settings {
+          padding-left: 1rem;
+          padding-right: 1rem;
+      }
+      .settings .version {
+          right: 1rem;
+      }
+  }
+  .md-card .md-card-content {
+    padding: 0px 16px 16px 16px !important;
+  }
 </style>
