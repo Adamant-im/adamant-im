@@ -119,6 +119,9 @@ export default {
       return require('../i18n').default
     }
   },
+  mounted () {
+    this.$store.commit('last_visited_chat', null)
+  },
   watch: {
     'sendOnEnter' (to, from) {
       this.$store.commit('change_send_on_enter', to)

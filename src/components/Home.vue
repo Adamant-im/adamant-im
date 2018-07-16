@@ -137,6 +137,9 @@ export default {
       this.$i18n.locale = to
     }
   },
+  mounted () {
+    this.$store.commit('last_visited_chat', null)
+  },
   data () {
     return {
       passPhrase: '',

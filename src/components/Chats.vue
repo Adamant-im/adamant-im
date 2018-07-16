@@ -18,7 +18,7 @@
 
             </md-list-item>
 
-            <md-list-item class="black-text" v-for="(chat) in chatList" :key="chat.partner" v-on:click="$router.push('/chats/' + chat.partner + '/')">
+            <md-list-item :id="formatPartnerName(chat.partner)" class="black-text" v-for="(chat) in chatList" :key="chat.partner" v-on:click="$router.push('/chats/' + chat.partner + '/')">
                 <md-avatar v-if="!chat.readOnly" class="md-avatar-icon" style="overflow: visible;">
                     <md-icon>library_books</md-icon>
                     <div class="new-icon" v-if="newMessages(chat.partner)">{{ newMessages(chat.partner) }}</div>
@@ -42,6 +42,7 @@
 <script>
 import NewChat from './NewChat.vue'
 import ChatEntry from './chat/ChatEntry.vue'
+const VueScrollTo = require('vue-scrollto')
 
 export default {
   name: 'chats',
@@ -64,6 +65,9 @@ export default {
     },
     startNewChat () {
       this.$refs['new-chat-dialog'].open()
+    },
+    formatPartnerName (partnerName) {
+      return partnerName.replace(' ', '-')
     }
   },
   computed: {
@@ -87,7 +91,13 @@ export default {
         return Object.values(this.$store.state.chats).sort(compare)
       }
       return this.$store.state.chats
+    },
+    lastVisitedChat: function () {
+      return this.formatPartnerName(this.$store.getters.lastVisitedChat)
     }
+  },
+  mounted () {
+    VueScrollTo.scrollTo('#' + this.lastVisitedChat, 12, {})
   },
   watch: {
   },
