@@ -92,11 +92,13 @@ export default {
       return this.$store.state.chats
     },
     lastVisitedChat: function () {
-      return this.formatPartnerName(this.$store.getters.lastVisitedChat)
+      return this.$store.getters.lastVisitedChat || null
     }
   },
   mounted () {
-    VueScrollTo.scrollTo('#' + this.lastVisitedChat, 12, {})
+    if (this.lastVisitedChat) {
+      VueScrollTo.scrollTo('#' + this.lastVisitedChat, 12, {})
+    }
   },
   watch: {
   },

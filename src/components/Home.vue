@@ -12,7 +12,7 @@
             :title="addr.tooltip ? $t(addr.tooltip) : ''"
           >
               <md-avatar class="md-avatar-icon">
-                <md-icon :md-src="addr.addressIcon"></md-icon>
+                <md-icon :md-src="addr.addressIcon" class="wallet-icon"></md-icon>
               </md-avatar>
 
               <div class="md-list-text-container for-address">
@@ -21,7 +21,7 @@
               </div>
 
               <div class='md-list-action'>
-                <md-icon class="custom-icon">content_copy</md-icon>
+                <md-icon class="custom-icon wallet-icon">content_copy</md-icon>
               </div>
           </md-list-item>
 
@@ -32,7 +32,7 @@
             :title="wallet.balanceTooltip ? $t(wallet.balanceTooltip) : ''"
           >
             <md-avatar class="md-avatar-icon">
-                <md-icon :md-src="wallet.balanceIcon"></md-icon>
+                <md-icon :md-src="wallet.balanceIcon" class="wallet-icon"></md-icon>
             </md-avatar>
             <div class="md-list-text-container">
                 <span>{{ $t('home.your_balance_' + wallet.system) }}</span>
@@ -42,7 +42,7 @@
 
           <md-list-item v-on:click="$router.push('/transfer/')" :title="$t('home.send_btn_tooltip')">
               <md-avatar class="md-avatar-icon">
-                <md-icon md-src="/static/img/Wallet/send.svg"></md-icon>
+                <md-icon md-src="/static/img/Wallet/send.svg" class="wallet-icon"></md-icon>
               </md-avatar>
               <div class="md-list-text-container">
                   <span>{{ $t('home.send_btn') }}</span>
@@ -52,7 +52,7 @@
           </md-list-item>
         <md-list-item v-if="showFreeTokenButton" :href="freeAdmAddress" target="_blank">
               <md-avatar class="md-avatar-icon">
-                <md-icon md-src="/static/img/Wallet/free-tokens.svg"></md-icon>
+                <md-icon md-src="/static/img/Wallet/free-tokens.svg" class="wallet-icon"></md-icon>
               </md-avatar>
 
               <div class="md-list-text-container">
@@ -64,7 +64,7 @@
           <md-list-item :href="$t('home.invest_btn_link')+'?wallet='+this.$store.state.address" target="_blank" :title="$t('home.invest_btn_tooltip')">
 
               <md-avatar class="md-avatar-icon">
-                <md-icon md-src="/static/img/Wallet/join-ico.svg"></md-icon>
+                <md-icon md-src="/static/img/Wallet/join-ico.svg" class="wallet-icon"></md-icon>
               </md-avatar>
 
               <div class="md-list-text-container">
@@ -169,5 +169,12 @@ export default {
   }
   .md-icon.custom-icon {
     vertical-align: top !important;
+  }
+  .wallet-icon {
+    width: 20px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    min-height: 20px !important;
+    font-size: 20px !important;
   }
 </style>
