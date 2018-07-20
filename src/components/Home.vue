@@ -169,5 +169,10 @@ export default {
   }
   .md-icon.custom-icon {
     vertical-align: top !important;
+    width: 20px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    min-height: 20px !important;
+    font-size: 20px !important;
   }
 </style>
