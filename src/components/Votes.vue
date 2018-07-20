@@ -3,10 +3,10 @@
     <md-layout class='chat_loads' v-show="!delegatesLoaded">
       <md-spinner :md-size="150" :md-stroke="1" md-indeterminate class="md-accent" style="margin: 0px -75px;position: fixed;left: 50%;"></md-spinner>
     </md-layout>
-    <div style="max-width:95%; margin:auto;" v-show="delegatesLoaded">
+    <div class="white-color-table" style="max-width:95%; margin:auto;" v-show="delegatesLoaded">
       <md-table-card class='votes-card' style="box-shadow:none">
-        <md-toolbar>
-          <md-layout md-gutter="16">
+        <md-toolbar class="custom-votes-toolbar">
+          <md-layout class="white-color-search-bar">
             <md-layout md-flex="100">
               <md-input-container>
                 <md-button class="md-icon-button">
@@ -415,10 +415,6 @@ export default {
   stroke: #4A4A4A;
 }
 
-.md-table {
-  padding-top: 35px;
-}
-
 .md-table-cell.delegate-details, .md-table-cell.delegate-details .md-table-cell-container {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
@@ -441,6 +437,27 @@ export default {
   .votes .md-column-xsmall .delegate-info-box {
     padding: 0 3px 10px 0;
   }
+}
+
+.white-color-table {
+  background-color: #FFFFFF;
+}
+
+.white-color-search-bar {
+  background-color: #FFF;
+  padding: 35px 0 0 0;
+  margin-top: -25px;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+.custom-votes-toolbar {
+  background: repeating-linear-gradient(140deg,#f6f6f6,#f6f6f6 1px,#fefefe 0,#fefefe 5px) !important;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+  padding-right: 0px !important;
+  padding-left: 0px !important;
+  position: relative !important;
 }
 
 </style>

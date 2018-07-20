@@ -239,7 +239,6 @@ export default {
   @media (max-width: 600px) {
     .chat_messages {
       margin-left: -8px!important;
-
     }
 
     .send_button, .attach_button {
@@ -250,12 +249,6 @@ export default {
     .md-flex-xsmall-offset-20
     {
       margin-left: 25%;
-    }
-    .md-flex-xsmall-offset-5 {
-      margin-left: 5%!important;
-    }
-    .md-flex-xsmall-offset-10 {
-      margin-left: 10%!important;
     }
     .md-toolbar .md-title
     {
@@ -268,37 +261,38 @@ export default {
   }
 
   .avatar-holder {
-    width: 45px;
-    height: 45px;
+    width: 38px;
+    height: 38px;
     position: absolute;
     top: 20px;
     right: 0;
     left:auto;
+    opacity: 0.8;
   }
 
   .md-own .avatar-holder{
     position: absolute;
     left:10px;
     right:auto;
-
-    top: 20px;
+    top: 12px;
   }
+
   .md-own.chat_message {
     padding-left:55px;
     padding-right: 10px;
+    border-left: 3px #ebebeb solid;
   }
   .avatar-holder:before {
-    content: 'assignment_ind';
+    content: 'account_circle';
     font-family: "Material Icons";
     text-rendering: optimizeLegibility;
-    font-size: 40px;
+    font-size: 30px;
     vertical-align: middle;
-    line-height: 40px;
+    line-height: 30px;
   }
   .chat_messages {
     overflow-y: auto;
     overflow-x: hidden;
-    max-height: 100%;
     max-height: calc(100vh - 180px);
     margin-top: 80px;
     padding-top: 10px;
@@ -341,5 +335,8 @@ export default {
   }
   .md-dialog-container.md-active .md-dialog {
     background: #fefefe;
+  }
+  .chat_message .dt {
+    right: 10px;
   }
 </style>
