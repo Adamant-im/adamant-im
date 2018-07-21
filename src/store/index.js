@@ -141,7 +141,8 @@ const store = {
         recipientId: partner,
         timestamp: utils.epochTime(),
         id: getters.getCurrentChatMessageCount,
-        confirm_class: 'sent'
+        confirm_class: 'sent',
+        direction: 'from'
       }
       Vue.set(chats[partner].messages, payload.id, payload)
       queue.add(() => {
@@ -167,7 +168,8 @@ const store = {
         recipientId: partner,
         message: messageText,
         transactionId: message.id,
-        timestamp: utils.epochTime()
+        timestamp: utils.epochTime(),
+        direction: 'from'
       }
 
       let chats = getters.getChats
@@ -183,7 +185,8 @@ const store = {
               message: payload.message,
               timestamp: payload.timestamp,
               id: response.transactionId,
-              confirm_class: 'sent'
+              confirm_class: 'sent',
+              direction: 'from'
             })
           }
         })
