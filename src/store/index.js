@@ -124,7 +124,7 @@ const store = {
       console.log(state.lastVisitedChat);
       console.log(state)     
       console.log('getter:');
-      console.log(this.$store.getters.lastVisitedChat)
+      console.log(store.getters.lastVisitedChat)
     },
     force_update (state) {
     },
