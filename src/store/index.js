@@ -119,8 +119,11 @@ const store = {
       console.log(state);      
       state.lastVisitedChat = payload;
       console.log('mutations-after-save:');
-      console.log(payload);
+      console.log('direct:');
+      console.log(state.lastVisitedChat);
       console.log(state)     
+      console.log('getter:');
+      console.log(this.$store.getters.lastVisitedChat)
     },
     force_update (state) {
     },
