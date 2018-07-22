@@ -118,7 +118,9 @@ const store = {
       console.log(payload);
       console.log(state);      
       state.lastVisitedChat = payload;
-      console.log('mutations-2')
+      console.log('mutations-after-save:');
+      console.log(payload);
+      console.log(state)     
     },
     force_update (state) {
     },
@@ -181,6 +183,7 @@ const store = {
       state.publicKey = false
       state.privateKey = false
       state.secretKey = false
+      console.log('nulled at logout')
       state.lastVisitedChat = null
     },
     stop_tracking_new (state) {
