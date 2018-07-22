@@ -44,9 +44,9 @@ import ChatEntry from './chat/ChatEntry.vue'
 
 const VueScrollTo = require('vue-scrollto')
 const scrollOptions = {
-    duration: 500,
+    duration: 1000,
     easing: "ease",
-    offset: -60,
+    offset: -20,
     cancelable: true,
     onStart: false,
     onDone: false,
@@ -109,7 +109,8 @@ export default {
   },
   mounted () {
     if (this.lastVisitedChat) {
-      VueScrollTo.scrollTo('#' + this.lastVisitedChat, 500, scrollOptions)
+      console.log(this.lastVisitedChat);
+      VueScrollTo.scrollTo('#' + this.lastVisitedChat, 1000, scrollOptions)
     }
   },
   watch: {
