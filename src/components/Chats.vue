@@ -42,7 +42,9 @@
 import NewChat from './NewChat.vue'
 import ChatEntry from './chat/ChatEntry.vue'
 
+console.log('set1');
 const VueScrollTo = require('vue-scrollto')
+console.log('set11');
 const scrollOptions = {
     duration: 1000,
     easing: "ease",
@@ -54,6 +56,8 @@ const scrollOptions = {
     x: false,
     y: true
 }
+console.log('set2');
+
 
 export default {
   name: 'chats',
@@ -104,10 +108,12 @@ export default {
       return this.$store.state.chats
     },
     lastVisitedChat: function () {
+      console.log('try get');
       return this.$store.getters.lastVisitedChat || null
     }
   },
   mounted () {
+    console.log('mounted');
     if (this.lastVisitedChat) {
       console.log(this.lastVisitedChat);
       if (document.getElementById(this.lastVisitedChat).offsetTop > 250) {
