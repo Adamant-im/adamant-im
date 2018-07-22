@@ -85,6 +85,15 @@ function changeMessageClass (messages, id, cssClass) {
   Vue.set(messages[id], 'confirm_class', cssClass)
 }
 
+function updateLastChatMessage (currentDialogs, payload, confirmClass, direction) {
+  currentDialogs.last_message = {
+    message: payload.message,
+    timestamp: payload.timestamp,
+    confirm_class: confirmClass,
+    direction
+  }
+}
+
 const store = {
   state: {
     address: '',
@@ -145,6 +154,13 @@ const store = {
         confirm_class: 'sent',
         direction: 'from'
       }
+
+      let currentDialogs = chats[partner]
+
+      if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
+        updateLastChatMessage(currentDialogs, payload, 'sent', 'from')
+      }
+
       Vue.set(chats[partner].messages, payload.id, payload)
       queue.add(() => {
         const params = {
@@ -401,23 +417,34 @@ const store = {
           last_message: {}
         }
       }
-      if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
-        currentDialogs.last_message = {
-          message: payload.message,
-          timestamp: payload.timestamp,
-          direction
-        }
+
+      let confirmClass = 'unconfirmed'
+      if (payload.height) {
+        confirmClass = 'confirmed'
       }
+
+      payload.confirm_class = confirmClass
+
+      if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
+        updateLastChatMessage(currentDialogs, payload, confirmClass, direction)
+      }
+
+      updateLastChatMessage(currentDialogs, payload, confirmClass, direction)
+
       payload.confirm_class = 'unconfirmed'
+
       if (payload.height && direction === 'from') {
         payload.confirm_class = 'confirmed'
       }
+
       if (payload.height && direction === 'to') {
         payload.confirm_class = ''
       }
+
       if (!payload && direction === 'from') {
         payload.confirm_class = 'rejected'
       }
+
       if (payload.height && payload.height > state.lastChatHeight) {
         state.lastChatHeight = payload.height
       }
