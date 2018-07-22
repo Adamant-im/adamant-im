@@ -43,7 +43,7 @@ import NewChat from './NewChat.vue'
 import ChatEntry from './chat/ChatEntry.vue'
 
 const VueScrollTo = require('vue-scrollto')
-VueScrollTo.setDefaults({
+const scrollOptions = {
     duration: 500,
     easing: "ease",
     offset: -60,
@@ -53,7 +53,7 @@ VueScrollTo.setDefaults({
     onCancel: false,
     x: false,
     y: true
-})
+}
 
 export default {
   name: 'chats',
@@ -111,7 +111,7 @@ export default {
     if (this.lastVisitedChat) {
       console.log(5 + 6);
       console.log(this.lastVisitedChat);
-      VueScrollTo.scrollTo('#' + this.lastVisitedChat, 500, {})
+      VueScrollTo.scrollTo('#' + this.lastVisitedChat, 500, scrollOptions)
     }
   },
   watch: {
