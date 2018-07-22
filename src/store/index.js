@@ -115,16 +115,7 @@ const store = {
   },
   mutations: {
     last_visited_chat (state, payload) {
-      console.log('mutations:');
-      console.log(payload);
-      console.log(state);      
-      state.lastVisitedChat = payload;
-      console.log('mutations-after-save:');
-      console.log('direct:');
-      console.log(state.lastVisitedChat);
-      console.log(state)     
-      console.log('getter:');
-      console.log(store.getters.lastVisitedChat)
+      state.lastVisitedChat = payload
     },
     force_update (state) {
     },
@@ -187,7 +178,6 @@ const store = {
       state.publicKey = false
       state.privateKey = false
       state.secretKey = false
-      console.log('nulled at logout')
       state.lastVisitedChat = null
     },
     stop_tracking_new (state) {
@@ -359,8 +349,6 @@ const store = {
       }
     },
     lastVisitedChat: state => {
-      console.log('lastVisitedChat getter:');
-      console.log(state.lastVisitedChat);
       return state.lastVisitedChat
     }
   },
