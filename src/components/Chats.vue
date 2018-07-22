@@ -110,7 +110,9 @@ export default {
   mounted () {
     if (this.lastVisitedChat) {
       console.log(this.lastVisitedChat);
-      VueScrollTo.scrollTo('#' + this.lastVisitedChat, 1000, scrollOptions)
+      if (document.getElementById(this.lastVisitedChat).offsetTop > 250) {
+        VueScrollTo.scrollTo('#' + this.lastVisitedChat, 1000, scrollOptions)
+        }
     }
   },
   watch: {
