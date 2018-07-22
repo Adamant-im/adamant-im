@@ -114,7 +114,11 @@ const store = {
   },
   mutations: {
     last_visited_chat (state, payload) {
-      state.lastVisitedChat = payload
+      console.log('mutations:');
+      console.log(payload);
+      console.log(state);      
+      state.lastVisitedChat = payload;
+      console.log('mutations-2')
     },
     force_update (state) {
     },
@@ -348,6 +352,8 @@ const store = {
       }
     },
     lastVisitedChat: state => {
+      console.log('lastVisitedChat getter:');
+      console.log(state.lastVisitedChat);
       return state.lastVisitedChat
     }
   },
