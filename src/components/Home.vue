@@ -138,6 +138,7 @@ export default {
     }
   },
   mounted () {
+    console.log('commited null');
     this.$store.commit('last_visited_chat', null)
   },
   data () {
