@@ -109,6 +109,7 @@ export default {
     },
     lastVisitedChat: function () {
       console.log('try get');
+      console.log(this.$store.getters.lastVisitedChat);
       return this.$store.getters.lastVisitedChat || null
     }
   },
