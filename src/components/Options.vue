@@ -120,7 +120,6 @@ export default {
     }
   },
   mounted () {
-    console.log('commited null - options');  
     this.$store.commit('last_visited_chat', null)
   },
   watch: {
