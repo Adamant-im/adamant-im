@@ -109,8 +109,6 @@ export default {
   },
   mounted () {
     if (this.lastVisitedChat) {
-      console.log(5 + 6);
-      console.log(this.lastVisitedChat);
       VueScrollTo.scrollTo('#' + this.lastVisitedChat, 500, scrollOptions)
     }
   },
