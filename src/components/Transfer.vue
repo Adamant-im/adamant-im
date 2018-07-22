@@ -179,6 +179,10 @@ export default {
         return this.$t('transfer.to_label') + ' ' + displayName
       }
 
+      if (this.fixedCrypto && this.fixedCrypto !== Cryptos.ADM) {
+        return this.$t('transfer.to_label') + ' ' + this.fixedAddress
+      }
+
       return this.$t('transfer.to_address_label')
     },
     confirmMessage () {
