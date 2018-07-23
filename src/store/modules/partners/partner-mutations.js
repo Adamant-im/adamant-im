@@ -23,7 +23,7 @@ export default {
    * @param {{partner: string, crypto: string, address: string}} payload partner ADM address, crypto and crypto address
    */
   address (state, payload) {
-    state.list[payload.partner] = Object.assign({ }, state[payload.partner],
+    state.list[payload.partner] = Object.assign({ }, state.list[payload.partner],
       { [payload.crypto]: payload.address })
   },
 
