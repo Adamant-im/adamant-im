@@ -41,7 +41,19 @@
 <script>
 import NewChat from './NewChat.vue'
 import ChatEntry from './chat/ChatEntry.vue'
+
 const VueScrollTo = require('vue-scrollto')
+const scrollOptions = {
+    duration: 1000,
+    easing: "ease",
+    offset: -20,
+    cancelable: true,
+    onStart: false,
+    onDone: false,
+    onCancel: false,
+    x: false,
+    y: true
+}
 
 export default {
   name: 'chats',
@@ -97,7 +109,9 @@ export default {
   },
   mounted () {
     if (this.lastVisitedChat) {
-      VueScrollTo.scrollTo('#' + this.lastVisitedChat, 12, {})
+      if (document.getElementById(this.lastVisitedChat).offsetTop > 250) {
+        VueScrollTo.scrollTo('#' + this.lastVisitedChat, 1000, scrollOptions)
+        }
     }
   },
   watch: {

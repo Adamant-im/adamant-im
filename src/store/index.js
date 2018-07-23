@@ -94,7 +94,8 @@ const store = {
     chats: {},
     lastChatHeight: 0,
     currentChat: false,
-    storeInLocalStorage: false
+    storeInLocalStorage: false,
+    lastVisitedChat: ''
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
