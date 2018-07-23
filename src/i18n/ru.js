@@ -119,7 +119,7 @@ export default {
     'error_transaction_send': 'Ошибка при отправке транзакции',
     'confirm_title': 'Подтверждение перевода',
     'confirm_message': 'Подтвердите перевод <b>{amount} {crypto}</b> на кошелек <span class="address-in-confirm">{target}</span>.',
-    'confirm_message_with_name': 'Подтвердите перевод <b>{amount} {crypto}</b> <span class="address-in-confirm">{target}</span>.',
+    'confirm_message_with_name': 'Подтвердите перевод <b>{amount} {crypto}</b> контакту <span class="address-in-confirm">{target}</span>.',
     'confirm_approve': 'Подтвердить',
     'confirm_cancel': 'Отмена',
     'no_address_title': 'У получателя пока еще нет {crypto}-кошелька',
