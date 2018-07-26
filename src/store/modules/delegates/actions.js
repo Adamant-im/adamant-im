@@ -54,7 +54,7 @@ export default {
         const votes = response.delegates.map(vote => vote.address)
         admApi.getDelegatesCount().then(response => {
           if (response.success) {
-            for (let i = 0; i < response.count % constants.Delegates.ACTIVE_DELEGATES; i++) {
+            for (let i = 0; i < response.count / constants.Delegates.ACTIVE_DELEGATES; i++) {
               _getDelegates(context, constants.Delegates.ACTIVE_DELEGATES, i * constants.Delegates.ACTIVE_DELEGATES, votes)
             }
           }
