@@ -108,9 +108,11 @@ export default {
     }
   },
   mounted () {
-    if (this.lastVisitedChat) {
-      if (document.getElementById(this.lastVisitedChat).offsetTop > 250) {
-        VueScrollTo.scrollTo('#' + this.lastVisitedChat, 1000, scrollOptions)
+    let lastVisitedChat = String(this.lastVisitedChat)
+    lastVisitedChat = lastVisitedChat.replace(' ', '-')
+    if (lastVisitedChat) {
+      if (document.getElementById(lastVisitedChat).offsetTop > 250) {
+        VueScrollTo.scrollTo('#' + lastVisitedChat, 1000, scrollOptions)
       }
     }
   },
