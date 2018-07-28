@@ -11,7 +11,7 @@ import admModule from './modules/adm'
 import delegatesModule from './modules/delegates'
 
 import * as admApi from '../lib/adamant-api'
-import {base64regex} from '../lib/constants'
+import {base64regex, WelcomeMessage} from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 
@@ -323,8 +323,8 @@ const store = {
     },
     mock_messages (state) {
       const newAccount = store.state.is_new_account
-      createMockMessage(state, newAccount, 'ADAMANT ICO', 'ico_message')
-      createMockMessage(state, newAccount, 'ADAMANT Bounty', 'welcome_message')
+      createMockMessage(state, newAccount, WelcomeMessage.ADAMANT_ICO, 'ico_message')
+      createMockMessage(state, newAccount, WelcomeMessage.ADAMANT_BOUNTY, 'welcome_message')
     },
     create_chat (state, payload) {
       var partner = payload
