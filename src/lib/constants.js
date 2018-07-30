@@ -44,3 +44,8 @@ export const Symbols = {
 export const Delegates = {
   ACTIVE_DELEGATES: 101
 }
+
+export const WelcomeMessage = {
+  ADAMANT_BOUNTY: 'ADAMANT Bounty',
+  ADAMANT_ICO: 'ADAMANT Tokens'
+}
