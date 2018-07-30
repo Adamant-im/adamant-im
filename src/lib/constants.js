@@ -47,5 +47,5 @@ export const Delegates = {
 
 export const WelcomeMessage = {
   ADAMANT_BOUNTY: 'ADAMANT Bounty',
-  ADAMANT_ICO: 'ADAMANT ICO'
+  ADAMANT_ICO: 'ADAMANT Tokens'
 }
