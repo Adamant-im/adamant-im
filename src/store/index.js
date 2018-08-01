@@ -85,6 +85,16 @@ function changeMessageClass (messages, id, cssClass) {
   Vue.set(messages[id], 'confirm_class', cssClass)
 }
 
+function updateLastChatMessage (currentDialogs, payload, confirmClass, direction, id) {
+  currentDialogs.last_message = {
+    id: id,
+    message: payload.message,
+    timestamp: payload.timestamp,
+    confirm_class: confirmClass,
+    direction
+  }
+}
+
 const store = {
   state: {
     address: '',
@@ -145,6 +155,13 @@ const store = {
         confirm_class: 'sent',
         direction: 'from'
       }
+
+      let currentDialogs = chats[partner]
+
+      if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
+        updateLastChatMessage(currentDialogs, payload, 'sent', 'from', payload.id)
+      }
+
       Vue.set(chats[partner].messages, payload.id, payload)
       queue.add(() => {
         const params = {
@@ -154,8 +171,10 @@ const store = {
         return admApi.sendMessage(params).then(response => {
           if (response.success) {
             replaceMessageAndDelete(chats[partner].messages, response.transactionId, payload.id, 'sent')
+            updateLastChatMessage(currentDialogs, payload, 'sent', 'from', response.transactionId)
           } else {
             changeMessageClass(chats[partner].messages, payload.id, 'rejected')
+            updateLastChatMessage(currentDialogs, payload, 'rejected', 'from', payload.id)
           }
         })
       })
@@ -190,6 +209,7 @@ const store = {
               direction: 'from'
             })
           }
+          updateLastChatMessage(currentChat, payload, 'sent', 'from')
         })
       })
     }
@@ -401,23 +421,35 @@ const store = {
           last_message: {}
         }
       }
-      if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
-        currentDialogs.last_message = {
-          message: payload.message,
-          timestamp: payload.timestamp,
-          direction
-        }
+
+      let confirmClass = 'unconfirmed'
+      if (payload.height) {
+        confirmClass = 'confirmed'
       }
+
+      payload.confirm_class = confirmClass
+
+      if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
+        updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.id)
+      }
+      if (currentDialogs.last_message.id === payload.id) {
+        updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.id)
+      }
+
       payload.confirm_class = 'unconfirmed'
+
       if (payload.height && direction === 'from') {
         payload.confirm_class = 'confirmed'
       }
+
       if (payload.height && direction === 'to') {
         payload.confirm_class = ''
       }
+
       if (!payload && direction === 'from') {
         payload.confirm_class = 'rejected'
       }
+
       if (payload.height && payload.height > state.lastChatHeight) {
         state.lastChatHeight = payload.height
       }

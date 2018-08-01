@@ -28,7 +28,10 @@
                 </md-avatar>
                 <div class="md-list-text-container">
                     <div class="chat_entry_title">{{ chatName(chat.partner) }}</div>
-                    <chat-entry :message="chat.last_message" :brief="true"></chat-entry>
+                    <div class="chat-entry-wrapper">
+                      <div class="message-status-block" :message-status="chat.last_message.confirm_class" v-if="chat.last_message.direction === 'from'"></div>
+                      <chat-entry :message="chat.last_message" :brief="true"></chat-entry>
+                    </div>
                     <span class="dt" v-if="chat.last_message.timestamp">{{ $formatDate(chat.last_message.timestamp) }}</span>
                 </div>
             </md-list-item>
@@ -213,4 +216,62 @@ export default {
     .md-list-text-container .dt {
       right: 10px !important;
     }
+    .chat-entry-wrapper {
+      flex-direction: row;
+      display: flex;
+    }
+    .message-status-block {
+      margin-right: 10px;
+    }
+    [message-status=confirmed]:before {
+      content: 'done';
+      font-family: "Material Icons";
+      text-rendering: optimizeLegibility;
+      position: absolute;
+      bottom: 14px;
+      left: 64px;
+      font-size: 8px;
+    }
+
+    [message-status=unconfirmed]:before {
+      content: 'query_builder';
+      font-family: "Material Icons";
+      text-rendering: optimizeLegibility;
+      position: absolute;
+      bottom: 14px;
+      left: 64px;
+      font-size: 8px;
+    }
+
+    [message-status=sent]:before {
+      content: 'watch_later';
+      font-family: "Material Icons";
+      text-rendering: optimizeLegibility;
+      position: absolute;
+      bottom: 12px;
+      left: 64px;
+      font-size: 8px;
+    }
+
+    [message-status=error]:before {
+      content: 'error';
+      font-family: "Material Icons";
+      text-rendering: optimizeLegibility;
+      position: absolute;
+      bottom: 14px;
+      left: 64px;
+      font-size: 8px;
+    }
+
+    [message-status=rejected]:before {
+      content: 'cancel';
+      font-family: "Material Icons";
+      text-rendering: optimizeLegibility;
+      position: absolute;
+      bottom: 14px;
+      left: 64px;
+      color: red;
+      font-size: 8px;
+    }
+
 </style>
