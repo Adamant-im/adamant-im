@@ -114,8 +114,11 @@ export default {
     let lastVisitedChat = String(this.lastVisitedChat)
     lastVisitedChat = lastVisitedChat.replace(' ', '-')
     if (lastVisitedChat) {
-      if (document.getElementById(lastVisitedChat).offsetTop > 250) {
-        VueScrollTo.scrollTo('#' + lastVisitedChat, 1000, scrollOptions)
+      let lastVisitedChatElement = document.getElementById(lastVisitedChat)
+      if (lastVisitedChatElement) {
+        if (lastVisitedChatElement.offsetTop > 250) {
+          VueScrollTo.scrollTo('#' + lastVisitedChat, 1000, scrollOptions)
+        }
       }
     }
   },
