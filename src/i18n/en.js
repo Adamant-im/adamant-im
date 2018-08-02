@@ -71,7 +71,7 @@ export default {
     'send_eth': 'Send ETH',
     'attach_image': 'Attach image',
     'attach_file': 'Attach file',
-    'retry_message': 'Message was not delivered. Weak connection. Tap to retry.'
+    'retry_message': 'Message was not sent, weak connection. Tap to retry.'
   },
   'home': {
     'copied': 'Copied',
