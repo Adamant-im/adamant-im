@@ -18,7 +18,7 @@
             </md-layout>
           </md-layout>
         </md-layout>
-        <md-snackbar md-position="bottom center" md-accent ref="chatSnackbar" md-duration="2000">
+        <md-snackbar v-if="isLogged" md-position="bottom center" md-accent ref="chatSnackbar" md-duration="2000">
           <span>{{ formErrorMessage }}</span>
         </md-snackbar>
       </md-dialog-content>
@@ -83,15 +83,16 @@ export default {
       this.$refs['new_chat_dialog'].open()
     }
   },
-  computed: {
+  mounted () {
+    this.isLogged = this.$store.getters.isLogged
   },
-  watch: { },
   data () {
     return {
       formErrorMessage: '',
       targetAddress: '',
       targetLabel: '',
-      showModal: false
+      showModal: false,
+      isLogged: false
     }
   }
 }

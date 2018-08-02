@@ -479,6 +479,9 @@ const store = {
     },
     getCurrentChat: state => {
       return state.currentChat
+    },
+    isLogged: state => {
+      return state.passPhrase.length > 0
     }
   },
   modules: {
