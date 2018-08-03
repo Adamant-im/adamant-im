@@ -20,7 +20,7 @@
         </div>
         <div v-if="!readOnly" class="dt">{{ $formatDate(timestamp) }}</div>
         <div v-if='retryMessageFlag'>
-          <div v-on:click='retryMessage'>{{getRetryMessage}}</div>
+          <div class="retryMessage" v-on:click='retryMessage'>{{getRetryMessage}}</div>
         </div>
       </div>
     </md-layout>
@@ -209,5 +209,12 @@ export default {
 
   .right-align-block {
     justify-content: flex-end;
+  }
+
+  .retryMessage {
+    font-size: 10px;
+    font-style: italic;
+    color: red;
+    cursor: pointer;
   }
 </style>
