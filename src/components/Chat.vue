@@ -1,7 +1,7 @@
 <template>
   <!--TODO: Move all non-static content to @/assets/-->
   <div class="chat">
-      <md-layout md-align="start" md-gutter="16" class="chat_messages">
+      <md-layout v-chat-scroll md-align="start" md-gutter="16" class="chat_messages">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
             <chat-entry :readOnly="readOnly" :message="message"></chat-entry>
           </md-layout>
@@ -60,6 +60,10 @@
 <script>
 import ChatEntry from './chat/ChatEntry.vue'
 import { Cryptos } from '../lib/constants'
+import Vue from 'vue'
+import VueChatScroll from 'vue-chat-scroll'
+
+Vue.use(VueChatScroll)
 
 export default {
   name: 'chats',
