@@ -1,5 +1,5 @@
 <template>
-  <div class="new_chat">
+  <div class="new_chat" v-if="isLogged">
     <md-dialog :md-open-from="openFrom" :md-close-to="closeTo" ref="new_chat_dialog">
       <md-dialog-content>
         <md-layout md-align="center" md-gutter="16" class="new-chat">
@@ -18,7 +18,7 @@
             </md-layout>
           </md-layout>
         </md-layout>
-        <md-snackbar v-if="isLogged" md-position="bottom center" md-accent ref="chatSnackbar" md-duration="2000">
+        <md-snackbar md-position="bottom center" md-accent ref="chatSnackbar" md-duration="2000">
           <span>{{ formErrorMessage }}</span>
         </md-snackbar>
       </md-dialog-content>

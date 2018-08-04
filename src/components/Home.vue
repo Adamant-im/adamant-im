@@ -1,6 +1,6 @@
 <template>
   <!--TODO: absolute paths must be relative again-->
-  <div class="home">
+  <div class="home" v-if="isLogged">
       <md-layout md-align="center" md-gutter="16">
       <md-list class="md-double-line">
           <md-list-item
@@ -11,7 +11,7 @@
             @success="copySuccess"
             :title="addr.tooltip ? $t(addr.tooltip) : ''"
           >
-              <md-avatar v-if="isLogged" class="md-avatar-icon">
+              <md-avatar class="md-avatar-icon">
                 <md-icon :md-src="addr.addressIcon"></md-icon>
               </md-avatar>
 
@@ -31,7 +31,7 @@
             v-on:click="goToTransactions(wallet.system)"
             :title="wallet.balanceTooltip ? $t(wallet.balanceTooltip) : ''"
           >
-            <md-avatar v-if="isLogged" class="md-avatar-icon">
+            <md-avatar class="md-avatar-icon">
                 <md-icon :md-src="wallet.balanceIcon"></md-icon>
             </md-avatar>
             <div class="md-list-text-container">
@@ -41,7 +41,7 @@
           </md-list-item>
 
           <md-list-item v-on:click="$router.push('/transfer/')" :title="$t('home.send_btn_tooltip')">
-              <md-avatar v-if="isLogged" class="md-avatar-icon">
+              <md-avatar class="md-avatar-icon">
                 <md-icon md-src="/static/img/Wallet/send.svg"></md-icon>
               </md-avatar>
               <div class="md-list-text-container">
@@ -51,7 +51,7 @@
 
           </md-list-item>
         <md-list-item v-if="showFreeTokenButton" :href="freeAdmAddress" target="_blank">
-              <md-avatar v-if="isLogged" class="md-avatar-icon">
+              <md-avatar class="md-avatar-icon">
                 <md-icon md-src="/static/img/Wallet/free-tokens.svg"></md-icon>
               </md-avatar>
 
@@ -63,7 +63,7 @@
 
           <md-list-item :href="$t('home.invest_btn_link')+'?wallet='+this.$store.state.address" target="_blank" :title="$t('home.invest_btn_tooltip')">
 
-              <md-avatar v-if="isLogged" class="md-avatar-icon">
+              <md-avatar class="md-avatar-icon">
                 <md-icon md-src="/static/img/Wallet/join-ico.svg"></md-icon>
               </md-avatar>
 
@@ -74,7 +74,7 @@
           </md-list-item>
       </md-list>
       </md-layout>
-      <md-snackbar v-if="isLogged" md-position="bottom center" md-accent ref="homeSnackbar" md-duration="2000">
+      <md-snackbar md-position="bottom center" md-accent ref="homeSnackbar" md-duration="2000">
           <span>{{ $t('home.copied') }}</span>
       </md-snackbar>
   </div>
