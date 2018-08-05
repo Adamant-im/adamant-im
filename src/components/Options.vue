@@ -37,7 +37,11 @@
                   <md-table-body>
                       <md-table-row>
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
-                          <md-table-cell colspan="2"  style="text-align:left;"><md-checkbox  v-model="storeInLS" :title="$t('options.exit_on_close_tooltip')">{{ $t('options.exit_on_close') }}</md-checkbox></md-table-cell>
+                          <md-table-cell colspan="2"  style="text-align:left;">
+                            <md-checkbox v-model="storeInLS" :title="$t('options.exit_on_close_tooltip')">
+                              {{ $t('options.exit_on_close') }}
+                            </md-checkbox>
+                          </md-table-cell>
                       </md-table-row>
                   </md-table-body>
               </md-table>
@@ -128,7 +132,7 @@ export default {
       this.$store.commit('change_send_on_enter', to)
     },
     'storeInLS' (to, from) {
-      // TODO undcomment
+      // TODO uncomment
       // if (this.$store.getters.isStoreInLocalStorage) {
       this.$refs['set_user_password'].open()
       // }

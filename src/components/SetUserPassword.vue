@@ -5,7 +5,7 @@
         <h3>{{$t('login_via_password.popup_title')}}</h3>
         <md-layout md-flex="66" sm-flex="90">
           <md-input-container>
-            <md-input :placeholder="$t('login_via_password.popup_hint')"></md-input>
+            <md-input v-model="userPasswordValue" :placeholder="$t('login_via_password.popup_hint')"></md-input>
           </md-input-container>
         </md-layout>
         <md-checkbox v-model="userPasswordCheckbox">
@@ -13,8 +13,8 @@
         </md-checkbox>
         <md-layout md-flex="66" sm-flex="90">
           <md-layout md-align="center" md-gutter="16">
-            <md-button class="md-flat md-primary">{{ $t('transfer.confirm_cancel') }}</md-button>
-            <md-button disabled class="md-flat md-primary">{{ $t('login_via_password.popup_confirm_text') }}</md-button>
+            <md-button v-on:click="close" class="md-flat md-primary">{{ $t('transfer.confirm_cancel') }}</md-button>
+            <md-button :disabled="disableSetPassword" class="md-flat md-primary">{{ $t('login_via_password.popup_confirm_text') }}</md-button>
           </md-layout>
         </md-layout>
       </md-dialog-content>
@@ -29,11 +29,20 @@ export default {
   methods: {
     open () {
       this.$refs['set_user_password'].open()
+    },
+    close () {
+      this.$refs['set_user_password'].close()
     }
+  },
+  updated () {
+    const userPasswordValue = this.userPasswordValue
+    this.disableSetPassword = !userPasswordValue || userPasswordValue.length < 1 || !this.userPasswordCheckbox
   },
   data () {
     return {
-      userPasswordCheckbox: null
+      userPasswordCheckbox: false,
+      disableSetPassword: true,
+      userPasswordValue: null
     }
   }
 }
