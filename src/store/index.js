@@ -498,6 +498,9 @@ const store = {
     getCurrentChat: state => {
       return state.currentChat
     },
+    isStoreInLocalStorage: state => {
+      return state.storeInLocalStorage
+    },
     isLogged: state => {
       return state.passPhrase.length > 0
     }
