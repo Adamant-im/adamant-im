@@ -167,5 +167,11 @@ export default {
     'new-chat': {
       'modal_header': 'Отсканируйте QR-код с ADM-адресом'
     }
+  },
+  'login_via_password': {
+    'popup_title': 'Задайте пароль',
+    'popup_hint': 'Рекомендуем 8+ символов...',
+    'popup_confirm_text': 'Установить',
+    'agreement': 'Я прочитал информацию о пользовательском пароле.'
   }
 }

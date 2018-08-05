@@ -503,6 +503,7 @@ const store = {
     },
     isLogged: state => {
       return state.passPhrase.length > 0
+      return !state.storeInLocalStorage
     }
   },
   modules: {

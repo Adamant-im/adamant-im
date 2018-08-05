@@ -104,16 +104,17 @@
             </div>
           </md-card-content>
       </md-card>
-
-    <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
-      </div>
-
+      <setUserPassword openFrom="#setUserPassword" closeTo="#setUserPassword" ref="set_user_password"></setUserPassword>
+      <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
+    </div>
   </div>
 </template>
 
 <script>
+import setUserPassword from './SetUserPassword.vue'
 export default {
   name: 'settings',
+  components: {setUserPassword},
   computed: {
     languageList: function () {
       return require('../i18n').default
@@ -127,6 +128,10 @@ export default {
       this.$store.commit('change_send_on_enter', to)
     },
     'storeInLS' (to, from) {
+      // TODO undcomment
+      // if (this.$store.getters.isStoreInLocalStorage) {
+      this.$refs['set_user_password'].open()
+      // }
       this.$store.commit('change_storage_method', !to)
     },
     'notifySound' (to, from) {
@@ -151,7 +156,8 @@ export default {
       sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
-      language: this.$i18n.locale
+      language: this.$i18n.locale,
+      userPassword: ''
     }
   }
 }
