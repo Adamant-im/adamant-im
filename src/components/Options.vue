@@ -121,12 +121,11 @@ export default {
   methods: {
     storeInLocalStorage (e) {
       e.preventDefault()
-      const keepDataInLocalStorage = this.$store.state.storeInLocalStorage
+      const keepDataInLocalStorage = !this.$store.state.storeInLocalStorage
       if (keepDataInLocalStorage) {
         this.$refs['set_user_password'].open()
       } else {
-        this.$store.commit('change_storage_method', !keepDataInLocalStorage)
-        this.storeInLS = !this.storeInLS
+        this.$store.commit('change_storage_method', keepDataInLocalStorage)
       }
     }
   },
@@ -135,7 +134,7 @@ export default {
       return require('../i18n').default
     },
     loadStoreInLocalStorage: function () {
-      return this.$store.state.storeInLocalStorage
+      return !this.$store.state.storeInLocalStorage
     }
   },
   mounted () {
