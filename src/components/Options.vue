@@ -38,9 +38,8 @@
                       <md-table-row>
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
                           <md-table-cell colspan="2"  style="text-align:left;">
-                            <md-checkbox v-model="storeInLS" :title="$t('options.exit_on_close_tooltip')">
-                              {{ $t('options.exit_on_close') }}
-                            </md-checkbox>
+                            <input type="checkbox" v-on:click="storeInLocalStorage" value="" v-model="loadStoreInLocalStorage"/>
+                            {{ $t('options.exit_on_close') }}
                           </md-table-cell>
                       </md-table-row>
                   </md-table-body>
@@ -119,9 +118,24 @@ import setUserPassword from './SetUserPassword.vue'
 export default {
   name: 'settings',
   components: {setUserPassword},
+  methods: {
+    storeInLocalStorage (e) {
+      e.preventDefault()
+      const keepDataInLocalStorage = this.$store.state.storeInLocalStorage
+      if (keepDataInLocalStorage) {
+        this.$refs['set_user_password'].open()
+      } else {
+        this.$store.commit('change_storage_method', !keepDataInLocalStorage)
+        this.storeInLS = !this.storeInLS
+      }
+    }
+  },
   computed: {
     languageList: function () {
       return require('../i18n').default
+    },
+    loadStoreInLocalStorage: function () {
+      return this.$store.state.storeInLocalStorage
     }
   },
   mounted () {
@@ -130,13 +144,6 @@ export default {
   watch: {
     'sendOnEnter' (to, from) {
       this.$store.commit('change_send_on_enter', to)
-    },
-    'storeInLS' (to, from) {
-      // TODO uncomment
-      // if (this.$store.getters.isStoreInLocalStorage) {
-      this.$refs['set_user_password'].open()
-      // }
-      this.$store.commit('change_storage_method', !to)
     },
     'notifySound' (to, from) {
       this.$store.commit('change_notify_sound', to)

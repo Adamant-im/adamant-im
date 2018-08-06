@@ -255,6 +255,9 @@ const store = {
     change_storage_method (state, payload) {
       state.storeInLocalStorage = payload
     },
+    save_user_password (state, payload) {
+      sessionStorage.setItem('userPassword', Base64.encode(payload))
+    },
     save_passphrase (state, payload) {
       state.passPhrase = Base64.encode(payload.passPhrase)
     },

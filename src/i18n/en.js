@@ -174,6 +174,7 @@ export default {
     'popup_title': 'Set password',
     'popup_hint': '8+ symbols recommended...',
     'popup_confirm_text': 'Set',
-    'agreement': 'I have read information about user password.'
+    'agreement_hint': 'I have read information about user password.',
+    'agreement': 'Agreement'
   }
 }

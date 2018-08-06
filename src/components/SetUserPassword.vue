@@ -8,13 +8,12 @@
             <md-input v-model="userPasswordValue" :placeholder="$t('login_via_password.popup_hint')"></md-input>
           </md-input-container>
         </md-layout>
-        <md-checkbox v-model="userPasswordCheckbox">
-          {{$t('login_via_password.agreement')}}
-        </md-checkbox>
+        <input type="checkbox" value="" v-model="userPasswordCheckbox"/>
+        {{$t('login_via_password.agreement_hint')}} <a target="_blank" v-bind:href="userPasswordAgreementLink">{{$t('login_via_password.agreement')}}</a>
         <md-layout md-flex="66" sm-flex="90">
           <md-layout md-align="center" md-gutter="16">
             <md-button v-on:click="close" class="md-flat md-primary">{{ $t('transfer.confirm_cancel') }}</md-button>
-            <md-button :disabled="disableSetPassword" class="md-flat md-primary">{{ $t('login_via_password.popup_confirm_text') }}</md-button>
+            <md-button :disabled="disableSetPassword" v-on:click="setPassword" class="md-flat md-primary">{{ $t('login_via_password.popup_confirm_text') }}</md-button>
           </md-layout>
         </md-layout>
       </md-dialog-content>
@@ -23,6 +22,8 @@
 </template>
 
 <script>
+import {UserPasswordAgreementLink} from '../lib/constants'
+
 export default {
   name: 'setUserPassword',
   props: ['openFrom', 'closeTo'],
@@ -32,6 +33,11 @@ export default {
     },
     close () {
       this.$refs['set_user_password'].close()
+    },
+    setPassword () {
+      this.$store.commit('change_storage_method', false)
+      this.$store.commit('save_user_password', this.userPasswordValue)
+      this.close()
     }
   },
   updated () {
@@ -42,7 +48,8 @@ export default {
     return {
       userPasswordCheckbox: false,
       disableSetPassword: true,
-      userPasswordValue: null
+      userPasswordValue: null,
+      userPasswordAgreementLink: UserPasswordAgreementLink
     }
   }
 }
