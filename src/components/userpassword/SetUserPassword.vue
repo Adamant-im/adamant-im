@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import {UserPasswordAgreementLink} from '../lib/constants'
+import {UserPasswordAgreementLink} from '../../lib/constants'
 
 export default {
   name: 'setUserPassword',
@@ -37,6 +37,11 @@ export default {
     setPassword () {
       this.$store.commit('change_storage_method', true)
       this.$store.commit('save_user_password', this.userPasswordValue)
+      this.userPasswordValue = null
+      this.userPasswordCheckbox = false
+      const storedData = localStorage.getItem('adm-persist')
+      // TODO encrypt data with some algorithm
+      localStorage.setItem('storedData', storedData)
       this.close()
     }
   },

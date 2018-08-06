@@ -175,6 +175,11 @@ export default {
     'popup_hint': '8+ symbols recommended...',
     'popup_confirm_text': 'Set',
     'agreement_hint': 'I have read information about user password.',
-    'agreement': 'Agreement'
+    'agreement': 'Agreement',
+    'enter_password': 'Enter password',
+    'user_password_hint': 'User password...',
+    'user_password_forget': 'Forget',
+    'user_password_unlock': 'Unlock',
+    'login_via_password': 'Login via password'
   }
 }

@@ -114,7 +114,7 @@
 </template>
 
 <script>
-import setUserPassword from './SetUserPassword.vue'
+import setUserPassword from './userpassword/SetUserPassword.vue'
 export default {
   name: 'settings',
   components: {setUserPassword},
@@ -126,6 +126,7 @@ export default {
         this.$refs['set_user_password'].open()
       } else {
         this.$store.commit('change_storage_method', keepDataInLocalStorage)
+        localStorage.removeItem('storedData')
       }
     }
   },

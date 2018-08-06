@@ -83,6 +83,10 @@
           <span>{{ $t('home.copied') }}</span>
       </md-snackbar>
     <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
+    <LoginWithUserPassword openFrom="#LoginWithUserPassword" closeTo="#LoginWithUserPassword" ref="login_with_user_password"></LoginWithUserPassword>
+    <md-layout md-align="center" md-gutter="16">
+      <md-button class="md-raised md-short" v-on:click="loginViaPassword">{{$t('login_via_password.login_via_password')}}</md-button>
+    </md-layout>
     <Spinner v-if="showSpinnerFlag"></Spinner>
   </div>
 </template>
@@ -93,15 +97,20 @@ import FileSaver from 'file-saver'
 import Icon from '@/components/Icon'
 import QRScan from '@/components/QRScan'
 import Spinner from '../components/Spinner'
+import LoginWithUserPassword from './userpassword/LoginWithUserPassword.vue'
 
 export default {
   name: 'login',
   components: {
     Icon,
     QRScan,
-    Spinner
+    Spinner,
+    LoginWithUserPassword
   },
   methods: {
+    loginViaPassword: function () {
+      this.$refs['login_with_user_password'].open()
+    },
     showSpinner: function () {
       this.showSpinnerFlag = true
     },
@@ -196,6 +205,12 @@ export default {
     if (this.$store.getters.getPassPhrase) {
       this.$store.commit('leave_chat')
       this.$root._router.push('/chats/')
+    }
+    if (localStorage.getItem('adm-persist') && localStorage.getItem('adm-persist').length > 0) {
+      let that = this
+      setTimeout(function () {
+        that.loginViaPassword()
+      }, 12)
     }
   },
   computed: {

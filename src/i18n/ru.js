@@ -173,6 +173,11 @@ export default {
     'popup_hint': 'Рекомендуем 8+ символов...',
     'popup_confirm_text': 'Установить',
     'agreement_hint': 'Я прочитал информацию о пользовательском пароле.',
-    'agreement': 'Соглашение'
+    'agreement': 'Соглашение',
+    'enter_password': 'Введите пароль',
+    'user_password_hint': 'Пароль...',
+    'user_password_forget': 'Забыть',
+    'user_password_unlock': 'Разблокировать',
+    'login_via_password': 'Войти с помощью пароля'
   }
 }
