@@ -155,14 +155,15 @@ const store = {
         confirm_class: 'sent',
         direction: 'from'
       }
-
       let currentDialogs = chats[partner]
 
       if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
         updateLastChatMessage(currentDialogs, payload, 'sent', 'from', payload.id)
       }
 
-      Vue.set(chats[partner].messages, payload.id, payload)
+      let internalPayload = Object.assign({}, payload)
+      internalPayload.message = internalPayload.message.replace(/\n/g, '<br>')
+      Vue.set(chats[partner].messages, payload.id, internalPayload)
       queue.add(() => {
         const params = {
           to: partner,
