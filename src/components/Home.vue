@@ -1,6 +1,6 @@
 <template>
   <!--TODO: absolute paths must be relative again-->
-  <div class="home">
+  <div class="home" v-if="isLogged">
       <md-layout md-align="center" md-gutter="16">
       <md-list class="md-double-line">
           <md-list-item
@@ -139,12 +139,14 @@ export default {
   },
   mounted () {
     this.$store.commit('last_visited_chat', null)
+    this.isLogged = this.$store.getters.isLogged
   },
   data () {
     return {
       passPhrase: '',
       language: 'en',
-      showCreate: false
+      showCreate: false,
+      isLogged: false
     }
   }
 }

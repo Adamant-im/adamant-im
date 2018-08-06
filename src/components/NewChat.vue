@@ -1,5 +1,5 @@
 <template>
-  <div class="new_chat">
+  <div class="new_chat" v-if="isLogged">
     <md-dialog :md-open-from="openFrom" :md-close-to="closeTo" ref="new_chat_dialog">
       <md-dialog-content>
         <md-layout md-align="center" md-gutter="16" class="new-chat">
@@ -83,15 +83,16 @@ export default {
       this.$refs['new_chat_dialog'].open()
     }
   },
-  computed: {
+  mounted () {
+    this.isLogged = this.$store.getters.isLogged
   },
-  watch: { },
   data () {
     return {
       formErrorMessage: '',
       targetAddress: '',
       targetLabel: '',
-      showModal: false
+      showModal: false,
+      isLogged: false
     }
   }
 }
