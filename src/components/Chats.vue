@@ -222,6 +222,7 @@ export default {
     .chat-entry-wrapper {
       flex-direction: row;
       display: flex;
+      min-height: 25px;
     }
     .message-status-block {
       margin-right: 10px;
