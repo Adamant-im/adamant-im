@@ -258,17 +258,6 @@ function install (Vue) {
     })
   }
 
-  Vue.prototype.isLastScroll = function () {
-    var element = document.getElementsByClassName('chat_messages')[0]
-    if (!element) {
-      return false
-    }
-    var scrollDiff = element.scrollHeight - element.scrollTop - element.clientHeight
-    if (scrollDiff > 5 || scrollDiff < -5) {
-      return false
-    }
-    return true
-  }
   Vue.prototype.needToScroll = function () {
     var element = document.getElementsByClassName('chat_messages')[0]
     if (!element) {
@@ -358,7 +347,6 @@ function install (Vue) {
       queryString += '&offset=' + offset
     }
     queryString += '&orderBy=timestamp:desc'
-    var last = this.isLastScroll()
     this.$http.get(queryString).then(response => {
       var haveSubseqs = false
       if (response.body.success) {
@@ -381,13 +369,6 @@ function install (Vue) {
           newOffset = newOffset + 100
           haveSubseqs = true
           this.loadChats(initialCall, newOffset)
-        }
-        if (last || this.isLastScroll()) {
-          setTimeout((function (self) {
-            return function () {
-              self.needToScroll()
-            }
-          })(this), 1000)
         }
         this.$store.commit('ajax_end')
       } else {
