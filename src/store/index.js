@@ -156,13 +156,11 @@ const store = {
         direction: 'from'
       }
       let currentDialogs = chats[partner]
-
-      if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
-        updateLastChatMessage(currentDialogs, payload, 'sent', 'from', payload.id)
-      }
-
       let internalPayload = Object.assign({}, payload)
       internalPayload.message = internalPayload.message.replace(/\n/g, '<br>')
+      if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
+        updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', payload.id)
+      }
       Vue.set(chats[partner].messages, payload.id, internalPayload)
       queue.add(() => {
         const params = {
@@ -172,10 +170,10 @@ const store = {
         return admApi.sendMessage(params).then(response => {
           if (response.success) {
             replaceMessageAndDelete(chats[partner].messages, response.transactionId, payload.id, 'sent')
-            updateLastChatMessage(currentDialogs, payload, 'sent', 'from', response.transactionId)
+            updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', response.transactionId)
           } else {
             changeMessageClass(chats[partner].messages, payload.id, 'rejected')
-            updateLastChatMessage(currentDialogs, payload, 'rejected', 'from', payload.id)
+            updateLastChatMessage(currentDialogs, internalPayload, 'rejected', 'from', payload.id)
           }
         })
       })

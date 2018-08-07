@@ -251,7 +251,7 @@ export default {
       font-family: "Material Icons";
       text-rendering: optimizeLegibility;
       position: absolute;
-      bottom: 12px;
+      bottom: 14px;
       left: 64px;
       font-size: 8px;
     }
