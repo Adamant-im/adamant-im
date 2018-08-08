@@ -182,7 +182,7 @@ const store = {
       const currentChat = getters.getCurrentChat
       const partner = currentChat.partner
       const message = currentChat.messages[payload]
-      const messageText = message.message.replace(/<\/?p>/g, '')
+      let messageText = message.message.replace(/<\/?p>/g, '')
       payload = {
         recipientId: partner,
         message: messageText,
@@ -193,6 +193,7 @@ const store = {
 
       let chats = getters.getChats
       queue.add(() => {
+        messageText = message.message.replace(/<\/?br>/g, '\n')
         const params = {
           to: partner,
           message: messageText
@@ -208,7 +209,7 @@ const store = {
               direction: 'from'
             })
           }
-          updateLastChatMessage(currentChat, payload, 'sent', 'from')
+          updateLastChatMessage(currentChat, payload, 'sent', 'from', response.transactionId)
         })
       })
     }
