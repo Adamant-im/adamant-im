@@ -16,10 +16,10 @@
       <div v-else class="avatar-holder"></div>
       <div class="message-block">
         <div class="msg-holder">
-          <div v-if="confirm === 'sent'" class="sent-message">
+          <div v-if="confirm !== 'confirmed'" class="sent-message">
             <slot></slot>
           </div>
-          <div v-else>
+          <div v-else class="confirmed-message">
             <slot></slot>
           </div>
         </div>
@@ -57,8 +57,11 @@ export default {
 </script>
 
 <style>
-  .sent-message {
+  .confirmed-message {
     padding: 5px 0
+  }
+  .sent-message {
+    padding: 10px 0
   }
   .chat_entry {
     width: 100%;
