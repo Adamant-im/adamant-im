@@ -222,6 +222,7 @@ export default {
     .chat-entry-wrapper {
       flex-direction: row;
       display: flex;
+      min-height: 25px;
     }
     .message-status-block {
       margin-right: 10px;
@@ -251,7 +252,7 @@ export default {
       font-family: "Material Icons";
       text-rendering: optimizeLegibility;
       position: absolute;
-      bottom: 12px;
+      bottom: 14px;
       left: 64px;
       font-size: 8px;
     }

@@ -16,11 +16,16 @@
       <div v-else class="avatar-holder"></div>
       <div class="message-block">
         <div class="msg-holder">
-          <slot></slot>
+          <div v-if="confirm !== 'confirmed'" class="sent-message">
+            <slot></slot>
+          </div>
+          <div v-else class="confirmed-message">
+            <slot></slot>
+          </div>
         </div>
         <div v-if="!readOnly" class="dt">{{ $formatDate(timestamp) }}</div>
         <div v-if='retryMessageFlag'>
-          <div v-on:click='retryMessage'>{{getRetryMessage}}</div>
+          <div class="retryMessage" v-on:click='retryMessage'>{{getRetryMessage}}</div>
         </div>
       </div>
     </md-layout>
@@ -52,6 +57,12 @@ export default {
 </script>
 
 <style>
+  .confirmed-message {
+    padding: 5px 0
+  }
+  .sent-message {
+    padding: 10px 0
+  }
   .chat_entry {
     width: 100%;
   }
@@ -106,6 +117,10 @@ export default {
     bottom: 0;
     left: 1px;
     font-size: 8px;
+  }
+
+  [data-confirmation=sent] p {
+    color: red;
   }
 
   [data-confirmation=rejected]:before {
@@ -209,5 +224,12 @@ export default {
 
   .right-align-block {
     justify-content: flex-end;
+  }
+
+  .retryMessage {
+    font-size: 10px;
+    font-style: italic;
+    color: red;
+    cursor: pointer;
   }
 </style>
