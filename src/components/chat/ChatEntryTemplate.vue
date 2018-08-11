@@ -231,5 +231,7 @@ export default {
     font-style: italic;
     color: red;
     cursor: pointer;
+    margin-left: 4px;
+    margin-top: -8px;
   }
 </style>
