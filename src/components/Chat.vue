@@ -122,8 +122,13 @@ export default {
       this.formErrorMessage = this.$t('chats.' + message)
       this.$refs.chatsSnackbar.open()
     },
+    scrollToEnd: function () {
+      setTimeout(function () {
+        let element = document.getElementById('msgContainer')
+        element.scrollTop = element.scrollHeight + 1000
+      }, 12)
+    },
     send () {
-      this.scrollToEnd()
       this.$refs.messageField.$el.focus()
       if (this.$store.state.balance < 0.001) {
         this.errorMessage('no_money')
@@ -148,6 +153,7 @@ export default {
         this.message = ''
         this.$refs.messageField.$el.value = ''
       }
+      this.scrollToEnd()
     },
     sendTokens (crypto) {
       this.sendToCrypto = crypto
