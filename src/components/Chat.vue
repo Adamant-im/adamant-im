@@ -60,10 +60,6 @@
 <script>
 import ChatEntry from './chat/ChatEntry.vue'
 import { Cryptos } from '../lib/constants'
-import Vue from 'vue'
-import VueChatScroll from 'vue-chat-scroll'
-
-Vue.use(VueChatScroll)
 
 export default {
   name: 'chats',
