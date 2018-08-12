@@ -1,7 +1,7 @@
 <template>
   <!--TODO: Move all non-static content to @/assets/-->
   <div class="chat">
-      <md-layout v-chat-scroll md-align="start" md-gutter="16" class="chat_messages">
+      <md-layout id="msgContainer" md-align="start" md-gutter="16" class="chat_messages">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
             <chat-entry :readOnly="readOnly" :message="message"></chat-entry>
           </md-layout>
@@ -123,6 +123,7 @@ export default {
       this.$refs.chatsSnackbar.open()
     },
     send () {
+      this.scrollToEnd()
       this.$refs.messageField.$el.focus()
       if (this.$store.state.balance < 0.001) {
         this.errorMessage('no_money')
