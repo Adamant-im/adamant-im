@@ -1,16 +1,13 @@
-import Mnemonic from 'bitcore-mnemonic'
-import hdkey from 'hdkey'
 import Web3 from 'web3'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as admApi from '../../../lib/adamant-api'
+import * as utils from '../../../lib/eth-utils'
 
 import { Fees } from '../../../lib/constants'
 
-const HD_KEY_PATH = "m/44'/60'/3'/1/0"
 const TRANSFER_GAS = '21000'
 const KVS_ADDRESS = 'eth:address'
-const DEFAULT_GAS_PRICE = '20000000000' // 20 Gwei
 /** Max number of attempts to retrieve the transaction details */
 const MAX_ATTEMPTS = 150
 
@@ -34,19 +31,7 @@ const STATUS_INTERVAL = 8000
  * @returns {{address: string, privateKey: string, publicKey: string}} account
  */
 function getAccountFromPassphrase (passphrase) {
-  const mnemonic = new Mnemonic(passphrase, Mnemonic.Words.ENGLISH)
-  const seed = mnemonic.toSeed()
-  const privateKey = hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey
-
-  return api.eth.accounts.privateKeyToAccount('0x' + privateKey.toString('hex'))
-}
-
-function toEther (wei) {
-  return api.utils.fromWei(`${wei}`, 'ether')
-}
-
-function toWei (ether) {
-  return api.utils.toWei(`${ether}`, 'ether')
+  return api.eth.accounts.privateKeyToAccount(utils.privateKeyFromPassphrase(passphrase))
 }
 
 function enqueueRequest (key, requestSupplier) {
@@ -165,14 +150,14 @@ export default {
       return [
         // Balance
         api.eth.getBalance.request(context.state.address, block || 'latest', (err, balance) => {
-          if (!err) context.commit('balance', toEther(balance))
+          if (!err) context.commit('balance', utils.toEther(balance))
         }),
         // Current gas price
         api.eth.getGasPrice.request((err, price) => {
           if (!err) {
             context.commit('gasPrice', {
               gasPrice: price,
-              fee: toEther(2 * Number(TRANSFER_GAS) * price)
+              fee: utils.toEther(2 * Number(TRANSFER_GAS) * price)
             })
           }
         }),
@@ -206,13 +191,13 @@ export default {
     // transactions with the same amount & recipient will have different hashes, thus preventing
     // the "Transaction with the same hash has already been imported" error.
     const gasPriceDelta = Math.round(100 * Math.random())
-    const gasPrice = new api.utils.BN(context.state.gasPrice || DEFAULT_GAS_PRICE).add(
+    const gasPrice = new api.utils.BN(context.getters.gasPrice).add(
       new api.utils.BN(gasPriceDelta)).toString()
 
     const ethTx = {
       from: context.state.address,
       to: ethAddress,
-      value: toWei(amount),
+      value: utils.toWei(amount),
       gas: TRANSFER_GAS,
       gasPrice
     }
@@ -274,7 +259,7 @@ export default {
             senderId: ethTx.from,
             recipientId: ethTx.to,
             amount,
-            fee: toEther(Number(ethTx.gas) * ethTx.gasPrice),
+            fee: utils.toEther(Number(ethTx.gas) * ethTx.gasPrice),
             status: 'PENDING',
             timestamp
           })
@@ -310,8 +295,8 @@ export default {
           hash: tx.hash,
           senderId: tx.from,
           recipientId: tx.to,
-          amount: toEther(tx.value),
-          fee: toEther(Number(tx.gas) * tx.gasPrice),
+          amount: utils.toEther(tx.value),
+          fee: utils.toEther(Number(tx.gas) * tx.gasPrice),
           status: tx.blockNumber ? 'SUCCESS' : 'PENDING',
           timestamp: payload.timestamp, // TODO: fetch from block?
           blockNumber: tx.blockNumber

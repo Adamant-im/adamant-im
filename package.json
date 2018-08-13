@@ -42,7 +42,8 @@
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.11.0",
     "vuex": "^3.0.1",
-    "web3": "^1.0.0-beta.34"
+    "web3": "^1.0.0-beta.34",
+    "web3-utils": "^1.0.0-beta.35"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.49",
