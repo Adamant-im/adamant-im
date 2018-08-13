@@ -1,7 +1,7 @@
 <template>
   <!--TODO: Move all non-static content to @/assets/-->
   <div class="chat">
-      <md-layout v-chat-scroll md-align="start" md-gutter="16" class="chat_messages">
+      <md-layout id="msgContainer" md-align="start" md-gutter="16" class="chat_messages">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
             <chat-entry :readOnly="readOnly" :message="message"></chat-entry>
           </md-layout>
@@ -60,10 +60,6 @@
 <script>
 import ChatEntry from './chat/ChatEntry.vue'
 import { Cryptos } from '../lib/constants'
-import Vue from 'vue'
-import VueChatScroll from 'vue-chat-scroll'
-
-Vue.use(VueChatScroll)
 
 export default {
   name: 'chats',
@@ -122,6 +118,12 @@ export default {
       this.formErrorMessage = this.$t('chats.' + message)
       this.$refs.chatsSnackbar.open()
     },
+    scrollToEnd: function () {
+      setTimeout(function () {
+        let element = document.getElementById('msgContainer')
+        element.scrollTop = element.scrollHeight + 1000
+      }, 12)
+    },
     send () {
       this.$refs.messageField.$el.focus()
       if (this.$store.state.balance < 0.001) {
@@ -147,6 +149,7 @@ export default {
         this.message = ''
         this.$refs.messageField.$el.value = ''
       }
+      this.scrollToEnd()
     },
     sendTokens (crypto) {
       this.sendToCrypto = crypto
