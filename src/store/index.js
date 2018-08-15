@@ -97,6 +97,9 @@ function updateLastChatMessage (currentDialogs, payload, confirmClass, direction
 
 function scrollToEnd () {
   const element = document.getElementById('msgContainer')
+  if (!element) {
+    return
+  }
   const scrollTop = element.scrollTop
   const scrollHeight = element.scrollHeight
   const elementHeight = element.offsetHeight
