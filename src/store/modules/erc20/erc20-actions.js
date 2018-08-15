@@ -1,4 +1,5 @@
 import Web3 from 'web3'
+import abiDecoder from 'abi-decoder'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as admApi from '../../../lib/adamant-api'
@@ -6,9 +7,12 @@ import * as ethUtils from '../../../lib/eth-utils'
 import Erc20 from './erc20.abi.json'
 
 const TRANSFER_GAS = '210000'
+/** Max number of attempts to retrieve the transaction details */
+const MAX_ATTEMPTS = 150
 
 const endpoint = getEndpointUrl('ETH')
 const api = new Web3(new Web3.providers.HttpProvider(endpoint, 2000))
+const queue = new ethUtils.BatchQueue(api.eth.BatchRequest)
 
 /**
  * Creates ETH account for the specified passphrase.
@@ -30,6 +34,7 @@ export default {
       const account = getAccountFromPassphrase(passphrase)
       context.commit('account', account)
       context.dispatch('updateStatus')
+      queue.start()
     }
   },
 
@@ -37,6 +42,7 @@ export default {
   reset: {
     root: true,
     handler (context) {
+      queue.stop()
       context.commit('reset')
     }
   },
@@ -54,6 +60,8 @@ export default {
       }
 
       context.dispatch('updateStatus')
+
+      queue.start()
     }
   },
 
@@ -142,5 +150,66 @@ export default {
           return hash
         }
       })
+  },
+
+  /**
+   * Enqueues a background request to retrieve the transaction details
+   * @param {object} context Vuex action context
+   * @param {{hash: string, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
+   */
+  getTransaction (context, payload) {
+    const existing = context.state.transactions[payload.hash]
+    if (existing && existing.status !== 'PENDING') return
+
+    // Set a stub so far
+    context.commit('transaction', {
+      hash: payload.hash,
+      timestamp: payload.timestamp,
+      amount: payload.amount,
+      status: 'PENDING'
+    })
+
+    const key = 'transaction:' + payload.hash
+    const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
+      if (!err && tx && tx.input) {
+        let recipientId = null
+        let amount = null
+
+        const decoded = abiDecoder.decodeMethod(tx.input)
+        if (decoded && decoded.name === 'transfer') {
+          decoded.params.forEach(x => {
+            if (x.name === '_to') recipientId = x.value
+            if (x.name === '_value') amount = ethUtils.toFraction(x.value, context.state.decimals)
+          })
+        }
+
+        if (recipientId) {
+          const transaction = {
+            hash: tx.hash,
+            senderId: tx.from,
+            fee: ethUtils.toEther(Number(tx.gas) * tx.gasPrice),
+            status: tx.blockNumber ? 'SUCCESS' : 'PENDING',
+            timestamp: payload.timestamp, // TODO: fetch from block?
+            blockNumber: tx.blockNumber,
+            amount,
+            recipientId
+          }
+
+          context.commit('transaction', transaction)
+        }
+      }
+
+      if (!tx && payload.attempt === MAX_ATTEMPTS) {
+        // Give up, if transaction could not be found after so many attempts
+        context.commit('transaction', { hash: tx.hash, status: 'ERROR' })
+      } else if (err || (tx && !tx.blockNumber) || (!tx && payload.isNew)) {
+        // In case of an error or a pending transaction fetch its details once again later
+        // Increment attempt counter, if no transaction was found so far
+        const newPayload = tx ? payload : { ...payload, attempt: 1 + (payload.attempt || 0) }
+        context.dispatch('getTransaction', newPayload)
+      }
+    })
+
+    queue.enqueue(key, supplier)
   }
 }

@@ -13,11 +13,7 @@ const MAX_ATTEMPTS = 150
 
 const endpoint = getEndpointUrl('ETH')
 const api = new Web3(new Web3.providers.HttpProvider(endpoint, 2000))
-
-/** Background requests queue */
-const backgroundRequests = []
-/** Background requests timer */
-let backgroundTimer = null
+const queue = new utils.BatchQueue(api.eth.BatchRequest)
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -32,23 +28,6 @@ const STATUS_INTERVAL = 8000
  */
 function getAccountFromPassphrase (passphrase) {
   return api.eth.accounts.privateKeyToAccount(utils.privateKeyFromPassphrase(passphrase))
-}
-
-function enqueueRequest (key, requestSupplier) {
-  if (backgroundRequests.some(x => x.key === key)) return
-
-  let requests = requestSupplier()
-  backgroundRequests.push({ key, requests: Array.isArray(requests) ? requests : [requests] })
-}
-
-function executeRequests () {
-  const requests = backgroundRequests.splice(0, 20)
-  if (!requests.length) return
-
-  const batch = new api.eth.BatchRequest()
-  requests.forEach(x => x.requests.forEach(r => batch.add(r)))
-
-  batch.execute()
 }
 
 let isAddressBeingStored = null
@@ -93,8 +72,7 @@ export default {
       // enough ADM for this transaction
       storeEthAddress(context)
 
-      clearInterval(backgroundTimer)
-      backgroundTimer = setInterval(executeRequests, 2000)
+      queue.start()
     }
   },
 
@@ -102,7 +80,7 @@ export default {
   reset: {
     root: true,
     handler (context) {
-      clearInterval(backgroundTimer)
+      queue.stop()
       context.commit('reset')
     }
   },
@@ -122,8 +100,7 @@ export default {
 
       context.dispatch('updateStatus')
 
-      clearInterval(backgroundTimer)
-      backgroundTimer = setInterval(executeRequests, 2000)
+      queue.start()
     }
   },
 
@@ -171,7 +148,7 @@ export default {
     const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)
     setTimeout(() => {
       if (context.state.address) {
-        enqueueRequest('status', supplier)
+        queue.enqueue('status', supplier)
         lastStatusUpdate = Date.now()
         context.dispatch('updateStatus')
       }
@@ -316,6 +293,6 @@ export default {
       }
     })
 
-    enqueueRequest(key, supplier)
+    queue.enqueue(key, supplier)
   }
 }

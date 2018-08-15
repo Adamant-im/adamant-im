@@ -46,3 +46,38 @@ export function toFraction (amount, decimals, separator = '.') {
 
   return whole + (fraction ? separator + fraction : '')
 }
+
+export class BatchQueue {
+  constructor (Web3BatchRequest) {
+    this.Web3BatchRequest = Web3BatchRequest
+    this._queue = []
+    this._timer = null
+  }
+
+  enqueue (key, supplier) {
+    if (typeof supplier !== 'function') return
+    if (this._queue.some(x => x.key === key)) return
+
+    let requests = supplier()
+    this._queue.push({ key, requests: Array.isArray(requests) ? requests : [requests] })
+  }
+
+  start () {
+    this.stop()
+    this._timer = setInterval(() => this._execute(), 2000)
+  }
+
+  stop () {
+    clearInterval(this._timer)
+  }
+
+  _execute () {
+    const requests = this._queue.splice(0, 20)
+    if (!requests.length) return
+
+    const batch = new this.Web3BatchRequest()
+    requests.forEach(x => x.requests.forEach(r => batch.add(r)))
+
+    batch.execute()
+  }
+}
