@@ -95,6 +95,20 @@ function updateLastChatMessage (currentDialogs, payload, confirmClass, direction
   }
 }
 
+function scrollToEnd () {
+  const element = document.getElementById('msgContainer')
+  const scrollTop = element.scrollTop
+  const scrollHeight = element.scrollHeight
+  const elementHeight = element.offsetHeight
+  const childrenCount = element.childNodes.length
+  const lastElementHeight = element.childNodes[childrenCount - 3].offsetHeight
+  if (scrollHeight - (elementHeight + scrollTop) < lastElementHeight) {
+    setTimeout(function () {
+      element.scrollTop = element.scrollHeight + 1000
+    }, 12)
+  }
+}
+
 const store = {
   state: {
     address: '',
@@ -456,6 +470,7 @@ const store = {
       Vue.set(state.chats, partner, currentDialogs)
       payload.direction = direction
       Vue.set(state.chats[partner].messages, payload.id, payload)
+      scrollToEnd()
     }
   },
   plugins: [storeData()],
