@@ -15,7 +15,8 @@ export const Transactions = {
 
 export const Cryptos = {
   ADM: 'ADM',
-  ETH: 'ETH'
+  ETH: 'ETH',
+  BNB: 'BNB'
 }
 
 /** Number of decimal places for the different crypto amounts */
