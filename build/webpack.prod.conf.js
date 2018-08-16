@@ -70,7 +70,8 @@ const webpackConfig = merge(baseWebpackConfig, {
       chunksSortMode: 'dependency',
       serviceWorker: `/${SERVICE_WORKER_FILENAME}`,
       serviceWorkerLoader: `<script>${loadMinified(path.join(__dirname,
-        './service-worker.js'))}</script>`
+        './service-worker.js'))}</script>`,
+      basePath: `<base href="/">`
     }),
     // keep module.id stable when vendor modules does not change
     new webpack.NamedChunksPlugin(),
