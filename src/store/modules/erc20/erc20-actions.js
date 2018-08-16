@@ -14,6 +14,11 @@ const endpoint = getEndpointUrl('ETH')
 const api = new Web3(new Web3.providers.HttpProvider(endpoint, 2000))
 const queue = new ethUtils.BatchQueue(api.eth.BatchRequest)
 
+/** Timestamp of the most recent status update */
+let lastStatusUpdate = 0
+/** Status update interval */
+const STATUS_INTERVAL = 8000
+
 /**
  * Creates ETH account for the specified passphrase.
  *
@@ -67,14 +72,27 @@ export default {
 
   /** Updates crypto balance info */
   updateStatus (context) {
+    if (!context.state.address) return
+
     const contract = new api.eth.Contract(Erc20, context.state.contractAddress)
-    contract.methods.balanceOf(context.state.address).call().then(
-      balance => context.commit('balance', balance),
-      error => console.warn(`${crypto} balance failed: `, error)
-    )
+    contract.methods.balanceOf(context.state.address).call()
+      .then(
+        balance => context.commit('balance', ethUtils.toFraction(balance, context.state.decimals)),
+        error => console.warn(`${context.state.crypto} balance failed: `, error)
+      )
+      .then(() => {
+        const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)
+        setTimeout(() => {
+          if (context.state.address) {
+            lastStatusUpdate = Date.now()
+            context.dispatch('updateStatus')
+          }
+        }, delay)
+      })
   },
 
   sendTokens (context, { amount, admAddress, ethAddress, comments }) {
+    const crypto = context.state.crypto
     const contract = new api.eth.Contract(Erc20, context.state.contractAddress)
 
     const ethTx = {
@@ -127,7 +145,7 @@ export default {
       })
       .then(({ hash, error }) => {
         if (error) {
-          console.error('Failed to send ETH transaction', error)
+          console.error(`Failed to send ${crypto} transaction`, error)
           context.commit('transaction', { hash, status: 'ERROR' })
           throw error
         } else {
