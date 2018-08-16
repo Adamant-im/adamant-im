@@ -14,7 +14,8 @@ export default {
   props: ['tx_id', 'crypto'],
   components: {
     AdmTransaction,
-    EthTransaction
+    EthTransaction,
+    Erc20Transaction
   },
   computed: {
     transactionComponent () {

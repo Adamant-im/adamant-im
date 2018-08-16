@@ -10,7 +10,7 @@ const BN = web3utils.BN
  * @param {string | number} wei Wei amount
  */
 export function toEther (wei) {
-  return web3utils.fromWei(wei, 'ether')
+  return web3utils.fromWei(String(wei), 'ether')
 }
 
 /**
@@ -18,7 +18,7 @@ export function toEther (wei) {
  * @param {string | number} eth Ether amount
  */
 export function toWei (eth) {
-  return web3utils.toWei(eth, 'ether')
+  return web3utils.toWei(String(eth), 'ether')
 }
 
 /**

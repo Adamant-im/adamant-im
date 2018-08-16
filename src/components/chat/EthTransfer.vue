@@ -7,13 +7,13 @@
   >
     <p>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</p>
     <p class='transaction-amount' v-on:click="goToTransaction()">
-      <span v-html="message.message.amount"></span> ETH
+      <span v-html="message.message.amount"></span> {{ crypto }}
     </p>
     <p><em v-html="message.message.comments"></em></p>
 
     <template slot="brief-view">
       <span>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</span>&nbsp;
-      <span v-html="message.message.amount"></span> ETH
+      <span v-html="message.message.amount"></span> {{ crypto }}
     </template>
   </chat-entry-template>
 </template>
@@ -29,13 +29,14 @@ export default {
   methods: {
     goToTransaction () {
       this.$store.commit('leave_chat')
-      const params = { crypto: Cryptos.ETH, tx_id: this.hash }
+      const params = { crypto: this.crypto, tx_id: this.hash }
       this.$router.push({ name: 'Transaction', params })
     }
   },
   mounted () {
     const timestamp = this.message.timestamp
-    this.$store.dispatch('eth/getTransaction', { hash: this.hash, timestamp, amount: this.amount })
+    const prefix = this.crypto.toLowerCase()
+    this.$store.dispatch(prefix + '/getTransaction', { hash: this.hash, timestamp, amount: this.amount })
   },
   computed: {
     hash () {
@@ -45,7 +46,8 @@ export default {
       return this.message.message && this.message.message.amount
     },
     confirm () {
-      const tx = this.$store.state.eth.transactions[this.hash]
+      const getter = this.crypto.toLowerCase() + '/transaction'
+      const tx = this.$store.getters[getter](this.hash)
       const status = tx && tx.status
 
       if (status === 'SUCCESS') {
@@ -55,6 +57,13 @@ export default {
       } else {
         return 'unconfirmed'
       }
+    },
+    crypto () {
+      const type = this.message.message && this.message.message.type
+      if (!type) return Cryptos.ETH
+
+      const crypto = type.substr(0, type.indexOf('_')).toUpperCase()
+      return crypto
     }
   }
 }
