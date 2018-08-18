@@ -108,16 +108,14 @@ export default {
           ? sendMessage({ to: this.targetAddress, message: this.comments, amount: this.targetAmount })
           : sendTokens(this.targetAddress, this.targetAmount)
         return promise.then(result => result.transactionId)
-      } else if (this.crypto === Cryptos.ETH) {
-        return this.$store.dispatch('eth/sendTokens', {
+      } else {
+        return this.$store.dispatch(this.crypto.toLowerCase() + '/sendTokens', {
           amount: this.targetAmount,
           admAddress: this.fixedAddress,
           ethAddress: this.targetAddress,
           comments: this.comments
         })
       }
-
-      return Promise.resolve(null)
     },
     transfer: function () {
       if (!this.targetAddress) {
@@ -159,10 +157,12 @@ export default {
       return localAmountToTransfer
     },
     commission () {
-      return this.crypto === Cryptos.ETH ? this.$store.state.eth.fee : Fees.TRANSFER
+      return this.crypto === Cryptos.ADM ? Fees.TRANSFER : this.$store.state.eth.fee
     },
     balance () {
-      return this.crypto === Cryptos.ETH ? this.$store.state.eth.balance : this.$store.state.balance
+      return this.crypto === Cryptos.ADM
+        ? this.$store.state.balance
+        : this.$store.state[this.crypto.toLowerCase()].balance
     },
     exponent () {
       return CryptoAmountPrecision[this.crypto]
