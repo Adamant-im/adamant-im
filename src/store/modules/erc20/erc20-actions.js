@@ -92,6 +92,7 @@ export default {
   },
 
   sendTokens (context, { amount, admAddress, ethAddress, comments }) {
+    ethAddress = ethAddress.trim()
     const crypto = context.state.crypto
     const contract = new api.eth.Contract(Erc20, context.state.contractAddress)
 
@@ -100,7 +101,7 @@ export default {
       to: context.state.contractAddress,
       value: '0x0',
       gasLimit: TRANSFER_GAS,
-      gasPrice: context.getters.gasPrice,
+      gasPrice: context.getters.gasPrice * 10,
       data: contract.methods.transfer(ethAddress, ethUtils.toWhole(amount, context.state.decimals)).encodeABI()
     }
 

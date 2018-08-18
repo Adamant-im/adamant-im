@@ -22,7 +22,8 @@ export const Cryptos = {
 /** Number of decimal places for the different crypto amounts */
 export const CryptoAmountPrecision = {
   ADM: 2,
-  ETH: 6
+  ETH: 6,
+  BNB: 6
 }
 
 /** Fees for the misc ADM operations */

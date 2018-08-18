@@ -5,6 +5,7 @@ import mutations from './erc20-mutations'
 
 export default function erc20Module (crypto, contractAddress, decimals) {
   return {
+    namespaced: true,
     state: initialState(crypto, contractAddress, decimals),
     actions,
     getters,

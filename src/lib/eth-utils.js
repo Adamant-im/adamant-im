@@ -35,7 +35,20 @@ export function privateKeyFromPassphrase (passphrase) {
 }
 
 export function toWhole (amount, decimals) {
-  return new BN(amount).mul(new BN(10).pow(new BN(decimals))).toString()
+  let [whole, fraction] = String(amount).split('.')
+  if (!whole) whole = '0'
+  if (!fraction) fraction = '0'
+
+  while (decimals - fraction.length > 0) {
+    fraction += '0'
+  }
+
+  const num = new BN(whole)
+    .mul(new BN(10).pow(new BN(decimals)))
+    .add(new BN(fraction))
+    .toString(10)
+
+  return num
 }
 
 export function toFraction (amount, decimals, separator = '.') {
