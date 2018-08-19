@@ -70,7 +70,7 @@ export default {
         return this.$t('transaction.me')
       }
       let result = this.$store.getters['partners/displayName'](address)
-      if (result !== '') {
+      if (result !== '' && result !== undefined) {
         result += ' (' + address + ')'
       } else {
         result = address
