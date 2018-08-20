@@ -134,7 +134,7 @@ export default {
         this.errorMessage('error_incorrect_amount')
         return
       }
-      if ((parseFloat(this.targetAmount) + parseFloat(this.commission)) > parseFloat(this.balance)) {
+      if (parseFloat(this.targetAmount) > parseFloat(this.maxToTransfer)) {
         this.errorMessage('error_not_enough')
         return
       }
@@ -150,7 +150,8 @@ export default {
     // TODO: HAS BEEN OVERWRITTEN TO AVOID POSSIBLE SIDE EFFECTS
     maxToTransfer: function () {
       const multiplier = Math.pow(10, this.exponent)
-      let localAmountToTransfer = (Math.floor((parseFloat(this.balance) - this.commission) * multiplier) / multiplier).toFixed(this.exponent)
+      const commission = (this.crypto === Cryptos.ADM || this.crypto === Cryptos.ETH) ? this.commission : 0
+      let localAmountToTransfer = (Math.floor((parseFloat(this.balance) - commission) * multiplier) / multiplier).toFixed(this.exponent)
       if (this.amountToTransfer < 0) {
         localAmountToTransfer = 0
       }
@@ -213,7 +214,8 @@ export default {
           fixedPoint = this.exponent
         }
       }
-      this.finalAmount = (parseFloat(to) + parseFloat(this.commission)).toFixed(fixedPoint)
+      const commission = (this.crypto === Cryptos.ADM || this.crypto === Cryptos.ETH) ? this.commission : 0
+      this.finalAmount = (parseFloat(to) + parseFloat(commission)).toFixed(fixedPoint)
     },
     'language' (to, from) {
       this.$i18n.locale = to
