@@ -144,7 +144,8 @@ const store = {
     lastChatHeight: 0,
     currentChat: false,
     storeInLocalStorage: false,
-    lastVisitedChat: ''
+    lastVisitedChat: '',
+    userPasswordExists: !sessionStorage.getItem('userPassword')
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
@@ -232,6 +233,9 @@ const store = {
     }
   },
   mutations: {
+    user_password_exists (state, payload) {
+      state.userPasswordExists = payload
+    },
     last_visited_chat (state, payload) {
       state.lastVisitedChat = payload
     },
@@ -508,7 +512,11 @@ const store = {
       return state.passPhrase.length > 0
     },
     getUserPassword: state => {
-      return Base64.decode(sessionStorage.getItem('userPassword'))
+      const userPassword = sessionStorage.getItem('userPassword')
+      return userPassword ? Base64.decode(userPassword) : null
+    },
+    getUserPasswordExists: state => {
+      return state.userPasswordExists
     }
   },
   modules: {

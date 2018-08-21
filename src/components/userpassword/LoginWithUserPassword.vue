@@ -1,22 +1,14 @@
 <template>
-  <div>
-    <md-dialog :md-open-from="openFrom" :md-close-to="closeTo" ref="login_with_user_password">
-      <md-dialog-content>
-        <h3>{{$t('login_via_password.enter_password')}}</h3>
-        <md-layout md-flex="66" sm-flex="90">
-          <md-input-container>
-            <md-input v-model="userPasswordValue" :placeholder="$t('login_via_password.user_password_hint')"></md-input>
-          </md-input-container>
-        </md-layout>
-        <md-layout md-flex="66" sm-flex="90">
-          <md-layout md-align="center" md-gutter="16">
-            <md-button v-on:click="closeAndForget" class="md-flat md-primary">{{ $t('login_via_password.user_password_forget') }}</md-button>
-            <md-button :disabled="disableLoginViaPassword" v-on:click="loginViaPassword" class="md-flat md-primary">{{ $t('login_via_password.user_password_unlock') }}</md-button>
-          </md-layout>
-        </md-layout>
-      </md-dialog-content>
-    </md-dialog>
-  </div>
+  <md-layout md-flex="66" md-flex-xsmall="80">
+    <md-input-container class="password_input">
+      <label style="text-align: center;width: 100%;">{{ $t('login.password_label') }}</label>
+      <md-input v-model="userPasswordValue" type="password"></md-input>
+    </md-input-container>
+    <md-layout md-align="center" md-gutter="16">
+      <md-button class="md-raised md-short" v-on:click="forget">{{ $t('login_via_password.user_password_forget') }}</md-button>
+      <md-button :disabled="disableLoginViaPassword" class="md-raised md-short" v-on:click="loginViaPassword">{{ $t('login_via_password.user_password_unlock') }}</md-button>
+    </md-layout>
+  </md-layout>
 </template>
 
 <script>
@@ -27,19 +19,12 @@ export default {
   name: 'loginWithUserPassword',
   props: ['openFrom', 'closeTo'],
   methods: {
-    open () {
-      this.$refs['login_with_user_password'].open()
-    },
-    close () {
-      this.$refs['login_with_user_password'].close()
-    },
-    closeAndForget () {
-      this.forget()
-      this.close()
-    },
     forget () {
       localStorage.removeItem('storedData')
       localStorage.removeItem('adm-persist')
+      sessionStorage.removeItem('userPassword')
+      this.$store.commit('user_password_exists', false)
+      this.$store.commit('change_storage_method', false)
     },
     loginViaPassword () {
       console.log('password', this.userPasswordValue)

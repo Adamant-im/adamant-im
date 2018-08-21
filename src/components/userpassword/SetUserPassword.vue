@@ -36,7 +36,9 @@ export default {
     },
     setPassword () {
       this.$store.commit('change_storage_method', true)
+      // TODO need encrypt password
       this.$store.commit('save_user_password', this.userPasswordValue)
+      this.$store.commit('user_password_exists', true)
       this.userPasswordValue = null
       this.userPasswordCheckbox = false
       const storedData = localStorage.getItem('adm-persist')

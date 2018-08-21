@@ -15,31 +15,23 @@
           <p class="site-description">{{ $t('login.subheader') }}</p>
       </div>
       <md-layout md-align="center" md-gutter="16">
-      <md-layout md-flex="66" md-flex-xsmall="80">
-          <md-input-container class="password_input">
+          <LoginWithUserPassword v-if="test" ref="login_with_user_password"></LoginWithUserPassword>
+          <md-layout v-else md-flex="66" md-flex-xsmall="80">
+            <md-input-container class="password_input">
               <label style="text-align: center;width: 100%;">{{ $t('login.password_label') }}</label>
               <md-input v-model="passPhrase" type="password" autocomplete="new-password" @keyup.native="kp($event)"></md-input>
-          </md-input-container>
-      </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="80">
-              <md-layout md-align="center" md-gutter="16">
-                  <md-button class="md-raised md-short" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
-              </md-layout>
+            </md-input-container>
+            <md-layout md-align="center" md-gutter="16">
+              <md-button class="md-raised md-short" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
+            </md-layout>
           </md-layout>
-          <md-layout md-flex="66"
-                     md-flex-xsmall="80"
-                     md-align="center"
-                     class="qr-code-buttons">
-            <md-button classs="md-ripple md-disabled"
-                       :title="$t('login.scan_qr_code_button_tooltip')"
-                       @click="scanQRCode">
+          <md-layout md-flex="66" md-flex-xsmall="80" md-align="center" class="qr-code-buttons">
+            <md-button classs="md-ripple md-disabled" :title="$t('login.scan_qr_code_button_tooltip')" @click="scanQRCode">
               <Icon name="qrCodeLense" />
             </md-button>
-            <md-button classs="md-ripple md-disabled"
-                       @click.prevent="saveQRCode">
+            <md-button classs="md-ripple md-disabled" @click.prevent="saveQRCode">
               <Icon name="qrCode" />
             </md-button>
-
           </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
             <p v-if="message">{{message}}</p>
@@ -83,10 +75,6 @@
           <span>{{ $t('home.copied') }}</span>
       </md-snackbar>
     <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
-    <LoginWithUserPassword openFrom="#LoginWithUserPassword" closeTo="#LoginWithUserPassword" ref="login_with_user_password"></LoginWithUserPassword>
-    <md-layout md-align="center" md-gutter="16">
-      <md-button class="md-raised md-short" v-on:click="loginViaPassword">{{$t('login_via_password.login_via_password')}}</md-button>
-    </md-layout>
     <Spinner v-if="showSpinnerFlag"></Spinner>
   </div>
 </template>
@@ -108,9 +96,6 @@ export default {
     LoginWithUserPassword
   },
   methods: {
-    loginViaPassword: function () {
-      this.$refs['login_with_user_password'].open()
-    },
     showSpinner: function () {
       this.showSpinnerFlag = true
     },
@@ -207,11 +192,10 @@ export default {
       this.$root._router.push('/chats/')
     }
     if (localStorage.getItem('adm-persist') && localStorage.getItem('adm-persist').length > 0) {
-      let that = this
-      setTimeout(function () {
-        that.loginViaPassword()
-      }, 12)
+      // TODO
     }
+    console.log(this.$store.getters.getUserPasswordExists)
+    this.userPasswordExists = this.$store.getters.getUserPasswordExists
   },
   computed: {
     iOS: function () {
@@ -228,6 +212,10 @@ export default {
     qrCodePassPhrase: function () {
       // return this.passPhrase
       return this.$store.getters.getPassPhrase
+    },
+    test: function () {
+      console.log('updated login component')
+      return this.$store.getters.getUserPasswordExists
     }
   },
   watch: {
@@ -244,7 +232,8 @@ export default {
       message: '',
       showQRCode: false,
       showModal: false,
-      showSpinnerFlag: false
+      showSpinnerFlag: false,
+      userPasswordExists: this.test
     }
   }
 }
