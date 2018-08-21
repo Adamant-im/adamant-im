@@ -96,6 +96,23 @@ function updateLastChatMessage (currentDialogs, payload, confirmClass, direction
   }
 }
 
+function scrollToEnd () {
+  const element = document.getElementById('msgContainer')
+  if (!element) {
+    return
+  }
+  const scrollTop = element.scrollTop
+  const scrollHeight = element.scrollHeight
+  const elementHeight = element.offsetHeight
+  const childrenCount = element.childNodes.length
+  const lastElementHeight = element.childNodes[childrenCount - 3].offsetHeight
+  if (scrollHeight - (elementHeight + scrollTop) < lastElementHeight) {
+    setTimeout(function () {
+      element.scrollTop = element.scrollHeight + 1000
+    }, 12)
+  }
+}
+
 const store = {
   state: {
     address: '',
@@ -156,14 +173,13 @@ const store = {
         confirm_class: 'sent',
         direction: 'from'
       }
-
       let currentDialogs = chats[partner]
-
+      let internalPayload = Object.assign({}, payload)
+      internalPayload.message = internalPayload.message.replace(/\n/g, '<br>')
       if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
-        updateLastChatMessage(currentDialogs, payload, 'sent', 'from', payload.id)
+        updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', payload.id)
       }
-
-      Vue.set(chats[partner].messages, payload.id, payload)
+      Vue.set(chats[partner].messages, payload.id, internalPayload)
       queue.add(() => {
         const params = {
           to: partner,
@@ -172,10 +188,10 @@ const store = {
         return admApi.sendMessage(params).then(response => {
           if (response.success) {
             replaceMessageAndDelete(chats[partner].messages, response.transactionId, payload.id, 'sent')
-            updateLastChatMessage(currentDialogs, payload, 'sent', 'from', response.transactionId)
+            updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', response.transactionId)
           } else {
             changeMessageClass(chats[partner].messages, payload.id, 'rejected')
-            updateLastChatMessage(currentDialogs, payload, 'rejected', 'from', payload.id)
+            updateLastChatMessage(currentDialogs, internalPayload, 'rejected', 'from', payload.id)
           }
         })
       })
@@ -184,7 +200,7 @@ const store = {
       const currentChat = getters.getCurrentChat
       const partner = currentChat.partner
       const message = currentChat.messages[payload]
-      const messageText = message.message.replace(/<\/?p>/g, '')
+      let messageText = message.message.replace(/<\/?p>/g, '')
       payload = {
         recipientId: partner,
         message: messageText,
@@ -195,6 +211,7 @@ const store = {
 
       let chats = getters.getChats
       queue.add(() => {
+        messageText = message.message.replace(/<\/?br>/g, '\n')
         const params = {
           to: partner,
           message: messageText
@@ -210,7 +227,7 @@ const store = {
               direction: 'from'
             })
           }
-          updateLastChatMessage(currentChat, payload, 'sent', 'from')
+          updateLastChatMessage(currentChat, payload, 'sent', 'from', response.transactionId)
         })
       })
     }
@@ -457,6 +474,7 @@ const store = {
       Vue.set(state.chats, partner, currentDialogs)
       payload.direction = direction
       Vue.set(state.chats[partner].messages, payload.id, payload)
+      scrollToEnd()
     }
   },
   plugins: [storeData()],

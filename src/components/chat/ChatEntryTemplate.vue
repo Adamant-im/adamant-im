@@ -13,14 +13,16 @@
     >
       <div v-if="direction !== 'to'" class="message-tick" :data-confirmation="confirm"></div>
       <div v-if="readOnly" class="adamant-avatar"></div>
-      <div v-else class="avatar-holder"></div>
+      <div v-else class="avatar-holder" v-bind:class="{fromAvatarHolder: toMessageFlag}"></div>
       <div class="message-block">
         <div class="msg-holder">
-          <slot></slot>
+          <div class="sent-message" v-bind:class="{to: toMessageFlag, sent: sentMessageFlag, confirm: confirmMessageFlag, reject: retryMessageFlag}">
+            <slot></slot>
+          </div>
         </div>
         <div v-if="!readOnly" class="dt">{{ $formatDate(timestamp) }}</div>
         <div v-if='retryMessageFlag'>
-          <div v-on:click='retryMessage'>{{getRetryMessage}}</div>
+          <div class="retryMessage" v-on:click='retryMessage'>{{getRetryMessage}}</div>
         </div>
       </div>
     </md-layout>
@@ -44,6 +46,15 @@ export default {
     retryMessageFlag () {
       return this.confirm === 'rejected'
     },
+    sentMessageFlag () {
+      return this.confirm === 'sent'
+    },
+    confirmMessageFlag () {
+      return this.confirm === 'confirmed'
+    },
+    toMessageFlag () {
+      return this.direction === 'to'
+    },
     getRetryMessage () {
       return this.$i18n.t('chats.retry_message')
     }
@@ -52,8 +63,23 @@ export default {
 </script>
 
 <style>
+  .confirm {
+    padding: 5px 0
+  }
+  .sent {
+    padding: 10px 0
+  }
+  .to {
+    padding: 5px 0
+  }
+  .reject {
+    padding: 10px 0
+  }
   .chat_entry {
     width: 100%;
+  }
+  .fromAvatarHolder {
+    top: 18px !important;
   }
   .black-text {
     color: rgba(0, 0, 0, 0.87) !important;
@@ -106,6 +132,10 @@ export default {
     bottom: 0;
     left: 1px;
     font-size: 8px;
+  }
+
+  [data-confirmation=sent] p {
+    color: red;
   }
 
   [data-confirmation=rejected]:before {
@@ -209,5 +239,14 @@ export default {
 
   .right-align-block {
     justify-content: flex-end;
+  }
+
+  .retryMessage {
+    font-size: 10px;
+    font-style: italic;
+    color: red;
+    cursor: pointer;
+    margin-left: 4px;
+    margin-top: -8px;
   }
 </style>
