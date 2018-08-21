@@ -29,8 +29,9 @@ Vue.config.productionTip = false
 
 var messages = require('./i18n').default
 
+// TODO: customize it or remove totally
 Vue.material.registerTheme({
-  grey: {
+  customGrey: {
     primary: 'grey',
     accent: 'white'
   }
