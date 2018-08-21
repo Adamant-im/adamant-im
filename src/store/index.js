@@ -306,6 +306,11 @@ const store = {
       state.resentMessages = []
       state.lastVisitedChat = null
     },
+    encrypt_store (state) {
+      const storedData = localStorage.getItem('adm-persist')
+      // TODO encrypt data with some algorithm
+      localStorage.setItem('storedData', Base64.encode(storedData))
+    },
     stop_tracking_new (state) {
       state.trackNewMessages = false
     },

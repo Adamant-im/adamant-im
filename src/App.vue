@@ -116,6 +116,9 @@ export default {
       this.$router.push({ name: 'Chats' })
     },
     exitme () {
+      if (this.$store.getters.getUserPasswordExists) {
+        this.$store.commit('encrypt_store')
+      }
       this.$store.commit('logout')
       this.$store.dispatch('reset')
       this.$router.push('/')

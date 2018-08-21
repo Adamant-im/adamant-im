@@ -15,7 +15,7 @@
           <p class="site-description">{{ $t('login.subheader') }}</p>
       </div>
       <md-layout md-align="center" md-gutter="16">
-          <LoginWithUserPassword v-if="test" ref="login_with_user_password"></LoginWithUserPassword>
+          <LoginWithUserPassword v-if="userPassoword" ref="login_with_user_password"></LoginWithUserPassword>
           <md-layout v-else md-flex="66" md-flex-xsmall="80">
             <md-input-container class="password_input">
               <label style="text-align: center;width: 100%;">{{ $t('login.password_label') }}</label>
@@ -210,11 +210,9 @@ export default {
       return new Mnemonic(Mnemonic.Words.ENGLISH).toString()
     },
     qrCodePassPhrase: function () {
-      // return this.passPhrase
       return this.$store.getters.getPassPhrase
     },
-    test: function () {
-      console.log('updated login component')
+    userPassoword: function () {
       return this.$store.getters.getUserPasswordExists
     }
   },
@@ -233,7 +231,7 @@ export default {
       showQRCode: false,
       showModal: false,
       showSpinnerFlag: false,
-      userPasswordExists: this.test
+      userPasswordExists: this.userPassoword
     }
   }
 }

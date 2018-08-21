@@ -38,7 +38,7 @@
                       <md-table-row>
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
                           <md-table-cell colspan="2"  style="text-align:left;">
-                            <input type="checkbox" v-on:click="storeInLocalStorage" value="" v-model="loadStoreInLocalStorage"/>
+                            <input type="checkbox" v-on:click="storeInLocalStorage" v-model="loadStoreInLocalStorage"/>
                             {{ $t('options.exit_on_close') }}
                           </md-table-cell>
                       </md-table-row>
@@ -140,6 +140,8 @@ export default {
   },
   mounted () {
     this.$store.commit('last_visited_chat', null)
+    console.log('userPassword mounted')
+    this.userPassword = this.$store.state.storeInLocalStorage
   },
   watch: {
     'sendOnEnter' (to, from) {
@@ -168,7 +170,7 @@ export default {
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
       language: this.$i18n.locale,
-      userPassword: ''
+      userPassword: false
     }
   }
 }

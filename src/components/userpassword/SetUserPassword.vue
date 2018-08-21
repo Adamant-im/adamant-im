@@ -33,6 +33,7 @@ export default {
     },
     close () {
       this.$refs['set_user_password'].close()
+      this.$store.commit('change_storage_method', this.$store.state.storeInLocalStorage)
     },
     setPassword () {
       this.$store.commit('change_storage_method', true)
@@ -41,9 +42,6 @@ export default {
       this.$store.commit('user_password_exists', true)
       this.userPasswordValue = null
       this.userPasswordCheckbox = false
-      const storedData = localStorage.getItem('adm-persist')
-      // TODO encrypt data with some algorithm
-      localStorage.setItem('storedData', storedData)
       this.close()
     }
   },

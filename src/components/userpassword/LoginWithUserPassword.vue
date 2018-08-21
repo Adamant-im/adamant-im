@@ -35,7 +35,7 @@ export default {
           console.log('some error has been occurred')
         }
         let passPhrase = ''
-        const storedData = JSON.parse(localStorage.getItem('storedData'))
+        const storedData = JSON.parse(Base64.decode(localStorage.getItem('storedData')))
         if (!storedData) {
           // TODO call warning
           console.log('empty stored data')
