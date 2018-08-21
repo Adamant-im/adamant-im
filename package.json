@@ -130,8 +130,8 @@
     "worker-loader": "^2.0.0"
   },
   "engines": {
-    "node": ">= 6.0.0",
-    "npm": ">= 3.0.0"
+    "node": ">= 8.11.0",
+    "npm": ">= 5.4.0"
   },
   "browserslist": [
     "> 1%",

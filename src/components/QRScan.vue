@@ -5,10 +5,10 @@
       <div class="modal">
         <div class="modal-body">
           <h3>{{$t('scan.' + this.checkParentName() + '.modal_header') }}</h3>
+          <md-progress v-show="loading" md-theme="grey" md-indeterminate></md-progress>
           <video id="preview"></video>
         </div>
         <div class="modal-footer">
-          <md-progress :md-progress="progress"></md-progress>
           <md-button style="max-width: 40px; min-width: 40px; margin-right: 0; padding: 0" v-for="(camera) in cameras" :key="camera.id"
                      v-if="cameras.length > 1 && camera.id !== activeCameraId"
                      :title="camera.name" @click.stop="selectCamera(camera)">
@@ -67,26 +67,26 @@ export default {
   mounted: function () {
     // Do not remove webpackMode!!!
     import(
-      /* webpackMode: "lazy-once" */
-      'instascan').then()
-      .then((Instascan) => {
-        let self = this
-        self.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5, mirror: false })
-        self.scanner.addListener('scan', function (content, image) {
-          self.parseHandler(content)
-        })
-        Instascan.Camera.getCameras().then(function (cameras) {
-          self.cameras = cameras
-          if (cameras.length > 0) {
-            self.activeCameraId = cameras[1] ? cameras[1].id : cameras[0].id
-            self.scanner.start(cameras[1] ? cameras[1] : cameras[0])
-          } else {
-            console.error('No cameras found.')
-          }
-        }).catch(function (e) {
-          console.error(e)
-        })
+      /* webpackMode: "lazy" */
+      'instascan').then((Instascan) => {
+      this.loading = false
+      let self = this
+      self.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5, mirror: false })
+      self.scanner.addListener('scan', function (content, image) {
+        self.parseHandler(content)
       })
+      Instascan.Camera.getCameras().then(function (cameras) {
+        self.cameras = cameras
+        if (cameras.length > 0) {
+          self.activeCameraId = cameras[1] ? cameras[1].id : cameras[0].id
+          self.scanner.start(cameras[1] ? cameras[1] : cameras[0])
+        } else {
+          console.error('No cameras found.')
+        }
+      }).catch(function (e) {
+        console.error(e)
+      })
+    })
   },
   computed: {
     modalWindow () {
@@ -103,7 +103,8 @@ export default {
       cameras: [],
       scans: [],
       cameraList: [],
-      currentCamera: false
+      currentCamera: false,
+      loading: true
     }
   }
 }

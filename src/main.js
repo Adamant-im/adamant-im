@@ -30,20 +30,9 @@ Vue.config.productionTip = false
 var messages = require('./i18n').default
 
 Vue.material.registerTheme({
-  default: {
-    primary: {
-      color: 'light-green',
-      hue: 700
-    },
-    accent: 'red'
-  },
-  teal: {
-    primary: 'blue',
-    accent: 'pink'
-  },
-  purple: {
-    primary: 'purple',
-    accent: 'orange'
+  grey: {
+    primary: 'grey',
+    accent: 'white'
   }
 })
 
