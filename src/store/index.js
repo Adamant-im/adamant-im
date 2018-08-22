@@ -52,13 +52,13 @@ function createMockMessage (state, newAccount, partner, message) {
       readOnly: true,
       messages: {
         0: {
-          message: window.ep.$i18n.t('chats.' + message),
+          message: this.$i18n.t('chats.' + message),
           timestamp: 0,
           direction: 'to'
         }
       },
       last_message: {
-        message: window.ep.$i18n.t('chats.' + message),
+        message: this.$i18n.t('chats.' + message),
         timestamp: 0,
         direction: 'to'
       }
@@ -148,7 +148,7 @@ const store = {
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
-      payload.message = window.ep.$i18n.t(payload.message)
+      payload.message = this.$i18n.t(payload.message)
       commit('add_chat_message', payload)
     },
     afterLogin ({ commit }, passPhrase) {
@@ -490,7 +490,10 @@ const store = {
       return state.lastVisitedChat
     },
     getCurrentChatMessageCount: state => {
-      return Object.keys(state.currentChat.messages).length
+      if ((state.currentChat != null) && (state.currentChat.messages != null)) {
+        return Object.keys(state.currentChat.messages).length
+      }
+      return 0
     },
     getChats: state => {
       return state.chats

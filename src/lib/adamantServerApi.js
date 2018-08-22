@@ -1,9 +1,13 @@
 import Queue from 'promise-queue'
+import adamant from './adamant.js'
+import config from '../config.json'
+import sodium from 'sodium-browserify-tweetnacl'
+import nacl from 'tweetnacl/nacl-fast'
+import ed2curve from 'ed2curve'
+import stablelib from '@stablelib/utf8'
 
-var config = require('../config.json')
-var adamant = require('./adamant.js')
-const renderMarkdown = require('./markdown').default
-const { hexToBytes, bytesToHex } = require('./hex')
+import renderMarkdown from './markdown'
+import { hexToBytes, bytesToHex } from './hex'
 
 Queue.configure(window.Promise)
 window.queue = new Queue(1, Infinity)
@@ -62,7 +66,7 @@ function install (Vue) {
     if (this.$store.getters.getPassPhrase) {
       keypair = this.getKeypair()
     } else {
-      var hash = adamant.createPassPhraseHash(passPhrase)
+      let hash = adamant.createPassPhraseHash(passPhrase)
       keypair = adamant.makeKeypair(hash)
       window.privateKey = keypair.privateKey
       window.publicKey = keypair.publicKey
@@ -119,15 +123,12 @@ function install (Vue) {
   }
 
   Vue.prototype.encodeMessage = function (msg, recipientPublicKey) {
-    var sodium = require('sodium-browserify-tweetnacl')
-    var nacl = require('tweetnacl/nacl-fast')
-    var ed2curve = require('ed2curve')
-    var nonce = Buffer.allocUnsafe(24)
+    let nonce = Buffer.allocUnsafe(24)
     sodium.randombytes(nonce)
-    var plainText = Buffer.from(msg)
+    let plainText = Buffer.from(msg)
     var keypair = this.getKeypair()
-    var DHPublicKey = ed2curve.convertPublicKey(hexToBytes(recipientPublicKey))
-    var DHSecretKey
+    let DHPublicKey = ed2curve.convertPublicKey(hexToBytes(recipientPublicKey))
+    let DHSecretKey
     if (window.secretKey) {
       DHSecretKey = window.secretKey
     } else {
@@ -135,18 +136,16 @@ function install (Vue) {
       window.secretKey = DHSecretKey
     }
 
-    var encrypted = nacl.box(plainText, nonce, DHPublicKey, DHSecretKey)
+    let encrypted = nacl.box(plainText, nonce, DHPublicKey, DHSecretKey)
     return {
       message: bytesToHex(encrypted),
       own_message: bytesToHex(nonce)
     }
   }
   Vue.prototype.decodeMessage = function (msg, senderPublicKey, nonce) {
-    var nacl = require('tweetnacl/nacl-fast')
-    var ed2curve = require('ed2curve')
-    var keypair = this.getKeypair()
     var DHPublicKey = ed2curve.convertPublicKey(senderPublicKey)
     var DHSecretKey
+    var keypair = this.getKeypair()
     if (window.secretKey) {
       DHSecretKey = window.secretKey
     } else {
@@ -157,7 +156,7 @@ function install (Vue) {
     if (!decrypted) {
       return ''
     }
-    return require('@stablelib/utf8').decode(decrypted)
+    return stablelib.decode(decrypted)
   }
   Vue.prototype.getAddressPublicKey = function (recipientAddress) {
     if (window.pk_cache[recipientAddress]) {
@@ -387,7 +386,7 @@ function install (Vue) {
         clearTimeout(window.loadTimeout)
       }
       window.loadTimeout = setTimeout(function () {
-        window.ep.$store.commit('have_loaded_chats')
+        this.$store.commit('have_loaded_chats')
       }, 7000)
     }
   }

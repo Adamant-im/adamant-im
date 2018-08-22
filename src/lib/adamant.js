@@ -1,16 +1,16 @@
 /* eslint-disable no-redeclare */
 'use strict'
 
-var sodium = require('sodium-browserify-tweetnacl')
-var crypto = require('crypto')
-var Mnemonic = require('bitcore-mnemonic')
-const nacl = require('tweetnacl/nacl-fast')
-const ed2curve = require('ed2curve')
-const utf8 = require('@stablelib/utf8')
-var bignum = require('./bignumber.js')
-var ByteBuffer = require('bytebuffer')
-const constants = require('./constants.js')
-const { hexToBytes, bytesToHex } = require('./hex')
+import sodium from 'sodium-browserify-tweetnacl'
+import crypto from 'crypto'
+import Mnemonic from 'bitcore-mnemonic'
+import nacl from 'tweetnacl/nacl-fast'
+import ed2curve from 'ed2curve'
+import utf8 from '@stablelib/utf8'
+import bignum from './bignumber.js'
+import ByteBuffer from 'bytebuffer'
+import constants from './constants.js'
+import { hexToBytes, bytesToHex } from './hex'
 
 /**
  * Crypto functions that implements sodium.

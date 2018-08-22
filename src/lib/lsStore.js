@@ -65,7 +65,7 @@ export default function storeData () {
       store.dispatch('rehydrate')
     }
     window.onbeforeunload = function () {
-      window.ep.$store.commit('force_update')
+      this.$store.commit('force_update')
     }
     store.subscribe((mutation, state) => {
       var storeNow = false
@@ -129,7 +129,7 @@ export default function storeData () {
           window.clearTimeout(window.storeTimer)
         }
         var storeTimer = window.setTimeout(function () {
-          window.ep.$store.commit('force_update')
+          this.$store.commit('force_update')
           window.storeTimer = undefined
         }, 10000)
         window.storeTimer = storeTimer

@@ -23,7 +23,7 @@
       </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80">
               <md-layout md-align="center" md-gutter="16">
-                  <md-button class="md-raised md-short" v-on:click="logme">{{ $t('login.login_button') }}</md-button>
+                  <md-button class="md-raised md-short" @click="logme">{{ $t('login.login_button') }}</md-button>
               </md-layout>
           </md-layout>
           <md-layout md-flex="66"
