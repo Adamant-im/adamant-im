@@ -11,7 +11,7 @@
             <md-button style="max-width: 40px; min-width: 40px; margin-right: 0; padding: 0" v-for="(camera) in cameras" :key="camera.id"
                        v-if="cameras.length > 1 && camera.id !== activeCameraId"
                        :title="camera.name" @click.stop="selectCamera(camera)">
-              <md-icon md-src="/static/img/Attach/rotate-cam.svg"></md-icon>
+              <md-icon md-src="/img/Attach/rotate-cam.svg"></md-icon>
             </md-button>
           <!--</div>-->
           <md-button  @click="hideModal"> {{ $t('scan.close_button') === 'scan.close_button'? 'Close' : $t('scan.close_button') }} </md-button>

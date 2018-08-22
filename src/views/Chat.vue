@@ -12,23 +12,23 @@
           <md-layout md-flex="10">
             <md-menu class="attach_menu" md-align-trigger md-size="4">
               <md-button md-menu-trigger style="min-height: 45px;max-height: 45px; min-width: 60px;margin-left:0;">
-                <md-icon md-src="/static/img/Attach/attach.svg"></md-icon>
+                <md-icon md-src="/img/Attach/attach.svg"></md-icon>
               </md-button>
               <md-menu-content class="attach_menu">
                 <md-menu-item v-on:click="sendTokens('ADM')">
-                  <md-icon md-src="/static/img/Attach/adm.svg">menu</md-icon>
+                  <md-icon md-src="/img/Attach/adm.svg">menu</md-icon>
                   <span>{{ $t('chats.send_adm') }}</span>
                 </md-menu-item>
                 <md-menu-item v-on:click="sendTokens('ETH')">
-                  <md-icon  md-src="/static/img/Attach/ethereum.svg">menu</md-icon>
+                  <md-icon  md-src="/img/Attach/ethereum.svg">menu</md-icon>
                   <span>{{ $t('chats.send_eth') }}</span>
                 </md-menu-item>
                 <md-menu-item :disabled="true">
-                  <md-icon md-src="/static/img/Attach/picture.svg">collections</md-icon>
+                  <md-icon md-src="/img/Attach/picture.svg">collections</md-icon>
                   <span>{{ $t('chats.attach_image') }}</span>
                 </md-menu-item>
                 <md-menu-item :disabled="true">
-                  <md-icon  md-src="/static/img/Attach/file.svg"></md-icon>
+                  <md-icon  md-src="/img/Attach/file.svg"></md-icon>
                   <span>{{ $t('chats.attach_file') }}</span>
                 </md-menu-item>
               </md-menu-content>
