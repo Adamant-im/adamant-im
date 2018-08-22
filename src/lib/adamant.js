@@ -441,4 +441,4 @@ adamant.prepareAmount = function (admAmount) {
   return Math.round(Number(admAmount) * 100000000)
 }
 
-module.exports = adamant
+export default adamant

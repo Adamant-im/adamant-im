@@ -1,9 +1,9 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-import App from './App'
+import App from './App.vue'
 import router from './router'
-import VueI18n from 'vue-i18n'
+import './registerServiceWorker'
+import i18n from './i18n'
+
 import VueResource from 'vue-resource'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
@@ -20,50 +20,21 @@ Vue.use(Vuex)
 Vue.use(VueMaterial)
 Vue.use(VueResource)
 Vue.use(VueClipboards)
-Vue.use(VueI18n)
 Vue.use(VueHazeServerApi)
 Vue.use(VueFormatters)
 Vue.component('qr-code', VueQRCodeComponent)
 
-Vue.config.productionTip = false
-
-var messages = require('./i18n').default
-
-Vue.material.registerTheme({
-  default: {
-    primary: {
-      color: 'light-green',
-      hue: 700
-    },
-    accent: 'red'
-  },
-  teal: {
-    primary: 'blue',
-    accent: 'pink'
-  },
-  purple: {
-    primary: 'purple',
-    accent: 'orange'
-  }
-})
-
 const store = new Vuex.Store(storeConfig)
-
-var i18n = new VueI18n({
-  locale: store.state.language, // set locale
-  fallbackLocale: 'en',
-  messages // set locale messages
-})
-
 document.title = i18n.t('app_title')
 
-/* eslint-disable no-new */
-window.ep = new Vue({
-  el: '#app',
+Vue.config.productionTip = false
+
+new Vue({
   version: packageJSON.version,
   router,
   store,
   template: '<App/>',
   components: { App },
-  i18n: i18n
-})
+  i18n,
+  render: h => h(App)
+}).$mount('#app')
