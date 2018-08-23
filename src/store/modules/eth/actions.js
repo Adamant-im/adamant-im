@@ -1,6 +1,8 @@
 import Mnemonic from 'bitcore-mnemonic'
 import hdkey from 'hdkey'
 import Web3 from 'web3'
+import { privateToAddress, bufferToHex, isValidAddress, toBuffer } from 'ethereumjs-util'
+import Tx from 'ethereumjs-tx'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as admApi from '../../../lib/adamant-api'
@@ -31,22 +33,25 @@ const STATUS_INTERVAL = 8000
  * Creates ETH account for the specified passphrase.
  *
  * @param {string} passphrase 12-word passphrase
- * @returns {{address: string, privateKey: string, publicKey: string}} account
+ * @returns {{address: string, privateKey: string}} account
  */
 function getAccountFromPassphrase (passphrase) {
   const mnemonic = new Mnemonic(passphrase, Mnemonic.Words.ENGLISH)
   const seed = mnemonic.toSeed()
   const privateKey = hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey
 
-  return api.eth.accounts.privateKeyToAccount('0x' + privateKey.toString('hex'))
+  return {
+    address: bufferToHex(privateToAddress(privateKey)),
+    privateKey
+  }
 }
 
 function toEther (wei) {
-  return api.utils.fromWei(`${wei}`, 'ether')
+  return api.fromWei(`${wei}`, 'ether')
 }
 
 function toWei (ether) {
-  return api.utils.toWei(`${ether}`, 'ether')
+  return api.toWei(`${ether}`, 'ether')
 }
 
 function enqueueRequest (key, requestSupplier) {
@@ -60,10 +65,16 @@ function executeRequests () {
   const requests = backgroundRequests.splice(0, 20)
   if (!requests.length) return
 
-  const batch = new api.eth.BatchRequest()
+  const batch = api.createBatch()
   requests.forEach(x => x.requests.forEach(r => batch.add(r)))
 
   batch.execute()
+}
+
+function promisify (func) {
+  return (...args) => new Promise((resolve, reject) => {
+    func(...args, (error, result) => error ? reject(error) : resolve(result))
+  })
 }
 
 let isAddressBeingStored = null
@@ -170,9 +181,10 @@ export default {
         // Current gas price
         api.eth.getGasPrice.request((err, price) => {
           if (!err) {
+            const gasPrice = 2 * price
             context.commit('gasPrice', {
-              gasPrice: price,
-              fee: toEther(2 * Number(TRANSFER_GAS) * price)
+              gasPrice,
+              fee: toEther(Number(TRANSFER_GAS) * gasPrice)
             })
           }
         }),
@@ -202,62 +214,55 @@ export default {
    * @returns {Promise<string>} ETH transaction hash
    */
   sendTokens (context, { amount, admAddress, ethAddress, comments }) {
-    // A dirty trick: change gas price a little bit in randomly. This way two subsequent
-    // transactions with the same amount & recipient will have different hashes, thus preventing
-    // the "Transaction with the same hash has already been imported" error.
-    const gasPriceDelta = Math.round(100 * Math.random())
-    const gasPrice = new api.utils.BN(context.state.gasPrice || DEFAULT_GAS_PRICE).add(
-      new api.utils.BN(gasPriceDelta)).toString()
-
     const ethTx = {
       from: context.state.address,
       to: ethAddress,
       value: toWei(amount),
       gas: TRANSFER_GAS,
-      gasPrice
+      gasPrice: context.state.gasPrice || DEFAULT_GAS_PRICE
     }
 
-    if (!api.utils.isAddress(ethAddress)) {
+    if (!isValidAddress(ethAddress)) {
       return Promise.reject(new Error('invalid_address'))
     }
 
-    return api.eth.getTransactionCount(context.state.address, 'pending')
+    return promisify(api.eth.getTransactionCount)(context.state.address, 'pending')
       .then(count => {
         if (count) ethTx.nonce = count
-        return api.eth.accounts.signTransaction(ethTx, context.state.privateKey)
-      })
-      .then(signed => {
-        const tx = signed.rawTransaction
-        const hash = api.utils.sha3(tx)
-        console.log('ETH transaction', hash)
 
-        return { tx, hash }
-      })
-      .then(signedTx => {
-        if (!admAddress) return signedTx
+        const tx = new Tx(ethTx)
+        tx.sign(toBuffer(context.state.privateKey.data))
+        const serialized = tx.serialize()
+        const hash = api.sha3(serialized)
+
+        if (!admAddress) return serialized
         // Send a special message to indicate that we're performing an ETH transfer
-        const msg = { type: 'eth_transaction', amount, hash: signedTx.hash, comments }
+        const msg = { type: 'eth_transaction', amount, hash, comments }
         return admApi.sendSpecialMessage(admAddress, msg)
           .then(() => {
             console.log('ADM message has been sent', msg)
-            return signedTx
+            return serialized
           })
           .catch((error) => {
             console.log('Failed to send "eth_transaction"', error)
             return Promise.reject(new Error('adm_message'))
           })
       })
-      .then(({ tx, hash }) => {
-        // https://github.com/ethereum/web3.js/issues/1255#issuecomment-356492134
-        const method = api.eth.sendSignedTransaction.method
-        const payload = method.toPayload([tx])
+      .then(tx => {
+        // // https://github.com/ethereum/web3.js/issues/1255#issuecomment-356492134
+        // const method = api.eth.sendSignedTransaction.method
+        // const payload = method.toPayload([tx])
 
-        return new Promise((resolve) => {
-          method.requestManager.send(payload, (error, result) => {
-            console.log('sendSignedTransaction', { error, result })
-            resolve({ hash: result, error })
-          })
-        })
+        // return new Promise((resolve) => {
+        //   method.requestManager.send(payload, (error, result) => {
+        //     console.log('sendSignedTransaction', { error, result })
+        //     resolve({ hash: result, error })
+        //   })
+        // })
+        return promisify(api.eth.sendRawTransaction)('0x' + tx.toString('hex')).then(
+          hash => ({ hash }),
+          error => ({ error })
+        )
       })
       .then(({ hash, error }) => {
         if (error) {

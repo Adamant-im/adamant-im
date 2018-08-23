@@ -96,7 +96,8 @@ export default {
             this.$router.push({ name: 'Transaction', params })
           }
         },
-        _ => {
+        err => {
+          console.error(err)
           this.isWaiting = false
           this.errorMessage('error_transaction_send')
         }
