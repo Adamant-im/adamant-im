@@ -231,7 +231,7 @@ export default {
         if (count) ethTx.nonce = count
 
         const tx = new Tx(ethTx)
-        tx.sign(toBuffer(context.state.privateKey.data))
+        tx.sign(toBuffer(context.state.privateKey))
         const serialized = tx.serialize()
         const hash = api.sha3(serialized)
 

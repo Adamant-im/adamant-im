@@ -6,7 +6,7 @@ import crypto from 'crypto'
 import Mnemonic from 'bitcore-mnemonic'
 import nacl from 'tweetnacl/nacl-fast'
 import ed2curve from 'ed2curve'
-import utf8 from '@stablelib/utf8'
+import { decode } from '@stablelib/utf8'
 import bignum from './bignumber.js'
 import ByteBuffer from 'bytebuffer'
 import constants from './constants.js'
@@ -370,7 +370,7 @@ adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
   const DHSecretKey = ed2curve.convertSecretKey(privateKey)
   const decrypted = nacl.box.open(msg, nonce, DHPublicKey, DHSecretKey)
 
-  return decrypted ? utf8.decode(decrypted) : ''
+  return decrypted ? decode(decrypted) : ''
 }
 
 /**
@@ -418,7 +418,7 @@ adamant.decodeValue = function (source, privateKey, nonce) {
   const secretKey = ed2curve.convertSecretKey(sodium.crypto_hash_sha256(privateKey))
   const decrypted = nacl.secretbox.open(source, nonce, secretKey)
 
-  const strValue = decrypted ? utf8.decode(decrypted) : ''
+  const strValue = decrypted ? decode(decrypted) : ''
   if (!strValue) return null
 
   const from = strValue.indexOf('{')

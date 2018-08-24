@@ -4,7 +4,7 @@ import config from '../config.json'
 import sodium from 'sodium-browserify-tweetnacl'
 import nacl from 'tweetnacl/nacl-fast'
 import ed2curve from 'ed2curve'
-import stablelib from '@stablelib/utf8'
+import * as stablelib from '@stablelib/utf8'
 
 import renderMarkdown from './markdown'
 import { hexToBytes, bytesToHex } from './hex'
