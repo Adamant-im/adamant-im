@@ -29,10 +29,27 @@ const webpackConfig = merge(baseWebpackConfig, {
       usePostCSS: true
     })
   },
+  entry: {
+    vendor: ['babel-polyfill', 'vue', 'vue-router', 'vuex']
+  },
   devtool: config.build.productionSourceMap ? config.build.devtool : false,
   output: {
     path: config.build.assetsRoot,
+    publicPath: '/',
     filename: utils.assetsPath('js/[name].[chunkhash].js'),
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          chunks: 'initial',
+          name: 'vendor',
+          test: 'vendor',
+          enforce: true
+        },
+      }
+    },
+    runtimeChunk: true
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
@@ -58,7 +75,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         ? 'index.html'
         : config.build.index,
       template: 'index.html',
-      inject: true,
+      inject: 'body',
       minify: {
         removeComments: true,
         collapseWhitespace: true,
