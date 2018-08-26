@@ -40,6 +40,7 @@ function deviceIsDisabled () {
 var defaultLanguage = navigator.language || navigator.userLanguage
 defaultLanguage = defaultLanguage.toLowerCase().substring(0, 2)
 window.refreshTime = new Date().getTime()
+// TODO: WTF?
 if (defaultLanguage !== 'ru' && defaultLanguage !== 'en') {
   defaultLanguage = 'en'
 }
@@ -52,13 +53,13 @@ function createMockMessage (state, newAccount, partner, message) {
       readOnly: true,
       messages: {
         0: {
-          message: this.$i18n.t('chats.' + message),
+          message: window.ep.$i18n.t('chats.' + message),
           timestamp: 0,
           direction: 'to'
         }
       },
       last_message: {
-        message: this.$i18n.t('chats.' + message),
+        message: window.ep.$i18n.t('chats.' + message),
         timestamp: 0,
         direction: 'to'
       }

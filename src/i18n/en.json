@@ -46,6 +46,7 @@
   },
   "chats": {
     "new_chat": "Start new Chat",
+    "scan_recipient_button": "Scan",
     "new_chat_tooltip": "Click to start a chat with new interlocutor",
     "no_money": "Not enough funds. Top up your balance.",
     "no_empty": "Message can't be empty",

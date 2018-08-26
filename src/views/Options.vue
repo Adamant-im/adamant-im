@@ -116,7 +116,7 @@ export default {
   name: 'settings',
   computed: {
     languageList: function () {
-      return require('../i18n').default
+      return window.ep.$i18n.messages
     }
   },
   mounted () {

@@ -5,6 +5,8 @@ import sodium from 'sodium-browserify-tweetnacl'
 import nacl from 'tweetnacl/nacl-fast'
 import ed2curve from 'ed2curve'
 import stablelib from '@stablelib/utf8'
+// TODO: we use axios only in that file now. Move it to separate file later.
+import axios from 'axios'
 
 import renderMarkdown from './markdown'
 import { hexToBytes, bytesToHex } from './hex'
@@ -75,19 +77,19 @@ function install (Vue) {
   }
   Vue.prototype.createNewAccount = function (publicKey, callback) {
     this.$store.commit('ajax_start')
-    this.$http.post(this.getAddressString() + '/api/accounts/new', { publicKey: publicKey }).then(response => {
-      if (response.body.success) {
-        response.body.account.balance = response.body.account.balance / 100000000
-        response.body.account.unconfirmedBalance = response.body.account.unconfirmedBalance / 100000000
-        response.body.account.publicKey = publicKey
-        response.body.account.is_new_account = true
-        this.$store.commit('login', response.body.account)
+    axios.post(this.getAddressString() + '/api/accounts/new', { publicKey: publicKey }).then(response => {
+      if (response.data.success) {
+        response.data.account.balance = response.data.account.balance / 100000000
+        response.data.account.unconfirmedBalance = response.data.account.unconfirmedBalance / 100000000
+        response.data.account.publicKey = publicKey
+        response.data.account.is_new_account = true
+        this.$store.commit('login', response.data.account)
         if (callback) {
           callback.call(this)
         }
         this.$store.commit('ajax_end')
       } else {
-        alert(response.body.error)
+        alert(response.data.error)
         this.$store.commit('ajax_end_with_error')
       }
     }, response => {
@@ -96,17 +98,17 @@ function install (Vue) {
   }
   Vue.prototype.getAccountByPublicKey = function (publicKey, callback) {
     this.$store.commit('ajax_start')
-    this.$http.get(this.getAddressString(true) + '/api/accounts?publicKey=' + publicKey).then(response => {
-      if (response.body.success) {
-        response.body.account.balance = response.body.account.balance / 100000000
-        response.body.account.unconfirmedBalance = response.body.account.unconfirmedBalance / 100000000
-        response.body.account.publicKey = publicKey
-        this.$store.dispatch('updateAccount', response.body.account)
+    axios.get(this.getAddressString(true) + '/api/accounts?publicKey=' + publicKey).then(response => {
+      if (response.data.success) {
+        response.data.account.balance = response.data.account.balance / 100000000
+        response.data.account.unconfirmedBalance = response.data.account.unconfirmedBalance / 100000000
+        response.data.account.publicKey = publicKey
+        this.$store.dispatch('updateAccount', response.data.account)
         if (callback) {
           callback.call(this)
         }
         this.$store.commit('ajax_end')
-      } else if (response.body.error === 'Account not found') {
+      } else if (response.data.error === 'Account not found') {
         this.createNewAccount(publicKey, callback)
       }
     }, response => {
@@ -162,19 +164,19 @@ function install (Vue) {
     if (window.pk_cache[recipientAddress]) {
       return Promise.resolve(window.pk_cache[recipientAddress])
     }
-    return this.$http.get(this.getAddressString() + '/api/accounts/getPublicKey?address=' + recipientAddress).then(response => {
-      if (response.body.success) {
-        window.pk_cache[recipientAddress] = response.body.publicKey
-        return response.body.publicKey
+    return axios.get(this.getAddressString() + '/api/accounts/getPublicKey?address=' + recipientAddress).then(response => {
+      if (response.data.success) {
+        window.pk_cache[recipientAddress] = response.data.publicKey
+        return response.data.publicKey
       }
 
       return null
     })
   }
   Vue.prototype.encodeMessageForAddress = function (msg, recipientAddress, caller) {
-    this.$http.get(this.getAddressString() + '/api/accounts/getPublicKey?address=' + recipientAddress).then(response => {
-      if (response.body.success) {
-        var msgObject = this.encodeMessage(msg, response.body.publicKey)
+    axios.get(this.getAddressString() + '/api/accounts/getPublicKey?address=' + recipientAddress).then(response => {
+      if (response.data.success) {
+        var msgObject = this.encodeMessage(msg, response.data.publicKey)
         // msgObject.message = msgObject.message.toString('hex')
         // msgObject.own_message = msgObject.own_message.toString('hex')
         this.sendMessage(msgObject, recipientAddress)
@@ -203,12 +205,12 @@ function install (Vue) {
     }
   }
   Vue.prototype.processMessageTransaction = function (transaction) {
-    this.$http.post(this.getAddressString() + '/api/chats/process', {
+    axios.post(this.getAddressString() + '/api/chats/process', {
       transaction: transaction
     }).then(response => {
-      if (response.body.success) {
-        if (response.body.transactionId) {
-          transaction.id = response.body.transactionId
+      if (response.data.success) {
+        if (response.data.transactionId) {
+          transaction.id = response.data.transactionId
           this.loadMessageTransaction(transaction)
           if (!this.$store.state.partnerName) {
             this.$store.commit('select_chat', transaction.recipientId)
@@ -231,7 +233,7 @@ function install (Vue) {
     })
   }
   Vue.prototype.normalizeMessageTransaction = function (transaction) {
-    this.$http.post(this.getAddressString() + '/api/chats/normalize', {
+    axios.post(this.getAddressString() + '/api/chats/normalize', {
       type: transaction.type,
       message: transaction.asset.chat.message,
       own_message: transaction.asset.chat.own_message,
@@ -240,15 +242,15 @@ function install (Vue) {
       publicKey: transaction.publicKey,
       senderId: transaction.senderId
     }).then(response => {
-      if (response.body.success) {
-        var newTransaction = response.body.transaction
+      if (response.data.success) {
+        var newTransaction = response.data.transaction
         var keypair = this.getKeypair()
         newTransaction.senderId = transaction.senderId
         newTransaction.signature = adamant.transactionSign(newTransaction, keypair)
         this.$store.commit('ajax_end')
         this.processMessageTransaction(newTransaction)
       } else {
-        this.$store.commit('send_error', {msg: response.body.error})
+        this.$store.commit('send_error', {msg: response.data.error})
         this.$store.commit('ajax_end')
       }
     }, response => {
@@ -346,21 +348,21 @@ function install (Vue) {
       queryString += '&offset=' + offset
     }
     queryString += '&orderBy=timestamp:desc'
-    this.$http.get(queryString).then(response => {
+    axios.get(queryString).then(response => {
       var haveSubseqs = false
-      if (response.body.success) {
-        for (var i in response.body.transactions) {
-          if (response.body.transactions[i] === null || !response.body.transactions[i]) {
+      if (response.data.success) {
+        for (var i in response.data.transactions) {
+          if (response.data.transactions[i] === null || !response.data.transactions[i]) {
             continue
           }
-          this.$store.commit('set_last_chat_height', response.body.transactions[i].height)
+          this.$store.commit('set_last_chat_height', response.data.transactions[i].height)
           if (!window.queuedMessages) {
             window.queuedMessages = 0
           }
           window.queuedMessages++
-          this.loadMessageTransaction(response.body.transactions[i])
+          this.loadMessageTransaction(response.data.transactions[i])
         }
-        if (response.body.transactions.length === 100) {
+        if (response.data.transactions.length === 100) {
           var newOffset = offset
           if (!newOffset) {
             newOffset = 0
@@ -386,7 +388,7 @@ function install (Vue) {
         clearTimeout(window.loadTimeout)
       }
       window.loadTimeout = setTimeout(function () {
-        this.$store.commit('have_loaded_chats')
+        window.ep.$store.commit('have_loaded_chats')
       }, 7000)
     }
   }
@@ -400,9 +402,9 @@ function install (Vue) {
 
   Vue.prototype.checkUnconfirmedTransactions = function () {
     this.$store.commit('ajax_start')
-    this.$http.get(this.getAddressString() + '/api/transactions/unconfirmed').then(response => {
-      if (response.body.success) {
-        if (response.body.count === 0) {
+    axios.get(this.getAddressString() + '/api/transactions/unconfirmed').then(response => {
+      if (response.data.success) {
+        if (response.data.count === 0) {
           this.$store.commit('set_last_transaction_status', true)
           // this.$store.commit('ajax_end')
         } else {

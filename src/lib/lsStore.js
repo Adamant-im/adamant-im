@@ -129,7 +129,7 @@ export default function storeData () {
           window.clearTimeout(window.storeTimer)
         }
         var storeTimer = window.setTimeout(function () {
-          this.$store.commit('force_update')
+          window.ep.$store.commit('force_update')
           window.storeTimer = undefined
         }, 10000)
         window.storeTimer = storeTimer

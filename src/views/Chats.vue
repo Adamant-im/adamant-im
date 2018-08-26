@@ -86,7 +86,7 @@ export default {
   },
   computed: {
     adamantAvatarIcon: function () {
-      return '/static/img/Wallet/adm-address.svg'
+      return '/img/Wallet/adm-address.svg'
     },
     firstLoading: function () {
       return this.$store.state.firstChatLoad

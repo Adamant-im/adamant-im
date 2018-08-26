@@ -4,7 +4,6 @@ import router from './router'
 import './registerServiceWorker'
 import i18n from './i18n'
 
-import VueResource from 'vue-resource'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 import VueMaterial from 'vue-material'
@@ -18,7 +17,6 @@ import storeConfig from './store'
 
 Vue.use(Vuex)
 Vue.use(VueMaterial)
-Vue.use(VueResource)
 Vue.use(VueClipboards)
 Vue.use(VueHazeServerApi)
 Vue.use(VueFormatters)
@@ -29,7 +27,7 @@ document.title = i18n.t('app_title')
 
 Vue.config.productionTip = false
 
-new Vue({
+window.ep = new Vue({
   version: packageJSON.version,
   router,
   store,
