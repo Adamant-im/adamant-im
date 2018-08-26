@@ -13,13 +13,10 @@
     >
       <div v-if="direction !== 'to'" class="message-tick" :data-confirmation="confirm"></div>
       <div v-if="readOnly" class="adamant-avatar"></div>
-      <div v-else class="avatar-holder"></div>
+      <div v-else class="avatar-holder" v-bind:class="{fromAvatarHolder: toMessageFlag}"></div>
       <div class="message-block">
         <div class="msg-holder">
-          <div v-if="confirm !== 'confirmed'" class="sent-message">
-            <slot></slot>
-          </div>
-          <div v-else class="confirmed-message">
+          <div class="sent-message" v-bind:class="{to: toMessageFlag, sent: sentMessageFlag, confirm: confirmMessageFlag, reject: retryMessageFlag}">
             <slot></slot>
           </div>
         </div>
@@ -49,6 +46,15 @@ export default {
     retryMessageFlag () {
       return this.confirm === 'rejected'
     },
+    sentMessageFlag () {
+      return this.confirm === 'sent'
+    },
+    confirmMessageFlag () {
+      return this.confirm === 'confirmed'
+    },
+    toMessageFlag () {
+      return this.direction === 'to'
+    },
     getRetryMessage () {
       return this.$i18n.t('chats.retry_message')
     }
@@ -57,14 +63,23 @@ export default {
 </script>
 
 <style>
-  .confirmed-message {
+  .confirm {
     padding: 5px 0
   }
-  .sent-message {
+  .sent {
+    padding: 10px 0
+  }
+  .to {
+    padding: 5px 0
+  }
+  .reject {
     padding: 10px 0
   }
   .chat_entry {
     width: 100%;
+  }
+  .fromAvatarHolder {
+    top: 18px !important;
   }
   .black-text {
     color: rgba(0, 0, 0, 0.87) !important;
