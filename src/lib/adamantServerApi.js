@@ -4,7 +4,7 @@ import config from '../config.json'
 import sodium from 'sodium-browserify-tweetnacl'
 import nacl from 'tweetnacl/nacl-fast'
 import ed2curve from 'ed2curve'
-import stablelib from '@stablelib/utf8'
+import * as stablelib from '@stablelib/utf8'
 // TODO: we use axios only in that file now. Move it to separate file later.
 import axios from 'axios'
 
