@@ -33,7 +33,7 @@
               <md-input type="number" readonly v-model="finalAmount"></md-input>
           </md-input-container>
 
-          <md-input-container v-if="this.fixedAddress && this.crypto=='ETH'">
+          <md-input-container v-if="this.fixedAddress">
             <label>{{ $t('transfer.comments_label') }}</label>
             <md-input v-model="comments" maxlength='100'></md-input>
           </md-input-container>
