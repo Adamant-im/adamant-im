@@ -179,6 +179,6 @@ export default {
     'user_password_forget': 'Забыть',
     'user_password_unlock': 'Разблокировать',
     'login_via_password': 'Войти с помощью пароля',
-    'incorrect_password': 'Неправильный пароль'
+    'incorrect_password': 'Неверный пользовательский пароль'
   }
 }

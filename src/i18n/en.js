@@ -181,6 +181,6 @@ export default {
     'user_password_forget': 'Forget',
     'user_password_unlock': 'Unlock',
     'login_via_password': 'Login via password',
-    'incorrect_password': 'Incorrect password'
+    'incorrect_password': 'Wrong user password'
   }
 }
