@@ -49,7 +49,6 @@ export default {
           this.$store.commit('stop_tracking_new')
         }, errorFunction)
       } else {
-        console.log('incorrect password')
         this.errorSnackOpen()
       }
     },
