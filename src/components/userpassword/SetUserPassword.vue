@@ -1,6 +1,6 @@
 <template>
   <div>
-    <md-dialog :md-open-from="openFrom" :md-close-to="closeTo" ref="set_user_password">
+    <md-dialog :md-open-from="openFrom" :md-close-to="closeTo" v-on:close="onClose" ref="set_user_password">
       <md-dialog-content>
         <h3>{{$t('login_via_password.popup_title')}}</h3>
         <md-layout md-flex="66" sm-flex="90">
@@ -43,6 +43,9 @@ export default {
       this.userPasswordValue = null
       this.userPasswordCheckbox = false
       this.close()
+    },
+    onClose () {
+      this.$emit('close', this.$store.state.storeInLocalStorage)
     }
   },
   updated () {
