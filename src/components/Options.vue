@@ -126,7 +126,7 @@ export default {
         this.$refs['set_user_password'].open()
       } else {
         this.$store.commit('change_storage_method', keepDataInLocalStorage)
-        localStorage.removeItem('storedData')
+        this.$store.dispatch('clearUserPassword')
       }
     }
   },

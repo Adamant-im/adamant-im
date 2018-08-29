@@ -178,6 +178,7 @@ export default {
     'user_password_hint': 'Пароль...',
     'user_password_forget': 'Забыть',
     'user_password_unlock': 'Разблокировать',
-    'login_via_password': 'Войти с помощью пароля'
+    'login_via_password': 'Войти с помощью пароля',
+    'incorrect_password': 'Неправильный пароль'
   }
 }

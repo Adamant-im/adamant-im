@@ -8,6 +8,9 @@
       <md-button class="md-raised md-short" v-on:click="forget">{{ $t('login_via_password.user_password_forget') }}</md-button>
       <md-button :disabled="disableLoginViaPassword" class="md-raised md-short" v-on:click="loginViaPassword">{{ $t('login_via_password.user_password_unlock') }}</md-button>
     </md-layout>
+    <md-snackbar md-position="bottom center" md-accent ref="errorsnackbar" md-duration="2000">
+      <span>{{ $t('login_via_password.incorrect_password') }}</span>
+    </md-snackbar>
   </md-layout>
 </template>
 
@@ -27,19 +30,14 @@ export default {
       this.$store.commit('change_storage_method', false)
     },
     loginViaPassword () {
-      console.log('password', this.userPasswordValue)
-      console.log('new password', this.$store.getters.getUserPassword)
       if (this.$store.getters.getUserPassword === this.userPasswordValue) {
         let errorFunction = function () {
-          // TODO call warning
-          console.log('some error has been occurred')
+          this.errorSnackOpen()
         }
         let passPhrase = ''
         const storedData = JSON.parse(Base64.decode(localStorage.getItem('storedData')))
         if (!storedData) {
-          // TODO call warning
-          console.log('empty stored data')
-          this.close()
+          this.errorSnackOpen()
           return
         }
         passPhrase = Base64.decode(storedData.passPhrase)
@@ -52,7 +50,11 @@ export default {
         }, errorFunction)
       } else {
         console.log('incorrect password')
+        this.errorSnackOpen()
       }
+    },
+    errorSnackOpen () {
+      this.$refs.errorsnackbar.open()
     }
   },
   computed: {

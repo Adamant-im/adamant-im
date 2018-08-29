@@ -230,6 +230,13 @@ const store = {
           updateLastChatMessage(currentChat, payload, 'sent', 'from', response.transactionId)
         })
       })
+    },
+    clearUserPassword ({ commit }) {
+      localStorage.removeItem('storedData')
+      localStorage.removeItem('adm-persist')
+      sessionStorage.removeItem('userPassword')
+      commit('user_password_exists', false)
+      commit('change_storage_method', false)
     }
   },
   mutations: {

@@ -15,7 +15,7 @@
           <p class="site-description">{{ $t('login.subheader') }}</p>
       </div>
       <md-layout md-align="center" md-gutter="16">
-          <LoginWithUserPassword v-if="userPassoword" ref="login_with_user_password"></LoginWithUserPassword>
+          <LoginWithUserPassword v-if="userPassword" ref="login_with_user_password"></LoginWithUserPassword>
           <md-layout v-else md-flex="66" md-flex-xsmall="80">
             <md-input-container class="password_input">
               <label style="text-align: center;width: 100%;">{{ $t('login.password_label') }}</label>
@@ -191,10 +191,6 @@ export default {
       this.$store.commit('leave_chat')
       this.$root._router.push('/chats/')
     }
-    if (localStorage.getItem('adm-persist') && localStorage.getItem('adm-persist').length > 0) {
-      // TODO
-    }
-    console.log(this.$store.getters.getUserPasswordExists)
     this.userPasswordExists = this.$store.getters.getUserPasswordExists
   },
   computed: {
@@ -212,7 +208,7 @@ export default {
     qrCodePassPhrase: function () {
       return this.$store.getters.getPassPhrase
     },
-    userPassoword: function () {
+    userPassword: function () {
       return this.$store.getters.getUserPasswordExists
     }
   },
