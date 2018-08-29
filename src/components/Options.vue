@@ -139,8 +139,6 @@ export default {
   },
   mounted () {
     this.$store.commit('last_visited_chat', null)
-    console.log('userPassword mounted')
-    this.userPassword = this.$store.state.storeInLocalStorage
   },
   watch: {
     'sendOnEnter' (to, from) {
@@ -168,8 +166,7 @@ export default {
       sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
-      language: this.$i18n.locale,
-      userPassword: false
+      language: this.$i18n.locale
     }
   }
 }

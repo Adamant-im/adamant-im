@@ -8,8 +8,9 @@
             <md-input v-model="userPasswordValue" :placeholder="$t('login_via_password.popup_hint')"></md-input>
           </md-input-container>
         </md-layout>
-        <input type="checkbox" value="" v-model="userPasswordCheckbox"/>
-        {{$t('login_via_password.agreement_hint')}} <a target="_blank" v-bind:href="userPasswordAgreementLink">{{$t('login_via_password.agreement')}}</a>
+        <md-checkbox v-model="userPasswordCheckbox">
+          {{$t('login_via_password.agreement_hint')}} <a target="_blank" v-bind:href="userPasswordAgreementLink">{{$t('login_via_password.agreement')}}</a>
+        </md-checkbox>
         <md-layout md-flex="66" sm-flex="90">
           <md-layout md-align="center" md-gutter="16">
             <md-button v-on:click="close" class="md-flat md-primary">{{ $t('transfer.confirm_cancel') }}</md-button>
