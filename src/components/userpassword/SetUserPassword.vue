@@ -1,6 +1,6 @@
 <template>
   <div>
-    <md-dialog :md-open-from="openFrom" :md-close-to="closeTo" v-on:close="onClose" ref="set_user_password">
+    <md-dialog class="user-password" :md-open-from="openFrom" :md-close-to="closeTo" v-on:close="onClose" ref="set_user_password">
       <md-dialog-content>
         <h3>{{$t('login_via_password.popup_title')}}</h3>
         <md-layout md-flex="66" sm-flex="90">
@@ -64,6 +64,10 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+  .user-password .md-checkbox .md-checkbox-container:after {
+      border: 2px solid gray;
+      border-top: 0;
+      border-left: 0;
+  }
 </style>
