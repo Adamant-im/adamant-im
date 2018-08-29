@@ -38,8 +38,9 @@
                       <md-table-row>
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
                           <md-table-cell colspan="2"  style="text-align:left;">
-                            <input type="checkbox" v-on:click="storeInLocalStorage" v-model="loadStoreInLocalStorage"/>
-                            {{ $t('options.exit_on_close') }}
+                            <md-checkbox v-on:change="storeInLocalStorage" v-model="clearOnExit">
+                              {{ $t('options.exit_on_close') }}
+                            </md-checkbox>
                           </md-table-cell>
                       </md-table-row>
                   </md-table-body>
@@ -107,7 +108,7 @@
             </div>
           </md-card-content>
       </md-card>
-      <setUserPassword openFrom="#setUserPassword" closeTo="#setUserPassword" ref="set_user_password"></setUserPassword>
+      <setUserPassword openFrom="#setUserPassword" closeTo="#setUserPassword" ref="set_user_password" v-on:close="onPwdDialogClose"></setUserPassword>
       <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
     </div>
   </div>
@@ -120,22 +121,20 @@ export default {
   components: {setUserPassword},
   methods: {
     storeInLocalStorage (e) {
-      e.preventDefault()
-      const keepDataInLocalStorage = !this.$store.state.storeInLocalStorage
-      if (keepDataInLocalStorage) {
+      if (!this.$store.state.storeInLocalStorage) {
         this.$refs['set_user_password'].open()
       } else {
-        this.$store.commit('change_storage_method', keepDataInLocalStorage)
+        this.$store.commit('change_storage_method', false)
         this.$store.dispatch('clearUserPassword')
       }
+    },
+    onPwdDialogClose (payload) {
+      this.clearOnExit = !payload
     }
   },
   computed: {
     languageList: function () {
       return require('../i18n').default
-    },
-    loadStoreInLocalStorage: function () {
-      return !this.$store.state.storeInLocalStorage
     }
   },
   mounted () {
@@ -164,7 +163,7 @@ export default {
   },
   data () {
     return {
-      storeInLS: !this.$store.state.storeInLocalStorage,
+      clearOnExit: !this.$store.state.storeInLocalStorage,
       notifySound: this.$store.state.notifySound,
       sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
