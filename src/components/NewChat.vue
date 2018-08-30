@@ -6,7 +6,7 @@
           <md-layout md-flex="90" sm-flex="90">
             <md-input-container>
               <label>{{ $t('chats.recipient') }}</label>
-              <md-input v-model="addressPlaceholder"></md-input>
+              <md-input v-model="targetAddress"></md-input>
             </md-input-container>
           </md-layout>
           <md-layout md-flex="66" sm-flex="90" style="margin-top: 10px;">
@@ -60,6 +60,9 @@ export default {
         this.errorMessage('no_address')
         return
       }
+      if (this.targetAddress.indexOf('U') < 0) {
+        this.targetAddress = 'U' + this.targetAddress
+      }
       if (!(/U([0-9]{6,})$/.test(this.targetAddress))) {
         this.errorMessage('incorrect_address')
         return
@@ -85,18 +88,6 @@ export default {
   },
   mounted () {
     this.isLogged = this.$store.getters.isLogged
-  },
-  computed: {
-    addressPlaceholder: {
-      get () {
-        return this.targetAddress
-      },
-      set (value) {
-        value = value || ''
-        if (value && !value.startsWith('U')) value = 'U' + value
-        this.targetAddress = value
-      }
-    }
   },
   data () {
     return {
