@@ -85,15 +85,16 @@ export default {
   },
   mounted () {
     this.isLogged = this.$store.getters.isLogged
-    this.targetAddress = 'U'
   },
   computed: {
     addressPlaceholder: {
       get () {
-        return !this.targetAddress ? 'U' + this.targetAddress : this.targetAddress
+        return this.targetAddress
       },
       set (value) {
-        this.targetAddress = !value ? 'U' + value : value
+        value = value || ''
+        if (value && !value.startsWith('U')) value = 'U' + value
+        this.targetAddress = value
       }
     }
   },
