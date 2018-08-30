@@ -10,7 +10,7 @@
     "copy_button_tooltip": "Click to copy the passphrase to clipboard. Save it in a password keeper application. To enter your new Wallet, paste it the passphrase field.",
     "save_button_tooltip": "Click to save your passphrase in a text file. Save it in the secure place!",
     "password_label": "Input your passphrase to login",
-    "new_password_label": "'<b>Save</b> the passphrase for new Wallet and Messenger account. There is no login to enter Wallet, only the passphrase needed. If lost, no way to recover it.'",
+    "new_password_label": "<b>Save</b> the passphrase for new Wallet and Messenger account. There is no login to enter Wallet, only the passphrase needed. If lost, no way to recover it.",
     "language_label": "Select your language",
     "login_button": "Login",
     "new_button": "Create new",
