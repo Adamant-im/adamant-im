@@ -5,15 +5,15 @@
       <div class="modal">
         <div class="modal-body">
           <h3>{{$t('scan.' + this.checkParentName() + '.modal_header') }}</h3>
+          <md-progress v-show="loading" md-theme="customGrey" md-indeterminate></md-progress>
           <video id="preview"></video>
         </div>
         <div class="modal-footer">
-            <md-button style="max-width: 40px; min-width: 40px; margin-right: 0; padding: 0" v-for="(camera) in cameras" :key="camera.id"
-                       v-if="cameras.length > 1 && camera.id !== activeCameraId"
-                       :title="camera.name" @click.stop="selectCamera(camera)">
-              <md-icon md-src="/img/Attach/rotate-cam.svg"></md-icon>
-            </md-button>
-          <!--</div>-->
+          <md-button style="max-width: 40px; min-width: 40px; margin-right: 0; padding: 0" v-for="(camera) in cameras" :key="camera.id"
+                     v-if="cameras.length > 1 && camera.id !== activeCameraId"
+                     :title="camera.name" @click.stop="selectCamera(camera)">
+            <md-icon md-src="/static/img/Attach/rotate-cam.svg"></md-icon>
+          </md-button>
           <md-button  @click="hideModal"> {{ $t('scan.close_button') === 'scan.close_button'? 'Close' : $t('scan.close_button') }} </md-button>
         </div>
       </div>
@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import Instascan from 'instascan'
 
 export default {
   name: 'qrscan',
@@ -53,12 +52,6 @@ export default {
         if (this.scanner) {
           this.scanner.stop()
         }
-        // this.$router.push('/chats/')
-        // this.$store.commit('create_chat', addressData.address)
-        // if (addressData.label && !this.$store.state.partners[addressData.address]) {
-        //   this.$store.commit('change_display_name', {partnerName: addressData.address, partnerDisplayName: addressData.label})
-        // }
-        // this.$router.push('/chats/' + addressData.address + '/')
       }
       this.$emit('code-grabbed', content)
       this.hideModal()
@@ -72,21 +65,27 @@ export default {
     }
   },
   mounted: function () {
-    let self = this
-    self.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5, mirror: false })
-    self.scanner.addListener('scan', function (content, image) {
-      self.parseHandler(content)
-    })
-    Instascan.Camera.getCameras().then(function (cameras) {
-      self.cameras = cameras
-      if (cameras.length > 0) {
-        self.activeCameraId = cameras[1] ? cameras[1].id : cameras[0].id
-        self.scanner.start(cameras[1] ? cameras[1] : cameras[0])
-      } else {
-        console.error('No cameras found.')
-      }
-    }).catch(function (e) {
-      console.error(e)
+    // Do not remove webpackMode!!!
+    import(
+      /* webpackMode: "lazy" */
+      'instascan').then((Instascan) => {
+      this.loading = false
+      let self = this
+      self.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5, mirror: false })
+      self.scanner.addListener('scan', function (content, image) {
+        self.parseHandler(content)
+      })
+      Instascan.Camera.getCameras().then(function (cameras) {
+        self.cameras = cameras
+        if (cameras.length > 0) {
+          self.activeCameraId = cameras[1] ? cameras[1].id : cameras[0].id
+          self.scanner.start(cameras[1] ? cameras[1] : cameras[0])
+        } else {
+          console.error('No cameras found.')
+        }
+      }).catch(function (e) {
+        console.error(e)
+      })
     })
   },
   computed: {
@@ -104,7 +103,8 @@ export default {
       cameras: [],
       scans: [],
       cameraList: [],
-      currentCamera: false
+      currentCamera: false,
+      loading: true
     }
   }
 }

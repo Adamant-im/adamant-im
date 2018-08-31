@@ -181,7 +181,7 @@ export default {
         // Current gas price
         api.eth.getGasPrice.request((err, price) => {
           if (!err) {
-            const gasPrice = 2 * price
+            const gasPrice = 3 * price
             context.commit('gasPrice', {
               gasPrice,
               fee: toEther(Number(TRANSFER_GAS) * gasPrice)
