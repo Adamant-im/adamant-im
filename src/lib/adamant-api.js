@@ -26,7 +26,7 @@ function parseResponse (response) {
 }
 
 function get (url, query) {
-  return axios.get(toAbsolute(url), query)
+  return axios.get(toAbsolute(url), {params: query})
     .then(parseResponse)
 }
 

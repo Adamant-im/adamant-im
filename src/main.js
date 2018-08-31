@@ -25,6 +25,13 @@ Vue.component('qr-code', VueQRCodeComponent)
 const store = new Vuex.Store(storeConfig)
 document.title = i18n.t('app_title')
 
+Vue.material.registerTheme({
+  customGrey: {
+    primary: 'grey',
+    accent: 'white'
+  }
+})
+
 Vue.config.productionTip = false
 
 window.ep = new Vue({

@@ -308,7 +308,9 @@ export default {
       return this.downvotedCount + this.originVotesCount - this.downvotedCount
     },
     delegatesLoaded () {
-      return Object.keys(this.$store.state.delegates.delegates).length > 0
+      if (this.$store.state.delegates.delegates) {
+        return Object.keys(this.$store.state.delegates.delegates).length > 0
+      }
     },
     errorMsg () {
       return this.$store.state.lastErrorMsg

@@ -100,7 +100,7 @@
           </md-card-area>
           <md-card-content>
             <div class="md-table md-theme-grey">
-              <md-button class="votes-button" v-on:click="$router.push('/votes/')">{{ $t('options.vote_for_delegates_button') }}</md-button>
+              <md-button class="votes-button" @click="$router.push('/votes/')">{{ $t('options.vote_for_delegates_button') }}</md-button>
             </div>
           </md-card-content>
       </md-card>
