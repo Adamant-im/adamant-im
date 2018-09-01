@@ -1,6 +1,5 @@
-import Web3 from 'web3'
+import { isValidAddress } from 'ethereumjs-util'
 
-const web3 = new Web3()
 const RE_ADM_ADDRESS = /U([0-9]{6,})$/
 
 /**
@@ -15,7 +14,7 @@ export default function validateAddress (crypto, address) {
     case 'ADM':
       return RE_ADM_ADDRESS.test(address)
     case 'ETH':
-      return web3.utils.isAddress(address)
+      return isValidAddress(address)
   }
 
   return true
