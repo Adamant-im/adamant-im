@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import setUserPassword from './userpassword/SetUserPassword.vue'
+import setUserPassword from '@/components/userpassword/SetUserPassword.vue'
 export default {
   name: 'settings',
   components: {setUserPassword},

@@ -85,7 +85,7 @@ import FileSaver from 'file-saver'
 import Icon from '@/components/Icon'
 import QRScan from '@/components/QRScan'
 import Spinner from '../components/Spinner'
-import LoginWithUserPassword from './userpassword/LoginWithUserPassword.vue'
+import LoginWithUserPassword from '@/components/userpassword/LoginWithUserPassword.vue'
 import i18n from '../i18n'
 
 export default {
