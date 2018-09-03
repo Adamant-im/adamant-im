@@ -49,5 +49,9 @@ export const WelcomeMessage = {
   ADAMANT_BOUNTY: 'ADAMANT Bounty',
   ADAMANT_ICO: 'ADAMANT Tokens'
 }
+export default {
+  EPOCH,
+  Transactions
+}
 
 export const UserPasswordAgreementLink = 'https://google.com'

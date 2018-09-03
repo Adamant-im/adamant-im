@@ -65,7 +65,7 @@ export default function storeData () {
       store.dispatch('rehydrate')
     }
     window.onbeforeunload = function () {
-      window.ep.$store.commit('force_update')
+      this.$store.commit('force_update')
     }
     store.subscribe((mutation, state) => {
       var storeNow = false
