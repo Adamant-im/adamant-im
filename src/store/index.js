@@ -40,7 +40,6 @@ function deviceIsDisabled () {
 var defaultLanguage = navigator.language || navigator.userLanguage
 defaultLanguage = defaultLanguage.toLowerCase().substring(0, 2)
 window.refreshTime = new Date().getTime()
-// TODO: WTF?
 if (defaultLanguage !== 'ru' && defaultLanguage !== 'en') {
   defaultLanguage = 'en'
 }
@@ -149,7 +148,7 @@ const store = {
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
-      payload.message = this.$i18n.t(payload.message)
+      payload.message = window.ep.$i18n.t(payload.message)
       commit('add_chat_message', payload)
     },
     afterLogin ({ commit }, passPhrase) {
@@ -491,10 +490,7 @@ const store = {
       return state.lastVisitedChat
     },
     getCurrentChatMessageCount: state => {
-      if ((state.currentChat != null) && (state.currentChat.messages != null)) {
-        return Object.keys(state.currentChat.messages).length
-      }
-      return 0
+      return Object.keys(state.currentChat.messages).length
     },
     getChats: state => {
       return state.chats

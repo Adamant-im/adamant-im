@@ -36,7 +36,7 @@
           <a name="bottom"></a>
       </md-theme>
       <div class="forbid" v-if="disabled" style="display: table;"><div style="display: table-cell; vertical-align: middle;">{{ $t('login.device_unsupported') }}</div></div>
-      <audio ref="messageSound" class="newMessageNotification" id="messageSound" src="/sound/bbpro_link.mp3"></audio>
+      <audio ref="messageSound" class="newMessageNotification" id="messageSound" src="/static/sound/bbpro_link.mp3"></audio>
 
   </div>
 </template>
@@ -47,7 +47,7 @@ export default {
   mounted: function () {
     this.checkChatPage(this.$router.currentRoute.path)
     setInterval(
-      ((self) => {
+      (function (self) {
         return function () {
           if (self.$store.state.totalNewChats > 0 && (self.$store.state.notifyBar)) {
             if (window.notify_amount !== self.$store.state.totalNewChats) {

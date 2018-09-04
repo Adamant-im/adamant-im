@@ -7,7 +7,7 @@ cache:
   directories:
     - node_modules
 install:
-  - yarn install
+  - npm install
 before_deploy:
   - source ./deploy.sh
 deploy:
@@ -17,4 +17,4 @@ deploy:
   skip_cleanup: true
   on:
     all_branches: true
-script: yarn run build
+script: npm run build
