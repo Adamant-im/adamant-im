@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 'use strict'
 
 /**
@@ -6,7 +7,7 @@
  * @requires bignumber
  * @constructor
  */
-import BigNumber from 'bignumber.js'
+var BigNumber = require('bignumber.js')
 
 /**
  * Creates an instance from a Buffer.
@@ -95,19 +96,19 @@ BigNumber.prototype.toBuffer = function (opts) {
 
   var size = opts.size === 'auto' ? Math.ceil(hex.length / 2) : (opts.size || 1)
 
-  len = Math.ceil(hex.length / (2 * size)) * size
-  buf = Buffer.alloc(len)
+  var len = Math.ceil(hex.length / (2 * size)) * size
+  var buf = Buffer.alloc(len)
 
   // Zero-pad the hex string so the chunks are all `size` long
   while (hex.length < 2 * len) hex = '0' + hex
 
-  const hx = hex
+  var hx = hex
     .split(new RegExp('(.{' + (2 * size) + '})'))
     .filter(function (s) { return s.length > 0 })
 
   hx.forEach(function (chunk, i) {
-    for (let j = 0; j < size; j++) {
-      let ix = i * size + (endian === 'big' ? j : size - j - 1)
+    for (var j = 0; j < size; j++) {
+      var ix = i * size + (endian === 'big' ? j : size - j - 1)
       buf[ix] = parseInt(chunk.slice(j * 2, j * 2 + 2), 16)
     }
   })
@@ -115,4 +116,4 @@ BigNumber.prototype.toBuffer = function (opts) {
   return buf
 }
 
-export default BigNumber
+module.exports = BigNumber

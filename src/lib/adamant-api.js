@@ -1,4 +1,4 @@
-import axios from 'axios'
+import sa from 'superagent'
 
 import getEndpointUrl from './getEndpointUrl'
 import { Cryptos, Transactions, Delegates } from './constants'
@@ -18,7 +18,7 @@ function toAbsolute (url = '') {
 }
 
 function parseResponse (response) {
-  const body = response.data
+  const body = response.body
   if (body && isFinite(body.nodeTimestamp)) {
     serverTimeDelta = utils.epochTime() - body.nodeTimestamp
   }
@@ -26,12 +26,14 @@ function parseResponse (response) {
 }
 
 function get (url, query) {
-  return axios.get(toAbsolute(url), {params: query})
+  return sa.get(toAbsolute(url))
+    .query(query)
     .then(parseResponse)
 }
 
 function post (url, payload) {
-  return axios.post(toAbsolute(url), payload)
+  return sa.post(toAbsolute(url))
+    .send(payload)
     .then(parseResponse)
 }
 

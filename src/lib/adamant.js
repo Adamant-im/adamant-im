@@ -1,16 +1,16 @@
 /* eslint-disable no-redeclare */
 'use strict'
 
-import sodium from 'sodium-browserify-tweetnacl'
-import crypto from 'crypto'
-import Mnemonic from 'bitcore-mnemonic'
-import nacl from 'tweetnacl/nacl-fast'
-import ed2curve from 'ed2curve'
-import { decode } from '@stablelib/utf8'
-import bignum from './bignumber.js'
-import ByteBuffer from 'bytebuffer'
-import constants from './constants.js'
-import { hexToBytes, bytesToHex } from './hex'
+var sodium = require('sodium-browserify-tweetnacl')
+var crypto = require('crypto')
+var Mnemonic = require('bitcore-mnemonic')
+const nacl = require('tweetnacl/nacl-fast')
+const ed2curve = require('ed2curve')
+const utf8 = require('@stablelib/utf8')
+var bignum = require('./bignumber.js')
+var ByteBuffer = require('bytebuffer')
+const constants = require('./constants.js')
+const { hexToBytes, bytesToHex } = require('./hex')
 
 /**
  * Crypto functions that implements sodium.
@@ -370,7 +370,7 @@ adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
   const DHSecretKey = ed2curve.convertSecretKey(privateKey)
   const decrypted = nacl.box.open(msg, nonce, DHPublicKey, DHSecretKey)
 
-  return decrypted ? decode(decrypted) : ''
+  return decrypted ? utf8.decode(decrypted) : ''
 }
 
 /**
@@ -418,7 +418,7 @@ adamant.decodeValue = function (source, privateKey, nonce) {
   const secretKey = ed2curve.convertSecretKey(sodium.crypto_hash_sha256(privateKey))
   const decrypted = nacl.secretbox.open(source, nonce, secretKey)
 
-  const strValue = decrypted ? decode(decrypted) : ''
+  const strValue = decrypted ? utf8.decode(decrypted) : ''
   if (!strValue) return null
 
   const from = strValue.indexOf('{')
@@ -441,4 +441,4 @@ adamant.prepareAmount = function (admAmount) {
   return Math.round(Number(admAmount) * 100000000)
 }
 
-export default adamant
+module.exports = adamant
