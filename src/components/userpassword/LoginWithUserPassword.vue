@@ -21,6 +21,15 @@ import nacl from 'tweetnacl/nacl-fast'
 import {Base64} from 'js-base64'
 import {decode} from '@stablelib/utf8'
 
+function convertStringToUint8Array () {
+  let encryptedStoredData = localStorage.getItem('storedData').split(',')
+  let result = []
+  for (let i = 0; i < encryptedStoredData.length; i++) {
+      result.push(parseInt(encryptedStoredData[i]))
+  }
+  return Uint8Array.from(result)
+}
+
 export default {
   name: 'loginWithUserPassword',
   props: ['openFrom', 'closeTo'],
@@ -38,16 +47,10 @@ export default {
         let errorFunction = function () {
           this.errorSnackOpen()
         }
-        let encryptedStoredData = localStorage.getItem('storedData').split(',')
-        let result = []
-        for (let i = 0; i < encryptedStoredData.length; i++) {
-          result.push(parseInt(encryptedStoredData[i]))
-        }
-        result = Uint8Array.from(result)
         let passPhrase = ''
         const nonce = Buffer.allocUnsafe(24)
         const DHSecretKey = ed2curve.convertSecretKey(userPassword)
-        const decrypted = nacl.secretbox.open(result, nonce, DHSecretKey)
+        const decrypted = nacl.secretbox.open(convertStringToUint8Array(), nonce, DHSecretKey)
         const storedData = JSON.parse(decode(decrypted))
         if (!storedData) {
           this.errorSnackOpen()
