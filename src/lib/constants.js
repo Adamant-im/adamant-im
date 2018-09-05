@@ -19,6 +19,12 @@ export const Cryptos = {
   BNB: 'BNB'
 }
 
+export const ERC20 = Object.freeze([
+  Cryptos.BNB
+])
+
+export const isErc20 = crypto => ERC20.includes(crypto)
+
 /** Number of decimal places for the different crypto amounts */
 export const CryptoAmountPrecision = {
   ADM: 2,

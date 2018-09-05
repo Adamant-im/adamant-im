@@ -23,6 +23,10 @@
                   <md-icon  md-src="/static/img/Attach/ethereum.svg">menu</md-icon>
                   <span>{{ $t('chats.send_eth') }}</span>
                 </md-menu-item>
+                <md-menu-item v-on:click="sendTokens('BNB')">
+                  <md-icon  md-src="/static/img/Attach/bnb.svg">menu</md-icon>
+                  <span>{{ $t('chats.send_bnb') }}</span>
+                </md-menu-item>
                 <md-menu-item :disabled="true">
                   <md-icon md-src="/static/img/Attach/picture.svg">collections</md-icon>
                   <span>{{ $t('chats.attach_image') }}</span>
@@ -158,7 +162,8 @@ export default {
       // For cryptos other than ADM we need to fetch the respective account address first
       if (crypto !== Cryptos.ADM) {
         const params = { crypto, partner: this.$route.params.partner }
-        promise = this.$store.dispatch('partners/fetchAddress', params).then(address => {
+        promise = this.$store.dispatch('partners/fetchAddress', params).then(() => {
+          const address = this.$store.getters['partners/cryptoAddress']
           if (!address) this.$refs['no_address_dialog'].open()
           return !!address
         })

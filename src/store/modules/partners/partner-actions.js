@@ -1,4 +1,5 @@
 import * as admApi from '../../../lib/adamant-api'
+import { isErc20, Cryptos } from '../../../lib/constants'
 
 const CONTACT_LIST_KEY = 'contact_list'
 const UPDATE_TIMEOUT = 3 * 60 * 1000 // 3 min
@@ -40,11 +41,13 @@ export default {
    * @returns {Promise<string>}
    */
   fetchAddress (context, payload) {
+    const crypto = isErc20(payload.crypto) ? Cryptos.ETH : payload.crypto
+
     const existingPartner = context.state.list[payload.partner]
-    const existingAddress = existingPartner && existingPartner[payload.crypto]
+    const existingAddress = existingPartner && existingPartner[crypto]
     if (existingAddress) return Promise.resolve(existingAddress)
 
-    const key = `${payload.crypto}:address`.toLowerCase()
+    const key = `${crypto}:address`.toLowerCase()
 
     return admApi.getStored(key, payload.partner).then(
       address => {

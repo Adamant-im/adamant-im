@@ -69,6 +69,7 @@ export default {
     'received_label': 'Received',
     'send_adm': 'Send ADM',
     'send_eth': 'Send ETH',
+    'send_bnb': 'Send BNB',
     'attach_image': 'Attach image',
     'attach_file': 'Attach file',
     'retry_message': 'Message was not sent, weak connection. Tap to retry.'
