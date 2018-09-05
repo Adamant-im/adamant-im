@@ -5,5 +5,9 @@ export default {
     return state.gasPrice || DEFAULT_GAS_PRICE
   },
 
+  fee (state) {
+    return state.fee
+  },
+
   transaction: state => id => state.transactions[id]
 }

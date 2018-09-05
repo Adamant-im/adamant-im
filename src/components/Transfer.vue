@@ -28,7 +28,7 @@
               <label>{{ $t('transfer.commission_label') }}</label>
               <md-input type="number" readonly v-model="commission"></md-input>
           </md-input-container>
-          <md-input-container>
+          <md-input-container v-if="!this.hideTotal">
               <label style="text-align:left">{{ $t('transfer.final_amount_label') }}</label>
               <md-input type="number" readonly v-model="finalAmount"></md-input>
           </md-input-container>
@@ -62,7 +62,7 @@
 import Spinner from './Spinner.vue'
 
 import validateAddress from '../lib/validateAddress'
-import { Cryptos, CryptoAmountPrecision, Fees } from '../lib/constants'
+import { Cryptos, CryptoAmountPrecision, Fees, isErc20 } from '../lib/constants'
 import { sendTokens, sendMessage } from '../lib/adamant-api'
 
 export default {
@@ -158,7 +158,8 @@ export default {
       return localAmountToTransfer
     },
     commission () {
-      return this.crypto === Cryptos.ADM ? Fees.TRANSFER : this.$store.state.eth.fee
+      if (this.crypto === Cryptos.ADM) return Fees.TRANSFER
+      return this.$store.getters[`${this.crypto.toLowerCase()}/fee`]
     },
     balance () {
       return this.crypto === Cryptos.ADM
@@ -196,6 +197,9 @@ export default {
       const msgType = this.displayName ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
 
       return this.$t(msgType, { amount: this.targetAmount, target, crypto: this.crypto })
+    },
+    hideTotal () {
+      return isErc20(this.crypto)
     }
   },
   mounted () {

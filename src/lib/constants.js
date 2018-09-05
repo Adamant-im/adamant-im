@@ -57,3 +57,6 @@ export const WelcomeMessage = {
   ADAMANT_BOUNTY: 'ADAMANT Bounty',
   ADAMANT_ICO: 'ADAMANT Tokens'
 }
+
+/** Gas value for the ETH transfers */
+export const ETH_TRANSFER_GAS = '210000'

@@ -4,9 +4,9 @@ import abiDecoder from 'abi-decoder'
 import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as admApi from '../../../lib/adamant-api'
 import * as ethUtils from '../../../lib/eth-utils'
+import { ETH_TRANSFER_GAS } from '../../../lib/constants'
 import Erc20 from './erc20.abi.json'
 
-const TRANSFER_GAS = '210000'
 /** Max number of attempts to retrieve the transaction details */
 const MAX_ATTEMPTS = 150
 
@@ -100,8 +100,8 @@ export default {
       from: context.state.address,
       to: context.state.contractAddress,
       value: '0x0',
-      gasLimit: TRANSFER_GAS,
-      gasPrice: context.getters.gasPrice * 10,
+      gasLimit: ETH_TRANSFER_GAS,
+      gasPrice: context.getters.gasPrice,
       data: contract.methods.transfer(ethAddress, ethUtils.toWhole(amount, context.state.decimals)).encodeABI()
     }
 

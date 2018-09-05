@@ -4,9 +4,8 @@ import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as admApi from '../../../lib/adamant-api'
 import * as utils from '../../../lib/eth-utils'
 
-import { Fees } from '../../../lib/constants'
+import { Fees, ETH_TRANSFER_GAS } from '../../../lib/constants'
 
-const TRANSFER_GAS = '21000'
 const KVS_ADDRESS = 'eth:address'
 /** Max number of attempts to retrieve the transaction details */
 const MAX_ATTEMPTS = 150
@@ -134,7 +133,7 @@ export default {
           if (!err) {
             context.commit('gasPrice', {
               gasPrice: price,
-              fee: utils.toEther(2 * Number(TRANSFER_GAS) * price)
+              fee: utils.toEther(2 * Number(ETH_TRANSFER_GAS) * price)
             })
           }
         }),
@@ -175,7 +174,7 @@ export default {
       from: context.state.address,
       to: ethAddress,
       value: utils.toWei(amount),
-      gas: TRANSFER_GAS,
+      gas: ETH_TRANSFER_GAS,
       gasPrice
     }
 
