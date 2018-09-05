@@ -16,7 +16,10 @@
 
 <script>
 
+import ed2curve from 'ed2curve'
+import nacl from 'tweetnacl/nacl-fast'
 import {Base64} from 'js-base64'
+import {decode} from '@stablelib/utf8'
 
 export default {
   name: 'loginWithUserPassword',
@@ -30,12 +33,22 @@ export default {
       this.$store.commit('change_storage_method', false)
     },
     loginViaPassword () {
-      if (this.$store.getters.getUserPassword === this.userPasswordValue) {
+      let userPassword = this.$store.getters.getUserPassword
+      if (userPassword === this.userPasswordValue) {
         let errorFunction = function () {
           this.errorSnackOpen()
         }
+        let encryptedStoredData = localStorage.getItem('storedData').split(',')
+        let result = []
+        for (let i = 0; i < encryptedStoredData.length; i++) {
+          result.push(parseInt(encryptedStoredData[i]))
+        }
+        result = Uint8Array.from(result)
         let passPhrase = ''
-        const storedData = JSON.parse(Base64.decode(localStorage.getItem('storedData')))
+        const nonce = Buffer.allocUnsafe(24)
+        const DHSecretKey = ed2curve.convertSecretKey(userPassword)
+        const decrypted = nacl.secretbox.open(result, nonce, DHSecretKey)
+        const storedData = JSON.parse(decode(decrypted))
         if (!storedData) {
           this.errorSnackOpen()
           return

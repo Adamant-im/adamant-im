@@ -14,6 +14,9 @@ import * as admApi from '../lib/adamant-api'
 import {base64regex, WelcomeMessage} from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
+import ed2curve from 'ed2curve'
+import nacl from 'tweetnacl/nacl-fast'
+import {decode} from '@stablelib/utf8'
 
 var maxConcurrent = 1
 var maxQueue = Infinity
@@ -316,8 +319,11 @@ const store = {
     },
     encrypt_store (state) {
       const storedData = localStorage.getItem('adm-persist')
-      // TODO encrypt data with some algorithm
-      localStorage.setItem('storedData', Base64.encode(storedData))
+      const userPassword = Base64.decode(sessionStorage.getItem('userPassword'))
+      const nonce = Buffer.allocUnsafe(24)
+      const DHSecretKey = ed2curve.convertSecretKey(userPassword)
+      const encrypted = nacl.secretbox(Buffer.from(storedData), nonce, DHSecretKey)
+      localStorage.setItem('storedData', encrypted)
     },
     stop_tracking_new (state) {
       state.trackNewMessages = false
