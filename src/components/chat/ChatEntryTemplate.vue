@@ -228,7 +228,7 @@ export default {
     position: absolute;
     top: 5px;
     left: 0;
-    background: url('/static/img/Wallet/adm-address.svg');
+    background: url('/img/Wallet/adm-address.svg');
   }
 
   .md-whiteframe.md-whiteframe-1dp {
