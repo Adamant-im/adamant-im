@@ -55,5 +55,7 @@ window.ep = new Vue({
   store,
   template: '<App/>',
   components: { App },
-  i18n: i18n
+  i18n
 })
+
+store.dispatch('healthCheck/init')

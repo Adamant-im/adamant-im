@@ -1,6 +1,5 @@
 import Queue from 'promise-queue'
 
-var config = require('../config.json')
 var adamant = require('./adamant.js')
 const renderMarkdown = require('./markdown').default
 const { hexToBytes, bytesToHex } = require('./hex')
@@ -27,23 +26,26 @@ function install (Vue) {
   Vue.prototype.parseURI = function (uri) {
     return adamant.parseURI(uri)
   }
+
   Vue.prototype.getAddressString = function (cached) {
-    // TODO: add health check
     if (cached && this.$store.state.connectionString && this.$store.state.connectionString !== 'undefined' && this.$store.state.connectionString !== undefined) {
       return this.$store.state.connectionString
     }
-    const servers = config.server.adm
-    const server = servers[Math.floor(Math.random() * servers.length)]
+
+    let server = this.$store.getters['healthCheck/getAvailableServer']('adm')
     if (!server.protocol) {
       server.protocol = 'http'
     }
-    var connectString = server.protocol + '://' + server.ip
+
+    let connectString = server.protocol + '://' + server.ip
     if (server.port) {
       connectString += ':' + server.port
     }
+
     this.$store.commit('connect', {'string': connectString})
     return connectString
   }
+
   Vue.prototype.getKeypair = function () {
     if (window.privateKey) {
       return {

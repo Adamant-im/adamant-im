@@ -38,6 +38,8 @@ export default {
     'enable_bar_tooltip': 'Shows new message counter in the tab title when new message arrives. Works for desktop browsers.',
     'enable_desktop': 'Browser notifications',
     'enable_desktop_tooltip': 'Use integrated browser notifications (need your acceptance)',
+    'enable_health_check': 'Server health check',
+    'enable_health_check_tooltip': 'While selecting a server, check for its availability',
     'delegates_title': 'Delegates',
     'delegate_name_input': 'Enter delegate name',
     'delegate_register_button': 'Register delegate',

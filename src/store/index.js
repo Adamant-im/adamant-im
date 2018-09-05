@@ -5,6 +5,7 @@ import {Base64} from 'js-base64'
 import storeData from '../lib/lsStore.js'
 
 import ethModule from './modules/eth'
+import healthCheck from './modules/healthCheck'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
 
@@ -248,6 +249,9 @@ const store = {
     },
     change_notify_desktop (state, payload) {
       state.notifyDesktop = payload
+    },
+    change_health_check (state, payload) {
+      state.healthCheckEnabled = payload
     },
     change_lang (state, payload) {
       state.language = payload
@@ -504,6 +508,7 @@ const store = {
   },
   modules: {
     eth: ethModule, // Ethereum-related data
+    healthCheck,     // Health check support
     adm: admModule, // ADM transfers
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule // Voting for delegates screen

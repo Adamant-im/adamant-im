@@ -86,6 +86,14 @@
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
                           <md-table-cell style="text-align:left;" colspan="2"><md-checkbox  v-model="notifyDesktop" disabled :title="$t('options.enable_desktop_tooltip')">{{ $t('options.enable_desktop') }}</md-checkbox></md-table-cell>
                       </md-table-row>
+                      <md-table-row>
+                        <md-table-cell class="hide_on_mobile"></md-table-cell>
+                        <md-table-cell style="text-align:left;" colspan="2">
+                            <md-checkbox  v-model="healthCheckEnabled" :title="$t('options.enable_health_check_tooltip')">
+                                {{ $t('options.enable_health_check') }}
+                            </md-checkbox>
+                        </md-table-cell>
+                    </md-table-row>
                   </md-table-body>
               </md-table>
           </md-card-content>
@@ -105,7 +113,7 @@
           </md-card-content>
       </md-card>
 
-    <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
+        <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
       </div>
 
   </div>
@@ -135,6 +143,9 @@ export default {
     'notifyBar' (to, from) {
       this.$store.commit('change_notify_bar', to)
     },
+    'healthCheckEnabled' (to, from) {
+      this.$store.commit('change_health_check', to)
+    },
     'notifyDesktop' (to, from) {
       this.$store.commit('change_notify_desktop', to)
     },
@@ -151,6 +162,7 @@ export default {
       sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
+      healthCheckEnabled: this.$store.state.healthCheckEnabled,
       language: this.$i18n.locale
     }
   }
