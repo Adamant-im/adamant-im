@@ -1,18 +1,19 @@
 # ADAMANT Messenger Progressive Web Application (PWA)
 
-It is a messaging application client for ADAMANT Blockchain.
+It is a messaging application client for ADAMANT Blockchain. See ADAMANT Project at https://adamant.im.
 
 ADAMANT is the most secure and anonymous messenger, encrypted with Blockchain.
 
 Highlights:
 
-– The most secure and anonymous messenger (see comparison table)
-– Trusted. Open-source project.
-– The only one which is Blockchain-powered
-– Integrated token transfers
-– Get welcome 0.49 ADM token for free messaging now
+- The most secure and anonymous messenger (see comparison table on the Website)
+- Trusted. Open-source project.
+- Bran new Fair dPoS consensus
+- The only one which is Blockchain-powered
+- Integrated crypto transfers
+- Get welcome amount of ADM tokens for free messaging now
 
-This application can be used at [msg.adamant.im](https://msg.adamant.im/). Feel free to run your own messenger using this code and Build Setup.
+This application deployed at [msg.adamant.im](https://msg.adamant.im/). Feel free to run your own messenger using this code and Build Setup.
 
 ## Project setup
 ```
