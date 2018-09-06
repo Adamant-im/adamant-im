@@ -16,7 +16,7 @@ import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import ed2curve from 'ed2curve'
 import nacl from 'tweetnacl/nacl-fast'
-import {decode} from '@stablelib/utf8'
+import crypto from 'pbkdf2'
 
 var maxConcurrent = 1
 var maxQueue = Infinity
@@ -271,7 +271,12 @@ const store = {
       state.storeInLocalStorage = payload
     },
     save_user_password (state, payload) {
-      sessionStorage.setItem('userPassword', Base64.encode(payload))
+      crypto.pbkdf2(payload, 'salt', 100000, 64, 'sha512', (err, encodePassword) => {
+        if (err) throw err
+        const pass = encodePassword.toString('hex')
+        console.log('save_user_password: ', pass)
+        sessionStorage.setItem('userPassword', pass)
+      })
     },
     save_passphrase (state, payload) {
       state.passPhrase = Base64.encode(payload.passPhrase)
@@ -319,7 +324,7 @@ const store = {
     },
     encrypt_store (state) {
       const storedData = localStorage.getItem('adm-persist')
-      const userPassword = Base64.decode(sessionStorage.getItem('userPassword'))
+      const userPassword = sessionStorage.getItem('userPassword')
       const nonce = Buffer.allocUnsafe(24)
       const DHSecretKey = ed2curve.convertSecretKey(userPassword)
       const encrypted = nacl.secretbox(Buffer.from(storedData), nonce, DHSecretKey)
@@ -535,7 +540,7 @@ const store = {
     },
     getUserPassword: state => {
       const userPassword = sessionStorage.getItem('userPassword')
-      return userPassword ? Base64.decode(userPassword) : null
+      return userPassword || null
     },
     getUserPasswordExists: state => {
       return state.userPasswordExists

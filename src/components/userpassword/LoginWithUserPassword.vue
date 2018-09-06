@@ -11,6 +11,7 @@
     <md-snackbar md-position="bottom center" md-accent ref="errorsnackbar" md-duration="2000">
       <span>{{ $t('login_via_password.incorrect_password') }}</span>
     </md-snackbar>
+    <Spinner v-if="showSpinnerFlag"></Spinner>
   </md-layout>
 </template>
 
@@ -20,12 +21,14 @@ import ed2curve from 'ed2curve'
 import nacl from 'tweetnacl/nacl-fast'
 import {Base64} from 'js-base64'
 import {decode} from '@stablelib/utf8'
+import crypto from 'pbkdf2'
+import Spinner from '../Spinner'
 
 function convertStringToUint8Array () {
   let encryptedStoredData = localStorage.getItem('storedData').split(',')
   let result = []
   for (let i = 0; i < encryptedStoredData.length; i++) {
-      result.push(parseInt(encryptedStoredData[i]))
+    result.push(parseInt(encryptedStoredData[i]))
   }
   return Uint8Array.from(result)
 }
@@ -33,6 +36,7 @@ function convertStringToUint8Array () {
 export default {
   name: 'loginWithUserPassword',
   props: ['openFrom', 'closeTo'],
+  components: { Spinner },
   methods: {
     forget () {
       localStorage.removeItem('storedData')
@@ -42,31 +46,37 @@ export default {
       this.$store.commit('change_storage_method', false)
     },
     loginViaPassword () {
-      let userPassword = this.$store.getters.getUserPassword
-      if (userPassword === this.userPasswordValue) {
-        let errorFunction = function () {
+      this.showSpinnerFlag = true
+      crypto.pbkdf2(this.userPasswordValue, 'salt', 100000, 64, 'sha512', (err, encodePassword) => {
+        if (err) this.errorSnackOpen()
+        let userPassword = this.$store.getters.getUserPassword
+        const userPasswordValueHash = encodePassword.toString('hex')
+        if (userPassword === userPasswordValueHash) {
+          let errorFunction = function () {
+            this.errorSnackOpen()
+          }
+          let passPhrase = ''
+          const nonce = Buffer.allocUnsafe(24)
+          const DHSecretKey = ed2curve.convertSecretKey(userPassword)
+          const decrypted = nacl.secretbox.open(convertStringToUint8Array(), nonce, DHSecretKey)
+          const storedData = JSON.parse(decode(decrypted))
+          if (!storedData) {
+            this.errorSnackOpen()
+            return
+          }
+          passPhrase = Base64.decode(storedData.passPhrase)
+          this.getAccountByPassPhrase(passPhrase, function (context) {
+            this.$store.dispatch('afterLogin', passPhrase)
+            this.$root._router.push('/chats/')
+            this.loadChats(true)
+            this.$store.commit('mock_messages')
+            this.$store.commit('stop_tracking_new')
+            this.showSpinnerFlag = false
+          }, errorFunction)
+        } else {
           this.errorSnackOpen()
         }
-        let passPhrase = ''
-        const nonce = Buffer.allocUnsafe(24)
-        const DHSecretKey = ed2curve.convertSecretKey(userPassword)
-        const decrypted = nacl.secretbox.open(convertStringToUint8Array(), nonce, DHSecretKey)
-        const storedData = JSON.parse(decode(decrypted))
-        if (!storedData) {
-          this.errorSnackOpen()
-          return
-        }
-        passPhrase = Base64.decode(storedData.passPhrase)
-        this.getAccountByPassPhrase(passPhrase, function (context) {
-          this.$store.dispatch('afterLogin', passPhrase)
-          this.$root._router.push('/chats/')
-          this.loadChats(true)
-          this.$store.commit('mock_messages')
-          this.$store.commit('stop_tracking_new')
-        }, errorFunction)
-      } else {
-        this.errorSnackOpen()
-      }
+      })
     },
     errorSnackOpen () {
       this.$refs.errorsnackbar.open()
@@ -79,7 +89,8 @@ export default {
   },
   data () {
     return {
-      userPasswordValue: null
+      userPasswordValue: null,
+      showSpinnerFlag: false
     }
   }
 }

@@ -28,6 +28,7 @@
     "instascan": "^1.0.0",
     "marked": "^0.3.6",
     "material-design-icons-iconfont": "^3.0.3",
+    "pbkdf2": "^3.0.16",
     "promise-queue": "^2.2.3",
     "register-service-worker": "^1.0.0",
     "simple-audio": "^1.0.1",
