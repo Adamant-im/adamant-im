@@ -149,7 +149,7 @@ const store = {
     currentChat: false,
     storeInLocalStorage: false,
     lastVisitedChat: '',
-    userPasswordExists: !sessionStorage.getItem('userPassword')
+    userPasswordExists: sessionStorage.getItem('userPassword') !== null
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
@@ -543,6 +543,7 @@ const store = {
       return userPassword || null
     },
     getUserPasswordExists: state => {
+      console.log(state.userPasswordExists)
       return state.userPasswordExists
     }
   },

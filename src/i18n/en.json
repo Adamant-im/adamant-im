@@ -182,6 +182,9 @@
     "user_password_forget": "Forget",
     "user_password_unlock": "Unlock",
     "login_via_password": "Login via password",
-    "incorrect_password": "Wrong user password"
+    "incorrect_password": "Wrong user password",
+    "remove_password_hint": "Or, remove password for login via passphrase",
+    "remove_password": "Remove password",
+    "user_password_title": "Password for unlock"
   }
 }

@@ -1,17 +1,28 @@
 <template>
-  <md-layout md-flex="66" md-flex-xsmall="80">
-    <md-input-container class="password_input">
-      <label style="text-align: center;width: 100%;">{{ $t('login.password_label') }}</label>
-      <md-input v-model="userPasswordValue" type="password"></md-input>
-    </md-input-container>
-    <md-layout md-align="center" md-gutter="16">
-      <md-button class="md-raised md-short" v-on:click="forget">{{ $t('login_via_password.user_password_forget') }}</md-button>
-      <md-button :disabled="disableLoginViaPassword" class="md-raised md-short" v-on:click="loginViaPassword">{{ $t('login_via_password.user_password_unlock') }}</md-button>
+  <md-layout v-else md-align="center" md-gutter="16" style="justify-content: center;">
+    <md-layout md-flex="66" md-flex-xsmall="80" style="justify-content: center;">
+      <md-input-container class="password_input">
+        <md-input v-model="userPasswordValue" :placeholder="$t('login_via_password.user_password_title')" type="password"></md-input>
+      </md-input-container>
+      <md-layout md-flex-xsmall="80" md-align="center" md-flex="66">
+        <md-button :disabled="disableLoginViaPassword" class="md-raised md-short" v-on:click="loginViaPassword">{{ $t('login_via_password.user_password_unlock') }}</md-button>
+      </md-layout>
+    </md-layout>
+    <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top: 50px">
+      <md-layout md-align="center" md-gutter="16">
+        <p style="font-weight: 300;margin-bottom: 10px;">{{$t('login_via_password.remove_password_hint')}}</p>
+      </md-layout>
+    </md-layout>
+    <md-layout md-flex="66" md-flex-xsmall="80" style="">
+      <md-layout md-align="center" md-gutter="16">
+        <a v-on:click="forget" class='create_link'>{{ $t('login_via_password.remove_password') }}</a>
+      </md-layout>
     </md-layout>
     <md-snackbar md-position="bottom center" md-accent ref="errorsnackbar" md-duration="2000">
       <span>{{ $t('login_via_password.incorrect_password') }}</span>
     </md-snackbar>
     <Spinner v-if="showSpinnerFlag"></Spinner>
+    <!--<md-button class="md-raised md-short" v-on:click="forget">{{ $t('login_via_password.user_password_forget') }}</md-button>-->
   </md-layout>
 </template>
 
