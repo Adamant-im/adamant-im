@@ -54,4 +54,4 @@ export default {
   Transactions
 }
 
-export const UserPasswordAgreementLink = 'https://google.com'
+export const UserPasswordAgreementLink = 'https://adamant.im'
