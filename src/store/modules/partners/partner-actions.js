@@ -51,7 +51,7 @@ export default {
 
     return admApi.getStored(key, payload.partner).then(
       address => {
-        context.commit('address', { ...payload, address })
+        context.commit('address', { ...payload, crypto, address })
         return address
       },
       error => {
