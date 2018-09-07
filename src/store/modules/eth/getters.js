@@ -9,5 +9,7 @@ export default {
     return state.fee
   },
 
-  transaction: state => id => state.transactions[id]
+  transaction: state => id => state.transactions[id],
+
+  privateKey: state => state.privateKey
 }

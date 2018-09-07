@@ -1,5 +1,7 @@
 import Web3 from 'web3'
 import abiDecoder from 'abi-decoder'
+import Tx from 'ethereumjs-tx'
+import { toBuffer } from 'ethereumjs-util'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as admApi from '../../../lib/adamant-api'
@@ -12,22 +14,12 @@ const MAX_ATTEMPTS = 150
 
 const endpoint = getEndpointUrl('ETH')
 const api = new Web3(new Web3.providers.HttpProvider(endpoint, 2000))
-const queue = new ethUtils.BatchQueue(api.eth.BatchRequest)
+const queue = new ethUtils.BatchQueue(() => api.createBatch())
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
 /** Status update interval */
 const STATUS_INTERVAL = 8000
-
-/**
- * Creates ETH account for the specified passphrase.
- *
- * @param {string} passphrase 12-word passphrase
- * @returns {{address: string, privateKey: string, publicKey: string}} account
- */
-function getAccountFromPassphrase (passphrase) {
-  return api.eth.accounts.privateKeyToAccount(ethUtils.privateKeyFromPassphrase(passphrase))
-}
 
 // Setup decoder
 abiDecoder.addABI(Erc20)
@@ -39,7 +31,7 @@ export default {
   afterLogin: {
     root: true,
     handler (context, passphrase) {
-      const account = getAccountFromPassphrase(passphrase)
+      const account = ethUtils.getAccountFromPassphrase(passphrase)
       context.commit('account', account)
       context.dispatch('updateStatus')
       queue.start()
@@ -63,7 +55,7 @@ export default {
       const address = context.state.address
 
       if (!address && passphrase) {
-        const account = getAccountFromPassphrase(passphrase)
+        const account = ethUtils.getAccountFromPassphrase(passphrase)
         context.commit('account', account)
       }
 
@@ -77,10 +69,11 @@ export default {
   updateStatus (context) {
     if (!context.state.address) return
 
-    const contract = new api.eth.Contract(Erc20, context.state.contractAddress)
-    contract.methods.balanceOf(context.state.address).call()
+    const contract = api.eth.contract(Erc20).at(context.state.contractAddress)
+
+    ethUtils.promisify(contract.balanceOf.call, context.state.address)
       .then(
-        balance => context.commit('balance', ethUtils.toFraction(balance, context.state.decimals)),
+        balance => context.commit('balance', ethUtils.toFraction(balance.toString(10), context.state.decimals)),
         error => console.warn(`${context.state.crypto} balance failed: `, error)
       )
       .then(() => {
@@ -97,7 +90,7 @@ export default {
   sendTokens (context, { amount, admAddress, ethAddress, comments }) {
     ethAddress = ethAddress.trim()
     const crypto = context.state.crypto
-    const contract = new api.eth.Contract(Erc20, context.state.contractAddress)
+    const contract = api.eth.contract(Erc20).at(context.state.contractAddress)
 
     const ethTx = {
       from: context.state.address,
@@ -105,47 +98,37 @@ export default {
       value: '0x0',
       gasLimit: ETH_TRANSFER_GAS,
       gasPrice: context.getters.gasPrice,
-      data: contract.methods.transfer(ethAddress, ethUtils.toWhole(amount, context.state.decimals)).encodeABI()
+      data: contract.transfer.getData(ethAddress, ethUtils.toWhole(amount, context.state.decimals))
     }
 
-    return api.eth.getTransactionCount(context.state.address, 'pending')
+    return ethUtils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
       .then(count => {
         if (count) ethTx.nonce = count
-        return api.eth.accounts.signTransaction(ethTx, context.state.privateKey)
-      })
-      .then(signed => {
-        const tx = signed.rawTransaction
-        const hash = api.utils.sha3(tx)
-        console.log(crypto + ' transaction', hash)
 
-        return { tx, hash }
-      })
-      .then(signedTx => {
-        if (!admAddress) return signedTx
+        const tx = new Tx(ethTx)
+        tx.sign(toBuffer(context.state.privateKey))
+        const serialized = '0x' + tx.serialize().toString('hex')
+        const hash = api.sha3(serialized, { encoding: 'hex' })
+
+        if (!admAddress) return serialized
         // Send a special message to indicate that we're performing an ETH transfer
         const type = crypto.toLowerCase() + '_transaction'
-        const msg = { type, amount, hash: signedTx.hash, comments }
+        const msg = { type, amount, hash, comments }
         return admApi.sendSpecialMessage(admAddress, msg)
           .then(() => {
             console.log('ADM message has been sent', msg)
-            return signedTx
+            return serialized
           })
           .catch((error) => {
             console.log(`Failed to send "${type}"`, error)
             return Promise.reject(new Error('adm_message'))
           })
       })
-      .then(({ tx, hash }) => {
-        // https://github.com/ethereum/web3.js/issues/1255#issuecomment-356492134
-        const method = api.eth.sendSignedTransaction.method
-        const payload = method.toPayload([tx])
-
-        return new Promise((resolve) => {
-          method.requestManager.send(payload, (error, result) => {
-            console.log('sendSignedTransaction', { error, result })
-            resolve({ hash: result, error })
-          })
-        })
+      .then(tx => {
+        return ethUtils.promisify(api.eth.sendRawTransaction, tx).then(
+          hash => ({ hash }),
+          error => ({ error })
+        )
       })
       .then(({ hash, error }) => {
         if (error) {
@@ -214,7 +197,7 @@ export default {
             blockNumber: tx.blockNumber,
             amount,
             recipientId,
-            gasPrice: tx.gasPrice
+            gasPrice: tx.gasPrice.toNumber(10)
           }
 
           context.commit('transaction', transaction)

@@ -1,4 +1,6 @@
 import Web3 from 'web3'
+import { isValidAddress, toBuffer } from 'ethereumjs-util'
+import Tx from 'ethereumjs-tx'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as admApi from '../../../lib/adamant-api'
@@ -12,22 +14,12 @@ const MAX_ATTEMPTS = 150
 
 const endpoint = getEndpointUrl('ETH')
 const api = new Web3(new Web3.providers.HttpProvider(endpoint, 2000))
-const queue = new utils.BatchQueue(api.eth.BatchRequest)
+const queue = new utils.BatchQueue(() => api.createBatch())
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
 /** Status update interval */
 const STATUS_INTERVAL = 8000
-
-/**
- * Creates ETH account for the specified passphrase.
- *
- * @param {string} passphrase 12-word passphrase
- * @returns {{address: string, privateKey: string, publicKey: string}} account
- */
-function getAccountFromPassphrase (passphrase) {
-  return api.eth.accounts.privateKeyToAccount(utils.privateKeyFromPassphrase(passphrase))
-}
 
 let isAddressBeingStored = null
 /**
@@ -63,7 +55,7 @@ export default {
   afterLogin: {
     root: true,
     handler (context, passphrase) {
-      const account = getAccountFromPassphrase(passphrase)
+      const account = utils.getAccountFromPassphrase(passphrase)
       context.commit('account', account)
       context.dispatch('updateStatus')
 
@@ -92,7 +84,7 @@ export default {
       const address = context.state.address
 
       if (!address && passphrase) {
-        const account = getAccountFromPassphrase(passphrase)
+        const account = utils.getAccountFromPassphrase(passphrase)
         context.commit('account', account)
         storeEthAddress(context)
       }
@@ -126,14 +118,15 @@ export default {
       return [
         // Balance
         api.eth.getBalance.request(context.state.address, block || 'latest', (err, balance) => {
-          if (!err) context.commit('balance', utils.toEther(balance))
+          if (!err) context.commit('balance', utils.toEther(balance.toString(10)))
         }),
         // Current gas price
         api.eth.getGasPrice.request((err, price) => {
           if (!err) {
+            const gasPrice = 3 * price.toNumber()
             context.commit('gasPrice', {
-              gasPrice: price,
-              fee: utils.toEther(2 * Number(ETH_TRANSFER_GAS) * price)
+              gasPrice,
+              fee: utils.calculateFee(ETH_TRANSFER_GAS, gasPrice)
             })
           }
         }),
@@ -163,62 +156,45 @@ export default {
    * @returns {Promise<string>} ETH transaction hash
    */
   sendTokens (context, { amount, admAddress, ethAddress, comments }) {
-    // A dirty trick: change gas price a little bit in randomly. This way two subsequent
-    // transactions with the same amount & recipient will have different hashes, thus preventing
-    // the "Transaction with the same hash has already been imported" error.
-    const gasPriceDelta = Math.round(100 * Math.random())
-    const gasPrice = new api.utils.BN(context.getters.gasPrice).add(
-      new api.utils.BN(gasPriceDelta)).toString()
-
     const ethTx = {
       from: context.state.address,
       to: ethAddress,
       value: utils.toWei(amount),
       gas: ETH_TRANSFER_GAS,
-      gasPrice
+      gasPrice: context.getters.gasPrice
     }
 
-    if (!api.utils.isAddress(ethAddress)) {
+    if (!isValidAddress(ethAddress)) {
       return Promise.reject(new Error('invalid_address'))
     }
 
-    return api.eth.getTransactionCount(context.state.address, 'pending')
+    return utils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
       .then(count => {
         if (count) ethTx.nonce = count
-        return api.eth.accounts.signTransaction(ethTx, context.state.privateKey)
-      })
-      .then(signed => {
-        const tx = signed.rawTransaction
-        const hash = api.utils.sha3(tx)
-        console.log('ETH transaction', hash)
 
-        return { tx, hash }
-      })
-      .then(signedTx => {
-        if (!admAddress) return signedTx
+        const tx = new Tx(ethTx)
+        tx.sign(toBuffer(context.state.privateKey))
+        const serialized = '0x' + tx.serialize().toString('hex')
+        const hash = api.sha3(serialized, { encoding: 'hex' })
+
+        if (!admAddress) return serialized
         // Send a special message to indicate that we're performing an ETH transfer
-        const msg = { type: 'eth_transaction', amount, hash: signedTx.hash, comments }
+        const msg = { type: 'eth_transaction', amount, hash, comments }
         return admApi.sendSpecialMessage(admAddress, msg)
           .then(() => {
             console.log('ADM message has been sent', msg)
-            return signedTx
+            return serialized
           })
           .catch((error) => {
             console.log('Failed to send "eth_transaction"', error)
             return Promise.reject(new Error('adm_message'))
           })
       })
-      .then(({ tx, hash }) => {
-        // https://github.com/ethereum/web3.js/issues/1255#issuecomment-356492134
-        const method = api.eth.sendSignedTransaction.method
-        const payload = method.toPayload([tx])
-
-        return new Promise((resolve) => {
-          method.requestManager.send(payload, (error, result) => {
-            console.log('sendSignedTransaction', { error, result })
-            resolve({ hash: result, error })
-          })
-        })
+      .then(tx => {
+        return utils.promisify(api.eth.sendRawTransaction, tx).then(
+          hash => ({ hash }),
+          error => ({ error })
+        )
       })
       .then(({ hash, error }) => {
         if (error) {
@@ -235,7 +211,7 @@ export default {
             senderId: ethTx.from,
             recipientId: ethTx.to,
             amount,
-            fee: utils.toEther(Number(ethTx.gas) * ethTx.gasPrice),
+            fee: utils.calculateFee(ethTx.gas, ethTx.gasPrice),
             status: 'PENDING',
             timestamp
           })
@@ -271,8 +247,8 @@ export default {
           hash: tx.hash,
           senderId: tx.from,
           recipientId: tx.to,
-          amount: utils.toEther(tx.value),
-          fee: utils.toEther(Number(tx.gas) * tx.gasPrice),
+          amount: utils.toEther(tx.value.toString(10)),
+          fee: utils.calculateFee(tx.gas, tx.gasPrice.toString(10)),
           status: tx.blockNumber ? 'SUCCESS' : 'PENDING',
           timestamp: payload.timestamp, // TODO: fetch from block?
           blockNumber: tx.blockNumber
