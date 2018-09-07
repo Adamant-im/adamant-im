@@ -26,7 +26,7 @@
 
           <md-input-container>
               <label>{{ $t('transfer.commission_label') }}</label>
-              <md-input type="number" readonly v-model="commission"></md-input>
+              <md-input type="text" readonly v-model="commissionString"></md-input>
           </md-input-container>
           <md-input-container v-if="!this.hideTotal">
               <label style="text-align:left">{{ $t('transfer.final_amount_label') }}</label>
@@ -150,7 +150,7 @@ export default {
     // TODO: HAS BEEN OVERWRITTEN TO AVOID POSSIBLE SIDE EFFECTS
     maxToTransfer: function () {
       const multiplier = Math.pow(10, this.exponent)
-      const commission = (this.crypto === Cryptos.ADM || this.crypto === Cryptos.ETH) ? this.commission : 0
+      const commission = isErc20(this.crypto) ? 0 : this.commission
       let localAmountToTransfer = (Math.floor((parseFloat(this.balance) - commission) * multiplier) / multiplier).toFixed(this.exponent)
       if (this.amountToTransfer < 0) {
         localAmountToTransfer = 0
@@ -160,6 +160,11 @@ export default {
     commission () {
       if (this.crypto === Cryptos.ADM) return Fees.TRANSFER
       return this.$store.getters[`${this.crypto.toLowerCase()}/fee`]
+    },
+    commissionString () {
+      const amount = this.commission
+      const crypto = isErc20(this.crypto) ? Cryptos.ETH : this.crypto
+      return `${amount} ${crypto}`
     },
     balance () {
       return this.crypto === Cryptos.ADM
