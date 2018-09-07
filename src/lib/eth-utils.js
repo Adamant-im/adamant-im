@@ -34,6 +34,13 @@ export function privateKeyFromPassphrase (passphrase) {
   return '0x' + privateKey.toString('hex')
 }
 
+export function calculateFee (gasUsed, gasPrice) {
+  const gas = new BN(gasUsed)
+  const price = new BN(gasPrice)
+  const fee = gas.mul(price).toString(10)
+  return toEther(fee)
+}
+
 export function toWhole (amount, decimals) {
   let [whole, fraction] = String(amount).split('.')
   if (!whole) whole = '0'
@@ -53,9 +60,18 @@ export function toWhole (amount, decimals) {
 
 export function toFraction (amount, decimals, separator = '.') {
   amount = `${amount}`
+  const len = amount.length
 
-  const whole = amount.substr(0, amount.length - decimals).replace(/^0+/, '') || '0'
-  const fraction = amount.substr(amount.length - decimals).replace(/0+$/, '')
+  const whole = len <= decimals
+    ? '0'
+    : amount.substr(0, amount.length - decimals).replace(/^0+/, '') || '0'
+
+  let fraction = len <= decimals ? amount : amount.substr(amount.length - decimals)
+  while (fraction.length < decimals) {
+    fraction = '0' + fraction
+  }
+
+  fraction = fraction.replace(/0+$/, '')
 
   return whole + (fraction ? separator + fraction : '')
 }

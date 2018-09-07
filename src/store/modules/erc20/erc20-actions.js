@@ -29,6 +29,9 @@ function getAccountFromPassphrase (passphrase) {
   return api.eth.accounts.privateKeyToAccount(ethUtils.privateKeyFromPassphrase(passphrase))
 }
 
+// Setup decoder
+abiDecoder.addABI(Erc20)
+
 export default {
   /**
    * Handles `afterLogin` action: generates ETH-account and requests its balance.
@@ -159,9 +162,10 @@ export default {
             senderId: ethTx.from,
             recipientId: ethAddress,
             amount,
-            fee: ethUtils.toEther(Number(ethTx.gas) * ethTx.gasPrice),
+            fee: ethUtils.calculateFee(ethTx.gas, ethTx.gasPrice),
             status: 'PENDING',
-            timestamp
+            timestamp,
+            gasPrice: ethTx.gasPrice
           })
 
           context.dispatch('getTransaction', { hash, timestamp, isNew: true })
@@ -206,15 +210,18 @@ export default {
           const transaction = {
             hash: tx.hash,
             senderId: tx.from,
-            fee: ethUtils.toEther(Number(tx.gas) * tx.gasPrice),
-            status: tx.blockNumber ? 'SUCCESS' : 'PENDING',
             timestamp: payload.timestamp, // TODO: fetch from block?
             blockNumber: tx.blockNumber,
             amount,
-            recipientId
+            recipientId,
+            gasPrice: tx.gasPrice
           }
 
           context.commit('transaction', transaction)
+
+          // Fetch receipt details: status and actual gas consumption
+          const { attempt, ...receiptPayload } = payload
+          context.dispatch('getTransactionReceipt', receiptPayload)
         }
       }
 
@@ -230,5 +237,39 @@ export default {
     })
 
     queue.enqueue(key, supplier)
+  },
+
+  /**
+   * Retrieves transaction receipt info: status and actual gas consumption.
+   * @param {any} context Vuex action context
+   * @param {{ hash: String, isNew: Boolean}} payload action payload
+   */
+  getTransactionReceipt (context, payload) {
+    const transaction = context.state.transactions[payload.hash]
+    if (!transaction) return
+
+    const gasPrice = transaction.gasPrice
+
+    const supplier = () => api.eth.getTransactionReceipt.request(payload.hash, (err, tx) => {
+      if (!err && tx) {
+        context.commit('transaction', {
+          hash: payload.hash,
+          fee: ethUtils.calculateFee(tx.gasUsed, gasPrice),
+          status: tx.status ? 'SUCCESS' : 'ERROR'
+        })
+      }
+
+      if (!tx && payload.attempt === MAX_ATTEMPTS) {
+        // Give up, if transaction could not be found after so many attempts
+        context.commit('transaction', { hash: tx.hash, status: 'ERROR' })
+      } else if (err || (tx && !tx.blockNumber) || (!tx && payload.isNew)) {
+        // In case of an error or a pending transaction fetch its receipt once again later
+        // Increment attempt counter, if no transaction was found so far
+        const newPayload = tx ? payload : { ...payload, attempt: 1 + (payload.attempt || 0) }
+        context.dispatch('getTransactionReceipt', newPayload)
+      }
+    })
+
+    queue.enqueue('transactionReceipt:' + payload.hash, supplier)
   }
 }
