@@ -6,7 +6,7 @@ import initialState from './state'
 export default {
   /** Resets module state */
   reset (state) {
-    resetState(state, initialState)
+    resetState(state, initialState())
   },
 
   /** Set ETH balance */
