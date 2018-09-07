@@ -142,6 +142,10 @@ export default {
         this.errorMessage('error_chat_fee', { crypto: this.crypto })
         return
       }
+      if (isErc20(this.crypto) && parseFloat(this.commission) > parseFloat(this.$store.state.eth.balance)) {
+        this.errorMessage('error_erc20_fee', { fee: this.commissionString })
+        return
+      }
       this.$refs['confirm_transfer_dialog'].open()
     }
   },
