@@ -11,7 +11,7 @@ import admModule from './modules/adm'
 import delegatesModule from './modules/delegates'
 
 import * as admApi from '../lib/adamant-api'
-import {base64regex, WelcomeMessage} from '../lib/constants'
+import {base64regex, WelcomeMessage, UserPasswordHashSettings } from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import ed2curve from 'ed2curve'
@@ -271,7 +271,7 @@ const store = {
       state.storeInLocalStorage = payload
     },
     save_user_password (state, payload) {
-      crypto.pbkdf2(payload, 'salt', 100000, 64, 'sha512', (err, encodePassword) => {
+      crypto.pbkdf2(payload, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
         if (err) throw err
         const pass = encodePassword.toString('hex')
         console.log('save_user_password: ', pass)
@@ -543,9 +543,8 @@ const store = {
       return userPassword || null
     },
     getUserPasswordExists: state => {
-      console.log(state.userPasswordExists)
       return state.userPasswordExists
-    },
+    }
   },
   modules: {
     eth: ethModule, // Ethereum-related data

@@ -33,6 +33,7 @@ import {Base64} from 'js-base64'
 import {decode} from '@stablelib/utf8'
 import crypto from 'pbkdf2'
 import Spinner from '../Spinner'
+import { UserPasswordHashSettings } from '../../lib/constants'
 
 function convertStringToUint8Array () {
   let encryptedStoredData = localStorage.getItem('storedData').split(',')
@@ -56,7 +57,7 @@ export default {
       this.$store.commit('change_storage_method', false)
     },
     loginViaPassword () {
-      crypto.pbkdf2(this.userPasswordValue, 'salt', 100000, 64, 'sha512', (err, encodePassword) => {
+      crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
         if (err) this.errorSnackOpen()
         const userPasswordValueHash = encodePassword.toString('hex')
         const nonce = Buffer.allocUnsafe(24)

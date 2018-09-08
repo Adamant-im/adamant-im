@@ -2,7 +2,7 @@
   <md-dialog class="user-password" :md-open-from="openFrom" :md-close-to="closeTo" v-on:close="onClose" ref="set_user_password">
     <md-dialog-content style="padding: 10px 10px 0px 20px">
       <h3>{{$t('login_via_password.popup_title')}}</h3>
-      <md-layout md-flex="66" sm-flex="90">
+      <md-layout md-flex="66" sm-flex="90" style="margin-top: -15px;">
         <md-input-container>
           <md-input v-model="userPasswordValue" :placeholder="$t('login_via_password.popup_hint')"></md-input>
         </md-input-container>
@@ -11,7 +11,9 @@
         <md-checkbox v-model="userPasswordCheckbox" style="display: flex; align-items: center">
         </md-checkbox>
         <md-layout>
-          <div class="middle-align-text">{{$t('login_via_password.agreement_hint')}}</div> <a class="middle-align-text" target="_blank" v-bind:href="userPasswordAgreementLink">{{$t('login_via_password.agreement')}}</a>
+          <div class="middle-align-text">
+            <div>{{$t('login_via_password.agreement_hint')}} <a target="_blank" v-bind:href="userPasswordAgreementLink">{{$t('login_via_password.agreement')}}</a></div>
+          </div>
         </md-layout>
       </md-layout>
       <md-layout md-align="end" md-gutter="16">
