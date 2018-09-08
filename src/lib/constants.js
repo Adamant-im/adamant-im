@@ -55,3 +55,10 @@ export default {
 }
 
 export const UserPasswordAgreementLink = 'https://adamant.im'
+
+export const UserPasswordHashSettings = {
+  SALT: 'salt',
+  ITERATIONS: 100000,
+  KEYLEN: 64,
+  DIGEST: 'sha512'
+}

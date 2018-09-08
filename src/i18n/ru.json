@@ -183,7 +183,7 @@
     "user_password_unlock": "Разблокировать",
     "login_via_password": "Войти с помощью пароля",
     "incorrect_password": "Неверный пользовательский пароль",
-    "remove_password_hint": "Или, удалите пароль для входа по секретной фразе",
+    "remove_password_hint": "Или удалите пароль для входа по секретной фразе",
     "remove_password": "Удалить пароль",
     "user_password_title": "Пароль для разблокировки"
   }

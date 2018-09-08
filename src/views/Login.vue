@@ -1,5 +1,5 @@
 <template>
-    <md-layout v-else md-align="center" md-gutter="16">
+    <md-layout md-align="center" md-gutter="16">
       <div class="login">
           <md-input-container class="language_select">
               <md-select name="language" id="language" v-model="language">
@@ -229,7 +229,7 @@ export default {
       showQRCode: false,
       showModal: false,
       showSpinnerFlag: false,
-      userPasswordExists: this.userPassoword
+      userPasswordExists: this.userPassword
     }
   }
 }

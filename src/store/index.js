@@ -545,7 +545,7 @@ const store = {
     getUserPasswordExists: state => {
       console.log(state.userPasswordExists)
       return state.userPasswordExists
-    }
+    },
   },
   modules: {
     eth: ethModule, // Ethereum-related data
