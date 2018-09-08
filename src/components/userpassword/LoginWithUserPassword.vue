@@ -79,6 +79,7 @@ export default {
           this.loadChats(true)
           this.$store.commit('mock_messages')
           this.$store.commit('stop_tracking_new')
+          this.$store.commit('save_user_password', this.userPasswordValue)
           this.showSpinnerFlag = false
         }, this.errorSnackOpen())
       })

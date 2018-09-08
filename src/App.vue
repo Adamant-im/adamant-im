@@ -45,6 +45,11 @@
 export default {
   name: 'app',
   mounted: function () {
+    if (localStorage.getItem('storedData') && this.$store.getters.getUserPassword == null) {
+      localStorage.removeItem('adm-persist')
+      this.$store.commit('logout')
+      this.$store.dispatch('reset')
+    }
     this.checkChatPage(this.$router.currentRoute.path)
     setInterval(
       ((self) => {

@@ -11,7 +11,7 @@ import admModule from './modules/adm'
 import delegatesModule from './modules/delegates'
 
 import * as admApi from '../lib/adamant-api'
-import {base64regex, WelcomeMessage, UserPasswordHashSettings } from '../lib/constants'
+import { base64regex, WelcomeMessage, UserPasswordHashSettings } from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import ed2curve from 'ed2curve'
@@ -274,7 +274,6 @@ const store = {
       crypto.pbkdf2(payload, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
         if (err) throw err
         const pass = encodePassword.toString('hex')
-        console.log('save_user_password: ', pass)
         sessionStorage.setItem('userPassword', pass)
       })
     },
