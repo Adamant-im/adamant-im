@@ -322,7 +322,7 @@ const store = {
       state.lastVisitedChat = null
     },
     encrypt_store (state) {
-      const storedData = localStorage.getItem('adm-persist')
+      const storedData = sessionStorage.getItem('adm-persist')
       const userPassword = sessionStorage.getItem('userPassword')
       const nonce = Buffer.allocUnsafe(24)
       const DHSecretKey = ed2curve.convertSecretKey(userPassword)

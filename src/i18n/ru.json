@@ -173,7 +173,7 @@
   },
   "login_via_password": {
     "popup_title": "Задайте пароль",
-    "popup_hint": "Рекомендуем 8+ символов",
+    "popup_hint": "Рекомендуем 8+ символов…",
     "popup_confirm_text": "Установить",
     "agreement_hint": "Я прочитал информацию о пользовательском пароле.",
     "agreement": "Соглашение.",

@@ -1,7 +1,7 @@
 <template>
     <md-layout md-align="center" md-gutter="16">
       <div class="login">
-          <md-input-container class="language_select">
+          <md-input-container v-if="!userPassword" class="language_select">
               <md-select name="language" id="language" v-model="language">
                   <md-option  v-for="(language, code) in languageList" :value="code" :key="code">{{ language.title }}</md-option>
               </md-select>

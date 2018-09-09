@@ -1,6 +1,6 @@
 <template>
-  <md-layout md-align="center" md-gutter="16" style="justify-content: center;">
-    <md-layout md-flex="66" md-flex-xsmall="80" style="justify-content: center;">
+  <md-layout md-align="center"style="justify-content: center;">
+    <md-layout md-flex="66" md-flex-xsmall="80" md-gutter="16"  style="justify-content: center;">
       <md-input-container class="password_input">
         <md-input v-model="userPasswordValue" :placeholder="$t('login_via_password.user_password_title')" type="password"></md-input>
       </md-input-container>
@@ -65,7 +65,6 @@ export default {
         const decrypted = nacl.secretbox.open(convertStringToUint8Array(), nonce, DHSecretKey)
         let storedData = null
         try {
-          this.$refs.errorsnackbar.open()
           storedData = JSON.parse(decode(decrypted))
         } catch (err) {
           this.errorSnackOpen()
@@ -85,7 +84,6 @@ export default {
       })
     },
     errorSnackOpen () {
-      this.showSpinnerFlag = false
       this.$refs.errorsnackbar.open()
     }
   },
