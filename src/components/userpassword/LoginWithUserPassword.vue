@@ -1,5 +1,5 @@
 <template>
-  <md-layout md-align="center"style="justify-content: center;">
+  <md-layout md-align="center" style="justify-content: center;">
     <md-layout md-flex="66" md-flex-xsmall="80" md-gutter="16"  style="justify-content: center;">
       <md-input-container class="password_input">
         <md-input v-model="userPasswordValue" :placeholder="$t('login_via_password.user_password_title')" type="password"></md-input>
