@@ -126,8 +126,8 @@ export default {
           tooltip: 'home.your_address_tooltip_ETH',
           balance: this.$store.state.eth.balance,
           balanceTooltip: 'home.your_balance_tooltip_ETH',
-          addressIcon: '/static/img/Wallet/eth-address.svg',
-          balanceIcon: '/static/img/Wallet/eth-balance.svg'
+          addressIcon: '/img/Wallet/eth-address.svg',
+          balanceIcon: '/img/Wallet/eth-balance.svg'
         },
         {
           system: 'BNB',
@@ -135,8 +135,8 @@ export default {
           tooltip: 'home.your_address_tooltip_BNB',
           balance: this.$store.state.bnb.balance,
           balanceTooltip: 'home.your_balance_tooltip_BNB',
-          addressIcon: '/static/img/Wallet/bnb-address.svg',
-          balanceIcon: '/static/img/Wallet/eth-balance.svg'
+          addressIcon: '/img/Wallet/bnb-address.svg',
+          balanceIcon: '/img/Wallet/bnb-balance.svg'
         }
       ]
     }
