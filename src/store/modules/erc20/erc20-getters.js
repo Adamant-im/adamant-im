@@ -3,7 +3,7 @@ import { toEther } from '../../../lib/eth-utils'
 
 export default {
   gasPrice (state, getters, rootState, rootGetters) {
-    return rootGetters['eth/gasPrice'] * 10
+    return rootGetters['eth/gasPrice'] * 3
   },
 
   fee (state, getters) {

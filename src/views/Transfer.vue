@@ -33,7 +33,7 @@
               <md-input type="number" readonly v-model="finalAmount"></md-input>
           </md-input-container>
 
-          <md-input-container v-if="this.fixedAddress && this.crypto=='ETH'">
+          <md-input-container v-if="this.fixedAddress && this.crypto !== 'ADM'">
             <label>{{ $t('transfer.comments_label') }}</label>
             <md-input v-model="comments" maxlength='100'></md-input>
           </md-input-container>
@@ -157,7 +157,7 @@ export default {
       const multiplier = Math.pow(10, this.exponent)
       const commission = isErc20(this.crypto) ? 0 : this.commission
       let localAmountToTransfer = (Math.floor((parseFloat(this.balance) - commission) * multiplier) / multiplier).toFixed(this.exponent)
-      if (this.amountToTransfer < 0) {
+      if (localAmountToTransfer < 0) {
         localAmountToTransfer = 0
       }
       return localAmountToTransfer
