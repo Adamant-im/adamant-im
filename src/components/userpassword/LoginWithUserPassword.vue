@@ -2,7 +2,7 @@
   <md-layout md-align="center" style="justify-content: center;">
     <md-layout md-flex="66" md-flex-xsmall="80" md-gutter="16"  style="justify-content: center;">
       <md-input-container class="password_input">
-        <md-input v-model="userPasswordValue" :placeholder="$t('login_via_password.user_password_title')" type="password"></md-input>
+        <md-input v-model="userPasswordValue" :placeholder="$t('login_via_password.user_password_title')" @keyup.native="kp($event)" type="password"></md-input>
       </md-input-container>
       <md-layout md-flex-xsmall="80" md-align="center" md-flex="66">
         <md-button :disabled="disableLoginViaPassword" class="md-raised md-short" v-on:click="loginViaPassword">{{ $t('login_via_password.user_password_unlock') }}</md-button>
@@ -58,7 +58,11 @@ export default {
     },
     loginViaPassword () {
       crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
-        if (err) this.errorSnackOpen()
+        let errorFunction = function () {
+          this.errorSnackOpen()
+          this.showSpinnerFlag = false
+        }.bind(this)
+        if (err) errorFunction()
         const userPasswordValueHash = encodePassword.toString('hex')
         const nonce = Buffer.allocUnsafe(24)
         const DHSecretKey = ed2curve.convertSecretKey(userPasswordValueHash)
@@ -67,7 +71,7 @@ export default {
         try {
           storedData = JSON.parse(decode(decrypted))
         } catch (err) {
-          this.errorSnackOpen()
+          errorFunction()
           return
         }
         this.showSpinnerFlag = true
@@ -80,12 +84,17 @@ export default {
           this.$store.commit('stop_tracking_new')
           this.$store.commit('save_user_password', this.userPasswordValue)
           this.showSpinnerFlag = false
-        }, this.errorSnackOpen())
+        }, errorFunction)
       })
     },
     errorSnackOpen () {
       this.$refs.errorsnackbar.open()
-    }
+    },
+    kp: function (event) {
+      if (event.key === 'Enter') {
+        this.loginViaPassword()
+      }
+    },
   },
   computed: {
     disableLoginViaPassword () {

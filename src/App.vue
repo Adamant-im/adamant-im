@@ -122,7 +122,11 @@ export default {
     },
     exitme () {
       if (this.$store.getters.getUserPasswordExists) {
-        this.$store.commit('encrypt_store')
+        localStorage.removeItem('storedData')
+        localStorage.removeItem('adm-persist')
+        sessionStorage.removeItem('userPassword')
+        this.$store.commit('user_password_exists', false)
+        this.$store.commit('change_storage_method', false)
       }
       this.$store.commit('logout')
       this.$store.dispatch('reset')

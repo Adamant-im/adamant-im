@@ -16,8 +16,8 @@
       </div>
     </md-dialog-content>
     <md-dialog-actions>
-      <md-button v-on:click="close" class="md-primary">{{ $t('transfer.confirm_cancel') }}</md-button>
-      <md-button :disabled="disableSetPassword" v-on:click="setPassword" class="md-primary">{{ $t('login_via_password.popup_confirm_text') }}</md-button>
+      <md-button v-on:click="close">{{ $t('transfer.confirm_cancel') }}</md-button>
+      <md-button :disabled="disableSetPassword" v-on:click="setPassword">{{ $t('login_via_password.popup_confirm_text') }}</md-button>
     </md-dialog-actions>
   </md-dialog>
 </template>
