@@ -137,6 +137,7 @@
     "confirm_message_with_name": "Подтвердите перевод <b>{amount} {crypto}</b> контакту <span class='address-in-confirm'>{target}</span>.",
     "confirm_title": "Подтверждение перевода",
     "error_chat_fee": "Чтобы отправить {crypto} в чате, вам также нужно 0.001 ADM",
+    "error_erc20_fee": "Вам также нужно {fee} для оплаты комиссии",
     "error_incorrect_address": "Неверный адрес {crypto} кошелька",
     "error_incorrect_amount": "Неверное количество",
     "error_no_address": "Укажите адрес кошелька получателя",
