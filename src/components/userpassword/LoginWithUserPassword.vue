@@ -2,7 +2,7 @@
   <md-layout md-align="center" style="justify-content: center;">
     <md-layout md-flex="66" md-flex-xsmall="80" md-gutter="16"  style="justify-content: center;">
       <md-input-container class="password_input">
-        <md-input v-model="userPasswordValue" :placeholder="$t('login_via_password.user_password_title')" @keyup.native="kp($event)" type="password"></md-input>
+        <md-input v-model="userPasswordValue" ref="passwordInput" :placeholder="$t('login_via_password.user_password_title')" @keyup.native="kp($event)" type="password"></md-input>
       </md-input-container>
       <md-layout md-flex-xsmall="80" md-align="center" md-flex="66">
         <md-button :disabled="disableLoginViaPassword" class="md-raised md-short" v-on:click="loginViaPassword">{{ $t('login_via_password.user_password_unlock') }}</md-button>
@@ -94,7 +94,10 @@ export default {
       if (event.key === 'Enter') {
         this.loginViaPassword()
       }
-    },
+    }
+  },
+  mounted () {
+    this.$refs.passwordInput.$el.focus()
   },
   computed: {
     disableLoginViaPassword () {
