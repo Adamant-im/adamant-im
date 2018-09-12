@@ -5,13 +5,14 @@ import {Base64} from 'js-base64'
 import storeData from '../lib/lsStore.js'
 
 import ethModule from './modules/eth'
+import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
 
 import delegatesModule from './modules/delegates'
 
 import * as admApi from '../lib/adamant-api'
-import {base64regex, WelcomeMessage} from '../lib/constants'
+import {base64regex, WelcomeMessage, Cryptos} from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 
@@ -508,6 +509,7 @@ const store = {
   },
   modules: {
     eth: ethModule, // Ethereum-related data
+    bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
     adm: admModule, // ADM transfers
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule // Voting for delegates screen

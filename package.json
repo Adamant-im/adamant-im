@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@stablelib/utf8": "^0.10.1",
+    "abi-decoder": "^1.2.0",
     "axios": "^0.18.0",
     "b64-to-blob": "^1.2.19",
     "bignumber.js": "^4.0.4",
