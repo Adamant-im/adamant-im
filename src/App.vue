@@ -25,7 +25,7 @@
     </main>
       <footer :style="footerCss">
           <div class="bottom-fixed">
-              <md-bottom-bar v-if="logged && isBottomPanelShown && !isTransferBackShown">
+              <md-bottom-bar v-if="logged && isBottomPanelShown && !isTransferBackShown" md-theme="bottomBar">
                   <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" :md-active="!!$router.currentRoute.path.match(/\/home\//) || !!$router.currentRoute.path.match(/\/transactions\//) || !!$router.currentRoute.path.match(/\/transfer\//)">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')" :md-active="chatsPage">{{$t('bottom.chats_button')}}<div class="new-icon" v-if="totalNew">{{ totalNew }}</div></md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="settings" v-on:click="$router.push('/options/')" :md-active="!!$router.currentRoute.path.match(/\/options\//)">{{$t('bottom.settings_button')}}</md-bottom-bar-item>
@@ -364,7 +364,7 @@ header span {
     right: 0;
     z-index: 10;
     /* background: rgba(153, 153, 153, 0.2); */
-    background: #ebebeb;
+    /*background: #ebebeb;*/
     border-bottom: none;
 }
 </style>

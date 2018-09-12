@@ -319,19 +319,6 @@ export default {
     max-width: 800px;
     margin-left:0!important;
   }
-  .md-toolbar.md-theme-grey {
-    position: fixed;
-    width: 100%;
-    top: 0;
-    max-width: 800px;
-    margin: 0 auto;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    /* background: rgba(153, 153, 153, 0.2); */
-    background: #ebebeb;
-    border-bottom: none;
-  }
   .attach_menu .md-list-item.md-menu-item {
     background-color: rgba(255,255,255,1);
   }

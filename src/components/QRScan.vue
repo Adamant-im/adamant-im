@@ -5,7 +5,7 @@
       <div class="modal">
         <div class="modal-body">
           <h3>{{$t('scan.' + this.checkParentName() + '.modal_header') }}</h3>
-          <md-progress v-show="loading" md-theme="customGrey" md-indeterminate></md-progress>
+          <md-progress v-show="loading" md-theme="grey" md-indeterminate></md-progress>
           <video id="preview"></video>
         </div>
         <div class="modal-footer">

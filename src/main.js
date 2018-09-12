@@ -26,9 +26,25 @@ const store = new Vuex.Store(storeConfig)
 document.title = i18n.t('app_title')
 
 Vue.material.registerTheme({
-  customGrey: {
-    primary: 'grey',
-    accent: 'white'
+  grey: {
+    primary: {
+      color: 'grey',
+      hue: 300,
+      textColor: 'blue'
+    },
+    accent: {
+      color: 'grey',
+      hue: 700
+    },
+    background: 'none'
+  },
+  bottomBar: {
+    primary: {
+      color: 'grey',
+      hue: 800,
+      textColor: 'blue'
+    },
+    background: 'white'
   }
 })
 
