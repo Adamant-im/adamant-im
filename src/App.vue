@@ -207,7 +207,7 @@ footer {
     min-width: 70%;
 }
 .md-toolbar .md-title .md-input-container:after {
-    background: none ;
+    background: none !important;
 }
 .md-toolbar .md-title .md-input-container.md-input-focused:after {
     background-color: rgba(0, 0, 0, 0.12);

@@ -29,20 +29,18 @@ Vue.material.registerTheme({
   grey: {
     primary: {
       color: 'grey',
-      hue: 300,
-      textColor: 'blue'
+      hue: 300
     },
     accent: {
       color: 'grey',
       hue: 700
     },
-    background: 'none'
+    background: 'white'
   },
   bottomBar: {
     primary: {
       color: 'grey',
-      hue: 800,
-      textColor: 'blue'
+      hue: 800
     },
     background: 'white'
   }
