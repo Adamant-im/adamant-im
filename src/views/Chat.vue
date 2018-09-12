@@ -161,9 +161,9 @@ export default {
       let promise = Promise.resolve(true)
       // For cryptos other than ADM we need to fetch the respective account address first
       if (crypto !== Cryptos.ADM) {
-        const params = { crypto, partner: this.$route.params.partner }
-        promise = this.$store.dispatch('partners/fetchAddress', params).then(() => {
-          const address = this.$store.getters['partners/cryptoAddress']
+        const partner = this.$route.params.partner
+        promise = this.$store.dispatch('partners/fetchAddress', { crypto, partner }).then(() => {
+          const address = this.$store.getters['partners/cryptoAddress'](partner, crypto)
           if (!address) this.$refs['no_address_dialog'].open()
           return !!address
         })
