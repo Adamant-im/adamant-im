@@ -14,7 +14,7 @@
                      :title="camera.name" @click.stop="selectCamera(camera)">
             <md-icon md-src="/static/img/Attach/rotate-cam.svg"></md-icon>
           </md-button>
-          <md-button  @click="hideModal"> {{ $t('scan.close_button') === 'scan.close_button'? 'Close' : $t('scan.close_button') }} </md-button>
+          <md-button class="md-raised" @click="hideModal"> {{ $t('scan.close_button') }} </md-button>
         </div>
       </div>
     </div>

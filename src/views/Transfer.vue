@@ -39,7 +39,7 @@
           </md-input-container>
 
           <md-layout md-align="center" md-gutter="16">
-            <md-button class="md-raised md-primary send_funds_button" :title="$t('transfer.send_button_tooltip')" v-on:click="transfer">
+            <md-button class="md-raised send_funds_button" :title="$t('transfer.send_button_tooltip')" v-on:click="transfer">
               {{ $t('transfer.send_button') }}
             </md-button>
           </md-layout>

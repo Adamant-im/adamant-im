@@ -354,6 +354,9 @@ header span {
 .md-dialog {
   box-shadow: initial;
 }
+.md-dialog-confirm > .md-dialog > .md-dialog-actions > button{
+  color: #000 !important;
+}
 .md-toolbar.md-theme-grey {
     position: fixed;
     width: 100%;

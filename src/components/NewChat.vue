@@ -11,8 +11,8 @@
           </md-layout>
           <md-layout md-flex="66" sm-flex="90" style="margin-top: 10px;">
             <md-layout md-align="center" md-gutter="16">
-              <md-button class="md-raised md-primary" :title="$t('chats.new_chat_tooltip')" @click="send">{{ $t('chats.new_chat') }}</md-button>
-              <md-button class="md-raised md-primary" @click="scanQRCode">{{ $t('chats.scan_recipient_button') }}</md-button>
+              <md-button class="md-raised" :title="$t('chats.new_chat_tooltip')" @click="send">{{ $t('chats.new_chat') }}</md-button>
+              <md-button class="md-raised" @click="scanQRCode">{{ $t('chats.scan_recipient_button') }}</md-button>
             </md-layout>
           </md-layout>
         </md-layout>
