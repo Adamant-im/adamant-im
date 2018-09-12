@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "node"
+  - "lts/*"
 os:
   - linux
 cache:
@@ -13,7 +13,7 @@ before_deploy:
 deploy:
   provider: surge
   project: ./dist/
-  domain: $SUBDOMAIN-adamant-im.surge.sh  
+  domain: $SUBDOMAIN-adamant-im.surge.sh
   skip_cleanup: true
   on:
     all_branches: true

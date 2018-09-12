@@ -1,45 +1,28 @@
 import Vue from 'vue'
 
 import { resetState } from '../../../lib/reset-state'
-import initialState from './state'
 
-export default {
+export default getInitialState => ({
   /** Resets module state */
   reset (state) {
-    resetState(state, initialState())
+    resetState(state, getInitialState())
   },
 
-  /** Set ETH balance */
+  /** Set balance */
   balance (state, balance) {
     state.balance = balance
   },
 
-  /** Gas price and fee */
-  gasPrice (state, payload) {
-    state.gasPrice = payload.gasPrice
-    state.fee = payload.fee
-  },
-
-  /** Current block number */
-  blockNumber (state, number) {
-    state.blockNumber = number
-  },
-
-  /** Set ETH account */
+  /** Set account */
   account (state, account) {
     state.address = account.address
     state.publicKey = account.publicKey
     state.privateKey = account.privateKey
   },
 
-  /** ETH account has been published */
-  isPublished (state) {
-    state.isPublished = true
-  },
-
   /** Adds a new transaction */
-  setTransaction (state, tx) {
+  transaction (state, tx) {
     const newTx = Object.assign({ }, state.transactions[tx.hash], tx)
     Vue.set(state.transactions, tx.hash, newTx)
   }
-}
+})

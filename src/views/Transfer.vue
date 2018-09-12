@@ -26,14 +26,14 @@
 
           <md-input-container>
               <label>{{ $t('transfer.commission_label') }}</label>
-              <md-input type="number" readonly v-model="commission"></md-input>
+              <md-input type="text" readonly v-model="commissionString"></md-input>
           </md-input-container>
-          <md-input-container>
+          <md-input-container v-if="!this.hideTotal">
               <label style="text-align:left">{{ $t('transfer.final_amount_label') }}</label>
               <md-input type="number" readonly v-model="finalAmount"></md-input>
           </md-input-container>
 
-          <md-input-container v-if="this.fixedAddress && this.crypto=='ETH'">
+          <md-input-container v-if="this.fixedAddress && this.crypto !== 'ADM'">
             <label>{{ $t('transfer.comments_label') }}</label>
             <md-input v-model="comments" maxlength='100'></md-input>
           </md-input-container>
@@ -62,7 +62,7 @@
 import Spinner from '@/components/Spinner.vue'
 
 import validateAddress from '../lib/validateAddress'
-import { Cryptos, CryptoAmountPrecision, Fees } from '../lib/constants'
+import { Cryptos, CryptoAmountPrecision, Fees, isErc20 } from '../lib/constants'
 import { sendTokens, sendMessage } from '../lib/adamant-api'
 
 export default {
@@ -109,16 +109,14 @@ export default {
           ? sendMessage({ to: this.targetAddress, message: this.comments, amount: this.targetAmount })
           : sendTokens(this.targetAddress, this.targetAmount)
         return promise.then(result => result.transactionId)
-      } else if (this.crypto === Cryptos.ETH) {
-        return this.$store.dispatch('eth/sendTokens', {
+      } else {
+        return this.$store.dispatch(this.crypto.toLowerCase() + '/sendTokens', {
           amount: this.targetAmount,
           admAddress: this.fixedAddress,
           ethAddress: this.targetAddress,
           comments: this.comments
         })
       }
-
-      return Promise.resolve(null)
     },
     transfer: function () {
       if (!this.targetAddress) {
@@ -137,12 +135,16 @@ export default {
         this.errorMessage('error_incorrect_amount')
         return
       }
-      if ((parseFloat(this.targetAmount) + parseFloat(this.commission)) > parseFloat(this.balance)) {
+      if (parseFloat(this.targetAmount) > parseFloat(this.maxToTransfer)) {
         this.errorMessage('error_not_enough')
         return
       }
       if (this.fixedAddress && this.crypto !== Cryptos.ADM && this.$store.state.balance < Fees.TRANSFER) {
         this.errorMessage('error_chat_fee', { crypto: this.crypto })
+        return
+      }
+      if (isErc20(this.crypto) && parseFloat(this.commission) > parseFloat(this.$store.state.eth.balance)) {
+        this.errorMessage('error_erc20_fee', { fee: this.commissionString })
         return
       }
       this.$refs['confirm_transfer_dialog'].open()
@@ -153,17 +155,26 @@ export default {
     // TODO: HAS BEEN OVERWRITTEN TO AVOID POSSIBLE SIDE EFFECTS
     maxToTransfer: function () {
       const multiplier = Math.pow(10, this.exponent)
-      let localAmountToTransfer = (Math.floor((parseFloat(this.balance) - this.commission) * multiplier) / multiplier).toFixed(this.exponent)
-      if (this.amountToTransfer < 0) {
+      const commission = isErc20(this.crypto) ? 0 : this.commission
+      let localAmountToTransfer = (Math.floor((parseFloat(this.balance) - commission) * multiplier) / multiplier).toFixed(this.exponent)
+      if (localAmountToTransfer < 0) {
         localAmountToTransfer = 0
       }
       return localAmountToTransfer
     },
     commission () {
-      return this.crypto === Cryptos.ETH ? this.$store.state.eth.fee : Fees.TRANSFER
+      if (this.crypto === Cryptos.ADM) return Fees.TRANSFER
+      return this.$store.getters[`${this.crypto.toLowerCase()}/fee`]
+    },
+    commissionString () {
+      const amount = this.commission
+      const crypto = isErc20(this.crypto) ? Cryptos.ETH : this.crypto
+      return `${amount} ${crypto}`
     },
     balance () {
-      return this.crypto === Cryptos.ETH ? this.$store.state.eth.balance : this.$store.state.balance
+      return this.crypto === Cryptos.ADM
+        ? this.$store.state.balance
+        : this.$store.state[this.crypto.toLowerCase()].balance
     },
     exponent () {
       return CryptoAmountPrecision[this.crypto]
@@ -196,6 +207,9 @@ export default {
       const msgType = this.displayName ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
 
       return this.$t(msgType, { amount: this.targetAmount, target, crypto: this.crypto })
+    },
+    hideTotal () {
+      return isErc20(this.crypto)
     }
   },
   mounted () {
@@ -214,7 +228,8 @@ export default {
           fixedPoint = this.exponent
         }
       }
-      this.finalAmount = (parseFloat(to) + parseFloat(this.commission)).toFixed(fixedPoint)
+      const commission = (this.crypto === Cryptos.ADM || this.crypto === Cryptos.ETH) ? this.commission : 0
+      this.finalAmount = (parseFloat(to) + parseFloat(commission)).toFixed(fixedPoint)
     },
     'language' (to, from) {
       this.$i18n.locale = to

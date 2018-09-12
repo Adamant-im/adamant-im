@@ -1,12 +1,12 @@
 import Vue from 'vue'
 
 import { resetState } from '../../../lib/reset-state'
-import initialState from './adm-state'
+import getInitialState from './adm-state'
 
 export default {
   /** Resets module state */
   reset (state) {
-    resetState(state, initialState)
+    resetState(state, getInitialState())
   },
 
   /** Sets current ADM address */
