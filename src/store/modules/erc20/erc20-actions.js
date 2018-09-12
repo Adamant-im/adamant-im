@@ -6,7 +6,7 @@ import { toBuffer } from 'ethereumjs-util'
 import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as admApi from '../../../lib/adamant-api'
 import * as ethUtils from '../../../lib/eth-utils'
-import { ETH_TRANSFER_GAS } from '../../../lib/constants'
+import { ERC20_TRANSFER_GAS } from '../../../lib/constants'
 import Erc20 from './erc20.abi.json'
 
 /** Max number of attempts to retrieve the transaction details */
@@ -95,9 +95,9 @@ export default {
     const ethTx = {
       from: context.state.address,
       to: context.state.contractAddress,
-      value: '0x0',
-      gasLimit: ETH_TRANSFER_GAS,
-      gasPrice: context.getters.gasPrice,
+      value: api.fromDecimal('0'),
+      gasLimit: api.fromDecimal(ERC20_TRANSFER_GAS),
+      gasPrice: api.fromDecimal(context.getters.gasPrice),
       data: contract.transfer.getData(ethAddress, ethUtils.toWhole(amount, context.state.decimals))
     }
 

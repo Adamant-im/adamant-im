@@ -159,9 +159,9 @@ export default {
     const ethTx = {
       from: context.state.address,
       to: ethAddress,
-      value: utils.toWei(amount),
-      gas: ETH_TRANSFER_GAS,
-      gasPrice: context.getters.gasPrice
+      value: api.fromDecimal(utils.toWei(amount)),
+      gas: api.fromDecimal(ETH_TRANSFER_GAS),
+      gasPrice: api.fromDecimal(context.getters.gasPrice)
     }
 
     if (!isValidAddress(ethAddress)) {

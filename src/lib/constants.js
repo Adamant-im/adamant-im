@@ -59,7 +59,10 @@ export const WelcomeMessage = {
 }
 
 /** Gas value for the ETH transfers */
-export const ETH_TRANSFER_GAS = '210000'
+export const ETH_TRANSFER_GAS = 21000
+
+/** Gas value for the ERC-20 transfers */
+export const ERC20_TRANSFER_GAS = ETH_TRANSFER_GAS * 10
 
 export default {
   EPOCH,
