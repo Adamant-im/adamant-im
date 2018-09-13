@@ -139,7 +139,7 @@ export default {
         this.errorMessage('error_not_enough')
         return
       }
-      if (this.fixedAddress && this.crypto !== Cryptos.ADM && this.$store.state.balance < Fees.TRANSFER) {
+      if (this.fixedAddress && this.crypto !== Cryptos.ADM && this.$store.state.balance < Fees.NOT_ADM_TRANSFER) {
         this.errorMessage('error_chat_fee', { crypto: this.crypto })
         return
       }
@@ -163,7 +163,7 @@ export default {
       return localAmountToTransfer
     },
     commission () {
-      if (this.crypto === Cryptos.ADM) return Fees.TRANSFER
+      if (this.crypto === Cryptos.ADM) return Fees.ADM_TRANSFER
       return this.$store.getters[`${this.crypto.toLowerCase()}/fee`]
     },
     commissionString () {
