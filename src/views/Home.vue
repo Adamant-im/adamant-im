@@ -2,7 +2,7 @@
   <!--TODO: absolute paths must be relative again-->
   <div class="home" v-if="isLogged">
       <md-layout md-align="center" md-gutter="16">
-      <md-list class="md-double-line">
+      <md-list class="md-double-line md-transparent">
           <md-list-item
             v-for="addr in wallets"
             :key="'addr_' + addr.system"

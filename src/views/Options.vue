@@ -1,7 +1,7 @@
 <template>
   <div class="settings">
       <div style="max-width:95%; margin:auto;">
-      <md-card class='settings-card' style="box-shadow:none">
+      <md-card class="settings-card md-transparent" style="box-shadow:none">
           <md-card-area md-inset>
               <md-card-header>
                   <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.general_title') }}</h2>
@@ -25,7 +25,7 @@
           </md-card-content>
       </md-card>
 
-      <md-card class='settings-card' style="box-shadow:none">
+      <md-card class='settings-card md-transparent' style="box-shadow:none">
           <md-card-area md-inset>
               <md-card-header>
                   <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.security_title') }}</h2>
@@ -44,7 +44,7 @@
           </md-card-content>
 
       </md-card>
-          <md-card class='settings-card' style="box-shadow:none">
+          <md-card class='settings-card md-transparent' style="box-shadow:none">
               <md-card-area md-inset>
                   <md-card-header>
                       <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.chats_title') }}</h2>
@@ -64,7 +64,7 @@
 
           </md-card>
 
-      <md-card class='settings-card' style="box-shadow:none">
+      <md-card class='settings-card md-transparent' style="box-shadow:none">
           <md-card-area md-inset>
               <md-card-header>
                   <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.notification_title') }}</h2>
@@ -92,7 +92,7 @@
 
       </md-card>
 
-      <md-card class='settings-card' style="box-shadow:none">
+      <md-card class='settings-card md-transparent' style="box-shadow:none">
         <md-card-area md-inset>
           <md-card-header>
             <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.delegates_title') }}</h2>
@@ -163,6 +163,9 @@ export default {
 <style>
     .settings-card .md-table .md-table-cell .md-table-cell-container {
         padding: 0;
+    }
+    .md-theme-grey.md-card.settings-card.md-transparent {
+      background-color: transparent;
     }
     .md-card>.md-card-area:after {
         background-color: rgba(0, 0, 0, .12);

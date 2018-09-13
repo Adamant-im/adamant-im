@@ -222,6 +222,9 @@ footer {
     top: 13px;
     font-size: 18px;
 }
+.md-theme-grey.md-input-container.md-input-focused label {
+  color: rgba(0, 0, 0, 0.54) !important;
+}
 .md-toolbar .md-title .md-input-container.md-input-focused label, .md-toolbar .md-title .md-input-container.md-has-value label {
     top: 0;
     font-size: 12px;
