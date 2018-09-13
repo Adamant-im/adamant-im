@@ -67,24 +67,23 @@ export default {
         const nonce = Buffer.allocUnsafe(24)
         const DHSecretKey = ed2curve.convertSecretKey(userPasswordValueHash)
         const decrypted = nacl.secretbox.open(convertStringToUint8Array(), nonce, DHSecretKey)
+        const stringStoredData = decode(decrypted)
         let storedData = null
         try {
-          storedData = JSON.parse(decode(decrypted))
+          storedData = JSON.parse(stringStoredData)
         } catch (err) {
           errorFunction()
           return
         }
-        this.showSpinnerFlag = true
         const passPhrase = Base64.decode(storedData.passPhrase)
-        this.getAccountByPassPhrase(passPhrase, function (context) {
-          this.$store.dispatch('afterLogin', passPhrase)
-          this.$root._router.push('/chats/')
-          this.loadChats(true)
-          this.$store.commit('mock_messages')
-          this.$store.commit('stop_tracking_new')
-          this.$store.commit('save_user_password', this.userPasswordValue)
-          this.showSpinnerFlag = false
-        }, errorFunction)
+        this.showSpinnerFlag = true
+        sessionStorage.setItem('adm-persist', stringStoredData)
+        this.$store.dispatch('afterLogin', passPhrase)
+        this.$root._router.push('/chats/')
+        this.loadChats(true)
+        this.$store.commit('mock_messages')
+        this.$store.commit('stop_tracking_new')
+        this.$store.commit('save_user_password', this.userPasswordValue)
       })
     },
     errorSnackOpen () {

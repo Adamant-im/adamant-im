@@ -37,7 +37,7 @@ export default {
       this.$store.commit('change_storage_method', this.$store.state.storeInLocalStorage)
     },
     setPassword () {
-      this.$store.commit('change_storage_method', true)
+      // this.$store.commit('change_storage_method', true)
       this.$store.commit('save_user_password', this.userPasswordValue)
       this.$store.commit('user_password_exists', true)
       setTimeout(() => {

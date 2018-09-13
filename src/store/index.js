@@ -543,7 +543,7 @@ const store = {
       return userPassword || null
     },
     getUserPasswordExists: state => {
-      return state.userPasswordExists
+      return localStorage.getItem('storedData')
     }
   },
   modules: {
