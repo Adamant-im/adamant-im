@@ -272,7 +272,9 @@ footer {
 .chats .md-list {
     max-width: 90%;
 }
-
+.md-theme-default a:not(.md-button) {
+  color: #e91e63 !important;
+}
 .version {
     position:absolute;
     bottom:0;
