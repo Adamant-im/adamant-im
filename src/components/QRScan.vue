@@ -55,7 +55,6 @@ export default {
       }
       this.$emit('code-grabbed', content)
       this.hideModal()
-      this.$router.push('/')
     }
   },
   beforeDestroy: function () {
