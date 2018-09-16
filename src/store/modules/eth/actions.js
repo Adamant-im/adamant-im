@@ -1,81 +1,25 @@
-import Mnemonic from 'bitcore-mnemonic'
-import hdkey from 'hdkey'
 import Web3 from 'web3'
-import { privateToAddress, bufferToHex, isValidAddress, toBuffer } from 'ethereumjs-util'
+import { isValidAddress, toBuffer } from 'ethereumjs-util'
 import Tx from 'ethereumjs-tx'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as admApi from '../../../lib/adamant-api'
+import * as utils from '../../../lib/eth-utils'
 
-import { Fees } from '../../../lib/constants'
+import { Fees, ETH_TRANSFER_GAS } from '../../../lib/constants'
 
-const HD_KEY_PATH = "m/44'/60'/3'/1/0"
-const TRANSFER_GAS = '21000'
 const KVS_ADDRESS = 'eth:address'
-const DEFAULT_GAS_PRICE = '20000000000' // 20 Gwei
 /** Max number of attempts to retrieve the transaction details */
 const MAX_ATTEMPTS = 150
 
 const endpoint = getEndpointUrl('ETH')
 const api = new Web3(new Web3.providers.HttpProvider(endpoint, 2000))
-
-/** Background requests queue */
-const backgroundRequests = []
-/** Background requests timer */
-let backgroundTimer = null
+const queue = new utils.BatchQueue(() => api.createBatch())
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
 /** Status update interval */
 const STATUS_INTERVAL = 8000
-
-/**
- * Creates ETH account for the specified passphrase.
- *
- * @param {string} passphrase 12-word passphrase
- * @returns {{address: string, privateKey: string}} account
- */
-function getAccountFromPassphrase (passphrase) {
-  const mnemonic = new Mnemonic(passphrase, Mnemonic.Words.ENGLISH)
-  const seed = mnemonic.toSeed()
-  const privateKey = hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey
-
-  return {
-    address: bufferToHex(privateToAddress(privateKey)),
-    privateKey
-  }
-}
-
-function toEther (wei) {
-  return api.fromWei(`${wei}`, 'ether')
-}
-
-function toWei (ether) {
-  return api.toWei(`${ether}`, 'ether')
-}
-
-function enqueueRequest (key, requestSupplier) {
-  if (backgroundRequests.some(x => x.key === key)) return
-
-  let requests = requestSupplier()
-  backgroundRequests.push({ key, requests: Array.isArray(requests) ? requests : [requests] })
-}
-
-function executeRequests () {
-  const requests = backgroundRequests.splice(0, 20)
-  if (!requests.length) return
-
-  const batch = api.createBatch()
-  requests.forEach(x => x.requests.forEach(r => batch.add(r)))
-
-  batch.execute()
-}
-
-function promisify (func) {
-  return (...args) => new Promise((resolve, reject) => {
-    func(...args, (error, result) => error ? reject(error) : resolve(result))
-  })
-}
 
 let isAddressBeingStored = null
 /**
@@ -111,7 +55,7 @@ export default {
   afterLogin: {
     root: true,
     handler (context, passphrase) {
-      const account = getAccountFromPassphrase(passphrase)
+      const account = utils.getAccountFromPassphrase(passphrase)
       context.commit('account', account)
       context.dispatch('updateStatus')
 
@@ -119,8 +63,7 @@ export default {
       // enough ADM for this transaction
       storeEthAddress(context)
 
-      clearInterval(backgroundTimer)
-      backgroundTimer = setInterval(executeRequests, 2000)
+      queue.start()
     }
   },
 
@@ -128,7 +71,7 @@ export default {
   reset: {
     root: true,
     handler (context) {
-      clearInterval(backgroundTimer)
+      queue.stop()
       context.commit('reset')
     }
   },
@@ -141,15 +84,14 @@ export default {
       const address = context.state.address
 
       if (!address && passphrase) {
-        const account = getAccountFromPassphrase(passphrase)
+        const account = utils.getAccountFromPassphrase(passphrase)
         context.commit('account', account)
         storeEthAddress(context)
       }
 
       context.dispatch('updateStatus')
 
-      clearInterval(backgroundTimer)
-      backgroundTimer = setInterval(executeRequests, 2000)
+      queue.start()
     }
   },
 
@@ -176,15 +118,15 @@ export default {
       return [
         // Balance
         api.eth.getBalance.request(context.state.address, block || 'latest', (err, balance) => {
-          if (!err) context.commit('balance', toEther(balance))
+          if (!err) context.commit('balance', utils.toEther(balance.toString(10)))
         }),
         // Current gas price
         api.eth.getGasPrice.request((err, price) => {
           if (!err) {
-            const gasPrice = 3 * price
+            const gasPrice = 3 * price.toNumber()
             context.commit('gasPrice', {
               gasPrice,
-              fee: toEther(Number(TRANSFER_GAS) * gasPrice)
+              fee: utils.calculateFee(ETH_TRANSFER_GAS, gasPrice)
             })
           }
         }),
@@ -198,7 +140,7 @@ export default {
     const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)
     setTimeout(() => {
       if (context.state.address) {
-        enqueueRequest('status', supplier)
+        queue.enqueue('status', supplier)
         lastStatusUpdate = Date.now()
         context.dispatch('updateStatus')
       }
@@ -217,23 +159,23 @@ export default {
     const ethTx = {
       from: context.state.address,
       to: ethAddress,
-      value: toWei(amount),
-      gas: TRANSFER_GAS,
-      gasPrice: context.state.gasPrice || DEFAULT_GAS_PRICE
+      value: api.fromDecimal(utils.toWei(amount)),
+      gas: api.fromDecimal(ETH_TRANSFER_GAS),
+      gasPrice: api.fromDecimal(context.getters.gasPrice)
     }
 
     if (!isValidAddress(ethAddress)) {
       return Promise.reject(new Error('invalid_address'))
     }
 
-    return promisify(api.eth.getTransactionCount)(context.state.address, 'pending')
+    return utils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
       .then(count => {
         if (count) ethTx.nonce = count
 
         const tx = new Tx(ethTx)
         tx.sign(toBuffer(context.state.privateKey))
-        const serialized = tx.serialize()
-        const hash = api.sha3(serialized)
+        const serialized = '0x' + tx.serialize().toString('hex')
+        const hash = api.sha3(serialized, { encoding: 'hex' })
 
         if (!admAddress) return serialized
         // Send a special message to indicate that we're performing an ETH transfer
@@ -249,17 +191,7 @@ export default {
           })
       })
       .then(tx => {
-        // // https://github.com/ethereum/web3.js/issues/1255#issuecomment-356492134
-        // const method = api.eth.sendSignedTransaction.method
-        // const payload = method.toPayload([tx])
-
-        // return new Promise((resolve) => {
-        //   method.requestManager.send(payload, (error, result) => {
-        //     console.log('sendSignedTransaction', { error, result })
-        //     resolve({ hash: result, error })
-        //   })
-        // })
-        return promisify(api.eth.sendRawTransaction)('0x' + tx.toString('hex')).then(
+        return utils.promisify(api.eth.sendRawTransaction, tx).then(
           hash => ({ hash }),
           error => ({ error })
         )
@@ -279,7 +211,7 @@ export default {
             senderId: ethTx.from,
             recipientId: ethTx.to,
             amount,
-            fee: toEther(Number(ethTx.gas) * ethTx.gasPrice),
+            fee: utils.calculateFee(ethTx.gas, ethTx.gasPrice),
             status: 'PENDING',
             timestamp
           })
@@ -315,8 +247,8 @@ export default {
           hash: tx.hash,
           senderId: tx.from,
           recipientId: tx.to,
-          amount: toEther(tx.value),
-          fee: toEther(Number(tx.gas) * tx.gasPrice),
+          amount: utils.toEther(tx.value.toString(10)),
+          fee: utils.calculateFee(tx.gas, tx.gasPrice.toString(10)),
           status: tx.blockNumber ? 'SUCCESS' : 'PENDING',
           timestamp: payload.timestamp, // TODO: fetch from block?
           blockNumber: tx.blockNumber
@@ -336,6 +268,6 @@ export default {
       }
     })
 
-    enqueueRequest(key, supplier)
+    queue.enqueue(key, supplier)
   }
 }

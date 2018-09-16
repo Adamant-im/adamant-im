@@ -15,13 +15,21 @@ export const Transactions = {
 
 export const Cryptos = {
   ADM: 'ADM',
-  ETH: 'ETH'
+  ETH: 'ETH',
+  BNB: 'BNB'
 }
+
+export const ERC20 = Object.freeze([
+  Cryptos.BNB
+])
+
+export const isErc20 = crypto => ERC20.includes(crypto)
 
 /** Number of decimal places for the different crypto amounts */
 export const CryptoAmountPrecision = {
   ADM: 2,
-  ETH: 6
+  ETH: 6,
+  BNB: 6
 }
 
 /** Fees for the misc ADM operations */
@@ -29,7 +37,8 @@ export const Fees = {
   /** Storing a value into the KVS */
   KVS: 0.001,
   /** Transfering tokens */
-  TRANSFER: 0.5
+  ADM_TRANSFER: 0.5,
+  NOT_ADM_TRANSFER: 0.001
 }
 
 /** Regex for detecting of base64 encoded string */
@@ -49,6 +58,13 @@ export const WelcomeMessage = {
   ADAMANT_BOUNTY: 'ADAMANT Bounty',
   ADAMANT_ICO: 'ADAMANT Tokens'
 }
+
+/** Gas value for the ETH transfers */
+export const ETH_TRANSFER_GAS = 21000
+
+/** Gas value for the ERC-20 transfers */
+export const ERC20_TRANSFER_GAS = ETH_TRANSFER_GAS * 10
+
 export default {
   EPOCH,
   Transactions

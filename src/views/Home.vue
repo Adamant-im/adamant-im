@@ -128,6 +128,15 @@ export default {
           balanceTooltip: 'home.your_balance_tooltip_ETH',
           addressIcon: '/img/Wallet/eth-address.svg',
           balanceIcon: '/img/Wallet/eth-balance.svg'
+        },
+        {
+          system: 'BNB',
+          address: this.$store.state.bnb.address,
+          tooltip: 'home.your_address_tooltip_BNB',
+          balance: this.$store.state.bnb.balance,
+          balanceTooltip: 'home.your_balance_tooltip_BNB',
+          addressIcon: '/img/Wallet/bnb-address.svg',
+          balanceIcon: '/img/Wallet/bnb-balance.svg'
         }
       ]
     }
