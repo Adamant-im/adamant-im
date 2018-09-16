@@ -272,9 +272,11 @@ footer {
 .chats .md-list {
     max-width: 90%;
 }
-.chats a:not(.md-button),
-.chat a:not(.md-button) {
+a:not(.md-button) {
   color: #2e7eed!important;
+}
+.login .create_link {
+  color: #4a4a4a!important;
 }
 .version {
     position:absolute;
