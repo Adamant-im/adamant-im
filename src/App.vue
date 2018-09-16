@@ -360,6 +360,9 @@ header span {
 .md-dialog {
   box-shadow: initial;
 }
+.md-dialog .md-primary {
+  background: #ffffff;
+}
 .md-dialog-confirm > .md-dialog > .md-dialog-actions > button{
   color: #000 !important;
 }
