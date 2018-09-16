@@ -37,7 +37,8 @@ export const Fees = {
   /** Storing a value into the KVS */
   KVS: 0.001,
   /** Transfering tokens */
-  TRANSFER: 0.5
+  ADM_TRANSFER: 0.5,
+  NOT_ADM_TRANSFER: 0.001
 }
 
 /** Regex for detecting of base64 encoded string */
