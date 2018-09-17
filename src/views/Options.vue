@@ -7,7 +7,7 @@
                   <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.general_title') }}</h2>
               </md-card-header>
           </md-card-area>
-
+          <md-button v-on:click="testDbButton">testDbButton</md-button>
           <md-card-content>
               <md-table>
                   <md-table-body>
@@ -116,6 +116,8 @@
 
 <script>
 import setUserPassword from '@/components/userpassword/SetUserPassword.vue'
+import {getAdmDataBase, getPassPhrase, getUserPassword, updateSecurity} from '../lib/indexedDb'
+
 export default {
   name: 'settings',
   components: {setUserPassword},
@@ -130,6 +132,20 @@ export default {
     },
     onPwdDialogClose (payload) {
       this.clearOnExit = !payload
+    },
+    testDbButton () {
+      getAdmDataBase().then((db) => {
+        const security = {
+          passPhrase: this.$store.getters.getPassPhrase,
+          userPassword: this.$store.getters.getUserPassword
+        }
+        updateSecurity(db, security)
+      })
+      getAdmDataBase().then((db) => {
+        getPassPhrase(db).then((data) => {
+          console.log('passPhrase', data)
+        })
+      })
     }
   },
   computed: {
