@@ -194,10 +194,10 @@ export default {
     }
   },
   mounted () {
-    if (this.$store.getters.getPassPhrase) {
-      this.$store.commit('leave_chat')
-      this.$root._router.push('/chats/')
-    }
+    // if (this.$store.getters.getPassPhrase) {
+    //   this.$store.commit('leave_chat')
+    //   this.$root._router.push('/chats/')
+    // }
   },
   computed: {
     iOS: function () {

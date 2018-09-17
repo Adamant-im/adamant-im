@@ -1,14 +1,12 @@
 {
   "name": "adamant-im",
   "version": "1.7.0",
-  "description": "Distributed chat",
-  "author": "ADAMANT Tech Labs <devs@adamant.im>",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "https": "vue-cli-service serve --https",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "https": "vue-cli-service serve --https",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e"
   },
@@ -106,5 +104,7 @@
       "**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)"
     ],
     "testURL": "http://localhost/"
-  }
+  },
+  "author": "ADAMANT Tech Labs <devs@adamant.im>",
+  "description": "Distributed chat"
 }

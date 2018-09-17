@@ -24,6 +24,23 @@ Vue.component('qr-code', VueQRCodeComponent)
 
 const store = new Vuex.Store(storeConfig)
 document.title = i18n.t('app_title')
+// TODO: Remove unnecessary checks from whole project
+router.beforeEach((to, from, next) => {
+  const isLogged = store.getters.isLogged
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (isLogged) {
+      next()
+    } else {
+      next({name: 'Login'})
+    }
+  } else {
+    if (to.name === 'Login' && isLogged) {
+      next({name: 'Chats'})
+    } else {
+      next()
+    }
+  }
+})
 
 Vue.material.registerTheme({
   grey: {
