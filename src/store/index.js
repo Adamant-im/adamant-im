@@ -150,7 +150,7 @@ const store = {
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
-      payload.message = this.$i18n.t(payload.message)
+      payload.message = window.ep.$i18n.t(payload.message)
       commit('add_chat_message', payload)
     },
     afterLogin ({ commit }, passPhrase) {

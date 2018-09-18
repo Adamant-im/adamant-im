@@ -15,7 +15,7 @@
             <p>{{ $formatDate(transaction.timestamp) }}</p>
           </div>
 
-          <md-button class="md-icon-button md-list-action" v-on:click="openChat(transaction)">
+          <md-button class="md-icon-button md-list-action" @click="openChat(transaction)">
             <md-icon>{{ hasMessages(transaction) ? "chat" : "chat_bubble_outline" }}</md-icon>
           </md-button>
 
