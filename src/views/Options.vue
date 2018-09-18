@@ -116,7 +116,16 @@
 
 <script>
 import setUserPassword from '@/components/userpassword/SetUserPassword.vue'
-import {getAdmDataBase, getPassPhrase, getUserPassword, updateSecurity} from '../lib/indexedDb'
+import {
+  decryptData,
+  encryptData,
+  getAdmDataBase,
+  getPassPhrase,
+  updatePassPhrase,
+  updateUserPassword
+} from '../lib/indexedDb'
+import crypto from 'pbkdf2'
+import {UserPasswordHashSettings} from '../lib/constants'
 
 export default {
   name: 'settings',
@@ -134,16 +143,28 @@ export default {
       this.clearOnExit = !payload
     },
     testDbButton () {
-      getAdmDataBase().then((db) => {
-        const security = {
-          passPhrase: this.$store.getters.getPassPhrase,
-          userPassword: this.$store.getters.getUserPassword
-        }
-        updateSecurity(db, security)
+    // Save user password
+      crypto.pbkdf2('some password', UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
+        if (err) throw err
+        getAdmDataBase().then((db) => {
+          updateUserPassword(db, encodePassword)
+        })
       })
       getAdmDataBase().then((db) => {
-        getPassPhrase(db).then((data) => {
-          console.log('passPhrase', data)
+        encryptData(this.$store.getters.getPassPhrase).then((result) => {
+          updatePassPhrase(db, result).then(() => {
+            getPassPhrase(db).then((ps) => {
+              decryptData(ps.value).then((data) => {
+                console.log('decrypted data: ', data)
+              })
+            })
+          })
+        })
+      })
+      encryptData('string').then((result) => {
+        console.log('encrypted data: ', result)
+        decryptData(result).then((data) => {
+          console.log('decrypted data: ', data)
         })
       })
     }
