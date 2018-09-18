@@ -143,6 +143,7 @@ export default {
       this.clearOnExit = !payload
     },
     testDbButton () {
+      // TODO: remove later, only for test
     // Save user password
       crypto.pbkdf2('some password', UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
         if (err) throw err

@@ -13,11 +13,23 @@ const NONCE = Buffer.allocUnsafe(24)
 const SECURITY = 'security'
 const PASSPHRASE = 'passPhrase'
 const USER_PASSWORD = 'userPassword'
+const COMMON = 'common'
+const CONTACT_LIST = 'contactList'
+const CHAT_LIST = 'chatList'
 
 export function getAdmDataBase () {
   return idb.open(DATABASE_NAME, 1, function (upgradeDb) {
     if (!upgradeDb.objectStoreNames.contains(SECURITY)) {
       upgradeDb.createObjectStore(SECURITY, {keyPath: DEFAULT_KEY_PATH, autoIncrement: true})
+    }
+    if (!upgradeDb.objectStoreNames.contains(COMMON)) {
+      upgradeDb.createObjectStore(COMMON, {keyPath: DEFAULT_KEY_PATH, autoIncrement: true})
+    }
+    if (!upgradeDb.objectStoreNames.contains(CONTACT_LIST)) {
+      upgradeDb.createObjectStore(CONTACT_LIST, {keyPath: DEFAULT_KEY_PATH, autoIncrement: true})
+    }
+    if (!upgradeDb.objectStoreNames.contains(CHAT_LIST)) {
+      upgradeDb.createObjectStore(CHAT_LIST, {keyPath: DEFAULT_KEY_PATH, autoIncrement: true})
     }
   })
 }
@@ -36,6 +48,30 @@ export function updatePassPhrase (db, value) {
     value: value
   }
   return saveValueByName(db, SECURITY, passPhrase)
+}
+
+export function updateCommonItem (db, key, value) {
+  const commonItem = {
+    name: key,
+    value: value
+  }
+  return saveValueByName(db, COMMON, commonItem)
+}
+
+export function updateContactItem (db, value) {
+  const contactItem = {
+    name: CONTACT_LIST,
+    value: value
+  }
+  return saveValueByName(db, CONTACT_LIST, contactItem)
+}
+
+export function updateChatItem (db, key, value) {
+  const chatItem = {
+    name: key,
+    value: value
+  }
+  return saveValueByName(db, CHAT_LIST, chatItem)
 }
 
 export function getPassPhrase (db) {

@@ -1,4 +1,5 @@
 import merge from 'deepmerge'
+import {getAdmDataBase, updateChatItem, updateCommonItem, updateContactItem} from './indexedDb'
 
 export default function storeData () {
   return store => {
@@ -16,6 +17,7 @@ export default function storeData () {
     }
     var lsStorage = false
     var gsStorage = false
+    let useDb = store.getters.getUserPasswordExists
     if (localStorageAvailable()) {
       lsStorage = window.localStorage
     }
@@ -68,72 +70,91 @@ export default function storeData () {
       this.$store.commit('force_update')
     }
     store.subscribe((mutation, state) => {
-      var storeNow = false
-      if (mutation.type === 'change_storage_method') {
-        if (mutation.payload) {
-          useStorage = lsStorage
+      getAdmDataBase().then((db) => {
+        var storeNow = false
+        if (mutation.type === 'change_storage_method') {
+          if (mutation.payload) {
+            useStorage = lsStorage
+            try {
+              lsStorage.setItem('adm-persist', gsStorage.getItem('adm-persist'))
+            } catch (e) {
+            }
+          } else {
+            useStorage = gsStorage
+            lsStorage.removeItem('adm-persist')
+          }
           try {
-            lsStorage.setItem('adm-persist', gsStorage.getItem('adm-persist'))
+            mainStorage.setItem('storeInLocalStorage', mutation.payload)
+          } catch (e) {
+          }
+          storeNow = true
+        } else if (mutation.type === 'change_lang') {
+          updateCommonItem(db, 'language', mutation.payload)
+          storeNow = true
+        } else if (mutation.type === 'change_notify_sound') {
+          updateCommonItem(db, 'notify_sound', mutation.payload)
+          storeNow = true
+        } else if (mutation.type === 'change_notify_bar') {
+          updateCommonItem(db, 'notify_bar', mutation.payload)
+          storeNow = true
+        } else if (mutation.type === 'change_notify_desktop') {
+          updateCommonItem(db, 'notify_desktop', mutation.payload)
+          storeNow = true
+        } else if (mutation.type === 'change_send_on_enter') {
+          updateCommonItem(db, 'send_on_enter', mutation.payload)
+          storeNow = true
+        }
+        if (mutation.type === 'logout') {
+          storeNow = true
+        }
+        if (mutation.type === 'save_passphrase') {
+          storeNow = true
+        }
+        if (mutation.type === 'force_update') {
+          storeNow = true
+        }
+        if (mutation.type === 'change_partner_name') {
+          storeNow = true
+        }
+        if (mutation.type === 'leave_chat') {
+          storeNow = true
+        }
+        if (mutation.type === 'ajax_start' || mutation.type === 'ajax_end' || mutation.type === 'ajax_end_with_error' || mutation.type === 'start_tracking_new' || mutation.type === 'have_loaded_chats' || mutation.type === 'connect' || mutation.type === 'login') {
+          return
+        }
+        if (storeNow) {
+          try {
+            useStorage.setItem('adm-persist', JSON.stringify(state))
+            if (useDb) {
+              // Update contacts
+              updateContactItem(db, state.partners)
+              // Update chats
+              for (let chat in state.chats) {
+                if (state.chats.hasOwnProperty(chat)) {
+                  updateChatItem(db, chat, state.chats[chat])
+                }
+              }
+              // Update commons
+              // Transformed kept state
+              let copyState = Object.assign({}, state)
+              delete copyState.partners
+              delete copyState.chats
+              delete copyState.passPhrase
+              updateCommonItem(db, 'adm_store', copyState)
+            }
           } catch (e) {
           }
         } else {
-          useStorage = gsStorage
-          lsStorage.removeItem('adm-persist')
+          if (window.storeTimer) {
+            window.clearTimeout(window.storeTimer)
+          }
+          var storeTimer = window.setTimeout(function () {
+            window.ep.$store.commit('force_update')
+            window.storeTimer = undefined
+          }, 10000)
+          window.storeTimer = storeTimer
         }
-        try {
-          mainStorage.setItem('storeInLocalStorage', mutation.payload)
-        } catch (e) {
-        }
-        storeNow = true
-      } else if (mutation.type === 'change_lang') {
-        mainStorage.setItem('language', mutation.payload)
-        storeNow = true
-      } else if (mutation.type === 'change_notify_sound') {
-        mainStorage.setItem('notify_sound', mutation.payload)
-        storeNow = true
-      } else if (mutation.type === 'change_notify_bar') {
-        mainStorage.setItem('notify_bar', mutation.payload)
-        storeNow = true
-      } else if (mutation.type === 'change_notify_desktop') {
-        mainStorage.setItem('notify_desktop', mutation.payload)
-        storeNow = true
-      } else if (mutation.type === 'change_send_on_enter') {
-        mainStorage.setItem('send_on_enter', mutation.payload)
-        storeNow = true
-      }
-      if (mutation.type === 'logout') {
-        storeNow = true
-      }
-      if (mutation.type === 'save_passphrase') {
-        storeNow = true
-      }
-      if (mutation.type === 'force_update') {
-        storeNow = true
-      }
-      if (mutation.type === 'change_partner_name') {
-        storeNow = true
-      }
-      if (mutation.type === 'leave_chat') {
-        storeNow = true
-      }
-      if (mutation.type === 'ajax_start' || mutation.type === 'ajax_end' || mutation.type === 'ajax_end_with_error' || mutation.type === 'start_tracking_new' || mutation.type === 'have_loaded_chats' || mutation.type === 'connect' || mutation.type === 'login') {
-        return
-      }
-      if (storeNow) {
-        try {
-          useStorage.setItem('adm-persist', JSON.stringify(state))
-        } catch (e) {
-        }
-      } else {
-        if (window.storeTimer) {
-          window.clearTimeout(window.storeTimer)
-        }
-        var storeTimer = window.setTimeout(function () {
-          window.ep.$store.commit('force_update')
-          window.storeTimer = undefined
-        }, 10000)
-        window.storeTimer = storeTimer
-      }
+      })
     })
   }
 }

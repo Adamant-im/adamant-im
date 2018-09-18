@@ -23,7 +23,10 @@
 </template>
 
 <script>
-import {UserPasswordAgreementLink} from '../../lib/constants'
+
+import {UserPasswordAgreementLink, UserPasswordHashSettings} from '../../lib/constants'
+import crypto from 'pbkdf2'
+import {encryptData, getAdmDataBase, updatePassPhrase, updateUserPassword} from '../../lib/indexedDb'
 
 export default {
   name: 'setUserPassword',
@@ -37,14 +40,21 @@ export default {
       this.$store.commit('change_storage_method', this.$store.state.storeInLocalStorage)
     },
     setPassword () {
-      this.$store.commit('change_storage_method', true)
-      this.$store.commit('save_user_password', this.userPasswordValue)
-      this.$store.commit('user_password_exists', true)
-      setTimeout(() => {
-        this.$store.commit('encrypt_store')
-      }, 500)
-      this.userPasswordValue = null
-      this.userPasswordCheckbox = false
+      crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encryptedPassword) => {
+        if (err) throw err
+        getAdmDataBase().then((db) => {
+          updateUserPassword(db, encryptedPassword).then(() => {
+            encryptData(this.$store.getters.getPassPhrase).then((encryptedPassPhrase) => {
+              console.log('encryptedPassPhrase: ', encryptedPassPhrase)
+              updatePassPhrase(db, encryptedPassPhrase)
+              this.userPasswordValue = null
+              this.userPasswordCheckbox = false
+              this.$store.commit('user_password_exists', true)
+              this.$store.commit('change_storage_method', true)
+            })
+          })
+        })
+      })
       this.close()
     },
     onClose () {
