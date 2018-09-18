@@ -1,5 +1,5 @@
 import merge from 'deepmerge'
-import {getAdmDataBase, updateChatItem, updateCommonItem, updateContactItem} from './indexedDb'
+import {encryptData, getAdmDataBase, updateChatItem, updateCommonItem, updateContactItem} from './indexedDb'
 
 export default function storeData () {
   return store => {
@@ -103,6 +103,12 @@ export default function storeData () {
         } else if (mutation.type === 'change_send_on_enter') {
           updateCommonItem(db, 'send_on_enter', mutation.payload)
           storeNow = true
+        } else if (mutation.type === 'partners/contactList' && store.getters.getUserPasswordExists) {
+          const payload = JSON.stringify(mutation.payload)
+          encryptData(payload).then((contactList) => {
+            updateContactItem(db, contactList)
+            storeNow = true
+          })
         }
         if (mutation.type === 'logout') {
           storeNow = true
@@ -126,21 +132,19 @@ export default function storeData () {
           try {
             useStorage.setItem('adm-persist', JSON.stringify(state))
             if (useDb) {
-              // Update contacts
-              updateContactItem(db, state.partners)
-              // Update chats
-              for (let chat in state.chats) {
-                if (state.chats.hasOwnProperty(chat)) {
-                  updateChatItem(db, chat, state.chats[chat])
-                }
-              }
-              // Update commons
-              // Transformed kept state
-              let copyState = Object.assign({}, state)
-              delete copyState.partners
-              delete copyState.chats
-              delete copyState.passPhrase
-              updateCommonItem(db, 'adm_store', copyState)
+              // // Update chats
+              // for (let chat in state.chats) {
+              //   if (state.chats.hasOwnProperty(chat)) {
+              //     updateChatItem(db, chat, state.chats[chat])
+              //   }
+              // }
+              // // Update commons
+              // // Transformed kept state
+              // let copyState = Object.assign({}, state)
+              // delete copyState.partners
+              // delete copyState.chats
+              // delete copyState.passPhrase
+              // updateCommonItem(db, 'adm_store', copyState)
             }
           } catch (e) {
           }

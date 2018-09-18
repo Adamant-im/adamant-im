@@ -40,17 +40,18 @@ export default {
       this.$store.commit('change_storage_method', this.$store.state.storeInLocalStorage)
     },
     setPassword () {
+      console.log(this.$store.state.partners)
       crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encryptedPassword) => {
         if (err) throw err
         getAdmDataBase().then((db) => {
           updateUserPassword(db, encryptedPassword).then(() => {
             encryptData(this.$store.getters.getPassPhrase).then((encryptedPassPhrase) => {
-              console.log('encryptedPassPhrase: ', encryptedPassPhrase)
               updatePassPhrase(db, encryptedPassPhrase)
               this.userPasswordValue = null
               this.userPasswordCheckbox = false
               this.$store.commit('user_password_exists', true)
               this.$store.commit('change_storage_method', true)
+              this.$store.commit('partners/contactList', this.$store.state.partners)
             })
           })
         })

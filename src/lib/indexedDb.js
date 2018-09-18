@@ -66,6 +66,10 @@ export function updateContactItem (db, value) {
   return saveValueByName(db, CONTACT_LIST, contactItem)
 }
 
+export function getContactItem (db) {
+  return getValueByName(db, CONTACT_LIST, CONTACT_LIST)
+}
+
 export function updateChatItem (db, key, value) {
   const chatItem = {
     name: key,

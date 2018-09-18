@@ -119,7 +119,7 @@ import setUserPassword from '@/components/userpassword/SetUserPassword.vue'
 import {
   decryptData,
   encryptData,
-  getAdmDataBase,
+  getAdmDataBase, getContactItem,
   getPassPhrase,
   updatePassPhrase,
   updateUserPassword
@@ -144,28 +144,12 @@ export default {
     },
     testDbButton () {
       // TODO: remove later, only for test
-    // Save user password
-      crypto.pbkdf2('some password', UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
-        if (err) throw err
-        getAdmDataBase().then((db) => {
-          updateUserPassword(db, encodePassword)
-        })
-      })
       getAdmDataBase().then((db) => {
-        encryptData(this.$store.getters.getPassPhrase).then((result) => {
-          updatePassPhrase(db, result).then(() => {
-            getPassPhrase(db).then((ps) => {
-              decryptData(ps.value).then((data) => {
-                console.log('decrypted data: ', data)
-              })
-            })
+        getContactItem(db).then((result) => {
+          console.log('encrypted getContactItem: ', result.value)
+          decryptData(result.value).then((data) => {
+            console.log('decrypted getContactItem: ', JSON.parse(data))
           })
-        })
-      })
-      encryptData('string').then((result) => {
-        console.log('encrypted data: ', result)
-        decryptData(result).then((data) => {
-          console.log('decrypted data: ', data)
         })
       })
     }
