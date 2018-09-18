@@ -41,7 +41,7 @@ function deviceIsDisabled () {
 var defaultLanguage = navigator.language || navigator.userLanguage
 defaultLanguage = defaultLanguage.toLowerCase().substring(0, 2)
 window.refreshTime = new Date().getTime()
-// TODO: WTF?
+
 if (defaultLanguage !== 'ru' && defaultLanguage !== 'en') {
   defaultLanguage = 'en'
 }

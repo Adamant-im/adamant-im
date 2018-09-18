@@ -151,8 +151,6 @@ export default {
     }
   },
   computed: {
-    // TODO: !!!CHECK FOR POSSIBLE PROBLEMS
-    // TODO: HAS BEEN OVERWRITTEN TO AVOID POSSIBLE SIDE EFFECTS
     maxToTransfer: function () {
       const multiplier = Math.pow(10, this.exponent)
       const commission = isErc20(this.crypto) ? 0 : this.commission

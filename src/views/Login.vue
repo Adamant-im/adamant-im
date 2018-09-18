@@ -193,12 +193,6 @@ export default {
       }
     }
   },
-  mounted () {
-    // if (this.$store.getters.getPassPhrase) {
-    //   this.$store.commit('leave_chat')
-    //   this.$root._router.push('/chats/')
-    // }
-  },
   computed: {
     iOS: function () {
       return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
