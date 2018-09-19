@@ -1,6 +1,17 @@
 <template>
   <!--TODO: Move all non-static content to @/assets/-->
   <div class="chat">
+    <md-toolbar>
+      <md-button class="md-icon-button" @click="gotochats">
+        <md-icon >keyboard_backspace</md-icon>
+      </md-button>
+      <h1 class="md-title">
+        <md-input-container>
+          <label>{{ partnerName }}</label>
+          <md-input :value="userDisplayName" @change="setUserName"></md-input>
+        </md-input-container>
+      </h1>
+    </md-toolbar>
       <md-layout id="msgContainer" md-align="start" md-gutter="16" class="chat_messages">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
             <chat-entry :readOnly="readOnly" :message="message"></chat-entry>
@@ -69,6 +80,10 @@ export default {
   name: 'chats',
   components: { ChatEntry },
   methods: {
+    setUserName (val) {
+      const partner = this.$store.state.partnerName
+      this.$store.commit('partners/displayName', { partner, displayName: val })
+    },
     blurHandler: function (event) {
       if (/iP(hone|od|ad)/.test(navigator.platform)) {
         var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/)
@@ -127,6 +142,10 @@ export default {
         let element = document.getElementById('msgContainer')
         element.scrollTop = element.scrollHeight + 1000
       }, 12)
+    },
+    gotochats () {
+      this.$store.commit('leave_chat')
+      this.$router.push({ name: 'Chats' })
     },
     send () {
       this.$refs.messageField.$el.focus()
@@ -192,6 +211,12 @@ export default {
     10)
   },
   computed: {
+    userDisplayName () {
+      return this.$store.getters['partners/displayName'](this.$store.state.partnerName)
+    },
+    partnerName () {
+      return this.$store.state.partnerName
+    },
     messages: function () {
       function compare (a, b) {
         if (a.timestamp < b.timestamp) {
