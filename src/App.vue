@@ -1,47 +1,30 @@
 <template>
   <div id="app">
-      <md-theme md-name="grey">
-          <md-toolbar v-if="isTopPanelShown">
-              <md-button class="md-icon-button" v-on:click="gotochats">
-                  <md-icon >keyboard_backspace</md-icon>
-              </md-button>
-            <h1 class="md-title">
-                <md-input-container>
-                    <label>{{ partnerName }}</label>
-                    <md-input :value="userDisplayName" @change="setUserName"></md-input>
-                </md-input-container>
-                </h1>
-          </md-toolbar>
-          <md-toolbar v-if="isTransferBackShown">
-              <md-button class="md-icon-button" v-on:click="backOneStep">
-                  <md-icon >keyboard_backspace</md-icon>
-              </md-button>
-            <h1 class="md-title">
-              {{ $t('home.send_btn') }}
-            </h1>
-          </md-toolbar>
-    <main>
+    <md-theme md-name="grey">
+      <main>
         <router-view></router-view>
-    </main>
+      </main>
       <footer :style="footerCss">
-          <div class="bottom-fixed">
-              <md-bottom-bar v-if="logged && isBottomPanelShown && !isTransferBackShown" md-theme="bottomBar">
-                  <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" :md-active="!!$router.currentRoute.path.match(/\/home\//) || !!$router.currentRoute.path.match(/\/transactions\//) || !!$router.currentRoute.path.match(/\/transfer\//)">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
-                  <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')" :md-active="chatsPage">{{$t('bottom.chats_button')}}<div class="new-icon" v-if="totalNew">{{ totalNew }}</div></md-bottom-bar-item>
-                  <md-bottom-bar-item md-icon="settings" v-on:click="$router.push('/options/')" :md-active="!!$router.currentRoute.path.match(/\/options\//)">{{$t('bottom.settings_button')}}</md-bottom-bar-item>
-                  <md-bottom-bar-item md-icon="exit_to_app" v-on:click="exitme" :title="$t('bottom.exit_button_tooltip')">{{$t('bottom.exit_button')}}</md-bottom-bar-item>
-              </md-bottom-bar>
-          </div>
+        <div class="bottom-fixed">
+          <md-bottom-bar v-if="logged && isBottomPanelShown && !isTransferBackShown" md-theme="bottomBar">
+            <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" :md-active="!!$router.currentRoute.path.match(/\/home\//) || !!$router.currentRoute.path.match(/\/transactions\//) || !!$router.currentRoute.path.match(/\/transfer\//)">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
+            <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')" :md-active="chatsPage">{{$t('bottom.chats_button')}}<div class="new-icon" v-if="totalNew">{{ totalNew }}</div></md-bottom-bar-item>
+            <md-bottom-bar-item md-icon="settings" v-on:click="$router.push('/options/')" :md-active="!!$router.currentRoute.path.match(/\/options\//)">{{$t('bottom.settings_button')}}</md-bottom-bar-item>
+            <md-bottom-bar-item md-icon="exit_to_app" v-on:click="exitme" :title="$t('bottom.exit_button_tooltip')">{{$t('bottom.exit_button')}}</md-bottom-bar-item>
+          </md-bottom-bar>
+        </div>
       </footer>
-          <a name="bottom"></a>
-      </md-theme>
-      <div class="forbid" v-if="disabled" style="display: table;"><div style="display: table-cell; vertical-align: middle;">{{ $t('login.device_unsupported') }}</div></div>
-      <audio ref="messageSound" class="newMessageNotification" id="messageSound" src="/sound/bbpro_link.mp3"></audio>
+      <a name="bottom"></a>
+    </md-theme>
+    <div class="forbid" v-if="disabled" style="display: table;"><div style="display: table-cell; vertical-align: middle;">{{ $t('login.device_unsupported') }}</div></div>
+    <audio ref="messageSound" class="newMessageNotification" id="messageSound" src="/sound/bbpro_link.mp3"></audio>
 
   </div>
 </template>
 
 <script>
+import i18n from './i18n'
+
 export default {
   name: 'app',
   mounted: function () {
@@ -58,15 +41,15 @@ export default {
               window.notify_amount = self.$store.state.totalNewChats
               window.notify_interval = setInterval(function () {
                 if (window.notify_toggle) {
-                  document.title = self.$i18n.t('app_title')
+                  document.title = i18n.t('app_title')
                 } else {
                   var newTitle = ''
                   if (window.notify_amount % 10 === 1 && window.notify_amount % 100 !== 11) {
-                    newTitle = window.notify_amount + ' ' + self.$i18n.t('new_messages_1')
+                    newTitle = window.notify_amount + ' ' + i18n.t('new_messages_1')
                   } else if (window.notify_amount % 10 >= 2 && window.notify_amount % 10 <= 4 && (window.notify_amount % 100 < 10 || window.notify_amount % 100 >= 20)) {
-                    newTitle = window.notify_amount + ' ' + self.$i18n.t('new_messages_2')
+                    newTitle = window.notify_amount + ' ' + i18n.t('new_messages_2')
                   } else {
-                    newTitle = window.notify_amount + ' ' + self.$i18n.t('new_messages_5')
+                    newTitle = window.notify_amount + ' ' + i18n.t('new_messages_5')
                   }
                   document.title = newTitle
                 }
@@ -77,13 +60,13 @@ export default {
             if (window.notify_interval) {
               clearInterval(window.notify_interval)
               setTimeout(function () {
-                document.title = self.$i18n.t('app_title')
+                document.title = i18n.t('app_title')
               }, 200)
             }
 
-            if (document.title !== self.$i18n.t('app_title')) {
+            if (document.title !== i18n.t('app_title')) {
               setTimeout(function () {
-                document.title = self.$i18n.t('app_title')
+                document.title = i18n.t('app_title')
               }, 200)
             }
           }
@@ -92,6 +75,7 @@ export default {
       })(this),
       3000
     )
+
     window.audio = require('simple-audio')
 
     if (!this.$store.getters.getPassPhrase && this.$route.path !== '/') {
@@ -99,22 +83,6 @@ export default {
     }
   },
   methods: {
-    setUserName (val) {
-      // this.$store.commit('change_partner_name', val)
-      const partner = this.$store.state.partnerName
-      this.$store.commit('partners/displayName', { partner, displayName: val })
-    },
-    backOneStep () {
-      if (history.length > 2) {
-        this.$router.back()
-      } else {
-        this.$router.push('/home/')
-      }
-    },
-    gotochats () {
-      this.$store.commit('leave_chat')
-      this.$router.push({ name: 'Chats' })
-    },
     exitme () {
       this.$store.commit('logout')
       this.$store.dispatch('reset')
@@ -137,17 +105,9 @@ export default {
     disabled () {
       return this.$store.state.disabled
     },
-    userDisplayName () {
-      return this.$store.getters['partners/displayName'](this.$store.state.partnerName)
-    },
-    partnerName () {
-      return this.$store.state.partnerName
-    },
+
     isTransferBackShown () {
       return this.transferBackShown
-    },
-    isTopPanelShown () {
-      return this.$store.state.showPanel
     },
     isBottomPanelShown () {
       return this.$store.state.showBottom

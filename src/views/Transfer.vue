@@ -1,5 +1,11 @@
 <template>
   <div class="transfer">
+    <md-toolbar>
+      <md-button class="md-icon-button" @click="backOneStep">
+        <md-icon >keyboard_backspace</md-icon>
+      </md-button>
+      <h1 class="md-title">{{ $t('home.send_btn') }}</h1>
+    </md-toolbar>
       <spinner v-if="isWaiting" />
       <form novalidate @submit.stop.prevent="submit">
         <md-input-container>
@@ -69,6 +75,13 @@ export default {
   name: 'home',
   components: { Spinner },
   methods: {
+    backOneStep () {
+      if (history.length > 2) {
+        this.$router.back()
+      } else {
+        this.$router.push('/home/')
+      }
+    },
     errorMessage (message, opts) {
       this.formErrorMessage = this.$t('transfer.' + message, opts)
       this.$refs.transferSnackbar.open()
@@ -266,6 +279,9 @@ export default {
   .transfer form {
     max-width: 95%;
     margin: auto;
+  }
+  .md-toolbar .md-title {
+    text-align: left;
   }
   @media (max-width: 800px) {
     .transfer {
