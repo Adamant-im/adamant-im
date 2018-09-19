@@ -1,6 +1,6 @@
 <template>
     <div class="transaction transaction_list">
-      <md-list class="custom-list md-triple-line">
+      <md-list class="custom-list md-triple-line md-transparent">
         <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
           <md-avatar>
             <md-icon>{{ transaction.direction === 'from' ? 'flight_takeoff' : 'flight_land' }}</md-icon>
@@ -15,7 +15,7 @@
             <p>{{ $formatDate(transaction.timestamp) }}</p>
           </div>
 
-          <md-button class="md-icon-button md-list-action" v-on:click="openChat(transaction)">
+          <md-button class="md-icon-button md-list-action" @click="openChat(transaction)">
             <md-icon>{{ hasMessages(transaction) ? "chat" : "chat_bubble_outline" }}</md-icon>
           </md-button>
 

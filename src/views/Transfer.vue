@@ -1,5 +1,11 @@
 <template>
   <div class="transfer">
+    <md-toolbar>
+      <md-button class="md-icon-button" @click="backOneStep">
+        <md-icon >keyboard_backspace</md-icon>
+      </md-button>
+      <h1 class="md-title">{{ $t('home.send_btn') }}</h1>
+    </md-toolbar>
       <spinner v-if="isWaiting" />
       <form novalidate @submit.stop.prevent="submit">
         <md-input-container>
@@ -39,7 +45,7 @@
           </md-input-container>
 
           <md-layout md-align="center" md-gutter="16">
-            <md-button class="md-raised md-primary send_funds_button" :title="$t('transfer.send_button_tooltip')" v-on:click="transfer">
+            <md-button class="md-raised send_funds_button" :title="$t('transfer.send_button_tooltip')" v-on:click="transfer">
               {{ $t('transfer.send_button') }}
             </md-button>
           </md-layout>
@@ -69,6 +75,13 @@ export default {
   name: 'home',
   components: { Spinner },
   methods: {
+    backOneStep () {
+      if (history.length > 2) {
+        this.$router.back()
+      } else {
+        this.$router.push('/home/')
+      }
+    },
     errorMessage (message, opts) {
       this.formErrorMessage = this.$t('transfer.' + message, opts)
       this.$refs.transferSnackbar.open()
@@ -151,8 +164,6 @@ export default {
     }
   },
   computed: {
-    // TODO: !!!CHECK FOR POSSIBLE PROBLEMS
-    // TODO: HAS BEEN OVERWRITTEN TO AVOID POSSIBLE SIDE EFFECTS
     maxToTransfer: function () {
       const multiplier = Math.pow(10, this.exponent)
       const commission = isErc20(this.crypto) ? 0 : this.commission
@@ -268,6 +279,9 @@ export default {
   .transfer form {
     max-width: 95%;
     margin: auto;
+  }
+  .md-toolbar .md-title {
+    text-align: left;
   }
   @media (max-width: 800px) {
     .transfer {

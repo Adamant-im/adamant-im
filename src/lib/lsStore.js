@@ -67,7 +67,7 @@ export default function storeData () {
       store.dispatch('rehydrate')
     }
     window.onbeforeunload = function () {
-      this.$store.commit('force_update')
+      window.ep.$store.commit('force_update')
     }
     store.subscribe((mutation, state) => {
       getAdmDataBase().then((db) => {

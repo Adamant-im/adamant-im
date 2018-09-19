@@ -1,14 +1,12 @@
 {
   "name": "adamant-im",
   "version": "1.7.0",
-  "description": "Distributed chat",
-  "author": "ADAMANT Tech Labs <devs@adamant.im>",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "https": "vue-cli-service serve --https",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "https": "vue-cli-service serve --https",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e"
   },
@@ -53,8 +51,8 @@
     "@vue/cli-plugin-pwa": "^3.0.1",
     "@vue/cli-plugin-unit-jest": "^3.0.1",
     "@vue/cli-service": "^3.0.1",
-    "@vue/eslint-config-standard": "^3.0.1",
-    "@vue/test-utils": "^1.0.0-beta.20",
+    "@vue/eslint-config-standard": "^3.0.3",
+    "@vue/test-utils": "^1.0.0-beta.25",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.0.1",
     "node-sass": "^4.9.3",
@@ -108,5 +106,7 @@
       "**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)"
     ],
     "testURL": "http://localhost/"
-  }
+  },
+  "author": "ADAMANT Tech Labs <devs@adamant.im>",
+  "description": "Distributed chat"
 }

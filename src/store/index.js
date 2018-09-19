@@ -15,6 +15,7 @@ import * as admApi from '../lib/adamant-api'
 import {base64regex, WelcomeMessage, UserPasswordHashSettings, Cryptos} from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
+import i18n from '../i18n'
 import ed2curve from 'ed2curve'
 import nacl from 'tweetnacl/nacl-fast'
 import crypto from 'pbkdf2'
@@ -44,7 +45,7 @@ function deviceIsDisabled () {
 var defaultLanguage = navigator.language || navigator.userLanguage
 defaultLanguage = defaultLanguage.toLowerCase().substring(0, 2)
 window.refreshTime = new Date().getTime()
-// TODO: WTF?
+
 if (defaultLanguage !== 'ru' && defaultLanguage !== 'en') {
   defaultLanguage = 'en'
 }
@@ -57,13 +58,13 @@ function createMockMessage (state, newAccount, partner, message) {
       readOnly: true,
       messages: {
         0: {
-          message: window.ep.$i18n.t('chats.' + message),
+          message: i18n.t('chats.' + message),
           timestamp: 0,
           direction: 'to'
         }
       },
       last_message: {
-        message: window.ep.$i18n.t('chats.' + message),
+        message: i18n.t('chats.' + message),
         timestamp: 0,
         direction: 'to'
       }
@@ -154,7 +155,7 @@ const store = {
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
-      payload.message = this.$i18n.t(payload.message)
+      payload.message = i18n.t(payload.message)
       commit('add_chat_message', payload)
     },
     afterLogin ({ commit }, passPhrase) {

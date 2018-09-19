@@ -15,43 +15,55 @@ Vue.use(Router)
 export default new Router({
   mode: 'history',
   routes: [
-    { path: '/votes', name: 'Votes', component: Votes },
+    {
+      path: '/votes',
+      name: 'Votes',
+      component: Votes,
+      meta: { requiresAuth: true }
+    },
     {
       path: '/transactions/:crypto/:tx_id',
       component: Transaction,
       name: 'Transaction',
-      props: true
+      props: true,
+      meta: { requiresAuth: true }
     },
     {
       path: '/transactions',
       name: 'Transactions',
-      component: Transactions
+      component: Transactions,
+      meta: { requiresAuth: true }
     },
     {
       path: '/options',
       name: 'Options',
-      component: Options
+      component: Options,
+      meta: { requiresAuth: true }
     },
     {
       path: '/chats/:partner/',
       component: Chat,
-      name: 'Chat'
+      name: 'Chat',
+      meta: { requiresAuth: true }
     },
     {
       path: '/chats',
       name: 'Chats',
-      component: Chats
+      component: Chats,
+      meta: { requiresAuth: true }
     },
     {
       path: '/transfer/:fixedCrypto?/:fixedAddress?',
       name: 'Transfer',
       component: Transfer,
-      props: true
+      props: true,
+      meta: { requiresAuth: true }
     },
     {
       path: '/home',
       name: 'Home',
-      component: Home
+      component: Home,
+      meta: { requiresAuth: true }
     },
     {
       path: '/',
