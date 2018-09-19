@@ -165,6 +165,9 @@ const store = {
       commit('login', account)
     },
     add_message_to_queue ({ getters }, payload) {
+      if (payload.message === undefined || payload.message.trim() === '') {
+        return
+      }
       let chats = getters.getChats
       const partner = payload.recipientId
       payload = {
