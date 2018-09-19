@@ -5,7 +5,7 @@
       </md-layout>
         <md-layout md-align="center" md-gutter="16">
 
-        <md-list class="md-double-line" >
+        <md-list class="md-double-line md-transparent" >
             <md-list-item v-on:click="startNewChat()" :title="$t('chats.new_chat_tooltip')" id="new_chat">
                 <md-avatar class="md-avatar-icon">
                     <md-icon>add</md-icon>

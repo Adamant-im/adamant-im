@@ -5,16 +5,16 @@
       <div class="modal">
         <div class="modal-body">
           <h3>{{$t('scan.' + this.checkParentName() + '.modal_header') }}</h3>
-          <md-progress v-show="loading" md-theme="customGrey" md-indeterminate></md-progress>
+          <md-progress v-show="loading" md-theme="grey" md-indeterminate></md-progress>
           <video id="preview"></video>
         </div>
         <div class="modal-footer">
           <md-button style="max-width: 40px; min-width: 40px; margin-right: 0; padding: 0" v-for="(camera) in cameras" :key="camera.id"
                      v-if="cameras.length > 1 && camera.id !== activeCameraId"
                      :title="camera.name" @click.stop="selectCamera(camera)">
-            <md-icon md-src="/static/img/Attach/rotate-cam.svg"></md-icon>
+            <md-icon md-src="/img/Attach/rotate-cam.svg"></md-icon>
           </md-button>
-          <md-button  @click="hideModal"> {{ $t('scan.close_button') === 'scan.close_button'? 'Close' : $t('scan.close_button') }} </md-button>
+          <md-button class="md-raised" @click="hideModal"> {{ $t('scan.close_button') }} </md-button>
         </div>
       </div>
     </div>
@@ -55,7 +55,6 @@ export default {
       }
       this.$emit('code-grabbed', content)
       this.hideModal()
-      this.$router.push('/')
     }
   },
   beforeDestroy: function () {

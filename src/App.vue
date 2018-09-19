@@ -25,7 +25,7 @@
     </main>
       <footer :style="footerCss">
           <div class="bottom-fixed">
-              <md-bottom-bar v-if="logged && isBottomPanelShown && !isTransferBackShown">
+              <md-bottom-bar v-if="logged && isBottomPanelShown && !isTransferBackShown" md-theme="bottomBar">
                   <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" :md-active="!!$router.currentRoute.path.match(/\/home\//) || !!$router.currentRoute.path.match(/\/transactions\//) || !!$router.currentRoute.path.match(/\/transfer\//)">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')" :md-active="chatsPage">{{$t('bottom.chats_button')}}<div class="new-icon" v-if="totalNew">{{ totalNew }}</div></md-bottom-bar-item>
                   <md-bottom-bar-item md-icon="settings" v-on:click="$router.push('/options/')" :md-active="!!$router.currentRoute.path.match(/\/options\//)">{{$t('bottom.settings_button')}}</md-bottom-bar-item>
@@ -207,7 +207,7 @@ footer {
     min-width: 70%;
 }
 .md-toolbar .md-title .md-input-container:after {
-    background: none ;
+    background: none !important;
 }
 .md-toolbar .md-title .md-input-container.md-input-focused:after {
     background-color: rgba(0, 0, 0, 0.12);
@@ -221,6 +221,9 @@ footer {
 {
     top: 13px;
     font-size: 18px;
+}
+.md-theme-grey.md-input-container.md-input-focused label {
+  color: rgba(0, 0, 0, 0.54) !important;
 }
 .md-toolbar .md-title .md-input-container.md-input-focused label, .md-toolbar .md-title .md-input-container.md-has-value label {
     top: 0;
@@ -269,7 +272,12 @@ footer {
 .chats .md-list {
     max-width: 90%;
 }
-
+a:not(.md-button) {
+  color: #2e7eed!important;
+}
+.login .create_link {
+  color: #4a4a4a!important;
+}
 .version {
     position:absolute;
     bottom:0;
@@ -354,6 +362,12 @@ header span {
 .md-dialog {
   box-shadow: initial;
 }
+.md-dialog .md-primary {
+  background: #ffffff;
+}
+.md-dialog-confirm > .md-dialog > .md-dialog-actions > button{
+  color: #000 !important;
+}
 .md-toolbar.md-theme-grey {
     position: fixed;
     width: 100%;
@@ -364,7 +378,7 @@ header span {
     right: 0;
     z-index: 10;
     /* background: rgba(153, 153, 153, 0.2); */
-    background: #ebebeb;
+    /*background: #ebebeb;*/
     border-bottom: none;
 }
 </style>
