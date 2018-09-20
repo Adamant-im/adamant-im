@@ -34,9 +34,9 @@ import {decode} from '@stablelib/utf8'
 import crypto from 'pbkdf2'
 import Spinner from '../Spinner'
 import { UserPasswordHashSettings } from '../../lib/constants'
+import {decryptData, getAdmDataBase, getCommonItem, getPassPhrase} from '../../lib/indexedDb'
 
-function convertStringToUint8Array () {
-  let encryptedStoredData = localStorage.getItem('storedData').split(',')
+function convertStringToUint8Array (encryptedStoredData) {
   let result = []
   for (let i = 0; i < encryptedStoredData.length; i++) {
     result.push(parseInt(encryptedStoredData[i]))
@@ -58,32 +58,37 @@ export default {
     },
     loginViaPassword () {
       crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
-        let errorFunction = function () {
-          this.errorSnackOpen()
-          this.showSpinnerFlag = false
-        }.bind(this)
-        if (err) errorFunction()
-        const userPasswordValueHash = encodePassword.toString('hex')
-        const nonce = Buffer.allocUnsafe(24)
-        const DHSecretKey = ed2curve.convertSecretKey(userPasswordValueHash)
-        const decrypted = nacl.secretbox.open(convertStringToUint8Array(), nonce, DHSecretKey)
-        const stringStoredData = decode(decrypted)
-        let storedData = null
-        try {
-          storedData = JSON.parse(stringStoredData)
-        } catch (err) {
-          errorFunction()
-          return
-        }
-        const passPhrase = Base64.decode(storedData.passPhrase)
-        this.showSpinnerFlag = true
-        sessionStorage.setItem('adm-persist', stringStoredData)
-        this.$store.dispatch('afterLogin', passPhrase)
-        this.$root._router.push('/chats/')
-        this.loadChats(true)
-        this.$store.commit('mock_messages')
-        this.$store.commit('stop_tracking_new')
-        this.$store.commit('save_user_password', this.userPasswordValue)
+        getAdmDataBase().then((db) => {
+          let errorFunction = function () {
+            this.errorSnackOpen()
+            this.showSpinnerFlag = false
+          }.bind(this)
+          if (err) errorFunction()
+          getCommonItem(db).then((encryptedCommonItem) => {
+            decryptData(encryptedCommonItem.value).then((decryptedCommonItem) => {
+              let storedData = null
+              try {
+                storedData = JSON.parse(decryptedCommonItem)
+                console.log(storedData)
+              } catch (err) {
+                errorFunction()
+                return
+              }
+              getPassPhrase(db).then((encryptedPassPhrase) => {
+                decryptData(encryptedPassPhrase.value).then((passPhrase) => {
+                  this.showSpinnerFlag = true
+                  sessionStorage.setItem('adm-persist', storedData)
+                  this.$store.dispatch('afterLogin', passPhrase)
+                  this.$root._router.push('/chats/')
+                  this.loadChats(true)
+                  this.$store.commit('mock_messages')
+                  this.$store.commit('stop_tracking_new')
+                  this.$store.commit('save_user_password', this.userPasswordValue)
+                })
+              })
+            })
+          })
+        })
       })
     },
     errorSnackOpen () {

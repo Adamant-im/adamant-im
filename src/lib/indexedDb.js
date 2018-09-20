@@ -78,6 +78,10 @@ export function getContactItem (db) {
   return getValueByName(db, CONTACT_LIST, CONTACT_LIST)
 }
 
+export function getCommonItem (db) {
+  return getValueByName(db, COMMON, COMMON)
+}
+
 export function getPassPhrase (db) {
   return getValueByName(db, SECURITY, PASSPHRASE)
 }

@@ -19,7 +19,7 @@ export default function storeData () {
     var gsStorage = false
     let useDb = store.getters.getUserPasswordExists
     if (localStorageAvailable()) {
-      lsStorage = window.localStorage
+      lsStorage = window.sessionStorage
     }
     gsStorage = window.sessionStorage
     var mainStorage = lsStorage
@@ -110,17 +110,17 @@ export default function storeData () {
             storeNow = true
           })
         } else if (store.getters.getUserPasswordExists) {
-          // TODO too expensive, need another solution
-          store.watch(() => store.getters.getChats, res => {
-            console.log('changed chats')
-            for (let chat in state.chats) {
-              if (state.chats.hasOwnProperty(chat)) {
-                encryptData(state.chats[chat]).then((encryptedChat) => {
-                  updateChatItem(db, chat, encryptedChat)
-                })
-              }
-            }
-          })
+          // // TODO too expensive, need another solution
+          // store.watch(() => store.getters.getChats, res => {
+          //   console.log('changed chats')
+          //   for (let chat in state.chats) {
+          //     if (state.chats.hasOwnProperty(chat)) {
+          //       encryptData(state.chats[chat]).then((encryptedChat) => {
+          //         updateChatItem(db, chat, encryptedChat)
+          //       })
+          //     }
+          //   }
+          // })
         }
         if (mutation.type === 'logout') {
           storeNow = true
