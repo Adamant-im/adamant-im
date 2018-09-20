@@ -26,7 +26,14 @@
 
 import {UserPasswordAgreementLink, UserPasswordHashSettings} from '../../lib/constants'
 import crypto from 'pbkdf2'
-import {encryptData, getAdmDataBase, updatePassPhrase, updateUserPassword} from '../../lib/indexedDb'
+import {
+  encryptData,
+  getAdmDataBase,
+  updateChatItem,
+  updateCommonItem,
+  updatePassPhrase,
+  updateUserPassword
+} from '../../lib/indexedDb'
 
 export default {
   name: 'setUserPassword',
@@ -40,22 +47,36 @@ export default {
       this.$store.commit('change_storage_method', this.$store.state.storeInLocalStorage)
     },
     setPassword () {
-      console.log(this.$store.state.partners)
       crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encryptedPassword) => {
         if (err) throw err
         getAdmDataBase().then((db) => {
           updateUserPassword(db, encryptedPassword).then(() => {
             encryptData(this.$store.getters.getPassPhrase).then((encryptedPassPhrase) => {
               updatePassPhrase(db, encryptedPassPhrase)
-              this.userPasswordValue = null
-              this.userPasswordCheckbox = false
-              this.$store.commit('user_password_exists', true)
-              this.$store.commit('change_storage_method', true)
               this.$store.commit('partners/contactList', this.$store.state.partners)
             })
+            let copyState = Object.assign({}, this.$store.state)
+            delete copyState.partners
+            delete copyState.chats
+            delete copyState.passPhrase
+            encryptData(JSON.stringify(copyState)).then((encryptedCommonData) => {
+              updateCommonItem(db, encryptedCommonData)
+            })
+            const chats = this.$store.getters.getChats
+            for (let chat in chats) {
+              if (chats.hasOwnProperty(chat)) {
+                encryptData(JSON.stringify(chats[chat])).then((encryptedChat) => {
+                  updateChatItem(db, chat, encryptedChat)
+                })
+              }
+            }
           })
         })
       })
+      this.userPasswordValue = null
+      this.userPasswordCheckbox = false
+      this.$store.commit('user_password_exists', true)
+      this.$store.commit('change_storage_method', true)
       this.close()
     },
     onClose () {

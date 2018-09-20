@@ -24,15 +24,18 @@
 
 <script>
 import i18n from './i18n'
+import {clearDb, getAdmDataBase} from './lib/indexedDb'
 
 export default {
   name: 'app',
   mounted: function () {
-    if (localStorage.getItem('storedData') && this.$store.getters.getUserPassword == null) {
-      localStorage.removeItem('adm-persist')
+    getAdmDataBase().then((db) => {
+      clearDb(db)
+      this.$store.commit('user_password_exists', false)
+      this.$store.commit('change_storage_method', false)
       this.$store.commit('logout')
       this.$store.dispatch('reset')
-    }
+    })
     this.checkChatPage(this.$router.currentRoute.path)
     setInterval(
       ((self) => {
@@ -90,11 +93,11 @@ export default {
   methods: {
     exitme () {
       if (this.$store.getters.getUserPasswordExists) {
-        localStorage.removeItem('storedData')
-        localStorage.removeItem('adm-persist')
-        sessionStorage.removeItem('userPassword')
-        this.$store.commit('user_password_exists', false)
-        this.$store.commit('change_storage_method', false)
+        getAdmDataBase().then((db) => {
+          clearDb(db)
+          this.$store.commit('user_password_exists', false)
+          this.$store.commit('change_storage_method', false)
+        })
       }
       this.$store.commit('logout')
       this.$store.dispatch('reset')

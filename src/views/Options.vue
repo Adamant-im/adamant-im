@@ -118,15 +118,11 @@
 import i18n from '../i18n'
 import setUserPassword from '@/components/userpassword/SetUserPassword.vue'
 import {
+  clearDb,
   decryptData,
-  encryptData,
-  getAdmDataBase, getContactItem,
-  getPassPhrase,
-  updatePassPhrase,
-  updateUserPassword
+  getAdmDataBase,
+  getContactItem
 } from '../lib/indexedDb'
-import crypto from 'pbkdf2'
-import {UserPasswordHashSettings} from '../lib/constants'
 
 export default {
   name: 'settings',
@@ -136,6 +132,10 @@ export default {
       if (!this.$store.state.storeInLocalStorage) {
         this.$refs['set_user_password'].open()
       } else {
+        console.log('clear db')
+        getAdmDataBase().then((db) => {
+          clearDb(db)
+        })
         this.$store.commit('change_storage_method', false)
         this.$store.dispatch('clearUserPassword')
       }

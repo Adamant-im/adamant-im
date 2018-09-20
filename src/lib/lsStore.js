@@ -88,19 +88,19 @@ export default function storeData () {
           } catch (e) {
           }
           storeNow = true
-        } else if (mutation.type === 'change_lang') {
+        } else if (mutation.type === 'change_lang' && store.getters.getUserPasswordExists) {
           updateCommonItem(db, 'language', mutation.payload)
           storeNow = true
-        } else if (mutation.type === 'change_notify_sound') {
+        } else if (mutation.type === 'change_notify_sound' && store.getters.getUserPasswordExists) {
           updateCommonItem(db, 'notify_sound', mutation.payload)
           storeNow = true
-        } else if (mutation.type === 'change_notify_bar') {
+        } else if (mutation.type === 'change_notify_bar' && store.getters.getUserPasswordExists) {
           updateCommonItem(db, 'notify_bar', mutation.payload)
           storeNow = true
-        } else if (mutation.type === 'change_notify_desktop') {
+        } else if (mutation.type === 'change_notify_desktop' && store.getters.getUserPasswordExists) {
           updateCommonItem(db, 'notify_desktop', mutation.payload)
           storeNow = true
-        } else if (mutation.type === 'change_send_on_enter') {
+        } else if (mutation.type === 'change_send_on_enter' && store.getters.getUserPasswordExists) {
           updateCommonItem(db, 'send_on_enter', mutation.payload)
           storeNow = true
         } else if (mutation.type === 'partners/contactList' && store.getters.getUserPasswordExists) {
@@ -108,6 +108,18 @@ export default function storeData () {
           encryptData(payload).then((contactList) => {
             updateContactItem(db, contactList)
             storeNow = true
+          })
+        } else if (store.getters.getUserPasswordExists) {
+          // TODO too expensive, need another solution
+          store.watch(() => store.getters.getChats, res => {
+            console.log('changed chats')
+            for (let chat in state.chats) {
+              if (state.chats.hasOwnProperty(chat)) {
+                encryptData(state.chats[chat]).then((encryptedChat) => {
+                  updateChatItem(db, chat, encryptedChat)
+                })
+              }
+            }
           })
         }
         if (mutation.type === 'logout') {

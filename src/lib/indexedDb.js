@@ -50,9 +50,9 @@ export function updatePassPhrase (db, value) {
   return saveValueByName(db, SECURITY, passPhrase)
 }
 
-export function updateCommonItem (db, key, value) {
+export function updateCommonItem (db, value) {
   const commonItem = {
-    name: key,
+    name: COMMON,
     value: value
   }
   return saveValueByName(db, COMMON, commonItem)
@@ -66,10 +66,6 @@ export function updateContactItem (db, value) {
   return saveValueByName(db, CONTACT_LIST, contactItem)
 }
 
-export function getContactItem (db) {
-  return getValueByName(db, CONTACT_LIST, CONTACT_LIST)
-}
-
 export function updateChatItem (db, key, value) {
   const chatItem = {
     name: key,
@@ -78,12 +74,52 @@ export function updateChatItem (db, key, value) {
   return saveValueByName(db, CHAT_LIST, chatItem)
 }
 
+export function getContactItem (db) {
+  return getValueByName(db, CONTACT_LIST, CONTACT_LIST)
+}
+
 export function getPassPhrase (db) {
   return getValueByName(db, SECURITY, PASSPHRASE)
 }
 
 export function getUserPassword (db) {
   return getValueByName(db, SECURITY, USER_PASSWORD)
+}
+
+export function clearDb (db) {
+  clearContactList(db)
+  clearChatList(db)
+  clearSecurity(db)
+  clearCommon(db)
+}
+
+export function clearSecurity (db) {
+  const transaction = db.transaction(SECURITY, READWRITE)
+  const store = transaction.objectStore(SECURITY)
+  store.delete(PASSPHRASE)
+  store.delete(USER_PASSWORD)
+  return transaction.complete
+}
+
+export function clearCommon (db) {
+  const transaction = db.transaction(COMMON, READWRITE)
+  const store = transaction.objectStore(COMMON)
+  store.delete(COMMON)
+  return transaction.complete
+}
+
+export function clearChatList (db) {
+  const transaction = db.transaction(CHAT_LIST, READWRITE)
+  const store = transaction.objectStore(CHAT_LIST)
+  store.clear()
+  return transaction.complete
+}
+
+export function clearContactList (db) {
+  const transaction = db.transaction(CONTACT_LIST, READWRITE)
+  const store = transaction.objectStore(CONTACT_LIST)
+  store.delete(CONTACT_LIST)
+  return transaction.complete
 }
 
 export function encryptData (data) {
