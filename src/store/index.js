@@ -16,7 +16,7 @@ import {base64regex, WelcomeMessage, Cryptos} from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import i18n from '../i18n'
-import renderMarkdown from "../lib/markdown";
+import renderMarkdown from '../lib/markdown'
 
 var maxConcurrent = 1
 var maxQueue = Infinity
