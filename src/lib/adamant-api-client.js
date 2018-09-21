@@ -28,13 +28,13 @@ class EndpointOfflineError extends Error {
 class ApiEndpoint {
   constructor (baseUrl) {
     this.disabled = false
-    
+
     this._baseUrl = baseUrl
     this._online = true
     this._ping = 0
     this._timeDelta = 0
     this._version = ''
-    
+
     this._client = axios.create({
       baseURL: this._baseUrl
     })
@@ -117,7 +117,7 @@ class ApiClient {
   constructor (endpoints = [], minApiVersion = '0.0.0') {
     /** @type {Array<ApiEndpoint>} */
     this._endpoints = endpoints.map(x => new ApiEndpoint(x))
-    
+
     this._minApiVersion = minApiVersion
     this._onStatusUpdate = null
     this.useFastest = false
@@ -148,7 +148,7 @@ class ApiClient {
     })
   }
 
-  toggleEndpoint(url, disable) {
+  toggleEndpoint (url, disable) {
     const endpoint = this._endpoints.find(x => x.endpointUrl === url)
     if (endpoint) {
       endpoint.disabled = disable
@@ -192,9 +192,9 @@ class ApiClient {
 
   _getRandomEndpoint () {
     const onlineEndpoints = this._endpoints.filter(x =>
-      x.online
-      && !x.disabled
-      && semver.gte(current.version, this._minApiVersion)
+      x.online &&
+      !x.disabled &&
+      semver.gte(x.version, this._minApiVersion)
     )
     const endpoint = onlineEndpoints[Math.floor(Math.random() * onlineEndpoints.length)]
     return endpoint
@@ -202,7 +202,7 @@ class ApiClient {
 
   _getFastestEndpoint () {
     return this._endpoints.reduce((fastest, current) => {
-      if (!current.online || x.disabled || semver.lt(current.version, this._minApiVersion)) {
+      if (!current.online || current.disabled || semver.lt(current.version, this._minApiVersion)) {
         return fastest
       }
       return (!fastest || fastest.ping > current.ping) ? current : fastest
