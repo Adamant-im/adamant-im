@@ -1,7 +1,8 @@
 import axios from 'axios'
 
-import { epochTime } from './adamant'
+import utils from './adamant'
 import config from '../config.json'
+import semver from 'semver'
 
 /**
  * @typedef {Object} RequestConfig
@@ -26,14 +27,25 @@ class EndpointOfflineError extends Error {
 
 class ApiEndpoint {
   constructor (baseUrl) {
+    this.disabled = false
+    
     this._baseUrl = baseUrl
     this._online = true
     this._ping = 0
     this._timeDelta = 0
+    this._version = ''
+    
+    this._client = axios.create({
+      baseURL: this._baseUrl
+    })
   }
 
   get endpointUrl () {
     return this._baseUrl
+  }
+
+  get version () {
+    return this._version
   }
 
   get online () {
@@ -62,19 +74,17 @@ class ApiEndpoint {
     }
 
     const config = {
-      baseUrl: this._baseUrl,
       url,
       method,
       [method === 'get' ? 'params' : 'data']: payload
     }
 
-    return axios(config).then(
+    return this._client.request(config).then(
       response => {
         const body = response.data
         if (body && isFinite(body.nodeTimestamp)) {
-          this.timeDelta = epochTime() - body.nodeTimestamp
+          this._timeDelta = utils.epochTime() - body.nodeTimestamp
         }
-        this._online = true
         return body
       },
       error => {
@@ -93,6 +103,7 @@ class ApiEndpoint {
     const time = Date.now()
     return this.request({ url: '/api/peers/version' }).then(body => {
       this._online = true
+      this._version = body.version
       this._ping = Date.now() - time
     })
   }
@@ -103,10 +114,20 @@ class ApiClient {
    * Creates new client instance
    * @param {Array<string>} endpoints endpoints URLs
    */
-  constructor (endpoints = []) {
+  constructor (endpoints = [], minApiVersion = '0.0.0') {
     /** @type {Array<ApiEndpoint>} */
-    this._endpoints = endpoints.map(x => new ApiEndpoint(x.url))
+    this._endpoints = endpoints.map(x => new ApiEndpoint(x))
+    
+    this._minApiVersion = minApiVersion
+    this._onStatusUpdate = null
     this.useFastest = false
+
+    this._getEndpointStatus = endpoint => ({
+      url: endpoint.endpointUrl,
+      online: endpoint.online,
+      ping: endpoint.ping,
+      version: endpoint.version
+    })
   }
 
   /**
@@ -114,18 +135,24 @@ class ApiClient {
    * @returns {Array<{ url: string, online: boolean, ping: number }>}
    */
   getEndpoints () {
-    return this._endpoints.map(x => ({
-      url: x.endpointUrl,
-      online: x.online,
-      ping: x.ping
-    }))
+    return this._endpoints.map(this._getEndpointStatus)
   }
 
   /**
    * Initiates the status update for each of the known endpoints.
    */
   updateStatus () {
-    this._endpoints.forEach(x => x.updateStatus())
+    this._endpoints.forEach(x => {
+      if (!x.disabled) return
+      x.updateStatus().then(() => this._fireStatusUpdate(x))
+    })
+  }
+
+  toggleEndpoint(url, disable) {
+    const endpoint = this._endpoints.find(x => x.endpointUrl === url)
+    if (endpoint) {
+      endpoint.disabled = disable
+    }
   }
 
   get (url, params) {
@@ -150,6 +177,8 @@ class ApiClient {
 
     return endpoint.request(config).catch(error => {
       if (error.code === 'ENDPOINT_OFFLINE') {
+        // Notify the world that the endpoint is down
+        this._fireStatusUpdate(endpoint)
         // If the selected endpoint is not available, repeat the request with another one.
         return this.request(config)
       }
@@ -157,16 +186,33 @@ class ApiClient {
     })
   }
 
+  onStatusUpdate (callback) {
+    this._onStatusUpdate = callback
+  }
+
   _getRandomEndpoint () {
-    const onlineEndpoints = this._endpoints.filter(x => x.online)
+    const onlineEndpoints = this._endpoints.filter(x =>
+      x.online
+      && !x.disabled
+      && semver.gte(current.version, this._minApiVersion)
+    )
     const endpoint = onlineEndpoints[Math.floor(Math.random() * onlineEndpoints.length)]
     return endpoint
   }
 
   _getFastestEndpoint () {
     return this._endpoints.reduce((fastest, current) => {
-      return (current.online && (!fastest || fastest.ping > current.ping)) ? current : fastest
+      if (!current.online || x.disabled || semver.lt(current.version, this._minApiVersion)) {
+        return fastest
+      }
+      return (!fastest || fastest.ping > current.ping) ? current : fastest
     })
+  }
+
+  _fireStatusUpdate (endpoint) {
+    if (typeof this._onStatusUpdate === 'function') {
+      this._onStatusUpdate(this._getEndpointStatus(endpoint))
+    }
   }
 }
 
@@ -180,6 +226,6 @@ const endpoints = config.server.adm.map(endpoint =>
   ].join('')
 )
 
-const apiClient = new ApiClient(endpoints)
+const apiClient = new ApiClient(endpoints, config.minApiVersion)
 
 export default apiClient

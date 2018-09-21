@@ -8,8 +8,11 @@ import ethModule from './modules/eth'
 import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
+import endpointsModule from './modules/endpoints'
 
 import delegatesModule from './modules/delegates'
+
+import endpointsPlugin from './modules/endpoints/endpoints-plugin';
 
 import * as admApi from '../lib/adamant-api'
 import {base64regex, WelcomeMessage, Cryptos} from '../lib/constants'
@@ -479,7 +482,7 @@ const store = {
       scrollToEnd()
     }
   },
-  plugins: [storeData()],
+  plugins: [storeData(), endpointsPlugin],
   getters: {
     // Returns decoded pass phrase from store
     getPassPhrase: state => {
@@ -513,7 +516,8 @@ const store = {
     bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
     adm: admModule, // ADM transfers
     partners: partnersModule, // Partners: display names, crypto addresses and so on
-    delegates: delegatesModule // Voting for delegates screen
+    delegates: delegatesModule, // Voting for delegates screen
+    endpoints: endpointsModule
   }
 }
 

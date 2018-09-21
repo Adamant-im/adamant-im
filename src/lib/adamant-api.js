@@ -1,39 +1,40 @@
-import axios from 'axios'
+// import axios from 'axios'
 
-import getEndpointUrl from './getEndpointUrl'
-import { Cryptos, Transactions, Delegates } from './constants'
+// import getEndpointUrl from './getEndpointUrl'
+import { Transactions, Delegates } from './constants'
 import utils from './adamant'
+import client from './adamant-api-client'
 
 /** @type {{privateKey: Buffer, publicKey: Buffer}} */
 let myKeypair = { }
 let myAddress = null
 
-/** Delta between local time and server time (ADM timestamp) */
-let serverTimeDelta = 0
+// /** Delta between local time and server time (ADM timestamp) */
+// let serverTimeDelta = 0
 
 const publicKeysCache = { }
 
-function toAbsolute (url = '') {
-  return getEndpointUrl(Cryptos.ADM) + url
-}
+// function toAbsolute (url = '') {
+//   return getEndpointUrl(Cryptos.ADM) + url
+// }
 
-function parseResponse (response) {
-  const body = response.data
-  if (body && isFinite(body.nodeTimestamp)) {
-    serverTimeDelta = utils.epochTime() - body.nodeTimestamp
-  }
-  return body
-}
+// function parseResponse (response) {
+//   const body = response.data
+//   if (body && isFinite(body.nodeTimestamp)) {
+//     serverTimeDelta = utils.epochTime() - body.nodeTimestamp
+//   }
+//   return body
+// }
 
-function get (url, query) {
-  return axios.get(toAbsolute(url), {params: query})
-    .then(parseResponse)
-}
+// function get (url, query) {
+//   return axios.get(toAbsolute(url), {params: query})
+//     .then(parseResponse)
+// }
 
-function post (url, payload) {
-  return axios.post(toAbsolute(url), payload)
-    .then(parseResponse)
-}
+// function post (url, payload) {
+//   return axios.post(toAbsolute(url), payload)
+//     .then(parseResponse)
+// }
 
 /**
  * Creates a new transaction with the common fields pre-filled
@@ -45,9 +46,25 @@ function newTransaction (type) {
     type,
     amount: 0,
     senderId: myAddress,
-    senderPublicKey: myKeypair.publicKey.toString('hex'),
-    timestamp: utils.epochTime() - serverTimeDelta
+    senderPublicKey: myKeypair.publicKey.toString('hex')
   }
+}
+
+/**
+ * Sets transaction timestamp and signature and returns it.
+ * @param {object} transaction ADM transaction
+ * @param {number} timeDelta server endpoint time delta
+ * @returns {object}
+ */
+function signTransaction (transaction, timeDelta) {
+  if (transaction.signature) {
+    delete transaction.signature
+  }
+
+  transaction.timestamp = utils.epochTime() - timeDelta
+  transaction.signature = utils.transactionSign(transaction, myKeypair)
+
+  return transaction
 }
 
 export function unlock (passphrase) {
@@ -74,7 +91,7 @@ export function getPublicKey (address = '') {
     return Promise.resolve(publicKeysCache[address])
   }
 
-  return get('/api/accounts/getPublicKey', { address })
+  return client.get('/api/accounts/getPublicKey', { address })
     .then(response => {
       const key = response.publicKey
       publicKeysCache[address] = key
@@ -112,9 +129,10 @@ export function sendMessage (params) {
       transaction.amount = params.amount ? utils.prepareAmount(params.amount) : 0
       transaction.asset = { chat }
       transaction.recipientId = params.to
-      transaction.signature = utils.transactionSign(transaction, myKeypair)
 
-      return post('/api/chats/process', { transaction })
+      return client.post('/api/chats/process', (endpoint) => {
+        return { transaction: signTransaction(transaction, endpoint.timeDelta) }
+      })
     }).catch(reason => {
       return reason
     })
@@ -144,7 +162,9 @@ export function storeValue (key, value, encode = false) {
   const transaction = newTransaction(Transactions.STATE)
   transaction.asset = { state: { key, value, type: 0 } }
   transaction.signature = utils.transactionSign(transaction, myKeypair)
-  return post('/api/states/store', { transaction })
+  return client.post('/api/states/store', (endpoint) => {
+    return { transaction: signTransaction(transaction, endpoint.timeDelta) }
+  })
 }
 
 function tryDecodeStoredValue (value) {
@@ -186,7 +206,7 @@ export function getStored (key, ownerAddress) {
     limit: 1
   }
 
-  return get('/api/states/get', params).then(response => {
+  return client.get('/api/states/get', params).then(response => {
     let value = null
 
     if (response.success && Array.isArray(response.transactions)) {
@@ -210,23 +230,25 @@ export function sendTokens (to, amount) {
   transaction.recipientId = to
   transaction.signature = utils.transactionSign(transaction, myKeypair)
 
-  return post('/api/transactions/process', { transaction })
+  return client.post('/api/transactions/process', (endpoint) => {
+    return { transaction: signTransaction(transaction, endpoint.timeDelta) }
+  })
 }
 
 export function getDelegates (limit, offset) {
-  return get('/api/delegates', { limit, offset })
+  return client.get('/api/delegates', { limit, offset })
 }
 
 export function getDelegatesWithVotes (address) {
-  return get('/api/accounts/delegates', { address })
+  return client.get('/api/accounts/delegates', { address })
 }
 
 export function getDelegatesCount () {
-  return get('/api/delegates/count')
+  return client.get('/api/delegates/count')
 }
 
 export function checkUnconfirmedTransactions () {
-  return get('/api/transactions/unconfirmed')
+  return client.get('/api/transactions/unconfirmed')
 }
 
 export function voteForDelegates (votes) {
@@ -237,19 +259,19 @@ export function voteForDelegates (votes) {
     amount: 0
   }, transaction)
   transaction.signature = utils.transactionSign(transaction, myKeypair)
-  return post('/api/accounts/delegates', transaction)
+  return client.post('/api/accounts/delegates', (endpoint) => signTransaction(transaction, endpoint.timeDelta))
 }
 
 export function getNextForgers () {
-  return get('/api/delegates/getNextForgers', { limit: Delegates.ACTIVE_DELEGATES })
+  return client.get('/api/delegates/getNextForgers', { limit: Delegates.ACTIVE_DELEGATES })
 }
 
 export function getBlocks () {
-  return get('/api/blocks?orderBy=height:desc&limit=100')
+  return client.get('/api/blocks?orderBy=height:desc&limit=100')
 }
 
 export function getForgedByAccount (accountPublicKey) {
-  return get('/api/delegates/forging/getForgedByAccount', { generatorPublicKey: accountPublicKey })
+  return client.get('/api/delegates/forging/getForgedByAccount', { generatorPublicKey: accountPublicKey })
 }
 
 /**
@@ -272,7 +294,7 @@ export function getTransactions (options = { }) {
     query['and:fromHeight'] = options.from
   }
 
-  return get('/api/transactions', query)
+  return client.get('/api/transactions', query)
 }
 
 /**
@@ -282,10 +304,10 @@ export function getTransactions (options = { }) {
  */
 export function getTransaction (id) {
   const query = { id }
-  return get('/api/transactions/get', query)
+  return client.get('/api/transactions/get', query)
     .then(response => {
       if (response.success) return response
-      return get('/api/transactions/unconfirmed/get', query)
+      return client.get('/api/transactions/unconfirmed/get', query)
     })
     .then(response => response.transaction || null)
 }
