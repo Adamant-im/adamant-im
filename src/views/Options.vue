@@ -25,6 +25,26 @@
           </md-card-content>
       </md-card>
 
+      <md-card class="settings-card md-transparent" style="box-shadow:none">
+        <md-card-area md-inset>
+          <md-card-header>
+            <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.endpoints_title') }}</h2>
+          </md-card-header>
+        </md-card-area>
+
+        <md-card-content>
+          <div class="settings-item">
+            <md-checkbox :title="$t('options.endpoints_fastest_tooltip')" v-model="preferFastestNode">
+              {{ $t('options.endpoints_fastest_title') }}
+            </md-checkbox>
+          </div>
+
+          <div class="settings-item">
+            <Endpoints />
+          </div>
+        </md-card-content>
+      </md-card>
+
       <md-card class='settings-card md-transparent' style="box-shadow:none">
           <md-card-area md-inset>
               <md-card-header>
@@ -113,9 +133,13 @@
 
 <script>
 import i18n from '../i18n'
+import Endpoints from '../components/Endpoints.vue'
 
 export default {
   name: 'settings',
+  components: {
+    Endpoints
+  },
   computed: {
     languageList: function () {
       return i18n.messages
@@ -144,6 +168,9 @@ export default {
       this.$i18n.locale = to
       this.$store.commit('change_lang', to)
       document.title = this.$i18n.t('app_title')
+    },
+    preferFastestNode (to, from) {
+      this.$store.commit('endpoints/useFastest', to)
     }
   },
   data () {
@@ -153,7 +180,8 @@ export default {
       sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
-      language: this.$i18n.locale
+      language: this.$i18n.locale,
+      preferFastestNode: this.$store.state.endpoints.useFastest
     }
   }
 }
@@ -214,5 +242,11 @@ export default {
       .settings .version {
           right: 1rem;
       }
+  }
+
+  .settings .settings-item {
+    padding-left: 8px;
+    font-size: 16px;
+    text-align: left;
   }
 </style>
