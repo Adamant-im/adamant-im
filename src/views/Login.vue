@@ -145,6 +145,7 @@ export default {
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
       this.showSpinnerFlag = true
+      this.$store.commit('set_first_load')
       let errorFunction = function () {
         this.snackOpen()
         this.showSpinnerFlag = false

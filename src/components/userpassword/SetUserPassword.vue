@@ -26,9 +26,11 @@
 
 import {UserPasswordAgreementLink, UserPasswordHashSettings} from '../../lib/constants'
 import crypto from 'pbkdf2'
+import utf8 from 'utf8'
 import {
+  decryptData,
   encryptData,
-  getAdmDataBase,
+  getAdmDataBase, getUserPassword,
   updateChatItem,
   updateCommonItem,
   updatePassPhrase,
@@ -47,7 +49,8 @@ export default {
       this.$store.commit('change_storage_method', this.$store.state.storeInLocalStorage)
     },
     setPassword () {
-      crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encryptedPassword) => {
+      crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS,
+        UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encryptedPassword) => {
         if (err) throw err
         getAdmDataBase().then((db) => {
           updateUserPassword(db, encryptedPassword).then(() => {

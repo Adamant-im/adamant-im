@@ -128,7 +128,7 @@ const store = {
     disabled: deviceIsDisabled(),
     is_new_account: false,
     ajaxIsOngoing: false,
-    firstChatLoad: true,
+    firstChatLoad: false,
     lastErrorMsg: '',
     transactions: {},
     showPanel: false,
@@ -246,6 +246,12 @@ const store = {
     }
   },
   mutations: {
+    set_first_load (state) {
+      state.firstChatLoad = true
+    },
+    set_state (state, payload) {
+      state = payload
+    },
     user_password_exists (state, payload) {
       state.userPasswordExists = payload
     },

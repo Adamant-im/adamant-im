@@ -27,14 +27,19 @@
 
 <script>
 
-import ed2curve from 'ed2curve'
-import nacl from 'tweetnacl/nacl-fast'
-import {Base64} from 'js-base64'
-import {decode} from '@stablelib/utf8'
 import crypto from 'pbkdf2'
+import Vue from 'vue'
 import Spinner from '../Spinner'
 import { UserPasswordHashSettings } from '../../lib/constants'
-import {decryptData, getAdmDataBase, getCommonItem, getPassPhrase} from '../../lib/indexedDb'
+import {
+  clearDb,
+  decryptData,
+  getAdmDataBase,
+  getChatItem,
+  getCommonItem,
+  getContactItem,
+  getPassPhrase, getUserPassword
+} from '../../lib/indexedDb'
 
 function convertStringToUint8Array (encryptedStoredData) {
   let result = []
@@ -50,40 +55,58 @@ export default {
   components: { Spinner },
   methods: {
     forget () {
-      localStorage.removeItem('storedData')
-      localStorage.removeItem('adm-persist')
+      getAdmDataBase().then((db) => {
+        clearDb(db)
+      })
       sessionStorage.removeItem('userPassword')
       this.$store.commit('user_password_exists', false)
       this.$store.commit('change_storage_method', false)
     },
-    loginViaPassword () {
-      crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
+    loginViaPassword: function () {
+      this.showSpinnerFlag = false
+      crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS,
+        UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
         getAdmDataBase().then((db) => {
           let errorFunction = function () {
             this.errorSnackOpen()
             this.showSpinnerFlag = false
           }.bind(this)
-          if (err) errorFunction()
-          getCommonItem(db).then((encryptedCommonItem) => {
-            decryptData(encryptedCommonItem.value).then((decryptedCommonItem) => {
-              let storedData = null
-              try {
-                storedData = JSON.parse(decryptedCommonItem)
-                console.log(storedData)
-              } catch (err) {
-                errorFunction()
-                return
+          getUserPassword(db).then((encryptedUserPassword) => {
+            let wrongPassword = false
+            encodePassword.forEach((symbol, index) => {
+              if (symbol !== encryptedUserPassword.value[index]) {
+                wrongPassword = true
               }
-              getPassPhrase(db).then((encryptedPassPhrase) => {
-                decryptData(encryptedPassPhrase.value).then((passPhrase) => {
-                  this.showSpinnerFlag = true
-                  sessionStorage.setItem('adm-persist', storedData)
-                  this.$store.dispatch('afterLogin', passPhrase)
-                  this.$root._router.push('/chats/')
-                  this.loadChats(true)
-                  this.$store.commit('mock_messages')
-                  this.$store.commit('stop_tracking_new')
-                  this.$store.commit('save_user_password', this.userPasswordValue)
+            })
+            if (wrongPassword) {
+              errorFunction()
+              return
+            }
+            getCommonItem(db).then((encryptedCommonItem) => {
+              decryptData(encryptedCommonItem.value).then((decryptedCommonItem) => {
+                let state = JSON.parse(decryptedCommonItem)
+                this.$store.commit('set_state', state)
+                getChatItem(db).then((encryptedChats) => {
+                  encryptedChats.forEach((chat) => {
+                    decryptData(chat.value).then((decryptedChat) => {
+                      Vue.set(this.$store.getters.getChats, chat.name, JSON.parse(decryptedChat))
+                    })
+                  })
+                })
+                getContactItem(db).then((encryptedContacts) => {
+                  decryptData(encryptedContacts.value).then((decryptedContacts) => {
+                    this.$store.commit('partners/contactList', JSON.parse(decryptedContacts))
+                  })
+                })
+                getPassPhrase(db).then((encryptedPassPhrase) => {
+                  decryptData(encryptedPassPhrase.value).then((passPhrase) => {
+                    this.$store.dispatch('afterLogin', passPhrase)
+                    this.$root._router.push('/chats/')
+                    this.$store.commit('mock_messages')
+                    this.$store.commit('stop_tracking_new')
+                    this.$store.commit('save_user_password', this.userPasswordValue)
+                    this.showSpinnerFlag = false
+                  })
                 })
               })
             })

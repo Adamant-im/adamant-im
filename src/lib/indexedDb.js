@@ -78,6 +78,12 @@ export function getContactItem (db) {
   return getValueByName(db, CONTACT_LIST, CONTACT_LIST)
 }
 
+export function getChatItem (db) {
+  const transaction = db.transaction(CHAT_LIST, READONLY)
+  const store = transaction.objectStore(CHAT_LIST)
+  return store.getAll()
+}
+
 export function getCommonItem (db) {
   return getValueByName(db, COMMON, COMMON)
 }
