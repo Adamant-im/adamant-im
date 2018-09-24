@@ -27,7 +27,7 @@ class EndpointOfflineError extends Error {
 
 class ApiEndpoint {
   constructor (baseUrl) {
-    this.disabled = false
+    this.active = true
 
     this._baseUrl = baseUrl
     this._online = true
@@ -101,11 +101,16 @@ class ApiEndpoint {
 
   updateStatus () {
     const time = Date.now()
-    return this.request({ url: '/api/peers/version' }).then(body => {
-      this._online = true
-      this._version = body.version
-      this._ping = Date.now() - time
-    })
+    return this.request({ url: '/api/peers/version' }).then(
+      body => {
+        this._online = !!body.version
+        this._version = body.version
+        this._ping = Date.now() - time
+      },
+      () => {
+        this._online = false
+      }
+    )
   }
 }
 
@@ -126,8 +131,13 @@ class ApiClient {
       url: endpoint.endpointUrl,
       online: endpoint.online,
       ping: endpoint.ping,
-      version: endpoint.version
+      version: endpoint.version,
+      active: endpoint.active
     })
+
+    this._statusPromise = null
+
+    this.updateStatus()
   }
 
   /**
@@ -142,16 +152,28 @@ class ApiClient {
    * Initiates the status update for each of the known endpoints.
    */
   updateStatus () {
-    this._endpoints.forEach(x => {
-      if (!x.disabled) return
-      x.updateStatus().then(() => this._fireStatusUpdate(x))
+    this._statusPromise = new Promise((resolve, reject) => {
+      let done = false
+
+      const promises = this._endpoints.filter(x => x.active).map(x => {
+        return x.updateStatus().then(() => {
+          this._fireStatusUpdate(x)
+          if (!done && this._isCompatible(x.version)) {
+            resolve()
+          }
+        })
+      })
+
+      Promise.all(promises).then(() => {
+        if (!done) reject(new Error('No compatible nodes at the moment'))
+      })
     })
   }
 
-  toggleEndpoint (url, disable) {
+  toggleEndpoint (url, active) {
     const endpoint = this._endpoints.find(x => x.endpointUrl === url)
     if (endpoint) {
-      endpoint.disabled = disable
+      endpoint.active = active
     }
   }
 
@@ -164,25 +186,27 @@ class ApiClient {
   }
 
   request (config) {
-    const endpoint = this.useFastest
-      ? this._getFastestEndpoint()
-      : this._getRandomEndpoint()
+    return this._statusPromise.then(() => {
+      const endpoint = this.useFastest
+        ? this._getFastestEndpoint()
+        : this._getRandomEndpoint()
 
-    if (!endpoint) {
-      // All endpoints seem to be offline: let's refresh the statuses
-      this.updateStatus()
-      // But there's nothing we can do right now
-      return Promise.reject(new Error('No online nodes at the moment'))
-    }
-
-    return endpoint.request(config).catch(error => {
-      if (error.code === 'ENDPOINT_OFFLINE') {
-        // Notify the world that the endpoint is down
-        this._fireStatusUpdate(endpoint)
-        // If the selected endpoint is not available, repeat the request with another one.
-        return this.request(config)
+      if (!endpoint) {
+        // All endpoints seem to be offline: let's refresh the statuses
+        this.updateStatus()
+        // But there's nothing we can do right now
+        return Promise.reject(new Error('No online nodes at the moment'))
       }
-      throw error
+
+      return endpoint.request(config).catch(error => {
+        if (error.code === 'ENDPOINT_OFFLINE') {
+          // Notify the world that the endpoint is down
+          this._fireStatusUpdate(endpoint)
+          // If the selected endpoint is not available, repeat the request with another one.
+          return this.request(config)
+        }
+        throw error
+      })
     })
   }
 
@@ -193,8 +217,8 @@ class ApiClient {
   _getRandomEndpoint () {
     const onlineEndpoints = this._endpoints.filter(x =>
       x.online &&
-      !x.disabled &&
-      semver.gte(x.version, this._minApiVersion)
+      x.active &&
+      this._isCompatible(x.version)
     )
     const endpoint = onlineEndpoints[Math.floor(Math.random() * onlineEndpoints.length)]
     return endpoint
@@ -202,7 +226,7 @@ class ApiClient {
 
   _getFastestEndpoint () {
     return this._endpoints.reduce((fastest, current) => {
-      if (!current.online || current.disabled || semver.lt(current.version, this._minApiVersion)) {
+      if (!current.online || !current.active || !this._isCompatible(current.version)) {
         return fastest
       }
       return (!fastest || fastest.ping > current.ping) ? current : fastest
@@ -213,6 +237,10 @@ class ApiClient {
     if (typeof this._onStatusUpdate === 'function') {
       this._onStatusUpdate(this._getEndpointStatus(endpoint))
     }
+  }
+
+  _isCompatible (version) {
+    return version && semver.gte(version, this._minApiVersion)
   }
 }
 

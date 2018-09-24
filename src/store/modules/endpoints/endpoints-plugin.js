@@ -7,7 +7,7 @@ export default store => {
     }
 
     if (mutation.type === 'endpoints/toggle') {
-      apiClient.toggleEndpoint(mutation.payload.url, mutation.payload.disabled)
+      apiClient.toggleEndpoint(mutation.payload.url, mutation.payload.active)
     }
   })
 

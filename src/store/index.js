@@ -12,7 +12,7 @@ import endpointsModule from './modules/endpoints'
 
 import delegatesModule from './modules/delegates'
 
-import endpointsPlugin from './modules/endpoints/endpoints-plugin';
+import endpointsPlugin from './modules/endpoints/endpoints-plugin'
 
 import * as admApi from '../lib/adamant-api'
 import {base64regex, WelcomeMessage, Cryptos} from '../lib/constants'

@@ -1,18 +1,16 @@
-import Vue from 'vue'
-
 export default {
   useFastest (state, value) {
     state.useFastest = value
   },
 
   toggle (state, payload) {
-    const { url, disabled } = payload
+    const { url, active } = payload
     const index = state.endpoints.findIndex(x => x.url === url)
-    
+
     if (index >= 0) {
       state.endpoints[index] = {
         ...state.endpoints[index],
-        disabled: disabled
+        active: active
       }
     }
   },
