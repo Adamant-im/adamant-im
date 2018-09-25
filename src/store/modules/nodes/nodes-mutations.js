@@ -5,22 +5,22 @@ export default {
 
   toggle (state, payload) {
     const { url, active } = payload
-    const index = state.endpoints.findIndex(x => x.url === url)
+    const index = state.list.findIndex(x => x.url === url)
 
     if (index >= 0) {
-      state.endpoints[index] = {
-        ...state.endpoints[index],
+      state.list[index] = {
+        ...state.list[index],
         active: active
       }
     }
   },
 
   status (state, status) {
-    const index = state.endpoints.findIndex(x => x.url === status.url)
+    const index = state.list.findIndex(x => x.url === status.url)
     if (index >= 0) {
-      state.endpoints[index] = status
+      state.list[index] = status
     } else {
-      state.endpoints.push(status)
+      state.list.push(status)
     }
   }
 }

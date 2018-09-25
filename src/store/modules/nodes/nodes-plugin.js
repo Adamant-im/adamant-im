@@ -2,16 +2,16 @@ import apiClient from '../../../lib/adamant-api-client'
 
 export default store => {
   store.subscribe(mutation => {
-    if (mutation.type === 'endpoints/useFastest') {
+    if (mutation.type === 'nodes/useFastest') {
       apiClient.useFastest = !!mutation.payload
     }
 
-    if (mutation.type === 'endpoints/toggle') {
-      apiClient.toggleEndpoint(mutation.payload.url, mutation.payload.active)
+    if (mutation.type === 'nodes/toggle') {
+      apiClient.toggleNode(mutation.payload.url, mutation.payload.active)
     }
   })
 
   apiClient.onStatusUpdate(status => {
-    store.commit('endpoints/status', status)
+    store.commit('nodes/status', status)
   })
 }

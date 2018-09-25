@@ -34,13 +34,7 @@
 
         <md-card-content>
           <div class="settings-item">
-            <md-checkbox :title="$t('options.endpoints_fastest_tooltip')" v-model="preferFastestNode">
-              {{ $t('options.endpoints_fastest_title') }}
-            </md-checkbox>
-          </div>
-
-          <div class="settings-item">
-            <Endpoints />
+            
           </div>
         </md-card-content>
       </md-card>
@@ -168,9 +162,6 @@ export default {
       this.$i18n.locale = to
       this.$store.commit('change_lang', to)
       document.title = this.$i18n.t('app_title')
-    },
-    preferFastestNode (to, from) {
-      this.$store.commit('endpoints/useFastest', to)
     }
   },
   data () {
@@ -180,8 +171,7 @@ export default {
       sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
-      language: this.$i18n.locale,
-      preferFastestNode: this.$store.state.endpoints.useFastest
+      language: this.$i18n.locale
     }
   }
 }

@@ -8,11 +8,11 @@ import ethModule from './modules/eth'
 import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
-import endpointsModule from './modules/endpoints'
+import nodesModule from './modules/nodes'
 
 import delegatesModule from './modules/delegates'
 
-import endpointsPlugin from './modules/endpoints/endpoints-plugin'
+import nodesPlugin from './modules/nodes/nodes-plugin'
 
 import * as admApi from '../lib/adamant-api'
 import {base64regex, WelcomeMessage, Cryptos} from '../lib/constants'
@@ -482,7 +482,7 @@ const store = {
       scrollToEnd()
     }
   },
-  plugins: [storeData(), endpointsPlugin],
+  plugins: [storeData(), nodesPlugin],
   getters: {
     // Returns decoded pass phrase from store
     getPassPhrase: state => {
@@ -517,7 +517,7 @@ const store = {
     adm: admModule, // ADM transfers
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen
-    endpoints: endpointsModule
+    nodes: nodesModule // ADAMANT nodes
   }
 }
 

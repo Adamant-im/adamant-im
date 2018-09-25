@@ -14,26 +14,26 @@ import semver from 'semver'
 /**
  * Custom error to indicate that the endpoint is not available
  */
-class EndpointOfflineError extends Error {
+class NodeOfflineError extends Error {
   constructor (...args) {
-    super('Endpoint is offline', ...args)
-    this.code = 'ENDPOINT_OFFLINE'
+    super('Node is offline', ...args)
+    this.code = 'NODE_OFFLINE'
 
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, EndpointOfflineError)
+      Error.captureStackTrace(this, NodeOfflineError)
     }
   }
 }
 
 /**
- * Encapsulates an ADAMANT endpoint. Provides methods to send API-requests
- * to the endpoint and verify is status (online/offline, version, ping, etc.)
+ * Encapsulates an ADAMANT node. Provides methods to send API-requests
+ * to the node and verify is status (online/offline, version, ping, etc.)
  */
-class ApiEndpoint {
+class ApiNode {
   constructor (baseUrl) {
     /**
-     * Indicates whether endpoint is active (i.e. user allows the application
-     * to interact with this endpoint).
+     * Indicates whether node is active (i.e. user allows the application
+     * to interact with this node).
      * @type {Boolean}
      */
     this.active = true
@@ -50,15 +50,15 @@ class ApiEndpoint {
   }
 
   /**
-   * Endpoint base URL
+   * Node base URL
    * @type {String}
    */
-  get endpointUrl () {
+  get url () {
     return this._baseUrl
   }
 
   /**
-   * Endpoint API version.
+   * Node API version.
    * @type {String}
    */
   get version () {
@@ -66,7 +66,7 @@ class ApiEndpoint {
   }
 
   /**
-   * Indicates whether endpoint is available.
+   * Indicates whether node is available.
    * @type {Boolean}
    */
   get online () {
@@ -74,7 +74,7 @@ class ApiEndpoint {
   }
 
   /**
-   * Endpoint ping estimation
+   * Node ping estimation
    * @type {Number}
    */
   get ping () {
@@ -82,7 +82,7 @@ class ApiEndpoint {
   }
 
   /**
-   * Delta between local time and the endpoint time
+   * Delta between local time and the node time
    * @type {Number}
    */
   get timeDelta () {
@@ -93,7 +93,7 @@ class ApiEndpoint {
    * Performs an API request.
    * 
    * The `payload` of the `cfg` can be either an object or a function that
-   * accepts `ApiEndpoint` as a first argument and returns an object.
+   * accepts `ApiNode` as a first argument and returns an object.
    * @param {RequestConfig} cfg config
    * @returns {Promise<any>}
    */
@@ -126,7 +126,7 @@ class ApiEndpoint {
         // but server could not respond.
         if (!error.response && error.request) {
           this._online = false
-          throw new EndpointOfflineError()
+          throw new NodeOfflineError()
         }
         throw error
       }
@@ -134,14 +134,14 @@ class ApiEndpoint {
   }
 
   /**
-   * Intitates endpoint status update: version, ping, online/offline.
+   * Intitates node status update: version, ping, online/offline.
    * @returns {PromiseLike}
    */
   updateStatus () {
     const time = Date.now()
     return this.request({ url: '/api/peers/version' }).then(
       body => {
-        // A decent endpoint must have version
+        // A decent node must have version
         this._online = !!body.version
         this._version = body.version
         this._ping = Date.now() - time
@@ -156,7 +156,7 @@ class ApiEndpoint {
 /**
  * Provides methods for calling the ADAMANT API.
  * 
- * The `ApiClient` instance automatically selects an ADAMANT endpoint to
+ * The `ApiClient` instance automatically selects an ADAMANT node to
  * send the API-requests to and swicthes to another node if the current one
  * is not available at the moment.
  */
@@ -167,38 +167,38 @@ class ApiClient {
    */
   constructor (endpoints = [], minApiVersion = '0.0.0') {
     /** 
-     * List of the available endpoints
-     * @type {Array<ApiEndpoint>}
+     * List of the available nodes
+     * @type {Array<ApiNode>}
      */
-    this._endpoints = endpoints.map(x => new ApiEndpoint(x))
+    this._nodes = endpoints.map(x => new ApiNode(x))
 
     /**
-     * Minimum API version an endpoint is required to have
+     * Minimum API version a node is required to have
      * @type {String}
      */
     this._minApiVersion = minApiVersion
     /**
-     * A callback that is called every time an endpoint status is updated
+     * A callback that is called every time a node status is updated
      * @type {function({url: string, ping: number, online: boolean}): void}
      */
     this._onStatusUpdate = null
 
     /**
-     * Indicates wether `ApiClient` should prefer the fastest endpoint available.
+     * Indicates wether `ApiClient` should prefer the fastest node available.
      * @type {Boolean}
      */
     this.useFastest = false
 
-    this._getEndpointStatus = endpoint => ({
-      url: endpoint.endpointUrl,
-      online: endpoint.online,
-      ping: endpoint.ping,
-      version: endpoint.version,
-      active: endpoint.active
+    this._getNodeStatus = node => ({
+      url: node.url,
+      online: node.online,
+      ping: node.ping,
+      version: node.version,
+      active: node.active
     })
 
     /**
-     * This promise is resolved whenever we get at least one compatible online endpoint
+     * This promise is resolved whenever we get at least one compatible online node
      * after the status update.
      * @type {Promise}
      */
@@ -211,21 +211,21 @@ class ApiClient {
    * Returns enpoints statuses
    * @returns {Array<{ url: string, online: boolean, ping: number }>}
    */
-  getEndpoints () {
-    return this._endpoints.map(this._getEndpointStatus)
+  getNodes () {
+    return this._nodes.map(this._getNodeStatus)
   }
 
   /**
-   * Initiates the status update for each of the known endpoints.
+   * Initiates the status update for each of the known nodes.
    */
   updateStatus () {
     this._statusPromise = new Promise((resolve, reject) => {
       let done = false
 
-      const promises = this._endpoints.filter(x => x.active).map(x => {
+      const promises = this._nodes.filter(x => x.active).map(x => {
         return x.updateStatus().then(() => {
           this._fireStatusUpdate(x)
-          // Resolve the `_statusPromise` if it's a good endpoint.
+          // Resolve the `_statusPromise` if it's a good node.
           if (!done && x.online && this._isCompatible(x.version)) {
             resolve()
           }
@@ -233,7 +233,7 @@ class ApiClient {
       })
 
       Promise.all(promises).then(() => {
-        // If all endpoints have been checked and none of them is online or
+        // If all nodes have been checked and none of them is online or
         // compatible, throw an error to indicate that we're unable to send
         // requests at the moment.
         if (!done) reject(new Error('No compatible nodes at the moment'))
@@ -242,21 +242,21 @@ class ApiClient {
   }
 
   /**
-   * Enables/disables an endpoint.
-   * @param {String} url endpoint URL
-   * @param {Boolean} active set endpoint active or not
+   * Enables/disables an node.
+   * @param {String} url node URL
+   * @param {Boolean} active set node active or not
    */
-  toggleEndpoint (url, active) {
-    const endpoint = this._endpoints.find(x => x.endpointUrl === url)
-    if (endpoint) {
-      endpoint.active = active
+  toggleNode (url, active) {
+    const node = this._nodes.find(x => x.url === url)
+    if (node) {
+      node.active = active
     }
   }
 
   /**
    * Performs a GET API request.
    * @param {String} url relative API url
-   * @param {any} params request params (an object) or a function that accepts `ApiEndpoint` and returns the request params
+   * @param {any} params request params (an object) or a function that accepts `ApiNode` and returns the request params
    */
   get (url, params) {
     return this.request({ method: 'get', url, payload: params })
@@ -265,7 +265,7 @@ class ApiClient {
   /**
    * Performs a POST API request.
    * @param {String} url relative API url
-   * @param {any} payload request payload (an object) or a function that accepts `ApiEndpoint` and returns the request payload
+   * @param {any} payload request payload (an object) or a function that accepts `ApiNode` and returns the request payload
    */
   post (url, payload) {
     return this.request({ method: 'post', url, payload })
@@ -276,24 +276,24 @@ class ApiClient {
    * @param {RequestConfig} config 
    */
   request (config) {
-    // First wait until we get at least one compatible endpoint
+    // First wait until we get at least one compatible node
     return this._statusPromise.then(() => {
-      const endpoint = this.useFastest
-        ? this._getFastestEndpoint()
-        : this._getRandomEndpoint()
+      const node = this.useFastest
+        ? this._getFastestNode()
+        : this._getRandomNode()
 
-      if (!endpoint) {
-        // All endpoints seem to be offline: let's refresh the statuses
+      if (!node) {
+        // All nodes seem to be offline: let's refresh the statuses
         this.updateStatus()
         // But there's nothing we can do right now
         return Promise.reject(new Error('No online nodes at the moment'))
       }
 
-      return endpoint.request(config).catch(error => {
-        if (error.code === 'ENDPOINT_OFFLINE') {
-          // Notify the world that the endpoint is down
-          this._fireStatusUpdate(endpoint)
-          // If the selected endpoint is not available, repeat the request with another one.
+      return node.request(config).catch(error => {
+        if (error.code === 'NODE_OFFLINE') {
+          // Notify the world that the node is down
+          this._fireStatusUpdate(node)
+          // If the selected node is not available, repeat the request with another one.
           return this.request(config)
         }
         throw error
@@ -310,25 +310,25 @@ class ApiClient {
   }
 
   /**
-   * Returns a random endpoint
-   * @returns {ApiEndpoint}
+   * Returns a random node.
+   * @returns {ApiNode}
    */
-  _getRandomEndpoint () {
-    const onlineEndpoints = this._endpoints.filter(x =>
+  _getRandomNode () {
+    const onlineNodes = this._nodes.filter(x =>
       x.online &&
       x.active &&
       this._isCompatible(x.version)
     )
-    const endpoint = onlineEndpoints[Math.floor(Math.random() * onlineEndpoints.length)]
-    return endpoint
+    const node = onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
+    return node
   }
 
   /**
-   * Returns the fastest endpoint.
-   * @returns {ApiEndpoint}
+   * Returns the fastest node.
+   * @returns {ApiNode}
    */
-  _getFastestEndpoint () {
-    return this._endpoints.reduce((fastest, current) => {
+  _getFastestNode () {
+    return this._nodes.reduce((fastest, current) => {
       if (!current.online || !current.active || !this._isCompatible(current.version)) {
         return fastest
       }
@@ -336,9 +336,9 @@ class ApiClient {
     })
   }
 
-  _fireStatusUpdate (endpoint) {
+  _fireStatusUpdate (node) {
     if (typeof this._onStatusUpdate === 'function') {
-      this._onStatusUpdate(this._getEndpointStatus(endpoint))
+      this._onStatusUpdate(this._getNodeStatus(node))
     }
   }
 
