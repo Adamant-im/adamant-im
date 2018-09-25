@@ -83,6 +83,15 @@
   "new_messages_1": "Neue Nachricht",
   "new_messages_2": "Neue Nachrichten",
   "new_messages_5": "Neue Nachrichten",
+  "nodes": {
+    "active": "",
+    "fastest_title": "",
+    "fastest_tooltip": "",
+    "host": "",
+    "ms": "",
+    "offline": "",
+    "ping": ""
+  },
   "options": {
     "already_delegate_text": "You are already a delegate. Your delegate name is",
     "chats_title": "Chats",
@@ -102,6 +111,7 @@
     "exit_on_close_tooltip": "Für die Sicherheit deiner Wallet, empfehlen wir dir dies aktiviert zu lassen. Falls du dies ausstellst, wird deine Passphrase im Browserspeicher abgelegt, und bei der nächsten Anmeldung wird diese entschlüsselt und du brauchst sie nicht wieder eingeben. Dies macht nur Sinn, wenn du der einzige Nutzer dieses Geräts bist.",
     "general_title": "Allgemein",
     "language_label": "Sprache: ",
+    "nodes_list": "",
     "notification_title": "Benachrichtigungen",
     "security_title": "Sicherheit",
     "send_on_enter": "Send message on Enter",

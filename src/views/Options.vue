@@ -22,21 +22,13 @@
                       </md-table-row>
                   </md-table-body>
               </md-table>
+
+              <div class='settings-item'>
+                <md-button class="votes-button" @click="$router.push({ name: 'Nodes' })">
+                  {{ $t('options.nodes_list') }}
+                </md-button>
+              </div>
           </md-card-content>
-      </md-card>
-
-      <md-card class="settings-card md-transparent" style="box-shadow:none">
-        <md-card-area md-inset>
-          <md-card-header>
-            <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.endpoints_title') }}</h2>
-          </md-card-header>
-        </md-card-area>
-
-        <md-card-content>
-          <div class="settings-item">
-            
-          </div>
-        </md-card-content>
       </md-card>
 
       <md-card class='settings-card md-transparent' style="box-shadow:none">
@@ -127,13 +119,9 @@
 
 <script>
 import i18n from '../i18n'
-import Endpoints from '../components/Endpoints.vue'
 
 export default {
   name: 'settings',
-  components: {
-    Endpoints
-  },
   computed: {
     languageList: function () {
       return i18n.messages
@@ -235,7 +223,6 @@ export default {
   }
 
   .settings .settings-item {
-    padding-left: 8px;
     font-size: 16px;
     text-align: left;
   }

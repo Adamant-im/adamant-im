@@ -91,7 +91,7 @@ class ApiNode {
 
   /**
    * Performs an API request.
-   * 
+   *
    * The `payload` of the `cfg` can be either an object or a function that
    * accepts `ApiNode` as a first argument and returns an object.
    * @param {RequestConfig} cfg config
@@ -155,7 +155,7 @@ class ApiNode {
 
 /**
  * Provides methods for calling the ADAMANT API.
- * 
+ *
  * The `ApiClient` instance automatically selects an ADAMANT node to
  * send the API-requests to and swicthes to another node if the current one
  * is not available at the moment.
@@ -166,7 +166,7 @@ class ApiClient {
    * @param {Array<string>} endpoints endpoints URLs
    */
   constructor (endpoints = [], minApiVersion = '0.0.0') {
-    /** 
+    /**
      * List of the available nodes
      * @type {Array<ApiNode>}
      */
@@ -273,7 +273,7 @@ class ApiClient {
 
   /**
    * Performs an API request.
-   * @param {RequestConfig} config 
+   * @param {RequestConfig} config request config
    */
   request (config) {
     // First wait until we get at least one compatible node
@@ -303,7 +303,7 @@ class ApiClient {
 
   /**
    * Registers a status update callback.
-   * @param {function({url: string, ping: number, online: boolean}): void} callback 
+   * @param {function({url: string, ping: number, online: boolean}): void} callback callback function
    */
   onStatusUpdate (callback) {
     this._onStatusUpdate = callback

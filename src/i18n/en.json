@@ -39,13 +39,6 @@
     "too_long": "Message is too long",
     "welcome_message": "<p>Welcome to ADAMANT, the most secure and anonymous messenger. Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.</p><p>Learn more about security and anonymity at <a href='https://adamant.im/staysecured/' target='_blank'>https://adamant.im/staysecured/</a>.</p><p>All the transactions within the blockchain do need to have their minimal fees. This is necessary to support the network infrastructure. To start messaging now, <b>get free tokens</b> — go to Wallet tab and click Free ADM tokens. Then click Start new chat on Chats tab and put your interlocutor's address. To copy your address, click on ADAMANT address on Wallet tab.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>"
   },
-  "endpoints": {
-    "active": "Active",
-    "host": "Host",
-    "ms": "ms",
-    "offline": "Unavailable",
-    "ping": "Ping"
-  },
   "error": "Error",
   "home": {
     "copied": "Copied",
@@ -86,6 +79,15 @@
   "new_messages_1": "new message",
   "new_messages_2": "new messages",
   "new_messages_5": "new messages",
+  "nodes": {
+    "active": "Active",
+    "fastest_title": "Prefer the fastest node",
+    "fastest_tooltip": "When checked, most requests will processed with a single node. We recommend to keep this option unchecked for better anonymity.",
+    "host": "Host",
+    "ms": "ms",
+    "offline": "Offline",
+    "ping": "Ping"
+  },
   "options": {
     "already_delegate_text": "You are already a delegate. Your delegate name is",
     "chats_title": "Chats",
@@ -98,13 +100,11 @@
     "enable_desktop_tooltip": "Use integrated browser notifications (need your acceptance)",
     "enable_sound": "Sound",
     "enable_sound_tooltip": "Play a sound when new message arrives. It works not on all of devices. Mobile browsers will not play a sound when browser is not active.",
-    "endpoints_fastest_title": "Prefer the fastest node",
-    "endpoints_fastest_tooltip": "When checked, most requests will processed with a single node. We recommend to keep this option unchecked for better anonymity.",
-    "endpoints_title": "Endpoints",
     "exit_on_close": "Logout on tab close",
     "exit_on_close_tooltip": "For your wallet security we recommend you keep this checked. In case uou'll uncheck it, your passphrase will be saved in browser storage, and next time you open the wallet it will be decripted with no need to enter a passphrase. It is acceptable only in case noone else can access your device.",
     "general_title": "General",
     "language_label": "Language: ",
+    "nodes_list": "Nodes list",
     "notification_title": "Notifications",
     "security_title": "Security",
     "send_on_enter": "Send message on Enter",

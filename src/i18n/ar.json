@@ -83,6 +83,15 @@
   "new_messages_1": "new message",
   "new_messages_2": "new messages",
   "new_messages_5": "new messages",
+  "nodes": {
+    "active": "",
+    "fastest_title": "",
+    "fastest_tooltip": "",
+    "host": "",
+    "ms": "",
+    "offline": "",
+    "ping": ""
+  },
   "options": {
     "already_delegate_text": "You are already a delegate. Your delegate name is",
     "chats_title": "الشات",
@@ -102,6 +111,7 @@
     "exit_on_close_tooltip": "لامن محفظتك ننصحك بهذا الفحص. في حالة ما إذا لم تفحصه، سيتم حفظ كلمة المرور الخاصة بك فى المتصفح، وفى المرة التالية التى تقوم فيها بفتح المتصفح  سيكون دون الحاجةالى ادخال جملة مرور. انه مقبول فقط فى حالة لم يتمكن أحد من الوصول لمتصفحك.",
     "general_title": "عام",
     "language_label": "اللغة ",
+    "nodes_list": "",
     "notification_title": "تنبيهات",
     "security_title": "الأمان",
     "send_on_enter": "Send message on Enter",

@@ -24,9 +24,11 @@
       </md-table-body>
     </md-table>
 
-    <md-checkbox :title="$t('nodes.fastest_tooltip')" v-model="preferFastestNode">
-      {{ $t('nodes.fastest_title') }}
-    </md-checkbox>    
+    <div class='nodes__options'>
+      <md-checkbox :title="$t('nodes.fastest_tooltip')" v-model="preferFastestNode">
+        {{ $t('nodes.fastest_title') }}
+      </md-checkbox>
+    </div>
   </div>
 </template>
 
@@ -35,7 +37,9 @@
 export default {
   name: 'nodes',
   data () {
-    preferFastestNode: this.$store.state.nodes.useFastest
+    return {
+      preferFastestNode: this.$store.state.nodes.useFastest
+    }
   },
   mounted () {
     this.$store.dispatch('nodes/updateStatus')
@@ -63,11 +67,12 @@ export default {
 </script>
 
 <style>
-  .nodes .md-table {
+  .nodes .md-table, .nodes .nodes__options {
     text-align: left;
   }
 
-  .nodes .md-table .md-table-head-text {
-    padding-left: 0;
+  .nodes .nodes__options {
+    padding-left: 24px;
+    font-size: 16px;
   }
 </style>
