@@ -278,4 +278,8 @@ export default {
       font-size: 8px;
     }
 
+    .md-list-item a {
+        color: black !important;
+    }
+
 </style>
