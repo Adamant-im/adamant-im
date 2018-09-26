@@ -27,11 +27,7 @@ export default function storeData () {
     if (localStorageAvailable()) {
       lsStorage = window.localStorage
     }
-    gsStorage = window.sessionStorage
-    var mainStorage = lsStorage
-    if (!mainStorage) {
-      mainStorage = gsStorage
-    }
+    let mainStorage = window.sessionStorage
     if (mainStorage.getItem('language')) {
       store.commit('change_lang', mainStorage.getItem('language'))
     }
@@ -54,7 +50,7 @@ export default function storeData () {
     if (storeInLocalStorage) {
       store.commit('change_storage_method', storeInLocalStorage)
     }
-    var useStorage = gsStorage
+    let useStorage = window.sessionStorage
     if (storeInLocalStorage && lsStorage) {
       useStorage = lsStorage
     }
@@ -104,15 +100,8 @@ export default function storeData () {
       } else {
         let storeNow = false
         if (mutation.type === 'change_storage_method') {
-          if (mutation.payload) {
-            useStorage = lsStorage
-            try {
-              lsStorage.setItem('adm-persist', gsStorage.getItem('adm-persist'))
-            } catch (e) {
-            }
-          } else {
-            useStorage = gsStorage
-            lsStorage.removeItem('adm-persist')
+          if (!mutation.payload) {
+            useStorage = sessionStorage.setItem('adm-persist', JSON.stringify(state))
           }
           try {
             mainStorage.setItem('storeInLocalStorage', mutation.payload)
