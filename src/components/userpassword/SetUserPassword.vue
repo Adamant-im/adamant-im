@@ -26,13 +26,11 @@
 
 import {UserPasswordAgreementLink, UserPasswordHashSettings} from '../../lib/constants'
 import crypto from 'pbkdf2'
-import utf8 from 'utf8'
 import {
-  decryptData,
   encryptData,
-  getAdmDataBase, getUserPassword,
+  getAdmDataBase,
   updateChatItem,
-  updateCommonItem,
+  updateCommonItem, updateContactItem,
   updatePassPhrase,
   updateUserPassword
 } from '../../lib/indexedDb'
@@ -51,31 +49,38 @@ export default {
     setPassword () {
       crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS,
         UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encryptedPassword) => {
-        if (err) throw err
-        getAdmDataBase().then((db) => {
-          updateUserPassword(db, encryptedPassword).then(() => {
-            encryptData(this.$store.getters.getPassPhrase).then((encryptedPassPhrase) => {
-              updatePassPhrase(db, encryptedPassPhrase)
-              this.$store.commit('partners/contactList', this.$store.state.partners)
-            })
-            let copyState = Object.assign({}, this.$store.state)
-            delete copyState.partners
-            delete copyState.chats
-            delete copyState.passPhrase
-            encryptData(JSON.stringify(copyState)).then((encryptedCommonData) => {
-              updateCommonItem(db, encryptedCommonData)
-            })
-            const chats = this.$store.getters.getChats
-            for (let chat in chats) {
-              if (chats.hasOwnProperty(chat)) {
-                encryptData(JSON.stringify(chats[chat])).then((encryptedChat) => {
-                  updateChatItem(db, chat, encryptedChat)
-                })
+          if (err) throw err
+          getAdmDataBase().then((db) => {
+            updateUserPassword(db, encryptedPassword).then(() => {
+              // Save passphrase
+              encryptData(this.$store.getters.getPassPhrase).then((encryptedPassPhrase) => {
+                updatePassPhrase(db, encryptedPassPhrase)
+              })
+              // Exclude contact list, chats, passphrase from common store
+              let copyState = Object.assign({}, this.$store.state)
+              delete copyState.partners
+              delete copyState.chats
+              delete copyState.passPhrase
+              encryptData(JSON.stringify(copyState)).then((encryptedCommonData) => {
+                updateCommonItem(db, encryptedCommonData)
+              })
+              // Save chats
+              const chats = this.$store.getters.getChats
+              for (let chat in chats) {
+                if (chats.hasOwnProperty(chat)) {
+                  encryptData(JSON.stringify(chats[chat])).then((encryptedChat) => {
+                    updateChatItem(db, chat, encryptedChat)
+                  })
+                }
               }
-            }
+              // Save contacts
+              const contacts = this.$store.getters.getContacts
+              encryptData(JSON.stringify(contacts)).then((encryptedContacts) => {
+                updateContactItem(db, encryptedContacts)
+              })
+            })
           })
         })
-      })
       this.userPasswordValue = null
       this.userPasswordCheckbox = false
       this.$store.commit('user_password_exists', true)

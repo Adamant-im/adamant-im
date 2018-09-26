@@ -29,18 +29,18 @@ import {clearDb, getAdmDataBase, getUserPassword} from './lib/indexedDb'
 export default {
   name: 'app',
   mounted: function () {
-    localStorage.removeItem('adm-persist')
     getAdmDataBase().then((db) => {
       getUserPassword(db).then((password) => {
-        console.log('try login with password', password.value)
+        sessionStorage.removeItem('userPassword')
         if (!password.value) {
           clearDb(db)
+          sessionStorage.removeItem('storeInLocalStorage')
           this.$store.commit('user_password_exists', false)
           this.$store.commit('change_storage_method', false)
           this.$store.commit('logout')
           this.$store.dispatch('reset')
         } else {
-          console.log('login with password')
+          sessionStorage.setItem('storeInLocalStorage', 'true')
           this.$store.commit('user_password_exists', true)
         }
       })

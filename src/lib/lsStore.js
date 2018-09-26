@@ -1,5 +1,12 @@
 import merge from 'deepmerge'
-import {encryptData, getAdmDataBase, updateChatItem, updateCommonItem, updateContactItem} from './indexedDb'
+import {
+  encryptData,
+  getAdmDataBase,
+  updateChatItem,
+  updateCommonItem, updateContactItem,
+  updatePassPhrase,
+  updateUserPassword
+} from './indexedDb'
 
 export default function storeData () {
   return store => {
@@ -17,9 +24,8 @@ export default function storeData () {
     }
     var lsStorage = false
     var gsStorage = false
-    let useDb = store.getters.getUserPasswordExists
     if (localStorageAvailable()) {
-      lsStorage = window.sessionStorage
+      lsStorage = window.localStorage
     }
     gsStorage = window.sessionStorage
     var mainStorage = lsStorage
@@ -67,11 +73,36 @@ export default function storeData () {
       store.dispatch('rehydrate')
     }
     window.onbeforeunload = function () {
-      window.ep.$store.commit('force_update')
+      this.$store.commit('force_update')
     }
     store.subscribe((mutation, state) => {
-      getAdmDataBase().then((db) => {
-        var storeNow = false
+      if (sessionStorage.getItem('storeInLocalStorage') === 'true') {
+        getAdmDataBase().then((db) => {
+          let copyState = Object.assign({}, state)
+          // Save contacts
+          const contacts = copyState.partners
+          encryptData(JSON.stringify(contacts)).then((encryptedContacts) => {
+            updateContactItem(db, encryptedContacts)
+          })
+          // Save chats
+          const chats = copyState.chats
+          for (let chat in chats) {
+            if (chats.hasOwnProperty(chat)) {
+              encryptData(JSON.stringify(chats[chat])).then((encryptedChat) => {
+                updateChatItem(db, chat, encryptedChat)
+              })
+            }
+          }
+          // Exclude contact list, chats, passphrase from common store
+          delete copyState.partners
+          delete copyState.chats
+          delete copyState.passPhrase
+          encryptData(JSON.stringify(copyState)).then((encryptedCommonData) => {
+            updateCommonItem(db, encryptedCommonData)
+          })
+        })
+      } else {
+        let storeNow = false
         if (mutation.type === 'change_storage_method') {
           if (mutation.payload) {
             useStorage = lsStorage
@@ -88,39 +119,21 @@ export default function storeData () {
           } catch (e) {
           }
           storeNow = true
-        } else if (mutation.type === 'change_lang' && store.getters.getUserPasswordExists) {
-          updateCommonItem(db, 'language', mutation.payload)
+        } else if (mutation.type === 'change_lang') {
+          mainStorage.setItem('language', mutation.payload)
           storeNow = true
-        } else if (mutation.type === 'change_notify_sound' && store.getters.getUserPasswordExists) {
-          updateCommonItem(db, 'notify_sound', mutation.payload)
+        } else if (mutation.type === 'change_notify_sound') {
+          mainStorage.setItem('notify_sound', mutation.payload)
           storeNow = true
-        } else if (mutation.type === 'change_notify_bar' && store.getters.getUserPasswordExists) {
-          updateCommonItem(db, 'notify_bar', mutation.payload)
+        } else if (mutation.type === 'change_notify_bar') {
+          mainStorage.setItem('notify_bar', mutation.payload)
           storeNow = true
-        } else if (mutation.type === 'change_notify_desktop' && store.getters.getUserPasswordExists) {
-          updateCommonItem(db, 'notify_desktop', mutation.payload)
+        } else if (mutation.type === 'change_notify_desktop') {
+          mainStorage.setItem('notify_desktop', mutation.payload)
           storeNow = true
-        } else if (mutation.type === 'change_send_on_enter' && store.getters.getUserPasswordExists) {
-          updateCommonItem(db, 'send_on_enter', mutation.payload)
+        } else if (mutation.type === 'change_send_on_enter') {
+          mainStorage.setItem('send_on_enter', mutation.payload)
           storeNow = true
-        } else if (mutation.type === 'partners/contactList' && store.getters.getUserPasswordExists) {
-          const payload = JSON.stringify(mutation.payload)
-          encryptData(payload).then((contactList) => {
-            updateContactItem(db, contactList)
-            storeNow = true
-          })
-        } else if (store.getters.getUserPasswordExists) {
-          // // TODO too expensive, need another solution
-          // store.watch(() => store.getters.getChats, res => {
-          //   console.log('changed chats')
-          //   for (let chat in state.chats) {
-          //     if (state.chats.hasOwnProperty(chat)) {
-          //       encryptData(state.chats[chat]).then((encryptedChat) => {
-          //         updateChatItem(db, chat, encryptedChat)
-          //       })
-          //     }
-          //   }
-          // })
         }
         if (mutation.type === 'logout') {
           storeNow = true
@@ -143,21 +156,6 @@ export default function storeData () {
         if (storeNow) {
           try {
             useStorage.setItem('adm-persist', JSON.stringify(state))
-            if (useDb) {
-              // // Update chats
-              // for (let chat in state.chats) {
-              //   if (state.chats.hasOwnProperty(chat)) {
-              //     updateChatItem(db, chat, state.chats[chat])
-              //   }
-              // }
-              // // Update commons
-              // // Transformed kept state
-              // let copyState = Object.assign({}, state)
-              // delete copyState.partners
-              // delete copyState.chats
-              // delete copyState.passPhrase
-              // updateCommonItem(db, 'adm_store', copyState)
-            }
           } catch (e) {
           }
         } else {
@@ -170,7 +168,7 @@ export default function storeData () {
           }, 10000)
           window.storeTimer = storeTimer
         }
-      })
+      }
     })
   }
 }

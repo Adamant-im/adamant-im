@@ -63,7 +63,6 @@ export default {
       this.$store.commit('change_storage_method', false)
     },
     loginViaPassword: function () {
-      this.showSpinnerFlag = false
       crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS,
         UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
         getAdmDataBase().then((db) => {
@@ -82,6 +81,7 @@ export default {
               errorFunction()
               return
             }
+            this.showSpinnerFlag = true
             getCommonItem(db).then((encryptedCommonItem) => {
               decryptData(encryptedCommonItem.value).then((decryptedCommonItem) => {
                 let state = JSON.parse(decryptedCommonItem)
@@ -100,11 +100,14 @@ export default {
                 })
                 getPassPhrase(db).then((encryptedPassPhrase) => {
                   decryptData(encryptedPassPhrase.value).then((passPhrase) => {
+                    sessionStorage.setItem('storeInLocalStorage', 'true')
+                    sessionStorage.removeItem('adm-persist')
                     this.$store.dispatch('afterLogin', passPhrase)
                     this.$root._router.push('/chats/')
                     this.$store.commit('mock_messages')
                     this.$store.commit('stop_tracking_new')
                     this.$store.commit('save_user_password', this.userPasswordValue)
+                    this.$store.commit('change_storage_method', true)
                     this.showSpinnerFlag = false
                   })
                 })

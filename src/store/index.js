@@ -16,8 +16,6 @@ import {base64regex, WelcomeMessage, UserPasswordHashSettings, Cryptos} from '..
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import i18n from '../i18n'
-import ed2curve from 'ed2curve'
-import nacl from 'tweetnacl/nacl-fast'
 import crypto from 'pbkdf2'
 
 var maxConcurrent = 1
@@ -276,6 +274,7 @@ const store = {
       state.language = payload
     },
     change_storage_method (state, payload) {
+      sessionStorage.setItem('storeInLocalStorage', payload)
       state.storeInLocalStorage = payload
     },
     save_user_password (state, payload) {
@@ -328,14 +327,6 @@ const store = {
       state.secretKey = false
       state.resentMessages = []
       state.lastVisitedChat = null
-    },
-    encrypt_store (state) {
-      const storedData = sessionStorage.getItem('adm-persist')
-      const userPassword = sessionStorage.getItem('userPassword')
-      const nonce = Buffer.allocUnsafe(24)
-      const DHSecretKey = ed2curve.convertSecretKey(userPassword)
-      const encrypted = nacl.secretbox(Buffer.from(storedData), nonce, DHSecretKey)
-      localStorage.setItem('storedData', encrypted)
     },
     stop_tracking_new (state) {
       state.trackNewMessages = false
@@ -551,6 +542,9 @@ const store = {
     },
     getUserPasswordExists: state => {
       return state.userPasswordExists
+    },
+    getContacts: state => {
+      return state.partners
     }
   },
   modules: {

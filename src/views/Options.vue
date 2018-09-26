@@ -7,7 +7,6 @@
                   <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.general_title') }}</h2>
               </md-card-header>
           </md-card-area>
-          <md-button v-on:click="testDbButton">testDbButton</md-button>
           <md-card-content>
               <md-table>
                   <md-table-body>
@@ -119,9 +118,7 @@ import i18n from '../i18n'
 import setUserPassword from '@/components/userpassword/SetUserPassword.vue'
 import {
   clearDb,
-  decryptData,
   getAdmDataBase,
-  getContactItem
 } from '../lib/indexedDb'
 
 export default {
@@ -132,7 +129,6 @@ export default {
       if (!this.$store.state.storeInLocalStorage) {
         this.$refs['set_user_password'].open()
       } else {
-        console.log('clear db')
         getAdmDataBase().then((db) => {
           clearDb(db)
         })
@@ -142,17 +138,6 @@ export default {
     },
     onPwdDialogClose (payload) {
       this.clearOnExit = !payload
-    },
-    testDbButton () {
-      // TODO: remove later, only for test
-      getAdmDataBase().then((db) => {
-        getContactItem(db).then((result) => {
-          console.log('encrypted getContactItem: ', result.value)
-          decryptData(result.value).then((data) => {
-            console.log('decrypted getContactItem: ', JSON.parse(data))
-          })
-        })
-      })
     }
   },
   computed: {
