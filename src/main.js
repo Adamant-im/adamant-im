@@ -29,6 +29,10 @@ router.beforeEach((to, from, next) => {
   const isLogged = store.getters.isLogged
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (isLogged) {
+      if (from.name === 'Chat' && to.name !== 'Chat') {
+        store.commit('leave_chat')
+      }
+
       next()
     } else {
       next({name: 'Login'})
