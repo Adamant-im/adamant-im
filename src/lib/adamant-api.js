@@ -1,6 +1,3 @@
-// import axios from 'axios'
-
-// import getEndpointUrl from './getEndpointUrl'
 import { Transactions, Delegates } from './constants'
 import utils from './adamant'
 import client from './adamant-api-client'
@@ -9,32 +6,7 @@ import client from './adamant-api-client'
 let myKeypair = { }
 let myAddress = null
 
-// /** Delta between local time and server time (ADM timestamp) */
-// let serverTimeDelta = 0
-
 const publicKeysCache = { }
-
-// function toAbsolute (url = '') {
-//   return getEndpointUrl(Cryptos.ADM) + url
-// }
-
-// function parseResponse (response) {
-//   const body = response.data
-//   if (body && isFinite(body.nodeTimestamp)) {
-//     serverTimeDelta = utils.epochTime() - body.nodeTimestamp
-//   }
-//   return body
-// }
-
-// function get (url, query) {
-//   return axios.get(toAbsolute(url), {params: query})
-//     .then(parseResponse)
-// }
-
-// function post (url, payload) {
-//   return axios.post(toAbsolute(url), payload)
-//     .then(parseResponse)
-// }
 
 /**
  * Creates a new transaction with the common fields pre-filled
