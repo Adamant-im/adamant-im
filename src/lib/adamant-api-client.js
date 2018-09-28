@@ -39,7 +39,7 @@ class ApiNode {
     this.active = true
 
     this._baseUrl = baseUrl
-    this._online = true
+    this._online = false
     this._ping = Infinity
     this._timeDelta = 0
     this._version = ''
@@ -236,7 +236,11 @@ class ApiClient {
         // If all nodes have been checked and none of them is online or
         // compatible, throw an error to indicate that we're unable to send
         // requests at the moment.
-        if (!done) reject(new Error('No compatible nodes at the moment'))
+        if (!done) {
+          reject(new Error('No compatible nodes at the moment'))
+          // Schedule a status update after a while
+          setTimeout(() => this.updateStatus(), 1000)
+        }
       })
     })
   }

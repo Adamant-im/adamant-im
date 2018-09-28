@@ -10,7 +10,7 @@
       </md-table-header>
 
       <md-table-body>
-        <md-table-row v-for="(node) in nodes" :key="node.url">
+        <md-table-row v-for="(node, key) in nodes" :key="key">
           <md-table-cell>
             <md-checkbox v-model="node.active" v-on:change="toggle(node)" />
           </md-table-cell>
@@ -18,7 +18,11 @@
             <span>{{ node.url }}</span>
           </md-table-cell>
           <md-table-cell>
-            {{ node.offline ? $t('nodes.offline') : (node.ping + ' ' + $t('nodes.ms')) }}
+            {{ !node.active
+              ? $t('nodes.inactive')
+              : !node.online
+                ? $t('nodes.offline')
+                : (node.ping + ' ' + $t('nodes.ms')) }}
           </md-table-cell>
         </md-table-row>
       </md-table-body>
@@ -38,11 +42,16 @@ export default {
   name: 'nodes',
   data () {
     return {
-      preferFastestNode: this.$store.state.nodes.useFastest
+      preferFastestNode: this.$store.state.nodes.useFastest,
+      timer: null
     }
   },
   mounted () {
-    this.$store.dispatch('nodes/updateStatus')
+    this.timer = setInterval(() => this.$store.dispatch('nodes/updateStatus'), 10000)
+  },
+  destroyed () {
+    clearInterval(this.timer)
+    this.timer = null
   },
   methods: {
     toggle (node) {
@@ -54,6 +63,7 @@ export default {
   },
   computed: {
     nodes () {
+      console.log('computed nodes')
       return this.$store.state.nodes.list
     }
   },

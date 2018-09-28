@@ -84,6 +84,7 @@
     "fastest_title": "Prefer the fastest node",
     "fastest_tooltip": "When checked, most requests will processed with a single node. We recommend to keep this option unchecked for better anonymity.",
     "host": "Host",
+    "inactive": "Inactive",
     "ms": "ms",
     "offline": "Offline",
     "ping": "Ping"
