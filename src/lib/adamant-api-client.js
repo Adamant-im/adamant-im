@@ -40,7 +40,7 @@ class ApiNode {
 
     this._baseUrl = baseUrl
     this._online = true
-    this._ping = 0
+    this._ping = Infinity
     this._timeDelta = 0
     this._version = ''
 
