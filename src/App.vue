@@ -30,20 +30,17 @@ export default {
   name: 'app',
   mounted: function () {
     getAdmDataBase().then((db) => {
-      getUserPassword(db).then((password) => {
-        sessionStorage.removeItem('userPassword')
-        if (!password.value) {
-          clearDb(db)
-          sessionStorage.removeItem('storeInLocalStorage')
-          this.$store.commit('user_password_exists', false)
-          this.$store.commit('change_storage_method', false)
-          this.$store.commit('logout')
-          this.$store.dispatch('reset')
-        } else {
-          sessionStorage.setItem('storeInLocalStorage', 'true')
-          this.$store.commit('user_password_exists', true)
-        }
-      })
+      if (!getUserPassword()) {
+        clearDb(db)
+        sessionStorage.removeItem('storeInLocalStorage')
+        this.$store.commit('user_password_exists', false)
+        this.$store.commit('change_storage_method', false)
+        this.$store.commit('logout')
+        this.$store.dispatch('reset')
+      } else {
+        sessionStorage.setItem('storeInLocalStorage', 'true')
+        this.$store.commit('user_password_exists', true)
+      }
     })
     this.checkChatPage(this.$router.currentRoute.path)
     setInterval(

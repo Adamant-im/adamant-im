@@ -41,14 +41,6 @@ import {
   getPassPhrase, getUserPassword
 } from '../../lib/indexedDb'
 
-function convertStringToUint8Array (encryptedStoredData) {
-  let result = []
-  for (let i = 0; i < encryptedStoredData.length; i++) {
-    result.push(parseInt(encryptedStoredData[i]))
-  }
-  return Uint8Array.from(result)
-}
-
 export default {
   name: 'loginWithUserPassword',
   props: ['openFrom', 'closeTo'],
@@ -65,19 +57,14 @@ export default {
     loginViaPassword: function () {
       crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS,
         UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
-        getAdmDataBase().then((db) => {
           let errorFunction = function () {
             this.errorSnackOpen()
             this.showSpinnerFlag = false
           }.bind(this)
-          getUserPassword(db).then((encryptedUserPassword) => {
-            let wrongPassword = false
-            encodePassword.forEach((symbol, index) => {
-              if (symbol !== encryptedUserPassword.value[index]) {
-                wrongPassword = true
-              }
-            })
-            if (wrongPassword) {
+          if (err) errorFunction()
+          getAdmDataBase().then((db) => {
+            const encryptedUserPassword = getUserPassword()
+            if (encryptedUserPassword !== encodePassword.toString('hex')) {
               errorFunction()
               return
             }
@@ -115,7 +102,6 @@ export default {
             })
           })
         })
-      })
     },
     errorSnackOpen () {
       this.$refs.errorsnackbar.open()

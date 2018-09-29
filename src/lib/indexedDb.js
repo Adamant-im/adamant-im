@@ -34,12 +34,8 @@ export function getAdmDataBase () {
   })
 }
 
-export function updateUserPassword (db, value) {
-  const userPassword = {
-    name: USER_PASSWORD,
-    value: value
-  }
-  return saveValueByName(db, SECURITY, userPassword)
+export function updateUserPassword (value) {
+  sessionStorage.setItem('userPassword', value.toString(TO_STRING_TRANSFORM_TYPE))
 }
 
 export function updatePassPhrase (db, value) {
@@ -92,8 +88,8 @@ export function getPassPhrase (db) {
   return getValueByName(db, SECURITY, PASSPHRASE)
 }
 
-export function getUserPassword (db) {
-  return getValueByName(db, SECURITY, USER_PASSWORD)
+export function getUserPassword () {
+  return sessionStorage.getItem('userPassword')
 }
 
 export function clearDb (db) {
@@ -133,20 +129,18 @@ export function clearContactList (db) {
 }
 
 export function encryptData (data) {
-  return getAdmDataBase().then((db) => {
-    return getUserPassword(db).then((userPassword) => {
-      const secretKey = ed2curve.convertSecretKey(userPassword.value.toString(TO_STRING_TRANSFORM_TYPE))
-      return nacl.secretbox(Buffer.from(data), NONCE, secretKey)
-    })
+  let userPassword = sessionStorage.getItem('userPassword')
+  const secretKey = ed2curve.convertSecretKey(userPassword.toString(TO_STRING_TRANSFORM_TYPE))
+  return new Promise(resolve => {
+    resolve(nacl.secretbox(Buffer.from(data), NONCE, secretKey))
   })
 }
 
 export function decryptData (encryptedData) {
-  return getAdmDataBase().then((db) => {
-    return getUserPassword(db).then((userPassword) => {
-      const secretKey = ed2curve.convertSecretKey(userPassword.value.toString(TO_STRING_TRANSFORM_TYPE))
-      return decode(nacl.secretbox.open(encryptedData, NONCE, secretKey))
-    })
+  let userPassword = sessionStorage.getItem('userPassword')
+  const secretKey = ed2curve.convertSecretKey(userPassword.toString(TO_STRING_TRANSFORM_TYPE))
+  return new Promise(resolve => {
+    resolve(decode(nacl.secretbox.open(encryptedData, NONCE, secretKey)))
   })
 }
 

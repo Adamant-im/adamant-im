@@ -5,7 +5,7 @@
     </md-dialog-title>
     <md-dialog-content md-flex="66" sm-flex="90" style="margin-top: -15px;">
       <md-input-container>
-        <md-input v-model="userPasswordValue" :placeholder="$t('login_via_password.popup_hint')"></md-input>
+        <md-input v-model="userPasswordValue" type="password" :placeholder="$t('login_via_password.popup_hint')"></md-input>
       </md-input-container>
       <div style="display: flex; flex-direction: row;">
         <md-checkbox v-model="userPasswordCheckbox" style="display: flex; align-items: center">
@@ -51,41 +51,40 @@ export default {
         UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encryptedPassword) => {
           if (err) throw err
           getAdmDataBase().then((db) => {
-            updateUserPassword(db, encryptedPassword).then(() => {
-              // Save passphrase
-              encryptData(this.$store.getters.getPassPhrase).then((encryptedPassPhrase) => {
-                updatePassPhrase(db, encryptedPassPhrase)
-              })
-              // Exclude contact list, chats, passphrase from common store
-              let copyState = Object.assign({}, this.$store.state)
-              delete copyState.partners
-              delete copyState.chats
-              delete copyState.passPhrase
-              encryptData(JSON.stringify(copyState)).then((encryptedCommonData) => {
-                updateCommonItem(db, encryptedCommonData)
-              })
-              // Save chats
-              const chats = this.$store.getters.getChats
-              for (let chat in chats) {
-                if (chats.hasOwnProperty(chat)) {
-                  encryptData(JSON.stringify(chats[chat])).then((encryptedChat) => {
-                    updateChatItem(db, chat, encryptedChat)
-                  })
-                }
+            updateUserPassword(encryptedPassword)
+            // Save passphrase
+            encryptData(this.$store.getters.getPassPhrase).then((encryptedPassPhrase) => {
+              updatePassPhrase(db, encryptedPassPhrase)
+            })
+            // Exclude contact list, chats, passphrase from common store
+            let copyState = Object.assign({}, this.$store.state)
+            delete copyState.partners
+            delete copyState.chats
+            delete copyState.passPhrase
+            encryptData(JSON.stringify(copyState)).then((encryptedCommonData) => {
+              updateCommonItem(db, encryptedCommonData)
+            })
+            // Save chats
+            const chats = this.$store.getters.getChats
+            for (let chat in chats) {
+              if (chats.hasOwnProperty(chat)) {
+                encryptData(JSON.stringify(chats[chat])).then((encryptedChat) => {
+                  updateChatItem(db, chat, encryptedChat)
+                })
               }
-              // Save contacts
-              const contacts = this.$store.getters.getContacts
-              encryptData(JSON.stringify(contacts)).then((encryptedContacts) => {
-                updateContactItem(db, encryptedContacts)
-              })
+            }
+            // Save contacts
+            const contacts = this.$store.getters.getContacts
+            encryptData(JSON.stringify(contacts)).then((encryptedContacts) => {
+              updateContactItem(db, encryptedContacts)
             })
           })
+          this.userPasswordValue = null
+          this.userPasswordCheckbox = false
+          this.$store.commit('user_password_exists', true)
+          this.$store.commit('change_storage_method', true)
+          this.close()
         })
-      this.userPasswordValue = null
-      this.userPasswordCheckbox = false
-      this.$store.commit('user_password_exists', true)
-      this.$store.commit('change_storage_method', true)
-      this.close()
     },
     onClose () {
       this.$emit('close', this.$store.state.storeInLocalStorage)
