@@ -12,7 +12,7 @@
       <md-table-body>
         <md-table-row v-for="(node, key) in nodes" :key="key">
           <md-table-cell>
-            <md-checkbox v-model="node.active" v-on:change="toggle(node)" />
+            <md-checkbox v-model="node.active" @change="toggle(node)" />
           </md-table-cell>
           <md-table-cell>
             <span>{{ node.url }}</span>
@@ -38,6 +38,8 @@
 
 <script>
 
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'nodes',
   data () {
@@ -55,21 +57,20 @@ export default {
   },
   methods: {
     toggle (node) {
-      this.$store.commit('nodes/toggle', {
-        url: node.url,
+      this.$store.dispatch('nodes/toggle', {
+        id: node.id,
         active: !node.active
       })
     }
   },
   computed: {
-    nodes () {
-      console.log('computed nodes')
-      return this.$store.state.nodes.list
-    }
+    ...mapGetters({
+      nodes: 'nodes/list'
+    })
   },
   watch: {
     preferFastestNode (to, from) {
-      this.$store.commit('nodes/useFastest', to)
+      this.$store.dispatch('nodes/setUseFastest', to)
     }
   }
 }

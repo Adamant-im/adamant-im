@@ -227,6 +227,7 @@ class ApiClient {
           this._fireStatusUpdate(x)
           // Resolve the `_statusPromise` if it's a good node.
           if (!done && x.online && this._isCompatible(x.version)) {
+            done = true
             resolve()
           }
         })
@@ -251,7 +252,7 @@ class ApiClient {
    * @param {Boolean} active set node active or not
    */
   toggleNode (url, active) {
-    const node = this._nodes.find(x => x.url === url)
+    const node = this._nodes.find(x => x.id === url)
     if (node) {
       node.active = active
     }
