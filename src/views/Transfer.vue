@@ -6,7 +6,7 @@
       </md-button>
       <h1 class="md-title">{{ $t('home.send_btn') }}</h1>
     </md-toolbar>
-      <spinner v-if="isWaiting" />
+      <!--<spinner v-if="isWaiting" />-->
       <form novalidate @submit.stop.prevent="submit">
         <md-input-container>
           <md-select v-model="crypto" style="text-align: left;" :disabled="!!this.fixedCrypto">
@@ -118,10 +118,15 @@ export default {
     },
     sendTokens () {
       if (this.crypto === Cryptos.ADM) {
-        const promise = (this.comments && this.fixedAddress)
-          ? sendMessage({ to: this.targetAddress, message: this.comments, amount: this.targetAmount })
-          : sendTokens(this.targetAddress, this.targetAmount)
-        return promise.then(result => result.transactionId)
+        const message = { to: this.targetAddress, message: this.comments, amount: this.targetAmount, fundType: this.crypto }
+        console.log('add message to queue pre-dispathed')
+        this.$store.dispatch('add_message_to_funds_queue', message)
+        console.log('add message to queue pre-dispathed')
+        // TODO uncomment
+        // const promise = (this.comments && this.fixedAddress)
+        //   ? sendMessage(message)
+        //   : sendTokens(this.targetAddress, this.targetAmount)
+        // return promise.then(result => result.transactionId)
       } else {
         return this.$store.dispatch(this.crypto.toLowerCase() + '/sendTokens', {
           amount: this.targetAmount,

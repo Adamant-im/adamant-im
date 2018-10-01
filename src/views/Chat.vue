@@ -257,8 +257,9 @@ export default {
       const transactions = this.$store
         .getters['adm/partnerTransactions'](this.$store.state.currentChat.partner)
         .filter(x => !chat[x.id])
+      console.log('transactions', transactions)
       const messages = Object.values(chat).concat(transactions)
-
+      console.log('messages', messages)
       return messages.sort(compare)
     },
     readOnly: function () {

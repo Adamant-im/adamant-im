@@ -193,7 +193,7 @@ const store = {
           to: partner,
           message: payload.message
         }
-        return admApi.sendMessage(params).then(response => {
+        return admApi.sendMessage(sent_funds_message).then(response => {
           if (response.success) {
             replaceMessageAndDelete(chats[partner].messages, response.transactionId, payload.id, 'sent')
             updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', response.transactionId)
@@ -203,6 +203,43 @@ const store = {
           }
         })
       })
+    },
+    add_message_to_funds_queue ({ getters }, payload) {
+      let chats = getters.getChats
+      const partner = payload.to
+      const partnerTransactionsCount = (getters['adm/partnerTransactions'](partner)).length
+      console.log('partnerTransactionsCount', partnerTransactionsCount)
+      console.log('currentChatMessageCount', getters.getCurrentChatMessageCount)
+      payload = {
+        ...payload,
+        message: payload.message,
+        id: getters.getCurrentChatMessageCount + partnerTransactionsCount,
+      }
+      // let currentDialogs = chats[partner]
+      // let internalPayload = Object.assign({}, payload)
+      // internalPayload.message = internalPayload.message.replace(/\n/g, '<br>')
+      // if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
+      //   internalPayload.message = renderMarkdown(internalPayload.message)
+      //   internalPayload.message = internalPayload.message.replace(/<p>|<\/p>/g, '')
+      //   updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', payload.id)
+      // }
+      Vue.set(chats[partner].messages, payload.id, payload)
+      console.log('handled payload: ', payload)
+      // queue.add(() => {
+      //   const params = {
+      //     to: partner,
+      //     message: payload.message
+      //   }
+      //   return admApi.sendMessage(params).then(response => {
+      //     if (response.success) {
+      //       replaceMessageAndDelete(chats[partner].messages, response.transactionId, payload.id, 'sent')
+      //       updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', response.transactionId)
+      //     } else {
+      //       changeMessageClass(chats[partner].messages, payload.id, 'rejected')
+      //       updateLastChatMessage(currentDialogs, internalPayload, 'rejected', 'from', payload.id)
+      //     }
+      //   })
+      // })
     },
     retry_message ({getters}, payload) {
       const currentChat = getters.getCurrentChat
