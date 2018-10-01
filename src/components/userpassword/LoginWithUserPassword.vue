@@ -38,7 +38,8 @@ import {
   getChatItem,
   getCommonItem,
   getContactItem,
-  getPassPhrase, getUserPassword
+  getPassPhrase,
+  updateUserPassword
 } from '../../lib/indexedDb'
 
 export default {
@@ -63,41 +64,41 @@ export default {
           }.bind(this)
           if (err) errorFunction()
           getAdmDataBase().then((db) => {
-            const encryptedUserPassword = getUserPassword()
-            if (encryptedUserPassword !== encodePassword.toString('hex')) {
-              errorFunction()
-              return
-            }
-            this.showSpinnerFlag = true
+            updateUserPassword(encodePassword)
             getCommonItem(db).then((encryptedCommonItem) => {
               decryptData(encryptedCommonItem.value).then((decryptedCommonItem) => {
-                let state = JSON.parse(decryptedCommonItem)
-                this.$store.commit('set_state', state)
-                getChatItem(db).then((encryptedChats) => {
-                  encryptedChats.forEach((chat) => {
-                    decryptData(chat.value).then((decryptedChat) => {
-                      Vue.set(this.$store.getters.getChats, chat.name, JSON.parse(decryptedChat))
+                try {
+                  let state = JSON.parse(decryptedCommonItem)
+                  this.$store.commit('set_state', state)
+                  getChatItem(db).then((encryptedChats) => {
+                    this.showSpinnerFlag = true
+                    encryptedChats.forEach((chat) => {
+                      decryptData(chat.value).then((decryptedChat) => {
+                        Vue.set(this.$store.getters.getChats, chat.name, JSON.parse(decryptedChat))
+                      })
                     })
                   })
-                })
-                getContactItem(db).then((encryptedContacts) => {
-                  decryptData(encryptedContacts.value).then((decryptedContacts) => {
-                    this.$store.commit('partners/contactList', JSON.parse(decryptedContacts))
+                  getContactItem(db).then((encryptedContacts) => {
+                    decryptData(encryptedContacts.value).then((decryptedContacts) => {
+                      this.$store.commit('partners/contactList', JSON.parse(decryptedContacts))
+                    })
                   })
-                })
-                getPassPhrase(db).then((encryptedPassPhrase) => {
-                  decryptData(encryptedPassPhrase.value).then((passPhrase) => {
-                    sessionStorage.setItem('storeInLocalStorage', 'true')
-                    sessionStorage.removeItem('adm-persist')
-                    this.$store.dispatch('afterLogin', passPhrase)
-                    this.$root._router.push('/chats/')
-                    this.$store.commit('mock_messages')
-                    this.$store.commit('stop_tracking_new')
-                    this.$store.commit('save_user_password', this.userPasswordValue)
-                    this.$store.commit('change_storage_method', true)
-                    this.showSpinnerFlag = false
+                  getPassPhrase(db).then((encryptedPassPhrase) => {
+                    decryptData(encryptedPassPhrase.value).then((passPhrase) => {
+                      sessionStorage.setItem('storeInLocalStorage', 'true')
+                      sessionStorage.removeItem('adm-persist')
+                      this.$store.dispatch('afterLogin', passPhrase)
+                      this.$root._router.push('/chats/')
+                      this.$store.commit('mock_messages')
+                      this.$store.commit('stop_tracking_new')
+                      this.$store.commit('save_user_password', this.userPasswordValue)
+                      this.$store.commit('change_storage_method', true)
+                      this.showSpinnerFlag = false
+                    })
                   })
-                })
+                } catch (e) {
+                  errorFunction()
+                }
               })
             })
           })

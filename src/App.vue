@@ -24,23 +24,25 @@
 
 <script>
 import i18n from './i18n'
-import {clearDb, getAdmDataBase, getUserPassword} from './lib/indexedDb'
+import {clearDb, getAdmDataBase, getPassPhrase} from './lib/indexedDb'
 
 export default {
   name: 'app',
   mounted: function () {
     getAdmDataBase().then((db) => {
-      if (!getUserPassword()) {
-        clearDb(db)
-        sessionStorage.removeItem('storeInLocalStorage')
-        this.$store.commit('user_password_exists', false)
-        this.$store.commit('change_storage_method', false)
-        this.$store.commit('logout')
-        this.$store.dispatch('reset')
-      } else {
-        sessionStorage.setItem('storeInLocalStorage', 'true')
-        this.$store.commit('user_password_exists', true)
-      }
+      getPassPhrase(db).then((encodedPassPhrase) => {
+        if (!encodedPassPhrase) {
+          clearDb(db)
+          sessionStorage.removeItem('storeInLocalStorage')
+          this.$store.commit('user_password_exists', false)
+          this.$store.commit('change_storage_method', false)
+          this.$store.commit('logout')
+          this.$store.dispatch('reset')
+        } else {
+          sessionStorage.setItem('storeInLocalStorage', 'true')
+          this.$store.commit('user_password_exists', true)
+        }
+      })
     })
     this.checkChatPage(this.$router.currentRoute.path)
     setInterval(
