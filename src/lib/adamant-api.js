@@ -50,13 +50,15 @@ export function unlock (passphrase) {
  * @returns {Promise<any>}
  */
 export function getCurrentAccount () {
-  return client.get('/api/accounts', { publicKey: myKeypair.publicKey })
+  const publicKey = myKeypair.publicKey.toString('hex')
+
+  return client.get('/api/accounts', { publicKey })
     .then(response => {
       if (response.success) {
         return response.account
       } else if (response.error === 'Address not found') {
         // Create account if it does not yet exist
-        return client.post('/api/accounts/new', { publicKey: myKeypair.publicKey }).then(response => {
+        return client.post('/api/accounts/new', { publicKey }).then(response => {
           if (response.error) throw new Error(response.error)
           response.account.isNew = true
           return response.account

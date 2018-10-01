@@ -248,11 +248,11 @@ const store = {
           context.commit('save_passphrase', { passPhrase: payload.passphrase })
           context.commit('mock_messages')
           context.commit('stop_tracking_new')
-          
+
           context.dispatch('afterLogin', payload.passphrase)
           context.dispatch('loadChats')
         }
-      )      
+      )
     },
     /**
      * Updates current account details. If an account does not yet exist in the ADAMANT
