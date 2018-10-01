@@ -46,6 +46,34 @@ export function unlock (passphrase) {
 }
 
 /**
+ * Retrieves current account details, creating it if necessary.
+ * @returns {Promise<any>}
+ */
+export function getCurrentAccount () {
+  return client.get('/api/accounts', { publicKey: myKeypair.publicKey })
+    .then(response => {
+      if (response.success) {
+        return response.account
+      } else if (response.error === 'Address not found') {
+        // Create account if it does not yet exist
+        return client.post('/api/accounts/new', { publicKey: myKeypair.publicKey }).then(response => {
+          if (response.error) throw new Error(response.error)
+          response.account.isNew = true
+          return response.account
+        })
+      }
+
+      throw new Error(response.error)
+    })
+    .then(account => {
+      account.balance = utils.toAdm(account.balance)
+      account.unconfirmedBalance = utils.toAdm(account.unconfirmedBalance)
+      account.publicKey = myKeypair.publicKey
+      return account
+    })
+}
+
+/**
  * Returns `true` if API client is unlocked and ready to process requests. *
  * @returns {Boolean}
  */

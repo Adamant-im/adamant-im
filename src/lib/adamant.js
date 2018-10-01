@@ -441,4 +441,8 @@ adamant.prepareAmount = function (admAmount) {
   return Math.round(Number(admAmount) * 100000000)
 }
 
+adamant.toAdm = function (rawAmount) {
+  return Number(rawAmount) / 100000000
+}
+
 export default adamant

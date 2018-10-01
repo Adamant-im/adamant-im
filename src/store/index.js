@@ -157,16 +157,16 @@ const store = {
       payload.message = i18n.t(payload.message)
       commit('add_chat_message', payload)
     },
-    afterLogin ({ commit }, passPhrase) {
-      commit('save_passphrase', {'passPhrase': passPhrase})
-      admApi.unlock(passPhrase)
-    },
+    // afterLogin ({ commit }, passPhrase) {
+    //   commit('save_passphrase', {'passPhrase': passPhrase})
+    //   admApi.unlock(passPhrase)
+    // },
     rehydrate ({ getters }) {
       admApi.unlock(getters.getPassPhrase)
     },
-    updateAccount ({ commit }, account) {
-      commit('login', account)
-    },
+    // updateAccount ({ commit }, account) {
+    //   commit('login', account)
+    // },
     add_message_to_queue ({ getters }, payload) {
       let chats = getters.getChats
       const partner = payload.recipientId
@@ -235,6 +235,42 @@ const store = {
           updateLastChatMessage(currentChat, payload, 'sent', 'from', response.transactionId)
         })
       })
+    },
+    /**
+     * Performs application login
+     * @param {any} context
+     * @param {{passphrase: string}} payload action payload
+     */
+    login (context, payload) {
+      admApi.unlock(payload.passphrase)
+      return context.dispatch('updateAccount').then(
+        () => {
+          context.commit('save_passphrase', { passPhrase: payload.passphrase })
+          context.commit('mock_messages')
+          context.commit('stop_tracking_new')
+          
+          context.dispatch('afterLogin', payload.passphrase)
+          context.dispatch('loadChats')
+        }
+      )      
+    },
+    /**
+     * Updates current account details. If an account does not yet exist in the ADAMANT
+     * network, it is created.
+     */
+    updateAccount (context) {
+      context.commit('ajax_start')
+      return admApi.getCurrentAccount().then(
+        (account) => {
+          context.commit('currentAccount', account)
+          context.commit('ajax_end')
+        },
+        (error) => {
+          console.error(error)
+          context.commit('ajax_end_with_error')
+          return Promise.reject(error)
+        }
+      )
     }
   },
   mutations: {
@@ -480,6 +516,10 @@ const store = {
       payload.direction = direction
       Vue.set(state.chats[partner].messages, payload.id, payload)
       scrollToEnd()
+    },
+    currentAccount (state, payload) {
+      state.address = payload.address
+      state.balance = payload.balance
     }
   },
   plugins: [storeData(), nodesPlugin],

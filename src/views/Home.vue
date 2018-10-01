@@ -102,9 +102,9 @@ export default {
     freeAdmAddress () {
       return 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
     },
-    isNewUser: function () {
-      return this.$store.state.is_new_account
-    },
+    // isNewUser: function () {
+    //   return this.$store.state.is_new_account
+    // },
     languageList: function () {
       var messages = require('../i18n').default
       return messages
