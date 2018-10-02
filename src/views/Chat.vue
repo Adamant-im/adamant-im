@@ -104,8 +104,9 @@ export default {
       }
     },
     keyUpHandle: function (event) {
-      if (event.srcElement.value.trim() === '') {
+      if (event.srcElement.value.trim() === '' && event.keyCode === 13) {
         this.message = null
+        this.errorMessage('no_empty')
       }
     },
     kp: function (event) {
@@ -247,6 +248,9 @@ export default {
   },
   watch: {
     message: function (value) {
+      if (!value) {
+        value = 0
+      }
       if (window.feeCalcTimeout) {
         clearTimeout(window.feeCalcTimeout)
       }
