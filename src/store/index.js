@@ -292,7 +292,7 @@ const store = {
         })
 
         // If there are more messages to retrieve, go for'em
-        if (count > transactions.length) {
+        if (count > (offset + transactions.length)) {
           context.dispatch('loadChats', {
             height,
             offset: offset + transactions.length
