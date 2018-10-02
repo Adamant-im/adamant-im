@@ -52,7 +52,7 @@
           <md-layout md-flex="80" md-flex-xsmall="75" class="text_block" v-if="!readOnly">
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
-                  <md-textarea ref="messageField" v-model="message" @keydown.native="kp($event)" @focus="focusHandler" @blur.native="blurHandler"></md-textarea>
+                  <md-textarea ref="messageField" v-model="message" @keyup.native="keyUpHandle($event)" @keydown.native="kp($event)" @focus="focusHandler" @blur.native="blurHandler"></md-textarea>
                   <span v-if="message_fee" class="md-count">{{ $t('chats.estimate_fee') }}: {{message_fee}}</span>
               </md-input-container>
           </md-layout>
@@ -101,6 +101,11 @@ export default {
           var form = document.getElementsByClassName('message_form')[0]
           form.style.position = 'absolute'
         }
+      }
+    },
+    keyUpHandle: function (event) {
+      if (event.srcElement.value.trim() === '') {
+        this.message = null
       }
     },
     kp: function (event) {
