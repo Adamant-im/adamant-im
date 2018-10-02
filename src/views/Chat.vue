@@ -166,6 +166,7 @@ export default {
     gotochats () {
       this.$store.commit('leave_chat')
       this.$router.push({ name: 'Chats' })
+      this.$refs.chatsSnackbar.close()
     },
     send () {
       this.$refs.messageField.$el.focus()
