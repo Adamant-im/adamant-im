@@ -75,6 +75,7 @@
 <script>
 import ChatEntry from '@/components/chat/ChatEntry.vue'
 import { Cryptos } from '../lib/constants'
+import {updateLastChatMessage} from '../store'
 
 export default {
   name: 'chats',

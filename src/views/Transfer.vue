@@ -70,6 +70,15 @@ import Spinner from '@/components/Spinner.vue'
 import validateAddress from '../lib/validateAddress'
 import { Cryptos, CryptoAmountPrecision, Fees, isErc20 } from '../lib/constants'
 import { sendTokens, sendMessage } from '../lib/adamant-api'
+import Queue from 'promise-queue'
+import Vue from 'vue'
+import utils from '../lib/adamant'
+import {replaceMessageAndDelete, updateLastChatMessage} from '../store'
+
+var maxConcurrent = 1
+var maxQueue = Infinity
+Queue.configure(window.Promise)
+var queue = new Queue(maxConcurrent, maxQueue)
 
 export default {
   name: 'home',
@@ -119,14 +128,44 @@ export default {
     sendTokens () {
       if (this.crypto === Cryptos.ADM) {
         const message = { to: this.targetAddress, message: this.comments, amount: this.targetAmount, fundType: this.crypto }
-        console.log('add message to queue pre-dispathed')
-        this.$store.dispatch('add_message_to_funds_queue', message)
-        console.log('add message to queue pre-dispathed')
-        // TODO uncomment
-        // const promise = (this.comments && this.fixedAddress)
-        //   ? sendMessage(message)
-        //   : sendTokens(this.targetAddress, this.targetAmount)
-        // return promise.then(result => result.transactionId)
+        let chats = this.$store.getters.getChats
+        const partner = message.to
+        const partnerTransactionsCount = (this.$store.getters['adm/partnerTransactions'](partner)).length
+        let handledPayload = {
+          ...message,
+          // TODO need fix immediately
+          amount: message.amount * 100000000,
+          timestamp: utils.epochTime(),
+          message: message.message,
+          direction: 'from',
+          confirm_class: 'sent',
+          id: this.$store.getters.getCurrentChatMessageCount + partnerTransactionsCount + 1,
+        }
+        let currentDialogs = chats[partner]
+        if (handledPayload.message === '') {
+          handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
+          updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', handledPayload.id)
+          handledPayload.message = ''
+        } else {
+          updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', handledPayload.id)
+        }
+        Vue.set(chats[partner].messages, handledPayload.id, handledPayload)
+        const promise = (this.comments && this.fixedAddress)
+          ? sendMessage(message)
+          : sendTokens(this.targetAddress, this.targetAmount)
+        return promise.then(response => {
+          console.log('send funds response', response)
+          if (response.success) {
+            replaceMessageAndDelete(chats[partner].messages, response.transactionId, handledPayload.id, 'sent')
+            handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
+            updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', response.transactionId)
+          } else {
+            changeMessageClass(chats[partner].messages, payload.id, 'rejected')
+            handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
+            updateLastChatMessage(currentDialogs, handledPayload, 'rejected', 'from', message.id)
+          }
+          return response.transactionId
+        })
       } else {
         return this.$store.dispatch(this.crypto.toLowerCase() + '/sendTokens', {
           amount: this.targetAmount,
