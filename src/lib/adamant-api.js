@@ -1,6 +1,14 @@
+import Queue from 'promise-queue'
+
 import { Transactions, Delegates } from './constants'
 import utils from './adamant'
 import client from './adamant-api-client'
+import renderMarkdown from './markdown'
+
+Queue.configure(Promise)
+
+/** Promises queue to execute them sequentially */
+const queue = new Queue(1, Infinity)
 
 /** @type {{privateKey: Buffer, publicKey: Buffer}} */
 let myKeypair = { }
@@ -312,4 +320,103 @@ export function getTransaction (id) {
       return client.get('/api/transactions/unconfirmed/get', query)
     })
     .then(response => response.transaction || null)
+}
+
+/**
+ * Retrieves chat messages for the current account.
+ * @param {number} from fetch messages starting from the specified height
+ * @param {number} offset offset (defaults to 0)
+ * @returns {Promise<{count: number, transactions: Array}>}
+ */
+export function getChats (from = 0, offset = 0) {
+  const params = {
+    isIn: myAddress,
+    orderBy: 'timestamp:desc'
+  }
+
+  if (from) {
+    params.fromHeight = from
+  }
+
+  if (offset) {
+    params.offset = offset
+  }
+
+  return client.get('/api/chats/get/', params).then(response => {
+    const { count, transactions } = response
+
+    const promises = transactions.map(transaction => {
+      const promise = (transaction.recipientId === myAddress)
+        ? Promise.resolve(myKeypair.publicKey)
+        : queue.add(() => getPublicKey(transaction.recipientId))
+
+      return promise
+        .then(key => decodeChat(transaction, key))
+        .catch(err => console.warn('Failed to parse chat message', { transaction, err }))
+    })
+
+    return Promise.all(promises).then(decoded => ({
+      count,
+      transactions: decoded
+    }))
+  })
+}
+
+/**
+ * Decodes chat transaction message setting the `message` property of the `transaction`. If the message is a
+ * pre-defined I18N-one, `isI18n` property is also set to `true`.
+ * @param {{senderId: string, asset: object}} transaction chat transaction
+ * @param {Buffer} key sender public key
+ * @returns {{senderId: string, asset: object, message: any, isI18n: boolean}}
+ */
+function decodeChat (transaction, key) {
+  const chat = transaction.asset.chat
+  const message = utils.decodeMessage(chat.message, key, myKeypair.privateKey, chat.own_message)
+
+  if (chat.type === 2) {
+    // So-called rich-text messages of type 2 are actually JSON objects
+    transaction.message = JSON.parse(message)
+  } else {
+    // Text message may actually be an internationalizable auto-generated message (we used to have those
+    // at the beginning)
+    const i18nMsg = getI18nMessage(message, transaction.senderId)
+    if (i18nMsg) {
+      // Yeap, that's a i18n one
+      transaction.message = i18nMsg
+      transaction.isI18n = true
+    } else {
+      transaction.message = renderMarkdown(message)
+    }
+  }
+
+  return transaction
+}
+
+/**
+ * Checks if the specified `message` is an auto-generated i18n message. If it is, its respective i18n code is returned.
+ * Otherwise returns an empty string.
+ * @param {string} message message to check
+ * @param {string} senderId message sender address
+ * @returns {string}
+ */
+function getI18nMessage (message, senderId) {
+  // At the beginning of the project we used to send auto-generated welcome messages to the new users.
+  // These messages have i18n codes as their content and known senders listed below.
+  // P.S. I hate this function, but there's no way to get rid of it now.
+
+  const isI18n =
+    (message.indexOf('chats.welcome_message') > -1 && senderId === 'U15423595369615486571') ||
+    (message.indexOf('chats.preico_message') > -1 && senderId === 'U7047165086065693428') ||
+    (message.indexOf('chats.ico_message') > -1 && senderId === 'U7047165086065693428')
+
+  if (isI18n) {
+    if (senderId === 'U15423595369615486571') {
+      return 'chats.welcome_message'
+    }
+    if (senderId === 'U7047165086065693428') {
+      return 'chats.ico_message'
+    }
+  }
+
+  return ''
 }

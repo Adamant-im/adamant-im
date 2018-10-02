@@ -271,6 +271,34 @@ const store = {
           return Promise.reject(error)
         }
       )
+    },
+    /**
+     * Retrieve the chat messages for the current account.
+     * @param {any} context action context
+     * @param {{height: number, offset: number}} payload height and offset
+     */
+    loadChats (context, payload) {
+      const height = payload.height || context.state.lastChatHeight || 0
+      const offset = payload.offset || 0
+
+      admApi.getChats(height, offset).then(result => {
+        const { count, transactions } = result
+
+        // Add the received chat messages to the store
+        transactions.forEach(tx => {
+          if (!tx) return
+          const mutation = tx.isI18n ? 'add_chat_i18n_message' : 'add_chat_message'
+          context.commit(mutation, tx)
+        })
+
+        // If there are more messages to retrieve, go for'em
+        if (count > transactions.length) {
+          context.dispatch('loadChats', {
+            height,
+            offset: offset + transactions.length
+          })
+        }
+      })
     }
   },
   mutations: {
