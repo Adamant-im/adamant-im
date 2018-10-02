@@ -1,6 +1,6 @@
 <template>
   <div class='nodes'>
-    <md-table v-once>
+    <md-table>
       <md-table-header>
         <md-table-row>
           <md-table-head width='100px'>{{ $t('nodes.active') }}</md-table-head>
@@ -10,21 +10,23 @@
       </md-table-header>
 
       <md-table-body>
-        <md-table-row v-for="(node, key) in nodes" :key="key">
-          <md-table-cell>
-            <md-checkbox v-model="node.active" @change="toggle(node)" />
-          </md-table-cell>
-          <md-table-cell>
-            <span>{{ node.url }}</span>
-          </md-table-cell>
-          <md-table-cell>
-            {{ !node.active
-              ? $t('nodes.inactive')
-              : !node.online
-                ? $t('nodes.offline')
-                : (node.ping + ' ' + $t('nodes.ms')) }}
-          </md-table-cell>
-        </md-table-row>
+        <template v-for="node in nodes">
+          <md-table-row :key="node.url">
+            <md-table-cell>
+              <md-checkbox v-model="node.active" @change="toggle(node)" />
+            </md-table-cell>
+            <md-table-cell>
+              <span>{{ node.url }}</span>
+            </md-table-cell>
+            <md-table-cell>
+              {{ !node.active
+                ? $t('nodes.inactive')
+                : !node.online
+                  ? $t('nodes.offline')
+                  : (node.ping + ' ' + $t('nodes.ms')) }}
+            </md-table-cell>
+          </md-table-row>
+        </template>
       </md-table-body>
     </md-table>
 
@@ -33,12 +35,11 @@
         {{ $t('nodes.fastest_title') }}
       </md-checkbox>
     </div>
+
   </div>
 </template>
 
 <script>
-
-import { mapGetters } from 'vuex'
 
 export default {
   name: 'nodes',
@@ -58,15 +59,15 @@ export default {
   methods: {
     toggle (node) {
       this.$store.dispatch('nodes/toggle', {
-        id: node.id,
+        url: node.url,
         active: !node.active
       })
     }
   },
   computed: {
-    ...mapGetters({
-      nodes: 'nodes/list'
-    })
+    nodes () {
+      return this.$store.getters['nodes/list']
+    }
   },
   watch: {
     preferFastestNode (to, from) {

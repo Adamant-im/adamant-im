@@ -1,5 +1,5 @@
 export default {
   list (state) {
-    return state.list
+    return Object.values(state.list)
   }
 }

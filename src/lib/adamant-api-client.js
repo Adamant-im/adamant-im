@@ -252,7 +252,7 @@ class ApiClient {
    * @param {Boolean} active set node active or not
    */
   toggleNode (url, active) {
-    const node = this._nodes.find(x => x.id === url)
+    const node = this._nodes.find(x => x.url === url)
     if (node) {
       node.active = active
     }
