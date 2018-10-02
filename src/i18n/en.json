@@ -19,7 +19,8 @@
     "device_unsupported": "Your device is not supported",
     "subheader": "A top-notch anonymous messenger encrypted with a Blockchain",
     "create_address_label": "Or create a new anonymous address:",
-    "scan_qr_code_button_tooltip": "Scan QR with passphrase via device Camera"
+    "scan_qr_code_button_tooltip": "Scan QR with passphrase via device Camera",
+    "scan_qr_code_from_image_button_tooltip": "Scan QR with passphrase from saved image"
   },
   "options": {
     "version": "App Version: ",
@@ -47,6 +48,7 @@
   "chats": {
     "new_chat": "Start new Chat",
     "scan_recipient_button": "Scan",
+    "scan_recipient_from_image_button": "Scan from image",
     "new_chat_tooltip": "Click to start a chat with new interlocutor",
     "no_money": "Not enough funds. Top up your balance.",
     "no_empty": "Message can't be empty",
@@ -175,6 +177,7 @@
     },
     "new-chat": {
       "modal_header": "Scan QR code with ADM address"
-    }
+    },
+    "no_qr_code_found_in_image_text" : "No QR code found, please select another image"
   }
 }
