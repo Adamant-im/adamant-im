@@ -509,6 +509,9 @@ const store = {
     },
     isLogged: state => {
       return state.passPhrase.length > 0
+    },
+    sendOnEnter: state => {
+      return state.sendOnEnter
     }
   },
   modules: {
