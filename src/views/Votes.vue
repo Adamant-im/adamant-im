@@ -199,8 +199,7 @@ export default {
         this.votesErrorMsg = this.$t('votes.no_money')
         this.$refs.votesSnackbar.open()
       } else {
-        let votes = Array.concat(this.delegates.filter(x => x.downvoted).map(x => `-${x.publicKey}`),
-          this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
+        let votes = (this.delegates.filter(x => x.downvoted).map(x => `-${x.publicKey}`)).concat(this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
         this.$store.dispatch('delegates/voteForDelegates', { votes: votes, address: this.$store.state.address })
       }
     },
