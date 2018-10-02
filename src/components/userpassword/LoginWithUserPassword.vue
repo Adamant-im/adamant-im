@@ -69,9 +69,9 @@ export default {
               decryptData(encryptedCommonItem.value).then((decryptedCommonItem) => {
                 try {
                   let state = JSON.parse(decryptedCommonItem)
+                  this.showSpinnerFlag = true
                   this.$store.commit('set_state', state)
                   getChatItem(db).then((encryptedChats) => {
-                    this.showSpinnerFlag = true
                     encryptedChats.forEach((chat) => {
                       decryptData(chat.value).then((decryptedChat) => {
                         Vue.set(this.$store.getters.getChats, chat.name, JSON.parse(decryptedChat))

@@ -72,7 +72,7 @@ export default function storeData () {
       this.$store.commit('force_update')
     }
     store.subscribe((mutation, state) => {
-      if (sessionStorage.getItem('storeInLocalStorage') === 'true') {
+      if (sessionStorage.getItem('storeInLocalStorage') === 'true' && sessionStorage.getItem('userPassword')) {
         getAdmDataBase().then((db) => {
           let copyState = Object.assign({}, state)
           // Save contacts
