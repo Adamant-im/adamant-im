@@ -347,7 +347,7 @@ export function getChats (from = 0, offset = 0) {
 
     const promises = transactions.map(transaction => {
       const promise = (transaction.recipientId === myAddress)
-        ? Promise.resolve(myKeypair.publicKey)
+        ? Promise.resolve(transaction.senderPublicKey)
         : queue.add(() => getPublicKey(transaction.recipientId))
 
       return promise

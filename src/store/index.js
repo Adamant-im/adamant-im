@@ -277,28 +277,53 @@ const store = {
      * @param {any} context action context
      * @param {{height: number, offset: number}} payload height and offset
      */
-    loadChats (context, payload) {
+    loadChats (context, payload = { }) {
       const height = payload.height || context.state.lastChatHeight || 0
       const offset = payload.offset || 0
 
-      admApi.getChats(height, offset).then(result => {
-        const { count, transactions } = result
+      context.commit('ajax_start')
+      admApi.getChats(height, offset).then(
+        result => {
+          context.commit('ajax_end')
 
-        // Add the received chat messages to the store
-        transactions.forEach(tx => {
-          if (!tx) return
-          const mutation = tx.isI18n ? 'add_chat_i18n_message' : 'add_chat_message'
-          context.commit(mutation, tx)
-        })
+          const { count, transactions } = result
 
-        // If there are more messages to retrieve, go for'em
-        if (count > (offset + transactions.length)) {
-          context.dispatch('loadChats', {
-            height,
-            offset: offset + transactions.length
+          // Add the received chat messages to the store
+          transactions.forEach(tx => {
+            if (!tx) return
+            const mutation = tx.isI18n ? 'add_chat_i18n_message' : 'add_chat_message'
+            context.commit(mutation, tx)
+            context.commit('set_last_chat_height', tx.height)
           })
+
+          // If there are more messages to retrieve, go for'em
+          if (count > (offset + transactions.length)) {
+            context.dispatch('loadChats', {
+              height,
+              offset: offset + transactions.length
+            })
+          } else {
+            context.commit('have_loaded_chats')
+          }
+        },
+        error => {
+          console.warn('Failed to retrieve chat messages', { height, offset, error })
+          context.commit('ajax_end_with_error')
         }
-      })
+      )
+    },
+    /**
+     * Updates current application status: balance, chat messages, transactions and so on
+     * @param {any} context Vuex action context
+     */
+    update (context) {
+      if (context.getters.getPassPhrase && !context.state.ajaxIsOngoing) {
+        context.dispatch('updateAccount')
+        context.commit('start_tracking_new')
+        context.dispatch('loadChats')
+        // TODO: Remove this, when it will be possible to fetch transactions together with the chat messages
+        context.dispatch('adm/getNewTransactions')
+      }
     }
   },
   mutations: {
@@ -386,10 +411,7 @@ const store = {
     },
     mark_as_read (state, payload) {
       if (state.newChats[payload]) {
-        // var wasNew = parseInt(state.newChats[payload])
         Vue.set(state.newChats, payload, 0)
-        // var newTotal = parseInt(state.newChats['total']) - wasNew
-        // Vue.set(state.newChats, 'total', newTotal)
       }
     },
     login (state, payload) {
@@ -402,10 +424,6 @@ const store = {
         state.is_new_account = payload.is_new_account
       }
     },
-    // transaction_info (state, payload) {
-    //   payload.direction = (state.address === payload.recipientId) ? 'to' : 'from'
-    //   Vue.set(state.transactions, payload.id, payload)
-    // },
     connect (state, payload) {
       state.connectionString = payload.string
     },
@@ -450,11 +468,6 @@ const store = {
         state.lastChatHeight = payload
       }
     },
-    // set_last_transaction_height (state, payload) {
-    //   if (state.lastTransactionHeight < payload) {
-    //     state.lastTransactionHeight = payload
-    //   }
-    // },
     add_chat_message (state, payload) {
       var me = state.address
       var partner = ''
@@ -488,7 +501,6 @@ const store = {
         if (state.notifySound) {
           try {
             window.audio.playSound('newMessageNotification')
-            // document.getElementById('messageSound').play()
           } catch (e) {
           }
         }

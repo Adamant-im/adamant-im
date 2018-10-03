@@ -165,15 +165,6 @@ export default {
         },
         errorFunction
       )
-
-      // this.getAccountByPassPhrase(this.passPhrase, function (context) {
-      //   this.$store.dispatch('afterLogin', this.passPhrase)
-      //   this.$root._router.push('/chats/')
-      //   this.loadChats(true)
-      //   this.$store.commit('mock_messages')
-      //   this.$store.commit('stop_tracking_new')
-      //   this.showSpinner = false
-      // }, errorFunction)
     },
     'handleSuccess': function (e) {
       this.snackbar = true
