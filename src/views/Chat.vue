@@ -52,7 +52,7 @@
           <md-layout md-flex="80" md-flex-xsmall="75" class="text_block" v-if="!readOnly">
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
-                  <md-textarea ref="messageField" v-model="message" @keyup.native="keyUpHandle($event)" @keydown.native="kp($event)" @focus="focusHandler" @blur.native="blurHandler"></md-textarea>
+                  <md-textarea ref="messageField" v-model="message" @keydown.native="kp($event)" @focus="focusHandler" @blur.native="blurHandler"></md-textarea>
                   <span v-if="message_fee" class="md-count">{{ $t('chats.estimate_fee') }}: {{message_fee}}</span>
               </md-input-container>
           </md-layout>
@@ -103,12 +103,31 @@ export default {
         }
       }
     },
-    keyUpHandle: function (event) {
-      if (event.srcElement.value.trim() === '') {
-        this.message = null
-      }
-    },
     kp: function (event) {
+      let value = event.srcElement.value
+      if (this.$store.getters.sendOnEnter) {
+        if (!event.ctrlKey && event.keyCode === 13) {
+          event.preventDefault()
+        }
+        if (event.ctrlKey && event.keyCode === 13) {
+          this.message = this.message === null ? '' + '\n' : this.message + '\n'
+          return
+        }
+        if (event.keyCode === 13 && value === '') {
+          this.message = null
+          this.errorMessage('no_empty')
+          event.preventDefault()
+          return
+        }
+        if (event.keyCode === 13 && value.trim() === '') {
+          this.errorMessage('no_empty')
+          event.preventDefault()
+        }
+      } else {
+        if (event.ctrlKey && event.keyCode === 13 && value.trim() === '') {
+          this.errorMessage('no_empty')
+        }
+      }
       if (/iP(hone|od|ad)/.test(navigator.platform)) {
         var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/)
         if (parseInt(v[1], 10) === 11) {
@@ -129,11 +148,11 @@ export default {
           body.style.overflow = 'hidden'
         }
       }
-      if (this.$store.state.sendOnEnter && event.key === 'Enter' && !event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) {
+      if (this.$store.state.sendOnEnter && event.key === 'Enter' && !event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey && event.srcElement.value.trim() !== '') {
         this.send()
       }
       if (!this.$store.state.sendOnEnter) {
-        if ((event.key === 'Enter' && event.ctrlKey) || (event.metaKey === true && event.key === 'Enter')) {
+        if (((event.key === 'Enter' && event.ctrlKey) || (event.metaKey === true && event.key === 'Enter')) && event.srcElement.value.trim() !== '') {
           this.send()
         }
       }
@@ -151,6 +170,7 @@ export default {
     gotochats () {
       this.$store.commit('leave_chat')
       this.$router.push({ name: 'Chats' })
+      this.$refs.chatsSnackbar.close()
     },
     send () {
       this.$refs.messageField.$el.focus()
@@ -247,6 +267,9 @@ export default {
   },
   watch: {
     message: function (value) {
+      if (!value) {
+        value = 0
+      }
       if (window.feeCalcTimeout) {
         clearTimeout(window.feeCalcTimeout)
       }
