@@ -113,6 +113,7 @@ export default {
         if (event.keyCode === 13 && value === '') {
           this.message = null
           this.errorMessage('no_empty')
+          event.preventDefault()
           return
         }
         if (event.keyCode === 13 && value.trim() === '') {
