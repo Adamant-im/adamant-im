@@ -71,31 +71,67 @@ export default function storeData () {
     window.onbeforeunload = function () {
       this.$store.commit('force_update')
     }
+    let lastChatUpdateTime = 0
     store.subscribe((mutation, state) => {
       if (sessionStorage.getItem('storeInLocalStorage') === 'true' && sessionStorage.getItem('userPassword')) {
         getAdmDataBase().then((db) => {
           let copyState = Object.assign({}, state)
-          // Save contacts
-          const contacts = copyState.partners
-          encryptData(JSON.stringify(contacts)).then((encryptedContacts) => {
-            updateContactItem(db, encryptedContacts)
-          })
-          // Save chats
-          const chats = copyState.chats
-          for (let chat in chats) {
-            if (chats.hasOwnProperty(chat)) {
-              encryptData(JSON.stringify(chats[chat])).then((encryptedChat) => {
-                updateChatItem(db, chat, encryptedChat)
-              })
+          if (mutation.type === 'partners/contactList') {
+            // Save contacts
+            const contacts = copyState.partners
+            encryptData(JSON.stringify(contacts)).then((encryptedContacts) => {
+              updateContactItem(db, encryptedContacts)
+            })
+          }
+          if (mutation.type === 'add_chat_message') {
+            // Save chats
+            if (lastChatUpdateTime > 0 && new Date().getTime() - lastChatUpdateTime > 1000) {
+              lastChatUpdateTime = new Date().getTime()
+              const chats = copyState.chats
+              for (let chat in chats) {
+                if (chats.hasOwnProperty(chat) && chat === 'recipientId') {
+                  encryptData(JSON.stringify(chats[chat])).then((encryptedChat) => {
+                    updateChatItem(db, chat, encryptedChat)
+                  })
+                }
+              }
+            } else {
+              lastChatUpdateTime = new Date().getTime()
             }
           }
-          // Exclude contact list, chats, passphrase from common store
-          delete copyState.partners
-          delete copyState.chats
-          delete copyState.passPhrase
-          encryptData(JSON.stringify(copyState)).then((encryptedCommonData) => {
-            updateCommonItem(db, encryptedCommonData)
-          })
+          let storeNow = false
+          if (mutation.type === 'change_lang') {
+            storeNow = true
+          } else if (mutation.type === 'change_notify_sound') {
+            storeNow = true
+          } else if (mutation.type === 'change_notify_bar') {
+            storeNow = true
+          } else if (mutation.type === 'change_notify_desktop') {
+            storeNow = true
+          } else if (mutation.type === 'change_send_on_enter') {
+            storeNow = true
+          } else if (mutation.type === 'logout') {
+            storeNow = true
+          } else if (mutation.type === 'save_passphrase') {
+            storeNow = true
+          } else if (mutation.type === 'force_update') {
+            storeNow = true
+          } else if (mutation.type === 'change_partner_name') {
+            storeNow = true
+          } else if (mutation.type === 'leave_chat') {
+            storeNow = true
+          } else if (mutation.type === 'ajax_start' || mutation.type === 'ajax_end' || mutation.type === 'ajax_end_with_error' || mutation.type === 'start_tracking_new' || mutation.type === 'have_loaded_chats' || mutation.type === 'connect' || mutation.type === 'login') {
+            return
+          }
+          if (storeNow) {
+            // Exclude contact list, chats, passphrase from common store
+            delete copyState.partners
+            delete copyState.chats
+            delete copyState.passPhrase
+            encryptData(JSON.stringify(copyState)).then((encryptedCommonData) => {
+              updateCommonItem(db, encryptedCommonData)
+            })
+          }
         })
       } else {
         let storeNow = false
