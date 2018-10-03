@@ -3,9 +3,7 @@ import {
   encryptData,
   getAdmDataBase,
   updateChatItem,
-  updateCommonItem, updateContactItem,
-  updatePassPhrase,
-  updateUserPassword
+  updateCommonItem, updateContactItem
 } from './indexedDb'
 
 export default function storeData () {
@@ -23,7 +21,6 @@ export default function storeData () {
       return supported
     }
     var lsStorage = false
-    var gsStorage = false
     if (localStorageAvailable()) {
       lsStorage = window.localStorage
     }
