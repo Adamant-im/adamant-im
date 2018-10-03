@@ -106,6 +106,9 @@ export default {
     kp: function (event) {
       let value = event.srcElement.value
       if (this.$store.getters.sendOnEnter) {
+        if (!event.ctrlKey && event.keyCode === 13) {
+          event.preventDefault()
+        }
         if (event.ctrlKey && event.keyCode === 13) {
           this.message = this.message === null ? '' + '\n' : this.message + '\n'
           return
