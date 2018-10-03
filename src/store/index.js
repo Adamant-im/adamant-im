@@ -168,6 +168,9 @@ const store = {
       commit('login', account)
     },
     add_message_to_queue ({ getters }, payload) {
+      if (payload.message === undefined || payload.message.trim() === '') {
+        return
+      }
       let chats = getters.getChats
       const partner = payload.recipientId
       payload = {
@@ -538,6 +541,9 @@ const store = {
     },
     isLogged: state => {
       return state.passPhrase.length > 0
+    },
+    sendOnEnter: state => {
+      return state.sendOnEnter
     },
     getUserPassword: state => {
       const userPassword = sessionStorage.getItem('userPassword')

@@ -104,6 +104,30 @@ export default {
       }
     },
     kp: function (event) {
+      let value = event.srcElement.value
+      if (this.$store.getters.sendOnEnter) {
+        if (!event.ctrlKey && event.keyCode === 13) {
+          event.preventDefault()
+        }
+        if (event.ctrlKey && event.keyCode === 13) {
+          this.message = this.message === null ? '' + '\n' : this.message + '\n'
+          return
+        }
+        if (event.keyCode === 13 && value === '') {
+          this.message = null
+          this.errorMessage('no_empty')
+          event.preventDefault()
+          return
+        }
+        if (event.keyCode === 13 && value.trim() === '') {
+          this.errorMessage('no_empty')
+          event.preventDefault()
+        }
+      } else {
+        if (event.ctrlKey && event.keyCode === 13 && value.trim() === '') {
+          this.errorMessage('no_empty')
+        }
+      }
       if (/iP(hone|od|ad)/.test(navigator.platform)) {
         var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/)
         if (parseInt(v[1], 10) === 11) {
@@ -124,11 +148,11 @@ export default {
           body.style.overflow = 'hidden'
         }
       }
-      if (this.$store.state.sendOnEnter && event.key === 'Enter' && !event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) {
+      if (this.$store.state.sendOnEnter && event.key === 'Enter' && !event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey && event.srcElement.value.trim() !== '') {
         this.send()
       }
       if (!this.$store.state.sendOnEnter) {
-        if ((event.key === 'Enter' && event.ctrlKey) || (event.metaKey === true && event.key === 'Enter')) {
+        if (((event.key === 'Enter' && event.ctrlKey) || (event.metaKey === true && event.key === 'Enter')) && event.srcElement.value.trim() !== '') {
           this.send()
         }
       }
@@ -146,6 +170,7 @@ export default {
     gotochats () {
       this.$store.commit('leave_chat')
       this.$router.push({ name: 'Chats' })
+      this.$refs.chatsSnackbar.close()
     },
     send () {
       this.$refs.messageField.$el.focus()
@@ -242,6 +267,9 @@ export default {
   },
   watch: {
     message: function (value) {
+      if (!value) {
+        value = 0
+      }
       if (window.feeCalcTimeout) {
         clearTimeout(window.feeCalcTimeout)
       }
