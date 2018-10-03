@@ -12,7 +12,10 @@
           <md-layout md-flex="66" sm-flex="90" style="margin-top: 10px;">
             <md-layout md-align="center" md-gutter="16">
               <md-button class="md-raised" :title="$t('chats.new_chat_tooltip')" @click="send">{{ $t('chats.new_chat') }}</md-button>
-              <md-button class="md-raised" @click="scanQRCode">{{ $t('chats.scan_recipient_button') }}</md-button>
+            </md-layout>
+            <md-layout md-align="center" md-gutter="16">
+              <md-button class="md-raised" @click="showQrScanModal = true">{{ $t('chats.scan_recipient_button') }}</md-button>
+              <md-button class="md-raised" @click="showQrFileScanModal = true">{{ $t('chats.scan_recipient_from_image_button') }}</md-button>
             </md-layout>
           </md-layout>
         </md-layout>
@@ -21,22 +24,22 @@
         </md-snackbar>
       </md-dialog-content>
     </md-dialog>
-    <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="saveTargetAddress"/>
+    <QRScan v-if="showQrScanModal" :modal="showQrScanModal" @hide-modal="showQrScanModal = false" @code-grabbed="saveTargetAddress"/>
+    <QRFileScan v-if="showQrFileScanModal" :modal="showQrFileScanModal" @hide-modal="showQrFileScanModal = false" @code-grabbed="saveTargetAddress"/>
   </div>
 </template>
 
 <script>
 import QRScan from '@/components/QRScan'
+import QRFileScan from '@/components/QRFileScan'
 export default {
   name: 'new-chat',
   components: {
-    QRScan
+    QRScan,
+    QRFileScan
   },
   props: ['openFrom', 'closeTo'],
   methods: {
-    scanQRCode () {
-      this.showModal = true
-    },
     saveTargetAddress (payload) {
       if (payload.match(/U\d*/)) {
         this.targetAddress = payload.match(/U\d*/)[0]
@@ -95,7 +98,8 @@ export default {
       formErrorMessage: '',
       targetAddress: '',
       targetLabel: '',
-      showModal: false,
+      showQrScanModal: false,
+      showQrFileScanModal: false,
       isLogged: false
     }
   }
