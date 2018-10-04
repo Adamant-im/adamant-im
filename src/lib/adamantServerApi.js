@@ -349,6 +349,11 @@ function install (Vue) {
     }
     queryString += '&orderBy=timestamp:desc'
     axios.get(queryString).then(response => {
+      if(this.$store.state.address.length === 0) {
+        this.$store.commit('logout')
+        return
+      }
+
       var haveSubseqs = false
       if (response.data.success) {
         for (var i in response.data.transactions) {
