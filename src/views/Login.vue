@@ -48,16 +48,6 @@
             </md-button>
 
           </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
-            <p v-if="message">{{message}}</p>
-            <p>
-              <a href="#"
-                 @click.prevent="downloadQRCode"
-                 v-if="showQRCode">
-                <qr-code :text="passPhrase" ref="qrCode"></qr-code>
-              </a>
-            </p>
-          </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top:30px">
               <md-layout md-align="center" md-gutter="16">
                   <p style="font-weight: 300;margin-bottom: 10px;">{{$t('login.create_address_label')}}</p>
@@ -75,6 +65,7 @@
               <md-input-container>
                   <label v-html="$t('login.new_password_label')"></label>
                   <md-textarea v-bind:value="yourPassPhrase" readonly></md-textarea>
+                  <Icon name="qrCode" v-on:click.native="showQrSaveModal = true" class="qr-material-button" :title="$t('login.save_qr_button_tooltip')" />
                   <md-icon v-clipboard="yourPassPhrase"  @success="copySuccess" style="cursor:pointer;z-index:20;" :title="$t('login.copy_button_tooltip')">content_copy</md-icon>
                   <md-icon v-if=!iOS v-on:click.native="saveFile" style="cursor:pointer;z-index:20;" :title="$t('login.save_button_tooltip')">archive</md-icon>
 
@@ -90,17 +81,17 @@
           <span>{{ $t('home.copied') }}</span>
       </md-snackbar>
     <QRScan v-if="showQrScanModal" :modal="showQrScanModal" @hide-modal="showQrScanModal = false" @code-grabbed="savePassPhrase"/>
-    <QRFileScan v-if="showQrFileScanModal" :modal="showQrFileScanModal" @hide-modal="showQrFileScanModal = false" @code-grabbed="savePassPhrase"/>
+    <QRFileScan v-if="showQrFileScanModal" @hide-modal="showQrFileScanModal = false" @code-grabbed="savePassPhrase"/>
+    <QRSave v-if="showQrSaveModal" :text="yourPassPhrase" @hide-modal="showQrSaveModal = false"/>
     <Spinner v-if="showSpinnerFlag"></Spinner>
   </div>
 </template>
 
 <script>
-import b64toBlob from 'b64-to-blob'
-import FileSaver from 'file-saver'
 import Icon from '@/components/Icon'
 import QRScan from '@/components/QRScan'
 import QRFileScan from '@/components/QRFileScan'
+import QRSave from '@/components/QRSave'
 import Spinner from '../components/Spinner'
 import i18n from '../i18n'
 
@@ -110,6 +101,7 @@ export default {
     Icon,
     QRScan,
     QRFileScan,
+    QRSave,
     Spinner
   },
   methods: {
@@ -131,23 +123,6 @@ export default {
     },
     snackOpen () {
       this.$refs.snackbar.open()
-    },
-    downloadQRCode () {
-      const imgUrl = this.$refs.qrCode.$el.querySelector('img').src
-      const base64Data = imgUrl.slice(22, imgUrl.length)
-      const byteCharacters = b64toBlob(base64Data)
-      const blob = new Blob([byteCharacters], {type: 'image/png'})
-
-      FileSaver.saveAs(blob, 'adamant-im.png')
-    },
-    saveQRCode () {
-      if (!this.passPhrase.length) {
-        this.message = 'Please enter passphrase first'
-        return
-      }
-
-      this.message = ''
-      this.showQRCode = true
     },
     savePassPhrase (payload) {
       this.passPhrase = payload
@@ -228,9 +203,9 @@ export default {
       language: this.$i18n.locale,
       showCreate: false,
       message: '',
-      showQRCode: false,
       showQrScanModal: false,
       showQrFileScanModal: false,
+      showQrSaveModal: false,
       showSpinnerFlag: false
     }
   }
@@ -485,5 +460,15 @@ a.create_link {
 }
 .between-buttons-text p {
   margin: 0;
+}
+.qr-material-button {
+  margin-top: 4px;
+  padding-top: 40px;
+  width: 24px;
+  cursor: pointer;
+  z-index: 1;
+}
+.qr-material-button svg g, .qr-material-button svg path {
+  fill: #757575;
 }
 </style>

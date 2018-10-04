@@ -41,6 +41,9 @@
                       </md-table-row>
                   </md-table-body>
               </md-table>
+              <div class="md-table md-theme-grey">
+                  <md-button class="save-qr-button" @click="showQrSaveModal = true">{{ $t('options.save_qr_button') }}</md-button>
+              </div>
           </md-card-content>
 
       </md-card>
@@ -108,14 +111,20 @@
     <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
       </div>
 
+      <QRSave v-if="showQrSaveModal" :text="$store.state.passPhrase" @hide-modal="showQrSaveModal = false"/>
+
   </div>
 </template>
 
 <script>
+import QRSave from '@/components/QRSave'
 import i18n from '../i18n'
 
 export default {
   name: 'settings',
+  components: {
+    QRSave
+  },
   computed: {
     languageList: function () {
       return i18n.messages
@@ -153,6 +162,7 @@ export default {
       sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
       notifyDesktop: this.$store.state.notifyDesktop,
+      showQrSaveModal: false,
       language: this.$i18n.locale
     }
   }
@@ -214,5 +224,17 @@ export default {
       .settings .version {
           right: 1rem;
       }
+  }
+  .save-qr-button {
+      text-align: left !important;
+      margin: 0 !important;
+      padding: 8px 6px !important;
+      border-radius: 0 !important;
+      text-transform: initial !important;
+      font-size: 16px !important;
+      font-weight: normal !important;
+  }
+  .save-qr-button:hover:not([disabled]):not(.md-raised) {
+      background: #eee !important;
   }
 </style>

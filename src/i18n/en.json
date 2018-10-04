@@ -8,6 +8,7 @@
   "error": "Error",
   "login": {
     "copy_button_tooltip": "Click to copy the passphrase to clipboard. Save it in a password keeper application. To enter your new Wallet, paste it the passphrase field.",
+    "save_qr_button_tooltip": "Click to save your passphrase as an QR code image on device. Save it in the secure place!",
     "save_button_tooltip": "Click to save your passphrase in a text file. Save it in the secure place!",
     "password_label": "Input your passphrase to login",
     "new_password_label": "<b>Save</b> the passphrase for new Wallet and Messenger account. There is no login to enter Wallet, only the passphrase needed. If lost, no way to recover it.",
@@ -43,6 +44,7 @@
     "delegate_name_input": "Enter delegate name",
     "delegate_register_button": "Register delegate",
     "vote_for_delegates_button": "Vote for delegates",
+    "save_qr_button": "Save QR code with passphrase",
     "already_delegate_text": "You are already a delegate. Your delegate name is"
   },
   "chats": {
@@ -180,5 +182,15 @@
     },
     "no_qr_code_found_in_image_text" : "No QR code found, please select another image",
     "or_text" : "Or"
+  },
+  "qr_save": {
+    "close_button": "Close",
+    "login": {
+      "modal_header": "QR with passphrase"
+    },
+    "settings": {
+      "modal_header": "QR with passphrase"
+    },
+    "how_to_save_text" : "Click on the image to save it"
   }
 }

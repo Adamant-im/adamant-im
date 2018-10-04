@@ -59,6 +59,7 @@
   },
   "login": {
     "copy_button_tooltip": "Klick hier, um die Passphrase in die Zwischenablage zu kopieren. Speicher diese in einer Passwort Manager Software. Um deine neue Wallet aufzurufen, füge deine Passphrase im Feld ein.",
+    "save_qr_button_tooltip": "Click to save your passphrase as an QR code image on device. Save it in the secure place!",
     "create_address_label": "Oder erstell dir eine neue anonyme Adresse:",
     "device_unsupported": "Dein Gerät wird nicht unterstützt",
     "invalid_passphrase": "Keine gültige Passphrase",
@@ -97,7 +98,8 @@
     "send_on_enter": "Send message on Enter",
     "send_on_enter_tooltip": "Nachricht senden bei ENTER",
     "version": "App Version: ",
-    "vote_for_delegates_button": "Vote for delegates"
+    "vote_for_delegates_button": "Vote for delegates",
+    "save_qr_button": "Save QR code with passphrase"
   },
   "region": "de-GER",
   "scan": {
@@ -111,6 +113,16 @@
     },
     "no_qr_code_found_in_image_text" : "No QR code found, please select another image",
     "or_text" : "Or"
+  },
+  "qr_save": {
+    "close_button": "Close",
+    "login": {
+      "modal_header": "QR with passphrase"
+    },
+    "settings": {
+      "modal_header": "QR with passphrase"
+    },
+    "how_to_save_text" : "Click on the image to save it"
   },
   "title": "Deutsch",
   "transaction": {
