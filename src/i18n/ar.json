@@ -29,6 +29,7 @@
     "recipient_tooltip": "أدخل اسم دخول المستقبل، مثل U1234567890",
     "retry_message": "Message was not sent, weak connection. Tap to retry.",
     "scan_recipient_button": "Scan",
+    "scan_recipient_from_image_button": "Scan from image",
     "send_adm": "Send ADM",
     "send_button": "Send",
     "send_button_tooltip": "Click to send a message",
@@ -69,6 +70,7 @@
     "password_label": "أدخل جملة المرور للدخول",
     "save_button_tooltip": "انقؤ لتحقظ جملة المرور في ملف، احفظه في مكان ’من",
     "scan_qr_code_button_tooltip": "Scan QR with passphrase via device Camera",
+    "scan_qr_code_from_image_button_tooltip": "Scan QR with passphrase from saved image",
     "subheader": "ميسنجر سري عالي المستوى مشفر بالبلوكشين"
   },
   "new_messages_1": "new message",
@@ -106,7 +108,9 @@
     },
     "new-chat": {
       "modal_header": "Scan QR code with ADM address"
-    }
+    },
+    "no_qr_code_found_in_image_text" : "No QR code found, please select another image",
+    "or_text" : "Or"
   },
   "title": "العربية",
   "transaction": {

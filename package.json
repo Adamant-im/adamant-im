@@ -28,6 +28,7 @@
     "marked": "^0.3.6",
     "material-design-icons-iconfont": "^3.0.3",
     "promise-queue": "^2.2.3",
+    "qrcode-reader": "^1.0.4",
     "register-service-worker": "^1.0.0",
     "simple-audio": "^1.0.1",
     "sodium-browserify-tweetnacl": "^0.2.3",
@@ -35,6 +36,7 @@
     "vue-clipboards": "^1.2.0",
     "vue-i18n": "^8.0.0",
     "vue-material": "^0.8.1",
+    "vue-picture-input": "^2.1.6",
     "vue-qrcode-component": "^2.1.1",
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.11.0",
@@ -94,6 +96,9 @@
       ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
       "^.+\\.jsx?$": "babel-jest"
     },
+    "transformIgnorePatterns": [
+      "node_modules/(?!vue-picture-input)"
+    ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
     },

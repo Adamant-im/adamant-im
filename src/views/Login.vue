@@ -26,17 +26,24 @@
                   <md-button class="md-raised md-short" @click="logme">{{ $t('login.login_button') }}</md-button>
               </md-layout>
           </md-layout>
+          <md-layout md-flex="100"
+                     md-flex-xsmall="100"
+                     md-align="center"
+                     class="between-buttons-text">
+              <p>{{$t('scan.or_text')}}</p>
+          </md-layout>
           <md-layout md-flex="66"
                      md-flex-xsmall="80"
                      md-align="center"
                      class="qr-code-buttons">
             <md-button classs="md-ripple md-disabled"
                        :title="$t('login.scan_qr_code_button_tooltip')"
-                       @click="scanQRCode">
+                       @click="showQrScanModal = true">
               <Icon name="qrCodeLense" />
             </md-button>
             <md-button classs="md-ripple md-disabled"
-                       @click.prevent="saveQRCode">
+                       :title="$t('login.scan_qr_code_from_image_button_tooltip')"
+                       @click="showQrFileScanModal = true">
               <Icon name="qrCode" />
             </md-button>
 
@@ -82,7 +89,8 @@
       <md-snackbar md-position="bottom center" md-accent ref="loginSnackbar" md-duration="2000">
           <span>{{ $t('home.copied') }}</span>
       </md-snackbar>
-    <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
+    <QRScan v-if="showQrScanModal" :modal="showQrScanModal" @hide-modal="showQrScanModal = false" @code-grabbed="savePassPhrase"/>
+    <QRFileScan v-if="showQrFileScanModal" :modal="showQrFileScanModal" @hide-modal="showQrFileScanModal = false" @code-grabbed="savePassPhrase"/>
     <Spinner v-if="showSpinnerFlag"></Spinner>
   </div>
 </template>
@@ -92,6 +100,7 @@ import b64toBlob from 'b64-to-blob'
 import FileSaver from 'file-saver'
 import Icon from '@/components/Icon'
 import QRScan from '@/components/QRScan'
+import QRFileScan from '@/components/QRFileScan'
 import Spinner from '../components/Spinner'
 import i18n from '../i18n'
 
@@ -100,6 +109,7 @@ export default {
   components: {
     Icon,
     QRScan,
+    QRFileScan,
     Spinner
   },
   methods: {
@@ -138,9 +148,6 @@ export default {
 
       this.message = ''
       this.showQRCode = true
-    },
-    scanQRCode () {
-      this.showModal = true
     },
     savePassPhrase (payload) {
       this.passPhrase = payload
@@ -222,7 +229,8 @@ export default {
       showCreate: false,
       message: '',
       showQRCode: false,
-      showModal: false,
+      showQrScanModal: false,
+      showQrFileScanModal: false,
       showSpinnerFlag: false
     }
   }
@@ -470,5 +478,12 @@ a.create_link {
     font-family:  'Exo 2'!important;
     letter-spacing: 0;
     margin-bottom: 40px;
+}
+.between-buttons-text {
+  padding: 5px 0;
+  font-size: 16px;
+}
+.between-buttons-text p {
+  margin: 0;
 }
 </style>
