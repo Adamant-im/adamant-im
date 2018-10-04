@@ -81,12 +81,13 @@ export default function storeData () {
             })
           }
           if (mutation.type === 'add_chat_message') {
+            console.log(mutation)
             // Save chats
             if (lastChatUpdateTime > 0 && new Date().getTime() - lastChatUpdateTime > 1000) {
               lastChatUpdateTime = new Date().getTime()
               const chats = copyState.chats
               for (let chat in chats) {
-                if (chats.hasOwnProperty(chat) && chat === 'recipientId') {
+                if (chats.hasOwnProperty(chat) && chat === mutation.payload.recipientId) {
                   encryptData(JSON.stringify(chats[chat])).then((encryptedChat) => {
                     updateChatItem(db, chat, encryptedChat)
                   })
