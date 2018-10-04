@@ -30,6 +30,7 @@
 import crypto from 'pbkdf2'
 import Vue from 'vue'
 import Spinner from '../Spinner'
+import {Base64} from 'js-base64'
 import { UserPasswordHashSettings } from '../../lib/constants'
 import {
   clearDb,
@@ -66,6 +67,8 @@ export default {
           getAdmDataBase().then((db) => {
             updateUserPassword(encodePassword)
             getCommonItem(db).then((encryptedCommonItem) => {
+              let chats = {}
+              let partners = null
               decryptData(encryptedCommonItem.value).then((decryptedCommonItem) => {
                 try {
                   let state = JSON.parse(decryptedCommonItem)
@@ -75,18 +78,26 @@ export default {
                     encryptedChats.forEach((chat) => {
                       decryptData(chat.value).then((decryptedChat) => {
                         Vue.set(this.$store.getters.getChats, chat.name, JSON.parse(decryptedChat))
+                        chats[chat.name] = JSON.parse(decryptedChat)
                       })
                     })
                   })
                   getContactItem(db).then((encryptedContacts) => {
                     decryptData(encryptedContacts.value).then((decryptedContacts) => {
                       this.$store.commit('partners/contactList', JSON.parse(decryptedContacts))
+                      partners = JSON.parse(decryptedContacts)
                     })
                   })
                   getPassPhrase(db).then((encryptedPassPhrase) => {
                     decryptData(encryptedPassPhrase.value).then((passPhrase) => {
                       sessionStorage.setItem('storeInLocalStorage', 'true')
-                      sessionStorage.removeItem('adm-persist')
+                      state = {
+                        ...state,
+                        partners: partners,
+                        chats: chats,
+                        passPhrase: Base64.encode(passPhrase)
+                      }
+                      sessionStorage.setItem('adm-persist', JSON.stringify(state))
                       this.$store.dispatch('afterLogin', passPhrase)
                       this.$root._router.push('/chats/')
                       this.$store.commit('mock_messages')

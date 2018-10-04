@@ -31,15 +31,7 @@ export default {
   mounted: function () {
     getAdmDataBase().then((db) => {
       getPassPhrase(db).then((encodedPassPhrase) => {
-        if (!encodedPassPhrase) {
-          clearDb(db)
-          sessionStorage.removeItem('adm-persist')
-          sessionStorage.removeItem('storeInLocalStorage')
-          this.$store.commit('user_password_exists', false)
-          this.$store.commit('change_storage_method', false)
-          this.$store.commit('logout')
-          this.$store.dispatch('reset')
-        } else {
+        if (encodedPassPhrase) {
           sessionStorage.setItem('storeInLocalStorage', 'true')
           this.$store.commit('user_password_exists', true)
         }
@@ -96,6 +88,7 @@ export default {
     window.audio = require('simple-audio')
 
     if (!this.$store.getters.getPassPhrase && this.$route.path !== '/') {
+      console.log('exit!')
       this.$router.push('/')
     }
   },

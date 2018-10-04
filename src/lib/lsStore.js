@@ -8,22 +8,6 @@ import {
 
 export default function storeData () {
   return store => {
-    var localStorageAvailable = function () {
-      var supported = true
-      try {
-        var ls = window.localStorage
-        var test = '__hz-ls-test__'
-        ls.setItem(test, test)
-        ls.removeItem(test)
-      } catch (e) {
-        supported = false
-      }
-      return supported
-    }
-    var lsStorage = false
-    if (localStorageAvailable()) {
-      lsStorage = window.localStorage
-    }
     let mainStorage = window.sessionStorage
     if (mainStorage.getItem('language')) {
       store.commit('change_lang', mainStorage.getItem('language'))
@@ -40,7 +24,7 @@ export default function storeData () {
     if (mainStorage.getItem('notify_desktop')) {
       store.commit('change_notify_desktop', mainStorage.getItem('notify_desktop'))
     }
-    var storeInLocalStorage = mainStorage.getItem('storeInLocalStorage')
+    let storeInLocalStorage = mainStorage.getItem('storeInLocalStorage')
     if (storeInLocalStorage === 'false') {
       storeInLocalStorage = false
     }
@@ -48,10 +32,7 @@ export default function storeData () {
       store.commit('change_storage_method', storeInLocalStorage)
     }
     let useStorage = window.sessionStorage
-    if (storeInLocalStorage && lsStorage) {
-      useStorage = lsStorage
-    }
-    var value = useStorage.getItem('adm-persist')
+    let value = useStorage.getItem('adm-persist')
     if (value !== 'undefined') {
       if (value) {
         value = JSON.parse(value)
@@ -62,11 +43,10 @@ export default function storeData () {
         arrayMerge: function (store, saved) { return saved },
         clone: false
       }))
-
       store.dispatch('rehydrate')
     }
     window.onbeforeunload = function () {
-      this.$store.commit('force_update')
+      store.commit('force_update')
     }
     let lastChatUpdateTime = 0
     store.subscribe((mutation, state) => {
@@ -81,7 +61,6 @@ export default function storeData () {
             })
           }
           if (mutation.type === 'add_chat_message') {
-            console.log(mutation)
             // Save chats
             if (lastChatUpdateTime > 0 && new Date().getTime() - lastChatUpdateTime > 1000) {
               lastChatUpdateTime = new Date().getTime()
@@ -186,7 +165,7 @@ export default function storeData () {
             window.clearTimeout(window.storeTimer)
           }
           var storeTimer = window.setTimeout(function () {
-            window.ep.$store.commit('force_update')
+            store.commit('force_update')
             window.storeTimer = undefined
           }, 10000)
           window.storeTimer = storeTimer
