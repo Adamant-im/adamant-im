@@ -78,13 +78,23 @@ export default {
 
 </script>
 
-<style>
-  .nodes .md-table, .nodes .nodes__options {
-    text-align: left;
-  }
+<style lang="scss">
+  .nodes {
+    background-color: #fff;
 
-  .nodes .nodes__options {
-    padding-left: 24px;
-    font-size: 16px;
+    .md-table,
+    .nodes .nodes__options {
+      text-align: left;
+    }
+
+    .nodes__options {
+      padding-left: 24px;
+      font-size: 16px;
+    }
+
+    .md-table .md-table-cell .md-table-cell-container {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
   }
 </style>
