@@ -21,6 +21,7 @@
     "message": "أدخل رسالتك",
     "new_chat": "بداية شات جديد",
     "new_chat_tooltip": "انقر لبداية شات جديد مع مستمع",
+    "show_my_qr": "Show my QR",
     "no_address": "من فضلك حدد عنوان المستقبل",
     "no_connection": "مشكلات الاتصال",
     "no_empty": "الرسالة لا يمكن أن تكون فارغة",
@@ -122,6 +123,9 @@
     },
     "settings": {
       "modal_header": "QR with passphrase"
+    },
+    "new-chat": {
+      "modal_header": "QR with your ADM address"
     },
     "how_to_save_text" : "Click on the image to save it"
   },

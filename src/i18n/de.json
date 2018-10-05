@@ -21,6 +21,7 @@
     "message": "Gib deine Nachricht ein",
     "new_chat": "Starte neuen Chat",
     "new_chat_tooltip": "Klicke hier um eine neue Konversation zu starten",
+    "show_my_qr": "Show my QR",
     "no_address": "Bitte gib die Empfängeradresse an",
     "no_connection": "Verbindungsproblem",
     "no_empty": "Nachrichten kann nicht leer sein",
@@ -122,6 +123,9 @@
     },
     "settings": {
       "modal_header": "QR with passphrase"
+    },
+    "new-chat": {
+      "modal_header": "QR with your ADM address"
     },
     "how_to_save_text" : "Click on the image to save it"
   },

@@ -52,6 +52,7 @@
     "scan_recipient_button": "Scan",
     "scan_recipient_from_image_button": "Scan from image",
     "new_chat_tooltip": "Click to start a chat with new interlocutor",
+    "show_my_qr": "Show my QR",
     "no_money": "Not enough funds. Top up your balance.",
     "no_empty": "Message can't be empty",
     "no_address": "Please specify recipient address",
@@ -191,6 +192,9 @@
     },
     "settings": {
       "modal_header": "QR with passphrase"
+    },
+    "new-chat": {
+      "modal_header": "QR with your ADM address"
     },
     "how_to_save_text" : "Click on the image to save it"
   }

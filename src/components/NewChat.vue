@@ -33,8 +33,8 @@
                          @click="showQrFileScanModal = true">
                 <Icon name="qrCode" />
               </md-button>
-
-          </md-layout>
+              <md-button class="md-raised" style="padding: 0 16px; margin-left: 10%;" @click="showQrSaveModal = true">{{ $t('chats.show_my_qr') }}</md-button>
+            </md-layout>
           </md-layout>
         </md-layout>
         <md-snackbar md-position="bottom center" md-accent ref="chatSnackbar" md-duration="2000">
@@ -44,6 +44,7 @@
     </md-dialog>
     <QRScan v-if="showQrScanModal" :modal="showQrScanModal" @hide-modal="showQrScanModal = false" @code-grabbed="saveTargetAddress"/>
     <QRFileScan v-if="showQrFileScanModal" :modal="showQrFileScanModal" @hide-modal="showQrFileScanModal = false" @code-grabbed="saveTargetAddress"/>
+    <QRSave v-if="showQrSaveModal" :text="$store.state.address" @hide-modal="showQrSaveModal = false"/>
   </div>
 </template>
 
@@ -51,12 +52,14 @@
 import Icon from '@/components/Icon'
 import QRScan from '@/components/QRScan'
 import QRFileScan from '@/components/QRFileScan'
+import QRSave from '@/components/QRSave'
 export default {
   name: 'new-chat',
   components: {
     Icon,
     QRScan,
-    QRFileScan
+    QRFileScan,
+    QRSave
   },
   props: ['openFrom', 'closeTo'],
   methods: {
@@ -124,6 +127,7 @@ export default {
       targetLabel: '',
       showQrScanModal: false,
       showQrFileScanModal: false,
+      showQrSaveModal: false,
       isLogged: false
     }
   }
