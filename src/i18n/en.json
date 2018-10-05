@@ -58,6 +58,7 @@
     "no_connection": "Connection problems",
     "too_long": "Message is too long",
     "incorrect_address": "Incorrect recipient address",
+    "target_and_user_addresses_are_same": "You don’t need a secret chat to talk to yourself",
     "title": "Chats",
     "send_button": "Send",
     "send_button_tooltip": "Click to send a message",

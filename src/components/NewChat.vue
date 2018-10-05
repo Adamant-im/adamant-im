@@ -88,6 +88,10 @@ export default {
         this.errorMessage('incorrect_address')
         return
       }
+      if (this.targetAddress === this.$store.state.address) {
+        this.errorMessage('target_and_user_addresses_are_same')
+        return
+      }
       this.getAddressPublicKey(this.targetAddress).then(
         (key) => {
           if (!key) {
