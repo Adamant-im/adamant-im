@@ -1,7 +1,8 @@
 import merge from 'deepmerge'
 import {
+  decryptData,
   encryptData,
-  getAdmDataBase,
+  getAdmDataBase, getChatItem, getCommonItem, getContactItem, getPassPhrase,
   updateChatItem,
   updateCommonItem, updateContactItem
 } from './indexedDb'
@@ -38,15 +39,66 @@ export default function storeData () {
         value = JSON.parse(value)
       }
     }
-    if (typeof value === 'object' && value !== null) {
+    console.log('state merge', value)
+    if (typeof value === 'object' && value !== null && sessionStorage.getItem('adm-persist').passPhrase !== '') {
+      console.log('state merge session storage')
       store.replaceState(merge(store.state, value, {
         arrayMerge: function (store, saved) { return saved },
         clone: false
       }))
       store.dispatch('rehydrate')
-    }
-    window.onbeforeunload = function () {
-      store.commit('force_update')
+      window.onbeforeunload = function () {
+        store.commit('force_update')
+      }
+    } else {
+      if (sessionStorage.getItem('storeInLocalStorage') === 'true' && sessionStorage.getItem('userPassword')) {
+        console.log('state db merge', JSON.parse(JSON.stringify(store.state)))
+        getAdmDataBase().then((db) => {
+          let restoredStore = {}
+          getCommonItem(db).then((encryptedCommonItem) => {
+            decryptData(encryptedCommonItem.value).then((decryptedCommonItem) => {
+              restoredStore = JSON.parse(decryptedCommonItem)
+              getPassPhrase(db).then((encryptedPassPhrase) => {
+                decryptData(encryptedPassPhrase.value).then((passPhrase) => {
+                  restoredStore = {
+                    ...restoredStore,
+                    passPhrase: passPhrase
+                  }
+                  getContactItem(db).then((encryptedContacts) => {
+                    decryptData(encryptedContacts.value).then((decryptedContacts) => {
+                      restoredStore = {
+                        ...restoredStore,
+                        partners: JSON.parse(decryptedContacts)
+                      }
+                      let chats = {}
+                      getChatItem(db).then((encryptedChats) => {
+                        encryptedChats.forEach((chat) => {
+                          decryptData(chat.value).then((decryptedChat) => {
+                            chats[chat.name] = JSON.parse(decryptedChat)
+                            restoredStore = {
+                              ...restoredStore,
+                              chats: chats
+                            }
+                          })
+                        })
+                      })
+                      console.log('state db merge end: ', restoredStore)
+                      store.replaceState(merge(store.state, restoredStore, {
+                        arrayMerge: function (store, saved) { return saved },
+                        clone: false
+                      }))
+                      store.dispatch('rehydrate')
+                      window.onbeforeunload = function () {
+                        store.commit('force_update')
+                      }
+                    })
+                  })
+                })
+              })
+            })
+          })
+        })
+      }
     }
     let lastChatUpdateTime = 0
     store.subscribe((mutation, state) => {

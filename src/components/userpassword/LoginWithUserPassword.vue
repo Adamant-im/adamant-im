@@ -93,11 +93,12 @@ export default {
                       sessionStorage.setItem('storeInLocalStorage', 'true')
                       state = {
                         ...state,
-                        partners: partners,
-                        chats: chats,
+                        // partners: partners,
+                        // chats: chats,
                         passPhrase: Base64.encode(passPhrase)
                       }
-                      sessionStorage.setItem('adm-persist', JSON.stringify(state))
+                      // sessionStorage.setItem('adm-persist', JSON.stringify(state))
+                      // sessionStorage.removeItem('adm-persist')
                       this.$store.dispatch('afterLogin', passPhrase)
                       this.$root._router.push('/chats/')
                       this.$store.commit('mock_messages')

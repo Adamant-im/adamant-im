@@ -49,6 +49,7 @@ export default {
     setPassword () {
       crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS,
         UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encryptedPassword) => {
+          sessionStorage.removeItem('adm-persist')
           if (err) throw err
           getAdmDataBase().then((db) => {
             updateUserPassword(encryptedPassword)

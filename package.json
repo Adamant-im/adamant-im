@@ -41,7 +41,8 @@
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.11.0",
     "vuex": "^3.0.1",
-    "web3": "0.20.6"
+    "web3": "0.20.6",
+    "js-base64": "^2.4.9"
   },
   "devDependencies": {
     "@kazupon/vue-i18n-loader": "^0.3.0",
