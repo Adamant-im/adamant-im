@@ -83,7 +83,7 @@ export default {
     background-color: #fff;
 
     .md-table,
-    .nodes .nodes__options {
+    .nodes__options {
       text-align: left;
     }
 
