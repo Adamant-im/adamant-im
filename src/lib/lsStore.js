@@ -39,7 +39,7 @@ export default function storeData () {
         value = JSON.parse(value)
       }
     }
-    if (typeof value === 'object' && value !== null && sessionStorage.getItem('adm-persist').passPhrase !== '') {
+    if (typeof value === 'object' && value !== null) {
       store.replaceState(merge(store.state, value, {
         arrayMerge: function (store, saved) { return saved },
         clone: false
