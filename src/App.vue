@@ -89,7 +89,6 @@ export default {
     window.audio = require('simple-audio')
 
     if (!this.$store.getters.getPassPhrase && this.$route.path !== '/') {
-      console.log('exit!')
       this.$router.push('/')
     }
   },

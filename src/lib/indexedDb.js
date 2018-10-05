@@ -131,17 +131,13 @@ export function clearContactList (db) {
 export function encryptData (data) {
   let userPassword = sessionStorage.getItem('userPassword')
   const secretKey = ed2curve.convertSecretKey(userPassword.toString(TO_STRING_TRANSFORM_TYPE))
-  return new Promise(resolve => {
-    resolve(nacl.secretbox(Buffer.from(data), NONCE, secretKey))
-  })
+  return nacl.secretbox(Buffer.from(data), NONCE, secretKey)
 }
 
 export function decryptData (encryptedData) {
   let userPassword = sessionStorage.getItem('userPassword')
   const secretKey = ed2curve.convertSecretKey(userPassword.toString(TO_STRING_TRANSFORM_TYPE))
-  return new Promise(resolve => {
-    resolve(decode(nacl.secretbox.open(encryptedData, NONCE, secretKey)))
-  })
+  return decode(nacl.secretbox.open(encryptedData, NONCE, secretKey))
 }
 
 function saveValueByName (db, storeObject, value) {

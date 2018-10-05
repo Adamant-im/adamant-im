@@ -54,31 +54,22 @@ export default {
           getAdmDataBase().then((db) => {
             updateUserPassword(encryptedPassword)
             // Save passphrase
-            encryptData(this.$store.getters.getPassPhrase).then((encryptedPassPhrase) => {
-              updatePassPhrase(db, encryptedPassPhrase)
-            })
+            updatePassPhrase(db, encryptData(this.$store.getters.getPassPhrase))
             // Exclude contact list, chats, passphrase from common store
             let copyState = Object.assign({}, this.$store.state)
             delete copyState.partners
             delete copyState.chats
             delete copyState.passPhrase
-            encryptData(JSON.stringify(copyState)).then((encryptedCommonData) => {
-              updateCommonItem(db, encryptedCommonData)
-            })
+            updateCommonItem(db, encryptData(JSON.stringify(copyState)))
             // Save chats
             const chats = this.$store.getters.getChats
             for (let chat in chats) {
               if (chats.hasOwnProperty(chat)) {
-                encryptData(JSON.stringify(chats[chat])).then((encryptedChat) => {
-                  updateChatItem(db, chat, encryptedChat)
-                })
+                updateChatItem(db, chat, encryptData(JSON.stringify(chats[chat])))
               }
             }
             // Save contacts
-            const contacts = this.$store.getters.getContacts
-            encryptData(JSON.stringify(contacts)).then((encryptedContacts) => {
-              updateContactItem(db, encryptedContacts)
-            })
+            updateContactItem(db, encryptData(JSON.stringify(this.$store.getters.getContacts)))
           })
           this.userPasswordValue = null
           this.userPasswordCheckbox = false

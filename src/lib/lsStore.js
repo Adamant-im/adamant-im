@@ -39,9 +39,7 @@ export default function storeData () {
         value = JSON.parse(value)
       }
     }
-    console.log('state merge', value)
     if (typeof value === 'object' && value !== null && sessionStorage.getItem('adm-persist').passPhrase !== '') {
-      console.log('state merge session storage')
       store.replaceState(merge(store.state, value, {
         arrayMerge: function (store, saved) { return saved },
         clone: false
@@ -52,47 +50,37 @@ export default function storeData () {
       }
     } else {
       if (sessionStorage.getItem('storeInLocalStorage') === 'true' && sessionStorage.getItem('userPassword')) {
-        console.log('state db merge', JSON.parse(JSON.stringify(store.state)))
         getAdmDataBase().then((db) => {
           let restoredStore = {}
           getCommonItem(db).then((encryptedCommonItem) => {
-            decryptData(encryptedCommonItem.value).then((decryptedCommonItem) => {
-              restoredStore = JSON.parse(decryptedCommonItem)
-              getPassPhrase(db).then((encryptedPassPhrase) => {
-                decryptData(encryptedPassPhrase.value).then((passPhrase) => {
-                  restoredStore = {
-                    ...restoredStore,
-                    passPhrase: passPhrase
-                  }
-                  getContactItem(db).then((encryptedContacts) => {
-                    decryptData(encryptedContacts.value).then((decryptedContacts) => {
-                      restoredStore = {
-                        ...restoredStore,
-                        partners: JSON.parse(decryptedContacts)
-                      }
-                      let chats = {}
-                      getChatItem(db).then((encryptedChats) => {
-                        encryptedChats.forEach((chat) => {
-                          decryptData(chat.value).then((decryptedChat) => {
-                            chats[chat.name] = JSON.parse(decryptedChat)
-                            restoredStore = {
-                              ...restoredStore,
-                              chats: chats
-                            }
-                          })
-                        })
-                      })
-                      console.log('state db merge end: ', restoredStore)
-                      store.replaceState(merge(store.state, restoredStore, {
-                        arrayMerge: function (store, saved) { return saved },
-                        clone: false
-                      }))
-                      store.dispatch('rehydrate')
-                      window.onbeforeunload = function () {
-                        store.commit('force_update')
-                      }
-                    })
+            restoredStore = JSON.parse(decryptData(encryptedCommonItem.value))
+            getPassPhrase(db).then((encryptedPassPhrase) => {
+              restoredStore = {
+                ...restoredStore,
+                passPhrase: decryptData(encryptedPassPhrase.value)
+              }
+              getContactItem(db).then((encryptedContacts) => {
+                restoredStore = {
+                  ...restoredStore,
+                  partners: JSON.parse(decryptData(encryptedContacts.value))
+                }
+                let chats = {}
+                getChatItem(db).then((encryptedChats) => {
+                  encryptedChats.forEach((chat) => {
+                    chats[chat.name] = JSON.parse(decryptData(chat.value))
+                    restoredStore = {
+                      ...restoredStore,
+                      chats: chats
+                    }
                   })
+                  store.replaceState(merge(store.state, restoredStore, {
+                    arrayMerge: function (store, saved) { return saved },
+                    clone: false
+                  }))
+                  store.dispatch('rehydrate')
+                  window.onbeforeunload = function () {
+                    store.commit('force_update')
+                  }
                 })
               })
             })
@@ -108,9 +96,7 @@ export default function storeData () {
           if (mutation.type === 'partners/contactList') {
             // Save contacts
             const contacts = copyState.partners
-            encryptData(JSON.stringify(contacts)).then((encryptedContacts) => {
-              updateContactItem(db, encryptedContacts)
-            })
+            updateContactItem(db, encryptData(JSON.stringify(contacts)))
           }
           if (mutation.type === 'add_chat_message') {
             // Save chats
@@ -119,9 +105,7 @@ export default function storeData () {
               const chats = copyState.chats
               for (let chat in chats) {
                 if (chats.hasOwnProperty(chat) && chat === mutation.payload.recipientId) {
-                  encryptData(JSON.stringify(chats[chat])).then((encryptedChat) => {
-                    updateChatItem(db, chat, encryptedChat)
-                  })
+                  updateChatItem(db, chat, encryptData(JSON.stringify(chats[chat])))
                 }
               }
             } else {
@@ -157,9 +141,7 @@ export default function storeData () {
             delete copyState.partners
             delete copyState.chats
             delete copyState.passPhrase
-            encryptData(JSON.stringify(copyState)).then((encryptedCommonData) => {
-              updateCommonItem(db, encryptedCommonData)
-            })
+            updateCommonItem(db, encryptData(JSON.stringify(copyState)))
           }
         })
       } else {

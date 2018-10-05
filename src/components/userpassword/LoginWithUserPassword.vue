@@ -69,49 +69,42 @@ export default {
             getCommonItem(db).then((encryptedCommonItem) => {
               let chats = {}
               let partners = null
-              decryptData(encryptedCommonItem.value).then((decryptedCommonItem) => {
-                try {
-                  let state = JSON.parse(decryptedCommonItem)
-                  this.showSpinnerFlag = true
-                  this.$store.commit('set_state', state)
-                  getChatItem(db).then((encryptedChats) => {
-                    encryptedChats.forEach((chat) => {
-                      decryptData(chat.value).then((decryptedChat) => {
-                        Vue.set(this.$store.getters.getChats, chat.name, JSON.parse(decryptedChat))
-                        chats[chat.name] = JSON.parse(decryptedChat)
-                      })
-                    })
+              try {
+                let state = JSON.parse(decryptData(encryptedCommonItem.value))
+                this.showSpinnerFlag = true
+                this.$store.commit('set_state', state)
+                getChatItem(db).then((encryptedChats) => {
+                  encryptedChats.forEach((chat) => {
+                    let decryptedChat = decryptData(chat.value)
+                    Vue.set(this.$store.getters.getChats, chat.name, JSON.parse(decryptedChat))
+                    chats[chat.name] = JSON.parse(decryptedChat)
                   })
-                  getContactItem(db).then((encryptedContacts) => {
-                    decryptData(encryptedContacts.value).then((decryptedContacts) => {
-                      this.$store.commit('partners/contactList', JSON.parse(decryptedContacts))
-                      partners = JSON.parse(decryptedContacts)
-                    })
-                  })
-                  getPassPhrase(db).then((encryptedPassPhrase) => {
-                    decryptData(encryptedPassPhrase.value).then((passPhrase) => {
-                      sessionStorage.setItem('storeInLocalStorage', 'true')
-                      state = {
-                        ...state,
-                        // partners: partners,
-                        // chats: chats,
-                        passPhrase: Base64.encode(passPhrase)
-                      }
-                      // sessionStorage.setItem('adm-persist', JSON.stringify(state))
-                      // sessionStorage.removeItem('adm-persist')
-                      this.$store.dispatch('afterLogin', passPhrase)
-                      this.$root._router.push('/chats/')
-                      this.$store.commit('mock_messages')
-                      this.$store.commit('stop_tracking_new')
-                      this.$store.commit('save_user_password', this.userPasswordValue)
-                      this.$store.commit('change_storage_method', true)
-                      this.showSpinnerFlag = false
-                    })
-                  })
-                } catch (e) {
-                  errorFunction()
-                }
-              })
+                })
+                getContactItem(db).then((encryptedContacts) => {
+                  let decryptedContacts = decryptData(encryptedContacts.value)
+                  this.$store.commit('partners/contactList', JSON.parse(decryptedContacts))
+                  partners = JSON.parse(decryptedContacts)
+                })
+                getPassPhrase(db).then((encryptedPassPhrase) => {
+                  let decryptedPassPhrase = decryptData(encryptedPassPhrase.value)
+                  sessionStorage.setItem('storeInLocalStorage', 'true')
+                  state = {
+                    ...state,
+                    partners: partners,
+                    chats: chats,
+                    passPhrase: Base64.encode(decryptedPassPhrase)
+                  }
+                  this.$store.dispatch('afterLogin', decryptedPassPhrase)
+                  this.$root._router.push('/chats/')
+                  this.$store.commit('mock_messages')
+                  this.$store.commit('stop_tracking_new')
+                  this.$store.commit('save_user_password', this.userPasswordValue)
+                  this.$store.commit('change_storage_method', true)
+                  this.showSpinnerFlag = false
+                })
+              } catch (e) {
+                errorFunction()
+              }
             })
           })
         })
