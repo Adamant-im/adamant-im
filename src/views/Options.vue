@@ -111,7 +111,7 @@
     <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
       </div>
 
-      <QRSave v-if="showQrSaveModal" :text="$store.state.passPhrase" @hide-modal="showQrSaveModal = false"/>
+      <QRSave v-if="showQrSaveModal" :text="passPhrase" @hide-modal="showQrSaveModal = false"/>
 
   </div>
 </template>
@@ -119,6 +119,7 @@
 <script>
 import QRSave from '@/components/QRSave'
 import i18n from '../i18n'
+import {Base64} from 'js-base64'
 
 export default {
   name: 'settings',
@@ -128,6 +129,9 @@ export default {
   computed: {
     languageList: function () {
       return i18n.messages
+    },
+    passPhrase() {
+      return Base64.decode(this.$store.state.passPhrase)
     }
   },
   mounted () {
