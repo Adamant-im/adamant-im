@@ -23,33 +23,33 @@
 </template>
 
 <script>
-  import b64toBlob from 'b64-to-blob'
-  import FileSaver from 'file-saver'
+import b64toBlob from 'b64-to-blob'
+import FileSaver from 'file-saver'
 
-  export default {
-    name: 'QRSave',
-    props: ['text'],
-    methods: {
-      showErrorMessage(errorMessage) {
-        this.errorMessage = errorMessage
-        this.$refs.snackbar.open()
-      },
-      getParentName() {
-        return this.$parent.$options._componentTag || this.$parent.$options.name || this.$parent.name
-      },
-      downloadQRCode () {
-        const imgUrl = this.$refs.qrCode.qrCode._oDrawing._elImage.src
-        const base64Data = imgUrl.slice(22, imgUrl.length)
-        const byteCharacters = b64toBlob(base64Data)
-        const blob = new Blob([byteCharacters], {type: 'image/png'})
+export default {
+  name: 'QRSave',
+  props: ['text'],
+  methods: {
+    showErrorMessage (errorMessage) {
+      this.errorMessage = errorMessage
+      this.$refs.snackbar.open()
+    },
+    getParentName () {
+      return this.$parent.$options._componentTag || this.$parent.$options.name || this.$parent.name
+    },
+    downloadQRCode () {
+      const imgUrl = this.$refs.qrCode.qrCode._oDrawing._elImage.src
+      const base64Data = imgUrl.slice(22, imgUrl.length)
+      const byteCharacters = b64toBlob(base64Data)
+      const blob = new Blob([byteCharacters], { type: 'image/png' })
 
-        FileSaver.saveAs(blob, 'adamant-im.png')
-      },
-      hideModal() {
-        this.$emit('hide-modal')
-      }
+      FileSaver.saveAs(blob, 'adamant-im.png')
+    },
+    hideModal () {
+      this.$emit('hide-modal')
     }
   }
+}
 </script>
 
 <style>

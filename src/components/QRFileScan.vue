@@ -20,58 +20,57 @@
 </template>
 
 <script>
-  import PictureInput from 'vue-picture-input'
-  import QrCodeReader from 'qrcode-reader'
+import PictureInput from 'vue-picture-input'
+import QrCodeReader from 'qrcode-reader'
 
-  export default {
-    name: 'QRFileScan',
-    components: {
-      PictureInput
-    },
-    props: [],
-    data() {
-      return {
-        loading: false,
-        QrReader: new QrCodeReader(),
-        errorMessage: ''
-      }
-    },
-    methods: {
-      showErrorMessage(errorMessage) {
-        this.errorMessage = errorMessage
-        this.$refs.snackbar.open()
-      },
-      getParentName() {
-        return this.$parent.$options._componentTag || this.$parent.$options.name || this.$parent.name
-      },
-      onImageChange(imageUrl) {
-        this.loading = true
-        this.$refs.pictureInput.removeImage()
-        setTimeout(() => {
-          this.QrReader.decode(imageUrl)
-        }, 0)
-      },
-      onQrDecode(error, result) {
-        this.loading = false
-        if (!error) {
-          this.parseHandler(result.result)
-        } else {
-          this.showErrorMessage(this.$t('scan.no_qr_code_found_in_image_text'))
-        }
-      },
-      hideModal() {
-        this.$emit('hide-modal')
-      },
-      parseHandler(content) {
-        this.hideModal()
-        let addressData = this.parseURI(content)
-        this.$emit('code-grabbed', content)
-      }
-    },
-    mounted() {
-      this.QrReader.callback = this.onQrDecode
+export default {
+  name: 'QRFileScan',
+  components: {
+    PictureInput
+  },
+  props: [],
+  data () {
+    return {
+      loading: false,
+      QrReader: new QrCodeReader(),
+      errorMessage: ''
     }
+  },
+  methods: {
+    showErrorMessage (errorMessage) {
+      this.errorMessage = errorMessage
+      this.$refs.snackbar.open()
+    },
+    getParentName () {
+      return this.$parent.$options._componentTag || this.$parent.$options.name || this.$parent.name
+    },
+    onImageChange (imageUrl) {
+      this.loading = true
+      this.$refs.pictureInput.removeImage()
+      setTimeout(() => {
+        this.QrReader.decode(imageUrl)
+      }, 0)
+    },
+    onQrDecode (error, result) {
+      this.loading = false
+      if (!error) {
+        this.parseHandler(result.result)
+      } else {
+        this.showErrorMessage(this.$t('scan.no_qr_code_found_in_image_text'))
+      }
+    },
+    hideModal () {
+      this.$emit('hide-modal')
+    },
+    parseHandler (content) {
+      this.hideModal()
+      this.$emit('code-grabbed', content)
+    }
+  },
+  mounted () {
+    this.QrReader.callback = this.onQrDecode
   }
+}
 </script>
 
 <style>

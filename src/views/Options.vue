@@ -119,7 +119,7 @@
 <script>
 import QRSave from '@/components/QRSave'
 import i18n from '../i18n'
-import {Base64} from 'js-base64'
+import { Base64 } from 'js-base64'
 
 export default {
   name: 'settings',
@@ -130,7 +130,7 @@ export default {
     languageList: function () {
       return i18n.messages
     },
-    passPhrase() {
+    passPhrase () {
       return Base64.decode(this.$store.state.passPhrase)
     }
   },

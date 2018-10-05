@@ -23,13 +23,13 @@ describe('QRFileScan.vue', () => {
     expect(wrapper.contains('div.modal-footer')).toBe(true)
   })
   it('Renders picture-input', () => {
-    expect(wrapper.contains({name: 'picture-input'})).toBe(true)
+    expect(wrapper.contains({ name: 'picture-input' })).toBe(true)
   })
   it('Renders close button', () => {
-    expect(wrapper.find('div.modal-footer').contains({name: 'md-button'})).toBe(true)
+    expect(wrapper.find('div.modal-footer').contains({ name: 'md-button' })).toBe(true)
   })
   it('Emits "hide-modal" on close button click', () => {
-    wrapper.find('div.modal-footer').find({name: 'md-button'}).trigger('click')
+    wrapper.find('div.modal-footer').find({ name: 'md-button' }).trigger('click')
     expect(wrapper.emitted()['hide-modal']).toBeTruthy()
   })
 })
