@@ -553,6 +553,9 @@ const store = {
     },
     getContacts: state => {
       return state.partners
+    },
+    getLastChatHeight: state => {
+      return state.lastChatHeight
     }
   },
   modules: {

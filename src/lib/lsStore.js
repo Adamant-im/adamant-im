@@ -7,6 +7,18 @@ import {
   updateCommonItem, updateContactItem
 } from './indexedDb'
 
+function updateChat (lastChatUpdateTime, copyState, mutation, store, db) {
+  lastChatUpdateTime = new Date().getTime()
+  const chats = copyState.chats
+  for (let chat in chats) {
+    if (chats.hasOwnProperty(chat) && chat === mutation.payload.recipientId) {
+      updateChatItem(db, chat, encryptData(JSON.stringify(chats[chat])))
+    }
+  }
+
+  return lastChatUpdateTime
+}
+
 export default function storeData () {
   return store => {
     let mainStorage = window.sessionStorage
@@ -89,6 +101,7 @@ export default function storeData () {
       }
     }
     let lastChatUpdateTime = 0
+    let lastChatHeight = store.getters.getLastChatHeight
     store.subscribe((mutation, state) => {
       if (sessionStorage.getItem('storeInLocalStorage') === 'true' && sessionStorage.getItem('userPassword')) {
         getAdmDataBase().then((db) => {
@@ -100,16 +113,17 @@ export default function storeData () {
           }
           if (mutation.type === 'add_chat_message') {
             // Save chats
-            if (lastChatUpdateTime > 0 && new Date().getTime() - lastChatUpdateTime > 1000) {
-              lastChatUpdateTime = new Date().getTime()
-              const chats = copyState.chats
-              for (let chat in chats) {
-                if (chats.hasOwnProperty(chat) && chat === mutation.payload.recipientId) {
-                  updateChatItem(db, chat, encryptData(JSON.stringify(chats[chat])))
-                }
+            if (lastChatHeight === 0) {
+              if (lastChatUpdateTime > 0 && new Date().getTime() - lastChatUpdateTime > 1000) {
+                lastChatUpdateTime = updateChat(lastChatUpdateTime, copyState, mutation, store, db)
+                lastChatHeight = store.getters.getLastChatHeight
+              } else {
+                lastChatUpdateTime = new Date().getTime()
               }
             } else {
-              lastChatUpdateTime = new Date().getTime()
+              if (lastChatHeight !== store.getters.getLastChatHeight) {
+                lastChatUpdateTime = updateChat(lastChatUpdateTime, copyState, mutation, store, db)
+              }
             }
           }
           let storeNow = false
