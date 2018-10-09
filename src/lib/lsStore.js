@@ -125,6 +125,7 @@ export default function storeData () {
             } else {
               if (lastChatHeight !== store.getters.getLastChatHeight) {
                 lastChatUpdateTime = updateChat(lastChatUpdateTime, copyState, mutation, store, db)
+                lastChatHeight = store.getters.getLastChatHeight
               }
             }
           }
