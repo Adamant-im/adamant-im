@@ -1,11 +1,11 @@
 <template>
   <div class='nodes'>
-    <md-table>
+    <md-table md-sort="url" md-sort-type="desc" @sort="onSort">
       <md-table-header>
         <md-table-row>
           <md-table-head width='100px'>{{ $t('nodes.active') }}</md-table-head>
-          <md-table-head>{{ $t('nodes.host') }}</md-table-head>
-          <md-table-head>{{ $t('nodes.ping') }}</md-table-head>
+          <md-table-head md-sort-by="url">{{ $t('nodes.host') }}</md-table-head>
+          <md-table-head md-sort-by="ping">{{ $t('nodes.ping') }}</md-table-head>
         </md-table-row>
       </md-table-header>
 
@@ -46,7 +46,11 @@ export default {
   data () {
     return {
       preferFastestNode: this.$store.state.nodes.useFastest,
-      timer: null
+      timer: null,
+      sortParams: {
+        name: 'url',
+        type: 'asc'
+      }
     }
   },
   mounted () {
@@ -62,11 +66,23 @@ export default {
         url: node.url,
         active: !node.active
       })
+    },
+    onSort (params) {
+      this.sortParams = params
     }
   },
   computed: {
     nodes () {
-      return this.$store.getters['nodes/list']
+      let nodes = this.$store.getters['nodes/list']
+      nodes = nodes.sort((a, b) => {
+        const l = a[this.sortParams.name]
+        const r = b[this.sortParams.name]
+        let res = 0
+        if (l < r) res = -1
+        if (l > r) res = 1
+        return this.sortParams.type === 'asc' ? res : -res
+      })
+      return nodes
     }
   },
   watch: {
@@ -82,19 +98,27 @@ export default {
   .nodes {
     background-color: #fff;
 
-    .md-table,
     .nodes__options {
       text-align: left;
-    }
-
-    .nodes__options {
       padding-left: 24px;
       font-size: 16px;
     }
 
-    .md-table .md-table-cell .md-table-cell-container {
-      padding-top: 0;
-      padding-bottom: 0;
+    .md-table {
+      .md-table-header {
+        text-align: center;
+      }
+
+      .md-table-cell .md-table-cell-container {
+        text-align: left;
+        padding-top: 0;
+        padding-bottom: 0;
+
+        .md-checkbox {
+          margin-top: 0;
+          margin-bottom: 0;
+        }
+      }
     }
   }
 </style>
