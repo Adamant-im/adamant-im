@@ -150,23 +150,17 @@ const store = {
     lastChatHeight: 0,
     currentChat: false,
     storeInLocalStorage: false,
-    lastVisitedChat: ''
+    lastVisitedChat: '',
+    areChatsLoading: false
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
       payload.message = i18n.t(payload.message)
       commit('add_chat_message', payload)
     },
-    // afterLogin ({ commit }, passPhrase) {
-    //   commit('save_passphrase', {'passPhrase': passPhrase})
-    //   admApi.unlock(passPhrase)
-    // },
     rehydrate ({ getters }) {
       admApi.unlock(getters.getPassPhrase)
     },
-    // updateAccount ({ commit }, account) {
-    //   commit('login', account)
-    // },
     add_message_to_queue ({ getters }, payload) {
       let chats = getters.getChats
       const partner = payload.recipientId
@@ -275,13 +269,19 @@ const store = {
     /**
      * Retrieve the chat messages for the current account.
      * @param {any} context action context
-     * @param {{height: number, offset: number}} payload height and offset
+     * @param {{height: number, offset: number, recurse: boolean}} payload height and offset
      */
     loadChats (context, payload = { }) {
-      const height = payload.height || context.state.lastChatHeight || 0
+      if (context.state.areChatsLoading && !payload.recurse) return
+
+      const height = Number.isFinite(payload.height)
+        ? payload.height
+        : (context.state.lastChatHeight || 0)
       const offset = payload.offset || 0
 
       context.commit('ajax_start')
+      context.commit('chatsLoading', true)
+
       admApi.getChats(height, offset).then(
         result => {
           context.commit('ajax_end')
@@ -296,19 +296,30 @@ const store = {
             context.commit('set_last_chat_height', tx.height)
           })
 
+          // We need to check if there are more chats to fetch.
+          // API is supposed to return the total number of the chats available (the `count` field), but it may not.
+          // In the latter case we check the number of the transactions returned: if its 100 (default chunk size),
+          // we assume that more transactions may be available.
+          const hasMore = Number.isFinite(count)
+            ? count > (offset + transactions.length)
+            : transactions.length === 100 // a dirty workaround, actually
+
           // If there are more messages to retrieve, go for'em
-          if (count > (offset + transactions.length)) {
+          if (hasMore) {
             context.dispatch('loadChats', {
               height,
-              offset: offset + transactions.length
+              offset: offset + transactions.length,
+              recurse: true
             })
           } else {
             context.commit('have_loaded_chats')
+            context.commit('chatsLoading', false)
           }
         },
         error => {
           console.warn('Failed to retrieve chat messages', { height, offset, error })
           context.commit('ajax_end_with_error')
+          context.commit('chatsLoading', false)
         }
       )
     },
@@ -560,6 +571,9 @@ const store = {
     currentAccount (state, payload) {
       state.address = payload.address
       state.balance = payload.balance
+    },
+    chatsLoading (state, payload) {
+      state.areChatsLoading = payload
     }
   },
   plugins: [storeData(), nodesPlugin],
