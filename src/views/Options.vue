@@ -118,7 +118,7 @@ import i18n from '../i18n'
 import setUserPassword from '@/components/userpassword/SetUserPassword.vue'
 import {
   clearDb,
-  getAdmDataBase,
+  getAdmDataBase
 } from '../lib/indexedDb'
 
 export default {

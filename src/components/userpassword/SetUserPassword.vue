@@ -49,7 +49,6 @@ export default {
     setPassword () {
       crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS,
         UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encryptedPassword) => {
-          sessionStorage.removeItem('adm-persist')
           if (err) throw err
           getAdmDataBase().then((db) => {
             updateUserPassword(encryptedPassword)
@@ -65,7 +64,8 @@ export default {
             const chats = this.$store.getters.getChats
             for (let chat in chats) {
               if (chats.hasOwnProperty(chat)) {
-                updateChatItem(db, chat, encryptData(JSON.stringify(chats[chat])))
+                const encryptedChatName = encryptData(chat)
+                updateChatItem(db, encryptedChatName.toString(), encryptData(JSON.stringify(chats[chat])))
               }
             }
             // Save contacts
@@ -75,6 +75,7 @@ export default {
           this.userPasswordCheckbox = false
           this.$store.commit('user_password_exists', true)
           this.$store.commit('change_storage_method', true)
+          sessionStorage.removeItem('adm-persist')
           this.close()
         })
     },

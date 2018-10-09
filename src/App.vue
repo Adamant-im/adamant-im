@@ -99,6 +99,8 @@ export default {
           clearDb(db)
           this.$store.commit('user_password_exists', false)
           this.$store.commit('change_storage_method', false)
+          sessionStorage.removeItem('userPassword')
+          sessionStorage.removeItem('adm-persist')
         })
       }
       this.$store.commit('logout')

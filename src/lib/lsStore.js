@@ -12,7 +12,8 @@ function updateChat (lastChatUpdateTime, copyState, mutation, store, db) {
   const chats = copyState.chats
   for (let chat in chats) {
     if (chats.hasOwnProperty(chat) && chat === mutation.payload.recipientId) {
-      updateChatItem(db, chat, encryptData(JSON.stringify(chats[chat])))
+      const encryptedChatName = encryptData(chat)
+      updateChatItem(db, encryptedChatName.toString(), encryptData(JSON.stringify(chats[chat])))
     }
   }
 
@@ -79,7 +80,8 @@ export default function storeData () {
                 let chats = {}
                 getChatItem(db).then((encryptedChats) => {
                   encryptedChats.forEach((chat) => {
-                    chats[chat.name] = JSON.parse(decryptData(chat.value))
+                    const decryptedChatName = decryptData(new Uint8Array(chat.name.split(',')))
+                    chats[decryptedChatName] = JSON.parse(decryptData(chat.value))
                     restoredStore = {
                       ...restoredStore,
                       chats: chats

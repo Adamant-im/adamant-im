@@ -75,9 +75,10 @@ export default {
                 this.$store.commit('set_state', state)
                 getChatItem(db).then((encryptedChats) => {
                   encryptedChats.forEach((chat) => {
+                    let decryptedChatName = decryptData(new Uint8Array(chat.name.split(',')))
                     let decryptedChat = decryptData(chat.value)
-                    Vue.set(this.$store.getters.getChats, chat.name, JSON.parse(decryptedChat))
-                    chats[chat.name] = JSON.parse(decryptedChat)
+                    Vue.set(this.$store.getters.getChats, decryptedChatName, JSON.parse(decryptedChat))
+                    chats[decryptedChatName] = JSON.parse(decryptedChat)
                   })
                 })
                 getContactItem(db).then((encryptedContacts) => {
