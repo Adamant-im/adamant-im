@@ -133,7 +133,6 @@ export default {
         const partnerTransactionsCount = (this.$store.getters['adm/partnerTransactions'](partner)).length
         let handledPayload = {
           ...message,
-          // TODO need fix immediately
           amount: message.amount * 100000000,
           timestamp: utils.epochTime(),
           message: message.message,
@@ -154,7 +153,6 @@ export default {
           ? sendMessage(message)
           : sendTokens(this.targetAddress, this.targetAmount)
         return promise.then(response => {
-          console.log('send funds response', response)
           if (response.success) {
             replaceMessageAndDelete(chats[partner].messages, response.transactionId, handledPayload.id, 'sent')
             handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType

@@ -1,6 +1,8 @@
 import * as admApi from '../../../lib/adamant-api'
+import Vue from 'vue'
 
 export default {
+
   /** Starts background sync after login */
   afterLogin: {
     root: true,
@@ -39,6 +41,22 @@ export default {
 
     return admApi.getTransactions(options).then(response => {
       if (Array.isArray(response.transactions) && response.transactions.length) {
+        let chats = context.rootGetters.getChats
+        response.transactions.forEach(tx => {
+          if (chats[tx.recipientId] !== undefined) {
+            let messages = chats[tx.recipientId].messages
+            Vue.set(messages, tx.id, {
+              ...chats[tx.recipientId].messages[tx.id],
+              confirm_class: 'confirmed'
+            })
+            if (chats[tx.recipientId].last_message.id === tx.id && chats[tx.recipientId].last_message.direction === 'from') {
+              chats[tx.recipientId].last_message = {
+                ...chats[tx.recipientId].last_message,
+                confirm_class: 'confirmed'
+              }
+            }
+          }
+        })
         context.commit('transactions', response.transactions)
       }
     })
