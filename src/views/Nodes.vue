@@ -3,7 +3,7 @@
     <md-table md-sort="url" md-sort-type="desc" @sort="onSort">
       <md-table-header>
         <md-table-row>
-          <md-table-head width='100px'>{{ $t('nodes.active') }}</md-table-head>
+          <md-table-head>{{ $t('nodes.active') }}</md-table-head>
           <md-table-head md-sort-by="url">{{ $t('nodes.host') }}</md-table-head>
           <md-table-head md-sort-by="ping">{{ $t('nodes.ping') }}</md-table-head>
         </md-table-row>
@@ -11,7 +11,10 @@
 
       <md-table-body>
         <template v-for="node in nodes">
-          <md-table-row :key="node.url">
+          <md-table-row
+            :key="node.url"
+            :class="{ 'node-inactive': !node.active, 'node-offline': node.active && !node.online }"
+          >
             <md-table-cell>
               <md-checkbox v-model="node.active" @change="toggle(node)" />
             </md-table-cell>
@@ -107,12 +110,25 @@ export default {
     .md-table {
       .md-table-header {
         text-align: center;
+
+        .md-table-head-text {
+          padding-right: 8px;
+        }
+      }
+
+      .node-inactive .md-table-cell {
+        color: red;
+      }
+
+      .node-offline .md-table-cell {
+        color: gray;
       }
 
       .md-table-cell .md-table-cell-container {
         text-align: left;
         padding-top: 0;
         padding-bottom: 0;
+        padding-right: 0;
 
         .md-checkbox {
           margin-top: 0;
