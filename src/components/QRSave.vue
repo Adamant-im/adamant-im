@@ -52,7 +52,8 @@ export default {
 }
 </script>
 
-<style>
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style lang="scss">
   .modal-wrapper {
     z-index: 999;
     display: table;
@@ -63,62 +64,62 @@ export default {
     top: 0;
     left: 0;
     visibility: hidden;
-  }
-  .modal-wrapper .modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: black;
-    opacity: 0;
-    visibility: hidden;
-    z-index: 1;
-  }
-  .modal-wrapper .modal-container {
-    display: table-cell;
-    vertical-align: middle;
-    position: relative;
-    z-index: 2;
-    opacity: 0;
-    visibility: hidden;
-  }
-  .modal-wrapper .modal-container .modal {
-    background: white;
-    width: 95%;
-    max-width: 600px;
-    max-height: 600px;
-    box-shadow: 0 7px 8px -4px rgba(0, 0, 0, 0.2), 0 13px 19px 2px rgba(0, 0, 0, 0.14), 0 5px 24px 4px rgba(0, 0, 0, 0.12);
-    margin: auto;
-    display: block;
-    border-radius: 4px;
-    opacity: 0;
-    visibility: hidden;
-  }
-  .modal-wrapper .modal-container .modal .modal-body {
-    max-height: 400px;
-    overflow: hidden;
-    padding: 1em;
-  }
-  .modal-wrapper .modal-container .modal .modal-footer {
-    display: inline-block;
-    padding: 1em;
-  }
-  .modal-wrapper.active {
-    opacity: 1;
-    visibility: visible;
-  }
-  .modal-wrapper.active .modal-overlay {
-    opacity: 0.5;
-    visibility: visible;
-  }
-  .modal-wrapper.active .modal-container {
-    opacity: 1;
-    visibility: visible;
-  }
-  .modal-wrapper.active .modal {
-    opacity: 1;
-    visibility: visible;
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      opacity: 0;
+      visibility: hidden;
+      z-index: 1;
+    }
+    .modal-container {
+      display: table-cell;
+      vertical-align: middle;
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+      visibility: hidden;
+      .modal {
+        background: white;
+        width: 95%;
+        max-width: 600px;
+        max-height: 600px;
+        box-shadow: 0 7px 8px -4px rgba(0,0,0,.2),0 13px 19px 2px rgba(0,0,0,.14),0 5px 24px 4px rgba(0,0,0,.12);
+        margin: auto;
+        display: block;
+        border-radius: 4px;
+        opacity: 0;
+        visibility: hidden;
+        .modal-body {
+          max-height: 400px;
+          overflow: hidden;
+          padding: 1em;
+        }
+        .modal-footer {
+          display: inline-block;
+          padding: 1em;
+        }
+      }
+    }
+    &.active {
+      opacity: 1;
+      visibility: visible;
+      .modal-overlay {
+        opacity: 0.5;
+        visibility: visible;
+      }
+      .modal-container {
+        opacity: 1;
+        visibility: visible;
+      }
+      .modal {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
   }
   .z-index-1000 {
     z-index: 1000 !important;
