@@ -39,6 +39,14 @@ export default function storeData () {
     if (mainStorage.getItem('notify_desktop')) {
       store.commit('change_notify_desktop', mainStorage.getItem('notify_desktop'))
     }
+
+    if (mainStorage.getItem('nodes')) {
+      try {
+        const nodes = JSON.parse(mainStorage.getItem('nodes'))
+        store.dispatch('nodes/restore', nodes)
+      } catch (e) { }
+    }
+
     var storeInLocalStorage = mainStorage.getItem('storeInLocalStorage')
     if (storeInLocalStorage === 'false') {
       storeInLocalStorage = false
@@ -100,7 +108,11 @@ export default function storeData () {
       } else if (mutation.type === 'change_send_on_enter') {
         mainStorage.setItem('send_on_enter', mutation.payload)
         storeNow = true
+      } else if (mutation.type === 'nodes/useFastest' || mutation.type === 'nodes/toggle') {
+        mainStorage.setItem('nodes', JSON.stringify(state.nodes))
+        storeNow = true
       }
+
       if (mutation.type === 'logout') {
         storeNow = true
       }

@@ -8,10 +8,6 @@ export default {
   toggle (state, payload) {
     const node = state.list[payload.url]
     if (node) {
-      // Vue.set(state.list, payload.url, {
-      //   ...node,
-      //   active: payload.active
-      // })
       node.active = payload.active
     }
   },
