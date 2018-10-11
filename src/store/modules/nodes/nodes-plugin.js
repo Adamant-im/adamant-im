@@ -1,6 +1,8 @@
 import apiClient from '../../../lib/adamant-api-client'
 
 export default store => {
+  apiClient.updateStatus()
+
   store.subscribe(mutation => {
     if (mutation.type === 'nodes/useFastest') {
       apiClient.useFastest = !!mutation.payload

@@ -202,9 +202,7 @@ class ApiClient {
      * after the status update.
      * @type {Promise}
      */
-    this._statusPromise = null
-
-    this.updateStatus()
+    this._statusPromise = Promise.reject(new Error('No compatible nodes at the moment'))
   }
 
   /**
