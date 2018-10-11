@@ -1,6 +1,6 @@
 <template>
   <div class='nodes'>
-    <md-table md-sort="url" md-sort-type="desc" @sort="onSort">
+    <md-table md-sort="url" md-sort-type="desc" @sort="onSort" class="md-table-grey">
       <md-table-header>
         <md-table-row>
           <md-table-head>{{ $t('nodes.active') }}</md-table-head>
@@ -105,9 +105,14 @@ export default {
       text-align: left;
       padding-left: 24px;
       font-size: 16px;
+      max-width: 95%;
+      margin: 10px auto auto auto;
     }
 
     .md-table {
+      max-width: 95%;
+      margin: 25px auto auto auto;
+
       .md-table-header {
         text-align: center;
 
@@ -122,6 +127,11 @@ export default {
 
       .node-offline .md-table-cell {
         color: gray;
+      }
+
+      .md-table-row .md-table-cell:nth-child(2) .md-table-cell-container {
+        text-overflow: ellipsis;
+        overflow: auto;
       }
 
       .md-table-cell .md-table-cell-container {
