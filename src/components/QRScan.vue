@@ -6,12 +6,16 @@
         <div class="modal-body">
           <h3>{{$t('scan.' + this.checkParentName() + '.modal_header') }}</h3>
           <md-progress v-show="loading" md-theme="grey" md-indeterminate></md-progress>
-          <video id="preview"></video>
+          <qrcode-reader
+              :paused="paused"
+              :camera="camera"
+              @init="onInit"
+              @decode="parseHandler">
+          </qrcode-reader>
         </div>
         <div class="modal-footer">
-          <md-button style="max-width: 40px; min-width: 40px; margin-right: 0; padding: 0" v-for="(camera) in cameras" :key="camera.id"
-                     v-if="cameras.length > 1 && camera.id !== activeCameraId"
-                     :title="camera.name" @click.stop="selectCamera(camera)">
+          <md-button style="max-width: 40px; min-width: 40px; margin-right: 0; padding: 0"
+                     @click.stop="switchCamera()">
             <md-icon md-src="/img/Attach/rotate-cam.svg"></md-icon>
           </md-button>
           <md-button class="md-raised" @click="hideModal"> {{ $t('scan.close_button') }} </md-button>
@@ -22,9 +26,21 @@
 </template>
 
 <script>
+import { QrcodeReader } from 'vue-qrcode-reader'
 
 export default {
   name: 'qrscan',
+  components: {
+    QrcodeReader
+  },
+  props: ['modal'],
+  data () {
+    return {
+      loading: true,
+      useRearCamera: true,
+      paused: false
+    }
+  },
   methods: {
     checkParentName () {
       return this.$parent.$options._componentTag || this.$parent.$options.name || this.$parent.name
@@ -32,78 +48,38 @@ export default {
     hideModal () {
       this.$emit('hide-modal')
     },
-    selectCamera: function (camera) {
-      this.activeCameraId = camera.id
-      this.scanner.start(camera)
-    },
-    switch_camera () {
-      if (this.scanner) {
-        this.currentCamera++
-        if (this.cameraList.length <= this.currentCamera) {
-          this.currentCamera = 0
-        }
-        var camera = this.cameraList[this.currentCamera]
-        this.selectCamera(camera)
+    async onInit (promise) {
+      try {
+        this.loading = true
+        await promise
+      } catch (error) {
+        this.$emit('error', error)
+      } finally {
+        this.loading = false
       }
+    },
+    switchCamera () {
+      this.useRearCamera = !this.useRearCamera
     },
     parseHandler (content) {
-      let addressData = this.parseURI(content)
-      if (addressData) {
-        if (this.scanner) {
-          this.scanner.stop()
-        }
-      }
       this.$emit('code-grabbed', content)
       this.hideModal()
     }
   },
-  beforeDestroy: function () {
-    let self = this
-    if (self.scanner) {
-      self.scanner.stop()
-    }
-  },
-  mounted: function () {
-    // Do not remove webpackMode!!!
-    import(
-      /* webpackMode: "lazy" */
-      'instascan').then((Instascan) => {
-      this.loading = false
-      let self = this
-      self.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5, mirror: false })
-      self.scanner.addListener('scan', function (content, image) {
-        self.parseHandler(content)
-      })
-      Instascan.Camera.getCameras().then(function (cameras) {
-        self.cameras = cameras
-        if (cameras.length > 0) {
-          self.activeCameraId = cameras[1] ? cameras[1].id : cameras[0].id
-          self.scanner.start(cameras[1] ? cameras[1] : cameras[0])
-        } else {
-          console.error('No cameras found.')
-        }
-      }).catch(function (e) {
-        console.error(e)
-      })
-    })
-  },
   computed: {
     modalWindow () {
       return this.modal
-    }
-  },
-  watch: {
-  },
-  props: ['modal'],
-  data () {
-    return {
-      scanner: null,
-      activeCameraId: null,
-      cameras: [],
-      scans: [],
-      cameraList: [],
-      currentCamera: false,
-      loading: true
+    },
+    camera () {
+      if (this.useRearCamera) {
+        return {
+          facingMode: { ideal: 'environment' }
+        }
+      } else {
+        return {
+          facingMode: { exact: 'user' }
+        }
+      }
     }
   }
 }

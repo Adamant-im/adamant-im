@@ -38,6 +38,7 @@
     "vue-material": "^0.8.1",
     "vue-picture-input": "^2.1.6",
     "vue-qrcode-component": "^2.1.1",
+    "vue-qrcode-reader": "^1.2.2",
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.11.0",
     "vuex": "^3.0.1",
