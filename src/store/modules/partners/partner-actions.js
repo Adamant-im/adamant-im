@@ -30,7 +30,10 @@ export default {
   rehydrate: {
     root: true,
     handler (context) {
-      context.dispatch('startSync')
+      const passphrase = context.rootGetters.getPassPhrase
+      if (passphrase) {
+        context.dispatch('startSync')
+      }
     }
   },
 

@@ -128,7 +128,7 @@ export default function storeData () {
       if (mutation.type === 'leave_chat') {
         storeNow = true
       }
-      if (mutation.type === 'ajax_start' || mutation.type === 'ajax_end' || mutation.type === 'ajax_end_with_error' || mutation.type === 'start_tracking_new' || mutation.type === 'have_loaded_chats' || mutation.type === 'connect' || mutation.type === 'login') {
+      if (mutation.type === 'ajax_start' || mutation.type === 'ajax_end' || mutation.type === 'ajax_end_with_error' || mutation.type === 'start_tracking_new' || mutation.type === 'have_loaded_chats' || mutation.type === 'connect' || mutation.type === 'login' || mutation.type === 'chatsLoading') {
         return
       }
       if (storeNow) {

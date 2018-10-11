@@ -408,6 +408,7 @@ const store = {
       state.secretKey = false
       state.resentMessages = []
       state.lastVisitedChat = null
+      state.areChatsLoading = false
     },
     stop_tracking_new (state) {
       state.trackNewMessages = false

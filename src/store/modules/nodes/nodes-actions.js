@@ -2,7 +2,6 @@ import apiClient from '../../../lib/adamant-api-client'
 
 export default {
   restore (context, payload = { }) {
-    console.log('RESTORE', payload)
     context.commit('useFastest', !!payload.useFastest)
 
     if (payload.list) {
