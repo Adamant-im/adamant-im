@@ -122,11 +122,11 @@ export default {
       }
 
       .node-inactive .md-table-cell {
-        color: red;
+        color: gray;
       }
 
       .node-offline .md-table-cell {
-        color: gray;
+        color: red;
       }
 
       .md-table-row .md-table-cell:nth-child(2) .md-table-cell-container {
