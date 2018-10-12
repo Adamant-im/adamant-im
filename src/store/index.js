@@ -238,12 +238,13 @@ const store = {
     login (context, payload) {
       return new Promise((resolve, reject) => {
         try {
-          admApi.unlock(payload.passphrase)
-          resolve()
+          const address = admApi.unlock(payload.passphrase)
+          resolve(address)
         } catch (e) {
           reject(e)
         }
-      }).then(() => {
+      }).then(address => {
+        context.commit('currentAccount', { address })
         context.commit('save_passphrase', { passPhrase: payload.passphrase })
         context.commit('mock_messages')
         context.commit('stop_tracking_new')
@@ -295,8 +296,11 @@ const store = {
           // Add the received chat messages to the store
           transactions.forEach(tx => {
             if (!tx) return
-            const mutation = tx.isI18n ? 'add_chat_i18n_message' : 'add_chat_message'
-            context.commit(mutation, tx)
+            if (tx.isI18n) {
+              context.dispatch('add_chat_i18n_message', tx)
+            } else {
+              context.commit('add_chat_message', tx)
+            }
             context.commit('set_last_chat_height', tx.height)
           })
 
