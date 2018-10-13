@@ -172,7 +172,6 @@ export function storeValue (key, value, encode = false) {
 
   const transaction = newTransaction(Transactions.STATE)
   transaction.asset = { state: { key, value, type: 0 } }
-  transaction.signature = utils.transactionSign(transaction, myKeypair)
   return client.post('/api/states/store', (endpoint) => {
     return { transaction: signTransaction(transaction, endpoint.timeDelta) }
   })
@@ -239,7 +238,6 @@ export function sendTokens (to, amount) {
   const transaction = newTransaction(Transactions.SEND)
   transaction.amount = utils.prepareAmount(amount)
   transaction.recipientId = to
-  transaction.signature = utils.transactionSign(transaction, myKeypair)
 
   return client.post('/api/transactions/process', (endpoint) => {
     return { transaction: signTransaction(transaction, endpoint.timeDelta) }

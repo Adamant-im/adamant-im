@@ -197,12 +197,20 @@ class ApiClient {
       active: node.active
     })
 
+    this._onInit = null
+
     /**
      * This promise is resolved whenever we get at least one compatible online node
      * after the status update.
      * @type {Promise}
      */
-    this._statusPromise = Promise.reject(new Error('No compatible nodes at the moment'))
+    this._statusPromise = new Promise((resolve, reject) => {
+      this._onInit = error => {
+        if (error) reject(error)
+        else resolve()
+        this._onInit = null
+      }
+    })
   }
 
   /**
@@ -241,7 +249,13 @@ class ApiClient {
           setTimeout(() => this.updateStatus(), 1000)
         }
       })
-    })
+    }).then(
+      () => { if (this._onInit) this._onInit() },
+      error => {
+        if (this._onInit) this._onInit(error)
+        return Promise.reject(error)
+      }
+    )
   }
 
   /**
