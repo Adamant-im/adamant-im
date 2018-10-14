@@ -59,6 +59,7 @@ export default {
             delete copyState.partners
             delete copyState.chats
             delete copyState.passPhrase
+            console.log('copy state', JSON.parse(JSON.stringify(copyState)))
             updateCommonItem(db, encryptData(JSON.stringify(copyState)))
             // Save chats
             const chats = this.$store.getters.getChats
