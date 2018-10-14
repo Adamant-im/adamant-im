@@ -167,7 +167,6 @@ function install (Vue) {
     return axios.get(this.getAddressString() + '/api/accounts/getPublicKey?address=' + recipientAddress).then(response => {
       if (response.data.success) {
         window.pk_cache[recipientAddress] = response.data.publicKey
-        this.$store.commit('save_partner_public_key', {recipientAddress: recipientAddress, publicKey: response.data.publicKey})
         return response.data.publicKey
       }
 

@@ -150,8 +150,7 @@ const store = {
     currentChat: false,
     storeInLocalStorage: false,
     lastVisitedChat: '',
-    userPasswordExists: sessionStorage.getItem('userPassword') !== null,
-    partnerKeys: {}
+    userPasswordExists: sessionStorage.getItem('userPassword') !== null
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
@@ -306,9 +305,6 @@ const store = {
     send_error (state, payload) {
       state.lastErrorMsg = payload.msg
     },
-    save_partner_public_key(state, payload) {
-      state.partnerKeys[payload.recipientAddress] = payload.publicKey
-    },
     logout (state) {
       state.passPhrase = ''
       state.address = ''
@@ -336,7 +332,6 @@ const store = {
       state.secretKey = false
       state.resentMessages = []
       state.lastVisitedChat = null
-      state.partnerKeys = {}
     },
     stop_tracking_new (state) {
       state.trackNewMessages = false
@@ -561,9 +556,6 @@ const store = {
     },
     getLastChatHeight: state => {
       return state.lastChatHeight
-    },
-    getPartnerPublicKeys: state => {
-      return state.partnerKeys
     }
   },
   modules: {
