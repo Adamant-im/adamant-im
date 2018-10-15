@@ -47,6 +47,7 @@ export default {
       this.$store.commit('change_storage_method', this.$store.state.storeInLocalStorage)
     },
     setPassword () {
+      sessionStorage.removeItem('adm-persist')
       crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS,
         UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encryptedPassword) => {
           if (err) throw err
@@ -75,7 +76,6 @@ export default {
           this.userPasswordCheckbox = false
           this.$store.commit('user_password_exists', true)
           this.$store.commit('change_storage_method', true)
-          sessionStorage.removeItem('adm-persist')
           this.close()
         })
     },
