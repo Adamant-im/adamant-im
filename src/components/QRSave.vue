@@ -7,7 +7,7 @@
           <h3>{{ $t(`qr_save.${this.getParentName()}.modal_header`) }}</h3>
           <md-layout md-flex="66" md-flex-xsmall="80" md-align="center" style="margin-top: 40px;">
             <a href="#" @click.prevent="downloadQRCode">
-              <qr-code :text="text" ref="qrCode"></qr-code>
+              <qr-code :text="text" ref="qrCode" style="padding: 5px; border: 5px solid #000;"></qr-code>
             </a>
           </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
@@ -39,9 +39,8 @@ export default {
     },
     downloadQRCode () {
       const imgUrl = this.$refs.qrCode.qrCode._oDrawing._elImage.src
-      const base64Data = imgUrl.slice(22, imgUrl.length)
-      const byteCharacters = b64toBlob(base64Data)
-      const blob = new Blob([byteCharacters], { type: 'image/png' })
+      const base64Data = imgUrl.slice(22)
+      const blob = b64toBlob(base64Data, 'image/png')
 
       FileSaver.saveAs(blob, 'adamant-im.png')
     },
