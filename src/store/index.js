@@ -193,7 +193,7 @@ const store = {
           to: partner,
           message: payload.message
         }
-        return admApi.sendMessage(sent_funds_message).then(response => {
+        return admApi.sendMessage(params).then(response => {
           if (response.success) {
             replaceMessageAndDelete(chats[partner].messages, response.transactionId, payload.id, 'sent')
             updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', response.transactionId)
