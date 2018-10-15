@@ -33,7 +33,7 @@ export default {
     getAdmDataBase().then((db) => {
       getPassPhrase(db).then((encodedPassPhrase) => {
         if (encodedPassPhrase) {
-          sessionStorage.setItem('storeInLocalStorage', 'true')
+          // sessionStorage.setItem('storeInLocalStorage', 'true')
           this.$store.commit('user_password_exists', true)
         }
       })
