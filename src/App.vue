@@ -29,9 +29,9 @@ import {clearDb, getAdmDataBase, getPassPhrase} from './lib/indexedDb'
 export default {
   name: 'app',
   mounted: function () {
+    console.log('im here')
     sessionStorage.removeItem('adm-persist')
     getAdmDataBase().then((db) => {
-      console.log('im here')
       getPassPhrase(db).then((encodedPassPhrase) => {
         if (encodedPassPhrase) {
           sessionStorage.setItem('storeInLocalStorage', 'true')
