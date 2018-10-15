@@ -29,7 +29,6 @@ import {clearDb, getAdmDataBase, getPassPhrase} from './lib/indexedDb'
 export default {
   name: 'app',
   mounted: function () {
-    console.log('im here')
     sessionStorage.removeItem('adm-persist')
     getAdmDataBase().then((db) => {
       getPassPhrase(db).then((encodedPassPhrase) => {
