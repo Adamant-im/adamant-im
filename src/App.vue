@@ -31,6 +31,7 @@ export default {
   mounted: function () {
     sessionStorage.removeItem('adm-persist')
     getAdmDataBase().then((db) => {
+      console.log('im here')
       getPassPhrase(db).then((encodedPassPhrase) => {
         if (encodedPassPhrase) {
           sessionStorage.setItem('storeInLocalStorage', 'true')
