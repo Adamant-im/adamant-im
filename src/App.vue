@@ -29,10 +29,11 @@ import {clearDb, getAdmDataBase, getPassPhrase} from './lib/indexedDb'
 export default {
   name: 'app',
   mounted: function () {
-    sessionStorage.removeItem('adm-persist')
+    window.privateKey = null
     getAdmDataBase().then((db) => {
       getPassPhrase(db).then((encodedPassPhrase) => {
         if (encodedPassPhrase) {
+          sessionStorage.removeItem('adm-persist')
           sessionStorage.setItem('storeInLocalStorage', 'true')
           this.$store.commit('user_password_exists', true)
         }
