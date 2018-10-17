@@ -70,15 +70,9 @@ import Spinner from '@/components/Spinner.vue'
 import validateAddress from '../lib/validateAddress'
 import { Cryptos, CryptoAmountPrecision, Fees, isErc20 } from '../lib/constants'
 import { sendTokens, sendMessage } from '../lib/adamant-api'
-import Queue from 'promise-queue'
 import Vue from 'vue'
 import utils from '../lib/adamant'
-import {replaceMessageAndDelete, updateLastChatMessage} from '../store'
-
-var maxConcurrent = 1
-var maxQueue = Infinity
-Queue.configure(window.Promise)
-var queue = new Queue(maxConcurrent, maxQueue)
+import {changeMessageClass, replaceMessageAndDelete, updateLastChatMessage} from '../store'
 
 export default {
   name: 'home',
@@ -138,7 +132,7 @@ export default {
           message: message.message,
           direction: 'from',
           confirm_class: 'sent',
-          id: this.$store.getters.getCurrentChatMessageCount + partnerTransactionsCount + 1,
+          id: this.$store.getters.getCurrentChatMessageCount + partnerTransactionsCount + 1
         }
         let currentDialogs = chats[partner]
         if (handledPayload.message === '') {
@@ -160,7 +154,7 @@ export default {
             handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
             updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', response.transactionId)
           } else {
-            changeMessageClass(chats[partner].messages, payload.id, 'rejected')
+            changeMessageClass(chats[partner].messages, handledPayload.id, 'rejected')
             handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
             updateLastChatMessage(currentDialogs, handledPayload, 'rejected', 'from', message.id)
           }

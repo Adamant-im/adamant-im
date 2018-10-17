@@ -85,7 +85,7 @@ export function replaceMessageAndDelete (messages, newMessageId, existMessageId,
   }
 }
 
-function changeMessageClass (messages, id, cssClass) {
+export function changeMessageClass (messages, id, cssClass) {
   Vue.set(messages[id], 'confirm_class', cssClass)
 }
 

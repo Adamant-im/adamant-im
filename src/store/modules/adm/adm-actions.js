@@ -44,16 +44,16 @@ export default {
         let chats = context.rootGetters.getChats
         response.transactions.forEach(tx => {
           for (let chat in chats) {
-            let chat = chats[chat]
-            for (let message in chat.messages) {
-              let messageItem = chat.messages[message].id
+            let chatItem = chats[chat]
+            for (let message in chatItem.messages) {
+              let messageItem = chatItem.messages[message].id
               if (messageItem === tx.id) {
-                Vue.set(chat.messages, tx.id, {
+                Vue.set(chatItem.messages, tx.id, {
                   ...chats[tx.recipientId].messages[tx.id],
                   confirm_class: 'confirmed'
                 })
-                if (chat.last_message.id === tx.id) {
-                  chat.last_message.confirm_class = 'confirmed'
+                if (chatItem.last_message.id === tx.id) {
+                  chatItem.last_message.confirm_class = 'confirmed'
                 }
               }
             }
