@@ -43,16 +43,18 @@ export default {
       if (Array.isArray(response.transactions) && response.transactions.length) {
         let chats = context.rootGetters.getChats
         response.transactions.forEach(tx => {
-          if (chats[tx.recipientId] !== undefined) {
-            let messages = chats[tx.recipientId].messages
-            Vue.set(messages, tx.id, {
-              ...chats[tx.recipientId].messages[tx.id],
-              confirm_class: 'confirmed'
-            })
-            if (chats[tx.recipientId].last_message.id === tx.id && chats[tx.recipientId].last_message.direction === 'from') {
-              chats[tx.recipientId].last_message = {
-                ...chats[tx.recipientId].last_message,
-                confirm_class: 'confirmed'
+          for (let chat in chats) {
+            let chat = chats[chat]
+            for (let message in chat.messages) {
+              let messageItem = chat.messages[message].id
+              if (messageItem === tx.id) {
+                Vue.set(chat.messages, tx.id, {
+                  ...chats[tx.recipientId].messages[tx.id],
+                  confirm_class: 'confirmed'
+                })
+                if (chat.last_message.id === tx.id) {
+                  chat.last_message.confirm_class = 'confirmed'
+                }
               }
             }
           }

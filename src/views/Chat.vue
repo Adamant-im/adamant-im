@@ -259,7 +259,6 @@ export default {
         .filter(x => !chat[x.id])
 
       const messages = Object.values(chat).concat(transactions)
-      console.log(messages)
       return messages.sort(compare)
     },
     readOnly: function () {

@@ -143,9 +143,11 @@ export default {
         let currentDialogs = chats[partner]
         if (handledPayload.message === '') {
           handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
+          handledPayload.message = handledPayload.message.replace(/<p>|<\/p>/g, '')
           updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', handledPayload.id)
           handledPayload.message = ''
         } else {
+          handledPayload.message = handledPayload.message.replace(/<p>|<\/p>/g, '')
           updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', handledPayload.id)
         }
         Vue.set(chats[partner].messages, handledPayload.id, handledPayload)
