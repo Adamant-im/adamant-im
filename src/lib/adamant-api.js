@@ -372,6 +372,8 @@ function decodeChat (transaction, key) {
   const chat = transaction.asset.chat
   const message = utils.decodeMessage(chat.message, key, myKeypair.privateKey, chat.own_message)
 
+  if (!message) return transaction
+
   if (chat.type === 2) {
     // So-called rich-text messages of type 2 are actually JSON objects
     transaction.message = JSON.parse(message)

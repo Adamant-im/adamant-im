@@ -295,7 +295,7 @@ const store = {
 
           // Add the received chat messages to the store
           transactions.forEach(tx => {
-            if (!tx) return
+            if (!tx || !tx.message) return
             if (tx.isI18n) {
               context.dispatch('add_chat_i18n_message', tx)
             } else {
