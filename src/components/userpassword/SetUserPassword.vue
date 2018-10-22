@@ -5,7 +5,7 @@
     </md-dialog-title>
     <md-dialog-content md-flex="66" sm-flex="90" style="margin-top: -15px;">
       <md-input-container>
-        <md-input v-model="userPasswordValue" type="password" :placeholder="$t('login_via_password.popup_hint')"></md-input>
+        <md-input v-model="userPasswordValue" autocomplete="off" type="password" :placeholder="$t('login_via_password.popup_hint')"></md-input>
       </md-input-container>
       <div style="display: flex; flex-direction: row;">
         <md-checkbox v-model="userPasswordCheckbox" style="display: flex; align-items: center">
