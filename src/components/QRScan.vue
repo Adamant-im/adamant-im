@@ -23,6 +23,8 @@
 
 <script>
 
+import utils from '../lib/adamant'
+
 export default {
   name: 'qrscan',
   methods: {
@@ -47,7 +49,7 @@ export default {
       }
     },
     parseHandler (content) {
-      let addressData = this.parseURI(content)
+      let addressData = utils.parseURI(content)
       if (addressData) {
         if (this.scanner) {
           this.scanner.stop()

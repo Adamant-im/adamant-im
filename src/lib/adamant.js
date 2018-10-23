@@ -366,6 +366,14 @@ adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
     nonce = hexToBytes(nonce)
   }
 
+  if (typeof senderPublicKey === 'string') {
+    senderPublicKey = hexToBytes(senderPublicKey)
+  }
+
+  if (typeof privateKey === 'string') {
+    privateKey = hexToBytes(privateKey)
+  }
+
   const DHPublicKey = ed2curve.convertPublicKey(senderPublicKey)
   const DHSecretKey = ed2curve.convertSecretKey(privateKey)
   const decrypted = nacl.box.open(msg, nonce, DHPublicKey, DHSecretKey)
@@ -439,6 +447,10 @@ adamant.decodeValue = function (source, privateKey, nonce) {
  */
 adamant.prepareAmount = function (admAmount) {
   return Math.round(Number(admAmount) * 100000000)
+}
+
+adamant.toAdm = function (rawAmount) {
+  return Number(rawAmount) / 100000000
 }
 
 export default adamant

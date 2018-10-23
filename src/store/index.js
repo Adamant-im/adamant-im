@@ -8,8 +8,11 @@ import ethModule from './modules/eth'
 import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
+import nodesModule from './modules/nodes'
 
 import delegatesModule from './modules/delegates'
+
+import nodesPlugin from './modules/nodes/nodes-plugin'
 
 import * as admApi from '../lib/adamant-api'
 import {base64regex, WelcomeMessage, Cryptos} from '../lib/constants'
@@ -148,22 +151,16 @@ const store = {
     lastChatHeight: 0,
     currentChat: false,
     storeInLocalStorage: false,
-    lastVisitedChat: ''
+    lastVisitedChat: '',
+    areChatsLoading: false
   },
   actions: {
     add_chat_i18n_message ({commit}, payload) {
       payload.message = i18n.t(payload.message)
       commit('add_chat_message', payload)
     },
-    afterLogin ({ commit }, passPhrase) {
-      commit('save_passphrase', {'passPhrase': passPhrase})
-      admApi.unlock(passPhrase)
-    },
     rehydrate ({ getters }) {
       admApi.unlock(getters.getPassPhrase)
-    },
-    updateAccount ({ commit }, account) {
-      commit('login', account)
     },
     add_message_to_queue ({ getters }, payload) {
       if (payload.message === undefined || payload.message.trim() === '') {
@@ -238,6 +235,120 @@ const store = {
           updateLastChatMessage(currentChat, payload, 'sent', 'from', response.transactionId)
         })
       })
+    },
+    /**
+     * Performs application login
+     * @param {any} context
+     * @param {{passphrase: string}} payload action payload
+     */
+    login (context, payload) {
+      return new Promise((resolve, reject) => {
+        try {
+          const address = admApi.unlock(payload.passphrase)
+          resolve(address)
+        } catch (e) {
+          reject(e)
+        }
+      }).then(address => {
+        context.commit('currentAccount', { address })
+        context.commit('save_passphrase', { passPhrase: payload.passphrase })
+        context.commit('mock_messages')
+        context.commit('stop_tracking_new')
+
+        context.dispatch('afterLogin', payload.passphrase)
+        context.dispatch('loadChats')
+      })
+    },
+    /**
+     * Updates current account details. If an account does not yet exist in the ADAMANT
+     * network, it is created.
+     */
+    updateAccount (context) {
+      context.commit('ajax_start')
+      return admApi.getCurrentAccount().then(
+        (account) => {
+          context.commit('currentAccount', account)
+          context.commit('ajax_end')
+        },
+        (error) => {
+          console.error(error)
+          context.commit('ajax_end_with_error')
+          return Promise.reject(error)
+        }
+      )
+    },
+    /**
+     * Retrieve the chat messages for the current account.
+     * @param {any} context action context
+     * @param {{height: number, offset: number, recurse: boolean}} payload height and offset
+     */
+    loadChats (context, payload = { }) {
+      if (context.state.areChatsLoading && !payload.recurse) return
+
+      const height = Number.isFinite(payload.height)
+        ? payload.height
+        : (context.state.lastChatHeight || 0)
+      const offset = payload.offset || 0
+
+      context.commit('ajax_start')
+      context.commit('chatsLoading', true)
+
+      admApi.getChats(height, offset).then(
+        result => {
+          context.commit('ajax_end')
+
+          const { count, transactions } = result
+
+          // Add the received chat messages to the store
+          transactions.forEach(tx => {
+            if (!tx || !tx.message) return
+            if (tx.isI18n) {
+              context.dispatch('add_chat_i18n_message', tx)
+            } else {
+              context.commit('add_chat_message', tx)
+            }
+            context.commit('set_last_chat_height', tx.height)
+          })
+
+          // We need to check if there are more chats to fetch.
+          // API is supposed to return the total number of the chats available (the `count` field), but it may not.
+          // In the latter case we check the number of the transactions returned: if its 100 (default chunk size),
+          // we assume that more transactions may be available.
+          const hasMore = Number.isFinite(count)
+            ? count > (offset + transactions.length)
+            : transactions.length === 100 // a dirty workaround, actually
+
+          // If there are more messages to retrieve, go for'em
+          if (hasMore) {
+            context.dispatch('loadChats', {
+              height,
+              offset: offset + transactions.length,
+              recurse: true
+            })
+          } else {
+            context.commit('have_loaded_chats')
+            context.commit('chatsLoading', false)
+          }
+        },
+        error => {
+          console.warn('Failed to retrieve chat messages', { height, offset, error })
+          context.commit('ajax_end_with_error')
+          context.commit('chatsLoading', false)
+        }
+      )
+    },
+    /**
+     * Updates current application status: balance, chat messages, transactions and so on
+     * @param {any} context Vuex action context
+     */
+    update (context) {
+      if (context.getters.getPassPhrase && !context.state.ajaxIsOngoing) {
+        context.dispatch('updateAccount')
+        context.commit('start_tracking_new')
+        context.dispatch('loadChats')
+        // TODO: Remove this, when it will be possible to fetch transactions together with the chat messages
+        context.dispatch('adm/getNewTransactions')
+      }
     }
   },
   mutations: {
@@ -307,6 +418,7 @@ const store = {
       state.secretKey = false
       state.resentMessages = []
       state.lastVisitedChat = null
+      state.areChatsLoading = false
     },
     stop_tracking_new (state) {
       state.trackNewMessages = false
@@ -325,10 +437,7 @@ const store = {
     },
     mark_as_read (state, payload) {
       if (state.newChats[payload]) {
-        // var wasNew = parseInt(state.newChats[payload])
         Vue.set(state.newChats, payload, 0)
-        // var newTotal = parseInt(state.newChats['total']) - wasNew
-        // Vue.set(state.newChats, 'total', newTotal)
       }
     },
     login (state, payload) {
@@ -341,10 +450,6 @@ const store = {
         state.is_new_account = payload.is_new_account
       }
     },
-    // transaction_info (state, payload) {
-    //   payload.direction = (state.address === payload.recipientId) ? 'to' : 'from'
-    //   Vue.set(state.transactions, payload.id, payload)
-    // },
     connect (state, payload) {
       state.connectionString = payload.string
     },
@@ -389,11 +494,6 @@ const store = {
         state.lastChatHeight = payload
       }
     },
-    // set_last_transaction_height (state, payload) {
-    //   if (state.lastTransactionHeight < payload) {
-    //     state.lastTransactionHeight = payload
-    //   }
-    // },
     add_chat_message (state, payload) {
       var me = state.address
       var partner = ''
@@ -427,7 +527,6 @@ const store = {
         if (state.notifySound) {
           try {
             window.audio.playSound('newMessageNotification')
-            // document.getElementById('messageSound').play()
           } catch (e) {
           }
         }
@@ -483,9 +582,16 @@ const store = {
       payload.direction = direction
       Vue.set(state.chats[partner].messages, payload.id, payload)
       scrollToEnd()
+    },
+    currentAccount (state, payload) {
+      state.address = payload.address
+      state.balance = payload.balance
+    },
+    chatsLoading (state, payload) {
+      state.areChatsLoading = payload
     }
   },
-  plugins: [storeData()],
+  plugins: [storeData(), nodesPlugin],
   getters: {
     // Returns decoded pass phrase from store
     getPassPhrase: state => {
@@ -522,7 +628,8 @@ const store = {
     bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
     adm: admModule, // ADM transfers
     partners: partnersModule, // Partners: display names, crypto addresses and so on
-    delegates: delegatesModule // Voting for delegates screen
+    delegates: delegatesModule, // Voting for delegates screen
+    nodes: nodesModule // ADAMANT nodes
   }
 }
 

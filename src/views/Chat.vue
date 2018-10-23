@@ -12,7 +12,7 @@
         </md-input-container>
       </h1>
     </md-toolbar>
-      <md-layout id="msgContainer" md-align="start" md-gutter="16" class="chat_messages">
+      <md-layout id="msgContainer" md-align="start" md-gutter="16" class="chat_messages" ref="messagesContainer">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
             <chat-entry :readOnly="readOnly" :message="message"></chat-entry>
           </md-layout>
@@ -230,7 +230,7 @@ export default {
     this.$store.commit('mark_as_read', this.$route.params.partner)
     setTimeout((function (self) {
       return function () {
-        self.needToScroll()
+        self.scrollToEnd()
       }
     })(this),
     10)
@@ -286,7 +286,7 @@ export default {
       this.$store.commit('mark_as_read', value)
       setTimeout((function (self) {
         return function () {
-          self.needToScroll()
+          self.scrollToEnd()
         }
       })(this),
       10)
