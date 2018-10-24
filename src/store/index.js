@@ -122,6 +122,7 @@ function scrollToEnd () {
 const store = {
   state: {
     address: '',
+    darkTheme: false,
     language: defaultLanguage,
     passPhrase: '',
     connectionString: '',
@@ -139,6 +140,12 @@ const store = {
     notifyDesktop: false,
     sendOnEnter: false,
     showBottom: true,
+    snackbarMessage: {
+      text: 'Что-то не так',
+      color: 'error',
+      timeout: 3000,
+      visibility: false
+    },
     partnerName: '',
     partnerDisplayName: '',
     partners: {
@@ -277,6 +284,9 @@ const store = {
         }
       )
     },
+    toggleDarkTheme (context) {
+      context.commit('setDarkTheme')
+    },
     /**
      * Retrieve the chat messages for the current account.
      * @param {any} context action context
@@ -352,6 +362,9 @@ const store = {
     }
   },
   mutations: {
+    setDarkTheme (state) {
+      state.darkTheme = !state.darkTheme
+    },
     last_visited_chat (state, payload) {
       state.lastVisitedChat = payload
     },
@@ -593,6 +606,7 @@ const store = {
   },
   plugins: [storeData(), nodesPlugin],
   getters: {
+    getDarkTheme: state => state.darkTheme,
     // Returns decoded pass phrase from store
     getPassPhrase: state => {
       if (state.passPhrase.match(base64regex)) {

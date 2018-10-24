@@ -1,5 +1,29 @@
 <template>
-  <div id="app">
+  <v-app :dark="getDarkTheme">
+    <v-content>
+      <router-view/>
+    </v-content>
+    <v-footer fixed app>
+      <v-layout row>
+        <v-flex xs12 >
+          <v-layout row wrap>
+            <v-flex xs4 sm3>
+
+            </v-flex>
+            <v-flex xs4 sm3>
+
+            </v-flex>
+            <v-flex xs4 sm3>
+
+            </v-flex>
+            <v-flex hidden-xs-only sm3 class="text-sm-right">
+            </v-flex>
+          </v-layout>
+        </v-flex>
+      </v-layout>
+    </v-footer>
+    <Snackbar :message="$store.state.snackbarMessage"></Snackbar>
+
     <md-theme md-name="grey">
       <main>
         <router-view></router-view>
@@ -18,15 +42,19 @@
     </md-theme>
     <div class="forbid" v-if="disabled" style="display: table;"><div style="display: table-cell; vertical-align: middle;">{{ $t('login.device_unsupported') }}</div></div>
     <audio ref="messageSound" class="newMessageNotification" id="messageSound" src="/sound/bbpro_link.mp3"></audio>
-
-  </div>
+  </v-app>
 </template>
 
 <script>
 import i18n from './i18n'
+import { mapGetters } from 'vuex'
+import Snackbar from '@/components/common/Snackbar'
 
 export default {
   name: 'app',
+  components: {
+    Snackbar
+  },
   mounted: function () {
     this.checkChatPage(this.$router.currentRoute.path)
     setInterval(
@@ -83,6 +111,9 @@ export default {
     }
   },
   methods: {
+    showSnack (text, color = 'error') {
+      this.$store.commit('setMessage', { snackbar_visibility: true, text, color })
+    },
     exitme () {
       this.$store.commit('logout')
       this.$store.dispatch('reset')
@@ -93,6 +124,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'getDarkTheme'
+    ]),
     footerCss () {
       if (this.$store.getters.getPassPhrase) {
         return 'display:block'
