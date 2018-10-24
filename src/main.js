@@ -1,4 +1,6 @@
+import '@babel/polyfill'
 import Vue from 'vue'
+import './plugins/vuetify'
 import App from './App.vue'
 import router from './router'
 import './registerServiceWorker'
@@ -13,6 +15,8 @@ import 'vue-material/dist/vue-material.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import packageJSON from '../package.json'
 import storeConfig from './store'
+import 'roboto-fontface/css/roboto/roboto-fontface.css'
+import '@mdi/font/css/materialdesignicons.css'
 
 Vue.use(Vuex)
 Vue.use(VueMaterial)
@@ -33,12 +37,12 @@ router.beforeEach((to, from, next) => {
 
       next()
     } else {
-      next({name: 'Login'})
+      next({ name: 'Login' })
     }
   } else {
     if (to.name === 'Login' && isLogged) {
       store.commit('leave_chat')
-      next({name: 'Chats'})
+      next({ name: 'Chats' })
     } else {
       next()
     }
