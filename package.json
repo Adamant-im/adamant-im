@@ -11,6 +11,7 @@
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
+    "@chenfengyuan/vue-qrcode": "^1.0.0",
     "@stablelib/utf8": "^0.10.1",
     "abi-decoder": "^1.2.0",
     "axios": "^0.18.0",
@@ -36,7 +37,6 @@
     "vue-i18n": "^8.0.0",
     "vue-material": "^0.8.1",
     "vue-picture-input": "^2.1.6",
-    "vue-qrcode-component": "^2.1.1",
     "vue-qrcode-reader": "^1.2.2",
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.11.0",

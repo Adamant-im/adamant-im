@@ -7,7 +7,7 @@
           <h3>{{ $t(`qr_save.${this.getParentName()}.modal_header`) }}</h3>
           <md-layout md-flex="66" md-flex-xsmall="80" md-align="center" style="margin-top: 40px;">
             <a href="#" @click.prevent="downloadQRCode">
-              <qr-code :text="text" ref="qrCode" style="padding: 5px; border: 5px solid #000;"></qr-code>
+              <qr-code :value="text" :options="{width: 256, margin: 1}" tag="img" ref="qrCode" style="border: 5px solid #000;"></qr-code>
             </a>
           </md-layout>
           <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
@@ -23,11 +23,15 @@
 </template>
 
 <script>
+import VueQrcode from '@chenfengyuan/vue-qrcode'
 import b64toBlob from 'b64-to-blob'
 import FileSaver from 'file-saver'
 
 export default {
   name: 'QRSave',
+  components: {
+    'qr-code': VueQrcode
+  },
   props: ['text'],
   methods: {
     showErrorMessage (errorMessage) {
@@ -38,7 +42,7 @@ export default {
       return this.$parent.$options._componentTag || this.$parent.$options.name || this.$parent.name
     },
     downloadQRCode () {
-      const imgUrl = this.$refs.qrCode.qrCode._oDrawing._elImage.src
+      const imgUrl = this.$refs.qrCode.$el.src
       const base64Data = imgUrl.slice(22)
       const blob = b64toBlob(base64Data, 'image/png')
 

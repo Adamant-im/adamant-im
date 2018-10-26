@@ -7,7 +7,6 @@ import i18n from './i18n'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 import VueMaterial from 'vue-material'
-import VueQRCodeComponent from 'vue-qrcode-component'
 import VueHazeServerApi from './lib/adamantServerApi'
 import VueFormatters from './lib/formatters'
 import 'vue-material/dist/vue-material.css'
@@ -20,7 +19,6 @@ Vue.use(VueMaterial)
 Vue.use(VueClipboards)
 Vue.use(VueHazeServerApi)
 Vue.use(VueFormatters)
-Vue.component('qr-code', VueQRCodeComponent)
 
 const store = new Vuex.Store(storeConfig)
 document.title = i18n.t('app_title')
