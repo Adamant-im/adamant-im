@@ -36,4 +36,5 @@ do
 done
 touch ./dist/CORS
 echo '*' > ./dist/CORS
+cp ./dist/index.html ./dist/200.html
 
