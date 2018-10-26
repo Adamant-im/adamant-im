@@ -5,7 +5,6 @@
       <div class="modal">
         <div class="modal-body">
           <h3>{{ $t(`scan.${this.getParentName()}.modal_header`) }}</h3>
-          <md-progress v-show="loading" md-theme="grey" md-indeterminate></md-progress>
           <picture-input ref="pictureInput" @change="onImageChange" :crop="false" :hideChangeButton="true" width="200" height="200" buttonClass="md-button md-raised md-theme-grey"></picture-input>
         </div>
         <div class="modal-footer">
@@ -31,7 +30,6 @@ export default {
   props: [],
   data () {
     return {
-      loading: false,
       QrReader: new QrCodeReader(),
       errorMessage: ''
     }
@@ -45,14 +43,12 @@ export default {
       return this.$parent.$options._componentTag || this.$parent.$options.name || this.$parent.name
     },
     onImageChange (imageUrl) {
-      this.loading = true
       this.$refs.pictureInput.removeImage()
       setTimeout(() => {
         this.QrReader.decode(imageUrl)
       }, 0)
     },
     onQrDecode (error, result) {
-      this.loading = false
       if (!error) {
         this.parseHandler(result.result)
       } else {
