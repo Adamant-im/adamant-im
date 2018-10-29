@@ -255,8 +255,8 @@ const store = {
         context.commit('mock_messages')
         context.commit('stop_tracking_new')
 
+        context.dispatch('update')
         context.dispatch('afterLogin', payload.passphrase)
-        context.dispatch('loadChats')
       })
     },
     /**
