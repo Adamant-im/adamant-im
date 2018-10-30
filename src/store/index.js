@@ -349,6 +349,19 @@ const store = {
         // TODO: Remove this, when it will be possible to fetch transactions together with the chat messages
         context.dispatch('adm/getNewTransactions')
       }
+    },
+    /** Starts new chat with the specified address */
+    startChat (context, { address, displayName }) {
+      return admApi.getPublicKey(address).then((key) => {
+        if (!key) throw new Error('not_found')
+        context.commit('create_chat', this.targetAddress)
+        context.commit('select_chat', this.targetAddress)
+        const partner = context.state.partnerName
+        const currentDisplayName = context.getters['partners/displayName'](partner)
+        if (!currentDisplayName || currentDisplayName.length === 0) {
+          context.commit('partners/displayName', { partner, displayName })
+        }
+      })
     }
   },
   mutations: {
