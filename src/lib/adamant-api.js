@@ -65,7 +65,7 @@ export function getCurrentAccount () {
     .then(response => {
       if (response.success) {
         return response.account
-      } else if (response.error === 'Address not found') {
+      } else if (response.error === 'Account not found') {
         // Create account if it does not yet exist
         return client.post('/api/accounts/new', { publicKey }).then(response => {
           if (response.error) throw new Error(response.error)
