@@ -102,23 +102,6 @@ function updateLastChatMessage (currentDialogs, payload, confirmClass, direction
   }
 }
 
-function scrollToEnd () {
-  const element = document.getElementById('msgContainer')
-  if (!element) {
-    return
-  }
-  const scrollTop = element.scrollTop
-  const scrollHeight = element.scrollHeight
-  const elementHeight = element.offsetHeight
-  const childrenCount = element.childNodes.length
-  const lastElementHeight = element.childNodes[childrenCount - 3].offsetHeight
-  if (scrollHeight - (elementHeight + scrollTop) < lastElementHeight) {
-    setTimeout(function () {
-      element.scrollTop = element.scrollHeight + 1000
-    }, 12)
-  }
-}
-
 const store = {
   state: {
     address: '',
@@ -349,6 +332,19 @@ const store = {
         // TODO: Remove this, when it will be possible to fetch transactions together with the chat messages
         context.dispatch('adm/getNewTransactions')
       }
+    },
+    /** Starts new chat with the specified address */
+    startChat (context, { address, displayName }) {
+      return admApi.getPublicKey(address).then((key) => {
+        if (!key) throw new Error('not_found')
+        context.commit('create_chat', address)
+        context.commit('select_chat', address)
+        const partner = context.state.partnerName
+        const currentDisplayName = context.getters['partners/displayName'](partner)
+        if (!currentDisplayName || currentDisplayName.length === 0) {
+          context.commit('partners/displayName', { partner, displayName })
+        }
+      })
     }
   },
   mutations: {
@@ -581,7 +577,6 @@ const store = {
       Vue.set(state.chats, partner, currentDialogs)
       payload.direction = direction
       Vue.set(state.chats[partner].messages, payload.id, payload)
-      scrollToEnd()
     },
     currentAccount (state, payload) {
       state.address = payload.address
