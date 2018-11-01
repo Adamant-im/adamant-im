@@ -22,6 +22,12 @@
                       </md-table-row>
                   </md-table-body>
               </md-table>
+
+              <div class='settings-item'>
+                <md-button class="votes-button" @click="$router.push({ name: 'Nodes' })">
+                  {{ $t('options.nodes_list') }}
+                </md-button>
+              </div>
           </md-card-content>
       </md-card>
 
@@ -214,5 +220,10 @@ export default {
       .settings .version {
           right: 1rem;
       }
+  }
+
+  .settings .settings-item {
+    font-size: 16px;
+    text-align: left;
   }
 </style>

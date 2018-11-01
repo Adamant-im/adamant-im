@@ -33,10 +33,11 @@ export default {
    * @param {Object.<string, {displayName: string}>} contacts contacts list
    */
   contactList (state, contacts) {
-    if (!contacts) return
-    Object.keys(contacts).forEach(uid => {
-      state.list[uid] = Object.assign({ }, state.list[uid], contacts[uid])
-    })
+    if (contacts) {
+      Object.keys(contacts).forEach(uid => {
+        state.list[uid] = Object.assign({ }, state.list[uid], contacts[uid])
+      })
+    }
     state.lastUpdate = Date.now()
   }
 }

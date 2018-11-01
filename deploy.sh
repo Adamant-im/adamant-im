@@ -34,3 +34,7 @@ do
   # https://en.wikipedia.org/wiki/Domain_Name_System#Domain_name_syntax
   SUBDOMAIN=`echo "$DEPLOY_SUBDOMAIN_UNFORMATTED" | sed -r 's/[\/|\.]+/\-/g'`
 done
+touch ./dist/CORS
+echo '*' > ./dist/CORS
+cp ./dist/index.html ./dist/200.html
+

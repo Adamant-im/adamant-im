@@ -9,12 +9,19 @@ import Transactions from '@/views/Transactions'
 import Options from '@/views/Options'
 import Home from '@/views/Home'
 import Votes from '@/views/Votes'
+import Nodes from '@/views/Nodes'
 
 Vue.use(Router)
 
 export default new Router({
   mode: 'history',
   routes: [
+    {
+      path: '/options/nodes',
+      name: 'Nodes',
+      component: Nodes,
+      meta: { requiresAuth: true }
+    },
     {
       path: '/votes',
       name: 'Votes',
