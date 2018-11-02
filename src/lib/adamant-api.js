@@ -267,7 +267,6 @@ export function voteForDelegates (votes) {
     recipientId: myAddress,
     amount: 0
   }, transaction)
-  transaction.signature = utils.transactionSign(transaction, myKeypair)
   return client.post('/api/accounts/delegates', (endpoint) => signTransaction(transaction, endpoint.timeDelta))
 }
 
