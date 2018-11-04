@@ -67,7 +67,7 @@ export default {
     padding: 5px 0
   }
   .sent {
-    padding: 10px 0
+    padding: 5px 0
   }
   .to {
     padding: 5px 0

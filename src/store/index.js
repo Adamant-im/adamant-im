@@ -161,10 +161,8 @@ const store = {
       }
       let currentDialogs = chats[partner]
       let internalPayload = Object.assign({}, payload)
-      internalPayload.message = internalPayload.message.replace(/\n/g, '<br>')
       if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
         internalPayload.message = renderMarkdown(internalPayload.message)
-        internalPayload.message = internalPayload.message.replace(/<p>|<\/p>/g, '')
         updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', payload.id)
       }
       Vue.set(chats[partner].messages, payload.id, internalPayload)
