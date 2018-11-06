@@ -22,7 +22,9 @@
       {
         "ip": "ethnode1.adamant.im",
         "protocol": "https",
-        "port": ""
+        "port": "",
+        "url": "https://ethnode1.adamant.im",
+        "hasIndex": true
       }
     ]
   }

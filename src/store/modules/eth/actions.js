@@ -5,6 +5,7 @@ import Tx from 'ethereumjs-tx'
 import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as admApi from '../../../lib/adamant-api'
 import * as utils from '../../../lib/eth-utils'
+import { getTransactions } from '../../../lib/eth-index'
 
 import { Fees, ETH_TRANSFER_GAS } from '../../../lib/constants'
 
@@ -269,5 +270,20 @@ export default {
     })
 
     queue.enqueue(key, supplier)
+  },
+
+  getNewTransactions (context, payload) {
+    const offset = (payload && payload.offset) || 0
+    const { address, maxHeight } = context.state
+
+    const options = {
+      address,
+      offset,
+      from: maxHeight > 0 ? maxHeight + 1 : 0
+    }
+
+    getTransactions(options).then(result => {
+      result.items.forEach(tx => context.commit('setTransaction', tx))
+    })
   }
 }
