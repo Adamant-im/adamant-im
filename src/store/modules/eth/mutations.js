@@ -37,9 +37,41 @@ export default {
     state.isPublished = true
   },
 
-  /** Adds a new transaction */
-  setTransaction (state, tx) {
-    const newTx = Object.assign({ }, state.transactions[tx.hash], tx)
-    Vue.set(state.transactions, tx.hash, newTx)
+  /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
+  bottom (state) {
+    state.bottomReached = true
+  },
+
+  /**
+   * Adds new transactions
+   * @param {{transactions: object, minHeight: number, maxHeight: number}} state current state
+   * @param {Array<{hash: string, time: number}>} transactions transactions list
+   */
+  transactions (state, transactions) {
+    let minHeight = Infinity
+    let maxHeight = 0
+
+    const address = state.address
+
+    transactions.forEach(tx => {
+      if (!tx) return
+
+      const direction = tx.recipientId === address ? 'to' : 'from'
+      const newTx = Object.assign({ direction }, state.transactions[tx.hash], tx)
+      Vue.set(state.transactions, tx.hash, newTx)
+
+      if (tx.time) {
+        minHeight = Math.min(minHeight, tx.time)
+        maxHeight = Math.max(maxHeight, tx.time)
+      }
+    })
+
+    if (minHeight < Infinity) {
+      state.minHeight = minHeight
+    }
+
+    if (maxHeight > 0) {
+      state.maxHeight = maxHeight
+    }
   }
 }

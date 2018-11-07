@@ -27,7 +27,6 @@
 </template>
 
 <script>
-import { Cryptos } from '../lib/constants'
 
 export default {
   name: 'transactions',
@@ -57,7 +56,7 @@ export default {
       this.$router.push('/chats/' + partner + '/')
     },
     goToTransaction (id) {
-      const params = { crypto: Cryptos.ADM, tx_id: id }
+      const params = { crypto: this.crypto, tx_id: id }
       this.$router.push({ name: 'Transaction', params })
     },
     displayName (partner) {
@@ -67,7 +66,7 @@ export default {
       return '(' + partner + ')'
     },
     update () {
-      this.$store.dispatch('adm/getNewTransactions')
+      this.$store.dispatch(`${this.crypto}/getNewTransactions`)
     },
     onScroll () {
       const pageHeight = document.body.offsetHeight
@@ -76,15 +75,16 @@ export default {
 
       // If we've scrolled to the very bottom, fetch the older transactions from server
       if (windowHeight + scrollPosition >= pageHeight) {
-        this.$store.dispatch('adm/getOldTransactions')
+        this.$store.dispatch(`${this.crypto}/getOldTransactions`)
       }
     }
   },
   computed: {
     transactions: function () {
-      return this.$store.getters['adm/sortedTransactions']
+      return this.$store.getters[`${this.crypto}/sortedTransactions`]
     }
-  }
+  },
+  props: ['crypto']
 }
 </script>
 <style>

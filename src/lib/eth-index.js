@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import config from '../config.json'
-import * as utils from '../../../lib/eth-utils'
+import * as utils from './eth-utils'
 
 /**
  * @typedef {Object} EthTx
@@ -46,7 +46,7 @@ export function getTransactions (options) {
     )
   } else {
     filters.push(
-      `input.eq.0x`,
+      `contract_to.eq.`,
       `or(txfrom.eq.${address},txto.eq.${address})`
     )
   }
@@ -93,8 +93,8 @@ function getTotalFromRange (range = '') {
 
 function getUrl () {
   const servers = config.server.eth.filter(x => x.hasIndex).map(x => x.url)
-  const url = Math.floor(Math.random() * servers.length)
-  return url + '/ethtxs'
+  const index = Math.floor(Math.random() * servers.length)
+  return servers[index] + '/ethtxs'
 }
 
 /**
@@ -110,6 +110,7 @@ function parseTxFromIndex (tx) {
     fee: utils.calculateFee(tx.gas, tx.gasPrice),
     status: 'SUCCESS',
     timestamp: tx.time,
-    blockNumber: tx.block
+    blockNumber: tx.block,
+    time: tx.time
   }
 }

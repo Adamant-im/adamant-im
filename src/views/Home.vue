@@ -89,10 +89,9 @@ export default {
     },
     copy () {
     },
-    goToTransactions (system) {
-      if (system === 'ADM') {
-        this.$router.push('/transactions/')
-      }
+    goToTransactions (crypto) {
+      const params = { crypto: crypto.toLowerCase() }
+      this.$router.push({ name: 'Transactions', params })
     }
   },
   computed: {

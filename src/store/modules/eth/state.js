@@ -8,6 +8,9 @@ export default () => {
     isPublished: false, // Indicates whether ETH address has been published to the KVS
     publicKey: null,
     privateKey: null,
-    transactions: { }
+    transactions: { },
+    minHeight: -1,
+    maxHeight: -1,
+    bottomReached: false
   }
 }

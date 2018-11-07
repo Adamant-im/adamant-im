@@ -200,14 +200,14 @@ export default {
       .then(({ hash, error }) => {
         if (error) {
           console.error('Failed to send ETH transaction', error)
-          context.commit('setTransaction', { hash, status: 'ERROR' })
+          context.commit('transactions', [{ hash, status: 'ERROR' }])
           throw error
         } else {
           console.log('ETH transaction has been sent')
 
           const timestamp = Date.now()
 
-          context.commit('setTransaction', {
+          context.commit('transactions', [{
             hash,
             senderId: ethTx.from,
             recipientId: ethTx.to,
@@ -215,7 +215,7 @@ export default {
             fee: utils.calculateFee(ethTx.gas, ethTx.gasPrice),
             status: 'PENDING',
             timestamp
-          })
+          }])
 
           context.dispatch('getTransaction', { hash, timestamp, isNew: true })
 
@@ -234,12 +234,12 @@ export default {
     if (existing && existing.status !== 'PENDING') return
 
     // Set a stub so far
-    context.commit('setTransaction', {
+    context.commit('transactions', [{
       hash: payload.hash,
       timestamp: payload.timestamp,
       amount: payload.amount,
       status: 'PENDING'
-    })
+    }])
 
     const key = 'transaction:' + payload.hash
     const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
@@ -255,12 +255,12 @@ export default {
           blockNumber: tx.blockNumber
         }
 
-        context.commit('setTransaction', transaction)
+        context.commit('transactions', [transaction])
       }
 
       if (!tx && payload.attempt === MAX_ATTEMPTS) {
         // Give up, if transaction could not be found after so many attempts
-        context.commit('setTransaction', { hash: tx.hash, status: 'ERROR' })
+        context.commit('transactions', [{ hash: tx.hash, status: 'ERROR' }])
       } else if (err || (tx && !tx.blockNumber) || (!tx && payload.isNew)) {
         // In case of an error or a pending transaction fetch its details once again later
         // Increment attempt counter, if no transaction was found so far
@@ -273,17 +273,33 @@ export default {
   },
 
   getNewTransactions (context, payload) {
-    const offset = (payload && payload.offset) || 0
     const { address, maxHeight } = context.state
 
     const options = {
       address,
-      offset,
       from: maxHeight > 0 ? maxHeight + 1 : 0
     }
 
-    getTransactions(options).then(result => {
-      result.items.forEach(tx => context.commit('setTransaction', tx))
+    return getTransactions(options).then(result => {
+      context.commit('transactions', result.items)
+    })
+  },
+
+  getOldTransactions (context) {
+    // If we already have the most old transaction for this address, no need to request anything
+    if (context.state.bottomReached) return Promise.resolve()
+
+    const options = { }
+    if (context.state.minHeight > 1) {
+      options.to = context.state.minHeight - 1
+    }
+
+    return getTransactions(options).then(result => {
+      context.commit('transactions', result.items)
+
+      if (!result.items.length) {
+        context.commit('bottom')
+      }
     })
   }
 }
