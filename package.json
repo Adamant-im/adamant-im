@@ -1,6 +1,6 @@
 {
   "name": "adamant-im",
-  "version": "1.7.0",
+  "version": "1.7.2",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -31,6 +31,7 @@
     "pbkdf2": "^3.0.16",
     "promise-queue": "^2.2.3",
     "register-service-worker": "^1.0.0",
+    "semver": "^5.5.1",
     "simple-audio": "^1.0.1",
     "sodium-browserify-tweetnacl": "^0.2.3",
     "vue": "^2.5.17",

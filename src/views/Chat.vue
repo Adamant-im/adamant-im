@@ -12,7 +12,7 @@
         </md-input-container>
       </h1>
     </md-toolbar>
-      <md-layout id="msgContainer" md-align="start" md-gutter="16" class="chat_messages">
+      <md-layout id="msgContainer" md-align="start" md-gutter="16" class="chat_messages" ref="messagesContainer">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
             <chat-entry :readOnly="readOnly" :message="message"></chat-entry>
           </md-layout>
@@ -230,7 +230,7 @@ export default {
     this.$store.commit('mark_as_read', this.$route.params.partner)
     setTimeout((function (self) {
       return function () {
-        self.needToScroll()
+        self.scrollToEnd()
       }
     })(this),
     10)
@@ -243,23 +243,16 @@ export default {
       return this.$store.state.partnerName
     },
     messages: function () {
-      function compare (a, b) {
-        if (a.timestamp < b.timestamp) {
-          return -1
-        }
-        if (a.timestamp > b.timestamp) {
-          return 1
-        }
-        return 0
-      }
-
       const chat = this.$store.state.currentChat.messages || { }
       const transactions = this.$store
         .getters['adm/partnerTransactions'](this.$store.state.currentChat.partner)
         .filter(x => !chat[x.id])
       const messages = Object.values(chat).concat(transactions)
 
-      return messages.sort(compare)
+      return messages.sort((a, b) => a.timestamp - b.timestamp)
+    },
+    messagesCount () {
+      return this.messages.length
     },
     readOnly: function () {
       return this.$store.state.currentChat.readOnly === true
@@ -286,10 +279,13 @@ export default {
       this.$store.commit('mark_as_read', value)
       setTimeout((function (self) {
         return function () {
-          self.needToScroll()
+          self.scrollToEnd()
         }
       })(this),
       10)
+    },
+    messagesCount () {
+      this.scrollToEnd()
     }
   },
   data () {

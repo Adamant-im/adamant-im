@@ -38,6 +38,15 @@ export default function storeData () {
     if (mainStorage.getItem('notify_desktop')) {
       store.commit('change_notify_desktop', mainStorage.getItem('notify_desktop'))
     }
+
+    if (mainStorage.getItem('nodes')) {
+      try {
+        const nodes = JSON.parse(mainStorage.getItem('nodes'))
+        store.dispatch('nodes/restore', nodes)
+      } catch (e) { }
+    }
+
+    var storeInLocalStorage = mainStorage.getItem('storeInLocalStorage')
     let storeInLocalStorage = mainStorage.getItem('storeInLocalStorage')
     if (storeInLocalStorage === 'false') {
       storeInLocalStorage = false
@@ -187,7 +196,11 @@ export default function storeData () {
         } else if (mutation.type === 'change_send_on_enter') {
           mainStorage.setItem('send_on_enter', mutation.payload)
           storeNow = true
-        }
+        } else if (mutation.type === 'nodes/useFastest' || mutation.type === 'nodes/toggle') {
+        mainStorage.setItem('nodes', JSON.stringify(state.nodes))
+        storeNow = true
+      }
+
         if (mutation.type === 'logout') {
           storeNow = true
         }
@@ -203,7 +216,7 @@ export default function storeData () {
         if (mutation.type === 'leave_chat') {
           storeNow = true
         }
-        if (mutation.type === 'ajax_start' || mutation.type === 'ajax_end' || mutation.type === 'ajax_end_with_error' || mutation.type === 'start_tracking_new' || mutation.type === 'have_loaded_chats' || mutation.type === 'connect' || mutation.type === 'login') {
+        if (mutation.type === 'ajax_start' || mutation.type === 'ajax_end' || mutation.type === 'ajax_end_with_error' || mutation.type === 'start_tracking_new' || mutation.type === 'have_loaded_chats' || mutation.type === 'connect' || mutation.type === 'login' || mutation.type === 'chatsLoading') {
           return
         }
         if (storeNow) {

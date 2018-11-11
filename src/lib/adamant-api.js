@@ -1,39 +1,20 @@
-import axios from 'axios'
+import Queue from 'promise-queue'
 
-import getEndpointUrl from './getEndpointUrl'
-import { Cryptos, Transactions, Delegates } from './constants'
+import { Transactions, Delegates } from './constants'
 import utils from './adamant'
+import client from './adamant-api-client'
+import renderMarkdown from './markdown'
+
+Queue.configure(Promise)
+
+/** Promises queue to execute them sequentially */
+const queue = new Queue(1, Infinity)
 
 /** @type {{privateKey: Buffer, publicKey: Buffer}} */
 let myKeypair = { }
 let myAddress = null
 
-/** Delta between local time and server time (ADM timestamp) */
-let serverTimeDelta = 0
-
 const publicKeysCache = { }
-
-function toAbsolute (url = '') {
-  return getEndpointUrl(Cryptos.ADM) + url
-}
-
-function parseResponse (response) {
-  const body = response.data
-  if (body && isFinite(body.nodeTimestamp)) {
-    serverTimeDelta = utils.epochTime() - body.nodeTimestamp
-  }
-  return body
-}
-
-function get (url, query) {
-  return axios.get(toAbsolute(url), {params: query})
-    .then(parseResponse)
-}
-
-function post (url, payload) {
-  return axios.post(toAbsolute(url), payload)
-    .then(parseResponse)
-}
 
 /**
  * Creates a new transaction with the common fields pre-filled
@@ -45,15 +26,62 @@ function newTransaction (type) {
     type,
     amount: 0,
     senderId: myAddress,
-    senderPublicKey: myKeypair.publicKey.toString('hex'),
-    timestamp: utils.epochTime() - serverTimeDelta
+    senderPublicKey: myKeypair.publicKey.toString('hex')
   }
+}
+
+/**
+ * Sets transaction timestamp and signature and returns it.
+ * @param {object} transaction ADM transaction
+ * @param {number} timeDelta server endpoint time delta
+ * @returns {object}
+ */
+function signTransaction (transaction, timeDelta) {
+  if (transaction.signature) {
+    delete transaction.signature
+  }
+
+  transaction.timestamp = utils.epochTime() - timeDelta
+  transaction.signature = utils.transactionSign(transaction, myKeypair)
+
+  return transaction
 }
 
 export function unlock (passphrase) {
   const hash = utils.createPassPhraseHash(passphrase)
   myKeypair = utils.makeKeypair(hash)
   myAddress = utils.getAddressFromPublicKey(myKeypair.publicKey)
+  return myAddress
+}
+
+/**
+ * Retrieves current account details, creating it if necessary.
+ * @returns {Promise<any>}
+ */
+export function getCurrentAccount () {
+  const publicKey = myKeypair.publicKey.toString('hex')
+
+  return client.get('/api/accounts', { publicKey })
+    .then(response => {
+      if (response.success) {
+        return response.account
+      } else if (response.error === 'Account not found') {
+        // Create account if it does not yet exist
+        return client.post('/api/accounts/new', { publicKey }).then(response => {
+          if (response.error) throw new Error(response.error)
+          response.account.isNew = true
+          return response.account
+        })
+      }
+
+      throw new Error(response.error)
+    })
+    .then(account => {
+      account.balance = utils.toAdm(account.balance)
+      account.unconfirmedBalance = utils.toAdm(account.unconfirmedBalance)
+      account.publicKey = myKeypair.publicKey
+      return account
+    })
 }
 
 /**
@@ -74,7 +102,7 @@ export function getPublicKey (address = '') {
     return Promise.resolve(publicKeysCache[address])
   }
 
-  return get('/api/accounts/getPublicKey', { address })
+  return client.get('/api/accounts/getPublicKey', { address })
     .then(response => {
       const key = response.publicKey
       publicKeysCache[address] = key
@@ -112,9 +140,10 @@ export function sendMessage (params) {
       transaction.amount = params.amount ? utils.prepareAmount(params.amount) : 0
       transaction.asset = { chat }
       transaction.recipientId = params.to
-      transaction.signature = utils.transactionSign(transaction, myKeypair)
 
-      return post('/api/chats/process', { transaction })
+      return client.post('/api/chats/process', (endpoint) => {
+        return { transaction: signTransaction(transaction, endpoint.timeDelta) }
+      })
     }).catch(reason => {
       return reason
     })
@@ -143,8 +172,9 @@ export function storeValue (key, value, encode = false) {
 
   const transaction = newTransaction(Transactions.STATE)
   transaction.asset = { state: { key, value, type: 0 } }
-  transaction.signature = utils.transactionSign(transaction, myKeypair)
-  return post('/api/states/store', { transaction })
+  return client.post('/api/states/store', (endpoint) => {
+    return { transaction: signTransaction(transaction, endpoint.timeDelta) }
+  })
 }
 
 function tryDecodeStoredValue (value) {
@@ -186,7 +216,7 @@ export function getStored (key, ownerAddress) {
     limit: 1
   }
 
-  return get('/api/states/get', params).then(response => {
+  return client.get('/api/states/get', params).then(response => {
     let value = null
 
     if (response.success && Array.isArray(response.transactions)) {
@@ -208,25 +238,26 @@ export function sendTokens (to, amount) {
   const transaction = newTransaction(Transactions.SEND)
   transaction.amount = utils.prepareAmount(amount)
   transaction.recipientId = to
-  transaction.signature = utils.transactionSign(transaction, myKeypair)
 
-  return post('/api/transactions/process', { transaction })
+  return client.post('/api/transactions/process', (endpoint) => {
+    return { transaction: signTransaction(transaction, endpoint.timeDelta) }
+  })
 }
 
 export function getDelegates (limit, offset) {
-  return get('/api/delegates', { limit, offset })
+  return client.get('/api/delegates', { limit, offset })
 }
 
 export function getDelegatesWithVotes (address) {
-  return get('/api/accounts/delegates', { address })
+  return client.get('/api/accounts/delegates', { address })
 }
 
 export function getDelegatesCount () {
-  return get('/api/delegates/count')
+  return client.get('/api/delegates/count')
 }
 
 export function checkUnconfirmedTransactions () {
-  return get('/api/transactions/unconfirmed')
+  return client.get('/api/transactions/unconfirmed')
 }
 
 export function voteForDelegates (votes) {
@@ -236,20 +267,19 @@ export function voteForDelegates (votes) {
     recipientId: myAddress,
     amount: 0
   }, transaction)
-  transaction.signature = utils.transactionSign(transaction, myKeypair)
-  return post('/api/accounts/delegates', transaction)
+  return client.post('/api/accounts/delegates', (endpoint) => signTransaction(transaction, endpoint.timeDelta))
 }
 
 export function getNextForgers () {
-  return get('/api/delegates/getNextForgers', { limit: Delegates.ACTIVE_DELEGATES })
+  return client.get('/api/delegates/getNextForgers', { limit: Delegates.ACTIVE_DELEGATES })
 }
 
 export function getBlocks () {
-  return get('/api/blocks?orderBy=height:desc&limit=100')
+  return client.get('/api/blocks?orderBy=height:desc&limit=100')
 }
 
 export function getForgedByAccount (accountPublicKey) {
-  return get('/api/delegates/forging/getForgedByAccount', { generatorPublicKey: accountPublicKey })
+  return client.get('/api/delegates/forging/getForgedByAccount', { generatorPublicKey: accountPublicKey })
 }
 
 /**
@@ -272,7 +302,7 @@ export function getTransactions (options = { }) {
     query['and:fromHeight'] = options.from
   }
 
-  return get('/api/transactions', query)
+  return client.get('/api/transactions', query)
 }
 
 /**
@@ -282,10 +312,116 @@ export function getTransactions (options = { }) {
  */
 export function getTransaction (id) {
   const query = { id }
-  return get('/api/transactions/get', query)
+  return client.get('/api/transactions/get', query)
     .then(response => {
       if (response.success) return response
-      return get('/api/transactions/unconfirmed/get', query)
+      return client.get('/api/transactions/unconfirmed/get', query)
     })
     .then(response => response.transaction || null)
+}
+
+/**
+ * Retrieves chat messages for the current account.
+ * @param {number} from fetch messages starting from the specified height
+ * @param {number} offset offset (defaults to 0)
+ * @returns {Promise<{count: number, transactions: Array}>}
+ */
+export function getChats (from = 0, offset = 0) {
+  const params = {
+    isIn: myAddress,
+    orderBy: 'timestamp:desc'
+  }
+
+  if (from) {
+    params.fromHeight = from
+  }
+
+  if (offset) {
+    params.offset = offset
+  }
+
+  return client.get('/api/chats/get/', params).then(response => {
+    const { count, transactions } = response
+
+    const promises = transactions.map(transaction => {
+      const promise = (transaction.recipientId === myAddress)
+        ? Promise.resolve(transaction.senderPublicKey)
+        : queue.add(() => getPublicKey(transaction.recipientId))
+
+      return promise
+        .then(key => {
+          if (key) return decodeChat(transaction, key)
+
+          console.warn(`Cannot decode tx ${transaction.id}: no public key for account ${transaction.recipientId}`)
+          return null
+        })
+        .catch(err => console.warn('Failed to parse chat message', { transaction, err }))
+    })
+
+    return Promise.all(promises).then(decoded => ({
+      count,
+      transactions: decoded
+    }))
+  })
+}
+
+/**
+ * Decodes chat transaction message setting the `message` property of the `transaction`. If the message is a
+ * pre-defined I18N-one, `isI18n` property is also set to `true`.
+ * @param {{senderId: string, asset: object}} transaction chat transaction
+ * @param {Buffer} key sender public key
+ * @returns {{senderId: string, asset: object, message: any, isI18n: boolean}}
+ */
+function decodeChat (transaction, key) {
+  const chat = transaction.asset.chat
+  const message = utils.decodeMessage(chat.message, key, myKeypair.privateKey, chat.own_message)
+
+  if (!message) return transaction
+
+  if (chat.type === 2) {
+    // So-called rich-text messages of type 2 are actually JSON objects
+    transaction.message = JSON.parse(message)
+  } else {
+    // Text message may actually be an internationalizable auto-generated message (we used to have those
+    // at the beginning)
+    const i18nMsg = getI18nMessage(message, transaction.senderId)
+    if (i18nMsg) {
+      // Yeap, that's a i18n one
+      transaction.message = i18nMsg
+      transaction.isI18n = true
+    } else {
+      transaction.message = renderMarkdown(message)
+    }
+  }
+
+  return transaction
+}
+
+/**
+ * Checks if the specified `message` is an auto-generated i18n message. If it is, its respective i18n code is returned.
+ * Otherwise returns an empty string.
+ * @param {string} message message to check
+ * @param {string} senderId message sender address
+ * @returns {string}
+ */
+function getI18nMessage (message, senderId) {
+  // At the beginning of the project we used to send auto-generated welcome messages to the new users.
+  // These messages have i18n codes as their content and known senders listed below.
+  // P.S. I hate this function, but there's no way to get rid of it now.
+
+  const isI18n =
+    (message.indexOf('chats.welcome_message') > -1 && senderId === 'U15423595369615486571') ||
+    (message.indexOf('chats.preico_message') > -1 && senderId === 'U7047165086065693428') ||
+    (message.indexOf('chats.ico_message') > -1 && senderId === 'U7047165086065693428')
+
+  if (isI18n) {
+    if (senderId === 'U15423595369615486571') {
+      return 'chats.welcome_message'
+    }
+    if (senderId === 'U7047165086065693428') {
+      return 'chats.ico_message'
+    }
+  }
+
+  return ''
 }

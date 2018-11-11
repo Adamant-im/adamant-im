@@ -63,10 +63,7 @@ export default {
   components: { NewChat, ChatEntry },
   methods: {
     load () {
-      this.loadChats(true)
-    },
-    send () {
-      this.encodeMessageForAddress(this.message, this.targetAddress)
+      this.$store.dispatch('loadChats')
     },
     newMessages (address) {
       if (this.$store.state.newChats[address]) {

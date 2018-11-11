@@ -81,7 +81,7 @@ export default {
               }, 200)
             }
           }
-          self.updateCurrentValues()
+          self.$store.dispatch('update')
         }
       })(this),
       3000
