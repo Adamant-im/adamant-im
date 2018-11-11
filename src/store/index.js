@@ -235,7 +235,6 @@ const store = {
     login (context, payload) {
       return new Promise((resolve, reject) => {
         try {
-          console.log('call unlock')
           const address = admApi.unlock(payload.passphrase)
           resolve(address)
         } catch (e) {

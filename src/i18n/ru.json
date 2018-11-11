@@ -214,6 +214,7 @@
     "incorrect_password": "Неверный пользовательский пароль",
     "remove_password_hint": "Или удалите пароль для входа по секретной фразе",
     "remove_password": "Удалить пароль",
-    "user_password_title": "Пароль для разблокировки"
+    "user_password_title": "Пароль для разблокировки",
+    "encoding_data_title": "Шифрование данных…"
   }
 }

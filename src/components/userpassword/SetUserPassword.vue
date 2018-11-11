@@ -1,24 +1,30 @@
 <template>
   <md-dialog class="user-password" :md-open-from="openFrom" :md-close-to="closeTo" v-on:close="onClose" ref="set_user_password">
-    <md-dialog-title>
-      {{$t('login_via_password.popup_title')}}
-    </md-dialog-title>
-    <md-dialog-content md-flex="66" sm-flex="90" style="margin-top: -15px;">
-      <md-input-container>
-        <md-input v-model="userPasswordValue" autocomplete="off" type="password" :placeholder="$t('login_via_password.popup_hint')"></md-input>
-      </md-input-container>
-      <div style="display: flex; flex-direction: row;">
-        <md-checkbox v-model="userPasswordCheckbox" style="display: flex; align-items: center">
-        </md-checkbox>
-        <div class="middle-align-text">
-          <div>{{$t('login_via_password.agreement_hint')}} <a target="_blank" v-bind:href="userPasswordAgreementLink">{{$t('login_via_password.agreement')}}</a></div>
+    <div v-if="showSpinnerFlag">
+      <md-dialog-title class="encoding-title">{{ $t('login_via_password.encoding_data_title') }}</md-dialog-title>
+      <Spinner class="inner-spinner"></Spinner>
+    </div>
+    <div v-else>
+      <md-dialog-title>
+        {{$t('login_via_password.popup_title')}}
+      </md-dialog-title>
+      <md-dialog-content md-flex="66" sm-flex="90" style="margin-top: -15px;">
+        <md-input-container>
+          <md-input v-model="userPasswordValue" autocomplete="off" type="password" :placeholder="$t('login_via_password.popup_hint')"></md-input>
+        </md-input-container>
+        <div style="display: flex; flex-direction: row;">
+          <md-checkbox v-model="userPasswordCheckbox" style="display: flex; align-items: center">
+          </md-checkbox>
+          <div class="middle-align-text">
+            <div>{{$t('login_via_password.agreement_hint')}} <a target="_blank" v-bind:href="userPasswordAgreementLink">{{$t('login_via_password.agreement')}}</a></div>
+          </div>
         </div>
-      </div>
-    </md-dialog-content>
-    <md-dialog-actions>
-      <md-button v-on:click="close">{{ $t('transfer.confirm_cancel') }}</md-button>
-      <md-button :disabled="disableSetPassword" v-on:click="setPassword">{{ $t('login_via_password.popup_confirm_text') }}</md-button>
-    </md-dialog-actions>
+      </md-dialog-content>
+      <md-dialog-actions>
+        <md-button v-on:click="close">{{ $t('transfer.confirm_cancel') }}</md-button>
+        <md-button :disabled="disableSetPassword" v-on:click="setPassword">{{ $t('login_via_password.popup_confirm_text') }}</md-button>
+      </md-dialog-actions>
+    </div>
   </md-dialog>
 </template>
 
@@ -34,9 +40,11 @@ import {
   updatePassPhrase,
   updateUserPassword
 } from '../../lib/indexedDb'
+import Spinner from '../Spinner'
 
 export default {
   name: 'setUserPassword',
+  components: { Spinner },
   props: ['openFrom', 'closeTo'],
   methods: {
     open () {
@@ -47,6 +55,7 @@ export default {
       this.$store.commit('change_storage_method', this.$store.state.storeInLocalStorage)
     },
     setPassword () {
+      this.showSpinnerFlag = true
       sessionStorage.removeItem('adm-persist')
       crypto.pbkdf2(this.userPasswordValue, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS,
         UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encryptedPassword) => {
@@ -71,12 +80,13 @@ export default {
             }
             // Save contacts
             updateContactItem(db, encryptData(JSON.stringify(this.$store.getters.getContacts)))
+            this.userPasswordValue = null
+            this.userPasswordCheckbox = false
+            this.$store.commit('user_password_exists', true)
+            this.$store.commit('change_storage_method', true)
+            this.showSpinnerFlag = false
+            this.close()
           })
-          this.userPasswordValue = null
-          this.userPasswordCheckbox = false
-          this.$store.commit('user_password_exists', true)
-          this.$store.commit('change_storage_method', true)
-          this.close()
         })
     },
     onClose () {
@@ -92,7 +102,8 @@ export default {
       userPasswordCheckbox: false,
       disableSetPassword: true,
       userPasswordValue: null,
-      userPasswordAgreementLink: UserPasswordAgreementLink
+      userPasswordAgreementLink: UserPasswordAgreementLink,
+      showSpinnerFlag: false
     }
   }
 }
@@ -111,5 +122,15 @@ export default {
     display: flex;
     justify-content: center;
     flex-direction: column;
+  }
+
+  .encoding-title {
+    height: 200px;
+  }
+
+  .inner-spinner {
+    position: absolute;
+    top: 15px;
+    background: rgba(0,0,0,0.0);
   }
 </style>

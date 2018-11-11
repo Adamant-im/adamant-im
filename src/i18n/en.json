@@ -206,6 +206,7 @@
     "incorrect_password": "Wrong user password",
     "remove_password_hint": "Or remove password for login via passphrase",
     "remove_password": "Remove password",
-    "user_password_title": "Password for unlock"
+    "user_password_title": "Password for unlock",
+    "encoding_data_title": "Encoding data…"
   }
 }
