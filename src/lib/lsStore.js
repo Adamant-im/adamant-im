@@ -46,7 +46,6 @@ export default function storeData () {
       } catch (e) { }
     }
 
-    var storeInLocalStorage = mainStorage.getItem('storeInLocalStorage')
     let storeInLocalStorage = mainStorage.getItem('storeInLocalStorage')
     if (storeInLocalStorage === 'false') {
       storeInLocalStorage = false
@@ -197,9 +196,9 @@ export default function storeData () {
           mainStorage.setItem('send_on_enter', mutation.payload)
           storeNow = true
         } else if (mutation.type === 'nodes/useFastest' || mutation.type === 'nodes/toggle') {
-        mainStorage.setItem('nodes', JSON.stringify(state.nodes))
-        storeNow = true
-      }
+          mainStorage.setItem('nodes', JSON.stringify(state.nodes))
+          storeNow = true
+        }
 
         if (mutation.type === 'logout') {
           storeNow = true

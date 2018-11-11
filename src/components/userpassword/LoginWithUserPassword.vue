@@ -72,7 +72,6 @@ export default {
               try {
                 let state = JSON.parse(decryptData(encryptedCommonItem.value))
                 this.showSpinnerFlag = true
-                this.$store.commit('set_state', state)
                 getChatItem(db).then((encryptedChats) => {
                   encryptedChats.forEach((chat) => {
                     let decryptedChatName = decryptData(new Uint8Array(chat.name.split(',')))
@@ -80,28 +79,33 @@ export default {
                     Vue.set(this.$store.getters.getChats, decryptedChatName, JSON.parse(decryptedChat))
                     chats[decryptedChatName] = JSON.parse(decryptedChat)
                   })
-                })
-                getContactItem(db).then((encryptedContacts) => {
-                  let decryptedContacts = decryptData(encryptedContacts.value)
-                  this.$store.commit('partners/contactList', JSON.parse(decryptedContacts))
-                  partners = JSON.parse(decryptedContacts)
-                })
-                getPassPhrase(db).then((encryptedPassPhrase) => {
-                  let decryptedPassPhrase = decryptData(encryptedPassPhrase.value)
-                  sessionStorage.setItem('storeInLocalStorage', 'true')
-                  state = {
-                    ...state,
-                    partners: partners,
-                    chats: chats,
-                    passPhrase: Base64.encode(decryptedPassPhrase)
-                  }
-                  this.$store.dispatch('afterLogin', decryptedPassPhrase)
-                  this.$root._router.push('/chats/')
-                  this.$store.commit('mock_messages')
-                  this.$store.commit('stop_tracking_new')
-                  this.$store.commit('save_user_password', this.userPasswordValue)
-                  this.$store.commit('change_storage_method', true)
-                  this.showSpinnerFlag = false
+                  getContactItem(db).then((encryptedContacts) => {
+                    let decryptedContacts = decryptData(encryptedContacts.value)
+                    this.$store.commit('partners/contactList', JSON.parse(decryptedContacts))
+                    partners = JSON.parse(decryptedContacts)
+                    getPassPhrase(db).then((encryptedPassPhrase) => {
+                      let decryptedPassPhrase = decryptData(encryptedPassPhrase.value)
+                      sessionStorage.setItem('storeInLocalStorage', 'true')
+                      state = {
+                        ...state,
+                        partners: partners,
+                        chats: chats,
+                        passPhrase: Base64.encode(decryptedPassPhrase)
+                      }
+                      const payloadPassPhrase = {
+                        passPhrase: decryptedPassPhrase
+                      }
+                      this.$store.commit('set_state', state)
+                      this.$store.commit('save_passphrase', payloadPassPhrase)
+                      this.$store.dispatch('afterLogin', decryptedPassPhrase)
+                      this.$root._router.push('/chats/')
+                      this.$store.commit('mock_messages')
+                      this.$store.commit('stop_tracking_new')
+                      this.$store.commit('save_user_password', this.userPasswordValue)
+                      this.$store.commit('change_storage_method', true)
+                      this.showSpinnerFlag = false
+                    })
+                  })
                 })
               } catch (e) {
                 errorFunction()

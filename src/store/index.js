@@ -136,8 +136,7 @@ const store = {
     currentChat: false,
     storeInLocalStorage: false,
     lastVisitedChat: '',
-    areChatsLoading: false
-    lastVisitedChat: '',
+    areChatsLoading: false,
     userPasswordExists: sessionStorage.getItem('userPassword') !== null
   },
   actions: {
@@ -236,6 +235,7 @@ const store = {
     login (context, payload) {
       return new Promise((resolve, reject) => {
         try {
+          console.log('call unlock')
           const address = admApi.unlock(payload.passphrase)
           resolve(address)
         } catch (e) {
@@ -257,7 +257,7 @@ const store = {
      */
     updateAccount (context) {
       context.commit('ajax_start')
-      return admApi.getCurrentAccount().then(
+      return admApi.getCurrentAccount(context).then(
         (account) => {
           context.commit('currentAccount', account)
           context.commit('ajax_end')
