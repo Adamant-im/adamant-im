@@ -164,7 +164,6 @@ const store = {
       internalPayload.message = internalPayload.message.replace(/\n/g, '<br>')
       if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
         internalPayload.message = renderMarkdown(internalPayload.message)
-        internalPayload.message = internalPayload.message.replace(/mailto:/g, '')
         updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', payload.id)
       }
       Vue.set(chats[partner].messages, payload.id, internalPayload)
@@ -575,6 +574,9 @@ const store = {
         state.lastChatHeight = payload.height
       }
       Vue.set(state.chats, partner, currentDialogs)
+      // payload.message = payload.message.replace(/mailto:/g, '')
+      // payload.message = renderMarkdown(payload.message)
+      console.log(payload)
       payload.direction = direction
       Vue.set(state.chats[partner].messages, payload.id, payload)
     },
