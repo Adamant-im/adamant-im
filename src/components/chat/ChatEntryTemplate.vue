@@ -34,9 +34,9 @@
 
 <script>
 
-  function checkForCurrency(text, currency) {
-    return text.indexOf(currency) === text.length - 4
-  }
+function checkForCurrency (text, currency) {
+  return text.indexOf(currency) === text.length - 4
+}
 
 export default {
   name: 'chat-entry-template',
