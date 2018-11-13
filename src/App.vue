@@ -36,6 +36,8 @@ export default {
           sessionStorage.removeItem('adm-persist')
           sessionStorage.setItem('storeInLocalStorage', 'true')
           this.$store.commit('user_password_exists', true)
+        } else {
+
         }
       })
     })
@@ -88,8 +90,9 @@ export default {
     )
 
     window.audio = require('simple-audio')
-
-    if (!this.$store.getters.getPassPhrase && this.$route.path !== '/') {
+    console.log('length', this.$store.getters.getPassPhrase.length)
+    console.log('path', this.$router.currentRoute.path)
+    if (this.$store.getters.getPassPhrase.length <= 0) {
       this.$router.push('/')
     }
   },
