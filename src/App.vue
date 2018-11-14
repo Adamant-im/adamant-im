@@ -90,8 +90,6 @@ export default {
     )
 
     window.audio = require('simple-audio')
-    console.log('length', this.$store.getters.getPassPhrase.length)
-    console.log('path', this.$router.currentRoute.path)
     if (this.$store.getters.getPassPhrase.length <= 0) {
       this.$router.push('/')
     }
