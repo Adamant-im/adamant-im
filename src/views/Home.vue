@@ -90,7 +90,7 @@ export default {
     copy () {
     },
     goToTransactions (crypto) {
-      const params = { crypto: crypto.toLowerCase() }
+      const params = { crypto }
       this.$router.push({ name: 'Transactions', params })
     }
   },

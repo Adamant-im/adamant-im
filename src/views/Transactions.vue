@@ -11,7 +11,7 @@
               {{ displayName(transaction.partner) }}
               <span class="partner_display_name">{{ formatPartnerAddress(transaction.partner) }}</span>
             </div>
-            <span>{{ $formatAmount(transaction.amount) }} ADM</span>
+            <span>{{ $formatAmount(transaction.amount, crypto) }} {{crypto}}</span>
             <p>{{ $formatDate(transaction.timestamp) }}</p>
           </div>
 
@@ -32,7 +32,8 @@ export default {
   name: 'transactions',
   data () {
     return {
-      bgTimer: null
+      bgTimer: null,
+      prefix: this.crypto.toLowerCase()
     }
   },
   mounted () {
@@ -66,7 +67,7 @@ export default {
       return '(' + partner + ')'
     },
     update () {
-      this.$store.dispatch(`${this.crypto}/getNewTransactions`)
+      this.$store.dispatch(`${this.prefix}/getNewTransactions`)
     },
     onScroll () {
       const pageHeight = document.body.offsetHeight
@@ -75,13 +76,13 @@ export default {
 
       // If we've scrolled to the very bottom, fetch the older transactions from server
       if (windowHeight + scrollPosition >= pageHeight) {
-        this.$store.dispatch(`${this.crypto}/getOldTransactions`)
+        this.$store.dispatch(`${this.prefix}/getOldTransactions`)
       }
     }
   },
   computed: {
     transactions: function () {
-      return this.$store.getters[`${this.crypto}/sortedTransactions`]
+      return this.$store.getters[`${this.prefix}/sortedTransactions`]
     }
   },
   props: ['crypto']

@@ -42,7 +42,7 @@ export function getTransactions (options) {
   if (contract) {
     filters.push(
       `txto.eq.${contract}`,
-      `or(txfrom.eq.${address},contract_to.like.*${address.replace('0x', '')})`
+      `or(txfrom.eq.${address},contract_to.eq.000000000000000000000000${address.replace('0x', '')})`
     )
   } else {
     filters.push(
@@ -102,14 +102,16 @@ function getUrl () {
  * @param {EthTx} tx entry
  */
 function parseTxFromIndex (tx) {
+  const hash = tx.txhash.replace(/^.*x/, '0x').toLowerCase()
   return {
-    hash: tx.txhash.replace('\\\\x', '0x'),
-    senderId: tx.txfrom,
-    recipientId: tx.txto,
+    id: hash,
+    hash,
+    senderId: tx.txfrom.toLowerCase(),
+    recipientId: tx.txto.toLowerCase(),
     amount: utils.toEther(tx.value),
-    fee: utils.calculateFee(tx.gas, tx.gasPrice),
+    fee: utils.calculateFee(tx.gas, tx.gasprice),
     status: 'SUCCESS',
-    timestamp: tx.time,
+    timestamp: tx.time * 1000,
     blockNumber: tx.block,
     time: tx.time
   }

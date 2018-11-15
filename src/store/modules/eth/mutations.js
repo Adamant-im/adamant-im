@@ -57,7 +57,8 @@ export default {
       if (!tx) return
 
       const direction = tx.recipientId === address ? 'to' : 'from'
-      const newTx = Object.assign({ direction }, state.transactions[tx.hash], tx)
+      const partner = direction === 'to' ? tx.senderId : tx.recipientId
+      const newTx = Object.assign({ direction, partner }, state.transactions[tx.hash], tx)
       Vue.set(state.transactions, tx.hash, newTx)
 
       if (tx.time) {
