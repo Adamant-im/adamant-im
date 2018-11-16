@@ -151,8 +151,9 @@ const store = {
       }
       let chats = getters.getChats
       const partner = payload.recipientId
+      let messageText = payload.message
       payload = {
-        message: payload.message,
+        message: messageText,
         recipientId: partner,
         timestamp: utils.epochTime(),
         id: getters.getCurrentChatMessageCount,
@@ -161,17 +162,15 @@ const store = {
       }
       let currentDialogs = chats[partner]
       let internalPayload = Object.assign({}, payload)
-      internalPayload.message = internalPayload.message.replace(/\n/g, '<br>')
       if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
         internalPayload.message = renderMarkdown(internalPayload.message)
-        internalPayload.message = internalPayload.message.replace(/<p>|<\/p>/g, '')
         updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', payload.id)
       }
       Vue.set(chats[partner].messages, payload.id, internalPayload)
       queue.add(() => {
         const params = {
           to: partner,
-          message: payload.message
+          message: messageText
         }
         return admApi.sendMessage(params).then(response => {
           if (response.success) {
@@ -187,19 +186,19 @@ const store = {
     retry_message ({getters}, payload) {
       const currentChat = getters.getCurrentChat
       const partner = currentChat.partner
-      const message = currentChat.messages[payload]
-      let messageText = message.message.replace(/<\/?p>/g, '')
+      let message = currentChat.messages[payload]
+      let messageText = message.message
+      messageText = messageText.replace(/<p>|<\/?p>/g, '')
+      messageText = messageText.replace(/<br>/g, '\n')
       payload = {
         recipientId: partner,
-        message: messageText,
+        message: message.message,
         transactionId: message.id,
         timestamp: utils.epochTime(),
         direction: 'from'
       }
-
       let chats = getters.getChats
       queue.add(() => {
-        messageText = message.message.replace(/<\/?br>/g, '\n')
         const params = {
           to: partner,
           message: messageText
