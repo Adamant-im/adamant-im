@@ -1,16 +1,28 @@
 <template>
   <div id="app">
     <md-theme md-name="grey">
+      <md-toolbar v-if="!!this.$route.meta.showToolbar">
+        <md-button class="md-icon-button" @click="backOneStep">
+          <md-icon >keyboard_backspace</md-icon>
+        </md-button>
+        <h1 class="md-title">
+          <label v-if="this.$route.name !== 'Chat'">{{ $t('toolbar.' + this.$router.currentRoute.name.toLowerCase() + '.title') }}</label>
+          <md-input-container v-if="this.$route.name === 'Chat'">
+            <label>{{ partnerName }}</label>
+            <md-input :value="userDisplayName" @change="setUserName"></md-input>
+          </md-input-container>
+        </h1>
+      </md-toolbar>
       <main>
         <router-view></router-view>
       </main>
-      <footer :style="footerCss">
+      <footer v-show="!!this.$route.meta.showFooter">
         <div class="bottom-fixed">
-          <md-bottom-bar v-if="logged && isBottomPanelShown && !isTransferBackShown" md-theme="bottomBar">
-            <md-bottom-bar-item md-icon="account_balance_wallet" v-on:click="$router.push('/home/')" :md-active="!!$router.currentRoute.path.match(/\/home\//) || !!$router.currentRoute.path.match(/\/transactions\//) || !!$router.currentRoute.path.match(/\/transfer\//)">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
-            <md-bottom-bar-item md-icon="forum" v-on:click="$router.push('/chats/')" :md-active="chatsPage">{{$t('bottom.chats_button')}}<div class="new-icon" v-if="totalNew">{{ totalNew }}</div></md-bottom-bar-item>
-            <md-bottom-bar-item md-icon="settings" v-on:click="$router.push('/options/')" :md-active="!!$router.currentRoute.path.match(/\/options\//)">{{$t('bottom.settings_button')}}</md-bottom-bar-item>
-            <md-bottom-bar-item md-icon="exit_to_app" v-on:click="exitme" :title="$t('bottom.exit_button_tooltip')">{{$t('bottom.exit_button')}}</md-bottom-bar-item>
+          <md-bottom-bar v-if="logged" md-theme="bottomBar">
+            <md-bottom-bar-item md-icon="account_balance_wallet" @click="$router.push('/home/')" :md-active="!!$router.currentRoute.path.match(/\/home\//) || !!$router.currentRoute.path.match(/\/transactions\//) || !!$router.currentRoute.path.match(/\/transfer\//)">{{$t('bottom.wallet_button')}}</md-bottom-bar-item>
+            <md-bottom-bar-item md-icon="forum" @click="$router.push('/chats/')" :md-active="!!$router.currentRoute.path.match(/\/chats\//)">{{$t('bottom.chats_button')}}<div class="new-icon" v-if="totalNew">{{ totalNew }}</div></md-bottom-bar-item>
+            <md-bottom-bar-item md-icon="settings" @click="$router.push('/options/')" :md-active="!!$router.currentRoute.path.match(/\/options\//)">{{$t('bottom.settings_button')}}</md-bottom-bar-item>
+            <md-bottom-bar-item md-icon="exit_to_app" @click="exitme" :title="$t('bottom.exit_button_tooltip')">{{$t('bottom.exit_button')}}</md-bottom-bar-item>
           </md-bottom-bar>
         </div>
       </footer>
@@ -28,7 +40,6 @@ import i18n from './i18n'
 export default {
   name: 'app',
   mounted: function () {
-    this.checkChatPage(this.$router.currentRoute.path)
     setInterval(
       ((self) => {
         return function () {
@@ -83,21 +94,29 @@ export default {
     }
   },
   methods: {
+    backOneStep () {
+      if (history.length > 2) {
+        this.$router.back()
+      } else {
+        this.$router.push('/home/')
+      }
+    },
+    setUserName (val) {
+      const partner = this.$store.state.partnerName
+      this.$store.commit('partners/displayName', { partner, displayName: val })
+    },
     exitme () {
       this.$store.commit('logout')
       this.$store.dispatch('reset')
       this.$router.push('/')
-    },
-    checkChatPage (path) {
-      this.chatsPage = path.includes('/chats')
     }
   },
   computed: {
-    footerCss () {
-      if (this.$store.getters.getPassPhrase) {
-        return 'display:block'
-      }
-      return 'display:none'
+    userDisplayName () {
+      return this.$store.getters['partners/displayName'](this.$store.state.partnerName)
+    },
+    partnerName () {
+      return this.$store.state.partnerName
     },
     totalNew () {
       return this.$store.state.totalNewChats
@@ -123,9 +142,6 @@ export default {
     '$route.name': function (name) {
       this.transferBackShown = (this.$router.currentRoute.name === 'Transfer')
     }
-  },
-  updated () {
-    this.checkChatPage(this.$router.currentRoute.path)
   },
   data () {
     return {
@@ -218,10 +234,13 @@ footer {
     box-shadow: none;
     border-top: 1px solid lightgray;
 }
-.chat, .home, .chats, .settings, .transaction, .transfer, .login, .votes {
+.chat, .home, .chats, .settings, .transaction, .transfer, .login, .votes, .nodes {
     max-width: 800px;
     margin: 0 auto;
     margin-top: 25px;
+}
+.view_with_toolbar {
+  margin-top: 80px;
 }
 .login {
     margin-top:0px;

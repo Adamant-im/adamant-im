@@ -1,5 +1,5 @@
 <template>
-    <div class="transaction transaction_list">
+    <div class="transaction transaction_list view_with_toolbar">
       <md-list class="custom-list md-triple-line md-transparent">
         <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
           <md-avatar>

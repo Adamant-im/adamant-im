@@ -132,6 +132,23 @@
     }
   },
   "title": "Française",
+  "toolbar": {
+    "nodes": {
+      "title": ""
+    },
+    "transaction": {
+      "title": ""
+    },
+    "transactions": {
+      "title": ""
+    },
+    "transfer": {
+      "title": ""
+    },
+    "votes": {
+      "title": ""
+    }
+  },
   "transaction": {
     "amount": "Montant",
     "commission": "Couts",

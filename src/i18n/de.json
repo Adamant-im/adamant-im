@@ -132,6 +132,23 @@
     }
   },
   "title": "Deutsch",
+  "toolbar": {
+    "nodes": {
+      "title": ""
+    },
+    "transaction": {
+      "title": ""
+    },
+    "transactions": {
+      "title": ""
+    },
+    "transfer": {
+      "title": ""
+    },
+    "votes": {
+      "title": ""
+    }
+  },
   "transaction": {
     "amount": "Betrag",
     "commission": "Gebühr",

@@ -20,57 +20,84 @@ export default new Router({
       path: '/options/nodes',
       name: 'Nodes',
       component: Nodes,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        showToolbar: true
+      }
     },
     {
       path: '/votes',
       name: 'Votes',
       component: Votes,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        showToolbar: true
+      }
     },
     {
       path: '/transactions/:crypto/:tx_id',
       component: Transaction,
       name: 'Transaction',
       props: true,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        showToolbar: true
+      }
     },
     {
       path: '/transactions',
       name: 'Transactions',
       component: Transactions,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        showToolbar: true
+      }
     },
     {
       path: '/options',
       name: 'Options',
       component: Options,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        showFooter: true
+      }
     },
     {
       path: '/chats/:partner/',
       component: Chat,
       name: 'Chat',
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        showToolbar: true
+      }
     },
     {
       path: '/chats',
       name: 'Chats',
       component: Chats,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        showFooter: true
+      }
     },
     {
       path: '/transfer/:fixedCrypto?/:fixedAddress?',
       name: 'Transfer',
       component: Transfer,
       props: true,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        showToolbar: true
+      }
     },
     {
       path: '/home',
       name: 'Home',
       component: Home,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        showFooter: true
+      }
     },
     {
       path: '/',

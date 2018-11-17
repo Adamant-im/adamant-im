@@ -137,6 +137,23 @@
     }
   },
   "title": "Русский",
+  "toolbar": {
+    "nodes": {
+      "title": ""
+    },
+    "transaction": {
+      "title": ""
+    },
+    "transactions": {
+      "title": ""
+    },
+    "transfer": {
+      "title": ""
+    },
+    "votes": {
+      "title": ""
+    }
+  },
   "transaction": {
     "amount": "Количество",
     "commission": "Комиссия за перевод",

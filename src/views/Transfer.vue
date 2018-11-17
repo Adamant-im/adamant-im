@@ -1,66 +1,60 @@
 <template>
-  <div class="transfer">
-    <md-toolbar>
-      <md-button class="md-icon-button" @click="backOneStep">
-        <md-icon >keyboard_backspace</md-icon>
-      </md-button>
-      <h1 class="md-title">{{ $t('home.send_btn') }}</h1>
-    </md-toolbar>
-      <spinner v-if="isWaiting" />
-      <form novalidate @submit.stop.prevent="submit">
-        <md-input-container>
-          <md-select v-model="crypto" style="text-align: left;" :disabled="!!this.fixedCrypto">
-            <md-option v-for="c in cryptosList" v-bind:key="c" :value="c">
-              {{ c }}
-            </md-option>
-          </md-select>
+  <div class="transfer view_with_toolbar">
+    <spinner v-if="isWaiting" />
+    <form novalidate @submit.stop.prevent="submit">
+      <md-input-container>
+        <md-select v-model="crypto" style="text-align: left;" :disabled="!!this.fixedCrypto">
+          <md-option v-for="c in cryptosList" v-bind:key="c" :value="c">
+            {{ c }}
+          </md-option>
+        </md-select>
+      </md-input-container>
+        <md-input-container :title="!this.fixedAddress ? $t('transfer.to_address_label_tooltip') : ''">
+          <label>{{ addressLabel }}</label>
+          <md-input v-model="targetAddress" :readonly="!!this.fixedAddress"></md-input>
         </md-input-container>
-          <md-input-container :title="!this.fixedAddress ? $t('transfer.to_address_label_tooltip') : ''">
-            <label>{{ addressLabel }}</label>
-            <md-input v-model="targetAddress" :readonly="!!this.fixedAddress"></md-input>
-          </md-input-container>
+        <md-layout>
           <md-layout>
-            <md-layout>
-              <md-input-container>
-                <label style="text-align:left" class="amount-label">
-                  {{ $t('transfer.amount_label') }} <span style="font-size: 10px;">(max: {{ maxToTransfer }} {{ crypto }})</span>
-                </label>
-                <md-input type="number" min=0 :max="maxToTransfer" v-model="targetAmount"></md-input>
-              </md-input-container>
-            </md-layout>
+            <md-input-container>
+              <label style="text-align:left" class="amount-label">
+                {{ $t('transfer.amount_label') }} <span style="font-size: 10px;">(max: {{ maxToTransfer }} {{ crypto }})</span>
+              </label>
+              <md-input type="number" min=0 :max="maxToTransfer" v-model="targetAmount"></md-input>
+            </md-input-container>
           </md-layout>
+        </md-layout>
 
-          <md-input-container>
-              <label>{{ $t('transfer.commission_label') }}</label>
-              <md-input type="text" readonly v-model="commissionString"></md-input>
-          </md-input-container>
-          <md-input-container v-if="!this.hideTotal">
-              <label style="text-align:left">{{ $t('transfer.final_amount_label') }}</label>
-              <md-input type="number" readonly v-model="finalAmount"></md-input>
-          </md-input-container>
+        <md-input-container>
+            <label>{{ $t('transfer.commission_label') }}</label>
+            <md-input type="text" readonly v-model="commissionString"></md-input>
+        </md-input-container>
+        <md-input-container v-if="!this.hideTotal">
+            <label style="text-align:left">{{ $t('transfer.final_amount_label') }}</label>
+            <md-input type="number" readonly v-model="finalAmount"></md-input>
+        </md-input-container>
 
-          <md-input-container v-if="this.fixedAddress && this.crypto !== 'ADM'">
-            <label>{{ $t('transfer.comments_label') }}</label>
-            <md-input v-model="comments" maxlength='100'></md-input>
-          </md-input-container>
+        <md-input-container v-if="this.fixedAddress && this.crypto !== 'ADM'">
+          <label>{{ $t('transfer.comments_label') }}</label>
+          <md-input v-model="comments" maxlength='100'></md-input>
+        </md-input-container>
 
-          <md-layout md-align="center" md-gutter="16">
-            <md-button class="md-raised send_funds_button" :title="$t('transfer.send_button_tooltip')" v-on:click="transfer">
-              {{ $t('transfer.send_button') }}
-            </md-button>
-          </md-layout>
-      </form>
-      <md-snackbar md-position="bottom center" md-accent ref="transferSnackbar" md-duration="2000">
-          <span>{{ formErrorMessage }}</span>
-      </md-snackbar>
-      <md-dialog-confirm
-              :md-title="$t('transfer.confirm_title')"
-              :md-content-html="confirmMessage"
-              :md-ok-text="$t('transfer.confirm_approve')"
-              :md-cancel-text="$t('transfer.confirm_cancel')"
-              @close="onClose"
-              ref="confirm_transfer_dialog">
-      </md-dialog-confirm>
+        <md-layout md-align="center" md-gutter="16">
+          <md-button class="md-raised send_funds_button" :title="$t('transfer.send_button_tooltip')" v-on:click="transfer">
+            {{ $t('transfer.send_button') }}
+          </md-button>
+        </md-layout>
+    </form>
+    <md-snackbar md-position="bottom center" md-accent ref="transferSnackbar" md-duration="2000">
+        <span>{{ formErrorMessage }}</span>
+    </md-snackbar>
+    <md-dialog-confirm
+            :md-title="$t('transfer.confirm_title')"
+            :md-content-html="confirmMessage"
+            :md-ok-text="$t('transfer.confirm_approve')"
+            :md-cancel-text="$t('transfer.confirm_cancel')"
+            @close="onClose"
+            ref="confirm_transfer_dialog">
+    </md-dialog-confirm>
   </div>
 </template>
 
@@ -75,13 +69,6 @@ export default {
   name: 'home',
   components: { Spinner },
   methods: {
-    backOneStep () {
-      if (history.length > 2) {
-        this.$router.back()
-      } else {
-        this.$router.push('/home/')
-      }
-    },
     errorMessage (message, opts) {
       this.formErrorMessage = this.$t('transfer.' + message, opts)
       this.$refs.transferSnackbar.open()

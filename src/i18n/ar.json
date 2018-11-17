@@ -132,6 +132,23 @@
     }
   },
   "title": "العربية",
+  "toolbar": {
+    "nodes": {
+      "title": ""
+    },
+    "transaction": {
+      "title": ""
+    },
+    "transactions": {
+      "title": ""
+    },
+    "transfer": {
+      "title": ""
+    },
+    "votes": {
+      "title": ""
+    }
+  },
   "transaction": {
     "amount": "المبلغ",
     "commission": "الرسوم",

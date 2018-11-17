@@ -125,6 +125,23 @@
     }
   },
   "title": "English",
+  "toolbar": {
+    "nodes": {
+      "title": "Nodes list"
+    },
+    "transaction": {
+      "title": "Transaction details"
+    },
+    "transactions": {
+      "title": "Transactions"
+    },
+    "transfer": {
+      "title": "Send funds"
+    },
+    "votes": {
+      "title": "Votes"
+    }
+  },
   "transaction": {
     "amount": "Amount",
     "commission": "Fee",

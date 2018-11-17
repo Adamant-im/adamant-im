@@ -1,17 +1,6 @@
 <template>
   <!--TODO: Move all non-static content to @/assets/-->
-  <div class="chat">
-    <md-toolbar>
-      <md-button class="md-icon-button" @click="gotochats">
-        <md-icon >keyboard_backspace</md-icon>
-      </md-button>
-      <h1 class="md-title">
-        <md-input-container>
-          <label>{{ partnerName }}</label>
-          <md-input :value="userDisplayName" @change="setUserName"></md-input>
-        </md-input-container>
-      </h1>
-    </md-toolbar>
+  <div class="chat view_with_toolbar">
       <md-layout id="msgContainer" md-align="start" md-gutter="16" class="chat_messages" ref="messagesContainer">
           <md-layout v-for="message in messages" :key="message.id" md-flex="100" style="padding-left: 0px;">
             <chat-entry :readOnly="readOnly" :message="message"></chat-entry>
@@ -80,10 +69,6 @@ export default {
   name: 'chats',
   components: { ChatEntry },
   methods: {
-    setUserName (val) {
-      const partner = this.$store.state.partnerName
-      this.$store.commit('partners/displayName', { partner, displayName: val })
-    },
     blurHandler: function (event) {
       if (/iP(hone|od|ad)/.test(navigator.platform)) {
         var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/)
@@ -167,11 +152,11 @@ export default {
         element.scrollTop = element.scrollHeight + 1000
       }, 12)
     },
-    gotochats () {
-      this.$store.commit('leave_chat')
-      this.$router.push({ name: 'Chats' })
-      this.$refs.chatsSnackbar.close()
-    },
+    // gotochats () {
+    //   this.$store.commit('leave_chat')
+    //   this.$router.push({ name: 'Chats' })
+    //   this.$refs.chatsSnackbar.close()
+    // },
     send () {
       this.$refs.messageField.$el.focus()
       if (this.$store.state.balance < 0.001) {
@@ -236,12 +221,6 @@ export default {
     10)
   },
   computed: {
-    userDisplayName () {
-      return this.$store.getters['partners/displayName'](this.$store.state.partnerName)
-    },
-    partnerName () {
-      return this.$store.state.partnerName
-    },
     messages: function () {
       const chat = this.$store.state.currentChat.messages || { }
       const transactions = this.$store
@@ -359,7 +338,6 @@ export default {
     overflow-y: auto;
     overflow-x: hidden;
     max-height: calc(100vh - 180px);
-    margin-top: 80px;
     padding-top: 10px;
     margin-left: 0!important;
   }

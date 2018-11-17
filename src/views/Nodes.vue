@@ -1,5 +1,5 @@
 <template>
-  <div class='nodes'>
+  <div class='nodes view_with_toolbar'>
     <md-table md-sort="url" md-sort-type="desc" @sort="onSort" class="md-table-grey">
       <md-table-header>
         <md-table-row>

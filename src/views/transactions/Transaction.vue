@@ -1,5 +1,5 @@
 <template>
-  <component v-bind:is="transactionComponent" :id="tx_id" :crypto="crypto" />
+  <component class="view_with_toolbar" :is="transactionComponent" :id="tx_id" :crypto="crypto" />
 </template>
 
 <script>

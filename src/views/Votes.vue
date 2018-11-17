@@ -1,5 +1,5 @@
 <template>
-  <div class="votes">
+  <div class="votes view_with_toolbar">
     <md-layout class='chat_loads' v-show="!delegatesLoaded">
       <md-spinner :md-size="150" :md-stroke="1" md-indeterminate class="md-accent" style="margin: 0px -75px;position: fixed;left: 50%;"></md-spinner>
     </md-layout>
