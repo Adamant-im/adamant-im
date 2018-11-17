@@ -90,6 +90,8 @@ export default {
     },
     chatList: function () {
       function compare (a, b) {
+        console.log('a', a.last_message)
+        console.log('b', b.last_message)
         if (a.last_message.timestamp < b.last_message.timestamp) {
           return 1
         }

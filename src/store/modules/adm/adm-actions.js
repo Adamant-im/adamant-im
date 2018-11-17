@@ -1,5 +1,7 @@
 import * as admApi from '../../../lib/adamant-api'
+import i18n from '../../../i18n'
 import Vue from 'vue'
+import utils from '../../../lib/adamant'
 
 export default {
 
@@ -54,6 +56,15 @@ export default {
                 })
                 if (chatItem.last_message.id === tx.id) {
                   chatItem.last_message.confirm_class = 'confirmed'
+                }
+              } else {
+                if (tx.senderId === chat) {
+                  Vue.set(chats[chat], 'last_message', {
+                    ...chats[chat].last_message,
+                    message: i18n.t('chats.received_label') + ' ' + tx.amount / 100000000 + ' ADM',
+                    confirm_class: 'confirmed',
+                    timestamp: utils.epochTime()
+                  })
                 }
               }
             }

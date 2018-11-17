@@ -248,27 +248,7 @@ export default {
         .getters['adm/partnerTransactions'](this.$store.state.currentChat.partner)
         .filter(x => !chat[x.id])
       let messages = Object.values(chat).concat(transactions)
-      messages = messages.sort((a, b) => a.timestamp - b.timestamp)
-      let chats = this.$store.state.chats
-      const lastMessage = Object.assign({}, messages[messages.length - 1])
-      if (lastMessage && lastMessage.amount > 0 && lastMessage.direction === 'to') {
-        if (lastMessage.message === undefined) {
-          let currencyTransactionMessage = this.$t('chats.received_label')
-          switch (lastMessage.type) {
-            case 0: {
-              lastMessage.message = currencyTransactionMessage + ' ' + lastMessage.amount / 100000000 + ' ADM'
-              break
-            }
-            case 2: {
-              lastMessage.message = currencyTransactionMessage + ' ' +  lastMessage.amount + ' ETH'
-              break
-            }
-          }
-        }
-        lastMessage.confirm_class = 'confirmed'
-        chats[this.$store.state.currentChat.partner].last_message = lastMessage
-      }
-      return messages
+      return messages.sort((a, b) => a.timestamp - b.timestamp)
     },
     messagesCount () {
       return this.messages.length
