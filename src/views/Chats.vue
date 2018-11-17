@@ -44,7 +44,7 @@
 <script>
 import NewChat from '@/components/NewChat.vue'
 import ChatEntry from '@/components/chat/ChatEntry.vue'
-
+import i18n from '../i18n'
 const VueScrollTo = require('vue-scrollto')
 const scrollOptions = {
   duration: 1000,
@@ -100,19 +100,19 @@ export default {
       }
       let messages = []
 
-      // Object.values(this.$store.state.chats).forEach((chat) => {
-      //   const transactions = this.$store
-      //     .getters['adm/partnerTransactions'](chat.partner)
-      //     .filter(x => !chat[x.id])
-      //   messages = Object.values(chat.messages).concat(transactions)
-      //   messages.sort((a, b) => a.timestamp - b.timestamp)
-      //   // console.log('messages', messages)
-      //   chat.messages = messages
-      // })
-
       Object.values(this.$store.state.chats).forEach((chat) => {
-        console.log('chat', chat)
-      }
+        const transactions = this.$store
+          .getters['adm/partnerTransactions'](chat.partner)
+          .filter(x => !chat[x.id])
+        messages = Object.values(chat.messages).concat(transactions)
+        messages.sort((a, b) => a.timestamp - b.timestamp)
+        let lastMessage = messages[messages.length - 1]
+        if (lastMessage.amount > 0) {
+          lastMessage.message = i18n.t('chats.received_label') + ' ' + lastMessage.amount / 100000000 + ' ADM'
+          lastMessage.confirm_class = 'confirmed'
+          chat.last_message = lastMessage
+        }
+      })
 
       if (this.$store.state.chats) {
         return Object.values(this.$store.state.chats).sort(compare)
