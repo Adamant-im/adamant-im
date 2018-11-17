@@ -90,8 +90,6 @@ export default {
     },
     chatList: function () {
       function compare (a, b) {
-        console.log('a', a.last_message)
-        console.log('b', b.last_message)
         if (a.last_message.timestamp < b.last_message.timestamp) {
           return 1
         }
@@ -100,6 +98,22 @@ export default {
         }
         return 0
       }
+      let messages = []
+
+      // Object.values(this.$store.state.chats).forEach((chat) => {
+      //   const transactions = this.$store
+      //     .getters['adm/partnerTransactions'](chat.partner)
+      //     .filter(x => !chat[x.id])
+      //   messages = Object.values(chat.messages).concat(transactions)
+      //   messages.sort((a, b) => a.timestamp - b.timestamp)
+      //   // console.log('messages', messages)
+      //   chat.messages = messages
+      // })
+
+      Object.values(this.$store.state.chats).forEach((chat) => {
+        console.log('chat', chat)
+      }
+
       if (this.$store.state.chats) {
         return Object.values(this.$store.state.chats).sort(compare)
       }
