@@ -172,6 +172,7 @@ const store = {
           to: partner,
           message: messageText
         }
+        console.log('correct email', messageText)
         return admApi.sendMessage(params).then(response => {
           if (response.success) {
             replaceMessageAndDelete(chats[partner].messages, response.transactionId, payload.id, 'sent')
@@ -189,6 +190,7 @@ const store = {
       let message = currentChat.messages[payload]
       let messageText = message.message
       messageText = messageText.replace(/<p>|<\/?p>/g, '')
+      messageText = messageText.replace(/<a href=".*">|<\/?a>/g, '')
       messageText = messageText.replace(/<br>/g, '\n')
       payload = {
         recipientId: partner,
@@ -574,9 +576,6 @@ const store = {
         state.lastChatHeight = payload.height
       }
       Vue.set(state.chats, partner, currentDialogs)
-      // payload.message = payload.message.replace(/mailto:/g, '')
-      // payload.message = renderMarkdown(payload.message)
-      console.log(payload)
       payload.direction = direction
       Vue.set(state.chats[partner].messages, payload.id, payload)
     },
