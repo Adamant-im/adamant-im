@@ -144,7 +144,7 @@ export default {
         this.errorMessage('error_no_amount')
         return
       }
-      if (this.targetAmount < 0) {
+      if (this.targetAmount <= 0) {
         this.errorMessage('error_incorrect_amount')
         return
       }
