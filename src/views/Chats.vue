@@ -29,7 +29,7 @@
                 <div class="md-list-text-container">
                     <div class="chat_entry_title">{{ chatName(chat.partner) }}</div>
                     <div class="chat-entry-wrapper">
-                      <div class="message-status-block" :message-status="chat.last_message.confirm_class" v-if="chat.last_message.direction === 'from'"></div>
+                      <div class="message-status-block" :message-status="chat.last_message.confirm_class" ></div>
                       <chat-entry :message="chat.last_message" :brief="true"></chat-entry>
                     </div>
                     <span class="dt" v-if="chat.last_message.timestamp">{{ $formatDate(chat.last_message.timestamp) }}</span>
@@ -107,10 +107,12 @@ export default {
         messages = Object.values(chat.messages).concat(transactions)
         messages.sort((a, b) => a.timestamp - b.timestamp)
         let lastMessage = messages[messages.length - 1]
-        if (lastMessage.amount > 0) {
-          lastMessage.message = i18n.t('chats.received_label') + ' ' + lastMessage.amount / 100000000 + ' ADM'
-          lastMessage.confirm_class = 'confirmed'
-          chat.last_message = lastMessage
+        let lastChatMessage = Object.assign({}, lastMessage)
+        if (lastChatMessage.amount > 0) {
+          lastChatMessage.message = lastMessage.message ===
+            undefined ? i18n.t('chats.received_label') + ' ' + lastMessage.amount / 100000000 + ' ADM' : lastMessage.message
+          lastChatMessage.confirm_class = 'confirmed'
+          chat.last_message = lastChatMessage
         }
       })
 
