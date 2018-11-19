@@ -22,6 +22,8 @@ let lastStatusUpdate = 0
 /** Status update interval */
 const STATUS_INTERVAL = 8000
 
+const CHUNK_SIZE = 25
+
 let isAddressBeingStored = null
 /**
  * Stores ETH address to the Adamant KVS if it's not there yet
@@ -275,9 +277,13 @@ export default {
   getNewTransactions (context, payload) {
     const { address, maxHeight } = context.state
 
+    const from = maxHeight > 0 ? maxHeight + 1 : 0
+    const limit = from ? undefined : CHUNK_SIZE
+
     const options = {
       address,
-      from: maxHeight > 0 ? maxHeight + 1 : 0
+      from,
+      limit
     }
 
     return getTransactions(options).then(result => {
@@ -289,7 +295,7 @@ export default {
     // If we already have the most old transaction for this address, no need to request anything
     if (context.state.bottomReached) return Promise.resolve()
 
-    const options = { }
+    const options = { limit: CHUNK_SIZE }
     if (context.state.minHeight > 1) {
       options.to = context.state.minHeight - 1
     }
