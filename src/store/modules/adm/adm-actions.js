@@ -55,7 +55,10 @@ export default {
                   confirm_class: 'confirmed'
                 })
                 if (chatItem.last_message.id === tx.id) {
-                  chatItem.last_message.confirm_class = 'confirmed'
+                  Vue.set(chats[chat], 'last_message', {
+                    ...chats[chat].last_message,
+                    confirm_class: 'confirmed'
+                  })
                 }
               } else {
                 if (tx.senderId === chat) {

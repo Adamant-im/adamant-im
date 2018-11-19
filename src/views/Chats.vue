@@ -110,8 +110,9 @@ export default {
         let lastChatMessage = Object.assign({}, lastMessage)
         if (lastChatMessage.amount > 0) {
           const label = lastChatMessage.direction === 'from' ? 'sent_label' : 'received_label'
+          const status = lastChatMessage.direction === 'from' ? lastChatMessage.confirm_class === undefined ? 'confirmed' : lastChatMessage.confirm_class : 'confirmed'
           lastChatMessage.message = !lastMessage.message || 0 === lastMessage.message.length ? i18n.t('chats.' + label) + ' ' + lastMessage.amount / 100000000 + ' ADM' : lastMessage.message
-          lastChatMessage.confirm_class = 'confirmed'
+          lastChatMessage.confirm_class = status
           chat.last_message = lastChatMessage
         }
       })
