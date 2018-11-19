@@ -615,6 +615,9 @@ const store = {
     },
     sendOnEnter: state => {
       return state.sendOnEnter
+    },
+    getAdmAddress: state => {
+      return state.address
     }
   },
   modules: {

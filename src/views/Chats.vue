@@ -109,8 +109,8 @@ export default {
         let lastMessage = messages[messages.length - 1]
         let lastChatMessage = Object.assign({}, lastMessage)
         if (lastChatMessage.amount > 0) {
-          lastChatMessage.message = lastMessage.message ===
-            undefined ? i18n.t('chats.received_label') + ' ' + lastMessage.amount / 100000000 + ' ADM' : lastMessage.message
+          const label = lastChatMessage.direction === 'from' ? 'sent_label' : 'received_label'
+          lastChatMessage.message = !lastMessage.message || 0 === lastMessage.message.length ? i18n.t('chats.' + label) + ' ' + lastMessage.amount / 100000000 + ' ADM' : lastMessage.message
           lastChatMessage.confirm_class = 'confirmed'
           chat.last_message = lastChatMessage
         }

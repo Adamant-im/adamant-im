@@ -61,7 +61,7 @@ export default {
                 if (tx.senderId === chat) {
                   Vue.set(chats[chat], 'last_message', {
                     ...chats[chat].last_message,
-                    message: i18n.t('chats.received_label') + ' ' + tx.amount / 100000000 + ' ADM',
+                    message: i18n.t('chats.' + (tx.recipientId === context.rootGetters.getAdmAddress ? 'received_label' : 'sent_label')) + ' ' + tx.amount / 100000000 + ' ADM',
                     confirm_class: 'confirmed',
                     timestamp: utils.epochTime()
                   })
