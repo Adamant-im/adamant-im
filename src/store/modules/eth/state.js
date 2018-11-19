@@ -1,16 +1,13 @@
+import baseState from '../eth-base/eth-base-state'
+import { Cryptos } from '../../../lib/constants'
+
 export default () => {
   return {
-    balance: 0,
+    crypto: Cryptos.ETH,
     gasPrice: 0,
     blockNumber: 0,
     fee: 0,
-    address: '',
     isPublished: false, // Indicates whether ETH address has been published to the KVS
-    publicKey: null,
-    privateKey: null,
-    transactions: { },
-    minHeight: -1,
-    maxHeight: -1,
-    bottomReached: false
+    ...baseState
   }
 }
