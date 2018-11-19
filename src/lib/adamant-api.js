@@ -349,7 +349,12 @@ export function getChats (from = 0, offset = 0) {
         : queue.add(() => getPublicKey(transaction.recipientId))
 
       return promise
-        .then(key => decodeChat(transaction, key))
+        .then(key => {
+          if (key) return decodeChat(transaction, key)
+
+          console.warn(`Cannot decode tx ${transaction.id}: no public key for account ${transaction.recipientId}`)
+          return null
+        })
         .catch(err => console.warn('Failed to parse chat message', { transaction, err }))
     })
 
