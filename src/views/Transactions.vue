@@ -15,7 +15,11 @@
             <p>{{ $formatDate(transaction.timestamp) }}</p>
           </div>
 
-          <md-button class="md-icon-button md-list-action" @click="openChat(transaction)">
+          <md-button
+            class="md-icon-button md-list-action"
+            v-if="showChat"
+            @click="openChat(transaction)"
+          >
             <md-icon>{{ hasMessages(transaction) ? "chat" : "chat_bubble_outline" }}</md-icon>
           </md-button>
 
@@ -28,12 +32,15 @@
 
 <script>
 
+import { Cryptos } from '../lib/constants'
+
 export default {
   name: 'transactions',
   data () {
     return {
       bgTimer: null,
-      prefix: this.crypto.toLowerCase()
+      prefix: this.crypto.toLowerCase(),
+      showChat: this.crypto === Cryptos.ADM
     }
   },
   mounted () {
@@ -61,10 +68,14 @@ export default {
       this.$router.push({ name: 'Transaction', params })
     },
     displayName (partner) {
-      return this.$store.getters['partners/displayName'](partner) || ''
+      return this.crypto === Cryptos.ADM
+        ? this.$store.getters['partners/displayName'](partner) || ''
+        : ''
     },
     formatPartnerAddress (partner) {
-      return '(' + partner + ')'
+      return this.crypto === Cryptos.ADM
+        ? '(' + partner + ')'
+        : partner
     },
     update () {
       this.$store.dispatch(`${this.prefix}/getNewTransactions`)
