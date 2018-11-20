@@ -152,11 +152,6 @@ export default {
         element.scrollTop = element.scrollHeight + 1000
       }, 12)
     },
-    // gotochats () {
-    //   this.$store.commit('leave_chat')
-    //   this.$router.push({ name: 'Chats' })
-    //   this.$refs.chatsSnackbar.close()
-    // },
     send () {
       this.$refs.messageField.$el.focus()
       if (this.$store.state.balance < 0.001) {

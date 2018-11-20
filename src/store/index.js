@@ -460,10 +460,8 @@ const store = {
       state.showBottom = false
     },
     leave_chat (state, payload) {
-      // state.showPanel = false
       state.partnerName = ''
       state.partnerDisplayName = ''
-      // state.showBottom = true
     },
     have_loaded_chats (state) {
       state.firstChatLoad = false
