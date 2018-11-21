@@ -1,6 +1,6 @@
 
 import Vue from 'vue'
-import {Base64} from 'js-base64'
+import { Base64 } from 'js-base64'
 
 import storeData from '../lib/lsStore.js'
 
@@ -15,7 +15,7 @@ import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
 
 import * as admApi from '../lib/adamant-api'
-import {base64regex, WelcomeMessage, Cryptos} from '../lib/constants'
+import { base64regex, WelcomeMessage, Cryptos } from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import i18n from '../i18n'
@@ -105,6 +105,7 @@ function updateLastChatMessage (currentDialogs, payload, confirmClass, direction
 const store = {
   state: {
     address: '',
+    darkTheme: false,
     language: defaultLanguage,
     passPhrase: '',
     connectionString: '',
@@ -122,6 +123,12 @@ const store = {
     notifyDesktop: false,
     sendOnEnter: false,
     showBottom: true,
+    snackbarMessage: {
+      text: 'Что-то не так',
+      color: 'error',
+      timeout: 3000,
+      visibility: false
+    },
     partnerName: '',
     partnerDisplayName: '',
     partners: {
@@ -138,7 +145,7 @@ const store = {
     areChatsLoading: false
   },
   actions: {
-    add_chat_i18n_message ({commit}, payload) {
+    add_chat_i18n_message ({ commit }, payload) {
       payload.message = i18n.t(payload.message)
       commit('add_chat_message', payload)
     },
@@ -183,7 +190,7 @@ const store = {
         })
       })
     },
-    retry_message ({getters}, payload) {
+    retry_message ({ getters }, payload) {
       const currentChat = getters.getCurrentChat
       const partner = currentChat.partner
       let message = currentChat.messages[payload]
@@ -258,6 +265,9 @@ const store = {
           return Promise.reject(error)
         }
       )
+    },
+    toggleDarkTheme (context) {
+      context.commit('setDarkTheme')
     },
     /**
      * Retrieve the chat messages for the current account.
@@ -347,6 +357,9 @@ const store = {
     }
   },
   mutations: {
+    setDarkTheme (state) {
+      state.darkTheme = !state.darkTheme
+    },
     last_visited_chat (state, payload) {
       state.lastVisitedChat = payload
     },
@@ -450,7 +463,7 @@ const store = {
     },
     select_chat (state, payload) {
       if (!state.chats[payload]) {
-        Vue.set(state.chats, payload, {messages: [], last_message: {}, partner: payload})
+        Vue.set(state.chats, payload, { messages: [], last_message: {}, partner: payload })
       }
       state.currentChat = state.chats[payload]
       Vue.set(state.currentChat, 'messages', state.chats[payload].messages)
@@ -587,6 +600,7 @@ const store = {
   },
   plugins: [storeData(), nodesPlugin],
   getters: {
+    getDarkTheme: state => state.darkTheme,
     // Returns decoded pass phrase from store
     getPassPhrase: state => {
       if (state.passPhrase.match(base64regex)) {

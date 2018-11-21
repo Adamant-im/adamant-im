@@ -92,6 +92,10 @@
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
                           <md-table-cell style="text-align:left;" colspan="2"><md-checkbox  v-model="notifyDesktop" disabled :title="$t('options.enable_desktop_tooltip')">{{ $t('options.enable_desktop') }}</md-checkbox></md-table-cell>
                       </md-table-row>
+                      <md-table-row>
+                          <md-table-cell></md-table-cell>
+                          <md-table-cell style="text-align:left;" colspan="2"><md-checkbox  :input-value="getDarkTheme" :title="$t('options.enable_desktop_tooltip')" @change="toggleTheme">Dark Theme</md-checkbox></md-table-cell>
+                      </md-table-row>
                   </md-table-body>
               </md-table>
           </md-card-content>
@@ -119,10 +123,19 @@
 
 <script>
 import i18n from '../i18n'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'settings',
+  methods: {
+    toggleTheme () {
+      this.$store.dispatch('toggleDarkTheme')
+    }
+  },
   computed: {
+    ...mapGetters([
+      'getDarkTheme'
+    ]),
     languageList: function () {
       return i18n.messages
     }
