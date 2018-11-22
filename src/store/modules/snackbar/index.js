@@ -1,10 +1,8 @@
 const initialState = {
   show: false,
-  options: {
-    message: '',
-    timeout: 1500,
-    color: ''
-  }
+  message: '',
+  timeout: 1500,
+  color: ''
 }
 
 const state = () => ({
@@ -25,16 +23,15 @@ const mutations = {
     state.show = value
   },
   resetOptions (state) {
-    state.options = {
-      ...initialState.options
-    }
+    state.message = initialState.message
+    state.timeout = initialState.timeout
+    state.color = initialState.color
   }
 }
 
 const actions = {
   show ({ commit }, options) {
     commit('show', options)
-    commit('resetOptions')
   }
 }
 

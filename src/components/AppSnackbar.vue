@@ -17,6 +17,10 @@ export default {
         return this.$store.state.snackbar.show
       },
       set (value) {
+        if (!value) {
+          this.$store.commit('snackbar/resetOptions', value)
+        }
+
         this.$store.commit('snackbar/changeState', value)
       }
     },
