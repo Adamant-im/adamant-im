@@ -13,7 +13,7 @@ import 'vue-material/dist/vue-material.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import packageJSON from '../package.json'
 import storeConfig from './store'
-import {getAdmDataBase, getPassPhrase} from './lib/indexedDb'
+import { getAdmDataBase, getPassPhrase } from './lib/indexedDb'
 
 Vue.use(Vuex)
 Vue.use(VueMaterial)
@@ -36,14 +36,14 @@ router.beforeEach((to, from, next) => {
             if (from.name === 'Chat' && to.name !== 'Chat') {
               store.commit('leave_chat')
             }
-            next()
+             next()
           } else {
-            next({name: 'Login'})
+            next({ name: 'Login' })
           }
         } else {
           if (to.name === 'Login' && isLogged) {
             store.commit('leave_chat')
-            next({name: 'Chats'})
+            next({ name: 'Chats' })
           } else {
             next()
           }

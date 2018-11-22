@@ -122,7 +122,7 @@ export default {
       const imgUrl = this.$refs.qrCode.$el.querySelector('img').src
       const base64Data = imgUrl.slice(22, imgUrl.length)
       const byteCharacters = b64toBlob(base64Data)
-      const blob = new Blob([byteCharacters], {type: 'image/png'})
+      const blob = new Blob([byteCharacters], { type: 'image/png' })
 
       FileSaver.saveAs(blob, 'adamant-im.png')
     },
@@ -173,7 +173,7 @@ export default {
       }
     },
     download (data, filename, type) {
-      var file = new Blob([data], {type: type})
+      var file = new Blob([data], { type: type })
       if (window.navigator.msSaveOrOpenBlob) { // IE10+
         window.navigator.msSaveOrOpenBlob(file, filename)
       } else { // Others
