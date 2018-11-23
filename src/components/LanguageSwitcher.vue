@@ -38,7 +38,7 @@ export default {
     },
     currentLanguageName () {
       const locale = Object.keys(this.languages)
-          .find(code => code === this.currentLocale)
+        .find(code => code === this.currentLocale)
 
       return this.languages[locale].title
     }

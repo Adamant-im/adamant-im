@@ -6,7 +6,7 @@
         {{ $t('login.new_button') }}
       </v-btn>
     </div>
-    
+
     <template v-if="showPassphraze">
       <div
         v-html="$t('login.new_password_label')"
