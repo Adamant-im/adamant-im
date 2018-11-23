@@ -17,12 +17,18 @@ import packageJSON from '../package.json'
 import storeConfig from './store'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
+import Default from './layouts/default'
+import Legacy from './layouts/legacy'
 
 Vue.use(Vuex)
 Vue.use(VueMaterial)
 Vue.use(VueClipboards)
 Vue.use(VueFormatters)
 Vue.component('qr-code', VueQRCodeComponent)
+
+// Register layouts globally
+Vue.component('default', Default)
+Vue.component('legacy', Legacy)
 
 const store = new Vuex.Store(storeConfig)
 document.title = i18n.t('app_title')

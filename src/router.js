@@ -20,57 +20,84 @@ export default new Router({
       path: '/options/nodes',
       name: 'Nodes',
       component: Nodes,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'legacy'
+      }
     },
     {
       path: '/votes',
       name: 'Votes',
       component: Votes,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'legacy'
+      }
     },
     {
       path: '/transactions/:crypto/:tx_id',
       component: Transaction,
       name: 'Transaction',
       props: true,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'legacy'
+      }
     },
     {
       path: '/transactions',
       name: 'Transactions',
       component: Transactions,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'legacy'
+      }
     },
     {
       path: '/options',
       name: 'Options',
       component: Options,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'legacy'
+      }
     },
     {
       path: '/chats/:partner/',
       component: Chat,
       name: 'Chat',
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'legacy'
+      }
     },
     {
       path: '/chats',
       name: 'Chats',
       component: Chats,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'legacy'
+      }
     },
     {
       path: '/transfer/:fixedCrypto?/:fixedAddress?',
       name: 'Transfer',
       component: Transfer,
       props: true,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'legacy'
+      }
     },
     {
       path: '/home',
       name: 'Home',
       component: Home,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'legacy'
+      }
     },
     {
       path: '/',
