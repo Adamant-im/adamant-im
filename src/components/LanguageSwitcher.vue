@@ -10,58 +10,37 @@
     </v-btn>
     <v-list>
       <v-list-tile
-        v-for="language in languages"
-        :key="language.locale"
-        @click="onSelect(language.locale)"
+        v-for="(language, code) in languages"
+        :key="code"
+        @click="onSelect(code)"
       >
-        <v-list-tile-title>{{ language.name }}</v-list-tile-title>
+        <v-list-tile-title>{{ language.title }}</v-list-tile-title>
       </v-list-tile>
     </v-list>
   </v-menu>
 </template>
 
 <script>
+import i18n from '@/i18n'
+
 export default {
   computed: {
+    languages () {
+      return i18n.messages
+    },
     currentLocale: {
       get () {
-        return this.$store.state.language.currentLocale
+        return this.$store.state.languageModule.currentLocale
       },
       set (value) {
-        this.$store.dispatch('language/changeLocale', value)
+        this.$store.dispatch('languageModule/changeLocale', value)
       }
     },
     currentLanguageName () {
-      const language = this.languages.find(language => language.locale === this.currentLocale)
+      const locale = Object.keys(this.languages)
+          .find(code => code === this.currentLocale)
 
-      return language.name
-    }
-  },
-  data () {
-    return {
-      // @todo may need to be transferred to i18n
-      languages: [
-        {
-          name: 'العربية',
-          locale: 'ar'
-        },
-        {
-          name: 'Deutsch',
-          locale: 'de'
-        },
-        {
-          name: 'English',
-          locale: 'en'
-        },
-        {
-          name: 'Française',
-          locale: 'fr'
-        },
-        {
-          name: 'Русский',
-          locale: 'ru'
-        }
-      ]
+      return this.languages[locale].title
     }
   },
   methods: {
