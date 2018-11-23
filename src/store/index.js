@@ -641,7 +641,7 @@ const store = {
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes
     snackbar,
-    language
+    languageModule: language // @todo rename module when deleting store.state.language
   }
 }
 
