@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PassphraseGenerator.vue renders the correct markup 1`] = `
+<div
+  class="passphrase-generator"
+>
+  <div
+    class="text-xs-center"
+  >
+    <h3
+      class="body-1 grey--text text--darken-2"
+    >
+      Or create a new anonymous address:
+    </h3>
+     
+    <vbtn-stub
+      activeclass="v-btn--active"
+      flat="true"
+      tag="button"
+      type="button"
+    >
+      
+      Create new
+    
+    </vbtn-stub>
+  </div>
+   
+  <!---->
+</div>
+`;
