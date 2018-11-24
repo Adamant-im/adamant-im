@@ -2,12 +2,12 @@
   <div class="passphrase-generator">
     <div class="text-xs-center">
       <h3 class="body-1 grey--text text--darken-2">{{ $t('login.create_address_label') }}</h3>
-      <v-btn @click="generatePassphraze" flat>
+      <v-btn @click="generatePassphrase" flat>
         {{ $t('login.new_button') }}
       </v-btn>
     </div>
 
-    <template v-if="showPassphraze">
+    <template v-if="showPassphrase">
       <div
         v-html="$t('login.new_password_label')"
         class="caption grey--text mt-2"
@@ -77,7 +77,7 @@ function downloadFile (data, filename, type) {
 export default {
   data: () => ({
     passphrase: '',
-    showPassphraze: false
+    showPassphrase: false
   }),
   methods: {
     copyToClipboard () {
@@ -102,10 +102,10 @@ export default {
         .querySelector('textarea')
         .select()
     },
-    generatePassphraze () {
+    generatePassphrase () {
       this.passphrase = new Mnemonic(Mnemonic.Words.ENGLISH).toString()
 
-      this.showPassphraze = true
+      this.showPassphrase = true
     }
   }
 }
