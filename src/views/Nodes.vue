@@ -44,21 +44,22 @@
 
 <script>
 
-  function createNodeDescriptionText(context) {
-    context.$refs.descriptionBlock.append(context.$t('nodes.nodeLabelDescription.part_one'))
-    context.$refs.descriptionBlock.appendChild(createLink(context.$t('nodes.nodeLabelDescription.link_one'), context.$t('nodes.nodeLabelDescription.link_one_content')))
-    context.$refs.descriptionBlock.append(context.$t('nodes.nodeLabelDescription.part_two'))
-    context.$refs.descriptionBlock.appendChild(createLink(context.$t('nodes.nodeLabelDescription.link_two'), context.$t('nodes.nodeLabelDescription.link_two_content')))
-    context.$refs.descriptionBlock.append(context.$t('nodes.nodeLabelDescription.part_three'))
-  }
+function createNodeDescriptionText (context) {
+  context.$refs.descriptionBlock.append(context.$t('nodes.nodeLabelDescription.part_one'))
+  context.$refs.descriptionBlock.appendChild(createLink(context.$t('nodes.nodeLabelDescription.link_one'), context.$t('nodes.nodeLabelDescription.link_one_content')))
+  context.$refs.descriptionBlock.append(context.$t('nodes.nodeLabelDescription.part_two'))
+  context.$refs.descriptionBlock.appendChild(createLink(context.$t('nodes.nodeLabelDescription.link_two'), context.$t('nodes.nodeLabelDescription.link_two_content')))
+  context.$refs.descriptionBlock.append(context.$t('nodes.nodeLabelDescription.part_three'))
+}
 
-  function createLink(url, text) {
-    let link = document.createElement('a')
-    link.href = url
-    link.innerText = text
-    link.target = '_blank'
-    return link
-  }
+function createLink (url, text) {
+  let link = document.createElement('a')
+  link.href = url
+  link.innerText = text
+  link.target = '_blank'
+  return link
+}
+
 export default {
   name: 'nodes',
   data () {
@@ -116,6 +117,9 @@ export default {
 <style lang="scss">
   .nodes {
     background-color: #fff;
+    max-width: 800px;
+    margin: 0 auto;
+    color: rgba(0, 0, 0, 0.87);
 
     .nodes__options {
       text-align: left;
@@ -173,6 +177,7 @@ export default {
         text-overflow: ellipsis;
         overflow: hidden;
         min-width: 100%;
+        margin-left: -20px;
       }
     }
   }
