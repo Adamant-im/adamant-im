@@ -11,11 +11,11 @@
 </template>
 
 <script>
-  import AppSnackbar from '@/components/AppSnackbar'
+import AppSnackbar from '@/components/AppSnackbar'
 
-  export default {
-    components: {
-      AppSnackbar
-    }
+export default {
+  components: {
+    AppSnackbar
   }
+}
 </script>
