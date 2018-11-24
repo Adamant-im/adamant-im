@@ -5,7 +5,7 @@
       :rules="passphraseRules"
       class="text-xs-center"
       type="password"
-      :label="$t('Input your passphrase to login')"
+      :label="$t('login.password_label')"
     />
 
     <v-btn
@@ -19,7 +19,7 @@
         size="24"
         class="mr-3"
       />
-      {{ $t('Login') }}
+      {{ $t('login.login_button') }}
     </v-btn>
   </v-form>
 </template>
@@ -46,19 +46,22 @@ export default {
     login () {
       const passphrase = this.passphrase.toLowerCase().trim()
 
-      this.$store.dispatch('login', {
+      const promise = this.$store.dispatch('login', {
         passphrase
       })
+
+      promise
         .then(() => {
           this.$emit('login')
         })
         .catch(err => {
           this.$emit('error', err)
-          console.log(err)
         })
         .finally(() => {
           this.antiFreeze()
         })
+
+      return promise
     },
     freeze () {
       this.disabledButton = true
@@ -95,13 +98,3 @@ export default {
   font-size: 12px;
 }
 </style>
-
-<i18n>
-{
-  "en": {
-    "Input your passphrase to login": "Input your passphrase to login",
-    "Login": "Login",
-    "Passphrase is required": "Passphrase is required"
-  }
-}
-</i18n>
