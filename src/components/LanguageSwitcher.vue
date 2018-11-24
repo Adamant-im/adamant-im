@@ -21,12 +21,10 @@
 </template>
 
 <script>
-import i18n from '@/i18n'
-
 export default {
   computed: {
     languages () {
-      return i18n.messages
+      return this.$i18n.messages
     },
     currentLocale: {
       get () {
