@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LoginForm.vue renders the correct markup 1`] = `
+<vform-stub
+  class="login-form"
+  value="true"
+>
+  <vtextfield-stub
+    class="text-xs-center"
+    label="Input your passphrase to login"
+    rules="function (v) {
+        return !!v || 'Passphrase is required';
+      },function (v) {
+        return v.split(' ').length === 12 || 'Passphrase must be valid';
+      }"
+    type="password"
+  />
+   
+  <vbtn-stub
+    activeclass="v-btn--active"
+    tag="button"
+    type="button"
+  >
+    <vprogresscircular-stub
+      class="mr-3"
+      color="primary"
+      indeterminate="true"
+      rotate="0"
+      size="24"
+      style="display: none;"
+      value="0"
+      width="4"
+    />
+    
+    Login
+  
+  </vbtn-stub>
+</vform-stub>
+`;
