@@ -11,7 +11,7 @@
       }"
       v-if="!brief"
     >
-      <div class="message-tick" :data-confirmation="confirm"></div>
+      <div v-if="amount > 0" class="message-tick" :data-confirmation="confirm"></div>
       <div v-if="readOnly" class="adamant-avatar"></div>
       <div v-else class="avatar-holder" v-bind:class="{fromAvatarHolder: toMessageFlag}"></div>
       <div class="message-block">
@@ -40,7 +40,7 @@ function checkForCurrency (text, currency) {
 
 export default {
   name: 'chat-entry-template',
-  props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly', 'message'],
+  props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly', 'message', 'amount'],
   methods: {
     retryMessage () {
       this.$store.dispatch('retry_message', this.message.id)

@@ -29,8 +29,10 @@
                 <div class="md-list-text-container">
                     <div class="chat_entry_title">{{ chatName(chat.partner) }}</div>
                     <div class="chat-entry-wrapper">
-                      <div class="message-status-block" :message-status="chat.last_message.confirm_class" ></div>
-                      <chat-entry :message="chat.last_message" :brief="true"></chat-entry>
+                      <div v-if="chat.last_message.amount > 0 && chat.last_message.direction === 'from'" class="message-status-block" :message-status="chat.last_message.confirm_class"></div>
+                      <chat-entry v-if="chat.last_message.amount > 0 && chat.last_message.direction === 'from'" :message="chat.last_message" :brief="true"></chat-entry>
+                      <chat-entry v-else :message="chat.last_message" :brief="true" class="for-received"></chat-entry>
+                      <div v-if="chat.last_message.amount > 0 && chat.last_message.direction === 'to'" class="message-status-block-for-received" :message-status="chat.last_message.confirm_class"></div>
                     </div>
                     <span class="dt" v-if="chat.last_message.timestamp">{{ $formatDate(chat.last_message.timestamp) }}</span>
                 </div>
@@ -108,7 +110,6 @@ export default {
         messages.sort((a, b) => a.timestamp - b.timestamp)
         let lastMessage = messages[messages.length - 1]
         let lastChatMessage = Object.assign({}, lastMessage)
-        console.log('im here', lastChatMessage)
         if (lastChatMessage.amount > 0) {
           const label = lastChatMessage.direction === 'from' ? 'sent_label' : 'received_label'
           const status = lastChatMessage.direction === 'from' ? lastChatMessage.confirm_class === undefined ? 'confirmed' : lastChatMessage.confirm_class : 'confirmed'
@@ -217,6 +218,10 @@ export default {
       justify-content: flex-start;
     }
 
+    .for-received {
+        width: auto;
+    }
+
     .adamant-avatar-wrapper {
       background-color: #9d9d9d !important;
     }
@@ -244,13 +249,16 @@ export default {
     .message-status-block {
       margin-right: 10px;
     }
+    .message-status-block-for-received {
+        margin-right: 10px;
+        margin-left: 5px;
+    }
     [message-status=confirmed]:before {
       content: 'done';
       font-family: "Material Icons";
       text-rendering: optimizeLegibility;
       position: absolute;
       bottom: 14px;
-      left: 64px;
       font-size: 8px;
     }
 

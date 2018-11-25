@@ -43,7 +43,7 @@ export default {
     return admApi.getTransactions(options).then(response => {
       if (Array.isArray(response.transactions) && response.transactions.length) {
         let chats = context.rootGetters.getChats
-        let targetChat;
+        let targetChat
         response.transactions.forEach(tx => {
           if (tx.recipientId === context.rootGetters.getAdmAddress) {
             targetChat = Object.values(chats).filter(chat => chat.partner === tx.senderId)

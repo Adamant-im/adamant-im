@@ -3,6 +3,7 @@
     :confirm="message.confirm_class"
     :direction="message.direction"
     :timestamp="message.timestamp"
+    :amount="message.amount"
     :brief="brief"
     :readOnly="readOnly"
     :message="message"
