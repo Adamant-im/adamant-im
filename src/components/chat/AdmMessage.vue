@@ -10,10 +10,18 @@
     <p v-if="message.amount">
       {{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}
     </p>
-    <p v-if="message.amount" class='transaction-amount' v-on:click="goToTransaction()">
+    <p
+      v-if="message.amount"
+      @click="goToTransaction"
+      class="transaction-amount"
+    >
       <span v-text="$formatAmount(message.amount)"></span> ADM
     </p>
-    <p v-html="message.message" v-bind:class="{ transfer_comment: !!message.amount }" ></p>
+
+    <p
+      v-html="renderMarkdown(message.message)"
+      :class="{ transfer_comment: !!message.amount }"
+    ></p>
 
     <template slot="brief-view">
       <span v-html="message.message"></span>
@@ -23,7 +31,8 @@
 
 <script>
 import ChatEntryTemplate from './ChatEntryTemplate.vue'
-import { Cryptos } from '../../lib/constants'
+import { Cryptos } from '@/lib/constants'
+import renderMarkdown from '@/lib/markdown'
 
 export default {
   name: 'adm-message',
@@ -34,6 +43,9 @@ export default {
       this.$store.commit('leave_chat')
       const params = { crypto: Cryptos.ADM, tx_id: this.message.id }
       this.$router.push({ name: 'Transaction', params })
+    },
+    renderMarkdown (text = '') {
+      return renderMarkdown(text)
     }
   }
 }
