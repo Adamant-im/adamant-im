@@ -29,7 +29,7 @@
                 <div class="md-list-text-container">
                     <div class="chat_entry_title">{{ chatName(chat.partner) }}</div>
                     <div class="chat-entry-wrapper">
-                      <div v-if="chat.last_message.amount > 0 && chat.last_message.direction === 'from'" class="message-status-block" :message-status="chat.last_message.confirm_class"></div>
+                      <div v-if="(chat.last_message.amount > 0 && chat.last_message.direction === 'from') || chat.last_message.direction === 'from'" class="message-status-block" :message-status="chat.last_message.confirm_class"></div>
                       <chat-entry v-if="chat.last_message.amount > 0 && chat.last_message.direction === 'from'" :message="chat.last_message" :brief="true"></chat-entry>
                       <chat-entry v-else :message="chat.last_message" :brief="true" class="for-received"></chat-entry>
                       <div v-if="chat.last_message.amount > 0 && chat.last_message.direction === 'to'" class="message-status-block-for-received" :message-status="chat.last_message.confirm_class"></div>

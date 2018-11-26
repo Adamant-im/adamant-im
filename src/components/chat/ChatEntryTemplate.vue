@@ -11,7 +11,7 @@
       }"
       v-if="!brief"
     >
-      <div v-if="amount > 0" class="message-tick" :data-confirmation="confirm"></div>
+      <div v-if="amount > 0 || direction === 'from'" class="message-tick" :data-confirmation="confirm"></div>
       <div v-if="readOnly" class="adamant-avatar"></div>
       <div v-else class="avatar-holder" v-bind:class="{fromAvatarHolder: toMessageFlag}"></div>
       <div class="message-block">
