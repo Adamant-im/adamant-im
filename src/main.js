@@ -9,7 +9,6 @@ import i18n from './i18n'
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
 import VueMaterial from 'vue-material'
-import VueQRCodeComponent from 'vue-qrcode-component'
 import VueFormatters from './lib/formatters'
 import 'vue-material/dist/vue-material.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
@@ -24,7 +23,6 @@ Vue.use(Vuex)
 Vue.use(VueMaterial)
 Vue.use(VueClipboards)
 Vue.use(VueFormatters)
-Vue.component('qr-code', VueQRCodeComponent)
 
 // Register layouts globally
 Vue.component('default', Default)

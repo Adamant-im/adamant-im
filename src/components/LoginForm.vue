@@ -3,9 +3,11 @@
     <v-text-field
       v-model="passphrase"
       :rules="passphraseRules"
+      :label="$t('login.password_label')"
+      append-outer-icon="mdi-qrcode"
+      @click:append-outer="toggleQrcodeRenderer"
       class="text-xs-center"
       type="password"
-      :label="$t('login.password_label')"
     />
 
     <v-btn
@@ -21,10 +23,16 @@
       />
       {{ $t('login.login_button') }}
     </v-btn>
+
+    <v-layout v-if="showQrcodeRenderer" justify-center class="mt-3">
+      <qrcode-renderer :text="passphrase"/>
+    </v-layout>
   </v-form>
 </template>
 
 <script>
+import QrcodeRenderer from 'vue-qrcode-component'
+
 export default {
   data: () => ({
     validForm: true,
@@ -34,7 +42,8 @@ export default {
       v => !!v || 'Passphrase is required', // @todo translations
       v => v.split(' ').length === 12 || 'Passphrase must be valid'
     ],
-    showSpinner: false
+    showSpinner: false,
+    showQrcodeRenderer: false
   }),
   methods: {
     submit () {
@@ -70,7 +79,13 @@ export default {
     antiFreeze () {
       this.disabledButton = false
       this.showSpinner = false
+    },
+    toggleQrcodeRenderer () {
+      this.showQrcodeRenderer = !this.showQrcodeRenderer
     }
+  },
+  components: {
+    QrcodeRenderer
   }
 }
 </script>
