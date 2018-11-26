@@ -29,6 +29,7 @@
           <v-layout justify-center>
             <v-flex xs12 md8>
               <login-form
+                v-model="passphrase"
                 @login="onLogin"
                 @error="onLoginError"
               />
@@ -36,11 +37,8 @@
           </v-layout>
 
           <v-layout justify-center>
-            <v-btn icon flat large fab>
+            <v-btn @click="showQrcodeScanner = true" icon flat large fab>
               <v-icon>mdi-qrcode-scan</v-icon>
-            </v-btn>
-            <v-btn icon flat large fab>
-              <v-icon>mdi-qrcode</v-icon>
             </v-btn>
           </v-layout>
 
@@ -56,6 +54,11 @@
       </v-flex>
     </v-layout>
 
+    <qrcode-scanner
+      v-if="showQrcodeScanner"
+      v-model="showQrcodeScanner"
+      @scan="onScanQrcode"
+    />
   </div>
 </template>
 
@@ -63,9 +66,12 @@
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
 import LoginForm from '@/components/LoginForm'
+import QrcodeScanner from '@/components/QrcodeScanner'
 
 export default {
   data: () => ({
+    passphrase: '',
+    showQrcodeScanner: false,
     logo: '/img/adamant-logo-transparent-512x512.png' // @todo maybe svg will be better
   }),
   methods: {
@@ -82,12 +88,24 @@ export default {
         message: this.$t('Copied'),
         timeout: 1500
       })
+    },
+    onScanQrcode (passphrase) {
+      this.$store.dispatch('login', {
+        passphrase
+      })
+        .then(() => {
+          this.onLogin()
+        })
+        .catch(err => {
+          this.onLoginError()
+        })
     }
   },
   components: {
     LanguageSwitcher,
     PassphraseGenerator,
-    LoginForm
+    LoginForm,
+    QrcodeScanner
   }
 }
 </script>
