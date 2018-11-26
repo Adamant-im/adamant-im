@@ -19,7 +19,7 @@
               <md-checkbox v-model="node.active" @change="toggle(node)" />
             </md-table-cell>
             <md-table-cell>
-              <span>{{ node.url }}</span>
+              <div class="node-url-block">{{ node.url }}</div>
             </md-table-cell>
             <md-table-cell>
               {{ !node.active
@@ -38,11 +38,27 @@
         {{ $t('nodes.fastest_title') }}
       </md-checkbox>
     </div>
-
+    <div class='nodes__options description-block' ref="descriptionBlock"></div>
   </div>
 </template>
 
 <script>
+
+function createNodeDescriptionText (context) {
+  context.$refs.descriptionBlock.append(context.$t('nodes.nodeLabelDescription.part_one'))
+  context.$refs.descriptionBlock.appendChild(createLink(context.$t('nodes.nodeLabelDescription.link_one'), context.$t('nodes.nodeLabelDescription.link_one_content')))
+  context.$refs.descriptionBlock.append(context.$t('nodes.nodeLabelDescription.part_two'))
+  context.$refs.descriptionBlock.appendChild(createLink(context.$t('nodes.nodeLabelDescription.link_two'), context.$t('nodes.nodeLabelDescription.link_two_content')))
+  context.$refs.descriptionBlock.append(context.$t('nodes.nodeLabelDescription.part_three'))
+}
+
+function createLink (url, text) {
+  let link = document.createElement('a')
+  link.href = url
+  link.innerText = text
+  link.target = '_blank'
+  return link
+}
 
 export default {
   name: 'nodes',
@@ -58,6 +74,7 @@ export default {
   },
   mounted () {
     this.timer = setInterval(() => this.$store.dispatch('nodes/updateStatus'), 10000)
+    createNodeDescriptionText(this)
   },
   destroyed () {
     clearInterval(this.timer)
@@ -100,6 +117,9 @@ export default {
 <style lang="scss">
   .nodes {
     background-color: #fff;
+    max-width: 800px;
+    margin: 0 auto;
+    color: rgba(0, 0, 0, 0.87);
 
     .nodes__options {
       text-align: left;
@@ -107,6 +127,12 @@ export default {
       font-size: 16px;
       max-width: 95%;
       margin: 10px auto auto auto;
+    }
+
+    .description-block {
+      text-align: justify;
+      padding-bottom: 20px;
+      padding-right: 20px;
     }
 
     .md-table {
@@ -144,6 +170,14 @@ export default {
           margin-top: 0;
           margin-bottom: 0;
         }
+      }
+
+      .node-url-block {
+        width: 100px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        min-width: 100%;
+        margin-left: -20px;
       }
     }
   }
