@@ -29,7 +29,6 @@
           <v-layout justify-center>
             <v-flex xs12 md8>
               <login-form
-                v-model="passphrase"
                 @login="onLogin"
                 @error="onLoginError"
               />
