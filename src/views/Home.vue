@@ -36,7 +36,7 @@
             </md-avatar>
             <div class="md-list-text-container">
                 <span>{{ $t('home.your_balance_' + wallet.system) }}</span>
-                <p> <span v-html="wallet.balance"></span> {{ wallet.system }}</p>
+                <p> <span v-text="wallet.balance"></span> {{ wallet.system }}</p>
             </div>
           </md-list-item>
 
