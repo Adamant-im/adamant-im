@@ -70,7 +70,6 @@ import QrcodeScanner from '@/components/QrcodeScanner'
 
 export default {
   data: () => ({
-    passphrase: '',
     showQrcodeScanner: false,
     logo: '/img/adamant-logo-transparent-512x512.png' // @todo maybe svg will be better
   }),
