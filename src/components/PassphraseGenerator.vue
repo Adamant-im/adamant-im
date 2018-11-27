@@ -33,7 +33,7 @@
 
 <script>
 import Mnemonic from 'bitcore-mnemonic'
-import { copyToClipboard, downloadFile } from "@/lib/textHelpers"
+import { copyToClipboard, downloadFile } from '@/lib/textHelpers'
 
 export default {
   data: () => ({

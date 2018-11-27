@@ -39,7 +39,6 @@
             v-for="wallet in wallets"
             :key="wallet.system"
             avatar
-            @click=""
           >
             <v-list-tile-avatar>
               <v-icon class="grey lighten-1 white--text">{{ wallet.iconBalance }}</v-icon>
@@ -83,7 +82,6 @@
 
 <script>
 import { copyToClipboard } from '@/lib/textHelpers'
-
 
 export default {
   computed: {
