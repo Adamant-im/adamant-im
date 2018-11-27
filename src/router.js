@@ -77,7 +77,7 @@ export default new Router({
       component: Chats,
       meta: {
         requiresAuth: true,
-        layout: 'legacy'
+        layout: 'toolbar'
       }
     },
     {
