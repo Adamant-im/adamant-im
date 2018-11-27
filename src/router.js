@@ -59,7 +59,7 @@ export default new Router({
       component: Options,
       meta: {
         requiresAuth: true,
-        layout: 'legacy'
+        layout: 'toolbar'
       }
     },
     {
