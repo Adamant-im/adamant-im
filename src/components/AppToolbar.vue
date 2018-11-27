@@ -37,6 +37,9 @@
 
 <script>
 export default {
+  mounted () {
+    this.currentPage = this.$route.path
+  },
   watch: {
     '$route' (to, from) {
       this.currentPage = to.path
