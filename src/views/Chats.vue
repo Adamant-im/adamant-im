@@ -32,7 +32,10 @@
 
     </v-flex>
 
-    <chat-start-dialog v-model="showChatStartDialog"/>
+    <chat-start-dialog
+      v-model="showChatStartDialog"
+      @start-chat="openChat"
+    />
   </v-layout>
 </template>
 
@@ -48,7 +51,7 @@ export default {
     }
   },
   data: () => ({
-    showChatStartDialog: true
+    showChatStartDialog: false
   }),
   methods: {
     newMessages (address) {
