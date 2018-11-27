@@ -18,6 +18,7 @@ import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
 import Default from './layouts/default'
 import Legacy from './layouts/legacy'
+import Toolbar from './layouts/toolbar'
 
 Vue.use(Vuex)
 Vue.use(VueMaterial)
@@ -27,6 +28,7 @@ Vue.use(VueFormatters)
 // Register layouts globally
 Vue.component('default', Default)
 Vue.component('legacy', Legacy)
+Vue.component('toolbar', Toolbar)
 
 const store = new Vuex.Store(storeConfig)
 document.title = i18n.t('app_title')
