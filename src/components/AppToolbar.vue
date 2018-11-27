@@ -5,13 +5,14 @@
       <v-flex xs12><v-divider></v-divider></v-flex>
 
       <v-flex
-        v-for="page in pages" :key="page.title"
+        v-for="page in pages"
+        :key="page.title"
         xs3
       >
         <v-btn
           flat
           :ripple="false"
-          class="wrap"
+          :class="{ 'v-btn--active': currentPage === page.link }"
           @click="$router.replace(page.link)"
         >
           <v-icon medium left>{{ page.icon }}</v-icon>
@@ -36,6 +37,11 @@
 
 <script>
 export default {
+  watch: {
+    '$route' (to, from) {
+      this.currentPage = to.path
+    }
+  },
   data: () => ({
     pages: [
       {
@@ -53,7 +59,8 @@ export default {
         link: '/options',
         icon: 'mdi-settings'
       }
-    ]
+    ],
+    currentPage: '/home'
   }),
   methods: {
     logout () {
