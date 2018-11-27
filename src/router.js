@@ -96,7 +96,7 @@ export default new Router({
       component: Home,
       meta: {
         requiresAuth: true,
-        layout: 'legacy'
+        layout: 'toolbar'
       }
     },
     {
