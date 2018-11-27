@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="application--toolbar">
     <v-content>
       <v-container fluid>
         <router-view/>
@@ -22,3 +22,17 @@ export default {
   }
 }
 </script>
+
+<style>
+/* @todo <main> shouldn't have text-align: center by default */
+main {
+  text-align: left;
+}
+
+/**
+ * Equals with toolbar height.
+ */
+.application--toolbar {
+  margin-bottom: 55px;
+}
+</style>
