@@ -140,11 +140,11 @@ export default {
         {
           system: 'DOGE',
           address: this.$store.state.doge.address,
-          tooltip: 'home.your_address_tooltip_ETH',
+          tooltip: 'home.your_address_tooltip_DOGE',
           balance: this.$store.state.doge.balance,
-          balanceTooltip: 'home.your_balance_tooltip_ETH',
-          addressIcon: '/img/Wallet/eth-address.svg',
-          balanceIcon: '/img/Wallet/eth-balance.svg'
+          balanceTooltip: 'home.your_balance_tooltip_DOGE',
+          addressIcon: '/img/Wallet/doge-address.svg',
+          balanceIcon: '/img/Wallet/doge-balance.svg'
         }
       ]
     }
