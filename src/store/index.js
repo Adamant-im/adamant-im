@@ -9,6 +9,7 @@ import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
 import nodesModule from './modules/nodes'
+import dogeModule from './modules/doge'
 
 import delegatesModule from './modules/delegates'
 
@@ -627,7 +628,8 @@ const store = {
     adm: admModule, // ADM transfers
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen
-    nodes: nodesModule // ADAMANT nodes
+    nodes: nodesModule, // ADAMANT nodes
+    doge: dogeModule
   }
 }
 

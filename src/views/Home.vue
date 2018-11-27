@@ -136,6 +136,15 @@ export default {
           balanceTooltip: 'home.your_balance_tooltip_BNB',
           addressIcon: '/img/Wallet/bnb-address.svg',
           balanceIcon: '/img/Wallet/bnb-balance.svg'
+        },
+        {
+          system: 'DOGE',
+          address: this.$store.state.doge.address,
+          tooltip: 'home.your_address_tooltip_ETH',
+          balance: this.$store.state.doge.balance,
+          balanceTooltip: 'home.your_balance_tooltip_ETH',
+          addressIcon: '/img/Wallet/eth-address.svg',
+          balanceIcon: '/img/Wallet/eth-balance.svg'
         }
       ]
     }
