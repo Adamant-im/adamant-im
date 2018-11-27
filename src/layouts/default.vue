@@ -19,3 +19,10 @@ export default {
   }
 }
 </script>
+
+<style>
+/* @todo <main> shouldn't have text-align: center by default */
+main {
+  text-align: left;
+}
+</style>
