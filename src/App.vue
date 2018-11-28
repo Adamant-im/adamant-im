@@ -23,64 +23,28 @@
 </template>
 
 <script>
-import i18n from './i18n'
+import Blinker from '@/lib/blinker'
 
 export default {
   name: 'app',
-  mounted: function () {
-    this.checkChatPage(this.$router.currentRoute.path)
-    setInterval(
-      ((self) => {
-        return function () {
-          if (self.$store.state.totalNewChats > 0 && (self.$store.state.notifyBar)) {
-            if (window.notify_amount !== self.$store.state.totalNewChats) {
-              if (window.notify_interval) {
-                clearInterval(window.notify_interval)
-              }
-              window.notify_toggle = false
-              window.notify_amount = self.$store.state.totalNewChats
-              window.notify_interval = setInterval(function () {
-                if (window.notify_toggle) {
-                  document.title = i18n.t('app_title')
-                } else {
-                  var newTitle = ''
-                  if (window.notify_amount % 10 === 1 && window.notify_amount % 100 !== 11) {
-                    newTitle = window.notify_amount + ' ' + i18n.t('new_messages_1')
-                  } else if (window.notify_amount % 10 >= 2 && window.notify_amount % 10 <= 4 && (window.notify_amount % 100 < 10 || window.notify_amount % 100 >= 20)) {
-                    newTitle = window.notify_amount + ' ' + i18n.t('new_messages_2')
-                  } else {
-                    newTitle = window.notify_amount + ' ' + i18n.t('new_messages_5')
-                  }
-                  document.title = newTitle
-                }
-                window.notify_toggle = !window.notify_toggle
-              }, 1000)
-            }
-          } else {
-            if (window.notify_interval) {
-              clearInterval(window.notify_interval)
-              setTimeout(function () {
-                document.title = i18n.t('app_title')
-              }, 200)
-            }
-
-            if (document.title !== i18n.t('app_title')) {
-              setTimeout(function () {
-                document.title = i18n.t('app_title')
-              }, 200)
-            }
-          }
-          self.$store.dispatch('update')
-        }
-      })(this),
-      3000
-    )
-
+  mounted () {
     window.audio = require('simple-audio')
 
+    this.checkChatPage(this.$router.currentRoute.path)
     if (!this.$store.getters.getPassPhrase && this.$route.path !== '/') {
       this.$router.push('/')
     }
+
+    this.blinker = new Blinker(this.$t('app_title'))
+
+    this.intervalRef = setInterval(() => {
+      this.$store.dispatch('update')
+      this.checkForNewMessages()
+    }, 3000)
+  },
+  beforeDestroy () {
+    this.blinker.stop()
+    clearInterval(this.intervalRef)
   },
   methods: {
     exitme () {
@@ -90,6 +54,17 @@ export default {
     },
     checkChatPage (path) {
       this.chatsPage = path.includes('/chats')
+    },
+    checkForNewMessages () {
+      if (this.numOfNewMessages > 0 && this.userAllowNotifications) {
+        let notificationMessage = this.numOfNewMessages % 10 > 4 ?
+          this.$tc('newMessageNotification.many', this.numOfNewMessages) :
+          this.$tc('newMessageNotification.few', this.numOfNewMessages)
+
+        this.blinker.start(notificationMessage)
+      } else {
+        this.blinker.stop()
+      }
     }
   },
   computed: {
@@ -117,6 +92,12 @@ export default {
     },
     logged () {
       return this.$store.getters.getPassPhrase
+    },
+    numOfNewMessages () {
+      return this.$store.state.totalNewChats
+    },
+    userAllowNotifications () {
+      return this.$store.state.notifyBar
     }
   },
   watch: {
@@ -130,7 +111,10 @@ export default {
   data () {
     return {
       transferBackShown: (this.$router.currentRoute.name === 'Transfer'),
-      chatsPage: false
+      chatsPage: false,
+
+      blinker: null,
+      intervalRef: null
     }
   }
 }
@@ -342,3 +326,38 @@ header span {
     border-bottom: none;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "newMessageNotification": {
+      "few": "no messages | 1 new message | {n} new messages",
+      "many": "{n} new messages"
+    }
+  },
+  "ru": {
+    "newMessageNotification": {
+      "few": "нет новых сообщений | 1 новое сообщение | {n} новых сообщения",
+      "many": "{n} новых сообщений"
+    }
+  },
+  "fr": {
+    "newMessageNotification": {
+      "few": "0 nouveaux message | 1 nouveaux message | {n} nouveaux messages",
+      "many": "{n} nouveaux messages"
+    }
+  },
+  "de": {
+    "newMessageNotification": {
+      "few": "0 Neue Nachricht | 1 Neue Nachricht | {n} Neue Nachrichten",
+      "many": "{n} Neue Nachrichten"
+    }
+  },
+  "ar": {
+    "newMessageNotification": {
+      "few": "no messages | 1 new message | {n} new messages",
+      "many": "{n} new messages"
+    }
+  }
+}
+</i18n>
