@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 import Chats from '@/views/Chats'
 import Chat from '@/views/Chat'
-import Transfer from '@/views/Transfer'
+import SendFunds from '@/views/SendFunds'
 import Transaction from '@/views/transactions/Transaction'
 import Transactions from '@/views/Transactions'
 import Options from '@/views/Options'
@@ -81,13 +81,13 @@ export default new Router({
       }
     },
     {
-      path: '/transfer/:fixedCrypto?/:fixedAddress?',
-      name: 'Transfer',
-      component: Transfer,
+      path: '/transfer/:cryptoCurrency?/:recipientAddress?/:amountToSend?',
+      name: 'SendFunds',
+      component: SendFunds,
       props: true,
       meta: {
         requiresAuth: true,
-        layout: 'legacy'
+        layout: 'toolbar'
       }
     },
     {
