@@ -22,7 +22,7 @@ export default new Router({
       component: Nodes,
       meta: {
         requiresAuth: true,
-        layout: 'legacy'
+        layout: 'toolbar'
       }
     },
     {
