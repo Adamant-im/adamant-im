@@ -1,5 +1,5 @@
 <template>
-    <div class="transaction transaction_list">
+    <div class="transaction transaction_list" ref="txListElement">
       <spinner v-if="isLoading" />
       <md-list class="custom-list md-triple-line md-transparent">
         <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
@@ -49,7 +49,7 @@ export default {
   mounted () {
     this.update()
     clearInterval(this.bgTimer)
-    this.bgTimer = setInterval(() => this.update(), 5000)
+    this.bgTimer = setInterval(() => this.update(), 20000)
     window.addEventListener('scroll', this.onScroll)
   },
   beforeDestroy () {
@@ -89,12 +89,12 @@ export default {
       this.$store.dispatch(`${this.prefix}/getNewTransactions`)
     },
     onScroll () {
-      const pageHeight = document.body.offsetHeight
+      const height = this.$refs['txListElement'].offsetHeight
       const windowHeight = window.innerHeight
       const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop + (document.documentElement.scrollTop || 0)
 
       // If we've scrolled to the very bottom, fetch the older transactions from server
-      if (windowHeight + scrollPosition >= pageHeight) {
+      if (windowHeight + scrollPosition >= height) {
         this.$store.dispatch(`${this.prefix}/getOldTransactions`)
       }
     }
