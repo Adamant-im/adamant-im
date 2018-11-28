@@ -1,5 +1,6 @@
 <template>
     <div class="transaction transaction_list">
+      <spinner v-if="isLoading" />
       <md-list class="custom-list md-triple-line md-transparent">
         <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
           <md-avatar>
@@ -8,8 +9,8 @@
 
           <div class="md-list-text-container" v-on:click="goToTransaction(transaction.id)">
             <div>
-              {{ displayName(transaction.partner) }}
-              <span class="partner_display_name">{{ formatPartnerAddress(transaction.partner) }}</span>
+              {{ displayName(transaction) }}
+              <span class="partner_display_name">{{ formatPartnerAddress(transaction) }}</span>
             </div>
             <span>{{ $formatAmount(transaction.amount, crypto) }} {{crypto}}</span>
             <p>{{ $formatDate(transaction.timestamp) }}</p>
@@ -33,9 +34,11 @@
 <script>
 
 import { Cryptos } from '../lib/constants'
+import Spinner from '@/components/Spinner.vue'
 
 export default {
   name: 'transactions',
+  components: { Spinner },
   data () {
     return {
       bgTimer: null,
@@ -67,12 +70,17 @@ export default {
       const params = { crypto: this.crypto, tx_id: id }
       this.$router.push({ name: 'Transaction', params })
     },
-    displayName (partner) {
+    getPartner (tx) {
+      return tx.partner || (tx.direction === 'to' ? tx.senderId : tx.recipientId)
+    },
+    displayName (tx) {
+      const partner = this.getPartner(tx)
       return this.crypto === Cryptos.ADM
         ? this.$store.getters['partners/displayName'](partner) || ''
         : ''
     },
-    formatPartnerAddress (partner) {
+    formatPartnerAddress (tx) {
+      const partner = this.getPartner(tx)
       return this.crypto === Cryptos.ADM
         ? '(' + partner + ')'
         : partner
@@ -94,6 +102,9 @@ export default {
   computed: {
     transactions: function () {
       return this.$store.getters[`${this.prefix}/sortedTransactions`]
+    },
+    isLoading () {
+      return this.$store.getters[`${this.prefix}/areTransactionsLoading`]
     }
   },
   props: ['crypto']

@@ -103,12 +103,21 @@ function getUrl () {
  */
 function parseTxFromIndex (tx) {
   const hash = tx.txhash.replace(/^.*x/, '0x').toLowerCase()
+
+  const recipientId = tx.contract_to
+    ? '0x' + tx.contract_to.substr(-40)
+    : tx.txto.toLowerCase()
+
+  const value = tx.contract_value
+    ? parseInt(tx.contract_value, 16)
+    : tx.value
+
   return {
     id: hash,
     hash,
     senderId: tx.txfrom.toLowerCase(),
-    recipientId: tx.txto.toLowerCase(),
-    amount: utils.toEther(tx.value),
+    recipientId,
+    amount: utils.toEther(value),
     fee: utils.calculateFee(tx.gas, tx.gasprice),
     status: 'SUCCESS',
     timestamp: tx.time * 1000,

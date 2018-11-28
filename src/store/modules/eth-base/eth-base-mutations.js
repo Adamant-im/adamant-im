@@ -33,9 +33,8 @@ export default {
       if (!tx) return
 
       const direction = tx.recipientId === address ? 'to' : 'from'
-      const partner = direction === 'to' ? tx.senderId : tx.recipientId
       const newTx = Object.assign(
-        { direction, partner, id: tx.hash },
+        { direction, id: tx.hash },
         state.transactions[tx.hash],
         tx
       )
@@ -54,5 +53,9 @@ export default {
     if (maxHeight > 0) {
       state.maxHeight = maxHeight
     }
+  },
+
+  areTransactionsLoading (state, areLoading) {
+    state.areTransactionsLoading = areLoading
   }
 }

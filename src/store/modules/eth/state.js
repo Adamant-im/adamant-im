@@ -8,6 +8,6 @@ export default () => {
     blockNumber: 0,
     fee: 0,
     isPublished: false, // Indicates whether ETH address has been published to the KVS
-    ...baseState
+    ...baseState()
   }
 }

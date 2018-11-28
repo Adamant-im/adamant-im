@@ -5,6 +5,6 @@ export default function initialState (crypto, contractAddress, decimals) {
     crypto,
     contractAddress,
     decimals,
-    ...baseState
+    ...baseState()
   }
 }
