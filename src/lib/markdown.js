@@ -26,9 +26,8 @@ renderer.link = function (href, title, text) {
     return text
   }
 
-  text = href
-  const out = ['<a href="', href, '">', text, '</a>'].join('')
-  return out
+  text = text || href
+  return ['<a href="', href, '">', text, '</a>'].join('')
 }
 
 /**
