@@ -5,20 +5,21 @@
         <router-view/>
       </v-container>
 
-      <app-toolbar/>
       <app-snackbar/>
     </v-content>
+
+    <app-navigation/>
   </v-app>
 </template>
 
 <script>
 import AppSnackbar from '@/components/AppSnackbar'
-import AppToolbar from '@/components/AppToolbar'
+import AppNavigation from '@/components/AppNavigation'
 
 export default {
   components: {
     AppSnackbar,
-    AppToolbar
+    AppNavigation
   }
 }
 </script>
