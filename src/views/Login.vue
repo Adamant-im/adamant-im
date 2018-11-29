@@ -1,5 +1,5 @@
 <template>
-  <v-layout row fill-height align-center justify-center class="login-page">
+  <v-layout row fill-height justify-center class="login-page">
 
     <v-flex md5 sm8 xs12>
 
