@@ -1,21 +1,20 @@
 <template>
   <v-layout row fill-height align-center justify-center class="login-page">
 
-    <v-flex md5 xs12>
+    <v-flex md5 sm8 xs12>
 
       <div class="text-xs-right">
         <language-switcher/>
       </div>
 
-      <v-card flat color="transparent" class="text-xs-center">
+      <v-card flat color="transparent" class="text-xs-center mt-3">
         <img
           :src="logo"
-          width="300"
-          height="300"
+          class="logo"
         />
 
         <h1 class="login-page__title">{{ $t('brandTitle') }}</h1>
-        <h2 class="login-page__subtitle mt-3">{{ $t('brandSubtitle') }}</h2>
+        <h2 class="hidden-sm-and-down login-page__subtitle mt-3">{{ $t('brandSubtitle') }}</h2>
       </v-card>
 
       <v-card flat color="transparent" class="text-xs-center mt-3">
@@ -122,6 +121,19 @@ main {
   font-family: 'Exo 2';
   font-weight: 100;
   font-size: 18px;
+}
+
+.logo {
+  width: 213px;
+  height: 213px;
+}
+
+/* sm-and-up */
+@media only screen and (min-width : 600px) {
+  .logo {
+    width: 300px;
+    height: 300px;
+  }
 }
 </style>
 
