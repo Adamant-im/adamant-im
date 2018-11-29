@@ -13,20 +13,21 @@
 
       <v-layout row wrap justify-center align-center class="pa-3">
 
-        <v-flex xs8>
+        <v-flex xs10>
           <v-text-field
             label="Recipient address"
             v-model="recipientAddress"
           />
         </v-flex>
-        <v-flex xs4 class="text-xs-right">
-          <v-btn @click="startChat">Start chat</v-btn>
-        </v-flex>
 
-        <v-flex xs12 class="text-xs-center">
-          <v-btn @click="showQrcodeScanner = true" icon flat large fab>
+        <v-flex xs2 class="text-xs-right">
+          <v-btn @click="showQrcodeScanner = true" icon flat>
             <v-icon>mdi-qrcode-scan</v-icon>
           </v-btn>
+        </v-flex>
+
+        <v-flex xs4 class="text-xs-center">
+          <v-btn @click="startChat">Start chat</v-btn>
         </v-flex>
 
       </v-layout>
