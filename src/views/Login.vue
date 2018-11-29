@@ -1,64 +1,59 @@
 <template>
-  <div class="login-page">
+  <v-layout row fill-height align-center justify-center class="login-page">
 
-    <v-layout row justify-center class="mb-3">
-      <v-flex xs12 md5 class="text-xs-right">
+    <v-flex md5 xs12>
+
+      <div class="text-xs-right">
         <language-switcher/>
-      </v-flex>
-    </v-layout>
+      </div>
 
-    <v-layout row wrap justify-center>
-      <v-flex xs12 md5>
-        <v-card flat color="transparent" class="text-xs-center">
-          <img
-            :src="logo"
-            width="300"
-            height="300"
-          />
-
-          <h1 class="login-page__title">{{ $t('brandTitle') }}</h1>
-          <h2 class="login-page__subtitle mt-3">{{ $t('brandSubtitle') }}</h2>
-        </v-card>
-      </v-flex>
-    </v-layout>
-
-    <v-layout row justify-center>
-      <v-flex xs12 md5>
-        <v-card flat color="transparent" class="text-xs-center mt-3">
-
-          <v-layout justify-center>
-            <v-flex xs12 md8>
-              <login-form
-                @login="onLogin"
-                @error="onLoginError"
-              />
-            </v-flex>
-          </v-layout>
-
-          <v-layout justify-center>
-            <v-btn @click="showQrcodeScanner = true" icon flat large fab>
-              <v-icon>mdi-qrcode-scan</v-icon>
-            </v-btn>
-          </v-layout>
-
-        </v-card>
-      </v-flex>
-    </v-layout>
-
-    <v-layout row justify-center class="mt-3">
-      <v-flex xs12 md4>
-        <passphrase-generator
-          @copy="onCopyPassphraze"
+      <v-card flat color="transparent" class="text-xs-center">
+        <img
+          :src="logo"
+          width="300"
+          height="300"
         />
-      </v-flex>
-    </v-layout>
 
-    <qrcode-scanner
-      v-if="showQrcodeScanner"
-      v-model="showQrcodeScanner"
-      @scan="onScanQrcode"
-    />
-  </div>
+        <h1 class="login-page__title">{{ $t('brandTitle') }}</h1>
+        <h2 class="login-page__subtitle mt-3">{{ $t('brandSubtitle') }}</h2>
+      </v-card>
+
+      <v-card flat color="transparent" class="text-xs-center mt-3">
+        <v-layout justify-center>
+          <v-flex xs12 md8>
+            <login-form
+              @login="onLogin"
+              @error="onLoginError"
+            />
+          </v-flex>
+        </v-layout>
+
+        <v-layout justify-center>
+          <v-btn @click="showQrcodeScanner = true" icon flat large fab>
+            <v-icon>mdi-qrcode-scan</v-icon>
+          </v-btn>
+        </v-layout>
+      </v-card>
+
+      <div>
+        <v-layout justify-center>
+          <v-flex xs12 md8>
+            <passphrase-generator
+              @copy="onCopyPassphraze"
+            />
+          </v-flex>
+        </v-layout>
+      </div>
+
+      <qrcode-scanner
+        v-if="showQrcodeScanner"
+        v-model="showQrcodeScanner"
+        @scan="onScanQrcode"
+      />
+
+    </v-flex>
+
+  </v-layout>
 </template>
 
 <script>
@@ -94,7 +89,7 @@ export default {
         .then(() => {
           this.onLogin()
         })
-        .catch(err => {
+        .catch(() => {
           this.onLoginError()
         })
     }
