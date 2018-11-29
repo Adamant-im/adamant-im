@@ -31,7 +31,7 @@ export default new Router({
       component: Votes,
       meta: {
         requiresAuth: true,
-        layout: 'legacy'
+        layout: 'default'
       }
     },
     {
@@ -41,7 +41,7 @@ export default new Router({
       props: true,
       meta: {
         requiresAuth: true,
-        layout: 'legacy'
+        layout: 'default'
       }
     },
     {
@@ -50,7 +50,7 @@ export default new Router({
       component: Transactions,
       meta: {
         requiresAuth: true,
-        layout: 'legacy'
+        layout: 'default'
       }
     },
     {
@@ -68,7 +68,7 @@ export default new Router({
       name: 'Chat',
       meta: {
         requiresAuth: true,
-        layout: 'legacy'
+        layout: 'default'
       }
     },
     {

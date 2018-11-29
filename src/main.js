@@ -8,26 +8,21 @@ import i18n from './i18n'
 
 import VueClipboards from 'vue-clipboards'
 import Vuex from 'vuex'
-import VueMaterial from 'vue-material'
 import VueFormatters from './lib/formatters'
-import 'vue-material/dist/vue-material.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import packageJSON from '../package.json'
 import storeConfig from './store'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
 import Default from './layouts/default'
-import Legacy from './layouts/legacy'
 import Toolbar from './layouts/toolbar'
 
 Vue.use(Vuex)
-Vue.use(VueMaterial)
 Vue.use(VueClipboards)
 Vue.use(VueFormatters)
 
 // Register layouts globally
 Vue.component('default', Default)
-Vue.component('legacy', Legacy)
 Vue.component('toolbar', Toolbar)
 
 const store = new Vuex.Store(storeConfig)
@@ -52,27 +47,6 @@ router.beforeEach((to, from, next) => {
     } else {
       next()
     }
-  }
-})
-
-Vue.material.registerTheme({
-  grey: {
-    primary: {
-      color: 'grey',
-      hue: 300
-    },
-    accent: {
-      color: 'grey',
-      hue: 700
-    },
-    background: 'white'
-  },
-  bottomBar: {
-    primary: {
-      color: 'grey',
-      hue: 800
-    },
-    background: 'white'
   }
 })
 
