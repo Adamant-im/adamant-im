@@ -19,6 +19,7 @@
         <v-flex xs12>
           <v-checkbox
             label="Logout on tab close"
+            color="grey darken-1"
             v-model="logoutOnTabClose"
           ></v-checkbox>
         </v-flex>
@@ -30,6 +31,7 @@
         <v-flex xs12>
           <v-checkbox
             label="Send message on Enter"
+            color="grey darken-1"
             v-model="sendMessageOnEnter"
           ></v-checkbox>
         </v-flex>
@@ -41,12 +43,14 @@
         <v-flex xs12>
           <v-checkbox
             label="Sound"
+            color="grey darken-1"
             v-model="notifySound"
           ></v-checkbox>
         </v-flex>
         <v-flex xs12>
           <v-checkbox
             label="Change browser tab title"
+            color="grey darken-1"
             v-model="changeBrowserTabTitle"
           ></v-checkbox>
         </v-flex>

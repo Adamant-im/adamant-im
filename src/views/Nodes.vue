@@ -29,8 +29,8 @@
           <td>
             <v-checkbox
               :input-value="props.item.active"
-              primary
               hide-details
+              color="grey darken-1"
               @click.native="toggle(props.item)"
             ></v-checkbox>
           </td>
@@ -44,6 +44,7 @@
 
       <v-checkbox
         label="Prefer the fastest node"
+        color="grey darken-1"
         v-model="preferFastestNodeOption"
       ></v-checkbox>
 
@@ -53,46 +54,46 @@
 </template>
 
 <script>
-  export default {
-    mounted () {
-      this.timer = setInterval(() => {
-        this.$store.dispatch('nodes/updateStatus')
-      }, 10000)
-    },
-    beforeDestroy () {
-      clearInterval(this.timer)
-    },
-    computed: {
-      preferFastestNodeOption: {
-        get () {
-          return this.$store.state.nodes.useFastest
-        },
-        set (value) {
-          this.$store.dispatch('nodes/setUseFastest', value)
-        }
+export default {
+  mounted () {
+    this.timer = setInterval(() => {
+      this.$store.dispatch('nodes/updateStatus')
+    }, 10000)
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
+  },
+  computed: {
+    preferFastestNodeOption: {
+      get () {
+        return this.$store.state.nodes.useFastest
       },
-      nodes () {
-        return this.$store.getters['nodes/list']
+      set (value) {
+        this.$store.dispatch('nodes/setUseFastest', value)
       }
     },
-    data: () => ({
-      pagination: {
-        sortBy: 'name'
-      },
-      headers: [
-        { text: 'Host', value: 'url' },
-        { text: 'Ping', value: 'ping' },
-        { text: 'Status', value: 'online' }
-      ],
-      timer: null
-    }),
-    methods: {
-      toggle (node) {
-        this.$store.dispatch('nodes/toggle', {
-          url: node.url,
-          active: !node.active
-        })
-      }
+    nodes () {
+      return this.$store.getters['nodes/list']
+    }
+  },
+  data: () => ({
+    pagination: {
+      sortBy: 'name'
+    },
+    headers: [
+      { text: 'Host', value: 'url' },
+      { text: 'Ping', value: 'ping' },
+      { text: 'Status', value: 'online' }
+    ],
+    timer: null
+  }),
+  methods: {
+    toggle (node) {
+      this.$store.dispatch('nodes/toggle', {
+        url: node.url,
+        active: !node.active
+      })
     }
   }
+}
 </script>
