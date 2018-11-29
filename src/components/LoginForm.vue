@@ -24,7 +24,7 @@
       {{ $t('login.login_button') }}
     </v-btn>
 
-    <v-layout v-if="showQrcodeRenderer" justify-center class="mt-3">
+    <v-layout v-if="showQrcodeRenderer && passphrase" justify-center class="mt-3">
       <qrcode-renderer :text="passphrase"/>
     </v-layout>
   </v-form>
