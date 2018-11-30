@@ -32,12 +32,15 @@ export default {
     transactions.forEach(tx => {
       if (!tx) return
 
+      Object.keys(tx).forEach(key => tx[key] === undefined && delete tx[key])
+
       const direction = tx.recipientId === address ? 'to' : 'from'
       const newTx = Object.assign(
         { direction, id: tx.hash },
         state.transactions[tx.hash],
         tx
       )
+
       Vue.set(state.transactions, tx.hash, newTx)
 
       if (tx.time) {
