@@ -16,6 +16,7 @@ import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
 import Default from './layouts/default'
 import Toolbar from './layouts/toolbar'
+import Chat from './layouts/chat'
 
 Vue.use(Vuex)
 Vue.use(VueClipboards)
@@ -24,6 +25,7 @@ Vue.use(VueFormatters)
 // Register layouts globally
 Vue.component('default', Default)
 Vue.component('toolbar', Toolbar)
+Vue.component('chat', Chat)
 
 const store = new Vuex.Store(storeConfig)
 document.title = i18n.t('app_title')

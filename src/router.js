@@ -68,7 +68,7 @@ export default new Router({
       name: 'Chat',
       meta: {
         requiresAuth: true,
-        layout: 'default'
+        layout: 'chat'
       }
     },
     {
