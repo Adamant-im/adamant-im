@@ -38,6 +38,7 @@
           <v-list-tile
             v-for="wallet in wallets"
             :key="wallet.system"
+            :to="wallet.link"
             avatar
           >
             <v-list-tile-avatar>
@@ -94,7 +95,8 @@ export default {
           iconWallet: 'mdi-polaroid',
           iconBalance: 'mdi-polaroid',
           titleWallet: 'ADAMANT address',
-          titleBalance: 'ADAMANT balance'
+          titleBalance: 'ADAMANT balance',
+          link: '/transactions'
         },
         {
           system: 'BNB',
