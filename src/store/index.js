@@ -15,6 +15,7 @@ import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
 import snackbar from './modules/snackbar'
 import language from './modules/language'
+import noise from './modules/noise'
 
 import * as admApi from '../lib/adamant-api'
 import { base64regex, WelcomeMessage, Cryptos } from '../lib/constants'
@@ -641,6 +642,7 @@ const store = {
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes
     snackbar,
+    noise,
     languageModule: language // @todo rename module when deleting store.state.language
   }
 }
