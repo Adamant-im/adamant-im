@@ -4,10 +4,7 @@
     <v-flex xs12 sm12 lg6 md8 >
 
       <v-card>
-        <chat-toolbar
-          :title="partnerId"
-          :subtitle="displayName"
-        />
+        <chat-toolbar/>
 
         <v-divider></v-divider>
 
