@@ -103,11 +103,6 @@ export default {
 </script>
 
 <style>
-/* @todo <main> shouldn't have text-align: center by default */
-main {
-  text-align: left;
-}
-
 .login-page {}
 .login-page__title {
   color: #4a4a4a;
@@ -141,15 +136,11 @@ main {
 {
   "en": {
     "brandTitle": "ADAMANT",
-    "brandSubtitle": "A top-notch anonymous messenger encrypted with a Blockchain",
-    "passwordPlaceholder": "Input your passphrase to login",
-    "Invalid passphraze": "Invalid passphraze",
-    "Copied": "Copied"
+    "brandSubtitle": "A top-notch anonymous messenger encrypted with a Blockchain"
   },
   "ru": {
     "brandTitle": "АДАМАНТ",
-    "brandSubtitle": "Самый анонимный мессенджер, зашифрованный в Blockchain",
-    "passwordPlaceholder": "Введите пароль, чтобы войти"
+    "brandSubtitle": "Самый анонимный мессенджер, зашифрованный в Blockchain"
   }
 }
 </i18n>

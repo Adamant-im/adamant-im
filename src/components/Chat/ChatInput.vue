@@ -6,7 +6,7 @@
       single-line
       no-resize
       rows="1"
-      label="Type your comment here"
+      :label="$t('typeYourMessage')"
     />
     <v-layout row justify-space-between align-center class="mt-2">
       <v-menu>
@@ -28,7 +28,7 @@
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-tile-avatar>
 
-            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
           </v-list-tile>
         </v-list>
       </v-menu>
@@ -46,17 +46,17 @@ export default {
     message: '',
     menuList: [
       {
-        title: 'Send ADM',
+        title: 'sendADM',
         icon: 'mdi-ethereum',
         currency: 'ADM'
       },
       {
-        title: 'Send ETH',
+        title: 'sendETH',
         icon: 'mdi-ethereum',
         currency: 'ETH'
       },
       {
-        title: 'Send BNB',
+        title: 'sendBNB',
         icon: 'mdi-ethereum',
         currency: 'BNB'
       }
@@ -84,14 +84,14 @@ export default {
       }
       if (this.$store.state.balance < 0.001) {
         this.$store.dispatch('snackbar/show', {
-          message: 'Not enough money'
+          message: this.$t('notEnoughFunds')
         })
 
         return
       }
       if ((this.message.length * 1.5) > 20000) {
         this.$store.dispatch('snackbar/show', {
-          message: 'Too long message'
+          message: this.$t('messageTooLong')
         })
 
         return
@@ -117,3 +117,24 @@ export default {
   }
 }
 </script>
+
+<i18n>
+{
+  "en": {
+    "typeYourMessage": "Type your message",
+    "notEnoughFunds": "Not enough funds. Top up your balance.",
+    "messageTooLong": "Message is too long",
+    "sendADM": "Send ADM",
+    "sendETH": "Send ETH",
+    "sendBNB": "Send BNB"
+  },
+  "ru": {
+    "typeYourMessage": "Введите сообщение",
+    "notEnoughFunds": "Недостаточно токенов. Пополните баланс.",
+    "messageTooLong": "Сообщение слишком длинное",
+    "sendADM": "Отправить ADM",
+    "sendETH": "Отправить ETH",
+    "sendBNB": "Отправить BNB"
+  }
+}
+</i18n>

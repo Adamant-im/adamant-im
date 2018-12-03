@@ -4,7 +4,7 @@
     <v-flex md5>
 
       <v-list two-line subheader class="transparent">
-        <v-subheader>Transactions</v-subheader>
+        <v-subheader>{{ $t('transactions') }}</v-subheader>
 
         <transaction-list-item
           v-for="(transaction, i) in transactions"
@@ -31,7 +31,6 @@ import TransactionListItem from '@/components/TransactionListItem'
 export default {
   mounted () {
     this.$store.dispatch('adm/getNewTransactions')
-    console.log(this.transactions)
   },
   computed: {
     transactions () {
@@ -62,3 +61,14 @@ export default {
   }
 }
 </script>
+
+<i18n>
+{
+  "en": {
+    "transactions": "Transactions"
+  },
+  "ru": {
+    "transactions": "Транзакции"
+  }
+}
+</i18n>

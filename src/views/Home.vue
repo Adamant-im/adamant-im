@@ -6,7 +6,7 @@
         <!-- Wallets -->
         <v-list two-line class="transparent">
           <v-subheader>
-            Wallets
+            {{ $t('wallets') }}
           </v-subheader>
 
           <v-list-tile
@@ -20,7 +20,7 @@
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title>{{ wallet.titleWallet }}</v-list-tile-title>
+              <v-list-tile-title>{{ $t(wallet.titleWallet) }}</v-list-tile-title>
               <v-list-tile-sub-title>{{ wallet.walletAddress }}</v-list-tile-sub-title>
             </v-list-tile-content>
 
@@ -33,7 +33,7 @@
         <!-- Wallets Balance -->
         <v-list two-line class="transparent">
           <v-subheader>
-            Balance
+            {{ $t('balance') }}
           </v-subheader>
           <v-list-tile
             v-for="wallet in wallets"
@@ -46,7 +46,7 @@
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title>{{ wallet.titleBalance }}</v-list-tile-title>
+              <v-list-tile-title>{{ $t(wallet.titleBalance) }}</v-list-tile-title>
               <v-list-tile-sub-title>{{ wallet.walletBalance }} {{ wallet.system }}</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
@@ -61,7 +61,7 @@
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title>Send funds</v-list-tile-title>
+              <v-list-tile-title>{{ $t('sendFunds') }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
 
@@ -71,7 +71,7 @@
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title>Buy tokens</v-list-tile-title>
+              <v-list-tile-title>{{ $t('buyTokens') }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
 
@@ -94,8 +94,8 @@ export default {
           walletBalance: this.$store.state.balance,
           iconWallet: 'mdi-polaroid',
           iconBalance: 'mdi-polaroid',
-          titleWallet: 'ADAMANT address',
-          titleBalance: 'ADAMANT balance',
+          titleWallet: 'adamantAddress',
+          titleBalance: 'adamantBalance',
           link: '/transactions'
         },
         {
@@ -104,8 +104,8 @@ export default {
           walletBalance: this.$store.state.bnb.balance,
           iconWallet: 'mdi-polaroid',
           iconBalance: 'mdi-polaroid',
-          titleWallet: 'Binance Coin address',
-          titleBalance: 'Binance Coin balance'
+          titleWallet: 'binanceCoinAddress',
+          titleBalance: 'binanceCoinBalance'
         },
         {
           system: 'ETH',
@@ -113,8 +113,8 @@ export default {
           walletBalance: this.$store.state.eth.balance,
           iconWallet: 'mdi-ethereum',
           iconBalance: 'mdi-ethereum',
-          titleWallet: 'Ethereum address',
-          titleBalance: 'Ethereum balance'
+          titleWallet: 'ethereumAddress',
+          titleBalance: 'ethereumBalance'
         }
       ]
     }
@@ -138,3 +138,32 @@ export default {
   }
 }
 </script>
+
+<i18n>
+{
+  "en": {
+    "wallets": "Wallets",
+    "balance": "Balance",
+    "adamantAddress": "ADAMANT address",
+    "ethereumAddress": "Ethereum address",
+    "binanceCoinAddress": "Binance Coin Address",
+    "adamantBalance": "ADAMANT balance",
+    "ethereumBalance": "Ethereum balance",
+    "binanceCoinBalance": "Binance Coin balance",
+    "sendFunds": "Send Funds",
+    "buyTokens": "Buy Tokens"
+  },
+  "ru": {
+    "wallets": "Кошельки",
+    "balance": "Баланс",
+    "adamantAddress": "Кошелек ADAMANT",
+    "ethereumAddress": "Кошелек Ethereum",
+    "binanceCoinAddress": "Кошелек Binance Coin",
+    "adamantBalance": "Баланс ADM",
+    "ethereumBalance": "Баланс ETH",
+    "binanceCoinBalance": "Баланс BNB",
+    "sendFunds": "Отправить средства",
+    "buyTokens": "Купить токены"
+  }
+}
+</i18n>

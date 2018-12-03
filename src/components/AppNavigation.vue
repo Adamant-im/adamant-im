@@ -11,12 +11,12 @@
       color="black"
       flat
     >
-      <span>{{ page.title }}</span>
+      <span>{{ $t(page.title) }}</span>
       <v-icon>{{ page.icon }}</v-icon>
     </v-btn>
 
     <v-btn @click="logout" flat>
-      <span>Logout</span>
+      <span>{{ $t('logout') }}</span>
       <v-icon>mdi-logout-variant</v-icon>
     </v-btn>
   </v-bottom-nav>
@@ -30,17 +30,17 @@ export default {
   data: () => ({
     pages: [
       {
-        title: 'Wallet',
+        title: 'wallet',
         link: '/home',
         icon: 'mdi-wallet'
       },
       {
-        title: 'Chats',
+        title: 'chats',
         link: '/chats',
         icon: 'mdi-forum'
       },
       {
-        title: 'Settings',
+        title: 'settings',
         link: '/options',
         icon: 'mdi-settings'
       }
@@ -64,5 +64,19 @@ export default {
 }
 </script>
 
-<style scoped>
-</style>
+<i18n>
+{
+  "en": {
+    "wallet": "Wallet",
+    "chats": "Chat",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "ru": {
+    "wallet": "Кошелек",
+    "chats": "Чаты",
+    "settings": "Настройки",
+    "logout": "Выйти"
+  }
+}
+</i18n>

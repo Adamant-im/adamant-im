@@ -12,7 +12,7 @@
         align-center
         class="pa-5"
       >
-        <div class="title">Waiting camera</div>
+        <div class="title">{{ $t('waitingCamera') }}</div>
         <v-progress-circular
           indeterminate
           color="primary"
@@ -32,7 +32,7 @@
         </v-flex>
         <v-flex xs12 class="pa-4">
           <h3 class="subheading text-xs-center">
-            Hold your device steady for 2-3 seconds towards the QR Code you want to scan.
+            {{ $t('holdYourDevice') }}
           </h3>
         </v-flex>
       </v-layout>
@@ -47,8 +47,8 @@
         class="text-xs-center pa-5"
       >
         <v-flex xs12>
-          <h3 class="headline">No camera found</h3>
-          <p class="mt-1 mb-0">Connect the camera and try again</p>
+          <h3 class="headline">{{ $t('noCameraFound') }}</h3>
+          <p class="mt-1 mb-0">{{ $t('connectCamera') }}</p>
         </v-flex>
       </v-layout>
 
@@ -61,7 +61,7 @@
           flat
           @click="show = false"
         >
-          Close
+          {{ $t('close') }}
         </v-btn>
       </v-card-actions>
 
@@ -162,3 +162,22 @@ export default {
   background-color: #000;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "waitingCamera": "Waiting camera",
+    "holdYourDevice": "Hold your device steady for 2-3 seconds towards the QR Code you want to scan.",
+    "noCameraFound": "No camera found",
+    "connectCamera": "Connect the camera and try again",
+    "close": "Close"
+  },
+  "ru": {
+    "waitingCamera": "Ожидание камеры",
+    "holdYourDevice": "Удерживайте устройство на 2-3 секунды в направлении QR-кода, который вы хотите отсканировать.",
+    "noCameraFound": "Камера не найдена",
+    "connectCamera": "Подключите камеру и попробуйте снова",
+    "close": "Закрыть"
+  }
+}
+</i18n>

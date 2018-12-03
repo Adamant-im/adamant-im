@@ -33,15 +33,22 @@
 <script>
 import QrcodeRenderer from 'vue-qrcode-component'
 
+let vm = null
+
 export default {
+  created () {
+    vm = this
+  },
+  computed: {
+    passphraseRules: () => ([
+      v => !!v || vm.$t('rules.passphraseRequired'),
+      v => v.split(' ').length === 12 || vm.$t('rules.passphraseValid')
+    ])
+  },
   data: () => ({
     validForm: true,
     disabledButton: false,
     passphrase: '',
-    passphraseRules: [
-      v => !!v || 'Passphrase is required', // @todo translations
-      v => v.split(' ').length === 12 || 'Passphrase must be valid'
-    ],
     showSpinner: false,
     showQrcodeRenderer: false
   }),
@@ -113,3 +120,20 @@ export default {
   font-size: 12px;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "rules": {
+      "passphraseRequired": "Passphrase is required",
+      "passphraseValid": "Passphrase must be valid"
+    }
+  },
+  "ru": {
+    "rules": {
+      "passphraseRequired": "Введите пассфразу",
+      "passphraseValid": "Неправильная пассфраза"
+    }
+  }
+}
+</i18n>

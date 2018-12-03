@@ -8,14 +8,14 @@
         class="headline grey lighten-2"
         primary-title
       >
-        Start new Chat
+        {{ $t('startNewChat') }}
       </v-card-title>
 
       <v-layout row wrap justify-center align-center class="pa-3">
 
         <v-flex xs10>
           <v-text-field
-            label="Recipient address"
+            :label="$t('recipientAddress')"
             v-model="recipientAddress"
           />
         </v-flex>
@@ -27,7 +27,7 @@
         </v-flex>
 
         <v-flex xs4 class="text-xs-center">
-          <v-btn @click="startChat">Start chat</v-btn>
+          <v-btn @click="startChat">{{ $t('startChat') }}</v-btn>
         </v-flex>
 
       </v-layout>
@@ -89,3 +89,18 @@ export default {
   }
 }
 </script>
+
+<i18n>
+{
+  "en": {
+    "startNewChat": "Start new Chat",
+    "recipientAddress": "Recipient address",
+    "startChat": "Start chat"
+  },
+  "ru": {
+    "startNewChat": "Новый чат",
+    "recipientAddress": "Адрес получателя",
+    "startChat": "Начать чат"
+  }
+}
+</i18n>

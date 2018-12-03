@@ -11,7 +11,7 @@
               </v-list-tile-avatar>
 
               <v-list-tile-content>
-                <v-list-tile-title>Start new Chat</v-list-tile-title>
+                <v-list-tile-title>{{ $t('startNewChat') }}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
 
@@ -85,3 +85,14 @@ export default {
   }
 }
 </script>
+
+<i18n>
+{
+  "en": {
+    "startNewChat": "Start new Chat"
+  },
+  "ru": {
+    "startNewChat": "Новый чат"
+  }
+}
+</i18n>
