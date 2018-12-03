@@ -1,101 +1,64 @@
 <template>
-    <div class="transaction transaction_list">
-      <md-list class="custom-list md-triple-line md-transparent">
-        <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
-          <md-avatar>
-            <md-icon>{{ transaction.direction === 'from' ? 'flight_takeoff' : 'flight_land' }}</md-icon>
-          </md-avatar>
+  <v-layout row wrap justify-center>
 
-          <div class="md-list-text-container" v-on:click="goToTransaction(transaction.id)">
-            <div>
-              {{ displayName(transaction.partner) }}
-              <span class="partner_display_name">{{ formatPartnerAddress(transaction.partner) }}</span>
-            </div>
-            <span>{{ $formatAmount(transaction.amount) }} ADM</span>
-            <p>{{ $formatDate(transaction.timestamp) }}</p>
-          </div>
+    <v-flex md5>
 
-          <md-button class="md-icon-button md-list-action" @click="openChat(transaction)">
-            <md-icon>{{ hasMessages(transaction) ? "chat" : "chat_bubble_outline" }}</md-icon>
-          </md-button>
+      <v-list two-line subheader class="transparent">
+        <v-subheader>Transactions</v-subheader>
 
-          <md-divider class="md-inset"></md-divider>
-        </md-list-item>
-      </md-list>
+        <transaction-list-item
+          v-for="(transaction, i) in transactions"
+          :key="i"
+          :id="transaction.id"
+          :direction="transaction.direction"
+          :sender-id="transaction.senderId"
+          :partner-id="transaction.partner"
+          :timestamp="transaction.timestamp"
+          @click:transaction="goToTransaction"
+          @click:icon="goToChat"
+        />
+      </v-list>
 
-    </div>
+    </v-flex>
+
+  </v-layout>
 </template>
 
 <script>
-import { Cryptos } from '../lib/constants'
+import { Cryptos } from '@/lib/constants'
+import TransactionListItem from '@/components/TransactionListItem'
 
 export default {
-  name: 'transactions',
-  data () {
-    return {
-      bgTimer: null
-    }
-  },
   mounted () {
-    this.update()
-    clearInterval(this.bgTimer)
-    this.bgTimer = setInterval(() => this.update(), 5000)
-    window.addEventListener('scroll', this.onScroll)
-  },
-  beforeDestroy () {
-    clearInterval(this.bgTimer)
-    window.removeEventListener('scroll', this.onScroll)
-  },
-  methods: {
-    hasMessages (transaction) {
-      const chat = this.$store.state.chats[transaction.partner]
-      return chat && chat.messages && Object.keys(chat.messages).length > 0
-    },
-    openChat (transaction) {
-      const partner = transaction.partner
-      this.$store.commit('select_chat', partner)
-      this.$router.push('/chats/' + partner + '/')
-    },
-    goToTransaction (id) {
-      const params = { crypto: Cryptos.ADM, tx_id: id }
-      this.$router.push({ name: 'Transaction', params })
-    },
-    displayName (partner) {
-      return this.$store.getters['partners/displayName'](partner) || ''
-    },
-    formatPartnerAddress (partner) {
-      return '(' + partner + ')'
-    },
-    update () {
-      this.$store.dispatch('adm/getNewTransactions')
-    },
-    onScroll () {
-      const pageHeight = document.body.offsetHeight
-      const windowHeight = window.innerHeight
-      const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop + (document.documentElement.scrollTop || 0)
-
-      // If we've scrolled to the very bottom, fetch the older transactions from server
-      if (windowHeight + scrollPosition >= pageHeight) {
-        this.$store.dispatch('adm/getOldTransactions')
-      }
-    }
+    this.$store.dispatch('adm/getNewTransactions')
+    console.log(this.transactions)
   },
   computed: {
-    transactions: function () {
+    transactions () {
       return this.$store.getters['adm/sortedTransactions']
     }
+  },
+  methods: {
+    goToTransaction (transactionId) {
+      this.$router.push({
+        name: 'Transaction',
+        params: {
+          crypto: Cryptos.ADM,
+          tx_id: transactionId
+        }
+      })
+    },
+    goToChat (partnerId) {
+      this.$router.push({
+        name: 'Chat',
+        params: {
+          partner: partnerId
+        }
+      })
+    }
+  },
+  components: {
+    TransactionListItem
   }
 }
 </script>
-<style>
-  .md-list-item .md-list-item-container .md-list-action:nth-child(3) {
-    margin: 0 -3px 0 16px !important;
-  }
-</style>
-
-<style>
-  .partner_display_name {
-    color: rgba(0, 0, 0, .54);
-    font-size: 14px;
-  }
-</style>
