@@ -1,18 +1,16 @@
 <template>
-  <div>
-    <transaction-template
-      :amount="amount"
-      :timestamp="transaction.timestamp"
-      :id="transaction.id"
-      :fee="fee"
-      :confirmations="transaction.confirmations"
-      :sender="sender"
-      :recipient="recipient"
-      :explorerLink="explorerLink"
-      :partner="transaction.partner"
-      :status="status"
-    />
-  </div>
+  <transaction-template
+    :amount="amount"
+    :timestamp="transaction.timestamp"
+    :id="transaction.id"
+    :fee="fee"
+    :confirmations="transaction.confirmations"
+    :sender="sender"
+    :recipient="recipient"
+    :explorerLink="explorerLink"
+    :partner="transaction.partner"
+    :status="status"
+  />
 </template>
 
 <script>

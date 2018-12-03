@@ -1,18 +1,16 @@
 <template>
-  <div>
-    <transaction-template
-      :amount="amount"
-      :timestamp="transaction.timestamp"
-      :id="transaction.hash"
-      :fee="fee"
-      :confirmations="confirmations"
-      :sender="sender"
-      :recipient="recipient"
-      :explorerLink="explorerLink"
-      :partner="partner"
-      :status="transaction.status"
-    />
-  </div>
+  <transaction-template
+    :amount="amount"
+    :timestamp="transaction.timestamp"
+    :id="transaction.hash"
+    :fee="fee"
+    :confirmations="confirmations"
+    :sender="sender"
+    :recipient="recipient"
+    :explorerLink="explorerLink"
+    :partner="partner"
+    :status="transaction.status"
+  />
 </template>
 
 <script>
