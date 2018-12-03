@@ -55,10 +55,7 @@ export default {
   }),
   methods: {
     newMessages (address) {
-      if (this.$store.state.newChats[address]) {
-        return true // @todo object or boolean?
-      }
-      return false
+      return this.$store.state.newChats[address] || 0
     },
     chatName (address) {
       return this.$store.getters['partners/displayName'](address) || address
