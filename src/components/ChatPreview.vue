@@ -7,6 +7,9 @@
       <v-icon class="grey lighten-1 white--text">
         {{ readOnly ? 'mdi-ethereum' : 'mdi-message-text' }}
       </v-icon>
+      <v-badge overlap color="primary">
+        <span v-if="newMessages" slot="badge">{{ newMessages }}</span>
+      </v-badge>
     </v-list-tile-avatar>
 
     <v-list-tile-content>

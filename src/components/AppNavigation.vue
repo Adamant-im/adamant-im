@@ -4,21 +4,34 @@
     :value="showNav"
     app
   >
-    <v-btn
-      v-for="page in pages"
-      :key="page.title"
-      :to="page.link"
-      color="black"
-      flat
-    >
-      <span>{{ $t(page.title) }}</span>
-      <v-icon>{{ page.icon }}</v-icon>
+
+    <!-- Wallet -->
+    <v-btn to="/home" color="black" flat>
+      <span>{{ $t('wallet') }}</span>
+      <v-icon>mdi-wallet</v-icon>
     </v-btn>
 
+    <!-- Chat -->
+    <v-btn to="/chats" color="black" flat>
+      <span>{{ $t('chats') }}</span>
+      <v-badge overlap color="primary">
+        <span v-if="numOfNewMessages > 0" slot="badge">{{ numOfNewMessages }}</span>
+        <v-icon>mdi-forum</v-icon>
+      </v-badge>
+    </v-btn>
+
+    <!-- Settings -->
+    <v-btn to="/options" color="black" flat>
+      <span>{{ $t('settings') }}</span>
+      <v-icon>mdi-settings</v-icon>
+    </v-btn>
+
+    <!-- Logout -->
     <v-btn @click="logout" flat>
       <span>{{ $t('logout') }}</span>
       <v-icon>mdi-logout-variant</v-icon>
     </v-btn>
+
   </v-bottom-nav>
 </template>
 
@@ -26,6 +39,11 @@
 export default {
   mounted () {
     this.currentPageIndex = this.getCurrentPageIndex()
+  },
+  computed: {
+    numOfNewMessages () {
+      return this.$store.state.totalNewChats
+    }
   },
   data: () => ({
     pages: [
