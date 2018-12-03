@@ -15,15 +15,15 @@
 </template>
 
 <script>
-import moment from 'moment'
-
 export default {
   computed: {
     timeAgo () {
-      return moment(this.timestamp).startOf('hour').fromNow()
+      return this.$formatDate(this.timestamp)
     },
     dateTime () {
-      return moment(this.timestamp)
+      // @todo use `moment` or add these prototype methods to Vue:
+      // $timeAgo & $dateTime
+      return ''
     }
   },
   props: ['message', 'userId', 'senderId', 'timestamp', 'amount', 'currency']
