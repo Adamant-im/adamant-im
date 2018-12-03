@@ -39,8 +39,8 @@ export default {
       default: ''
     },
     newMessages: {
-      type: Boolean,
-      default: false
+      type: Number,
+      default: 0
     },
     createdAt: {
       type: String,
