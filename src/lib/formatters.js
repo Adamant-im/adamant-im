@@ -66,6 +66,10 @@ function formatDate (timestamp) {
     options = {'day': 'numeric', 'month': 'short'}
   }
 
+  if (startToday.getFullYear() !== date.getFullYear()) {
+    options.year = 'numeric'
+  }
+
   return date.toLocaleDateString(this.$t('region'), options) + ', ' + getTime(date)
 }
 

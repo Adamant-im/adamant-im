@@ -26,7 +26,7 @@ const initTransaction = (api, context, ethAddress, amount) => {
   }
 }
 
-const parseTransaction = (context, tx, timestamp) => {
+const parseTransaction = (context, tx) => {
   let recipientId = null
   let amount = null
 
@@ -42,7 +42,6 @@ const parseTransaction = (context, tx, timestamp) => {
     return {
       hash: tx.hash,
       senderId: tx.from,
-      timestamp,
       blockNumber: tx.blockNumber,
       amount,
       recipientId,

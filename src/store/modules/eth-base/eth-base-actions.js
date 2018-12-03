@@ -112,8 +112,6 @@ export default function createActions (config) {
           } else {
             console.log(`${crypto} transaction has been sent`)
 
-            const timestamp = Date.now()
-
             context.commit('transactions', [{
               hash,
               senderId: ethTx.from,
@@ -121,11 +119,11 @@ export default function createActions (config) {
               amount,
               fee: utils.calculateFee(ethTx.gas, ethTx.gasPrice),
               status: 'PENDING',
-              timestamp,
+              timestamp: Date.now(),
               gasPrice: ethTx.gasPrice
             }])
 
-            context.dispatch('getTransaction', { hash, timestamp, isNew: true })
+            context.dispatch('getTransaction', { hash, isNew: true })
 
             return hash
           }
@@ -152,7 +150,7 @@ export default function createActions (config) {
       const key = 'transaction:' + payload.hash
       const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
         if (!err && tx && tx.input) {
-          const transaction = parseTransaction(context, tx, payload.timestamp)
+          const transaction = parseTransaction(context, tx)
 
           if (transaction) {
             context.commit('transactions', [transaction])

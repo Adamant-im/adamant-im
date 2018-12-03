@@ -50,7 +50,7 @@ const initTransaction = (api, context, ethAddress, amount) => {
   }
 }
 
-const parseTransaction = (context, tx, timestamp) => {
+const parseTransaction = (context, tx) => {
   return {
     hash: tx.hash,
     senderId: tx.from,
@@ -58,7 +58,6 @@ const parseTransaction = (context, tx, timestamp) => {
     amount: utils.toEther(tx.value.toString(10)),
     fee: utils.calculateFee(tx.gas, tx.gasPrice.toString(10)),
     status: tx.blockNumber ? 'SUCCESS' : 'PENDING',
-    timestamp: timestamp, // TODO: fetch from block?
     blockNumber: tx.blockNumber
   }
 }

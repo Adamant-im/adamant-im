@@ -21,6 +21,7 @@
 <script>
 import ChatEntryTemplate from './ChatEntryTemplate.vue'
 import { Cryptos } from '../../lib/constants'
+import adm from '../../lib/adamant'
 
 export default {
   name: 'eth-transfer',
@@ -34,8 +35,9 @@ export default {
     }
   },
   mounted () {
-    const timestamp = this.message.timestamp
+    const timestamp = adm.toTimestamp(this.message.timestamp)
     const prefix = this.crypto.toLowerCase()
+    console.log('Tx ', this.hash, ' from message ', this.message)
     this.$store.dispatch(prefix + '/getTransaction', { hash: this.hash, timestamp, amount: this.amount })
   },
   computed: {

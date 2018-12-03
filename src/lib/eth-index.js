@@ -3,6 +3,8 @@ import axios from 'axios'
 import config from '../config.json'
 import * as utils from './eth-utils'
 
+const cache = { }
+
 /**
  * @typedef {Object} EthTx
  * @property {number} time
@@ -59,27 +61,41 @@ export function getTransactions (options) {
     filters.push(`time.lte.${to}`)
   }
 
-  const params = {
-    and: `(${filters.join(',')})`,
-    order: 'time.desc'
-  }
+  const filterString = filters.join(',')
 
-  if (limit) params.limit = limit
-
-  const config = {
-    url: getUrl(),
-    params
-  }
-
-  return axios.request(config).then(({ data, headers }) => {
-    const range = headers['content-range']
-    const total = getTotalFromRange(range)
-
-    return {
-      total,
-      items: data.map(parseTxFromIndex)
+  if (!cache[filterString]) {
+    const params = {
+      and: `(${filters.join(',')})`,
+      order: 'time.desc'
     }
-  })
+
+    if (limit) params.limit = limit
+
+    const config = {
+      url: getUrl(),
+      params
+    }
+
+    cache[filterString] = axios.request(config).then(
+      ({ data, headers }) => {
+        delete cache[filterString]
+
+        const range = headers['content-range']
+        const total = getTotalFromRange(range)
+
+        return {
+          total,
+          items: data.map(parseTxFromIndex)
+        }
+      },
+      error => {
+        delete cache[filterString]
+        return Promise.reject(error)
+      }
+    )
+  }
+
+  return cache[filterString]
 }
 
 /**
