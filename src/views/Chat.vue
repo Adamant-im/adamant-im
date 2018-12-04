@@ -18,7 +18,7 @@
               :user-id="userId"
               :sender-id="message.senderId"
               :message="message.message"
-              :timestamp="message.realTimestamp"
+              :timestamp="message.timestamp"
               :readonly="isChatReadOnly"
             />
             <chat-transaction
@@ -27,7 +27,7 @@
               :user-id="userId"
               :sender-id="message.senderId"
               :message="message.message"
-              :timestamp="message.realTimestamp"
+              :timestamp="message.timestamp"
               :amount="message.amount"
               :currency="message.currency"
             />
