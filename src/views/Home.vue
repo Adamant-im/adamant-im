@@ -4,7 +4,7 @@
       <v-card flat class="transparent white--text">
 
         <!-- Wallets -->
-        <v-tabs color="transparent" grow light slider-color="blue">
+        <v-tabs color="transparent" grow slider-color="blue">
           <v-tab :key="wallet.system" color="black" v-for="wallet in wallets">
             {{ $t(wallet.system) }}
           </v-tab>
@@ -15,15 +15,12 @@
                   <v-spacer></v-spacer>{{ $t(wallet.titleWallet) }}
                 </v-card-title>
                 <v-layout row>
-                  <v-flex xs7>
-                    <v-card-text>
-                      <div class="caption grey--text">{{ $t(wallet.titleBalance) }}</div>
-                      <div>{{ wallet.walletBalance }}</div>
-                      <div class="caption grey--text">{{ $t(wallet.titleWallet) }}</div>
-                      <div>{{ wallet.walletAddress }}</div>
-                    </v-card-text>
-                  </v-flex>
-                  <v-flex xs5></v-flex>
+                  <v-card-text>
+                    <div class="caption grey--text">{{ $t(wallet.titleBalance) }}</div>
+                    <div>{{ wallet.walletBalance }}</div>
+                    <div class="caption grey--text">{{ $t(wallet.titleWallet) }}</div>
+                    <div>{{ wallet.walletAddress }}</div>
+                  </v-card-text>
                 </v-layout>
                 <v-card-actions class="pa-3">
                   <v-btn @click="copyToClipboard(wallet.walletAddress)" color="blue" flat>
