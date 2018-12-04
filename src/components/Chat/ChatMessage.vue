@@ -5,7 +5,7 @@
   >
     <div class="chat__item-header">
       <span v-if="senderId !== userId">{{ senderId }}</span>
-      <span :title="dateTime">{{ timeAgo }}</span>
+      <span v-if="!readonly" :title="dateTime">{{ timeAgo }}</span>
     </div>
 
     <div class="chat__item-body">
@@ -26,6 +26,6 @@ export default {
       return ''
     }
   },
-  props: ['userId', 'senderId', 'message', 'timestamp']
+  props: ['userId', 'senderId', 'message', 'timestamp', 'readonly']
 }
 </script>

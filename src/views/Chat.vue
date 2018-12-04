@@ -8,22 +8,23 @@
 
         <v-divider></v-divider>
 
-        <chat ref="chat">
+        <chat ref="chat" :class="{ 'chat--fill-height': isChatReadOnly }">
           <chat-row
             v-for="(message, i) in messages"
             :key="i"
           >
             <chat-message
               v-if="message.type === 'message'"
-              :userId="userId"
-              :senderId="message.senderId"
+              :user-id="userId"
+              :sender-id="message.senderId"
               :message="message.message"
               :timestamp="message.realTimestamp"
+              :readonly="isChatReadOnly"
             />
             <chat-transaction
               v-else-if="message.type === 'transaction'"
-              :userId="userId"
-              :senderId="message.senderId"
+              :user-id="userId"
+              :sender-id="message.senderId"
               :message="message.message"
               :timestamp="message.realTimestamp"
               :amount="message.amount"
@@ -35,6 +36,7 @@
         <v-divider></v-divider>
 
         <chat-input
+          v-if="!isChatReadOnly"
           :partnerId="partnerId"
           @send="onSendMessage"
         />
@@ -121,6 +123,9 @@ export default {
     },
     userId () {
       return this.$store.state.address
+    },
+    isChatReadOnly () {
+      return this.$store.state.currentChat.readOnly === true
     }
   },
   data: () => ({
