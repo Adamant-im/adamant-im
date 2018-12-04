@@ -65,8 +65,6 @@ export default {
       // @todo refactor store and return array instead object
       let messages = this.$store.state.currentChat.messages || {}
 
-      console.log(messages)
-
       // transform into array and replace keys
       let arrayMessages = Object
         .keys(messages)
@@ -99,7 +97,7 @@ export default {
               timestamp: messages[key].timestamp,
               realTimestamp: messages[key].real_timestamp,
               username: this.partnerName,
-              amount: messages[key].amount / 100000000,
+              amount: this.$formatAmount(messages[key].amount),
               currency: 'ADM'
             }
           } else {
@@ -143,8 +141,7 @@ export default {
       this.$store.commit('mark_as_read_total', this.partnerId)
       this.$store.commit('mark_as_read', this.partnerId)
     },
-    onSendMessage (message) {
-      console.log('sendMessage', message)
+    onSendMessage () {
       this.$refs.chat.scrollToBottom()
     }
   },
