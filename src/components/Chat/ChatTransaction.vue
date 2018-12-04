@@ -6,8 +6,8 @@
     </div>
 
     <div class="chat__item-body">
-      <span v-if="senderId === userId">You've sent {{ amount }} {{ currency }}</span>
-      <span v-else>You received {{ amount }} {{ currency }}</span>
+      <span v-if="senderId === userId">{{ $t('sent') }} {{ amount }} {{ currency }}</span>
+      <span v-else>{{ $t('received') }} {{ amount }} {{ currency }}</span>
       <v-icon @click="goToTransaction" class="ml-2">mdi-file-document</v-icon>
       <div v-if="message" class="body-1 mt-2">{{ message }}</div>
     </div>
@@ -40,3 +40,16 @@ export default {
   props: ['transactionId', 'message', 'userId', 'senderId', 'timestamp', 'amount', 'currency']
 }
 </script>
+
+<i18n>
+{
+  "en": {
+    "received": "You received",
+    "sent": "You've sent"
+  },
+  "ru": {
+    "received": "Вы получили",
+    "sent": "Вы отправили"
+  }
+}
+</i18n>
