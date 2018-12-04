@@ -7,9 +7,13 @@
 </template>
 
 <script>
+import i18n from '@/i18n'
 import Blinker from '@/lib/blinker'
 
 export default {
+  created () {
+    this.setLocale()
+  },
   mounted () {
     this.almostSocket()
   },
@@ -65,6 +69,16 @@ export default {
       } else {
         this.blinker.stop()
       }
+    },
+    setLocale () {
+      // Set language from `localStorage`.
+      //
+      // This is required only when initializing the application.
+      // Subsequent mutations of `languageModule.currentLocale`
+      // will be synchronized with `i18n.locale`.
+      const localeFromStorage = this.$store.state.languageModule.currentLocale
+
+      i18n.locale = localeFromStorage
     }
   }
 }
