@@ -3,7 +3,6 @@ import Queue from 'promise-queue'
 import { Transactions, Delegates } from './constants'
 import utils from './adamant'
 import client from './adamant-api-client'
-import renderMarkdown from './markdown'
 
 Queue.configure(Promise)
 
@@ -390,7 +389,7 @@ function decodeChat (transaction, key) {
       transaction.message = i18nMsg
       transaction.isI18n = true
     } else {
-      transaction.message = renderMarkdown(message)
+      transaction.message = message
     }
   }
 

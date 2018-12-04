@@ -8,7 +8,6 @@ import * as stablelib from '@stablelib/utf8'
 // TODO: we use axios only in that file now. Move it to separate file later.
 import axios from 'axios'
 
-import renderMarkdown from './markdown'
 import { hexToBytes, bytesToHex } from './hex'
 
 Queue.configure(window.Promise)
@@ -316,7 +315,7 @@ function install (Vue) {
               // TODO: is that 'if' condition required?
               // currentTransaction.message = this.$i18n.t('chats.welcome_message')
             } else {
-              currentTransaction.message = renderMarkdown(currentTransaction.message)
+              currentTransaction.message = currentTransaction.message
             }
 
             if (currentTransaction.message && currentTransaction.message.length > 0) {

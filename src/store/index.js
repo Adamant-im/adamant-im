@@ -22,7 +22,6 @@ import { base64regex, WelcomeMessage, Cryptos } from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import i18n from '../i18n'
-import renderMarkdown from '../lib/markdown'
 
 var maxConcurrent = 1
 var maxQueue = Infinity
@@ -173,7 +172,7 @@ const store = {
       let currentDialogs = chats[partner]
       let internalPayload = Object.assign({}, payload)
       if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
-        internalPayload.message = renderMarkdown(internalPayload.message)
+        internalPayload.message = internalPayload.message
         updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', payload.id)
       }
       Vue.set(chats[partner].messages, payload.id, internalPayload)
