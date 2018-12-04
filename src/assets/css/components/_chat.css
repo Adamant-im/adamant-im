@@ -7,6 +7,9 @@
   height: calc(100vh - 64px - 125px - 2px);
   box-sizing: border-box;
 }
+.chat--fill-height { /* for readonly chats with hidden `ChatInput`*/
+  height: calc(100vh - 64px - 2px);
+}
 
 .chat__body {
   height: inherit;
