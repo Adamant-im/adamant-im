@@ -8,13 +8,13 @@
       <span v-if="!readonly" :title="dateTime">{{ timeAgo }}</span>
     </div>
 
-    <div class="chat__item-body">
-      {{ message }}
-    </div>
+    <div class="chat__item-body" v-markdown="message"></div>
   </div>
 </template>
 
 <script>
+import markdown from '@/directives/markdown'
+
 export default {
   computed: {
     timeAgo () {
@@ -25,6 +25,9 @@ export default {
       // $timeAgo & $dateTime
       return ''
     }
+  },
+  directives: {
+    markdown
   },
   props: ['userId', 'senderId', 'message', 'timestamp', 'readonly']
 }
