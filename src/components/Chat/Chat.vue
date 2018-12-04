@@ -14,7 +14,7 @@
 import '@/assets/css/components/_chat.css'
 
 export default {
-  mounted () {
+  updated () {
     this.scrollToBottom()
   },
   methods: {
