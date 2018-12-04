@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-content>
-      <v-container fluid>
+      <v-container fluid :class="{ 'pa-0': containerNoPadding }">
         <router-view/>
       </v-container>
 
@@ -17,6 +17,11 @@ import AppSnackbar from '@/components/AppSnackbar'
 import AppNavigation from '@/components/AppNavigation'
 
 export default {
+  computed: {
+    containerNoPadding () {
+      return this.$route.meta.containerNoPadding
+    }
+  },
   components: {
     AppSnackbar,
     AppNavigation
