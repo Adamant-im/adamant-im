@@ -8,7 +8,7 @@
     <div class="chat__item-body">
       <span v-if="senderId === userId">You've sent {{ amount }} {{ currency }}</span>
       <span v-else>You received {{ amount }} {{ currency }}</span>
-      <v-icon class="ml-2">mdi-file-document</v-icon>
+      <v-icon @click="goToTransaction" class="ml-2">mdi-file-document</v-icon>
       <div v-if="message" class="body-1 mt-2">{{ message }}</div>
     </div>
   </div>
@@ -26,6 +26,17 @@ export default {
       return ''
     }
   },
-  props: ['message', 'userId', 'senderId', 'timestamp', 'amount', 'currency']
+  methods: {
+    goToTransaction () {
+      this.$router.push({
+        name: 'Transaction',
+        params: {
+          crypto: this.currency,
+          tx_id: this.transactionId
+        }
+      })
+    }
+  },
+  props: ['transactionId', 'message', 'userId', 'senderId', 'timestamp', 'amount', 'currency']
 }
 </script>

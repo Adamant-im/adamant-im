@@ -23,6 +23,7 @@
             />
             <chat-transaction
               v-else-if="message.type === 'transaction'"
+              :transaction-id="message.id"
               :user-id="userId"
               :sender-id="message.senderId"
               :message="message.message"
@@ -64,6 +65,8 @@ export default {
       // @todo refactor store and return array instead object
       let messages = this.$store.state.currentChat.messages || {}
 
+      console.log(messages)
+
       // transform into array and replace keys
       let arrayMessages = Object
         .keys(messages)
@@ -74,6 +77,7 @@ export default {
             messages[key].message.type === 'eth_transaction'
           ) { // ETH transaction
             return {
+              id: messages[key].id,
               type: 'transaction',
               senderId: messages[key].senderId,
               message: messages[key].message.comments,
@@ -88,6 +92,7 @@ export default {
             messages[key].amount > 0
           ) { // ADM transaction
             return {
+              id: messages[key].id,
               type: 'transaction',
               senderId: messages[key].senderId,
               message: messages[key].message,
@@ -99,6 +104,7 @@ export default {
             }
           } else {
             return { // message
+              id: messages[key].id,
               type: 'message',
               senderId: messages[key].senderId,
               message: messages[key].message,
