@@ -3,6 +3,7 @@
     :active.sync="currentPageIndex"
     :value="showNav"
     app
+    class="app-navigation"
   >
 
     <!-- Wallet -->
@@ -81,6 +82,15 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/**
+ * Disable grayscale filter.
+ */
+.app-navigation >>> .v-btn:not(.v-btn--active) {
+  filter: unset;
+}
+</style>
 
 <i18n>
 {
