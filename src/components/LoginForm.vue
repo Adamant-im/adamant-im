@@ -5,6 +5,7 @@
       :rules="passphraseRules"
       :label="$t('login.password_label')"
       append-outer-icon="mdi-qrcode"
+      browser-autocomplete="current-password"
       @click:append-outer="toggleQrcodeRenderer"
       class="text-xs-center"
       type="password"
