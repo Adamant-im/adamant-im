@@ -63,6 +63,8 @@
   background-color: #F5F5F5; /* grey lighten-4 */
   padding: 8px 16px;
   max-width: 90%;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 /**
