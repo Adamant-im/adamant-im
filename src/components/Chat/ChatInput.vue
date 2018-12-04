@@ -2,6 +2,7 @@
   <div class="chat__input grey lighten-4">
     <v-textarea
       v-model="message"
+      v-on="listeners"
       hide-details
       single-line
       no-resize
@@ -33,7 +34,11 @@
         </v-list>
       </v-menu>
 
-      <v-btn @click="sendMessage" icon class="ma-0">
+      <v-btn
+        @click="sendMessage"
+        icon
+        class="ma-0"
+      >
         <v-icon medium color="blue darken-1">mdi-send</v-icon>
       </v-btn>
     </v-layout>
@@ -42,6 +47,30 @@
 
 <script>
 export default {
+  computed: {
+    listeners () {
+      return {
+        keydown: (e) => {
+          if (e.code === 'Enter') {
+            if (e.shiftKey) {
+              //
+            } else {
+              if (this.sendMessageOnEnter) {
+                e.preventDefault()
+                this.sendMessage()
+              }
+            }
+          }
+        }
+      }
+    },
+    sendMessageOnEnter () {
+      return this.$store.state.sendOnEnter
+    },
+    logoutOnTabClose () {
+      return !this.$store.state.storeInLocalStorage
+    }
+  },
   data: () => ({
     message: '',
     menuList: [
@@ -107,6 +136,11 @@ export default {
           recipientAddress: this.partnerId
         }
       })
+    },
+    keyup (e) {
+      if (e.code === 'Enter') {
+        e.preventDefault()
+      }
     }
   },
   props: {
