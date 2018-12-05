@@ -73,10 +73,7 @@
 // @todo [Deprecation] URL.createObjectURL with media streams is deprecated and will be removed in M71, around December 2018. Please use HTMLMediaElement.srcObject instead. See https://www.chromestatus.com/features/5618491470118912 for more details.
 export default {
   mounted () {
-    this.initScanner()
-      .then(() => {
-        this.getCameras()
-      })
+    this.init()
   },
   beforeDestroy () {
     this.destroyScanner()
@@ -111,6 +108,19 @@ export default {
     cameras: []
   }),
   methods: {
+    init () {
+      return this.initScanner()
+        .then(() => {
+          return this.getCameras()
+        })
+        .catch(err => {
+          this.cameraStatus = 'nocamera'
+          this.$store.dispatch('snackbar/show', {
+            message: this.$t('somethingWrong')
+          })
+          console.error(err)
+        })
+    },
     async initScanner () {
       const instascanModule = import(/* webpackMode: "lazy" */ 'instascan')
 
@@ -129,7 +139,10 @@ export default {
       })
     },
     destroyScanner () {
-      return this.scanner.stop()
+      // First check if the scanner was initialized.
+      // Needed when an unexpected error occurred,
+      // or when the dialog closes before initialization.
+      return this.scanner && this.scanner.stop()
     },
     async getCameras () {
       try {
@@ -170,14 +183,16 @@ export default {
     "holdYourDevice": "Hold your device steady for 2-3 seconds towards the QR Code you want to scan.",
     "noCameraFound": "No camera found",
     "connectCamera": "Connect the camera and try again",
-    "close": "Close"
+    "close": "Close",
+    "somethingWrong": "Something went wrong. Check the console."
   },
   "ru": {
     "waitingCamera": "Ожидание камеры",
     "holdYourDevice": "Удерживайте устройство на 2-3 секунды в направлении QR-кода, который вы хотите отсканировать.",
     "noCameraFound": "Камера не найдена",
     "connectCamera": "Подключите камеру и попробуйте снова",
-    "close": "Закрыть"
+    "close": "Закрыть",
+    "somethingWrong": "Что-то пошло не так. Проверьте консоль."
   }
 }
 </i18n>
