@@ -32,8 +32,8 @@
   text-align: right;
 }
 .chat__item--right .chat__item-body {
-  color: #FFF;
-  background-color: #424242; /* grey darken-4 */
+  /*color: #FFF;*/
+  /*background-color: #424242; !* grey darken-4 *!*/
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
   border-top-left-radius: 8px;
@@ -42,7 +42,7 @@
 .chat__item--transfer .chat__item-body {
   font-size: 18px;
   color: #000;
-  background-color: #FFD54F; /* amber lighten-2 */
+  background-color: #F1F8E9; /* light-green lighten-5 */
 }
 
 .chat__item-header {
