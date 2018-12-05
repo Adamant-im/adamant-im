@@ -1,0 +1,86 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`QrcodeScanner.vue renders the correct markup 1`] = `
+<vdialog-stub
+  maxwidth="none"
+  origin="center center"
+  transition="dialog-transition"
+  width="500"
+>
+  <vcard-stub
+    tag="div"
+  >
+    <vlayout-stub
+      align-center=""
+      class="pa-5"
+      justify-center=""
+      tag="div"
+    >
+      <div
+        class="title"
+      >
+        waitingCamera
+      </div>
+       
+      <vprogresscircular-stub
+        class="ml-3"
+        color="primary"
+        indeterminate="true"
+        rotate="0"
+        size="32"
+        value="0"
+        width="4"
+      />
+    </vlayout-stub>
+     
+    <vlayout-stub
+      row=""
+      tag="div"
+      wrap=""
+    >
+      <vflex-stub
+        tag="div"
+        xs12=""
+      >
+        <video
+          class="camera"
+        />
+      </vflex-stub>
+       
+      <vflex-stub
+        class="pa-4"
+        tag="div"
+        xs12=""
+      >
+        <h3
+          class="subheading text-xs-center"
+        >
+          
+          holdYourDevice
+        
+        </h3>
+      </vflex-stub>
+    </vlayout-stub>
+     
+    <!---->
+     
+    <vdivider-stub />
+     
+    <vcardactions-stub>
+      <vspacer-stub />
+       
+      <vbtn-stub
+        activeclass="v-btn--active"
+        color="primary"
+        flat="true"
+        tag="button"
+        type="button"
+      >
+        
+        close
+      
+      </vbtn-stub>
+    </vcardactions-stub>
+  </vcard-stub>
+</vdialog-stub>
+`;
