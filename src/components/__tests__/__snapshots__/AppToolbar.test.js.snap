@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AppToolbar.vue renders the correct markup 1`] = `
+<vtoolbar-stub
+  flat="true"
+  height="64"
+  scrollthreshold="300"
+>
+  <vbtn-stub
+    activeclass="v-btn--active"
+    icon="true"
+    tag="button"
+    type="button"
+  >
+    <vicon-stub>
+      arrow_back
+    </vicon-stub>
+  </vbtn-stub>
+   
+  <vtoolbartitle-stub>
+    <div>
+      
+    </div>
+     
+    <div
+      class="body-1"
+    >
+      
+    </div>
+  </vtoolbartitle-stub>
+   
+  <vspacer-stub />
+</vtoolbar-stub>
+`;
