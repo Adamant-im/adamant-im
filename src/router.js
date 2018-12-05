@@ -10,6 +10,7 @@ import Options from '@/views/Options'
 import Home from '@/views/Home'
 import Votes from '@/views/Votes'
 import Nodes from '@/views/Nodes'
+import PageNotFound from '@/views/PageNotFound'
 
 Vue.use(Router)
 
@@ -104,6 +105,10 @@ export default new Router({
       path: '/',
       name: 'Login',
       component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue')
+    },
+    {
+      path: '*',
+      component: PageNotFound
     }
   ],
   scrollBehavior (to, from, savedPosition) {
