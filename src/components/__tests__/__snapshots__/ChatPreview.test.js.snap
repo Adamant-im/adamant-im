@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ChatPreview.vue renders the correct markup 1`] = `
+<vlisttile-stub
+  activeclass="primary--text"
+  class="chat-preview"
+>
+  <vlisttileavatar-stub
+    size="40"
+  >
+    <vicon-stub
+      class="grey lighten-1 white--text"
+    >
+      
+      mdi-message-text
+    
+    </vicon-stub>
+     
+    <vbadge-stub
+      color="primary"
+      overlap="true"
+      transition="fab-transition"
+      value="true"
+    >
+      <!---->
+    </vbadge-stub>
+  </vlisttileavatar-stub>
+   
+  <vlisttilecontent-stub>
+    <vlisttiletitle-stub>
+      
+    </vlisttiletitle-stub>
+     
+    <vlisttilesubtitle-stub>
+      
+    </vlisttilesubtitle-stub>
+  </vlisttilecontent-stub>
+   
+  <vlisttileaction-stub
+    class="chat-preview__date"
+  >
+    
+    
+  
+  </vlisttileaction-stub>
+</vlisttile-stub>
+`;
