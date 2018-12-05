@@ -4,7 +4,7 @@
     :class="{ 'chat__item--right': senderId === userId }"
   >
     <div class="chat__item-header">
-      <span v-if="senderId !== userId">{{ senderId }}</span>
+      <span v-if="senderId !== userId && showSenderId">{{ senderId }}</span>
       <span v-if="!readonly" :title="dateTime">{{ timeAgo }}</span>
     </div>
 
@@ -29,6 +29,6 @@ export default {
   directives: {
     markdown
   },
-  props: ['userId', 'senderId', 'message', 'timestamp', 'readonly']
+  props: ['userId', 'senderId', 'message', 'timestamp', 'readonly', 'showSenderId']
 }
 </script>
