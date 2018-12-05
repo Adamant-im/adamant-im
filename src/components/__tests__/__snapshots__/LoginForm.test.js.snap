@@ -6,12 +6,14 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
   value="true"
 >
   <vtextfield-stub
+    append-outer-icon="mdi-qrcode"
+    browser-autocomplete="current-password"
     class="text-xs-center"
     label="Input your passphrase to login"
     rules="function (v) {
-        return !!v || 'Passphrase is required';
+        return !!v || vm.$t('rules.passphraseRequired');
       },function (v) {
-        return v.split(' ').length === 12 || 'Passphrase must be valid';
+        return v.split(' ').length === 12 || vm.$t('rules.passphraseValid');
       }"
     type="password"
   />
@@ -35,5 +37,7 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
     Login
   
   </vbtn-stub>
+   
+  <!---->
 </vform-stub>
 `;
