@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ChatStartDialog.vue renders the correct markup 1`] = `
+<vdialog-stub
+  maxwidth="none"
+  origin="center center"
+  transition="dialog-transition"
+  width="500"
+>
+  <vcard-stub
+    tag="div"
+  >
+    <vcardtitle-stub
+      class="headline grey lighten-2"
+      primarytitle="true"
+    >
+      
+      startNewChat
+    
+    </vcardtitle-stub>
+     
+    <vlayout-stub
+      align-center=""
+      class="pa-3"
+      justify-center=""
+      row=""
+      tag="div"
+      wrap=""
+    >
+      <vflex-stub
+        tag="div"
+        xs10=""
+      >
+        <vtextfield-stub
+          label="recipientAddress"
+        />
+      </vflex-stub>
+       
+      <vflex-stub
+        class="text-xs-right"
+        tag="div"
+        xs2=""
+      >
+        <vbtn-stub
+          activeclass="v-btn--active"
+          flat="true"
+          icon="true"
+          tag="button"
+          type="button"
+        >
+          <vicon-stub>
+            mdi-qrcode-scan
+          </vicon-stub>
+        </vbtn-stub>
+      </vflex-stub>
+       
+      <vflex-stub
+        class="text-xs-center"
+        tag="div"
+        xs4=""
+      >
+        <vbtn-stub
+          activeclass="v-btn--active"
+          tag="button"
+          type="button"
+        >
+          startChat
+        </vbtn-stub>
+      </vflex-stub>
+    </vlayout-stub>
+  </vcard-stub>
+   
+  <!---->
+</vdialog-stub>
+`;
