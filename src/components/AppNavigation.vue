@@ -65,7 +65,6 @@ export default {
       }
     ],
     currentPageIndex: 0,
-    activeBtn: 1,
     showNav: true
   }),
   methods: {
