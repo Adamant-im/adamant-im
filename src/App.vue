@@ -9,10 +9,19 @@
 <script>
 import i18n from '@/i18n'
 import Blinker from '@/lib/blinker'
+import Notify from 'notifyjs'
 
 export default {
   created () {
     this.setLocale()
+    if (Notify.needsPermission) {
+      if (Notify.isSupported()) {
+        Notify.requestPermission(
+          /* () => console.log('Permission has been granted by the user'),
+          () => console.log('Permission has been denied by the user') */
+        )
+      }
+    }
   },
   mounted () {
     this.almostSocket()
@@ -38,6 +47,15 @@ export default {
   data: () => ({
     blinker: null,
     intervalRef: null,
+    browserNotification: {
+      body: null,
+      /* notifyClick: () => console.log('Notification was clicked'),
+      notifyClose: () => console.log('Notification is closed'),
+      notifyError: () => console.error('You may need to request permission'),
+      notifyShow: () => console.log('Notification is shown'), */
+      tag: null,
+      timeout: 5
+    },
     prevNumOfMessages: 0
   }),
   methods: {
@@ -69,6 +87,25 @@ export default {
       } else {
         this.blinker.stop()
       }
+      // Browser notification
+      const partner = Object.keys(this.$store.state.chats).find(
+        partner => this.$store.state.newChats[partner]
+      )
+      if (partner) {
+        const tag = this.$store.state.chats[partner].last_message.id
+        // Message not shown yet
+        if (tag !== this.browserNotification.tag) {
+          this.browserNotification = {
+            body: `${partner}: ${this.$store.state.chats[partner].last_message.message}`,
+            tag
+          }
+          this.showBrowserNotification()
+        }
+      }
+    },
+    showBrowserNotification () {
+      const notification = new Notify('ADAMANT', this.browserNotification)
+      notification.show()
     },
     setLocale () {
       // Set language from `localStorage`.
