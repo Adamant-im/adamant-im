@@ -10,7 +10,7 @@
           v-for="(transaction, i) in transactions"
           :key="i"
           :id="transaction.id"
-          :direction="transaction.direction"
+          :user-id="userId"
           :sender-id="transaction.senderId"
           :partner-id="transaction.partner"
           :timestamp="transaction.timestamp"
@@ -35,6 +35,9 @@ export default {
   computed: {
     transactions () {
       return this.$store.getters['adm/sortedTransactions']
+    },
+    userId () {
+      return this.$store.state.address
     }
   },
   methods: {

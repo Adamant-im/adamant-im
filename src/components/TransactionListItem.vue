@@ -1,7 +1,7 @@
 <template>
   <v-list-tile avatar @click="onClickTransaction">
     <v-list-tile-avatar>
-      <v-icon>{{ direction === 'from' ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}</v-icon>
+      <v-icon>{{ senderId === userId ? 'mdi-airplane-landing' : 'mdi-airplane-takeoff' }}</v-icon>
     </v-list-tile-avatar>
 
     <v-list-tile-content>
@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import validateAddress from '@/lib/validateAddress'
+
 export default {
   computed: {
     partnerName () {
@@ -34,9 +36,11 @@ export default {
     timeAgo () {
       return this.$formatDate(this.timestamp)
     },
+    // @todo incorrect implementation
+    // should return transaction based on transactionId
     hasMessages () {
       const chat = this.$store.state.chats[this.partnerId]
-      return chat && chat.messages && Object.keys(chat.messages).length > 0
+      return chat && chat.messages && Object.keys(chat.messages).length > 0 || false
     }
   },
   methods: {
@@ -47,6 +51,30 @@ export default {
       this.$emit('click:icon', this.partnerId)
     }
   },
-  props: ['id', 'direction', 'senderId', 'partnerId', 'timestamp']
+  props: {
+    id: {
+      type: String,
+      required: true
+    },
+    userId: {
+      type: String,
+      required: true,
+      validator: value => validateAddress('ADM', value)
+    },
+    senderId: {
+      type: String,
+      required: true,
+      validator: value => validateAddress('ADM', value)
+    },
+    partnerId: {
+      type: String,
+      required: true,
+      validator: value => validateAddress('ADM', value)
+    },
+    timestamp: {
+      type: Number,
+      required: true
+    }
+  }
 }
 </script>
