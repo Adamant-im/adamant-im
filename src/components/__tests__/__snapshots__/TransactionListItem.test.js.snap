@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TransactionListItem renders the correct markup 1`] = `
+<vlisttile-stub
+  activeclass="primary--text"
+  avatar="true"
+>
+  <vlisttileavatar-stub
+    size="40"
+  >
+    <vicon-stub>
+      mdi-airplane-takeoff
+    </vicon-stub>
+  </vlisttileavatar-stub>
+   
+  <vlisttilecontent-stub>
+    <vlisttiletitle-stub>
+      
+      Rick
+      
+      <span
+        class="body-1 grey--text text--darken-1"
+      >
+        (U654321)
+      </span>
+    </vlisttiletitle-stub>
+     
+    <vlisttilesubtitle-stub>
+      Nov 14, 16:51
+    </vlisttilesubtitle-stub>
+  </vlisttilecontent-stub>
+   
+  <vlisttileaction-stub>
+    <vbtn-stub
+      activeclass="v-btn--active"
+      icon="true"
+      ripple="true"
+      tag="button"
+      type="button"
+    >
+      <vicon-stub
+        color="grey darken-2"
+      >
+        
+        mdi-comment-outline
+      
+      </vicon-stub>
+    </vbtn-stub>
+  </vlisttileaction-stub>
+</vlisttile-stub>
+`;
