@@ -5,7 +5,7 @@ import VueI18n from 'vue-i18n'
 import Vuetify from 'vuetify'
 import LoginForm from '@/components/LoginForm'
 
-import en from '@/i18n/en'
+import mockupI18n from './__mocks__/plugins/i18n'
 import loginMock from './__mocks__/login'
 
 Vue.use(Vuex)
@@ -24,19 +24,6 @@ Promise.prototype.finally = Promise.prototype.finally || {
     )
   }
 }.finally
-
-/**
- * Mockup i18n helper.
- */
-function mockupI18n () {
-  return new VueI18n({
-    locale: 'en',
-    fallbackLocale: 'en',
-    messages: {
-      en
-    }
-  })
-}
 
 /**
  * Mockup store helper

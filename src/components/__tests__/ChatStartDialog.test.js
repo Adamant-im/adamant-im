@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 import VueI18n from 'vue-i18n'
 import Vuetify from 'vuetify'
 
-import en from '@/i18n/en'
+import mockupI18n from './__mocks__/plugins/i18n'
 import ChatStartDialog from '@/components/ChatStartDialog'
 
 Vue.use(Vuex)
@@ -42,21 +42,6 @@ function mockupStore () {
     store,
     snackbar
   }
-}
-
-/**
- * Mockup i18n helper.
- */
-function mockupI18n () {
-  return new VueI18n({
-    locale: 'en',
-    fallbackLocale: 'en',
-    // fallbackRoot: true,
-    silentTranslationWarn: true, // @todo Replace with fallbackRoot: true after updating vue-i18n
-    messages: {
-      en
-    }
-  })
 }
 
 describe('ChatStartDialog.vue', () => {

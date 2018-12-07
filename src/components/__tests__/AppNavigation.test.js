@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 import VueI18n from 'vue-i18n'
 import Vuetify from 'vuetify'
 
-import en from '@/i18n/en'
+import mockupI18n from './__mocks__/plugins/i18n'
 import AppNavigation from '@/components/AppNavigation'
 
 Vue.use(Vuex)
@@ -34,15 +34,7 @@ describe('AppNavigation.vue', () => {
     store = new Vuex.Store(mainStoreModule)
 
     // mockup i18n
-    i18n = new VueI18n({
-      locale: 'en',
-      fallbackLocale: 'en',
-      // fallbackRoot: true,
-      silentTranslationWarn: true, // @todo Replace with fallbackRoot: true after updating vue-i18n
-      messages: {
-        en
-      }
-    })
+    i18n = mockupI18n
   })
 
   it('renders the correct markup', () => {

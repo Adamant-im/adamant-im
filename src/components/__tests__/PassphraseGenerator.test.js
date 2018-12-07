@@ -4,23 +4,10 @@ import VueI18n from 'vue-i18n'
 import Vuetify from 'vuetify'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
 
-import en from '@/i18n/en'
+import mockupI18n from './__mocks__/plugins/i18n'
 
 Vue.use(VueI18n)
 Vue.use(Vuetify)
-
-/**
- * Mockup i18n helper.
- */
-function mockupI18n () {
-  return new VueI18n({
-    locale: 'en',
-    fallbackLocale: 'en',
-    messages: {
-      en
-    }
-  })
-}
 
 describe('PassphraseGenerator.vue', () => {
   let i18n = null
