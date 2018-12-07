@@ -37,7 +37,6 @@ export default {
   mounted () {
     const timestamp = adm.toTimestamp(this.message.timestamp)
     const prefix = this.crypto.toLowerCase()
-    console.log('Tx ', this.hash, ' from message ', this.message)
     this.$store.dispatch(prefix + '/getTransaction', { hash: this.hash, timestamp, amount: this.amount })
   },
   computed: {
