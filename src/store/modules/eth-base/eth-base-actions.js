@@ -123,7 +123,7 @@ export default function createActions (config) {
               gasPrice: ethTx.gasPrice
             }])
 
-            context.dispatch('getTransaction', { hash, isNew: true })
+            context.dispatch('getTransaction', { hash, isNew: true, direction: 'from' })
 
             return hash
           }
@@ -133,7 +133,7 @@ export default function createActions (config) {
     /**
      * Enqueues a background request to retrieve the transaction details
      * @param {object} context Vuex action context
-     * @param {{hash: string, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
+     * @param {{hash: string, timestamp: number, amount: number, direction: 'from' | 'to'}} payload hash and timestamp of the transaction to fetch
      */
     getTransaction (context, payload) {
       const existing = context.state.transactions[payload.hash]
@@ -144,7 +144,8 @@ export default function createActions (config) {
         hash: payload.hash,
         timestamp: payload.timestamp,
         amount: payload.amount,
-        status: 'PENDING'
+        status: 'PENDING',
+        direction: payload.direction
       }])
 
       const key = 'transaction:' + payload.hash
