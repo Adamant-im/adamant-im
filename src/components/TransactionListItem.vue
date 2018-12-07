@@ -40,7 +40,7 @@ export default {
     // should return transaction based on transactionId
     hasMessages () {
       const chat = this.$store.state.chats[this.partnerId]
-      return chat && chat.messages && Object.keys(chat.messages).length > 0 || false
+      return (chat && chat.messages && Object.keys(chat.messages).length > 0) || false
     }
   },
   methods: {

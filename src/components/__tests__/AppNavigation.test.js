@@ -34,7 +34,7 @@ describe('AppNavigation.vue', () => {
     store = new Vuex.Store(mainStoreModule)
 
     // mockup i18n
-    i18n = mockupI18n
+    i18n = mockupI18n()
   })
 
   it('renders the correct markup', () => {
