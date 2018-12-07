@@ -7,13 +7,13 @@
   >
     <p>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</p>
     <p class='transaction-amount' v-on:click="goToTransaction()">
-      <span v-html="message.message.amount"></span> {{ crypto }}
+      <span v-text="message.message.amount"></span> {{ crypto }}
     </p>
-    <p><em v-html="message.message.comments"></em></p>
+    <p><em v-text="message.message.comments"></em></p>
 
     <template slot="brief-view">
       <span>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</span>&nbsp;
-      <span v-html="message.message.amount"></span> {{ crypto }}
+      <span v-text="message.message.amount"></span> {{ crypto }}
     </template>
   </chat-entry-template>
 </template>

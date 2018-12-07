@@ -75,7 +75,7 @@ export default {
     if ((Date.now() - lastUpdate) < UPDATE_TIMEOUT) return
 
     return admApi.getStored(CONTACT_LIST_KEY)
-      .then(cl => cl && context.commit('contactList', cl))
+      .then(cl => context.commit('contactList', cl))
       .catch(err => console.warn('Failed to fetch contact list', err))
   },
 

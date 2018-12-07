@@ -1,6 +1,6 @@
 
 import Vue from 'vue'
-import {Base64} from 'js-base64'
+import { Base64 } from 'js-base64'
 
 import storeData from '../lib/lsStore.js'
 
@@ -15,7 +15,7 @@ import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
 
 import * as admApi from '../lib/adamant-api'
-import {base64regex, WelcomeMessage, Cryptos} from '../lib/constants'
+import { base64regex, WelcomeMessage, Cryptos } from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import i18n from '../i18n'
@@ -102,23 +102,6 @@ function updateLastChatMessage (currentDialogs, payload, confirmClass, direction
   }
 }
 
-function scrollToEnd () {
-  const element = document.getElementById('msgContainer')
-  if (!element) {
-    return
-  }
-  const scrollTop = element.scrollTop
-  const scrollHeight = element.scrollHeight
-  const elementHeight = element.offsetHeight
-  const childrenCount = element.childNodes.length
-  const lastElementHeight = element.childNodes[childrenCount - 3].offsetHeight
-  if (scrollHeight - (elementHeight + scrollTop) < lastElementHeight) {
-    setTimeout(function () {
-      element.scrollTop = element.scrollHeight + 1000
-    }, 12)
-  }
-}
-
 const store = {
   state: {
     address: '',
@@ -155,7 +138,7 @@ const store = {
     areChatsLoading: false
   },
   actions: {
-    add_chat_i18n_message ({commit}, payload) {
+    add_chat_i18n_message ({ commit }, payload) {
       payload.message = i18n.t(payload.message)
       commit('add_chat_message', payload)
     },
@@ -168,8 +151,9 @@ const store = {
       }
       let chats = getters.getChats
       const partner = payload.recipientId
+      let messageText = payload.message
       payload = {
-        message: payload.message,
+        message: messageText,
         recipientId: partner,
         timestamp: utils.epochTime(),
         id: getters.getCurrentChatMessageCount,
@@ -178,18 +162,17 @@ const store = {
       }
       let currentDialogs = chats[partner]
       let internalPayload = Object.assign({}, payload)
-      internalPayload.message = internalPayload.message.replace(/\n/g, '<br>')
       if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
         internalPayload.message = renderMarkdown(internalPayload.message)
-        internalPayload.message = internalPayload.message.replace(/<p>|<\/p>/g, '')
         updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', payload.id)
       }
       Vue.set(chats[partner].messages, payload.id, internalPayload)
       queue.add(() => {
         const params = {
           to: partner,
-          message: payload.message
+          message: messageText
         }
+        console.log('correct email', messageText)
         return admApi.sendMessage(params).then(response => {
           if (response.success) {
             replaceMessageAndDelete(chats[partner].messages, response.transactionId, payload.id, 'sent')
@@ -201,22 +184,23 @@ const store = {
         })
       })
     },
-    retry_message ({getters}, payload) {
+    retry_message ({ getters }, payload) {
       const currentChat = getters.getCurrentChat
       const partner = currentChat.partner
-      const message = currentChat.messages[payload]
-      let messageText = message.message.replace(/<\/?p>/g, '')
+      let message = currentChat.messages[payload]
+      let messageText = message.message
+      messageText = messageText.replace(/<p>|<\/?p>/g, '')
+      messageText = messageText.replace(/<a href=".*">|<\/?a>/g, '')
+      messageText = messageText.replace(/<br>/g, '\n')
       payload = {
         recipientId: partner,
-        message: messageText,
+        message: message.message,
         transactionId: message.id,
         timestamp: utils.epochTime(),
         direction: 'from'
       }
-
       let chats = getters.getChats
       queue.add(() => {
-        messageText = message.message.replace(/<\/?br>/g, '\n')
         const params = {
           to: partner,
           message: messageText
@@ -349,6 +333,19 @@ const store = {
         // TODO: Remove this, when it will be possible to fetch transactions together with the chat messages
         context.dispatch('adm/getNewTransactions')
       }
+    },
+    /** Starts new chat with the specified address */
+    startChat (context, { address, displayName }) {
+      return admApi.getPublicKey(address).then((key) => {
+        if (!key) throw new Error('not_found')
+        context.commit('create_chat', address)
+        context.commit('select_chat', address)
+        const partner = context.state.partnerName
+        const currentDisplayName = context.getters['partners/displayName'](partner)
+        if (!currentDisplayName || currentDisplayName.length === 0) {
+          context.commit('partners/displayName', { partner, displayName })
+        }
+      })
     }
   },
   mutations: {
@@ -455,7 +452,7 @@ const store = {
     },
     select_chat (state, payload) {
       if (!state.chats[payload]) {
-        Vue.set(state.chats, payload, {messages: [], last_message: {}, partner: payload})
+        Vue.set(state.chats, payload, { messages: [], last_message: {}, partner: payload })
       }
       state.currentChat = state.chats[payload]
       Vue.set(state.currentChat, 'messages', state.chats[payload].messages)
@@ -581,7 +578,6 @@ const store = {
       Vue.set(state.chats, partner, currentDialogs)
       payload.direction = direction
       Vue.set(state.chats[partner].messages, payload.id, payload)
-      scrollToEnd()
     },
     currentAccount (state, payload) {
       state.address = payload.address

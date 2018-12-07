@@ -11,7 +11,7 @@
       {{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}
     </p>
     <p v-if="message.amount" class='transaction-amount' v-on:click="goToTransaction()">
-      <span v-html="$formatAmount(message.amount)"></span> ADM
+      <span v-text="$formatAmount(message.amount)"></span> ADM
     </p>
     <p v-html="message.message" v-bind:class="{ transfer_comment: !!message.amount }" ></p>
 

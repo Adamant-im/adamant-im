@@ -180,7 +180,7 @@ adamant.getBytes = function (transaction) {
   if (transaction.recipientId) {
     var recipient = transaction.recipientId.slice(1)
     // eslint-disable-next-line new-cap
-    recipient = new bignum(recipient).toBuffer({size: 8})
+    recipient = new bignum(recipient).toBuffer({ size: 8 })
 
     for (i = 0; i < 8; i++) {
       bb.writeByte(recipient[i] || 0)

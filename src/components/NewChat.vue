@@ -65,22 +65,11 @@ export default {
         this.errorMessage('incorrect_address')
         return
       }
-      this.getAddressPublicKey(this.targetAddress).then(
-        (key) => {
-          if (!key) {
-            this.errorMessage('incorrect_address')
-          } else {
-            this.$store.commit('create_chat', this.targetAddress)
-            this.$store.commit('select_chat', this.targetAddress)
-            const partner = this.$store.state.partnerName
-            const currentDisplayName = this.$store.getters['partners/displayName'](partner)
-            if (!currentDisplayName || currentDisplayName.length === 0) {
-              this.$store.commit('partners/displayName', { partner, displayName: this.targetLabel })
-            }
-            this.$router.push('/chats/' + this.targetAddress + '/')
-          }
-        },
-        () => this.errorMessage('no_connection')
+
+      const payload = { address: this.targetAddress, displayName: this.targetLabel }
+      this.$store.dispatch('startChat', payload).then(
+        () => this.$router.push('/chats/' + this.targetAddress + '/'),
+        (error) => this.errorMessage(error.message === 'not_found' ? 'incorrect_address' : 'no_connection')
       )
     },
     open () {
