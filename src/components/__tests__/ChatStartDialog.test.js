@@ -5,6 +5,7 @@ import VueI18n from 'vue-i18n'
 import Vuetify from 'vuetify'
 
 import mockupI18n from './__mocks__/plugins/i18n'
+import mockupSnackbar from './__mocks__/store/modules/snackbar'
 import ChatStartDialog from '@/components/ChatStartDialog'
 
 Vue.use(Vuex)
@@ -15,22 +16,7 @@ Vue.use(Vuetify)
  * Mockup store helper.
  */
 function mockupStore () {
-  const snackbar = {
-    state: {
-      show: false,
-      message: '',
-      timeout: 1500,
-      color: ''
-    },
-    mutations: {
-      changeState: jest.fn(),
-      resetOptions: jest.fn()
-    },
-    actions: {
-      show: jest.fn()
-    },
-    namespaced: true
-  }
+  const snackbar = mockupSnackbar()
 
   const store = new Vuex.Store({
     modules: {

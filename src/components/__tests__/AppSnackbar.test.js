@@ -3,6 +3,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
 
+import mockupSnackbar from './__mocks__/store/modules/snackbar'
 import AppSnackbar from '@/components/AppSnackbar'
 
 // const localVue = createLocalVue()
@@ -18,22 +19,7 @@ describe('AppSnackbar.vue', () => {
 
   // mockup store module
   beforeEach(() => {
-    snackbar = {
-      state: {
-        show: false,
-        message: '',
-        timeout: 1500,
-        color: ''
-      },
-      mutations: {
-        changeState: jest.fn(),
-        resetOptions: jest.fn()
-      },
-      actions: {
-        show: jest.fn()
-      },
-      namespaced: true
-    }
+    snackbar = mockupSnackbar()
 
     store = new Vuex.Store({
       modules: {
