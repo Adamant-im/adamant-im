@@ -33,6 +33,7 @@
     "send_button": "Send",
     "send_button_tooltip": "Click to send a message",
     "send_eth": "Send ETH",
+    "send_bz": "Send BZ",
     "sent_label": "Sent",
     "title": "Chats",
     "too_long": "الرسالة طويلة جدا",
@@ -58,12 +59,16 @@
     "send_btn_tooltip": "لنقر لتحول القطع لمستخدمي الاتطبيق الآخرين",
     "your_address_ADM": "عنوانك ADM",
     "your_address_ETH": "عنوانك ETH",
+    "your_address_BZ": "عنوانك BZ",
     "your_address_tooltip_ADM": "هذا هو اسم الدخول الوحيد الخاص بك، انقر عليه للنسخ.",
     "your_address_tooltip_ETH": "This is your ADAMANT ETH wallet unique identifier. Click to copy it in the clipboard.",
+    "your_address_tooltip_BZ": "This is your ADAMANT BZ wallet unique identifier. Click to copy it in the clipboard.",
     "your_balance_ADM": "رصيدك ADM",
     "your_balance_ETH": "رصيدك ETH",
+    "your_balance_BZ": "رصيدك BZ",
     "your_balance_tooltip_ADM": "انه رصيدك الخاص، انقر لترى مدخلاتك ومخرجاتك من التحويلات.",
-    "your_balance_tooltip_ETH": "It is your ADAMANT ETH balance."
+    "your_balance_tooltip_ETH": "It is your ADAMANT ETH balance.",
+    "your_balance_tooltip_BZ": "It is your ADAMANT BZ balance."
   },
   "login": {
     "copy_button_tooltip": "انقر فوق نسخ كلمة المرور الى الحافظة. احفظه فى حافظ كلمات المرور. ادخال حافظة جديدة ولصق جملة السر.",

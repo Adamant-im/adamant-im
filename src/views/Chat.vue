@@ -39,7 +39,7 @@
                   <span>{{ $t('chats.send_bnb') }}</span>
                 </md-menu-item>
                 <md-menu-item v-on:click="sendTokens('BZ')">
-                  <md-icon  md-src="/img/Attach/bnb.svg">menu</md-icon>
+                  <md-icon  md-src="/img/Attach/bz.svg">menu</md-icon>
                   <span>{{ $t('chats.send_bz') }}</span>
                 </md-menu-item>
                 <md-menu-item :disabled="true">

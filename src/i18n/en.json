@@ -34,6 +34,7 @@
     "send_button": "Send",
     "send_button_tooltip": "Click to send a message",
     "send_eth": "Send ETH",
+    "send_bz": "Send BZ",
     "sent_label": "Sent",
     "title": "Chats",
     "too_long": "Message is too long",
@@ -51,15 +52,19 @@
     "your_address_ADM": "ADAMANT address",
     "your_address_BNB": "Binance Coin address",
     "your_address_ETH": "Ethereum address",
+    "your_address_BZ": "Bit-Z address",
     "your_address_tooltip_ADM": "This is your ADAMANT unique identifier. Click to copy it in the clipboard.",
     "your_address_tooltip_BNB": "This is your ADAMANT BNB wallet unique identifier. Click to copy it in the clipboard.",
     "your_address_tooltip_ETH": "This is your ADAMANT ETH wallet unique identifier. Click to copy it in the clipboard.",
+    "your_address_tooltip_BZ": "This is your ADAMANT BZ wallet unique identifier. Click to copy it in the clipboard.",
     "your_balance_ADM": "ADAMANT Balance",
     "your_balance_BNB": "Binance Coin Balance",
     "your_balance_ETH": "Ethereum Balance",
+    "your_balance_BZ": "Bit-Z Balance",
     "your_balance_tooltip_ADM": "It is your ADAMANT balance. Click to see all of input and output transactions.",
     "your_balance_tooltip_BNB": "It is your ADAMANT BNB balance.",
-    "your_balance_tooltip_ETH": "It is your ADAMANT ETH balance."
+    "your_balance_tooltip_ETH": "It is your ADAMANT ETH balance.",
+    "your_balance_tooltip_BZ": "It is your ADAMANT BZ balance."
   },
   "login": {
     "copy_button_tooltip": "Click to copy the passphrase to clipboard. Save it in a password keeper application. To enter your new Wallet, paste it the passphrase field.",
