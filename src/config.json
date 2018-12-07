@@ -3,26 +3,19 @@
   "server": {
     "adm": [
       {
-        "ip": "clown.adamant.im",
-        "protocol": "https",
-        "port": ""
+        "url": "https://clown.adamant.im"
       },
       {
-        "ip": "lake.adamant.im",
-        "protocol": "https",
-        "port": ""
+        "url": "https://lake.adamant.im"
       },
       {
-        "ip": "endless.adamant.im",
-        "protocol": "https",
-        "port": ""
+        "url": "https://endless.adamant.im"
       }
     ],
     "eth": [
       {
-        "ip": "ethnode1.adamant.im",
-        "protocol": "https",
-        "port": ""
+        "url": "https://ethnode1.adamant.im",
+        "hasIndex": true
       }
     ]
   }
