@@ -77,7 +77,7 @@ function createMockMessage (state, newAccount, partner, message) {
   Vue.set(state.chats, partner, currentDialogs)
 }
 
-function replaceMessageAndDelete (messages, newMessageId, existMessageId, cssClass) {
+export function replaceMessageAndDelete (messages, newMessageId, existMessageId, cssClass) {
   Vue.set(messages, newMessageId, {
     ...messages[existMessageId],
     id: newMessageId,
@@ -88,11 +88,11 @@ function replaceMessageAndDelete (messages, newMessageId, existMessageId, cssCla
   }
 }
 
-function changeMessageClass (messages, id, cssClass) {
+export function changeMessageClass (messages, id, cssClass) {
   Vue.set(messages[id], 'confirm_class', cssClass)
 }
 
-function updateLastChatMessage (currentDialogs, payload, confirmClass, direction, id) {
+export function updateLastChatMessage (currentDialogs, payload, confirmClass, direction, id) {
   currentDialogs.last_message = {
     id: id,
     message: payload.message,
@@ -617,6 +617,9 @@ const store = {
     },
     sendOnEnter: state => {
       return state.sendOnEnter
+    },
+    getAdmAddress: state => {
+      return state.address
     }
   },
   modules: {
