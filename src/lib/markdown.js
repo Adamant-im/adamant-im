@@ -13,10 +13,10 @@ renderer.image = function (href, title, text) {
 }
 
 renderer.link = function (href, title, text) {
-  const isLink = /^(http[s]?:\/\/(www\.)?|ftp:\/\/(www\.)?|\/\/(www\.)?|www.){1}([\w\u0400-\u04FF-.@:%_+~#=]+)+((\.[a-zA-Z\u0400-\u04FF]{2,})+)(\/(.)*)?(\?(.)*)?/
+  const isLink = /^(http[s]?:\/\/(www\.)?|ftp:\/\/(www\.)?|\/\/(www\.)?|www.){1}([\w\u0400-\u04FF-.@:%_+~#=]+)+((\.[\w\u0400-\u04FF]{2,})+)(\/(.)*)?(\?(.)*)?/
 
   if (!isLink.test(href)) {
-    return href
+    return text
   }
 
   return ['<a target="_blank" href="', href, '">', href, '</a>'].join('')
