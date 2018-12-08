@@ -13,7 +13,7 @@ renderer.image = function (href, title, text) {
 }
 
 renderer.link = function (href, title, text) {
-  const isLink = /^(https?:\/\/|\/\/)/
+  const isLink = /^(http[s]?:\/\/(www\.)?|ftp:\/\/(www\.)?|\/\/(www\.)?|www.){1}([0-9A-Za-z-.@:%_+~#=]+)+((\.[a-zA-Z]{2,3})+)(\/(.)*)?(\?(.)*)?/
 
   if (!isLink.test(href)) {
     return href
