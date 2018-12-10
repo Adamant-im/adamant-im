@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex md5>
+    <v-flex lg4 md5 sm12 xs12>
 
       <v-data-table
         :headers="headers"
@@ -17,6 +17,7 @@
             <th
               v-for="header in props.headers"
               :key="header.text"
+              :class="{ 'text-xs-left': header.align === 'left' }"
             >
               {{ $t(header.text) }}
             </th>
@@ -33,9 +34,14 @@
             ></v-checkbox>
           </td>
           <td>{{ props.item.url }}</td>
-          <td class="text-xs-right">{{ props.item.ping }} ms</td>
           <td class="text-xs-right">
-            <v-icon :color="props.item.online ? 'green' : 'red'">mdi-checkbox-blank-circle</v-icon>
+            <span>
+              {{ props.item.online ? `${props.item.ping} ms` : $t('offline') }}
+            </span>
+            <v-icon
+              :color="props.item.online ? 'green lighten-1' : 'red lighten-1'"
+              size="small"
+            >mdi-checkbox-blank-circle</v-icon>
           </td>
         </template>
       </v-data-table>
@@ -45,7 +51,7 @@
         :title="$t('nodes.fastest_tooltip')"
         color="grey darken-1"
         v-model="preferFastestNodeOption"
-      ></v-checkbox>
+      />
 
     </v-flex>
 
@@ -80,9 +86,12 @@ export default {
       sortBy: 'name'
     },
     headers: [
-      { text: 'nodes.host', value: 'url' },
-      { text: 'nodes.ping', value: 'ping' },
-      { text: 'nodes.active', value: 'online' }
+      {
+        text: 'nodes.host',
+        value: 'url',
+        align: 'left'
+      },
+      { text: 'nodes.ping', value: 'ping' }
     ],
     timer: null
   }),
@@ -96,3 +105,14 @@ export default {
   }
 }
 </script>
+
+<i18n>
+{
+  "en": {
+    "offline": "offline"
+  },
+  "ru": {
+    "offline": "неактивен"
+  }
+}
+</i18n>

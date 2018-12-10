@@ -41,6 +41,11 @@ export default {
   mounted () {
     this.currentPageIndex = this.getCurrentPageIndex()
   },
+  watch: {
+    '$route.path' () {
+      this.currentPageIndex = this.getCurrentPageIndex()
+    }
+  },
   computed: {
     numOfNewMessages () {
       return this.$store.state.totalNewChats
@@ -74,7 +79,11 @@ export default {
       this.$router.push('/')
     },
     getCurrentPageIndex () {
-      const currentPage = this.pages.find(page => page.link === this.$route.path)
+      const currentPage = this.pages.find(page => {
+        const pattern = new RegExp(`^${page.link}`)
+
+        return this.$route.path.match(pattern)
+      })
 
       return this.pages.indexOf(currentPage)
     }

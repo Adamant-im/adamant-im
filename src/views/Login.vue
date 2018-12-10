@@ -1,7 +1,7 @@
 <template>
   <v-layout row fill-height justify-center class="login-page">
 
-    <v-flex md5 sm8 xs12>
+    <v-flex lg4 md5 sm12 xs12>
 
       <div class="text-xs-right">
         <language-switcher/>

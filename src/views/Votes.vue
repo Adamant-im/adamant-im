@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex xs12 md5>
+    <v-flex lg5 md5 sm12 xs12>
 
       <v-card>
         <v-card-title>
@@ -129,7 +129,9 @@ export default {
   },
   computed: {
     delegates () {
-      return Object.values(this.$store.state.delegates.delegates)
+      const delegates = this.$store.state.delegates.delegates || {}
+
+      return Object.values(delegates)
     },
     numOfUpvotes () {
       return this.delegates

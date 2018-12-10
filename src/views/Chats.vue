@@ -1,6 +1,6 @@
 <template>
   <v-layout row wrap justify-center>
-    <v-flex xs12 md4>
+    <v-flex lg4 md5 sm12 xs12>
       <v-layout row wrap>
         <v-flex xs12>
 

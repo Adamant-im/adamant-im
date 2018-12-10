@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex xs12 md4>
+    <v-flex lg4 md4 sm12 xs12>
       <send-funds-form
         :crypto-currency="cryptoCurrency"
         :recipient-address="recipientAddress"

@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex md5>
+    <v-flex lg5 md5 sm12 xs12>
 
       <v-list two-line subheader class="transparent">
         <v-subheader>{{ $t('transactions') }}</v-subheader>

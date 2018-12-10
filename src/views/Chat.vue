@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex xs12 sm12 lg6 md8 >
+    <v-flex lg5 md5 sm12 xs12>
 
       <v-card>
         <chat-toolbar/>
