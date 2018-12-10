@@ -101,8 +101,6 @@ export default {
       .then(response => {
         if (!response.success) {
           console.warn('Contacts list save was rejected')
-        } else {
-          console.log('Contacts list saved', response.transactionId)
         }
       })
       .catch(err => {
