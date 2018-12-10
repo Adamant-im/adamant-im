@@ -1,6 +1,5 @@
 <template>
     <div class="transaction transaction_list" ref="txListElement">
-      <spinner v-if="isLoading" />
       <md-list class="custom-list md-triple-line md-transparent">
         <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
           <md-avatar>
@@ -26,6 +25,9 @@
 
           <md-divider class="md-inset"></md-divider>
         </md-list-item>
+        <md-list-item class="transaction_list__loader" v-if="areTransactionsLoading">
+          <inline-spinner />
+        </md-list-item>
       </md-list>
 
     </div>
@@ -34,11 +36,11 @@
 <script>
 
 import { Cryptos } from '../lib/constants'
-import Spinner from '@/components/Spinner.vue'
+import InlineSpinner from '@/components/InlineSpinner.vue'
 
 export default {
   name: 'transactions',
-  components: { Spinner },
+  components: { InlineSpinner },
   data () {
     return {
       bgTimer: null,
@@ -111,8 +113,12 @@ export default {
 }
 </script>
 <style>
-  .md-list-item .md-list-item-container .md-list-action:nth-child(3) {
+  .transaction_list .md-list-item .md-list-item-container .md-list-action:nth-child(3) {
     margin: 0 -3px 0 16px !important;
+  }
+
+  .transaction_list .transaction_list__loader {
+    text-align: center;
   }
 </style>
 

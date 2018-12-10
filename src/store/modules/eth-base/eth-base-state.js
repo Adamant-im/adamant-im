@@ -4,8 +4,9 @@ export default () => ({
   publicKey: null,
   privateKey: null,
   transactions: { },
-  areTransactionsLoading: true,
   minHeight: -1,
   maxHeight: -1,
-  bottomReached: false
+  bottomReached: false,
+  areRecentLoading: false,
+  areOlderLoading: false
 })

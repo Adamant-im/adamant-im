@@ -222,9 +222,11 @@ export default function createActions (config) {
         limit
       }
 
+      context.commit('areRecentLoading', true)
+
       return getTransactions(options).then(result => {
         context.commit('transactions', result.items)
-        context.commit('areTransactionsLoading', false)
+        context.commit('areRecentLoading', false)
       })
     },
 
@@ -243,9 +245,11 @@ export default function createActions (config) {
         options.to = minHeight - 1
       }
 
+      context.commit('areOlderLoading', true)
+
       return getTransactions(options).then(result => {
         context.commit('transactions', result.items)
-        context.commit('areTransactionsLoading', false)
+        context.commit('areOlderLoading', false)
 
         if (!result.items.length) {
           context.commit('bottom')

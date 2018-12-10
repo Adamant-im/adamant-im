@@ -58,7 +58,11 @@ export default {
     }
   },
 
-  areTransactionsLoading (state, areLoading) {
-    state.areTransactionsLoading = areLoading
+  areRecentLoading (state, areLoading) {
+    state.areRecentLoading = areLoading
+  },
+
+  areOlderLoading (state, areLoading) {
+    state.areOlderLoading = areLoading
   }
 }
