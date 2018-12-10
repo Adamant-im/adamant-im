@@ -13,13 +13,13 @@ renderer.image = function (href, title, text) {
 }
 
 renderer.link = function (href, title, text) {
-  const isLink = /^(http[s]?:\/\/(www\.)?|ftp:\/\/(www\.)?|\/\/(www\.)?|www.){1}([\w\u0400-\u04FF-.@:%_+~#=]+)+((\.[\w\u0400-\u04FF]{2,})+)(\/(.)*)?(\?(.)*)?/
+  const pattern = /^(eth|bch|bitcoin|https?|s?ftp|magnet|tor|onion|tg):(.*)$/i
 
-  if (!isLink.test(href)) {
-    return text
+  if (pattern.test(href)) {
+    return `<a href="${href}">${href}</a>`
   }
 
-  return ['<a target="_blank" href="', href, '">', href, '</a>'].join('')
+  return text
 }
 
 renderer.heading = function (text) {
