@@ -15,5 +15,14 @@ export default {
    * This getter was added to support transactions display in chats and supposed to be removed
    * as soon as we add an endpoint to fetch transactions for chats.
    */
-  partnerTransactions: state => partner => Object.values(state.transactions).filter(tx => tx.partner === partner)
+  partnerTransactions: state => partner => Object.values(state.transactions).filter(tx => tx.partner === partner),
+
+  /**
+   * Returns a flag, indicating whether older transactions are being retrieved at the moment.
+   * @param {any} state module state
+   * @returns {boolean}
+   */
+  areTransactionsLoading (state) {
+    return state.areTransactionsLoading
+  }
 }

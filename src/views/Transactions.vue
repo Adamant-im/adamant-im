@@ -25,7 +25,7 @@
 
           <md-divider class="md-inset"></md-divider>
         </md-list-item>
-        <md-list-item class="transaction_list__loader" v-if="areTransactionsLoading">
+        <md-list-item class="transaction_list__loader" v-if="isLoading">
           <inline-spinner />
         </md-list-item>
       </md-list>
@@ -117,8 +117,8 @@ export default {
     margin: 0 -3px 0 16px !important;
   }
 
-  .transaction_list .transaction_list__loader {
-    text-align: center;
+  .transaction_list .transaction_list__loader .md-list-item-container {
+    justify-content: center;
   }
 </style>
 

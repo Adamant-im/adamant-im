@@ -224,10 +224,16 @@ export default function createActions (config) {
 
       context.commit('areRecentLoading', true)
 
-      return getTransactions(options).then(result => {
-        context.commit('transactions', result.items)
-        context.commit('areRecentLoading', false)
-      })
+      return getTransactions(options).then(
+        result => {
+          context.commit('areRecentLoading', false)
+          context.commit('transactions', result.items)
+        },
+        error => {
+          context.commit('areRecentLoading', false)
+          return Promise.reject(error)
+        }
+      )
     },
 
     getOldTransactions (context) {
@@ -247,14 +253,20 @@ export default function createActions (config) {
 
       context.commit('areOlderLoading', true)
 
-      return getTransactions(options).then(result => {
-        context.commit('transactions', result.items)
-        context.commit('areOlderLoading', false)
+      return getTransactions(options).then(
+        result => {
+          context.commit('areOlderLoading', false)
+          context.commit('transactions', result.items)
 
-        if (!result.items.length) {
-          context.commit('bottom')
+          if (!result.items.length) {
+            context.commit('bottom')
+          }
+        },
+        error => {
+          context.commit('areOlderLoading', false)
+          return Promise.reject(error)
         }
-      })
+      )
     }
   }
 }
