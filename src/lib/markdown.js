@@ -13,21 +13,17 @@ renderer.image = function (href, title, text) {
 }
 
 renderer.link = function (href, title, text) {
-  let prot = null
-  try {
-    prot = decodeURIComponent(unescape(href))
-      .replace(/[^\w:]/g, '')
-      .toLowerCase()
-  } catch (e) {
-    return text
+  const pattern = /^(eth|bch|bitcoin|https?|s?ftp|magnet|tor|onion|tg):(.*)$/i
+
+  if (pattern.test(href)) {
+    return `<a href="${href}">${href}</a>`
   }
 
-  if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
-    return text
-  }
+  return text
+}
 
-  text = text || href
-  return ['<a href="', href, '">', text, '</a>'].join('')
+renderer.heading = function (text) {
+  return `<p>${text}</p>`
 }
 
 /**

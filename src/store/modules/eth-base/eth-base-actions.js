@@ -90,11 +90,9 @@ export default function createActions (config) {
           const msg = { type, amount, hash, comments }
           return admApi.sendSpecialMessage(admAddress, msg)
             .then(() => {
-              console.log('ADM message has been sent', msg)
               return serialized
             })
             .catch((error) => {
-              console.log(`Failed to send "${type}"`, error)
               return Promise.reject(new Error('adm_message'))
             })
         })
@@ -110,8 +108,6 @@ export default function createActions (config) {
             context.commit('transactions', [{ hash, status: 'ERROR' }])
             throw error
           } else {
-            console.log(`${crypto} transaction has been sent`)
-
             context.commit('transactions', [{
               hash,
               senderId: ethTx.from,

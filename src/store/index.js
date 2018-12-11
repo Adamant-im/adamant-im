@@ -172,7 +172,6 @@ const store = {
           to: partner,
           message: messageText
         }
-        console.log('correct email', messageText)
         return admApi.sendMessage(params).then(response => {
           if (response.success) {
             replaceMessageAndDelete(chats[partner].messages, response.transactionId, payload.id, 'sent')
