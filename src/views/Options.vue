@@ -44,14 +44,14 @@
           <v-checkbox
             :label="$t('sound')"
             color="grey darken-1"
-            v-model="notifySound"
+            v-model="allowSoundNotifications"
           ></v-checkbox>
         </v-flex>
         <v-flex xs12>
           <v-checkbox
             :label="$t('changeBrowserTabTitle')"
             color="grey darken-1"
-            v-model="changeBrowserTabTitle"
+            v-model="allowBrowserTabNotification"
           ></v-checkbox>
         </v-flex>
       </v-layout>
@@ -75,34 +75,46 @@ export default {
   computed: {
     logoutOnTabClose: {
       get () {
-        return !this.$store.state.storeInLocalStorage
+        return this.$store.state.options.logoutOnTabClose
       },
       set (value) {
-        this.$store.commit('change_storage_method', !value)
+        this.$store.commit('options/updateOption', {
+          key: 'logoutOnTabClose',
+          value
+        })
       }
     },
     sendMessageOnEnter: {
       get () {
-        return this.$store.state.sendOnEnter
+        return this.$store.state.options.sendMessageOnEnter
       },
       set (value) {
-        this.$store.commit('change_send_on_enter', value)
+        this.$store.commit('options/updateOption', {
+          key: 'sendMessageOnEnter',
+          value
+        })
       }
     },
-    notifySound: {
+    allowSoundNotifications: {
       get () {
-        return this.$store.state.notifySound
+        return this.$store.state.options.allowSoundNotifications
       },
       set (value) {
-        this.$store.commit('change_notify_sound', value)
+        this.$store.commit('options/updateOption', {
+          key: 'allowSoundNotifications',
+          value
+        })
       }
     },
-    changeBrowserTabTitle: {
+    allowBrowserTabNotification: {
       get () {
-        return this.$store.state.notifyBar
+        return this.$store.state.options.allowBrowserTabNotification
       },
       set (value) {
-        this.$store.commit('change_notify_bar', value)
+        this.$store.commit('options/updateOption', {
+          key: 'allowBrowserTabNotification',
+          value
+        })
       }
     }
   },
