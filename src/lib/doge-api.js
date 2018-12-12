@@ -19,6 +19,7 @@ const network = {
 
 const MULTIPLIER = 1e8
 const TX_FEE = 1 // 1 DOGE per transaction
+const CHUNK_SIZE = 20
 
 export default class DogeApi {
   constructor (passphrase) {
@@ -39,14 +40,14 @@ export default class DogeApi {
    */
   getBalance () {
     return this._get(`/addr/${this.address}/balance`)
-      .then(({ data }) => data && data.confirmed_balance)
+      .then(balance => Number(balance) / MULTIPLIER)
   }
 
   /**
    * Creates a DOGE transfer transaction hex and ID
    * @param {string} address receiver address
    * @param {number} amount amount to transfer (DOGEs)
-   * @returns {{hex: string, txid: string}}
+   * @returns {Promise<{hex: string, txid: string}>}
    */
   createTransaction (address = '', amount = 0) {
     amount = Math.floor(Number(amount) * MULTIPLIER)
@@ -69,6 +70,25 @@ export default class DogeApi {
    */
   sendTransaction (txHex) {
     return this._post('/tx/send', { rawtx: txHex })
+  }
+
+  /**
+   * Retrieves transaction details
+   * @param {*} txid transaction ID
+   * @returns {Promise<object>}
+   */
+  getTransaction (txid) {
+    return this._get(`tx/${txid}`)
+  }
+
+  /**
+   * Retrieves transactions for the specified address
+   * @param {number=} from retrieve transactions starting from the specified position
+   * @returns {Promise<{totalItems: number, from: number, to: number, items: Array}>}
+   */
+  getTransactions (from = 0) {
+    const to = from + CHUNK_SIZE
+    return this._get(`/addrs/${this.address}/txs`, { from, to })
   }
 
   /**
