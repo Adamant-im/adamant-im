@@ -72,7 +72,7 @@ import { Cryptos, CryptoAmountPrecision, Fees, isErc20 } from '../lib/constants'
 import { sendTokens, sendMessage } from '../lib/adamant-api'
 import Vue from 'vue'
 import utils from '../lib/adamant'
-import {changeMessageClass, replaceMessageAndDelete, updateLastChatMessage} from '../store'
+import { changeMessageClass, replaceMessageAndDelete, updateLastChatMessage } from '../store'
 
 export default {
   name: 'home',
