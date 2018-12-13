@@ -17,9 +17,22 @@ const network = {
   wif: fmt.wif
 }
 
-const MULTIPLIER = 1e8
-const TX_FEE = 1 // 1 DOGE per transaction
-const CHUNK_SIZE = 20
+/**
+ * Returns unique addresses, used in the specified transactions list
+ * @param {Array<{addr: string}>} transactions DOGE transactions
+ * @returns {Array<string>}
+ */
+const mapAddresses = transactions => {
+  const map = transactions.reduce((m, tx) => {
+    m[tx.addr] = 1
+    return m
+  }, { })
+  return Object.keys(map)
+}
+
+export const MULTIPLIER = 1e8
+export const TX_FEE = 1 // 1 DOGE per transaction
+export const CHUNK_SIZE = 20
 
 export default class DogeApi {
   constructor (passphrase) {
@@ -27,6 +40,8 @@ export default class DogeApi {
     this._keyPair = bitcoin.ECPair.fromPrivateKey(pwHash, { network })
     this._address = bitcoin.payments.p2pkh({ pubkey: this._keyPair.publicKey, network }).address
     this._clients = { }
+
+    this._mapTransaction = this._mapTransaction.bind(this)
   }
 
   /** Dogecoin public address */
@@ -78,7 +93,7 @@ export default class DogeApi {
    * @returns {Promise<object>}
    */
   getTransaction (txid) {
-    return this._get(`tx/${txid}`)
+    return this._get(`tx/${txid}`).then(this._mapTransaction)
   }
 
   /**
@@ -89,6 +104,10 @@ export default class DogeApi {
   getTransactions (from = 0) {
     const to = from + CHUNK_SIZE
     return this._get(`/addrs/${this.address}/txs`, { from, to })
+      .then(resp => ({
+        ...resp,
+        items: resp.items.map(this._mapTransaction)
+      }))
   }
 
   /**
@@ -148,5 +167,43 @@ export default class DogeApi {
       })
     }
     return this._clients[url]
+  }
+
+  _mapTransaction (tx) {
+    const senders = mapAddresses(tx.vin)
+    const senderId = senders.length === 1 ? senders[0] : null
+
+    const direction = senders.includes(this._address) ? 'from' : 'to'
+
+    const recipients = mapAddresses(tx.vout)
+    if (direction === 'from') {
+      // Disregard our address for the outgoing transaction
+      const idx = recipients.indexOf(this._address)
+      if (idx >= 0) recipients.splice(idx, 1)
+    }
+    const recipientId = recipients.length === 1 ? recipients[0] : null
+
+    // Calculate amount from outputs:
+    // * for the outgoing transactions take outputs that DO NOT target us
+    // * for the incoming transactions take ouputs that DO target us
+    let amount = tx.vout.reduce((sum, t) =>
+      ((direction === 'from') === (t.addr !== this._address) ? sum + t.value : sum), 0)
+
+    const confirmations = tx.confirmations
+
+    return {
+      id: tx.txid,
+      fee: tx.fees || TX_FEE,
+      status: confirmations > 0 ? 'SUCCESS' : 'PENDING',
+      timestamp: tx.time,
+      time: tx.time,
+      direction,
+      senders,
+      senderId,
+      recipients,
+      recipientId,
+      amount,
+      confirmations
+    }
   }
 }

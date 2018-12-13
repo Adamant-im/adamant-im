@@ -4,20 +4,19 @@
 
 <script>
 import AdmMessage from './AdmMessage.vue'
-import EthTransfer from './EthTransfer.vue'
+import CryptoTransfer from './CryptoTransfer'
 
 export default {
   name: 'chat-entry',
   props: ['message', 'brief', 'readOnly'],
   components: {
     AdmMessage,
-    EthTransfer
+    CryptoTransfer
   },
   computed: {
     entryComponent () {
-      // TODO: as long as we support only ETH and ERC20-based tokens this condition is OK,
-      // but will need to be adjusted in the future
-      if (this.message.message && this.message.message.type) return 'eth-transfer'
+      const type = this.message.message && this.message.message.type
+      if (type && type.includes('_transaction')) return 'crypto-transfer'
       return 'adm-message'
     }
   }

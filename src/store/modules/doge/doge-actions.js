@@ -1,4 +1,4 @@
-import DogeApi from '../../../lib/doge-api'
+import DogeApi, { TX_FEE } from '../../../lib/doge-api'
 import * as admApi from '../../../lib/adamant-api'
 
 /** @type {DogeApi} */
@@ -91,7 +91,7 @@ export default {
             senderId: context.state.address,
             recipientId: address,
             amount,
-            // fee: 0,
+            fee: TX_FEE,
             status: 'PENDING',
             timestamp: Date.now()
           }])
