@@ -35,6 +35,7 @@
                               v-on:click.native="toggleDetails(delegate)">
                   <md-table-cell>
                     <md-checkbox v-model="delegate.voted" title="vote" v-on:change="vote(delegate)"></md-checkbox>
+                    {{delegate.voted}}
                   </md-table-cell>
                   <md-table-cell style="text-align: left">{{ delegate.rank }}</md-table-cell>
                   <md-table-cell style="text-align: left"><span>{{ delegate.username }}</span></md-table-cell>
@@ -210,7 +211,7 @@ export default {
       // Downvoting
       if (delegate.voted) {
         if (this.$store.state.delegates.delegates[delegate.address]._voted) {
-          delegate.downvoted = true
+          this.$store.state.delegates.delegates[delegate.address].downvoted = true
           this.putToDownVotedList(delegate)
         }
         delegate.upvoted = false
@@ -218,13 +219,13 @@ export default {
       // Upvoting
       } else {
         if (!this.$store.state.delegates.delegates[delegate.address]._voted) {
-          delegate.upvoted = true
+          this.$store.state.delegates.delegates[delegate.address].upvoted = true
           this.putToUpVotedList(delegate)
         }
-        this.$store.state.delegates.delegates[delegate.address].upvoted = true
         delegate.downvoted = false
         this.removeFromDownVotedList(delegate)
       }
+      this.$store.dispatch('update_delegates_grid', delegate)
     },
     onSort (params) {
       this.sortParams = params

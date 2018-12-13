@@ -138,6 +138,9 @@ const store = {
     areChatsLoading: false
   },
   actions: {
+    update_delegates_grid ({ commit }, payload) {
+      commit('update_delegate', payload)
+    },
     add_chat_i18n_message ({ commit }, payload) {
       payload.message = i18n.t(payload.message)
       commit('add_chat_message', payload)
@@ -349,6 +352,9 @@ const store = {
     }
   },
   mutations: {
+    update_delegate (state, payload) {
+      state.delegates[payload.address] = payload
+    },
     last_visited_chat (state, payload) {
       state.lastVisitedChat = payload
     },
