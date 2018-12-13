@@ -111,6 +111,34 @@
           </md-table>
       </md-table-card>
       <md-card>
+          <div v-if="upVotedList.length > 0 || downVotedList.length > 0" class="voted-delegates">
+            <div v-if="upVotedList.length > 0" class="votedList">
+              <div class="voteTextLabel">Vote for: </div>
+              <div class="voted-list-wrapper">
+                <template v-for="(votedDelegate, index) in upVotedList">
+                  <div v-bind:key="index" class="voted-delegates-item">
+                    <div>
+                      <md-checkbox v-model="votedDelegate.upvoted" title="vote" v-on:change="vote(votedDelegate)"></md-checkbox>
+                    </div>
+                    <div>{{votedDelegate.username}}</div>
+                  </div>
+                </template>
+              </div>
+            </div>
+            <div v-if="downVotedList.length > 0" class="votedList">
+              <div class="voteTextLabel">Downvote for: </div>
+              <div class="voted-list-wrapper">
+                <template v-for="(votedDelegate, index) in downVotedList">
+                  <div v-bind:key="index" class="voted-delegates-item">
+                    <div>
+                      <md-checkbox v-model="votedDelegate.downvoted" title="vote" v-on:change="vote(votedDelegate)"></md-checkbox>
+                    </div>
+                    <div>{{votedDelegate.username}}</div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
           <md-card-header>
             <div class="md-title">{{ $t('votes.summary_title') }}</div>
             <div class="md-subhead">
@@ -179,16 +207,23 @@ export default {
       if (this.votedCount + this.unvotedCount > this.voteRequestLimit) {
         return false
       }
+      // Downvoting
       if (delegate.voted) {
         if (this.$store.state.delegates.delegates[delegate.address]._voted) {
           delegate.downvoted = true
+          this.putToDownVotedList(delegate)
         }
         delegate.upvoted = false
+        this.removeFromUpVotedList(delegate)
+      // Upvoting
       } else {
         if (!this.$store.state.delegates.delegates[delegate.address]._voted) {
           delegate.upvoted = true
+          this.putToUpVotedList(delegate)
         }
+        this.$store.state.delegates.delegates[delegate.address].upvoted = true
         delegate.downvoted = false
+        this.removeFromDownVotedList(delegate)
       }
     },
     onSort (params) {
@@ -295,10 +330,10 @@ export default {
       return this.delegates.length
     },
     upvotedCount () {
-      return this.delegates.filter(x => x.upvoted).length
+      return this.upVotedList.filter(x => x.upvoted).length
     },
     downvotedCount () {
-      return this.delegates.filter(x => x.downvoted).length
+      return this.downVotedList.filter(x => x.downvoted).length
     },
     originVotesCount () {
       return Object.values(this.$store.state.delegates.delegates).filter(x => x._voted).length
@@ -459,6 +494,31 @@ export default {
   padding-right: 0px !important;
   padding-left: 0px !important;
   position: relative !important;
+}
+
+.voted-delegates {
+  margin: 15px 0 0 18px;
+  display: flex;
+  padding-left: 1px;
+  flex-direction: column;
+}
+
+.voted-delegates-item {
+  display: flex;
+  margin-right: 10px;
+  height: 20px;
+}
+
+.voted-list-wrapper {
+  display: flex;
+}
+
+.voteTextLabel {
+  margin-right: 5px;
+}
+
+.votedList {
+  display: flex;
 }
 
 </style>
