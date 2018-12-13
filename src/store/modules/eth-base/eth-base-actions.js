@@ -92,7 +92,7 @@ export default function createActions (config) {
             .then(() => {
               return serialized
             })
-            .catch((error) => {
+            .catch(() => {
               return Promise.reject(new Error('adm_message'))
             })
         })
