@@ -135,28 +135,34 @@ export default {
           id: this.$store.getters.getCurrentChatMessageCount + partnerTransactionsCount + 1
         }
         let currentDialogs = chats[partner]
-        if (handledPayload.message === '') {
-          handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
-          handledPayload.message = handledPayload.message.replace(/<p>|<\/p>/g, '')
-          updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', handledPayload.id)
-          handledPayload.message = ''
-        } else {
-          handledPayload.message = handledPayload.message.replace(/<p>|<\/p>/g, '')
-          updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', handledPayload.id)
+        // if the user is in the chat list, save message
+        if (currentDialogs) {
+          if (handledPayload.message === '') {
+            handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
+            handledPayload.message = handledPayload.message.replace(/<p>|<\/p>/g, '')
+            updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', handledPayload.id)
+            handledPayload.message = ''
+          } else {
+            handledPayload.message = handledPayload.message.replace(/<p>|<\/p>/g, '')
+            updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', handledPayload.id)
+          }
+          Vue.set(chats[partner].messages, handledPayload.id, handledPayload)
         }
-        Vue.set(chats[partner].messages, handledPayload.id, handledPayload)
         const promise = (this.comments && this.fixedAddress)
           ? sendMessage(message)
           : sendTokens(this.targetAddress, this.targetAmount)
         return promise.then(response => {
-          if (response.success) {
-            replaceMessageAndDelete(chats[partner].messages, response.transactionId, handledPayload.id, 'sent')
-            handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
-            updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', response.transactionId)
-          } else {
-            changeMessageClass(chats[partner].messages, handledPayload.id, 'rejected')
-            handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
-            updateLastChatMessage(currentDialogs, handledPayload, 'rejected', 'from', message.id)
+          // if the user is in the chat list, save message
+          if (currentDialogs) {
+            if (response.success) {
+              replaceMessageAndDelete(chats[partner].messages, response.transactionId, handledPayload.id, 'sent')
+              handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
+              updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', response.transactionId)
+            } else {
+              changeMessageClass(chats[partner].messages, handledPayload.id, 'rejected')
+              handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
+              updateLastChatMessage(currentDialogs, handledPayload, 'rejected', 'from', message.id)
+            }
           }
           return response.transactionId
         })
