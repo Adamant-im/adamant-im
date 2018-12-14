@@ -17,6 +17,8 @@ const queue = new Queue(1, Infinity)
 let myKeypair = { }
 let myAddress = null
 
+const publicKeysCache = { }
+
 /** Lists cryptos for which addresses are currently being stored to the KVS */
 const pendingAddresses = { }
 
@@ -311,7 +313,7 @@ export function storeCryptoAddress (crypto, address) {
   pendingAddresses[crypto] = true
 
   return getStored(key)
-    .then(stored => (stored)
+    .then(address => (address)
       ? true
       : storeValue(key, address).then(response => response.success)
     )
