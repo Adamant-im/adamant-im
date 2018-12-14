@@ -162,7 +162,7 @@ export default class DogeApi {
   _getClient () {
     const url = getEnpointUrl(Cryptos.DOGE)
     if (!this._clients[url]) {
-      this._clients = axios.create({
+      this._clients[url] = axios.create({
         baseURL: url
       })
     }

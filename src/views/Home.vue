@@ -92,6 +92,9 @@ export default {
     goToTransactions (crypto) {
       const params = { crypto }
       this.$router.push({ name: 'Transactions', params })
+    },
+    update () {
+      this.$store.dispatch('updateBalance')
     }
   },
   computed: {
@@ -157,13 +160,20 @@ export default {
   mounted () {
     this.$store.commit('last_visited_chat', null)
     this.isLogged = this.$store.getters.isLogged
+
+    this.update()
+    this.timer = setInterval(() => this.update(), 20000)
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
   },
   data () {
     return {
       passPhrase: '',
       language: 'en',
       showCreate: false,
-      isLogged: false
+      isLogged: false,
+      timer: null
     }
   }
 }

@@ -149,7 +149,8 @@ export default {
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
       this.showSpinnerFlag = true
-      let errorFunction = function () {
+      let errorFunction = function (err) {
+        console.warn(err)
         this.snackOpen()
         this.showSpinnerFlag = false
       }.bind(this)
