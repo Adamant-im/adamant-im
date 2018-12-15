@@ -170,8 +170,8 @@ export default {
         return this.$store.dispatch(this.crypto.toLowerCase() + '/sendTokens', {
           amount: this.targetAmount,
           admAddress: this.fixedAddress,
-          address: this.targeethAddresstAddress,
-          comments: this.comethAddressments
+          address: this.targetAddress,
+          comments: this.comments
         })
       }
     },

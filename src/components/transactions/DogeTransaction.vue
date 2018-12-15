@@ -48,8 +48,6 @@ export default {
       if (this.transaction.senderId) {
         return this.formatAddress(this.transaction.senderId)
       }
-
-      
     },
     recipient () {
       return this.formatAddress(this.transaction.recipientId)
@@ -57,7 +55,7 @@ export default {
     partner () {
       if (this.transaction.partner) return this.transaction.partner
 
-      const id = this.transaction.senderId !== this.$store.state.DOGE.address
+      const id = this.transaction.senderId !== this.$store.state.doge.address
         ? this.transaction.senderId : this.transaction.recipientId
       return this.getAdmAddress(id)
     },

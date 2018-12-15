@@ -6,6 +6,7 @@
 import AdmTransaction from '../../components/transactions/AdmTransaction.vue'
 import EthTransaction from '../../components/transactions/EthTransaction.vue'
 import Erc20Transaction from '../../components/transactions/Erc20Transaction.vue'
+import DogeTransaction from '../../components/transactions/DogeTransaction.vue'
 
 import { Cryptos, isErc20 } from '../../lib/constants'
 
@@ -15,12 +16,14 @@ export default {
   components: {
     AdmTransaction,
     EthTransaction,
-    Erc20Transaction
+    Erc20Transaction,
+    DogeTransaction
   },
   computed: {
     transactionComponent () {
       if (this.crypto === Cryptos.ETH) return 'eth-transaction'
       if (isErc20(this.crypto)) return 'erc20-transaction'
+      if (this.crypto === Cryptos.DOGE) return 'doge-transaction'
       return 'adm-transaction'
     }
   }
