@@ -2,6 +2,8 @@ import DogeApi, { TX_FEE } from '../../../lib/doge-api'
 import * as admApi from '../../../lib/adamant-api'
 import { Cryptos } from '../../../lib/constants'
 
+const MAX_ATTEMPTS = 60
+
 /** @type {DogeApi} */
 let api = null
 
@@ -104,5 +106,52 @@ export default {
           return hash
         }
       })
+  },
+
+  getTransaction (context, payload) {
+    const existing = context.state.transactions[payload.hash]
+    if (existing && existing.status !== 'PENDING') return
+
+    // Set a stub so far
+    if (!existing) {
+      context.commit('transactions', [{
+        hash: payload.hash,
+        timestamp: payload.timestamp,
+        amount: payload.amount,
+        status: 'PENDING'
+      }])
+    }
+
+    api.getTransaction(payload.hash)
+      .then(
+        tx => {
+          if (tx) context.commit('transactions', [tx])
+          return (!tx && payload.isNew) || (tx && tx.status !== 'SUCCESS')
+        },
+        () => true
+      )
+      .then(replay => {
+        const attempt = payload.attempt || 0
+        if (replay && attempt < MAX_ATTEMPTS) {
+          const newPayload = { ...payload, attempt: attempt + 1 }
+          setTimeout(() => context.dispatch('getTransaction', newPayload), 3000)
+        }
+      })
+  },
+
+  getNewTransactions (context) {
+    return api.getTransactions().then(result => {
+      context.commit('transactions', result.items)
+    })
+  },
+
+  getOldTransactions (context) {
+    const from = Object.keys(context.state.transactions).length
+    return api.getTransactions(from).then(result => {
+      context.commit('transactions', result.items)
+      if (!result.hasMore) {
+        context.commit('bottom')
+      }
+    })
   }
 }

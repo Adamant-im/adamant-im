@@ -17,14 +17,9 @@ const network = {
   wif: fmt.wif
 }
 
-/**
- * Returns unique addresses, used in the specified transactions list
- * @param {Array<{addr: string}>} transactions DOGE transactions
- * @returns {Array<string>}
- */
-const mapAddresses = transactions => {
-  const map = transactions.reduce((m, tx) => {
-    m[tx.addr] = 1
+const getUnique = values => {
+  const map = values.reduce((m, v) => {
+    m[v] = 1
     return m
   }, { })
   return Object.keys(map)
@@ -99,13 +94,14 @@ export default class DogeApi {
   /**
    * Retrieves transactions for the specified address
    * @param {number=} from retrieve transactions starting from the specified position
-   * @returns {Promise<{totalItems: number, from: number, to: number, items: Array}>}
+   * @returns {Promise<{hasMore: boolean, items: Array}>}
    */
   getTransactions (from = 0) {
     const to = from + CHUNK_SIZE
     return this._get(`/addrs/${this.address}/txs`, { from, to })
       .then(resp => ({
         ...resp,
+        hasMore: to < resp.totalItems,
         items: resp.items.map(this._mapTransaction)
       }))
   }
@@ -170,12 +166,16 @@ export default class DogeApi {
   }
 
   _mapTransaction (tx) {
-    const senders = mapAddresses(tx.vin)
+    const senders = getUnique(tx.vin.map(x => x.addr))
     const senderId = senders.length === 1 ? senders[0] : null
 
     const direction = senders.includes(this._address) ? 'from' : 'to'
 
-    const recipients = mapAddresses(tx.vout)
+    const recipients = getUnique(tx.vout.reduce((list, out) => {
+      list.push(...out.scriptPubKey.addresses)
+      return list
+    }, []))
+
     if (direction === 'from') {
       // Disregard our address for the outgoing transaction
       const idx = recipients.indexOf(this._address)
@@ -187,16 +187,17 @@ export default class DogeApi {
     // * for the outgoing transactions take outputs that DO NOT target us
     // * for the incoming transactions take ouputs that DO target us
     let amount = tx.vout.reduce((sum, t) =>
-      ((direction === 'from') === (t.addr !== this._address) ? sum + t.value : sum), 0)
+      ((direction === 'to') === (t.scriptPubKey.addresses.includes(this._address)) ? sum + Number(t.value) : sum), 0)
 
     const confirmations = tx.confirmations
+    const timestamp = tx.time * 1000
 
     return {
       id: tx.txid,
+      hash: tx.txid,
       fee: tx.fees || TX_FEE,
       status: confirmations > 0 ? 'SUCCESS' : 'PENDING',
-      timestamp: tx.time,
-      time: tx.time,
+      timestamp,
       direction,
       senders,
       senderId,
