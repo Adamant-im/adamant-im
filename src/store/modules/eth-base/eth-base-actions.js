@@ -70,10 +70,10 @@ export default function createActions (config) {
       }
     },
 
-    sendTokens (context, { amount, admAddress, ethAddress, comments }) {
-      ethAddress = ethAddress.trim()
+    sendTokens (context, { amount, admAddress, address, comments }) {
+      address = address.trim()
       const crypto = context.state.crypto
-      const ethTx = initTransaction(api, context, ethAddress, amount)
+      const ethTx = initTransaction(api, context, address, amount)
 
       return utils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
         .then(count => {
@@ -111,7 +111,7 @@ export default function createActions (config) {
             context.commit('transactions', [{
               hash,
               senderId: ethTx.from,
-              recipientId: ethAddress,
+              recipientId: address,
               amount,
               fee: utils.calculateFee(ethTx.gas, ethTx.gasPrice),
               status: 'PENDING',

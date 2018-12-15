@@ -299,7 +299,7 @@ export function storeCryptoAddress (crypto, address) {
   pendingAddresses[crypto] = true
 
   return getStored(key)
-    .then(address => (address)
+    .then(stored => (stored)
       ? true
       : storeValue(key, address).then(response => response.success)
     )

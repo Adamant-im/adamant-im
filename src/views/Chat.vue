@@ -38,6 +38,10 @@
                   <md-icon  md-src="/img/Attach/bnb.svg">menu</md-icon>
                   <span>{{ $t('chats.send_bnb') }}</span>
                 </md-menu-item>
+                <md-menu-item v-on:click="sendTokens('DOGE')">
+                  <md-icon  md-src="/img/Attach/doge.svg">menu</md-icon>
+                  <span>{{ $t('chats.send_doge') }}</span>
+                </md-menu-item>
                 <md-menu-item :disabled="true">
                   <md-icon md-src="/img/Attach/picture.svg">collections</md-icon>
                   <span>{{ $t('chats.attach_image') }}</span>

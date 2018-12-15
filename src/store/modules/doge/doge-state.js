@@ -1,5 +1,6 @@
 export default () => ({
   address: '',
   balance: '',
-  lastStatusUpdate: 0
+  transactions: { },
+  bottomReached: false
 })
