@@ -1,5 +1,5 @@
 <template>
-  <div class="chat_entry black-text"
+  <div class="chat_entry black-text" ref="chatEntry"
        v-bind:class="{
         'right-align-block' :  direction === 'from'
     }">
@@ -11,7 +11,7 @@
       }"
       v-if="!brief"
     >
-      <div v-if="direction !== 'to'" class="message-tick" :data-confirmation="confirm"></div>
+      <div v-if="amount > 0 || direction === 'from'" class="message-tick" :data-confirmation="confirm"></div>
       <div v-if="readOnly" class="adamant-avatar"></div>
       <div v-else class="avatar-holder" v-bind:class="{fromAvatarHolder: toMessageFlag}"></div>
       <div class="message-block">
@@ -34,13 +34,29 @@
 
 <script>
 
+function checkForCurrency (text, currency) {
+  return text.indexOf(currency) === text.length - 4
+}
+
 export default {
   name: 'chat-entry-template',
-  props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly', 'message'],
+  props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly', 'message', 'amount'],
   methods: {
     retryMessage () {
       this.$store.dispatch('retry_message', this.message.id)
     }
+  },
+  mounted () {
+    let innerText = this.$refs.chatEntry.innerText
+    const currencies = ['ADM', 'ETH', 'BNB']
+    let checkCurrency = false
+    currencies.forEach(currency => {
+      checkCurrency = checkForCurrency(innerText, currency)
+      if (innerText.indexOf('sent ') === 0 && checkCurrency) {
+        this.$refs.chatEntry.classList.add('chat_entry_for_money')
+        return checkCurrency
+      }
+    })
   },
   computed: {
     retryMessageFlag () {
@@ -67,7 +83,7 @@ export default {
     padding: 5px 0
   }
   .sent {
-    padding: 10px 0
+    padding: 5px 0
   }
   .to {
     padding: 5px 0
@@ -77,6 +93,9 @@ export default {
   }
   .chat_entry {
     width: 100%;
+  }
+  .chat_entry_for_money {
+    text-transform: capitalize;
   }
   .fromAvatarHolder {
     top: 18px !important;

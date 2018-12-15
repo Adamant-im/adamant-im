@@ -34,6 +34,15 @@ adamant.epochTime = function (time) {
 }
 
 /**
+ * Converts ADM epoch timestamp to a Unix timestamp
+ * @param {number} epochTime timestamp to convert
+ * @returns {number}
+ */
+adamant.toTimestamp = function (epochTime) {
+  return epochTime * 1000 + constants.EPOCH
+}
+
+/**
  * Parses URI, return false on fails or object with fields if valid
  * @param uri
  * @returns {*}
@@ -171,7 +180,7 @@ adamant.getBytes = function (transaction) {
   if (transaction.recipientId) {
     var recipient = transaction.recipientId.slice(1)
     // eslint-disable-next-line new-cap
-    recipient = new bignum(recipient).toBuffer({size: 8})
+    recipient = new bignum(recipient).toBuffer({ size: 8 })
 
     for (i = 0; i < 8; i++) {
       bb.writeByte(recipient[i] || 0)

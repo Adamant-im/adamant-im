@@ -7,13 +7,13 @@
   >
     <p>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</p>
     <p class='transaction-amount' v-on:click="goToTransaction()">
-      <span v-html="message.message.amount"></span> {{ crypto }}
+      <span v-text="message.message.amount"></span> {{ crypto }}
     </p>
-    <p><em v-html="message.message.comments"></em></p>
+    <p><em v-text="message.message.comments"></em></p>
 
     <template slot="brief-view">
       <span>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</span>&nbsp;
-      <span v-html="message.message.amount"></span> {{ crypto }}
+      <span v-text="message.message.amount"></span> {{ crypto }}
     </template>
   </chat-entry-template>
 </template>
@@ -21,6 +21,7 @@
 <script>
 import ChatEntryTemplate from './ChatEntryTemplate.vue'
 import { Cryptos } from '../../lib/constants'
+import adm from '../../lib/adamant'
 
 export default {
   name: 'eth-transfer',
@@ -34,7 +35,7 @@ export default {
     }
   },
   mounted () {
-    const timestamp = this.message.timestamp
+    const timestamp = adm.toTimestamp(this.message.timestamp)
     const prefix = this.crypto.toLowerCase()
     this.$store.dispatch(prefix + '/getTransaction', { hash: this.hash, timestamp, amount: this.amount })
   },

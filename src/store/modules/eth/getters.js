@@ -1,3 +1,5 @@
+import baseGetters from '../eth-base/eth-base-getters'
+
 const DEFAULT_GAS_PRICE = '20000000000' // 20 Gwei
 
 export default {
@@ -9,7 +11,7 @@ export default {
     return state.fee
   },
 
-  transaction: state => id => state.transactions[id],
+  privateKey: state => state.privateKey,
 
-  privateKey: state => state.privateKey
+  ...baseGetters
 }

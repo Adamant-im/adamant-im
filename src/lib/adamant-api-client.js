@@ -369,16 +369,7 @@ class ApiClient {
   }
 }
 
-const endpoints = config.server.adm.map(endpoint =>
-  [
-    endpoint.protocol,
-    '://',
-    endpoint.ip,
-    endpoint.port ? (':' + endpoint.port) : '',
-    endpoint.path ? ('/' + endpoint.path) : ''
-  ].join('')
-)
-
+const endpoints = config.server.adm.map(endpoint => endpoint.url)
 const apiClient = new ApiClient(endpoints, config.minApiVersion)
 
 export default apiClient

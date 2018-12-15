@@ -36,7 +36,7 @@
             </md-avatar>
             <div class="md-list-text-container">
                 <span>{{ $t('home.your_balance_' + wallet.system) }}</span>
-                <p> <span v-html="wallet.balance"></span> {{ wallet.system }}</p>
+                <p> <span v-text="wallet.balance"></span> {{ wallet.system }}</p>
             </div>
           </md-list-item>
 
@@ -89,10 +89,9 @@ export default {
     },
     copy () {
     },
-    goToTransactions (system) {
-      if (system === 'ADM') {
-        this.$router.push('/transactions/')
-      }
+    goToTransactions (crypto) {
+      const params = { crypto }
+      this.$router.push({ name: 'Transactions', params })
     }
   },
   computed: {

@@ -38,12 +38,12 @@ router.beforeEach((to, from, next) => {
             }
             next()
           } else {
-            next({name: 'Login'})
+            next({ name: 'Login' })
           }
         } else {
           if (to.name === 'Login' && isLogged) {
             store.commit('leave_chat')
-            next({name: 'Chats'})
+            next({ name: 'Chats' })
           } else {
             next()
           }

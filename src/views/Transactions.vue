@@ -1,5 +1,6 @@
 <template>
-    <div class="transaction transaction_list">
+    <div class="transaction transaction_list" ref="txListElement">
+      <spinner v-if="isLoading" />
       <md-list class="custom-list md-triple-line md-transparent">
         <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
           <md-avatar>
@@ -8,14 +9,18 @@
 
           <div class="md-list-text-container" v-on:click="goToTransaction(transaction.id)">
             <div>
-              {{ displayName(transaction.partner) }}
-              <span class="partner_display_name">{{ formatPartnerAddress(transaction.partner) }}</span>
+              {{ displayName(transaction) }}
+              <span class="partner_display_name">{{ formatPartnerAddress(transaction) }}</span>
             </div>
-            <span>{{ $formatAmount(transaction.amount) }} ADM</span>
+            <span>{{ $formatAmount(transaction.amount, crypto) }} {{crypto}}</span>
             <p>{{ $formatDate(transaction.timestamp) }}</p>
           </div>
 
-          <md-button class="md-icon-button md-list-action" @click="openChat(transaction)">
+          <md-button
+            class="md-icon-button md-list-action"
+            v-if="showChat"
+            @click="openChat(transaction)"
+          >
             <md-icon>{{ hasMessages(transaction) ? "chat" : "chat_bubble_outline" }}</md-icon>
           </md-button>
 
@@ -27,19 +32,24 @@
 </template>
 
 <script>
+
 import { Cryptos } from '../lib/constants'
+import Spinner from '@/components/Spinner.vue'
 
 export default {
   name: 'transactions',
+  components: { Spinner },
   data () {
     return {
-      bgTimer: null
+      bgTimer: null,
+      prefix: this.crypto.toLowerCase(),
+      showChat: this.crypto === Cryptos.ADM
     }
   },
   mounted () {
     this.update()
     clearInterval(this.bgTimer)
-    this.bgTimer = setInterval(() => this.update(), 5000)
+    this.bgTimer = setInterval(() => this.update(), 20000)
     window.addEventListener('scroll', this.onScroll)
   },
   beforeDestroy () {
@@ -57,34 +67,47 @@ export default {
       this.$router.push('/chats/' + partner + '/')
     },
     goToTransaction (id) {
-      const params = { crypto: Cryptos.ADM, tx_id: id }
+      const params = { crypto: this.crypto, tx_id: id }
       this.$router.push({ name: 'Transaction', params })
     },
-    displayName (partner) {
-      return this.$store.getters['partners/displayName'](partner) || ''
+    getPartner (tx) {
+      return tx.partner || (tx.direction === 'to' ? tx.senderId : tx.recipientId)
     },
-    formatPartnerAddress (partner) {
-      return '(' + partner + ')'
+    displayName (tx) {
+      const partner = this.getPartner(tx)
+      return this.crypto === Cryptos.ADM
+        ? this.$store.getters['partners/displayName'](partner) || ''
+        : ''
+    },
+    formatPartnerAddress (tx) {
+      const partner = this.getPartner(tx)
+      return this.crypto === Cryptos.ADM
+        ? '(' + partner + ')'
+        : partner
     },
     update () {
-      this.$store.dispatch('adm/getNewTransactions')
+      this.$store.dispatch(`${this.prefix}/getNewTransactions`)
     },
     onScroll () {
-      const pageHeight = document.body.offsetHeight
+      const height = this.$refs['txListElement'].offsetHeight
       const windowHeight = window.innerHeight
       const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop + (document.documentElement.scrollTop || 0)
 
       // If we've scrolled to the very bottom, fetch the older transactions from server
-      if (windowHeight + scrollPosition >= pageHeight) {
-        this.$store.dispatch('adm/getOldTransactions')
+      if (windowHeight + scrollPosition >= height) {
+        this.$store.dispatch(`${this.prefix}/getOldTransactions`)
       }
     }
   },
   computed: {
     transactions: function () {
-      return this.$store.getters['adm/sortedTransactions']
+      return this.$store.getters[`${this.prefix}/sortedTransactions`]
+    },
+    isLoading () {
+      return this.$store.getters[`${this.prefix}/areTransactionsLoading`]
     }
-  }
+  },
+  props: ['crypto']
 }
 </script>
 <style>

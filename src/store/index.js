@@ -1,6 +1,6 @@
 
 import Vue from 'vue'
-import {Base64} from 'js-base64'
+import { Base64 } from 'js-base64'
 
 import storeData from '../lib/lsStore.js'
 
@@ -15,7 +15,7 @@ import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
 
 import * as admApi from '../lib/adamant-api'
-import {base64regex, WelcomeMessage, UserPasswordHashSettings, Cryptos} from '../lib/constants'
+import { base64regex, WelcomeMessage, UserPasswordHashSettings, Cryptos } from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import i18n from '../i18n'
@@ -78,7 +78,7 @@ function createMockMessage (state, newAccount, partner, message) {
   Vue.set(state.chats, partner, currentDialogs)
 }
 
-function replaceMessageAndDelete (messages, newMessageId, existMessageId, cssClass) {
+export function replaceMessageAndDelete (messages, newMessageId, existMessageId, cssClass) {
   Vue.set(messages, newMessageId, {
     ...messages[existMessageId],
     id: newMessageId,
@@ -89,11 +89,11 @@ function replaceMessageAndDelete (messages, newMessageId, existMessageId, cssCla
   }
 }
 
-function changeMessageClass (messages, id, cssClass) {
+export function changeMessageClass (messages, id, cssClass) {
   Vue.set(messages[id], 'confirm_class', cssClass)
 }
 
-function updateLastChatMessage (currentDialogs, payload, confirmClass, direction, id) {
+export function updateLastChatMessage (currentDialogs, payload, confirmClass, direction, id) {
   currentDialogs.last_message = {
     id: id,
     message: payload.message,
@@ -140,7 +140,7 @@ const store = {
     userPasswordExists: sessionStorage.getItem('userPassword') !== null
   },
   actions: {
-    add_chat_i18n_message ({commit}, payload) {
+    add_chat_i18n_message ({ commit }, payload) {
       payload.message = i18n.t(payload.message)
       commit('add_chat_message', payload)
     },
@@ -153,8 +153,9 @@ const store = {
       }
       let chats = getters.getChats
       const partner = payload.recipientId
+      let messageText = payload.message
       payload = {
-        message: payload.message,
+        message: messageText,
         recipientId: partner,
         timestamp: utils.epochTime(),
         id: getters.getCurrentChatMessageCount,
@@ -163,17 +164,15 @@ const store = {
       }
       let currentDialogs = chats[partner]
       let internalPayload = Object.assign({}, payload)
-      internalPayload.message = internalPayload.message.replace(/\n/g, '<br>')
       if (currentDialogs.last_message.timestamp < payload.timestamp || !currentDialogs.last_message.timestamp) {
         internalPayload.message = renderMarkdown(internalPayload.message)
-        internalPayload.message = internalPayload.message.replace(/<p>|<\/p>/g, '')
         updateLastChatMessage(currentDialogs, internalPayload, 'sent', 'from', payload.id)
       }
       Vue.set(chats[partner].messages, payload.id, internalPayload)
       queue.add(() => {
         const params = {
           to: partner,
-          message: payload.message
+          message: messageText
         }
         return admApi.sendMessage(params).then(response => {
           if (response.success) {
@@ -186,22 +185,23 @@ const store = {
         })
       })
     },
-    retry_message ({getters}, payload) {
+    retry_message ({ getters }, payload) {
       const currentChat = getters.getCurrentChat
       const partner = currentChat.partner
-      const message = currentChat.messages[payload]
-      let messageText = message.message.replace(/<\/?p>/g, '')
+      let message = currentChat.messages[payload]
+      let messageText = message.message
+      messageText = messageText.replace(/<p>|<\/?p>/g, '')
+      messageText = messageText.replace(/<a href=".*">|<\/?a>/g, '')
+      messageText = messageText.replace(/<br>/g, '\n')
       payload = {
         recipientId: partner,
-        message: messageText,
+        message: message.message,
         transactionId: message.id,
         timestamp: utils.epochTime(),
         direction: 'from'
       }
-
       let chats = getters.getChats
       queue.add(() => {
-        messageText = message.message.replace(/<\/?br>/g, '\n')
         const params = {
           to: partner,
           message: messageText
@@ -476,7 +476,7 @@ const store = {
     },
     select_chat (state, payload) {
       if (!state.chats[payload]) {
-        Vue.set(state.chats, payload, {messages: [], last_message: {}, partner: payload})
+        Vue.set(state.chats, payload, { messages: [], last_message: {}, partner: payload })
       }
       state.currentChat = state.chats[payload]
       Vue.set(state.currentChat, 'messages', state.chats[payload].messages)
@@ -657,6 +657,9 @@ const store = {
     },
     getLastChatHeight: state => {
       return state.lastChatHeight
+    },
+    getAdmAddress: state => {
+      return state.address
     }
   },
   modules: {
