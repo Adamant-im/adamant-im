@@ -36,7 +36,7 @@ router.beforeEach((to, from, next) => {
             if (from.name === 'Chat' && to.name !== 'Chat') {
               store.commit('leave_chat')
             }
-             next()
+            next()
           } else {
             next({ name: 'Login' })
           }

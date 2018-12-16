@@ -73,8 +73,15 @@ export default {
             // Save chats
             const chats = this.$store.getters.getChats
             for (let chat in chats) {
-              if (chats.hasOwnProperty(chat)) {
+              if (chats.hasOwnProperty(chat) && !chats[chat].hasOwnProperty('readOnly')) {
                 const encryptedChatName = encryptData(chat)
+                let transactions = this.$store.getters['adm/partnerTransactions'](chat)
+                let messages = Object.values(chats[chat].messages)
+                messages = messages.concat(transactions)
+                messages = messages.sort((a, b) => a.timestamp - b.timestamp)
+                messages.forEach(message => {
+                  chats[chat].messages[message.id] = message
+                })
                 updateChatItem(db, encryptedChatName.toString(), encryptData(JSON.stringify(chats[chat])))
               }
             }

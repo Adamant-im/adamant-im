@@ -68,7 +68,6 @@ export default {
             updateUserPassword(encodePassword)
             getCommonItem(db).then((encryptedCommonItem) => {
               let chats = {}
-              let partners = null
               try {
                 let state = JSON.parse(decryptData(encryptedCommonItem.value))
                 this.showSpinnerFlag = true
