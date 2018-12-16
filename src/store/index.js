@@ -660,6 +660,9 @@ const store = {
     },
     getAdmAddress: state => {
       return state.address
+    },
+    getState: state => {
+      return state
     }
   },
   modules: {

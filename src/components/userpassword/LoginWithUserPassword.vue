@@ -81,14 +81,12 @@ export default {
                   })
                   getContactItem(db).then((encryptedContacts) => {
                     let decryptedContacts = decryptData(encryptedContacts.value)
-                    this.$store.commit('partners/contactList', JSON.parse(decryptedContacts))
-                    partners = JSON.parse(decryptedContacts)
+                    this.$store.commit('partners/contactList', JSON.parse(decryptedContacts).list)
                     getPassPhrase(db).then((encryptedPassPhrase) => {
                       let decryptedPassPhrase = decryptData(encryptedPassPhrase.value)
                       sessionStorage.setItem('storeInLocalStorage', 'true')
                       state = {
                         ...state,
-                        partners: partners,
                         chats: chats,
                         passPhrase: Base64.encode(decryptedPassPhrase)
                       }
