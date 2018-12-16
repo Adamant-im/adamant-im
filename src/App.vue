@@ -24,7 +24,7 @@
 
 <script>
 import i18n from './i18n'
-import {clearDb, getAdmDataBase, getPassPhrase} from './lib/indexedDb'
+import {clearDb, decryptData, getAdmDataBase, getPassPhrase} from './lib/indexedDb'
 
 export default {
   name: 'app',
@@ -36,8 +36,6 @@ export default {
           sessionStorage.removeItem('adm-persist')
           sessionStorage.setItem('storeInLocalStorage', 'true')
           this.$store.commit('user_password_exists', true)
-        } else {
-
         }
       })
     })
@@ -90,8 +88,18 @@ export default {
     )
 
     window.audio = require('simple-audio')
-    if (this.$store.getters.getPassPhrase.length <= 0) {
-      this.$router.push('/')
+    if (this.$store.getters.isLoginViaPassword) {
+      getAdmDataBase().then((db) => {
+        getPassPhrase(db).then((encryptedPassPhrase) => {
+          if (decryptData(encryptedPassPhrase.value).length <= 0) {
+            this.$router.push('/')
+          }
+        })
+      })
+    } else {
+      if (this.$store.getters.getPassPhrase.length <= 0) {
+        this.$router.push('/')
+      }
     }
   },
   methods: {

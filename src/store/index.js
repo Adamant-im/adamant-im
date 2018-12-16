@@ -645,9 +645,8 @@ const store = {
     sendOnEnter: state => {
       return state.sendOnEnter
     },
-    getUserPassword: state => {
-      const userPassword = sessionStorage.getItem('userPassword')
-      return userPassword || null
+    isLoginViaPassword: () => {
+      return sessionStorage.getItem('storeInLocalStorage') === 'true' && sessionStorage.getItem('userPassword')
     },
     getUserPasswordExists: state => {
       return state.userPasswordExists

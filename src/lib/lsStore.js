@@ -65,12 +65,13 @@ export default function storeData () {
         arrayMerge: function (store, saved) { return saved },
         clone: false
       }))
+      store.commit('mock_messages')
       store.dispatch('rehydrate')
       window.onbeforeunload = function () {
         store.commit('force_update')
       }
     } else {
-      if (sessionStorage.getItem('storeInLocalStorage') === 'true' && sessionStorage.getItem('userPassword')) {
+      if (store.getters.isLoginViaPassword) {
         getAdmDataBase().then((db) => {
           let restoredStore = {}
           getCommonItem(db).then((encryptedCommonItem) => {
