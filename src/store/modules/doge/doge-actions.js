@@ -59,6 +59,7 @@ export default {
   },
 
   sendTokens (context, { amount, admAddress, address, comments }) {
+    if (!api) return
     address = address.trim()
 
     return api.createTransaction(address, amount)
@@ -109,6 +110,8 @@ export default {
   },
 
   getTransaction (context, payload) {
+    if (!api) return
+
     const existing = context.state.transactions[payload.hash]
     if (existing && existing.status !== 'PENDING') return
 
@@ -140,12 +143,16 @@ export default {
   },
 
   getNewTransactions (context) {
+    if (!api) return
+
     return api.getTransactions().then(result => {
       context.commit('transactions', result.items)
     })
   },
 
   getOldTransactions (context) {
+    if (!api) return
+
     const from = Object.keys(context.state.transactions).length
     return api.getTransactions(from).then(result => {
       context.commit('transactions', result.items)

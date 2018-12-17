@@ -1,6 +1,7 @@
 import coininfo from 'coininfo'
 import bitcoin from 'bitcoinjs-lib'
 import axios from 'axios'
+import qs from 'qs'
 
 import { Cryptos } from './constants'
 import getEnpointUrl from './getEndpointUrl'
@@ -15,6 +16,12 @@ const network = {
   pubKeyHash: fmt.pubKeyHash,
   scriptHash: fmt.scriptHash,
   wif: fmt.wif
+}
+
+const POST_CONFIG = {
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
 }
 
 const getUnique = values => {
@@ -60,8 +67,6 @@ export default class DogeApi {
    * @returns {Promise<{hex: string, txid: string}>}
    */
   createTransaction (address = '', amount = 0) {
-    amount = Math.floor(Number(amount) * MULTIPLIER)
-
     return this._get(`/addr/${this.address}/utxo?noCache=1`)
       .then(unspents => {
         const hex = this._buildTransaction(address, amount, unspents)
@@ -79,7 +84,7 @@ export default class DogeApi {
    * @param {string} txHex raw transaction as a HEX literal
    */
   sendTransaction (txHex) {
-    return this._post('/tx/send', { rawtx: txHex })
+    return this._post('/tx/send', { rawtx: txHex }).then(res => res.txid)
   }
 
   /**
@@ -114,18 +119,21 @@ export default class DogeApi {
    * @returns {string}
    */
   _buildTransaction (address, amount, unspents) {
+    amount = Number(amount) * MULTIPLIER
+
     const txb = new bitcoin.TransactionBuilder(network)
     txb.setVersion(1)
 
-    const target = (amount + TX_FEE) * MULTIPLIER
+    const target = amount + TX_FEE * MULTIPLIER
     let transferAmount = 0
     let inputs = 0
 
     unspents.forEach(tx => {
-      const amount = Math.floor(tx.amount * MULTIPLIER)
+      const amt = Math.floor(tx.amount * MULTIPLIER)
       if (transferAmount < target) {
-        txb.addInput(tx.txid, inputs++)
-        transferAmount += amount
+        txb.addInput(tx.txid, tx.vout)
+        transferAmount += amt
+        inputs++
       }
     })
 
@@ -146,12 +154,7 @@ export default class DogeApi {
 
   /** Executes a POST request to the DOGE API */
   _post (url, data) {
-    const fd = Object.keys(data).reduce((form, key) => {
-      form.append(key, data[key])
-      return form
-    }, new FormData())
-
-    return this._getClient().post(url, fd).then(response => response.data)
+    return this._getClient().post(url, qs.stringify(data), POST_CONFIG).then(response => response.data)
   }
 
   /** Picks a client for a random DOGE API endpoint */
