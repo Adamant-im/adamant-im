@@ -84,7 +84,7 @@ export default class DogeApi {
    * @param {string} txHex raw transaction as a HEX literal
    */
   sendTransaction (txHex) {
-    return this._post('/tx/send', { rawtx: txHex })
+    return this._post('/tx/send', { rawtx: txHex }).then(res => res.txid)
   }
 
   /**
@@ -131,8 +131,9 @@ export default class DogeApi {
     unspents.forEach(tx => {
       const amt = Math.floor(tx.amount * MULTIPLIER)
       if (transferAmount < target) {
-        txb.addInput(tx.txid, inputs++)
+        txb.addInput(tx.txid, tx.vout)
         transferAmount += amt
+        inputs++
       }
     })
 
