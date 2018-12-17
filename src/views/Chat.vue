@@ -20,6 +20,7 @@
               :message="message.message"
               :timestamp="message.timestamp"
               :readonly="isChatReadOnly"
+              :status="message.status"
             />
             <chat-transaction
               v-else-if="message.type === 'transaction'"
@@ -56,93 +57,98 @@ import ChatMessage from '@/components/Chat/ChatMessage'
 import ChatTransaction from '@/components/Chat/ChatTransaction'
 import ChatInput from '@/components/Chat/ChatInput'
 
+/**
+ * Return unix timestamp based on
+ * ADM timestamp (foundation Date).
+ * @param {number} timestamp
+ * @returns {number}
+ */
+function getRealTimestamp (timestamp) {
+  return parseInt(timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0)
+}
+
+/**
+ * Transform array of messages into types:
+ * message or adm transaction or eth transaction
+ */
+function transformMessages (messages) {
+  return messages.map(message => {
+    if (message.message && message.message.type === 'eth_transaction') {
+      // ETH Transaction
+      return {
+        id: message.id,
+        type: 'transaction',
+        senderId: message.senderId,
+        message: (message.message && message.message.comments) || '',
+        timestamp: message.timestamp,
+        realTimestamp: getRealTimestamp(message.timestamp),
+        username: this.partnerName,
+        amount: message.amount,
+        currency: 'ETH',
+        status: message.status || 'confirmed'
+      }
+    } else if (message.amount > 0) {
+      // ADM Transaction
+      return {
+        id: message.id,
+        type: 'transaction',
+        senderId: message.senderId,
+        message: message.message,
+        timestamp: message.timestamp,
+        realTimestamp: getRealTimestamp(message.timestamp),
+        username: this.partnerName,
+        amount: this.$formatAmount(message.amount),
+        currency: 'ADM',
+        status: message.status || 'confirmed'
+      }
+    } else {
+      // Message
+      return {
+        id: message.id,
+        type: 'message',
+        senderId: message.senderId,
+        message: message.message,
+        timestamp: message.timestamp,
+        realTimestamp: getRealTimestamp(message.timestamp),
+        username: this.partnerName,
+        status: message.status || 'confirmed'
+      }
+    }
+  }).sort((a, b) => a.realTimestamp - b.realTimestamp)
+}
+
 export default {
   mounted () {
-    this.fetchMessages()
+    this.markAsRead()
   },
   computed: {
     messages () {
-      // @todo refactor store and return array instead object
-      let messages = this.$store.state.currentChat.messages || {}
+      let messages = this.$store.getters['chat/messages'](this.partnerId)
 
-      // transform into array and replace keys
-      let arrayMessages = Object
-        .keys(messages)
-        .map(key => {
-          if (
-            messages[key] &&
-            messages[key].message &&
-            messages[key].message.type === 'eth_transaction'
-          ) { // ETH transaction
-            return {
-              id: messages[key].id,
-              type: 'transaction',
-              senderId: messages[key].senderId,
-              message: messages[key].message.comments,
-              timestamp: messages[key].timestamp,
-              realTimestamp: messages[key].real_timestamp,
-              username: this.partnerName,
-              amount: messages[key].message.amount,
-              currency: 'ETH'
-            }
-          } else if (
-            messages[key] &&
-            messages[key].amount > 0
-          ) { // ADM transaction
-            return {
-              id: messages[key].id,
-              type: 'transaction',
-              senderId: messages[key].senderId,
-              message: messages[key].message,
-              timestamp: messages[key].timestamp,
-              realTimestamp: messages[key].real_timestamp,
-              username: this.partnerName,
-              amount: this.$formatAmount(messages[key].amount),
-              currency: 'ADM'
-            }
-          } else {
-            return { // message
-              id: messages[key].id,
-              type: 'message',
-              senderId: messages[key].senderId,
-              message: messages[key].message,
-              timestamp: messages[key].timestamp,
-              realTimestamp: messages[key].real_timestamp,
-              username: this.partnerName
-            }
-          }
-        })
-        .sort((a, b) => a.realTimestamp - b.realTimestamp)
-
-      return arrayMessages
+      return transformMessages.call(this, messages)
     },
     partnerId () {
       return this.$route.params.partner
     },
     partnerName () {
-      return this.$store.state.partnerName
-    },
-    displayName () {
-      return this.$store.getters['partners/displayName'](this.$store.state.partnerName)
+      return this.$store.getters['partners/displayName'](this.partnerId)
     },
     userId () {
       return this.$store.state.address
     },
     isChatReadOnly () {
-      return this.$store.state.currentChat.readOnly === true
+      // @todo Check for these addresses: Adm Bounty & Adm Tokens
+      return false
     }
   },
   data: () => ({
   }),
   methods: {
-    fetchMessages () {
-      this.$store.commit('last_visited_chat', this.partnerId)
-      this.$store.commit('select_chat', this.partnerId)
-      this.$store.commit('mark_as_read_total', this.partnerId)
-      this.$store.commit('mark_as_read', this.partnerId)
-    },
     onSendMessage () {
       this.$refs.chat.scrollToBottom()
+    },
+    markAsRead () {
+      this.$store.commit('chat/markAsRead', this.partnerId)
     }
   },
   components: {

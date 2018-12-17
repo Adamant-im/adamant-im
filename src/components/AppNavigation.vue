@@ -48,7 +48,7 @@ export default {
   },
   computed: {
     numOfNewMessages () {
-      return this.$store.state.totalNewChats
+      return this.$store.getters['chat/totalNumOfNewMessages']
     }
   },
   data: () => ({
@@ -74,7 +74,7 @@ export default {
   }),
   methods: {
     logout () {
-      this.$store.commit('logout')
+      this.$store.dispatch('logout')
       this.$store.dispatch('reset')
       this.$router.push('/')
     },

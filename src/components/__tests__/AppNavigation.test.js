@@ -11,27 +11,52 @@ Vue.use(Vuex)
 Vue.use(VueI18n)
 Vue.use(Vuetify)
 
+/**
+ * Mockup store helper
+ */
+function mockupStore () {
+  const actions = {
+    reset: jest.fn(),
+    logout: jest.fn()
+  }
+
+  const chat = {
+    state: {
+      numOfNewMessages: 0 // fake key for getter test
+    },
+    getters: {
+      totalNumOfNewMessages: state => state.numOfNewMessages
+    },
+    namespaced: true
+  }
+
+  const store = new Vuex.Store({
+    actions,
+    modules: {
+      chat
+    }
+  })
+
+  return {
+    store,
+    chat,
+    actions
+  }
+}
+
 // @todo Update tests after refactor store
 describe('AppNavigation.vue', () => {
-  let mainStoreModule = null // used as reference to check jest.fn() calls
-  let store = null
-  let router = null
   let i18n = null
+  let store = null
+  let actions = null
+  let chat = null
 
   beforeEach(() => {
-    // mockup Store
-    mainStoreModule = {
-      state: {
-        totalNewChats: 0
-      },
-      mutations: {
-        logout: jest.fn()
-      },
-      actions: {
-        reset: jest.fn()
-      }
-    }
-    store = new Vuex.Store(mainStoreModule)
+    // mockup chat module
+    const vuex = mockupStore()
+    store = vuex.store
+    actions = vuex.actions
+    chat = vuex.chat
 
     // mockup i18n
     i18n = mockupI18n()
@@ -87,8 +112,8 @@ describe('AppNavigation.vue', () => {
 
     wrapper.vm.logout()
 
-    expect(mainStoreModule.mutations.logout).toHaveBeenCalled()
-    expect(mainStoreModule.actions.reset).toHaveBeenCalled()
+    expect(actions.logout).toHaveBeenCalled()
+    expect(actions.reset).toHaveBeenCalled()
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith('/')
   })
 
@@ -129,7 +154,8 @@ describe('AppNavigation.vue', () => {
     expect(wrapper.find('vbadge-stub > span').exists()).toBe(false) // hidden badge
 
     // new messages
-    mainStoreModule.state.totalNewChats = 10
+    chat.state.numOfNewMessages = 10
+    expect(wrapper.vm.numOfNewMessages).toBe(10)
     expect(wrapper.find('vbadge-stub > span').text()).toBe('10') // visible badge
   })
 })

@@ -15,35 +15,44 @@ Vue.use(Vuetify)
 // set $formatAmount & $formatDate prototype methods
 formatters(Vue)
 
+let fake = createFakeVars()
+
+function createFakeVars () {
+  return {
+    partnerName: 'Rick',
+    isPartnerInChatList: false
+  }
+}
+
 /**
  * Mockup store helper.
  */
 function mockupStore () {
-  const state = {
-    chats: [
-      {
-        messages: []
-      }
-    ]
+  const chat = {
+    getters: {
+      isPartnerInChatList: () => () => fake.isPartnerInChatList
+    },
+    namespaced: true
   }
 
-  const modules = {
-    partners: {
-      getters: {
-        displayName: () => () => 'Rick'
-      },
-      namespaced: true
-    }
+  const partners = {
+    getters: {
+      displayName: () => () => fake.partnerName
+    },
+    namespaced: true
   }
 
   const store = new Vuex.Store({
-    state,
-    modules
+    modules: {
+      chat,
+      partners
+    }
   })
 
   return {
     store,
-    modules
+    chat,
+    partners
   }
 }
 
@@ -55,7 +64,8 @@ const validProps = {
   userId: 'U123456',
   partnerId: 'U654321',
   senderId: 'U654321',
-  timestamp: 37835483 // ADM timestamp?
+  timestamp: 37835483, // ADM timestamp
+  amount: 100000000 // 1 ADM
 }
 
 // disable Vue console warnings when testings
@@ -66,14 +76,17 @@ describe('TransactionListItem', () => {
   let i18n = null
   let store = null
   let partners = null // vuex module
+  let chat = null // vuex module
 
   beforeEach(() => {
     const vuex = mockupStore()
 
     store = vuex.store
-    partners = vuex.modules.partners
+    partners = vuex.partners
+    chat = vuex.chat
 
     i18n = mockupI18n()
+    fake = createFakeVars()
   })
 
   it('renders the correct markup', () => {
@@ -111,14 +124,14 @@ describe('TransactionListItem', () => {
     })
 
     // Sep 3, 20:00
-    expect(wrapper.vm.timeAgo).toBe('Sep 3, 20:00')
+    expect(wrapper.vm.createdAt).toBe('Sep 3, 20:00')
 
     // Sep 4, 20:00
     wrapper.setProps({ timestamp: 3600 * 24 * 2 })
-    expect(wrapper.vm.timeAgo).toBe('Sep 4, 20:00')
+    expect(wrapper.vm.createdAt).toBe('Sep 4, 20:00')
   })
 
-  it('should display icon when transaction contains a message', () => {
+  it('should not display icon when transaction contains a message', () => {
     const wrapper = shallowMount(TransactionListItem, {
       store,
       i18n,
@@ -128,11 +141,21 @@ describe('TransactionListItem', () => {
     })
 
     // transaction without comment
-    expect(wrapper.vm.hasMessages).toBe(false)
+    expect(wrapper.vm.isPartnerInChatList).toBe(false)
+  })
 
-    // transaction contains a comment, to check (chat.messages.length > 0)
-    // store.state.chats[0].messages = [{}]
-    // @todo more tests after refactor store
+  it('should display icon when transaction contains a message', () => {
+    fake.isPartnerInChatList = true
+
+    const wrapper = shallowMount(TransactionListItem, {
+      store,
+      i18n,
+      propsData: {
+        ...validProps
+      }
+    })
+
+    expect(wrapper.vm.isPartnerInChatList).toBe(true)
   })
 
   it('should emit events', () => {

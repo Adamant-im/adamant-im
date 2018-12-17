@@ -70,10 +70,11 @@ export default {
     onLogin () {
       this.$router.push('/chats')
     },
-    onLoginError () {
+    onLoginError (err) {
       this.$store.dispatch('snackbar/show', {
         message: this.$t('Invalid passphraze')
       })
+      console.error(err)
     },
     onCopyPassphraze () {
       this.$store.dispatch('snackbar/show', {
@@ -82,14 +83,12 @@ export default {
       })
     },
     onScanQrcode (passphrase) {
-      this.$store.dispatch('login', {
-        passphrase
-      })
+      this.$store.dispatch('login', passphrase)
         .then(() => {
           this.onLogin()
         })
-        .catch(() => {
-          this.onLoginError()
+        .catch(err => {
+          this.onLoginError(err)
         })
     }
   },

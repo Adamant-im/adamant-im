@@ -68,15 +68,7 @@
 // @todo refactor store
 import { sendTokens, sendMessage } from '@/lib/adamant-api'
 import { Cryptos, CryptoAmountPrecision, Fees, isErc20 } from '@/lib/constants'
-
-/**
- * Is number and not Infinity or NaN.
- *
- * @param {any} Number or string-number.
- */
-function isNumeric (abstract) {
-  return !isNaN(parseFloat(abstract)) && isFinite(abstract)
-}
+import { isNumeric } from '@/lib/numericHelpers'
 
 export default {
   created () {

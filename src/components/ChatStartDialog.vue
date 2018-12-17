@@ -61,14 +61,26 @@ export default {
   }),
   methods: {
     startChat () {
-      if (this.isValidUserAddress()) {
-        this.$emit('start-chat', this.recipientAddress)
-        this.show = false
-      } else {
+      if (!this.isValidUserAddress()) {
         this.$store.dispatch('snackbar/show', {
           message: 'Invalid recipient address'
         })
+
+        return Promise.reject('Invalid user address')
       }
+
+      return this.$store.dispatch('chat/createChat', {
+        partnerId: this.recipientAddress
+      })
+        .then((key) => {
+          this.$emit('start-chat', this.recipientAddress)
+          this.show = false
+        })
+        .catch(err => {
+          this.$store.dispatch('snackbar/show', {
+            message: err.message // @todo translations
+          })
+        })
     },
     onScanQrcode (userId) {
       this.recipientAddress = userId

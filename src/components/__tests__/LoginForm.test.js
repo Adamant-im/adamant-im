@@ -29,19 +29,39 @@ Promise.prototype.finally = Promise.prototype.finally || {
  * Mockup store helper
  */
 function mockupStore () {
-  const state = {}
+  const state = () => ({
+    address: '',
+    balance: 0,
+    passphrase: ''
+  })
+
+  const getters = {
+    isLogged: jest.fn()
+  }
+
+  const mutations = {
+    setAddress: jest.fn(),
+    setBalance: jest.fn(),
+    setPassphrase: jest.fn()
+  }
 
   const actions = {
-    login: loginMock
+    login: loginMock,
+    logout: jest.fn()
   }
 
   const store = new Vuex.Store({
     state,
+    getters,
+    mutations,
     actions
   })
 
   return {
     store,
+    state,
+    getters,
+    mutations,
     actions
   }
 }
@@ -49,12 +69,10 @@ function mockupStore () {
 describe('LoginForm.vue', () => {
   let i18n = null
   let store = null
-  let actions = null
 
   beforeEach(() => {
     const vuex = mockupStore()
 
-    actions = vuex.actions
     store = vuex.store
 
     i18n = mockupI18n()

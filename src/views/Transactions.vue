@@ -14,6 +14,7 @@
           :sender-id="transaction.senderId"
           :partner-id="transaction.partner"
           :timestamp="transaction.timestamp"
+          :amount="transaction.amount"
           @click:transaction="goToTransaction"
           @click:icon="goToChat"
         />

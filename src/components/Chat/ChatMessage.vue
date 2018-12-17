@@ -9,6 +9,9 @@
     </div>
 
     <div class="chat__item-body" v-markdown="message"></div>
+    <div>
+      <small>{{ status }}</small>
+    </div>
   </div>
 </template>
 
@@ -29,6 +32,6 @@ export default {
   directives: {
     markdown
   },
-  props: ['userId', 'senderId', 'message', 'timestamp', 'readonly', 'showSenderId']
+  props: ['userId', 'senderId', 'message', 'timestamp', 'readonly', 'showSenderId', 'status']
 }
 </script>

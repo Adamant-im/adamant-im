@@ -63,9 +63,7 @@ export default {
     login () {
       const passphrase = this.passphrase.toLowerCase().trim()
 
-      const promise = this.$store.dispatch('login', {
-        passphrase
-      })
+      const promise = this.$store.dispatch('login', passphrase)
 
       promise
         .then(() => {

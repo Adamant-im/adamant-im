@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+import AuthMiddleware from '@/middlewares/auth'
 import Chats from '@/views/Chats'
 import Chat from '@/views/Chat'
 import SendFunds from '@/views/SendFunds'
@@ -14,7 +15,7 @@ import PageNotFound from '@/views/PageNotFound'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   routes: [
     {
@@ -119,3 +120,7 @@ export default new Router({
     }
   }
 })
+
+router.beforeEach(AuthMiddleware)
+
+export default router

@@ -6,5 +6,10 @@ module.exports = {
         useBuiltIns: 'entry'
       }
     ]
-  ]
+  ],
+  env: {
+    test: {
+      plugins: ['rewire']
+    }
+  }
 }

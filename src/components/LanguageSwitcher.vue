@@ -28,10 +28,10 @@ export default {
     },
     currentLocale: {
       get () {
-        return this.$store.state.languageModule.currentLocale
+        return this.$store.state.language.currentLocale
       },
       set (value) {
-        this.$store.dispatch('languageModule/changeLocale', value)
+        this.$store.dispatch('language/changeLocale', value)
       }
     },
     currentLanguageName () {

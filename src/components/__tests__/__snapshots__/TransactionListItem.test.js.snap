@@ -26,26 +26,20 @@ exports[`TransactionListItem renders the correct markup 1`] = `
     </vlisttiletitle-stub>
      
     <vlisttilesubtitle-stub>
-      Nov 14, 16:51
+      <vlayout-stub
+        tag="div"
+      >
+        
+        1 ADM
+        
+        <vspacer-stub />
+        
+        Nov 14, 16:51
+      
+      </vlayout-stub>
     </vlisttilesubtitle-stub>
   </vlisttilecontent-stub>
    
-  <vlisttileaction-stub>
-    <vbtn-stub
-      activeclass="v-btn--active"
-      icon="true"
-      ripple="true"
-      tag="button"
-      type="button"
-    >
-      <vicon-stub
-        color="grey darken-2"
-      >
-        
-        mdi-comment-outline
-      
-      </vicon-stub>
-    </vbtn-stub>
-  </vlisttileaction-stub>
+  <!---->
 </vlisttile-stub>
 `;

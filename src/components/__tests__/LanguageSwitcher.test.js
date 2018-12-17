@@ -29,7 +29,7 @@ function mockupStore () {
 
   const store = new Vuex.Store({
     modules: {
-      languageModule: language // @todo rename module to `language`, because now it creates a conflict with `state.language`
+      language
     }
   })
 
@@ -75,7 +75,7 @@ describe('LanguageSwitcher.vue', () => {
       i18n
     })
 
-    expect(wrapper.vm.currentLocale).toBe(store.state.languageModule.currentLocale)
+    expect(wrapper.vm.currentLocale).toBe(store.state.language.currentLocale)
   })
 
   it('"currentLanguageName" should be "English"', () => {

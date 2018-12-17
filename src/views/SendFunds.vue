@@ -16,17 +16,9 @@
 <script>
 import { Cryptos } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
+import { isNumeric } from '@/lib/numericHelpers'
 
 import SendFundsForm from '@/components/SendFundsForm'
-
-/**
- * Is number and not Infinity or NaN.
- *
- * @param {any} Number or string-number.
- */
-function isNumeric (abstract) {
-  return !isNaN(parseFloat(abstract)) && isFinite(abstract)
-}
 
 export default {
   created () {

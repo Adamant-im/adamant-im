@@ -11,9 +11,9 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
     class="text-xs-center"
     label="Input your passphrase to login"
     rules="function (v) {
-        return !!v || vm.$t('rules.passphraseRequired');
+        return !!v || _get__(\\"vm\\").$t('rules.passphraseRequired');
       },function (v) {
-        return v.split(' ').length === 12 || vm.$t('rules.passphraseValid');
+        return v.split(' ').length === 12 || _get__(\\"vm\\").$t('rules.passphraseValid');
       }"
     type="password"
   />

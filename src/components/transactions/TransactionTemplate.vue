@@ -141,7 +141,7 @@ export default {
   },
   computed: {
     hasMessages: function () {
-      const chat = this.$store.state.chats[this.partner]
+      const chat = this.$store.state.chat.chats[this.partner]
       return chat && chat.messages && Object.keys(chat.messages).length > 0
     },
     placeholder () {

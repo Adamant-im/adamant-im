@@ -13,6 +13,9 @@ import Blinker from '@/lib/blinker'
 export default {
   created () {
     this.setLocale()
+    if (this.isLogged) {
+      this.$store.dispatch('unlock')
+    }
   },
   mounted () {
     this.almostSocket()
@@ -26,13 +29,16 @@ export default {
       return this.$route.meta.layout || 'default'
     },
     numOfNewMessages () {
-      return this.$store.state.totalNewChats
+      return this.$store.getters['chat/totalNumOfNewMessages']
     },
     userAllowNotifications () {
-      return this.$store.state.notifyBar
+      return this.$store.state.options.allowBrowserTabNotification
     },
     userAllowSoundNotifications () {
-      return this.$store.state.notifySound
+      return this.$store.state.options.allowSoundNotifications
+    },
+    isLogged () {
+      return this.$store.getters.isLogged
     }
   },
   data: () => ({
@@ -74,9 +80,9 @@ export default {
       // Set language from `localStorage`.
       //
       // This is required only when initializing the application.
-      // Subsequent mutations of `languageModule.currentLocale`
+      // Subsequent mutations of `language.currentLocale`
       // will be synchronized with `i18n.locale`.
-      const localeFromStorage = this.$store.state.languageModule.currentLocale
+      const localeFromStorage = this.$store.state.language.currentLocale
 
       i18n.locale = localeFromStorage
     }

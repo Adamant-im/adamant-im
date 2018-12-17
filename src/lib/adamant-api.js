@@ -321,14 +321,15 @@ export function getTransaction (id) {
 
 /**
  * Retrieves chat messages for the current account.
- * @param {number} from fetch messages starting from the specified height
- * @param {number} offset offset (defaults to 0)
+ * @param {number} from Fetch messages starting from the specified height
+ * @param {number} offset Offset (defaults to 0)
+ * @param {string} orderBy Can be: `asc` || `desc`
  * @returns {Promise<{count: number, transactions: Array}>}
  */
-export function getChats (from = 0, offset = 0) {
+export function getChats (from = 0, offset = 0, orderBy = 'desc') {
   const params = {
     isIn: myAddress,
-    orderBy: 'timestamp:desc'
+    orderBy: `timestamp:${orderBy}`
   }
 
   if (from) {
@@ -423,4 +424,19 @@ function getI18nMessage (message, senderId) {
   }
 
   return ''
+}
+
+/**
+ * Performs application login
+ * @param {string} Passphrase
+ * @return Promise<string> User address
+ */
+export function loginOrRegister (passphrase) {
+  try {
+    unlock(passphrase)
+  } catch (e) {
+    return Promise.reject(e)
+  }
+
+  return getCurrentAccount()
 }

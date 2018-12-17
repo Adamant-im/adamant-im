@@ -8,13 +8,13 @@
         {{ readOnly ? 'mdi-ethereum' : 'mdi-message-text' }}
       </v-icon>
       <v-badge overlap color="primary">
-        <span v-if="newMessages" slot="badge">{{ newMessages }}</span>
+        <span v-if="numOfNewMessages" slot="badge">{{ numOfNewMessages }}</span>
       </v-badge>
     </v-list-tile-avatar>
 
     <v-list-tile-content>
-      <v-list-tile-title>{{ chatName }}</v-list-tile-title>
-      <v-list-tile-sub-title>{{ lastMessage }}</v-list-tile-sub-title>
+      <v-list-tile-title>{{ partnerName }}</v-list-tile-title>
+      <v-list-tile-sub-title>{{ lastMessageText }}</v-list-tile-sub-title>
     </v-list-tile-content>
 
     <v-list-tile-action class="chat-preview__date">
@@ -25,34 +25,31 @@
 
 <script>
 export default {
+  computed: {
+    partnerName () {
+      return this.$store.getters['partners/displayName'](this.partnerId) || this.partnerId
+    },
+    lastMessageText () {
+      return this.$store.getters['chat/lastMessageText'](this.partnerId)
+    },
+    lastMessageTimestamp () {
+      return this.$store.getters['chat/lastMessageTimestamp'](this.partnerId)
+    },
+    numOfNewMessages () {
+      return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
+    },
+    createdAt () {
+      return this.$formatDate(this.lastMessageTimestamp)
+    }
+  },
   props: {
-    icon: {
+    partnerId: {
       type: String,
-      default: 'mdi-message-text'
-    },
-    chatName: {
-      type: String,
-      default: ''
-    },
-    lastMessage: {
-      type: String,
-      default: ''
-    },
-    newMessages: {
-      type: Number,
-      default: 0
-    },
-    createdAt: {
-      type: String,
-      default: ''
+      required: true
     },
     readOnly: {
       type: Boolean,
       default: false
-    },
-    userId: {
-      type: String,
-      default: ''
     }
   }
 }

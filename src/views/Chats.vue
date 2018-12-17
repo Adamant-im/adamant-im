@@ -16,14 +16,10 @@
             </v-list-tile>
 
             <chat-preview
-              v-for="chat in chats"
-              :key="chat.partner"
-              :chat-name="chatName(chat.partner)"
-              :new-messages="newMessages(chat.partner)"
-              :created-at="$formatDate(chat.last_message.timestamp)"
-              :last-message="getLastMessage(chat.last_message)"
-              :read-only="chat.readOnly"
-              @click="openChat(chat.partner)"
+              v-for="partnerId in partners"
+              :key="partnerId"
+              :partner-id="partnerId"
+              @click="openChat(partnerId)"
             />
           </v-list>
 
@@ -45,33 +41,21 @@ import ChatPreview from '@/components/ChatPreview'
 import ChatStartDialog from '@/components/ChatStartDialog'
 
 export default {
+  mounted () {
+    this.$store.dispatch('chat/loadChats')
+  },
   computed: {
-    chats () {
-      return this.$store.state.chats
+    isFulfilled () {
+      return this.$store.state.chat.isFulfilled
+    },
+    partners () {
+      return this.$store.getters['chat/partners']
     }
   },
   data: () => ({
     showChatStartDialog: false
   }),
   methods: {
-    newMessages (address) {
-      return this.$store.state.newChats[address] || 0
-    },
-    chatName (address) {
-      return this.$store.getters['partners/displayName'](address) || address
-    },
-    getLastMessage (obj) {
-      // type message or type transaction
-      if (obj && obj.message) {
-        if (typeof obj.message === 'string') {
-          return obj.message
-        } else if (obj.message.comments) {
-          return obj.message.comments
-        }
-      }
-
-      return ''
-    },
     openChat (userId) {
       this.$router.push(`/chats/${userId}`)
     }

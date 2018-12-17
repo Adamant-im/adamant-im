@@ -12,13 +12,19 @@
       <v-list-tile-title v-else>
         {{ partnerId }}
       </v-list-tile-title>
-      <v-list-tile-sub-title>{{ timeAgo }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title>
+        <v-layout>
+          {{ amountFormatted }} ADM
+          <v-spacer/>
+          {{ createdAt }}
+        </v-layout>
+      </v-list-tile-sub-title>
     </v-list-tile-content>
 
-    <v-list-tile-action>
+    <v-list-tile-action v-if="isPartnerInChatList">
       <v-btn icon ripple @click.stop="onClickIcon">
         <v-icon color="grey darken-2">
-          {{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}
+          mdi-comment
         </v-icon>
       </v-btn>
     </v-list-tile-action>
@@ -33,14 +39,14 @@ export default {
     partnerName () {
       return this.$store.getters['partners/displayName'](this.partnerId) || ''
     },
-    timeAgo () {
+    createdAt () {
       return this.$formatDate(this.timestamp)
     },
-    // @todo incorrect implementation
-    // should return transaction based on transactionId
-    hasMessages () {
-      const chat = this.$store.state.chats[this.partnerId]
-      return (chat && chat.messages && Object.keys(chat.messages).length > 0) || false
+    isPartnerInChatList () {
+      return this.$store.getters['chat/isPartnerInChatList'](this.partnerId)
+    },
+    amountFormatted () {
+      return this.$formatAmount(this.amount)
     }
   },
   methods: {
@@ -72,6 +78,10 @@ export default {
       validator: value => validateAddress('ADM', value)
     },
     timestamp: {
+      type: Number,
+      required: true
+    },
+    amount: {
       type: Number,
       required: true
     }

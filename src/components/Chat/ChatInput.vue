@@ -65,10 +65,10 @@ export default {
       }
     },
     sendMessageOnEnter () {
-      return this.$store.state.sendOnEnter
+      return this.$store.state.options.sendMessageOnEnter
     },
     logoutOnTabClose () {
-      return !this.$store.state.storeInLocalStorage
+      return !this.$store.state.options.logoutOnTabClose
     }
   },
   data: () => ({
@@ -95,10 +95,16 @@ export default {
     sendMessage () {
       if (!this.validate()) return false
 
-      this.$store.dispatch('add_message_to_queue', {
+      this.$store.dispatch('chat/sendMessage', {
         message: this.message,
         recipientId: this.$route.params.partner
       })
+        .catch(err => {
+          this.$store.dispatch('snackbar/show', {
+            message: err.message
+          })
+          console.error(err.message)
+        })
 
       // $emit after rerender
       // and later call scrollToBottom()

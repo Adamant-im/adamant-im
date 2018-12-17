@@ -13,26 +13,49 @@ Vue.use(VueI18n)
 Vue.use(Vuetify)
 
 /**
+ * Mockup createChat.
+ */
+function createChat (context, { partnerId }) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (partnerId === 'U123456') {
+        return resolve(true)
+      }
+      reject(new Error('Incorrect user id'))
+    }, 1000)
+  })
+}
+
+/**
  * Mockup store helper.
  */
 function mockupStore () {
   const snackbar = mockupSnackbar()
+  const chat = {
+    actions: {
+      createChat: createChat
+    },
+    namespaced: true
+  }
 
   const store = new Vuex.Store({
     modules: {
-      snackbar
+      snackbar,
+      chat
     }
   })
 
   return {
     store,
-    snackbar
+    snackbar,
+    chat
   }
 }
 
 describe('ChatStartDialog.vue', () => {
   let store = null
   let snackbar = null
+  let chat = null
   let i18n = null
 
   beforeEach(() => {
@@ -40,6 +63,7 @@ describe('ChatStartDialog.vue', () => {
     const mockup = mockupStore()
     store = mockup.store
     snackbar = mockup.snackbar // used as reference
+    chat = mockup.chat // used as reference
 
     // mockup i18n
     i18n = mockupI18n()
@@ -74,7 +98,7 @@ describe('ChatStartDialog.vue', () => {
     expect(wrapper.vm.show).toBe(false)
   })
 
-  it('should show snackbar when invalid recipient address', () => {
+  it('should show snackbar when invalid recipient address', async () => {
     const wrapper = shallowMount(ChatStartDialog, {
       store,
       i18n,
@@ -84,12 +108,16 @@ describe('ChatStartDialog.vue', () => {
     })
 
     wrapper.setData({ recipientAddress: 'U123ABC' }) // invalid address
-    wrapper.vm.startChat()
+
+    try {
+      await wrapper.vm.startChat()
+    } catch (err) {
+    }
 
     expect(snackbar.actions.show).toHaveBeenCalled()
   })
 
-  it('should emit `start-chat` when valid recipient address', () => {
+  it('should emit `start-chat` when valid recipient address', async () => {
     const wrapper = shallowMount(ChatStartDialog, {
       store,
       i18n,
@@ -99,7 +127,7 @@ describe('ChatStartDialog.vue', () => {
     })
 
     wrapper.setData({ recipientAddress: 'U123456' }) // valid address
-    wrapper.vm.startChat()
+    await wrapper.vm.startChat()
 
     expect(wrapper.emitted()['start-chat']).toBeTruthy()
     expect(wrapper.emitted().input).toEqual([[ false ]]) // should close dialog after

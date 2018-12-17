@@ -7,18 +7,16 @@ import './registerServiceWorker'
 import i18n from './i18n'
 
 import VueClipboards from 'vue-clipboards'
-import Vuex from 'vuex'
 import VueFormatters from './lib/formatters'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import packageJSON from '../package.json'
-import storeConfig from './store'
+import store from './store'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
 import Default from './layouts/default'
 import Toolbar from './layouts/toolbar'
 import Chat from './layouts/chat'
 
-Vue.use(Vuex)
 Vue.use(VueClipboards)
 Vue.use(VueFormatters)
 
@@ -27,30 +25,7 @@ Vue.component('default', Default)
 Vue.component('toolbar', Toolbar)
 Vue.component('chat', Chat)
 
-const store = new Vuex.Store(storeConfig)
 document.title = i18n.t('app_title')
-// TODO: Remove unnecessary checks from whole project
-router.beforeEach((to, from, next) => {
-  const isLogged = store.getters.isLogged
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (isLogged) {
-      if (from.name === 'Chat' && to.name !== 'Chat') {
-        store.commit('leave_chat')
-      }
-
-      next()
-    } else {
-      next({ name: 'Login' })
-    }
-  } else {
-    if (to.name === 'Login' && isLogged) {
-      store.commit('leave_chat')
-      next({ name: 'Chats' })
-    } else {
-      next()
-    }
-  }
-})
 
 Vue.config.productionTip = false
 
