@@ -19,7 +19,7 @@
       }
     ],
     "doge": [
-      { "url": "http://5.9.99.62:3100/api/" }
+      { "url": "https://dogenode1.adamant.im/api/" }
     ]
   }
 }
