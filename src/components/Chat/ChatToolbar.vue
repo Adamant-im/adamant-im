@@ -6,16 +6,16 @@
 
     <v-toolbar-title>
       <v-edit-dialog lazy>
-        <div>{{ displayName ? displayName : partnerId }}</div>
+        <div>{{ partnerName ? partnerName : partnerId }}</div>
         <v-text-field
-          v-model="displayName"
+          v-model="partnerName"
           slot="input"
           :label="$t('partnerName')"
           single-line
         />
       </v-edit-dialog>
 
-      <div class="body-1" v-if="displayName">{{ partnerId }}</div>
+      <div class="body-1" v-if="partnerName">{{ partnerId }}</div>
     </v-toolbar-title>
 
     <v-spacer></v-spacer>
@@ -29,16 +29,13 @@ export default {
     partnerId () {
       return this.$route.params.partner
     },
-    partnerName () {
-      return this.$store.state.partnerName
-    },
-    displayName: {
+    partnerName: {
       get () {
-        return this.$store.getters['partners/displayName'](this.$store.state.partnerName)
+        return this.$store.getters['partners/displayName'](this.partnerId)
       },
       set (value) {
         this.$store.commit('partners/displayName', {
-          partner: this.partnerName,
+          partner: this.partnerId,
           displayName: value
         })
       }
