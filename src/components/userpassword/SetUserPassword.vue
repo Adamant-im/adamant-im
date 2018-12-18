@@ -13,8 +13,6 @@
           <md-input v-model="userPasswordValue" autocomplete="off" type="password" :placeholder="$t('login_via_password.popup_hint')"></md-input>
         </md-input-container>
         <div style="display: flex; flex-direction: row;">
-          <md-checkbox v-model="userPasswordCheckbox" style="display: flex; align-items: center">
-          </md-checkbox>
           <div class="middle-align-text">
             <div>{{$t('login_via_password.agreement_hint')}} <a target="_blank" v-bind:href="userPasswordAgreementLink">{{$t('login_via_password.agreement')}}</a></div>
           </div>
@@ -88,7 +86,6 @@ export default {
             // Save contacts
             updateContactItem(db, encryptData(JSON.stringify(this.$store.getters.getContacts)))
             this.userPasswordValue = null
-            this.userPasswordCheckbox = false
             this.$store.commit('user_password_exists', true)
             this.$store.commit('change_storage_method', true)
             this.showSpinnerFlag = false
@@ -102,11 +99,10 @@ export default {
   },
   updated () {
     const userPasswordValue = this.userPasswordValue
-    this.disableSetPassword = !userPasswordValue || userPasswordValue.length < 1 || !this.userPasswordCheckbox
+    this.disableSetPassword = !userPasswordValue || userPasswordValue.length < 1
   },
   data () {
     return {
-      userPasswordCheckbox: false,
       disableSetPassword: true,
       userPasswordValue: null,
       userPasswordAgreementLink: UserPasswordAgreementLink,
