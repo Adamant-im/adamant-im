@@ -33,6 +33,7 @@
     "send_bnb": "Send BNB",
     "send_button": "Send",
     "send_button_tooltip": "Click to send a message",
+    "send_doge": "Send DOGE",
     "send_eth": "Send ETH",
     "sent_label": "Sent",
     "title": "Chats",
@@ -50,15 +51,19 @@
     "send_btn_tooltip": "Click to transfer supported tokens to other account or ADAMANT user",
     "your_address_ADM": "ADAMANT address",
     "your_address_BNB": "Binance Coin address",
+    "your_address_DOGE": "Dogecoin address",
     "your_address_ETH": "Ethereum address",
     "your_address_tooltip_ADM": "This is your ADAMANT unique identifier. Click to copy it in the clipboard.",
     "your_address_tooltip_BNB": "This is your ADAMANT BNB wallet unique identifier. Click to copy it in the clipboard.",
+    "your_address_tooltip_DOGE": "This is your ADAMANT DOGE wallet unique identifier. Click to copy it in the clipboard.",
     "your_address_tooltip_ETH": "This is your ADAMANT ETH wallet unique identifier. Click to copy it in the clipboard.",
     "your_balance_ADM": "ADAMANT Balance",
     "your_balance_BNB": "Binance Coin Balance",
+    "your_balance_DOGE": "Dogecoin Balance",
     "your_balance_ETH": "Ethereum Balance",
     "your_balance_tooltip_ADM": "It is your ADAMANT balance. Click to see all of input and output transactions.",
     "your_balance_tooltip_BNB": "It is your ADAMANT BNB balance.",
+    "your_balance_tooltip_DOGE": "It is your ADAMANT DOGE balance.",
     "your_balance_tooltip_ETH": "It is your ADAMANT ETH balance."
   },
   "login": {
@@ -86,17 +91,17 @@
     "host": "Host",
     "inactive": "Inactive",
     "ms": "ms",
-    "offline": "Offline",
-    "ping": "Ping",
     "nodeLabelDescription": {
-      "part_one": "Support decentralization and enhance privacy level—run your own ADAMANT node and web application for messaging. Node can be run ",
       "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",
       "link_one_content": "following instructions",
-      "part_two": ". To add your nodes in the list for connection, you need ",
       "link_two": "https://github.com/Adamant-im/adamant-im/",
       "link_two_content": "to deploy web application on separate domain",
-      "part_three": ". This limitation is connected to Content Security Policy (CSP). In iOS and Android applications there are no such limitations."
-    }
+      "part_one": "Support decentralization and enhance privacy level—run your own ADAMANT node and web application for messaging. Node can be run ",
+      "part_three": ". This limitation is connected to Content Security Policy (CSP). In iOS and Android applications there are no such limitations.",
+      "part_two": ". To add your nodes in the list for connection, you need "
+    },
+    "offline": "Offline",
+    "ping": "Ping"
   },
   "options": {
     "already_delegate_text": "You are already a delegate. Your delegate name is",
@@ -135,6 +140,7 @@
   },
   "title": "English",
   "transaction": {
+    "addresses": "no address | {n} more address | {n} more addresses",
     "amount": "Amount",
     "commission": "Fee",
     "confirmations": "Confirmations",
@@ -142,6 +148,7 @@
     "date": "Date",
     "explorer": "Open in Explorer",
     "me": "Me",
+    "me_and": "Me and",
     "recipient": "To",
     "sender": "From",
     "startChat": "Start chat",

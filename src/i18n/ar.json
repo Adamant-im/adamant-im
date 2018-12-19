@@ -32,6 +32,7 @@
     "send_adm": "Send ADM",
     "send_button": "Send",
     "send_button_tooltip": "Click to send a message",
+    "send_doge": "",
     "send_eth": "Send ETH",
     "sent_label": "Sent",
     "title": "Chats",
@@ -57,12 +58,16 @@
     "send_btn": "انقر لترسل القطع",
     "send_btn_tooltip": "لنقر لتحول القطع لمستخدمي الاتطبيق الآخرين",
     "your_address_ADM": "عنوانك ADM",
+    "your_address_DOGE": "",
     "your_address_ETH": "عنوانك ETH",
     "your_address_tooltip_ADM": "هذا هو اسم الدخول الوحيد الخاص بك، انقر عليه للنسخ.",
+    "your_address_tooltip_DOGE": "",
     "your_address_tooltip_ETH": "This is your ADAMANT ETH wallet unique identifier. Click to copy it in the clipboard.",
     "your_balance_ADM": "رصيدك ADM",
+    "your_balance_DOGE": "",
     "your_balance_ETH": "رصيدك ETH",
     "your_balance_tooltip_ADM": "انه رصيدك الخاص، انقر لترى مدخلاتك ومخرجاتك من التحويلات.",
+    "your_balance_tooltip_DOGE": "",
     "your_balance_tooltip_ETH": "It is your ADAMANT ETH balance."
   },
   "login": {
@@ -90,17 +95,17 @@
     "host": "",
     "inactive": "",
     "ms": "",
-    "offline": "",
-    "ping": "",
     "nodeLabelDescription": {
-      "part_one": "Support decentralization and enhance privacy level—run your own ADAMANT node and web application for messaging. Node can be run ",
       "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",
       "link_one_content": "following instructions",
-      "part_two": ". To add your nodes in the list for connection, you need ",
       "link_two": "https://github.com/Adamant-im/adamant-im/",
       "link_two_content": "to deploy web application on separate domain",
-      "part_three": ". This limitation is connected to Content Security Policy (CSP). In iOS and Android applications there are no such limitations."
-    }
+      "part_one": "Support decentralization and enhance privacy level—run your own ADAMANT node and web application for messaging. Node can be run ",
+      "part_three": ". This limitation is connected to Content Security Policy (CSP). In iOS and Android applications there are no such limitations.",
+      "part_two": ". To add your nodes in the list for connection, you need "
+    },
+    "offline": "",
+    "ping": ""
   },
   "options": {
     "already_delegate_text": "You are already a delegate. Your delegate name is",
@@ -142,6 +147,7 @@
   },
   "title": "العربية",
   "transaction": {
+    "addresses": "",
     "amount": "المبلغ",
     "commission": "الرسوم",
     "confirmations": "التأكيدات",
@@ -149,6 +155,8 @@
     "date": "التاريخ",
     "explorer": "Open in Explorer",
     "me": "Me",
+    "me_and": "",
+    "me_and_others": "",
     "recipient": "إلى",
     "sender": "من",
     "startChat": "Start chat",

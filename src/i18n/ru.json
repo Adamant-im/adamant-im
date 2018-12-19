@@ -33,6 +33,7 @@
     "send_bnb": "Отправить BNB",
     "send_button": "Отправить",
     "send_button_tooltip": "Нажмите, чтобы отправить сообщение",
+    "send_doge": "",
     "send_eth": "Отправить ETH",
     "sent_label": "Отправлено",
     "title": "Диалоги",
@@ -59,15 +60,19 @@
     "send_btn_tooltip": "Нажмите, чтобы сделать перевод на другой аккуунт или другому пользователю АДАМАНТа",
     "your_address_ADM": "ADAMANT address",
     "your_address_BNB": "Кошелек Binance Coin",
+    "your_address_DOGE": "Кошелек Dogecoin",
     "your_address_ETH": "Кошелек Ethereum",
     "your_address_tooltip_ADM": "Это ваш уникальный идентификатор кошелька и мессенджера АДАМАНТ. Нажмите, чтобы скопировать его в буфер обмена.",
     "your_address_tooltip_BNB": "Это ваш уникальный идентификатор кошелька BNB в мессенджере АДАМАНТ. Нажмите, чтобы скопировать его в буфер обмена.",
+    "your_address_tooltip_DOGE": "Это ваш уникальный идентификатор кошелька DOGE в мессенджере АДАМАНТ. Нажмите, чтобы скопировать его в буфер обмена.",
     "your_address_tooltip_ETH": "Это ваш уникальный идентификатор кошелька ETH в мессенджере АДАМАНТ. Нажмите, чтобы скопировать его в буфер обмена.",
     "your_balance_ADM": "Баланс ADM",
     "your_balance_BNB": "Баланс BNB",
+    "your_balance_DOGE": "Баланс DOGE",
     "your_balance_ETH": "Баланс ETH",
     "your_balance_tooltip_ADM": "Ваш баланс токенов АДАМАНТа. Нажмите, чтобы посмотреть все входящие и исходящие транзакции.",
     "your_balance_tooltip_BNB": "Ваш баланс кошелька Binance Coin.",
+    "your_balance_tooltip_DOGE": "Ваш баланс кошелька Dogecoin.",
     "your_balance_tooltip_ETH": "Ваш баланс кошелька Ethereum."
   },
   "login": {
@@ -95,17 +100,17 @@
     "host": "Хост",
     "inactive": "Неактивен",
     "ms": "мс",
-    "offline": "Недоступен",
-    "ping": "Пинг",
     "nodeLabelDescription": {
-      "part_one": "Поддержите децентрализацию и повысьте уровень приватности — настройте свой узел (ноду) АДАМАНТа и свое веб-приложение. Узел можно установить, ",
       "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",
       "link_one_content": "следуя инструкции",
-      "part_two": ". Чтобы добавить свои узлы в список для подключения, вам нужно ",
       "link_two": "https://github.com/Adamant-im/adamant-im/",
       "link_two_content": "развернуть веб-приложение на отдельном домене",
-      "part_three": ". Это ограничение связано с настройками безопасности Content Security Policy (CSP). В приложениях iOS и Android таких ограничений нет."
-    }
+      "part_one": "Поддержите децентрализацию и повысьте уровень приватности — настройте свой узел (ноду) АДАМАНТа и свое веб-приложение. Узел можно установить, ",
+      "part_three": ". Это ограничение связано с настройками безопасности Content Security Policy (CSP). В приложениях iOS и Android таких ограничений нет.",
+      "part_two": ". Чтобы добавить свои узлы в список для подключения, вам нужно "
+    },
+    "offline": "Недоступен",
+    "ping": "Пинг"
   },
   "options": {
     "already_delegate_text": "Вы уже являетесь делегатом. Его имя: ",
@@ -147,6 +152,7 @@
   },
   "title": "Русский",
   "transaction": {
+    "addresses": "| еще {n} адрес | еще {n} адреса | еще {n} адресов",
     "amount": "Количество",
     "commission": "Комиссия за перевод",
     "confirmations": "Подтверждений",
@@ -154,6 +160,7 @@
     "date": "Дата",
     "explorer": "Посмотреть в Explorer'е",
     "me": "Мой",
+    "me_and": "Я и",
     "recipient": "Получатель",
     "sender": "Отправитель",
     "startChat": "Начать чат",

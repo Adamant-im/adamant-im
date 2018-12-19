@@ -45,12 +45,20 @@ export default {
       return this.transaction.fee + ' ' + Cryptos.DOGE
     },
     sender () {
-      if (this.transaction.senderId) {
-        return this.formatAddress(this.transaction.senderId)
+      const { senders, senderId } = this.transaction
+      if (senderId) {
+        return this.formatAddress(senderId)
+      } else if (senders) {
+        return this.formatAddresses(senders)
       }
     },
     recipient () {
-      return this.formatAddress(this.transaction.recipientId)
+      const { recipientId, recipients } = this.transaction
+      if (recipientId) {
+        return this.formatAddress(recipientId)
+      } else if (recipients) {
+        return this.formatAddresses(recipients)
+      }
     },
     partner () {
       if (this.transaction.partner) return this.transaction.partner
@@ -110,6 +118,13 @@ export default {
       }
 
       return result
+    },
+
+    formatAddresses (addresses) {
+      const count = addresses.length
+      return addresses.includes(this.$store.state.doge.address)
+        ? `${this.$t('transaction.me_and')} ${this.$tc('transaction.addresses', count - 1)}`
+        : this.$tc('transaction.addresses', count)
     }
   }
 }
