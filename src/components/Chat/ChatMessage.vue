@@ -8,7 +8,9 @@
       <span v-if="!readonly" :title="dateTime">{{ timeAgo }}</span>
     </div>
 
-    <div class="chat__item-body" v-markdown="message"></div>
+    <div class="chat__item-body" v-if="readonly" v-html="i18n ? $t(message) : message"></div>
+    <div class="chat__item-body" v-else v-markdown="message"></div>
+
     <div>
       <small>{{ status }}</small>
     </div>
@@ -32,6 +34,6 @@ export default {
   directives: {
     markdown
   },
-  props: ['userId', 'senderId', 'message', 'timestamp', 'readonly', 'showSenderId', 'status']
+  props: ['userId', 'senderId', 'message', 'timestamp', 'readonly', 'showSenderId', 'status', 'i18n']
 }
 </script>

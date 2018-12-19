@@ -19,6 +19,7 @@
               v-for="partnerId in partners"
               :key="partnerId"
               :partner-id="partnerId"
+              :read-only="isChatReadOnly(partnerId)"
               @click="openChat(partnerId)"
             />
           </v-list>
@@ -42,6 +43,7 @@ import ChatStartDialog from '@/components/ChatStartDialog'
 
 export default {
   mounted () {
+    this.$store.commit('chat/createAdamantChats')
     this.$store.dispatch('chat/loadChats')
   },
   computed: {
@@ -58,6 +60,9 @@ export default {
   methods: {
     openChat (userId) {
       this.$router.push(`/chats/${userId}`)
+    },
+    isChatReadOnly (partnerId) {
+      return this.$store.getters['chat/isChatReadOnly'](partnerId)
     }
   },
   components: {

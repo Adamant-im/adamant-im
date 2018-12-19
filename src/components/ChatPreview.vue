@@ -14,7 +14,11 @@
 
     <v-list-tile-content>
       <v-list-tile-title>{{ partnerName }}</v-list-tile-title>
-      <v-list-tile-sub-title>{{ lastMessageText }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title
+        v-if="readOnly"
+        v-text="isMessageI18n ? $t(lastMessageText) : lastMessageText"
+      />
+      <v-list-tile-sub-title v-else>{{ lastMessageText }}</v-list-tile-sub-title>
     </v-list-tile-content>
 
     <v-list-tile-action class="chat-preview__date">
@@ -28,6 +32,12 @@ export default {
   computed: {
     partnerName () {
       return this.$store.getters['partners/displayName'](this.partnerId) || this.partnerId
+    },
+    lastMessage () {
+      return this.$store.getters['chat/lastMessage'](this.partnerId)
+    },
+    isMessageI18n () {
+      return (this.lastMessage.i18n)
     },
     lastMessageText () {
       return this.$store.getters['chat/lastMessageText'](this.partnerId)

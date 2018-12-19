@@ -19,8 +19,9 @@
               :sender-id="message.senderId"
               :message="message.message"
               :timestamp="message.timestamp"
-              :readonly="isChatReadOnly"
               :status="message.status"
+              :readonly="isChatReadOnly"
+              :i18n="message.i18n"
             />
             <chat-transaction
               v-else-if="message.type === 'transaction'"
@@ -111,7 +112,8 @@ function transformMessages (messages) {
         timestamp: message.timestamp,
         realTimestamp: getRealTimestamp(message.timestamp),
         username: this.partnerName,
-        status: message.status || 'confirmed'
+        status: message.status || 'confirmed',
+        i18n: (message.i18n)
       }
     }
   }).sort((a, b) => a.realTimestamp - b.realTimestamp)
@@ -137,8 +139,7 @@ export default {
       return this.$store.state.address
     },
     isChatReadOnly () {
-      // @todo Check for these addresses: Adm Bounty & Adm Tokens
-      return false
+      return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
     }
   },
   data: () => ({

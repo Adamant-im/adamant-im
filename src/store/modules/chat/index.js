@@ -15,7 +15,8 @@ import { isNumeric } from '@/lib/numericHelpers'
  *
  * interface Chat {
  *   messages: Message[],
- *   numOfNewMessages: number
+ *   numOfNewMessages: number,
+ *   readOnly?: boolean // for Adamant Bounty & Adamant Tokens chats
  * }
  *
  * interface Message {
@@ -143,6 +144,19 @@ const getters = {
       (acc, senderId) => state.chats[senderId].numOfNewMessages + acc,
       0
     )
+  },
+
+  /**
+   * @param {string} partnerId
+   */
+  isChatReadOnly: state => partnerId => {
+    const chat = state.chats[partnerId]
+
+    if (chat && chat.readOnly) {
+      return true
+    }
+
+    return false
   }
 }
 
@@ -249,6 +263,40 @@ const mutations = {
         }
       }
     }
+  },
+
+  /**
+   * Add `Adamant Bounty` & `Adamant Tokens` to state.chats.
+   */
+  createAdamantChats (state) {
+    const bountyMessages = [
+      {
+        id: 'b1',
+        message: 'chats.welcome_message',
+        timestamp: 0,
+        senderId: 'Adamant Bounty',
+        i18n: true
+      }
+    ]
+
+    const tokensMessages = [
+      {
+        id: 't1',
+        message: 'chats.ico_message',
+        timestamp: 0,
+        senderId: 'Adamant Tokens',
+        i18n: true
+      }
+    ]
+
+    Vue.set(state.chats, 'Adamant Bounty', {
+      messages: bountyMessages,
+      readOnly: true
+    })
+    Vue.set(state.chats, 'Adamant Tokens', {
+      messages: tokensMessages,
+      readOnly: true
+    })
   }
 }
 
