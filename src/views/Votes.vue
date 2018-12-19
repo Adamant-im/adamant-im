@@ -35,7 +35,6 @@
                               v-on:click.native="toggleDetails(delegate)">
                   <md-table-cell>
                     <md-checkbox v-model="delegate.voted" title="vote" v-on:change="vote(delegate)"></md-checkbox>
-                    {{delegate.voted}}
                   </md-table-cell>
                   <md-table-cell style="text-align: left">{{ delegate.rank }}</md-table-cell>
                   <md-table-cell style="text-align: left"><span>{{ delegate.username }}</span></md-table-cell>
@@ -112,34 +111,6 @@
           </md-table>
       </md-table-card>
       <md-card>
-          <div v-if="upVotedList.length > 0 || downVotedList.length > 0" class="voted-delegates">
-            <div v-if="upVotedList.length > 0" class="votedList">
-              <div class="voteTextLabel">Vote for: </div>
-              <div class="voted-list-wrapper">
-                <template v-for="(votedDelegate, index) in upVotedList">
-                  <div v-bind:key="index" class="voted-delegates-item">
-                    <div>
-                      <md-checkbox v-model="votedDelegate.upvoted" title="vote" v-on:change="vote(votedDelegate)"></md-checkbox>
-                    </div>
-                    <div>{{votedDelegate.username}}</div>
-                  </div>
-                </template>
-              </div>
-            </div>
-            <div v-if="downVotedList.length > 0" class="votedList">
-              <div class="voteTextLabel">Downvote for: </div>
-              <div class="voted-list-wrapper">
-                <template v-for="(votedDelegate, index) in downVotedList">
-                  <div v-bind:key="index" class="voted-delegates-item">
-                    <div>
-                      <md-checkbox v-model="votedDelegate.downvoted" title="vote" v-on:change="vote(votedDelegate)"></md-checkbox>
-                    </div>
-                    <div>{{votedDelegate.username}}</div>
-                  </div>
-                </template>
-              </div>
-            </div>
-          </div>
           <md-card-header>
             <div class="md-title">{{ $t('votes.summary_title') }}</div>
             <div class="md-subhead">
@@ -159,6 +130,32 @@
               </md-button>
             </md-card-actions>
             <md-card-content style="text-align: left">
+                <div class="vote-group" v-if="upVotedList.length > 0">
+                    <div class="voteTextLabel">{{$t('options.upvote_for_label')}}</div>
+                    <div class="voted-list-wrapper">
+                        <template v-for="(votedDelegate, index) in upVotedList">
+                            <div v-bind:key="index" class="voted-delegates-item">
+                                <div class="voted-element">
+                                    {{votedDelegate.username}}
+                                </div>
+                                <div class="remove-voted-element" v-on:click="vote(votedDelegate)">&#9587;</div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                <div class="vote-group" v-if="downVotedList.length > 0">
+                    <div class="voteTextLabel">{{$t('options.downvote_for_label')}}</div>
+                    <div class="voted-list-wrapper">
+                        <template v-for="(votedDelegate, index) in downVotedList">
+                            <div v-bind:key="index" class="voted-delegates-item">
+                                <div class="voted-element">
+                                    <label>{{votedDelegate.username}}</label>
+                                </div>
+                                <div class="remove-voted-element" v-on:click="vote(votedDelegate)">&#9587;</div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
               {{$t('votes.summary_info')}} <a href="https://adamant.im" target="_blank">{{$t('votes.summary_info_link_text')}}</a>
             </md-card-content>
           </md-card-expand>
@@ -212,18 +209,16 @@ export default {
       if (delegate.voted) {
         if (this.$store.state.delegates.delegates[delegate.address]._voted) {
           this.$store.state.delegates.delegates[delegate.address].downvoted = true
-          this.putToDownVotedList(delegate)
         }
         delegate.upvoted = false
-        this.removeFromUpVotedList(delegate)
+        delegate.voted = false
       // Upvoting
       } else {
         if (!this.$store.state.delegates.delegates[delegate.address]._voted) {
           this.$store.state.delegates.delegates[delegate.address].upvoted = true
-          this.putToUpVotedList(delegate)
         }
         delegate.downvoted = false
-        this.removeFromDownVotedList(delegate)
+        delegate.voted = true
       }
       this.$store.dispatch('update_delegates_grid', delegate)
     },
@@ -235,7 +230,7 @@ export default {
         this.votesErrorMsg = this.$t('votes.no_money')
         this.$refs.votesSnackbar.open()
       } else {
-        let votes = (this.delegates.filter(x => x.downvoted).map(x => `-${x.publicKey}`)).concat(this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
+        const votes = (Object.values(this.$store.state.delegates.delegates).filter(x => x.downvoted).map(x => `-${x.publicKey}`)).concat(this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
         this.$store.dispatch('delegates/voteForDelegates', { votes: votes, address: this.$store.state.address })
       }
     },
@@ -281,6 +276,12 @@ export default {
     }
   },
   computed: {
+    downVotedList () {
+      return Object.values(this.$store.state.delegates.delegates).filter(x => x.downvoted)
+    },
+    upVotedList () {
+      return Object.values(this.$store.state.delegates.delegates).filter(x => x.upvoted)
+    },
     delegates () {
       const compare = (a, b) => {
         const compareNumbers = (x, y) => this.sortParams.type === 'desc' ? x - y : y - x
@@ -317,7 +318,6 @@ export default {
         const regexp = new RegExp(this.filterString, 'i')
         return this.filterString !== '' ? (regexp.test(x.address) || regexp.test(x.username)) : true
       }
-
       return Object.values(this.$store.state.delegates.delegates)
         .filter(filterDelegates)
         .sort(compare)
@@ -331,10 +331,10 @@ export default {
       return this.delegates.length
     },
     upvotedCount () {
-      return this.upVotedList.filter(x => x.upvoted).length
+      return Object.values(this.$store.state.delegates.delegates).filter(x => x.upvoted).length
     },
     downvotedCount () {
-      return this.downVotedList.filter(x => x.downvoted).length
+      return Object.values(this.$store.state.delegates.delegates).filter(x => x.downvoted).length
     },
     originVotesCount () {
       return Object.values(this.$store.state.delegates.delegates).filter(x => x._voted).length
@@ -511,15 +511,34 @@ export default {
 }
 
 .voted-list-wrapper {
+  overflow: visible;
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .voteTextLabel {
   margin-right: 5px;
+  white-space: nowrap;
 }
 
-.votedList {
+.voted-element {
+  cursor: default;
+}
+
+.remove-voted-element {
+  font-size: 8px;
+  top: 1px;
+  left: 3px;
+  position: relative;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.vote-group {
+  margin: 5px 0px;
   display: flex;
+  flex-direction: row;
 }
 
 </style>
