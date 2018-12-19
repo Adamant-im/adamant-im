@@ -1,90 +1,84 @@
 <template>
-  <div class="login">
-      <md-input-container class="language_select">
-          <md-select name="language" id="language" v-model="language">
-              <md-option  v-for="(language, code) in languageList" :value="code" :key="code">{{ language.title }}</md-option>
-          </md-select>
-      </md-input-container>
-      <div class="site-branding container">
-          <span class="custom-logo-link" rel="home" itemprop="url"><img  src="/img/adamant-logo-transparent-512x512.png" class="custom-logo" alt="ADAMANT" itemprop="logo"></span>
-            <span href="#">
-              <span class="site-title">
-                {{ language === 'ru' ? 'АДАМАНТ' : 'ADAMANT' }}
-              </span>
-            </span>
-          <p class="site-description">{{ $t('login.subheader') }}</p>
-      </div>
-      <md-layout md-align="center" md-gutter="16">
-      <md-layout md-flex="66" md-flex-xsmall="80">
-          <md-input-container class="password_input">
-              <label style="text-align: center;width: 100%;">{{ $t('login.password_label') }}</label>
-              <md-input v-model="passPhrase" type="password" autocomplete="new-password" @keyup.native="kp($event)"></md-input>
+    <md-layout md-align="center" md-gutter="16">
+      <div class="login">
+          <md-input-container v-if="!userPassword" class="language_select">
+              <md-select name="language" id="language" v-model="language">
+                  <md-option  v-for="(language, code) in languageList" :value="code" :key="code">{{ language.title }}</md-option>
+              </md-select>
           </md-input-container>
-      </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="80">
-              <md-layout md-align="center" md-gutter="16">
-                  <md-button class="md-raised md-short" @click="logme">{{ $t('login.login_button') }}</md-button>
+          <div class="site-branding container">
+              <span class="custom-logo-link" rel="home" itemprop="url"><img  src="/img/adamant-logo-transparent-512x512.png" class="custom-logo" alt="ADAMANT" itemprop="logo"></span>
+                <span href="#">
+                  <span class="site-title">
+                    {{ language === 'ru' ? 'АДАМАНТ' : 'ADAMANT' }}
+                  </span>
+                </span>
+              <p class="site-description">{{ $t('login.subheader') }}</p>
+          </div>
+          <LoginWithUserPassword v-if="userPassword" ref="login_with_user_password"></LoginWithUserPassword>
+          <md-layout v-else md-align="center" md-gutter="16">
+              <md-layout md-flex="66" md-flex-xsmall="80">
+                  <md-input-container class="password_input">
+                      <label style="text-align: center;width: 100%;">{{ $t('login.password_label') }}</label>
+                      <md-input v-model="passPhrase" type="password" autocomplete="new-password" @keyup.native="kp($event)"></md-input>
+                  </md-input-container>
+                  <md-layout md-align="center" md-gutter="16">
+                      <md-button class="md-raised md-short" @click="logme">{{ $t('login.login_button') }}</md-button>
+                  </md-layout>
               </md-layout>
-          </md-layout>
-          <md-layout md-flex="66"
-                     md-flex-xsmall="80"
-                     md-align="center"
-                     class="qr-code-buttons">
-            <md-button classs="md-ripple md-disabled"
-                       :title="$t('login.scan_qr_code_button_tooltip')"
-                       @click="scanQRCode">
-              <Icon name="qrCodeLense" />
-            </md-button>
-            <md-button classs="md-ripple md-disabled"
-                       @click.prevent="saveQRCode">
-              <Icon name="qrCode" />
-            </md-button>
+              <md-layout md-flex="66" md-flex-xsmall="80" md-align="center" class="qr-code-buttons">
+                  <md-button classs="md-ripple md-disabled" :title="$t('login.scan_qr_code_button_tooltip')" @click="scanQRCode">
+                      <Icon name="qrCodeLense" />
+                  </md-button>
+                  <md-button classs="md-ripple md-disabled" @click.prevent="saveQRCode">
+                      <Icon name="qrCode" />
+                  </md-button>
+              </md-layout>
+              <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
+                  <p v-if="message">{{message}}</p>
+                  <p>
+                      <a href="#"
+                         @click.prevent="downloadQRCode"
+                         v-if="showQRCode">
+                          <qr-code :text="passPhrase" ref="qrCode"></qr-code>
+                      </a>
+                  </p>
+              </md-layout>
+              <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top:30px">
+                  <md-layout md-align="center" md-gutter="16">
+                      <p style="font-weight: 300;margin-bottom: 10px;">{{$t('login.create_address_label')}}</p>
+                  </md-layout>
+              </md-layout>
+              <md-layout md-flex="66" md-flex-xsmall="80" style="">
+                  <md-layout md-align="center" md-gutter="16">
+                      <a class='create_link' v-on:click="showCreate = true; scrollToBottom()">{{ $t('login.new_button') }}</a>
+                  </md-layout>
+              </md-layout>
+        </md-layout>
+          <md-layout v-if="showCreate" md-align="center" md-gutter="16">
+              <md-layout md-flex="66" md-flex-xsmall="90" class="newpass_field">
 
-          </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
-            <p v-if="message">{{message}}</p>
-            <p>
-              <a href="#"
-                 @click.prevent="downloadQRCode"
-                 v-if="showQRCode">
-                <qr-code :text="passPhrase" ref="qrCode"></qr-code>
-              </a>
-            </p>
-          </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top:30px">
-              <md-layout md-align="center" md-gutter="16">
-                  <p style="font-weight: 300;margin-bottom: 10px;">{{$t('login.create_address_label')}}</p>
+                  <md-input-container>
+                      <label v-html="$t('login.new_password_label')"></label>
+                      <md-textarea v-bind:value="yourPassPhrase" readonly></md-textarea>
+                      <md-icon v-clipboard="yourPassPhrase"  @success="copySuccess" style="cursor:pointer;z-index:20;" :title="$t('login.copy_button_tooltip')">content_copy</md-icon>
+                      <md-icon v-if=!iOS v-on:click.native="saveFile" style="cursor:pointer;z-index:20;" :title="$t('login.save_button_tooltip')">archive</md-icon>
+
+                  </md-input-container>
+
               </md-layout>
           </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="80" style="">
-              <md-layout md-align="center" md-gutter="16">
-                  <a class='create_link' v-on:click="showCreate = true; scrollToBottom()">{{ $t('login.new_button') }}</a>
-              </md-layout>
-          </md-layout>
+
+          <md-snackbar md-position="bottom center" md-accent ref="snackbar" md-duration="2000">
+              <span>{{ $t('login.invalid_passphrase') }}</span>
+          </md-snackbar>
+          <md-snackbar md-position="bottom center" md-accent ref="loginSnackbar" md-duration="2000">
+              <span>{{ $t('home.copied') }}</span>
+          </md-snackbar>
+        <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
+        <Spinner v-if="showSpinnerFlag"></Spinner>
+      </div>
     </md-layout>
-      <md-layout v-if="showCreate" md-align="center" md-gutter="16">
-          <md-layout md-flex="66" md-flex-xsmall="90" class="newpass_field">
-
-              <md-input-container>
-                  <label v-html="$t('login.new_password_label')"></label>
-                  <md-textarea v-bind:value="yourPassPhrase" readonly></md-textarea>
-                  <md-icon v-clipboard="yourPassPhrase"  @success="copySuccess" style="cursor:pointer;z-index:20;" :title="$t('login.copy_button_tooltip')">content_copy</md-icon>
-                  <md-icon v-if=!iOS v-on:click.native="saveFile" style="cursor:pointer;z-index:20;" :title="$t('login.save_button_tooltip')">archive</md-icon>
-
-              </md-input-container>
-
-          </md-layout>
-      </md-layout>
-
-      <md-snackbar md-position="bottom center" md-accent ref="snackbar" md-duration="2000">
-          <span>{{ $t('login.invalid_passphrase') }}</span>
-      </md-snackbar>
-      <md-snackbar md-position="bottom center" md-accent ref="loginSnackbar" md-duration="2000">
-          <span>{{ $t('home.copied') }}</span>
-      </md-snackbar>
-    <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
-    <Spinner v-if="showSpinnerFlag"></Spinner>
-  </div>
 </template>
 
 <script>
@@ -93,6 +87,7 @@ import FileSaver from 'file-saver'
 import Icon from '@/components/Icon'
 import QRScan from '@/components/QRScan'
 import Spinner from '../components/Spinner'
+import LoginWithUserPassword from '@/components/userpassword/LoginWithUserPassword.vue'
 import i18n from '../i18n'
 
 export default {
@@ -100,7 +95,8 @@ export default {
   components: {
     Icon,
     QRScan,
-    Spinner
+    Spinner,
+    LoginWithUserPassword
   },
   methods: {
     showSpinner: function () {
@@ -149,6 +145,7 @@ export default {
     logme () {
       this.passPhrase = this.passPhrase.toLowerCase().trim()
       this.showSpinnerFlag = true
+      this.$store.commit('set_first_load')
       let errorFunction = function () {
         this.snackOpen()
         this.showSpinnerFlag = false
@@ -193,6 +190,13 @@ export default {
       }
     }
   },
+  mounted () {
+    if (this.$store.getters.getPassPhrase) {
+      this.$store.commit('leave_chat')
+      this.$root._router.push('/chats/')
+    }
+    this.userPasswordExists = this.$store.getters.getUserPasswordExists
+  },
   computed: {
     iOS: function () {
       return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
@@ -205,8 +209,10 @@ export default {
       return new Mnemonic(Mnemonic.Words.ENGLISH).toString()
     },
     qrCodePassPhrase: function () {
-      // return this.passPhrase
       return this.$store.getters.getPassPhrase
+    },
+    userPassword: function () {
+      return this.$store.getters.getUserPasswordExists
     }
   },
   watch: {
@@ -223,7 +229,8 @@ export default {
       message: '',
       showQRCode: false,
       showModal: false,
-      showSpinnerFlag: false
+      showSpinnerFlag: false,
+      userPasswordExists: this.userPassword
     }
   }
 }

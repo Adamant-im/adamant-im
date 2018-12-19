@@ -69,3 +69,12 @@ export default {
   EPOCH,
   Transactions
 }
+
+export const UserPasswordArticleLink = 'https://medium.com/'
+
+export const UserPasswordHashSettings = {
+  SALT: 'salt',
+  ITERATIONS: 100000,
+  KEYLEN: 64,
+  DIGEST: 'sha512'
+}

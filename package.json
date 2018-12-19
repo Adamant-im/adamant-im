@@ -24,9 +24,11 @@
     "ethereumjs-util": "^5.2.0",
     "file-saver": "^1.3.8",
     "hdkey": "^0.8.0",
+    "idb": "^2.1.3",
     "instascan": "^1.0.0",
     "marked": "^0.3.6",
     "material-design-icons-iconfont": "^3.0.3",
+    "pbkdf2": "^3.0.16",
     "promise-queue": "^2.2.3",
     "register-service-worker": "^1.0.0",
     "semver": "^5.5.1",
@@ -40,7 +42,8 @@
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.11.0",
     "vuex": "^3.0.1",
-    "web3": "0.20.6"
+    "web3": "0.20.6",
+    "js-base64": "^2.4.9"
   },
   "devDependencies": {
     "@kazupon/vue-i18n-loader": "^0.3.0",

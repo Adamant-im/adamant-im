@@ -7,7 +7,6 @@
                   <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.general_title') }}</h2>
               </md-card-header>
           </md-card-area>
-
           <md-card-content>
               <md-table>
                   <md-table-body>
@@ -43,7 +42,11 @@
                   <md-table-body>
                       <md-table-row>
                           <md-table-cell class="hide_on_mobile"></md-table-cell>
-                          <md-table-cell colspan="2"  style="text-align:left;"><md-checkbox  v-model="storeInLS" :title="$t('options.exit_on_close_tooltip')">{{ $t('options.exit_on_close') }}</md-checkbox></md-table-cell>
+                          <md-table-cell colspan="2"  style="text-align:left;">
+                            <md-checkbox v-on:change="storeInLocalStorage" v-model="clearOnExit">
+                              {{ $t('options.exit_on_close') }}
+                            </md-checkbox>
+                          </md-table-cell>
                       </md-table-row>
                   </md-table-body>
               </md-table>
@@ -110,18 +113,39 @@
             </div>
           </md-card-content>
       </md-card>
-
-    <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
-      </div>
-
+      <setUserPassword openFrom="#setUserPassword" closeTo="#setUserPassword" ref="set_user_password" v-on:close="onPwdDialogClose"></setUserPassword>
+      <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
+    </div>
   </div>
 </template>
 
 <script>
 import i18n from '../i18n'
+import setUserPassword from '@/components/userpassword/SetUserPassword.vue'
+import {
+  clearDb,
+  getAdmDataBase
+} from '../lib/indexedDb'
 
 export default {
   name: 'settings',
+  components: { setUserPassword },
+  methods: {
+    storeInLocalStorage (e) {
+      if (!this.$store.state.storeInLocalStorage) {
+        this.$refs['set_user_password'].open()
+      } else {
+        getAdmDataBase().then((db) => {
+          clearDb(db)
+        })
+        this.$store.commit('change_storage_method', false)
+        this.$store.dispatch('clearUserPassword')
+      }
+    },
+    onPwdDialogClose (payload) {
+      this.clearOnExit = !payload
+    }
+  },
   computed: {
     languageList: function () {
       return i18n.messages
@@ -133,9 +157,6 @@ export default {
   watch: {
     'sendOnEnter' (to, from) {
       this.$store.commit('change_send_on_enter', to)
-    },
-    'storeInLS' (to, from) {
-      this.$store.commit('change_storage_method', !to)
     },
     'notifySound' (to, from) {
       this.$store.commit('change_notify_sound', to)
@@ -154,7 +175,7 @@ export default {
   },
   data () {
     return {
-      storeInLS: !this.$store.state.storeInLocalStorage,
+      clearOnExit: !this.$store.state.storeInLocalStorage,
       notifySound: this.$store.state.notifySound,
       sendOnEnter: this.$store.state.sendOnEnter,
       notifyBar: this.$store.state.notifyBar,
