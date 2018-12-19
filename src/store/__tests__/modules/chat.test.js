@@ -291,6 +291,31 @@ describe('Store: chat.js', () => {
         expect(total).toBe(0)
       })
     })
+
+    /**
+     * getters.isChatReadOnly
+     */
+    describe('getters.isChatReadOnly', () => {
+      it('should return boolean', () => {
+        const state = {
+          chats: {
+            adamantBounty: {
+              readOnly: true
+            },
+            adamantTokens: {
+              readOnly: false
+            },
+            U111111: {}
+          }
+        }
+
+        const isChatReadOnly = getters.isChatReadOnly(state)
+
+        expect(isChatReadOnly('adamantBounty')).toBe(true)
+        expect(isChatReadOnly('adamantTokens')).toBe(false)
+        expect(isChatReadOnly('U111111')).toBe(false)
+      })
+    })
   })
 
   /**
@@ -595,6 +620,22 @@ describe('Store: chat.js', () => {
             status: 'confirmed'
           }
         ])
+      })
+    })
+
+    /**
+     * mutations.createAdamantChats
+     */
+    describe('mutations.createAdamantChats', () => {
+      it('should push `Adamant Bounty` & `Adamant Tokens` to state.chats', () => {
+        const state = {
+          chats: {}
+        }
+
+        mutations.createAdamantChats(state)
+
+        expect(state.chats['Adamant Tokens']).toBeTruthy()
+        expect(state.chats['Adamant Bounty']).toBeTruthy()
       })
     })
   })
