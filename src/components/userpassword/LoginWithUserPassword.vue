@@ -30,7 +30,7 @@
 import crypto from 'pbkdf2'
 import Vue from 'vue'
 import Spinner from '../Spinner'
-import {Base64} from 'js-base64'
+import { Base64 } from 'js-base64'
 import { UserPasswordHashSettings } from '../../lib/constants'
 import {
   clearDb,

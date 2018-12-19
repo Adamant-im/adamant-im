@@ -1,7 +1,7 @@
 import idb from 'idb'
 import ed2curve from 'ed2curve'
 import nacl from 'tweetnacl/nacl-fast'
-import {decode} from '@stablelib/utf8'
+import { decode } from '@stablelib/utf8'
 
 const DATABASE_NAME = 'adm'
 const DEFAULT_KEY_PATH = 'name'
@@ -20,16 +20,16 @@ const CHAT_LIST = 'chatList'
 export function getAdmDataBase () {
   return idb.open(DATABASE_NAME, 1, function (upgradeDb) {
     if (!upgradeDb.objectStoreNames.contains(SECURITY)) {
-      upgradeDb.createObjectStore(SECURITY, {keyPath: DEFAULT_KEY_PATH, autoIncrement: true})
+      upgradeDb.createObjectStore(SECURITY, { keyPath: DEFAULT_KEY_PATH, autoIncrement: true })
     }
     if (!upgradeDb.objectStoreNames.contains(COMMON)) {
-      upgradeDb.createObjectStore(COMMON, {keyPath: DEFAULT_KEY_PATH, autoIncrement: true})
+      upgradeDb.createObjectStore(COMMON, { keyPath: DEFAULT_KEY_PATH, autoIncrement: true })
     }
     if (!upgradeDb.objectStoreNames.contains(CONTACT_LIST)) {
-      upgradeDb.createObjectStore(CONTACT_LIST, {keyPath: DEFAULT_KEY_PATH, autoIncrement: true})
+      upgradeDb.createObjectStore(CONTACT_LIST, { keyPath: DEFAULT_KEY_PATH, autoIncrement: true })
     }
     if (!upgradeDb.objectStoreNames.contains(CHAT_LIST)) {
-      upgradeDb.createObjectStore(CHAT_LIST, {keyPath: DEFAULT_KEY_PATH, autoIncrement: true})
+      upgradeDb.createObjectStore(CHAT_LIST, { keyPath: DEFAULT_KEY_PATH, autoIncrement: true })
     }
   })
 }

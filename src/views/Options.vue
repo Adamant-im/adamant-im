@@ -129,7 +129,7 @@ import {
 
 export default {
   name: 'settings',
-  components: {setUserPassword},
+  components: { setUserPassword },
   methods: {
     storeInLocalStorage (e) {
       if (!this.$store.state.storeInLocalStorage) {

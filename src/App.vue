@@ -24,7 +24,7 @@
 
 <script>
 import i18n from './i18n'
-import {clearDb, decryptData, getAdmDataBase, getPassPhrase} from './lib/indexedDb'
+import { clearDb, decryptData, getAdmDataBase, getPassPhrase } from './lib/indexedDb'
 
 export default {
   name: 'app',

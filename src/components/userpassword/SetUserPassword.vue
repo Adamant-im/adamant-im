@@ -28,7 +28,7 @@
 
 <script>
 
-import {UserPasswordAgreementLink, UserPasswordHashSettings} from '../../lib/constants'
+import { UserPasswordAgreementLink, UserPasswordHashSettings } from '../../lib/constants'
 import crypto from 'pbkdf2'
 import {
   encryptData,
