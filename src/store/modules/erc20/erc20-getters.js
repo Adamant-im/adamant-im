@@ -1,3 +1,4 @@
+import baseGetters from '../eth-base/eth-base-getters'
 import { ERC20_TRANSFER_GAS } from '../../../lib/constants'
 import { calculateFee } from '../../../lib/eth-utils'
 
@@ -10,5 +11,5 @@ export default {
     return calculateFee(ERC20_TRANSFER_GAS, getters.gasPrice)
   },
 
-  transaction: state => id => state.transactions[id]
+  ...baseGetters
 }

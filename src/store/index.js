@@ -15,10 +15,11 @@ import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
 
 import * as admApi from '../lib/adamant-api'
-import { base64regex, WelcomeMessage, Cryptos } from '../lib/constants'
+import { base64regex, WelcomeMessage, UserPasswordHashSettings, Cryptos } from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import i18n from '../i18n'
+import crypto from 'pbkdf2'
 import renderMarkdown from '../lib/markdown'
 
 var maxConcurrent = 1
@@ -77,7 +78,7 @@ function createMockMessage (state, newAccount, partner, message) {
   Vue.set(state.chats, partner, currentDialogs)
 }
 
-function replaceMessageAndDelete (messages, newMessageId, existMessageId, cssClass) {
+export function replaceMessageAndDelete (messages, newMessageId, existMessageId, cssClass) {
   Vue.set(messages, newMessageId, {
     ...messages[existMessageId],
     id: newMessageId,
@@ -88,11 +89,11 @@ function replaceMessageAndDelete (messages, newMessageId, existMessageId, cssCla
   }
 }
 
-function changeMessageClass (messages, id, cssClass) {
+export function changeMessageClass (messages, id, cssClass) {
   Vue.set(messages[id], 'confirm_class', cssClass)
 }
 
-function updateLastChatMessage (currentDialogs, payload, confirmClass, direction, id) {
+export function updateLastChatMessage (currentDialogs, payload, confirmClass, direction, id) {
   currentDialogs.last_message = {
     id: id,
     message: payload.message,
@@ -112,7 +113,7 @@ const store = {
     disabled: deviceIsDisabled(),
     is_new_account: false,
     ajaxIsOngoing: false,
-    firstChatLoad: true,
+    firstChatLoad: false,
     lastErrorMsg: '',
     transactions: {},
     showPanel: false,
@@ -135,7 +136,8 @@ const store = {
     currentChat: false,
     storeInLocalStorage: false,
     lastVisitedChat: '',
-    areChatsLoading: false
+    areChatsLoading: false,
+    userPasswordExists: sessionStorage.getItem('userPassword') !== null
   },
   actions: {
     update_delegates_grid ({ commit }, payload) {
@@ -175,7 +177,6 @@ const store = {
           to: partner,
           message: messageText
         }
-        console.log('correct email', messageText)
         return admApi.sendMessage(params).then(response => {
           if (response.success) {
             replaceMessageAndDelete(chats[partner].messages, response.transactionId, payload.id, 'sent')
@@ -223,6 +224,12 @@ const store = {
         })
       })
     },
+    clearUserPassword ({ commit }) {
+      localStorage.removeItem('storedData')
+      sessionStorage.removeItem('userPassword')
+      commit('user_password_exists', false)
+      commit('change_storage_method', false)
+    },
     /**
      * Performs application login
      * @param {any} context
@@ -252,7 +259,7 @@ const store = {
      */
     updateAccount (context) {
       context.commit('ajax_start')
-      return admApi.getCurrentAccount().then(
+      return admApi.getCurrentAccount(context).then(
         (account) => {
           context.commit('currentAccount', account)
           context.commit('ajax_end')
@@ -352,6 +359,15 @@ const store = {
     }
   },
   mutations: {
+    set_first_load (state) {
+      state.firstChatLoad = true
+    },
+    set_state (state, payload) {
+      state = payload
+    },
+    user_password_exists (state, payload) {
+      state.userPasswordExists = payload
+    },
     update_delegate (state, payload) {
       state.delegates[payload.address] = payload
     },
@@ -376,7 +392,15 @@ const store = {
       state.language = payload
     },
     change_storage_method (state, payload) {
+      sessionStorage.setItem('storeInLocalStorage', payload)
       state.storeInLocalStorage = payload
+    },
+    save_user_password (state, payload) {
+      crypto.pbkdf2(payload, UserPasswordHashSettings.SALT, UserPasswordHashSettings.ITERATIONS, UserPasswordHashSettings.KEYLEN, UserPasswordHashSettings.DIGEST, (err, encodePassword) => {
+        if (err) throw err
+        const pass = encodePassword.toString('hex')
+        sessionStorage.setItem('userPassword', pass)
+      })
     },
     save_passphrase (state, payload) {
       state.passPhrase = Base64.encode(payload.passPhrase)
@@ -618,11 +642,32 @@ const store = {
     getCurrentChat: state => {
       return state.currentChat
     },
+    isStoreInLocalStorage: state => {
+      return state.storeInLocalStorage
+    },
     isLogged: state => {
       return state.passPhrase.length > 0
     },
     sendOnEnter: state => {
       return state.sendOnEnter
+    },
+    isLoginViaPassword: () => {
+      return sessionStorage.getItem('storeInLocalStorage') === 'true' && sessionStorage.getItem('userPassword')
+    },
+    getUserPasswordExists: state => {
+      return state.userPasswordExists
+    },
+    getContacts: state => {
+      return state.partners
+    },
+    getLastChatHeight: state => {
+      return state.lastChatHeight
+    },
+    getAdmAddress: state => {
+      return state.address
+    },
+    getState: state => {
+      return state
     }
   },
   modules: {

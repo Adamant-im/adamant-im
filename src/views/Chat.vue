@@ -247,8 +247,7 @@ export default {
       const transactions = this.$store
         .getters['adm/partnerTransactions'](this.$store.state.currentChat.partner)
         .filter(x => !chat[x.id])
-      const messages = Object.values(chat).concat(transactions)
-
+      let messages = Object.values(chat).concat(transactions)
       return messages.sort((a, b) => a.timestamp - b.timestamp)
     },
     messagesCount () {

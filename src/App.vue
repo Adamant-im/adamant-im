@@ -24,10 +24,21 @@
 
 <script>
 import i18n from './i18n'
+import { clearDb, decryptData, getAdmDataBase, getPassPhrase } from './lib/indexedDb'
 
 export default {
   name: 'app',
   mounted: function () {
+    window.privateKey = null
+    getAdmDataBase().then((db) => {
+      getPassPhrase(db).then((encodedPassPhrase) => {
+        if (encodedPassPhrase) {
+          sessionStorage.removeItem('adm-persist')
+          sessionStorage.setItem('storeInLocalStorage', 'true')
+          this.$store.commit('user_password_exists', true)
+        }
+      })
+    })
     this.checkChatPage(this.$router.currentRoute.path)
     setInterval(
       ((self) => {
@@ -77,13 +88,32 @@ export default {
     )
 
     window.audio = require('simple-audio')
-
-    if (!this.$store.getters.getPassPhrase && this.$route.path !== '/') {
-      this.$router.push('/')
+    if (this.$store.getters.isLoginViaPassword) {
+      getAdmDataBase().then((db) => {
+        getPassPhrase(db).then((encryptedPassPhrase) => {
+          if (decryptData(encryptedPassPhrase.value).length <= 0) {
+            this.$router.push('/')
+          }
+        })
+      })
+    } else {
+      if (this.$store.getters.getPassPhrase.length <= 0) {
+        this.$router.push('/')
+      }
     }
   },
   methods: {
     exitme () {
+      if (this.$store.getters.getUserPasswordExists) {
+        getAdmDataBase().then((db) => {
+          clearDb(db)
+          this.$store.commit('user_password_exists', false)
+          this.$store.commit('change_storage_method', false)
+          sessionStorage.removeItem('userPassword')
+          sessionStorage.removeItem('adm-persist')
+          sessionStorage.removeItem('storeInLocalStorage')
+        })
+      }
       this.$store.commit('logout')
       this.$store.dispatch('reset')
       this.$router.push('/')

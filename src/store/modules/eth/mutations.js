@@ -1,17 +1,14 @@
-import Vue from 'vue'
-
 import { resetState } from '../../../lib/reset-state'
 import initialState from './state'
 
+import baseMutations from '../eth-base/eth-base-mutations'
+
 export default {
+  ...baseMutations,
+
   /** Resets module state */
   reset (state) {
     resetState(state, initialState())
-  },
-
-  /** Set ETH balance */
-  balance (state, balance) {
-    state.balance = balance
   },
 
   /** Gas price and fee */
@@ -25,21 +22,8 @@ export default {
     state.blockNumber = number
   },
 
-  /** Set ETH account */
-  account (state, account) {
-    state.address = account.address
-    state.publicKey = account.publicKey
-    state.privateKey = account.privateKey
-  },
-
   /** ETH account has been published */
   isPublished (state) {
     state.isPublished = true
-  },
-
-  /** Adds a new transaction */
-  setTransaction (state, tx) {
-    const newTx = Object.assign({ }, state.transactions[tx.hash], tx)
-    Vue.set(state.transactions, tx.hash, newTx)
   }
 }

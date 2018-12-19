@@ -311,7 +311,6 @@ export default {
         if (typeof lVal === 'number' && typeof rVal === 'number') {
           return compareNumbers(lVal, rVal)
         }
-        console.log('uncompared values!', a, b)
         return 0
       }
       const filterDelegates = (x) => {

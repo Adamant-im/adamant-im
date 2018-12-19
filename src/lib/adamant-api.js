@@ -58,9 +58,11 @@ export function unlock (passphrase) {
  * Retrieves current account details, creating it if necessary.
  * @returns {Promise<any>}
  */
-export function getCurrentAccount () {
+export function getCurrentAccount (context) {
+  if (myKeypair.publicKey === undefined) {
+    unlock(context.getters.getPassPhrase)
+  }
   const publicKey = myKeypair.publicKey.toString('hex')
-
   return client.get('/api/accounts', { publicKey })
     .then(response => {
       if (response.success) {

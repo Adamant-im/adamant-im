@@ -36,9 +36,10 @@ export default new Router({
       meta: { requiresAuth: true }
     },
     {
-      path: '/transactions',
+      path: '/transactions/:crypto',
       name: 'Transactions',
       component: Transactions,
+      props: true,
       meta: { requiresAuth: true }
     },
     {
