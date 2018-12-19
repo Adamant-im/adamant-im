@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import validateAddress from '@/lib/validateAddress'
 import QrcodeScanner from '@/components/QrcodeScanner'
 
 export default {
@@ -63,10 +64,10 @@ export default {
     startChat () {
       if (!this.isValidUserAddress()) {
         this.$store.dispatch('snackbar/show', {
-          message: 'Invalid recipient address'
+          message: 'Invalid user address'
         })
 
-        return Promise.reject('Invalid user address')
+        return Promise.reject(new Error('Invalid user address'))
       }
 
       return this.$store.dispatch('chat/createChat', {
@@ -87,7 +88,7 @@ export default {
       this.startChat()
     },
     isValidUserAddress () {
-      return /^U[\d]{6,}$/.test(this.recipientAddress)
+      return validateAddress('ADM', this.recipientAddress)
     }
   },
   components: {

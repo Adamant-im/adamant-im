@@ -27,7 +27,7 @@ export function queueMessage (message, recipientId) {
  * @param {number} startHeight
  * @param {number} startOffset
  * @param {boolean} recursive
- * @returns {Promise<Message[]>} Array of messages
+ * @returns {Promise<{messages: Message[], lastMessageHeight: number}>} Array of messages
  */
 export function getChats (startHeight = 0, startOffset = 0, recursive = true) {
   let allTransactions = []
