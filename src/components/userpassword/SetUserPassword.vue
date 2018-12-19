@@ -14,13 +14,13 @@
         </md-input-container>
         <div style="display: flex; flex-direction: row;">
           <div class="middle-align-text">
-            <div>{{$t('login_via_password.agreement_hint')}} <a target="_blank" v-bind:href="userPasswordAgreementLink">{{$t('login_via_password.agreement')}}</a></div>
+            <div>{{$t('login_via_password.article_hint')}} <a :href="userPasswordAgreementLink">{{$t('login_via_password.article')}}</a></div>
           </div>
         </div>
       </md-dialog-content>
       <md-dialog-actions>
-        <md-button v-on:click="close">{{ $t('transfer.confirm_cancel') }}</md-button>
-        <md-button :disabled="disableSetPassword" v-on:click="setPassword">{{ $t('login_via_password.popup_confirm_text') }}</md-button>
+        <md-button @click="close">{{ $t('transfer.confirm_cancel') }}</md-button>
+        <md-button :disabled="disableSetPassword" @click="setPassword">{{ $t('login_via_password.popup_confirm_text') }}</md-button>
       </md-dialog-actions>
     </div>
   </md-dialog>
@@ -28,7 +28,7 @@
 
 <script>
 
-import { UserPasswordAgreementLink, UserPasswordHashSettings } from '../../lib/constants'
+import { UserPasswordArticleLink, UserPasswordHashSettings } from '../../lib/constants'
 import crypto from 'pbkdf2'
 import {
   encryptData,
@@ -105,7 +105,7 @@ export default {
     return {
       disableSetPassword: true,
       userPasswordValue: null,
-      userPasswordAgreementLink: UserPasswordAgreementLink,
+      userPasswordAgreementLink: UserPasswordArticleLink,
       showSpinnerFlag: false
     }
   }

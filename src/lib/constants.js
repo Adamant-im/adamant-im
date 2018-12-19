@@ -70,7 +70,7 @@ export default {
   Transactions
 }
 
-export const UserPasswordAgreementLink = 'https://adamant.im'
+export const UserPasswordArticleLink = 'https://medium.com/'
 
 export const UserPasswordHashSettings = {
   SALT: 'salt',
