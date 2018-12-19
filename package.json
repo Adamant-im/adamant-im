@@ -64,6 +64,8 @@
     "lorem-ipsum": "^1.0.6",
     "node-sass": "^4.9.3",
     "sass-loader": "^7.0.1",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
     "vue-cli-plugin-i18n": "^0.5.0",
     "vue-cli-plugin-vuetify": "^0.4.5",
     "vue-template-compiler": "^2.5.17"

@@ -1,7 +1,7 @@
 <template>
   <div class="passphrase-generator">
     <div class="text-xs-center">
-      <h3 class="body-1 grey--text text--darken-2">{{ $t('login.create_address_label') }}</h3>
+      <h3 class="body-1">{{ $t('login.create_address_label') }}</h3>
       <v-btn @click="generatePassphrase" flat>
         {{ $t('login.new_button') }}
       </v-btn>

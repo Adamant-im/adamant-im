@@ -7,7 +7,7 @@
           <v-list two-line subheader class="transparent">
             <v-list-tile @click="showChatStartDialog = true">
               <v-list-tile-avatar>
-                <v-icon class="grey lighten-1 white--text">mdi-plus</v-icon>
+                <v-icon class="chat-icon">mdi-plus</v-icon>
               </v-list-tile-avatar>
 
               <v-list-tile-content>
@@ -82,6 +82,20 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_colors.styl'
+
+.theme--light
+  .chat-icon
+    color: $shades.white
+    background-color: $grey.lighten-1
+
+.theme--dark
+  .chat-icon
+    color: $shades.white
+    background-color: $grey.darken-1
+</style>
 
 <i18n>
 {

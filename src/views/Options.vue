@@ -3,7 +3,7 @@
     <v-flex lg4 md5 sm12 xs12>
 
       <!-- General -->
-      <h3 class="title grey--text text--darken-3 mb-3">{{ $t('general') }}</h3>
+      <h3 class="title mb-3">{{ $t('general') }}</h3>
       <v-layout row wrap align-center class="mb-5">
         <v-flex xs6>
           <v-subheader class="pa-0">{{ $t('language') }}</v-subheader>
@@ -14,50 +14,50 @@
       </v-layout>
 
       <!-- Security -->
-      <h3 class="title grey--text text--darken-3 mb-3">{{ $t('security') }}</h3>
+      <h3 class="title mb-3">{{ $t('security') }}</h3>
       <v-layout row wrap align-center class="mb-5">
         <v-flex xs12>
           <v-checkbox
             :label="$t('logoutOnTabClose')"
             color="grey darken-1"
             v-model="logoutOnTabClose"
-          ></v-checkbox>
+          />
         </v-flex>
       </v-layout>
 
       <!-- Chats -->
-      <h3 class="title grey--text text--darken-3 mb-3">{{ $t('chats') }}</h3>
+      <h3 class="title mb-3">{{ $t('chats') }}</h3>
       <v-layout row wrap align-center class="mb-5">
         <v-flex xs12>
           <v-checkbox
             :label="$t('sendMessageOnEnter')"
             color="grey darken-1"
             v-model="sendMessageOnEnter"
-          ></v-checkbox>
+          />
         </v-flex>
       </v-layout>
 
       <!-- Notifications -->
-      <h3 class="title grey--text text--darken-3 mb-3">{{ $t('notifications') }}</h3>
+      <h3 class="title mb-3">{{ $t('notifications') }}</h3>
       <v-layout row wrap align-center class="mb-5">
         <v-flex xs12>
           <v-checkbox
             :label="$t('sound')"
             color="grey darken-1"
             v-model="notifySound"
-          ></v-checkbox>
+          />
         </v-flex>
         <v-flex xs12>
           <v-checkbox
             :label="$t('changeBrowserTabTitle')"
             color="grey darken-1"
             v-model="changeBrowserTabTitle"
-          ></v-checkbox>
+          />
         </v-flex>
       </v-layout>
 
       <!-- Other -->
-      <h3 class="title grey--text text--darken-3 mb-3">{{ $t('other') }}</h3>
+      <h3 class="title mb-3">{{ $t('other') }}</h3>
       <v-layout row wrap align-center>
         <v-flex xs12>
           <v-btn @click="$router.push('/options/nodes')">{{ $t('nodeList') }}</v-btn>

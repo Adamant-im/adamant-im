@@ -1,4 +1,5 @@
 import '@babel/polyfill'
+import '@/assets/stylus/app.styl'
 import Vue from 'vue'
 import './plugins/vuetify'
 import App from './App.vue'

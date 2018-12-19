@@ -4,7 +4,7 @@
     @click="$emit('click')"
   >
     <v-list-tile-avatar>
-      <v-icon class="grey lighten-1 white--text">
+      <v-icon class="chat-preview__icon">
         {{ readOnly ? 'mdi-ethereum' : 'mdi-message-text' }}
       </v-icon>
       <v-badge overlap color="primary">
@@ -57,6 +57,26 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_colors.styl'
+
+.chat-preview
+  &__date
+    font-size: 8px
+    color: #616161
+  &__icon
+    color: $shades.white
+
+/** Themes **/
+.theme--light
+  .chat-preview__icon
+    background-color: $grey.lighten-1
+
+.theme--dark
+  .chat-preview__icon
+    background-color: $grey.darken-1
+</style>
 
 <style>
 .chat-preview {
