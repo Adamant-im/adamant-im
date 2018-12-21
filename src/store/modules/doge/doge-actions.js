@@ -109,14 +109,19 @@ export default {
       })
   },
 
+  /**
+   * Retrieves transaction details
+   * @param {object} context Vuex action context
+   * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
+   */
   getTransaction (context, payload) {
     if (!api) return
 
     const existing = context.state.transactions[payload.hash]
-    if (existing && existing.status !== 'PENDING') return
+    if (existing && existing.status !== 'PENDING' && !payload.force) return
 
     // Set a stub so far
-    if (!existing) {
+    if (!existing || existing.status === 'ERROR') {
       context.commit('transactions', [{
         hash: payload.hash,
         timestamp: payload.timestamp,

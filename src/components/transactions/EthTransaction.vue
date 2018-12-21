@@ -26,9 +26,6 @@ export default {
   components: {
     TransactionTemplate
   },
-  mounted () {
-    this.$store.dispatch('eth/getTransaction', { hash: this.id })
-  },
   data () {
     return { }
   },

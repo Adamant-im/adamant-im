@@ -129,19 +129,21 @@ export default function createActions (config) {
     /**
      * Enqueues a background request to retrieve the transaction details
      * @param {object} context Vuex action context
-     * @param {{hash: string, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
+     * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
      */
     getTransaction (context, payload) {
       const existing = context.state.transactions[payload.hash]
-      if (existing && existing.status !== 'PENDING') return
+      if (existing && existing.status !== 'PENDING' && !payload.force) return
 
       // Set a stub so far
-      context.commit('transactions', [{
-        hash: payload.hash,
-        timestamp: payload.timestamp,
-        amount: payload.amount,
-        status: 'PENDING'
-      }])
+      if (!existing || existing.status === 'ERROR') {
+        context.commit('transactions', [{
+          hash: payload.hash,
+          timestamp: payload.timestamp,
+          amount: payload.amount,
+          status: 'PENDING'
+        }])
+      }
 
       const key = 'transaction:' + payload.hash
       const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
