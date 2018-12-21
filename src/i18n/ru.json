@@ -90,6 +90,23 @@
     "scan_qr_code_button_tooltip": "Отсканируйте QR-код с паролем",
     "subheader": "Самый анонимный мессенджер, зашифрованный в Blockchain"
   },
+  "login_via_password": {
+    "article": "Медиуме.",
+    "article_hint": "Информацию о пользовательском пароле можно найти на ",
+    "encoding_data_title": "Шифрование данных…",
+    "enter_password": "Пароль для разблокировки",
+    "incorrect_password": "Неверный пользовательский пароль",
+    "login_via_password": "Войти с помощью пароля",
+    "popup_confirm_text": "Установить",
+    "popup_hint": "Рекомендуем 8+ символов…",
+    "popup_title": "Задайте пароль",
+    "remove_password": "Удалить пароль",
+    "remove_password_hint": "Или удалите пароль для входа по секретной фразе",
+    "user_password_forget": "Забыть",
+    "user_password_hint": "Пароль",
+    "user_password_title": "Пароль для разблокировки",
+    "user_password_unlock": "Разблокировать"
+  },
   "new_messages_1": "новое сообщение",
   "new_messages_2": "новых сообщения",
   "new_messages_5": "новых сообщений",

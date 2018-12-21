@@ -148,12 +148,7 @@ function install (Vue) {
     var DHPublicKey = ed2curve.convertPublicKey(senderPublicKey)
     var DHSecretKey
     var keypair = this.getKeypair()
-    if (window.secretKey) {
-      DHSecretKey = window.secretKey
-    } else {
-      DHSecretKey = ed2curve.convertSecretKey(keypair.privateKey)
-      window.secretKey = DHSecretKey
-    }
+    DHSecretKey = ed2curve.convertSecretKey(keypair.privateKey)
     var decrypted = nacl.box.open(msg, nonce, DHPublicKey, DHSecretKey)
     if (!decrypted) {
       return ''
@@ -295,7 +290,6 @@ function install (Vue) {
       return
     }
     var currentAddress = this.$store.state.address
-
     if (currentTransaction.type > 0) {
       const promise = currentTransaction.recipientId !== currentAddress
         ? window.queue.add(() => this.getAddressPublicKey(currentTransaction.recipientId))
@@ -307,7 +301,6 @@ function install (Vue) {
           var message = hexToBytes(currentTransaction.asset.chat.message)
           var nonce = hexToBytes(currentTransaction.asset.chat.own_message)
           currentTransaction.message = this.decodeMessage(message, decodePublic, nonce)
-
           if (currentTransaction.asset.chat.type === 2) {
             currentTransaction.message = JSON.parse(currentTransaction.message)
             this.$store.commit('add_chat_message', currentTransaction)
@@ -318,7 +311,6 @@ function install (Vue) {
             } else {
               currentTransaction.message = renderMarkdown(currentTransaction.message)
             }
-
             if (currentTransaction.message && currentTransaction.message.length > 0) {
               if ((currentTransaction.message.indexOf('chats.welcome_message') > -1 && currentTransaction.senderId === 'U15423595369615486571') || (currentTransaction.message.indexOf('chats.preico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428') || (currentTransaction.message.indexOf('chats.ico_message') > -1 && currentTransaction.senderId === 'U7047165086065693428')) {
                 if (currentTransaction.senderId === 'U15423595369615486571') {

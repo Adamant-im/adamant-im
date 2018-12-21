@@ -81,6 +81,23 @@
     "scan_qr_code_button_tooltip": "Scan QR with passphrase via device Camera",
     "subheader": "A top-notch anonymous messenger encrypted with a Blockchain"
   },
+  "login_via_password": {
+    "article": "Medium.",
+    "article_hint": "Read information about user password on ",
+    "encoding_data_title": "Encoding data…",
+    "enter_password": "Enter password",
+    "incorrect_password": "Wrong user password",
+    "login_via_password": "Login via password",
+    "popup_confirm_text": "Set",
+    "popup_hint": "8+ symbols recommended…",
+    "popup_title": "Set password",
+    "remove_password": "Remove password",
+    "remove_password_hint": "Or remove password for login via passphrase",
+    "user_password_forget": "Forget",
+    "user_password_hint": "User password",
+    "user_password_title": "Password for unlock",
+    "user_password_unlock": "Unlock"
+  },
   "new_messages_1": "new message",
   "new_messages_2": "new messages",
   "new_messages_5": "new messages",
