@@ -46,8 +46,11 @@ export default {
       return this.message.message && this.message.message.amount
     },
     confirm () {
-      const getter = this.crypto.toLowerCase() + '/transaction'
-      const tx = this.$store.getters[getter](this.hash)
+      const getterName = this.crypto.toLowerCase() + '/transaction'
+      const getter = this.$store.getters[getterName]
+      if (!getter) return 'error'
+
+      const tx = getter(this.hash)
       const status = tx && tx.status
 
       if (status === 'SUCCESS') {
