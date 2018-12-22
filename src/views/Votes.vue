@@ -317,14 +317,19 @@ export default {
         const regexp = new RegExp(this.filterString, 'i')
         return this.filterString !== '' ? (regexp.test(x.address) || regexp.test(x.username)) : true
       }
-      return Object.values(this.$store.state.delegates.delegates)
-        .filter(filterDelegates)
-        .sort(compare)
-        .map((x) => {
-          x.style = this.status[x.status].style
-          x.tooltip = this.status[x.status].tooltip
-          return x
-        })
+      let delegates = this.$store.state.delegates.delegates
+      if (delegates) {
+        return Object.values(delegates)
+          .filter(filterDelegates)
+          .sort(compare)
+          .map((x) => {
+            x.style = this.status[x.status].style
+            x.tooltip = this.status[x.status].tooltip
+            return x
+          })
+      } else {
+        return []
+      }
     },
     delegatesCount () {
       return this.delegates.length
