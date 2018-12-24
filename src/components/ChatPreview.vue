@@ -4,9 +4,12 @@
     @click="$emit('click')"
   >
     <v-list-tile-avatar>
-      <v-icon class="grey lighten-1 white--text">
-        {{ readOnly ? 'mdi-ethereum' : 'mdi-message-text' }}
+      <v-icon class="grey lighten-1 white--text" v-if="readOnly">
+        {{ 'mdi-ethereum' }}
       </v-icon>
+      <canvas :height="identiconSize" :ref="identiconRef" :width="identiconSize" v-else>
+        Canvas API is not supported
+      </canvas>
       <v-badge overlap color="primary">
         <span v-if="newMessages" slot="badge">{{ newMessages }}</span>
       </v-badge>
@@ -24,7 +27,18 @@
 </template>
 
 <script>
+import Identicon from '@/lib/identicon'
 export default {
+  computed: {
+    identiconRef () {
+      return 'identicon_' + this.chatName
+    }
+  },
+  data () {
+    return {
+      identiconSize: 40
+    }
+  },
   props: {
     icon: {
       type: String,
@@ -53,6 +67,13 @@ export default {
     userId: {
       type: String,
       default: ''
+    }
+  },
+  mounted () {
+    if (!this.readOnly) {
+      const el = this.$refs[this.identiconRef]
+      const identicon = new Identicon()
+      identicon.avatar(el, this.chatName, this.identiconSize)
     }
   }
 }
