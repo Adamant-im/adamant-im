@@ -20,10 +20,16 @@
 
     <v-spacer></v-spacer>
 
+    <chat-menu
+      :partner-id="partnerId"
+    />
+
   </v-toolbar>
 </template>
 
 <script>
+import ChatMenu from '@/components/Chat/ChatMenu'
+
 export default {
   computed: {
     partnerId () {
@@ -45,6 +51,9 @@ export default {
     goBack () {
       this.$router.back()
     }
+  },
+  components: {
+    ChatMenu
   }
 }
 </script>

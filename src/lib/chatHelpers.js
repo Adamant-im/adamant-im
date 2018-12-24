@@ -92,3 +92,45 @@ export function createMessage ({ recipientId, senderId, message, status = 'sent'
     timestamp: utils.epochTime()
   }
 }
+
+/**
+ * Returns real timestamp by ADM timestamp.
+ * @param {number} admTimestamp
+ */
+export function getRealTimestamp (admTimestamp) {
+  const foundationDate = Date.UTC(2017, 8, 2, 17, 0, 0, 0)
+
+  return parseInt(admTimestamp) * 1000 + foundationDate
+}
+
+/**
+ * Transform message for better integration into Vue components.
+ * @param {Object} abstract Message object returned by the server.
+ * @returns {Message} See `packages/chat/src/types.ts`
+ */
+export function transformMessage (abstract) {
+  let transaction = {}
+
+  // common properties for all transaction types
+  transaction.id = abstract.id
+  transaction.senderId = abstract.senderId
+  transaction.admTimestamp = abstract.timestamp
+  transaction.timestamp = getRealTimestamp(abstract.timestamp)
+  transaction.status = abstract.status || 'confirmed'
+  transaction.i18n = (abstract.i18n)
+  transaction.amount = abstract.amount ? abstract.amount : 0
+  transaction.message = ''
+
+  if (abstract.message && abstract.message.type === 'eth_transaction') {
+    transaction.type = 'ETH'
+    transaction.message = abstract.message.comments || ''
+  } else if (abstract.amount > 0) { // ADM transaction
+    transaction.type = 'ADM'
+    transaction.message = abstract.message
+  } else {
+    transaction.type = 'message'
+    transaction.message = abstract.message
+  }
+
+  return transaction
+}

@@ -206,6 +206,14 @@ const mutations = {
     }
 
     const chat = state.chats[partnerId]
+
+    // shouldn't duplicate local messages added directly
+    // when dispatch('getNewMessages')
+    const isMessageInList = chat.messages.find(localMessage => localMessage.id === message.id)
+    if (isMessageInList) {
+      return
+    }
+
     chat.messages.push(message)
 
     // If this is a new message, increment `numOfNewMessages`.

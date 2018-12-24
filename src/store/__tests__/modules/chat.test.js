@@ -394,6 +394,7 @@ describe('Store: chat.js', () => {
         // U111111 => me
         mutations.pushMessage(state, {
           message: {
+            id: '1',
             senderId: partnerId,
             recipientId: userId,
             message: 'hello'
@@ -404,6 +405,7 @@ describe('Store: chat.js', () => {
         // me => U111111
         mutations.pushMessage(state, {
           message: {
+            id: '2',
             senderId: userId,
             recipientId: partnerId,
             message: 'hi'
@@ -413,11 +415,13 @@ describe('Store: chat.js', () => {
 
         expect(state.chats.U111111.messages).toEqual([
           {
+            id: '1',
             senderId: partnerId,
             recipientId: userId,
             message: 'hello'
           },
           {
+            id: '2',
             senderId: userId,
             recipientId: partnerId,
             message: 'hi'
@@ -476,6 +480,7 @@ describe('Store: chat.js', () => {
         // message 1
         mutations.pushMessage(state, {
           message: {
+            id: '1',
             senderId: partnerId,
             recipientId: userId,
             message: 'message 1',
@@ -489,6 +494,7 @@ describe('Store: chat.js', () => {
         // message 2
         mutations.pushMessage(state, {
           message: {
+            id: '2',
             senderId: partnerId,
             recipientId: userId,
             message: 'message 2',
@@ -516,6 +522,7 @@ describe('Store: chat.js', () => {
 
         mutations.pushMessage(state, {
           message: {
+            id: '1',
             senderId: partnerId,
             recipientId: userId,
             message: 'message 1',
@@ -525,6 +532,34 @@ describe('Store: chat.js', () => {
         })
 
         expect(state.chats.U111111.numOfNewMessages).toBe(0)
+      })
+
+      it('should not duplicate local messages added directly when `getNewMessages`', () => {
+        const state = {
+          chats: {
+            U111111: {
+              messages: [],
+              numOfNewMessages: 0
+            }
+          }
+        }
+
+        const userId = 'U123456'
+        const partnerId = 'U111111'
+        const messageObject = {
+          message: {
+            id: '1',
+            senderId: partnerId,
+            recipientId: userId,
+            message: 'message 1'
+          },
+          userId
+        }
+
+        mutations.pushMessage(state, messageObject)
+        mutations.pushMessage(state, messageObject) // duplicate
+
+        expect(state.chats.U111111.messages.length).toBe(1)
       })
     })
 
