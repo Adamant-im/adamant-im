@@ -4,7 +4,7 @@
     @click="$emit('click')"
   >
     <v-list-tile-avatar>
-      <v-icon class="grey lighten-1 white--text" v-if="readOnly">
+      <v-icon class="chat-preview__icon" v-if="readOnly">
         {{ 'mdi-ethereum' }}
       </v-icon>
       <canvas :height="identiconSize" :ref="identiconRef" :width="identiconSize" v-else>
@@ -89,11 +89,22 @@ export default {
 }
 </script>
 
-<style>
-.chat-preview {
-}
-.chat-preview__date {
-  font-size: 8px;
-  color: #616161;
-}
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_colors.styl'
+
+.chat-preview
+  &__date
+    font-size: 8px
+    color: #616161
+  &__icon
+    color: $shades.white
+
+/** Themes **/
+.theme--light
+  .chat-preview__icon
+    background-color: $grey.lighten-1
+
+.theme--dark
+  .chat-preview__icon
+    background-color: $grey.darken-1
 </style>

@@ -7,13 +7,13 @@
   >
 
     <!-- Wallet -->
-    <v-btn to="/home" color="black" flat>
+    <v-btn to="/home" flat>
       <span>{{ $t('wallet') }}</span>
       <v-icon>mdi-wallet</v-icon>
     </v-btn>
 
     <!-- Chat -->
-    <v-btn to="/chats" color="black" flat>
+    <v-btn to="/chats" flat>
       <span>{{ $t('chats') }}</span>
       <v-badge overlap color="primary">
         <span v-if="numOfNewMessages > 0" slot="badge">{{ numOfNewMessages }}</span>
@@ -22,7 +22,7 @@
     </v-btn>
 
     <!-- Settings -->
-    <v-btn to="/options" color="black" flat>
+    <v-btn to="/options" flat>
       <span>{{ $t('settings') }}</span>
       <v-icon>mdi-settings</v-icon>
     </v-btn>

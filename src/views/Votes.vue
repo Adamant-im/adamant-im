@@ -96,7 +96,7 @@
         </v-data-table>
       </v-card>
 
-      <v-card class="mt-2" color="grey lighten-2">
+      <v-card class="vote-card mt-2">
         <v-card-title>
           <div>
             <h3 class="headline mb-0">{{ $t('votes.summary_title') }}</h3>
@@ -288,6 +288,14 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_colors.styl'
+
+.theme--light
+  .vote-card
+    background-color: $grey.lighten-2
+</style>
 
 <i18n>
 {

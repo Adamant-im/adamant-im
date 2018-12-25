@@ -101,34 +101,29 @@ export default {
 }
 </script>
 
-<style>
-.login-page {}
-.login-page__title {
-  color: #4a4a4a;
-  font-family: 'Exo 2';
-  font-weight: 100;
-  font-size: 45px;
-  line-height: 40px;
-  text-transform: uppercase;
-}
-.login-page__subtitle {
-  font-family: 'Exo 2';
-  font-weight: 100;
-  font-size: 18px;
-}
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_variables.styl'
 
-.logo {
-  width: 213px;
-  height: 213px;
-}
+.login-page
+  &__title
+    font-family: 'Exo 2'
+    font-weight: 100
+    font-size: 45px
+    line-height: 40px
+    text-transform: uppercase
+  &__subtitle
+    font-family: 'Exo 2'
+    font-weight: 100
+    font-size: 18px
 
-/* sm-and-up */
-@media only screen and (min-width : 600px) {
-  .logo {
-    width: 300px;
-    height: 300px;
-  }
-}
+.logo
+  width: 213px
+  height: 213px
+
+@media $display-breakpoints.sm-and-up
+  .logo
+    width: 300px
+    height: 300px
 </style>
 
 <i18n>
