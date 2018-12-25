@@ -36,13 +36,7 @@ npm i --save file:packages/chat
 
         <v-btn @click="pushNewMessage" color="primary">Push Message</v-btn>
         <v-btn @click="shuffle" color="secondary">Shuffle</v-btn>
-
-        <v-checkbox
-          v-model="enableTransition"
-          hide-details
-          label="Transition"
-        />
-       </v-toolbar>
+      </v-toolbar>
       
       <template slot="message" slot-scope="props">
 
