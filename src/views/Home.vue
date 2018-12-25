@@ -4,53 +4,37 @@
       <v-card flat class="transparent white--text">
 
         <!-- Wallets -->
-        <v-list two-line class="transparent">
-          <v-subheader>
-            {{ $t('wallets') }}
-          </v-subheader>
-
-          <v-list-tile
-            v-for="wallet in wallets"
-            :key="wallet.system"
-            avatar
-            @click="copyToClipboard(wallet.walletAddress)"
-          >
-            <v-list-tile-avatar>
-              <v-icon class="grey lighten-1 white--text">{{ wallet.iconWallet }}</v-icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t(wallet.titleWallet) }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{ wallet.walletAddress }}</v-list-tile-sub-title>
-            </v-list-tile-content>
-
-            <v-list-tile-action>
-              <v-icon>mdi-content-copy</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
-        </v-list>
-
-        <!-- Wallets Balance -->
-        <v-list two-line class="transparent">
-          <v-subheader>
-            {{ $t('balance') }}
-          </v-subheader>
-          <v-list-tile
-            v-for="wallet in wallets"
-            :key="wallet.system"
-            :to="wallet.link"
-            avatar
-          >
-            <v-list-tile-avatar>
-              <v-icon class="grey lighten-1 white--text">{{ wallet.iconBalance }}</v-icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t(wallet.titleBalance) }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{ wallet.walletBalance }} {{ wallet.system }}</v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
+        <v-tabs color="transparent" grow slider-color="blue">
+          <v-tab :key="wallet.system" color="black" v-for="wallet in wallets">
+            {{ $t(wallet.system) }}
+          </v-tab>
+          <v-tab-item :key="wallet.system" v-for="wallet in wallets">
+            <v-flex xs12>
+              <v-card :class="wallet.style + ' elevation-2'" flat>
+                <v-card-title primary-title>
+                  <v-spacer></v-spacer>{{ $t(wallet.titleWallet) }}
+                </v-card-title>
+                <v-layout row>
+                  <v-card-text>
+                    <div class="caption grey--text">{{ $t(wallet.titleBalance) }}</div>
+                    <div>{{ wallet.walletBalance }}</div>
+                    <div class="caption grey--text">{{ $t(wallet.titleWallet) }}</div>
+                    <div>{{ wallet.walletAddress }}</div>
+                  </v-card-text>
+                </v-layout>
+                <v-card-actions class="pa-3">
+                  <v-btn @click="copyToClipboard(wallet.walletAddress)" color="blue" flat>
+                    {{ $t(wallet.buttonCopyAddress) }}
+                  </v-btn>
+                  <v-spacer></v-spacer>
+                  <!--v-btn flat color="blue">
+                    {{ $t(wallet.buttonCreateQrCode) }}
+                  </v-btn-->
+                </v-card-actions>
+              </v-card>
+            </v-flex>
+          </v-tab-item>
+        </v-tabs>
 
         <!-- Actions -->
         <v-list class="transparent">
@@ -96,7 +80,10 @@ export default {
           iconBalance: 'mdi-polaroid',
           titleWallet: 'adamantAddress',
           titleBalance: 'adamantBalance',
-          link: '/transactions'
+          buttonCopyAddress: 'copyAddress',
+          buttonCreateQrCode: 'createQrCode',
+          link: '/transactions',
+          style: 'wallet-adm'
         },
         {
           system: 'BNB',
@@ -105,7 +92,10 @@ export default {
           iconWallet: 'mdi-polaroid',
           iconBalance: 'mdi-polaroid',
           titleWallet: 'binanceCoinAddress',
-          titleBalance: 'binanceCoinBalance'
+          titleBalance: 'binanceCoinBalance',
+          buttonCopyAddress: 'copyAddress',
+          buttonCreateQrCode: 'createQrCode',
+          style: 'wallet-bnb'
         },
         {
           system: 'ETH',
@@ -114,7 +104,10 @@ export default {
           iconWallet: 'mdi-ethereum',
           iconBalance: 'mdi-ethereum',
           titleWallet: 'ethereumAddress',
-          titleBalance: 'ethereumBalance'
+          titleBalance: 'ethereumBalance',
+          buttonCopyAddress: 'copyAddress',
+          buttonCreateQrCode: 'createQrCode',
+          style: 'wallet-eth'
         }
       ]
     }
@@ -151,7 +144,9 @@ export default {
     "ethereumBalance": "Ethereum balance",
     "binanceCoinBalance": "Binance Coin balance",
     "sendFunds": "Send Funds",
-    "buyTokens": "Buy Tokens"
+    "buyTokens": "Buy Tokens",
+    "copyAddress": "Copy",
+    "createQrCode": "Create QR code"
   },
   "ru": {
     "wallets": "Кошельки",
@@ -163,7 +158,21 @@ export default {
     "ethereumBalance": "Баланс ETH",
     "binanceCoinBalance": "Баланс BNB",
     "sendFunds": "Отправить средства",
-    "buyTokens": "Купить токены"
+    "buyTokens": "Купить токены",
+    "copyAddress": "Копировать",
+    "createQrCode": "Создать QR-код"
   }
 }
 </i18n>
+
+<style scoped>
+.wallet-adm {
+  background: url('/img/Wallet/adm-address.svg') center right no-repeat;
+}
+.wallet-bnb {
+  background: url('/img/Wallet/bnb-address.svg') center right no-repeat;
+}
+.wallet-eth {
+  background: url('/img/Wallet/eth-address.svg') center right no-repeat;
+}
+</style>
