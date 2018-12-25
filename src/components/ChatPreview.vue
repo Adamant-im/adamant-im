@@ -27,7 +27,10 @@
 </template>
 
 <script>
+// import adamant from '@/lib/adamant'
+import { getPublicKey } from '@/lib/adamant-api'
 import Identicon from '@/lib/identicon'
+
 export default {
   computed: {
     identiconRef () {
@@ -73,7 +76,11 @@ export default {
     if (!this.readOnly) {
       const el = this.$refs[this.identiconRef]
       const identicon = new Identicon()
-      identicon.avatar(el, this.chatName, this.identiconSize)
+      // const hash = adamant.createPassPhraseHash(this.$store.getters.getPassPhrase)
+      // const publicKey = adamant.makeKeypair(hash).publicKey
+      getPublicKey(this.chatName).then(key => {
+        identicon.avatar(el, key, this.identiconSize)
+      })
     }
   }
 }
