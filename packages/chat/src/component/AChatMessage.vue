@@ -45,7 +45,7 @@ export default {
   props: {
     id: {
       type: null,
-      required: true,
+      required: true
     },
     message: {
       type: String,

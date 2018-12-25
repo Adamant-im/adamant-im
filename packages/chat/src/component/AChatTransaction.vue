@@ -26,48 +26,49 @@
 </template>
 
 <script>
-  import moment from 'moment'
-  export default {
-    computed: {
-      time () {
-        return moment(this.timestamp).format('hh:mm A')
-      },
-      date () {
-        return moment(this.timestamp).format('LLLL')
-      },
-      amountFormatted () {
-        return (this.amount / 100000000).toFixed(2)
-      }
+import moment from 'moment'
+
+export default {
+  computed: {
+    time () {
+      return moment(this.timestamp).format('hh:mm A')
     },
-    props: {
-      id: {
-        type: String,
-        required: true,
-      },
-      message: {
-        type: String,
-        default: ''
-      },
-      timestamp: {
-        type: Number,
-        default: 0
-      },
-      userId: {
-        type: String,
-        default: ''
-      },
-      senderId: {
-        type: String,
-        default: ''
-      },
-      amount: {
-        type: Number,
-        default: 0
-      },
-      currency: {
-        type: String,
-        default: 'ADM'
-      }
+    date () {
+      return moment(this.timestamp).format('LLLL')
+    },
+    amountFormatted () {
+      return (this.amount / 100000000).toFixed(2)
+    }
+  },
+  props: {
+    id: {
+      type: String,
+      required: true
+    },
+    message: {
+      type: String,
+      default: ''
+    },
+    timestamp: {
+      type: Number,
+      default: 0
+    },
+    userId: {
+      type: String,
+      default: ''
+    },
+    senderId: {
+      type: String,
+      default: ''
+    },
+    amount: {
+      type: Number,
+      default: 0
+    },
+    currency: {
+      type: String,
+      default: 'ADM'
     }
   }
+}
 </script>

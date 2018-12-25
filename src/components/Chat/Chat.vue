@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { transformMessage, getRealTimestamp } from '@/lib/chatHelpers'
+import { transformMessage } from '@/lib/chatHelpers'
 import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@adamant/chat'
 
 import ChatToolbar from '@/components/Chat/ChatToolbar'
