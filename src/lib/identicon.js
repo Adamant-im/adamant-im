@@ -231,15 +231,15 @@ export default class Identicon {
       let t = Triangle.triangles[id][i]
       let x = t.x
       let y = t.y
-      let index = x + 3 * y + lines + seed + this.getValue(keyHash, keyArray[i + 1])
+      let index = x + 3 * y + lines + seed % this.getValue(keyHash, keyArray[i + 1])
       let color = this.PickColor(keyHash, colorsSet, index)
       tColors.push(color)
     }
     return tColors
   }
   scramble (seed) {
-    let multiplier = 0x5DEECE66D
-    let mask = (1 << 48) - 1
+    let multiplier = 0x5DEEC
+    let mask = (1 << 30) - 1
     return (seed ^ multiplier) & mask
   }
   getValue (string, index) {
