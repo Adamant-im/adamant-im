@@ -208,29 +208,44 @@ export default class Identicon {
     return xsMirror
   }
   triangleColors (id, key, lines) {
+    let keyHash = md5(key)
+    /* if (keyHash.length !== 32) {
+      throw new Error('AdamantIdenticon: Wrong md5 hash')
+    } */
     var tColors = []
-    var seed = 0
-    for (const u of md5(key)) {
-      seed += u.charCodeAt()
+    var rawKeyArray = []
+    for (const u of keyHash) {
+      rawKeyArray.push(u.charCodeAt())
     }
-    let highestValue = Math.trunc(this.MAX_INT32 / 2)
-    let rnd = randomDistribution(seed)
-    let colorsSet = this.colors[rnd.nextIntRange(0, highestValue) % this.colors.length]
+    const reducer = (accum, crntValue) => accum + crntValue
+    let seed = this.scramble(rawKeyArray.reduce(reducer)) // sum of all values
+    // process hash values to number array with 10 values. 1 - avatar color set (merge first 5), 2-10 - values for triange colors (merged by 3 values)
+    var keyArray = []
+    keyArray.push(rawKeyArray.slice(0, 5).reduce(reducer)) // merge first 5
+    for (let i = 5; i < 32; i += 3) {
+      keyArray.push(rawKeyArray.slice(i, i + 3).reduce(reducer)) // merge rest by 3
+    }
+    let setId = seed % this.getValue(keyHash, keyArray[0])
+    let colorsSet = this.colors[setId % this.colors.length]
     for (let i = 0; i < Triangle.triangles[id].length; i++) {
       let t = Triangle.triangles[id][i]
       let x = t.x
       let y = t.y
-      let index = (x + 3 * y + lines + rnd.nextIntRange(0, highestValue)) % 15
-      let color = this.PickColor(key, colorsSet, index)
+      let index = x + 3 * y + lines + seed + this.getValue(keyHash, keyArray[i + 1])
+      let color = this.PickColor(keyHash, colorsSet, index)
       tColors.push(color)
     }
     return tColors
   }
-  /* scramble (seed) {
+  scramble (seed) {
     let multiplier = 0x5DEECE66D
     let mask = (1 << 48) - 1
     return (seed ^ multiplier) & mask
-  } */
+  }
+  getValue (string, index) {
+    let s = String(string[index % string.length])
+    return s.charCodeAt()
+  }
   isOutsideHexagon (xL, yL, lines) {
     return !this.isFill1InHexagon(xL, yL, lines) && !this.isFill2InHexagon(xL, yL, lines)
   }
@@ -271,7 +286,7 @@ export default class Identicon {
   }
   // PickColor returns a color given a key string, an array of colors and an index.
   // key: should be a md5 hash string.
-  // index: is an index from the key string. Should be in interval [0, 16]
+  // index: is an index from the key string.
   // Algorithm: PickColor converts the key[index] value to a decimal value.
   // We pick the ith colors that respects the equality value%numberOfColors == i.
   PickColor (key, colors, index) {
@@ -282,12 +297,12 @@ export default class Identicon {
   // PickIndex returns an index of given a key string, the size of an array of colors
   //  and an index.
   // key: should be a md5 hash string.
-  // index: is an index from the key string. Should be in interval [0, 16]
+  // index: is an index from the key string.
   // Algorithm: PickIndex converts the key[index] value to a decimal value.
   // We pick the ith index that respects the equality value%sizeOfArray == i.
   PickIndex (key, n, index) {
     let s = md5(key)[index]
-    let r = s.charCodeAt()
+    let r = this.getValue(key, index)
     for (let i = 0; i < n; i++) {
       if (r % n === i) {
         return i
@@ -450,7 +465,7 @@ Triangle.triangles = [
   ]
 ]
 
-function randomDistribution (seed) {
+/* function randomDistribution (seed) {
   return {
     seed: seed,
     a: 0x5DEECE66D, // 25214903917
@@ -470,4 +485,4 @@ function randomDistribution (seed) {
       return Math.floor(this.nextFloatRange(min, max))
     }
   }
-}
+} */
