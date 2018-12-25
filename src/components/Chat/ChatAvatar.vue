@@ -3,20 +3,20 @@
 </template>
 
 <script>
+import { getPublicKey } from '@/lib/adamant-api'
+import Identicon from '@/lib/identicon'
+
 export default {
   mounted () {
     this.generateAvatar()
   },
   methods: {
     generateAvatar () {
-      // @todo Identicon will be here
       const el = this.$refs.avatar
-      const ctx = el.getContext('2d')
+      const identicon = new Identicon()
 
-      const circleSize = this.size / 2
-      ctx.beginPath()
-      ctx.arc(circleSize, circleSize, circleSize - 1, 0, 2 * Math.PI)
-      ctx.stroke()
+      getPublicKey(this.userId)
+        .then(key => identicon.avatar(el, key, this.size))
     }
   },
   props: {

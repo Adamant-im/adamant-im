@@ -21,7 +21,7 @@
           :key="props.message.id"
           :show-avatar="true"
         >
-          <chat-avatar :user-id="props.userId" slot="avatar"/>
+          <chat-avatar :user-id="props.sender.id" slot="avatar"/>
         </a-chat-message>
 
         <a-chat-transaction

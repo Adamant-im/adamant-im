@@ -8,13 +8,14 @@ exports[`ChatPreview.vue renders the correct markup 1`] = `
   <vlisttileavatar-stub
     size="40"
   >
-    <vicon-stub
-      class="grey lighten-1 white--text"
+    <canvas
+      height="40"
+      width="40"
     >
       
-      mdi-message-text
+      Canvas API is not supported
     
-    </vicon-stub>
+    </canvas>
      
     <vbadge-stub
       color="primary"
