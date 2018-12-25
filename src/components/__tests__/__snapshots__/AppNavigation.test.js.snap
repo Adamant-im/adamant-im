@@ -10,7 +10,6 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
 >
   <vbtn-stub
     activeclass="v-btn--active"
-    color="black"
     flat="true"
     tag="button"
     to="/home"
@@ -27,7 +26,6 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
    
   <vbtn-stub
     activeclass="v-btn--active"
-    color="black"
     flat="true"
     tag="button"
     to="/chats"
@@ -83,7 +81,6 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
    
   <vbtn-stub
     activeclass="v-btn--active"
-    color="black"
     flat="true"
     tag="button"
     to="/options"
