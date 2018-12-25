@@ -21,6 +21,7 @@
     <v-spacer></v-spacer>
 
     <chat-menu
+      v-if="!isChatReadOnly"
       :partner-id="partnerId"
     />
 
@@ -32,9 +33,6 @@ import ChatMenu from '@/components/Chat/ChatMenu'
 
 export default {
   computed: {
-    partnerId () {
-      return this.$route.params.partner
-    },
     partnerName: {
       get () {
         return this.$store.getters['partners/displayName'](this.partnerId)
@@ -45,6 +43,9 @@ export default {
           displayName: value
         })
       }
+    },
+    isChatReadOnly () {
+      return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
     }
   },
   methods: {
@@ -54,6 +55,12 @@ export default {
   },
   components: {
     ChatMenu
+  },
+  props: {
+    partnerId: {
+      type: String,
+      required: true
+    }
   }
 }
 </script>

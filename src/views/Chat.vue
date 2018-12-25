@@ -3,7 +3,7 @@
 
     <v-flex lg5 md5 sm12 xs12>
 
-      <chat/>
+      <chat :partner-id="partnerId"/>
 
     </v-flex>
 
@@ -14,6 +14,11 @@
 import Chat from '@/components/Chat/Chat'
 
 export default {
+  computed: {
+    partnerId () {
+      return this.$route.params.partner
+    }
+  },
   components: {
     Chat
   }

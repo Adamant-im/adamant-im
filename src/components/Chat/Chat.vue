@@ -11,7 +11,7 @@
 
       ref="chat"
     >
-      <chat-toolbar slot="header"/>
+      <chat-toolbar :partner-id="partnerId" slot="header"/>
 
       <template slot="message" slot-scope="props">
 
@@ -19,9 +19,9 @@
           v-if="props.message.type === 'message'"
           v-bind="props.message"
           :key="props.message.id"
-          :show-avatar="true"
+          :show-avatar="!isChatReadOnly"
         >
-          <chat-avatar :user-id="props.sender.id" slot="avatar"/>
+          <chat-avatar v-if="!isChatReadOnly" :user-id="props.sender.id" slot="avatar"/>
         </a-chat-message>
 
         <a-chat-transaction
@@ -36,6 +36,7 @@
       </template>
 
       <a-chat-form
+        v-if="!isChatReadOnly"
         slot="form"
         @message="onMessage"
         :show-send-button="true"
@@ -125,9 +126,6 @@ export default {
         getUserMeta.call(this, this.partnerId)
       ]
     },
-    partnerId () {
-      return this.$route.params.partner
-    },
     partnerName () {
       return this.$store.getters['partners/displayName'](this.partnerId)
     },
@@ -189,6 +187,12 @@ export default {
     AChatForm,
     ChatToolbar,
     ChatAvatar
+  },
+  props: {
+    partnerId: {
+      type: String,
+      required: true
+    }
   }
 }
 </script>
