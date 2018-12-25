@@ -426,7 +426,6 @@ const store = {
       state.showPanel = false
       state.showBottom = true
       state.transactions = {}
-      state.delegates = {}
       state.originDelegates = {}
       state.chats = {}
       state.newChats = {}
@@ -666,8 +665,8 @@ const store = {
     getAdmAddress: state => {
       return state.address
     },
-    getState: state => {
-      return state
+    getDelegateList: state => {
+      return state.delegates.delegates || []
     }
   },
   modules: {

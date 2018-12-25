@@ -117,7 +117,7 @@
               {{$t('votes.upvotes')}}: <strong>{{ upvotedCount }}</strong>,&nbsp;
               {{$t('votes.downvotes')}}: <strong>{{ downvotedCount }}</strong>,&nbsp;
               {{$t('votes.total_new_votes')}}: <strong>{{ downvotedCount + upvotedCount }}</strong> / {{ voteRequestLimit }},&nbsp;
-              {{$t('votes.total_votes')}}: <strong>{{ originVotesCount }} / {{ delegates.length }}</strong>
+              {{$t('votes.total_votes')}}: <strong>{{ originVotesCount }} / {{ delegatesLength }}</strong>
             </div>
           </md-card-header>
           <md-card-expand>
@@ -156,7 +156,7 @@
                         </template>
                     </div>
                 </div>
-              {{$t('votes.summary_info')}} <a href="https://adamant.im" target="_blank">{{$t('votes.summary_info_link_text')}}</a>
+              <a href="https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516" target="_blank">{{$t('votes.summary_info_link_text')}}</a>
             </md-card-content>
           </md-card-expand>
       </md-card>
@@ -207,15 +207,15 @@ export default {
       }
       // Downvoting
       if (delegate.voted) {
-        if (this.$store.state.delegates.delegates[delegate.address]._voted) {
-          this.$store.state.delegates.delegates[delegate.address].downvoted = true
+        if (this.$store.getters.getDelegateList[delegate.address]._voted) {
+          this.$store.getters.getDelegateList[delegate.address].downvoted = true
         }
         delegate.upvoted = false
         delegate.voted = false
       // Upvoting
       } else {
-        if (!this.$store.state.delegates.delegates[delegate.address]._voted) {
-          this.$store.state.delegates.delegates[delegate.address].upvoted = true
+        if (!this.$store.getters.getDelegateList[delegate.address]._voted) {
+          this.$store.getters.getDelegateList[delegate.address].upvoted = true
         }
         delegate.downvoted = false
         delegate.voted = true
@@ -230,7 +230,7 @@ export default {
         this.votesErrorMsg = this.$t('votes.no_money')
         this.$refs.votesSnackbar.open()
       } else {
-        const votes = (Object.values(this.$store.state.delegates.delegates).filter(x => x.downvoted).map(x => `-${x.publicKey}`)).concat(this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
+        const votes = (Object.values(this.$store.getters.getDelegateList).filter(x => x.downvoted).map(x => `-${x.publicKey}`)).concat(this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
         this.$store.dispatch('delegates/voteForDelegates', { votes: votes, address: this.$store.state.address })
       }
     },
@@ -276,11 +276,14 @@ export default {
     }
   },
   computed: {
+    delegatesLength () {
+      return Object.values(this.$store.getters.getDelegateList).length
+    },
     downVotedList () {
-      return Object.values(this.$store.state.delegates.delegates).filter(x => x.downvoted)
+      return Object.values(this.$store.getters.getDelegateList).filter(x => x.downvoted)
     },
     upVotedList () {
-      return Object.values(this.$store.state.delegates.delegates).filter(x => x.upvoted)
+      return Object.values(this.$store.getters.getDelegateList).filter(x => x.upvoted)
     },
     delegates () {
       const compare = (a, b) => {
@@ -317,38 +320,33 @@ export default {
         const regexp = new RegExp(this.filterString, 'i')
         return this.filterString !== '' ? (regexp.test(x.address) || regexp.test(x.username)) : true
       }
-      let delegates = this.$store.state.delegates.delegates
-      if (delegates) {
-        return Object.values(delegates)
-          .filter(filterDelegates)
-          .sort(compare)
-          .map((x) => {
-            x.style = this.status[x.status].style
-            x.tooltip = this.status[x.status].tooltip
-            return x
-          })
-      } else {
-        return []
-      }
+      return Object.values(this.$store.getters.getDelegateList)
+        .filter(filterDelegates)
+        .sort(compare)
+        .map((x) => {
+          x.style = this.status[x.status].style
+          x.tooltip = this.status[x.status].tooltip
+          return x
+        })
     },
     delegatesCount () {
       return this.delegates.length
     },
     upvotedCount () {
-      return Object.values(this.$store.state.delegates.delegates).filter(x => x.upvoted).length
+      return Object.values(this.$store.getters.getDelegateList).filter(x => x.upvoted).length
     },
     downvotedCount () {
-      return Object.values(this.$store.state.delegates.delegates).filter(x => x.downvoted).length
+      return Object.values(this.$store.getters.getDelegateList).filter(x => x.downvoted).length
     },
     originVotesCount () {
-      return Object.values(this.$store.state.delegates.delegates).filter(x => x._voted).length
+      return Object.values(this.$store.getters.getDelegateList).filter(x => x._voted).length
     },
     totalVotes () {
       return this.downvotedCount + this.originVotesCount - this.downvotedCount
     },
     delegatesLoaded () {
-      if (this.$store.state.delegates.delegates) {
-        return Object.keys(this.$store.state.delegates.delegates).length > 0
+      if (this.$store.getters.getDelegateList) {
+        return Object.keys(this.$store.getters.getDelegateList).length > 0
       }
     },
     errorMsg () {
