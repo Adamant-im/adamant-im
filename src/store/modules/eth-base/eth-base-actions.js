@@ -46,7 +46,6 @@ export default function createActions (config) {
     reset: {
       root: true,
       handler (context) {
-        console.log('logout in eth')
         queue.stop()
         context.commit('reset')
       }
