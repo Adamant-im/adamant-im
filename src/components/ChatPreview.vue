@@ -4,9 +4,12 @@
     @click="$emit('click')"
   >
     <v-list-tile-avatar>
-      <v-icon class="grey lighten-1 white--text">
-        {{ readOnly ? 'mdi-ethereum' : 'mdi-message-text' }}
+      <v-icon class="grey lighten-1 white--text" v-if="readOnly">
+        {{ 'mdi-ethereum' }}
       </v-icon>
+      <canvas :height="identiconSize" :ref="identiconRef" :width="identiconSize" v-else>
+        Canvas API is not supported
+      </canvas>
       <v-badge overlap color="primary">
         <span v-if="numOfNewMessages" slot="badge">{{ numOfNewMessages }}</span>
       </v-badge>
@@ -28,7 +31,20 @@
 </template>
 
 <script>
+import { getPublicKey } from '@/lib/adamant-api'
+import Identicon from '@/lib/identicon'
+
 export default {
+  mounted () {
+    if (!this.readOnly) {
+      const el = this.$refs[this.identiconRef]
+      const identicon = new Identicon()
+
+      getPublicKey(this.partnerId).then(key => {
+        identicon.avatar(el, key, this.identiconSize)
+      })
+    }
+  },
   computed: {
     partnerName () {
       return this.$store.getters['partners/displayName'](this.partnerId) || this.partnerId
@@ -50,6 +66,14 @@ export default {
     },
     createdAt () {
       return this.$formatDate(this.lastMessageTimestamp)
+    },
+    identiconRef () {
+      return 'identicon_' + this.partnerId
+    }
+  },
+  data () {
+    return {
+      identiconSize: 40
     }
   },
   props: {
