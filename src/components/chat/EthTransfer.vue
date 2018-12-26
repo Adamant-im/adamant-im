@@ -9,6 +9,7 @@
     <p class='transaction-amount' v-on:click="goToTransaction()">
       <span v-text="message.message.amount"></span> {{ crypto }}
     </p>
+    this is eth like payment
     <p><em v-text="message.message.comments"></em></p>
 
     <template slot="brief-view">

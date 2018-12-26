@@ -74,7 +74,6 @@ export default function createActions (config) {
       ethAddress = ethAddress.trim()
       const crypto = context.state.crypto
       const ethTx = initTransaction(api, context, ethAddress, amount)
-
       return utils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
         .then(count => {
           if (count) ethTx.nonce = count

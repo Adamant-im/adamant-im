@@ -8,6 +8,7 @@
     :readOnly="readOnly"
     :message="message"
   >
+    this is adm payment
     <p v-if="message.amount">
       {{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}
     </p>

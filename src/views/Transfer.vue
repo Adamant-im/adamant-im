@@ -134,6 +134,7 @@ export default {
           confirm_class: 'sent',
           id: this.$store.getters.getCurrentChatMessageCount + partnerTransactionsCount + 1
         }
+        console.log('ADM handledPayload', handledPayload)
         let currentDialogs = chats[partner]
         // if the user is in the chat list, save message
         if (currentDialogs) {
@@ -156,6 +157,7 @@ export default {
           if (currentDialogs) {
             if (response.success) {
               replaceMessageAndDelete(chats[partner].messages, response.transactionId, handledPayload.id, 'sent')
+              console.log('ADM chats', chats)
               handledPayload.message = 'sent ' + (message.amount) + ' ' + message.fundType
               updateLastChatMessage(currentDialogs, handledPayload, 'sent', 'from', response.transactionId)
             } else {
@@ -167,12 +169,58 @@ export default {
           return response.transactionId
         })
       } else {
-        return this.$store.dispatch(this.crypto.toLowerCase() + '/sendTokens', {
-          amount: this.targetAmount,
-          admAddress: this.fixedAddress,
-          ethAddress: this.targetAddress,
-          comments: this.comments
+        console.log('send some another currency')
+        let chats = this.$store.getters.getChats
+        // Check for existing chat by eth address
+        let contacts = Object.entries(this.$store.getters.getContacts.list)
+        let recipient
+        contacts.forEach((contact) => {
+          const ethAddress = contact[1].ETH
+          if (ethAddress === this.targetAddress) {
+            recipient = {
+              ADMAddress: contact[0],
+              ETHAddress: contact[1].ETH
+            }
+          }
         })
+        const message = { to: this.targetAddress, message: this.comments, amount: this.targetAmount, fundType: this.crypto }
+        const partnerTransactionsCount = (this.$store.getters['adm/partnerTransactions'](recipient.ADMAddress)).length
+        // Build chat message
+        let handledPayload = {
+          ...message,
+          timestamp: utils.epochTime(),
+          message: {
+            amount: message.amount,
+            comments: message.message,
+            type: 'eth_transaction'
+          },
+          direction: 'from',
+          confirm_class: 'sent',
+          id: this.$store.getters.getCurrentChatMessageCount + partnerTransactionsCount + 1
+        }
+        console.log('handledPayload', handledPayload)
+        console.log('recipient', recipient)
+        // replaceMessageAndDelete(chats[recipient.ADMAddress].messages, "17617165176462818475", handledPayload.id, 'sent')
+        let currentDialog = chats[recipient.ADMAddress]
+        if (currentDialog) {
+          if (handledPayload.message === '') {
+            handledPayload.message.comments = 'sent ' + (message.amount) + ' ' + message.fundType
+            handledPayload.message.comments = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
+            updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
+            handledPayload.message.comments = ''
+          } else {
+            handledPayload.message = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
+            updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
+          }
+          Vue.set(currentDialog.messages, handledPayload.id, handledPayload)
+        }
+        console.log('chats', chats)
+        // return this.$store.dispatch(this.crypto.toLowerCase() + '/sendTokens', {
+        //   amount: this.targetAmount,
+        //   admAddress: this.fixedAddress,
+        //   ethAddress: this.targetAddress,
+        //   comments: this.comments
+        // })
       }
     },
     transfer: function () {
