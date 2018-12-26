@@ -29,6 +29,14 @@ renderer.heading = function (text) {
   return `<p>${text}</p>`
 }
 
+renderer.text = function (text) {
+  // (^|\s) - start of the line or space
+  // ($|\s) - end of the line or space
+  const linkPattern = /(^|\s)([a-z.\u0400-\u04FF]+)\.([a-z\u0400-\u04FF]{2,})($|\s)/ig
+
+  return text.replace(linkPattern, `$1<a href="http://$2.$3">$2.$3</a>$4`)
+}
+
 /**
  * Renders markdown-formatted input to HTML
  * @param {string} text text to render
