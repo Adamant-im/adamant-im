@@ -169,7 +169,6 @@ export default {
           return response.transactionId
         })
       } else {
-        console.log('send some another currency')
         let chats = this.$store.getters.getChats
         // Check for existing chat by eth address
         let contacts = Object.entries(this.$store.getters.getContacts.list)
@@ -183,7 +182,7 @@ export default {
             }
           }
         })
-        const message = { to: this.targetAddress, message: this.comments, amount: this.targetAmount, fundType: this.crypto }
+        const message = { to: this.targetAddress, amount: this.targetAmount, fundType: this.crypto }
         const partnerTransactionsCount = (this.$store.getters['adm/partnerTransactions'](recipient.ADMAddress)).length
         // Build chat message
         let handledPayload = {
@@ -191,7 +190,7 @@ export default {
           timestamp: utils.epochTime(),
           message: {
             amount: message.amount,
-            comments: message.message,
+            comments: message.message || '',
             type: 'eth_transaction'
           },
           direction: 'from',
@@ -203,24 +202,23 @@ export default {
         // replaceMessageAndDelete(chats[recipient.ADMAddress].messages, "17617165176462818475", handledPayload.id, 'sent')
         let currentDialog = chats[recipient.ADMAddress]
         if (currentDialog) {
-          if (handledPayload.message === '') {
+          if (handledPayload.message.comments === '') {
             handledPayload.message.comments = 'sent ' + (message.amount) + ' ' + message.fundType
             handledPayload.message.comments = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
             updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
             handledPayload.message.comments = ''
           } else {
-            handledPayload.message = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
+            handledPayload.message.comments = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
             updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
           }
           Vue.set(currentDialog.messages, handledPayload.id, handledPayload)
         }
-        console.log('chats', chats)
-        // return this.$store.dispatch(this.crypto.toLowerCase() + '/sendTokens', {
-        //   amount: this.targetAmount,
-        //   admAddress: this.fixedAddress,
-        //   ethAddress: this.targetAddress,
-        //   comments: this.comments
-        // })
+        return this.$store.dispatch(this.crypto.toLowerCase() + '/sendTokens', {
+          amount: this.targetAmount,
+          admAddress: this.fixedAddress,
+          ethAddress: this.targetAddress,
+          comments: this.comments
+        })
       }
     },
     transfer: function () {
