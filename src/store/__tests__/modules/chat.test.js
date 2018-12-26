@@ -316,6 +316,116 @@ describe('Store: chat.js', () => {
         expect(isChatReadOnly('U111111')).toBe(false)
       })
     })
+
+    /**
+     * getters.unreadMessages
+     */
+    describe('getters.unreadMessages', () => {
+      it('should return empty array when no chats', () => {
+        const partners = []
+        const state = {
+          chats: {}
+        }
+
+        expect(getters.unreadMessages(state, { partners })).toEqual([])
+      })
+
+      it('should return empty array when no unread messages', () => {
+        const state = {
+          chats: {
+            U111111: {
+              messages: [],
+              numOfNewMessages: 0
+            },
+            U222222: {
+              messages: [],
+              numOfNewMessages: 0
+            }
+          }
+        }
+
+        const listGetters = {
+          partners: getters.partners(state),
+          numOfNewMessages: getters.numOfNewMessages(state),
+          messages: getters.messages(state)
+        }
+
+        expect(getters.unreadMessages(state, listGetters)).toEqual([])
+      })
+
+      it('should return array of messages', () => {
+        const messages = [
+          { id: 1 },
+          { id: 2 },
+          { id: 3 },
+          { id: 4 },
+          { id: 5 },
+          { id: 6 }
+        ]
+
+        const state = {
+          chats: {
+            U111111: {
+              messages: [],
+              numOfNewMessages: 0
+            },
+            U222222: {
+              messages: [
+                messages[0],
+                messages[1],
+                messages[2]
+              ],
+              numOfNewMessages: 1
+            },
+            U333333: {
+              messages: [
+                messages[3],
+                messages[4],
+                messages[5]
+              ],
+              numOfNewMessages: 2
+            }
+          }
+        }
+
+        const listGetters = {
+          partners: getters.partners(state),
+          numOfNewMessages: getters.numOfNewMessages(state),
+          messages: getters.messages(state)
+        }
+
+        expect(getters.unreadMessages(state, listGetters)).toEqual(
+          [
+            messages[2],
+            messages[4],
+            messages[5]
+          ]
+        )
+      })
+    })
+
+    /**
+     * getters.lastUnreadMessage
+     */
+    describe('getters.lastUnreadMessage', () => {
+      it('should return null when no messages', () => {
+        const unreadMessages = []
+
+        expect(getters.lastUnreadMessage({}, { unreadMessages })).toBe(null)
+      })
+
+      it('should return message', () => {
+        const unreadMessages = [
+          { id: 1 },
+          { id: 2 },
+          { id: 3 }
+        ]
+
+        const lastUnreadMessage = getters.lastUnreadMessage({}, { unreadMessages })
+
+        expect(lastUnreadMessage).toEqual({ id: 3 })
+      })
+    })
   })
 
   /**

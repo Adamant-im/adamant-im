@@ -157,6 +157,37 @@ const getters = {
     }
 
     return false
+  },
+
+  /**
+   * Get unread messages from all chats.
+   * @returns {Message[]}
+   */
+  unreadMessages: (state, getters) => {
+    let messages = []
+
+    getters.partners.forEach(partnerId => {
+      const numOfNewMessages = getters.numOfNewMessages(partnerId)
+
+      // get last `n` messages
+      const partnerMessages = getters
+        .messages(partnerId)
+        .slice(-numOfNewMessages)
+
+      messages = [...messages, ...partnerMessages]
+    })
+
+    return messages
+  },
+
+  /**
+   * Returns last unread message from all chats.
+   * @returns {Message|null}
+   */
+  lastUnreadMessage: (state, getters) => {
+    const length = getters.unreadMessages.length
+
+    return getters.unreadMessages[length - 1] || null
   }
 }
 
