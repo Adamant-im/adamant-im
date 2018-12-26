@@ -51,7 +51,14 @@
           <v-checkbox
             :label="$t('changeBrowserTabTitle')"
             color="grey darken-1"
-            v-model="allowBrowserTabNotification"
+            v-model="allowTabNotifications"
+          />
+        </v-flex>
+        <v-flex xs12>
+          <v-checkbox
+            :label="$t('push')"
+            color="grey darken-1"
+            v-model="allowPushNotifications"
           />
         </v-flex>
       </v-layout>
@@ -106,13 +113,24 @@ export default {
         })
       }
     },
-    allowBrowserTabNotification: {
+    allowTabNotifications: {
       get () {
-        return this.$store.state.options.allowBrowserTabNotification
+        return this.$store.state.options.allowTabNotifications
       },
       set (value) {
         this.$store.commit('options/updateOption', {
-          key: 'allowBrowserTabNotification',
+          key: 'allowTabNotifications',
+          value
+        })
+      }
+    },
+    allowPushNotifications: {
+      get () {
+        return this.$store.state.options.allowPushNotifications
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'allowPushNotifications',
           value
         })
       }
@@ -140,6 +158,7 @@ export default {
       "logoutOnTabClose": "Logout on tab close",
       "sendMessageOnEnter": "Send message on Enter",
       "sound": "Sound",
+      "push": "Allow PUSH-notifications",
       "changeBrowserTabTitle": "Change browser tab title"
     },
     "ru": {
@@ -154,6 +173,7 @@ export default {
       "logoutOnTabClose": "Выходить из кошелька при закрытии вкладки браузера",
       "sendMessageOnEnter": "Отправлять сообщения при нажатии Enter",
       "sound": "Звуковые уведомления",
+      "push": "Разрешить PUSH-уведомления",
       "changeBrowserTabTitle": "Менять заголовок вкладки браузера"
     }
   }

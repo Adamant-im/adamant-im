@@ -37,14 +37,33 @@ export default {
     numOfNewMessages () {
       return this.$store.getters['chat/totalNumOfNewMessages']
     },
-    userAllowNotifications () {
-      return this.$store.state.options.allowBrowserTabNotification
+    userAllowTabNotifications () {
+      return this.$store.state.options.allowTabNotifications
     },
     userAllowSoundNotifications () {
       return this.$store.state.options.allowSoundNotifications
     },
+    userAllowPushNotifications () {
+      return this.$store.state.options.allowPushNotifications
+    },
     isLogged () {
       return this.$store.getters.isLogged
+    },
+    lastUnreadMessage () {
+      return this.$store.getters['chat/lastUnreadMessage']
+    },
+    /**
+     * Returns `partnerName` or `partnerId` from `lastUnreadMessage`
+     * @returns {string}
+     */
+    partnerName () {
+      const partnerId = this.lastUnreadMessage && this.lastUnreadMessage.senderId
+
+      if (partnerId) {
+        return this.$store.getters['partners/displayName'](partnerId)
+      }
+
+      return ''
     }
   },
   data: () => ({
@@ -67,43 +86,56 @@ export default {
       }, 3000)
     },
     checkForNewMessages () {
-      if (this.numOfNewMessages > 0 && this.userAllowNotifications) {
-        // Tab notification
+      this.handleTabNotifications()
+      this.handleSoundNotifications()
+      this.handlePushNotifications()
+
+      // save previous number of messages
+      // to avoid endless notifications
+      this.prevNumOfMessages = this.numOfNewMessages
+    },
+    handleTabNotifications () {
+      if (
+        this.userAllowTabNotifications &&
+        this.numOfNewMessages > 0
+      ) {
         let notificationMessage = this.numOfNewMessages % 10 > 4
           ? this.$tc('newMessageNotification.many', this.numOfNewMessages)
           : this.$tc('newMessageNotification.few', this.numOfNewMessages)
 
         this.blinker.start(notificationMessage)
-
-        // Sound notification
-        if (
-          this.userAllowSoundNotifications &&
-          this.numOfNewMessages > this.prevNumOfMessages
-        ) {
-          this.$store.dispatch('noise/play')
-          this.prevNumOfMessages = this.numOfNewMessages
-        }
-
-        // PUSH notification
-        if (this.numOfNewMessages > this.prevNumOfMessages) {
-          const lastUnreadMessage = this.$store.getters['chat/lastUnreadMessage']
-          if (lastUnreadMessage) {
-            const tag = lastUnreadMessage.id
-            // Message not shown yet
-            if (tag !== this.browserNotification.tag) {
-              this.browserNotification = {
-                body: `${partner}: ${lastUnreadMessage.message}`,
-                tag
-              }
-              this.showBrowserNotification()
-            }
-          }
-        }
       } else {
         this.blinker.stop()
       }
     },
-    showBrowserNotification () {
+    handleSoundNotifications () {
+      if (
+        this.userAllowSoundNotifications &&
+        this.numOfNewMessages > this.prevNumOfMessages
+      ) {
+        this.$store.dispatch('noise/play')
+      }
+    },
+    handlePushNotifications () {
+      if (
+        this.userAllowPushNotifications &&
+        this.numOfNewMessages > this.prevNumOfMessages
+      ) {
+        if (this.lastUnreadMessage) {
+          const tag = this.lastUnreadMessage.id
+
+          // Message not shown yet
+          if (tag !== this.browserNotification.tag) {
+            this.browserNotification = {
+              body: `${this.partnerName}: ${this.lastUnreadMessage.message}`,
+              tag
+            }
+            this.sendPushNotification()
+          }
+        }
+      }
+    },
+    sendPushNotification () {
       const notification = new Notify('ADAMANT', this.browserNotification)
       notification.show()
     },

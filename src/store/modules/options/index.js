@@ -2,7 +2,8 @@ const state = () => ({
   logoutOnTabClose: false, // if true, localStorage will be cleared after logout
   sendMessageOnEnter: false,
   allowSoundNotifications: false,
-  allowBrowserTabNotification: false
+  allowTabNotifications: false,
+  allowPushNotifications: false
 })
 
 const mutations = {
