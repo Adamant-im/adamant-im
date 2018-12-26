@@ -156,7 +156,7 @@
                         </template>
                     </div>
                 </div>
-              <a href="https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516" target="_blank">{{$t('votes.summary_info_link_text')}}</a>
+                {{$t('votes.summary_info')}} <a href="https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516" target="_blank">{{$t('votes.summary_info_link_text')}}</a>.
             </md-card-content>
           </md-card-expand>
       </md-card>

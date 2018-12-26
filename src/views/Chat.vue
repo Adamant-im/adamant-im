@@ -200,6 +200,7 @@ export default {
       this.scrollToEnd()
     },
     sendTokens (crypto) {
+      console.log('im here')
       this.sendToCrypto = crypto
 
       let promise = Promise.resolve(true)
