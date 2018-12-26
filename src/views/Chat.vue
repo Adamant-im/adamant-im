@@ -390,6 +390,9 @@ export default {
   .chat_message .dt {
     right: 10px;
   }
+  /* TODO these classes fix color of emoji
+   * Without of them all emojies will have color like main color of font in application.
+   */
   .message-input {
     color: rgba(0, 0, 0, 1) !important;
   }
