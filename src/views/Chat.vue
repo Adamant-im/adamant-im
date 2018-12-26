@@ -52,7 +52,7 @@
           <md-layout md-flex="80" md-flex-xsmall="75" class="text_block" v-if="!readOnly">
               <md-input-container md-inline>
                   <label>{{ $t('chats.message') }}</label>
-                  <md-textarea ref="messageField" v-model="message" @keydown.native="kp($event)" @focus="focusHandler" @blur.native="blurHandler"></md-textarea>
+                  <md-textarea class="message-input" ref="messageField" v-model="message" @keydown.native="kp($event)" @focus="focusHandler" @blur.native="blurHandler"></md-textarea>
                   <span v-if="message_fee" class="md-count">{{ $t('chats.estimate_fee') }}: {{message_fee}}</span>
               </md-input-container>
           </md-layout>
@@ -389,5 +389,15 @@ export default {
   }
   .chat_message .dt {
     right: 10px;
+  }
+  /* TODO these classes fix color of emoji
+   * Without of them all emojies will have color like main color of font in application.
+   */
+  .message-input {
+    color: rgba(0, 0, 0, 1) !important;
+  }
+  .message-input:focus {
+    text-shadow: none !important;
+    -webkit-text-fill-color: inherit !important;
   }
 </style>
