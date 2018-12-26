@@ -9,12 +9,18 @@
 <script>
 import i18n from '@/i18n'
 import Blinker from '@/lib/blinker'
+import Notify from 'notifyjs'
 
 export default {
   created () {
     this.setLocale()
     if (this.isLogged) {
       this.$store.dispatch('unlock')
+    }
+    if (Notify.needsPermission) {
+      if (Notify.isSupported()) {
+        Notify.requestPermission()
+      }
     }
   },
   mounted () {
@@ -44,7 +50,12 @@ export default {
   data: () => ({
     blinker: null,
     intervalRef: null,
-    prevNumOfMessages: 0
+    prevNumOfMessages: 0,
+    browserNotification: {
+      body: null,
+      tag: null,
+      timeout: 5
+    }
   }),
   methods: {
     almostSocket () {
@@ -72,9 +83,29 @@ export default {
           this.$store.dispatch('noise/play')
           this.prevNumOfMessages = this.numOfNewMessages
         }
+
+        // PUSH notification
+        if (this.numOfNewMessages > this.prevNumOfMessages) {
+          const lastUnreadMessage = this.$store.getters['chat/lastUnreadMessage']
+          if (lastUnreadMessage) {
+            const tag = lastUnreadMessage.id
+            // Message not shown yet
+            if (tag !== this.browserNotification.tag) {
+              this.browserNotification = {
+                body: `${partner}: ${lastUnreadMessage.message}`,
+                tag
+              }
+              this.showBrowserNotification()
+            }
+          }
+        }
       } else {
         this.blinker.stop()
       }
+    },
+    showBrowserNotification () {
+      const notification = new Notify('ADAMANT', this.browserNotification)
+      notification.show()
     },
     setLocale () {
       // Set language from `localStorage`.
