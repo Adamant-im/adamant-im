@@ -353,6 +353,29 @@ describe('Store: chat.js', () => {
         expect(getters.unreadMessages(state, listGetters)).toEqual([])
       })
 
+      it('should return empty array when `numOfNewMessages = 0`', () => {
+        const state = {
+          chats: {
+            U111111: {
+              messages: [
+                { id: 1 },
+                { id: 2 },
+                { id: 3 }
+              ],
+              numOfNewMessages: 0
+            }
+          }
+        }
+
+        const listGetters = {
+          partners: getters.partners(state),
+          numOfNewMessages: getters.numOfNewMessages(state),
+          messages: getters.messages(state)
+        }
+
+        expect(getters.unreadMessages(state, listGetters)).toEqual([])
+      })
+
       it('should return array of messages', () => {
         const messages = [
           { id: 1 },

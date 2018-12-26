@@ -170,11 +170,11 @@ const getters = {
       const numOfNewMessages = getters.numOfNewMessages(partnerId)
 
       // get last `n` messages
-      const partnerMessages = getters
-        .messages(partnerId)
-        .slice(-numOfNewMessages)
+      const partnerMessages = getters.messages(partnerId)
+      const lastPartnerMessages = partnerMessages
+        .slice(partnerMessages.length - numOfNewMessages)
 
-      messages = [...messages, ...partnerMessages]
+      messages = [...messages, ...lastPartnerMessages]
     })
 
     return messages
@@ -330,10 +330,12 @@ const mutations = {
 
     Vue.set(state.chats, 'Adamant Bounty', {
       messages: bountyMessages,
+      numOfNewMessages: 0,
       readOnly: true
     })
     Vue.set(state.chats, 'Adamant Tokens', {
       messages: tokensMessages,
+      numOfNewMessages: 0,
       readOnly: true
     })
   }
