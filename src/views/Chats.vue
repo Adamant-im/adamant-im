@@ -64,9 +64,6 @@ export default {
   name: 'chats',
   components: { NewChat, ChatEntry },
   methods: {
-    load () {
-      this.$store.dispatch('loadChats')
-    },
     newMessages (address) {
       if (this.$store.state.newChats[address]) {
         return this.$store.state.newChats[address]
@@ -129,6 +126,7 @@ export default {
     }
   },
   mounted () {
+    this.$store.dispatch('loadChats')
     let lastVisitedChat = String(this.lastVisitedChat)
     lastVisitedChat = lastVisitedChat.replace(' ', '-')
     if (lastVisitedChat) {

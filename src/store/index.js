@@ -328,6 +328,9 @@ const store = {
         }
       )
     },
+    updateChatHeight (context, payload) {
+      context.commit('set_last_chat_height', payload)
+    },
     /**
      * Updates current application status: balance, chat messages, transactions and so on
      * @param {any} context Vuex action context
