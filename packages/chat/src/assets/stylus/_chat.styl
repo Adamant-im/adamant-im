@@ -3,6 +3,19 @@ $chat-body-color := #000
 
 $chat-form-height := 64px
 
+$chat-header-height := 18px
+$chat-body-height := 18px
+
+$chat-sender := {
+  font-size: 15px
+  line-height: 1.2
+}
+
+$chat-message := {
+  font-size: 15px
+  line-height: 1
+}
+
 .a-chat
   display: block
   text-decoration: none
@@ -66,14 +79,17 @@ $chat-form-height := 64px
   &__message-card
     text-align: left
     display: inline-block
-    max-width: 80%
 
   &__message-card-header
     display: flex
     flex-direction: row
     align-items: center
 
+  &__message-card-body
+    margin-top: 2px
+
   &__message-text
+    font-size: $chat-message.font-size
     overflow-wrap: break-word
     word-break: break-all
 
@@ -81,11 +97,11 @@ $chat-form-height := 64px
    * 1. align text to top
    */
   &__sender
-    font-size: 16px
+    font-size: $chat-sender.font-size
+    line-height: $chat-sender.line-height
     font-weight: 700
     color: $grey.darken-4
     margin-right: 8px
-    line-height: 1
 
   &__timestamp
     font-size: 12px
@@ -93,10 +109,11 @@ $chat-form-height := 64px
     line-height: 1
 
   &__status
+    line-height: 1
     margin-left: 8px
 
-  &__message-card-body
-    margin-top: 4px
+    i
+      line-height: 1.2
 
   &__form
     background-color: $grey.lighten-4

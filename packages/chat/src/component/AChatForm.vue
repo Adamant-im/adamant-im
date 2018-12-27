@@ -24,10 +24,17 @@ export default {
     listeners () {
       return {
         keydown: (e) => {
-          if (e.code === 'Enter' && !e.shiftKey) {
+          if (e.code === 'Enter') {
             if (this.sendOnEnter) {
-              e.preventDefault()
-              this.submitMessage()
+              if (!e.ctrlKey && !e.shiftKey) {
+                e.preventDefault()
+                this.submitMessage()
+              }
+            } else {
+              if (e.ctrlKey || e.shiftKey) {
+                e.preventDefault()
+                this.submitMessage()
+              }
             }
           }
         }
@@ -46,11 +53,11 @@ export default {
   props: {
     showSendButton: {
       type: Boolean,
-      default: false
+      default: true
     },
     sendOnEnter: {
       type: Boolean,
-      default: false
+      default: true
     },
     label: {
       type: String,

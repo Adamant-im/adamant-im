@@ -5,7 +5,7 @@ import { createChat, getChats, queueMessage, createMessage } from '@/lib/chatHel
 import { isNumeric } from '@/lib/numericHelpers'
 
 /**
- * interface State {
+ * type State {
  *   chats: {
  *     [senderId: string]: Chat
  *   },
@@ -13,13 +13,13 @@ import { isNumeric } from '@/lib/numericHelpers'
  *   isFulfilled: boolean
  * }
  *
- * interface Chat {
+ * type Chat {
  *   messages: Message[],
  *   numOfNewMessages: number,
  *   readOnly?: boolean // for Adamant Bounty & Adamant Tokens chats
  * }
  *
- * interface Message {
+ * type ServerMessage {
  *   id: number,
  *   message: {string|Object}, // `Object` when eth transaction
  *   senderId: string,
@@ -27,7 +27,30 @@ import { isNumeric } from '@/lib/numericHelpers'
  *   amount: number,
  *   timestamp: number
  *   ...
- *   status?: enum('sent', 'confirmed', 'rejected' // assigned locally (default = confirmed)
+ * }
+ *
+ * type Message = {
+ *   id: number,
+ *   senderId: string,
+ *   message: string,
+ *   timestamp: number,
+ *   admTimestamp: number,
+ *   amount: number,
+ *   i18n: boolean,
+ *   status: MessageStatus,
+ *   type: MessageType
+ * }
+ *
+ * enum MessageType {
+ *   Message = 'message',
+ *   ADM = 'ADM',
+ *   ETH = 'ETH'
+ * }
+ *
+ * enum MessageStatus {
+ *   sent,
+ *   confirmed,
+ *   rejected
  * }
  */
 const state = () => ({

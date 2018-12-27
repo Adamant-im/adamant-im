@@ -5,6 +5,7 @@
       :partners="partners"
       :user-id="userId"
       :loading="loading"
+      :locale="$i18n.locale"
 
       @scroll:top="onScrollTop"
       @scroll:bottom="onScrollBottom"
@@ -13,24 +14,29 @@
     >
       <chat-toolbar :partner-id="partnerId" slot="header"/>
 
-      <template slot="message" slot-scope="props">
+      <template slot="message" slot-scope="{ message, userId, sender, locale }">
 
         <a-chat-message
-          v-if="props.message.type === 'message'"
-          v-bind="props.message"
-          :key="props.message.id"
+          v-if="message.type === 'message'"
+          v-bind="message"
+          :key="message.id"
+          :user-id="userId"
           :show-avatar="!isChatReadOnly"
+          :locale="locale"
         >
-          <chat-avatar v-if="!isChatReadOnly" :user-id="props.sender.id" slot="avatar"/>
+          <chat-avatar v-if="!isChatReadOnly" :user-id="sender.id" use-public-key slot="avatar"/>
         </a-chat-message>
 
         <a-chat-transaction
-          v-else-if="['ADM', 'ETH'].includes(props.message.type)"
-          v-bind="props.message"
-          :key="props.message.id"
-          :amount="props.message.amount"
-          :currency="props.message.type"
-          @click:transaction="openTransaction(props.message)"
+          v-else-if="['ADM', 'ETH'].includes(message.type)"
+          v-bind="message"
+          :key="message.id"
+          :user-id="userId"
+          :amount="message.amount"
+          :currency="message.type"
+          :i18n="{ sent: $t('sent'), received: $t('received') }"
+          :locale="locale"
+          @click:transaction="openTransaction(message)"
         />
 
       </template>
@@ -208,13 +214,17 @@ export default {
     "YOU": "YOU",
     "typeYourMessage": "Type your message",
     "notEnoughFunds": "Not enough funds. Top up your balance.",
-    "messageTooLong": "Message is too long"
+    "messageTooLong": "Message is too long",
+    "sent": "Sent",
+    "received": "Received"
   },
   "ru": {
     "YOU": "ВЫ",
     "typeYourMessage": "Введите сообщение",
     "notEnoughFunds": "Недостаточно токенов. Пополните баланс.",
-    "messageTooLong": "Сообщение слишком длинное"
+    "messageTooLong": "Сообщение слишком длинное",
+    "sent": "Отправлено",
+    "received": "Получено"
   }
 }
 </i18n>

@@ -26,6 +26,7 @@
                   :message="message"
                   :sender="message.sender"
                   :user-id="userId"
+                  :locale="locale"
                 />
 
               </template>
@@ -45,6 +46,7 @@
 <script>
 import AChatMessage from './AChatMessage'
 import AChatTransaction from './AChatTransaction'
+
 export default {
   mounted () {
     this.attachScrollListener()
@@ -117,10 +119,12 @@ export default {
   },
   props: {
     messages: {
-      type: Array
+      type: Array,
+      default: () => []
     },
     partners: {
-      type: Array
+      type: Array,
+      default: () => []
     },
     userId: {
       type: String
@@ -128,6 +132,10 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    locale: {
+      type: String,
+      default: 'en'
     }
   }
 }

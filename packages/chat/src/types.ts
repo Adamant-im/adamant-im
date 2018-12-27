@@ -7,7 +7,7 @@ export type Message = {
   amount: number,
   i18n: boolean,
   status: MessageStatus,
-  type: MessageType,
+  type: MessageType
 }
 
 export enum MessageType {

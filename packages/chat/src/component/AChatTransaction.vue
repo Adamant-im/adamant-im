@@ -2,24 +2,26 @@
   <div
     class="a-chat__message"
     :class="{
-      'red lighten-5': senderId === userId,
-      'green lighten-5': senderId !== userId
+      'red lighten-5': sender.id === userId,
+      'green lighten-5': sender.id !== userId
     }"
   >
     <div class="a-chat__message-card">
       <div class="a-chat__message-card-header">
-        <div v-if="senderId === userId" class="a-chat__sender">
-          Sent {{ amountFormatted }} {{ currency }}
+        <div v-if="sender.id === userId" class="a-chat__sender">
+          {{ i18n.sent }} {{ amountFormatted }} {{ currency }}
         </div>
         <div v-else class="a-chat__sender">
-          Received {{ amountFormatted }} {{ currency }}
+          {{ i18n.received }} {{ amountFormatted }} {{ currency }}
         </div>
-        <v-icon @click="$emit('click:transaction')" class="mr-2">mdi-open-in-new</v-icon>
+        <v-icon @click="$emit('click:transaction', id)" class="mr-2">mdi-open-in-new</v-icon>
         <span :title="date" class="a-chat__timestamp">{{ time }}</span>
       </div>
 
       <div class="a-chat__message-card-body">
-        {{ message }}
+        <div class="a-chat__message-text">
+          {{ message }}
+        </div>
       </div>
     </div>
   </div>
@@ -42,7 +44,7 @@ export default {
   },
   props: {
     id: {
-      type: String,
+      type: null,
       required: true
     },
     message: {
@@ -57,9 +59,9 @@ export default {
       type: String,
       default: ''
     },
-    senderId: {
-      type: String,
-      default: ''
+    sender: {
+      type: Object,
+      required: true
     },
     amount: {
       type: Number,
@@ -68,6 +70,17 @@ export default {
     currency: {
       type: String,
       default: 'ADM'
+    },
+    i18n: {
+      type: Object,
+      default: () => ({
+        'sent': 'Sent',
+        'received': 'Received'
+      })
+    },
+    locale: {
+      type: String,
+      default: 'en'
     }
   }
 }
