@@ -98,7 +98,6 @@ export default {
         return 0
       }
       let messages = []
-
       Object.values(this.$store.state.chats).forEach((chat) => {
         const transactions = this.$store
           .getters['adm/partnerTransactions'](chat.partner)

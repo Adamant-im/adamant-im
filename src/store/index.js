@@ -359,6 +359,9 @@ const store = {
     }
   },
   mutations: {
+    set_adm_address (state, payload) {
+      state.address = payload
+    },
     set_first_load (state) {
       state.firstChatLoad = true
     },

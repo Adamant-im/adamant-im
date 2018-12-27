@@ -93,6 +93,7 @@ export default {
                         passPhrase: decryptedPassPhrase
                       }
                       this.$store.commit('set_state', state)
+                      this.$store.commit('set_adm_address', state.address)
                       this.$store.commit('save_passphrase', payloadPassPhrase)
                       this.$store.dispatch('afterLogin', decryptedPassPhrase)
                       this.$root._router.push('/chats/')
