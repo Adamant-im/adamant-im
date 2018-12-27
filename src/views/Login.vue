@@ -75,7 +75,7 @@
           <md-snackbar md-position="bottom center" md-accent ref="loginSnackbar" md-duration="2000">
               <span>{{ $t('home.copied') }}</span>
           </md-snackbar>
-        <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
+        <QRScan v-if="showModal" :modal="showModal, componentName" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
         <Spinner v-if="showSpinnerFlag"></Spinner>
       </div>
     </md-layout>
@@ -198,6 +198,9 @@ export default {
     this.userPasswordExists = this.$store.getters.getUserPasswordExists
   },
   computed: {
+    componentName () {
+      return this.$options.name
+    },
     iOS: function () {
       return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
     },

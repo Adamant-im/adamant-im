@@ -21,7 +21,7 @@
         </md-snackbar>
       </md-dialog-content>
     </md-dialog>
-    <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="saveTargetAddress"/>
+    <QRScan v-if="showModal" :modal="showModal, componentName" @hide-modal="showModal = false" @code-grabbed="saveTargetAddress"/>
   </div>
 </template>
 
@@ -78,6 +78,11 @@ export default {
   },
   mounted () {
     this.isLogged = this.$store.getters.isLogged
+  },
+  computed: {
+    componentName () {
+      return this.$options.name
+    }
   },
   data () {
     return {
