@@ -162,7 +162,7 @@ export default function storeData () {
           } else if (mutation.type === 'ajax_start' || mutation.type === 'ajax_end' || mutation.type === 'ajax_end_with_error' || mutation.type === 'start_tracking_new' || mutation.type === 'have_loaded_chats' || mutation.type === 'connect' || mutation.type === 'login') {
             return
           }
-          if (storeNow && sessionStorage.getItem('userPassword')) {
+          if (storeNow && sessionStorage.getItem('userPassword') && copyState.passPhrase) {
             // Exclude contact list, chats, passphrase from common store
             delete copyState.partners
             delete copyState.chats
