@@ -57,9 +57,9 @@ export default {
     }
   },
   beforeDestroy: function () {
-    let self = this
-    if (self.scanner) {
-      self.scanner.stop()
+    let QRScan = this
+    if (QRScan.scanner) {
+      QRScan.scanner.stop()
     }
   },
   mounted: function () {
