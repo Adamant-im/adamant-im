@@ -28,7 +28,7 @@
 <script>
 
 import crypto from 'pbkdf2'
-import utils from '../../lib/adamant'
+import { unlock } from '../../lib/adamant-api'
 import Vue from 'vue'
 import Spinner from '../Spinner'
 import { Base64 } from 'js-base64'
@@ -93,10 +93,7 @@ export default {
                       const payloadPassPhrase = {
                         passPhrase: decryptedPassPhrase
                       }
-                      const hash = utils.createPassPhraseHash(decryptedPassPhrase)
-                      const keyPair = utils.makeKeypair(hash)
-                      window.privateKey = keyPair.privateKey
-                      window.publicKey = keyPair.publicKey
+                      unlock(decryptedPassPhrase)
                       this.$store.commit('set_state', state)
                       this.$store.commit('set_adm_address', state.address)
                       this.$store.commit('save_passphrase', payloadPassPhrase)
