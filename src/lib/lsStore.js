@@ -10,11 +10,18 @@ import {
 function updateChat (lastChatUpdateTime, copyState, mutation, store, db) {
   lastChatUpdateTime = new Date().getTime()
   const chats = copyState.chats
-  for (let chat in chats) {
-    if (chats.hasOwnProperty(chat) && chat === mutation.payload.recipientId) {
-      const encryptedChatName = encryptData(chat)
-      updateChatItem(db, encryptedChatName.toString(), encryptData(JSON.stringify(chats[chat])))
-    }
+  const chatMap = new Map(Object.entries(chats))
+  let chatKey
+  if (mutation.payload.direction === 'to') {
+    chatKey = mutation.payload.senderId
+  } else {
+    chatKey = mutation.payload.recipientId
+  }
+  const targetChat = chatMap.get(chatKey)
+
+  if (targetChat) {
+    const encryptedChatName = encryptData(chatKey)
+    updateChatItem(db, encryptedChatName.toString(), encryptData(JSON.stringify(targetChat)))
   }
 
   return lastChatUpdateTime
