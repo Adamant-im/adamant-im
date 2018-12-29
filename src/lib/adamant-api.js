@@ -149,6 +149,9 @@ export function getPublicKeyWithAddress (address = '') {
     .then(response => {
       const key = response.publicKey
       publicKeysCache[address] = key
+      getAdmDataBase().then((db) => {
+        updatePublicKeysCache(db, encryptData(address), encryptData(key))
+      })
       return {
         address: address,
         publicKey: key
