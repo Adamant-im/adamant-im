@@ -15,6 +15,7 @@ const PASSPHRASE = 'passPhrase'
 const USER_PASSWORD = 'userPassword'
 const COMMON = 'common'
 const CONTACT_LIST = 'contactList'
+const PUBLIC_KEYS_CACHE = 'publicKeysCache'
 const CHAT_LIST = 'chatList'
 
 export function getAdmDataBase () {
@@ -30,6 +31,9 @@ export function getAdmDataBase () {
     }
     if (!upgradeDb.objectStoreNames.contains(CHAT_LIST)) {
       upgradeDb.createObjectStore(CHAT_LIST, { keyPath: DEFAULT_KEY_PATH, autoIncrement: true })
+    }
+    if (!upgradeDb.objectStoreNames.contains(PUBLIC_KEYS_CACHE)) {
+      upgradeDb.createObjectStore(PUBLIC_KEYS_CACHE, { keyPath: DEFAULT_KEY_PATH, autoIncrement: true })
     }
   })
 }
@@ -62,6 +66,14 @@ export function updateContactItem (db, value) {
   return saveValueByName(db, CONTACT_LIST, contactItem)
 }
 
+export function updatePublicKeysCaches (db, value) {
+  const publicKeysCache = {
+    name: PUBLIC_KEYS_CACHE,
+    value: value
+  }
+  return saveValueByName(db, PUBLIC_KEYS_CACHE, publicKeysCache)
+}
+
 export function updateChatItem (db, key, value) {
   const chatItem = {
     name: key,
@@ -72,6 +84,10 @@ export function updateChatItem (db, key, value) {
 
 export function getContactItem (db) {
   return getValueByName(db, CONTACT_LIST, CONTACT_LIST)
+}
+
+export function getPublicKeysCache (db) {
+  return getValueByName(db, PUBLIC_KEYS_CACHE, PUBLIC_KEYS_CACHE)
 }
 
 export function getChatItem (db) {
