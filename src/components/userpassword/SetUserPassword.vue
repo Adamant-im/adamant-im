@@ -35,7 +35,7 @@ import {
   getAdmDataBase,
   updateChatItem,
   updateCommonItem, updateContactItem,
-  updatePassPhrase, updatePublicKeysCaches,
+  updatePassPhrase, updatePublicKeysCache,
   updateUserPassword
 } from '../../lib/indexedDb'
 import { getPublicKeyWithAddress } from '../../lib/adamant-api'
@@ -94,9 +94,12 @@ export default {
                 )
               )
             }, Promise.resolve([])).then(arrayOfResults => {
-              updatePublicKeysCaches(db, encryptData(JSON.stringify(arrayOfResults)))
+              arrayOfResults.forEach(pair => {
+                if (pair.address && pair.publicKey) {
+                  updatePublicKeysCache(db, encryptData(pair.address), encryptData(pair.publicKey))
+                }
+              })
             })
-
             // Save contacts
             updateContactItem(db, encryptData(JSON.stringify(this.$store.getters.getContacts)))
             this.userPasswordValue = null

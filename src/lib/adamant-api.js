@@ -4,7 +4,7 @@ import { Transactions, Delegates } from './constants'
 import utils from './adamant'
 import client from './adamant-api-client'
 import renderMarkdown from './markdown'
-import {decryptData, getAdmDataBase, getPublicKeysCache} from './indexedDb'
+import {decryptData, encryptData, getAdmDataBase, getPublicKeysCache, updatePublicKeysCache} from './indexedDb'
 
 Queue.configure(Promise)
 
@@ -101,22 +101,26 @@ export function isReady () {
  * @returns {Promise<string>}
  */
 export function getPublicKey (address = '') {
+  if (publicKeysCache[address]) {
+    return Promise.resolve(publicKeysCache[address])
+  }
+
   // In case of login via password
   if (sessionStorage.getItem('storeInLocalStorage') === 'true') {
     return getAdmDataBase().then((db) => {
-      return getPublicKeysCache(db).then(encryptedPublicKeysCache => {
-        return JSON.parse(decryptData(encryptedPublicKeysCache.value)).filter(pair => pair.address === address)[0].publicKey
+      return getPublicKeysCache(db, encryptData(address)).then(encryptedPublicKeysCache => {
+        if (!encryptedPublicKeysCache) {
+          return getPublicKeyFromBackend(address)
+        }
+        const decryptedPublicKey = decryptData(encryptedPublicKeysCache.value)
+        publicKeysCache[address] = decryptedPublicKey
+        return decryptedPublicKey
       }).catch(err => {
         console.warn('Something going wrong, get public key from backend', err)
         return getPublicKeyFromBackend(address)
       })
     })
   }
-
-  if (publicKeysCache[address]) {
-    return Promise.resolve(publicKeysCache[address])
-  }
-
   return getPublicKeyFromBackend(address)
 }
 
@@ -125,6 +129,11 @@ function getPublicKeyFromBackend (address) {
     .then(response => {
       const key = response.publicKey
       publicKeysCache[address] = key
+      if (key && sessionStorage.getItem('storeInLocalStorage') === 'true') {
+        getAdmDataBase().then((db) => {
+          updatePublicKeysCache(db, encryptData(address), encryptData(key))
+        })
+      }
       return key
     })
 }
@@ -136,7 +145,6 @@ export function getPublicKeyWithAddress (address = '') {
       publicKey: publicKeysCache[address]
     })
   }
-
   return client.get('/api/accounts/getPublicKey', { address })
     .then(response => {
       const key = response.publicKey
