@@ -1,3 +1,5 @@
+const webpack = require('webpack')
+
 module.exports = {
   pluginOptions: {
 
@@ -8,5 +10,15 @@ module.exports = {
       enableInSFC: true
     }
 
+  },
+  configureWebpack: {
+    plugins: [
+      // exclude from bundle unused locales,
+      // allow only those
+      new webpack.ContextReplacementPlugin(
+        /moment[/\\]locale$/,
+        /ar|de|en|fr|ru/
+      )
+    ]
   }
 }
