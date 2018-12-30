@@ -2,7 +2,7 @@
 
 exports[`AppToolbar.vue renders the correct markup 1`] = `
 <vtoolbar-stub
-  flat="true"
+  app=""
   height="64"
   scrollthreshold="300"
 >
@@ -17,18 +17,6 @@ exports[`AppToolbar.vue renders the correct markup 1`] = `
     </vicon-stub>
   </vbtn-stub>
    
-  <vtoolbartitle-stub>
-    <div>
-      
-    </div>
-     
-    <div
-      class="body-1"
-    >
-      
-    </div>
-  </vtoolbartitle-stub>
-   
-  <vspacer-stub />
+  <!---->
 </vtoolbar-stub>
 `;

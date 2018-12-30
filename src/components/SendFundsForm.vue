@@ -6,10 +6,16 @@
     class="send-funds-form"
   >
 
+    <v-select
+      v-model="currency"
+      :items="cryptoList"
+      :label="$t('selectCryptoCurrency')"
+    />
+
     <v-text-field
       v-model="address"
-      :rules="addressRules"
-      label="Recipient address"
+      :rules="validationRulus.admAddress"
+      :label="$t('admAddress')"
       type="text"
     />
 
@@ -23,14 +29,14 @@
 
     <v-text-field
       v-model="amount"
-      :rules="amountRules"
-      label="Amount to send"
+      :rules="validationRulus.amount"
+      :label="$t('amount')"
       type="number"
     />
 
     <v-textarea
       v-model="comment"
-      label="Comments"
+      :label="$t('comments')"
       type="text"
       multi-line
     />
@@ -58,14 +64,14 @@
         size="24"
         class="mr-3"
       />
-      Send funds
+      {{ $t('sendFunds') }}
     </v-btn>
 
   </v-form>
 </template>
 
 <script>
-// @todo refactor store
+import validateAddress from '@/lib/validateAddress'
 import { sendTokens, sendMessage } from '@/lib/adamant-api'
 import { Cryptos, CryptoAmountPrecision, Fees, isErc20 } from '@/lib/constants'
 import { isNumeric } from '@/lib/numericHelpers'
@@ -121,22 +127,36 @@ export default {
     listInfo () {
       return [
         {
-          title: 'Balance',
+          title: this.$t('balance'),
           value: `${this.balance} ${this.currency}`
         },
         {
-          title: 'Max to transfer',
+          title: this.$t('maxToTransfer'),
           value: `${this.maxToTransfer} ${this.currency}`
         },
         {
-          title: 'Transfer fee',
+          title: this.$t('transferFee'),
           value: `${this.transferFee} ${this.currency}`
         },
         {
-          title: 'Final amount',
+          title: this.$t('finalAmount'),
           value: `${this.finalAmount} ${this.currency}`
         }
       ]
+    },
+    cryptoList () {
+      return Object.keys(Cryptos)
+    },
+    validationRulus () {
+      return {
+        admAddress: [
+          v => !!v || this.$t('errors.fieldIsRequired'),
+          v => validateAddress('ADM', v) || this.$t('errors.invalidCryptoAddress')
+        ],
+        amount: [
+          v => !!v || this.$t('errors.fieldIsRequired')
+        ]
+      }
     }
   },
   data: () => ({
@@ -147,14 +167,7 @@ export default {
 
     validForm: true,
     disabledButton: false,
-    showSpinner: false,
-
-    addressRules: [
-      v => !!v || 'Address is required'
-    ],
-    amountRules: [
-      v => !!v || 'Amount is required'
-    ]
+    showSpinner: false
   }),
   methods: {
     submit () {
@@ -215,7 +228,7 @@ export default {
     },
     amountToSend: {
       type: Number,
-      default: null
+      default: undefined
     }
   }
 }
@@ -229,3 +242,38 @@ export default {
   padding: 0;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "selectCryptoCurrency": "Cryptocurrency",
+    "admAddress": "To address",
+    "amount": "Amount to send",
+    "comments": "Comments",
+    "balance": "Balance",
+    "maxToTransfer": "Max to transfer",
+    "transferFee": "Transfer fee",
+    "finalAmount": "Final amount",
+    "sendFunds": "Send funds",
+    "errors": {
+      "fieldIsRequired": "Field is required",
+      "invalidCryptoAddress": "Incorrect wallet address"
+    }
+  },
+  "ru": {
+    "selectCryptoCurrency": "Криптовалюта",
+    "admAddress": "Адрес получателя",
+    "amount": "Количество для перевода",
+    "comments": "Комментарий",
+    "balance": "Баланс",
+    "maxToTransfer": "Макс. сумма перевода",
+    "transferFee": "Комиссия за перевод",
+    "finalAmount": "Количество, включая комиссию",
+    "sendFunds": "Передать токены",
+    "errors": {
+      "fieldIsRequired": "Заполните это поле",
+      "invalidCryptoAddress": "Неверный адрес кошелька"
+    }
+  }
+}
+</i18n>

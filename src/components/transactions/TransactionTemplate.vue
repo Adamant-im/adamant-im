@@ -1,7 +1,12 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex lg5 md5 sm12 xs12>
+    <app-toolbar
+      :title="`#${id}`"
+      flat
+    />
+
+    <v-flex xs12 sm12 md8 lg5>
 
       <v-list class="transparent">
 
@@ -112,7 +117,9 @@
 </template>
 
 <script>
-import { Symbols } from '../../lib/constants'
+import { Symbols } from '@/lib/constants'
+
+import AppToolbar from '@/components/AppToolbar'
 
 export default {
   name: 'transaction-template',
@@ -148,6 +155,9 @@ export default {
       if (!this.status) return Symbols.CLOCK
       return this.status === 'ERROR' ? Symbols.CROSS : Symbols.HOURGLASS
     }
+  },
+  components: {
+    AppToolbar
   }
 }
 </script>

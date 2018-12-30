@@ -1,6 +1,6 @@
 <template>
   <v-layout row wrap justify-center>
-    <v-flex xs12 md4>
+    <v-flex xs12 sm12 md8 lg5>
       <v-card flat class="transparent white--text">
 
         <!-- Wallets -->

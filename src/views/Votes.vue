@@ -1,7 +1,12 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex lg5 md5 sm12 xs12>
+    <app-toolbar
+      :title="$t('options.vote_for_delegates_button')"
+      flat
+    />
+
+    <v-flex xs12 sm12 md8 lg5>
 
       <v-card>
         <v-card-title>
@@ -16,6 +21,7 @@
 
         <v-data-table
           :headers="headers"
+          :pagination.sync="pagination"
           :items="delegates"
           :search="search"
           item-key="username"
@@ -103,7 +109,7 @@
             <div>
               {{ $t('upVotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
               {{ $t('downVotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
-              {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }}</strong> / {{ voteRequestLimit }},&nbsp;
+              {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
               {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
             </div>
           </div>
@@ -121,6 +127,8 @@
 </template>
 
 <script>
+import AppToolbar from '@/components/AppToolbar'
+
 export default {
   mounted () {
     this.$store.dispatch('delegates/getDelegates', {
@@ -200,6 +208,9 @@ export default {
       { text: 'vote', value: '_voted' },
       { text: '', value: 'expand' }
     ],
+    pagination: {
+      rowsPerPage: 10
+    },
     waitingForConfirmation: false
   }),
   methods: {
@@ -285,6 +296,9 @@ export default {
         return `${seconds} ${this.$t('sec')}`
       }
     }
+  },
+  components: {
+    AppToolbar
   }
 }
 </script>

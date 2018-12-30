@@ -33,7 +33,7 @@ const router = new Router({
       component: Votes,
       meta: {
         requiresAuth: true,
-        layout: 'default'
+        layout: 'toolbar'
       }
     },
     {
@@ -43,7 +43,8 @@ const router = new Router({
       props: true,
       meta: {
         requiresAuth: true,
-        layout: 'default'
+        layout: 'toolbar',
+        containerNoPadding: true
       }
     },
     {
@@ -52,7 +53,8 @@ const router = new Router({
       component: Transactions,
       meta: {
         requiresAuth: true,
-        layout: 'default'
+        layout: 'toolbar',
+        containerNoPadding: true
       }
     },
     {
@@ -61,7 +63,8 @@ const router = new Router({
       component: Options,
       meta: {
         requiresAuth: true,
-        layout: 'toolbar'
+        layout: 'toolbar',
+        showNavigation: true
       }
     },
     {
@@ -80,7 +83,8 @@ const router = new Router({
       meta: {
         requiresAuth: true,
         layout: 'toolbar',
-        containerNoPadding: true
+        containerNoPadding: true,
+        showNavigation: true
       }
     },
     {
@@ -99,7 +103,8 @@ const router = new Router({
       component: Home,
       meta: {
         requiresAuth: true,
-        layout: 'toolbar'
+        layout: 'toolbar',
+        showNavigation: true
       }
     },
     {

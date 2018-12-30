@@ -1,7 +1,7 @@
 <template>
   <v-layout row fill-height justify-center class="login-page">
 
-    <v-flex lg4 md5 sm12 xs12>
+    <v-flex xs12 sm12 md8 lg8>
 
       <div class="text-xs-right">
         <language-switcher/>
@@ -19,7 +19,7 @@
 
       <v-card flat color="transparent" class="text-xs-center mt-3">
         <v-layout justify-center>
-          <v-flex xs12 md8>
+          <v-flex xs12 sm8 md8 lg6>
             <login-form
               @login="onLogin"
               @error="onLoginError"
@@ -28,21 +28,26 @@
         </v-layout>
 
         <v-layout justify-center>
-          <v-btn @click="showQrcodeScanner = true" icon flat large fab>
+          <v-btn
+            icon
+            flat
+            large
+            fab
+            @click="showQrcodeScanner = true"
+            :title="$t('login.scan_qr_code_button_tooltip')"
+          >
             <v-icon>mdi-qrcode-scan</v-icon>
           </v-btn>
         </v-layout>
       </v-card>
 
-      <div>
-        <v-layout justify-center>
-          <v-flex xs12 md8>
-            <passphrase-generator
-              @copy="onCopyPassphraze"
-            />
-          </v-flex>
-        </v-layout>
-      </div>
+      <v-layout justify-center class="mt-2">
+        <v-flex xs12 sm8 md8 lg6>
+          <passphrase-generator
+            @copy="onCopyPassphraze"
+          />
+        </v-flex>
+      </v-layout>
 
       <qrcode-scanner
         v-if="showQrcodeScanner"
@@ -72,13 +77,13 @@ export default {
     },
     onLoginError (err) {
       this.$store.dispatch('snackbar/show', {
-        message: this.$t('Invalid passphraze')
+        message: this.$t('login.invalid_passphrase')
       })
       console.error(err)
     },
     onCopyPassphraze () {
       this.$store.dispatch('snackbar/show', {
-        message: this.$t('Copied'),
+        message: this.$t('home.copied'),
         timeout: 1500
       })
     },

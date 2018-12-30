@@ -1,11 +1,14 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex lg5 md5 sm12 xs12>
+    <app-toolbar
+      :title="$t('transactions')"
+      flat
+    />
 
-      <v-list two-line subheader class="transparent">
-        <v-subheader>{{ $t('transactions') }}</v-subheader>
+    <v-flex xs12 sm12 md8 lg5>
 
+      <v-list two-line class="transparent">
         <transaction-list-item
           v-for="(transaction, i) in transactions"
           :key="i"
@@ -27,6 +30,7 @@
 
 <script>
 import { Cryptos } from '@/lib/constants'
+import AppToolbar from '@/components/AppToolbar'
 import TransactionListItem from '@/components/TransactionListItem'
 
 export default {
@@ -61,6 +65,7 @@ export default {
     }
   },
   components: {
+    AppToolbar,
     TransactionListItem
   }
 }

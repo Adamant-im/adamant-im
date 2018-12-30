@@ -1,6 +1,13 @@
 <template>
   <v-layout row wrap justify-center>
-    <v-flex lg4 md5 sm12 xs12>
+
+    <app-toolbar
+      :title="$t('pageTitle')"
+      :show-back="false"
+      flat
+    />
+
+    <v-flex xs12 sm12 md8 lg5>
 
       <!-- General -->
       <h3 class="title mb-3">{{ $t('general') }}</h3>
@@ -66,17 +73,22 @@
       <!-- Other -->
       <h3 class="title mb-3">{{ $t('other') }}</h3>
       <v-layout row wrap align-center>
-        <v-flex xs12>
-          <v-btn @click="$router.push('/options/nodes')">{{ $t('nodeList') }}</v-btn>
-          <v-btn @click="$router.push('/votes')">{{ $t('voteForDelegates') }}</v-btn>
+        <v-flex xs12 md6 class="px-1">
+          <v-btn block @click="$router.push('/options/nodes')">{{ $t('nodeList') }}</v-btn>
+        </v-flex>
+        <v-flex xs12 md6 class="px-1">
+          <v-btn block @click="$router.push('/votes')">{{ $t('voteForDelegates') }}</v-btn>
         </v-flex>
       </v-layout>
+
     </v-flex>
+
   </v-layout>
 </template>
 
 <script>
 import LanguageSwitcher from '@/components/LanguageSwitcher'
+import AppToolbar from '@/components/AppToolbar'
 
 export default {
   computed: {
@@ -139,7 +151,8 @@ export default {
   data: () => ({
   }),
   components: {
-    LanguageSwitcher
+    LanguageSwitcher,
+    AppToolbar
   }
 }
 </script>
@@ -147,6 +160,7 @@ export default {
 <i18n>
   {
     "en": {
+      "pageTitle": "Settings",
       "general": "General",
       "chats": "Chats",
       "language": "Language",
@@ -162,6 +176,7 @@ export default {
       "changeBrowserTabTitle": "Change browser tab title"
     },
     "ru": {
+      "pageTitle": "Настройки",
       "general": "Общие",
       "chats": "Чаты",
       "language": "Язык",

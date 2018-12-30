@@ -5,38 +5,59 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
   class="login-form"
   value="true"
 >
-  <vtextfield-stub
-    append-outer-icon="mdi-qrcode"
-    browser-autocomplete="current-password"
-    class="text-xs-center"
-    label="Input your passphrase to login"
-    rules="function (v) {
-        return !!v || _get__(\\"vm\\").$t('rules.passphraseRequired');
-      },function (v) {
-        return v.split(' ').length === 12 || _get__(\\"vm\\").$t('rules.passphraseValid');
-      }"
-    type="password"
-  />
-   
-  <vbtn-stub
-    activeclass="v-btn--active"
-    tag="button"
-    type="button"
+  <vlayout-stub
+    tag="div"
   >
-    <vprogresscircular-stub
-      class="mr-3"
-      color="primary"
-      indeterminate="true"
-      rotate="0"
-      size="24"
-      style="display: none;"
-      value="0"
-      width="4"
+    <vtextfield-stub
+      browser-autocomplete="current-password"
+      class="text-xs-center"
+      label="Input your passphrase to login"
+      rules="function (v) {
+        return !!v || _this.$t('rules.passphraseRequired');
+      },function (v) {
+        return v.split(' ').length === 12 || _this.$t('rules.passphraseValid');
+      }"
+      type="password"
     />
+     
+    <vicon-stub
+      class="ml-2"
+      color=""
+    >
+      
+      mdi-qrcode
     
-    Login
-  
-  </vbtn-stub>
+    </vicon-stub>
+  </vlayout-stub>
+   
+  <vlayout-stub
+    align-center=""
+    class="mt-2"
+    justify-center=""
+    row=""
+    tag="div"
+    wrap=""
+  >
+    <vbtn-stub
+      activeclass="v-btn--active"
+      tag="button"
+      type="button"
+    >
+      <vprogresscircular-stub
+        class="mr-3"
+        color="primary"
+        indeterminate="true"
+        rotate="0"
+        size="24"
+        style="display: none;"
+        value="0"
+        width="4"
+      />
+      
+      Login
+    
+    </vbtn-stub>
+  </vlayout-stub>
    
   <!---->
 </vform-stub>

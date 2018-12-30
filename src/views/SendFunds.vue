@@ -1,7 +1,12 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex lg4 md4 sm12 xs12>
+    <app-toolbar
+      :title="$t('transfer.send_button')"
+      flat
+    />
+
+    <v-flex xs12 sm12 md8 lg5>
       <send-funds-form
         :crypto-currency="cryptoCurrency"
         :recipient-address="recipientAddress"
@@ -18,6 +23,7 @@ import { Cryptos } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { isNumeric } from '@/lib/numericHelpers'
 
+import AppToolbar from '@/components/AppToolbar'
 import SendFundsForm from '@/components/SendFundsForm'
 
 export default {
@@ -69,6 +75,7 @@ export default {
     }
   },
   components: {
+    AppToolbar,
     SendFundsForm
   }
 }

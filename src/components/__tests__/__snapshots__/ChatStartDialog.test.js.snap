@@ -33,6 +33,9 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
       >
         <vtextfield-stub
           label="recipientAddress"
+          rules="function (v) {
+        return _get__(\\"validateAddress\\")('ADM', v) || _this.$t('chats.incorrect_address');
+      }"
         />
       </vflex-stub>
        

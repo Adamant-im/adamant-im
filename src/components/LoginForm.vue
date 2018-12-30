@@ -1,50 +1,60 @@
 <template>
   <v-form v-model="validForm" @submit.prevent="submit" ref="form" class="login-form">
-    <v-text-field
-      v-model="passphrase"
-      :rules="passphraseRules"
-      :label="$t('login.password_label')"
-      append-outer-icon="mdi-qrcode"
-      browser-autocomplete="current-password"
-      @click:append-outer="toggleQrcodeRenderer"
-      class="text-xs-center"
-      type="password"
-    />
 
-    <v-btn
-      :disabled="!validForm || disabledButton"
-      @click="submit"
-    >
-      <v-progress-circular
-        v-show="showSpinner"
-        indeterminate
-        color="primary"
-        size="24"
-        class="mr-3"
+    <v-layout>
+      <v-text-field
+        v-model="passphrase"
+        :rules="passphraseRules"
+        :label="$t('login.password_label')"
+        browser-autocomplete="current-password"
+        class="text-xs-center"
+        type="password"
       />
-      {{ $t('login.login_button') }}
-    </v-btn>
-
-    <v-layout v-if="showQrcodeRenderer && passphrase" justify-center class="mt-3">
-      <qrcode-renderer :text="passphrase"/>
+      <v-icon
+        class="ml-2"
+        :color="showQrcodeRenderer ? 'primary' : ''"
+        @click="toggleQrcodeRenderer"
+      >
+        mdi-qrcode
+      </v-icon>
     </v-layout>
+
+    <v-layout row wrap align-center justify-center class="mt-2">
+      <v-btn
+        :disabled="!validForm || disabledButton"
+        @click="submit"
+      >
+        <v-progress-circular
+          v-show="showSpinner"
+          indeterminate
+          color="primary"
+          size="24"
+          class="mr-3"
+        />
+        {{ $t('login.login_button') }}
+      </v-btn>
+    </v-layout>
+
+    <transition name="slide-fade">
+      <v-layout v-if="showQrcodeRenderer && passphrase" justify-center class="mt-3">
+        <qrcode-renderer :text="passphrase"/>
+      </v-layout>
+    </transition>
+
   </v-form>
 </template>
 
 <script>
 import QrcodeRenderer from 'vue-qrcode-component'
 
-let vm = null
-
 export default {
-  created () {
-    vm = this
-  },
   computed: {
-    passphraseRules: () => ([
-      v => !!v || vm.$t('rules.passphraseRequired'),
-      v => v.split(' ').length === 12 || vm.$t('rules.passphraseValid')
-    ])
+    passphraseRules () {
+      return [
+        v => !!v || this.$t('rules.passphraseRequired'),
+        v => v.split(' ').length === 12 || this.$t('rules.passphraseValid')
+      ]
+    }
   },
   data: () => ({
     validForm: true,
@@ -117,6 +127,17 @@ export default {
   transform: translateY(-18px);
   -webkit-transform: translateY(-18px);
   font-size: 12px;
+}
+
+/**
+ * Slide Fade animation.
+ */
+.slide-fade-enter-active, .slide-fade-leave-active {
+  transition: all .3s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to {
+  transform: translateY(10px);
+  opacity: 0;
 }
 </style>
 

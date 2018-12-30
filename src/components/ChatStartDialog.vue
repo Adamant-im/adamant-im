@@ -15,8 +15,9 @@
 
         <v-flex xs10>
           <v-text-field
-            :label="$t('recipientAddress')"
             v-model="recipientAddress"
+            :rules="validationRules"
+            :label="$t('recipientAddress')"
           />
         </v-flex>
 
@@ -54,6 +55,11 @@ export default {
       set (value) {
         this.$emit('input', value)
       }
+    },
+    validationRules () {
+      return [
+        v => validateAddress('ADM', v) || this.$t('chats.incorrect_address')
+      ]
     }
   },
   data: () => ({
@@ -64,10 +70,10 @@ export default {
     startChat () {
       if (!this.isValidUserAddress()) {
         this.$store.dispatch('snackbar/show', {
-          message: 'Invalid user address'
+          message: this.$t('chats.incorrect_address')
         })
 
-        return Promise.reject(new Error('Invalid user address'))
+        return Promise.reject(new Error(this.$t('chats.incorrect_address')))
       }
 
       return this.$store.dispatch('chat/createChat', {

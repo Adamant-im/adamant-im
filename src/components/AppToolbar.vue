@@ -1,16 +1,17 @@
 <template>
-  <v-toolbar flat height="64">
-    <v-btn @click="goBack" icon>
+  <v-toolbar
+    :flat="flat"
+    :height="height"
+    app
+  >
+    <v-btn v-if="showBack" @click="goBack" icon>
       <v-icon>arrow_back</v-icon>
     </v-btn>
 
-    <v-toolbar-title>
+    <v-toolbar-title v-if="title">
       <div>{{ title }}</div>
-      <div class="body-1">{{ subtitle }}</div>
+      <div v-if="subtitle" class="body-1">{{ subtitle }}</div>
     </v-toolbar-title>
-
-    <v-spacer></v-spacer>
-
   </v-toolbar>
 </template>
 
@@ -21,6 +22,27 @@ export default {
       this.$router.back()
     }
   },
-  props: ['title', 'subtitle']
+  props: {
+    title: {
+      type: String,
+      default: undefined
+    },
+    subtitle: {
+      type: String,
+      default: undefined
+    },
+    flat: {
+      type: Boolean,
+      default: false
+    },
+    height: {
+      type: Number,
+      default: 64
+    },
+    showBack: {
+      type: Boolean,
+      default: true
+    }
+  }
 }
 </script>

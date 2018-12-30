@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex lg5 md5 sm12 xs12>
+    <v-flex xs12 sm12 md8 lg5>
 
       <chat :partner-id="partnerId"/>
 

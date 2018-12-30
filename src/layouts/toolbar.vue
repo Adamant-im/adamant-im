@@ -8,7 +8,7 @@
       <app-snackbar/>
     </v-content>
 
-    <app-navigation/>
+    <app-navigation v-if="showNavigation"/>
   </v-app>
 </template>
 
@@ -20,6 +20,9 @@ export default {
   computed: {
     containerNoPadding () {
       return this.$route.meta.containerNoPadding
+    },
+    showNavigation () {
+      return this.$route.meta.showNavigation || false
     }
   },
   components: {

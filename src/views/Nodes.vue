@@ -1,7 +1,12 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex lg4 md5 sm12 xs12>
+    <app-toolbar
+      :title="$t('options.nodes_list')"
+      flat
+    />
+
+    <v-flex xs12 sm12 md8 lg5>
 
       <v-data-table
         :headers="headers"
@@ -34,7 +39,7 @@
             ></v-checkbox>
           </td>
           <td>{{ props.item.url }}</td>
-          <td class="text-xs-right">
+          <td>
             <span>
               {{ props.item.online ? `${props.item.ping} ms` : $t('offline') }}
             </span>
@@ -59,6 +64,8 @@
 </template>
 
 <script>
+import AppToolbar from '@/components/AppToolbar'
+
 export default {
   mounted () {
     this.$store.dispatch('nodes/restore')
@@ -93,7 +100,11 @@ export default {
         value: 'url',
         align: 'left'
       },
-      { text: 'nodes.ping', value: 'ping' }
+      {
+        text: 'nodes.ping',
+        value: 'ping',
+        align: 'left'
+      }
     ],
     timer: null
   }),
@@ -104,6 +115,9 @@ export default {
         active: !node.active
       })
     }
+  },
+  components: {
+    AppToolbar
   }
 }
 </script>
