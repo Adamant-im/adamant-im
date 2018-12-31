@@ -36,6 +36,7 @@ export default {
           sessionStorage.removeItem('adm-persist')
           sessionStorage.setItem('storeInLocalStorage', 'true')
           this.$store.commit('user_password_exists', true)
+          this.$store.commit('mock_messages')
         }
       })
     })

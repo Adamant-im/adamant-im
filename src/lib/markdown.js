@@ -13,10 +13,13 @@ renderer.image = function (href, title, text) {
 }
 
 renderer.link = function (href, title, text) {
-  const pattern = /^(eth|bch|bitcoin|https?|s?ftp|magnet|tor|onion|tg):(.*)$/i
+  const linkPattern = /^(eth|bch|bitcoin|https?|s?ftp|magnet|tor|onion|tg):(.*)$/i
+  const emailPattern = /^(mailto):[^@]+@[^@]+\.[^@]+$/i
 
-  if (pattern.test(href)) {
+  if (linkPattern.test(href)) {
     return `<a href="${href}">${href}</a>`
+  } else if (emailPattern.test(href)) {
+    return `<a href="${href}">${text}</a>`
   }
 
   return text

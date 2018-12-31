@@ -70,7 +70,7 @@ export default {
   Transactions
 }
 
-export const UserPasswordArticleLink = 'https://medium.com/'
+export const UserPasswordArticleLink = 'https://medium.com/adamant-im/more-convenience-login-to-the-web-messenger-with-user-password-9d48a736dfd8'
 
 export const UserPasswordHashSettings = {
   SALT: 'salt',
