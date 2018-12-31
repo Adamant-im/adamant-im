@@ -64,9 +64,6 @@ export default {
   name: 'chats',
   components: { NewChat, ChatEntry },
   methods: {
-    load () {
-      this.$store.dispatch('loadChats')
-    },
     newMessages (address) {
       if (this.$store.state.newChats[address]) {
         return this.$store.state.newChats[address]
@@ -101,7 +98,6 @@ export default {
         return 0
       }
       let messages = []
-
       Object.values(this.$store.state.chats).forEach((chat) => {
         const transactions = this.$store
           .getters['adm/partnerTransactions'](chat.partner)
@@ -129,6 +125,7 @@ export default {
     }
   },
   mounted () {
+    this.$store.dispatch('loadChats')
     let lastVisitedChat = String(this.lastVisitedChat)
     lastVisitedChat = lastVisitedChat.replace(' ', '-')
     if (lastVisitedChat) {

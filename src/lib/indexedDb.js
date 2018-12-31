@@ -15,6 +15,7 @@ const PASSPHRASE = 'passPhrase'
 const USER_PASSWORD = 'userPassword'
 const COMMON = 'common'
 const CONTACT_LIST = 'contactList'
+const PUBLIC_KEYS_CACHE = 'publicKeysCache'
 const CHAT_LIST = 'chatList'
 
 export function getAdmDataBase () {
@@ -30,6 +31,9 @@ export function getAdmDataBase () {
     }
     if (!upgradeDb.objectStoreNames.contains(CHAT_LIST)) {
       upgradeDb.createObjectStore(CHAT_LIST, { keyPath: DEFAULT_KEY_PATH, autoIncrement: true })
+    }
+    if (!upgradeDb.objectStoreNames.contains(PUBLIC_KEYS_CACHE)) {
+      upgradeDb.createObjectStore(PUBLIC_KEYS_CACHE, { keyPath: DEFAULT_KEY_PATH, autoIncrement: true })
     }
   })
 }
@@ -62,6 +66,14 @@ export function updateContactItem (db, value) {
   return saveValueByName(db, CONTACT_LIST, contactItem)
 }
 
+export function updatePublicKeysCache (db, key, value) {
+  const publicKeysCache = {
+    name: key,
+    value: value
+  }
+  return saveValueByName(db, PUBLIC_KEYS_CACHE, publicKeysCache)
+}
+
 export function updateChatItem (db, key, value) {
   const chatItem = {
     name: key,
@@ -72,6 +84,12 @@ export function updateChatItem (db, key, value) {
 
 export function getContactItem (db) {
   return getValueByName(db, CONTACT_LIST, CONTACT_LIST)
+}
+
+export function getPublicKeysCache (db, address) {
+  const transaction = db.transaction(PUBLIC_KEYS_CACHE, READONLY)
+  const store = transaction.objectStore(PUBLIC_KEYS_CACHE)
+  return store.get(address)
 }
 
 export function getChatItem (db) {
@@ -97,6 +115,7 @@ export function clearDb (db) {
   clearChatList(db)
   clearSecurity(db)
   clearCommon(db)
+  clearPublicKeyCache(db)
 }
 
 export function clearSecurity (db) {
@@ -111,6 +130,13 @@ export function clearCommon (db) {
   const transaction = db.transaction(COMMON, READWRITE)
   const store = transaction.objectStore(COMMON)
   store.delete(COMMON)
+  return transaction.complete
+}
+
+export function clearPublicKeyCache (db) {
+  const transaction = db.transaction(PUBLIC_KEYS_CACHE, READWRITE)
+  const store = transaction.objectStore(PUBLIC_KEYS_CACHE)
+  store.clear()
   return transaction.complete
 }
 
