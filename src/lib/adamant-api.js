@@ -4,7 +4,7 @@ import { Transactions, Delegates } from './constants'
 import utils from './adamant'
 import client from './adamant-api-client'
 import renderMarkdown from './markdown'
-import {decryptData, encryptData, getAdmDataBase, getPublicKeysCache, updatePublicKeysCache} from './indexedDb'
+import { decryptData, encryptData, getAdmDataBase, getPublicKeysCache, updatePublicKeysCache } from './indexedDb'
 
 Queue.configure(Promise)
 

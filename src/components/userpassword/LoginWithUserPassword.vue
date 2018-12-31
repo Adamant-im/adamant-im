@@ -41,7 +41,6 @@ import {
   getCommonItem,
   getContactItem,
   getPassPhrase,
-  getPublicKeysCache,
   updateUserPassword
 } from '../../lib/indexedDb'
 
