@@ -20,9 +20,11 @@
           v-if="message.type === 'message'"
           v-bind="message"
           :key="message.id"
+          :message="isChatReadOnly ? $t(message.message) : message.message"
           :user-id="userId"
           :show-avatar="!isChatReadOnly"
           :locale="locale"
+          :format-message="true"
         >
           <chat-avatar v-if="!isChatReadOnly" :user-id="sender.id" use-public-key slot="avatar"/>
         </a-chat-message>

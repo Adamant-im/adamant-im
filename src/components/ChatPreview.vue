@@ -18,7 +18,7 @@
         v-if="readOnly"
         v-text="isMessageI18n ? $t(lastMessageText) : lastMessageText"
       />
-      <v-list-tile-sub-title v-else>{{ lastMessageText }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title v-else>{{ lastMessageTextNoFormats }}</v-list-tile-sub-title>
     </v-list-tile-content>
 
     <v-list-tile-action class="chat-preview__date">
@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { removeFormats } from '@adamant/message-formatter'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 
 export default {
@@ -43,6 +44,9 @@ export default {
     },
     lastMessageText () {
       return this.$store.getters['chat/lastMessageText'](this.partnerId)
+    },
+    lastMessageTextNoFormats () {
+      return removeFormats(this.lastMessageText)
     },
     lastMessageTimestamp () {
       return this.$store.getters['chat/lastMessageTimestamp'](this.partnerId)

@@ -5,6 +5,7 @@
 "@adamant/chat@file:packages/chat":
   version "0.0.1"
   dependencies:
+    "@adamant/message-formatter" "file:../../.cache/yarn/v4/npm-@adamant-chat-0.0.1-634512a5-46b3-41dc-9370-dda9a258bb41-1546367604957/node_modules/@adamant/message-formatter"
     moment "^2.23.0"
 
 "@adamant/message-formatter@file:packages/message-formatter":
@@ -6734,10 +6735,6 @@ map-visit@^1.0.0:
   resolved "https://registry.yarnpkg.com/map-visit/-/map-visit-1.0.0.tgz#ecdca8f13144e660f1b5bd41f12f3479d98dfb8f"
   dependencies:
     object-visit "^1.0.0"
-
-marked@^0.3.6:
-  version "0.3.19"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.19.tgz#5d47f709c4c9fc3c216b6d46127280f40b39d790"
 
 material-design-icons-iconfont@^3.0.3:
   version "3.0.3"
