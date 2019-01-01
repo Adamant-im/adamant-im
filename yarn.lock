@@ -7,6 +7,9 @@
   dependencies:
     moment "^2.23.0"
 
+"@adamant/message-formatter@file:packages/message-formatter":
+  version "0.0.1"
+
 "@babel/code-frame@7.0.0-beta.44":
   version "7.0.0-beta.44"
   resolved "http://registry.npmjs.org/@babel/code-frame/-/code-frame-7.0.0-beta.44.tgz#2a02643368de80916162be70865c97774f3adbd9"
