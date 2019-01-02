@@ -42,7 +42,7 @@ export default {
   data: () => ({
     cryptoCurrency: Cryptos.ADM,
     recipientAddress: '',
-    amountToSend: null
+    amountToSend: undefined
   }),
   methods: {
     validateCryptoCurrency () {

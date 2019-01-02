@@ -1,0 +1,185 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SendFundsForm renders the correct markup 1`] = `
+<div
+  class="send-funds-form"
+>
+  <vform-stub
+    class="send-funds-form"
+    value="true"
+  >
+    <vselect-stub
+      items="ADM,ETH,BNB"
+      label="selectCryptoCurrency"
+    />
+     
+    <vtextfield-stub
+      label="admAddress"
+      rules="function (v) {
+          return !!v || _this.$t('errors.fieldIsRequired');
+        },function (v) {
+          return _get__(\\"validateAddress\\")('ADM', v) || _this.$t('errors.invalidCryptoAddress');
+        }"
+      type="text"
+    />
+     
+    <!---->
+     
+    <vtextfield-stub
+      label="amount"
+      rules="function (v) {
+          return !!v || _this.$t('errors.fieldIsRequired');
+        },function (v) {
+          return _this.finalAmount <= _this.balance || _this.$t('errors.notEnoughTokens');
+        }"
+      type="number"
+    />
+     
+    <vtextarea-stub
+      label="comments"
+      multi-line=""
+      rowheight="24"
+      rows="5"
+      type="text"
+    />
+     
+    <vlist-stub
+      class="list-info transparent"
+    >
+      <vlisttile-stub
+        activeclass="primary--text"
+      >
+        <vlisttilecontent-stub>
+          <vlisttilesubtitle-stub>
+            balance
+          </vlisttilesubtitle-stub>
+        </vlisttilecontent-stub>
+         
+        <vlisttileaction-stub>
+          <vlisttiletitle-stub
+            class="text-xs-right"
+          >
+            10000 ADM
+          </vlisttiletitle-stub>
+        </vlisttileaction-stub>
+      </vlisttile-stub>
+      <vlisttile-stub
+        activeclass="primary--text"
+      >
+        <vlisttilecontent-stub>
+          <vlisttilesubtitle-stub>
+            maxToTransfer
+          </vlisttilesubtitle-stub>
+        </vlisttilecontent-stub>
+         
+        <vlisttileaction-stub>
+          <vlisttiletitle-stub
+            class="text-xs-right"
+          >
+            9999.5 ADM
+          </vlisttiletitle-stub>
+        </vlisttileaction-stub>
+      </vlisttile-stub>
+      <vlisttile-stub
+        activeclass="primary--text"
+      >
+        <vlisttilecontent-stub>
+          <vlisttilesubtitle-stub>
+            transferFee
+          </vlisttilesubtitle-stub>
+        </vlisttilecontent-stub>
+         
+        <vlisttileaction-stub>
+          <vlisttiletitle-stub
+            class="text-xs-right"
+          >
+            0.5 ADM
+          </vlisttiletitle-stub>
+        </vlisttileaction-stub>
+      </vlisttile-stub>
+      <vlisttile-stub
+        activeclass="primary--text"
+      >
+        <vlisttilecontent-stub>
+          <vlisttilesubtitle-stub>
+            finalAmount
+          </vlisttilesubtitle-stub>
+        </vlisttilecontent-stub>
+         
+        <vlisttileaction-stub>
+          <vlisttiletitle-stub
+            class="text-xs-right"
+          >
+            0.5 ADM
+          </vlisttiletitle-stub>
+        </vlisttileaction-stub>
+      </vlisttile-stub>
+    </vlist-stub>
+     
+    <vbtn-stub
+      activeclass="v-btn--active"
+      tag="button"
+      type="button"
+    >
+      <vprogresscircular-stub
+        class="mr-3"
+        color="primary"
+        indeterminate="true"
+        rotate="0"
+        size="24"
+        style="display: none;"
+        value="0"
+        width="4"
+      />
+      
+      sendFunds
+    
+    </vbtn-stub>
+  </vform-stub>
+   
+  <vdialog-stub
+    maxwidth="290"
+    origin="center center"
+    transition="dialog-transition"
+    width="auto"
+  >
+    <vcard-stub
+      tag="div"
+    >
+      <vcardtitle-stub
+        class="headline"
+      >
+        Transfer confirmation
+      </vcardtitle-stub>
+       
+      <vcardtext-stub />
+       
+      <vcardactions-stub>
+        <vspacer-stub />
+         
+        <vbtn-stub
+          activeclass="v-btn--active"
+          flat="true"
+          tag="button"
+          type="button"
+        >
+          
+          Cancel
+        
+        </vbtn-stub>
+         
+        <vbtn-stub
+          activeclass="v-btn--active"
+          flat="true"
+          tag="button"
+          type="button"
+        >
+          
+          Confirm
+        
+        </vbtn-stub>
+      </vcardactions-stub>
+    </vcard-stub>
+  </vdialog-stub>
+</div>
+`;
