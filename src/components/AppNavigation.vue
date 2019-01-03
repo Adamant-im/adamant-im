@@ -8,13 +8,13 @@
 
     <!-- Wallet -->
     <v-btn to="/home" flat>
-      <span>{{ $t('wallet') }}</span>
+      <span>{{ $t('bottom.wallet_button') }}</span>
       <v-icon>mdi-wallet</v-icon>
     </v-btn>
 
     <!-- Chat -->
     <v-btn to="/chats" flat>
-      <span>{{ $t('chats') }}</span>
+      <span>{{ $t('bottom.chats_button') }}</span>
       <v-badge overlap color="primary">
         <span v-if="numOfNewMessages > 0" slot="badge">{{ numOfNewMessages }}</span>
         <v-icon>mdi-forum</v-icon>
@@ -23,13 +23,13 @@
 
     <!-- Settings -->
     <v-btn to="/options" flat>
-      <span>{{ $t('settings') }}</span>
+      <span>{{ $t('bottom.settings_button') }}</span>
       <v-icon>mdi-settings</v-icon>
     </v-btn>
 
     <!-- Logout -->
     <v-btn @click="logout" flat>
-      <span>{{ $t('logout') }}</span>
+      <span>{{ $t('bottom.exit_button') }}</span>
       <v-icon>mdi-logout-variant</v-icon>
     </v-btn>
 
@@ -99,20 +99,3 @@ export default {
   filter: unset;
 }
 </style>
-
-<i18n>
-{
-  "en": {
-    "wallet": "Wallet",
-    "chats": "Chat",
-    "settings": "Settings",
-    "logout": "Logout"
-  },
-  "ru": {
-    "wallet": "Кошелек",
-    "chats": "Чаты",
-    "settings": "Настройки",
-    "logout": "Выйти"
-  }
-}
-</i18n>

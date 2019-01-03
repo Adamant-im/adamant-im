@@ -4,7 +4,6 @@
     <v-layout>
       <v-text-field
         v-model="passphrase"
-        :rules="passphraseRules"
         :label="$t('login.password_label')"
         browser-autocomplete="current-password"
         class="text-xs-center"
@@ -48,14 +47,6 @@
 import QrcodeRenderer from 'vue-qrcode-component'
 
 export default {
-  computed: {
-    passphraseRules () {
-      return [
-        v => !!v || this.$t('rules.passphraseRequired'),
-        v => v.split(' ').length === 12 || this.$t('rules.passphraseValid')
-      ]
-    }
-  },
   data: () => ({
     validForm: true,
     disabledButton: false,
@@ -140,20 +131,3 @@ export default {
   opacity: 0;
 }
 </style>
-
-<i18n>
-{
-  "en": {
-    "rules": {
-      "passphraseRequired": "Passphrase is required",
-      "passphraseValid": "Passphrase must be valid"
-    }
-  },
-  "ru": {
-    "rules": {
-      "passphraseRequired": "Введите пассфразу",
-      "passphraseValid": "Неправильная пассфраза"
-    }
-  }
-}
-</i18n>

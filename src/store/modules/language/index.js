@@ -2,7 +2,7 @@ import i18n from '@/i18n'
 
 const state = () => ({
   currentLocale: 'en',
-  locales: ['ar', 'de', 'en', 'fr', 'ru']
+  locales: ['it', 'de', 'en', 'fr', 'ru']
 })
 
 const mutations = {

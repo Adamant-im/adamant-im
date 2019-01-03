@@ -10,7 +10,7 @@
         <v-text-field
           v-model="partnerName"
           slot="input"
-          :label="$t('partnerName')"
+          :label="$t('chats.partner_name')"
           single-line
         />
       </v-edit-dialog>
@@ -64,14 +64,3 @@ export default {
   }
 }
 </script>
-
-<i18n>
-{
-  "en": {
-    "partnerName": "Partner name"
-  },
-  "ru": {
-    "partnerName": "Имя собеседника"
-  }
-}
-</i18n>

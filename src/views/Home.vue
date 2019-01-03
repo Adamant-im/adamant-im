@@ -45,7 +45,7 @@
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title>{{ $t('sendFunds') }}</v-list-tile-title>
+              <v-list-tile-title>{{ $t('home.send_btn') }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
 
@@ -55,7 +55,7 @@
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title>{{ $t('buyTokens') }}</v-list-tile-title>
+              <v-list-tile-title>{{ $t('home.invest_btn') }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
 
@@ -78,10 +78,10 @@ export default {
           walletBalance: this.$store.state.balance,
           iconWallet: 'mdi-polaroid',
           iconBalance: 'mdi-polaroid',
-          titleWallet: 'adamantAddress',
-          titleBalance: 'adamantBalance',
-          buttonCopyAddress: 'copyAddress',
-          buttonCreateQrCode: 'createQrCode',
+          titleWallet: 'home.your_address_ADM',
+          titleBalance: 'home.your_balance_ADM',
+          buttonCopyAddress: 'home.copy',
+          buttonCreateQrCode: 'home.create_qrcode',
           link: '/transactions',
           style: 'wallet-adm'
         },
@@ -91,10 +91,10 @@ export default {
           walletBalance: this.$store.state.bnb.balance,
           iconWallet: 'mdi-polaroid',
           iconBalance: 'mdi-polaroid',
-          titleWallet: 'binanceCoinAddress',
-          titleBalance: 'binanceCoinBalance',
-          buttonCopyAddress: 'copyAddress',
-          buttonCreateQrCode: 'createQrCode',
+          titleWallet: 'home.your_address_BNB',
+          titleBalance: 'home.your_balance_BNB',
+          buttonCopyAddress: 'home.copy',
+          buttonCreateQrCode: 'home.create_qrcode',
           style: 'wallet-bnb'
         },
         {
@@ -103,10 +103,10 @@ export default {
           walletBalance: this.$store.state.eth.balance,
           iconWallet: 'mdi-ethereum',
           iconBalance: 'mdi-ethereum',
-          titleWallet: 'ethereumAddress',
-          titleBalance: 'ethereumBalance',
-          buttonCopyAddress: 'copyAddress',
-          buttonCreateQrCode: 'createQrCode',
+          titleWallet: 'home.your_address_ETH',
+          titleBalance: 'home.your_balance_ETH',
+          buttonCopyAddress: 'home.copy',
+          buttonCreateQrCode: 'home.create_qrcode',
           style: 'wallet-eth'
         }
       ]
@@ -119,7 +119,7 @@ export default {
       copyToClipboard(text)
 
       this.$store.dispatch('snackbar/show', {
-        message: 'Copied'
+        message: this.$t('home.copied')
       })
     },
     sendFunds () {
@@ -131,39 +131,6 @@ export default {
   }
 }
 </script>
-
-<i18n>
-{
-  "en": {
-    "wallets": "Wallets",
-    "balance": "Balance",
-    "adamantAddress": "ADAMANT address",
-    "ethereumAddress": "Ethereum address",
-    "binanceCoinAddress": "Binance Coin Address",
-    "adamantBalance": "ADAMANT balance",
-    "ethereumBalance": "Ethereum balance",
-    "binanceCoinBalance": "Binance Coin balance",
-    "sendFunds": "Send Funds",
-    "buyTokens": "Buy Tokens",
-    "copyAddress": "Copy",
-    "createQrCode": "Create QR code"
-  },
-  "ru": {
-    "wallets": "Кошельки",
-    "balance": "Баланс",
-    "adamantAddress": "Кошелек ADAMANT",
-    "ethereumAddress": "Кошелек Ethereum",
-    "binanceCoinAddress": "Кошелек Binance Coin",
-    "adamantBalance": "Баланс ADM",
-    "ethereumBalance": "Баланс ETH",
-    "binanceCoinBalance": "Баланс BNB",
-    "sendFunds": "Отправить средства",
-    "buyTokens": "Купить токены",
-    "copyAddress": "Копировать",
-    "createQrCode": "Создать QR-код"
-  }
-}
-</i18n>
 
 <style scoped>
 .wallet-adm {

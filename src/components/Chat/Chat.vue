@@ -41,7 +41,7 @@
         @message="onMessage"
         :show-send-button="true"
         :send-on-enter="sendMessageOnEnter"
-        :label="$t('typeYourMessage')"
+        :label="$t('chats.message')"
       />
     </a-chat>
   </v-card>
@@ -66,7 +66,7 @@ function getUserMeta (userId) {
   }
 
   if (userId === this.userId) {
-    user.name = this.$t('YOU')
+    user.name = this.$t('chats.you')
   } else {
     user.name = this.$store.getters['partners/displayName'](userId)
   }
@@ -86,14 +86,14 @@ function validateMessage (message) {
 
   if (this.$store.state.balance < 0.001) {
     this.$store.dispatch('snackbar/show', {
-      message: this.$t('notEnoughFunds')
+      message: this.$t('chats.no_money')
     })
     return false
   }
 
   if ((message.length * 1.5) > 20000) {
     this.$store.dispatch('snackbar/show', {
-      message: this.$t('messageTooLong')
+      message: this.$t('chats.too_long')
     })
     return false
   }
@@ -201,20 +201,3 @@ export default {
 .chat
   height: 100vh
 </style>
-
-<i18n>
-{
-  "en": {
-    "YOU": "YOU",
-    "typeYourMessage": "Type your message",
-    "notEnoughFunds": "Not enough funds. Top up your balance.",
-    "messageTooLong": "Message is too long"
-  },
-  "ru": {
-    "YOU": "ВЫ",
-    "typeYourMessage": "Введите сообщение",
-    "notEnoughFunds": "Недостаточно токенов. Пополните баланс.",
-    "messageTooLong": "Сообщение слишком длинное"
-  }
-}
-</i18n>

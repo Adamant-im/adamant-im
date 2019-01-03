@@ -12,7 +12,7 @@
         align-center
         class="pa-5"
       >
-        <div class="title">{{ $t('waitingCamera') }}</div>
+        <div class="title">{{ $t('scan.waiting_camera') }}</div>
         <v-progress-circular
           indeterminate
           color="primary"
@@ -32,7 +32,7 @@
         </v-flex>
         <v-flex xs12 class="pa-4">
           <h3 class="subheading text-xs-center">
-            {{ $t('holdYourDevice') }}
+            {{ $t('scan.hold_your_device') }}
           </h3>
         </v-flex>
       </v-layout>
@@ -47,8 +47,8 @@
         class="text-xs-center pa-5"
       >
         <v-flex xs12>
-          <h3 class="headline">{{ $t('noCameraFound') }}</h3>
-          <p class="mt-1 mb-0">{{ $t('connectCamera') }}</p>
+          <h3 class="headline">{{ $t('scan.no_camera_found') }}</h3>
+          <p class="mt-1 mb-0">{{ $t('scan.connect_camera') }}</p>
         </v-flex>
       </v-layout>
 
@@ -61,7 +61,7 @@
           flat
           @click="show = false"
         >
-          {{ $t('close') }}
+          {{ $t('scan.close_button') }}
         </v-btn>
       </v-card-actions>
 
@@ -116,7 +116,7 @@ export default {
         .catch(err => {
           this.cameraStatus = 'nocamera'
           this.$store.dispatch('snackbar/show', {
-            message: this.$t('somethingWrong')
+            message: this.$t('scan.something_wrong')
           })
           console.error(err)
         })
@@ -175,24 +175,3 @@ export default {
   background-color: #000;
 }
 </style>
-
-<i18n>
-{
-  "en": {
-    "waitingCamera": "Waiting camera",
-    "holdYourDevice": "Hold your device steady for 2-3 seconds towards the QR Code you want to scan.",
-    "noCameraFound": "No camera found",
-    "connectCamera": "Connect the camera and try again",
-    "close": "Close",
-    "somethingWrong": "Something went wrong. Check the console."
-  },
-  "ru": {
-    "waitingCamera": "Ожидание камеры",
-    "holdYourDevice": "Удерживайте устройство на 2-3 секунды в направлении QR-кода, который вы хотите отсканировать.",
-    "noCameraFound": "Камера не найдена",
-    "connectCamera": "Подключите камеру и попробуйте снова",
-    "close": "Закрыть",
-    "somethingWrong": "Что-то пошло не так. Проверьте консоль."
-  }
-}
-</i18n>

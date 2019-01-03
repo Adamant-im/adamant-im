@@ -2,7 +2,7 @@
   <v-layout row wrap justify-center>
 
     <app-toolbar
-      :title="$t('pageTitle')"
+      :title="$t('options.page_title')"
       :show-back="false"
       flat
     />
@@ -10,10 +10,10 @@
     <v-flex xs12 sm12 md8 lg5>
 
       <!-- General -->
-      <h3 class="title mb-3">{{ $t('general') }}</h3>
+      <h3 class="title mb-3">{{ $t('options.general_title') }}</h3>
       <v-layout row wrap align-center class="mb-5">
         <v-flex xs6>
-          <v-subheader class="pa-0">{{ $t('language') }}</v-subheader>
+          <v-subheader class="pa-0">{{ $t('options.language_label') }}</v-subheader>
         </v-flex>
         <v-flex xs6 class="text-xs-right">
           <language-switcher/>
@@ -21,11 +21,12 @@
       </v-layout>
 
       <!-- Security -->
-      <h3 class="title mb-3">{{ $t('security') }}</h3>
+      <h3 class="title mb-3">{{ $t('options.security_title') }}</h3>
       <v-layout row wrap align-center class="mb-5">
         <v-flex xs12>
           <v-checkbox
-            :label="$t('logoutOnTabClose')"
+            :label="$t('options.exit_on_close')"
+            :title="$t('options.exit_on_close_tooltip')"
             color="grey darken-1"
             v-model="logoutOnTabClose"
           />
@@ -33,11 +34,12 @@
       </v-layout>
 
       <!-- Chats -->
-      <h3 class="title mb-3">{{ $t('chats') }}</h3>
+      <h3 class="title mb-3">{{ $t('options.chats_title') }}</h3>
       <v-layout row wrap align-center class="mb-5">
         <v-flex xs12>
           <v-checkbox
-            :label="$t('sendMessageOnEnter')"
+            :label="$t('options.send_on_enter')"
+            :title="$t('options.send_on_enter_tooltip')"
             color="grey darken-1"
             v-model="sendMessageOnEnter"
           />
@@ -45,25 +47,27 @@
       </v-layout>
 
       <!-- Notifications -->
-      <h3 class="title mb-3">{{ $t('notifications') }}</h3>
+      <h3 class="title mb-3">{{ $t('options.notification_title') }}</h3>
       <v-layout row wrap align-center class="mb-5">
         <v-flex xs12>
           <v-checkbox
-            :label="$t('sound')"
+            :label="$t('options.enable_sound')"
+            :title="$t('options.enable_sound_tooltip')"
             color="grey darken-1"
             v-model="allowSoundNotifications"
           />
         </v-flex>
         <v-flex xs12>
           <v-checkbox
-            :label="$t('changeBrowserTabTitle')"
+            :label="$t('options.enable_bar')"
+            :title="$t('options.enable_bar_tooltip')"
             color="grey darken-1"
             v-model="allowTabNotifications"
           />
         </v-flex>
         <v-flex xs12>
           <v-checkbox
-            :label="$t('push')"
+            :label="$t('options.allow_push')"
             color="grey darken-1"
             v-model="allowPushNotifications"
           />
@@ -71,13 +75,13 @@
       </v-layout>
 
       <!-- Other -->
-      <h3 class="title mb-3">{{ $t('other') }}</h3>
+      <h3 class="title mb-3">{{ $t('options.other') }}</h3>
       <v-layout row wrap align-center>
         <v-flex xs12 md6 class="px-1">
-          <v-btn block @click="$router.push('/options/nodes')">{{ $t('nodeList') }}</v-btn>
+          <v-btn block @click="$router.push('/options/nodes')">{{ $t('options.nodes_list') }}</v-btn>
         </v-flex>
         <v-flex xs12 md6 class="px-1">
-          <v-btn block @click="$router.push('/votes')">{{ $t('voteForDelegates') }}</v-btn>
+          <v-btn block @click="$router.push('/votes')">{{ $t('options.vote_for_delegates_button') }}</v-btn>
         </v-flex>
       </v-layout>
 
@@ -156,40 +160,3 @@ export default {
   }
 }
 </script>
-
-<i18n>
-  {
-    "en": {
-      "pageTitle": "Settings",
-      "general": "General",
-      "chats": "Chats",
-      "language": "Language",
-      "security": "Security",
-      "notifications": "Notifications",
-      "other": "Other",
-      "nodeList": "Node list",
-      "voteForDelegates": "Vote for delegates",
-      "logoutOnTabClose": "Logout on tab close",
-      "sendMessageOnEnter": "Send message on Enter",
-      "sound": "Sound",
-      "push": "Allow PUSH-notifications",
-      "changeBrowserTabTitle": "Change browser tab title"
-    },
-    "ru": {
-      "pageTitle": "Настройки",
-      "general": "Общие",
-      "chats": "Чаты",
-      "language": "Язык",
-      "security": "Безопасность",
-      "notifications": "Уведомления",
-      "other": "Другое",
-      "nodeList": "Список узлов",
-      "voteForDelegates": "Голосовать за делегатов",
-      "logoutOnTabClose": "Выходить из кошелька при закрытии вкладки браузера",
-      "sendMessageOnEnter": "Отправлять сообщения при нажатии Enter",
-      "sound": "Звуковые уведомления",
-      "push": "Разрешить PUSH-уведомления",
-      "changeBrowserTabTitle": "Менять заголовок вкладки браузера"
-    }
-  }
-</i18n>

@@ -10,15 +10,17 @@ exports[`SendFundsForm renders the correct markup 1`] = `
   >
     <vselect-stub
       items="ADM,ETH,BNB"
-      label="selectCryptoCurrency"
+      label="Cryptocurrency"
     />
      
     <vtextfield-stub
-      label="admAddress"
+      label="To Address"
       rules="function (v) {
-          return !!v || _this.$t('errors.fieldIsRequired');
+          return !!v || _this.$t('transfer.error_field_is_required');
         },function (v) {
-          return _get__(\\"validateAddress\\")('ADM', v) || _this.$t('errors.invalidCryptoAddress');
+          return _get__(\\"validateAddress\\")('ADM', v) || _this.$t('transfer.error_incorrect_address', {
+            crypto: 'ADM'
+          });
         }"
       type="text"
     />
@@ -26,17 +28,17 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     <!---->
      
     <vtextfield-stub
-      label="amount"
+      label="Amount to send"
       rules="function (v) {
-          return !!v || _this.$t('errors.fieldIsRequired');
+          return !!v || _this.$t('transfer.error_field_is_required');
         },function (v) {
-          return _this.finalAmount <= _this.balance || _this.$t('errors.notEnoughTokens');
+          return _this.finalAmount <= _this.balance || _this.$t('transfer.error_not_enough');
         }"
       type="number"
     />
      
     <vtextarea-stub
-      label="comments"
+      label="Comments"
       multi-line=""
       rowheight="24"
       rows="5"
@@ -51,7 +53,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
       >
         <vlisttilecontent-stub>
           <vlisttilesubtitle-stub>
-            balance
+            Balance
           </vlisttilesubtitle-stub>
         </vlisttilecontent-stub>
          
@@ -68,7 +70,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
       >
         <vlisttilecontent-stub>
           <vlisttilesubtitle-stub>
-            maxToTransfer
+            Max to transfer
           </vlisttilesubtitle-stub>
         </vlisttilecontent-stub>
          
@@ -85,7 +87,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
       >
         <vlisttilecontent-stub>
           <vlisttilesubtitle-stub>
-            transferFee
+            Transfer fee
           </vlisttilesubtitle-stub>
         </vlisttilecontent-stub>
          
@@ -102,7 +104,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
       >
         <vlisttilecontent-stub>
           <vlisttilesubtitle-stub>
-            finalAmount
+            Amount including transfer fee
           </vlisttilesubtitle-stub>
         </vlisttilecontent-stub>
          
@@ -132,13 +134,13 @@ exports[`SendFundsForm renders the correct markup 1`] = `
         width="4"
       />
       
-      sendFunds
+      Send Funds
     
     </vbtn-stub>
   </vform-stub>
    
   <vdialog-stub
-    maxwidth="290"
+    maxwidth="none"
     origin="center center"
     transition="dialog-transition"
     width="auto"

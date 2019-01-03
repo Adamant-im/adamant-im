@@ -12,11 +12,6 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
       browser-autocomplete="current-password"
       class="text-xs-center"
       label="Input your passphrase to login"
-      rules="function (v) {
-        return !!v || _this.$t('rules.passphraseRequired');
-      },function (v) {
-        return v.split(' ').length === 12 || _this.$t('rules.passphraseValid');
-      }"
       type="password"
     />
      
