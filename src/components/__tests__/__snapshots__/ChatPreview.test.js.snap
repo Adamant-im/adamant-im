@@ -8,14 +8,11 @@ exports[`ChatPreview.vue renders the correct markup 1`] = `
   <vlisttileavatar-stub
     size="40"
   >
-    <canvas
-      height="40"
-      width="40"
-    >
-      
-      Canvas API is not supported
-    
-    </canvas>
+    <chatavatar-stub
+      size="40"
+      usepublickey="true"
+      userid="U123456"
+    />
      
     <vbadge-stub
       color="primary"

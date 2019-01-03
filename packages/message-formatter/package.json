@@ -1,0 +1,9 @@
+{
+  "name": "@adamant/message-formatter",
+  "version": "0.0.1",
+  "description": "Message formatter for Adamant chat",
+  "main": "src/index.js",
+  "author": "bludnic",
+  "license": "MIT",
+  "dependencies": {}
+}

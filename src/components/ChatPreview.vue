@@ -4,12 +4,9 @@
     @click="$emit('click')"
   >
     <v-list-tile-avatar>
-      <v-icon class="chat-preview__icon" v-if="readOnly">
-        {{ 'mdi-ethereum' }}
-      </v-icon>
-      <canvas :height="identiconSize" :ref="identiconRef" :width="identiconSize" v-else>
-        Canvas API is not supported
-      </canvas>
+      <v-icon v-if="readOnly" class="chat-preview__icon">mdi-ethereum</v-icon>
+      <chat-avatar v-else :size="40" :user-id="partnerId" use-public-key/>
+
       <v-badge overlap color="primary">
         <span v-if="numOfNewMessages" slot="badge">{{ numOfNewMessages }}</span>
       </v-badge>
@@ -21,7 +18,7 @@
         v-if="readOnly"
         v-text="isMessageI18n ? $t(lastMessageText) : lastMessageText"
       />
-      <v-list-tile-sub-title v-else>{{ lastMessageText }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title v-else>{{ lastMessageTextNoFormats }}</v-list-tile-sub-title>
     </v-list-tile-content>
 
     <v-list-tile-action class="chat-preview__date">
@@ -31,20 +28,10 @@
 </template>
 
 <script>
-import { getPublicKey } from '@/lib/adamant-api'
-import Identicon from '@/lib/identicon'
+import { removeFormats } from '@adamant/message-formatter'
+import ChatAvatar from '@/components/Chat/ChatAvatar'
 
 export default {
-  mounted () {
-    if (!this.readOnly) {
-      const el = this.$refs[this.identiconRef]
-      const identicon = new Identicon()
-
-      getPublicKey(this.partnerId).then(key => {
-        identicon.avatar(el, key, this.identiconSize)
-      })
-    }
-  },
   computed: {
     partnerName () {
       return this.$store.getters['partners/displayName'](this.partnerId) || this.partnerId
@@ -58,6 +45,9 @@ export default {
     lastMessageText () {
       return this.$store.getters['chat/lastMessageText'](this.partnerId)
     },
+    lastMessageTextNoFormats () {
+      return removeFormats(this.lastMessageText)
+    },
     lastMessageTimestamp () {
       return this.$store.getters['chat/lastMessageTimestamp'](this.partnerId)
     },
@@ -66,15 +56,12 @@ export default {
     },
     createdAt () {
       return this.$formatDate(this.lastMessageTimestamp)
-    },
-    identiconRef () {
-      return 'identicon_' + this.partnerId
     }
   },
-  data () {
-    return {
-      identiconSize: 40
-    }
+  data: () => ({
+  }),
+  components: {
+    ChatAvatar
   },
   props: {
     partnerId: {

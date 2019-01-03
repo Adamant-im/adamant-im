@@ -11,13 +11,15 @@
         <div class="a-chat__sender">{{ sender.name || sender.id }}</div>
         <div :title="date" class="a-chat__timestamp">{{ time }}</div>
         <div class="a-chat__status">
-          <v-icon small>
+          <v-icon size="15">
             {{ statusIcon }}
           </v-icon>
         </div>
       </div>
-      <div class="a-chat__message-text">
-        {{ message }}
+
+      <div class="a-chat__message-card-body">
+        <div v-if="formatMessage" v-html="messageFormatted" class="a-chat__message-text"></div>
+        <div v-else v-text="message" class="a-chat__message-text"></div>
       </div>
     </div>
   </div>
@@ -25,8 +27,12 @@
 
 <script>
 import moment from 'moment'
+import { formatMessage } from '@adamant/message-formatter'
 
 export default {
+  mounted () {
+    moment.locale(this.locale)
+  },
   computed: {
     time () {
       return moment(this.timestamp).format('hh:mm A')
@@ -40,6 +46,9 @@ export default {
         : this.status === 'rejected'
           ? 'mdi-shield-remove-outline'
           : 'mdi-check-all'
+    },
+    messageFormatted () {
+      return formatMessage(this.message)
     }
   },
   props: {
@@ -64,11 +73,20 @@ export default {
       default: ''
     },
     sender: {
-      type: Object
+      type: Object,
+      required: true
     },
     showAvatar: {
       type: Boolean,
       default: true
+    },
+    locale: {
+      type: String,
+      default: 'en'
+    },
+    formatMessage: {
+      type: Boolean,
+      default: false
     }
   }
 }

@@ -2,6 +2,9 @@
 # yarn lockfile v1
 
 
+"@adamant/message-formatter@file:../message-formatter/":
+  version "0.0.1"
+
 amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"

@@ -20,6 +20,7 @@
     "uuid": "^3.3.2"
   },
   "dependencies": {
+    "@adamant/message-formatter": "file:../message-formatter/",
     "moment": "^2.23.0"
   }
 }

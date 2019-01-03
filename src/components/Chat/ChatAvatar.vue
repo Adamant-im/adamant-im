@@ -1,5 +1,5 @@
 <template>
-  <canvas width="36" height="36" ref="avatar"></canvas>
+  <canvas :width="size" :height="size" ref="avatar"></canvas>
 </template>
 
 <script>
@@ -15,8 +15,13 @@ export default {
       const el = this.$refs.avatar
       const identicon = new Identicon()
 
-      getPublicKey(this.userId)
-        .then(key => identicon.avatar(el, key, this.size))
+      // generate avatar by `publicKey` or `userId`
+      if (this.usePublicKey) {
+        getPublicKey(this.userId)
+          .then(key => identicon.avatar(el, key, this.size))
+      } else {
+        identicon.avatar(el, this.userId, this.size)
+      }
     }
   },
   props: {
@@ -27,6 +32,10 @@ export default {
     userId: {
       type: String,
       required: true
+    },
+    usePublicKey: {
+      type: Boolean,
+      default: false
     }
   }
 }
