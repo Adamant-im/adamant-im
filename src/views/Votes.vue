@@ -2,7 +2,7 @@
   <v-layout row wrap justify-center>
 
     <app-toolbar
-      :title="$t('options.vote_for_delegates_button')"
+      :title="$t('votes.page_title')"
       flat
     />
 
@@ -13,7 +13,7 @@
           <v-text-field
             v-model="search"
             append-icon="search"
-            :label="$t('search')"
+            :label="$t('votes.search')"
             single-line
             hide-details
           />
@@ -35,10 +35,10 @@
                 size="24"
                 class="mr-3"
               />
-              <span>{{ $t('waitingForConfirmations') }}</span>
+              <span>{{ $t('votes.waiting_confirmations') }}</span>
             </div>
             <div v-else>
-              {{ $t('noDataAvailable') }}
+              {{ $t('votes.no_data_available') }}
             </div>
           </div>
 
@@ -107,8 +107,8 @@
           <div>
             <h3 class="headline mb-0">{{ $t('votes.summary_title') }}</h3>
             <div>
-              {{ $t('upVotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
-              {{ $t('downVotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
+              {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
+              {{ $t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
               {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
               {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
             </div>
@@ -116,7 +116,7 @@
         </v-card-title>
         <v-card-text>
           <v-btn @click="sendVotes">
-            {{ $t('sendVotes') }}
+            {{ $t('votes.vote_button_text') }}
           </v-btn>
         </v-card-text>
       </v-card>
@@ -203,9 +203,9 @@ export default {
     voteRequestLimit: 30,
     search: '',
     headers: [
-      { text: 'name', value: 'username' },
-      { text: 'rank', value: 'rank' },
-      { text: 'vote', value: '_voted' },
+      { text: 'votes.table_head_name', value: 'username' },
+      { text: 'votes.table_head_rank', value: 'rank' },
+      { text: 'votes.table_head_vote', value: '_voted' },
       { text: '', value: 'expand' }
     ],
     pagination: {
@@ -235,7 +235,7 @@ export default {
 
       if (allVotes.length <= 0) {
         this.$store.dispatch('snackbar/show', {
-          message: this.$t('firstSelectDelegates')
+          message: this.$t('votes.select_delegates')
         })
 
         return
@@ -249,13 +249,13 @@ export default {
       })
 
       this.$store.dispatch('snackbar/show', {
-        message: this.$t('votesSent')
+        message: this.$t('votes.sent')
       })
     },
     validateVotes () {
       if (this.upvotedCount + this.downvotedCount > this.voteRequestLimit) {
         this.$store.dispatch('snackbar/show', {
-          message: this.$t('voteRequestLimit', { limit: this.voteRequestLimit })
+          message: this.$t('votes.vote_request_limit', { limit: this.voteRequestLimit })
         })
 
         return false
@@ -284,16 +284,16 @@ export default {
         return '...'
       }
       if (seconds === 0) {
-        return this.$t('now')
+        return this.$t('votes.now')
       }
       const minutes = Math.floor(seconds / 60)
       seconds = seconds - (minutes * 60)
       if (minutes && seconds) {
-        return `${minutes} ${this.$t('min')} ${seconds} ${this.$t('sec')}`
+        return `${minutes} ${this.$t('votes.min')} ${seconds} ${this.$t('votes.sec')}`
       } else if (minutes) {
-        return `${minutes} ${this.$t('min')}`
+        return `${minutes} ${this.$t('votes.min')}`
       } else {
-        return `${seconds} ${this.$t('sec')}`
+        return `${seconds} ${this.$t('votes.sec')}`
       }
     }
   },
@@ -310,42 +310,3 @@ export default {
   .vote-card
     background-color: $grey.lighten-2
 </style>
-
-<i18n>
-{
-  "en": {
-    "name": "Name",
-    "rank": "Rank",
-    "vote": "Vote",
-    "upVotes": "Up votes",
-    "downVotes": "Down votes",
-    "sendVotes": "Send Votes",
-    "search": "Search",
-    "votesSent": "Votes have been sent",
-    "voteRequestLimit": "Vote request limit: {limit}",
-    "noDataAvailable": "No data available",
-    "waitingForConfirmations": "Waiting for confirmations",
-    "firstSelectDelegates": "First select delegates",
-    "now": "Now!",
-    "min": "min",
-    "sec": "sec"
-  },
-  "ru": {
-    "name": "Имя",
-    "rank": "Репутация",
-    "vote": "Голосовать",
-    "upVotes": "За",
-    "downVotes": "Против",
-    "sendVotes": "Отправить голоса",
-    "search": "Поиск",
-    "votesSent": "Голоса отправлены",
-    "voteRequestLimit": "Лимит голосов: {limit}",
-    "noDataAvailable": "Нет данных",
-    "waitingForConfirmations": "Ожидание подтверждений",
-    "firstSelectDelegates": "Сначала выберите делегатов",
-    "now": "Сейчас!",
-    "min": "мин",
-    "sec": "сек"
-  }
-}
-</i18n>

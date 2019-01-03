@@ -8,7 +8,7 @@
         class="headline grey lighten-2"
         primary-title
       >
-        {{ $t('startNewChat') }}
+        {{ $t('chats.new_chat') }}
       </v-card-title>
 
       <v-layout row wrap justify-center align-center class="pa-3">
@@ -17,7 +17,8 @@
           <v-text-field
             v-model="recipientAddress"
             :rules="validationRules"
-            :label="$t('recipientAddress')"
+            :label="$t('chats.recipient')"
+            :title="$t('chats.recipient_tooltip')"
           />
         </v-flex>
 
@@ -28,7 +29,7 @@
         </v-flex>
 
         <v-flex xs4 class="text-xs-center">
-          <v-btn @click="startChat">{{ $t('startChat') }}</v-btn>
+          <v-btn @click="startChat">{{ $t('chats.start_chat') }}</v-btn>
         </v-flex>
 
       </v-layout>
@@ -108,18 +109,3 @@ export default {
   }
 }
 </script>
-
-<i18n>
-{
-  "en": {
-    "startNewChat": "Start new Chat",
-    "recipientAddress": "Recipient address",
-    "startChat": "Start chat"
-  },
-  "ru": {
-    "startNewChat": "Новый чат",
-    "recipientAddress": "Адрес получателя",
-    "startChat": "Начать чат"
-  }
-}
-</i18n>

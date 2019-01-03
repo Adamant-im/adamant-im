@@ -100,8 +100,8 @@ export default {
         this.numOfNewMessages > 0
       ) {
         let notificationMessage = this.numOfNewMessages % 10 > 4
-          ? this.$tc('newMessageNotification.many', this.numOfNewMessages)
-          : this.$tc('newMessageNotification.few', this.numOfNewMessages)
+          ? this.$tc('notifications.message.many', this.numOfNewMessages)
+          : this.$tc('notifications.message.few', this.numOfNewMessages)
 
         this.blinker.start(notificationMessage)
       } else {
@@ -163,38 +163,3 @@ export default {
     #fefefe 5px
   )
 </style>
-
-<i18n>
-  {
-    "en": {
-      "newMessageNotification": {
-      "few": "no messages | 1 new message | {n} new messages",
-      "many": "{n} new messages"
-    }
-  },
-  "ru": {
-    "newMessageNotification": {
-      "few": "нет новых сообщений | 1 новое сообщение | {n} новых сообщения",
-      "many": "{n} новых сообщений"
-    }
-  },
-    "fr": {
-    "newMessageNotification": {
-      "few": "0 nouveaux message | 1 nouveaux message | {n} nouveaux messages",
-      "many": "{n} nouveaux messages"
-    }
-  },
-  "de": {
-    "newMessageNotification": {
-      "few": "0 Neue Nachricht | 1 Neue Nachricht | {n} Neue Nachrichten",
-      "many": "{n} Neue Nachrichten"
-    }
-  },
-  "ar": {
-    "newMessageNotification": {
-      "few": "no messages | 1 new message | {n} new messages",
-      "many": "{n} new messages"
-    }
-  }
-}
-</i18n>

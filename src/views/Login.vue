@@ -13,8 +13,8 @@
           class="logo"
         />
 
-        <h1 class="login-page__title">{{ $t('brandTitle') }}</h1>
-        <h2 class="hidden-sm-and-down login-page__subtitle mt-3">{{ $t('brandSubtitle') }}</h2>
+        <h1 class="login-page__title">{{ $t('login.brand_title') }}</h1>
+        <h2 class="hidden-sm-and-down login-page__subtitle mt-3">{{ $t('login.subheader') }}</h2>
       </v-card>
 
       <v-card flat color="transparent" class="text-xs-center mt-3">
@@ -130,16 +130,3 @@ export default {
     width: 300px
     height: 300px
 </style>
-
-<i18n>
-{
-  "en": {
-    "brandTitle": "ADAMANT",
-    "brandSubtitle": "A top-notch anonymous messenger encrypted with a Blockchain"
-  },
-  "ru": {
-    "brandTitle": "АДАМАНТ",
-    "brandSubtitle": "Самый анонимный мессенджер, зашифрованный в Blockchain"
-  }
-}
-</i18n>

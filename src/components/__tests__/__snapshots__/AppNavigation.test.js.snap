@@ -16,7 +16,7 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
     type="button"
   >
     <span>
-      wallet
+      Wallet
     </span>
      
     <vicon-stub>
@@ -32,37 +32,7 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
     type="button"
   >
     <span>
-      {
-  "attach_file": "Attach file",
-  "attach_image": "Attach image",
-  "date_today": "Today",
-  "date_tomorrow": "Tomorrow",
-  "date_yesterday": "Yesterday",
-  "estimate_fee": "Estimate Fee",
-  "ico_message": "&lt;p&gt;Now you have a possibility to buy tokens of ADAMANT, the most secure and anonymous messenger, with the cheapest price.&lt;/p&gt;&lt;p&gt;Please make sure your have saved the passphrase to this account — exit your account and open it again. Better save your password on a sheet of paper also. But remember, only &lt;b&gt;you are responsible for the passphrase safety&lt;/b&gt;. It cannot be recovered. And if other person will get it, your money will be stolen. Treat this question as secure, as if tokens in your wallet will cost a billion dollars some time.&lt;/p&gt;&lt;p&gt;To buy ADM tokens, go to Wallet tab and click Buy tokens, or open the page Adamant.im/buy-tokens/ in the web browser. In the form enter your ADAMANT address — you will receive ADM tokens there. If you moved from Messenger App, your ADM address will be filled already, other way go back to Messenger and click ADAMANT address to copy it to clipboard. Next, choose crypto you want to spend and its amount. You'll see how much ADM tokens you will receive, including volume bonus: 20–30 ETH: +20%, 30–50 ETH: +30%, 50–90 ETH: +40%, 90+ ETH: +50%. Click Buy ADAMANT tokens. You'll get unique address where you need to send crypto. As soon as your transaction will be confirmed, you'll receive ADM tokens. Transaction can be done &lt;b&gt;from any wallet or exchange&lt;/b&gt;. It is not necessary to transfer exact amount including transaction fees, the payment will be processed anyway.&lt;/p&gt;&gt;&lt;p&gt;Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.&lt;/p&gt;",
-  "incorrect_address": "Incorrect recipient address",
-  "message": "Type your message",
-  "new_chat": "Start new Chat",
-  "new_chat_tooltip": "Click to start a chat with new interlocutor",
-  "no_address": "Please specify recipient address",
-  "no_connection": "Connection problems",
-  "no_empty": "Message can't be empty",
-  "no_money": "Not enough funds. Top up your balance.",
-  "received_label": "Received",
-  "recipient": "Recipient address",
-  "recipient_tooltip": "Enter a recepient identifier, like U1234567890",
-  "retry_message": "Message was not sent, weak connection. Tap to retry.",
-  "scan_recipient_button": "Scan",
-  "send_adm": "Send ADM",
-  "send_bnb": "Send BNB",
-  "send_button": "Send",
-  "send_button_tooltip": "Click to send a message",
-  "send_eth": "Send ETH",
-  "sent_label": "Sent",
-  "title": "Chats",
-  "too_long": "Message is too long",
-  "welcome_message": "&lt;p&gt;Welcome to ADAMANT, the most secure and anonymous messenger. Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.&lt;/p&gt;&lt;p&gt;Learn more about security and anonymity at &lt;a href='https://adamant.im/staysecured/' target='_blank'&gt;https://adamant.im/staysecured/&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;All the transactions within the blockchain do need to have their minimal fees. This is necessary to support the network infrastructure. To start messaging now, &lt;b&gt;get free tokens&lt;/b&gt; — go to Wallet tab and click Free ADM tokens. Then click Start new chat on Chats tab and put your interlocutor's address. To copy your address, click on ADAMANT address on Wallet tab.&lt;/p&gt;&lt;p&gt;Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.&lt;/p&gt;"
-}
+      Chats
     </span>
      
     <vbadge-stub
@@ -87,7 +57,7 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
     type="button"
   >
     <span>
-      settings
+      Settings
     </span>
      
     <vicon-stub>
@@ -102,7 +72,7 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
     type="button"
   >
     <span>
-      logout
+      Logout
     </span>
      
     <vicon-stub>

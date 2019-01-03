@@ -29,17 +29,17 @@ export default {
   data: () => ({
     menuItems: [
       {
-        title: 'sendADM',
+        title: 'chats.send_adm',
         icon: 'mdi-ethereum',
         currency: 'ADM'
       },
       {
-        title: 'sendETH',
+        title: 'chats.send_bnb',
         icon: 'mdi-ethereum',
         currency: 'ETH'
       },
       {
-        title: 'sendBNB',
+        title: 'chats.send_eth',
         icon: 'mdi-ethereum',
         currency: 'BNB'
       }
@@ -64,18 +64,3 @@ export default {
   }
 }
 </script>
-
-<i18n>
-{
-  "en": {
-    "sendADM": "Send ADM",
-    "sendETH": "Send ETH",
-    "sendBNB": "Send BNB"
-  },
-  "ru": {
-    "sendADM": "Отправить ADM",
-    "sendETH": "Отправить ETH",
-    "sendBNB": "Отправить BNB"
-  }
-}
-</i18n>

@@ -41,7 +41,7 @@
           <td>{{ props.item.url }}</td>
           <td>
             <span>
-              {{ props.item.online ? `${props.item.ping} ms` : $t('offline') }}
+              {{ props.item.online ? `${props.item.ping} ms` : $t('nodes.offline') }}
             </span>
             <v-icon
               :color="props.item.online ? 'green lighten-1' : 'red lighten-1'"
@@ -121,14 +121,3 @@ export default {
   }
 }
 </script>
-
-<i18n>
-{
-  "en": {
-    "offline": "offline"
-  },
-  "ru": {
-    "offline": "неактивен"
-  }
-}
-</i18n>

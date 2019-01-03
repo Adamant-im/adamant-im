@@ -19,7 +19,7 @@ exports[`QrcodeScanner.vue renders the correct markup 1`] = `
       <div
         class="title"
       >
-        waitingCamera
+        Waiting camera
       </div>
        
       <vprogresscircular-stub
@@ -56,7 +56,7 @@ exports[`QrcodeScanner.vue renders the correct markup 1`] = `
           class="subheading text-xs-center"
         >
           
-          holdYourDevice
+          Hold your device steady for 2-3 seconds towards the QR Code you want to scan.
         
         </h3>
       </vflex-stub>
@@ -77,7 +77,7 @@ exports[`QrcodeScanner.vue renders the correct markup 1`] = `
         type="button"
       >
         
-        close
+        Close
       
       </vbtn-stub>
     </vcardactions-stub>

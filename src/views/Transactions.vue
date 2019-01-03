@@ -2,7 +2,7 @@
   <v-layout row wrap justify-center>
 
     <app-toolbar
-      :title="$t('transactions')"
+      :title="$t('transaction.transactions')"
       flat
     />
 
@@ -70,14 +70,3 @@ export default {
   }
 }
 </script>
-
-<i18n>
-{
-  "en": {
-    "transactions": "Transactions"
-  },
-  "ru": {
-    "transactions": "Транзакции"
-  }
-}
-</i18n>
