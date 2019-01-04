@@ -9,15 +9,5 @@ export default function getEndpointUrl (system = '') {
   const endpoints = config.server[system.toLowerCase()] || []
   const endpoint = endpoints[Math.floor(Math.random() * endpoints.length)]
 
-  if (!endpoint) return ''
-
-  const url = [
-    endpoint.protocol,
-    '://',
-    endpoint.ip,
-    endpoint.port ? (':' + endpoint.port) : '',
-    endpoint.path ? ('/' + endpoint.path) : ''
-  ].join('')
-
-  return url
+  return endpoint && endpoint.url
 }

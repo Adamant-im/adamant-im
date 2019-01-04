@@ -48,7 +48,7 @@ const router = new Router({
       }
     },
     {
-      path: '/transactions',
+      path: '/transactions/:crypto',
       name: 'Transactions',
       component: Transactions,
       meta: {

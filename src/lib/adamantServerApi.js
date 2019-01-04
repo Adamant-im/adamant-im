@@ -1,6 +1,6 @@
 import Queue from 'promise-queue'
 import adamant from './adamant.js'
-import config from '../config.json'
+import config from '../config'
 import sodium from 'sodium-browserify-tweetnacl'
 import nacl from 'tweetnacl/nacl-fast'
 import ed2curve from 'ed2curve'
@@ -46,7 +46,7 @@ function install (Vue) {
     if (server.port) {
       connectString += ':' + server.port
     }
-    this.$store.commit('connect', {'string': connectString})
+    this.$store.commit('connect', { 'string': connectString })
     return connectString
   }
   Vue.prototype.getKeypair = function () {
@@ -249,7 +249,7 @@ function install (Vue) {
         this.$store.commit('ajax_end')
         this.processMessageTransaction(newTransaction)
       } else {
-        this.$store.commit('send_error', {msg: response.data.error})
+        this.$store.commit('send_error', { msg: response.data.error })
         this.$store.commit('ajax_end')
       }
     }, response => {
