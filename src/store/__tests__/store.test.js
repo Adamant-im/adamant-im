@@ -10,6 +10,12 @@ jest.mock('@/store/modules/language', () => {
     namespaced: true
   }
 })
+jest.mock('@/store/modules/adm', () => {
+  return {
+    state: () => ({}),
+    namespaced: true
+  }
+})
 
 const { getters, mutations, actions } = store
 

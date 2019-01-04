@@ -1,25 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ChatStartDialog.vue renders the correct markup 1`] = `
-<vdialog-stub
+<v-dialog-stub
   maxwidth="none"
   origin="center center"
   transition="dialog-transition"
   width="500"
 >
-  <vcard-stub
-    tag="div"
+  <v-card-stub
+    elevation="2"
   >
-    <vcardtitle-stub
+    <v-card-title-stub
       class="headline grey lighten-2"
       primarytitle="true"
     >
       
       Start new Chat
     
-    </vcardtitle-stub>
+    </v-card-title-stub>
      
-    <vlayout-stub
+    <v-layout-stub
       align-center=""
       class="pa-3"
       justify-center=""
@@ -27,53 +27,53 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
       tag="div"
       wrap=""
     >
-      <vflex-stub
+      <v-flex-stub
         tag="div"
         xs10=""
       >
-        <vtextfield-stub
+        <v-text-field-stub
           label="Recipient address"
           rules="function (v) {
         return _get__(\\"validateAddress\\")('ADM', v) || _this.$t('chats.incorrect_address');
       }"
           title="Enter a recepient identifier, like U1234567890"
         />
-      </vflex-stub>
+      </v-flex-stub>
        
-      <vflex-stub
+      <v-flex-stub
         class="text-xs-right"
         tag="div"
         xs2=""
       >
-        <vbtn-stub
+        <v-btn-stub
           activeclass="v-btn--active"
           flat="true"
           icon="true"
           tag="button"
           type="button"
         >
-          <vicon-stub>
+          <v-icon-stub>
             mdi-qrcode-scan
-          </vicon-stub>
-        </vbtn-stub>
-      </vflex-stub>
+          </v-icon-stub>
+        </v-btn-stub>
+      </v-flex-stub>
        
-      <vflex-stub
+      <v-flex-stub
         class="text-xs-center"
         tag="div"
         xs4=""
       >
-        <vbtn-stub
+        <v-btn-stub
           activeclass="v-btn--active"
           tag="button"
           type="button"
         >
           Start chat
-        </vbtn-stub>
-      </vflex-stub>
-    </vlayout-stub>
-  </vcard-stub>
+        </v-btn-stub>
+      </v-flex-stub>
+    </v-layout-stub>
+  </v-card-stub>
    
   <!---->
-</vdialog-stub>
+</v-dialog-stub>
 `;

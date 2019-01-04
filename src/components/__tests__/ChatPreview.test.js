@@ -92,21 +92,6 @@ describe('ChatPreview.vue', () => {
     expect(wrapper.element).toMatchSnapshot()
   })
 
-  it('item click should emit `click`', () => {
-    const wrapper = mount(ChatPreview, {
-      store,
-      i18n,
-      propsData: {
-        partnerId: fake.partnerId
-      }
-    })
-
-    const el = wrapper.find('.chat-preview')
-    el.trigger('click')
-
-    expect(wrapper.emitted().click).toBeTruthy()
-  })
-
   it('check computed properties', () => {
     fake.partnerId = 'U654321'
     fake.partnerName = 'Morty'
@@ -126,6 +111,6 @@ describe('ChatPreview.vue', () => {
     expect(wrapper.vm.lastMessageText).toBe('ok')
     expect(wrapper.vm.lastMessageTimestamp).toBe(3600)
     expect(wrapper.vm.numOfNewMessages).toBe(1)
-    expect(wrapper.vm.createdAt).toBe('Sep 2, 21:00')
+    expect(wrapper.vm.createdAt).toBe('Sep 2, 2017, 21:00')
   })
 })

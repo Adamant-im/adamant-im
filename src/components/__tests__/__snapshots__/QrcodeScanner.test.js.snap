@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`QrcodeScanner.vue renders the correct markup 1`] = `
-<vdialog-stub
+<v-dialog-stub
   maxwidth="none"
   origin="center center"
   transition="dialog-transition"
   width="500"
 >
-  <vcard-stub
-    tag="div"
+  <v-card-stub
+    elevation="2"
   >
-    <vlayout-stub
+    <v-layout-stub
       align-center=""
       class="pa-5"
       justify-center=""
@@ -22,7 +22,7 @@ exports[`QrcodeScanner.vue renders the correct markup 1`] = `
         Waiting camera
       </div>
        
-      <vprogresscircular-stub
+      <v-progress-circular-stub
         class="ml-3"
         color="primary"
         indeterminate="true"
@@ -31,23 +31,23 @@ exports[`QrcodeScanner.vue renders the correct markup 1`] = `
         value="0"
         width="4"
       />
-    </vlayout-stub>
+    </v-layout-stub>
      
-    <vlayout-stub
+    <v-layout-stub
       row=""
       tag="div"
       wrap=""
     >
-      <vflex-stub
+      <v-flex-stub
         tag="div"
         xs12=""
       >
         <video
           class="camera"
         />
-      </vflex-stub>
+      </v-flex-stub>
        
-      <vflex-stub
+      <v-flex-stub
         class="pa-4"
         tag="div"
         xs12=""
@@ -59,17 +59,17 @@ exports[`QrcodeScanner.vue renders the correct markup 1`] = `
           Hold your device steady for 2-3 seconds towards the QR Code you want to scan.
         
         </h3>
-      </vflex-stub>
-    </vlayout-stub>
+      </v-flex-stub>
+    </v-layout-stub>
      
     <!---->
      
-    <vdivider-stub />
+    <v-divider-stub />
      
-    <vcardactions-stub>
-      <vspacer-stub />
+    <v-card-actions-stub>
+      <v-spacer-stub />
        
-      <vbtn-stub
+      <v-btn-stub
         activeclass="v-btn--active"
         color="primary"
         flat="true"
@@ -79,8 +79,8 @@ exports[`QrcodeScanner.vue renders the correct markup 1`] = `
         
         Close
       
-      </vbtn-stub>
-    </vcardactions-stub>
-  </vcard-stub>
-</vdialog-stub>
+      </v-btn-stub>
+    </v-card-actions-stub>
+  </v-card-stub>
+</v-dialog-stub>
 `;

@@ -1,45 +1,45 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ChatPreview.vue renders the correct markup 1`] = `
-<vlisttile-stub
+<v-list-tile-stub
   activeclass="primary--text"
   class="chat-preview"
 >
-  <vlisttileavatar-stub
+  <v-list-tile-avatar-stub
     size="40"
   >
-    <chatavatar-stub
+    <chat-avatar-stub
       size="40"
       usepublickey="true"
       userid="U123456"
     />
      
-    <vbadge-stub
+    <v-badge-stub
       color="primary"
       overlap="true"
       transition="fab-transition"
       value="true"
     >
       <!---->
-    </vbadge-stub>
-  </vlisttileavatar-stub>
+    </v-badge-stub>
+  </v-list-tile-avatar-stub>
    
-  <vlisttilecontent-stub>
-    <vlisttiletitle-stub>
+  <v-list-tile-content-stub>
+    <v-list-tile-title-stub>
       Rick
-    </vlisttiletitle-stub>
+    </v-list-tile-title-stub>
      
-    <vlisttilesubtitle-stub>
+    <v-list-tile-sub-title-stub>
       you are death if you touch me
-    </vlisttilesubtitle-stub>
-  </vlisttilecontent-stub>
+    </v-list-tile-sub-title-stub>
+  </v-list-tile-content-stub>
    
-  <vlisttileaction-stub
+  <v-list-tile-action-stub
     class="chat-preview__date"
   >
     
-    Sep 2, 20:00
+    Sep 2, 2017, 20:00
   
-  </vlisttileaction-stub>
-</vlisttile-stub>
+  </v-list-tile-action-stub>
+</v-list-tile-stub>
 `;

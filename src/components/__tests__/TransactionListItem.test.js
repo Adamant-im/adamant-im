@@ -123,12 +123,12 @@ describe('TransactionListItem', () => {
       }
     })
 
-    // Sep 3, 20:00
-    expect(wrapper.vm.createdAt).toBe('Sep 3, 20:00')
+    // Sep 3, 2017, 20:00
+    expect(wrapper.vm.createdAt).toBe('Sep 3, 2017, 20:00')
 
-    // Sep 4, 20:00
+    // Sep 4, 2017, 20:00
     wrapper.setProps({ timestamp: 3600 * 24 * 2 })
-    expect(wrapper.vm.createdAt).toBe('Sep 4, 20:00')
+    expect(wrapper.vm.createdAt).toBe('Sep 4, 2017, 20:00')
   })
 
   it('should not display icon when transaction contains a message', () => {

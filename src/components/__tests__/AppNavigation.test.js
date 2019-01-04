@@ -151,11 +151,11 @@ describe('AppNavigation.vue', () => {
 
     // no messages
     expect(wrapper.vm.numOfNewMessages).toBe(0)
-    expect(wrapper.find('vbadge-stub > span').exists()).toBe(false) // hidden badge
+    expect(wrapper.find('v-badge-stub > span').exists()).toBe(false) // hidden badge
 
     // new messages
     chat.state.numOfNewMessages = 10
     expect(wrapper.vm.numOfNewMessages).toBe(10)
-    expect(wrapper.find('vbadge-stub > span').text()).toBe('10') // visible badge
+    expect(wrapper.find('v-badge-stub > span').text()).toBe('10') // visible badge
   })
 })

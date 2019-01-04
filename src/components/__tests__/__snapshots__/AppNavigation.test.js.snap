@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AppNavigation.vue renders the correct markup 1`] = `
-<vbottomnav-stub
+<v-bottom-nav-stub
   active="0"
   app=""
   class="app-navigation"
   height="56"
   value="true"
 >
-  <vbtn-stub
+  <v-btn-stub
     activeclass="v-btn--active"
     flat="true"
     tag="button"
@@ -19,12 +19,12 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
       Wallet
     </span>
      
-    <vicon-stub>
+    <v-icon-stub>
       mdi-wallet
-    </vicon-stub>
-  </vbtn-stub>
+    </v-icon-stub>
+  </v-btn-stub>
    
-  <vbtn-stub
+  <v-btn-stub
     activeclass="v-btn--active"
     flat="true"
     tag="button"
@@ -35,7 +35,7 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
       Chats
     </span>
      
-    <vbadge-stub
+    <v-badge-stub
       color="primary"
       overlap="true"
       transition="fab-transition"
@@ -43,13 +43,13 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
     >
       <!---->
        
-      <vicon-stub>
+      <v-icon-stub>
         mdi-forum
-      </vicon-stub>
-    </vbadge-stub>
-  </vbtn-stub>
+      </v-icon-stub>
+    </v-badge-stub>
+  </v-btn-stub>
    
-  <vbtn-stub
+  <v-btn-stub
     activeclass="v-btn--active"
     flat="true"
     tag="button"
@@ -60,12 +60,12 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
       Settings
     </span>
      
-    <vicon-stub>
+    <v-icon-stub>
       mdi-settings
-    </vicon-stub>
-  </vbtn-stub>
+    </v-icon-stub>
+  </v-btn-stub>
    
-  <vbtn-stub
+  <v-btn-stub
     activeclass="v-btn--active"
     flat="true"
     tag="button"
@@ -75,9 +75,9 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
       Logout
     </span>
      
-    <vicon-stub>
+    <v-icon-stub>
       mdi-logout-variant
-    </vicon-stub>
-  </vbtn-stub>
-</vbottomnav-stub>
+    </v-icon-stub>
+  </v-btn-stub>
+</v-bottom-nav-stub>
 `;

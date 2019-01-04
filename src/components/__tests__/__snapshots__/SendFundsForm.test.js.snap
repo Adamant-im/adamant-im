@@ -4,40 +4,32 @@ exports[`SendFundsForm renders the correct markup 1`] = `
 <div
   class="send-funds-form"
 >
-  <vform-stub
+  <v-form-stub
     class="send-funds-form"
     value="true"
   >
-    <vselect-stub
+    <v-select-stub
       items="ADM,ETH,BNB"
       label="Cryptocurrency"
     />
      
-    <vtextfield-stub
+    <v-text-field-stub
       label="To Address"
-      rules="function (v) {
-          return !!v || _this.$t('transfer.error_field_is_required');
-        },function (v) {
-          return _get__(\\"validateAddress\\")('ADM', v) || _this.$t('transfer.error_incorrect_address', {
-            crypto: 'ADM'
-          });
-        }"
+      rules="v => !!v || this.$t('transfer.error_field_is_required'),v => _get__(\\"validateAddress\\")('ADM', v) || this.$t('transfer.error_incorrect_address', {
+          crypto: 'ADM'
+        })"
       type="text"
     />
      
     <!---->
      
-    <vtextfield-stub
+    <v-text-field-stub
       label="Amount to send"
-      rules="function (v) {
-          return !!v || _this.$t('transfer.error_field_is_required');
-        },function (v) {
-          return _this.finalAmount <= _this.balance || _this.$t('transfer.error_not_enough');
-        }"
+      rules="v => !!v || this.$t('transfer.error_field_is_required'),v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough')"
       type="number"
     />
      
-    <vtextarea-stub
+    <v-textarea-stub
       label="Comments"
       multi-line=""
       rowheight="24"
@@ -45,85 +37,85 @@ exports[`SendFundsForm renders the correct markup 1`] = `
       type="text"
     />
      
-    <vlist-stub
+    <v-list-stub
       class="list-info transparent"
     >
-      <vlisttile-stub
+      <v-list-tile-stub
         activeclass="primary--text"
       >
-        <vlisttilecontent-stub>
-          <vlisttilesubtitle-stub>
+        <v-list-tile-content-stub>
+          <v-list-tile-sub-title-stub>
             Balance
-          </vlisttilesubtitle-stub>
-        </vlisttilecontent-stub>
+          </v-list-tile-sub-title-stub>
+        </v-list-tile-content-stub>
          
-        <vlisttileaction-stub>
-          <vlisttiletitle-stub
+        <v-list-tile-action-stub>
+          <v-list-tile-title-stub
             class="text-xs-right"
           >
             10000 ADM
-          </vlisttiletitle-stub>
-        </vlisttileaction-stub>
-      </vlisttile-stub>
-      <vlisttile-stub
+          </v-list-tile-title-stub>
+        </v-list-tile-action-stub>
+      </v-list-tile-stub>
+      <v-list-tile-stub
         activeclass="primary--text"
       >
-        <vlisttilecontent-stub>
-          <vlisttilesubtitle-stub>
+        <v-list-tile-content-stub>
+          <v-list-tile-sub-title-stub>
             Max to transfer
-          </vlisttilesubtitle-stub>
-        </vlisttilecontent-stub>
+          </v-list-tile-sub-title-stub>
+        </v-list-tile-content-stub>
          
-        <vlisttileaction-stub>
-          <vlisttiletitle-stub
+        <v-list-tile-action-stub>
+          <v-list-tile-title-stub
             class="text-xs-right"
           >
             9999.5 ADM
-          </vlisttiletitle-stub>
-        </vlisttileaction-stub>
-      </vlisttile-stub>
-      <vlisttile-stub
+          </v-list-tile-title-stub>
+        </v-list-tile-action-stub>
+      </v-list-tile-stub>
+      <v-list-tile-stub
         activeclass="primary--text"
       >
-        <vlisttilecontent-stub>
-          <vlisttilesubtitle-stub>
+        <v-list-tile-content-stub>
+          <v-list-tile-sub-title-stub>
             Transfer fee
-          </vlisttilesubtitle-stub>
-        </vlisttilecontent-stub>
+          </v-list-tile-sub-title-stub>
+        </v-list-tile-content-stub>
          
-        <vlisttileaction-stub>
-          <vlisttiletitle-stub
+        <v-list-tile-action-stub>
+          <v-list-tile-title-stub
             class="text-xs-right"
           >
             0.5 ADM
-          </vlisttiletitle-stub>
-        </vlisttileaction-stub>
-      </vlisttile-stub>
-      <vlisttile-stub
+          </v-list-tile-title-stub>
+        </v-list-tile-action-stub>
+      </v-list-tile-stub>
+      <v-list-tile-stub
         activeclass="primary--text"
       >
-        <vlisttilecontent-stub>
-          <vlisttilesubtitle-stub>
+        <v-list-tile-content-stub>
+          <v-list-tile-sub-title-stub>
             Amount including transfer fee
-          </vlisttilesubtitle-stub>
-        </vlisttilecontent-stub>
+          </v-list-tile-sub-title-stub>
+        </v-list-tile-content-stub>
          
-        <vlisttileaction-stub>
-          <vlisttiletitle-stub
+        <v-list-tile-action-stub>
+          <v-list-tile-title-stub
             class="text-xs-right"
           >
             0.5 ADM
-          </vlisttiletitle-stub>
-        </vlisttileaction-stub>
-      </vlisttile-stub>
-    </vlist-stub>
+          </v-list-tile-title-stub>
+        </v-list-tile-action-stub>
+      </v-list-tile-stub>
+    </v-list-stub>
      
-    <vbtn-stub
+    <v-btn-stub
       activeclass="v-btn--active"
       tag="button"
       type="button"
     >
-      <vprogresscircular-stub
+      <v-progress-circular-stub
         class="mr-3"
         color="primary"
         indeterminate="true"
@@ -136,30 +128,30 @@ exports[`SendFundsForm renders the correct markup 1`] = `
       
       Send Funds
     
-    </vbtn-stub>
-  </vform-stub>
+    </v-btn-stub>
+  </v-form-stub>
    
-  <vdialog-stub
+  <v-dialog-stub
     maxwidth="none"
     origin="center center"
     transition="dialog-transition"
-    width="auto"
+    width="500"
   >
-    <vcard-stub
-      tag="div"
+    <v-card-stub
+      elevation="2"
     >
-      <vcardtitle-stub
+      <v-card-title-stub
         class="headline"
       >
         Transfer confirmation
-      </vcardtitle-stub>
+      </v-card-title-stub>
        
-      <vcardtext-stub />
+      <v-card-text-stub />
        
-      <vcardactions-stub>
-        <vspacer-stub />
+      <v-card-actions-stub>
+        <v-spacer-stub />
          
-        <vbtn-stub
+        <v-btn-stub
           activeclass="v-btn--active"
           flat="true"
           tag="button"
@@ -168,9 +160,9 @@ exports[`SendFundsForm renders the correct markup 1`] = `
           
           Cancel
         
-        </vbtn-stub>
+        </v-btn-stub>
          
-        <vbtn-stub
+        <v-btn-stub
           activeclass="v-btn--active"
           flat="true"
           tag="button"
@@ -179,9 +171,9 @@ exports[`SendFundsForm renders the correct markup 1`] = `
           
           Confirm
         
-        </vbtn-stub>
-      </vcardactions-stub>
-    </vcard-stub>
-  </vdialog-stub>
+        </v-btn-stub>
+      </v-card-actions-stub>
+    </v-card-stub>
+  </v-dialog-stub>
 </div>
 `;

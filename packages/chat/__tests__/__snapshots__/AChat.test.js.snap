@@ -8,7 +8,7 @@ exports[`AChat.vue renders the correct markup 1`] = `
     class="a-chat__content"
   >
      
-    <vdivider-stub />
+    <v-divider-stub />
      
     <div
       class="a-chat__body"
@@ -16,7 +16,7 @@ exports[`AChat.vue renders the correct markup 1`] = `
       <div
         class="text-xs-center py-2"
       >
-        <vprogresscircular-stub
+        <v-progress-circular-stub
           color="primary"
           indeterminate="true"
           rotate="0"
@@ -32,7 +32,7 @@ exports[`AChat.vue renders the correct markup 1`] = `
       />
     </div>
      
-    <vdivider-stub />
+    <v-divider-stub />
      
   </div>
 </div>

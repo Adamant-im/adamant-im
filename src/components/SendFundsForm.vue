@@ -72,6 +72,7 @@
 
     <v-dialog
       v-model="dialog"
+      width="500"
     >
       <v-card>
         <v-card-title class="headline">{{ $t('transfer.confirm_title') }}</v-card-title>

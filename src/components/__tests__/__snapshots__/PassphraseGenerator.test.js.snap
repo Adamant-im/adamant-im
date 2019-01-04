@@ -13,7 +13,7 @@ exports[`PassphraseGenerator.vue renders the correct markup 1`] = `
       Or create a new anonymous address:
     </h3>
      
-    <vbtn-stub
+    <v-btn-stub
       activeclass="v-btn--active"
       flat="true"
       tag="button"
@@ -22,7 +22,7 @@ exports[`PassphraseGenerator.vue renders the correct markup 1`] = `
       
       Create new
     
-    </vbtn-stub>
+    </v-btn-stub>
   </div>
    
   <!---->
