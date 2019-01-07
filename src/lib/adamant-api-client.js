@@ -4,6 +4,8 @@ import utils from './adamant'
 import config from '../config.json'
 import semver from 'semver'
 
+const HEIGHT_EPSILON = 10
+
 /**
  * @typedef {Object} RequestConfig
  * @property {String} url request relative URL
@@ -38,11 +40,19 @@ class ApiNode {
      */
     this.active = true
 
+    /**
+     * Indicates whether node is out of sync (i.e. its block height is
+     * either too big or too small compared to the other nodes)
+     * @type {Boolean}
+     */
+    this.outOfSync = false
+
     this._baseUrl = baseUrl
     this._online = false
     this._ping = Infinity
     this._timeDelta = 0
     this._version = ''
+    this._height = 0
 
     this._client = axios.create({
       baseURL: this._baseUrl
@@ -87,6 +97,14 @@ class ApiNode {
    */
   get timeDelta () {
     return this._timeDelta
+  }
+
+  /**
+   * Current block height
+   * @type {Number}
+   */
+  get height () {
+    return this._height
   }
 
   /**
@@ -138,18 +156,34 @@ class ApiNode {
    * @returns {PromiseLike}
    */
   updateStatus () {
-    const time = Date.now()
-    return this.request({ url: '/api/peers/version' }).then(
-      body => {
-        // A decent node must have version
-        this._online = !!body.version
-        this._version = body.version
-        this._ping = Date.now() - time
-      },
-      () => {
+    return Promise.all([this._getVersion(), this._getHeight()])
+      .catch(() => {
         this._online = false
-      }
-    )
+      })
+  }
+
+  /**
+   * Gets node version and ping
+   * @returns {Promise}
+   */
+  _getVersion () {
+    const time = Date.now()
+    return this.request({ url: '/api/peers/version' }).then(body => {
+      // A decent node must have version
+      this._online = !!body.version
+      this._version = body.version
+      this._ping = Date.now() - time
+    })
+  }
+
+  /**
+   * Gets node block height
+   * @returns {Promise}
+   */
+  _getHeight () {
+    return this.request({ url: '/api/blocks/getHeight' }).then(body => {
+      this._height = Number(body.height)
+    })
   }
 }
 
@@ -194,7 +228,8 @@ class ApiClient {
       online: node.online,
       ping: node.ping,
       version: node.version,
-      active: node.active
+      active: node.active,
+      outOfSync: node.outOfSync
     })
 
     this._onInit = null
@@ -247,6 +282,8 @@ class ApiClient {
           reject(new Error('No compatible nodes at the moment'))
           // Schedule a status update after a while
           setTimeout(() => this.updateStatus(), 1000)
+        } else {
+          this._updateSyncStatuses()
         }
       })
     }).then(
@@ -310,6 +347,8 @@ class ApiClient {
         if (error.code === 'NODE_OFFLINE') {
           // Notify the world that the node is down
           this._fireStatusUpdate(node)
+          // Initiate nodes status check
+          this.updateStatus()
           // If the selected node is not available, repeat the request with another one.
           return this.request(config)
         }
@@ -366,6 +405,35 @@ class ApiClient {
    */
   _isCompatible (version) {
     return !!(version && semver.gte(version, this._minApiVersion))
+  }
+
+  /**
+   * Updates `outOfSync` status of the nodes.
+   */
+  _updateSyncStatuses () {
+    const nodes = this._nodes.filter(x => x.online)
+
+    // For each node we take its height and list of nodes that have the same height ± epsilon
+    const grouped = nodes.map(node => {
+      return {
+        height: node.height,
+        comrads: nodes.filter(x => Math.abs(node.height - x.height) <= HEIGHT_EPSILON)
+      }
+    })
+
+    // Now get the longest comrads list with the highest height
+    const winner = grouped.reduce((out, x) => {
+      if (!out) return x
+      if (out.comrads.length < x.comrads.length || out.height < x.height) return x
+      return out
+    }, null)
+
+    // Finally, all the comrads from the winner list are considered to be in sync, all the
+    // others are not
+    nodes.forEach(node => {
+      node.outOfSync = !winner.comrads.includes(node)
+      this._fireStatusUpdate(node)
+    })
   }
 }
 

@@ -13,7 +13,11 @@
         <template v-for="node in nodes">
           <md-table-row
             :key="node.url"
-            :class="{ 'node-inactive': !node.active, 'node-offline': node.active && !node.online }"
+            :class="{
+              'node-inactive': !node.active,
+              'node-offline': node.active && !node.online,
+              'node-sync': node.active && node.outOfSync
+            }"
           >
             <md-table-cell>
               <md-checkbox v-model="node.active" @change="toggle(node)" />
@@ -22,11 +26,7 @@
               <div class="node-url-block">{{ node.url }}</div>
             </md-table-cell>
             <md-table-cell>
-              {{ !node.active
-                ? $t('nodes.inactive')
-                : !node.online
-                  ? $t('nodes.offline')
-                  : (node.ping + ' ' + $t('nodes.ms')) }}
+              {{ getNodeStatus(node) }}
             </md-table-cell>
           </md-table-row>
         </template>
@@ -89,6 +89,17 @@ export default {
     },
     onSort (params) {
       this.sortParams = params
+    },
+    getNodeStatus (node) {
+      if (!node.active) {
+        return this.$t('nodes.inactive')
+      } else if (!node.online) {
+        return this.$t('nodes.offline')
+      } else if (node.outOfSync) {
+        return this.$t('nodes.sync')
+      }
+
+      return node.ping + ' ' + this.$t('nodes.ms')
     }
   },
   computed: {
@@ -153,6 +164,10 @@ export default {
 
       .node-offline .md-table-cell {
         color: red;
+      }
+
+      .node-sync .md-table-cell {
+        color: orange;
       }
 
       .md-table-row .md-table-cell:nth-child(2) .md-table-cell-container {
