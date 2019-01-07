@@ -90,6 +90,23 @@
     "scan_qr_code_button_tooltip": "Отсканируйте QR-код с паролем",
     "subheader": "Самый анонимный мессенджер, зашифрованный в Blockchain"
   },
+  "login_via_password": {
+    "article": "Медиуме.",
+    "article_hint": "Информацию о пользовательском пароле можно найти на ",
+    "encoding_data_title": "Шифрование данных…",
+    "enter_password": "Пароль для разблокировки",
+    "incorrect_password": "Неверный пользовательский пароль",
+    "login_via_password": "Войти с помощью пароля",
+    "popup_confirm_text": "Установить",
+    "popup_hint": "Рекомендуем 8+ символов…",
+    "popup_title": "Задайте пароль",
+    "remove_password": "Удалить пароль",
+    "remove_password_hint": "Или удалите пароль для входа по секретной фразе",
+    "user_password_forget": "Забыть",
+    "user_password_hint": "Пароль",
+    "user_password_title": "Пароль для разблокировки",
+    "user_password_unlock": "Разблокировать"
+  },
   "new_messages_1": "новое сообщение",
   "new_messages_2": "новых сообщения",
   "new_messages_5": "новых сообщений",
@@ -100,17 +117,17 @@
     "host": "Хост",
     "inactive": "Неактивен",
     "ms": "мс",
-    "offline": "Недоступен",
-    "ping": "Пинг",
     "nodeLabelDescription": {
-      "part_one": "Поддержите децентрализацию и повысьте уровень приватности — настройте свой узел (ноду) АДАМАНТа и свое веб-приложение. Узел можно установить, ",
       "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",
       "link_one_content": "следуя инструкции",
-      "part_two": ". Чтобы добавить свои узлы в список для подключения, вам нужно ",
       "link_two": "https://github.com/Adamant-im/adamant-im/",
       "link_two_content": "развернуть веб-приложение на отдельном домене",
-      "part_three": ". Это ограничение связано с настройками безопасности Content Security Policy (CSP). В приложениях iOS и Android таких ограничений нет."
-    }
+      "part_one": "Поддержите децентрализацию и повысьте уровень приватности — настройте свой узел (ноду) АДАМАНТа и свое веб-приложение. Узел можно установить, ",
+      "part_three": ". Это ограничение связано с настройками безопасности Content Security Policy (CSP). В приложениях iOS и Android таких ограничений нет.",
+      "part_two": ". Чтобы добавить свои узлы в список для подключения, вам нужно "
+    },
+    "offline": "Недоступен",
+    "ping": "Пинг"
   },
   "options": {
     "already_delegate_text": "Вы уже являетесь делегатом. Его имя: ",
@@ -137,7 +154,9 @@
     "send_on_enter": "Отправлять сообщения по Enter",
     "send_on_enter_tooltip": "Отправлять сообщения по нажатию на клавишу Enter, перенос строки по Shift + Enter. По умолчанию используется отправка сообщений по Ctrl (Cmd) + Enter.",
     "version": "Версия приложения: ",
-    "vote_for_delegates_button": "Голосовать за делегатов"
+    "vote_for_delegates_button": "Голосовать за делегатов",
+    "upvote_for_label": "Голосовать за:",
+    "downvote_for_label": "Отозвать голос для:"
   },
   "region": "ru-RU",
   "scan": {
@@ -201,8 +220,8 @@
     "filter_placeholder": "Имя или ADAMANT ID",
     "no_money": "Вам нужно 50 ADM для голосования",
     "page_title": "Голосование",
-    "summary_info": "Стоимость голосования: 50 ADM. Больше информации — ",
-    "summary_info_link_text": "на сайте ADAMANT",
+    "summary_info": "Стоимость голосования: 50 ADM. ",
+    "summary_info_link_text": "Читайте о голосовании и форжинге",
     "summary_title": "Голосование",
     "table_head_name": "Имя",
     "table_head_rank": "Ранк",

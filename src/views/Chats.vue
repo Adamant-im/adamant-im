@@ -29,8 +29,10 @@
                 <div class="md-list-text-container">
                     <div class="chat_entry_title">{{ chatName(chat.partner) }}</div>
                     <div class="chat-entry-wrapper">
-                      <div class="message-status-block" :message-status="chat.last_message.confirm_class" v-if="chat.last_message.direction === 'from'"></div>
-                      <chat-entry :message="chat.last_message" :brief="true"></chat-entry>
+                      <div v-if="(chat.last_message.amount > 0 && chat.last_message.direction === 'from') || chat.last_message.direction === 'from'" class="message-status-block" :message-status="chat.last_message.confirm_class"></div>
+                      <chat-entry v-if="chat.last_message.amount > 0 && chat.last_message.direction === 'from'" :message="chat.last_message" :brief="true"></chat-entry>
+                      <chat-entry v-else :message="chat.last_message" :brief="true" class="for-received"></chat-entry>
+                      <div v-if="chat.last_message.amount > 0 && chat.last_message.direction === 'to'" class="message-status-block-for-received" :message-status="chat.last_message.confirm_class"></div>
                     </div>
                     <span class="dt" v-if="chat.last_message.timestamp">{{ $formatDate(chat.last_message.timestamp) }}</span>
                 </div>
@@ -44,7 +46,7 @@
 <script>
 import NewChat from '@/components/NewChat.vue'
 import ChatEntry from '@/components/chat/ChatEntry.vue'
-
+import i18n from '../i18n'
 const VueScrollTo = require('vue-scrollto')
 const scrollOptions = {
   duration: 1000,
@@ -62,9 +64,6 @@ export default {
   name: 'chats',
   components: { NewChat, ChatEntry },
   methods: {
-    load () {
-      this.$store.dispatch('loadChats')
-    },
     newMessages (address) {
       if (this.$store.state.newChats[address]) {
         return this.$store.state.newChats[address]
@@ -98,6 +97,24 @@ export default {
         }
         return 0
       }
+      let messages = []
+      Object.values(this.$store.state.chats).forEach((chat) => {
+        const transactions = this.$store
+          .getters['adm/partnerTransactions'](chat.partner)
+          .filter(x => !chat[x.id])
+        messages = Object.values(chat.messages).concat(transactions)
+        messages.sort((a, b) => a.timestamp - b.timestamp)
+        let lastMessage = messages[messages.length - 1]
+        let lastChatMessage = Object.assign({}, lastMessage)
+        if (lastChatMessage.amount > 0) {
+          const label = lastChatMessage.direction === 'from' ? 'sent_label' : 'received_label'
+          const status = lastChatMessage.direction === 'from' ? lastChatMessage.confirm_class === undefined ? 'confirmed' : lastChatMessage.confirm_class : 'confirmed'
+          lastChatMessage.message = !lastMessage.message || lastMessage.message.length === 0 ? i18n.t('chats.' + label) + ' ' + lastMessage.amount / 100000000 + ' ADM' : lastMessage.message
+          lastChatMessage.confirm_class = status
+          chat.last_message = lastChatMessage
+        }
+      })
+
       if (this.$store.state.chats) {
         return Object.values(this.$store.state.chats).sort(compare)
       }
@@ -108,6 +125,7 @@ export default {
     }
   },
   mounted () {
+    this.$store.dispatch('loadChats')
     let lastVisitedChat = String(this.lastVisitedChat)
     lastVisitedChat = lastVisitedChat.replace(' ', '-')
     if (lastVisitedChat) {
@@ -197,6 +215,10 @@ export default {
       justify-content: flex-start;
     }
 
+    .for-received {
+        width: auto;
+    }
+
     .adamant-avatar-wrapper {
       background-color: #9d9d9d !important;
     }
@@ -224,13 +246,16 @@ export default {
     .message-status-block {
       margin-right: 10px;
     }
+    .message-status-block-for-received {
+        margin-right: 10px;
+        margin-left: 5px;
+    }
     [message-status=confirmed]:before {
       content: 'done';
       font-family: "Material Icons";
       text-rendering: optimizeLegibility;
       position: absolute;
       bottom: 14px;
-      left: 64px;
       font-size: 8px;
     }
 

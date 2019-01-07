@@ -88,15 +88,14 @@ export default function createActions (config) {
           // Send a special message to indicate that we're performing an ETH transfer
           const type = crypto.toLowerCase() + '_transaction'
           const msg = { type, amount, hash, comments }
-          return admApi.sendSpecialMessage(admAddress, msg).then(result => {
-            if (result.success) {
-              console.log('ADM message has been sent', msg, result.transactionId)
+
+          return admApi.sendSpecialMessage(admAddress, msg)
+            .then(() => {
               return serialized
-            } else {
-              console.log(`Failed to send "${type}"`, result)
+            })
+            .catch(() => {
               return Promise.reject(new Error('adm_message'))
-            }
-          })
+            })
         })
         .then(tx => {
           return utils.promisify(api.eth.sendRawTransaction, tx).then(
@@ -110,8 +109,6 @@ export default function createActions (config) {
             context.commit('transactions', [{ hash, status: 'ERROR' }])
             throw error
           } else {
-            console.log(`${crypto} transaction has been sent`)
-
             context.commit('transactions', [{
               hash,
               senderId: ethTx.from,

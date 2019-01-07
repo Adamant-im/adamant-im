@@ -1,11 +1,11 @@
 import Vue from 'vue'
 
+/** Resets module state */
 export default {
-  /** Resets module state */
   delegate_info (state, payload) {
     Vue.set(state.delegates, payload.address, payload)
   },
-  clean_delegates (state) {
+  reset (state) {
     state.delegates = {}
   },
   update_delegate (state, payload) {
