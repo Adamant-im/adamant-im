@@ -13,7 +13,7 @@ exports[`AppToolbar.vue renders the correct markup 1`] = `
     type="button"
   >
     <v-icon-stub>
-      arrow_back
+      mdi-arrow-left
     </v-icon-stub>
   </v-btn-stub>
    

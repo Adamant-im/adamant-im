@@ -301,7 +301,6 @@ export default class Identicon {
   // Algorithm: PickIndex converts the key[index] value to a decimal value.
   // We pick the ith index that respects the equality value%sizeOfArray == i.
   PickIndex (key, n, index) {
-    let s = md5(key)[index]
     let r = this.getValue(key, index)
     for (let i = 0; i < n; i++) {
       if (r % n === i) {

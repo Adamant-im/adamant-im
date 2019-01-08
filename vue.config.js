@@ -17,7 +17,7 @@ module.exports = {
       // allow only those
       new webpack.ContextReplacementPlugin(
         /moment[/\\]locale$/,
-        /ar|de|en|fr|ru/
+        /it|de|en|fr|ru/
       )
     ]
   }

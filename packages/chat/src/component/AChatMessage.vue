@@ -18,7 +18,7 @@
       </div>
 
       <div class="a-chat__message-card-body">
-        <div v-if="formatMessage" v-html="messageFormatted" class="a-chat__message-text"></div>
+        <div v-if="html" v-html="message" class="a-chat__message-text"></div>
         <div v-else v-text="message" class="a-chat__message-text"></div>
       </div>
     </div>
@@ -27,7 +27,6 @@
 
 <script>
 import moment from 'moment'
-import { formatMessage } from '@adamant/message-formatter'
 
 export default {
   mounted () {
@@ -46,9 +45,6 @@ export default {
         : this.status === 'rejected'
           ? 'mdi-shield-remove-outline'
           : 'mdi-check-all'
-    },
-    messageFormatted () {
-      return formatMessage(this.message)
     }
   },
   props: {
@@ -84,7 +80,7 @@ export default {
       type: String,
       default: 'en'
     },
-    formatMessage: {
+    html: {
       type: Boolean,
       default: false
     }

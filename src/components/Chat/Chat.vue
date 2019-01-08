@@ -20,11 +20,11 @@
           v-if="message.type === 'message'"
           v-bind="message"
           :key="message.id"
-          :message="isChatReadOnly ? $t(message.message) : message.message"
+          :message="isChatReadOnly ? $t(message.message) : message.message | msg"
           :user-id="userId"
           :show-avatar="!isChatReadOnly"
           :locale="locale"
-          :format-message="true"
+          :html="true"
         >
           <chat-avatar v-if="!isChatReadOnly" :user-id="sender.id" use-public-key slot="avatar"/>
         </a-chat-message>
@@ -36,7 +36,7 @@
           :user-id="userId"
           :amount="message.amount"
           :currency="message.type"
-          :i18n="{ sent: $t('sent'), received: $t('received') }"
+          :i18n="{ sent: $t('chats.sent_label'), received: $t('chats.received_label') }"
           :locale="locale"
           @click:transaction="openTransaction(message)"
         />
@@ -58,9 +58,15 @@
 <script>
 import { transformMessage } from '@/lib/chatHelpers'
 import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@adamant/chat'
+import { Formatter } from '@adamant/message-formatter'
 
 import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
+
+/**
+ * Create Formatter instance.
+ */
+const formatter = new Formatter()
 
 /**
  * Returns user meta by userId.
@@ -187,6 +193,9 @@ export default {
         }
       })
     }
+  },
+  filters: {
+    msg: message => formatter.format(message)
   },
   components: {
     AChat,

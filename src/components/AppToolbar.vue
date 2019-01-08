@@ -5,7 +5,7 @@
     app
   >
     <v-btn v-if="showBack" @click="goBack" icon>
-      <v-icon>arrow_back</v-icon>
+      <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
 
     <v-toolbar-title v-if="title">

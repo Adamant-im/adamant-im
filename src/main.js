@@ -1,29 +1,17 @@
-import '@/assets/stylus/app.styl'
 import Vue from 'vue'
-import './plugins/vuetify'
+
 import App from './App.vue'
 import router from './router'
-import './registerServiceWorker'
-import i18n from './i18n'
-
-import VueClipboards from 'vue-clipboards'
-import VueFormatters from './lib/formatters'
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
-import packageJSON from '../package.json'
 import store from './store'
-import 'roboto-fontface/css/roboto/roboto-fontface.css'
-import '@mdi/font/css/materialdesignicons.css'
-import Default from './layouts/default'
-import Toolbar from './layouts/toolbar'
-import Chat from './layouts/chat'
+import i18n from './i18n'
+import VueFormatters from './lib/formatters'
+import packageJSON from '../package.json'
+import './plugins/vuetify'
+import './plugins/layout'
+import './registerServiceWorker'
+import '@/assets/stylus/app.styl'
 
-Vue.use(VueClipboards)
 Vue.use(VueFormatters)
-
-// Register layouts globally
-Vue.component('default', Default)
-Vue.component('toolbar', Toolbar)
-Vue.component('chat', Chat)
 
 document.title = i18n.t('app_title')
 

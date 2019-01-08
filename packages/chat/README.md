@@ -227,7 +227,7 @@ export type User = {
 |**[`sender`](#)**|`User`|`undefined`|Can be accessed from `props.message.sender` of `AChat.vue`|
 |**[`show-avatar`](#)**|`boolean`|`true`|Display user avatars in chat|
 |**[`locale`](#)**|`string`|`'en'`|Moment.js locale|
-|**[`format-message`](#)**|`boolean`|`false`|If true, `message` will be processed with `formatMessage` from `@adamant/message-formatter`|
+|**[`html`](#)**|`boolean`|`false`|Uses `v-html` or `v-text` to display message|
 
 ### Slots
 |Name|Props|Description|

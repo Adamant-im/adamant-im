@@ -17,7 +17,9 @@ npm i --save file:packages/message-formatter
 ## Format message
 
 ```js
-import { formatMessage } from '@adamant/message-formatter'
+import { Formatter } from '@adamant/message-formatter'
+
+const formatter = new Formatter()
 
 const message = `
   To bold, surround your text with asterisks: *your text*
@@ -36,7 +38,7 @@ const message = `
   email team@adamant.im
 `
 
-const messageFormatted = formatMessage(message)
+const messageFormatted = formatter.format(message)
 ```
 
 #### Output

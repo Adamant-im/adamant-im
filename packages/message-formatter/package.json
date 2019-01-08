@@ -5,5 +5,7 @@
   "main": "src/index.js",
   "author": "bludnic",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "underscore": "^1.9.1"
+  }
 }

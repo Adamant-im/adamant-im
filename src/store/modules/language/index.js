@@ -1,13 +1,14 @@
 import i18n from '@/i18n'
 
+const locales = ['it', 'de', 'en', 'fr', 'ru']
+
 const state = () => ({
-  currentLocale: 'en',
-  locales: ['it', 'de', 'en', 'fr', 'ru']
+  currentLocale: 'en'
 })
 
 const mutations = {
   changeLocale (state, locale) {
-    const newLocale = state.locales.find(value => value === locale)
+    const newLocale = locales.find(value => value === locale)
 
     if (newLocale) {
       state.currentLocale = newLocale

@@ -1,11 +1,12 @@
 <template>
   <v-toolbar flat height="64">
     <v-btn @click="goBack" icon>
-      <v-icon>arrow_back</v-icon>
+      <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
 
     <v-toolbar-title>
-      <v-edit-dialog lazy>
+      <div v-if="isChatReadOnly">{{ partnerId }}</div>
+      <v-edit-dialog v-else>
         <div>{{ partnerName ? partnerName : partnerId }}</div>
         <v-text-field
           v-model="partnerName"

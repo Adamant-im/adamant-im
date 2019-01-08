@@ -32,13 +32,6 @@ export default {
     this.validateRecipientAddress()
     this.validateAmountToSend()
   },
-  computed: {
-    cryptoAddress () {
-      return this.cryptoCurrency === Cryptos.ADM
-        ? this.$route.params.recipientAddress
-        : this.$store.getters['partners/cryptoAddress'](this.$route.params.recipientAddress, this.cryptoCurrency)
-    }
-  },
   data: () => ({
     cryptoCurrency: Cryptos.ADM,
     recipientAddress: '',
@@ -54,7 +47,7 @@ export default {
       }
     },
     validateRecipientAddress () {
-      if (validateAddress(this.cryptoCurrency, this.cryptoAddress)) {
+      if (validateAddress('ADM', this.$route.params.recipientAddress)) {
         this.recipientAddress = this.$route.params.recipientAddress
       }
     },

@@ -83,13 +83,12 @@ export default {
   &__date
     font-size: 8px
     color: #616161
-  &__icon
-    color: $shades.white
 
 /** Themes **/
 .theme--light
   .chat-preview__icon
     background-color: $grey.lighten-1
+    color: $shades.white
 
 .theme--dark
   .chat-preview__icon
