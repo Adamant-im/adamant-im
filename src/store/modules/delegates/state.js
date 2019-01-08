@@ -1,5 +1,7 @@
-export default {
-  delegates: {},
-  originDelegates: {},
-  lastTransactionConfirmed: true
+export default () => {
+  return {
+    delegates: {},
+    originDelegates: {},
+    lastTransactionConfirmed: true
+  }
 }

@@ -4640,9 +4640,9 @@ inquirer@^3.0.6:
     strip-ansi "^4.0.0"
     through "^2.3.6"
 
-instascan@^1.0.0:
+"instascan@git+https://github.com/schmich/instascan.git#master":
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/instascan/-/instascan-1.0.0.tgz#de5949f73f698f8dff68df0a7bcf6942a799ee44"
+  resolved "git+https://github.com/schmich/instascan.git#b0f9519f2dd2a6661e67066d6ed678e621dd5ce2"
   dependencies:
     babel-polyfill "^6.9.1"
     fsm-as-promised "^0.13.0"
@@ -5392,6 +5392,10 @@ joi@^13.0.0:
 js-base64@^2.1.8:
   version "2.4.9"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.4.9.tgz#748911fb04f48a60c4771b375cac45a80df11c03"
+
+js-base64@^2.4.9:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.5.0.tgz#42255ba183ab67ce59a0dee640afdc00ab5ae93e"
 
 js-beautify@^1.6.12, js-beautify@^1.6.14:
   version "1.8.8"
@@ -8892,10 +8896,6 @@ use@^3.1.0:
 utf8@^2.1.1:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/utf8/-/utf8-2.1.2.tgz#1fa0d9270e9be850d9b05027f63519bf46457d96"
-
-utf8@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/utf8/-/utf8-3.0.0.tgz#f052eed1364d696e769ef058b183df88c87f69d1"
 
 util-deprecate@~1.0.1:
   version "1.0.2"

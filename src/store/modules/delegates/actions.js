@@ -48,6 +48,12 @@ function round (height) {
 }
 
 export default {
+  reset: {
+    root: true,
+    handler (context) {
+      context.commit('reset')
+    }
+  },
   getDelegates (context, payload) {
     admApi.getDelegatesWithVotes(payload.address).then(response => {
       if (response.success) {
@@ -63,7 +69,7 @@ export default {
     })
   },
   voteForDelegates (context, payload) {
-    context.commit('clean_delegates')
+    context.commit('reset')
     context.commit('ajax_start', null, { root: true })
     admApi.voteForDelegates(payload.votes).then(response => {
       if (response.success) {

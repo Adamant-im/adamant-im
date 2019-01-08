@@ -137,7 +137,9 @@
     "send_on_enter": "Send message on Enter",
     "send_on_enter_tooltip": "Send message on Enter key, new line on Shift + Enter. By default combination Ctrl (Cmd) + Enter is used to send messages.",
     "version": "App Version: ",
-    "vote_for_delegates_button": "Vote for delegates"
+    "vote_for_delegates_button": "Vote for delegates",
+    "upvote_for_label": "Vote for:",
+    "downvote_for_label": "Downvote for:"
   },
   "region": "en-US",
   "scan": {
@@ -201,8 +203,8 @@
     "filter_placeholder": "Name or ADAMANT ID",
     "no_money": "You need 50 ADM to vote",
     "page_title": "Votes",
-    "summary_info": "Voting cost: 50 ADM. More info on the ",
-    "summary_info_link_text": "ADAMANT website",
+    "summary_info": "Voting cost: 50 ADM. ",
+    "summary_info_link_text": "Read about voting and forging",
     "summary_title": "Review voting",
     "table_head_name": "Name",
     "table_head_rank": "Rank",

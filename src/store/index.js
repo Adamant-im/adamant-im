@@ -140,6 +140,9 @@ const store = {
     userPasswordExists: sessionStorage.getItem('userPassword') !== null
   },
   actions: {
+    update_delegates_grid ({ commit }, payload) {
+      commit('update_delegate', payload)
+    },
     add_chat_i18n_message ({ commit }, payload) {
       payload.message = i18n.t(payload.message)
       commit('add_chat_message', payload)
@@ -328,6 +331,9 @@ const store = {
         }
       )
     },
+    updateChatHeight (context, payload) {
+      context.commit('set_last_chat_height', payload)
+    },
     /**
      * Updates current application status: balance, chat messages, transactions and so on
      * @param {any} context Vuex action context
@@ -356,6 +362,9 @@ const store = {
     }
   },
   mutations: {
+    set_adm_address (state, payload) {
+      state.address = payload
+    },
     set_first_load (state) {
       state.firstChatLoad = true
     },
@@ -364,6 +373,9 @@ const store = {
     },
     user_password_exists (state, payload) {
       state.userPasswordExists = payload
+    },
+    update_delegate (state, payload) {
+      state.delegates[payload.address] = payload
     },
     last_visited_chat (state, payload) {
       state.lastVisitedChat = payload
@@ -420,7 +432,6 @@ const store = {
       state.showPanel = false
       state.showBottom = true
       state.transactions = {}
-      state.delegates = {}
       state.originDelegates = {}
       state.chats = {}
       state.newChats = {}
@@ -660,8 +671,8 @@ const store = {
     getAdmAddress: state => {
       return state.address
     },
-    getState: state => {
-      return state
+    getDelegateList: state => {
+      return state.delegates.delegates || []
     }
   },
   modules: {
