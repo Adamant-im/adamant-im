@@ -54,7 +54,6 @@ export default {
       checkCurrency = checkForCurrency(innerText, currency)
       if (innerText.indexOf('sent ') === 0 && checkCurrency) {
         this.$refs.chatEntry.classList.add('chat_entry_for_money')
-        console.log('checkCurrency', checkCurrency)
         return checkCurrency
       }
     })

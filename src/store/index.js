@@ -89,6 +89,16 @@ export function replaceMessageAndDelete (messages, newMessageId, existMessageId,
   }
 }
 
+function deleteMessage (state, payload) {
+  if (!state.chats[payload.recipientId]) {
+    return
+  }
+  const messages = state.chats[payload.recipientId].messages
+  if (payload.message.hash) {
+    Vue.delete(messages, payload.message.hash)
+  }
+}
+
 export function changeMessageClass (messages, id, cssClass) {
   Vue.set(messages[id], 'confirm_class', cssClass)
 }
@@ -140,6 +150,48 @@ const store = {
     userPasswordExists: sessionStorage.getItem('userPassword') !== null
   },
   actions: {
+    create_stub_message (state, payload) {
+      const timestamp = utils.epochTime()
+      // Build chat message
+      let message = payload.message
+
+      let contacts = Object.entries(state.getters.getContacts.list)
+      let recipient
+      contacts.forEach((contact) => {
+        const ethAddress = contact[1].ETH
+        if (ethAddress === payload.targetAddress) {
+          recipient = {
+            ADMAddress: contact[0],
+            ETHAddress: contact[1].ETH
+          }
+        }
+      })
+      let handledPayload = {
+        ...message,
+        timestamp: timestamp,
+        message: {
+          amount: message.amount,
+          comments: message.message || '',
+          type: 'eth_transaction'
+        },
+        direction: 'from',
+        confirm_class: 'sent',
+        id: payload.hash
+      }
+      let currentDialog = state.getters.getChats[recipient.ADMAddress]
+      if (currentDialog) {
+        if (handledPayload.message.comments === '') {
+          handledPayload.message.comments = 'sent ' + (message.amount) + ' ' + message.fundType
+          handledPayload.message.comments = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
+          updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
+          handledPayload.message.comments = ''
+        } else {
+          handledPayload.message.comments = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
+          updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
+        }
+        Vue.set(currentDialog.messages, handledPayload.id, handledPayload)
+      }
+    },
     update_delegates_grid ({ commit }, payload) {
       commit('update_delegate', payload)
     },
@@ -527,6 +579,9 @@ const store = {
       }
     },
     add_chat_message (state, payload) {
+      if (payload.type === 8 && payload.message.hash) {
+        deleteMessage(state, payload)
+      }
       var me = state.address
       var partner = ''
       payload.real_timestamp = parseInt(payload.timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0)
