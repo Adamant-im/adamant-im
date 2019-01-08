@@ -89,13 +89,15 @@ export default function createActions (config) {
           const type = crypto.toLowerCase() + '_transaction'
           const msg = { type, amount, hash, comments }
 
-          return admApi.sendSpecialMessage(admAddress, msg)
-            .then(() => {
+          return admApi.sendSpecialMessage(admAddress, msg).then(result => {
+            if (result.success) {
+              console.log('ADM message has been sent', msg, result.transactionId)
               return serialized
-            })
-            .catch(() => {
+            } else {
+              console.log(`Failed to send "${type}"`, result)
               return Promise.reject(new Error('adm_message'))
-            })
+            }
+          })
         })
         .then(tx => {
           return utils.promisify(api.eth.sendRawTransaction, tx).then(
