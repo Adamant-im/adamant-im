@@ -81,6 +81,8 @@
 </template>
 
 <script>
+import { Cryptos } from '../lib/constants'
+
 export default {
   name: 'home',
   methods: {
@@ -109,35 +111,20 @@ export default {
       return messages
     },
     wallets: function () {
-      return [
-        {
-          system: 'ADM',
-          address: this.$store.state.address,
-          tooltip: 'home.your_address_tooltip_ADM',
-          balance: this.$store.state.balance,
-          balanceTooltip: 'home.your_balance_tooltip_ADM',
-          addressIcon: '/img/Wallet/adm-address.svg',
-          balanceIcon: '/img/Wallet/adm-balance.svg'
-        },
-        {
-          system: 'ETH',
-          address: this.$store.state.eth.address,
-          tooltip: 'home.your_address_tooltip_ETH',
-          balance: this.$store.state.eth.balance,
-          balanceTooltip: 'home.your_balance_tooltip_ETH',
-          addressIcon: '/img/Wallet/eth-address.svg',
-          balanceIcon: '/img/Wallet/eth-balance.svg'
-        },
-        {
-          system: 'BNB',
-          address: this.$store.state.bnb.address,
-          tooltip: 'home.your_address_tooltip_BNB',
-          balance: this.$store.state.bnb.balance,
-          balanceTooltip: 'home.your_balance_tooltip_BNB',
-          addressIcon: '/img/Wallet/bnb-address.svg',
-          balanceIcon: '/img/Wallet/bnb-balance.svg'
+      return Object.keys(Cryptos).map(c => {
+        const lower = c.toLowerCase()
+        const state = c === Cryptos.ADM ? this.$store.state : this.$store.state[lower]
+
+        return {
+          system: c,
+          address: state.address,
+          balance: state.balance,
+          tooltip: `home.your_address_tooltip_${c}`,
+          balanceTooltip: `home.your_balance_tooltip_${c}`,
+          addressIcon: `/img/Wallet/${lower}-address.svg`,
+          balanceIcon: `/img/Wallet/${lower}-balance.svg`
         }
-      ]
+      })
     }
   },
   watch: {
