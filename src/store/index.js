@@ -579,9 +579,6 @@ const store = {
       }
     },
     add_chat_message (state, payload) {
-      if (payload.type === 8 && payload.message.hash) {
-        deleteMessage(state, payload)
-      }
       var me = state.address
       var partner = ''
       payload.real_timestamp = parseInt(payload.timestamp) * 1000 + Date.UTC(2017, 8, 2, 17, 0, 0, 0)
@@ -646,6 +643,10 @@ const store = {
       }
       if (currentDialogs.last_message.id === payload.id) {
         updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.id)
+      }
+
+      if (payload.type === 8 && payload.message.hash) {
+        deleteMessage(state, payload)
       }
 
       payload.confirm_class = 'unconfirmed'
