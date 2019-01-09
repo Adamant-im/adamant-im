@@ -80,6 +80,79 @@ describe('Store: chat.js', () => {
     })
 
     /**
+     * getters.messageById
+     */
+    describe('getters.messageById', () => {
+      const state = {
+        chats: {
+          U111111: {
+            messages: [
+              { id: 1 },
+              { id: 2 },
+              { id: 3 }
+            ]
+          }
+        }
+      }
+      const messageById = getters.messageById(state, {
+        partners: getters.partners(state),
+        messages: getters.messages(state)
+      })
+
+      it('should return message by id', () => {
+        expect(messageById(1)).toEqual({ id: 1 })
+        expect(messageById(2)).toEqual({ id: 2 })
+        expect(messageById(3)).toEqual({ id: 3 })
+      })
+
+      it('should return undefined when message is not found', () => {
+        expect(messageById(4)).toEqual(undefined)
+      })
+
+      it('should return undefined if typeof id = string', () => {
+        expect(messageById('1')).toEqual(undefined)
+      })
+    })
+
+    /**
+     * getters.partnerMessageById
+     */
+    describe('getters.partnerMessageById', () => {
+      const state = {
+        chats: {
+          U111111: {
+            messages: [
+              { id: 1 },
+              { id: 2 },
+              { id: 3 }
+            ]
+          }
+        }
+      }
+      const partnerMessageById = getters.partnerMessageById(state, {
+        messages: getters.messages(state)
+      })
+
+      it('should return message by id', () => {
+        expect(partnerMessageById('U111111', 1)).toEqual({ id: 1 })
+        expect(partnerMessageById('U111111', 2)).toEqual({ id: 2 })
+        expect(partnerMessageById('U111111', 3)).toEqual({ id: 3 })
+      })
+
+      it('should return undefined when message is not found', () => {
+        expect(partnerMessageById('U111111', 4)).toEqual(undefined)
+      })
+
+      it('should return undefined if typeof id = string', () => {
+        expect(partnerMessageById('U111111', '1')).toEqual(undefined)
+      })
+
+      it('should return undefined if user is not in chat list', () => {
+        expect(partnerMessageById('U222222', 1)).toEqual(undefined)
+      })
+    })
+
+    /**
      * getters.lastMessage
      */
     describe('getters.lastMessage', () => {
@@ -965,6 +1038,7 @@ describe('Store: chat.js', () => {
           message: 'hello world',
           status: 'sent'
         }
+        const transactionId = 't1'
 
         // mock & replace `createMessage` & `queueMessage` dependency
         chatModule.__Rewire__('createMessage', () => messageObject)
@@ -975,7 +1049,6 @@ describe('Store: chat.js', () => {
           address: userId
         }
 
-        const transactionId = 't1'
         const promise = actions.sendMessage({ commit, rootState }, { message, recipientId })
         await expect(promise).resolves.toEqual({ success: true, transactionId })
 
@@ -985,6 +1058,90 @@ describe('Store: chat.js', () => {
             id: messageObject.id,
             realId: transactionId,
             status: 'confirmed',
+            partnerId: recipientId
+          }]
+        ])
+      })
+    })
+
+    /**
+     * actions.resendMessage
+     */
+    describe('actions.resendMessage', () => {
+      const userId = 'U111111'
+      const recipientId = 'U222222'
+      const messageId = 1
+      const message = 'hello world'
+
+      const messageObject = {
+        id: messageId,
+        message,
+        status: 'sent'
+      }
+      const transactionId = 't1'
+
+      it('should resend message successfully', async () => {
+        // mock & replace `createMessage` & `queueMessage` dependency
+        chatModule.__Rewire__('createMessage', () => messageObject)
+        chatModule.__Rewire__('queueMessage', () => {
+          return Promise.resolve({ success: true, transactionId })
+        })
+
+        const commit = sinon.spy()
+        const mockGetters = {
+          partnerMessageById: () => ({
+            id: 1,
+            recipientId,
+            message: 'hello world'
+          })
+        }
+
+        const promise = actions.resendMessage({ commit, getters: mockGetters }, { recipientId, messageId })
+        await expect(promise).resolves.toEqual({ success: true, transactionId })
+
+        expect(commit.args).toEqual([
+          ['updateMessage', {
+            id: messageId,
+            status: 'sent',
+            partnerId: recipientId
+          }],
+          ['updateMessage', {
+            id: messageId,
+            realId: transactionId,
+            status: 'confirmed',
+            partnerId: recipientId
+          }]
+        ])
+      })
+
+      it('resend should fail', async () => {
+        // mock & replace `createMessage` & `queueMessage` dependency
+        chatModule.__Rewire__('createMessage', () => messageObject)
+        chatModule.__Rewire__('queueMessage', () => {
+          return Promise.reject(new Error('No connection'))
+        })
+
+        const commit = sinon.spy()
+        const mockGetters = {
+          partnerMessageById: () => ({
+            id: 1,
+            recipientId,
+            message: 'hello world'
+          })
+        }
+
+        const promise = actions.resendMessage({ commit, getters: mockGetters }, { recipientId, messageId })
+        await expect(promise).rejects.toEqual(new Error('No connection'))
+
+        expect(commit.args).toEqual([
+          ['updateMessage', {
+            id: messageId,
+            status: 'sent',
+            partnerId: recipientId
+          }],
+          ['updateMessage', {
+            id: messageId,
+            status: 'rejected',
             partnerId: recipientId
           }]
         ])

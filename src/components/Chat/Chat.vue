@@ -25,6 +25,7 @@
           :show-avatar="!isChatReadOnly"
           :locale="locale"
           :html="true"
+          @resend="resendMessage(partnerId, message.id)"
         >
           <chat-avatar v-if="!isChatReadOnly" :user-id="sender.id" use-public-key slot="avatar"/>
         </a-chat-message>
@@ -168,6 +169,15 @@ export default {
         message,
         recipientId: this.partnerId
       })
+        .catch(err => {
+          this.$store.dispatch('snackbar/show', {
+            message: err.message
+          })
+          console.error(err.message)
+        })
+    },
+    resendMessage (recipientId, messageId) {
+      return this.$store.dispatch('chat/resendMessage', { recipientId, messageId })
         .catch(err => {
           this.$store.dispatch('snackbar/show', {
             message: err.message

@@ -34,12 +34,12 @@ exports[`ChatPreview.vue renders the correct markup 1`] = `
     </v-list-tile-sub-title-stub>
   </v-list-tile-content-stub>
    
-  <v-list-tile-action-stub
+  <div
     class="chat-preview__date"
   >
     
-    Sep 2, 2017, 20:00
+    02.09.2017
   
-  </v-list-tile-action-stub>
+  </div>
 </v-list-tile-stub>
 `;

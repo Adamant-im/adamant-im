@@ -11,9 +11,14 @@
         <div class="a-chat__sender">{{ sender.name || sender.id }}</div>
         <div :title="date" class="a-chat__timestamp">{{ time }}</div>
         <div class="a-chat__status">
-          <v-icon size="15">
-            {{ statusIcon }}
-          </v-icon>
+          <v-icon v-if="status === 'sent'" size="15">mdi-clock-outline</v-icon>
+          <v-icon
+            v-else-if="status === 'rejected'"
+            size="15"
+            color="red"
+            @click="$emit('resend')"
+          >mdi-clock-outline</v-icon>
+          <v-icon v-else size="15">mdi-check-all</v-icon>
         </div>
       </div>
 
@@ -38,13 +43,6 @@ export default {
     },
     date () {
       return moment(this.timestamp).format('LLLL')
-    },
-    statusIcon () {
-      return this.status === 'sent'
-        ? 'mdi-clock-outline'
-        : this.status === 'rejected'
-          ? 'mdi-shield-remove-outline'
-          : 'mdi-check-all'
     }
   },
   props: {
