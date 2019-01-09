@@ -645,8 +645,11 @@ const store = {
         updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.id)
       }
 
+      if (currentDialogs.last_message.id === payload.message.hash) {
+        updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.message.hash)
+      }
+
       if (payload.type === 8 && payload.message.hash) {
-        updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.id)
         deleteMessage(state, payload)
       }
 
