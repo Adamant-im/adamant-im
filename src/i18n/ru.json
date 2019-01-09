@@ -53,6 +53,7 @@
   },
   "error": "Ошибка",
   "home": {
+    "balance": "Баланс",
     "copied": "Скопировано",
     "copy": "Копировать",
     "create_qrcode": "Создать QR-код",
@@ -62,6 +63,7 @@
     "invest_btn_tooltip": "Сейчас у Вас есть возможность купить токены самого защищенного мессенджера АДАМАНТ по низкой цене. Нажмите, чтобы перейти к странице покупки токенов Adamant.im/ru-buy-tokens/.",
     "send_btn": "Отправить средства",
     "send_btn_tooltip": "Нажмите, чтобы сделать перевод на другой аккуунт или другому пользователю АДАМАНТа",
+    "wallet": "кошелек",
     "your_address_ADM": "ADAMANT address",
     "your_address_BNB": "Кошелек Binance Coin",
     "your_address_ETH": "Кошелек Ethereum",
@@ -125,16 +127,7 @@
       "part_two": ". Чтобы добавить свои узлы в список для подключения, вам нужно "
     },
     "offline": "Недоступен",
-    "ping": "Пинг",
-    "nodeLabelDescription": {
-      "part_one": "Поддержите децентрализацию и повысьте уровень приватности — настройте свой узел (ноду) АДАМАНТа и свое веб-приложение. Узел можно установить, ",
-      "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",
-      "link_one_content": "следуя инструкции",
-      "part_two": ". Чтобы добавить свои узлы в список для подключения, вам нужно ",
-      "link_two": "https://github.com/Adamant-im/adamant-im/",
-      "link_two_content": "развернуть веб-приложение на отдельном домене",
-      "part_three": ". Это ограничение связано с настройками безопасности Content Security Policy (CSP). В приложениях iOS и Android таких ограничений нет."
-    }
+    "ping": "Пинг"
   },
   "notifications": {
     "message": {
