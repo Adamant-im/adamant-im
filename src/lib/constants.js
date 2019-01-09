@@ -16,11 +16,13 @@ export const Transactions = {
 export const Cryptos = {
   ADM: 'ADM',
   ETH: 'ETH',
-  BNB: 'BNB'
+  BNB: 'BNB',
+  BZ: 'BZ'
 }
 
 export const ERC20 = Object.freeze([
-  Cryptos.BNB
+  Cryptos.BNB,
+  Cryptos.BZ
 ])
 
 export const isErc20 = crypto => ERC20.includes(crypto)
@@ -29,7 +31,8 @@ export const isErc20 = crypto => ERC20.includes(crypto)
 export const CryptoAmountPrecision = {
   ADM: 2,
   ETH: 6,
-  BNB: 6
+  BNB: 6,
+  BZ: 6
 }
 
 /** Fees for the misc ADM operations */
