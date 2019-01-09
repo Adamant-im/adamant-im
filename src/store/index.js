@@ -172,7 +172,7 @@ const store = {
         message: {
           amount: message.amount,
           comments: message.message || '',
-          type: 'eth_transaction'
+          type: message.fundType.toLowerCase() + '_transaction'
         },
         direction: 'from',
         confirm_class: 'sent',
