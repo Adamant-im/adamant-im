@@ -71,6 +71,7 @@
     "stylus-loader": "^3.0.2",
     "vue-cli-plugin-i18n": "^0.5.0",
     "vue-cli-plugin-vuetify": "^0.4.5",
+    "vue-cli-plugin-webpack-bundle-analyzer": "^1.2.0",
     "vue-template-compiler": "^2.5.17"
   },
   "eslintConfig": {

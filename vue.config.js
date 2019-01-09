@@ -8,6 +8,9 @@ module.exports = {
       fallbackLocale: 'en',
       localeDir: 'i18n',
       enableInSFC: true
+    },
+    webpackBundleAnalyzer: {
+      openAnalyzer: true
     }
 
   },
