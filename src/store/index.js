@@ -646,6 +646,7 @@ const store = {
       }
 
       if (payload.type === 8 && payload.message.hash) {
+        updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.id)
         deleteMessage(state, payload)
       }
 
