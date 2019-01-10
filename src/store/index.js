@@ -18,6 +18,7 @@ import language from './modules/language'
 import noise from './modules/noise'
 import chat from './modules/chat'
 import options from './modules/options'
+import identicon from './modules/identicon'
 
 Vue.use(Vuex)
 
@@ -96,7 +97,8 @@ const store = {
     noise,
     language,
     chat,
-    options
+    options,
+    identicon
   }
 }
 
