@@ -27,7 +27,7 @@
             />
           </v-flex>
         </v-layout>
-        <qrcode-capture @decode="onDecode"/>
+        <qrcode-capture @detect="onDetect" ref="qrcodeCapture" style="display: none"/>
         <v-layout justify-center>
           <v-btn
             icon
@@ -39,9 +39,9 @@
           >
             <v-icon>mdi-qrcode-scan</v-icon>
           </v-btn>
-          <!--v-btn :title="$t('login.login_by_qr_code_tooltip')" icon flat large fab>
+          <v-btn @click="openFileDialog" :title="$t('login.login_by_qr_code_tooltip')" icon flat large fab>
             <v-icon>mdi-file-upload-outline</v-icon>
-          </v-btn-->
+          </v-btn>
         </v-layout>
       </v-card>
 
@@ -78,8 +78,20 @@ export default {
     decodedPassphrase: ''
   }),
   methods: {
-    onDecode (result) {
-      this.decodedPassphrase = result
+    async onDetect (promise) {
+      try {
+        const { content } = await promise // Decoded string or null
+        if (content && /^(([a-z]{3,8})\x20){11}[A-z]{3,8}$/i.test(content.trim())) {
+          this.decodedPassphrase = content
+        } else {
+          this.decodedPassphrase = ''
+          this.$store.dispatch('snackbar/show', {
+            message: this.$t('login.invalid_qr_code')
+          })
+        }
+      } catch (error) {
+        console.error(error)
+      }
     },
     onLogin () {
       this.$router.push('/chats')
@@ -104,6 +116,9 @@ export default {
         .catch(err => {
           this.onLoginError(err)
         })
+    },
+    openFileDialog () {
+      this.$refs.qrcodeCapture.$el.click()
     }
   },
   components: {
