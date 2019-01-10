@@ -4,7 +4,7 @@
     @click="$emit('click')"
   >
     <v-list-tile-avatar>
-      <v-icon v-if="readOnly" class="chat-preview__icon">mdi-ethereum</v-icon>
+      <icon v-if="readOnly" class="adm-icon"><adm-fill-icon/></icon>
       <chat-avatar v-else :size="40" :user-id="partnerId" use-public-key/>
 
       <v-badge overlap color="primary">
@@ -30,6 +30,8 @@
 <script>
 import { removeFormats } from '@adamant/message-formatter'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
+import Icon from '@/components/icons/BaseIcon'
+import AdmFillIcon from '@/components/icons/AdmFill'
 
 export default {
   computed: {
@@ -61,7 +63,9 @@ export default {
   data: () => ({
   }),
   components: {
-    ChatAvatar
+    ChatAvatar,
+    Icon,
+    AdmFillIcon
   },
   props: {
     partnerId: {
@@ -89,6 +93,8 @@ export default {
   .chat-preview__icon
     background-color: $grey.lighten-1
     color: $shades.white
+  .adm-icon
+    fill: #BDBDBD
 
 .theme--dark
   .chat-preview__icon

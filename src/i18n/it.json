@@ -44,6 +44,7 @@
   },
   "error": "Errore",
   "home": {
+    "balance": "",
     "copied": "Copiato",
     "copy": "",
     "create_qrcode": "",
@@ -53,6 +54,7 @@
     "invest_btn_tooltip": "Hai la possibilita di investire in ICO di ADAMANT, il messenger piu sicuro e anonimo. Clicca per andare a investire in forma https://adamant.im/ico/. ",
     "send_btn": "Invia fondi",
     "send_btn_tooltip": "Fare clic per trasferire token supportati su un altro account o utente ADAMANT",
+    "wallet": "",
     "your_address_ADM": "Indirizzo ADAMANT",
     "your_address_BNB": "Indirizzo Binance Coin",
     "your_address_ETH": "Indirizzo Ethereum",
