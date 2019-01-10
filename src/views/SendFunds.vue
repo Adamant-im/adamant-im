@@ -63,7 +63,7 @@ export default {
       if (this.userComeFrom()) {
         this.$router.replace(this.$route.query.from)
       } else {
-        this.$router.replace(`/transactions/${this.cryptoCurrency}/${transactionId}'`)
+        this.$router.replace(`/transactions/${this.cryptoCurrency}/${transactionId}`)
       }
     }
   },
