@@ -187,6 +187,11 @@ uuid@^3.3.2:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
   integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
 
+vuetify@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-1.4.1.tgz#9dc99d59f93cd7f685864f10048c6606b8d38145"
+  integrity sha512-rf86frKvK3c6fdzXkbLdChamifnyhLRwLEVvXKua8zfVSrFZ4HXFK4T8zN68Pg/4vxlp+5DFxF1IQ4rq4tJ03A==
+
 when@~3.6.x:
   version "3.6.4"
   resolved "https://registry.yarnpkg.com/when/-/when-3.6.4.tgz#473b517ec159e2b85005497a13983f095412e34e"

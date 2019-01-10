@@ -18,7 +18,7 @@
       <div class="wallet-card__right">
         <slot name="icon"/>
         <div>
-          <v-btn @click="copyToClipboard(address)" color="blue" flat>
+          <v-btn class="wallet-card__action" @click="copyToClipboard(address)" flat>
             {{ $t('home.copy') }}
           </v-btn>
         </div>
@@ -74,11 +74,9 @@ export default {
     height: inherit
     margin: 0 16px 0 16px
     position: relative
-
   &__left
     margin-right: 120px
     z-index: 1
-
   &__right
     text-align: center
     position: absolute
@@ -87,15 +85,29 @@ export default {
     h3
       text-transform: uppercase
       color: $grey.darken-1
-
   &__title
     font-size: 16px
     font-weight: 400
-    color: $grey.base
-
   &__subtitle
     font-size: 16px
     font-weight: 400
     word-break: break-word
-    color: $shades.black
+
+/** Themes **/
+.theme--light
+  .wallet-card
+    &__title
+      color: $grey.base
+    &__subtitle
+      color: $shades.black
+    &__action
+      color: $blue.base
+.theme--dark
+  .wallet-card
+    &__title
+      color: $grey.base
+    &__subtitle
+      color: $shades.white
+    &__action
+      color: $shades.white
 </style>

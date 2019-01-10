@@ -35,10 +35,10 @@
         </v-card>
 
         <!-- Actions -->
-        <v-list class="transparent">
+        <v-list class="action-list transparent">
           <v-list-tile @click="sendFunds" avatar>
             <v-list-tile-avatar>
-              <v-icon class="grey lighten-1 white--text">mdi-cube-send</v-icon>
+              <v-icon class="action-list__icon">mdi-cube-send</v-icon>
             </v-list-tile-avatar>
 
             <v-list-tile-content>
@@ -48,7 +48,7 @@
 
           <v-list-tile @click="buyTokens" avatar>
             <v-list-tile-avatar>
-              <v-icon class="grey lighten-1 white--text">mdi-cash-usd</v-icon>
+              <v-icon class="action-list__icon">mdi-cash-usd</v-icon>
             </v-list-tile-avatar>
 
             <v-list-tile-content>
@@ -126,3 +126,19 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_colors.styl'
+
+/** Themes **/
+.theme--light
+  .action-list
+    &__icon
+      background-color: $grey.lighten-1
+      color: $shades.white
+.theme--dark
+  .action-list
+    &__icon
+      background-color: $grey.darken-3
+      color: $shades.white
+</style>

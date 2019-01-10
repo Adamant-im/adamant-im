@@ -1,10 +1,6 @@
-$chat-body-background-color := #FFF
-$chat-body-color := #000
+@import '~vuetify/src/stylus/settings/_colors.styl'
 
 $chat-form-height := 64px
-
-$chat-header-height := 18px
-$chat-body-height := 18px
 
 $chat-sender := {
   font-size: 15px
@@ -31,8 +27,8 @@ $chat-message := {
   &__body
     position: relative
     flex: 1
-    background-color: $chat-body-background-color
-    color: $chat-body-color
+    background-color: inherit
+    color: inherit
 
   &__body-messages
     position: absolute
@@ -61,9 +57,6 @@ $chat-message := {
     padding-bottom: 8px
     padding-left: 16px
     padding-right: 16px
-
-    &:hover
-      background-color: $grey.lighten-4
 
   &__message-avatar
     width: 36px
@@ -95,9 +88,12 @@ $chat-message := {
 
     p
       margin-bottom: 0
-
     p:not(:last-child)
       margin-bottom: 8px
+    a
+      text-decoration: none
+      &:hover
+        text-decoration: underline
 
   /**
    * 1. align text to top
@@ -106,12 +102,10 @@ $chat-message := {
     font-size: $chat-sender.font-size
     line-height: $chat-sender.line-height
     font-weight: 700
-    color: $grey.darken-4
     margin-right: 8px
 
   &__timestamp
     font-size: 12px
-    color: $grey.darken-1
     line-height: 1
 
   &__status
@@ -122,9 +116,53 @@ $chat-message := {
       line-height: 1.2
 
   &__form
-    background-color: $grey.lighten-4
     padding: 16px
     position: absolute
     left: 0
     bottom: 0
     width: 100%
+
+/** Themes **/
+.theme--light
+  .a-chat
+    &__content
+      background-color: $shades.white
+      color: $shades.black
+    &__message
+      &--red
+        background-color: $red.lighten-5
+      &--green
+        background-color: $green.lighten-5
+      &:hover
+        background-color: $grey.lighten-4
+    &__sender
+      color: $grey.darken-4
+    &__timestamp
+      color: $grey.darken-1
+    &__message-text
+      a
+        color: inherit
+    &__form
+      background-color: $grey.lighten-4
+
+.theme--dark
+  .a-chat
+    &__content
+      background-color: $grey.darken-4
+      color: $shades.white
+    &__message
+      &--red
+        background-color: $grey.darken-3
+      &--green
+        background-color: $grey.darken-3
+      &:hover
+        background-color: $grey.darken-3
+    &__sender
+      color: $shades.white
+    &__timestamp
+      color: $grey.base
+    &__message-text
+      a
+        color: $blue.lighten-2
+    &__form
+      background-color: $grey.darken-4

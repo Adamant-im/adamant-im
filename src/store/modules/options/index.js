@@ -3,7 +3,8 @@ const state = () => ({
   sendMessageOnEnter: false,
   allowSoundNotifications: false,
   allowTabNotifications: false,
-  allowPushNotifications: false
+  allowPushNotifications: false,
+  darkTheme: false
 })
 
 const mutations = {

@@ -139,6 +139,7 @@
     "allow_push": "Разрешить PUSH-уведомления",
     "already_delegate_text": "Вы уже являетесь делегатом. Его имя: ",
     "chats_title": "Диалоги",
+    "dark_theme": "Включить темную тему",
     "delegate_name_input": "Введите имя делегата",
     "delegate_register_button": "Зарегистрировать делегата",
     "delegates_title": "Делегаты",

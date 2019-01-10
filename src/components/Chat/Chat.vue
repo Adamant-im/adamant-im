@@ -50,6 +50,7 @@
         @message="onMessage"
         :show-send-button="true"
         :send-on-enter="sendMessageOnEnter"
+        :show-divider="true"
         :label="$t('chats.message')"
       />
     </a-chat>

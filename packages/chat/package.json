@@ -20,6 +20,7 @@
     "uuid": "^3.3.2"
   },
   "dependencies": {
-    "moment": "^2.23.0"
+    "moment": "^2.23.0",
+    "vuetify": "^1.4.1"
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app :dark="isDarkTheme">
     <v-content>
       <v-container fluid fill-height>
         <router-view/>
@@ -14,6 +14,11 @@
 import AppSnackbar from '@/components/AppSnackbar'
 
 export default {
+  computed: {
+    isDarkTheme () {
+      return this.$store.state.options.darkTheme
+    }
+  },
   components: {
     AppSnackbar
   }

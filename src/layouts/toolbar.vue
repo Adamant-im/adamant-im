@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app :dark="isDarkTheme">
     <v-content>
       <v-container fluid :class="{ 'pa-0': containerNoPadding }">
         <router-view/>
@@ -23,6 +23,9 @@ export default {
     },
     showNavigation () {
       return this.$route.meta.showNavigation || false
+    },
+    isDarkTheme () {
+      return this.$store.state.options.darkTheme
     }
   },
   components: {

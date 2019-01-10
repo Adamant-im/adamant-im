@@ -18,6 +18,13 @@
         <v-flex xs6 class="text-xs-right">
           <language-switcher/>
         </v-flex>
+        <v-flex xs12>
+          <v-checkbox
+            :label="$t('options.dark_theme')"
+            color="grey darken-1"
+            v-model="darkTheme"
+          />
+        </v-flex>
       </v-layout>
 
       <!-- Security -->
@@ -147,6 +154,17 @@ export default {
       set (value) {
         this.$store.commit('options/updateOption', {
           key: 'allowPushNotifications',
+          value
+        })
+      }
+    },
+    darkTheme: {
+      get () {
+        return this.$store.state.options.darkTheme
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'darkTheme',
           value
         })
       }

@@ -130,6 +130,7 @@
     "allow_push": "Allow PUSH-notifications",
     "already_delegate_text": "You are already a delegate. Your delegate name is",
     "chats_title": "Chats",
+    "dark_theme": "Enable dark theme",
     "delegate_name_input": "Enter delegate name",
     "delegate_register_button": "Register delegate",
     "delegates_title": "Delegates",

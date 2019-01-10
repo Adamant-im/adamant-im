@@ -1,5 +1,6 @@
 <template>
   <svg
+    class="svg-icon"
     xmlns="http://www.w3.org/2000/svg"
     :width="width"
     :height="height"
@@ -41,15 +42,17 @@ export default {
 </script>
 
 <style lang="stylus">
-svg
+@import '~vuetify/src/stylus/settings/_colors.styl'
+
+.svg-icon
   display: inline-block
   vertical-align: baseline
 
-/* icon circle, context styles
-.v-avatar svg
-  border-radius: 50%
-  display: inline-flex
-  height: inherit
-  width: inherit
-*/
+/* Themes */
+.theme--light
+  .svg-icon
+    fill: rgba(0,0,0,0.54)
+.theme--dark
+  .svg-icon
+    fill: $shades.white
 </style>
