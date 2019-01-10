@@ -32,6 +32,7 @@ import { isNumeric } from '@/lib/numericHelpers'
  * type Message = {
  *   id: number,
  *   senderId: string,
+ *   recipientId: string,
  *   message: string,
  *   timestamp: number,
  *   admTimestamp: number,
@@ -61,7 +62,7 @@ const state = () => ({
 
 const getters = {
   /**
-   * Returns partners IDs.
+   * Returns partner IDs.
    * @returns {string[]}
    */
   partners: state => Object.keys(state.chats),
@@ -79,6 +80,40 @@ const getters = {
     }
 
     return []
+  },
+
+  /**
+   * Return message by ID.
+   * @param {number} id Message Id
+   * @returns {Message}
+   */
+  messageById: (state, getters) => id => {
+    const partnerIds = getters.partners
+    let message
+
+    partnerIds.forEach((senderId) => {
+      const found = getters.messages(senderId).find(
+        message => message.id === id
+      )
+
+      if (found) {
+        message = found
+      }
+    })
+
+    return message
+  },
+
+  /**
+   * Returns message by partnerId & messageId.
+   * @param {string} partnerId
+   * @param {number} messageId
+   * @returns {Message}
+   */
+  partnerMessageById: (state, getters) => (partnerId, messageId) => {
+    const messages = getters.messages(partnerId)
+
+    return messages.find(message => message.id === messageId)
   },
 
   /**
@@ -471,6 +506,7 @@ const actions = {
    *
    * @param {string} message
    * @param {string} recipientId
+   * @returns {Promise}
    */
   sendMessage ({ commit, rootState }, { message, recipientId }) {
     const messageObject = createMessage({
@@ -512,6 +548,53 @@ const actions = {
 
         throw err // call the error again so that it can be processed inside view
       })
+  },
+
+  /**
+   * Resend message, in case the connection fails.
+   * @param {string} id Recipient Id
+   * @param {number} id Message Id
+   * @returns {Promise}
+   */
+  resendMessage ({ getters, commit }, { recipientId, messageId }) {
+    const message = getters.partnerMessageById(recipientId, messageId)
+
+    // update message status from `rejected` to `sent`
+    // and then resendMessage
+    commit('updateMessage', {
+      id: messageId,
+      status: 'sent',
+      partnerId: recipientId
+    })
+
+    if (message) {
+      return queueMessage(message.message, recipientId)
+        .then(res => {
+          if (!res.success) {
+            throw new Error('Message rejected')
+          }
+
+          commit('updateMessage', {
+            id: messageId,
+            realId: res.transactionId,
+            status: 'confirmed',
+            partnerId: recipientId
+          })
+
+          return res
+        })
+        .catch(err => {
+          commit('updateMessage', {
+            id: messageId,
+            status: 'rejected',
+            partnerId: recipientId
+          })
+
+          throw err
+        })
+    }
+
+    return Promise.reject(new Error('Message not found in history'))
   }
 }
 

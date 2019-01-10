@@ -21,19 +21,25 @@
       <v-list-tile-sub-title v-else>{{ lastMessageTextNoFormats }}</v-list-tile-sub-title>
     </v-list-tile-content>
 
-    <v-list-tile-action class="chat-preview__date">
-      {{ createdAt }}
-    </v-list-tile-action>
+    <div class="chat-preview__date">
+      {{ createdAt | date }}
+    </div>
   </v-list-tile>
 </template>
 
 <script>
+import moment from 'moment'
+import dateFilter from '@/filters/date'
+import { EPOCH } from '@/lib/constants'
 import { removeFormats } from '@adamant/message-formatter'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import Icon from '@/components/icons/BaseIcon'
 import AdmFillIcon from '@/components/icons/AdmFill'
 
 export default {
+  mounted () {
+    moment.locale(this.$store.state.language.currentLocale)
+  },
   computed: {
     partnerName () {
       return this.$store.getters['partners/displayName'](this.partnerId) || this.partnerId
@@ -57,11 +63,14 @@ export default {
       return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
     },
     createdAt () {
-      return this.$formatDate(this.lastMessageTimestamp)
+      return this.lastMessageTimestamp * 1000 + EPOCH // transform ADM timestamp
     }
   },
   data: () => ({
   }),
+  filters: {
+    date: dateFilter
+  },
   components: {
     ChatAvatar,
     Icon,
@@ -84,9 +93,14 @@ export default {
 @import '~vuetify/src/stylus/settings/_colors.styl'
 
 .chat-preview
+  position: relative
+
   &__date
-    font-size: 8px
-    color: #616161
+    font-size: 12px
+    color: $grey.base
+    position: absolute
+    top: 16px
+    right: 16px
 
 /** Themes **/
 .theme--light

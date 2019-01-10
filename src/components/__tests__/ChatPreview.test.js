@@ -5,6 +5,7 @@ import VueI18n from 'vue-i18n'
 import Vuetify from 'vuetify'
 
 import formatters from '@/lib/formatters'
+import { EPOCH } from '@/lib/constants'
 import mockupI18n from './__mocks__/plugins/i18n'
 import ChatPreview from '@/components/ChatPreview'
 
@@ -50,17 +51,26 @@ function mockupStore () {
     namespaced: true
   }
 
+  const language = {
+    state: {
+      currentLocale: 'en'
+    },
+    namespaced: true
+  }
+
   const store = new Vuex.Store({
     modules: {
+      partners,
       chat,
-      partners
+      language
     }
   })
 
   return {
     store,
+    partners,
     chat,
-    partners
+    language
   }
 }
 
@@ -69,12 +79,14 @@ describe('ChatPreview.vue', () => {
   let store = null
   let chat = null
   let partners = null
+  let language = null
 
   beforeEach(() => {
     const vuex = mockupStore()
     store = vuex.store
     chat = vuex.chat
     partners = vuex.partners
+    language = vuex.language
 
     i18n = mockupI18n()
     fake = createFakeVars() // reset fake vars
@@ -111,6 +123,6 @@ describe('ChatPreview.vue', () => {
     expect(wrapper.vm.lastMessageText).toBe('ok')
     expect(wrapper.vm.lastMessageTimestamp).toBe(3600)
     expect(wrapper.vm.numOfNewMessages).toBe(1)
-    expect(wrapper.vm.createdAt).toBe('Sep 2, 2017, 21:00')
+    expect(wrapper.vm.createdAt).toBe(3600 * 1000 + EPOCH)
   })
 })

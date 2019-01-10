@@ -229,6 +229,12 @@ export type User = {
 |**[`locale`](#)**|`string`|`'en'`|Moment.js locale|
 |**[`html`](#)**|`boolean`|`false`|Uses `v-html` or `v-text` to display message|
 
+### Events
+
+|Name|Arguments|Description|
+|:--:|:----:|:-------------|
+|**[`@resend`](#)**||When user clicked on the resend icon|
+
 ### Slots
 |Name|Props|Description|
 |:--:|:---:|:----------|
