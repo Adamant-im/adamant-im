@@ -180,6 +180,7 @@
     "date": "Date",
     "explorer": "Open in Explorer",
     "me": "Me",
+    "no_transactions": "No transactions",
     "recipient": "To",
     "sender": "From",
     "startChat": "Start chat",

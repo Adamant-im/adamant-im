@@ -6,7 +6,13 @@
         <div class="wallet-card__subtitle mb-2">{{ address }}</div>
 
         <h3 class="wallet-card__title">{{ $t('home.balance') }}</h3>
-        <div class="wallet-card__subtitle">{{ balance }} {{ cryptoCurrency }}</div>
+        <div
+          class="wallet-card__subtitle"
+          :style="{ cursor: 'pointer' }"
+          @click="$emit('click:balance', cryptoCurrency)"
+        >
+          {{ balance }} {{ cryptoCurrency }}
+        </div>
       </div>
 
       <div class="wallet-card__right">

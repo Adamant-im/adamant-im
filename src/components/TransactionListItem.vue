@@ -16,7 +16,7 @@
         <v-layout>
           {{ amountFormatted }} ADM
           <v-spacer/>
-          {{ createdAt }}
+          {{ createdAt | date }}
         </v-layout>
       </v-list-tile-sub-title>
     </v-list-tile-content>
@@ -33,6 +33,8 @@
 
 <script>
 import validateAddress from '@/lib/validateAddress'
+import dateFilter from '@/filters/date'
+import { EPOCH } from '@/lib/constants'
 
 export default {
   computed: {
@@ -40,7 +42,11 @@ export default {
       return this.$store.getters['partners/displayName'](this.partnerId) || ''
     },
     createdAt () {
-      return this.$formatDate(this.timestamp)
+      if (this.crypto === 'ADM') {
+        return this.timestamp * 1000 + EPOCH
+      }
+
+      return this.timestamp
     },
     isPartnerInChatList () {
       return this.$store.getters['chat/isPartnerInChatList'](this.partnerId)
@@ -56,6 +62,9 @@ export default {
     onClickIcon () {
       this.$emit('click:icon', this.partnerId)
     }
+  },
+  filters: {
+    date: dateFilter
   },
   props: {
     id: {
@@ -84,6 +93,10 @@ export default {
     amount: {
       type: Number,
       required: true
+    },
+    crypto: {
+      type: String,
+      default: 'ADM'
     }
   }
 }

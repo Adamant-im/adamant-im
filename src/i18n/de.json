@@ -170,6 +170,7 @@
     "date": "Datum",
     "explorer": "Open in Explorer",
     "me": "Me",
+    "no_transactions": "",
     "recipient": "Zu",
     "sender": "Von",
     "startChat": "Start chat",

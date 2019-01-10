@@ -24,6 +24,7 @@
                 :balance="wallet.balance"
                 :crypto-currency="wallet.cryptoCurrency"
                 :crypto-name="wallet.cryptoName"
+                @click:balance="goToTransactions"
               >
                 <icon :width="125" :height="125" fill="#BDBDBD" slot="icon">
                   <component :is="wallet.icon"/>
@@ -106,6 +107,14 @@ export default {
     },
     buyTokens () {
       window.open('https://adamant.im/buy-tokens/?wallet=U9203183357885757380', '_blank')
+    },
+    goToTransactions (crypto) {
+      this.$router.push({
+        name: 'Transactions',
+        params: {
+          crypto
+        }
+      })
     }
   },
   components: {
