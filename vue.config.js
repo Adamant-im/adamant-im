@@ -10,7 +10,7 @@ module.exports = {
       enableInSFC: true
     },
     webpackBundleAnalyzer: {
-      openAnalyzer: true
+      openAnalyzer: false
     }
 
   },
@@ -23,5 +23,9 @@ module.exports = {
         /it|de|en|fr|ru/
       )
     ]
-  }
+  },
+  transpileDependencies: [
+    '@adamant/chat',
+    '@adamant/message-formatter'
+  ]
 }
