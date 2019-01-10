@@ -15,7 +15,9 @@
         @click="sendFunds(item)"
       >
         <v-list-tile-avatar>
-          <v-icon>{{ item.icon }}</v-icon>
+          <icon fill="#BDBDBD">
+            <component :is="item.icon"/>
+          </icon>
         </v-list-tile-avatar>
 
         <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
@@ -25,22 +27,27 @@
 </template>
 
 <script>
+import Icon from '@/components/icons/BaseIcon'
+import AdmFillIcon from '@/components/icons/AdmFill'
+import EthFillIcon from '@/components/icons/EthFill'
+import BnbFillIcon from '@/components/icons/BnbFill'
+
 export default {
   data: () => ({
     menuItems: [
       {
         title: 'chats.send_adm',
-        icon: 'mdi-ethereum',
+        icon: 'adm-fill-icon',
         currency: 'ADM'
       },
       {
-        title: 'chats.send_bnb',
-        icon: 'mdi-ethereum',
+        title: 'chats.send_eth',
+        icon: 'eth-fill-icon',
         currency: 'ETH'
       },
       {
-        title: 'chats.send_eth',
-        icon: 'mdi-ethereum',
+        title: 'chats.send_bnb',
+        icon: 'bnb-fill-icon',
         currency: 'BNB'
       }
     ]
@@ -55,6 +62,12 @@ export default {
         }
       })
     }
+  },
+  components: {
+    Icon,
+    AdmFillIcon,
+    EthFillIcon,
+    BnbFillIcon
   },
   props: {
     partnerId: {
