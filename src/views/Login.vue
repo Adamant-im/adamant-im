@@ -23,10 +23,11 @@
             <login-form
               @login="onLogin"
               @error="onLoginError"
+              :qrcodePassphrase="decodedPassphrase"
             />
           </v-flex>
         </v-layout>
-
+        <qrcode-capture @decode="onDecode"/>
         <v-layout justify-center>
           <v-btn
             icon
@@ -38,6 +39,9 @@
           >
             <v-icon>mdi-qrcode-scan</v-icon>
           </v-btn>
+          <!--v-btn :title="$t('login.login_by_qr_code_tooltip')" icon flat large fab>
+            <v-icon>mdi-file-upload-outline</v-icon>
+          </v-btn-->
         </v-layout>
       </v-card>
 
@@ -65,13 +69,18 @@ import LanguageSwitcher from '@/components/LanguageSwitcher'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
 import LoginForm from '@/components/LoginForm'
 import QrcodeScanner from '@/components/QrcodeScanner'
+import { QrcodeCapture } from 'vue-qrcode-reader'
 
 export default {
   data: () => ({
     showQrcodeScanner: false,
-    logo: '/img/adamant-logo-transparent-512x512.png' // @todo maybe svg will be better
+    logo: '/img/adamant-logo-transparent-512x512.png', // @todo maybe svg will be better
+    decodedPassphrase: ''
   }),
   methods: {
+    onDecode (result) {
+      this.decodedPassphrase = result
+    },
     onLogin () {
       this.$router.push('/chats')
     },
@@ -101,7 +110,8 @@ export default {
     LanguageSwitcher,
     PassphraseGenerator,
     LoginForm,
-    QrcodeScanner
+    QrcodeScanner,
+    QrcodeCapture
   }
 }
 </script>

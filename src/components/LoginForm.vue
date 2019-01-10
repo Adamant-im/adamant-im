@@ -39,7 +39,6 @@
         <qrcode-renderer :text="passphrase"/>
       </v-layout>
     </transition>
-
   </v-form>
 </template>
 
@@ -93,6 +92,12 @@ export default {
   },
   components: {
     QrcodeRenderer
+  },
+  props: ['qrcodePassphrase'],
+  watch: {
+    qrcodePassphrase () {
+      this.passphrase = this.qrcodePassphrase
+    }
   }
 }
 </script>

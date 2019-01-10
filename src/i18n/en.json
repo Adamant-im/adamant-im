@@ -75,6 +75,7 @@
     "invalid_qr_code": "This QR code does not include valid passphrase",
     "language_label": "Select your language",
     "login_button": "Login",
+    "login_by_qr_code_tooltip": "Login by passphrase encoded in QR code file",
     "new_button": "Create new",
     "new_password_label": "<b>Save</b> the passphrase for new Wallet and Messenger account. There is no login to enter Wallet, only the passphrase needed. If lost, no way to recover it.",
     "password_label": "Input your passphrase to login",
