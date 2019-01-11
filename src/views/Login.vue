@@ -81,7 +81,7 @@ export default {
     async onDetect (promise) {
       try {
         const { content } = await promise // Decoded string or null
-        if (content && /^(([a-z]{3,8})\x20){11}[A-z]{3,8}$/i.test(content.trim())) {
+        if (content && /^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(content.trim())) {
           this.decodedPassphrase = content
         } else {
           this.decodedPassphrase = ''

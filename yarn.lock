@@ -8366,11 +8366,6 @@ q@^1.1.2:
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
   integrity sha1-fjL3W0E4EpHQRhHxvxQQmsAGUdc=
 
-qrcode-js-package@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/qrcode-js-package/-/qrcode-js-package-1.0.4.tgz#ba11f7f672b537013c380d033e3baa865d07b5bd"
-  integrity sha1-uhH39nK1NwE8OA0DPjuqhl0Htb0=
-
 qs@6.5.2, qs@~6.5.1, qs@~6.5.2:
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
@@ -10335,13 +10330,13 @@ vue-material@^0.8.1:
   dependencies:
     vue "^2.4.4"
 
-vue-qrcode-component@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/vue-qrcode-component/-/vue-qrcode-component-2.1.1.tgz#72c37567ad90bca2a9372456bd2884f0f43edf38"
-  integrity sha1-csN1Z62QvKKpNyRWvSiE8PQ+3zg=
+vue-qr@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/vue-qr/-/vue-qr-1.5.2.tgz#a10614ea97f9f2bd55892bbebcd09b708bda1686"
+  integrity sha512-n253Rr6URhcFqLtCs9u9qnXAvBPQZOGVgGnP4MnhXi0pa4jkVDKBdlovnu0YaUbsKZO38RbmvaMrqF7DBmC14g==
   dependencies:
-    qrcode-js-package "^1.0.4"
-    vue "^2.0.1"
+    uuid "^3.3.2"
+    vue "^2.5.16"
 
 vue-qrcode-reader@^1.3.3:
   version "1.3.3"
@@ -10386,7 +10381,7 @@ vue-template-es2015-compiler@^1.6.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.6.0.tgz#dc42697133302ce3017524356a6c61b7b69b4a18"
   integrity sha512-x3LV3wdmmERhVCYy3quqA57NJW7F3i6faas++pJQWtknWT+n7k30F4TVdHvCLn48peTJFRvCpxs3UuFPqgeELg==
 
-vue@^2.0.1, vue@^2.4.4, vue@^2.5.16, vue@^2.5.17:
+vue@^2.4.4, vue@^2.5.16, vue@^2.5.17:
   version "2.5.21"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.5.21.tgz#3d33dcd03bb813912ce894a8303ab553699c4a85"
   integrity sha512-Aejvyyfhn0zjVeLvXd70h4hrE4zZDx1wfZqia6ekkobLmUZ+vNFQer53B4fu0EjWBSiqApxPejzkO1Znt3joxQ==
