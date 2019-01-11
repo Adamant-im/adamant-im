@@ -23,10 +23,11 @@
             <login-form
               @login="onLogin"
               @error="onLoginError"
+              :qrcodePassphrase="decodedPassphrase"
             />
           </v-flex>
         </v-layout>
-
+        <qrcode-capture @detect="onDetect" ref="qrcodeCapture" style="display: none"/>
         <v-layout justify-center>
           <v-btn
             icon
@@ -37,6 +38,9 @@
             :title="$t('login.scan_qr_code_button_tooltip')"
           >
             <v-icon>mdi-qrcode-scan</v-icon>
+          </v-btn>
+          <v-btn @click="openFileDialog" :title="$t('login.login_by_qr_code_tooltip')" icon flat large fab>
+            <v-icon>mdi-file-upload-outline</v-icon>
           </v-btn>
         </v-layout>
       </v-card>
@@ -65,13 +69,30 @@ import LanguageSwitcher from '@/components/LanguageSwitcher'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
 import LoginForm from '@/components/LoginForm'
 import QrcodeScanner from '@/components/QrcodeScanner'
+import { QrcodeCapture } from 'vue-qrcode-reader'
 
 export default {
   data: () => ({
     showQrcodeScanner: false,
-    logo: '/img/adamant-logo-transparent-512x512.png' // @todo maybe svg will be better
+    logo: '/img/adamant-logo-transparent-512x512.png', // @todo maybe svg will be better
+    decodedPassphrase: ''
   }),
   methods: {
+    async onDetect (promise) {
+      try {
+        const { content } = await promise // Decoded string or null
+        if (content && /^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(content.trim())) {
+          this.decodedPassphrase = content
+        } else {
+          this.decodedPassphrase = ''
+          this.$store.dispatch('snackbar/show', {
+            message: this.$t('login.invalid_qr_code')
+          })
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    },
     onLogin () {
       this.$router.push('/chats')
     },
@@ -95,13 +116,17 @@ export default {
         .catch(err => {
           this.onLoginError(err)
         })
+    },
+    openFileDialog () {
+      this.$refs.qrcodeCapture.$el.click()
     }
   },
   components: {
     LanguageSwitcher,
     PassphraseGenerator,
     LoginForm,
-    QrcodeScanner
+    QrcodeScanner,
+    QrcodeCapture
   }
 }
 </script>
