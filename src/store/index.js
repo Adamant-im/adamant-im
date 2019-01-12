@@ -171,7 +171,7 @@ const store = {
         timestamp: timestamp,
         message: {
           amount: message.amount,
-          comments: message.message || '',
+          comments: payload.comments || '',
           type: message.fundType.toLowerCase() + '_transaction'
         },
         direction: 'from',

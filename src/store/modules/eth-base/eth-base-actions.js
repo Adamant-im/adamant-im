@@ -82,7 +82,12 @@ export default function createActions (config) {
           tx.sign(toBuffer(context.state.privateKey))
           const serialized = '0x' + tx.serialize().toString('hex')
           const hash = api.sha3(serialized, { encoding: 'hex' })
-          context.dispatch('create_stub_message', { targetAddress: crypto !== 'ADM' ? ethAddress : admAddress, message: message, hash: hash }, { root: true })
+          context.dispatch('create_stub_message', {
+            targetAddress: crypto !== 'ADM' ? ethAddress : admAddress,
+            message: message,
+            comments: comments,
+            hash: hash },
+          { root: true })
           if (!admAddress) {
             return serialized
           }
