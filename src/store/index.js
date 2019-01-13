@@ -684,6 +684,17 @@ const store = {
   },
   plugins: [storeData(), nodesPlugin],
   getters: {
+    checkForActiveNode: state => {
+      let activeNodeIsExist = false
+      const nodeList = Object.values(state.nodes.list)
+      for (const node of nodeList) {
+        if (node.active) {
+          activeNodeIsExist = node.active
+          break
+        }
+      }
+      return activeNodeIsExist
+    },
     // Returns decoded pass phrase from store
     getPassPhrase: state => {
       if (state.passPhrase.match(base64regex)) {
