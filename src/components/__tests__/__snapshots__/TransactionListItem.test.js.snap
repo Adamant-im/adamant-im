@@ -34,7 +34,7 @@ exports[`TransactionListItem renders the correct markup 1`] = `
         
         <v-spacer-stub />
         
-        Nov 14, 2018, 16:51
+        14.11.2018
       
       </v-layout-stub>
     </v-list-tile-sub-title-stub>

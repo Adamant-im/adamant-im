@@ -33,9 +33,7 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
       >
         <v-text-field-stub
           label="Recipient address"
-          rules="function (v) {
-        return _get__(\\"validateAddress\\")('ADM', v) || _this.$t('chats.incorrect_address');
-      }"
+          rules="v => _get__(\\"validateAddress\\")('ADM', v) || this.$t('chats.incorrect_address')"
           title="Enter a recepient identifier, like U1234567890"
         />
       </v-flex-stub>

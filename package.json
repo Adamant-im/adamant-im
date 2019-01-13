@@ -46,7 +46,7 @@
     "vue-qrcode-reader": "^1.3.3",
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.11.0",
-    "vuetify": "^1.3.0",
+    "vuetify": "1.4.1",
     "vuex": "^3.0.1",
     "vuex-persist": "^2.0.0",
     "web3": "0.20.6",
@@ -126,5 +126,6 @@
     "testURL": "http://localhost/"
   },
   "author": "ADAMANT Tech Labs <devs@adamant.im>",
+  "license": "GPLv3",
   "description": "Distributed chat"
 }

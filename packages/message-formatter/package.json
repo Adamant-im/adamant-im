@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "Message formatter for Adamant chat",
   "main": "src/index.js",
-  "author": "bludnic",
-  "license": "MIT",
+  "author": "ADAMANT Tech Labs <devs@adamant.im>",
+  "license": "GPLv3",
   "dependencies": {
     "underscore": "^1.9.1"
   }
