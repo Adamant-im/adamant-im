@@ -6,7 +6,7 @@ import Vuetify from 'vuetify'
 
 import mockupI18n from './__mocks__/plugins/i18n'
 import mockupSnackbar from './__mocks__/store/modules/snackbar'
-import QrcodeScanner from '@/components/QrcodeScanner'
+import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 
 Vue.use(Vuex)
 Vue.use(VueI18n)
@@ -30,7 +30,7 @@ function mockupStore () {
   }
 }
 
-describe('QrcodeScanner.vue', () => {
+describe('QrcodeScannerDialog.vue', () => {
   let store = null
   let snackbar = null
   let i18n = null
@@ -46,7 +46,7 @@ describe('QrcodeScanner.vue', () => {
   })
 
   it('renders the correct markup', () => {
-    const wrapper = shallowMount(QrcodeScanner, {
+    const wrapper = shallowMount(QrcodeScannerDialog, {
       store,
       i18n,
       propsData: {
@@ -58,7 +58,7 @@ describe('QrcodeScanner.vue', () => {
   })
 
   it('should display dialog when :value = true', () => {
-    const wrapper = shallowMount(QrcodeScanner, {
+    const wrapper = shallowMount(QrcodeScannerDialog, {
       store,
       i18n,
       propsData: {

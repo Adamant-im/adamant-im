@@ -20,14 +20,35 @@
       <v-card flat color="transparent" class="text-xs-center mt-3">
         <v-layout justify-center>
           <v-flex xs12 sm8 md8 lg6>
+
             <login-form
+              v-model="passphrase"
               @login="onLogin"
               @error="onLoginError"
-              :qrcodePassphrase="decodedPassphrase"
-            />
+            >
+              <template slot="append-outer">
+                <icon
+                  class="ml-2"
+                  :width="24"
+                  :height="24"
+                  shape-rendering="crispEdges"
+                  :color="showQrcodeRenderer ? this.$vuetify.theme.primary : ''"
+                  @click="toggleQrcodeRenderer"
+                >
+                  <qr-code-icon/>
+                </icon>
+              </template>
+
+              <template slot="qrcode-renderer">
+                <div @click="saveQrcode" :style="{ cursor: 'pointer' }">
+                  <vue-qr v-if="showQrcodeRenderer" :text="passphrase" ref="qrcode"/>
+                </div>
+              </template>
+            </login-form>
+
           </v-flex>
         </v-layout>
-        <qrcode-capture @detect="onDetect" ref="qrcodeCapture" style="display: none"/>
+
         <v-layout justify-center>
           <v-btn
             icon
@@ -37,11 +58,14 @@
             @click="showQrcodeScanner = true"
             :title="$t('login.scan_qr_code_button_tooltip')"
           >
-            <v-icon>mdi-qrcode-scan</v-icon>
+            <icon><qr-code-scan-icon/></icon>
           </v-btn>
+
           <v-btn @click="openFileDialog" :title="$t('login.login_by_qr_code_tooltip')" icon flat large fab>
-            <v-icon>mdi-file-upload-outline</v-icon>
+            <icon><file-icon/></icon>
           </v-btn>
+
+          <qrcode-capture @detect="onDetect" ref="qrcodeCapture" style="display: none"/>
         </v-layout>
       </v-card>
 
@@ -53,7 +77,7 @@
         </v-flex>
       </v-layout>
 
-      <qrcode-scanner
+      <qrcode-scanner-dialog
         v-if="showQrcodeScanner"
         v-model="showQrcodeScanner"
         @scan="onScanQrcode"
@@ -65,26 +89,40 @@
 </template>
 
 <script>
+import VueQr from 'vue-qr'
+import b64toBlob from 'b64-to-blob'
+import FileSaver from 'file-saver'
+import { QrcodeCapture } from 'vue-qrcode-reader'
+
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
 import LoginForm from '@/components/LoginForm'
-import QrcodeScanner from '@/components/QrcodeScanner'
-import { QrcodeCapture } from 'vue-qrcode-reader'
+import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
+import Icon from '@/components/icons/BaseIcon'
+import QrCodeIcon from '@/components/icons/common/QrCode'
+import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
+import FileIcon from '@/components/icons/common/File'
 
 export default {
+  computed: {
+    showQrcodeRenderer () {
+      return this.isQrcodeRendererActive && this.passphrase
+    }
+  },
   data: () => ({
+    passphrase: '',
     showQrcodeScanner: false,
-    logo: '/img/adamant-logo-transparent-512x512.png', // @todo maybe svg will be better
-    decodedPassphrase: ''
+    isQrcodeRendererActive: false,
+    logo: '/img/adamant-logo-transparent-512x512.png'
   }),
   methods: {
     async onDetect (promise) {
       try {
         const { content } = await promise // Decoded string or null
         if (content && /^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(content.trim())) {
-          this.decodedPassphrase = content
+          this.passphrase = content
         } else {
-          this.decodedPassphrase = ''
+          this.passphrase = ''
           this.$store.dispatch('snackbar/show', {
             message: this.$t('login.invalid_qr_code')
           })
@@ -119,14 +157,29 @@ export default {
     },
     openFileDialog () {
       this.$refs.qrcodeCapture.$el.click()
+    },
+    saveQrcode () {
+      const imgUrl = this.$refs.qrcode.$el.querySelector('img').src
+      const base64Data = imgUrl.slice(22, imgUrl.length)
+      const byteCharacters = b64toBlob(base64Data)
+      const blob = new Blob([byteCharacters], { type: 'image/png' })
+      FileSaver.saveAs(blob, 'adamant-im.png')
+    },
+    toggleQrcodeRenderer () {
+      this.isQrcodeRendererActive = !this.isQrcodeRendererActive
     }
   },
   components: {
+    VueQr,
     LanguageSwitcher,
     PassphraseGenerator,
     LoginForm,
-    QrcodeScanner,
-    QrcodeCapture
+    QrcodeScannerDialog,
+    QrcodeCapture,
+    Icon,
+    QrCodeIcon,
+    QrCodeScanIcon,
+    FileIcon
   }
 }
 </script>

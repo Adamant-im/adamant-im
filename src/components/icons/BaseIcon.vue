@@ -1,22 +1,40 @@
 <template>
-  <svg
-    class="svg-icon"
-    xmlns="http://www.w3.org/2000/svg"
-    :width="width"
-    :height="height"
-    :viewBox="viewBox"
-    :aria-labelledby="title"
-    role="presentation"
-  >
-    <title v-if="title">{{ title }}</title>
-    <g :fill="color">
-      <slot/>
-    </g>
-  </svg>
+  <i class="v-icon" :class="{ 'v-icon--link': isClickable }">
+    <svg
+      class="svg-icon"
+      xmlns="http://www.w3.org/2000/svg"
+      :width="width"
+      :height="height"
+      :viewBox="viewBox"
+      :shape-rendering="shapeRendering"
+      :aria-labelledby="title"
+      role="presentation"
+      @click="$emit('click')"
+    >
+      <title v-if="title">{{ title }}</title>
+      <g :fill="color">
+        <slot/>
+      </g>
+    </svg>
+  </i>
 </template>
 
 <script>
 export default {
+  created () {
+    // if component has @click attr, make cursor: pointer
+    const listeners = Object.keys(this.$listeners)
+    const hasClickAttr = listeners.some(
+      listener => /^click/.test(listener)
+    )
+
+    if (hasClickAttr) {
+      this.isClickable = true
+    }
+  },
+  data: () => ({
+    isClickable: false
+  }),
   props: {
     width: {
       type: [Number, String],
@@ -36,6 +54,10 @@ export default {
     viewBox: {
       type: String,
       default: '0 0 512 512'
+    },
+    shapeRendering: {
+      type: String,
+      default: 'auto'
     }
   }
 }
@@ -43,10 +65,6 @@ export default {
 
 <style lang="stylus">
 @import '~vuetify/src/stylus/settings/_colors.styl'
-
-.svg-icon
-  display: inline-block
-  vertical-align: baseline
 
 /* Themes */
 .theme--light
