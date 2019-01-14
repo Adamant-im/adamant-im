@@ -1,82 +1,120 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+import AuthMiddleware from '@/middlewares/auth'
 import Chats from '@/views/Chats'
 import Chat from '@/views/Chat'
-import Transfer from '@/views/Transfer'
+import SendFunds from '@/views/SendFunds'
 import Transaction from '@/views/transactions/Transaction'
 import Transactions from '@/views/Transactions'
 import Options from '@/views/Options'
 import Home from '@/views/Home'
 import Votes from '@/views/Votes'
 import Nodes from '@/views/Nodes'
+import PageNotFound from '@/views/PageNotFound'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   routes: [
     {
       path: '/options/nodes',
       name: 'Nodes',
       component: Nodes,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'toolbar'
+      }
     },
     {
       path: '/votes',
       name: 'Votes',
       component: Votes,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'toolbar'
+      }
     },
     {
       path: '/transactions/:crypto/:tx_id',
       component: Transaction,
       name: 'Transaction',
       props: true,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'toolbar',
+        containerNoPadding: true
+      }
     },
     {
       path: '/transactions/:crypto',
       name: 'Transactions',
       component: Transactions,
-      props: true,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'toolbar',
+        containerNoPadding: true
+      }
     },
     {
       path: '/options',
       name: 'Options',
       component: Options,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'toolbar',
+        showNavigation: true
+      }
     },
     {
       path: '/chats/:partner/',
       component: Chat,
       name: 'Chat',
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'chat'
+      }
     },
     {
       path: '/chats',
       name: 'Chats',
       component: Chats,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'toolbar',
+        containerNoPadding: true,
+        showNavigation: true
+      }
     },
     {
-      path: '/transfer/:fixedCrypto?/:fixedAddress?',
-      name: 'Transfer',
-      component: Transfer,
+      path: '/transfer/:cryptoCurrency?/:recipientAddress?/:amountToSend?',
+      name: 'SendFunds',
+      component: SendFunds,
       props: true,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'toolbar'
+      }
     },
     {
       path: '/home',
       name: 'Home',
       component: Home,
-      meta: { requiresAuth: true }
+      meta: {
+        requiresAuth: true,
+        layout: 'toolbar',
+        showNavigation: true
+      }
     },
     {
       path: '/',
       name: 'Login',
       component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue')
+    },
+    {
+      path: '*',
+      component: PageNotFound
     }
   ],
   scrollBehavior (to, from, savedPosition) {
@@ -87,3 +125,7 @@ export default new Router({
     }
   }
 })
+
+router.beforeEach(AuthMiddleware)
+
+export default router

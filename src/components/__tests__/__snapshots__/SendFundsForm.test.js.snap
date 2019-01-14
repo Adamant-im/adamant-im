@@ -1,0 +1,179 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SendFundsForm renders the correct markup 1`] = `
+<div
+  class="send-funds-form"
+>
+  <v-form-stub
+    class="send-funds-form"
+    value="true"
+  >
+    <v-select-stub
+      items="ADM,ETH,BNB"
+      label="Cryptocurrency"
+    />
+     
+    <v-text-field-stub
+      label="To Address"
+      rules="v => !!v || this.$t('transfer.error_field_is_required'),v => _get__(\\"validateAddress\\")('ADM', v) || this.$t('transfer.error_incorrect_address', {
+          crypto: 'ADM'
+        })"
+      type="text"
+    />
+     
+    <!---->
+     
+    <v-text-field-stub
+      label="Amount to send"
+      rules="v => !!v || this.$t('transfer.error_field_is_required'),v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough')"
+      type="number"
+    />
+     
+    <v-textarea-stub
+      label="Comments"
+      multi-line=""
+      rowheight="24"
+      rows="5"
+      type="text"
+    />
+     
+    <v-list-stub
+      class="list-info transparent"
+    >
+      <v-list-tile-stub
+        activeclass="primary--text"
+      >
+        <v-list-tile-content-stub>
+          <v-list-tile-sub-title-stub>
+            Balance
+          </v-list-tile-sub-title-stub>
+        </v-list-tile-content-stub>
+         
+        <v-list-tile-action-stub>
+          <v-list-tile-title-stub
+            class="text-xs-right"
+          >
+            10000 ADM
+          </v-list-tile-title-stub>
+        </v-list-tile-action-stub>
+      </v-list-tile-stub>
+      <v-list-tile-stub
+        activeclass="primary--text"
+      >
+        <v-list-tile-content-stub>
+          <v-list-tile-sub-title-stub>
+            Max to transfer
+          </v-list-tile-sub-title-stub>
+        </v-list-tile-content-stub>
+         
+        <v-list-tile-action-stub>
+          <v-list-tile-title-stub
+            class="text-xs-right"
+          >
+            9999.5 ADM
+          </v-list-tile-title-stub>
+        </v-list-tile-action-stub>
+      </v-list-tile-stub>
+      <v-list-tile-stub
+        activeclass="primary--text"
+      >
+        <v-list-tile-content-stub>
+          <v-list-tile-sub-title-stub>
+            Transfer fee
+          </v-list-tile-sub-title-stub>
+        </v-list-tile-content-stub>
+         
+        <v-list-tile-action-stub>
+          <v-list-tile-title-stub
+            class="text-xs-right"
+          >
+            0.5 ADM
+          </v-list-tile-title-stub>
+        </v-list-tile-action-stub>
+      </v-list-tile-stub>
+      <v-list-tile-stub
+        activeclass="primary--text"
+      >
+        <v-list-tile-content-stub>
+          <v-list-tile-sub-title-stub>
+            Amount including transfer fee
+          </v-list-tile-sub-title-stub>
+        </v-list-tile-content-stub>
+         
+        <v-list-tile-action-stub>
+          <v-list-tile-title-stub
+            class="text-xs-right"
+          >
+            0.5 ADM
+          </v-list-tile-title-stub>
+        </v-list-tile-action-stub>
+      </v-list-tile-stub>
+    </v-list-stub>
+     
+    <v-btn-stub
+      activeclass="v-btn--active"
+      tag="button"
+      type="button"
+    >
+      <v-progress-circular-stub
+        class="mr-3"
+        color="primary"
+        indeterminate="true"
+        rotate="0"
+        size="24"
+        style="display: none;"
+        value="0"
+        width="4"
+      />
+      
+      Send Funds
+    
+    </v-btn-stub>
+  </v-form-stub>
+   
+  <v-dialog-stub
+    maxwidth="none"
+    origin="center center"
+    transition="dialog-transition"
+    width="500"
+  >
+    <v-card-stub
+      elevation="2"
+    >
+      <v-card-title-stub
+        class="headline"
+      >
+        Transfer confirmation
+      </v-card-title-stub>
+       
+      <v-card-text-stub />
+       
+      <v-card-actions-stub>
+        <v-spacer-stub />
+         
+        <v-btn-stub
+          activeclass="v-btn--active"
+          flat="true"
+          tag="button"
+          type="button"
+        >
+          
+          Cancel
+        
+        </v-btn-stub>
+         
+        <v-btn-stub
+          activeclass="v-btn--active"
+          flat="true"
+          tag="button"
+          type="button"
+        >
+          
+          Confirm
+        
+        </v-btn-stub>
+      </v-card-actions-stub>
+    </v-card-stub>
+  </v-dialog-stub>
+</div>
+`;

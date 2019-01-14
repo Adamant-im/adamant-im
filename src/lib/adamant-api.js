@@ -3,7 +3,6 @@ import Queue from 'promise-queue'
 import { Transactions, Delegates } from './constants'
 import utils from './adamant'
 import client from './adamant-api-client'
-import renderMarkdown from './markdown'
 
 Queue.configure(Promise)
 
@@ -322,14 +321,15 @@ export function getTransaction (id) {
 
 /**
  * Retrieves chat messages for the current account.
- * @param {number} from fetch messages starting from the specified height
- * @param {number} offset offset (defaults to 0)
+ * @param {number} from Fetch messages starting from the specified height
+ * @param {number} offset Offset (defaults to 0)
+ * @param {string} orderBy Can be: `asc` || `desc`
  * @returns {Promise<{count: number, transactions: Array}>}
  */
-export function getChats (from = 0, offset = 0) {
+export function getChats (from = 0, offset = 0, orderBy = 'desc') {
   const params = {
     isIn: myAddress,
-    orderBy: 'timestamp:desc'
+    orderBy: `timestamp:${orderBy}`
   }
 
   if (from) {
@@ -390,7 +390,7 @@ function decodeChat (transaction, key) {
       transaction.message = i18nMsg
       transaction.isI18n = true
     } else {
-      transaction.message = renderMarkdown(message)
+      transaction.message = message
     }
   }
 
@@ -424,4 +424,19 @@ function getI18nMessage (message, senderId) {
   }
 
   return ''
+}
+
+/**
+ * Performs application login
+ * @param {string} Passphrase
+ * @return Promise<string> User address
+ */
+export function loginOrRegister (passphrase) {
+  try {
+    unlock(passphrase)
+  } catch (e) {
+    return Promise.reject(e)
+  }
+
+  return getCurrentAccount()
 }

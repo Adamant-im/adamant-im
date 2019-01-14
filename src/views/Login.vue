@@ -1,474 +1,157 @@
 <template>
-  <div class="login">
-      <md-input-container class="language_select">
-          <md-select name="language" id="language" v-model="language">
-              <md-option  v-for="(language, code) in languageList" :value="code" :key="code">{{ language.title }}</md-option>
-          </md-select>
-      </md-input-container>
-      <div class="site-branding container">
-          <span class="custom-logo-link" rel="home" itemprop="url"><img  src="/img/adamant-logo-transparent-512x512.png" class="custom-logo" alt="ADAMANT" itemprop="logo"></span>
-            <span href="#">
-              <span class="site-title">
-                {{ language === 'ru' ? 'АДАМАНТ' : 'ADAMANT' }}
-              </span>
-            </span>
-          <p class="site-description">{{ $t('login.subheader') }}</p>
+  <v-layout row fill-height justify-center class="login-page">
+
+    <v-flex xs12 sm12 md8 lg8>
+
+      <div class="text-xs-right">
+        <language-switcher/>
       </div>
-      <md-layout md-align="center" md-gutter="16">
-      <md-layout md-flex="66" md-flex-xsmall="80">
-          <md-input-container class="password_input">
-              <label style="text-align: center;width: 100%;">{{ $t('login.password_label') }}</label>
-              <md-input v-model="passPhrase" type="password" autocomplete="new-password" @keyup.native="kp($event)"></md-input>
-          </md-input-container>
-      </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="80">
-              <md-layout md-align="center" md-gutter="16">
-                  <md-button class="md-raised md-short" @click="logme">{{ $t('login.login_button') }}</md-button>
-              </md-layout>
-          </md-layout>
-          <md-layout md-flex="66"
-                     md-flex-xsmall="80"
-                     md-align="center"
-                     class="qr-code-buttons">
-            <md-button classs="md-ripple md-disabled"
-                       :title="$t('login.scan_qr_code_button_tooltip')"
-                       @click="scanQRCode">
-              <Icon name="qrCodeLense" />
-            </md-button>
-            <md-button classs="md-ripple md-disabled"
-                       @click.prevent="saveQRCode">
-              <Icon name="qrCode" />
-            </md-button>
 
-          </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="80" md-align="center">
-            <p v-if="message">{{message}}</p>
-            <p>
-              <a href="#"
-                 @click.prevent="downloadQRCode"
-                 v-if="showQRCode">
-                <qr-code :text="passPhrase" ref="qrCode"></qr-code>
-              </a>
-            </p>
-          </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="80" style="margin-top:30px">
-              <md-layout md-align="center" md-gutter="16">
-                  <p style="font-weight: 300;margin-bottom: 10px;">{{$t('login.create_address_label')}}</p>
-              </md-layout>
-          </md-layout>
-          <md-layout md-flex="66" md-flex-xsmall="80" style="">
-              <md-layout md-align="center" md-gutter="16">
-                  <a class='create_link' v-on:click="showCreate = true; scrollToBottom()">{{ $t('login.new_button') }}</a>
-              </md-layout>
-          </md-layout>
-    </md-layout>
-      <md-layout v-if="showCreate" md-align="center" md-gutter="16">
-          <md-layout md-flex="66" md-flex-xsmall="90" class="newpass_field">
+      <v-card flat color="transparent" class="text-xs-center mt-3">
+        <img
+          :src="logo"
+          class="logo"
+        />
 
-              <md-input-container>
-                  <label v-html="$t('login.new_password_label')"></label>
-                  <md-textarea v-bind:value="yourPassPhrase" readonly></md-textarea>
-                  <md-icon v-clipboard="yourPassPhrase"  @success="copySuccess" style="cursor:pointer;z-index:20;" :title="$t('login.copy_button_tooltip')">content_copy</md-icon>
-                  <md-icon v-if=!iOS v-on:click.native="saveFile" style="cursor:pointer;z-index:20;" :title="$t('login.save_button_tooltip')">archive</md-icon>
+        <h1 class="login-page__title">{{ $t('login.brand_title') }}</h1>
+        <h2 class="hidden-sm-and-down login-page__subtitle mt-3">{{ $t('login.subheader') }}</h2>
+      </v-card>
 
-              </md-input-container>
+      <v-card flat color="transparent" class="text-xs-center mt-3">
+        <v-layout justify-center>
+          <v-flex xs12 sm8 md8 lg6>
+            <login-form
+              @login="onLogin"
+              @error="onLoginError"
+              :qrcodePassphrase="decodedPassphrase"
+            />
+          </v-flex>
+        </v-layout>
+        <qrcode-capture @detect="onDetect" ref="qrcodeCapture" style="display: none"/>
+        <v-layout justify-center>
+          <v-btn
+            icon
+            flat
+            large
+            fab
+            @click="showQrcodeScanner = true"
+            :title="$t('login.scan_qr_code_button_tooltip')"
+          >
+            <v-icon>mdi-qrcode-scan</v-icon>
+          </v-btn>
+          <v-btn @click="openFileDialog" :title="$t('login.login_by_qr_code_tooltip')" icon flat large fab>
+            <v-icon>mdi-file-upload-outline</v-icon>
+          </v-btn>
+        </v-layout>
+      </v-card>
 
-          </md-layout>
-      </md-layout>
+      <v-layout justify-center class="mt-2">
+        <v-flex xs12 sm8 md8 lg6>
+          <passphrase-generator
+            @copy="onCopyPassphraze"
+          />
+        </v-flex>
+      </v-layout>
 
-      <md-snackbar md-position="bottom center" md-accent ref="snackbar" md-duration="2000">
-          <span>{{ $t('login.invalid_passphrase') }}</span>
-      </md-snackbar>
-      <md-snackbar md-position="bottom center" md-accent ref="loginSnackbar" md-duration="2000">
-          <span>{{ $t('home.copied') }}</span>
-      </md-snackbar>
-    <QRScan v-if="showModal" :modal="showModal" @hide-modal="showModal = false" @code-grabbed="savePassPhrase"/>
-    <Spinner v-if="showSpinnerFlag"></Spinner>
-  </div>
+      <qrcode-scanner
+        v-if="showQrcodeScanner"
+        v-model="showQrcodeScanner"
+        @scan="onScanQrcode"
+      />
+
+    </v-flex>
+
+  </v-layout>
 </template>
 
 <script>
-import b64toBlob from 'b64-to-blob'
-import FileSaver from 'file-saver'
-import Icon from '@/components/Icon'
-import QRScan from '@/components/QRScan'
-import Spinner from '../components/Spinner'
-import i18n from '../i18n'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
+import PassphraseGenerator from '@/components/PassphraseGenerator'
+import LoginForm from '@/components/LoginForm'
+import QrcodeScanner from '@/components/QrcodeScanner'
+import { QrcodeCapture } from 'vue-qrcode-reader'
 
 export default {
-  name: 'login',
-  components: {
-    Icon,
-    QRScan,
-    Spinner
-  },
+  data: () => ({
+    showQrcodeScanner: false,
+    logo: '/img/adamant-logo-transparent-512x512.png', // @todo maybe svg will be better
+    decodedPassphrase: ''
+  }),
   methods: {
-    showSpinner: function () {
-      this.showSpinnerFlag = true
+    async onDetect (promise) {
+      try {
+        const { content } = await promise // Decoded string or null
+        if (content && /^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(content.trim())) {
+          this.decodedPassphrase = content
+        } else {
+          this.decodedPassphrase = ''
+          this.$store.dispatch('snackbar/show', {
+            message: this.$t('login.invalid_qr_code')
+          })
+        }
+      } catch (error) {
+        console.error(error)
+      }
     },
-    scrollToBottom: function () {
-      this.$root.$nextTick(function () {
-        window.scrollTo(0, document.body.scrollHeight)
+    onLogin () {
+      this.$router.push('/chats')
+    },
+    onLoginError (err) {
+      this.$store.dispatch('snackbar/show', {
+        message: this.$t('login.invalid_passphrase')
+      })
+      console.error(err)
+    },
+    onCopyPassphraze () {
+      this.$store.dispatch('snackbar/show', {
+        message: this.$t('home.copied'),
+        timeout: 1500
       })
     },
-    copySuccess (e) {
-      this.$refs.loginSnackbar.open()
+    onScanQrcode (passphrase) {
+      this.$store.dispatch('login', passphrase)
+        .then(() => {
+          this.onLogin()
+        })
+        .catch(err => {
+          this.onLoginError(err)
+        })
     },
-    kp: function (event) {
-      if (event.key === 'Enter') {
-        this.logme()
-      }
-    },
-    snackOpen () {
-      this.$refs.snackbar.open()
-    },
-    downloadQRCode () {
-      const imgUrl = this.$refs.qrCode.$el.querySelector('img').src
-      const base64Data = imgUrl.slice(22, imgUrl.length)
-      const byteCharacters = b64toBlob(base64Data)
-      const blob = new Blob([byteCharacters], { type: 'image/png' })
-
-      FileSaver.saveAs(blob, 'adamant-im.png')
-    },
-    saveQRCode () {
-      if (!this.passPhrase.length) {
-        this.message = 'Please enter passphrase first'
-        return
-      }
-
-      this.message = ''
-      this.showQRCode = true
-    },
-    scanQRCode () {
-      this.showModal = true
-    },
-    savePassPhrase (payload) {
-      this.passPhrase = payload
-      this.logme()
-    },
-    logme () {
-      this.passPhrase = this.passPhrase.toLowerCase().trim()
-      this.showSpinnerFlag = true
-      let errorFunction = function () {
-        this.snackOpen()
-        this.showSpinnerFlag = false
-      }.bind(this)
-      if (this.passPhrase.split(' ').length !== 12) {
-        errorFunction()
-        return
-      }
-
-      this.$store.dispatch('login', { passphrase: this.passPhrase }).then(
-        () => {
-          this.$root._router.push('/chats/')
-          this.showSpinner = false
-        },
-        errorFunction
-      )
-    },
-    'handleSuccess': function (e) {
-      this.snackbar = true
-    },
-    saveFile () {
-      var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
-      if (!iOS) {
-        this.download(this.yourPassPhrase, 'adm-' + btoa(new Date().getTime()).replace('==', '') + '.txt', 'text/plain')
-      }
-    },
-    download (data, filename, type) {
-      var file = new Blob([data], { type: type })
-      if (window.navigator.msSaveOrOpenBlob) { // IE10+
-        window.navigator.msSaveOrOpenBlob(file, filename)
-      } else { // Others
-        var a = document.createElement('a')
-        var url = URL.createObjectURL(file)
-        a.href = url
-        a.download = filename
-        document.body.appendChild(a)
-        a.click()
-        setTimeout(function () {
-          document.body.removeChild(a)
-          window.URL.revokeObjectURL(url)
-        }, 0)
-      }
+    openFileDialog () {
+      this.$refs.qrcodeCapture.$el.click()
     }
   },
-  computed: {
-    iOS: function () {
-      return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
-    },
-    languageList () {
-      return i18n.messages
-    },
-    yourPassPhrase: function () {
-      var Mnemonic = require('bitcore-mnemonic')
-      return new Mnemonic(Mnemonic.Words.ENGLISH).toString()
-    },
-    qrCodePassPhrase: function () {
-      // return this.passPhrase
-      return this.$store.getters.getPassPhrase
-    }
-  },
-  watch: {
-    'language' (to, from) {
-      this.$i18n.locale = to
-      this.$store.commit('change_lang', to)
-    }
-  },
-  data () {
-    return {
-      passPhrase: this.qrCodePassPhrase || '',
-      language: this.$i18n.locale,
-      showCreate: false,
-      message: '',
-      showQRCode: false,
-      showModal: false,
-      showSpinnerFlag: false
-    }
+  components: {
+    LanguageSwitcher,
+    PassphraseGenerator,
+    LoginForm,
+    QrcodeScanner,
+    QrcodeCapture
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_variables.styl'
 
-.qr-code-buttons button {
-  min-width: auto;
-  padding: 0;
-}
+.login-page
+  &__title
+    font-family: 'Exo 2'
+    font-weight: 100
+    font-size: 45px
+    line-height: 40px
+    text-transform: uppercase
+  &__subtitle
+    font-family: 'Exo 2'
+    font-weight: 100
+    font-size: 18px
 
-.site-branding
-{
-    text-align: center;
-    padding: 40px 0 40px;
-}
+.logo
+  width: 213px
+  height: 213px
 
-.container {
-    width: 800px;
-    margin: 0 auto;
-}
-.container a{
-    color: #000;
-}
-.md-layout .md-button.md-raised.md-short, .md-short {
-    min-width: 126px;
-    background-color: #FFFFFF;
-}
-.md-layout .md-button.md-raised.md-shit, .md-shit {
-    background: repeating-linear-gradient( 140deg, lightgray, lightgray 1px, #FEFEFE 1px, #FEFEFE 15px );
-    color: #4A4A4A;
-}
-.md-button:hover:not([disabled]).md-raised {
-  background-color: #dfdfdf !important;
-}
-.md-layout .md-button.md-raised.md-shit:hover,.md-shit:hover {
-    background-color: #dfdfdf !important;
-}
-p.site-description {
-    font-family: 'Exo 2'!important;
-    font-style: normal!important;
-    font-weight: 100!important;
-    margin: 10px 0;
-    margin-top: 0px;
-    padding: 0px 20px;
-    font-size: 18px;
-}
-
-p.site-description {
-    line-height: 20px;
-}
-
-p.site-description {
-    color: #4a4a4a;
-}
-
-.site-title {
-    color: #4a4a4a;
-    line-height: 40px;
-    font-family: 'Exo 2'!important;
-    font-style: normal!important;
-    font-weight: 100!important;
-    font-size: 45px;
-    display: inline-block;
-    width: 100%;
-    padding: 0px 10px;
-    padding-bottom: 15px;
-}
-a.custom-logo-link {
-    width: 100%;
-    text-align: center;
-    display: inline-block;
-    margin-bottom: 10px;
-    color: #000;
-}
-
-a.custom-logo-link img {
-    height: auto;
-    max-width: 100%
-}
-.newpass_field label {
-    text-align: left;
-    line-height: 18px;
-
-}
-.newpass_field {
-    padding-top: 20px!important;
-}
-.newpass_field textarea {
-    padding-top: 20px !important;
-}
-
-.custom-logo-link img {
-    width: 301px;
-    height: 301px;
-}
-
-.site-branding {
-    padding: 66px 0 10px;
-}
-.newpass_field textarea{
-    height: 90px!important;
-    padding-top: 30px!important;
-}
-.newpass_field .md-icon{
-    padding-top: 40px;
-}
-@media (max-width: 1100px) {
-    .container {
-        width: 95%;
-        margin: 0 auto;
-    }
-}
-@media (max-width: 991px) {
-    .site-branding {
-        padding: 61px 0 10px;
-    }
-    .container {
-        width: 95%;
-        margin: 0 auto;
-    }
-    .newpass_field textarea{
-        height: 90px!important;
-        padding-top: 30px!important;
-    }
-    .newpass_field .md-icon{
-        padding-top: 40px;
-    }
-}
-@media (max-width: 767px) {
-    .container {
-        width: 90%;
-        margin: 0 auto;
-    }
-    p.site-description {
-        font-size: 16px;
-    }
-    .site-title
-    {
-        font-size: 36px;
-
-    }
-    .newpass_field textarea{
-        height: 100px!important;
-        padding-top: 40px!important;
-    }
-    .newpass_field .md-icon{
-        padding-top: 50px;
-    }
-}
-
-@media (max-width: 600px) {
-    .newpass_field textarea{
-        height: 90px!important;
-        padding-top: 30px!important;
-    }
-    .site-description {
-        display:none;
-    }
-    .newpass_field .md-icon{
-        padding-top: 30px;
-    }
-}
-@media (max-width: 480px) {
-    .newpass_field .md-icon{
-        padding-top: 50px;
-    }
-    .custom-logo-link img {
-        width: 213px;
-        height: 213px;
-    }
-
-    .newpass_field textarea{
-        height: 115px!important;
-        padding-top: 50px!important;
-    }
-    .container {
-        width: 95%;
-    }
-    .site-description {
-        display:none;
-    }
-}
-
-.language_select .md-select
-{
-    min-width:150px;
-}
-
-.language_select .md-select:not(.md-select-icon):after {
-    left: 0;
-    transform: translateY(-50%) rotateZ(270deg) scaleY(0.45) scaleX(0.85);
-    right:auto;
-}
-.language_select.md-input-container:after {
-    background-color: transparent;
-}
-.md-input-container.password_input {
-    margin-bottom:10px;
-}
-
-.login .md-input-container.language_select .md-select .md-select-value {
-    padding-right: 0px;
-}
-
-.md-input-container.language_select {
-    position: absolute;
-    right: 13px;
-    top: 0;
-    margin-top: 9px;
-    padding-top: 0;
-    width: auto;
-    font-weight: 300;
-    max-width: 120px;
-    min-width: 70px;
-}
-.password_input input {
-    text-align: center;
-}
-.login .md-input-container.language_select .md-select .md-select-value
-{
-    text-align: right;
-}
-
-.language_select .md-select .md-menu {
-
-}
-.md-input-container.language_select .md-select .md-select-value
-{
-    padding-right: 0px;
-}
-.md-input-container.language_select .md-select {
-    min-width: 70px;
-    max-width: 120px;
-}
-a.create_link {
-   text-decoration: underline!important;
-   color: #4a4a4a!important;
-   font-weight: 500;
-   cursor:pointer;
-    font-size: 16px;
-    font-family:  'Exo 2'!important;
-    letter-spacing: 0;
-    margin-bottom: 40px;
-}
+@media $display-breakpoints.sm-and-up
+  .logo
+    width: 300px
+    height: 300px
 </style>

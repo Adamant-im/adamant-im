@@ -1,0 +1,153 @@
+<template>
+  <v-form v-model="validForm" @submit.prevent="submit" ref="form" class="login-form">
+
+    <v-layout>
+      <v-text-field
+        v-model="passphrase"
+        :label="$t('login.password_label')"
+        browser-autocomplete="current-password"
+        class="text-xs-center"
+        type="password"
+      />
+      <v-icon
+        class="ml-2"
+        :color="showQrcodeRenderer ? 'primary' : ''"
+        @click="toggleQrcodeRenderer"
+      >
+        mdi-qrcode
+      </v-icon>
+    </v-layout>
+
+    <v-layout row wrap align-center justify-center class="mt-2">
+      <v-btn
+        :disabled="!validForm || disabledButton"
+        @click="submit"
+      >
+        <v-progress-circular
+          v-show="showSpinner"
+          indeterminate
+          color="primary"
+          size="24"
+          class="mr-3"
+        />
+        {{ $t('login.login_button') }}
+      </v-btn>
+    </v-layout>
+
+    <transition name="slide-fade">
+      <v-layout v-if="showQrcodeRenderer && passphrase" justify-center class="mt-3">
+        <button @click="saveQrcode" type="button">
+          <QrcodeRenderer :text="passphrase" ref="qrcode" />
+        </button>
+      </v-layout>
+    </transition>
+  </v-form>
+</template>
+
+<script>
+import b64toBlob from 'b64-to-blob'
+import FileSaver from 'file-saver'
+import QrcodeRenderer from '@/components/QrcodeRenderer'
+
+export default {
+  data: () => ({
+    validForm: true,
+    disabledButton: false,
+    passphrase: '',
+    showSpinner: false,
+    showQrcodeRenderer: false
+  }),
+  methods: {
+    submit () {
+      if (!this.$refs.form.validate()) return false
+
+      this.freeze()
+      this.login()
+    },
+    login () {
+      const passphrase = this.passphrase.toLowerCase().trim()
+
+      const promise = this.$store.dispatch('login', passphrase)
+
+      promise
+        .then(() => {
+          this.$emit('login')
+        })
+        .catch(err => {
+          this.$emit('error', err)
+        })
+        .finally(() => {
+          this.antiFreeze()
+        })
+
+      return promise
+    },
+    saveQrcode () {
+      const imgUrl = this.$refs.qrcode.$el.src
+      const base64Data = imgUrl.slice(22, imgUrl.length)
+      const byteCharacters = b64toBlob(base64Data)
+      const blob = new Blob([byteCharacters], { type: 'image/png' })
+      FileSaver.saveAs(blob, 'adamant-im.png')
+    },
+    freeze () {
+      this.disabledButton = true
+      this.showSpinner = true
+    },
+    antiFreeze () {
+      this.disabledButton = false
+      this.showSpinner = false
+    },
+    toggleQrcodeRenderer () {
+      this.showQrcodeRenderer = !this.showQrcodeRenderer
+    }
+  },
+  components: {
+    QrcodeRenderer
+  },
+  props: {
+    qrcodePassphrase: {
+      type: String
+    }
+  },
+  watch: {
+    qrcodePassphrase () {
+      this.passphrase = this.qrcodePassphrase
+    }
+  }
+}
+</script>
+
+<style lang="css" scoped>
+/**
+ * Centering input text and label.
+ *
+ * 1. Override `style` attribute.
+ * 2. Align input text to center.
+ * 3. Fix label centering after `scaleY` animation, using `transition font-size` instead.
+ */
+.login-form >>> .v-label { /* [1] */
+  width: 100% !important;
+  max-width: 100% !important;
+  left: 0;
+}
+.login-form >>> .v-input input {
+  text-align: center; /* [2] */
+}
+.login-form >>> .v-input .v-label--active { /* [3] */
+  transition: font .3s ease;
+  transform: translateY(-18px);
+  -webkit-transform: translateY(-18px);
+  font-size: 12px;
+}
+
+/**
+ * Slide Fade animation.
+ */
+.slide-fade-enter-active, .slide-fade-leave-active {
+  transition: all .3s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to {
+  transform: translateY(10px);
+  opacity: 0;
+}
+</style>

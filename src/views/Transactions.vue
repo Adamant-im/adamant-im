@@ -1,124 +1,92 @@
 <template>
-    <div class="transaction transaction_list" ref="txListElement">
-      <spinner v-if="isLoading" />
-      <md-list class="custom-list md-triple-line md-transparent">
-        <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
-          <md-avatar>
-            <md-icon>{{ transaction.direction === 'from' ? 'flight_takeoff' : 'flight_land' }}</md-icon>
-          </md-avatar>
+  <v-layout row wrap justify-center>
 
-          <div class="md-list-text-container" v-on:click="goToTransaction(transaction.id)">
-            <div>
-              {{ displayName(transaction) }}
-              <span class="partner_display_name">{{ formatPartnerAddress(transaction) }}</span>
-            </div>
-            <span>{{ $formatAmount(transaction.amount, crypto) }} {{crypto}}</span>
-            <p>{{ $formatDate(transaction.timestamp) }}</p>
-          </div>
+    <app-toolbar
+      :title="$t('transaction.transactions')"
+      flat
+    />
 
-          <md-button
-            class="md-icon-button md-list-action"
-            v-if="showChat"
-            @click="openChat(transaction)"
-          >
-            <md-icon>{{ hasMessages(transaction) ? "chat" : "chat_bubble_outline" }}</md-icon>
-          </md-button>
+    <v-flex v-if="isFulfilled" xs12 sm12 md8 lg5>
 
-          <md-divider class="md-inset"></md-divider>
-        </md-list-item>
-      </md-list>
+      <v-list v-if="hasTransactions" two-line class="transparent">
+        <transaction-list-item
+          v-for="(transaction, i) in transactions"
+          :key="i"
+          :id="transaction.id"
+          :user-id="userId"
+          :sender-id="transaction.senderId"
+          :partner-id="transaction.partner"
+          :timestamp="transaction.timestamp"
+          :amount="transaction.amount"
+          :crypto="crypto"
+          @click:transaction="goToTransaction"
+          @click:icon="goToChat"
+        />
+      </v-list>
 
-    </div>
+      <h3 v-else class="headline text-xs-center mt-4">{{ $t('transaction.no_transactions') }}</h3>
+
+    </v-flex>
+
+  </v-layout>
 </template>
 
 <script>
-
-import { Cryptos } from '../lib/constants'
-import Spinner from '@/components/Spinner.vue'
+import { Cryptos } from '@/lib/constants'
+import AppToolbar from '@/components/AppToolbar'
+import TransactionListItem from '@/components/TransactionListItem'
 
 export default {
-  name: 'transactions',
-  components: { Spinner },
-  data () {
-    return {
-      bgTimer: null,
-      prefix: this.crypto.toLowerCase(),
-      showChat: this.crypto === Cryptos.ADM
-    }
-  },
   mounted () {
-    this.update()
-    clearInterval(this.bgTimer)
-    this.bgTimer = setInterval(() => this.update(), 20000)
-    window.addEventListener('scroll', this.onScroll)
-  },
-  beforeDestroy () {
-    clearInterval(this.bgTimer)
-    window.removeEventListener('scroll', this.onScroll)
-  },
-  methods: {
-    hasMessages (transaction) {
-      const chat = this.$store.state.chats[transaction.partner]
-      return chat && chat.messages && Object.keys(chat.messages).length > 0
-    },
-    openChat (transaction) {
-      const partner = transaction.partner
-      this.$store.commit('select_chat', partner)
-      this.$router.push('/chats/' + partner + '/')
-    },
-    goToTransaction (id) {
-      const params = { crypto: this.crypto, tx_id: id }
-      this.$router.push({ name: 'Transaction', params })
-    },
-    getPartner (tx) {
-      return tx.partner || (tx.direction === 'to' ? tx.senderId : tx.recipientId)
-    },
-    displayName (tx) {
-      const partner = this.getPartner(tx)
-      return this.crypto === Cryptos.ADM
-        ? this.$store.getters['partners/displayName'](partner) || ''
-        : ''
-    },
-    formatPartnerAddress (tx) {
-      const partner = this.getPartner(tx)
-      return this.crypto === Cryptos.ADM
-        ? '(' + partner + ')'
-        : partner
-    },
-    update () {
-      this.$store.dispatch(`${this.prefix}/getNewTransactions`)
-    },
-    onScroll () {
-      const height = this.$refs['txListElement'].offsetHeight
-      const windowHeight = window.innerHeight
-      const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop + (document.documentElement.scrollTop || 0)
-
-      // If we've scrolled to the very bottom, fetch the older transactions from server
-      if (windowHeight + scrollPosition >= height) {
-        this.$store.dispatch(`${this.prefix}/getOldTransactions`)
-      }
-    }
+    this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
+      .then(() => {
+        this.isFulfilled = true
+      })
   },
   computed: {
-    transactions: function () {
-      return this.$store.getters[`${this.prefix}/sortedTransactions`]
+    transactions () {
+      return this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
     },
-    isLoading () {
-      return this.$store.getters[`${this.prefix}/areTransactionsLoading`]
+    hasTransactions () {
+      return this.transactions && this.transactions.length > 0
+    },
+    userId () {
+      return this.$store.state.address
+    },
+    crypto () {
+      return ['ADM', 'ETH', 'BNB'].includes(this.$route.params.crypto)
+        ? this.$route.params.crypto
+        : 'ADM'
+    },
+    cryptoModule () {
+      return this.crypto.toLowerCase()
     }
   },
-  props: ['crypto']
+  data: () => ({
+    isFulfilled: false
+  }),
+  methods: {
+    goToTransaction (transactionId) {
+      this.$router.push({
+        name: 'Transaction',
+        params: {
+          crypto: Cryptos.ADM,
+          tx_id: transactionId
+        }
+      })
+    },
+    goToChat (partnerId) {
+      this.$router.push({
+        name: 'Chat',
+        params: {
+          partner: partnerId
+        }
+      })
+    }
+  },
+  components: {
+    AppToolbar,
+    TransactionListItem
+  }
 }
 </script>
-<style>
-  .md-list-item .md-list-item-container .md-list-action:nth-child(3) {
-    margin: 0 -3px 0 16px !important;
-  }
-</style>
-
-<style>
-  .partner_display_name {
-    color: rgba(0, 0, 0, .54);
-    font-size: 14px;
-  }
-</style>

@@ -1,229 +1,180 @@
 <template>
-  <div class="settings">
-      <div style="max-width:95%; margin:auto;">
-      <md-card class="settings-card md-transparent" style="box-shadow:none">
-          <md-card-area md-inset>
-              <md-card-header>
-                  <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.general_title') }}</h2>
-              </md-card-header>
-          </md-card-area>
+  <v-layout row wrap justify-center>
 
-          <md-card-content>
-              <md-table>
-                  <md-table-body>
-                      <md-table-row>
-                          <md-table-cell style="text-align: left;">{{ $t('options.language_label') }}</md-table-cell>
-                          <md-table-cell ><md-input-container class="language_selector">
-                              <md-select name="language" id="language" v-model="language">
-                                  <md-option  v-for="(language, code) in languageList" :value="code" :key="code">{{ language.title }}</md-option>
-                              </md-select>
-                          </md-input-container>
-                          </md-table-cell>
-                      </md-table-row>
-                  </md-table-body>
-              </md-table>
+    <app-toolbar
+      :title="$t('options.page_title')"
+      :show-back="false"
+      flat
+    />
 
-              <div class='settings-item'>
-                <md-button class="votes-button" @click="$router.push({ name: 'Nodes' })">
-                  {{ $t('options.nodes_list') }}
-                </md-button>
-              </div>
-          </md-card-content>
-      </md-card>
+    <v-flex xs12 sm12 md8 lg5>
 
-      <md-card class='settings-card md-transparent' style="box-shadow:none">
-          <md-card-area md-inset>
-              <md-card-header>
-                  <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.security_title') }}</h2>
-              </md-card-header>
-          </md-card-area>
+      <!-- General -->
+      <h3 class="title mb-3">{{ $t('options.general_title') }}</h3>
+      <v-layout row wrap align-center class="mb-5">
+        <v-flex xs6>
+          <v-subheader class="pa-0">{{ $t('options.language_label') }}</v-subheader>
+        </v-flex>
+        <v-flex xs6 class="text-xs-right">
+          <language-switcher/>
+        </v-flex>
+        <v-flex xs12>
+          <v-checkbox
+            :label="$t('options.dark_theme')"
+            color="grey darken-1"
+            v-model="darkTheme"
+          />
+        </v-flex>
+      </v-layout>
 
-          <md-card-content>
-              <md-table>
-                  <md-table-body>
-                      <md-table-row>
-                          <md-table-cell class="hide_on_mobile"></md-table-cell>
-                          <md-table-cell colspan="2"  style="text-align:left;"><md-checkbox  v-model="storeInLS" :title="$t('options.exit_on_close_tooltip')">{{ $t('options.exit_on_close') }}</md-checkbox></md-table-cell>
-                      </md-table-row>
-                  </md-table-body>
-              </md-table>
-          </md-card-content>
+      <!-- Security -->
+      <h3 class="title mb-3">{{ $t('options.security_title') }}</h3>
+      <v-layout row wrap align-center class="mb-5">
+        <v-flex xs12>
+          <v-checkbox
+            :label="$t('options.exit_on_close')"
+            :title="$t('options.exit_on_close_tooltip')"
+            color="grey darken-1"
+            v-model="logoutOnTabClose"
+          />
+        </v-flex>
+      </v-layout>
 
-      </md-card>
-          <md-card class='settings-card md-transparent' style="box-shadow:none">
-              <md-card-area md-inset>
-                  <md-card-header>
-                      <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.chats_title') }}</h2>
-                  </md-card-header>
-              </md-card-area>
+      <!-- Chats -->
+      <h3 class="title mb-3">{{ $t('options.chats_title') }}</h3>
+      <v-layout row wrap align-center class="mb-5">
+        <v-flex xs12>
+          <v-checkbox
+            :label="$t('options.send_on_enter')"
+            :title="$t('options.send_on_enter_tooltip')"
+            color="grey darken-1"
+            v-model="sendMessageOnEnter"
+          />
+        </v-flex>
+      </v-layout>
 
-              <md-card-content>
-                  <md-table>
-                      <md-table-body>
-                          <md-table-row>
-                              <md-table-cell class="hide_on_mobile"></md-table-cell>
-                              <md-table-cell colspan="2"  style="text-align:left;"><md-checkbox  v-model="sendOnEnter" :title="$t('options.send_on_enter_tooltip')">{{ $t('options.send_on_enter') }}</md-checkbox></md-table-cell>
-                          </md-table-row>
-                      </md-table-body>
-                  </md-table>
-              </md-card-content>
+      <!-- Notifications -->
+      <h3 class="title mb-3">{{ $t('options.notification_title') }}</h3>
+      <v-layout row wrap align-center class="mb-5">
+        <v-flex xs12>
+          <v-checkbox
+            :label="$t('options.enable_sound')"
+            :title="$t('options.enable_sound_tooltip')"
+            color="grey darken-1"
+            v-model="allowSoundNotifications"
+          />
+        </v-flex>
+        <v-flex xs12>
+          <v-checkbox
+            :label="$t('options.enable_bar')"
+            :title="$t('options.enable_bar_tooltip')"
+            color="grey darken-1"
+            v-model="allowTabNotifications"
+          />
+        </v-flex>
+        <v-flex xs12>
+          <v-checkbox
+            :label="$t('options.allow_push')"
+            color="grey darken-1"
+            v-model="allowPushNotifications"
+          />
+        </v-flex>
+      </v-layout>
 
-          </md-card>
+      <!-- Other -->
+      <h3 class="title mb-3">{{ $t('options.other') }}</h3>
+      <v-layout row wrap align-center>
+        <v-flex xs12 md6 class="px-1">
+          <v-btn block @click="$router.push('/options/nodes')">{{ $t('options.nodes_list') }}</v-btn>
+        </v-flex>
+        <v-flex xs12 md6 class="px-1">
+          <v-btn block @click="$router.push('/votes')">{{ $t('options.vote_for_delegates_button') }}</v-btn>
+        </v-flex>
+      </v-layout>
 
-      <md-card class='settings-card md-transparent' style="box-shadow:none">
-          <md-card-area md-inset>
-              <md-card-header>
-                  <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.notification_title') }}</h2>
-              </md-card-header>
-          </md-card-area>
+    </v-flex>
 
-          <md-card-content>
-              <md-table>
-                  <md-table-body>
-                      <md-table-row>
-                          <md-table-cell class="hide_on_mobile"></md-table-cell>
-                          <md-table-cell style="text-align:left;" colspan="2"><md-checkbox  v-model="notifySound" :title="$t('options.enable_sound_tooltip')">{{ $t('options.enable_sound') }}</md-checkbox></md-table-cell>
-                      </md-table-row>
-                      <md-table-row>
-                          <md-table-cell class="hide_on_mobile"></md-table-cell>
-                          <md-table-cell style="text-align:left;" colspan="2"><md-checkbox  v-model="notifyBar" :title="$t('options.enable_bar_tooltip')">{{ $t('options.enable_bar') }}</md-checkbox></md-table-cell>
-                      </md-table-row>
-                      <md-table-row style="display:none">
-                          <md-table-cell class="hide_on_mobile"></md-table-cell>
-                          <md-table-cell style="text-align:left;" colspan="2"><md-checkbox  v-model="notifyDesktop" disabled :title="$t('options.enable_desktop_tooltip')">{{ $t('options.enable_desktop') }}</md-checkbox></md-table-cell>
-                      </md-table-row>
-                  </md-table-body>
-              </md-table>
-          </md-card-content>
-
-      </md-card>
-
-      <md-card class='settings-card md-transparent' style="box-shadow:none">
-        <md-card-area md-inset>
-          <md-card-header>
-            <h2 class="md-title" style="text-align:left; font-size:20px">{{ $t('options.delegates_title') }}</h2>
-          </md-card-header>
-          </md-card-area>
-          <md-card-content>
-            <div class="md-table md-theme-grey">
-              <md-button class="votes-button" @click="$router.push('/votes/')">{{ $t('options.vote_for_delegates_button') }}</md-button>
-            </div>
-          </md-card-content>
-      </md-card>
-
-    <div class="version" style=" margin-bottom: -1rem; right:1rem;">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
-      </div>
-
-  </div>
+  </v-layout>
 </template>
 
 <script>
-import i18n from '../i18n'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
+import AppToolbar from '@/components/AppToolbar'
 
 export default {
-  name: 'settings',
   computed: {
-    languageList: function () {
-      return i18n.messages
+    logoutOnTabClose: {
+      get () {
+        return this.$store.state.options.logoutOnTabClose
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'logoutOnTabClose',
+          value
+        })
+      }
+    },
+    sendMessageOnEnter: {
+      get () {
+        return this.$store.state.options.sendMessageOnEnter
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'sendMessageOnEnter',
+          value
+        })
+      }
+    },
+    allowSoundNotifications: {
+      get () {
+        return this.$store.state.options.allowSoundNotifications
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'allowSoundNotifications',
+          value
+        })
+      }
+    },
+    allowTabNotifications: {
+      get () {
+        return this.$store.state.options.allowTabNotifications
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'allowTabNotifications',
+          value
+        })
+      }
+    },
+    allowPushNotifications: {
+      get () {
+        return this.$store.state.options.allowPushNotifications
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'allowPushNotifications',
+          value
+        })
+      }
+    },
+    darkTheme: {
+      get () {
+        return this.$store.state.options.darkTheme
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'darkTheme',
+          value
+        })
+      }
     }
   },
-  mounted () {
-    this.$store.commit('last_visited_chat', null)
-  },
-  watch: {
-    'sendOnEnter' (to, from) {
-      this.$store.commit('change_send_on_enter', to)
-    },
-    'storeInLS' (to, from) {
-      this.$store.commit('change_storage_method', !to)
-    },
-    'notifySound' (to, from) {
-      this.$store.commit('change_notify_sound', to)
-    },
-    'notifyBar' (to, from) {
-      this.$store.commit('change_notify_bar', to)
-    },
-    'notifyDesktop' (to, from) {
-      this.$store.commit('change_notify_desktop', to)
-    },
-    'language' (to, from) {
-      this.$i18n.locale = to
-      this.$store.commit('change_lang', to)
-      document.title = this.$i18n.t('app_title')
-    }
-  },
-  data () {
-    return {
-      storeInLS: !this.$store.state.storeInLocalStorage,
-      notifySound: this.$store.state.notifySound,
-      sendOnEnter: this.$store.state.sendOnEnter,
-      notifyBar: this.$store.state.notifyBar,
-      notifyDesktop: this.$store.state.notifyDesktop,
-      language: this.$i18n.locale
-    }
+  data: () => ({
+  }),
+  components: {
+    LanguageSwitcher,
+    AppToolbar
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
-    .settings-card .md-table .md-table-cell .md-table-cell-container {
-        padding: 0;
-    }
-    .md-theme-grey.md-card.settings-card.md-transparent {
-      background-color: transparent;
-    }
-    .md-card>.md-card-area:after {
-        background-color: rgba(0, 0, 0, .12);
-    }
-    .settings .md-table .md-table-cell {
-        font-size: 16px;
-    }
-    .settings .md-table .md-select-value, .settings .md-table .md-option {
-        font-size: 16px;
-    }
-  .settings .md-checkbox .md-checkbox-container:after {
-      border: 2px solid gray;
-      border-top: 0;
-      border-left: 0;
-  }
-  .settings {
-    position:relative;
-    width:100%;
-  }
-  .settings .md-card .md-card-header:last-child {
-      margin-bottom: 0;
-  }
-  .votes-button {
-      width: 100% !important;
-      font-size: 16px !important;
-      font-weight: 400 !important;
-      height: 48px !important;
-      text-transform: none !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      text-align: left !important;
-      line-height: 48px !important;
-      color: rgba(0,0,0,.87) !important;
-  }
-  @media (max-width: 480px) {
-      .hide_on_mobile {
-          display:none;
-      }
-      #notification {
-          max-width:150px;
-      }
-      .settings {
-          padding-left: 1rem;
-          padding-right: 1rem;
-      }
-      .settings .version {
-          right: 1rem;
-      }
-  }
-
-  .settings .settings-item {
-    font-size: 16px;
-    text-align: left;
-  }
-</style>

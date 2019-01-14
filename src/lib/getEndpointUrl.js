@@ -1,4 +1,4 @@
-import config from '../config.json'
+import config from '../config'
 
 /**
  * Returns an endpoint for the desired system, picked randomly from the possible options (`config.json`)
