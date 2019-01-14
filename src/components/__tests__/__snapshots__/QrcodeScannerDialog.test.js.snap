@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`QrcodeScanner.vue renders the correct markup 1`] = `
+exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
 <v-dialog-stub
   maxwidth="none"
   origin="center center"

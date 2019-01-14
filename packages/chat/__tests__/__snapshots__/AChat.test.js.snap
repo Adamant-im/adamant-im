@@ -32,8 +32,6 @@ exports[`AChat.vue renders the correct markup 1`] = `
       />
     </div>
      
-    <v-divider-stub />
-     
   </div>
 </div>
 `;

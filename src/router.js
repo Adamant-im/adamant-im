@@ -11,7 +11,6 @@ import Options from '@/views/Options'
 import Home from '@/views/Home'
 import Votes from '@/views/Votes'
 import Nodes from '@/views/Nodes'
-import PageNotFound from '@/views/PageNotFound'
 
 Vue.use(Router)
 
@@ -114,7 +113,7 @@ const router = new Router({
     },
     {
       path: '*',
-      component: PageNotFound
+      redirect: '/'
     }
   ],
   scrollBehavior (to, from, savedPosition) {

@@ -16,24 +16,31 @@
       <v-textarea
         :value="passphrase"
         @click.prevent="selectText"
-        @click:append="copyToClipboard"
-        @click:append-outer="saveFile"
-        append-icon="mdi-content-copy"
-        append-outer-icon="mdi-package-down"
         type="text"
         multi-line
         readonly
         rows="2"
         class="pt-0"
         ref="textarea"
-      />
+      >
+        <icon @click="copyToClipboard" :width="24" :height="24" shape-rendering="crispEdges" slot="append">
+          <copy-icon/>
+        </icon>
+        <icon @click="saveFile" :width="24" :height="24" shape-rendering="auto" slot="append-outer">
+          <save-icon/>
+        </icon>
+      </v-textarea>
     </template>
   </div>
 </template>
 
 <script>
 import Mnemonic from 'bitcore-mnemonic'
+
 import { copyToClipboard, downloadFile } from '@/lib/textHelpers'
+import Icon from '@/components/icons/BaseIcon'
+import CopyIcon from '@/components/icons/common/Copy'
+import SaveIcon from '@/components/icons/common/Save'
 
 export default {
   data: () => ({
@@ -68,6 +75,11 @@ export default {
 
       this.showPassphrase = true
     }
+  },
+  components: {
+    Icon,
+    CopyIcon,
+    SaveIcon
   }
 }
 </script>
