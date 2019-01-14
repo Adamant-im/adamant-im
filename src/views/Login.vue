@@ -41,7 +41,7 @@
 
               <template slot="qrcode-renderer">
                 <div @click="saveQrcode" :style="{ cursor: 'pointer' }">
-                  <vue-qr v-if="showQrcodeRenderer" :text="passphrase" ref="qrcode"/>
+                  <QrcodeRenderer v-show="showQrcodeRenderer" :text="passphrase" ref="qrcode" />
                 </div>
               </template>
             </login-form>
@@ -89,7 +89,6 @@
 </template>
 
 <script>
-import VueQr from 'vue-qr'
 import b64toBlob from 'b64-to-blob'
 import FileSaver from 'file-saver'
 import { QrcodeCapture } from 'vue-qrcode-reader'
@@ -98,6 +97,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
 import LoginForm from '@/components/LoginForm'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
+import QrcodeRenderer from '@/components/QrcodeRenderer'
 import Icon from '@/components/icons/BaseIcon'
 import QrCodeIcon from '@/components/icons/common/QrCode'
 import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
@@ -159,7 +159,7 @@ export default {
       this.$refs.qrcodeCapture.$el.click()
     },
     saveQrcode () {
-      const imgUrl = this.$refs.qrcode.$el.querySelector('img').src
+      const imgUrl = this.$refs.qrcode.$el.src
       const base64Data = imgUrl.slice(22, imgUrl.length)
       const byteCharacters = b64toBlob(base64Data)
       const blob = new Blob([byteCharacters], { type: 'image/png' })
@@ -170,11 +170,11 @@ export default {
     }
   },
   components: {
-    VueQr,
     LanguageSwitcher,
     PassphraseGenerator,
     LoginForm,
     QrcodeScannerDialog,
+    QrcodeRenderer,
     QrcodeCapture,
     Icon,
     QrCodeIcon,
