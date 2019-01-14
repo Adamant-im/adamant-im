@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <v-app :dark="isDarkTheme">
     <component :is="layout" class="application--linear-gradient">
       <router-view/>
     </component>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -64,6 +64,9 @@ export default {
       }
 
       return ''
+    },
+    isDarkTheme () {
+      return this.$store.state.options.darkTheme
     }
   },
   data: () => ({
