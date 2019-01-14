@@ -37,7 +37,7 @@
     <transition name="slide-fade">
       <v-layout v-if="showQrcodeRenderer && passphrase" justify-center class="mt-3">
         <button @click="saveQrcode" type="button">
-          <vue-qr :text="passphrase" ref="qrcode"/>
+          <QrcodeRenderer :text="passphrase" ref="qrcode"/>
         </button>
       </v-layout>
     </transition>
@@ -47,7 +47,7 @@
 <script>
 import b64toBlob from 'b64-to-blob'
 import FileSaver from 'file-saver'
-import VueQr from 'vue-qr'
+import QrcodeRenderer from '@/components/QrcodeRenderer'
 
 export default {
   data: () => ({
