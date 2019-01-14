@@ -6,9 +6,12 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
     "https": "vue-cli-service serve --https",
     "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e"
+    "test:e2e": "vue-cli-service test:e2e",
+    "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
     "@adamant/chat": "file:packages/chat",
@@ -65,10 +68,12 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.0.1",
     "babel-plugin-rewire": "^1.2.0",
+    "electron": "^3.0.0",
     "sass-loader": "^7.0.1",
     "sinon": "^7.2.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
+    "vue-cli-plugin-electron-builder": "^1.0.0-rc.10",
     "vue-cli-plugin-i18n": "^0.5.0",
     "vue-cli-plugin-vuetify": "^0.4.5",
     "vue-cli-plugin-webpack-bundle-analyzer": "^1.2.0",
@@ -126,5 +131,6 @@
     "testURL": "http://localhost/"
   },
   "author": "ADAMANT Tech Labs <devs@adamant.im>",
-  "description": "Distributed chat"
+  "description": "Distributed chat",
+  "main": "background.js"
 }
