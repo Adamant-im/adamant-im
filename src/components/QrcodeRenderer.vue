@@ -14,7 +14,7 @@ export default {
   watch: {
     async text () {
       try {
-        await QRCode.toDataURL(this.text, opts, function (error, url) {
+        await QRCode.toDataURL(this.text, (error, url) => {
           if (error) throw error
           this.$refs.qrcode.src = url
         })
