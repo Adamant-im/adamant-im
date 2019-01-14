@@ -15,14 +15,6 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
       type="password"
     />
      
-    <v-icon-stub
-      class="ml-2"
-      color=""
-    >
-      
-      mdi-qrcode
-    
-    </v-icon-stub>
   </v-layout-stub>
    
   <v-layout-stub
@@ -49,11 +41,16 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
         width="4"
       />
       
-      Login
-    
+        Login
+      
     </v-btn-stub>
   </v-layout-stub>
    
-  <!---->
+  <v-layout-stub
+    class="mt-3"
+    justify-center=""
+    name="slide-fade"
+    tag="div"
+  />
 </v-form-stub>
 `;

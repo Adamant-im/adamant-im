@@ -93,7 +93,7 @@ describe('LoginForm.vue', () => {
       store
     })
 
-    wrapper.vm.passphrase = 'correct passphrase'
+    wrapper.setProps({ value: 'correct passphrase' })
 
     const promise = wrapper.vm.login()
     await expect(promise).resolves.toEqual(true)
