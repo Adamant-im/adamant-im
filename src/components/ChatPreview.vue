@@ -40,7 +40,7 @@ export default {
   },
   computed: {
     partnerName () {
-      return this.$store.getters['partners/displayName'](this.partnerId) || this.partnerId
+      return this.$store.getters['contacts/contactName'](this.partnerId) || this.partnerId
     },
     lastMessage () {
       return this.$store.getters['chat/lastMessage'](this.partnerId)

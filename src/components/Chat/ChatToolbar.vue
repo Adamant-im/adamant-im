@@ -30,19 +30,30 @@
 </template>
 
 <script>
+import { debounce } from 'underscore'
+
 import ChatMenu from '@/components/Chat/ChatMenu'
+
+/**
+ * Update contact name no more than every 2 seconds.
+ * @param {string} Contact name
+ * @type {Function} Debounce
+ */
+let updateContactName = debounce(function (name) {
+  this.$store.dispatch('contacts/updateName', {
+    userId: this.partnerId,
+    name
+  })
+}, 2000)
 
 export default {
   computed: {
     partnerName: {
       get () {
-        return this.$store.getters['partners/displayName'](this.partnerId)
+        return this.$store.getters['contacts/contactName'](this.partnerId)
       },
       set (value) {
-        this.$store.commit('partners/displayName', {
-          partner: this.partnerId,
-          displayName: value
-        })
+        updateContactName.call(this, value)
       }
     },
     isChatReadOnly () {

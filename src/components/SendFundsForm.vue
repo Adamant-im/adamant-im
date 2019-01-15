@@ -103,31 +103,10 @@
 
 <script>
 import { throttle } from 'underscore'
+import { BigNumber } from 'bignumber.js'
 import { sendTokens, sendMessage } from '@/lib/adamant-api'
 import { Cryptos, CryptoAmountPrecision, Fees, isErc20 } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
-
-/**
- * Returns sum with precision of two numbers.
- * @param {number} left
- * @param {number} right
- * @param {number} precision
- * @param {number}
- */
-function sumWithPrecision (left, right, precision = 6) {
-  return ((left * 10 * precision) + (right * 10 * precision)) / (10 * precision)
-}
-
-/**
- * Subtract with precision two numbers.
- * @param {number} left
- * @param {number} right
- * @param {number} precision
- * @param {number}
- */
-function subtractWithPrecision (left, right, precision = 6) {
-  return ((left * 10 * precision) - (right * 10 * precision)) / (10 * precision)
-}
 
 export default {
   created () {
@@ -137,7 +116,6 @@ export default {
   },
   mounted () {
     this.fetchAddress = throttle(this.fetchUserCryptoAddress, 1000)
-    this.fetchAddress()
   },
   watch: {
     address () {
@@ -156,11 +134,8 @@ export default {
     finalAmount () {
       const amount = this.amount > 0 ? this.amount : 0
 
-      const finalAmount = sumWithPrecision(
-        amount,
-        this.transferFee,
-        this.exponent
-      ).toFixed(this.exponent)
+      const finalAmount = BigNumber.sum(amount, this.transferFee)
+        .toFixed(this.exponent)
 
       return parseFloat(finalAmount)
     },
@@ -171,20 +146,20 @@ export default {
     },
     maxToTransfer () {
       const fee = isErc20(this.currency) ? 0 : this.transferFee
-      const maxToTransfer = subtractWithPrecision(
-        this.balance,
-        fee
-      ).toFixed(this.exponent)
+
+      const maxToTransfer = BigNumber(this.balance)
+        .minus(fee)
+        .toFixed(this.exponent)
 
       return maxToTransfer > 0 ? parseFloat(maxToTransfer) : 0
     },
     cryptoAddress () {
       return this.currency === Cryptos.ADM
         ? ''
-        : this.$store.getters['partners/cryptoAddress'](this.address, this.currency)
+        : this.$store.getters['contacts/cryptoAddress'](this.address, this.currency)
     },
     recipientName () {
-      return this.$store.getters['partners/displayName'](this.address)
+      return this.$store.getters['contacts/contactName'](this.address)
     },
     exponent () {
       return CryptoAmountPrecision[this.currency]
@@ -272,6 +247,7 @@ export default {
         })
         .finally(() => {
           this.antiFreeze()
+          this.dialog = false
         })
     },
     sendFunds () {
@@ -298,10 +274,13 @@ export default {
       this.showSpinner = false
     },
     fetchUserCryptoAddress () {
-      if (validateAddress('ADM', this.address)) {
-        this.$store.dispatch('partners/fetchAddress', {
-          crypto: this.currency,
-          partner: this.address
+      if (
+        validateAddress('ADM', this.address) &&
+        this.currency !== Cryptos.ADM
+      ) {
+        this.$store.dispatch('contacts/fetchCryptoAddress', {
+          userId: this.address,
+          cryptoCurrency: this.currency
         })
       }
     }
@@ -311,7 +290,9 @@ export default {
       type: String,
       default: 'ADM',
       validator: value => {
-        return ['ADM', 'ETH', 'BNB'].includes(value)
+        const cryptos = Object.values(Cryptos)
+
+        return cryptos.includes(value)
       }
     },
     recipientAddress: {

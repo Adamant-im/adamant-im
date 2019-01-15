@@ -9,9 +9,12 @@ const vuexPersistence = new VuexPersistence({
       address: state.address,
       balance: state.balance,
       passphrase: state.passphrase,
+      publicKey: state.publicKey,
+      privateKey: state.privateKey,
 
       // modules
-      chat: state.chat
+      chat: state.chat,
+      contacts: state.contacts
     }
   }
 })

@@ -488,7 +488,7 @@ const actions = {
       .then(key => {
         // set partner name if provided
         if (partnerName) {
-          commit('partners/displayName', {
+          commit('contacts/contactName', {
             partner: partnerId,
             displayName: partnerName
           }, { root: true })

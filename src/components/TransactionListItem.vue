@@ -37,7 +37,7 @@ import validateAddress from '@/lib/validateAddress'
 export default {
   computed: {
     partnerName () {
-      return this.$store.getters['partners/displayName'](this.partnerId) || ''
+      return this.$store.getters['contacts/contactName'](this.partnerId) || ''
     },
     createdAt () {
       return this.$formatDate(this.timestamp)

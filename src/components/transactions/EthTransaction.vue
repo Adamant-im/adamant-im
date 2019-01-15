@@ -99,7 +99,7 @@ export default {
       }
 
       let admAddress = this.getAdmAddress(address)
-      let name = this.$store.getters['partners/displayName'](admAddress)
+      let name = this.$store.getters['contacts/contactName'](admAddress)
 
       let result = address || ''
       if (admAddress) {

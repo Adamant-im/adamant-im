@@ -18,7 +18,7 @@
     "abi-decoder": "^1.2.0",
     "axios": "^0.18.0",
     "b64-to-blob": "^1.2.19",
-    "bignumber.js": "^4.0.4",
+    "bignumber.js": "^8.0.2",
     "bitcore-mnemonic": "^1.2.5",
     "bytebuffer": "^5.0.1",
     "deepmerge": "^2.1.1",

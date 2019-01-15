@@ -2,18 +2,30 @@ import Queue from 'promise-queue'
 
 import { Transactions, Delegates } from './constants'
 import utils from './adamant'
+import { bytesToHex, hexToBytes } from './hex'
 import client from './adamant-api-client'
+
+import store from '@/store'
 
 Queue.configure(Promise)
 
 /** Promises queue to execute them sequentially */
 const queue = new Queue(1, Infinity)
 
-/** @type {{privateKey: Buffer, publicKey: Buffer}} */
-let myKeypair = { }
-let myAddress = null
-
 const publicKeysCache = { }
+
+/** Vuex selectors **/
+const user = {
+  get publicKey () {
+    return hexToBytes(store.state.publicKey)
+  },
+  get privateKey () {
+    return hexToBytes(store.state.privateKey)
+  },
+  get address () {
+    return store.state.address
+  }
+}
 
 /**
  * Creates a new transaction with the common fields pre-filled
@@ -24,8 +36,8 @@ function newTransaction (type) {
   return {
     type,
     amount: 0,
-    senderId: myAddress,
-    senderPublicKey: myKeypair.publicKey.toString('hex')
+    senderId: user.address,
+    senderPublicKey: bytesToHex(user.publicKey)
   }
 }
 
@@ -41,25 +53,38 @@ function signTransaction (transaction, timeDelta) {
   }
 
   transaction.timestamp = utils.epochTime() - timeDelta
-  transaction.signature = utils.transactionSign(transaction, myKeypair)
+  transaction.signature = utils.transactionSign(transaction, {
+    publicKey: user.publicKey,
+    privateKey: user.privateKey
+  })
 
   return transaction
 }
 
+/**
+ * Return publicKey, privateKey, userAddress by passphrase.
+ * @param {string} passphrase
+ * @returns {{ publicKey: string, privateKey: string, userAddress: string }}
+ */
 export function unlock (passphrase) {
   const hash = utils.createPassPhraseHash(passphrase)
-  myKeypair = utils.makeKeypair(hash)
-  myAddress = utils.getAddressFromPublicKey(myKeypair.publicKey)
-  return myAddress
+
+  const keyPair = utils.makeKeypair(hash)
+  const userAddress = utils.getAddressFromPublicKey(keyPair.publicKey)
+
+  return {
+    publicKey: bytesToHex(keyPair.publicKey),
+    privateKey: bytesToHex(keyPair.privateKey),
+    address: userAddress
+  }
 }
 
 /**
  * Retrieves current account details, creating it if necessary.
+ * @param {string} publicKey
  * @returns {Promise<any>}
  */
-export function getCurrentAccount () {
-  const publicKey = myKeypair.publicKey.toString('hex')
-
+export function getCurrentAccount (publicKey) {
   return client.get('/api/accounts', { publicKey })
     .then(response => {
       if (response.success) {
@@ -78,7 +103,7 @@ export function getCurrentAccount () {
     .then(account => {
       account.balance = utils.toAdm(account.balance)
       account.unconfirmedBalance = utils.toAdm(account.unconfirmedBalance)
-      account.publicKey = myKeypair.publicKey
+      account.publicKey = publicKey
       return account
     })
 }
@@ -88,7 +113,7 @@ export function getCurrentAccount () {
  * @returns {Boolean}
  */
 export function isReady () {
-  return Boolean(myAddress && myKeypair)
+  return Boolean(user.publicKey && user.privateKey)
 }
 
 /**
@@ -128,7 +153,10 @@ export function sendMessage (params) {
       const text = typeof params.message === 'string'
         ? params.message
         : JSON.stringify(params.message)
-      const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
+      const encoded = utils.encodeMessage(text, user.publicKey, {
+        publicKey: user.publicKey,
+        privateKey: user.privateKey
+      })
       const chat = {
         message: encoded.message,
         own_message: encoded.nonce,
@@ -165,7 +193,7 @@ export function sendSpecialMessage (to, payload) {
  */
 export function storeValue (key, value, encode = false) {
   if (encode) {
-    const encoded = utils.encodeValue(value, myKeypair.privateKey)
+    const encoded = utils.encodeValue(value, user.privateKey)
     value = JSON.stringify(encoded)
   }
 
@@ -187,7 +215,7 @@ function tryDecodeStoredValue (value) {
 
   if (json.nonce) {
     try {
-      return utils.decodeValue(json.message, myKeypair.privateKey, json.nonce)
+      return utils.decodeValue(json.message, user.privateKey, json.nonce)
     } catch (e) {
       console.warn('Failed to parse encoded value', e)
       throw e
@@ -205,7 +233,7 @@ function tryDecodeStoredValue (value) {
  */
 export function getStored (key, ownerAddress) {
   if (!ownerAddress) {
-    ownerAddress = myAddress
+    ownerAddress = user.address
   }
 
   const params = {
@@ -263,7 +291,7 @@ export function voteForDelegates (votes) {
   let transaction = newTransaction(Transactions.VOTE)
   transaction = Object.assign({
     asset: { votes: votes },
-    recipientId: myAddress,
+    recipientId: user.address,
     amount: 0
   }, transaction)
   return client.post('/api/accounts/delegates', (endpoint) => signTransaction(transaction, endpoint.timeDelta))
@@ -288,7 +316,7 @@ export function getForgedByAccount (accountPublicKey) {
  */
 export function getTransactions (options = { }) {
   const query = {
-    inId: myAddress,
+    inId: user.address,
     'and:type': options.type || Transactions.SEND,
     orderBy: 'timestamp:desc'
   }
@@ -328,7 +356,7 @@ export function getTransaction (id) {
  */
 export function getChats (from = 0, offset = 0, orderBy = 'desc') {
   const params = {
-    isIn: myAddress,
+    isIn: user.address,
     orderBy: `timestamp:${orderBy}`
   }
 
@@ -344,7 +372,7 @@ export function getChats (from = 0, offset = 0, orderBy = 'desc') {
     const { count, transactions } = response
 
     const promises = transactions.map(transaction => {
-      const promise = (transaction.recipientId === myAddress)
+      const promise = (transaction.recipientId === user.address)
         ? Promise.resolve(transaction.senderPublicKey)
         : queue.add(() => getPublicKey(transaction.recipientId))
 
@@ -374,7 +402,7 @@ export function getChats (from = 0, offset = 0, orderBy = 'desc') {
  */
 function decodeChat (transaction, key) {
   const chat = transaction.asset.chat
-  const message = utils.decodeMessage(chat.message, key, myKeypair.privateKey, chat.own_message)
+  const message = utils.decodeMessage(chat.message, key, user.privateKey, chat.own_message)
 
   if (!message) return transaction
 
@@ -427,16 +455,20 @@ function getI18nMessage (message, senderId) {
 }
 
 /**
- * Performs application login
- * @param {string} Passphrase
- * @return Promise<string> User address
+ * Performs application login/register.
+ * @param {string} passphrase
+ * @returns {Promise<{ balance: number, unconfirmedBalance: number, publicKey: string, privateKey: string }>}
  */
 export function loginOrRegister (passphrase) {
   try {
-    unlock(passphrase)
+    const { publicKey, privateKey } = unlock(passphrase)
+
+    return getCurrentAccount(publicKey)
+      .then(data => ({
+        ...data,
+        privateKey
+      }))
   } catch (e) {
     return Promise.reject(e)
   }
-
-  return getCurrentAccount()
 }

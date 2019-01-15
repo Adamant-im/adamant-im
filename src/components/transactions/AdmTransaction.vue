@@ -67,7 +67,7 @@ export default {
       if (address === this.$store.state.address) {
         return this.$t('transaction.me')
       }
-      let result = this.$store.getters['partners/displayName'](address)
+      let result = this.$store.getters['contacts/contactName'](address)
       if (result !== '' && result !== undefined) {
         result += ' (' + address + ')'
       } else {

@@ -83,7 +83,7 @@ function getUserMeta (userId) {
   if (userId === this.userId) {
     user.name = this.$t('chats.you')
   } else {
-    user.name = this.$store.getters['partners/displayName'](userId)
+    user.name = this.$store.getters['contacts/contactName'](userId)
   }
 
   return user
@@ -142,7 +142,7 @@ export default {
       ]
     },
     partnerName () {
-      return this.$store.getters['partners/displayName'](this.partnerId)
+      return this.$store.getters['contacts/contactName'](this.partnerId)
     },
     userId () {
       return this.$store.state.address

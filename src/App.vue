@@ -14,9 +14,6 @@ import Notify from 'notifyjs'
 export default {
   created () {
     this.setLocale()
-    if (this.isLogged) {
-      this.$store.dispatch('unlock')
-    }
     if (Notify.needsPermission) {
       if (Notify.isSupported()) {
         Notify.requestPermission()
@@ -60,7 +57,7 @@ export default {
       const partnerId = this.lastUnreadMessage && this.lastUnreadMessage.senderId
 
       if (partnerId) {
-        return this.$store.getters['partners/displayName'](partnerId)
+        return this.$store.getters['contacts/contactName'](partnerId) || partnerId
       }
 
       return ''

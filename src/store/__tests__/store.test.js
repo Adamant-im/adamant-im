@@ -22,7 +22,9 @@ const { getters, mutations, actions } = store
 const fakeData = {
   address: 'U123456',
   balance: 1000,
-  passphrase: 'lorem ipsum'
+  passphrase: 'lorem ipsum',
+  publicKey: 'publicKey',
+  privateKey: 'privateKey'
 }
 
 describe('store', () => {
@@ -61,7 +63,9 @@ describe('store', () => {
     state = {
       address: 'U123456',
       balance: 1000,
-      passphrase: 'lorem ipsum'
+      passphrase: 'lorem ipsum',
+      publicKey: 'publicKey',
+      privateKey: 'privateKey'
     }
 
     mutations.resetState(state)
@@ -69,17 +73,45 @@ describe('store', () => {
     expect(state).toEqual({
       address: '',
       balance: 0,
-      passphrase: ''
+      passphrase: '',
+      publicKey: '',
+      privateKey: ''
     })
   })
 
+  it('should fetch messages from node if is logged', () => {
+    const dispatch = sinon.spy(() => ({ catch: () => {} })) // also mock `catch` attr
+    const mockGetters = {
+      isLogged: true
+    }
+
+    actions.update({ dispatch, getters: mockGetters })
+
+    expect(dispatch.args).toEqual([
+      ['chat/getNewMessages']
+    ])
+  })
+
+  it('should commit nothing if is not logged', () => {
+    const dispatch = sinon.spy(() => ({ catch: () => {} })) // also mock `catch` attr
+    const mockGetters = {
+      isLogged: false
+    }
+
+    actions.update({ dispatch, getters: mockGetters })
+
+    expect(dispatch.args).toEqual([])
+  })
+
   it('should update state when login success', async () => {
-    const { address, balance, passphrase } = fakeData
+    const { address, balance, passphrase, publicKey, privateKey } = fakeData
 
     // mock & replace `loginOrRegister` dependency
     storeModule.__Rewire__('loginOrRegister', (passphrase) => Promise.resolve({
       address,
-      balance
+      balance,
+      publicKey,
+      privateKey
     }))
 
     const commit = sinon.spy()
@@ -90,10 +122,13 @@ describe('store', () => {
     expect(commit.args).toEqual([
       ['setAddress', address],
       ['setBalance', balance],
-      ['setPassphrase', passphrase]
+      ['setPassphrase', passphrase],
+      ['setPublicKey', publicKey],
+      ['setPrivateKey', privateKey]
     ])
     expect(dispatch.args).toEqual([
-      ['afterLogin', passphrase]
+      ['afterLogin', passphrase],
+      ['contacts/fetchContacts', null, true]
     ])
   })
 
