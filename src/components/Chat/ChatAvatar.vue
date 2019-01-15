@@ -1,9 +1,9 @@
 <template>
   <div>
-    <img v-if="avatar" :src="avatar" :width="size" :height="size"/>
+    <img class="chat-avatar" v-if="avatar" :src="avatar" :width="size" :height="size"/>
     <canvas
-      :width="size"
-      :height="size"
+      :width="canvasSize"
+      :height="canvasSize"
       :style="{ display: 'none' }"
       ref="avatar"
     ></canvas>
@@ -21,6 +21,9 @@ export default {
   computed: {
     avatar () {
       return this.$store.getters['identicon/avatar'](this.userId)
+    },
+    canvasSize () {
+      return this.size < 40 ? 40 : this.size
     },
     isAvatarCached () {
       return this.$store.getters['identicon/isAvatarCached'](this.userId)
@@ -54,12 +57,12 @@ export default {
       if (this.usePublicKey) {
         return getPublicKey(this.userId)
           .then(key => {
-            identicon.avatar(el, key, this.size)
+            identicon.avatar(el, key, this.canvasSize)
 
             return el.toDataURL()
           })
       } else {
-        identicon.avatar(el, this.userId, this.size)
+        identicon.avatar(el, this.userId, this.canvasSize)
       }
 
       return Promise.resolve(el.toDataURL())
@@ -68,7 +71,7 @@ export default {
   props: {
     size: {
       type: Number,
-      default: 36
+      default: 40
     },
     userId: {
       type: String,
@@ -81,3 +84,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.chat-avatar {
+  min-height: 40px !important;
+  min-width: 40px !important
+}
+</style>
