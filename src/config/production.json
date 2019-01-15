@@ -3,7 +3,13 @@
   "server": {
     "adm": [
       {
-        "url": "http://163.172.161.218:36667"
+        "url": "https://clown.adamant.im"
+      },
+      {
+        "url": "https://lake.adamant.im"
+      },
+      {
+        "url": "https://endless.adamant.im"
       }
     ],
     "eth": [
@@ -13,5 +19,5 @@
       }
     ]
   },
-  "env": "test"
+  "env": "production"
 }
