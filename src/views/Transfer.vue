@@ -90,8 +90,11 @@ export default {
       this.$refs.transferSnackbar.open()
     },
     onClose (type) {
+      if (!this.$store.getters.checkForActiveNode) {
+        this.errorMessage('error_transaction_send')
+        return
+      }
       if (type !== 'ok') return
-
       this.isWaiting = true
       this.sendTokens().then(
         hash => {
@@ -120,10 +123,6 @@ export default {
       )
     },
     sendTokens () {
-      if (!this.$store.getters.checkForActiveNode) {
-        this.errorMessage('error_transaction_send')
-        return
-      }
       if (this.crypto === Cryptos.ADM) {
         const message = { to: this.targetAddress, message: this.comments, amount: this.targetAmount, fundType: this.crypto }
         let chats = this.$store.getters.getChats
