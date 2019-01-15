@@ -70,6 +70,7 @@ import Icon from '@/components/icons/BaseIcon'
 import AdmFillIcon from '@/components/icons/AdmFill'
 import BnbFillIcon from '@/components/icons/BnbFill'
 import EthFillIcon from '@/components/icons/EthFill'
+import BnzFillIcon from '@/components/icons/BnzFill'
 
 export default {
   computed: {
@@ -95,6 +96,13 @@ export default {
           cryptoCurrency: 'ETH',
           cryptoName: 'Ethereum',
           icon: 'eth-fill-icon'
+        },
+        {
+          address: this.$store.state.bz.address,
+          balance: this.$store.state.bz.balance,
+          cryptoCurrency: 'BZ',
+          cryptoName: 'Bit-Z',
+          icon: 'bnz-fill-icon'
         }
       ]
     }
@@ -122,7 +130,8 @@ export default {
     Icon,
     AdmFillIcon,
     BnbFillIcon,
-    EthFillIcon
+    EthFillIcon,
+    BnzFillIcon
   }
 }
 </script>
