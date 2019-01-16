@@ -5,8 +5,8 @@ export default (timestamp) => {
   const date = moment(timestamp)
 
   return date.calendar(null, {
-    sameDay: i18n.t('chats.date_today'),
-    lastDay: i18n.t('chats.date_yesterday'),
+    sameDay: `[${i18n.t('chats.date_today')}]`,
+    lastDay: `[${i18n.t('chats.date_yesterday')}]`,
     lastWeek: 'ddd',
     sameElse: 'DD.MM.YYYY'
   })
