@@ -18,5 +18,6 @@
         "hasIndex": true
       }
     ]
-  }
+  },
+  "env": "development"
 }

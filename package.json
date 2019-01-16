@@ -1,9 +1,10 @@
 {
   "name": "adamant-im",
-  "version": "1.8.1",
+  "version": "1.9.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "serve:test": "cross-env ADM_CONFIG_FILE=test vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "https": "vue-cli-service serve --https",
@@ -65,7 +66,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.0.1",
     "babel-plugin-rewire": "^1.2.0",
-    "sass-loader": "^7.0.1",
+    "cross-env": "^5.2.0",
     "sinon": "^7.2.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
@@ -97,7 +98,7 @@
   "browserslist": [
     "> 1%",
     "last 2 versions",
-    "not ie <= 8"
+    "not ie > 0"
   ],
   "jest": {
     "moduleFileExtensions": [
@@ -115,7 +116,8 @@
       "node_modules/(?!vue-qrcode-component)"
     ],
     "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1"
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "(.*){ENV}(.*)": "$1development$2"
     },
     "snapshotSerializers": [
       "jest-serializer-vue"
