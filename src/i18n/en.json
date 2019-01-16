@@ -15,12 +15,12 @@
     "date_tomorrow": "Tomorrow",
     "date_yesterday": "Yesterday",
     "estimate_fee": "Estimate Fee",
-    "ico_message": "Now you have a possibility to buy tokens of ADAMANT, the most secure and anonymous messenger, with the cheapest price.\n\nPlease make sure your have saved the passphrase to this account — log out from your account and open it again. It is recommeded to save your passphrase on a paper for backup. But remember, only *you are responsible for the passphrase safety*. It can not be recovered. And if other person will gain access to it, your money will be stolen. Treat this issue as secure, as if tokens in your wallet will cost a billion dollars one day.\n\nTo buy ADM tokens, go to Wallet tab and click Buy tokens, or open the page <a href=\"https://adamant.im/buy-tokens/\" target=\"_blank\">adamant.im/buy-tokens</a> in the web browser. In the form enter your ADAMANT address — you will receive ADM tokens there. If you moved from Messenger App, your ADM address will be filled already, other way go back to Messenger and click ADAMANT address to copy it to clipboard. Next, choose crypto you want to spend and its amount. You'll see how much ADM tokens you will receive, including volume bonus: 20–30 ETH: +20%, 30–50 ETH: +30%, 50–90 ETH: +40%, 90+ ETH: +50%. Click Buy ADAMANT tokens. You'll get unique address where you need to send crypto. As soon as your transaction will be confirmed, you'll receive ADM tokens. Transaction can be done *from any wallet or exchange*. It is not necessary to transfer exact amount including transaction fees, the payment will be processed anyway.\n\nDo not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.",
+    "ico_message": "Now you have a possibility to buy tokens of ADAMANT, the most secure and anonymous messenger, with the cheapest price.\n\nPlease make sure your have saved the passphrase to this account — log out from your account and open it again. It is recommeded to save your passphrase on a paper for backup. But remember, only *you are responsible for the passphrase safety*. It can not be recovered. And if other person will gain access to it, your money will be stolen. Treat this issue as secure, as if tokens in your wallet will cost a billion dollars one day.\n\nTo buy ADM tokens, go to \"Wallet\" tab and click \"Buy tokens\", or open the page <a href=\"https://adamant.im/buy-tokens/\" target=\"_blank\">adamant.im/buy-tokens</a> in the web browser. In the form enter your ADAMANT wallet address — you will receive ADM tokens there. If you moved from Messenger App, your ADAMANT wallet address will be filled already, other way go back to the Messenger and click ADAMANT address to copy it to the clipboard. Next, choose crypto you want to spend and its amount. You will see how much ADM tokens you receive, including volume bonus: 20–30 ETH: +20%, 30–50 ETH: +30%, 50–90 ETH: +40%, 90+ ETH: +50%. Click \"Buy ADM tokens\". You will get unique address where you need to send tokens. As soon as your transaction will be confirmed, you will receive ADM tokens. Transaction can be done *from any wallet or exchange*. It is not necessary to transfer exact amount including transaction fees, the payment will be processed anyway.\n\nDo not reply to this message, it is a system account. If you still have any questions, contact us by address U15677078342684640219",
     "incorrect_address": "Incorrect partner address",
     "message": "Type your message",
     "new_chat": "Start new chat",
     "new_chat_tooltip": "Click to start a chat with a new partner",
-    "no_address": "Enter recipient address",
+    "no_address": "Enter address of a partner",
     "no_connection": "Connection problems",
     "no_empty": "Message can not be empty",
     "no_money": "Not enough tokens. Please, replenish your balance",
@@ -64,9 +64,9 @@
     "your_balance_ADM": "ADAMANT balance",
     "your_balance_BNB": "Binance Coin balance",
     "your_balance_ETH": "Ethereum balance",
-    "your_balance_tooltip_ADM": "It is your ADAMANT balance. Click to see all of input and output transactions",
-    "your_balance_tooltip_BNB": "It is your ADAMANT BNB balance",
-    "your_balance_tooltip_ETH": "It is your ADAMANT ETH balance"
+    "your_balance_tooltip_ADM": "This is your ADM balance. Click to see all input and output transactions",
+    "your_balance_tooltip_BNB": "This is your BNB balance",
+    "your_balance_tooltip_ETH": "This is your ETH balance"
   },
   "login": {
     "brand_title": "ADAMANT",
@@ -112,7 +112,7 @@
     "nodeLabelDescription": {
       "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",
       "link_one_content": "following instructions",
-      "link_two": "https://github.com/ADAMANT-im/adamant-im/",
+      "link_two": "https://github.com/Adamant-im/adamant-im/",
       "link_two_content": "to deploy web application on separate domain",
       "part_one": "Support decentralization and enhance privacy level—run your own ADAMANT node and web application for messaging. Node can be run ",
       "part_three": ". This limitation refers to Content Security Policy (CSP). In iOS and Android applications there are no such limitations",
@@ -168,7 +168,7 @@
       "modal_header": "Scan QR code with a passphrase"
     },
     "new-chat": {
-      "modal_header": "Scan QR code with ADM address"
+      "modal_header": "Scan QR code with ADAMANT wallet address"
     },
     "no_camera_found": "No camera found",
     "something_wrong": "Something went wrong. Check the console",
@@ -217,7 +217,7 @@
     "send_button": "Send",
     "send_button_tooltip": "After you click the button, you will see a confirmation request",
     "to_address_label": "Recipient address",
-    "to_address_label_tooltip": "Enter a recipient address, like U1234567890",
+    "to_address_label_tooltip": "Enter a recipient address in the format U1234567890",
     "to_label": "To"
   },
   "votes": {
@@ -228,7 +228,7 @@
     "delegate_link": "Link",
     "delegate_uptime": "Uptime",
     "downvotes": "Downvotes",
-    "filter_placeholder": "Name or ADAMANT ID",
+    "filter_placeholder": "Name or ADAMANT wallet address",
     "min": "min",
     "no_data_available": "No data available",
     "no_money": "You need 50 ADM to vote",
