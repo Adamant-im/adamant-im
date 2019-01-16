@@ -61,6 +61,9 @@ export default {
       }
 
       return ''
+    },
+    isDarkTheme () {
+      return this.$store.state.options.darkTheme
     }
   },
   data: () => ({

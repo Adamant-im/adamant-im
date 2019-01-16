@@ -40,9 +40,9 @@ function createFakeVars () {
  * Mockup store helper
  */
 function mockupStore () {
-  const partners = {
+  const contacts = {
     getters: {
-      displayName: state => partnerId => fake.partnerName
+      contactName: state => partnerId => fake.partnerName
     },
     namespaced: true
   }
@@ -66,7 +66,7 @@ function mockupStore () {
 
   const store = new Vuex.Store({
     modules: {
-      partners,
+      contacts,
       chat,
       language
     }
@@ -74,7 +74,7 @@ function mockupStore () {
 
   return {
     store,
-    partners,
+    contacts,
     chat,
     language
   }
@@ -84,14 +84,14 @@ describe('ChatPreview.vue', () => {
   let i18n = null
   let store = null
   let chat = null
-  let partners = null
+  let contacts = null
   let language = null
 
   beforeEach(() => {
     const vuex = mockupStore()
     store = vuex.store
     chat = vuex.chat
-    partners = vuex.partners
+    contacts = vuex.contacts
     language = vuex.language
 
     i18n = mockupI18n()

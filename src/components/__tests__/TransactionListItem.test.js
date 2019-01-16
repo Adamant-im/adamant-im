@@ -36,9 +36,9 @@ function mockupStore () {
     namespaced: true
   }
 
-  const partners = {
+  const contacts = {
     getters: {
-      displayName: () => () => fake.partnerName
+      contactName: () => () => fake.partnerName
     },
     namespaced: true
   }
@@ -46,14 +46,14 @@ function mockupStore () {
   const store = new Vuex.Store({
     modules: {
       chat,
-      partners
+      contacts
     }
   })
 
   return {
     store,
     chat,
-    partners
+    contacts
   }
 }
 
@@ -76,14 +76,14 @@ const validProps = {
 describe('TransactionListItem', () => {
   let i18n = null
   let store = null
-  let partners = null // vuex module
+  let contacts = null // vuex module
   let chat = null // vuex module
 
   beforeEach(() => {
     const vuex = mockupStore()
 
     store = vuex.store
-    partners = vuex.partners
+    contacts = vuex.contacts
     chat = vuex.chat
 
     i18n = mockupI18n()

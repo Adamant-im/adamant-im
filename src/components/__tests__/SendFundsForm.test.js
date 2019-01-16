@@ -65,7 +65,7 @@ function mockupStore () {
     namespaced: true
   }
 
-  const partnersModule = {
+  const contactsModule = {
     getters: {
       cryptoAddress: state => (userId, cryptoCurrency) => {
         if (cryptoCurrency === 'ETH') {
@@ -74,10 +74,10 @@ function mockupStore () {
           return 'BNB123456'
         }
       },
-      displayName: state => (partnerId) => 'Rick'
+      contactName: state => (partnerId) => 'Rick'
     },
     actions: {
-      fetchAddress () {
+      fetchCryptoAddress () {
         return new Promise((resolve) => {
           resolve('0x111111111111111111')
         })
@@ -92,7 +92,7 @@ function mockupStore () {
       adm: admModule,
       eth: ethModule,
       bnb: bnbModule,
-      partners: partnersModule
+      contacts: contactsModule
     }
   })
 
@@ -102,7 +102,7 @@ function mockupStore () {
     admModule,
     ethModule,
     bnbModule,
-    partnersModule
+    contactsModule
   }
 }
 
@@ -112,7 +112,7 @@ describe('SendFundsForm', () => {
   let adm = null
   let eth = null
   let bnb = null
-  let partners = null
+  let contacts = null
 
   beforeEach(() => {
     const vuex = mockupStore()
@@ -121,7 +121,7 @@ describe('SendFundsForm', () => {
     adm = vuex.admModule
     eth = vuex.ethModule
     bnb = vuex.bnbModule
-    partners = vuex.partners
+    contacts = vuex.contacts
 
     i18n = mockupI18n()
   })

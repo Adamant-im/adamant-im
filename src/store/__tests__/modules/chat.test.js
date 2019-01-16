@@ -1,5 +1,12 @@
-import chatModule from '@/store/modules/chat'
 import sinon from 'sinon'
+
+// mockup `@/lib/adamant-api`
+// to avoid importing `@/store`
+/* eslint-disable */
+jest.mock('@/lib/adamant-api')
+import * as admApi from '@/lib/adamant-api'
+
+import chatModule from '@/store/modules/chat'
 
 const { getters, mutations, actions } = chatModule
 
@@ -989,7 +996,7 @@ describe('Store: chat.js', () => {
         await expect(actions.createChat({ commit }, { partnerId, partnerName })).resolves.toEqual('public key')
 
         expect(commit.args).toEqual([
-          ['partners/displayName', { partner: partnerId, displayName: partnerName }, { root: true }],
+          ['contacts/updateName', { userId: partnerId, name: partnerName }, { root: true }],
           ['createEmptyChat', partnerId]
         ])
       })
