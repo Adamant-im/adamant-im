@@ -1,0 +1,3 @@
+yarn run v1.12.3
+$ vue-cli-service build --profile --json
+

@@ -1,0 +1,20 @@
+/** Vuetify context styles **/
+
+/**
+ * BaseIcon.vue: Context styles
+ *
+ * 1. Inherit button color when icon inside VButton.
+ * 2. Vuetify should not steal pieces of SVG icon.
+ */
+.v-btn .v-btn__content .svg-icon // [1]
+  fill: currentColor
+.v-btn--floating .v-btn__content .svg-icon :not(:only-child) // [2]
+  &:last-child,
+  &:first-child
+    -webkit-backface-visibility: visible
+    position: static
+    left: auto
+    top: auto
+    opacity: 1
+    -webkit-transform: none
+    transform: none

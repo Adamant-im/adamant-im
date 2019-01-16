@@ -1,13 +1,11 @@
 <template>
-  <v-app>
-    <v-content>
-      <v-container fluid fill-height>
-        <router-view/>
-      </v-container>
+  <v-content>
+    <v-container fluid fill-height>
+      <router-view/>
+    </v-container>
 
-      <app-snackbar/>
-    </v-content>
-  </v-app>
+    <app-snackbar/>
+  </v-content>
 </template>
 
 <script>

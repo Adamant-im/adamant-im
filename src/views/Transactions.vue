@@ -6,9 +6,9 @@
       flat
     />
 
-    <v-flex xs12 sm12 md8 lg5>
+    <v-flex v-if="isFulfilled" xs12 sm12 md8 lg5>
 
-      <v-list two-line class="transparent">
+      <v-list v-if="hasTransactions" two-line class="transparent">
         <transaction-list-item
           v-for="(transaction, i) in transactions"
           :key="i"
@@ -18,10 +18,13 @@
           :partner-id="transaction.partner"
           :timestamp="transaction.timestamp"
           :amount="transaction.amount"
+          :crypto="crypto"
           @click:transaction="goToTransaction"
           @click:icon="goToChat"
         />
       </v-list>
+
+      <h3 v-else class="headline text-xs-center mt-4">{{ $t('transaction.no_transactions') }}</h3>
 
     </v-flex>
 
@@ -35,16 +38,33 @@ import TransactionListItem from '@/components/TransactionListItem'
 
 export default {
   mounted () {
-    this.$store.dispatch('adm/getNewTransactions')
+    this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
+      .then(() => {
+        this.isFulfilled = true
+      })
   },
   computed: {
     transactions () {
-      return this.$store.getters['adm/sortedTransactions']
+      return this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
+    },
+    hasTransactions () {
+      return this.transactions && this.transactions.length > 0
     },
     userId () {
       return this.$store.state.address
+    },
+    crypto () {
+      return ['ADM', 'ETH', 'BNB'].includes(this.$route.params.crypto)
+        ? this.$route.params.crypto
+        : 'ADM'
+    },
+    cryptoModule () {
+      return this.crypto.toLowerCase()
     }
   },
+  data: () => ({
+    isFulfilled: false
+  }),
   methods: {
     goToTransaction (transactionId) {
       this.$router.push({

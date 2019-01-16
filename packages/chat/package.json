@@ -3,16 +3,12 @@
   "version": "0.0.1",
   "description": "Vuetify chat",
   "main": "src/index.js",
-  "scripts": {
-    "dev": "parcel watch src/index.js",
-    "build": "parcel build src/index.js"
-  },
   "keywords": [
     "vuetify",
     "chat"
   ],
-  "author": "bludnic",
-  "license": "ISC",
+  "author": "ADAMANT Tech Labs <devs@adamant.im>",
+  "license": "GPLv3",
   "devDependencies": {
     "lorem-ipsum": "^1.0.6",
     "stylus": "^0.54.5",
@@ -20,6 +16,7 @@
     "uuid": "^3.3.2"
   },
   "dependencies": {
-    "moment": "^2.23.0"
+    "moment": "^2.23.0",
+    "vuetify": "^1.4.1"
   }
 }

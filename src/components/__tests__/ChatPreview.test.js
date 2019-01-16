@@ -1,4 +1,4 @@
-import { shallowMount, mount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VueI18n from 'vue-i18n'
@@ -25,6 +25,11 @@ function createFakeVars () {
   return {
     partnerId: 'U123456',
     partnerName: 'Rick',
+    lastMessage: {
+      id: 1,
+      type: 'message',
+      message: 'you are death if you touch me'
+    },
     lastMessageText: 'you are death if you touch me',
     lastMessageTimestamp: 0, // Sep 2, 20:00
     numOfNewMessages: 0
@@ -45,6 +50,7 @@ function mockupStore () {
   const chat = {
     getters: {
       numOfNewMessages: state => partnerId => fake.numOfNewMessages,
+      lastMessage: state => partnerId => fake.lastMessage,
       lastMessageText: state => partnerId => fake.lastMessageText,
       lastMessageTimestamp: state => partnerId => fake.lastMessageTimestamp
     },
@@ -111,7 +117,7 @@ describe('ChatPreview.vue', () => {
     fake.lastMessageTimestamp = 3600 // Sep 2, 21:00
     fake.numOfNewMessages = 1
 
-    const wrapper = mount(ChatPreview, {
+    const wrapper = shallowMount(ChatPreview, {
       store,
       i18n,
       propsData: {

@@ -4,7 +4,7 @@
     @click="$emit('click')"
   >
     <v-list-tile-avatar>
-      <v-icon v-if="readOnly" class="chat-preview__icon">mdi-ethereum</v-icon>
+      <icon v-if="readOnly" class="adm-icon"><adm-fill-icon/></icon>
       <chat-avatar v-else :size="40" :user-id="partnerId" use-public-key/>
 
       <v-badge overlap color="primary">
@@ -14,11 +14,20 @@
 
     <v-list-tile-content>
       <v-list-tile-title>{{ partnerName }}</v-list-tile-title>
-      <v-list-tile-sub-title
-        v-if="readOnly"
-        v-text="isMessageI18n ? $t(lastMessageText) : lastMessageText"
-      />
-      <v-list-tile-sub-title v-else>{{ lastMessageTextNoFormats }}</v-list-tile-sub-title>
+
+      <!-- Transaction -->
+      <template v-if="lastTransaction">
+        <v-list-tile-sub-title>{{ transactionMessage }}</v-list-tile-sub-title>
+      </template>
+
+      <!-- Message -->
+      <template v-else>
+        <v-list-tile-sub-title
+          v-if="readOnly"
+          v-text="isMessageI18n ? $t(lastMessageText) : lastMessageText"
+        />
+        <v-list-tile-sub-title v-else>{{ lastMessageTextNoFormats }}</v-list-tile-sub-title>
+      </template>
     </v-list-tile-content>
 
     <div class="chat-preview__date">
@@ -33,12 +42,18 @@ import dateFilter from '@/filters/date'
 import { EPOCH } from '@/lib/constants'
 import { removeFormats } from '@adamant/message-formatter'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
+import Icon from '@/components/icons/BaseIcon'
+import AdmFillIcon from '@/components/icons/AdmFill'
+import { transformMessage } from '@/lib/chatHelpers'
 
 export default {
   mounted () {
     moment.locale(this.$store.state.language.currentLocale)
   },
   computed: {
+    userId () {
+      return this.$store.state.address
+    },
     partnerName () {
       return this.$store.getters['contacts/contactName'](this.partnerId) || this.partnerId
     },
@@ -57,6 +72,28 @@ export default {
     lastMessageTimestamp () {
       return this.$store.getters['chat/lastMessageTimestamp'](this.partnerId)
     },
+    lastTransaction () {
+      const abstract = transformMessage(this.lastMessage)
+
+      if (abstract.type !== 'message') {
+        return abstract
+      }
+
+      return null
+    },
+    transactionMessage () {
+      const amount = this.lastTransaction.type === 'ADM'
+        ? this.$formatAmount(this.lastTransaction.amount)
+        : this.lastTransaction.amount
+
+      const direction = this.userId === this.lastTransaction.senderId
+        ? this.$t('chats.sent_label')
+        : this.$t('chats.received_label')
+
+      const crypto = this.lastTransaction.type
+
+      return `${direction} ${amount} ${crypto}`
+    },
     numOfNewMessages () {
       return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
     },
@@ -70,7 +107,9 @@ export default {
     date: dateFilter
   },
   components: {
-    ChatAvatar
+    ChatAvatar,
+    Icon,
+    AdmFillIcon
   },
   props: {
     partnerId: {
@@ -103,6 +142,8 @@ export default {
   .chat-preview__icon
     background-color: $grey.lighten-1
     color: $shades.white
+  .adm-icon
+    fill: #BDBDBD
 
 .theme--dark
   .chat-preview__icon

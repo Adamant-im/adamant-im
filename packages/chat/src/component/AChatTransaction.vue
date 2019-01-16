@@ -2,8 +2,8 @@
   <div
     class="a-chat__message"
     :class="{
-      'red lighten-5': sender.id === userId,
-      'green lighten-5': sender.id !== userId
+      'a-chat__message--red': sender.id === userId,
+      'a-chat__message--green': sender.id !== userId
     }"
   >
     <div class="a-chat__message-card">

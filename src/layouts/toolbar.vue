@@ -1,15 +1,12 @@
 <template>
-  <v-app>
-    <v-content>
-      <v-container fluid :class="{ 'pa-0': containerNoPadding }">
-        <router-view/>
-      </v-container>
+  <v-content>
+    <v-container fluid :class="{ 'pa-0': containerNoPadding }">
+      <router-view/>
+    </v-container>
 
-      <app-snackbar/>
-    </v-content>
-
+    <app-snackbar/>
     <app-navigation v-if="showNavigation"/>
-  </v-app>
+  </v-content>
 </template>
 
 <script>

@@ -1,9 +1,10 @@
 {
   "name": "adamant-im",
-  "version": "1.8.1",
+  "version": "1.9.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "serve:test": "cross-env ADM_CONFIG_FILE=test vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "https": "vue-cli-service serve --https",
@@ -18,7 +19,7 @@
     "abi-decoder": "^1.2.0",
     "axios": "^0.18.0",
     "b64-to-blob": "^1.2.19",
-    "bignumber.js": "^8.0.2",
+    "bignumber.js": "^8.0.1",
     "bitcore-mnemonic": "^1.2.5",
     "bytebuffer": "^5.0.1",
     "deepmerge": "^2.1.1",
@@ -27,12 +28,13 @@
     "ethereumjs-util": "^5.2.0",
     "file-saver": "^1.3.8",
     "hdkey": "^0.8.0",
-    "instascan": "^1.0.0",
+    "instascan": "git+https://github.com/schmich/instascan.git#master",
     "js-base64": "^2.5.0",
     "js-md5": "^0.7.3",
     "moment": "^2.22.2",
     "notifyjs": "^3.0.0",
     "promise-queue": "^2.2.3",
+    "qrcode": "^1.3.2",
     "register-service-worker": "^1.0.0",
     "roboto-fontface": "^0.10.0",
     "semver": "^5.5.1",
@@ -42,11 +44,10 @@
     "vue": "^2.5.17",
     "vue-i18n": "^8.0.0",
     "vue-material": "^0.8.1",
-    "vue-qrcode-component": "^2.1.1",
+    "vue-qrcode-reader": "^1.3.3",
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.11.0",
-    "vuetify": "^1.3.0",
-    "vuetify-loader": "^1.1.1",
+    "vuetify": "1.4.1",
     "vuex": "^3.0.1",
     "vuex-persist": "^2.0.0",
     "web3": "0.20.6",
@@ -65,13 +66,15 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.0.1",
     "babel-plugin-rewire": "^1.2.0",
-    "sass-loader": "^7.0.1",
+    "cross-env": "^5.2.0",
     "sinon": "^7.2.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "vue-cli-plugin-i18n": "^0.5.0",
     "vue-cli-plugin-vuetify": "^0.4.5",
-    "vue-template-compiler": "^2.5.17"
+    "vue-cli-plugin-webpack-bundle-analyzer": "^1.2.0",
+    "vue-template-compiler": "^2.5.17",
+    "vuetify-loader": "^1.1.1"
   },
   "eslintConfig": {
     "root": true,
@@ -95,7 +98,7 @@
   "browserslist": [
     "> 1%",
     "last 2 versions",
-    "not ie <= 8"
+    "not ie > 0"
   ],
   "jest": {
     "moduleFileExtensions": [
@@ -113,7 +116,8 @@
       "node_modules/(?!vue-qrcode-component)"
     ],
     "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1"
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "(.*){ENV}(.*)": "$1development$2"
     },
     "snapshotSerializers": [
       "jest-serializer-vue"
@@ -124,5 +128,6 @@
     "testURL": "http://localhost/"
   },
   "author": "ADAMANT Tech Labs <devs@adamant.im>",
+  "license": "GPLv3",
   "description": "Distributed chat"
 }

@@ -271,6 +271,7 @@ export type User = {
 |Name|Type|Default|Description|
 |:--:|:--:|:-----:|:----------|
 |**[`showSendButton`](#)**|`boolean`|`true`|Show send button|
+|**[`showDivider`](#)**|`boolean`|`false`|Show divider on top of the form|
 |**[`sendOnEnter`](#)**|`boolean`|`true`|Send message on enter|
 |**[`label`](#)**|`string`|`Type your message`|Input message placeholder|
 

@@ -1,5 +1,6 @@
 <template>
   <div class="a-chat__form">
+    <v-divider v-if="showDivider" class="a-chat__divider"/>
     <v-textarea
       v-model="message"
       v-on="listeners"
@@ -62,6 +63,10 @@ export default {
     label: {
       type: String,
       default: 'Type your message'
+    },
+    showDivider: {
+      type: Boolean,
+      default: false
     }
   }
 }
@@ -74,4 +79,10 @@ export default {
 .v-chat__form >>> .v-text-field
   padding-top: 0
   margin-top: 0
+
+.a-chat__divider
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
 </style>

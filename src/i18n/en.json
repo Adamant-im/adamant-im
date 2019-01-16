@@ -44,6 +44,7 @@
   },
   "error": "Error",
   "home": {
+    "balance": "Balance",
     "copied": "Copied",
     "copy": "Copy",
     "create_qrcode": "Create QR code",
@@ -53,6 +54,7 @@
     "invest_btn_tooltip": "Now you have a possibility to buy tokens of ADAMANT, the most secure and anonymous messenger, with the cheapest price. Click to go to ICO form Adamant.im/buy-tokens/.",
     "send_btn": "Send funds",
     "send_btn_tooltip": "Click to transfer supported tokens to other account or ADAMANT user",
+    "wallet": "wallet",
     "your_address_ADM": "ADAMANT address",
     "your_address_BNB": "Binance Coin address",
     "your_address_ETH": "Ethereum address",
@@ -75,6 +77,7 @@
     "invalid_qr_code": "This QR code does not include valid passphrase",
     "language_label": "Select your language",
     "login_button": "Login",
+    "login_by_qr_code_tooltip": "Login by passphrase encoded in QR code file",
     "new_button": "Create new",
     "new_password_label": "<b>Save</b> the passphrase for new Wallet and Messenger account. There is no login to enter Wallet, only the passphrase needed. If lost, no way to recover it.",
     "password_label": "Input your passphrase to login",
@@ -116,16 +119,7 @@
       "part_two": ". To add your nodes in the list for connection, you need "
     },
     "offline": "Offline",
-    "ping": "Ping",
-    "nodeLabelDescription": {
-      "part_one": "Support decentralization and enhance privacy level—run your own ADAMANT node and web application for messaging. Node can be run ",
-      "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",
-      "link_one_content": "following instructions",
-      "part_two": ". To add your nodes in the list for connection, you need ",
-      "link_two": "https://github.com/Adamant-im/adamant-im/",
-      "link_two_content": "to deploy web application on separate domain",
-      "part_three": ". This limitation is connected to Content Security Policy (CSP). In iOS and Android applications there are no such limitations."
-    }
+    "ping": "Ping"
   },
   "notifications": {
     "message": {
@@ -137,6 +131,7 @@
     "allow_push": "Allow PUSH-notifications",
     "already_delegate_text": "You are already a delegate. Your delegate name is",
     "chats_title": "Chats",
+    "dark_theme": "Enable dark theme",
     "delegate_name_input": "Enter delegate name",
     "delegate_register_button": "Register delegate",
     "delegates_title": "Delegates",
@@ -187,6 +182,7 @@
     "date": "Date",
     "explorer": "Open in Explorer",
     "me": "Me",
+    "no_transactions": "No transactions",
     "recipient": "To",
     "sender": "From",
     "startChat": "Start chat",

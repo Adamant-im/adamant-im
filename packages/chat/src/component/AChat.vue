@@ -36,8 +36,6 @@
 
       </div>
 
-      <v-divider/>
-
       <slot name="form"></slot>
     </div>
   </div>

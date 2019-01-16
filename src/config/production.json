@@ -1,0 +1,23 @@
+{
+  "minApiVersion": "0.3.1",
+  "server": {
+    "adm": [
+      {
+        "url": "https://clown.adamant.im"
+      },
+      {
+        "url": "https://lake.adamant.im"
+      },
+      {
+        "url": "https://endless.adamant.im"
+      }
+    ],
+    "eth": [
+      {
+        "url": "https://ethnode1.adamant.im",
+        "hasIndex": true
+      }
+    ]
+  },
+  "env": "production"
+}

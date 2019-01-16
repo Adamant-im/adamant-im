@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 import VueI18n from 'vue-i18n'
 import Vuetify from 'vuetify'
 
+import { EPOCH } from '@/lib/constants'
 import formatters from '@/lib/formatters'
 import mockupI18n from './__mocks__/plugins/i18n'
 import TransactionListItem from '@/components/TransactionListItem'
@@ -114,21 +115,24 @@ describe('TransactionListItem', () => {
   })
 
   it('should return correct date based on props.timestamp', () => {
+    const admTimestamp1 = 3600 * 24 // 1 day
+    const admTimestamp2 = 3600 * 24 * 2 // 2 days
+
     const wrapper = shallowMount(TransactionListItem, {
       store,
       i18n,
       propsData: {
         ...validProps,
-        timestamp: 3600 * 24 // adm timestamp
+        timestamp: admTimestamp1
       }
     })
 
     // Sep 3, 2017, 20:00
-    expect(wrapper.vm.createdAt).toBe('Sep 3, 2017, 20:00')
+    expect(wrapper.vm.createdAt).toBe(admTimestamp1 * 1000 + EPOCH)
 
     // Sep 4, 2017, 20:00
     wrapper.setProps({ timestamp: 3600 * 24 * 2 })
-    expect(wrapper.vm.createdAt).toBe('Sep 4, 2017, 20:00')
+    expect(wrapper.vm.createdAt).toBe(admTimestamp2 * 1000 + EPOCH)
   })
 
   it('should not display icon when transaction contains a message', () => {
