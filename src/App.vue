@@ -58,12 +58,7 @@ export default {
      */
     partnerName () {
       const partnerId = this.lastUnreadMessage && this.lastUnreadMessage.senderId
-
-      if (partnerId) {
-        return this.$store.getters['partners/displayName'](partnerId)
-      }
-
-      return ''
+      return this.$store.getters['partners/displayName'](partnerId) || partnerId
     },
     isDarkTheme () {
       return this.$store.state.options.darkTheme
