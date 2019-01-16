@@ -74,7 +74,8 @@
         </v-flex>
         <v-flex xs12>
           <v-checkbox
-            :label="$t('options.allow_push')"
+            :label="$t('options.enable_push')"
+            :title="$t('options.enable_push_tooltip')"
             color="grey darken-1"
             v-model="allowPushNotifications"
           />
