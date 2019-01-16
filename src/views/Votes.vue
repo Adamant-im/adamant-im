@@ -23,6 +23,7 @@
           :headers="headers"
           :pagination.sync="pagination"
           :items="delegates"
+          :rows-per-page-text="$t('rows_per_page')"
           :search="search"
           item-key="username"
           class="elevation-1"

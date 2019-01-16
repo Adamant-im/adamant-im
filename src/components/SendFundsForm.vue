@@ -15,7 +15,7 @@
 
       <v-text-field
         v-model="address"
-        :rules="validationRulus.admAddress"
+        :rules="validationRules.admAddress"
         :label="$t('transfer.to_address_label')"
         type="text"
       />
@@ -30,7 +30,7 @@
 
       <v-text-field
         v-model.number="amount"
-        :rules="validationRulus.amount"
+        :rules="validationRules.amount"
         :label="$t('transfer.amount_label')"
         type="number"
       />
@@ -187,7 +187,7 @@ export default {
     cryptoList () {
       return Object.keys(Cryptos)
     },
-    validationRulus () {
+    validationRules () {
       return {
         admAddress: [
           v => !!v || this.$t('transfer.error_field_is_required'),

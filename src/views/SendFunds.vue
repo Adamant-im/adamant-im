@@ -2,7 +2,7 @@
   <v-layout row wrap justify-center>
 
     <app-toolbar
-      :title="$t('transfer.send_button')"
+      :title="$t('home.send_btn')"
       flat
     />
 
