@@ -1,7 +1,13 @@
 import * as admApi from '../../../lib/adamant-api'
 import i18n from '../../../i18n'
 import Vue from 'vue'
+import router from '../../../router'
 import utils from '../../../lib/adamant'
+
+function getExistedChatWithSender (chats, senderAddress) {
+  const chatListWithSender = Object.values(chats).filter(chat => chat.partner === senderAddress)
+  return chatListWithSender && chatListWithSender[0] && chatListWithSender[0].partner ? chatListWithSender[0] : undefined
+}
 
 export default {
 
@@ -42,49 +48,47 @@ export default {
     }
     return admApi.getTransactions(options).then(response => {
       if (Array.isArray(response.transactions) && response.transactions.length) {
+        const currentAdmAddress = context.rootGetters.getAdmAddress
         let chats = context.rootGetters.getChats
-        let targetChat
         response.transactions.forEach(tx => {
-          if (tx.recipientId === context.rootGetters.getAdmAddress) {
-            targetChat = Object.values(chats).filter(chat => chat.partner === tx.senderId)
-            if (targetChat && targetChat[0] && targetChat[0].partner) {
-              if (!context.rootState.newChats && context.rootState.newChats[targetChat[0].partner]) {
-                Vue.set(context.rootState.newChats, targetChat[0].partner, 1)
-                if (context.rootState.notifySound) {
-                  try {
-                    window.audio.playSound('newMessageNotification')
-                  } catch (e) {
-                  }
+          context.dispatch('updateChatHeight', tx.height, { root: true })
+          if (tx.recipientId !== currentAdmAddress) {
+            // Means that transaction is not for this user. Impossible case. But nonetheless
+            return
+          }
+          const senderId = tx.senderId
+          const chatWithSender = getExistedChatWithSender(chats, senderId)
+          if (!chatWithSender) {
+            return
+          }
+          if (options.from) {
+            // Mark chat as unread, if user is on another page
+            if (router.currentRoute.path.indexOf(senderId) < 0) {
+              let newMessages = context.rootState.newChats[chatWithSender.partner]
+              if (!newMessages) {
+                newMessages = 0
+              }
+              Vue.set(context.rootState.newChats, chatWithSender.partner, newMessages + 1)
+              context.rootState.totalNewChats = context.rootState.totalNewChats + 1
+              // Play notification sound
+              if (context.rootState.notifySound) {
+                try {
+                  window.audio.playSound('newMessageNotification')
+                } catch (e) {
                 }
-                context.rootState.totalNewChats = context.rootState.totalNewChats + 1
-              } else {
-                let newMessages = context.rootState.newChats[targetChat[0].partner]
-                if (!newMessages) {
-                  newMessages = 0
-                }
-                if (context.rootState.notifySound) {
-                  try {
-                    window.audio.playSound('newMessageNotification')
-                  } catch (e) {
-                  }
-                }
-                Vue.set(context.rootState.newChats, targetChat[0].partner, newMessages + 1)
-                context.rootState.totalNewChats = context.rootState.totalNewChats + 1
               }
             }
-          } else {
-            targetChat = Object.values(chats).filter(chat => chat.partner === tx.recipientId)
-            if (targetChat.length > 0 && targetChat[0].messages[tx.id]) {
-              Vue.set(targetChat[0].messages[tx.id], 'confirm_class', 'confirmed')
+            // Update last chat message
+            if (chatWithSender) {
+              const textLabel = tx.recipientId === currentAdmAddress ? 'received_label' : 'sent_label'
+              Vue.set(chatWithSender, 'last_message', {
+                ...chatWithSender.last_message,
+                message: i18n.t('chats.' + textLabel) + ' ' + tx.amount / 100000000 + ' ADM',
+                confirm_class: 'confirmed',
+                timestamp: utils.epochTime()
+              })
             }
           }
-          // Update last chat message
-          Vue.set(targetChat, 'last_message', {
-            ...targetChat.last_message,
-            message: i18n.t('chats.' + (tx.recipientId === context.rootGetters.getAdmAddress ? 'received_label' : 'sent_label')) + ' ' + tx.amount / 100000000 + ' ADM',
-            confirm_class: 'confirmed',
-            timestamp: utils.epochTime()
-          })
         })
         context.commit('transactions', response.transactions)
       }

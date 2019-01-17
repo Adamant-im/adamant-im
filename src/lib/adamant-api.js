@@ -4,6 +4,7 @@ import { Transactions, Delegates } from './constants'
 import utils from './adamant'
 import client from './adamant-api-client'
 import renderMarkdown from './markdown'
+import { decryptData, encryptData, getAdmDataBase, getPublicKeysCache, updatePublicKeysCache } from './indexedDb'
 
 Queue.configure(Promise)
 
@@ -107,11 +108,57 @@ export function getPublicKey (address = '') {
     return Promise.resolve(publicKeysCache[address])
   }
 
+  // In case of login via password
+  if (sessionStorage.getItem('storeInLocalStorage') === 'true') {
+    return getAdmDataBase().then((db) => {
+      return getPublicKeysCache(db, encryptData(address)).then(encryptedPublicKeysCache => {
+        if (!encryptedPublicKeysCache) {
+          return getPublicKeyFromBackend(address)
+        }
+        const decryptedPublicKey = decryptData(encryptedPublicKeysCache.value)
+        publicKeysCache[address] = decryptedPublicKey
+        return decryptedPublicKey
+      }).catch(err => {
+        console.warn('Something going wrong, get public key from backend', err)
+        return getPublicKeyFromBackend(address)
+      })
+    })
+  }
+  return getPublicKeyFromBackend(address)
+}
+
+function getPublicKeyFromBackend (address) {
   return client.get('/api/accounts/getPublicKey', { address })
     .then(response => {
       const key = response.publicKey
       publicKeysCache[address] = key
+      if (key && sessionStorage.getItem('storeInLocalStorage') === 'true') {
+        getAdmDataBase().then((db) => {
+          updatePublicKeysCache(db, encryptData(address), encryptData(key))
+        })
+      }
       return key
+    })
+}
+
+export function getPublicKeyWithAddress (address = '') {
+  if (publicKeysCache[address]) {
+    return Promise.resolve({
+      address: address,
+      publicKey: publicKeysCache[address]
+    })
+  }
+  return client.get('/api/accounts/getPublicKey', { address })
+    .then(response => {
+      const key = response.publicKey
+      publicKeysCache[address] = key
+      getAdmDataBase().then((db) => {
+        updatePublicKeysCache(db, encryptData(address), encryptData(key))
+      })
+      return {
+        address: address,
+        publicKey: key
+      }
     })
 }
 

@@ -141,6 +141,9 @@ const store = {
     userPasswordExists: sessionStorage.getItem('userPassword') !== null
   },
   actions: {
+    update_delegates_grid ({ commit }, payload) {
+      commit('update_delegate', payload)
+    },
     add_chat_i18n_message ({ commit }, payload) {
       payload.message = i18n.t(payload.message)
       commit('add_chat_message', payload)
@@ -329,6 +332,9 @@ const store = {
         }
       )
     },
+    updateChatHeight (context, payload) {
+      context.commit('set_last_chat_height', payload)
+    },
     /**
      * Updates current application status: balance, chat messages, transactions and so on
      * @param {any} context Vuex action context
@@ -362,6 +368,9 @@ const store = {
     }
   },
   mutations: {
+    set_adm_address (state, payload) {
+      state.address = payload
+    },
     set_first_load (state) {
       state.firstChatLoad = true
     },
@@ -370,6 +379,9 @@ const store = {
     },
     user_password_exists (state, payload) {
       state.userPasswordExists = payload
+    },
+    update_delegate (state, payload) {
+      state.delegates[payload.address] = payload
     },
     last_visited_chat (state, payload) {
       state.lastVisitedChat = payload
@@ -426,7 +438,6 @@ const store = {
       state.showPanel = false
       state.showBottom = true
       state.transactions = {}
-      state.delegates = {}
       state.originDelegates = {}
       state.chats = {}
       state.newChats = {}
@@ -666,13 +677,14 @@ const store = {
     getAdmAddress: state => {
       return state.address
     },
-    getState: state => {
-      return state
+    getDelegateList: state => {
+      return state.delegates.delegates || []
     }
   },
   modules: {
     eth: ethModule, // Ethereum-related data
     bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
+    bz: erc20Module(Cryptos.BZ, '0x4375e7ad8a01b8ec3ed041399f62d9cd120e0063', 18),
     adm: admModule, // ADM transfers
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen

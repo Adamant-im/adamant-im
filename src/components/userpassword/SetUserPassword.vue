@@ -35,9 +35,10 @@ import {
   getAdmDataBase,
   updateChatItem,
   updateCommonItem, updateContactItem,
-  updatePassPhrase,
+  updatePassPhrase, updatePublicKeysCache,
   updateUserPassword
 } from '../../lib/indexedDb'
+import { getPublicKeyWithAddress } from '../../lib/adamant-api'
 import Spinner from '../Spinner'
 
 export default {
@@ -70,6 +71,7 @@ export default {
             updateCommonItem(db, encryptData(JSON.stringify(copyState)))
             // Save chats
             const chats = this.$store.getters.getChats
+            let contactListFromChat = []
             for (let chat in chats) {
               if (chats.hasOwnProperty(chat) && !chats[chat].hasOwnProperty('readOnly')) {
                 const encryptedChatName = encryptData(chat)
@@ -80,9 +82,24 @@ export default {
                 messages.forEach(message => {
                   chats[chat].messages[message.id] = message
                 })
+                contactListFromChat.push(chat)
                 updateChatItem(db, encryptedChatName.toString(), encryptData(JSON.stringify(chats[chat])))
               }
             }
+
+            contactListFromChat.map(contact => getPublicKeyWithAddress(contact)).reduce((promiseChain, currentTask) => {
+              return promiseChain.then(chainResults =>
+                currentTask.then(currentResult =>
+                  [ ...chainResults, currentResult ]
+                )
+              )
+            }, Promise.resolve([])).then(arrayOfResults => {
+              arrayOfResults.forEach(pair => {
+                if (pair.address && pair.publicKey) {
+                  updatePublicKeysCache(db, encryptData(pair.address), encryptData(pair.publicKey))
+                }
+              })
+            })
             // Save contacts
             updateContactItem(db, encryptData(JSON.stringify(this.$store.getters.getContacts)))
             this.userPasswordValue = null

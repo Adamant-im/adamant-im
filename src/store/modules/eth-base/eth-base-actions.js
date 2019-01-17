@@ -88,13 +88,16 @@ export default function createActions (config) {
           // Send a special message to indicate that we're performing an ETH transfer
           const type = crypto.toLowerCase() + '_transaction'
           const msg = { type, amount, hash, comments }
-          return admApi.sendSpecialMessage(admAddress, msg)
-            .then(() => {
+
+          return admApi.sendSpecialMessage(admAddress, msg).then(result => {
+            if (result.success) {
+              console.log('ADM message has been sent', msg, result.transactionId)
               return serialized
-            })
-            .catch(() => {
+            } else {
+              console.log(`Failed to send "${type}"`, result)
               return Promise.reject(new Error('adm_message'))
-            })
+            }
+          })
         })
         .then(tx => {
           return utils.promisify(api.eth.sendRawTransaction, tx).then(
@@ -119,7 +122,7 @@ export default function createActions (config) {
               gasPrice: ethTx.gasPrice
             }])
 
-            context.dispatch('getTransaction', { hash, isNew: true })
+            context.dispatch('getTransaction', { hash, isNew: true, direction: 'from' })
 
             return hash
           }
@@ -129,7 +132,7 @@ export default function createActions (config) {
     /**
      * Enqueues a background request to retrieve the transaction details
      * @param {object} context Vuex action context
-     * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
+     * @param {{hash: string, fotce: boolean, timestamp: number, amount: number, direction: 'from' | 'to'}} payload hash and timestamp of the transaction to fetch
      */
     getTransaction (context, payload) {
       const existing = context.state.transactions[payload.hash]
@@ -141,7 +144,8 @@ export default function createActions (config) {
           hash: payload.hash,
           timestamp: payload.timestamp,
           amount: payload.amount,
-          status: 'PENDING'
+          status: 'PENDING',
+          direction: payload.direction
         }])
       }
 
