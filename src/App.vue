@@ -17,7 +17,7 @@ export default {
     if (this.isLogged) {
       this.$store.dispatch('unlock')
     }
-    if (Notify.needsPermission) {
+    if (this.$store.state.options.allowPushNotifications && Notify.needsPermission) {
       if (Notify.isSupported()) {
         Notify.requestPermission()
       }
