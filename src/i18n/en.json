@@ -59,14 +59,14 @@
     "your_address_BNB": "Binance Coin address",
     "your_address_ETH": "Ethereum address",
     "your_address_tooltip_ADM": "This is your ADAMANT unique identifier. Click to copy it to the clipboard",
-    "your_address_tooltip_BNB": "This is your ADAMANT BNB wallet unique identifier. Click to copy it to the clipboard",
-    "your_address_tooltip_ETH": "This is your ADAMANT ETH wallet unique identifier. Click to copy it to the clipboard",
+    "your_address_tooltip_BNB": "This is your ADAMANT's Binance Coin wallet unique identifier. Click to copy it to the clipboard",
+    "your_address_tooltip_ETH": "This is your ADAMANT's Ethereum wallet unique identifier. Click to copy it to the clipboard",
     "your_balance_ADM": "ADAMANT balance",
     "your_balance_BNB": "Binance Coin balance",
     "your_balance_ETH": "Ethereum balance",
-    "your_balance_tooltip_ADM": "This is your ADM balance. Click to see all input and output transactions",
-    "your_balance_tooltip_BNB": "This is your BNB balance",
-    "your_balance_tooltip_ETH": "This is your ETH balance"
+    "your_balance_tooltip_ADM": "This is your ADM tokens balance. Click to see all incoming and outcoming transactions",
+    "your_balance_tooltip_BNB": "This is your BNB tokens balance",
+    "your_balance_tooltip_ETH": "This is your ETH tokens balance"
   },
   "login": {
     "brand_title": "ADAMANT",
@@ -171,7 +171,7 @@
       "modal_header": "Scan QR code with ADAMANT wallet address"
     },
     "no_camera_found": "No camera found",
-    "something_wrong": "Something went wrong. Check the console",
+    "something_wrong": "Unexpected error. Check the adm console application",
     "waiting_camera": "Waiting camera"
   },
   "title": "English",
@@ -193,7 +193,7 @@
   "transfer": {
     "amount_label": "Amount",
     "balance": "Balance",
-    "comments_label": "Comments",
+    "comments_label": "Comment",
     "commission_label": "Transfer fee",
     "confirm_approve": "Confirm",
     "confirm_cancel": "Cancel",
