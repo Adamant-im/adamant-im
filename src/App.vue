@@ -10,6 +10,7 @@
 import i18n from '@/i18n'
 import Blinker from '@/lib/blinker'
 import Notify from 'notifyjs'
+import Visibility from 'visibilityjs'
 
 export default {
   created () {
@@ -17,7 +18,7 @@ export default {
     if (this.isLogged) {
       this.$store.dispatch('unlock')
     }
-    if (this.$store.state.options.allowPushNotifications && Notify.needsPermission) {
+    if (this.userAllowPushNotifications && Notify.needsPermission) {
       if (Notify.isSupported()) {
         Notify.requestPermission()
       }
@@ -52,13 +53,15 @@ export default {
     lastUnreadMessage () {
       return this.$store.getters['chat/lastUnreadMessage']
     },
+    partnerId () {
+      return this.lastUnreadMessage && this.lastUnreadMessage.senderId
+    },
     /**
      * Returns `partnerName` or `partnerId` from `lastUnreadMessage`
      * @returns {string}
      */
-    partnerName () {
-      const partnerId = this.lastUnreadMessage && this.lastUnreadMessage.senderId
-      return this.$store.getters['partners/displayName'](partnerId) || partnerId
+    partnerIdentity () {
+      return this.$store.getters['partners/displayName'](this.partnerId) || this.partnerId
     },
     isDarkTheme () {
       return this.$store.state.options.darkTheme
@@ -77,10 +80,12 @@ export default {
   methods: {
     almostSocket () {
       this.blinker = new Blinker(this.$t('app_title'))
-
       this.intervalRef = setInterval(() => {
         this.$store.dispatch('update')
         this.checkForNewMessages()
+        Visibility.onVisible(() => {
+          this.$store.commit('chat/markAsRead', this.partnerId)
+        })
       }, 3000)
     },
     checkForNewMessages () {
@@ -125,7 +130,7 @@ export default {
           // Message not shown yet
           if (tag !== this.browserNotification.tag) {
             this.browserNotification = {
-              body: `${this.partnerName}: ${this.lastUnreadMessage.message}`,
+              body: `${this.partnerIdentity}: ${this.lastUnreadMessage.message}`,
               tag
             }
             this.sendPushNotification()

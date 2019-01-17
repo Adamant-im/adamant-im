@@ -41,6 +41,7 @@
     "simple-audio": "^1.0.1",
     "sodium-browserify-tweetnacl": "^0.2.3",
     "underscore": "^1.9.1",
+    "visibilityjs": "^2.0.2",
     "vue": "^2.5.17",
     "vue-i18n": "^8.0.0",
     "vue-material": "^0.8.1",

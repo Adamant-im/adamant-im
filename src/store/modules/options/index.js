@@ -9,10 +9,7 @@ const state = () => ({
 
 const mutations = {
   updateOption (state, { key, value }) {
-    const keyExists = Object.keys(state)
-      .find(findKey => findKey === key)
-
-    if (keyExists) {
+    if (key in state) {
       state[key] = value
     }
   }
