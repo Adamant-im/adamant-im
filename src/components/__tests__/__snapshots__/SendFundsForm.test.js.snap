@@ -14,7 +14,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     />
      
     <v-text-field-stub
-      label="To Address"
+      label="Recipient address"
       rules="v => !!v || this.$t('transfer.error_field_is_required'),v => _get__(\\"validateAddress\\")('ADM', v) || this.$t('transfer.error_incorrect_address', {
           crypto: 'ADM'
         })"
@@ -24,13 +24,13 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     <!---->
      
     <v-text-field-stub
-      label="Amount to send"
+      label="Amount"
       rules="v => !!v || this.$t('transfer.error_field_is_required'),v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough')"
       type="number"
     />
      
     <v-textarea-stub
-      label="Comments"
+      label="Comment"
       multi-line=""
       rowheight="24"
       rows="5"
@@ -126,7 +126,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
         width="4"
       />
       
-      Send Funds
+      Send
     
     </v-btn-stub>
   </v-form-stub>

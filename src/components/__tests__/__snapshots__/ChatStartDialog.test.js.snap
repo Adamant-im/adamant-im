@@ -15,7 +15,7 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
       primarytitle="true"
     >
       
-      Start new Chat
+      Start new chat
     
     </v-card-title-stub>
      
@@ -32,9 +32,9 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
         xs10=""
       >
         <v-text-field-stub
-          label="Recipient address"
+          label="Partner address"
           rules="v => _get__(\\"validateAddress\\")('ADM', v) || this.$t('chats.incorrect_address')"
-          title="Enter a recepient identifier, like U1234567890"
+          title="Enter a partner address in the format U1234567890"
         />
       </v-flex-stub>
        
