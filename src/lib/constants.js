@@ -17,7 +17,8 @@ export const Cryptos = {
   ADM: 'ADM',
   ETH: 'ETH',
   BNB: 'BNB',
-  DOGE: 'DOGE'
+  DOGE: 'DOGE',
+  DASH: 'DASH'
 }
 
 export const ERC20 = Object.freeze([
