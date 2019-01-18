@@ -31,11 +31,11 @@
         </a-chat-message>
 
         <a-chat-transaction
-          v-else-if="['ADM', 'ETH'].includes(message.type)"
+          v-else-if="isTransaction(message.type)"
           v-bind="message"
           :key="message.id"
           :user-id="userId"
-          :amount="message.amount"
+          :amount="$formatAmount(message.amount)"
           :currency="message.type"
           :i18n="{ sent: $t('chats.sent_label'), received: $t('chats.received_label') }"
           :locale="locale"
@@ -52,18 +52,25 @@
         :send-on-enter="sendMessageOnEnter"
         :show-divider="true"
         :label="$t('chats.message')"
-      />
+      >
+        <chat-menu
+          slot="prepend"
+          :partner-id="partnerId"
+        />
+      </a-chat-form>
     </a-chat>
   </v-card>
 </template>
 
 <script>
+import { Cryptos } from '@/lib/constants'
 import { transformMessage } from '@/lib/chatHelpers'
 import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@adamant/chat'
 import { Formatter } from '@adamant/message-formatter'
 
 import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
+import ChatMenu from '@/components/Chat/ChatMenu'
 
 /**
  * Create Formatter instance.
@@ -119,8 +126,14 @@ function validateMessage (message) {
 
 export default {
   mounted () {
-    this.$refs.chat.scrollToBottom()
+    this.$nextTick(() => this.$refs.chat.scrollToBottom())
     this.markAsRead()
+  },
+  watch: {
+    // scroll to bottom when received new message
+    messages () {
+      this.$nextTick(() => this.$refs.chat.scrollToBottom())
+    }
   },
   computed: {
     /**
@@ -128,9 +141,10 @@ export default {
      * @returns {Message[]}
      */
     messages () {
-      let messages = this.$store.getters['chat/messages'](this.partnerId)
-
-      return messages.map(message => transformMessage(message))
+      return this.rawMessages.map(message => transformMessage(message))
+    },
+    rawMessages () {
+      return this.$store.getters['chat/messages'](this.partnerId)
     },
     /**
      * Returns array of partners who participate in chat.
@@ -203,6 +217,11 @@ export default {
           tx_id: transaction.id
         }
       })
+    },
+    isTransaction (type) {
+      const cryptos = Object.values(Cryptos)
+
+      return cryptos.includes(type)
     }
   },
   filters: {
@@ -214,7 +233,8 @@ export default {
     AChatTransaction,
     AChatForm,
     ChatToolbar,
-    ChatAvatar
+    ChatAvatar,
+    ChatMenu
   },
   props: {
     partnerId: {

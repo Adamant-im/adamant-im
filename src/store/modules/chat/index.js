@@ -376,23 +376,8 @@ const mutations = {
       }
     ]
 
-    const tokensMessages = [
-      {
-        id: 't1',
-        message: 'chats.ico_message',
-        timestamp: 0,
-        senderId: 'Adamant Tokens',
-        i18n: true
-      }
-    ]
-
     Vue.set(state.chats, 'Adamant Bounty', {
       messages: bountyMessages,
-      numOfNewMessages: 0,
-      readOnly: true
-    })
-    Vue.set(state.chats, 'Adamant Tokens', {
-      messages: tokensMessages,
       numOfNewMessages: 0,
       readOnly: true
     })

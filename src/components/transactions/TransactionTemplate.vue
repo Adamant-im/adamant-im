@@ -142,7 +142,6 @@ export default {
       }
     },
     openChat: function () {
-      this.$store.commit('select_chat', this.partner)
       this.$router.push('/chats/' + this.partner + '/')
     }
   },
