@@ -1,6 +1,6 @@
 <template>
-  <v-app :dark="isDarkTheme">
-    <component :is="layout" class="application--linear-gradient">
+  <v-app :dark="isDarkTheme" class="application--linear-gradient">
+    <component :is="layout">
       <router-view/>
     </component>
   </v-app>
