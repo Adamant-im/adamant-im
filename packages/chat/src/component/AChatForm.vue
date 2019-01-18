@@ -7,12 +7,16 @@
       :label="label"
       hide-details
       single-line
-      no-resize
+      auto-grow
       rows="1"
 
-      :append-outer-icon="showSendButton ? 'mdi-send' : ''"
-      @click:append-outer="submitMessage"
-    />
+      :append-icon="showSendButton && message ? 'mdi-send' : ''"
+      @click:append="submitMessage"
+    >
+      <template slot="prepend">
+        <slot name="prepend"></slot>
+      </template>
+    </v-textarea>
   </div>
 </template>
 

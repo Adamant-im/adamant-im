@@ -9,10 +9,10 @@
     <div class="a-chat__message-card">
       <div class="a-chat__message-card-header">
         <div v-if="sender.id === userId" class="a-chat__sender">
-          {{ i18n.sent }} {{ amountFormatted }} {{ currency }}
+          {{ i18n.sent }} {{ amount }} {{ currency }}
         </div>
         <div v-else class="a-chat__sender">
-          {{ i18n.received }} {{ amountFormatted }} {{ currency }}
+          {{ i18n.received }} {{ amount }} {{ currency }}
         </div>
         <v-icon @click="$emit('click:transaction', id)" class="mr-2">mdi-open-in-new</v-icon>
         <span :title="date" class="a-chat__timestamp">{{ time }}</span>
@@ -37,9 +37,6 @@ export default {
     },
     date () {
       return moment(this.timestamp).format('LLLL')
-    },
-    amountFormatted () {
-      return (this.amount / 100000000).toFixed(2)
     }
   },
   props: {

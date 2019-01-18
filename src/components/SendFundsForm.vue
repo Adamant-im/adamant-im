@@ -286,9 +286,7 @@ export default {
     cryptoCurrency: {
       type: String,
       default: 'ADM',
-      validator: value => {
-        return ['ADM', 'ETH', 'BNB'].includes(value)
-      }
+      validator: value => value in Cryptos
     },
     recipientAddress: {
       type: String,

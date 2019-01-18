@@ -84,10 +84,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.chat-avatar {
-  min-height: 40px !important;
-  min-width: 40px !important
-}
-</style>
