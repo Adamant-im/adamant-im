@@ -7,10 +7,7 @@
 </template>
 
 <script>
-import i18n from '@/i18n'
-import Blinker from '@/lib/blinker'
-import Notify from 'notifyjs'
-import Visibility from 'visibilityjs'
+import Notifications from '@/lib/notifications'
 
 export default {
   created () {
@@ -18,129 +15,34 @@ export default {
     if (this.isLogged) {
       this.$store.dispatch('unlock')
     }
-    if (this.userAllowPushNotifications && Notify.needsPermission) {
-      if (Notify.isSupported()) {
-        Notify.requestPermission()
-      }
-    }
   },
   mounted () {
+    this.notifications = new Notifications(this.$i18n, this.$store)
     this.almostSocket()
   },
   beforeDestroy () {
-    this.blinker.stop()
+    this.notifications.stop()
     clearInterval(this.intervalRef)
   },
   computed: {
     layout () {
       return this.$route.meta.layout || 'default'
     },
-    numOfNewMessages () {
-      return this.$store.getters['chat/totalNumOfNewMessages']
-    },
-    userAllowTabNotifications () {
-      return this.$store.state.options.allowTabNotifications
-    },
-    userAllowSoundNotifications () {
-      return this.$store.state.options.allowSoundNotifications
-    },
-    userAllowPushNotifications () {
-      return this.$store.state.options.allowPushNotifications
-    },
     isLogged () {
       return this.$store.getters.isLogged
-    },
-    lastUnreadMessage () {
-      return this.$store.getters['chat/lastUnreadMessage']
-    },
-    partnerId () {
-      return this.lastUnreadMessage && this.lastUnreadMessage.senderId
-    },
-    /**
-     * Returns `partnerName` or `partnerId` from `lastUnreadMessage`
-     * @returns {string}
-     */
-    partnerIdentity () {
-      return this.$store.getters['partners/displayName'](this.partnerId) || this.partnerId
     },
     isDarkTheme () {
       return this.$store.state.options.darkTheme
     }
   },
   data: () => ({
-    blinker: null,
-    intervalRef: null,
-    prevNumOfMessages: 0,
-    browserNotification: {
-      body: null,
-      tag: null,
-      timeout: 5
-    }
+    intervalRef: null
   }),
   methods: {
     almostSocket () {
-      this.blinker = new Blinker(this.$t('app_title'))
       this.intervalRef = setInterval(() => {
         this.$store.dispatch('update')
-        this.checkForNewMessages()
-        Visibility.onVisible(() => {
-          this.$store.commit('chat/markAsRead', this.partnerId)
-        })
       }, 3000)
-    },
-    checkForNewMessages () {
-      this.handleTabNotifications()
-      this.handleSoundNotifications()
-      this.handlePushNotifications()
-
-      // save previous number of messages
-      // to avoid endless notifications
-      this.prevNumOfMessages = this.numOfNewMessages
-    },
-    handleTabNotifications () {
-      if (
-        this.userAllowTabNotifications &&
-        this.numOfNewMessages > 0
-      ) {
-        let notificationMessage = this.numOfNewMessages % 10 > 4
-          ? this.$tc('notifications.message.many', this.numOfNewMessages)
-          : this.$tc('notifications.message.few', this.numOfNewMessages)
-
-        this.blinker.start(notificationMessage)
-      } else {
-        this.blinker.stop()
-      }
-    },
-    handleSoundNotifications () {
-      if (
-        this.userAllowSoundNotifications &&
-        this.numOfNewMessages > this.prevNumOfMessages
-      ) {
-        this.$store.dispatch('noise/play')
-      }
-    },
-    handlePushNotifications () {
-      if (
-        this.userAllowPushNotifications &&
-        this.numOfNewMessages > this.prevNumOfMessages
-      ) {
-        if (this.lastUnreadMessage) {
-          const tag = this.lastUnreadMessage.id
-
-          // Message not shown yet
-          if (tag !== this.browserNotification.tag) {
-            this.browserNotification = {
-              body: `${this.partnerIdentity}: ${this.lastUnreadMessage.message}`,
-              tag
-            }
-            this.sendPushNotification()
-          }
-        }
-      }
-    },
-    sendPushNotification () {
-      const notification = new Notify('ADAMANT', this.browserNotification)
-      notification.show()
     },
     setLocale () {
       // Set language from `localStorage`.
@@ -149,8 +51,7 @@ export default {
       // Subsequent mutations of `language.currentLocale`
       // will be synchronized with `i18n.locale`.
       const localeFromStorage = this.$store.state.language.currentLocale
-
-      i18n.locale = localeFromStorage
+      this.$i18n.locale = localeFromStorage
     }
   }
 }
