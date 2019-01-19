@@ -17,6 +17,9 @@
         "url": "https://ethnode1.adamant.im",
         "hasIndex": true
       }
+    ],
+    "doge": [
+      { "url": "https://dogenode1.adamant.im/api/" }
     ]
   },
   "env": "development"

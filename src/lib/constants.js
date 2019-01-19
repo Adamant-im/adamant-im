@@ -17,6 +17,7 @@ export const Cryptos = {
   ADM: 'ADM',
   ETH: 'ETH',
   BNB: 'BNB',
+  DOGE: 'DOGE',
   BZ: 'BZ'
 }
 
@@ -32,6 +33,7 @@ export const CryptoAmountPrecision = {
   ADM: 2,
   ETH: 6,
   BNB: 6,
+  DOGE: 8,
   BZ: 6
 }
 

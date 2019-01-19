@@ -15,6 +15,9 @@ let myAddress = null
 
 const publicKeysCache = { }
 
+/** Lists cryptos for which addresses are currently being stored to the KVS */
+const pendingAddresses = { }
+
 /**
  * Creates a new transaction with the common fields pre-filled
  * @param {number} type transaction type
@@ -279,6 +282,37 @@ export function getBlocks () {
 
 export function getForgedByAccount (accountPublicKey) {
   return client.get('/api/delegates/forging/getForgedByAccount', { generatorPublicKey: accountPublicKey })
+}
+
+/**
+ * Stores user address for the specified crypto
+ * @param {string} crypto crypto
+ * @param {*} address user address for `crypto`
+ * @returns {Promise<boolean>}
+ */
+export function storeCryptoAddress (crypto, address) {
+  const canProceed = crypto && address && isReady() && !pendingAddresses[crypto]
+  if (!canProceed) return Promise.resolve(false)
+
+  const key = `${crypto.toLowerCase()}:address`
+  pendingAddresses[crypto] = true
+
+  return getStored(key)
+    .then(stored => (stored)
+      ? true
+      : storeValue(key, address).then(response => response.success)
+    )
+    .then(
+      success => {
+        delete pendingAddresses[crypto]
+        return success
+      },
+      error => {
+        console.warn(`Failed to store ${key}`, error)
+        delete pendingAddresses[crypto]
+        return false
+      }
+    )
 }
 
 /**

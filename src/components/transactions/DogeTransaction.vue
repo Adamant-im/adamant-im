@@ -19,45 +19,57 @@ import getExplorerUrl from '../../lib/getExplorerUrl'
 import { Cryptos } from '../../lib/constants'
 
 export default {
-  name: 'eth-transaction',
+  name: 'doge-transaction',
   props: ['id'],
   components: {
     TransactionTemplate
+  },
+  mounted () {
+    this.$store.dispatch('doge/getTransaction', { hash: this.id })
   },
   data () {
     return { }
   },
   computed: {
     transaction () {
-      return this.$store.state.eth.transactions[this.id] || { }
+      return this.$store.getters['doge/transaction'](this.id) || { }
     },
     amount () {
       if (!this.transaction.amount) return ''
-      return this.transaction.amount + ' ' + Cryptos.ETH
+      return this.transaction.amount + ' ' + Cryptos.DOGE
     },
     fee () {
       if (!this.transaction.fee) return ''
-      return this.transaction.fee + ' ' + Cryptos.ETH
+      return this.transaction.fee + ' ' + Cryptos.DOGE
     },
     sender () {
-      return this.formatAddress(this.transaction.senderId)
+      const { senders, senderId } = this.transaction
+      if (senderId) {
+        return this.formatAddress(senderId)
+      } else if (senders) {
+        return this.formatAddresses(senders)
+      }
     },
     recipient () {
-      return this.formatAddress(this.transaction.recipientId)
+      const { recipientId, recipients } = this.transaction
+      if (recipientId) {
+        return this.formatAddress(recipientId)
+      } else if (recipients) {
+        return this.formatAddresses(recipients)
+      }
     },
     partner () {
       if (this.transaction.partner) return this.transaction.partner
 
-      const id = this.transaction.senderId !== this.$store.state.eth.address
+      const id = this.transaction.senderId !== this.$store.state.doge.address
         ? this.transaction.senderId : this.transaction.recipientId
       return this.getAdmAddress(id)
     },
     explorerLink () {
-      return getExplorerUrl(Cryptos.ETH, this.id)
+      return getExplorerUrl(Cryptos.DOGE, this.id)
     },
     confirmations () {
-      if (!this.transaction.blockNumber || !this.$store.state.eth.blockNumber) return 0
-      return Math.max(0, this.$store.state.eth.blockNumber - this.transaction.blockNumber)
+      return this.transaction.confirmations || 0
     }
   },
   methods: {
@@ -68,7 +80,7 @@ export default {
       const partners = this.$store.state.partners
       Object.keys(partners).some(uid => {
         const partner = partners[uid]
-        if (partner[Cryptos.ETH] === address) {
+        if (partner[Cryptos.DOGE] === address) {
           admAddress = uid
         }
         return !!admAddress
@@ -91,7 +103,7 @@ export default {
     },
 
     formatAddress (address) {
-      if (address === this.$store.state.eth.address) {
+      if (address === this.$store.state.doge.address) {
         return this.$t('transaction.me')
       }
 
@@ -104,6 +116,13 @@ export default {
       }
 
       return result
+    },
+
+    formatAddresses (addresses) {
+      const count = addresses.length
+      return addresses.includes(this.$store.state.doge.address)
+        ? `${this.$t('transaction.me_and')} ${this.$tc('transaction.addresses', count - 1)}`
+        : this.$tc('transaction.addresses', count)
     }
   }
 }

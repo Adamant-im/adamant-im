@@ -2,14 +2,15 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { Base64 } from 'js-base64'
 
-import { unlock, loginOrRegister } from '@/lib/adamant-api'
-import { Cryptos } from '@/lib/constants'
+import { unlock, loginOrRegister, storeCryptoAddress } from '@/lib/adamant-api'
+import { Cryptos, Fees } from '@/lib/constants'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import ethModule from './modules/eth'
 import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
+import dogeModule from './modules/doge'
 import nodesModule from './modules/nodes'
 import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
@@ -29,7 +30,8 @@ const store = {
     passphrase: ''
   }),
   getters: {
-    isLogged: state => state.passphrase.length > 0
+    isLogged: state => state.passphrase.length > 0,
+    getPassPhrase: state => state.passphrase // compatibility getter for ERC20 modules
   },
   mutations: {
     setAddress (state, address) {
@@ -83,6 +85,14 @@ const store = {
 
       // retrieve eth & erc20 data
       dispatch('afterLogin', passphrase)
+    },
+    /** Stores user address for the specified crypto in the ADM KVS */
+    storeCryptoAddress ({ state }, { crypto, address }) {
+      if (state.balance < Fees.KVS) {
+        return
+      }
+
+      return storeCryptoAddress(crypto, address)
     }
   },
   plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin],
@@ -91,6 +101,7 @@ const store = {
     bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
     bz: erc20Module(Cryptos.BZ, '0x4375e7ad8a01b8ec3ed041399f62d9cd120e0063', 18),
     adm: admModule, // ADM transfers
+    doge: dogeModule,
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes

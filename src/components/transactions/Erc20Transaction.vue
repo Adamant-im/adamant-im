@@ -24,10 +24,6 @@ export default {
   components: {
     TransactionTemplate
   },
-  mounted () {
-    const prefix = this.crypto.toLowerCase()
-    this.$store.dispatch(prefix + '/getTransaction', { hash: this.id })
-  },
   data () {
     return { }
   },
