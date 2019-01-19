@@ -70,9 +70,9 @@ export default function createActions (config) {
       }
     },
 
-    sendTokens (context, { amount, admAddress, ethAddress, comments, message }) {
+    sendTokens (context, { amount, admAddress, ethAddress, comments }) {
       ethAddress = ethAddress.trim()
-      const crypto = context.state.crypto
+      const crypto = context.state.crypto.toLowerCase()
       const ethTx = initTransaction(api, context, ethAddress, amount)
       return utils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
         .then(count => {
@@ -82,10 +82,13 @@ export default function createActions (config) {
           tx.sign(toBuffer(context.state.privateKey))
           const serialized = '0x' + tx.serialize().toString('hex')
           const hash = api.sha3(serialized, { encoding: 'hex' })
-          context.dispatch('create_stub_message', {
-            targetAddress: crypto !== 'ADM' ? ethAddress : admAddress,
-            message: message,
-            comments: comments,
+          context.dispatch('createStubMessage', {
+            targetAddress: ethAddress,
+            message: {
+              amount: amount,
+              comments: comments,
+              type: crypto + '_transaction'
+            },
             hash: hash },
           { root: true })
           if (!admAddress) {
@@ -125,7 +128,7 @@ export default function createActions (config) {
               timestamp: Date.now(),
               gasPrice: ethTx.gasPrice
             }])
-            context.dispatch('getTransaction', { hash, admAddress, isNew: true, direction: 'from' })
+            context.dispatch('getTransaction', { hash, isNew: true, direction: 'from' })
 
             return hash
           }

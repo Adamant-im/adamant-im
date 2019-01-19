@@ -171,13 +171,11 @@ export default {
         })
       } else {
         // Check for existing chat by eth address
-        const message = { to: this.targetAddress, amount: this.targetAmount, fundType: this.crypto }
         return this.$store.dispatch(this.crypto.toLowerCase() + '/sendTokens', {
           amount: this.targetAmount,
           admAddress: this.fixedAddress,
           ethAddress: this.targetAddress,
-          comments: this.comments,
-          message: message
+          comments: this.comments
         })
       }
     },

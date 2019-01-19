@@ -150,7 +150,7 @@ const store = {
     userPasswordExists: sessionStorage.getItem('userPassword') !== null
   },
   actions: {
-    create_stub_message (state, payload) {
+    createStubMessage (state, payload) {
       const timestamp = utils.epochTime()
       // Build chat message
       let message = payload.message
@@ -167,12 +167,11 @@ const store = {
         }
       })
       let handledPayload = {
-        ...message,
         timestamp: timestamp,
         message: {
           amount: message.amount,
-          comments: payload.comments || '',
-          type: message.fundType.toLowerCase() + '_transaction'
+          comments: message.comments || '',
+          type: message.type
         },
         direction: 'from',
         confirm_class: 'sent',
