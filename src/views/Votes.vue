@@ -5,7 +5,7 @@
       flat
     />
 
-    <v-container fluid>
+    <v-container fluid class="px-0">
       <v-layout row wrap justify-center>
 
         <v-flex xs12 sm12 md8 lg5>
@@ -26,6 +26,7 @@
               :pagination.sync="pagination"
               :items="delegates"
               :search="search"
+              hide-actions
               item-key="username"
               class="elevation-1"
             >
@@ -45,22 +46,17 @@
               </div>
 
               <template slot="headerCell" slot-scope="props">
-            <span slot="activator">
-              {{ $t(props.header.text) }}
-            </span>
+                <span slot="activator">
+                  {{ $t(props.header.text) }}
+                </span>
               </template>
 
               <template slot="items" slot-scope="props">
-                <td>{{ props.item.username }}</td>
+                <td @click="toggleDetails(props.item, props)" style="cursor:pointer">{{ props.item.username }}</td>
                 <td>{{ props.item.rank }}</td>
                 <td>
                   <v-icon v-if="props.item._voted" @click="downVote(props.item.address)">mdi-thumb-up</v-icon>
                   <v-icon v-else @click="upVote(props.item.address)">mdi-thumb-up-outline</v-icon>
-                </td>
-                <td>
-                  <v-btn icon @click="toggleDetails(props.item, props)">
-                    <v-icon>mdi-chevron-down</v-icon>
-                  </v-btn>
                 </td>
               </template>
 
@@ -98,40 +94,71 @@
                 </v-card>
               </template>
 
-              <v-alert slot="no-results" :value="true" color="error" icon="warning">
+              <v-alert slot="no-results" :value="true" color="error" icon="mdi-alert">
                 Your search for "{{ search }}" found no results.
               </v-alert>
-            </v-data-table>
-          </v-card>
 
-          <v-card class="vote-card mt-2">
-            <v-card-title>
-              <div>
-                <h3 class="headline mb-0">{{ $t('votes.summary_title') }}</h3>
-                <div>
-                  {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
-                  {{ $t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
-                  {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
-                  {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
-                </div>
-              </div>
-            </v-card-title>
-            <v-card-text>
-              <v-btn @click="sendVotes">
-                {{ $t('votes.vote_button_text') }}
-              </v-btn>
-            </v-card-text>
+              <template slot="footer">
+                <td :colspan="headers.length" class="pa-0">
+
+                  <v-layout row wrap align-center justify-space-between>
+                    <v-btn dark @click="showConfirmationDialog">
+                      {{ $t('votes.vote_button_text') }}
+                    </v-btn>
+                    <pagination v-model="pagination.page" :pages="pages"></pagination>
+                  </v-layout>
+
+                </td>
+              </template>
+            </v-data-table>
           </v-card>
 
         </v-flex>
 
       </v-layout>
     </v-container>
+
+    <v-dialog
+      v-model="dialog"
+      width="500"
+    >
+      <v-card>
+        <v-card-title>
+          <div>
+            <h3 class="headline mb-0">{{ $t('votes.summary_title') }}</h3>
+            <div>
+              {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
+              {{ $t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
+              {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
+              {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
+            </div>
+          </div>
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            flat="flat"
+            @click="dialog = false"
+          >
+            {{ $t('transfer.confirm_cancel') }}
+          </v-btn>
+
+          <v-btn
+            flat="flat"
+            @click="sendVotes"
+          >
+            {{ $t('transfer.confirm_approve') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import AppToolbarCentered from '@/components/AppToolbarCentered'
+import Pagination from '@/components/Pagination'
 
 export default {
   mounted () {
@@ -201,6 +228,13 @@ export default {
           }
         }
       ]
+    },
+    pages () {
+      if (this.pagination.rowsPerPage == null ||
+        this.pagination.totalItems == null
+      ) return 0
+
+      return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
     }
   },
   data: () => ({
@@ -209,13 +243,14 @@ export default {
     headers: [
       { text: 'votes.table_head_name', value: 'username' },
       { text: 'votes.table_head_rank', value: 'rank' },
-      { text: 'votes.table_head_vote', value: '_voted' },
-      { text: '', value: 'expand' }
+      { text: 'votes.table_head_vote', value: '_voted' }
     ],
     pagination: {
-      rowsPerPage: 10
+      rowsPerPage: 10,
+      page: 1
     },
-    waitingForConfirmation: false
+    waitingForConfirmation: false,
+    dialog: false
   }),
   methods: {
     upVote (id) {
@@ -246,6 +281,7 @@ export default {
       }
 
       this.waitingForConfirmation = true
+      this.dialog = false
 
       this.$store.dispatch('delegates/voteForDelegates', {
         votes: [...upVotes, ...downVotes],
@@ -299,10 +335,14 @@ export default {
       } else {
         return `${seconds} ${this.$t('votes.sec')}`
       }
+    },
+    showConfirmationDialog () {
+      this.dialog = true
     }
   },
   components: {
-    AppToolbarCentered
+    AppToolbarCentered,
+    Pagination
   }
 }
 </script>
