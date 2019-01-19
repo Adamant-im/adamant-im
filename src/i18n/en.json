@@ -136,7 +136,7 @@
     "delegate_register_button": "Register delegate",
     "delegates_title": "Delegates",
     "downvote_for_label": "Downvote for:",
-    "enable_bar": "Change browser tab title",
+    "enable_bar": "Allow notifications by browser tab title",
     "enable_bar_tooltip": "Shows new message counter in the tab title. Works on desktop browsers",
     "enable_push": "Allow PUSH notifications",
     "enable_push_tooltip": "Use PUSH notifications (requires your acceptance)",
