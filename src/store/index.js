@@ -15,7 +15,6 @@ import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
 import snackbar from './modules/snackbar'
 import language from './modules/language'
-import noise from './modules/noise'
 import chat from './modules/chat'
 import options from './modules/options'
 import identicon from './modules/identicon'
@@ -95,7 +94,6 @@ const store = {
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes
     snackbar,
-    noise,
     language,
     chat,
     options,
