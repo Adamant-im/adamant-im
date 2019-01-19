@@ -156,14 +156,11 @@ const store = {
       let message = payload.message
 
       let contacts = Object.entries(state.getters.getContacts.list)
-      let recipient
+      let ADMAddress
       contacts.forEach((contact) => {
         const ethAddress = contact[1].ETH
         if (ethAddress === payload.targetAddress) {
-          recipient = {
-            ADMAddress: contact[0],
-            ETHAddress: contact[1].ETH
-          }
+          ADMAddress = contact[0]
         }
       })
       let handledPayload = {
@@ -177,7 +174,7 @@ const store = {
         confirm_class: 'sent',
         id: payload.hash
       }
-      let currentDialog = state.getters.getChats[recipient.ADMAddress]
+      let currentDialog = state.getters.getChats[ADMAddress]
       if (currentDialog) {
         if (handledPayload.message.comments === '') {
           handledPayload.message.comments = 'sent ' + (message.amount) + ' ' + message.fundType
