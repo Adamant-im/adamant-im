@@ -7,8 +7,7 @@ const vuexPersistence = new VuexPersistence({
     return {
       // modules
       language: state.language,
-      options: state.options,
-      nodes: state.nodes
+      options: state.options
     }
   }
 })

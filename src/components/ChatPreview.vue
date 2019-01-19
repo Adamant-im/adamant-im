@@ -73,10 +73,12 @@ export default {
       return this.$store.getters['chat/lastMessageTimestamp'](this.partnerId)
     },
     lastTransaction () {
-      const abstract = transformMessage(this.lastMessage)
+      if (this.lastMessage) {
+        const abstract = transformMessage(this.lastMessage)
 
-      if (abstract.type !== 'message') {
-        return abstract
+        if (abstract.type !== 'message') {
+          return abstract
+        }
       }
 
       return null

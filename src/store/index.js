@@ -40,7 +40,7 @@ const store = {
     setPassphrase (state, passphrase) {
       state.passphrase = Base64.encode(passphrase)
     },
-    resetState (state) {
+    reset (state) {
       state.address = ''
       state.balance = 0
       state.passphrase = ''
@@ -68,12 +68,8 @@ const store = {
           dispatch('afterLogin', passphrase)
         })
     },
-    logout ({ commit }) {
-      commit('resetState')
-
-      window.publicKey = false
-      window.privateKey = false
-      window.secretKey = false
+    logout ({ dispatch }) {
+      dispatch('reset')
     },
     unlock ({ state, dispatch }) {
       const passphrase = Base64.decode(state.passphrase)
@@ -82,6 +78,9 @@ const store = {
 
       // retrieve eth & erc20 data
       dispatch('afterLogin', passphrase)
+    },
+    reset ({ commit }) {
+      commit('reset', null, { root: true })
     }
   },
   plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin],

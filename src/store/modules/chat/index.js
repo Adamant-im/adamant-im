@@ -381,6 +381,12 @@ const mutations = {
       numOfNewMessages: 0,
       readOnly: true
     })
+  },
+
+  reset (state) {
+    state.chats = {}
+    state.lastMessageHeight = 0
+    state.isFulfilled = false
   }
 }
 
@@ -580,6 +586,13 @@ const actions = {
     }
 
     return Promise.reject(new Error('Message not found in history'))
+  },
+  /** Resets module state **/
+  reset: {
+    root: true,
+    handler ({ commit }) {
+      commit('reset')
+    }
   }
 }
 

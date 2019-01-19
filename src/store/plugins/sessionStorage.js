@@ -8,10 +8,7 @@ const vuexPersistence = new VuexPersistence({
       // rootState
       address: state.address,
       balance: state.balance,
-      passphrase: state.passphrase,
-
-      // modules
-      chat: state.chat
+      passphrase: state.passphrase
     }
   }
 })
