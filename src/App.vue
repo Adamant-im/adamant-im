@@ -17,8 +17,13 @@ export default {
     }
   },
   mounted () {
-    this.notifications = new Notifications(this.$i18n, this.$store)
-    this.almostSocket()
+    this.notifications = new Notifications(this)
+    this.interval = window.setInterval(() => {
+      this.$store.dispatch('update')
+    }, 3000)
+  },
+  updated () {
+    this.notifications.update(this)
   },
   beforeDestroy () {
     this.notifications.stop()
@@ -36,14 +41,9 @@ export default {
     }
   },
   data: () => ({
-    intervalRef: null
+    interval: null
   }),
   methods: {
-    almostSocket () {
-      this.intervalRef = setInterval(() => {
-        this.$store.dispatch('update')
-      }, 3000)
-    },
     setLocale () {
       // Set language from `localStorage`.
       //

@@ -1,13 +1,13 @@
 'use strict'
 
-import Blinker from '@/lib/blinker'
 import Notify from 'notifyjs'
 import Visibility from 'visibilityjs'
 
 class PushNotification {
-  constructor (i18n, store) {
-    this.i18n = i18n
-    this.store = store
+  constructor (ctx) {
+    this.i18n = ctx.$i18n
+    this.route = ctx.$route
+    this.store = ctx.$store
     if (Notify.needsPermission) {
       if (Notify.isSupported()) {
         Notify.requestPermission()
@@ -35,76 +35,92 @@ class PushNotification {
     }
   }
   sendNotification () {
-    const notification = new Notify('ADAMANT', this.opts)
+    const notification = new Notify(this.i18n.t('app_title'), this.opts)
     notification.show()
   }
 }
 
 class SoundNotification {
-  constructor (i18n, store) {
-    this.i18n = i18n
-    this.store = store
+  constructor (ctx) {
+    this.i18n = ctx.$i18n
+    this.route = ctx.$route
+    this.store = ctx.$store
+    this.audio = new Audio('/sound/bbpro_link.mp3')
   }
   checkNewMessages (amount) {
     if (amount.unread > amount.prev) {
-      this.store.dispatch('noise/play')
+      this.audio.play()
     }
   }
 }
 
 class TabNotification {
-  constructor (i18n, store) {
-    this.i18n = i18n
-    this.store = store
-    this.blinker = new Blinker(this.i18n.t('app_title'))
+  constructor (ctx) {
+    this.i18n = ctx.$i18n
+    this.route = ctx.$route
+    this.store = ctx.$store
+    this.documentTitle = this.i18n.t('app_title')
   }
   stop () {
-    this.blinker.stop()
+    window.clearInterval(this.interval)
+    this.interval = null
+    document.title = this.documentTitle
   }
   checkNewMessages (unreadAmount, note) {
     if (unreadAmount > 0) {
-      this.blinker.start(unreadAmount % 10 > 4 ? note.many : note.few)
-    } else {
-      this.blinker.stop()
-    }
+      this.notifyMessage = unreadAmount % 10 > 4 ? note.many : note.few
+      let isNotify = false
+      if (this.interval) return
+      this.interval = window.setInterval(() => {
+        isNotify = !isNotify
+        if (isNotify) {
+          document.title = this.notifyMessage
+        } else {
+          document.title = this.documentTitle
+        }
+      }, 1e3)
+    } else this.stop()
   }
 }
 
 export default class Notifications {
-  constructor (i18n, store) {
-    this.i18n = i18n
-    this.store = store
+  constructor (ctx) {
+    this.i18n = ctx.$i18n
+    this.route = ctx.$route
+    this.store = ctx.$store
     /* eslint no-fallthrough: "off" */
     switch (true) {
-      case this.pushAllowed: this.push = new PushNotification(i18n, store)
-      case this.soundAllowed: this.sound = new SoundNotification(i18n, store)
-      case this.tabAllowed: this.tab = new TabNotification(i18n, store)
+      case this.pushAllowed: this.push = new PushNotification(ctx)
+      case this.soundAllowed: this.sound = new SoundNotification(ctx)
+      case this.tabAllowed: this.tab = new TabNotification(ctx)
     }
     this.interval = window.setInterval(() => {
       this.lastUnreadMessage = this.store.getters['chat/lastUnreadMessage']
-      Visibility.onVisible(() => {
-        this.store.commit('chat/markAsRead', this.partnerAddress)
-      })
+      const chatUnread = this.route.params.partner !== this.partnerAddress
+      const pageHidden = Visibility.hidden()
       /* eslint no-fallthrough: "off" */
       switch (true) {
-        case this.pushAllowed: this.push.checkNewMessages(
+        case this.pushAllowed && pageHidden: this.push.checkNewMessages(
           this.lastUnreadMessage, this.partnerIdentity, {
             prev: this.prevMessagesAmount,
             unread: this.unreadMessagesAmount
           }
         )
-        case this.soundAllowed: this.sound.checkNewMessages(
+        case this.soundAllowed && chatUnread: this.sound.checkNewMessages(
           {
             prev: this.prevMessagesAmount,
             unread: this.unreadMessagesAmount
           }
         )
-        case this.tabAllowed: this.tab.checkNewMessages(
+        case this.tabAllowed && chatUnread: this.tab.checkNewMessages(
           this.unreadMessagesAmount, {
             few: this.i18n.tc('notifications.message.few', this.unreadMessagesAmount),
             many: this.i18n.tc('notifications.message.many', this.unreadMessagesAmount)
           }
         )
+      }
+      if (!chatUnread) {
+        this.store.commit('chat/markAsRead', this.partnerAddress)
       }
       this.prevMessagesAmount = this.unreadMessagesAmount
     }, 3e3)
@@ -128,7 +144,10 @@ export default class Notifications {
     return this.store.getters['chat/totalNumOfNewMessages']
   }
   stop () {
-    this.tab.stop()
     window.clearInterval(this.interval)
+    this.tab.stop()
+  }
+  update (ctx) {
+    this.route = ctx.$route
   }
 }
