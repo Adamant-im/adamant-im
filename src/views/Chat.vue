@@ -204,9 +204,7 @@ export default {
       this.scrollToEnd()
     },
     sendTokens (crypto) {
-      console.log('im here')
       this.sendToCrypto = crypto
-
       let promise = Promise.resolve(true)
       // For cryptos other than ADM we need to fetch the respective account address first
       if (crypto !== Cryptos.ADM) {

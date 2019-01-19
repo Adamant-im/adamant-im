@@ -72,9 +72,8 @@ export default function createActions (config) {
 
     sendTokens (context, { amount, admAddress, ethAddress, comments }) {
       ethAddress = ethAddress.trim()
-      const crypto = context.state.crypto
+      const crypto = context.state.crypto.toLowerCase()
       const ethTx = initTransaction(api, context, ethAddress, amount)
-
       return utils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
         .then(count => {
           if (count) ethTx.nonce = count
@@ -83,8 +82,18 @@ export default function createActions (config) {
           tx.sign(toBuffer(context.state.privateKey))
           const serialized = '0x' + tx.serialize().toString('hex')
           const hash = api.sha3(serialized, { encoding: 'hex' })
-
-          if (!admAddress) return serialized
+          context.dispatch('createStubMessage', {
+            targetAddress: ethAddress,
+            message: {
+              amount: amount,
+              comments: comments,
+              type: crypto + '_transaction'
+            },
+            hash: hash },
+          { root: true })
+          if (!admAddress) {
+            return serialized
+          }
           // Send a special message to indicate that we're performing an ETH transfer
           const type = crypto.toLowerCase() + '_transaction'
           const msg = { type, amount, hash, comments }
@@ -121,7 +130,6 @@ export default function createActions (config) {
               timestamp: Date.now(),
               gasPrice: ethTx.gasPrice
             }])
-
             context.dispatch('getTransaction', { hash, isNew: true, direction: 'from' })
 
             return hash
@@ -137,7 +145,6 @@ export default function createActions (config) {
     getTransaction (context, payload) {
       const existing = context.state.transactions[payload.hash]
       if (existing && existing.status !== 'PENDING') return
-
       // Set a stub so far
       context.commit('transactions', [{
         hash: payload.hash,
@@ -146,7 +153,6 @@ export default function createActions (config) {
         status: 'PENDING',
         direction: payload.direction
       }])
-
       const key = 'transaction:' + payload.hash
       const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
         if (!err && tx && tx.input) {
@@ -194,7 +200,6 @@ export default function createActions (config) {
             status: tx.status ? 'SUCCESS' : 'ERROR'
           }])
         }
-
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
           context.commit('transactions', [{ hash: tx.hash, status: 'ERROR' }])

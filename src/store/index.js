@@ -89,6 +89,16 @@ export function replaceMessageAndDelete (messages, newMessageId, existMessageId,
   }
 }
 
+function deleteMessage (state, payload) {
+  if (!state.chats[payload.recipientId]) {
+    return
+  }
+  const messages = state.chats[payload.recipientId].messages
+  if (payload.message.hash) {
+    Vue.delete(messages, payload.message.hash)
+  }
+}
+
 export function changeMessageClass (messages, id, cssClass) {
   Vue.set(messages[id], 'confirm_class', cssClass)
 }
@@ -140,6 +150,44 @@ const store = {
     userPasswordExists: sessionStorage.getItem('userPassword') !== null
   },
   actions: {
+    createStubMessage (state, payload) {
+      const timestamp = utils.epochTime()
+      // Build chat message
+      let message = payload.message
+
+      let contacts = Object.entries(state.getters.getContacts.list)
+      let ADMAddress
+      contacts.forEach((contact) => {
+        const ethAddress = contact[1].ETH
+        if (ethAddress === payload.targetAddress) {
+          ADMAddress = contact[0]
+        }
+      })
+      let handledPayload = {
+        timestamp: timestamp,
+        message: {
+          amount: message.amount,
+          comments: message.comments || '',
+          type: message.type
+        },
+        direction: 'from',
+        confirm_class: 'sent',
+        id: payload.hash
+      }
+      let currentDialog = state.getters.getChats[ADMAddress]
+      if (currentDialog) {
+        if (handledPayload.message.comments === '') {
+          handledPayload.message.comments = 'sent ' + (message.amount) + ' ' + message.fundType
+          handledPayload.message.comments = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
+          updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
+          handledPayload.message.comments = ''
+        } else {
+          handledPayload.message.comments = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
+          updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
+        }
+        Vue.set(currentDialog.messages, handledPayload.id, handledPayload)
+      }
+    },
     update_delegates_grid ({ commit }, payload) {
       commit('update_delegate', payload)
     },
@@ -593,6 +641,14 @@ const store = {
         updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.id)
       }
 
+      if (currentDialogs.last_message.id === payload.message.hash) {
+        updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.message.hash)
+      }
+
+      if (payload.type === 8 && payload.message.hash) {
+        deleteMessage(state, payload)
+      }
+
       payload.confirm_class = 'unconfirmed'
 
       if (payload.height && direction === 'from') {
@@ -624,6 +680,17 @@ const store = {
   },
   plugins: [storeData(), nodesPlugin],
   getters: {
+    checkForActiveNode: state => {
+      let activeNodeIsExist = false
+      const nodeList = Object.values(state.nodes.list)
+      for (const node of nodeList) {
+        if (node.active) {
+          activeNodeIsExist = node.active
+          break
+        }
+      }
+      return activeNodeIsExist
+    },
     // Returns decoded pass phrase from store
     getPassPhrase: state => {
       if (state.passPhrase.match(base64regex)) {
