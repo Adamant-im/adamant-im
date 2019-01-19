@@ -410,16 +410,11 @@ function getI18nMessage (message, senderId) {
   // P.S. I hate this function, but there's no way to get rid of it now.
 
   const isI18n =
-    (message.indexOf('chats.welcome_message') > -1 && senderId === 'U15423595369615486571') ||
-    (message.indexOf('chats.preico_message') > -1 && senderId === 'U7047165086065693428') ||
-    (message.indexOf('chats.ico_message') > -1 && senderId === 'U7047165086065693428')
+    (message.indexOf('chats.welcome_message') > -1 && senderId === 'U15423595369615486571')
 
   if (isI18n) {
     if (senderId === 'U15423595369615486571') {
       return 'chats.welcome_message'
-    }
-    if (senderId === 'U7047165086065693428') {
-      return 'chats.ico_message'
     }
   }
 
