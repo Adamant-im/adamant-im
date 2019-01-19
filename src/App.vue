@@ -160,4 +160,12 @@ export default {
     #fefefe 0,
     #fefefe 5px
   )
+.theme--dark.application--linear-gradient
+  background: repeating-linear-gradient(
+    140deg,
+    #191919,
+    #191919 1px,
+    #212121 0,
+    #212121 5px
+  )
 </style>

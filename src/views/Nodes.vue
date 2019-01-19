@@ -2,7 +2,7 @@
   <div>
     <app-toolbar-centered
       :title="$t('options.nodes_list')"
-      :show-back="false"
+      :show-back="true"
       flat
     />
 

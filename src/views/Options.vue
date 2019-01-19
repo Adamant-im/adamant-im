@@ -2,7 +2,7 @@
   <div>
     <app-toolbar-centered
       :title="$t('options.page_title')"
-      :show-back="false"
+      :show-back="true"
       flat
     />
 

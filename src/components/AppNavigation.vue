@@ -91,11 +91,24 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="stylus" scoped>
 /**
  * Disable grayscale filter.
  */
 .app-navigation >>> .v-btn:not(.v-btn--active) {
   filter: unset;
 }
+
+/**
+ * 1. Add linear-gradient for active navigation element.
+ */
+.theme--dark
+  .app-navigation >>> .v-btn.v-btn--active
+    background: repeating-linear-gradient( // [1]
+      140deg,
+      #191919,
+      #191919 1px,
+      #212121 0,
+      #212121 5px
+    ) !important
 </style>
