@@ -32,7 +32,7 @@
                       <div v-if="(chat.last_message.amount > 0 && chat.last_message.direction === 'from') || chat.last_message.direction === 'from'" class="message-status-block" :message-status="chat.last_message.confirm_class"></div>
                       <chat-entry v-if="chat.last_message.amount > 0 && chat.last_message.direction === 'from'" :message="chat.last_message" :brief="true"></chat-entry>
                       <chat-entry v-else :message="chat.last_message" :brief="true" class="for-received"></chat-entry>
-                      <div v-if="chat.last_message.amount > 0 && chat.last_message.direction === 'to'" class="message-status-block-for-received" :message-status="chat.last_message.confirm_class"></div>
+                      <div v-if="(chat.last_message.amount || chat.last_message.message.amount > 0) && chat.last_message.direction === 'to'" class="message-status-block-for-received" :message-status="chat.last_message.confirm_class"></div>
                     </div>
                     <span class="dt" v-if="chat.last_message.timestamp">{{ $formatDate(chat.last_message.timestamp) }}</span>
                 </div>

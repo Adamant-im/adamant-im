@@ -100,7 +100,6 @@ export default function createActions (config) {
 
           return admApi.sendSpecialMessage(admAddress, msg).then(result => {
             if (result.success) {
-              console.log('ADM message has been sent', msg, result.transactionId)
               return serialized
             } else {
               console.log(`Failed to send "${type}"`, result)
@@ -169,7 +168,7 @@ export default function createActions (config) {
 
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
-          context.commit('transactions', [{ hash: tx.hash, status: 'ERROR' }])
+          context.commit('transactions', [{ hash: null, status: 'ERROR' }])
         } else if (err || (tx && !tx.blockNumber) || (!tx && payload.isNew)) {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far

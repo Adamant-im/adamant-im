@@ -4,6 +4,7 @@
     :direction="message.direction"
     :timestamp="message.timestamp"
     :brief="brief"
+    :amount="message.message.amount"
   >
     <p>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</p>
     <p class='transaction-amount' v-on:click="goToTransaction()">
@@ -12,7 +13,7 @@
     <p><em v-text="message.message.comments"></em></p>
 
     <template slot="brief-view">
-      <span>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</span>&nbsp;
+      <span>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }} </span>
       <span v-text="message.message.amount"></span> {{ crypto }}
     </template>
   </chat-entry-template>
@@ -68,8 +69,7 @@ export default {
       const type = this.message.message && this.message.message.type
       if (!type) return Cryptos.ETH
 
-      const crypto = type.substr(0, type.indexOf('_')).toUpperCase()
-      return crypto
+      return type.substr(0, type.indexOf('_')).toUpperCase()
     }
   }
 }
