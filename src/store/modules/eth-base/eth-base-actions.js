@@ -84,7 +84,19 @@ export default function createActions (config) {
           const serialized = '0x' + tx.serialize().toString('hex')
           const hash = api.sha3(serialized, { encoding: 'hex' })
 
-          if (!admAddress) return serialized
+          context.dispatch('createStubMessage', {
+            targetAddress: address,
+            message: {
+              amount: amount,
+              comments: comments,
+              type: crypto + '_transaction'
+            },
+            hash: hash
+          }, { root: true })
+
+          if (!admAddress) {
+            return serialized
+          }
           // Send a special message to indicate that we're performing an ETH transfer
           const type = crypto.toLowerCase() + '_transaction'
           const msg = { type, amount, hash, comments }
@@ -121,7 +133,6 @@ export default function createActions (config) {
               timestamp: Date.now(),
               gasPrice: ethTx.gasPrice
             }])
-
             context.dispatch('getTransaction', { hash, isNew: true, direction: 'from' })
 
             return hash
@@ -196,7 +207,6 @@ export default function createActions (config) {
             status: tx.status ? 'SUCCESS' : 'ERROR'
           }])
         }
-
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
           context.commit('transactions', [{ hash: tx.hash, status: 'ERROR' }])

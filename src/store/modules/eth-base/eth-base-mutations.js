@@ -28,7 +28,6 @@ export default {
     let maxHeight = 0
 
     const address = state.address
-
     transactions.forEach(tx => {
       if (!tx) return
 

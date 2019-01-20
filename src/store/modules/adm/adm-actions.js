@@ -52,8 +52,13 @@ export default {
         let chats = context.rootGetters.getChats
         response.transactions.forEach(tx => {
           context.dispatch('updateChatHeight', tx.height, { root: true })
-          if (tx.recipientId !== currentAdmAddress) {
-            // Means that transaction is not for this user. Impossible case. But nonetheless
+          if (tx.recipientId !== currentAdmAddress && tx.senderId === currentAdmAddress && chats[tx.recipientId]) {
+            // Update sent message
+            Vue.set(chats[tx.recipientId].messages, tx.id, {
+              ...tx,
+              direction: 'from',
+              confirmation_class: 'confirmed'
+            })
             return
           }
           const senderId = tx.senderId
