@@ -4,6 +4,14 @@ import axios from 'axios'
 import networks from './networks'
 import getEnpointUrl from '../getEndpointUrl'
 
+const getUnique = values => {
+  const map = values.reduce((m, v) => {
+    m[v] = 1
+    return m
+  }, { })
+  return Object.keys(map)
+}
+
 export default class BtcBaseApi {
   constructor (crypto, passphrase) {
     const network = this._network = networks[crypto]
@@ -82,10 +90,10 @@ export default class BtcBaseApi {
   /**
    * Retrieves transactions for the specified address
    * @abstract
-   * @param {number=} from retrieve transactions starting from the specified position
+   * @param {any} options crypto-specific options
    * @returns {Promise<{hasMore: boolean, items: Array}>}
    */
-  getTransactions (from = 0) {
+  getTransactions (options) {
     return Promise.resolve({ hasMore: false, items: [] })
   }
 
@@ -143,5 +151,55 @@ export default class BtcBaseApi {
       })
     }
     return this._clients[url]
+  }
+
+  _mapTransaction (tx) {
+    const senders = getUnique(tx.vin.map(x => x.addr))
+    const senderId = senders.length === 1 ? senders[0] : null
+
+    const direction = senders.includes(this._address) ? 'from' : 'to'
+
+    const recipients = getUnique(tx.vout.reduce((list, out) => {
+      list.push(...out.scriptPubKey.addresses)
+      return list
+    }, []))
+
+    if (direction === 'from') {
+      // Disregard our address for the outgoing transaction
+      const idx = recipients.indexOf(this._address)
+      if (idx >= 0) recipients.splice(idx, 1)
+    }
+    const recipientId = recipients.length === 1 ? recipients[0] : null
+
+    // Calculate amount from outputs:
+    // * for the outgoing transactions take outputs that DO NOT target us
+    // * for the incoming transactions take ouputs that DO target us
+    let amount = tx.vout.reduce((sum, t) =>
+      ((direction === 'to') === (t.scriptPubKey.addresses.includes(this._address)) ? sum + Number(t.value) : sum), 0)
+
+    const confirmations = tx.confirmations
+    const timestamp = tx.time * 1000
+
+    let fee = tx.fees
+    if (!fee) {
+      const totalIn = tx.vin.reduce((sum, x) => sum + x.value, 0)
+      const totalOut = tx.vout.reduce((sum, x) => sum + x.value, 0)
+      fee = totalIn - totalOut
+    }
+
+    return {
+      id: tx.txid,
+      hash: tx.txid,
+      fee,
+      status: confirmations > 0 ? 'SUCCESS' : 'PENDING',
+      timestamp,
+      direction,
+      senders,
+      senderId,
+      recipients,
+      recipientId,
+      amount,
+      confirmations
+    }
   }
 }

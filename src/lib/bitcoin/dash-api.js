@@ -1,14 +1,5 @@
-import bitcoin from 'bitcoinjs-lib'
 import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
-
-const getUnique = values => {
-  const map = values.reduce((m, v) => {
-    m[v] = 1
-    return m
-  }, { })
-  return Object.keys(map)
-}
 
 class DashApiError extends Error {
   constructor (method, error) {
@@ -51,6 +42,32 @@ export default class DashApi extends BtcBaseApi {
   }
 
   /** @override */
+  getTransaction (txid) {
+    return this._invoke('getrawtransaction', [txid, true])
+      .then(result => this._mapTransaction(result))
+  }
+
+  /** @override */
+  getTransactions (options) {
+    return this._invoke('getaddresstxids', [this._address])
+      .then(txids => {
+        const excludes = options.excludes || []
+        return txids
+          .filter(x => !excludes.includes(x))
+          .map(x => ({
+            method: 'getrawtransaction',
+            params: [x, true]
+          }))
+      })
+      .then(calls => this._invokeMany(calls))
+      .then(results => results
+        .filter(x => !x.error && x.result)
+        .map(x => this._mapTransaction(x.result))
+      )
+      .then(items => ({ hasMore: false, items }))
+  }
+
+  /** @override */
   _getUnspents () {
     return this._invoke('getaddressutxos', [this.address]).then(result => {
       if (!Array.isArray(result)) return []
@@ -60,6 +77,14 @@ export default class DashApi extends BtcBaseApi {
         amount: x.satoshis,
         vout: x.outputIndex
       }))
+    })
+  }
+
+  /** @override */
+  _mapTransaction (tx) {
+    return super._mapTransaction({
+      ...tx,
+      vin: tx.vin.map(x => ({ ...x, addr: x.address }))
     })
   }
 
@@ -77,41 +102,8 @@ export default class DashApi extends BtcBaseApi {
       })
   }
 
-  _parseTransaction (id, txHex) {
-    const tx = bitcoin.Transaction.fromHex(txHex)
-
-    const senders = getUnique(tx.ins.map(this._getInputAddress).filter(x => x))
-    const recipients = getUnique(tx.outs.map(this._getOutputAddress).filter(x => x))
-
-    return {
-      id,
-      hash: id,
-      senders,
-      recipients
-    }
-  }
-
-  _getInputAddress (input) {
-    try {
-      // Inspired by https://github.com/dashevo/dashcore-lib/blob/v0.16.3/lib/script/script.js#L962
-      const sig = bitcoin.script.decompile(input.script)
-      const hash = bitcoin.crypto.ripemd160(bitcoin.crypto.sha256(sig[sig.length - 1]))
-      const addr = bitcoin.address.toBase58Check(hash, this._network.pubKeyHash)
-      return addr
-    } catch (e) {
-      // Don't care
-      return ''
-    }
-  }
-
-  _getOutputAddress (output) {
-    try {
-      const buf = Buffer.from(output.script, 3, 20)
-      const addr = bitcoin.address.fromOutputScript(buf, this._network)
-      return addr
-    } catch (e) {
-      // Never mind
-      return ''
-    }
+  _invokeMany (calls) {
+    return this._getClient().post(calls)
+      .then(response => response.data)
   }
 }
