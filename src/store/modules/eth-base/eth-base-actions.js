@@ -199,6 +199,21 @@ export default function createActions (config) {
 
       const supplier = () => api.eth.getTransactionReceipt.request(payload.hash, (err, tx) => {
         if (!err && tx && checkBlockCount(tx, context.rootState)) {
+          // For sync last chat message with transaction state
+          if (tx.from === context.rootState.eth.address) {
+            let contacts = Object.entries(context.rootGetters.getContacts.list)
+            let ADMAddress
+            contacts.forEach((contact) => {
+              const ethAddress = contact[1].ETH
+              if (ethAddress && ethAddress.toString().toUpperCase() === tx.to.toUpperCase()) {
+                ADMAddress = contact[0]
+                let currentDialogs = context.rootState.chats[ADMAddress]
+                if (currentDialogs.last_message.id === tx.transactionHash) {
+                  currentDialogs.last_message.confirm_class = 'confirmed'
+                }
+              }
+            })
+          }
           context.commit('transactions', [{
             hash: payload.hash,
             fee: utils.calculateFee(tx.gasUsed, gasPrice),
