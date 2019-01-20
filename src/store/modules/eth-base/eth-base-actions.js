@@ -13,7 +13,11 @@ const MAX_ATTEMPTS = 150
 const CHUNK_SIZE = 25
 
 function checkBlockCount (transaction, rootState) {
-  return Number(transaction.blockNumber) !== 0 && (Number(transaction.blockNumber) < Number(rootState.eth.blockNumber))
+  if (transaction.blockNumber) {
+    return Number(transaction.blockNumber) !== 0 && (Number(transaction.blockNumber) < Number(rootState.eth.blockNumber))
+  } else {
+    return false
+  }
 }
 
 export default function createActions (config) {
