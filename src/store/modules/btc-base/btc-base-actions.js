@@ -5,6 +5,7 @@ const MAX_ATTEMPTS = 60
 
 export default options => {
   const Api = options.apiCtor || BtcBaseApi
+  const { getNewTransactions, getOldTransactions } = options
 
   /** @type {BtcBaseApi} */
   let api = null
@@ -149,6 +150,20 @@ export default options => {
             setTimeout(() => context.dispatch('getTransaction', newPayload), 3000)
           }
         })
+    },
+
+    getNewTransactions (context) {
+      if (api && typeof getNewTransactions === 'function') {
+        return getNewTransactions(api, context)
+      }
+      return Promise.resolve()
+    },
+
+    getOldTransactions (context) {
+      if (api && typeof getOldTransactions === 'function') {
+        return getOldTransactions(api, context)
+      }
+      return Promise.resolve()
     }
   }
 }

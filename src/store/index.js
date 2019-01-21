@@ -10,6 +10,7 @@ import partnersModule from './modules/partners'
 import admModule from './modules/adm'
 import nodesModule from './modules/nodes'
 import dogeModule from './modules/doge'
+import dashModule from './modules/dash'
 
 import delegatesModule from './modules/delegates'
 
@@ -677,7 +678,8 @@ const store = {
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes
-    doge: dogeModule
+    doge: dogeModule,
+    dash: dashModule
   }
 }
 
