@@ -1,6 +1,9 @@
 import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
 
+/** Fee for sending tokens */
+export const TX_FEE = 0.001
+
 class DashApiError extends Error {
   constructor (method, error) {
     super('Dash API returned an error')
@@ -18,9 +21,6 @@ class DashApiError extends Error {
 export default class DashApi extends BtcBaseApi {
   constructor (passphrase) {
     super(Cryptos.DASH, passphrase)
-
-    this._getInputAddress = this._getInputAddress.bind(this)
-    this._getOutputAddress = this._getOutputAddress.bind(this)
   }
 
   /**
@@ -32,8 +32,8 @@ export default class DashApi extends BtcBaseApi {
   }
 
   /** @override */
-  getFee (amount) {
-    return Math.floor(amount * 0.05)
+  getFee () {
+    return TX_FEE
   }
 
   /** @override */

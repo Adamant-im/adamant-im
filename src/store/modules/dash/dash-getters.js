@@ -1,7 +1,10 @@
 import baseGetters from '../btc-base/btc-base-getters'
+import { TX_FEE } from '../../../lib/bitcoin/dash-api'
 
 export default {
   ...baseGetters,
 
-  fee: () => 1
+  fee () {
+    return TX_FEE
+  }
 }
