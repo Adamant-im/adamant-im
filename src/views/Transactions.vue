@@ -54,7 +54,7 @@ export default {
       return this.$store.state.address
     },
     crypto () {
-      return ['ADM', 'ETH', 'BNB'].includes(this.$route.params.crypto)
+      return this.$route.params.crypto in Cryptos
         ? this.$route.params.crypto
         : 'ADM'
     },

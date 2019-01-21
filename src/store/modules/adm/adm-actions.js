@@ -77,8 +77,8 @@ export default {
    * @param {any} context Vuex action context
    * @param {string} id transaction ID
    */
-  getTransaction (context, id) {
-    admApi.getTransaction(id).then(
+  getTransaction (context, { hash }) {
+    admApi.getTransaction(hash).then(
       transaction => context.commit('transactions', [transaction])
     )
   }

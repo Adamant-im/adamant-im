@@ -1,43 +1,23 @@
-import * as admApi from '../../../lib/adamant-api'
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { Fees, ETH_TRANSFER_GAS } from '../../../lib/constants'
-
-const KVS_ADDRESS = 'eth:address'
+import { ETH_TRANSFER_GAS } from '../../../lib/constants'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
 /** Status update interval */
 const STATUS_INTERVAL = 8000
 
-// const CHUNK_SIZE = 25
-
-let isAddressBeingStored = null
 /**
  * Stores ETH address to the Adamant KVS if it's not there yet
  * @param {*} context
  */
 function storeEthAddress (context) {
-  if (isAddressBeingStored) return
-  if (!admApi.isReady()) return
-  if (!context.state.address) return
-  if (context.rootState.balance < Fees.KVS) return
-  if (context.state.isPublished) return
-
-  isAddressBeingStored = true
-  admApi.getStored(KVS_ADDRESS)
-    .then(address => (address)
-      ? true
-      : admApi.storeValue(KVS_ADDRESS, context.state.address).then(response => response.success)
-    )
-    .then(
-      success => {
-        isAddressBeingStored = false
-        if (success) context.commit('isPublished')
-      },
-      () => { isAddressBeingStored = false }
-    )
+  const payload = {
+    crypto: context.state.crypto,
+    address: context.state.address
+  }
+  context.dispatch('storeCryptoAddress', payload, { root: true })
 }
 
 const initTransaction = (api, context, ethAddress, amount) => {
