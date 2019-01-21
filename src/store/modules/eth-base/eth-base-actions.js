@@ -234,10 +234,18 @@ export default function createActions (config) {
         limit
       }
 
-      return getTransactions(options).then(result => {
-        context.commit('transactions', result.items)
-        context.commit('areTransactionsLoading', false)
-      })
+      context.commit('areRecentLoading', true)
+
+      return getTransactions(options).then(
+        result => {
+          context.commit('areRecentLoading', false)
+          context.commit('transactions', result.items)
+        },
+        error => {
+          context.commit('areRecentLoading', false)
+          return Promise.reject(error)
+        }
+      )
     },
 
     getOldTransactions (context) {
@@ -255,14 +263,22 @@ export default function createActions (config) {
         options.to = minHeight - 1
       }
 
-      return getTransactions(options).then(result => {
-        context.commit('transactions', result.items)
-        context.commit('areTransactionsLoading', false)
+      context.commit('areOlderLoading', true)
 
-        if (!result.items.length) {
-          context.commit('bottom')
+      return getTransactions(options).then(
+        result => {
+          context.commit('areOlderLoading', false)
+          context.commit('transactions', result.items)
+
+          if (!result.items.length) {
+            context.commit('bottom')
+          }
+        },
+        error => {
+          context.commit('areOlderLoading', false)
+          return Promise.reject(error)
         }
-      })
+      )
     }
   }
 }

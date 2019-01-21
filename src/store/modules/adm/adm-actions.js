@@ -113,19 +113,28 @@ export default {
       options.to = context.state.minHeight - 1
     }
 
-    return admApi.getTransactions(options).then(response => {
-      const hasResult = Array.isArray(response.transactions) && response.transactions.length
+    context.commit('areTransactionsLoading', true)
 
-      if (hasResult) {
-        context.commit('transactions', response.transactions)
-      }
+    return admApi.getTransactions(options).then(
+      response => {
+        context.commit('areTransactionsLoading', false)
+        const hasResult = Array.isArray(response.transactions) && response.transactions.length
 
-      // Successful but empty response means, that the oldest transaction for the current
-      // address has been received already
-      if (response.success && !hasResult) {
-        context.commit('bottom')
+        if (hasResult) {
+          context.commit('transactions', response.transactions)
+        }
+
+        // Successful but empty response means, that the oldest transaction for the current
+        // address has been received already
+        if (response.success && !hasResult) {
+          context.commit('bottom')
+        }
+      },
+      error => {
+        context.commit('areTransactionsLoading', false)
+        return Promise.reject(error)
       }
-    })
+    )
   },
 
   /**
