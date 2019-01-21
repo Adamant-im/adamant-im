@@ -174,7 +174,7 @@ export default {
         return this.$store.dispatch(this.crypto.toLowerCase() + '/sendTokens', {
           amount: this.targetAmount,
           admAddress: this.fixedAddress,
-          ethAddress: this.targetAddress,
+          address: this.targetAddress,
           comments: this.comments
         })
       }
@@ -287,7 +287,7 @@ export default {
           fixedPoint = this.exponent
         }
       }
-      const commission = (this.crypto === Cryptos.ADM || this.crypto === Cryptos.ETH) ? this.commission : 0
+      const commission = isErc20(this.crypto) ? 0 : this.commission
       this.finalAmount = (parseFloat(to) + parseFloat(commission)).toFixed(fixedPoint)
     },
     'language' (to, from) {

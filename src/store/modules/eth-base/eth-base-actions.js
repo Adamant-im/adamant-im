@@ -70,10 +70,11 @@ export default function createActions (config) {
       }
     },
 
-    sendTokens (context, { amount, admAddress, ethAddress, comments }) {
-      ethAddress = ethAddress.trim()
-      const crypto = context.state.crypto.toLowerCase()
-      const ethTx = initTransaction(api, context, ethAddress, amount)
+    sendTokens (context, { amount, admAddress, address, comments }) {
+      address = address.trim()
+      const crypto = context.state.crypto
+      const ethTx = initTransaction(api, context, address, amount)
+
       return utils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
         .then(count => {
           if (count) ethTx.nonce = count
@@ -82,15 +83,17 @@ export default function createActions (config) {
           tx.sign(toBuffer(context.state.privateKey))
           const serialized = '0x' + tx.serialize().toString('hex')
           const hash = api.sha3(serialized, { encoding: 'hex' })
+
           context.dispatch('createStubMessage', {
-            targetAddress: ethAddress,
+            targetAddress: address,
             message: {
               amount: amount,
               comments: comments,
               type: crypto + '_transaction'
             },
-            hash: hash },
-          { root: true })
+            hash: hash
+          }, { root: true })
+
           if (!admAddress) {
             return serialized
           }
@@ -123,7 +126,7 @@ export default function createActions (config) {
             context.commit('transactions', [{
               hash,
               senderId: ethTx.from,
-              recipientId: ethAddress,
+              recipientId: address,
               amount,
               fee: utils.calculateFee(ethTx.gas, ethTx.gasPrice),
               status: 'PENDING',
@@ -140,19 +143,23 @@ export default function createActions (config) {
     /**
      * Enqueues a background request to retrieve the transaction details
      * @param {object} context Vuex action context
-     * @param {{hash: string, timestamp: number, amount: number, direction: 'from' | 'to'}} payload hash and timestamp of the transaction to fetch
+     * @param {{hash: string, force: boolean, timestamp: number, amount: number, direction: 'from' | 'to'}} payload hash and timestamp of the transaction to fetch
      */
     getTransaction (context, payload) {
       const existing = context.state.transactions[payload.hash]
-      if (existing && existing.status !== 'PENDING') return
+      if (existing && existing.status !== 'PENDING' && !payload.force) return
+
       // Set a stub so far
-      context.commit('transactions', [{
-        hash: payload.hash,
-        timestamp: payload.timestamp,
-        amount: payload.amount,
-        status: 'PENDING',
-        direction: payload.direction
-      }])
+      if (!existing || existing.status === 'ERROR') {
+        context.commit('transactions', [{
+          hash: payload.hash,
+          timestamp: payload.timestamp,
+          amount: payload.amount,
+          status: 'PENDING',
+          direction: payload.direction
+        }])
+      }
+
       const key = 'transaction:' + payload.hash
       const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
         if (!err && tx && tx.input) {
