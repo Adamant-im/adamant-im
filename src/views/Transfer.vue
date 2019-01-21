@@ -61,6 +61,7 @@
               @close="onClose"
               ref="confirm_transfer_dialog">
       </md-dialog-confirm>
+      <Spinner v-if="showLoader"></Spinner>
   </div>
 </template>
 
@@ -96,6 +97,7 @@ export default {
       }
       if (type !== 'ok') return
       this.isWaiting = true
+      this.showLoader = true
       this.sendTokens().then(
         hash => {
           this.isWaiting = false
@@ -103,20 +105,24 @@ export default {
           if (!hash) {
             // No hash: transaction has been rejected
             this.errorMessage('error_transaction_send')
+            this.showLoader = false
             return
           }
 
           if (this.fixedAddress) {
             // Go back to chat if we came from there
+            this.showLoader = false
             this.$router.push({ name: 'Chat', params: { partner: this.fixedAddress } })
           } else {
             // View the newly created transaction
             const params = { crypto: this.crypto, tx_id: hash }
+            this.showLoader = false
             this.$router.push({ name: 'Transaction', params })
           }
         },
         err => {
           console.error(err)
+          this.showLoader = false
           this.isWaiting = false
           this.errorMessage('error_transaction_send')
         }
@@ -303,7 +309,8 @@ export default {
       targetAmount: '',
       crypto: this.fixedCrypto || Cryptos.ADM,
       comments: '',
-      isWaiting: false
+      isWaiting: false,
+      showLoader: false
     }
   },
   props: ['fixedCrypto', 'fixedAddress']

@@ -647,7 +647,7 @@ const store = {
         updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.id)
       }
 
-      if (currentDialogs.last_message.id === payload.message.hash) {
+      if (currentDialogs.last_message.id === payload.message.hash && payload.direction === 'to') {
         updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.message.hash)
       }
 
