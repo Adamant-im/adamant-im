@@ -48,7 +48,7 @@ export default {
   },
   mounted () {
     let innerText = this.$refs.chatEntry.innerText
-    const currencies = ['ADM', 'ETH', 'BNB', 'BZ']
+    const currencies = ['ADM', 'ETH', 'BNB', 'BZ', 'DOGE']
     let checkCurrency = false
     currencies.forEach(currency => {
       checkCurrency = checkForCurrency(innerText, currency)
