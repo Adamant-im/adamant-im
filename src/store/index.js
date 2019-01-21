@@ -91,6 +91,16 @@ export function replaceMessageAndDelete (messages, newMessageId, existMessageId,
   }
 }
 
+function deleteMessage (state, payload) {
+  if (!state.chats[payload.recipientId]) {
+    return
+  }
+  const messages = state.chats[payload.recipientId].messages
+  if (payload.message.hash) {
+    Vue.delete(messages, payload.message.hash)
+  }
+}
+
 export function changeMessageClass (messages, id, cssClass) {
   Vue.set(messages[id], 'confirm_class', cssClass)
 }
@@ -142,6 +152,47 @@ const store = {
     userPasswordExists: sessionStorage.getItem('userPassword') !== null
   },
   actions: {
+    createStubMessage (state, payload) {
+      const timestamp = utils.epochTime()
+      // Build chat message
+      let message = payload.message
+
+      let contacts = Object.entries(state.getters.getContacts.list)
+      let ADMAddress
+      contacts.forEach((contact) => {
+        const ethAddress = contact[1].ETH
+        if (ethAddress === payload.targetAddress) {
+          ADMAddress = contact[0]
+        }
+      })
+      let handledPayload = {
+        timestamp: timestamp,
+        message: {
+          amount: message.amount,
+          comments: message.comments || '',
+          type: message.type
+        },
+        direction: 'from',
+        confirm_class: 'sent',
+        id: payload.hash
+      }
+      let currentDialog = state.getters.getChats[ADMAddress]
+      if (currentDialog) {
+        if (handledPayload.message.comments === '') {
+          handledPayload.message.comments = 'sent ' + (message.amount) + ' ' + message.fundType
+          handledPayload.message.comments = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
+          updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
+          handledPayload.message.comments = ''
+        } else {
+          handledPayload.message.comments = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
+          updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
+        }
+        Vue.set(currentDialog.messages, handledPayload.id, handledPayload)
+      }
+    },
+    update_delegates_grid ({ commit }, payload) {
+      commit('update_delegate', payload)
+    },
     add_chat_i18n_message ({ commit }, payload) {
       payload.message = i18n.t(payload.message)
       commit('add_chat_message', payload)
@@ -330,6 +381,9 @@ const store = {
         }
       )
     },
+    updateChatHeight (context, payload) {
+      context.commit('set_last_chat_height', payload)
+    },
     /**
      * Updates current application status: balance, chat messages, transactions and so on
      * @param {any} context Vuex action context
@@ -363,6 +417,9 @@ const store = {
     }
   },
   mutations: {
+    set_adm_address (state, payload) {
+      state.address = payload
+    },
     set_first_load (state) {
       state.firstChatLoad = true
     },
@@ -371,6 +428,9 @@ const store = {
     },
     user_password_exists (state, payload) {
       state.userPasswordExists = payload
+    },
+    update_delegate (state, payload) {
+      state.delegates[payload.address] = payload
     },
     last_visited_chat (state, payload) {
       state.lastVisitedChat = payload
@@ -427,7 +487,6 @@ const store = {
       state.showPanel = false
       state.showBottom = true
       state.transactions = {}
-      state.delegates = {}
       state.originDelegates = {}
       state.chats = {}
       state.newChats = {}
@@ -589,6 +648,14 @@ const store = {
         updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.id)
       }
 
+      if (currentDialogs.last_message.id === payload.message.hash) {
+        updateLastChatMessage(currentDialogs, payload, confirmClass, direction, payload.message.hash)
+      }
+
+      if (payload.type === 8 && payload.message.hash) {
+        deleteMessage(state, payload)
+      }
+
       payload.confirm_class = 'unconfirmed'
 
       if (payload.height && direction === 'from') {
@@ -620,6 +687,17 @@ const store = {
   },
   plugins: [storeData(), nodesPlugin],
   getters: {
+    checkForActiveNode: state => {
+      let activeNodeIsExist = false
+      const nodeList = Object.values(state.nodes.list)
+      for (const node of nodeList) {
+        if (node.active) {
+          activeNodeIsExist = node.active
+          break
+        }
+      }
+      return activeNodeIsExist
+    },
     // Returns decoded pass phrase from store
     getPassPhrase: state => {
       if (state.passPhrase.match(base64regex)) {
@@ -667,13 +745,14 @@ const store = {
     getAdmAddress: state => {
       return state.address
     },
-    getState: state => {
-      return state
+    getDelegateList: state => {
+      return state.delegates.delegates || []
     }
   },
   modules: {
     eth: ethModule, // Ethereum-related data
     bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
+    bz: erc20Module(Cryptos.BZ, '0x4375e7ad8a01b8ec3ed041399f62d9cd120e0063', 18),
     adm: admModule, // ADM transfers
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen

@@ -117,7 +117,7 @@
               {{$t('votes.upvotes')}}: <strong>{{ upvotedCount }}</strong>,&nbsp;
               {{$t('votes.downvotes')}}: <strong>{{ downvotedCount }}</strong>,&nbsp;
               {{$t('votes.total_new_votes')}}: <strong>{{ downvotedCount + upvotedCount }}</strong> / {{ voteRequestLimit }},&nbsp;
-              {{$t('votes.total_votes')}}: <strong>{{ originVotesCount }} / {{ delegates.length }}</strong>
+              {{$t('votes.total_votes')}}: <strong>{{ originVotesCount }} / {{ delegatesLength }}</strong>
             </div>
           </md-card-header>
           <md-card-expand>
@@ -130,7 +130,33 @@
               </md-button>
             </md-card-actions>
             <md-card-content style="text-align: left">
-              {{$t('votes.summary_info')}} <a href="https://adamant.im" target="_blank">{{$t('votes.summary_info_link_text')}}</a>
+                <div class="vote-group" v-if="upVotedList.length > 0">
+                    <div class="voteTextLabel">{{$t('options.upvote_for_label')}}</div>
+                    <div class="voted-list-wrapper">
+                        <template v-for="(votedDelegate, index) in upVotedList">
+                            <div v-bind:key="index" class="voted-delegates-item">
+                                <div class="voted-element">
+                                    {{votedDelegate.username}}
+                                </div>
+                                <div class="remove-voted-element" v-on:click="vote(votedDelegate)">&#9587;</div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                <div class="vote-group" v-if="downVotedList.length > 0">
+                    <div class="voteTextLabel">{{$t('options.downvote_for_label')}}</div>
+                    <div class="voted-list-wrapper">
+                        <template v-for="(votedDelegate, index) in downVotedList">
+                            <div v-bind:key="index" class="voted-delegates-item">
+                                <div class="voted-element">
+                                    <label>{{votedDelegate.username}}</label>
+                                </div>
+                                <div class="remove-voted-element" v-on:click="vote(votedDelegate)">&#9587;</div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                {{$t('votes.summary_info')}} <a href="https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516" target="_blank">{{$t('votes.summary_info_link_text')}}</a>.
             </md-card-content>
           </md-card-expand>
       </md-card>
@@ -179,17 +205,22 @@ export default {
       if (this.votedCount + this.unvotedCount > this.voteRequestLimit) {
         return false
       }
+      // Downvoting
       if (delegate.voted) {
-        if (this.$store.state.delegates.delegates[delegate.address]._voted) {
-          delegate.downvoted = true
+        if (this.$store.getters.getDelegateList[delegate.address]._voted) {
+          this.$store.getters.getDelegateList[delegate.address].downvoted = true
         }
         delegate.upvoted = false
+        delegate.voted = false
+      // Upvoting
       } else {
-        if (!this.$store.state.delegates.delegates[delegate.address]._voted) {
-          delegate.upvoted = true
+        if (!this.$store.getters.getDelegateList[delegate.address]._voted) {
+          this.$store.getters.getDelegateList[delegate.address].upvoted = true
         }
         delegate.downvoted = false
+        delegate.voted = true
       }
+      this.$store.dispatch('update_delegates_grid', delegate)
     },
     onSort (params) {
       this.sortParams = params
@@ -199,7 +230,7 @@ export default {
         this.votesErrorMsg = this.$t('votes.no_money')
         this.$refs.votesSnackbar.open()
       } else {
-        let votes = (this.delegates.filter(x => x.downvoted).map(x => `-${x.publicKey}`)).concat(this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
+        const votes = (Object.values(this.$store.getters.getDelegateList).filter(x => x.downvoted).map(x => `-${x.publicKey}`)).concat(this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
         this.$store.dispatch('delegates/voteForDelegates', { votes: votes, address: this.$store.state.address })
       }
     },
@@ -245,6 +276,15 @@ export default {
     }
   },
   computed: {
+    delegatesLength () {
+      return Object.values(this.$store.getters.getDelegateList).length
+    },
+    downVotedList () {
+      return Object.values(this.$store.getters.getDelegateList).filter(x => x.downvoted)
+    },
+    upVotedList () {
+      return Object.values(this.$store.getters.getDelegateList).filter(x => x.upvoted)
+    },
     delegates () {
       const compare = (a, b) => {
         const compareNumbers = (x, y) => this.sortParams.type === 'desc' ? x - y : y - x
@@ -280,8 +320,7 @@ export default {
         const regexp = new RegExp(this.filterString, 'i')
         return this.filterString !== '' ? (regexp.test(x.address) || regexp.test(x.username)) : true
       }
-
-      return Object.values(this.$store.state.delegates.delegates)
+      return Object.values(this.$store.getters.getDelegateList)
         .filter(filterDelegates)
         .sort(compare)
         .map((x) => {
@@ -294,20 +333,20 @@ export default {
       return this.delegates.length
     },
     upvotedCount () {
-      return this.delegates.filter(x => x.upvoted).length
+      return Object.values(this.$store.getters.getDelegateList).filter(x => x.upvoted).length
     },
     downvotedCount () {
-      return this.delegates.filter(x => x.downvoted).length
+      return Object.values(this.$store.getters.getDelegateList).filter(x => x.downvoted).length
     },
     originVotesCount () {
-      return Object.values(this.$store.state.delegates.delegates).filter(x => x._voted).length
+      return Object.values(this.$store.getters.getDelegateList).filter(x => x._voted).length
     },
     totalVotes () {
       return this.downvotedCount + this.originVotesCount - this.downvotedCount
     },
     delegatesLoaded () {
-      if (this.$store.state.delegates.delegates) {
-        return Object.keys(this.$store.state.delegates.delegates).length > 0
+      if (this.$store.getters.getDelegateList) {
+        return Object.keys(this.$store.getters.getDelegateList).length > 0
       }
     },
     errorMsg () {
@@ -458,6 +497,50 @@ export default {
   padding-right: 0px !important;
   padding-left: 0px !important;
   position: relative !important;
+}
+
+.voted-delegates {
+  margin: 15px 0 0 18px;
+  display: flex;
+  padding-left: 1px;
+  flex-direction: column;
+}
+
+.voted-delegates-item {
+  display: flex;
+  margin-right: 10px;
+  height: 20px;
+}
+
+.voted-list-wrapper {
+  overflow: visible;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.voteTextLabel {
+  margin-right: 5px;
+  white-space: nowrap;
+}
+
+.voted-element {
+  cursor: default;
+}
+
+.remove-voted-element {
+  font-size: 8px;
+  top: 1px;
+  left: 3px;
+  position: relative;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.vote-group {
+  margin: 5px 0px;
+  display: flex;
+  flex-direction: row;
 }
 
 </style>

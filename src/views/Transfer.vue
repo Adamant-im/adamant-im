@@ -90,8 +90,11 @@ export default {
       this.$refs.transferSnackbar.open()
     },
     onClose (type) {
+      if (!this.$store.getters.checkForActiveNode) {
+        this.errorMessage('error_transaction_send')
+        return
+      }
       if (type !== 'ok') return
-
       this.isWaiting = true
       this.sendTokens().then(
         hash => {
@@ -167,6 +170,7 @@ export default {
           return response.transactionId
         })
       } else {
+        // Check for existing chat by eth address
         return this.$store.dispatch(this.crypto.toLowerCase() + '/sendTokens', {
           amount: this.targetAmount,
           admAddress: this.fixedAddress,

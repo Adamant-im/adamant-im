@@ -144,7 +144,7 @@ export default {
   }
 
   [data-confirmation=sent]:before {
-    content: 'watch_later';
+    content: 'query_builder';
     font-family: "Material Icons";
     text-rendering: optimizeLegibility;
     position: absolute;

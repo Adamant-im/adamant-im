@@ -18,11 +18,13 @@ export const Cryptos = {
   ETH: 'ETH',
   BNB: 'BNB',
   DOGE: 'DOGE',
-  DASH: 'DASH'
+  DASH: 'DASH',
+  BZ: 'BZ'
 }
 
 export const ERC20 = Object.freeze([
-  Cryptos.BNB
+  Cryptos.BNB,
+  Cryptos.BZ
 ])
 
 export const isErc20 = crypto => ERC20.includes(crypto)
@@ -32,7 +34,9 @@ export const CryptoAmountPrecision = {
   ADM: 2,
   ETH: 6,
   BNB: 6,
-  DOGE: 8
+  DOGE: 8,
+  BZ: 6,
+  DASH: 8
 }
 
 /** Fees for the misc ADM operations */
@@ -73,7 +77,7 @@ export default {
   Transactions
 }
 
-export const UserPasswordArticleLink = 'https://medium.com/'
+export const UserPasswordArticleLink = 'https://medium.com/adamant-im/more-convenience-login-to-the-web-messenger-with-user-password-9d48a736dfd8'
 
 export const UserPasswordHashSettings = {
   SALT: 'salt',

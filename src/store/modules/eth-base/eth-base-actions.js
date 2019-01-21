@@ -84,17 +84,32 @@ export default function createActions (config) {
           const serialized = '0x' + tx.serialize().toString('hex')
           const hash = api.sha3(serialized, { encoding: 'hex' })
 
-          if (!admAddress) return serialized
+          context.dispatch('createStubMessage', {
+            targetAddress: address,
+            message: {
+              amount: amount,
+              comments: comments,
+              type: crypto + '_transaction'
+            },
+            hash: hash
+          }, { root: true })
+
+          if (!admAddress) {
+            return serialized
+          }
           // Send a special message to indicate that we're performing an ETH transfer
           const type = crypto.toLowerCase() + '_transaction'
           const msg = { type, amount, hash, comments }
-          return admApi.sendSpecialMessage(admAddress, msg)
-            .then(() => {
+
+          return admApi.sendSpecialMessage(admAddress, msg).then(result => {
+            if (result.success) {
+              console.log('ADM message has been sent', msg, result.transactionId)
               return serialized
-            })
-            .catch(() => {
+            } else {
+              console.log(`Failed to send "${type}"`, result)
               return Promise.reject(new Error('adm_message'))
-            })
+            }
+          })
         })
         .then(tx => {
           return utils.promisify(api.eth.sendRawTransaction, tx).then(
@@ -118,8 +133,7 @@ export default function createActions (config) {
               timestamp: Date.now(),
               gasPrice: ethTx.gasPrice
             }])
-
-            context.dispatch('getTransaction', { hash, isNew: true })
+            context.dispatch('getTransaction', { hash, isNew: true, direction: 'from' })
 
             return hash
           }
@@ -129,7 +143,7 @@ export default function createActions (config) {
     /**
      * Enqueues a background request to retrieve the transaction details
      * @param {object} context Vuex action context
-     * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
+     * @param {{hash: string, force: boolean, timestamp: number, amount: number, direction: 'from' | 'to'}} payload hash and timestamp of the transaction to fetch
      */
     getTransaction (context, payload) {
       const existing = context.state.transactions[payload.hash]
@@ -141,7 +155,8 @@ export default function createActions (config) {
           hash: payload.hash,
           timestamp: payload.timestamp,
           amount: payload.amount,
-          status: 'PENDING'
+          status: 'PENDING',
+          direction: payload.direction
         }])
       }
 
@@ -192,7 +207,6 @@ export default function createActions (config) {
             status: tx.status ? 'SUCCESS' : 'ERROR'
           }])
         }
-
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
           context.commit('transactions', [{ hash: tx.hash, status: 'ERROR' }])
@@ -220,10 +234,18 @@ export default function createActions (config) {
         limit
       }
 
-      return getTransactions(options).then(result => {
-        context.commit('transactions', result.items)
-        context.commit('areTransactionsLoading', false)
-      })
+      context.commit('areRecentLoading', true)
+
+      return getTransactions(options).then(
+        result => {
+          context.commit('areRecentLoading', false)
+          context.commit('transactions', result.items)
+        },
+        error => {
+          context.commit('areRecentLoading', false)
+          return Promise.reject(error)
+        }
+      )
     },
 
     getOldTransactions (context) {
@@ -241,14 +263,22 @@ export default function createActions (config) {
         options.to = minHeight - 1
       }
 
-      return getTransactions(options).then(result => {
-        context.commit('transactions', result.items)
-        context.commit('areTransactionsLoading', false)
+      context.commit('areOlderLoading', true)
 
-        if (!result.items.length) {
-          context.commit('bottom')
+      return getTransactions(options).then(
+        result => {
+          context.commit('areOlderLoading', false)
+          context.commit('transactions', result.items)
+
+          if (!result.items.length) {
+            context.commit('bottom')
+          }
+        },
+        error => {
+          context.commit('areOlderLoading', false)
+          return Promise.reject(error)
         }
-      })
+      )
     }
   }
 }

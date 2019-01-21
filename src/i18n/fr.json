@@ -34,6 +34,7 @@
     "send_button_tooltip": "Cliquez pour envoyer un message",
     "send_doge": "",
     "send_eth": "Envoyer ETH",
+    "send_bz": "Envoyer BZ",
     "sent_label": "Sent",
     "title": "Chats",
     "too_long": "Le message est trop long",
@@ -60,15 +61,19 @@
     "your_address_ADM": "ADAMANT address",
     "your_address_DOGE": "",
     "your_address_ETH": "Ethereum address",
+    "your_address_BZ": "Bit-Z address",
     "your_address_tooltip_ADM": "Ceci est votre identifiant ADAMANT unique. Cliquez pour le copier dans le presse-papiers.",
     "your_address_tooltip_DOGE": "",
     "your_address_tooltip_ETH": "Ceci est votre identifiant Ethereum unique. Cliquez pour le copier dans le presse-papiers.",
+    "your_address_tooltip_BZ": "Ceci est votre identifiant Bit-Z unique. Cliquez pour le copier dans le presse-papiers.",
     "your_balance_ADM": "ADAMANT Balance",
     "your_balance_DOGE": "",
     "your_balance_ETH": "Ethereum Balance",
+    "your_balance_BZ": "Bit-Z Balance",
     "your_balance_tooltip_ADM": "Il est de votre équilibre ADAMANT. Cliquez pour voir toutes les transactions d'entrée et de sortie.",
     "your_balance_tooltip_DOGE": "",
-    "your_balance_tooltip_ETH": "It is your ADAMANT ETH balance."
+    "your_balance_tooltip_ETH": "It is your ADAMANT ETH balance.",
+    "your_balance_tooltip_BZ": "It is your ADAMANT BZ balance."
   },
   "login": {
     "copy_button_tooltip": "Cliquez pour copier le mot de passe dans le presse papier. Enregistrer dans une application mot de passe deuxième. Pour entrer votre nouveau portefeuille, collez-le champ de mot de passe.",
@@ -132,7 +137,9 @@
     "send_on_enter": "Envoyer un message sur Enter",
     "send_on_enter_tooltip": "Envoyer un message sur la touche Entrée, par la combinaison par défaut Ctrl (Cmd) + Entrée est utilisé",
     "version": "Application Version: ",
-    "vote_for_delegates_button": "Vote for delegates"
+    "vote_for_delegates_button": "Vote for delegates",
+    "upvote_for_label": "Vote for:",
+    "downvote_for_label": "Downvote for:"
   },
   "region": "fr-FR",
   "scan": {
@@ -198,8 +205,8 @@
     "filter_placeholder": "Name or ADAMANT ID",
     "no_money": "You need 50 ADM to vote",
     "page_title": "Votes",
-    "summary_info": "Voting cost: 50 ADM. More info on the ",
-    "summary_info_link_text": "ADAMANT website",
+    "summary_info": "Voting cost: 50 ADM. ",
+    "summary_info_link_text": "Read about voting and forging",
     "summary_title": "Review voting",
     "table_head_name": "Name",
     "table_head_rank": "Rank",

@@ -4,7 +4,7 @@
     <div class="modal-container">
       <div class="modal">
         <div class="modal-body">
-          <h3>{{$t('scan.' + this.checkParentName() + '.modal_header') }}</h3>
+          <h3>{{$t(`scan.${this.componentName}.modal_header`) }}</h3>
           <md-progress v-show="loading" md-theme="grey" md-indeterminate></md-progress>
           <video id="preview"></video>
         </div>
@@ -28,9 +28,6 @@ import utils from '../lib/adamant'
 export default {
   name: 'qrscan',
   methods: {
-    checkParentName () {
-      return this.$parent.$options._componentTag || this.$parent.$options.name || this.$parent.name
-    },
     hideModal () {
       this.$emit('hide-modal')
     },
@@ -60,9 +57,9 @@ export default {
     }
   },
   beforeDestroy: function () {
-    let self = this
-    if (self.scanner) {
-      self.scanner.stop()
+    let QRScan = this
+    if (QRScan.scanner) {
+      QRScan.scanner.stop()
     }
   },
   mounted: function () {
@@ -71,16 +68,16 @@ export default {
       /* webpackMode: "lazy" */
       'instascan').then((Instascan) => {
       this.loading = false
-      let self = this
-      self.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5, mirror: false })
-      self.scanner.addListener('scan', function (content, image) {
-        self.parseHandler(content)
+      let QRScan = this
+      QRScan.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5, mirror: false })
+      QRScan.scanner.addListener('scan', function (content, image) {
+        QRScan.parseHandler(content)
       })
       Instascan.Camera.getCameras().then(function (cameras) {
-        self.cameras = cameras
+        QRScan.cameras = cameras
         if (cameras.length > 0) {
-          self.activeCameraId = cameras[1] ? cameras[1].id : cameras[0].id
-          self.scanner.start(cameras[1] ? cameras[1] : cameras[0])
+          QRScan.activeCameraId = cameras[1] ? cameras[1].id : cameras[0].id
+          QRScan.scanner.start(cameras[1] ? cameras[1] : cameras[0])
         } else {
           console.error('No cameras found.')
         }
@@ -96,7 +93,7 @@ export default {
   },
   watch: {
   },
-  props: ['modal'],
+  props: ['modal', 'componentName'],
   data () {
     return {
       scanner: null,
