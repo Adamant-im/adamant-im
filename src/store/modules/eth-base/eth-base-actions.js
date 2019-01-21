@@ -143,7 +143,7 @@ export default function createActions (config) {
     /**
      * Enqueues a background request to retrieve the transaction details
      * @param {object} context Vuex action context
-     * @param {{hash: string, fotce: boolean, timestamp: number, amount: number, direction: 'from' | 'to'}} payload hash and timestamp of the transaction to fetch
+     * @param {{hash: string, force: boolean, timestamp: number, amount: number, direction: 'from' | 'to'}} payload hash and timestamp of the transaction to fetch
      */
     getTransaction (context, payload) {
       const existing = context.state.transactions[payload.hash]
