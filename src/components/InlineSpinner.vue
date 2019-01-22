@@ -15,10 +15,9 @@ export default {
     return {
       spinnerSize: this.size || 32
     }
-  } 
+  }
 }
 </script>
-
 
 <style>
   .inline-spinner.md-accent .md-spinner-path {

@@ -63,8 +63,7 @@ export default {
     },
     crypto () {
       const type = this.message.message && this.message.message.type
-      const crypto = type.substr(0, type.indexOf('_')).toUpperCase()
-      return crypto
+      return type.substr(0, type.indexOf('_')).toUpperCase()
     }
   }
 }

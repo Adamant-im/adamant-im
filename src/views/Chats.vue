@@ -29,10 +29,10 @@
                 <div class="md-list-text-container">
                     <div class="chat_entry_title">{{ chatName(chat.partner) }}</div>
                     <div class="chat-entry-wrapper">
-                      <div v-if="(chat.last_message.amount > 0 && chat.last_message.direction === 'from') || chat.last_message.direction === 'from'" class="message-status-block" :message-status="chat.last_message.confirm_class"></div>
-                      <chat-entry v-if="chat.last_message.amount > 0 && chat.last_message.direction === 'from'" :message="chat.last_message" :brief="true"></chat-entry>
+                      <div v-if="messageStatusCondition(chat.last_message)" class="message-status-block" :message-status="chat.last_message.confirm_class"></div>
+                      <chat-entry v-if="briefMessageCondition(chat.last_message)" :message="chat.last_message" :brief="true"></chat-entry>
                       <chat-entry v-else :message="chat.last_message" :brief="true" class="for-received"></chat-entry>
-                      <div v-if="(chat.last_message.amount || chat.last_message.message.amount > 0) && chat.last_message.direction === 'to'" class="message-status-block-for-received" :message-status="chat.last_message.confirm_class"></div>
+                      <div v-if="receivedMessageCondition(chat.last_message)" class="message-status-block-for-received" :message-status="chat.last_message.confirm_class"></div>
                     </div>
                     <span class="dt" v-if="chat.last_message.timestamp">{{ $formatDate(chat.last_message.timestamp) }}</span>
                 </div>
@@ -64,6 +64,15 @@ export default {
   name: 'chats',
   components: { NewChat, ChatEntry },
   methods: {
+    receivedMessageCondition (value) {
+      return Object.values(value).length > 0 && (value.amount || value.message.amount > 0) && value.direction === 'to'
+    },
+    briefMessageCondition (value) {
+      return Object.values(value).length > 0 && value.amount > 0 && value.direction === 'from'
+    },
+    messageStatusCondition (value) {
+      return (Object.values(value).length > 0 && value.amount > 0 && value.direction === 'from') || value.direction === 'from'
+    },
     newMessages (address) {
       if (this.$store.state.newChats[address]) {
         return this.$store.state.newChats[address]
