@@ -1,6 +1,7 @@
+import baseState from '../btc-base/btc-base-state'
+import { Cryptos } from '../../../lib/constants'
+
 export default () => ({
-  address: '',
-  balance: 0,
-  transactions: { },
-  bottomReached: false
+  crypto: Cryptos.DOGE,
+  ...baseState()
 })
