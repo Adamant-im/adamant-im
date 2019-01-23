@@ -23,6 +23,7 @@
     "no_connection": "Connection problems",
     "no_empty": "Message can not be empty",
     "no_money": "Not enough tokens. Please, replenish your balance",
+    "partner_info": "Partner info",
     "partner_name": "Partner name",
     "received_label": "Received",
     "recipient": "Partner address",

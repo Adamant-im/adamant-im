@@ -27,7 +27,9 @@
           :html="true"
           @resend="resendMessage(partnerId, message.id)"
         >
-          <chat-avatar v-if="!isChatReadOnly" :user-id="sender.id" use-public-key slot="avatar"/>
+          <div @click="showPartnerInfo" slot="avatar" v-if="!isChatReadOnly">
+            <ChatAvatar :user-id="sender.id" style="cursor: pointer" use-public-key />
+          </div>
         </a-chat-message>
 
         <a-chat-transaction
@@ -156,9 +158,6 @@ export default {
         getUserMeta.call(this, this.partnerId)
       ]
     },
-    partnerName () {
-      return this.$store.getters['partners/displayName'](this.partnerId)
-    },
     userId () {
       return this.$store.state.address
     },
@@ -190,6 +189,9 @@ export default {
           })
           console.error(err.message)
         })
+    },
+    showPartnerInfo () {
+      this.$emit('partner-info', true)
     },
     resendMessage (recipientId, messageId) {
       return this.$store.dispatch('chat/resendMessage', { recipientId, messageId })

@@ -3,7 +3,8 @@
 
     <v-flex xs12 sm12 md8 lg5>
 
-      <chat :partner-id="partnerId"/>
+      <chat :partner-id="partnerId" @partner-info="partnerInfoValue = true"/>
+      <PartnerInfo :address="partnerId" :name="partnerName" v-model="partnerInfoValue" />
 
     </v-flex>
 
@@ -12,15 +13,23 @@
 
 <script>
 import Chat from '@/components/Chat/Chat'
+import PartnerInfo from '@/components/PartnerInfo'
 
 export default {
   computed: {
     partnerId () {
       return this.$route.params.partner
+    },
+    partnerName () {
+      return this.$store.getters['partners/displayName'](this.partnerId)
     }
   },
   components: {
-    Chat
-  }
+    Chat,
+    PartnerInfo
+  },
+  data: () => ({
+    partnerInfoValue: false
+  })
 }
 </script>
