@@ -3,7 +3,6 @@ import Tx from 'ethereumjs-tx'
 import { toBuffer } from 'ethereumjs-util'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
-import * as admApi from '../../../lib/adamant-api'
 import * as utils from '../../../lib/eth-utils'
 import { getTransactions } from '../../../lib/eth-index'
 
@@ -92,31 +91,21 @@ export default function createActions (config) {
           const serialized = '0x' + tx.serialize().toString('hex')
           const hash = api.sha3(serialized, { encoding: 'hex' })
 
-          context.dispatch('createStubMessage', {
-            targetAddress: address,
-            message: {
-              amount: amount,
-              comments: comments,
-              type: crypto + '_transaction'
-            },
-            hash: hash
-          }, { root: true })
-
           if (!admAddress) {
             return serialized
           }
-          // Send a special message to indicate that we're performing an ETH transfer
-          const type = crypto.toLowerCase() + '_transaction'
-          const msg = { type, amount, hash, comments }
 
-          return admApi.sendSpecialMessage(admAddress, msg).then(result => {
-            if (result.success) {
-              return serialized
-            } else {
-              console.log(`Failed to send "${type}"`, result)
-              return Promise.reject(new Error('adm_message'))
-            }
-          })
+          const msgPayload = {
+            address: admAddress,
+            amount,
+            comments,
+            crypto,
+            hash
+          }
+
+          // Send a special message to indicate that we're performing an ETH transfer
+          return context.dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
+            .then(success => success ? serialized : Promise.reject(new Error('adm_message')))
         })
         .then(tx => {
           return utils.promisify(api.eth.sendRawTransaction, tx).then(
