@@ -26,25 +26,13 @@
                 <md-icon md-src="/img/Attach/attach.svg"></md-icon>
               </md-button>
               <md-menu-content class="attach_menu">
-                <md-menu-item v-on:click="sendTokens('ADM')">
-                  <md-icon md-src="/img/Attach/adm.svg">menu</md-icon>
-                  <span>{{ $t('chats.send_adm') }}</span>
-                </md-menu-item>
-                <md-menu-item v-on:click="sendTokens('ETH')">
-                  <md-icon  md-src="/img/Attach/ethereum.svg">menu</md-icon>
-                  <span>{{ $t('chats.send_eth') }}</span>
-                </md-menu-item>
-                <md-menu-item v-on:click="sendTokens('BNB')">
-                  <md-icon  md-src="/img/Attach/bnb.svg">menu</md-icon>
-                  <span>{{ $t('chats.send_bnb') }}</span>
-                </md-menu-item>
-                <md-menu-item v-on:click="sendTokens('DOGE')">
-                  <md-icon  md-src="/img/Attach/doge.svg">menu</md-icon>
-                  <span>{{ $t('chats.send_doge') }}</span>
-                </md-menu-item>
-                <md-menu-item v-on:click="sendTokens('BZ')">
-                  <md-icon  md-src="/img/Attach/bz.svg">menu</md-icon>
-                  <span>{{ $t('chats.send_bz') }}</span>
+                <md-menu-item
+                  v-for="crypto in cryptos"
+                  v-bind:key="crypto"
+                  v-on:click="sendTokens(crypto)"
+                >
+                  <md-icon :md-src="`/img/Attach/${crypto.toLowerCase()}.svg`">menu</md-icon>
+                  <span>{{ $t('chats.send_crypto', { crypto }) }}</span>
                 </md-menu-item>
                 <md-menu-item :disabled="true">
                   <md-icon md-src="/img/Attach/picture.svg">collections</md-icon>
@@ -262,6 +250,9 @@ export default {
     },
     readOnly: function () {
       return this.$store.state.currentChat.readOnly === true
+    },
+    cryptos () {
+      return Object.keys(Cryptos)
     }
   },
   watch: {
