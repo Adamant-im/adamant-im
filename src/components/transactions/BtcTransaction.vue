@@ -18,6 +18,7 @@
 <script>
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
+import { CryptoAmountPrecision } from '../../lib/constants'
 
 export default {
   name: 'btc-transaction',
@@ -44,7 +45,10 @@ export default {
     },
     fee () {
       if (!this.transaction.fee) return ''
-      return this.transaction.fee + ' ' + this.crypto
+      const fee = Number(this.transaction.fee)
+        .toFixed(CryptoAmountPrecision[this.crypto])
+        .replace(/0+$/, '')
+      return fee + ' ' + this.crypto
     },
     sender () {
       const { senders, senderId } = this.transaction
