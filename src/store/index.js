@@ -16,7 +16,7 @@ import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
 
 import * as admApi from '../lib/adamant-api'
-import { base64regex, WelcomeMessage, UserPasswordHashSettings, Cryptos, Fees } from '../lib/constants'
+import { base64regex, WelcomeMessage, UserPasswordHashSettings, Cryptos } from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import i18n from '../i18n'
@@ -411,7 +411,6 @@ const store = {
     },
     /** Stores user address for the specified crypto in the ADM KVS */
     storeCryptoAddress (context, { crypto, address }) {
-      if (context.state.balance < Fees.KVS) return
       return admApi.storeCryptoAddress(crypto, address)
     }
   },
