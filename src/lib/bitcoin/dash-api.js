@@ -2,7 +2,7 @@ import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
 
 /** Fee for sending tokens */
-export const TX_FEE = 0.001
+export const TX_FEE = 0.0001
 
 class DashApiError extends Error {
   constructor (method, error) {
@@ -28,7 +28,7 @@ export default class DashApi extends BtcBaseApi {
    */
   getBalance () {
     return this._invoke('getaddressbalance', [this.address])
-      .then(result => result.balance)
+      .then(result => Number(result.balance) / this.multiplier)
   }
 
   /** @override */

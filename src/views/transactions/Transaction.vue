@@ -6,9 +6,9 @@
 import AdmTransaction from '../../components/transactions/AdmTransaction.vue'
 import EthTransaction from '../../components/transactions/EthTransaction.vue'
 import Erc20Transaction from '../../components/transactions/Erc20Transaction.vue'
-import DogeTransaction from '../../components/transactions/DogeTransaction.vue'
+import BtcTransaction from '../../components/transactions/BtcTransaction.vue'
 
-import { Cryptos, isErc20 } from '../../lib/constants'
+import { Cryptos, isErc20, isBtcBased } from '../../lib/constants'
 
 export default {
   name: 'transaction',
@@ -17,7 +17,7 @@ export default {
     AdmTransaction,
     EthTransaction,
     Erc20Transaction,
-    DogeTransaction
+    BtcTransaction
   },
   mounted () {
     this.update()
@@ -37,7 +37,7 @@ export default {
     transactionComponent () {
       if (this.crypto === Cryptos.ETH) return 'eth-transaction'
       if (isErc20(this.crypto)) return 'erc20-transaction'
-      if (this.crypto === Cryptos.DOGE) return 'doge-transaction'
+      if (isBtcBased(this.crypto)) return 'btc-transaction'
       return 'adm-transaction'
     }
   },

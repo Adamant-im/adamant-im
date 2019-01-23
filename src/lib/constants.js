@@ -27,7 +27,14 @@ export const ERC20 = Object.freeze([
   Cryptos.BZ
 ])
 
+export const BTC_BASED = Object.freeze([
+  Cryptos.DOGE,
+  Cryptos.DASH
+])
+
 export const isErc20 = crypto => ERC20.includes(crypto)
+
+export const isBtcBased = crypto => BTC_BASED.includes(crypto)
 
 /** Number of decimal places for the different crypto amounts */
 export const CryptoAmountPrecision = {
