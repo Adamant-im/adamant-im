@@ -3,7 +3,7 @@ import DogeApi from '../../../lib/bitcoin/doge-api'
 
 const getOldTransactions = (api, context) => {
   const from = Object.keys(context.state.transactions).length
-  return api.getTransactions(from).then(result => {
+  return api.getTransactions({ from }).then(result => {
     context.commit('transactions', result.items)
     if (!result.hasMore) {
       context.commit('bottom')
@@ -12,7 +12,7 @@ const getOldTransactions = (api, context) => {
 }
 
 const getNewTransactions = (api, context) => {
-  return api.getTransactions().then(result => {
+  return api.getTransactions({ }).then(result => {
     context.commit('transactions', result.items)
   })
 }
