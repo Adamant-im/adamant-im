@@ -43,10 +43,9 @@ export default class BtcBaseApi {
   /**
    * Returns transaction fee
    * @abstract
-   * @param {number} amount transfer amount (satoshis)
    * @returns {number}
    */
-  getFee (amount) {
+  getFee () {
     return 0
   }
 
@@ -119,7 +118,7 @@ export default class BtcBaseApi {
     const txb = new bitcoin.TransactionBuilder(this._network)
     txb.setVersion(1)
 
-    const target = amount + this.getFee(amount)
+    const target = amount + this.getFee() * this.multiplier
     let transferAmount = 0
     let inputs = 0
 
@@ -178,7 +177,7 @@ export default class BtcBaseApi {
       ((direction === 'to') === (t.scriptPubKey.addresses.includes(this._address)) ? sum + Number(t.value) : sum), 0)
 
     const confirmations = tx.confirmations
-    const timestamp = tx.time * 1000
+    const timestamp = tx.time ? tx.time * 1000 : undefined
 
     let fee = tx.fees
     if (!fee) {

@@ -38,7 +38,7 @@ export default class DogeApi extends BtcBaseApi {
 
   /** @override */
   getTransaction (txid) {
-    return this._get(`tx/${txid}`).then(this._mapTransaction)
+    return this._get(`tx/${txid}`).then(tx => this._mapTransaction(tx))
   }
 
   /** @override */
@@ -48,7 +48,7 @@ export default class DogeApi extends BtcBaseApi {
       .then(resp => ({
         ...resp,
         hasMore: to < resp.totalItems,
-        items: resp.items.map(this._mapTransaction)
+        items: resp.items.map(tx => this._mapTransaction(tx))
       }))
   }
 
