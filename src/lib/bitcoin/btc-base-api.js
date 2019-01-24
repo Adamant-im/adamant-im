@@ -3,6 +3,7 @@ import axios from 'axios'
 
 import networks from './networks'
 import getEnpointUrl from '../getEndpointUrl'
+import BigNumber from '../bignumber'
 
 const getUnique = values => {
   const map = values.reduce((m, v) => {
@@ -113,12 +114,12 @@ export default class BtcBaseApi {
    * @returns {string}
    */
   _buildTransaction (address, amount, unspents) {
-    amount = Number(amount) * this.multiplier
+    amount = new BigNumber(amount).times(this.multiplier).toNumber()
 
     const txb = new bitcoin.TransactionBuilder(this._network)
     txb.setVersion(1)
 
-    const target = amount + this.getFee() * this.multiplier
+    const target = amount + new BigNumber(this.getFee()).times(this.multiplier).toNumber()
     let transferAmount = 0
     let inputs = 0
 

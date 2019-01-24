@@ -2,6 +2,7 @@ import qs from 'qs'
 
 import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
+import BigNumber from '../bignumber'
 
 const POST_CONFIG = {
   headers: {
@@ -57,7 +58,7 @@ export default class DogeApi extends BtcBaseApi {
     return this._get(`/addr/${this.address}/utxo?noCache=1`)
       .then(unspents => unspents.map(tx => ({
         ...tx,
-        amount: Math.floor(tx.amount * this.multiplier)
+        amount: new BigNumber(tx.amount).times(this.multiplier).toNumber()
       })))
   }
 
