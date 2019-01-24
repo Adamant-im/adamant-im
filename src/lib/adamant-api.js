@@ -487,7 +487,7 @@ export function loginOrRegister (passphrase) {
  * Login via password.
  * @param {string} password
  * @param {any} store
- * @returns {Promise<string>} Encrypted password
+ * @returns {Promise} Encrypted password
  */
 export function loginViaPassword (password, store) {
   return encryptPassword(password)
@@ -506,5 +506,9 @@ export function loginViaPassword (password, store) {
       }
 
       return getCurrentAccount()
+        .then(account => ({
+          ...account,
+          passphrase
+        }))
     })
 }

@@ -87,20 +87,17 @@ const store = {
           commit('setBalance', account.balance)
           commit('setPassphrase', passphrase)
 
-          commit('chat/createAdamantChats')
-          dispatch('chat/loadChats')
-
           // retrieve eth & erc20 data
           dispatch('afterLogin', passphrase)
         })
     },
-    loginViaPassword ({ commit, dispatch }, password) {
+    loginViaPassword ({ commit, dispatch, state }, password) {
       return loginViaPassword(password, this)
         .then(account => {
           commit('setIDBReady', true)
 
-          commit('chat/createAdamantChats')
-          dispatch('chat/loadChats')
+          // retrieve eth & erc20 data
+          dispatch('afterLogin', account.passphrase)
         })
     },
     logout ({ dispatch }) {
