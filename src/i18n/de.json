@@ -159,7 +159,8 @@
   },
   "title": "Deutsch",
   "transaction": {
-    "addresses": "",
+    "addresses": "no address | {n} address | {n} addresses",
+    "me_and_addresses": "no address | Me and {n} more address | Me and {n} more addresses",
     "amount": "Betrag",
     "commission": "Gebühr",
     "confirmations": "Bestätigungen",
@@ -167,8 +168,6 @@
     "date": "Datum",
     "explorer": "Open in Explorer",
     "me": "Me",
-    "me_and": "",
-    "me_and_others": "",
     "recipient": "Zu",
     "sender": "Von",
     "startChat": "Start chat",

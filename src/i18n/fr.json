@@ -159,7 +159,8 @@
   },
   "title": "Française",
   "transaction": {
-    "addresses": "",
+    "addresses": "no address | {n} address | {n} addresses",
+    "me_and_addresses": "no address | Me and {n} more address | Me and {n} more addresses",
     "amount": "Montant",
     "commission": "Couts",
     "confirmations": "Confirmations",
@@ -167,8 +168,6 @@
     "date": "Date",
     "explorer": "Open in Explorer",
     "me": "Me",
-    "me_and": "",
-    "me_and_others": "",
     "recipient": "A",
     "sender": "De",
     "startChat": "Start chat",

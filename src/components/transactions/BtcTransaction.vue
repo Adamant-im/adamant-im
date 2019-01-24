@@ -129,7 +129,7 @@ export default {
     formatAddresses (addresses) {
       const count = addresses.length
       return addresses.includes(this.$store.state[this.cryptoKey].address)
-        ? `${this.$t('transaction.me_and')} ${this.$tc('transaction.addresses', count - 1)}`
+        ? this.$tc('transaction.me_and_addresses', count - 1)
         : this.$tc('transaction.addresses', count)
     }
   }
