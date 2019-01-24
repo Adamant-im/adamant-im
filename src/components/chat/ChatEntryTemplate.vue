@@ -34,6 +34,8 @@
 
 <script>
 
+import { Cryptos } from '@/lib/constants'
+
 function checkForCurrency (text, currency) {
   return text.indexOf(currency) === text.length - 4
 }
@@ -48,7 +50,7 @@ export default {
   },
   mounted () {
     let innerText = this.$refs.chatEntry.innerText
-    const currencies = ['ADM', 'ETH', 'BNB', 'BZ', 'DOGE']
+    const currencies = Object.keys(Cryptos)
     let checkCurrency = false
     currencies.forEach(currency => {
       checkCurrency = checkForCurrency(innerText, currency)

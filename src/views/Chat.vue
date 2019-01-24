@@ -46,6 +46,10 @@
                   <md-icon  md-src="/img/Attach/bz.svg">menu</md-icon>
                   <span>{{ $t('chats.send_bz') }}</span>
                 </md-menu-item>
+                <md-menu-item v-on:click="sendTokens('AT')">
+                  <md-icon  md-src="/img/Attach/at.svg">menu</md-icon>
+                  <span>{{ $t('chats.send_at') }}</span>
+                </md-menu-item>
                 <md-menu-item :disabled="true">
                   <md-icon md-src="/img/Attach/picture.svg">collections</md-icon>
                   <span>{{ $t('chats.attach_image') }}</span>

@@ -34,6 +34,7 @@
     "send_button": "Inviare",
     "send_button_tooltip": "Clicca per inviare un messaggio",
     "send_eth": "Invia ETH",
+    "send_at": "Invia AT",
     "sent_label": "Inviato",
     "title": "Chats",
     "too_long": "Il messaggio e troppo lungo",
@@ -51,15 +52,19 @@
     "your_address_ADM": "Indirizzo ADAMANT",
     "your_address_BNB": "Indirizzo Binance Coin",
     "your_address_ETH": "Indirizzo Ethereum",
+    "your_address_AT": "Indirizzo ABCC",
     "your_address_tooltip_ADM": "Questo e l'identificatore univoco di ADAMANT. Clicca per copiarlo negli appunti.",
     "your_address_tooltip_BNB": "Questo e l'identificatore univoco di Binance Coin. Clicca per copiarlo negli appunti.",
     "your_address_tooltip_ETH": "Questo e l'identificatore univoco di Ethereum. Clicca per copiarlo negli appunti.",
+    "your_address_tooltip_AT": "Questo e l'identificatore univoco di ABCC. Clicca per copiarlo negli appunti.",
     "your_balance_ADM": "ADAMANT Saldo",
     "your_balance_BNB": "Binance Coin Saldo",
     "your_balance_ETH": "Ethereum Saldo",
+    "your_balance_AT": "ABCC Saldo",
     "your_balance_tooltip_ADM": "E il tuo saldo ADAMANT. Clicca per vedere tutte le transazioni di input e output.",
     "your_balance_tooltip_BNB": "E il tuo saldo ADAMANT BNB.",
-    "your_balance_tooltip_ETH": "E il tuo saldo ADAMANT ETH."
+    "your_balance_tooltip_ETH": "E il tuo saldo ADAMANT ETH.",
+    "your_balance_tooltip_AT": "E il tuo saldo ADAMANT AT."
   },
   "login": {
     "copy_button_tooltip": "Fare clic per copiare la passphrase negli appunti. Salvalo in un'applicazione password keeper. Per inserire il tuo nuovo Portafoglio, incollalo nel campo passphrase.",
