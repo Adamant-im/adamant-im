@@ -230,8 +230,13 @@ export default {
         this.votesErrorMsg = this.$t('votes.no_money')
         this.$refs.votesSnackbar.open()
       } else {
-        const votes = (Object.values(this.$store.getters.getDelegateList).filter(x => x.downvoted).map(x => `-${x.publicKey}`)).concat(this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
-        this.$store.dispatch('delegates/voteForDelegates', { votes: votes, address: this.$store.state.address })
+        const dl = Object.values(this.$store.getters.getDelegateList)
+        const dlDownvoted = dl.filter(x => x.downvoted)
+        const dlUpvoted = dl.filter(x => x.upvoted)
+        const dlDownvotedPK = dlDownvoted.map(x => `-${x.publicKey}`)
+        const dlUpvotedPK = dlUpvoted.map(x => `+${x.publicKey}`)
+        const votes = dlDownvotedPK.concat(dlUpvotedPK)
+        this.$store.dispatch('delegates/voteForDelegates', { votes, address: this.$store.state.address })
       }
     },
     toggleDetails (delegate) {
