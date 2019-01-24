@@ -42,7 +42,7 @@ const router = new Router({
       props: true,
       meta: {
         requiresAuth: true,
-        layout: 'toolbar',
+        layout: 'no-container',
         containerNoPadding: true
       }
     },

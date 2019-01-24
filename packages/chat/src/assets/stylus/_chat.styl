@@ -54,6 +54,18 @@ $chat-avatar-size := 40px
     &::-webkit-scrollbar-thumb:hover
       background: $grey.lighten-1
 
+  &__message-container
+    display: inline-block
+    clear: both
+    float: left
+    margin-bottom: 16px
+    max-width: 80%
+
+    &:last-child
+      margin-bottom: 0
+    &--right
+      float: right
+
   &__message
     display: flex
     flex-direction: row
@@ -75,6 +87,10 @@ $chat-avatar-size := 40px
 
     img
       border-radius: inherit
+    &--right
+      order: 2
+      margin-right: 0px
+      margin-left: 8px
 
   /**
    * 1. Element `pre` must not overflow the parent flex element.
@@ -95,7 +111,8 @@ $chat-avatar-size := 40px
   &__message-text
     font-size: $chat-message.font-size
     overflow-wrap: break-word
-    word-break: break-all
+    word-break: break-word
+    word-wrap: break-word
 
     p
       margin-bottom: 0
@@ -178,7 +195,7 @@ $chat-avatar-size := 40px
       color: $grey.darken-1
     &__message-text
       a
-        color: inherit
+        color: $blue.base
       pre
         background-color: $grey.lighten-4
         color: $grey.darken-3

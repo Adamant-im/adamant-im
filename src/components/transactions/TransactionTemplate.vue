@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <app-toolbar
+    <app-toolbar-centered
       :title="`#${id}`"
       flat
     />
@@ -119,7 +119,7 @@
 <script>
 import { Symbols } from '@/lib/constants'
 
-import AppToolbar from '@/components/AppToolbar'
+import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 export default {
   name: 'transaction-template',
@@ -156,7 +156,7 @@ export default {
     }
   },
   components: {
-    AppToolbar
+    AppToolbarCentered
   }
 }
 </script>
