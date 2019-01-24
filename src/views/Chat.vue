@@ -353,8 +353,7 @@ export default {
     padding-right: 10px;
     border-left: 3px #ebebeb solid;
   }
-  .avatar-holder:before {
-    content: 'account_circle';
+  .avatar-holder .md-icon {
     font-family: "Material Icons";
     text-rendering: optimizeLegibility;
     font-size: 30px;
