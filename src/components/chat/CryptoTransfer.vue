@@ -3,6 +3,7 @@
     :confirm="confirm"
     :direction="message.direction"
     :timestamp="message.timestamp"
+    :amount="message.message.amount"
     :brief="brief"
   >
     <p>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</p>
