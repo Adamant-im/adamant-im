@@ -46,8 +46,10 @@ import ChatStartDialog from '@/components/ChatStartDialog'
 
 export default {
   mounted () {
-    this.$store.commit('chat/createAdamantChats')
-    this.$store.dispatch('chat/loadChats')
+    if (!this.$store.state.chat.isFulfilled) {
+      this.$store.commit('chat/createAdamantChats')
+      this.$store.dispatch('chat/loadChats')
+    }
   },
   computed: {
     isFulfilled () {

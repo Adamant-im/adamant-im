@@ -87,7 +87,7 @@
   "login_via_password": {
     "article": "Medium.",
     "article_hint": "Read information about user password on ",
-    "encrypting_data_title": "Encrypting data…",
+    "encoding_data_title": "Encoding data…",
     "enter_password": "Enter password",
     "incorrect_password": "Wrong user password",
     "login_via_password": "Login via password",

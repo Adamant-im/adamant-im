@@ -2,10 +2,12 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { Base64 } from 'js-base64'
 
-import { unlock, loginOrRegister, storeCryptoAddress } from '@/lib/adamant-api'
+import { unlock, loginOrRegister, loginViaPassword, storeCryptoAddress } from '@/lib/adamant-api'
 import { Cryptos, Fees } from '@/lib/constants'
+import { encryptPassword } from '@/lib/idb/crypto'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
+import indexedDbPlugin from './plugins/indexedDb'
 import ethModule from './modules/eth'
 import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
@@ -26,11 +28,15 @@ const store = {
   state: () => ({
     address: '',
     balance: 0,
-    passphrase: ''
+    passphrase: '',
+    password: '',
+    IDBReady: false, // set `true` when state has been saved in IDB
+    publicKeys: {}
   }),
   getters: {
     isLogged: state => state.passphrase.length > 0,
-    getPassPhrase: state => state.passphrase // compatibility getter for ERC20 modules
+    getPassPhrase: state => state.passphrase, // compatibility getter for ERC20 modules
+    publicKey: state => adamantAddress => state.publicKeys[adamantAddress]
   },
   mutations: {
     setAddress (state, address) {
@@ -42,10 +48,25 @@ const store = {
     setPassphrase (state, passphrase) {
       state.passphrase = Base64.encode(passphrase)
     },
+    setPassword (state, password) {
+      state.password = password
+    },
+    resetPassword (state) {
+      state.password = ''
+    },
+    setIDBReady (state, value) {
+      state.IDBReady = value
+    },
     reset (state) {
       state.address = ''
       state.balance = 0
       state.passphrase = ''
+      state.password = ''
+      state.IDBReady = false
+      state.publicKeys = {}
+    },
+    setPublicKey (state, { adamantAddress, publicKey }) {
+      state.publicKeys[adamantAddress] = publicKey
     }
   },
   actions: {
@@ -66,8 +87,20 @@ const store = {
           commit('setBalance', account.balance)
           commit('setPassphrase', passphrase)
 
+          commit('chat/createAdamantChats')
+          dispatch('chat/loadChats')
+
           // retrieve eth & erc20 data
           dispatch('afterLogin', passphrase)
+        })
+    },
+    loginViaPassword ({ commit, dispatch }, password) {
+      return loginViaPassword(password, this)
+        .then(account => {
+          commit('setIDBReady', true)
+
+          commit('chat/createAdamantChats')
+          dispatch('chat/loadChats')
         })
     },
     logout ({ dispatch }) {
@@ -91,9 +124,22 @@ const store = {
     },
     reset ({ commit }) {
       commit('reset', null, { root: true })
+    },
+    setPassword ({ commit }, password) {
+      return encryptPassword(password)
+        .then(encryptedPassword => {
+          commit('setPassword', encryptedPassword)
+
+          return encryptedPassword
+        })
+    },
+    removePassword ({ commit }) {
+      commit('resetPassword')
+      commit('setIDBReady')
+      commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
     }
   },
-  plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin],
+  plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin, indexedDbPlugin],
   modules: {
     eth: ethModule, // Ethereum-related data
     bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),

@@ -8,12 +8,20 @@
 
 <script>
 import Notifications from '@/lib/notifications'
+import { restoreState } from '@/lib/idb/state'
 
 export default {
   created () {
     this.setLocale()
     if (this.isLogged) {
       this.$store.dispatch('unlock')
+
+      if (this.isLoginViaPassword) {
+        restoreState(this.$store)
+          .catch(err => {
+            console.error(err)
+          })
+      }
     }
   },
   mounted () {
@@ -38,6 +46,9 @@ export default {
     },
     isDarkTheme () {
       return this.$store.state.options.darkTheme
+    },
+    isLoginViaPassword () {
+      return this.$store.getters['options/isLoginViaPassword']
     }
   },
   data: () => ({

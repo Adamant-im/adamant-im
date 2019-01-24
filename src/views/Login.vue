@@ -17,7 +17,7 @@
         <h2 class="hidden-sm-and-down login-page__subtitle mt-3">{{ $t('login.subheader') }}</h2>
       </v-card>
 
-      <v-card flat color="transparent" class="text-xs-center mt-3">
+      <v-card v-if="!isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
         <v-layout justify-center>
           <v-flex xs12 sm8 md8 lg6>
 
@@ -69,13 +69,27 @@
         </v-layout>
       </v-card>
 
-      <v-layout justify-center class="mt-2">
+      <v-layout v-if="!isLoginViaPassword" justify-center class="mt-2">
         <v-flex xs12 sm8 md8 lg6>
           <passphrase-generator
             @copy="onCopyPassphraze"
           />
         </v-flex>
       </v-layout>
+
+      <v-card v-if="isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
+        <v-layout justify-center>
+          <v-flex xs12 sm8 md8 lg6>
+
+            <login-password-form
+              v-model="password"
+              @login="onLogin"
+              @error="onLoginError"
+            />
+
+          </v-flex>
+        </v-layout>
+      </v-card>
 
       <qrcode-scanner-dialog
         v-if="showQrcodeScanner"
@@ -102,15 +116,20 @@ import Icon from '@/components/icons/BaseIcon'
 import QrCodeIcon from '@/components/icons/common/QrCode'
 import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
 import FileIcon from '@/components/icons/common/File'
+import LoginPasswordForm from '@/components/LoginPasswordForm'
 
 export default {
   computed: {
     showQrcodeRenderer () {
       return this.isQrcodeRendererActive && this.passphrase
+    },
+    isLoginViaPassword () {
+      return this.$store.getters['options/isLoginViaPassword']
     }
   },
   data: () => ({
     passphrase: '',
+    password: '',
     showQrcodeScanner: false,
     isQrcodeRendererActive: false,
     logo: '/img/adamant-logo-transparent-512x512.png'
@@ -134,11 +153,10 @@ export default {
     onLogin () {
       this.$router.push('/chats')
     },
-    onLoginError (err) {
+    onLoginError (key) {
       this.$store.dispatch('snackbar/show', {
-        message: this.$t('login.invalid_passphrase')
+        message: this.$t(key)
       })
-      console.error(err)
     },
     onCopyPassphraze () {
       this.$store.dispatch('snackbar/show', {
@@ -179,7 +197,8 @@ export default {
     Icon,
     QrCodeIcon,
     QrCodeScanIcon,
-    FileIcon
+    FileIcon,
+    LoginPasswordForm
   }
 }
 </script>

@@ -7,6 +7,10 @@ const state = () => ({
   darkTheme: false
 })
 
+const getters = {
+  isLoginViaPassword: state => !state.logoutOnTabClose
+}
+
 const mutations = {
   updateOption (state, { key, value }) {
     if (key in state) {
@@ -17,6 +21,7 @@ const mutations = {
 
 export default {
   state,
+  getters,
   mutations,
   namespaced: true
 }

@@ -37,6 +37,8 @@
 </template>
 
 <script>
+import { clearDb } from '@/lib/idb'
+
 export default {
   mounted () {
     this.currentPageIndex = this.getCurrentPageIndex()
@@ -76,7 +78,13 @@ export default {
     logout () {
       this.$store.dispatch('logout')
       this.$store.dispatch('reset')
-      this.$router.push('/')
+
+      return clearDb().then(() => {
+        // turn off IDB sync
+        this.$store.commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
+
+        this.$router.push('/')
+      })
     },
     getCurrentPageIndex () {
       const currentPage = this.pages.find(page => {

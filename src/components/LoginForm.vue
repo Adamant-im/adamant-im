@@ -74,8 +74,8 @@ export default {
         .then(() => {
           this.$emit('login')
         })
-        .catch(err => {
-          this.$emit('error', err)
+        .catch(() => {
+          this.$emit('error', 'login.invalid_passphrase')
         })
         .finally(() => {
           this.antiFreeze()
