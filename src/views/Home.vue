@@ -1,13 +1,13 @@
 <template>
-  <v-layout row wrap justify-center>
+  <v-layout row wrap justify-center class="home-page">
 
     <v-flex xs12 sm12 md8 lg5>
 
       <v-card flat class="transparent white--text">
 
         <!-- Wallets -->
-        <v-card>
-          <v-tabs grow fixed-tabs slider-color="blue">
+        <v-card class="home-page__wallets">
+          <v-tabs grow fixed-tabs slider-color="white">
             <v-tab
               v-for="wallet in wallets"
               :key="wallet.cryptoCurrency"

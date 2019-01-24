@@ -5,6 +5,7 @@
       <v-flex xs12 sm12 md8 lg5>
 
         <v-toolbar
+          class="app-toolbar-centered"
           :flat="flat"
           :height="height"
         >
