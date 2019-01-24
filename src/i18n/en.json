@@ -195,6 +195,8 @@
   },
   "title": "English",
   "transaction": {
+    "addresses": "no address | {n} address | {n} addresses",
+    "me_and_addresses": "no address | Me and {n} more address | Me and {n} more addresses",
     "amount": "Amount",
     "commission": "Transaction fee",
     "confirmations": "Confirmations",
