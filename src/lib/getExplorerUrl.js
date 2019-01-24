@@ -16,7 +16,7 @@ export default function getExplorerUrl (crypto, transactionId) {
     case Cryptos.DOGE:
       return 'https://dogechain.info/tx/' + transactionId
     case Cryptos.DASH:
-      return 'https://chainz.cryptoid.info/dash/tx.dws?' + transactionId
+      return 'https://explorer.dash.org/tx/' + transactionId
   }
 
   return ''
