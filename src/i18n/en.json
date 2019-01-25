@@ -112,6 +112,7 @@
     "fastest_tooltip": "When checked, most requests will processed with a single node. We recommend to keep this option unchecked for better anonymity.",
     "host": "Host",
     "inactive": "Inactive",
+    "sync": "Sync",
     "ms": "ms",
     "nodeLabelDescription": {
       "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",

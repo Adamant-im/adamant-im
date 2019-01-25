@@ -102,6 +102,7 @@
     "fastest_tooltip": "Se selezionato, la maggior parte delle richieste verrà elaborata con un singolo nodo. Raccomandiamo di mantenere questa opzione deselezionata per un migliore anonimato.",
     "host": "Ospite",
     "inactive": "Inattivo",
+    "sync": "Sync",
     "ms": "ms",
     "nodeLabelDescription": {
       "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",

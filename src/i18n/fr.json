@@ -40,15 +40,6 @@
     "too_long": "Le message est trop long",
     "welcome_message": "<p>Welcome to ADAMANT, the most secure and anonymous messenger. Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.</p><p>Learn more about security and anonymity at <a href='https://adamant.im/staysecured/' target='_blank'>https://adamant.im/staysecured/</a>.</p><p>All the transactions within the blockchain do need to have their minimal fees. This is necessary to support the network infrastructure. To start messaging now, <b>get free tokens</b> — go to Wallet tab and click Free ADM tokens. Then click Start new chat on Chats tab and put your interlocutor's address. To copy your address, click on ADAMANT address on Wallet tab.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>"
   },
-  "ednpoints": {
-    "active": ""
-  },
-  "endpoints": {
-    "host": "",
-    "ms": "",
-    "offline": "",
-    "ping": ""
-  },
   "error": "Error",
   "home": {
     "copied": "Copié",
@@ -99,6 +90,7 @@
     "fastest_tooltip": "",
     "host": "",
     "inactive": "",
+    "sync": "Sync",
     "ms": "",
     "nodeLabelDescription": {
       "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",

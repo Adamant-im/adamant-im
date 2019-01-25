@@ -373,6 +373,7 @@ class ApiClient {
     const onlineNodes = this._nodes.filter(x =>
       x.online &&
       x.active &&
+      !x.outOfSync &&
       this._isCompatible(x.version)
     )
     const node = onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
@@ -385,7 +386,7 @@ class ApiClient {
    */
   _getFastestNode () {
     return this._nodes.reduce((fastest, current) => {
-      if (!current.online || !current.active || !this._isCompatible(current.version)) {
+      if (!current.online || !current.active || current.outOfSync || !this._isCompatible(current.version)) {
         return fastest
       }
       return (!fastest || fastest.ping > current.ping) ? current : fastest
