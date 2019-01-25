@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import { Base64 } from 'js-base64'
 
 import { unlock, loginOrRegister, storeCryptoAddress } from '@/lib/adamant-api'
-import { Cryptos, Fees } from '@/lib/constants'
+import { Cryptos } from '@/lib/constants'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import ethModule from './modules/eth'
@@ -83,10 +83,6 @@ const store = {
     },
     /** Stores user address for the specified crypto in the ADM KVS */
     storeCryptoAddress ({ state }, { crypto, address }) {
-      if (state.balance < Fees.KVS) {
-        return
-      }
-
       return storeCryptoAddress(crypto, address)
     },
     reset ({ commit }) {
