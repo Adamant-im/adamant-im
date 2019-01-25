@@ -27,7 +27,7 @@ export default {
   },
   beforeDestroy () {
     this.notifications.stop()
-    clearInterval(this.intervalRef)
+    window.clearInterval(this.interval)
   },
   computed: {
     layout () {
