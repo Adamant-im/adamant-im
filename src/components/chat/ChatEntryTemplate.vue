@@ -1,8 +1,5 @@
 <template>
-  <div class="chat_entry black-text" ref="chatEntry"
-       v-bind:class="{
-        'right-align-block' :  direction === 'from'
-    }">
+  <div class="chat_entry black-text" ref="chatEntry" v-bind:class="{'right-align-block' : direction === 'from'}">
     <md-layout
       class="chat_message md-whiteframe md-whiteframe-1dp"
       v-bind:class="{
@@ -26,9 +23,12 @@
         </div>
       </div>
     </md-layout>
-    <span v-if="brief">
-      <slot name="brief-view"></slot>
-    </span>
+    <div v-if="brief" class="brief-message-wrapper">
+      <div class="brief-message-tick" :direction="direction" :data-confirmation="confirm"></div>
+      <div class="brief-message-text" :direction="direction">
+        <slot name="brief-view"></slot>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -123,69 +123,113 @@ export default {
     hyphens: auto;
   }
 
-  .message-tick:before {
-    content: 'done';
+  /* Brief-mode element styles */
+  .brief-message-tick {
+    height: 20px;
+    width: 10px;
+    bottom: 14px;
+  }
+
+  .brief-message-tick:before {
     font-family: "Material Icons";
     text-rendering: optimizeLegibility;
     position: absolute;
-    bottom: 0;
-    left: 1px;
     font-size: 8px;
+    bottom: 14px;
   }
 
-  [data-confirmation=confirmed]:before {
+  .brief-message-tick[data-confirmation=confirmed]:before {
     content: 'done';
-    font-family: "Material Icons";
-    text-rendering: optimizeLegibility;
-    position: absolute;
-    bottom: 0;
-    left: 1px;
-    font-size: 8px;
   }
 
-  [data-confirmation=sent]:before {
+  .brief-message-tick[data-confirmation=sent]:before {
     content: 'query_builder';
+  }
+
+  .brief-message-tick[data-confirmation=rejected]:before {
+    content: 'cancel';
+    color: red;
+  }
+
+  .brief-message-tick[data-confirmation=unconfirmed]:before {
+    content: 'query_builder';
+  }
+
+  .brief-message-tick[data-confirmation=error]:before {
+    content: 'error';
+  }
+
+  .brief-message-tick[direction=from] {
+    order: 0 !important;
+  }
+
+  .brief-message-tick[direction=to] {
+    order: 1 !important;
+  }
+
+  .brief-message-text[direction=to] {
+    margin-right: 5px;
+    order: 0 !important;
+  }
+
+  .brief-message-text[direction=from] {
+    margin-left: 2px;
+    order: 1 !important;
+  }
+
+  .message-tick-for-received-transfers {
+    bottom: 14px;
+  }
+
+  .message-tick-for-received-transfers:before  {
+    content: 'done';
     font-family: "Material Icons";
     text-rendering: optimizeLegibility;
     position: absolute;
-    bottom: 0;
-    left: 1px;
     font-size: 8px;
+    bottom: 0;
+    left: 5px;
+  }
+
+  /* Full-mode element styles */
+  .message-tick {
+    height: 20px;
+    width: 10px;
+    bottom: 14px;
+  }
+
+  .message-tick:before {
+    font-family: "Material Icons";
+    text-rendering: optimizeLegibility;
+    position: absolute;
+    font-size: 8px;
+    bottom: 0;
+    left: 5px;
+  }
+
+  .message-tick[data-confirmation=confirmed]:before {
+    content: 'done';
+  }
+
+  .message-tick[data-confirmation=sent]:before {
+    content: 'query_builder';
+  }
+
+  .message-tick[data-confirmation=rejected]:before {
+    content: 'cancel';
+    color: red;
+  }
+
+  .message-tick[data-confirmation=unconfirmed]:before {
+    content: 'query_builder';
+  }
+
+  .message-tick[data-confirmation=error]:before {
+    content: 'error';
   }
 
   [data-confirmation=sent] p {
     color: red;
-  }
-
-  [data-confirmation=rejected]:before {
-    content: 'cancel';
-    font-family: "Material Icons";
-    text-rendering: optimizeLegibility;
-    position: absolute;
-    bottom: 0;
-    left: 1px;
-    color: red;
-    font-size: 8px;
-  }
-
-  [data-confirmation=unconfirmed]:before {
-    content: 'query_builder';
-    font-family: "Material Icons";
-    text-rendering: optimizeLegibility;
-    position: absolute;
-    bottom: 0;
-    left: 1px;
-    font-size: 8px;
-  }
-
-  [data-confirmation=error]:before {
-    content: 'error';
-    font-family: "Material Icons";
-    text-rendering: optimizeLegibility;
-    position: absolute;
-    bottom: 0;
-    left: 1px;
-    font-size: 8px;
   }
 
   .msg-holder {
@@ -267,5 +311,15 @@ export default {
     cursor: pointer;
     margin-left: 4px;
     margin-top: -8px;
+  }
+
+  .message-text-wrapper {
+    left: 10px;
+    position: relative;
+  }
+
+  .brief-message-wrapper {
+    display: flex;
+    flex-direction: row;
   }
 </style>
