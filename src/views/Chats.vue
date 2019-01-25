@@ -46,7 +46,13 @@ import ChatStartDialog from '@/components/ChatStartDialog'
 
 export default {
   mounted () {
-    if (!this.$store.state.chat.isFulfilled) {
+    if (this.$store.state.IDBReady) {
+      // @todo Restore state from Indexed DB
+      if (!this.$store.state.chat.chats.length) {
+        this.$store.commit('chat/createAdamantChats')
+        this.$store.dispatch('chat/loadChats')
+      }
+    } else {
       this.$store.commit('chat/createAdamantChats')
       this.$store.dispatch('chat/loadChats')
     }
