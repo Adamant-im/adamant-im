@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="options-page">
     <app-toolbar-centered
       :title="$t('options.page_title')"
       :show-back="true"
@@ -12,15 +12,15 @@
         <v-flex xs12 sm12 md8 lg5>
 
           <!-- General -->
-          <h3 class="title mb-3">{{ $t('options.general_title') }}</h3>
-          <v-layout row wrap align-center class="mb-5">
+          <h3 class="title mt-3 mb-3">{{ $t('options.general_title') }}</h3>
+          <v-layout row wrap align-center>
             <v-flex xs6>
               <v-subheader class="pa-0">{{ $t('options.language_label') }}</v-subheader>
             </v-flex>
             <v-flex xs6 class="text-xs-right">
               <language-switcher/>
             </v-flex>
-            <v-flex xs12>
+            <v-flex xs12 class="mt-2">
               <v-checkbox
                 :label="$t('options.dark_theme')"
                 color="grey darken-1"
@@ -30,8 +30,8 @@
           </v-layout>
 
           <!-- Security -->
-          <h3 class="title mb-3">{{ $t('options.security_title') }}</h3>
-          <v-layout row wrap align-center class="mb-5">
+          <h3 class="title mt-4 mb-4">{{ $t('options.security_title') }}</h3>
+          <v-layout row wrap align-center>
             <v-flex xs12>
               <v-checkbox
                 :label="$t('options.exit_on_close')"
@@ -43,8 +43,8 @@
           </v-layout>
 
           <!-- Chats -->
-          <h3 class="title mb-3">{{ $t('options.chats_title') }}</h3>
-          <v-layout row wrap align-center class="mb-5">
+          <h3 class="title mt-4 mb-4">{{ $t('options.chats_title') }}</h3>
+          <v-layout row wrap align-center>
             <v-flex xs12>
               <v-checkbox
                 :label="$t('options.send_on_enter')"
@@ -56,8 +56,8 @@
           </v-layout>
 
           <!-- Notifications -->
-          <h3 class="title mb-3">{{ $t('options.notification_title') }}</h3>
-          <v-layout row wrap align-center class="mb-5">
+          <h3 class="title mt-4 mb-4">{{ $t('options.notification_title') }}</h3>
+          <v-layout row wrap align-center>
             <v-flex xs12>
               <v-checkbox
                 :label="$t('options.enable_sound')"
@@ -83,15 +83,18 @@
             </v-flex>
           </v-layout>
 
-          <!-- Other -->
-          <h3 class="title mb-3">{{ $t('options.other') }}</h3>
+          <!-- Delegates -->
+          <h3 class="title mt-4 mb-4">{{ $t('options.other') }}</h3>
           <v-layout row wrap align-center>
-            <v-flex xs12 md6 class="px-1">
-              <v-btn block @click="$router.push('/options/nodes')">{{ $t('options.nodes_list') }}</v-btn>
-            </v-flex>
-            <v-flex xs12 md6 class="px-1">
-              <v-btn block @click="$router.push('/votes')">{{ $t('options.vote_for_delegates_button') }}</v-btn>
-            </v-flex>
+           <v-flex xs12>
+             <v-btn flat @click="$router.push('/options/nodes')">{{ $t('options.nodes_list') }}</v-btn>
+
+             <v-btn flat class="text-xs-left" @click="$router.push('/votes')">
+               {{ $t('options.vote_for_delegates_button') }}
+             </v-btn>
+
+             <div class="text-xs-right">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
+           </v-flex>
           </v-layout>
 
         </v-flex>
