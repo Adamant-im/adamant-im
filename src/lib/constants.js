@@ -18,7 +18,8 @@ export const Cryptos = {
   ETH: 'ETH',
   BNB: 'BNB',
   DOGE: 'DOGE',
-  BZ: 'BZ'
+  BZ: 'BZ',
+  UNKNOWN_CRYPTO: 'UNKNOWN_CRYPTO'
 }
 
 export const ERC20 = Object.freeze([

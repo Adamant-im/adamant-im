@@ -37,7 +37,7 @@
           v-bind="message"
           :key="message.id"
           :user-id="userId"
-          :amount="$formatAmount(message.amount)"
+          :amount="$formatAmount(message.amount, message.type)"
           :currency="message.type"
           :i18n="{ sent: $t('chats.sent_label'), received: $t('chats.received_label') }"
           :locale="locale"
@@ -221,9 +221,7 @@ export default {
       })
     },
     isTransaction (type) {
-      const cryptos = Object.values(Cryptos)
-
-      return cryptos.includes(type)
+      return type in Cryptos
     }
   },
   filters: {

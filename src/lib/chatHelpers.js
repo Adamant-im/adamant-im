@@ -1,6 +1,9 @@
 import Queue from 'promise-queue'
+import { isString } from 'lodash'
+
 import utils from '@/lib/adamant'
 import * as admApi from '@/lib/adamant-api'
+import { isNumeric } from './numericHelpers'
 
 const maxConcurent = 1
 const maxQueue = Infinity
@@ -110,6 +113,10 @@ export function getRealTimestamp (admTimestamp) {
  */
 export function transformMessage (abstract) {
   let transaction = {}
+  const knownCryptos = {
+    eth_transaction: 'ETH',
+    doge_transaction: 'DOGE'
+  }
 
   // common properties for all transaction types
   transaction.id = abstract.id
@@ -121,15 +128,24 @@ export function transformMessage (abstract) {
   transaction.amount = abstract.amount ? abstract.amount : 0
   transaction.message = ''
 
-  if (abstract.message && abstract.message.type === 'eth_transaction') {
-    transaction.type = 'ETH'
-    transaction.message = abstract.message.comments || ''
-  } else if (abstract.amount > 0) { // ADM transaction
-    transaction.type = 'ADM'
+  if (isString(abstract.message)) { // ADM transaction or Message
     transaction.message = abstract.message
+
+    abstract.amount > 0
+      ? transaction.type = 'ADM'
+      : transaction.type = 'message'
+  } else if (abstract.message && abstract.message.type) { // cryptos
+    transaction.message = abstract.message.comments || ''
+    transaction.amount = isNumeric(abstract.message.amount) ? +abstract.message.amount : 0
+
+    const knownCrypto = knownCryptos[abstract.message.type]
+    if (knownCrypto) {
+      transaction.type = knownCrypto
+    } else {
+      transaction.type = 'UNKNOWN_CRYPTO'
+    }
   } else {
     transaction.type = 'message'
-    transaction.message = abstract.message
   }
 
   return transaction
