@@ -1,6 +1,6 @@
 import DogeApi, { TX_FEE } from '../../../lib/doge-api'
-import * as admApi from '../../../lib/adamant-api'
 import { Cryptos } from '../../../lib/constants'
+import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
 const MAX_ATTEMPTS = 60
 
@@ -48,9 +48,8 @@ export default {
     }
   },
 
-  storeAddress ({ state, dispatch }) {
-    const payload = { address: state.address, crypto: Cryptos.DOGE }
-    return dispatch('storeCryptoAddress', payload, { root: true })
+  storeAddress ({ state }) {
+    storeCryptoAddress(Cryptos.DOGE, state.address)
   },
 
   updateStatus (context) {
@@ -65,20 +64,19 @@ export default {
     return api.createTransaction(address, amount)
       .then(tx => {
         if (!admAddress) return tx.hex
-
+        const crypto = 'doge'
         // Send a special message to indicate that we're performing an ETH transfer
-        const type = 'doge_transaction'
-        const msg = { type, amount, hash: tx.txid, comments }
-        return admApi.sendSpecialMessage(admAddress, msg)
-          .then(response => {
-            if (response.success) {
-              console.log('ADM message has been sent', msg)
-              return tx.hex
-            } else {
-              console.log(`Failed to send "${type}"`, response)
-              return Promise.reject(new Error('adm_message'))
-            }
-          })
+        const msgPayload = {
+          address: admAddress,
+          amount,
+          comments,
+          crypto,
+          hash: tx.txid
+        }
+
+        // Send a special message to indicate that we're performing a crypto transfer
+        return context.dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
+          .then(success => success ? tx.hex : Promise.reject(new Error('adm_message')))
       })
       .then(rawTx => api.sendTransaction(rawTx).then(
         hash => ({ hash }),
@@ -90,8 +88,6 @@ export default {
           context.commit('transactions', [{ hash, status: 'ERROR' }])
           throw error
         } else {
-          console.log(`${crypto} transaction has been sent`)
-
           context.commit('transactions', [{
             hash,
             senderId: context.state.address,
@@ -109,14 +105,19 @@ export default {
       })
   },
 
+  /**
+   * Retrieves transaction details
+   * @param {object} context Vuex action context
+   * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
+   */
   getTransaction (context, payload) {
     if (!api) return
 
     const existing = context.state.transactions[payload.hash]
-    if (existing && existing.status !== 'PENDING') return
+    if (existing && existing.status !== 'PENDING' && !payload.force) return
 
     // Set a stub so far
-    if (!existing) {
+    if (!existing || existing.status === 'ERROR') {
       context.commit('transactions', [{
         hash: payload.hash,
         timestamp: payload.timestamp,
