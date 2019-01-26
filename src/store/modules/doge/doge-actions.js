@@ -1,6 +1,6 @@
 import DogeApi, { TX_FEE } from '../../../lib/doge-api'
 import { Cryptos } from '../../../lib/constants'
-import storeCryptoAddress from '../../../lib/store-crypto-address'
+import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
 const MAX_ATTEMPTS = 60
 

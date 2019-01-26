@@ -16,12 +16,13 @@ import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
 
 import * as admApi from '../lib/adamant-api'
-import { base64regex, WelcomeMessage, UserPasswordHashSettings, Cryptos } from '../lib/constants'
+import { base64regex, WelcomeMessage, UserPasswordHashSettings, Cryptos, Fees } from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import i18n from '../i18n'
 import crypto from 'pbkdf2'
 import renderMarkdown from '../lib/markdown'
+import { flushCryptoAddresses } from '../lib/store-crypto-address'
 
 var maxConcurrent = 1
 var maxQueue = Infinity
@@ -322,6 +323,10 @@ const store = {
         (account) => {
           context.commit('currentAccount', account)
           context.commit('ajax_end')
+
+          if (account.balance > Fees.KVS) {
+            flushCryptoAddresses()
+          }
         },
         (error) => {
           console.error(error)
