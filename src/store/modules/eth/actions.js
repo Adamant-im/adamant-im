@@ -2,6 +2,7 @@ import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
 import { ETH_TRANSFER_GAS } from '../../../lib/constants'
+import storeCryptoAddress from '../../../lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -13,11 +14,7 @@ const STATUS_INTERVAL = 8000
  * @param {*} context
  */
 function storeEthAddress (context) {
-  const payload = {
-    crypto: context.state.crypto,
-    address: context.state.address
-  }
-  context.dispatch('storeCryptoAddress', payload, { root: true })
+  storeCryptoAddress(context.state.crypto, context.state.address)
 }
 
 const initTransaction = (api, context, ethAddress, amount) => {
@@ -43,14 +40,6 @@ const parseTransaction = (context, tx) => {
 }
 
 const createSpecificActions = (api, queue) => ({
-  /** On account update this handler ensures that ETH address is in the KVS */
-  updateAccount: {
-    root: true,
-    handler (context) {
-      storeEthAddress(context)
-    }
-  },
-
   /**
    * Requests ETH account status: balance, gas price, etc.
    * @param {*} context Vuex action context
