@@ -88,8 +88,6 @@ export default {
           context.commit('transactions', [{ hash, status: 'ERROR' }])
           throw error
         } else {
-          console.log(`${crypto} transaction has been sent`)
-
           context.commit('transactions', [{
             hash,
             senderId: context.state.address,
