@@ -1,5 +1,6 @@
 import DogeApi, { TX_FEE } from '../../../lib/doge-api'
 import { Cryptos } from '../../../lib/constants'
+import storeCryptoAddress from '../../../lib/store-crypto-address'
 
 const MAX_ATTEMPTS = 60
 
@@ -47,9 +48,8 @@ export default {
     }
   },
 
-  storeAddress ({ state, dispatch }) {
-    const payload = { address: state.address, crypto: Cryptos.DOGE }
-    return dispatch('storeCryptoAddress', payload, { root: true })
+  storeAddress ({ state }) {
+    storeCryptoAddress(Cryptos.DOGE, state.address)
   },
 
   updateStatus (context) {

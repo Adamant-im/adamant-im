@@ -418,10 +418,6 @@ const store = {
           context.commit('partners/displayName', { partner, displayName })
         }
       })
-    },
-    /** Stores user address for the specified crypto in the ADM KVS */
-    storeCryptoAddress (context, { crypto, address }) {
-      return admApi.storeCryptoAddress(crypto, address)
     }
   },
   mutations: {
