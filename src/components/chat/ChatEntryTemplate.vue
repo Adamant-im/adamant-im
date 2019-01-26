@@ -177,18 +177,9 @@ export default {
     order: 1 !important;
   }
 
-  .message-tick-for-received-transfers {
-    bottom: 14px;
-  }
-
-  .message-tick-for-received-transfers:before  {
-    content: 'done';
-    font-family: "Material Icons";
-    text-rendering: optimizeLegibility;
-    position: absolute;
-    font-size: 8px;
-    bottom: 0;
-    left: 5px;
+  .received-message-tick {
+    height: 0 !important;
+    bottom: 14px !important;
   }
 
   /* Full-mode element styles */
