@@ -1,5 +1,4 @@
 import DogeApi, { TX_FEE } from '../../../lib/doge-api'
-import * as admApi from '../../../lib/adamant-api'
 import { Cryptos } from '../../../lib/constants'
 
 const MAX_ATTEMPTS = 60
@@ -65,20 +64,19 @@ export default {
     return api.createTransaction(address, amount)
       .then(tx => {
         if (!admAddress) return tx.hex
-
+        const crypto = 'doge'
         // Send a special message to indicate that we're performing an ETH transfer
-        const type = 'doge_transaction'
-        const msg = { type, amount, hash: tx.txid, comments }
-        return admApi.sendSpecialMessage(admAddress, msg)
-          .then(response => {
-            if (response.success) {
-              console.log('ADM message has been sent', msg)
-              return tx.hex
-            } else {
-              console.log(`Failed to send "${type}"`, response)
-              return Promise.reject(new Error('adm_message'))
-            }
-          })
+        const msgPayload = {
+          address: admAddress,
+          amount,
+          comments,
+          crypto,
+          hash: tx.txid
+        }
+
+        // Send a special message to indicate that we're performing a crypto transfer
+        return context.dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
+          .then(success => success ? tx.hex : Promise.reject(new Error('adm_message')))
       })
       .then(rawTx => api.sendTransaction(rawTx).then(
         hash => ({ hash }),
@@ -90,8 +88,6 @@ export default {
           context.commit('transactions', [{ hash, status: 'ERROR' }])
           throw error
         } else {
-          console.log(`${crypto} transaction has been sent`)
-
           context.commit('transactions', [{
             hash,
             senderId: context.state.address,
