@@ -66,20 +66,24 @@ class TabNotification {
     this.interval = null
     document.title = this.documentTitle
   }
-  checkNewMessages (unreadAmount, note) {
+  checkNewMessages (unreadAmount) {
+    this.stop()
     if (unreadAmount > 0) {
-      this.notifyMessage = unreadAmount % 10 > 4 ? note.many : note.few
       let isNotify = false
       if (this.interval) return
       this.interval = window.setInterval(() => {
         isNotify = !isNotify
         if (isNotify) {
-          document.title = this.notifyMessage
+          if (unreadAmount < 100) {
+            document.title = this.i18n.tc('notifications.tabMessage.few')
+          } else {
+            document.title = this.i18n.t('notifications.tabMessage.many')
+          }
         } else {
           document.title = this.documentTitle
         }
       }, 1e3)
-    } else this.stop()
+    }
   }
 }
 
@@ -113,10 +117,7 @@ export default class Notifications {
           }
         )
         case this.tabAllowed && chatUnread: this.tab.checkNewMessages(
-          this.unreadMessagesAmount, {
-            few: this.i18n.tc('notifications.message.few', this.unreadMessagesAmount),
-            many: this.i18n.tc('notifications.message.many', this.unreadMessagesAmount)
-          }
+          this.unreadMessagesAmount
         )
       }
       if (!chatUnread) {

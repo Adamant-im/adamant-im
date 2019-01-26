@@ -122,13 +122,12 @@
     "ping": "Ping"
   },
   "notifications": {
-    "message": {
-      "few": "no messages | 1 new message | {n} new messages",
-      "many": "{n} new messages"
+    "tabMessage": {
+      "few": "no new messages | 1 new message | {n} new messages | {n} new messages",
+      "many": "99+ new messages"
     }
   },
   "options": {
-    "allow_push": "Allow PUSH notifications",
     "already_delegate_text": "You are already a delegate. Delegate name is:",
     "chats_title": "Chats",
     "dark_theme": "Enable dark theme",
