@@ -12,8 +12,13 @@
     <div v-if="message.direction === 'to'" class="message-tick received-message-tick" :data-confirmation="confirm"></div>
     <p><em v-text="message.message.comments"></em></p>
     <template slot="brief-view">
-      <span>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }} </span>
-      <span v-text="message.message.amount"></span> {{ crypto }}
+      <div v-if="message.message.comments === ''">
+        <span>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }} </span>
+        <span v-text="message.message.amount"></span> {{ crypto }}
+      </div>
+      <div v-else>
+        <span v-text="message.message.comments"></span>
+      </div>
     </template>
   </chat-entry-template>
 </template>

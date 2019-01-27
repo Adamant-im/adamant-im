@@ -34,10 +34,6 @@
 
 <script>
 
-function checkForCurrency (text, currency) {
-  return text.indexOf(currency) === text.length - 4
-}
-
 export default {
   name: 'chat-entry-template',
   props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly', 'message', 'amount'],
@@ -45,18 +41,6 @@ export default {
     retryMessage () {
       this.$store.dispatch('retry_message', this.message.id)
     }
-  },
-  mounted () {
-    let innerText = this.$refs.chatEntry.innerText
-    const currencies = ['ADM', 'ETH', 'BNB', 'BZ', 'DOGE']
-    let checkCurrency = false
-    currencies.forEach(currency => {
-      checkCurrency = checkForCurrency(innerText, currency)
-      if (innerText.indexOf('sent ') === 0 && checkCurrency) {
-        this.$refs.chatEntry.classList.add('chat_entry_for_money')
-        return checkCurrency
-      }
-    })
   },
   computed: {
     retryMessageFlag () {

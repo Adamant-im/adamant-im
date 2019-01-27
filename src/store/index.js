@@ -168,20 +168,9 @@ const store = {
         confirm_class: 'sent',
         id: payload.hash
       }
-
       const currentDialog = context.getters.getChats[payload.address]
-      if (currentDialog) {
-        if (handledPayload.message.comments === '') {
-          handledPayload.message.comments = 'sent ' + (message.amount) + ' ' + payload.crypto
-          handledPayload.message.comments = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
-          updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
-          handledPayload.message.comments = ''
-        } else {
-          handledPayload.message.comments = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
-          updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
-        }
-        Vue.set(currentDialog.messages, handledPayload.id, handledPayload)
-      }
+      updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
+      Vue.set(currentDialog.messages, handledPayload.id, handledPayload)
     },
     sendCryptoTransferMessage (context, payload) {
       context.dispatch('createInChatTransferStubMessage', payload)

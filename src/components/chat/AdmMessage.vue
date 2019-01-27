@@ -14,7 +14,7 @@
     <p v-if="message.amount" class='transaction-amount' v-on:click="goToTransaction()">
       <span v-text="$formatAmount(message.amount)"></span> ADM
     </p>
-    <div v-if="message.direction === 'to'" class="message-tick received-message-tick" :data-confirmation="'confirmed'"></div>
+    <div v-if="tickCondition(message)" class="message-tick received-message-tick" :data-confirmation="'confirmed'"></div>
     <p v-html="message.message" v-bind:class="{ transfer_comment: !!message.amount }" ></p>
 
     <template slot="brief-view">
@@ -32,6 +32,9 @@ export default {
   components: { ChatEntryTemplate },
   props: ['message', 'brief', 'readOnly'],
   methods: {
+    tickCondition (message) {
+      return message.amount > 0 && message.blockId
+    },
     goToTransaction () {
       this.$store.commit('leave_chat')
       const params = { crypto: Cryptos.ADM, tx_id: this.message.id }
