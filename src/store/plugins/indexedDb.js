@@ -3,6 +3,8 @@ import cloneDeep from 'lodash'
 
 import { Modules, Chats, Security } from '@/lib/idb'
 import { restoreState } from '@/lib/idb/state'
+import AppInterval from '@/lib/AppInterval'
+import { Base64 } from 'js-base64'
 
 const chatModuleMutations = ['setHeight', 'setFulfilled']
 const multipleChatMutations = ['markAllAsRead', 'createEmptyChat', 'createAdamantChats']
@@ -74,13 +76,34 @@ function createThrottles () {
 const throttles = createThrottles()
 
 export default store => {
-  if (store.getters.hasPassword) {
-    restoreState(store)
-      .catch(err => {
-        console.error(err)
-        store.commit('resetPassword')
-        store.commit('setIDBReady', false)
-      })
+  if (store.getters['options/isLoginViaPassword']) {
+    if (store.state.password) {
+      restoreState(store)
+        .then(() => {
+          if (!store.state.chat.isFulfilled) {
+            store.commit('chat/createAdamantChats')
+            return store.dispatch('chat/loadChats')
+          }
+        })
+        .then(() => {
+          store.dispatch('unlock')
+          AppInterval.subscribe()
+        })
+        .catch(err => {
+          // @todo fallback to login via passphrase
+          // disable option `login via password`
+          // clearDb
+          // redirect to `/`
+          console.error('restoreState', err)
+        })
+    }
+  } else if (store.getters.isLogged) { // is logged with passphrase
+    store.dispatch('unlock')
+    store.commit('chat/createAdamantChats')
+    store.dispatch('chat/loadChats')
+      .then(() => AppInterval.subscribe())
+
+    store.dispatch('afterLogin', Base64.decode(store.state.passphrase))
   }
 
   store.subscribe((mutation, state) => {
@@ -113,9 +136,15 @@ export default store => {
           let chatId = ''
 
           switch (mutationName) {
-            case 'pushMessage': chatId = mutation.payload.userId; break
-            case 'markAsRead': chatId = mutation.payload; break
-            case 'updateMessage': chatId = mutation.payload.partnerId; break
+            case 'pushMessage':
+              chatId = mutation.payload.message.senderId === mutation.payload.userId
+                ? mutation.payload.message.recipientId
+                : mutation.payload.message.senderId
+              break
+            case 'markAsRead': chatId = mutation.payload
+              break
+            case 'updateMessage': chatId = mutation.payload.partnerId
+              break
           }
 
           if (chatId) {

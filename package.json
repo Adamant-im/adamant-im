@@ -42,6 +42,7 @@
     "qs": "^6.6.0",
     "register-service-worker": "^1.0.0",
     "roboto-fontface": "^0.10.0",
+    "rxjs": "^6.3.3",
     "semver": "^5.5.1",
     "simple-audio": "^1.0.1",
     "sodium-browserify-tweetnacl": "^0.2.3",

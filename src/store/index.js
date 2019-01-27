@@ -70,16 +70,6 @@ const store = {
     }
   },
   actions: {
-    /**
-     * Updates current application status: balance, chat messages, transactions and so on
-     * @param {any} context Vuex action context
-     */
-    update ({ dispatch, getters }) {
-      if (getters.isLogged) {
-        dispatch('chat/getNewMessages')
-          .catch(() => {})
-      }
-    },
     login ({ commit, dispatch }, passphrase) {
       return loginOrRegister(passphrase)
         .then(account => {

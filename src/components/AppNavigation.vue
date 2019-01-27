@@ -38,6 +38,7 @@
 
 <script>
 import { clearDb } from '@/lib/idb'
+import AppInterval from '@/lib/AppInterval'
 
 export default {
   mounted () {
@@ -76,8 +77,8 @@ export default {
   }),
   methods: {
     logout () {
+      AppInterval.unsubscribe()
       this.$store.dispatch('logout')
-      this.$store.dispatch('reset')
 
       return clearDb().then(() => {
         // turn off IDB sync

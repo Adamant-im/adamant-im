@@ -74,13 +74,6 @@ import BnzFillIcon from '@/components/icons/BnzFill'
 import DogeFillIcon from '@/components/icons/DogeFill'
 
 export default {
-  created () {
-    this.update()
-    this.timer = setInterval(() => this.update(), 20000)
-  },
-  beforeDestroy () {
-    clearInterval(this.timer)
-  },
   computed: {
     wallets () {
       return [
@@ -123,7 +116,6 @@ export default {
     }
   },
   data: () => ({
-    timer: null
   }),
   methods: {
     sendFunds () {
@@ -139,9 +131,6 @@ export default {
           crypto
         }
       })
-    },
-    update () {
-      this.$store.dispatch('updateBalance')
     }
   },
   components: {

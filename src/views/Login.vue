@@ -117,6 +117,7 @@ import QrCodeIcon from '@/components/icons/common/QrCode'
 import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
 import FileIcon from '@/components/icons/common/File'
 import LoginPasswordForm from '@/components/LoginPasswordForm'
+import AppInterval from '@/lib/AppInterval'
 
 export default {
   computed: {
@@ -152,6 +153,14 @@ export default {
     },
     onLogin () {
       this.$router.push('/chats')
+
+      if (!this.$store.state.chat.isFulfilled) {
+        this.$store.commit('chat/createAdamantChats')
+        this.$store.dispatch('chat/loadChats')
+          .then(() => AppInterval.subscribe())
+      } else {
+        AppInterval.subscribe()
+      }
     },
     onLoginError (key) {
       this.$store.dispatch('snackbar/show', {

@@ -8,34 +8,21 @@
 
 <script>
 import Notifications from '@/lib/notifications'
-import { restoreState } from '@/lib/idb/state'
+import AppInterval from '@/lib/AppInterval'
 
 export default {
   created () {
     this.setLocale()
-    if (this.isLogged) {
-      this.$store.dispatch('unlock')
-
-      if (this.isLoginViaPassword) {
-        restoreState(this.$store)
-          .catch(err => {
-            console.error(err)
-          })
-      }
-    }
   },
   mounted () {
     this.notifications = new Notifications(this)
-    this.interval = window.setInterval(() => {
-      this.$store.dispatch('update')
-    }, 3000)
   },
   updated () {
     this.notifications.update(this)
   },
   beforeDestroy () {
     this.notifications.stop()
-    clearInterval(this.intervalRef)
+    AppInterval.unsubscribe()
   },
   computed: {
     layout () {
