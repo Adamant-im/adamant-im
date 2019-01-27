@@ -1,21 +1,28 @@
 <template>
-  <v-layout row wrap justify-center>
-
-    <app-toolbar
+  <div>
+    <app-toolbar-centered
       :title="$t('home.send_btn')"
       flat
     />
 
-    <v-flex xs12 sm12 md8 lg5>
-      <send-funds-form
-        :crypto-currency="cryptoCurrency"
-        :recipient-address="recipientAddress"
-        :amount-to-send="amountToSend"
-        @send="onSend"
-      />
-    </v-flex>
+    <v-container fluid>
+      <v-layout row wrap justify-center>
 
-  </v-layout>
+        <v-flex xs12 sm12 md8 lg5>
+
+          <send-funds-form
+            :crypto-currency="cryptoCurrency"
+            :recipient-address="recipientAddress"
+            :amount-to-send="amountToSend"
+            :address-readonly="comeFromChat"
+            @send="onSend"
+          />
+
+        </v-flex>
+
+      </v-layout>
+    </v-container>
+  </div>
 </template>
 
 <script>
@@ -23,7 +30,7 @@ import { Cryptos } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { isNumeric } from '@/lib/numericHelpers'
 
-import AppToolbar from '@/components/AppToolbar'
+import AppToolbarCentered from '@/components/AppToolbarCentered'
 import SendFundsForm from '@/components/SendFundsForm'
 
 export default {
@@ -31,6 +38,11 @@ export default {
     this.validateCryptoCurrency()
     this.validateRecipientAddress()
     this.validateAmountToSend()
+  },
+  computed: {
+    comeFromChat () {
+      return this.recipientAddress.length > 0
+    }
   },
   data: () => ({
     cryptoCurrency: Cryptos.ADM,
@@ -56,19 +68,18 @@ export default {
         this.amountToSend = parseFloat(this.$route.params.amountToSend)
       }
     },
-    userComeFrom () {
-      return this.$route.query.from
-    },
     onSend (transactionId) {
-      if (this.userComeFrom()) {
-        this.$router.replace(this.$route.query.from)
+      const userComeFrom = this.$route.query.from
+
+      if (userComeFrom) {
+        this.$router.replace(userComeFrom)
       } else {
         this.$router.replace(`/transactions/${this.cryptoCurrency}/${transactionId}`)
       }
     }
   },
   components: {
-    AppToolbar,
+    AppToolbarCentered,
     SendFundsForm
   }
 }

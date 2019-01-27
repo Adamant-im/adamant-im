@@ -1,6 +1,6 @@
 <template>
-  <v-app :dark="isDarkTheme">
-    <component :is="layout" class="application--linear-gradient">
+  <v-app :dark="isDarkTheme" class="application--linear-gradient">
+    <component :is="layout">
       <router-view/>
     </component>
   </v-app>
@@ -63,5 +63,13 @@ export default {
     #f6f6f6 1px,
     #fefefe 0,
     #fefefe 5px
+  )
+.theme--dark.application--linear-gradient
+  background: repeating-linear-gradient(
+    140deg,
+    #191919,
+    #191919 1px,
+    #212121 0,
+    #212121 5px
   )
 </style>

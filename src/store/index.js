@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import { Base64 } from 'js-base64'
 
 import { unlock, loginOrRegister, loginViaPassword, storeCryptoAddress } from '@/lib/adamant-api'
-import { Cryptos, Fees } from '@/lib/constants'
+import { Cryptos } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'

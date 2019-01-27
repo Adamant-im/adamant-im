@@ -7,30 +7,32 @@
       </v-btn>
     </div>
 
-    <template v-if="showPassphrase">
-      <div
-        v-html="$t('login.new_password_label')"
-        class="caption grey--text mt-2"
-        ref="el"
-      ></div>
-      <v-textarea
-        :value="passphrase"
-        @click.prevent="selectText"
-        type="text"
-        multi-line
-        readonly
-        rows="2"
-        class="pt-0"
-        ref="textarea"
-      >
-        <icon @click="copyToClipboard" :width="24" :height="24" shape-rendering="crispEdges" slot="append">
-          <copy-icon/>
-        </icon>
-        <icon @click="saveFile" :width="24" :height="24" shape-rendering="auto" slot="append-outer">
-          <save-icon/>
-        </icon>
-      </v-textarea>
-    </template>
+    <transition name="slide-fade">
+      <div v-if="showPassphrase">
+        <div
+          v-html="$t('login.new_password_label')"
+          class="caption grey--text mt-2"
+          ref="el"
+        ></div>
+        <v-textarea
+          :value="passphrase"
+          @click.prevent="selectText"
+          type="text"
+          multi-line
+          readonly
+          rows="2"
+          class="pt-0"
+          ref="textarea"
+        >
+          <icon @click="copyToClipboard" :width="24" :height="24" shape-rendering="crispEdges" slot="append">
+            <copy-icon/>
+          </icon>
+          <icon @click="saveFile" :width="24" :height="24" shape-rendering="auto" slot="append-outer">
+            <save-icon/>
+          </icon>
+        </v-textarea>
+      </div>
+    </transition>
   </div>
 </template>
 

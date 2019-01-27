@@ -1,39 +1,43 @@
 <template>
-  <v-layout row wrap justify-center>
-
-    <app-toolbar
+  <div>
+    <app-toolbar-centered
       :title="$t('transaction.transactions')"
       flat
     />
 
-    <v-flex v-if="isFulfilled" xs12 sm12 md8 lg5>
+    <v-container fluid>
+      <v-layout row wrap justify-center>
 
-      <v-list v-if="hasTransactions" two-line class="transparent">
-        <transaction-list-item
-          v-for="(transaction, i) in transactions"
-          :key="i"
-          :id="transaction.id"
-          :user-id="userId"
-          :sender-id="transaction.senderId"
-          :partner-id="transaction.partner"
-          :timestamp="transaction.timestamp"
-          :amount="transaction.amount"
-          :crypto="crypto"
-          @click:transaction="goToTransaction"
-          @click:icon="goToChat"
-        />
-      </v-list>
+        <v-flex v-if="isFulfilled" xs12 sm12 md8 lg5>
 
-      <h3 v-else class="headline text-xs-center mt-4">{{ $t('transaction.no_transactions') }}</h3>
+          <v-list v-if="hasTransactions" two-line class="transparent">
+            <transaction-list-item
+              v-for="(transaction, i) in transactions"
+              :key="i"
+              :id="transaction.id"
+              :user-id="userId"
+              :sender-id="transaction.senderId"
+              :partner-id="transaction.partner"
+              :timestamp="transaction.timestamp"
+              :amount="transaction.amount"
+              :crypto="crypto"
+              @click:transaction="goToTransaction"
+              @click:icon="goToChat"
+            />
+          </v-list>
 
-    </v-flex>
+          <h3 v-else class="headline text-xs-center mt-4">{{ $t('transaction.no_transactions') }}</h3>
 
-  </v-layout>
+        </v-flex>
+
+      </v-layout>
+    </v-container>
+  </div>
 </template>
 
 <script>
 import { Cryptos } from '@/lib/constants'
-import AppToolbar from '@/components/AppToolbar'
+import AppToolbarCentered from '@/components/AppToolbarCentered'
 import TransactionListItem from '@/components/TransactionListItem'
 
 export default {
@@ -85,7 +89,7 @@ export default {
     }
   },
   components: {
-    AppToolbar,
+    AppToolbarCentered,
     TransactionListItem
   }
 }

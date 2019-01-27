@@ -1,0 +1,126 @@
+@import '~vuetify/src/stylus/settings/_colors.styl'
+
+/** ChatPreview.vue **/
+.chat-preview
+  .v-list__tile__title
+    font-weight: 500
+
+/** AppNavigation.vue **/
+.app-navigation
+  &.v-bottom-nav
+    box-shadow: none
+
+.theme--light
+  .app-navigation
+    &__container
+      border-top: 1px solid $grey.lighten-2
+    &.v-bottom-nav
+      background-color: $shades.white
+    .v-btn--active
+      background: repeating-linear-gradient(
+        140deg,
+        #d3d3d3,
+        #d3d3d3 1px,
+        #fefefe 0,
+        #fefefe 15px
+      ) !important
+
+.theme--dark
+  .app-navigation
+    &.v-bottom-nav
+      background-color: $shades.black
+    .v-btn--active
+      background: repeating-linear-gradient(
+        140deg,
+        #191919,
+        #191919 1px,
+        #212121 0,
+        #212121 15px
+      ) !important
+
+/** Home.vue **/
+.home-page
+  .home-page__wallets.v-card
+    background-color: transparent
+  .v-tabs__bar
+    background-color: transparent
+
+.theme--light
+  .home-page
+    .v-tabs__item
+      color: $grey.darken-3
+      font-weight: 600
+    .v-tabs__item--active
+      background: repeating-linear-gradient(
+        140deg,
+        #d3d3d3,
+        #d3d3d3 1px,
+        #fefefe 0,
+        #fefefe 15px
+      ) !important
+    .v-list__tile__title
+      font-size: 16px
+      font-weight: 500
+      color: $grey.darken-3
+
+.theme--dark
+  .home-page
+    .v-tabs__item
+      color: $shades.white
+      font-weight: 600
+    .v-tabs__item--active
+      background: repeating-linear-gradient(
+        140deg,
+        #191919,
+        #191919 1px,
+        #212121 0,
+        #212121 15px
+      ) !important
+    .v-list__tile__title
+      font-size: 16px
+      font-weight: 500
+
+/** Chat.vue **/
+.a-chat, .a-chat__content
+  background-color: transparent !important
+
+.chat
+  box-shadow: none !important
+  background-color: transparent !important
+
+  .a-chat__message
+    border-radius: 8px
+  .a-chat__body-messages
+    padding: 16px
+
+.theme--light
+  .chat
+    .v-toolbar
+      background-color: $grey.lighten-2
+
+  .a-chat__message
+    background-color: #FFF
+    box-shadow: 0 1px 10px hsla(0,0%,39.2%,.06),0 1px 1px hsla(0,0%,39.2%,.04),0 2px 10px -1px hsla(0,0%,39.2%,.02)
+
+    &:hover {
+      background-color: $shades.white
+    }
+
+.theme--dark
+  .a-chat__message
+    background-color: #000
+    box-shadow: 0 1px 10px hsla(0,0%,39.2%,.06),0 1px 1px hsla(0,0%,39.2%,.04),0 2px 10px -1px hsla(0,0%,39.2%,.02)
+
+    &:hover {
+      background-color: $shades.black
+    }
+
+/** AppToolbarCentered **/
+.theme--light
+  .app-toolbar-centered.v-toolbar
+    background-color: $grey.lighten-2
+
+/** Options.vue **/
+.options-page
+  .v-input--selection-controls
+    margin-top: 0

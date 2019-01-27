@@ -1,30 +1,38 @@
 <template>
   <div
-    class="a-chat__message"
-    :class="{ 'v-chat__message--highlighted': sender.id === userId }"
+    class="a-chat__message-container"
+    :class="{ 'a-chat__message-container--right': sender.id === userId }"
   >
-    <div v-if="showAvatar" class="a-chat__message-avatar">
-      <slot name="avatar"></slot>
-    </div>
-    <div class="a-chat__message-card">
-      <div class="a-chat__message-card-header">
-        <div class="a-chat__sender">{{ sender.name || sender.id }}</div>
-        <div :title="date" class="a-chat__timestamp">{{ time }}</div>
-        <div class="a-chat__status">
-          <v-icon v-if="status === 'sent'" size="15">mdi-clock-outline</v-icon>
-          <v-icon
-            v-else-if="status === 'rejected'"
-            size="15"
-            color="red"
-            @click="$emit('resend')"
-          >mdi-clock-outline</v-icon>
-          <v-icon v-else size="15">mdi-check-all</v-icon>
-        </div>
+    <div
+      class="a-chat__message"
+      :class="{ 'a-chat__message--highlighted': sender.id === userId }"
+    >
+      <div
+        v-if="showAvatar"
+        class="a-chat__message-avatar"
+        :class="{ 'a-chat__message-avatar--right': sender.id === userId }"
+      >
+        <slot name="avatar"></slot>
       </div>
+      <div class="a-chat__message-card">
+        <div class="a-chat__message-card-body">
+          <div v-if="html" v-html="message" class="a-chat__message-text"></div>
+          <div v-else v-text="message" class="a-chat__message-text"></div>
+        </div>
 
-      <div class="a-chat__message-card-body">
-        <div v-if="html" v-html="message" class="a-chat__message-text"></div>
-        <div v-else v-text="message" class="a-chat__message-text"></div>
+        <div class="a-chat__message-card-header mt-2">
+          <div :title="date" class="a-chat__timestamp">{{ time }}</div>
+          <div class="a-chat__status">
+            <v-icon v-if="status === 'sent'" size="15">mdi-clock-outline</v-icon>
+            <v-icon
+              v-else-if="status === 'rejected'"
+              size="15"
+              color="red"
+              @click="$emit('resend')"
+            >mdi-clock-outline</v-icon>
+            <v-icon v-else size="15">mdi-check-all</v-icon>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -38,6 +38,14 @@ export const CryptoAmountPrecision = {
   BZ: 6
 }
 
+export const CryptoNaturalUnits = {
+  ADM: 8,
+  ETH: 18,
+  BNB: 18,
+  BZ: 18,
+  DOGE: 8
+}
+
 /** Fees for the misc ADM operations */
 export const Fees = {
   /** Storing a value into the KVS */
