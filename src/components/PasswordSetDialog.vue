@@ -71,7 +71,8 @@ export default {
   },
   methods: {
     submit () {
-      this.freeze()
+      this.disabledButton = true
+      this.showSpinner = true
 
       this.$store.dispatch('setPassword', this.password)
         .then(encodedPassword => {
@@ -82,25 +83,16 @@ export default {
           return encodedPassword
         })
         .then(encodedPassword => {
-          this.$emit('saved')
-
           return saveState(this.$store)
         })
         .catch(err => {
           console.error(err)
         })
         .finally(() => {
-          this.antiFreeze()
+          this.disabledButton = false
+          this.showSpinner = false
           this.show = false
         })
-    },
-    freeze () {
-      this.disabledButton = true
-      this.showSpinner = true
-    },
-    antiFreeze () {
-      this.disabledButton = false
-      this.showSpinner = false
     }
   },
   props: {

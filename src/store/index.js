@@ -122,7 +122,7 @@ const store = {
     },
     removePassword ({ commit }) {
       commit('resetPassword')
-      commit('setIDBReady')
+      commit('setIDBReady', false)
       commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
     }
   },
