@@ -205,6 +205,7 @@
     "error_field_is_required": "Field is required",
     "error_incorrect_address": "Incorrect {crypto} wallet address",
     "error_incorrect_amount": "Incorrect amount",
+    "error_natural_units": "Too many natural units for this cryptocurrency",
     "error_no_address": "Please provide wallet address",
     "error_no_amount": "Please provide amount",
     "error_not_enough": "Not enough tokens",

@@ -14,6 +14,7 @@
             :crypto-currency="cryptoCurrency"
             :recipient-address="recipientAddress"
             :amount-to-send="amountToSend"
+            :address-readonly="comeFromChat"
             @send="onSend"
           />
 
@@ -37,6 +38,11 @@ export default {
     this.validateCryptoCurrency()
     this.validateRecipientAddress()
     this.validateAmountToSend()
+  },
+  computed: {
+    comeFromChat () {
+      return this.recipientAddress.length > 0
+    }
   },
   data: () => ({
     cryptoCurrency: Cryptos.ADM,
@@ -62,12 +68,11 @@ export default {
         this.amountToSend = parseFloat(this.$route.params.amountToSend)
       }
     },
-    userComeFrom () {
-      return this.$route.query.from
-    },
     onSend (transactionId) {
-      if (this.userComeFrom()) {
-        this.$router.replace(this.$route.query.from)
+      const userComeFrom = this.$route.query.from
+
+      if (userComeFrom) {
+        this.$router.replace(userComeFrom)
       } else {
         this.$router.replace(`/transactions/${this.cryptoCurrency}/${transactionId}`)
       }

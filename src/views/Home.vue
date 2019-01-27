@@ -55,6 +55,16 @@
               <v-list-tile-title>{{ $t('home.invest_btn') }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
+
+          <v-list-tile v-if="!hasAdmTokens" @click="getFreeTokens" avatar>
+            <v-list-tile-avatar>
+              <v-icon class="action-list__icon">mdi-gift</v-icon>
+            </v-list-tile-avatar>
+
+            <v-list-tile-content>
+              <v-list-tile-title>{{ $t('home.free_adm_btn') }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
         </v-list>
 
       </v-card>
@@ -105,6 +115,9 @@ export default {
           icon: 'bnz-fill-icon'
         }
       ]
+    },
+    hasAdmTokens () {
+      return this.$store.state.balance > 0
     }
   },
   data: () => ({
@@ -115,6 +128,11 @@ export default {
     },
     buyTokens () {
       window.open('https://adamant.im/buy-tokens/?wallet=U9203183357885757380', '_blank')
+    },
+    getFreeTokens () {
+      const link = 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
+
+      window.open(link, '_blank')
     },
     goToTransactions (crypto) {
       this.$router.push({

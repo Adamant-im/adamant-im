@@ -123,15 +123,4 @@ export default {
   -webkit-transform: translateY(-18px);
   font-size: 12px;
 }
-
-/**
- * Slide Fade animation.
- */
-.slide-fade-enter-active, .slide-fade-leave-active {
-  transition: all .3s ease;
-}
-.slide-fade-enter, .slide-fade-leave-to {
-  transform: translateY(10px);
-  opacity: 0;
-}
 </style>
