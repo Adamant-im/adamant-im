@@ -57,7 +57,7 @@ import { isNumeric } from '@/lib/numericHelpers'
 const state = () => ({
   chats: {},
   lastMessageHeight: 0, // `height` value of the last message
-  isFulfilled: false
+  isFulfilled: false // false - getChats did not start or in progress, true - getChats finished
 })
 
 const getters = {

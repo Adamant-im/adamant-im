@@ -1,8 +1,12 @@
 import Queue from 'promise-queue'
+import { Base64 } from 'js-base64'
 
 import { Transactions, Delegates } from './constants'
 import utils from './adamant'
 import client from './adamant-api-client'
+import { encryptPassword } from '@/lib/idb/crypto'
+import { restoreState } from '@/lib/idb/state'
+import store from '@/store'
 
 Queue.configure(Promise)
 
@@ -12,8 +16,6 @@ const queue = new Queue(1, Infinity)
 /** @type {{privateKey: Buffer, publicKey: Buffer}} */
 let myKeypair = { }
 let myAddress = null
-
-const publicKeysCache = { }
 
 /** Lists cryptos for which addresses are currently being stored to the KVS */
 const pendingAddresses = { }
@@ -100,15 +102,26 @@ export function isReady () {
  * @returns {Promise<string>}
  */
 export function getPublicKey (address = '') {
-  if (publicKeysCache[address]) {
-    return Promise.resolve(publicKeysCache[address])
+  const publicKeyCached = store.getters.publicKey(address)
+
+  if (publicKeyCached) {
+    return Promise.resolve(publicKeyCached)
   }
 
   return client.get('/api/accounts/getPublicKey', { address })
     .then(response => {
-      const key = response.publicKey
-      publicKeysCache[address] = key
-      return key
+      const publicKey = response.publicKey
+
+      if (publicKey) {
+        store.commit('setPublicKey', {
+          adamantAddress: address,
+          publicKey
+        })
+
+        return publicKey
+      }
+
+      throw new Error('No public key')
     })
 }
 
@@ -468,4 +481,34 @@ export function loginOrRegister (passphrase) {
   }
 
   return getCurrentAccount()
+}
+
+/**
+ * Login via password.
+ * @param {string} password
+ * @param {any} store
+ * @returns {Promise} Encrypted password
+ */
+export function loginViaPassword (password, store) {
+  return encryptPassword(password)
+    .then(encryptedPassword => {
+      store.commit('setPassword', encryptedPassword)
+
+      return restoreState(store)
+    })
+    .then(() => {
+      const passphrase = Base64.decode(store.state.passphrase)
+
+      try {
+        unlock(passphrase)
+      } catch (e) {
+        return Promise.reject(e)
+      }
+
+      return getCurrentAccount()
+        .then(account => ({
+          ...account,
+          passphrase
+        }))
+    })
 }

@@ -37,6 +37,9 @@
 </template>
 
 <script>
+import { clearDb } from '@/lib/idb'
+import AppInterval from '@/lib/AppInterval'
+
 export default {
   mounted () {
     this.currentPageIndex = this.getCurrentPageIndex()
@@ -74,9 +77,15 @@ export default {
   }),
   methods: {
     logout () {
+      AppInterval.unsubscribe()
       this.$store.dispatch('logout')
-      this.$store.dispatch('reset')
-      this.$router.push('/')
+
+      return clearDb().then(() => {
+        // turn off IDB sync
+        this.$store.commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
+
+        this.$router.push('/')
+      })
     },
     getCurrentPageIndex () {
       const currentPage = this.pages.find(page => {

@@ -35,8 +35,12 @@
             :label="$t('options.exit_on_close')"
             :title="$t('options.exit_on_close_tooltip')"
             color="grey darken-1"
-            v-model="logoutOnTabClose"
+            :input-value="logoutOnTabClose"
+            @click="onCheckLogoutOnTabClose"
+            readonly
           />
+
+          <password-set-dialog v-model="passwordDialog" @password="onSetPassword" />
         </v-flex>
       </v-layout>
 
@@ -101,19 +105,13 @@
 <script>
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import AppToolbar from '@/components/AppToolbar'
+import PasswordSetDialog from '@/components/PasswordSetDialog'
+import { clearDb } from '@/lib/idb'
 
 export default {
   computed: {
-    logoutOnTabClose: {
-      get () {
-        return this.$store.state.options.logoutOnTabClose
-      },
-      set (value) {
-        this.$store.commit('options/updateOption', {
-          key: 'logoutOnTabClose',
-          value
-        })
-      }
+    logoutOnTabClose () {
+      return this.$store.state.options.logoutOnTabClose
     },
     sendMessageOnEnter: {
       get () {
@@ -172,10 +170,34 @@ export default {
     }
   },
   data: () => ({
+    passwordDialog: false
   }),
+  methods: {
+    onSetPassword (password) {
+      this.$store.commit('options/updateOption', {
+        key: 'logoutOnTabClose',
+        value: false
+      })
+    },
+    onCheckLogoutOnTabClose () {
+      if (this.logoutOnTabClose) {
+        this.passwordDialog = true
+      } else {
+        clearDb().then(() => {
+          this.$store.commit('options/updateOption', {
+            key: 'logoutOnTabClose',
+            value: !this.logoutOnTabClose
+          })
+
+          this.$store.commit('resetPassword')
+        })
+      }
+    }
+  },
   components: {
     LanguageSwitcher,
-    AppToolbar
+    AppToolbar,
+    PasswordSetDialog
   }
 }
 </script>

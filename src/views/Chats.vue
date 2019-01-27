@@ -45,10 +45,6 @@ import ChatPreview from '@/components/ChatPreview'
 import ChatStartDialog from '@/components/ChatStartDialog'
 
 export default {
-  mounted () {
-    this.$store.commit('chat/createAdamantChats')
-    this.$store.dispatch('chat/loadChats')
-  },
   computed: {
     isFulfilled () {
       return this.$store.state.chat.isFulfilled

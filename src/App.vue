@@ -8,26 +8,21 @@
 
 <script>
 import Notifications from '@/lib/notifications'
+import AppInterval from '@/lib/AppInterval'
 
 export default {
   created () {
     this.setLocale()
-    if (this.isLogged) {
-      this.$store.dispatch('unlock')
-    }
   },
   mounted () {
     this.notifications = new Notifications(this)
-    this.interval = window.setInterval(() => {
-      this.$store.dispatch('update')
-    }, 3000)
   },
   updated () {
     this.notifications.update(this)
   },
   beforeDestroy () {
     this.notifications.stop()
-    window.clearInterval(this.interval)
+    AppInterval.unsubscribe()
   },
   computed: {
     layout () {
@@ -38,6 +33,9 @@ export default {
     },
     isDarkTheme () {
       return this.$store.state.options.darkTheme
+    },
+    isLoginViaPassword () {
+      return this.$store.getters['options/isLoginViaPassword']
     }
   },
   data: () => ({
