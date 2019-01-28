@@ -149,6 +149,7 @@ export default {
     line-height: 8px;
     min-height: 14px;
     vertical-align: bottom;
+  }
 
   /* Brief-mode element styles */
   .brief-message-tick {
