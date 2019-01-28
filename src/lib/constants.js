@@ -18,8 +18,7 @@ export const Cryptos = {
   ETH: 'ETH',
   BNB: 'BNB',
   DOGE: 'DOGE',
-  BZ: 'BZ',
-  UNKNOWN_CRYPTO: 'UNKNOWN_CRYPTO'
+  BZ: 'BZ'
 }
 
 export const ERC20 = Object.freeze([
@@ -42,8 +41,8 @@ export const CryptoNaturalUnits = {
   ADM: 8,
   ETH: 18,
   BNB: 18,
-  BZ: 18,
-  DOGE: 8
+  DOGE: 8,
+  BZ: 18
 }
 
 /** Fees for the misc ADM operations */

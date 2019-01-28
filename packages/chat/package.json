@@ -1,6 +1,6 @@
 {
   "name": "@adamant/chat",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Vuetify chat",
   "main": "src/index.js",
   "keywords": [

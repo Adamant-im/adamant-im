@@ -3,7 +3,7 @@
 
 
 "@adamant/chat@file:packages/chat":
-  version "0.0.1"
+  version "0.0.2"
   dependencies:
     moment "^2.23.0"
     vuetify "^1.4.1"

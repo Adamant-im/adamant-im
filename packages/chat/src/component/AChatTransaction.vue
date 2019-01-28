@@ -66,7 +66,7 @@ export default {
       required: true
     },
     amount: {
-      type: Number,
+      type: [Number, String],
       default: 0
     },
     currency: {

@@ -158,196 +158,196 @@
 </template>
 
 <script>
-  import AppToolbarCentered from '@/components/AppToolbarCentered'
-  import Pagination from '@/components/Pagination'
+import AppToolbarCentered from '@/components/AppToolbarCentered'
+import Pagination from '@/components/Pagination'
 
-  export default {
-    mounted () {
-      this.$store.dispatch('delegates/getDelegates', {
+export default {
+  mounted () {
+    this.$store.dispatch('delegates/getDelegates', {
+      address: this.$store.state.address
+    })
+  },
+  computed: {
+    delegates () {
+      const delegates = this.$store.state.delegates.delegates || {}
+
+      return Object.values(delegates)
+    },
+    numOfUpvotes () {
+      return this.delegates
+        .filter(delegate => delegate.upvoted && !delegate.voted)
+        .length
+    },
+    numOfDownvotes () {
+      return this.delegates
+        .filter(delegate => delegate.downvoted && delegate.voted)
+        .length
+    },
+    totalVotes () {
+      return this.delegates.filter(delegate => delegate._voted).length
+    },
+    delegateDetails () {
+      return [
+        {
+          title: this.$t('votes.delegate_uptime'),
+          value () {
+            return this.productivity
+          },
+          format: value => `${value}%`
+        },
+        {
+          title: this.$t('votes.delegate_approval'),
+          value () {
+            return this.approval
+          },
+          format: value => `${value}%`
+        },
+        {
+          title: this.$t('votes.delegate_forging_time'),
+          value () {
+            return this.forgingTime
+          },
+          format: value => this.formatForgingTime(value)
+        },
+        {
+          title: this.$t('votes.delegate_forged'),
+          value () {
+            return this.forged
+          },
+          format: value => `${this.$formatAmount(value).toFixed()} ADM`
+        },
+        {
+          title: this.$t('votes.delegate_link'),
+          value () {
+            return this.link
+          }
+        },
+        {
+          title: this.$t('votes.delegate_description'),
+          value () {
+            return this.description
+          }
+        }
+      ]
+    },
+    pages () {
+      if (this.delegates.length <= 0) {
+        return 0
+      }
+
+      return Math.ceil(this.delegates.length / this.pagination.rowsPerPage)
+    }
+  },
+  data: () => ({
+    voteRequestLimit: 30,
+    search: '',
+    headers: [
+      { text: 'votes.table_head_name', value: 'username' },
+      { text: 'votes.table_head_rank', value: 'rank' },
+      { text: 'votes.table_head_vote', value: '_voted' }
+    ],
+    pagination: {
+      rowsPerPage: 10,
+      sortBy: 'rank',
+      descending: true,
+      page: 1
+    },
+    waitingForConfirmation: false,
+    dialog: false
+  }),
+  methods: {
+    upVote (id) {
+      this.$store.commit('delegates/upVote', id)
+    },
+    downVote (id) {
+      this.$store.commit('delegates/downVote', id)
+    },
+    sendVotes () {
+      if (!this.validateVotes()) {
+        return
+      }
+
+      const upVotes = this.delegates
+        .filter(delegate => delegate.upvoted && !delegate.voted)
+        .map(delegate => `+${delegate.publicKey}`)
+      const downVotes = this.delegates
+        .filter(delegate => delegate.downvoted && delegate.voted)
+        .map(delegate => `-${delegate.publicKey}`)
+      const allVotes = [...upVotes, ...downVotes]
+
+      if (allVotes.length <= 0) {
+        this.$store.dispatch('snackbar/show', {
+          message: this.$t('votes.select_delegates')
+        })
+
+        return
+      }
+
+      this.waitingForConfirmation = true
+      this.dialog = false
+
+      this.$store.dispatch('delegates/voteForDelegates', {
+        votes: [...upVotes, ...downVotes],
         address: this.$store.state.address
       })
+
+      this.$store.dispatch('snackbar/show', {
+        message: this.$t('votes.sent')
+      })
     },
-    computed: {
-      delegates () {
-        const delegates = this.$store.state.delegates.delegates || {}
-
-        return Object.values(delegates)
-      },
-      numOfUpvotes () {
-        return this.delegates
-          .filter(delegate => delegate.upvoted && !delegate.voted)
-          .length
-      },
-      numOfDownvotes () {
-        return this.delegates
-          .filter(delegate => delegate.downvoted && delegate.voted)
-          .length
-      },
-      totalVotes () {
-        return this.delegates.filter(delegate => delegate._voted).length
-      },
-      delegateDetails () {
-        return [
-          {
-            title: this.$t('votes.delegate_uptime'),
-            value () {
-              return this.productivity
-            },
-            format: value => `${value}%`
-          },
-          {
-            title: this.$t('votes.delegate_approval'),
-            value () {
-              return this.approval
-            },
-            format: value => `${value}%`
-          },
-          {
-            title: this.$t('votes.delegate_forging_time'),
-            value () {
-              return this.forgingTime
-            },
-            format: value => this.formatForgingTime(value)
-          },
-          {
-            title: this.$t('votes.delegate_forged'),
-            value () {
-              return this.forged
-            },
-            format: value => `${this.$formatAmount(value).toFixed()} ADM`
-          },
-          {
-            title: this.$t('votes.delegate_link'),
-            value () {
-              return this.link
-            }
-          },
-          {
-            title: this.$t('votes.delegate_description'),
-            value () {
-              return this.description
-            }
-          }
-        ]
-      },
-      pages () {
-        if (this.delegates.length <= 0) {
-          return 0
-        }
-
-        return Math.ceil(this.delegates.length / this.pagination.rowsPerPage)
-      }
-    },
-    data: () => ({
-      voteRequestLimit: 30,
-      search: '',
-      headers: [
-        { text: 'votes.table_head_name', value: 'username' },
-        { text: 'votes.table_head_rank', value: 'rank' },
-        { text: 'votes.table_head_vote', value: '_voted' }
-      ],
-      pagination: {
-        rowsPerPage: 10,
-        sortBy: 'rank',
-        descending: true,
-        page: 1
-      },
-      waitingForConfirmation: false,
-      dialog: false
-    }),
-    methods: {
-      upVote (id) {
-        this.$store.commit('delegates/upVote', id)
-      },
-      downVote (id) {
-        this.$store.commit('delegates/downVote', id)
-      },
-      sendVotes () {
-        if (!this.validateVotes()) {
-          return
-        }
-
-        const upVotes = this.delegates
-          .filter(delegate => delegate.upvoted && !delegate.voted)
-          .map(delegate => `+${delegate.publicKey}`)
-        const downVotes = this.delegates
-          .filter(delegate => delegate.downvoted && delegate.voted)
-          .map(delegate => `-${delegate.publicKey}`)
-        const allVotes = [...upVotes, ...downVotes]
-
-        if (allVotes.length <= 0) {
-          this.$store.dispatch('snackbar/show', {
-            message: this.$t('votes.select_delegates')
-          })
-
-          return
-        }
-
-        this.waitingForConfirmation = true
-        this.dialog = false
-
-        this.$store.dispatch('delegates/voteForDelegates', {
-          votes: [...upVotes, ...downVotes],
-          address: this.$store.state.address
-        })
-
+    validateVotes () {
+      if (this.upvotedCount + this.downvotedCount > this.voteRequestLimit) {
         this.$store.dispatch('snackbar/show', {
-          message: this.$t('votes.sent')
+          message: this.$t('votes.vote_request_limit', { limit: this.voteRequestLimit })
         })
-      },
-      validateVotes () {
-        if (this.upvotedCount + this.downvotedCount > this.voteRequestLimit) {
-          this.$store.dispatch('snackbar/show', {
-            message: this.$t('votes.vote_request_limit', { limit: this.voteRequestLimit })
-          })
 
-          return false
-        }
+        return false
+      }
 
-        if (this.$store.state.balance < 50) {
-          this.$store.dispatch('snackbar/show', {
-            message: this.$t('votes.no_money')
-          })
+      if (this.$store.state.balance < 50) {
+        this.$store.dispatch('snackbar/show', {
+          message: this.$t('votes.no_money')
+        })
 
-          return false
-        }
+        return false
+      }
 
-        return true
-      },
-      toggleDetails (delegate, props) {
-        props.expanded = !props.expanded
+      return true
+    },
+    toggleDetails (delegate, props) {
+      props.expanded = !props.expanded
 
-        if (!props.expaned) {
-          this.$store.dispatch('delegates/getForgedByAccount', delegate)
-          this.$store.dispatch('delegates/getForgingTimeForDelegate', delegate)
-        }
-      },
-      formatForgingTime (seconds) {
-        if (!seconds) {
-          return '...'
-        }
-        if (seconds === 0) {
-          return this.$t('votes.now')
-        }
-        const minutes = Math.floor(seconds / 60)
-        seconds = seconds - (minutes * 60)
-        if (minutes && seconds) {
-          return `${minutes} ${this.$t('votes.min')} ${seconds} ${this.$t('votes.sec')}`
-        } else if (minutes) {
-          return `${minutes} ${this.$t('votes.min')}`
-        } else {
-          return `${seconds} ${this.$t('votes.sec')}`
-        }
-      },
-      showConfirmationDialog () {
-        this.dialog = true
+      if (!props.expaned) {
+        this.$store.dispatch('delegates/getForgedByAccount', delegate)
+        this.$store.dispatch('delegates/getForgingTimeForDelegate', delegate)
       }
     },
-    components: {
-      AppToolbarCentered,
-      Pagination
+    formatForgingTime (seconds) {
+      if (!seconds) {
+        return '...'
+      }
+      if (seconds === 0) {
+        return this.$t('votes.now')
+      }
+      const minutes = Math.floor(seconds / 60)
+      seconds = seconds - (minutes * 60)
+      if (minutes && seconds) {
+        return `${minutes} ${this.$t('votes.min')} ${seconds} ${this.$t('votes.sec')}`
+      } else if (minutes) {
+        return `${minutes} ${this.$t('votes.min')}`
+      } else {
+        return `${seconds} ${this.$t('votes.sec')}`
+      }
+    },
+    showConfirmationDialog () {
+      this.dialog = true
     }
+  },
+  components: {
+    AppToolbarCentered,
+    Pagination
   }
+}
 </script>
 
 <style lang="stylus" scoped>

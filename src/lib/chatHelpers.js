@@ -1,5 +1,4 @@
 import Queue from 'promise-queue'
-import { isString } from 'lodash'
 
 import utils from '@/lib/adamant'
 import * as admApi from '@/lib/adamant-api'
@@ -92,8 +91,47 @@ export function createMessage ({ recipientId, senderId, message, status = 'sent'
     senderId,
     message,
     status,
-    timestamp: utils.epochTime()
+    timestamp: Date.now(),
+    type: 'message'
   }
+}
+
+/**
+ * Create a transaction object with uniq ID.
+ * @param {number} transactionId
+ * @param {string} recipientId
+ * @param {string} senderId
+ * @param {number} amount
+ * @param {string} comment Transaction comment
+ * @param {string} type ADM, ETH...
+ * @param {string} status Can be: `sent`, `confirmed`, `rejected`
+ */
+export function createTransaction (payload) {
+  const {
+    transactionId,
+    recipientId,
+    senderId,
+    amount,
+    comment,
+    type = 'ADM',
+    status = 'sent'
+  } = payload
+
+  const transaction = {
+    id: transactionId,
+    recipientId,
+    senderId,
+    amount,
+    type,
+    status,
+    timestamp: Date.now()
+  }
+
+  if (comment) {
+    transaction.message = comment
+  }
+
+  return transaction
 }
 
 /**
@@ -115,12 +153,15 @@ export function transformMessage (abstract) {
   let transaction = {}
   const knownCryptos = {
     eth_transaction: 'ETH',
+    bz_transaction: 'BZ',
+    bnb_transaction: 'BNB',
     doge_transaction: 'DOGE'
   }
 
   // common properties for all transaction types
   transaction.id = abstract.id
   transaction.senderId = abstract.senderId
+  transaction.recipientId = abstract.recipientId
   transaction.admTimestamp = abstract.timestamp
   transaction.timestamp = getRealTimestamp(abstract.timestamp)
   transaction.status = abstract.status || 'confirmed'
@@ -128,13 +169,7 @@ export function transformMessage (abstract) {
   transaction.amount = abstract.amount ? abstract.amount : 0
   transaction.message = ''
 
-  if (isString(abstract.message)) { // ADM transaction or Message
-    transaction.message = abstract.message
-
-    abstract.amount > 0
-      ? transaction.type = 'ADM'
-      : transaction.type = 'message'
-  } else if (abstract.message && abstract.message.type) { // cryptos
+  if (abstract.message && abstract.message.type) { // cryptos
     transaction.message = abstract.message.comments || ''
     transaction.amount = isNumeric(abstract.message.amount) ? +abstract.message.amount : 0
 
@@ -144,8 +179,12 @@ export function transformMessage (abstract) {
     } else {
       transaction.type = 'UNKNOWN_CRYPTO'
     }
-  } else {
-    transaction.type = 'message'
+  } else { // ADM transaction or Message
+    transaction.message = abstract.message || ''
+
+    abstract.amount > 0
+      ? transaction.type = 'ADM'
+      : transaction.type = 'message'
   }
 
   return transaction

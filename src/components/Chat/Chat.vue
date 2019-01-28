@@ -66,7 +66,6 @@
 
 <script>
 import { Cryptos } from '@/lib/constants'
-import { transformMessage } from '@/lib/chatHelpers'
 import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@adamant/chat'
 import { Formatter } from '@adamant/message-formatter'
 
@@ -143,9 +142,6 @@ export default {
      * @returns {Message[]}
      */
     messages () {
-      return this.rawMessages.map(message => transformMessage(message))
-    },
-    rawMessages () {
       return this.$store.getters['chat/messages'](this.partnerId)
     },
     /**
@@ -221,7 +217,7 @@ export default {
       })
     },
     isTransaction (type) {
-      return type in Cryptos
+      return type in Cryptos || type === 'UNKNOWN_CRYPTO'
     }
   },
   filters: {

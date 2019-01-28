@@ -1,8 +1,16 @@
 import Vue from 'vue'
 import validateAddress from '@/lib/validateAddress'
 import * as admApi from '@/lib/adamant-api'
-import { createChat, getChats, queueMessage, createMessage } from '@/lib/chatHelpers'
+import {
+  createChat,
+  getChats,
+  queueMessage,
+  createMessage,
+  createTransaction,
+  transformMessage
+} from '@/lib/chatHelpers'
 import { isNumeric } from '@/lib/numericHelpers'
+import { EPOCH } from '@/lib/constants'
 
 /**
  * type State {
@@ -370,8 +378,9 @@ const mutations = {
       {
         id: 'b1',
         message: 'chats.welcome_message',
-        timestamp: 0,
+        timestamp: EPOCH,
         senderId: 'Adamant Bounty',
+        type: 'message',
         i18n: true
       }
     ]
@@ -424,7 +433,7 @@ const actions = {
   pushMessages ({ commit, rootState }, messages) {
     messages.forEach(message => {
       commit('pushMessage', {
-        message,
+        message: transformMessage(message),
         userId: rootState.address
       })
     })
@@ -587,6 +596,46 @@ const actions = {
 
     return Promise.reject(new Error('Message not found in history'))
   },
+
+  /**
+   * Fast crypto-transfer, to display transaction in chat
+   * before confirmation.
+   * @param {number} transactionId
+   * @param {string} recipientId
+   * @param {string} type ADM, ETH...
+   * @param {string} status Can be: `sent`, `confirmed`, 'rejected'
+   * @param {number} amount
+   * @param {string} comment Transaction comment
+   * @returns {number} Transaction ID
+   */
+  pushTransaction ({ commit, rootState }, payload) {
+    const {
+      transactionId,
+      recipientId,
+      type,
+      status,
+      amount,
+      comment = ''
+    } = payload
+
+    const transactionObject = createTransaction({
+      transactionId,
+      recipientId,
+      type,
+      status,
+      amount,
+      comment,
+      senderId: rootState.address
+    })
+
+    commit('pushMessage', {
+      message: transactionObject,
+      userId: rootState.address
+    })
+
+    return transactionObject.id
+  },
+
   /** Resets module state **/
   reset: {
     root: true,

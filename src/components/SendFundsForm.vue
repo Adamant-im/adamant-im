@@ -134,7 +134,7 @@ export default {
       const amount = this.amount > 0 ? this.amount : 0
 
       const finalAmount = BigNumber.sum(amount, this.transferFee)
-        .toFixed(this.exponent)
+        .toFixed()
 
       return parseFloat(finalAmount)
     },
@@ -169,6 +169,7 @@ export default {
         ],
         amount: [
           v => !!v || this.$t('transfer.error_field_is_required'),
+          v => v > 0 || this.$t('transfer.error_incorrect_amount'),
           v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
           v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units')
         ]
@@ -182,13 +183,15 @@ export default {
       }
 
       const msgType = this.recipientName ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
-      return this.$t(msgType, { amount: this.amount, target, crypto: this.currency })
+      return this.$t(msgType, { amount: BigNumber(this.amount).toFixed(), target, crypto: this.currency })
     }
   },
   watch: {
     amountString (value) {
       if (isNumeric(value)) {
         this.amount = +value
+      } else {
+        this.amount = 0
       }
     }
   },
@@ -221,6 +224,11 @@ export default {
             throw new Error('No hash')
           }
 
+          // send message if come from chat
+          if (this.address) {
+            this.pushTransactionToChat(transactionId)
+          }
+
           this.$emit('send', transactionId)
         })
         .catch(err => {
@@ -236,7 +244,7 @@ export default {
     },
     sendFunds () {
       if (this.currency === Cryptos.ADM) {
-        const promise = this.comment
+        const promise = this.address // if come from chat
           ? sendMessage({ to: this.cryptoAddress, message: this.comment, amount: this.amount })
           : sendTokens(this.cryptoAddress, this.amount)
         return promise.then(result => result.transactionId)
@@ -248,6 +256,23 @@ export default {
           comments: this.comment
         })
       }
+    },
+    pushTransactionToChat (transactionId) {
+      let amount = this.amount
+
+      // unformat ADM `amount`
+      if (this.currency === Cryptos.ADM) {
+        amount = amount * 1e8
+      }
+
+      this.$store.dispatch('chat/pushTransaction', {
+        transactionId,
+        recipientId: this.address,
+        type: this.currency,
+        status: 'confirmed',
+        amount,
+        comment: this.comment
+      })
     },
     freeze () {
       this.disabledButton = true
@@ -276,7 +301,7 @@ export default {
     validateNaturalUnits (amount, currency) {
       const units = CryptoNaturalUnits[currency]
 
-      const [ , right = '' ] = amount.toString().split('.')
+      const [ , right = '' ] = BigNumber(amount).toFixed().split('.')
 
       return right.length <= units
     }

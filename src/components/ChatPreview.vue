@@ -39,12 +39,10 @@
 <script>
 import moment from 'moment'
 import dateFilter from '@/filters/date'
-import { EPOCH } from '@/lib/constants'
 import { removeFormats } from '@adamant/message-formatter'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import Icon from '@/components/icons/BaseIcon'
 import AdmFillIcon from '@/components/icons/AdmFill'
-import { transformMessage } from '@/lib/chatHelpers'
 
 export default {
   mounted () {
@@ -74,7 +72,7 @@ export default {
     },
     lastTransaction () {
       if (this.lastMessage) {
-        const abstract = transformMessage(this.lastMessage)
+        const abstract = this.lastMessage
 
         if (abstract.type !== 'message') {
           return abstract
@@ -100,7 +98,7 @@ export default {
       return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
     },
     createdAt () {
-      return this.lastMessageTimestamp * 1000 + EPOCH // transform ADM timestamp
+      return this.lastMessageTimestamp
     }
   },
   data: () => ({

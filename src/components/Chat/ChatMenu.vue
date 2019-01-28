@@ -102,6 +102,9 @@ export default {
         params: {
           cryptoCurrency: item.currency,
           recipientAddress: this.partnerId
+        },
+        query: {
+          from: `/chats/${this.partnerId}`
         }
       })
     }
