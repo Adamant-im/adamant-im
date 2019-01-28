@@ -22,6 +22,7 @@ import utils from '../lib/adamant'
 import i18n from '../i18n'
 import crypto from 'pbkdf2'
 import renderMarkdown from '../lib/markdown'
+import { flushCryptoAddresses } from '../lib/store-crypto-address'
 
 var maxConcurrent = 1
 var maxQueue = Infinity
@@ -151,34 +152,28 @@ const store = {
     userPasswordExists: sessionStorage.getItem('userPassword') !== null
   },
   actions: {
-    createStubMessage (state, payload) {
+    createInChatTransferStubMessage (context, payload) {
       const timestamp = utils.epochTime()
       // Build chat message
-      let message = payload.message
+      const message = {
+        amount: payload.amount,
+        comments: payload.comments || '',
+        type: `${payload.crypto}_transaction`,
+        hash: payload.hash
+      }
 
-      let contacts = Object.entries(state.getters.getContacts.list)
-      let ADMAddress
-      contacts.forEach((contact) => {
-        const ethAddress = contact[1].ETH
-        if (ethAddress === payload.targetAddress) {
-          ADMAddress = contact[0]
-        }
-      })
-      let handledPayload = {
+      const handledPayload = {
         timestamp: timestamp,
-        message: {
-          amount: message.amount,
-          comments: message.comments || '',
-          type: message.type
-        },
+        message,
         direction: 'from',
         confirm_class: 'sent',
         id: payload.hash
       }
-      let currentDialog = state.getters.getChats[ADMAddress]
+
+      const currentDialog = context.getters.getChats[payload.address]
       if (currentDialog) {
         if (handledPayload.message.comments === '') {
-          handledPayload.message.comments = 'sent ' + (message.amount) + ' ' + message.fundType
+          handledPayload.message.comments = 'sent ' + (message.amount) + ' ' + payload.crypto
           handledPayload.message.comments = handledPayload.message.comments.replace(/<p>|<\/p>/g, '')
           updateLastChatMessage(currentDialog, handledPayload, 'sent', 'from', handledPayload.id)
           handledPayload.message.comments = ''
@@ -188,6 +183,22 @@ const store = {
         }
         Vue.set(currentDialog.messages, handledPayload.id, handledPayload)
       }
+    },
+    sendCryptoTransferMessage (context, payload) {
+      context.dispatch('createInChatTransferStubMessage', payload)
+      const msg = {
+        type: `${payload.crypto}_transaction`,
+        amount: payload.amount,
+        hash: payload.hash,
+        comments: payload.comments
+      }
+
+      return admApi.sendSpecialMessage(payload.address, msg).then(result => {
+        if (!result.success) {
+          console.log(`Failed to send "${msg.type}"`, result)
+        }
+        return result.success
+      })
     },
     update_delegates_grid ({ commit }, payload) {
       commit('update_delegate', payload)
@@ -312,6 +323,10 @@ const store = {
         (account) => {
           context.commit('currentAccount', account)
           context.commit('ajax_end')
+
+          if (account.balance > Fees.KVS) {
+            flushCryptoAddresses()
+          }
         },
         (error) => {
           console.error(error)
@@ -408,11 +423,6 @@ const store = {
           context.commit('partners/displayName', { partner, displayName })
         }
       })
-    },
-    /** Stores user address for the specified crypto in the ADM KVS */
-    storeCryptoAddress (context, { crypto, address }) {
-      if (context.state.balance < Fees.KVS) return
-      return admApi.storeCryptoAddress(crypto, address)
     }
   },
   mutations: {
