@@ -409,6 +409,6 @@ export default {
     -webkit-text-fill-color: inherit !important;
   }
   .chat-dialog-alert .md-theme-grey.md-button:not([disabled]).md-primary:not(.md-icon-button) {
-    color: rgba(0, 0, 0, .87);
+    color: #000;
   }
 </style>
