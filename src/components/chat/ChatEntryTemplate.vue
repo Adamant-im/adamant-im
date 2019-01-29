@@ -28,7 +28,9 @@
       </div>
     </md-layout>
     <div v-if="brief" class="brief-message-wrapper">
-      <div class="brief-message-tick" :direction="direction" :data-confirmation="confirm"></div>
+      <div class="brief-message-tick" :direction="direction" :data-confirmation="confirm">
+        <md-icon>{{ messageTick[confirm] }}</md-icon>
+      </div>
       <div class="brief-message-text" :direction="direction">
         <slot name="brief-view"></slot>
       </div>
@@ -158,34 +160,22 @@ export default {
     bottom: 14px;
   }
 
-  .brief-message-tick:before {
+  .brief-message-tick .md-icon {
     font-family: "Material Icons";
     text-rendering: optimizeLegibility;
     position: absolute;
     font-size: 8px;
     bottom: 14px;
+    line-height: 29px;
   }
 
-  .brief-message-tick[data-confirmation=confirmed]:before {
-    content: 'done';
-  }
-
-  .brief-message-tick[data-confirmation=sent]:before {
-    content: 'query_builder';
-  }
-
-  .brief-message-tick[data-confirmation=rejected]:before {
-    content: 'cancel';
+  .brief-message-tick[data-confirmation=rejected] .md-icon {
     color: red;
   }
 
-  .brief-message-tick[data-confirmation=unconfirmed]:before {
-    content: 'query_builder';
-  }
-
-  .brief-message-tick[data-confirmation=error]:before {
-    content: 'error';
-  }
+  .message-tick[data-confirmation=rejected] .md-icon {
+    color: red;
+   }
 
   .brief-message-tick[direction=from] {
     order: 0 !important;
