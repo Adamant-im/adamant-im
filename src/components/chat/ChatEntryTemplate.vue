@@ -217,36 +217,6 @@ export default {
     bottom: 14px;
   }
 
-  .message-tick:before {
-    font-family: "Material Icons";
-    text-rendering: optimizeLegibility;
-    position: absolute;
-    font-size: 8px;
-    bottom: 0;
-    left: 5px;
-  }
-
-  .message-tick[data-confirmation=confirmed]:before {
-    content: 'done';
-  }
-
-  .message-tick[data-confirmation=sent]:before {
-    content: 'query_builder';
-  }
-
-  .message-tick[data-confirmation=rejected]:before {
-    content: 'cancel';
-    color: red;
-  }
-
-  .message-tick[data-confirmation=unconfirmed]:before {
-    content: 'query_builder';
-  }
-
-  .message-tick[data-confirmation=error]:before {
-    content: 'error';
-  }
-
   .message-tick[data-confirmation=sent] p {
     color: red;
   }
