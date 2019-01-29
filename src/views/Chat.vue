@@ -76,6 +76,7 @@
       :md-title="$t('transfer.no_address_title', { crypto: sendToCrypto })"
       :md-content-html="$t('transfer.no_address_text', { crypto: sendToCrypto })"
       ref="no_address_dialog"
+      class="chat-dialog-alert"
     />
   </div>
 </template>
@@ -406,5 +407,8 @@ export default {
   .message-input:focus {
     text-shadow: none !important;
     -webkit-text-fill-color: inherit !important;
+  }
+  .chat-dialog-alert .md-theme-grey.md-button:not([disabled]).md-primary:not(.md-icon-button) {
+    color: rgba(0, 0, 0, .87);
   }
 </style>
