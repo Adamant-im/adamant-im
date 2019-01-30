@@ -4,6 +4,12 @@ import utils from './adamant'
 import config from '../config.json'
 import semver from 'semver'
 
+/**
+ * Allowed height delta for the nodes.
+ *
+ * If two nodes' heights differ by no more than this value,
+ * they are considered to be in sync with each other.
+ */
 const HEIGHT_EPSILON = 10
 
 /**
@@ -410,6 +416,10 @@ class ApiClient {
 
   /**
    * Updates `outOfSync` status of the nodes.
+   *
+   * Basic idea is the following: we look for the biggest group of nodes that have the same
+   * height (considering HEIGHT_EPSILON). These nodes are considered to be in sync with the network,
+   * all the others are not.
    */
   _updateSyncStatuses () {
     const nodes = this._nodes.filter(x => x.online)
@@ -417,22 +427,25 @@ class ApiClient {
     // For each node we take its height and list of nodes that have the same height ± epsilon
     const grouped = nodes.map(node => {
       return {
+        /** In case of "win" this height will be considered to be real height of the network */
         height: node.height,
-        comrads: nodes.filter(x => Math.abs(node.height - x.height) <= HEIGHT_EPSILON)
+        /** List of nodes with the same (or close) height, including current one */
+        nodes: nodes.filter(x => Math.abs(node.height - x.height) <= HEIGHT_EPSILON)
       }
     })
 
-    // Now get the longest comrads list with the highest height
+    // A group with the longest same-height nodes list wins.
+    // If two groups have the same number of nodes, the one with the biggest height wins.
     const winner = grouped.reduce((out, x) => {
       if (!out) return x
-      if (out.comrads.length < x.comrads.length || out.height < x.height) return x
+      if (out.nodes.length < x.nodes.length || out.height < x.height) return x
       return out
     }, null)
 
-    // Finally, all the comrads from the winner list are considered to be in sync, all the
+    // Finally, all the nodes from the winner list are considered to be in sync, all the
     // others are not
     nodes.forEach(node => {
-      node.outOfSync = !winner.comrads.includes(node)
+      node.outOfSync = !winner.nodes.includes(node)
       this._fireStatusUpdate(node)
     })
   }
