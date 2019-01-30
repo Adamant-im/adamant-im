@@ -1,5 +1,6 @@
 <template>
   <v-layout row wrap justify-center>
+    <ProgressIndicator :show="!isFulfilled" />
     <v-flex xs12 sm12 md8 lg5>
       <v-layout row wrap>
         <v-flex xs12>
@@ -43,6 +44,7 @@ import { cloneDeep } from 'lodash'
 
 import ChatPreview from '@/components/ChatPreview'
 import ChatStartDialog from '@/components/ChatStartDialog'
+import ProgressIndicator from '@/components/ProgressIndicator'
 
 export default {
   computed: {
@@ -93,7 +95,8 @@ export default {
   },
   components: {
     ChatPreview,
-    ChatStartDialog
+    ChatStartDialog,
+    ProgressIndicator
   }
 }
 </script>
