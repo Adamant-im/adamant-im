@@ -1,5 +1,4 @@
 import merge from 'deepmerge'
-import cloneDeep from 'lodash/cloneDeep'
 import {
   decryptData,
   encryptData,
@@ -183,9 +182,10 @@ export default function storeData () {
         let storeNow = false
         if (mutation.type === 'change_storage_method') {
           if (!mutation.payload) {
-            const clonedState = cloneDeep(state)
-            delete clonedState.areChatsLoading
-            useStorage = sessionStorage.setItem('adm-persist', JSON.stringify(clonedState))
+            useStorage = sessionStorage.setItem(
+              'adm-persist',
+              JSON.stringify(state, (k, v) => (k === 'areChatsLoading' ? undefined : v))
+            )
           }
           try {
             mainStorage.setItem('storeInLocalStorage', mutation.payload)
@@ -232,9 +232,10 @@ export default function storeData () {
         }
         if (storeNow) {
           try {
-            const clonedState = cloneDeep(state)
-            delete clonedState.areChatsLoading
-            useStorage.setItem('adm-persist', JSON.stringify(clonedState))
+            useStorage.setItem(
+              'adm-persist',
+              JSON.stringify(state, (k, v) => (k === 'areChatsLoading' ? undefined : v))
+            )
           } catch (e) {
           }
         } else {
