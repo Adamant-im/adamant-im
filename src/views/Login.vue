@@ -41,7 +41,10 @@
 
               <template slot="qrcode-renderer">
                 <div @click="saveQrcode" :style="{ cursor: 'pointer' }">
-                  <QrcodeRenderer v-show="showQrcodeRenderer" :text="passphrase" ref="qrcode" />
+                  <transition name="slide-fade">
+                    <QrcodeRenderer v-if="showQrcodeRenderer" :text="passphrase"
+                      ref="qrcode" />
+                  </transition>
                 </div>
               </template>
             </login-form>
