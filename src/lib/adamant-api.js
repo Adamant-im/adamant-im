@@ -336,7 +336,7 @@ export function storeCryptoAddress (crypto, address) {
 export function getTransactions (options = { }) {
   const query = {
     inId: myAddress,
-    'and:type': options.type || Transactions.SEND,
+    'and:minAmount': 1,
     orderBy: 'timestamp:desc'
   }
 
@@ -346,6 +346,10 @@ export function getTransactions (options = { }) {
 
   if (options.from) {
     query['and:fromHeight'] = options.from
+  }
+
+  if (options.type) {
+    query['and:type'] = options.type
   }
 
   return client.get('/api/transactions', query)
