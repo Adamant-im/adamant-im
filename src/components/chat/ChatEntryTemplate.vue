@@ -8,9 +8,13 @@
       }"
       v-if="!brief"
     >
-      <div v-if="amount > 0 || direction === 'from'" class="message-tick" :data-confirmation="confirm"></div>
+      <div v-if="amount > 0 || direction === 'from'" class="message-tick" :data-confirmation="confirm">
+        <md-icon>{{ messageTick[confirm] || 'done' }}</md-icon>
+      </div>
       <div v-if="readOnly" class="adamant-avatar"></div>
-      <div v-else class="avatar-holder" v-bind:class="{fromAvatarHolder: toMessageFlag}"></div>
+      <div v-else class="avatar-holder" v-bind:class="{fromAvatarHolder: toMessageFlag}">
+        <md-icon>account_circle</md-icon>
+      </div>
       <div class="message-block">
         <div class="msg-holder">
           <div class="sent-message" v-bind:class="{to: toMessageFlag, sent: sentMessageFlag, confirm: confirmMessageFlag, reject: retryMessageFlag}">
@@ -24,7 +28,9 @@
       </div>
     </md-layout>
     <div v-if="brief" class="brief-message-wrapper">
-      <div class="brief-message-tick" :direction="direction" :data-confirmation="confirm"></div>
+      <div class="brief-message-tick" :direction="direction" :data-confirmation="confirm">
+        <md-icon>{{ messageTick[confirm] }}</md-icon>
+      </div>
       <div class="brief-message-text" :direction="direction">
         <slot name="brief-view"></slot>
       </div>
@@ -39,6 +45,17 @@ function checkForCurrency (text, currency) {
 }
 
 export default {
+  data () {
+    return {
+      messageTick: {
+        confirmed: 'done',
+        error: 'error',
+        rejected: 'cancel',
+        sent: 'query_builder',
+        unconfirmed: 'query_builder'
+      }
+    }
+  },
   name: 'chat-entry-template',
   props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly', 'message', 'amount'],
   methods: {
@@ -123,6 +140,19 @@ export default {
     hyphens: auto;
   }
 
+  .message-tick .md-icon {
+    font-family: "Material Icons";
+    font-size: 8px;
+    text-rendering: optimizeLegibility;
+    position: absolute;
+    bottom: 0;
+    height: 14px;
+    left: 1px;
+    line-height: 8px;
+    min-height: 14px;
+    vertical-align: bottom;
+  }
+
   /* Brief-mode element styles */
   .brief-message-tick {
     height: 20px;
@@ -130,34 +160,22 @@ export default {
     bottom: 14px;
   }
 
-  .brief-message-tick:before {
+  .brief-message-tick .md-icon {
     font-family: "Material Icons";
     text-rendering: optimizeLegibility;
     position: absolute;
     font-size: 8px;
     bottom: 14px;
+    line-height: 29px;
   }
 
-  .brief-message-tick[data-confirmation=confirmed]:before {
-    content: 'done';
-  }
-
-  .brief-message-tick[data-confirmation=sent]:before {
-    content: 'query_builder';
-  }
-
-  .brief-message-tick[data-confirmation=rejected]:before {
-    content: 'cancel';
+  .brief-message-tick[data-confirmation=rejected] .md-icon {
     color: red;
   }
 
-  .brief-message-tick[data-confirmation=unconfirmed]:before {
-    content: 'query_builder';
-  }
-
-  .brief-message-tick[data-confirmation=error]:before {
-    content: 'error';
-  }
+  .message-tick[data-confirmation=rejected] .md-icon {
+    color: red;
+   }
 
   .brief-message-tick[direction=from] {
     order: 0 !important;
@@ -189,37 +207,7 @@ export default {
     bottom: 14px;
   }
 
-  .message-tick:before {
-    font-family: "Material Icons";
-    text-rendering: optimizeLegibility;
-    position: absolute;
-    font-size: 8px;
-    bottom: 0;
-    left: 5px;
-  }
-
-  .message-tick[data-confirmation=confirmed]:before {
-    content: 'done';
-  }
-
-  .message-tick[data-confirmation=sent]:before {
-    content: 'query_builder';
-  }
-
-  .message-tick[data-confirmation=rejected]:before {
-    content: 'cancel';
-    color: red;
-  }
-
-  .message-tick[data-confirmation=unconfirmed]:before {
-    content: 'query_builder';
-  }
-
-  .message-tick[data-confirmation=error]:before {
-    content: 'error';
-  }
-
-  [data-confirmation=sent] p {
+  .message-tick[data-confirmation=sent] p {
     color: red;
   }
 
