@@ -15,9 +15,8 @@
               v-for="(transaction, i) in transactions"
               :key="i"
               :id="transaction.id"
-              :user-id="userId"
               :sender-id="transaction.senderId"
-              :partner-id="transaction.partner"
+              :recipient-id="transaction.recipientId"
               :timestamp="transaction.timestamp"
               :amount="transaction.amount"
               :crypto="crypto"
@@ -54,9 +53,6 @@ export default {
     hasTransactions () {
       return this.transactions && this.transactions.length > 0
     },
-    userId () {
-      return this.$store.state.address
-    },
     crypto () {
       return this.$route.params.crypto in Cryptos
         ? this.$route.params.crypto
@@ -74,7 +70,7 @@ export default {
       this.$router.push({
         name: 'Transaction',
         params: {
-          crypto: Cryptos.ADM,
+          crypto: this.crypto,
           tx_id: transactionId
         }
       })

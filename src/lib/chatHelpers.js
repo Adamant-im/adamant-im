@@ -165,7 +165,7 @@ export function transformMessage (abstract) {
   transaction.admTimestamp = abstract.timestamp
   transaction.timestamp = getRealTimestamp(abstract.timestamp)
   transaction.status = abstract.status || 'confirmed'
-  transaction.i18n = (abstract.i18n)
+  transaction.i18n = !!abstract.i18n
   transaction.amount = abstract.amount ? abstract.amount : 0
   transaction.message = ''
 
@@ -173,14 +173,16 @@ export function transformMessage (abstract) {
     transaction.message = abstract.message.comments || ''
     transaction.amount = isNumeric(abstract.message.amount) ? +abstract.message.amount : 0
 
-    const knownCrypto = knownCryptos[abstract.message.type]
+    const knownCrypto = knownCryptos[abstract.message.type.toLowerCase()]
     if (knownCrypto) {
       transaction.type = knownCrypto
+      transaction.hash = abstract.message.hash // other cryptos hash
     } else {
       transaction.type = 'UNKNOWN_CRYPTO'
     }
   } else { // ADM transaction or Message
     transaction.message = abstract.message || ''
+    transaction.hash = abstract.id // adm transaction id (hash)
 
     abstract.amount > 0
       ? transaction.type = 'ADM'

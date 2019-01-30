@@ -82,9 +82,7 @@ export default {
       return null
     },
     transactionMessage () {
-      const amount = this.lastTransaction.type === 'ADM'
-        ? this.$formatAmount(this.lastTransaction.amount)
-        : this.lastTransaction.amount
+      const amount = this.$formatAmount(this.lastTransaction.amount, this.lastTransaction.type)
 
       const direction = this.userId === this.lastTransaction.senderId
         ? this.$t('chats.sent_label')

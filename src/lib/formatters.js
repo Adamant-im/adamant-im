@@ -1,7 +1,11 @@
+import { BigNumber } from 'bignumber.js'
+
 import { EPOCH, Cryptos } from './constants'
 
 function formatAmount (amount, crypto = Cryptos.ADM) {
-  if (crypto !== Cryptos.ADM) return amount // TODO: formatting for other cryptos maybe?
+  if (crypto !== Cryptos.ADM) {
+    return BigNumber(amount).toFixed()
+  }
 
   amount = amount / 100000000
   var e
