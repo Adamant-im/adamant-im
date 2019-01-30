@@ -1,4 +1,5 @@
 import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
+import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
 const MAX_ATTEMPTS = 60
 
@@ -50,9 +51,8 @@ export default options => {
       }
     },
 
-    storeAddress ({ state, dispatch }) {
-      const payload = { address: state.address, crypto: state.crypto }
-      return dispatch('storeCryptoAddress', payload, { root: true })
+    storeAddress ({ state }) {
+      storeCryptoAddress(state.crypto, state.address)
     },
 
     updateStatus (context) {

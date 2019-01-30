@@ -23,6 +23,7 @@ import utils from '../lib/adamant'
 import i18n from '../i18n'
 import crypto from 'pbkdf2'
 import renderMarkdown from '../lib/markdown'
+import { flushCryptoAddresses } from '../lib/store-crypto-address'
 
 var maxConcurrent = 1
 var maxQueue = Infinity
@@ -189,6 +190,27 @@ const store = {
         Vue.set(currentDialog.messages, handledPayload.id, handledPayload)
       }
     },
+    /**
+     * Sends crypto transfer message
+     * @param {object} context application root state
+     * @param {{address: string, amount: number | string, comments: string, crypto: string, hash: string}} payload action payload
+     */
+    sendCryptoTransferMessage (context, payload) {
+      context.dispatch('createInChatTransferStubMessage', payload)
+      const msg = {
+        type: `${payload.crypto}_transaction`,
+        amount: payload.amount,
+        hash: payload.hash,
+        comments: payload.comments
+      }
+
+      return admApi.sendSpecialMessage(payload.address, msg).then(result => {
+        if (!result.success) {
+          console.log(`Failed to send "${msg.type}"`, result)
+        }
+        return result.success
+      })
+    },
     update_delegates_grid ({ commit }, payload) {
       commit('update_delegate', payload)
     },
@@ -312,6 +334,10 @@ const store = {
         (account) => {
           context.commit('currentAccount', account)
           context.commit('ajax_end')
+
+          if (account.balance > Fees.KVS) {
+            flushCryptoAddresses()
+          }
         },
         (error) => {
           console.error(error)
@@ -413,27 +439,6 @@ const store = {
     storeCryptoAddress (context, { crypto, address }) {
       if (context.state.balance < Fees.KVS) return
       return admApi.storeCryptoAddress(crypto, address)
-    },
-    /**
-     * Sends crypto transfer message
-     * @param {object} context application root state
-     * @param {{address: string, amount: number | string, comments: string, crypto: string, hash: string}} payload action payload
-     */
-    sendCryptoTransferMessage (context, payload) {
-      context.dispatch('createInChatTransferStubMessage', payload)
-      const msg = {
-        type: `${payload.crypto}_transaction`,
-        amount: payload.amount,
-        hash: payload.hash,
-        comments: payload.comments
-      }
-
-      return admApi.sendSpecialMessage(payload.address, msg).then(result => {
-        if (!result.success) {
-          console.log(`Failed to send "${msg.type}"`, result)
-        }
-        return result.success
-      })
     }
   },
   mutations: {

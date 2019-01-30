@@ -10,10 +10,10 @@
     <p class='transaction-amount' v-on:click="goToTransaction()">
       <span v-text="message.message.amount"></span> {{ crypto }}
     </p>
+    <div v-if="message.direction === 'to'" class="message-tick received-message-tick" :data-confirmation="confirm"></div>
     <p><em v-text="message.message.comments"></em></p>
-
     <template slot="brief-view">
-      <span>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}</span>&nbsp;
+      <span>{{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }} </span>
       <span v-text="message.message.amount"></span> {{ crypto }}
     </template>
   </chat-entry-template>
