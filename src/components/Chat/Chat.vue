@@ -104,7 +104,8 @@ function getUserMeta (userId) {
  * @returns {boolean}
  */
 function validateMessage (message) {
-  if (!message) {
+  // Ensure that message contains at least one non-whitespace character
+  if (!message.trim().length) {
     return false
   }
 

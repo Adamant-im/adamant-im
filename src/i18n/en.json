@@ -34,6 +34,8 @@
     "send_bnb": "Send BNB",
     "send_button": "Send",
     "send_button_tooltip": "Click to send a message",
+    "send_bz": "Send BZ",
+    "send_doge": "Send DOGE",
     "send_eth": "Send ETH",
     "sent_label": "Sent",
     "start_chat": "Start chat",
