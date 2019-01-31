@@ -35,7 +35,7 @@
         </md-list>
       </template>
 
-      <Spinner v-if="!isFulfilled && !isRejected"/>
+      <Spinner v-else-if="!isRejected"/>
 
       <md-snackbar md-position="bottom center" md-accent ref="snackbar" md-duration="6000">
         <span>{{ errorMessage }}</span>
