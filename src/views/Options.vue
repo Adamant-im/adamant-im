@@ -113,7 +113,7 @@
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import PasswordSetDialog from '@/components/PasswordSetDialog'
-import { clearDb } from '@/lib/idb'
+import { clearDb, db as isIDBSupported } from '@/lib/idb'
 
 export default {
   computed: {
@@ -188,7 +188,16 @@ export default {
     },
     onCheckLogoutOnTabClose () {
       if (this.logoutOnTabClose) {
-        this.passwordDialog = true
+        isIDBSupported
+          .then(() => {
+            this.passwordDialog = true
+          })
+          .catch(() => {
+            this.$store.dispatch('snackbar/show', {
+              message: this.$t('options.idb_not_supported'),
+              timeout: 5000
+            })
+          })
       } else {
         clearDb().then(() => {
           this.$store.commit('options/updateOption', {
