@@ -1,34 +1,45 @@
 <template>
     <div class="transaction transaction_list" ref="txListElement">
-      <md-list class="custom-list md-triple-line md-transparent">
-        <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
-          <md-avatar>
-            <md-icon>{{ transaction.direction === 'from' ? 'flight_takeoff' : 'flight_land' }}</md-icon>
-          </md-avatar>
 
-          <div class="md-list-text-container" v-on:click="goToTransaction(transaction.id)">
-            <div>
-              {{ displayName(transaction) }}
-              <span class="partner_display_name">{{ formatPartnerAddress(transaction) }}</span>
+      <template v-if="isFulfilled">
+        <h3 v-if="!hasTransactions" class="md-headline">{{ $t('transaction.no_transactions') }}</h3>
+
+        <md-list v-else class="custom-list md-triple-line md-transparent">
+          <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
+            <md-avatar>
+              <md-icon>{{ transaction.direction === 'from' ? 'flight_takeoff' : 'flight_land' }}</md-icon>
+            </md-avatar>
+
+            <div class="md-list-text-container" v-on:click="goToTransaction(transaction.id)">
+              <div>
+                {{ displayName(transaction) }}
+                <span class="partner_display_name">{{ formatPartnerAddress(transaction) }}</span>
+              </div>
+              <span>{{ $formatAmount(transaction.amount, crypto) }} {{crypto}}</span>
+              <p>{{ $formatDate(transaction.timestamp) }}</p>
             </div>
-            <span>{{ $formatAmount(transaction.amount, crypto) }} {{crypto}}</span>
-            <p>{{ $formatDate(transaction.timestamp) }}</p>
-          </div>
 
-          <md-button
-            class="md-icon-button md-list-action"
-            v-if="showChat"
-            @click="openChat(transaction)"
-          >
-            <md-icon>{{ hasMessages(transaction) ? "chat" : "chat_bubble_outline" }}</md-icon>
-          </md-button>
+            <md-button
+              class="md-icon-button md-list-action"
+              v-if="showChat"
+              @click="openChat(transaction)"
+            >
+              <md-icon>{{ hasMessages(transaction) ? "chat" : "chat_bubble_outline" }}</md-icon>
+            </md-button>
 
-          <md-divider class="md-inset"></md-divider>
-        </md-list-item>
-        <md-list-item class="transaction_list__loader" v-if="isLoading">
-          <inline-spinner />
-        </md-list-item>
-      </md-list>
+            <md-divider class="md-inset"></md-divider>
+          </md-list-item>
+          <md-list-item class="transaction_list__loader" v-if="isLoading">
+            <inline-spinner />
+          </md-list-item>
+        </md-list>
+      </template>
+
+      <Spinner v-else-if="!isRejected"/>
+
+      <md-snackbar md-position="bottom center" md-accent ref="snackbar" md-duration="6000">
+        <span>{{ errorMessage }}</span>
+      </md-snackbar>
 
     </div>
 </template>
@@ -37,15 +48,19 @@
 
 import { Cryptos } from '../lib/constants'
 import InlineSpinner from '@/components/InlineSpinner.vue'
+import Spinner from '@/components/Spinner'
 
 export default {
   name: 'transactions',
-  components: { InlineSpinner },
+  components: { InlineSpinner, Spinner },
   data () {
     return {
       bgTimer: null,
       prefix: this.crypto.toLowerCase(),
-      showChat: this.crypto === Cryptos.ADM
+      showChat: this.crypto === Cryptos.ADM,
+      isFulfilled: false,
+      isRejected: false,
+      errorMessage: ''
     }
   },
   mounted () {
@@ -57,6 +72,7 @@ export default {
   beforeDestroy () {
     clearInterval(this.bgTimer)
     window.removeEventListener('scroll', this.onScroll)
+    this.$refs.snackbar.close()
   },
   methods: {
     hasMessages (transaction) {
@@ -89,6 +105,14 @@ export default {
     },
     update () {
       this.$store.dispatch(`${this.prefix}/getNewTransactions`)
+        .then(() => {
+          this.isFulfilled = true
+        })
+        .catch(err => {
+          this.isRejected = true
+          this.errorMessage = err.message
+          this.$refs.snackbar.open()
+        })
     },
     onScroll () {
       const height = this.$refs['txListElement'].offsetHeight
@@ -104,6 +128,9 @@ export default {
   computed: {
     transactions: function () {
       return this.$store.getters[`${this.prefix}/sortedTransactions`]
+    },
+    hasTransactions () {
+      return this.transactions && this.transactions.length > 0
     },
     isLoading () {
       return this.$store.getters[`${this.prefix}/areTransactionsLoading`]
