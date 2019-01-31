@@ -65,6 +65,7 @@ export default function storeData () {
     if (value !== 'undefined') {
       if (value) {
         value = JSON.parse(value)
+        delete value.areChatsLoading // for users who already have this property
       }
     }
     if (typeof value === 'object' && value !== null) {
@@ -181,7 +182,10 @@ export default function storeData () {
         let storeNow = false
         if (mutation.type === 'change_storage_method') {
           if (!mutation.payload) {
-            useStorage = sessionStorage.setItem('adm-persist', JSON.stringify(state))
+            useStorage = sessionStorage.setItem(
+              'adm-persist',
+              JSON.stringify(state, (k, v) => (k === 'areChatsLoading' ? undefined : v))
+            )
           }
           try {
             mainStorage.setItem('storeInLocalStorage', mutation.payload)
@@ -228,7 +232,10 @@ export default function storeData () {
         }
         if (storeNow) {
           try {
-            useStorage.setItem('adm-persist', JSON.stringify(state))
+            useStorage.setItem(
+              'adm-persist',
+              JSON.stringify(state, (k, v) => (k === 'areChatsLoading' ? undefined : v))
+            )
           } catch (e) {
           }
         } else {
