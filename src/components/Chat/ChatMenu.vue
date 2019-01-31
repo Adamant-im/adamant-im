@@ -1,46 +1,56 @@
 <template>
-  <v-menu>
-    <v-icon medium class="chat-menu__icon" slot="activator">mdi-plus-circle-outline</v-icon>
+  <div>
+    <v-menu>
+      <v-icon medium class="chat-menu__icon" slot="activator">mdi-plus-circle-outline</v-icon>
 
-    <v-list>
+      <v-list>
 
-      <template v-for="item in menuItems">
+        <template v-for="item in menuItems">
 
-        <!-- Cryptos -->
-        <v-list-tile
-          v-if="item.type === 'crypto'"
-          :key="item.title"
-          @click="sendFunds(item)"
-        >
-          <v-list-tile-avatar>
-            <icon fill="#BDBDBD">
-              <component :is="item.icon"/>
-            </icon>
-          </v-list-tile-avatar>
+          <!-- Cryptos -->
+          <v-list-tile
+            v-if="item.type === 'crypto'"
+            :key="item.title"
+            @click="sendFunds(item)"
+          >
+            <v-list-tile-avatar>
+              <icon fill="#BDBDBD">
+                <component :is="item.icon"/>
+              </icon>
+            </v-list-tile-avatar>
 
-          <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
-        </v-list-tile>
+            <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
+          </v-list-tile>
 
-        <!-- Actions -->
-        <v-list-tile
-          v-else-if="item.type === 'action'"
-          :key="item.title"
-          :disabled="item.disabled"
-        >
-          <v-list-tile-avatar>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-tile-avatar>
+          <!-- Actions -->
+          <v-list-tile
+            v-else-if="item.type === 'action'"
+            :key="item.title"
+            :disabled="item.disabled"
+          >
+            <v-list-tile-avatar>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-tile-avatar>
 
-          <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
-        </v-list-tile>
+            <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
+          </v-list-tile>
 
-      </template>
+        </template>
 
-    </v-list>
-  </v-menu>
+      </v-list>
+    </v-menu>
+
+    <ChatDialog
+      v-model="dialog"
+      :title="$t('transfer.no_address_title', { crypto })"
+      :text="$t('transfer.no_address_text', { crypto })"
+    />
+  </div>
 </template>
 
 <script>
+import { Cryptos } from '@/lib/constants'
+import ChatDialog from '@/components/Chat/ChatDialog'
 import Icon from '@/components/icons/BaseIcon'
 import AdmFillIcon from '@/components/icons/AdmFill'
 import EthFillIcon from '@/components/icons/EthFill'
@@ -93,23 +103,49 @@ export default {
         icon: 'mdi-file',
         disabled: true
       }
-    ]
+    ],
+    dialog: false,
+    crypto: ''
   }),
   methods: {
     sendFunds (item) {
-      this.$router.push({
-        name: 'SendFunds',
-        params: {
-          cryptoCurrency: item.currency,
-          recipientAddress: this.partnerId
-        },
-        query: {
-          from: `/chats/${this.partnerId}`
-        }
+      // check if user has crypto wallet
+      // otherwise show dialog
+      this.fetchCryptoAddress(item.currency)
+        .then(() => {
+          this.$router.push({
+            name: 'SendFunds',
+            params: {
+              cryptoCurrency: item.currency,
+              recipientAddress: this.partnerId
+            },
+            query: {
+              from: `/chats/${this.partnerId}`
+            }
+          })
+        })
+        .catch(() => {
+          this.crypto = item.currency
+          this.dialog = true
+        })
+    },
+    fetchCryptoAddress (crypto) {
+      if (crypto === Cryptos.ADM) {
+        return Promise.resolve()
+      }
+
+      return this.$store.dispatch('partners/fetchAddress', {
+        crypto,
+        partner: this.partnerId
+      }).then(address => {
+        if (!address) throw new Error('No crypto wallet address')
+
+        return address
       })
     }
   },
   components: {
+    ChatDialog,
     Icon,
     AdmFillIcon,
     EthFillIcon,
