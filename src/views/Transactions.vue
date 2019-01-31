@@ -2,7 +2,9 @@
     <div class="transaction transaction_list" ref="txListElement">
 
       <template v-if="isFulfilled">
-        <md-list v-if="hasTransactions" class="custom-list md-triple-line md-transparent">
+        <h3 v-if="!hasTransactions" class="md-headline">{{ $t('transaction.no_transactions') }}</h3>
+
+        <md-list v-else class="custom-list md-triple-line md-transparent">
           <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
             <md-avatar>
               <md-icon>{{ transaction.direction === 'from' ? 'flight_takeoff' : 'flight_land' }}</md-icon>
@@ -31,9 +33,11 @@
             <inline-spinner />
           </md-list-item>
         </md-list>
-
-        <h3 v-else class="md-headline">{{ $t('transaction.no_transactions') }}</h3>
       </template>
+
+      <h3 v-if="isRejected" class="md-headline">{{ errorMessage }}</h3>
+
+      <Spinner v-if="!isFulfilled && !isRejected"/>
 
     </div>
 </template>
@@ -42,16 +46,19 @@
 
 import { Cryptos } from '../lib/constants'
 import InlineSpinner from '@/components/InlineSpinner.vue'
+import Spinner from '@/components/Spinner'
 
 export default {
   name: 'transactions',
-  components: { InlineSpinner },
+  components: { InlineSpinner, Spinner },
   data () {
     return {
       bgTimer: null,
       prefix: this.crypto.toLowerCase(),
       showChat: this.crypto === Cryptos.ADM,
-      isFulfilled: false
+      isFulfilled: false,
+      isRejected: false,
+      errorMessage: ''
     }
   },
   mounted () {
@@ -97,6 +104,10 @@ export default {
       this.$store.dispatch(`${this.prefix}/getNewTransactions`)
         .then(() => {
           this.isFulfilled = true
+        })
+        .catch(err => {
+          this.isRejected = true
+          this.errorMessage = err.message
         })
     },
     onScroll () {
