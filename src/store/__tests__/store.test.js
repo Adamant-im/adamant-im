@@ -22,7 +22,10 @@ const { getters, mutations, actions } = store
 const fakeData = {
   address: 'U123456',
   balance: 1000,
-  passphrase: 'lorem ipsum'
+  passphrase: 'lorem ipsum',
+  password: '',
+  IDBReady: false,
+  publicKeys: {}
 }
 
 describe('store', () => {
@@ -61,15 +64,23 @@ describe('store', () => {
     state = {
       address: 'U123456',
       balance: 1000,
-      passphrase: 'lorem ipsum'
+      passphrase: 'lorem ipsum',
+      password: 'password',
+      IDBReady: true,
+      publicKeys: {
+        U123456: 'key'
+      }
     }
 
-    mutations.resetState(state)
+    mutations.reset(state)
 
     expect(state).toEqual({
       address: '',
       balance: 0,
-      passphrase: ''
+      passphrase: '',
+      password: '',
+      IDBReady: false,
+      publicKeys: {}
     })
   })
 
@@ -98,10 +109,10 @@ describe('store', () => {
   })
 
   it('should reset state when logout', () => {
-    const commit = jest.fn()
+    const dispatch = jest.fn()
 
-    actions.logout({ commit })
+    actions.logout({ dispatch })
 
-    expect(commit).toHaveBeenCalledWith('resetState')
+    expect(dispatch).toHaveBeenCalledWith('reset')
   })
 })

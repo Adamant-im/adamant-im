@@ -312,7 +312,7 @@ const mutations = {
     }
 
     // find transaction by `hash` and update `status`
-    if (message.type !== 'message') {
+    if (message.type && message.type !== 'message') {
       const transaction = chat.messages.find(localTransaction => localTransaction.hash === message.hash)
 
       if (transaction) {

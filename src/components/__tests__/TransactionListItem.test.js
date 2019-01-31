@@ -62,9 +62,8 @@ function mockupStore () {
  */
 const validProps = {
   id: '123456789',
-  userId: 'U123456',
-  partnerId: 'U654321',
   senderId: 'U654321',
+  recipientId: 'U123456',
   timestamp: 37835483, // ADM timestamp
   amount: 100000000 // 1 ADM
 }

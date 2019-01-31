@@ -133,7 +133,10 @@
     "testMatch": [
       "**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/**/*.(test|spec).(js|jsx|ts|tsx)"
     ],
-    "testURL": "http://localhost/"
+    "testURL": "http://localhost/",
+    "setupFiles": [
+      "<rootDir>/tests/__mocks__/globals.js"
+    ]
   },
   "author": "ADAMANT Tech Labs <devs@adamant.im>",
   "license": "GPLv3",

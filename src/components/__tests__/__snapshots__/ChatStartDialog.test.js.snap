@@ -11,7 +11,7 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
     elevation="2"
   >
     <v-card-title-stub
-      class="headline grey lighten-2"
+      class="headline"
       primarytitle="true"
     >
       
