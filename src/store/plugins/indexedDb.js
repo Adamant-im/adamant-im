@@ -1,16 +1,15 @@
 import throttle from 'throttle-promise'
 import cloneDeep from 'lodash'
 
-import { Modules, Chats, Security } from '@/lib/idb'
-import { restoreState } from '@/lib/idb/state'
+import router from '@/router'
+import { Modules, Chats, Security, clearDb } from '@/lib/idb'
+import { restoreState, modules } from '@/lib/idb/state'
 import AppInterval from '@/lib/AppInterval'
 import { Base64 } from 'js-base64'
 
 const chatModuleMutations = ['setHeight', 'setFulfilled']
 const multipleChatMutations = ['markAllAsRead', 'createEmptyChat', 'createAdamantChats']
 const singleChatMutations = ['pushMessage', 'markAsRead', 'updateMessage']
-
-const modules = ['adm', 'eth', 'doge', 'bnb', 'bz', 'partners', 'delegates']
 
 /**
  * @param {string} mutation
@@ -75,10 +74,31 @@ function createThrottles () {
 
 const throttles = createThrottles()
 
+/**
+ * Dynamic throttles creation for each `chat`.
+ */
+const chatThrottles = {}
+
+function chatThrottle (chatId) {
+  let interval = 10000
+
+  // create throttle wrapper if does not exists
+  if (!chatThrottles[chatId]) {
+    chatThrottles[chatId] = throttle(({ name, value }) => {
+      return Chats.set({ name, value })
+    }, 1, interval)
+  }
+
+  return chatThrottles[chatId]
+}
+
 export default store => {
   if (store.getters['options/isLoginViaPassword']) {
     if (store.state.password) {
       restoreState(store)
+        .then(() => {
+          store.commit('setIDBReady', true)
+        })
         .then(() => {
           if (!store.state.chat.isFulfilled) {
             store.commit('chat/createAdamantChats')
@@ -89,12 +109,23 @@ export default store => {
           store.dispatch('unlock')
           AppInterval.subscribe()
         })
-        .catch(err => {
-          // @todo fallback to login via passphrase
-          // disable option `login via password`
-          // clearDb
-          // redirect to `/`
-          console.error('restoreState', err)
+        .catch(() => {
+          console.error('Can not decode IDB with current password. Fallback to Login via Passphrase.')
+
+          clearDb()
+            .then(() => {
+              store.commit('options/updateOption', {
+                key: 'logoutOnTabClose',
+                value: true
+              })
+              store.commit('reset')
+            })
+            .catch(err => {
+              console.error(err)
+            })
+            .finally(() => {
+              router.push('/')
+            })
         })
     }
   } else if (store.getters.isLogged) { // is logged with passphrase
@@ -150,7 +181,7 @@ export default store => {
           if (chatId) {
             const chat = state.chat.chats[chatId]
 
-            Chats.set({ name: chatId, value: chat })
+            chatThrottle(chatId)({ name: chatId, value: chat })
           }
         }
       } else if (mutation.type === 'setPublicKey') {

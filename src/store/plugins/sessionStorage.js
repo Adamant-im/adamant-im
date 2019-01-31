@@ -9,8 +9,7 @@ const vuexPersistence = new VuexPersistence({
       address: state.address,
       balance: state.balance,
       passphrase: state.passphrase,
-      password: state.password,
-      IDBReady: state.IDBReady
+      password: state.password
     }
   }
 })
