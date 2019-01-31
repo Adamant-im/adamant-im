@@ -35,9 +35,11 @@
         </md-list>
       </template>
 
-      <h3 v-if="isRejected" class="md-headline">{{ errorMessage }}</h3>
-
       <Spinner v-if="!isFulfilled && !isRejected"/>
+
+      <md-snackbar md-position="bottom center" md-accent ref="snackbar" md-duration="6000">
+        <span>{{ errorMessage }}</span>
+      </md-snackbar>
 
     </div>
 </template>
@@ -70,6 +72,7 @@ export default {
   beforeDestroy () {
     clearInterval(this.bgTimer)
     window.removeEventListener('scroll', this.onScroll)
+    this.$refs.snackbar.close()
   },
   methods: {
     hasMessages (transaction) {
@@ -108,6 +111,7 @@ export default {
         .catch(err => {
           this.isRejected = true
           this.errorMessage = err.message
+          this.$refs.snackbar.open()
         })
     },
     onScroll () {
