@@ -311,6 +311,17 @@ const mutations = {
       return
     }
 
+    // find transaction by `hash` and update `status`
+    if (message.type !== 'message') {
+      const transaction = chat.messages.find(localTransaction => localTransaction.hash === message.hash)
+
+      if (transaction) {
+        transaction.status = message.status
+
+        return
+      }
+    }
+
     chat.messages.push(message)
 
     // If this is a new message, increment `numOfNewMessages`.
@@ -615,6 +626,7 @@ const actions = {
       type,
       status,
       amount,
+      hash,
       comment = ''
     } = payload
 
@@ -624,6 +636,7 @@ const actions = {
       type,
       status,
       amount,
+      hash,
       comment,
       senderId: rootState.address
     })

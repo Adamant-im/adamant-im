@@ -41,6 +41,7 @@
           :currency="message.type"
           :i18n="{ sent: $t('chats.sent_label'), received: $t('chats.received_label') }"
           :locale="locale"
+          :status="transactionStatus(message)"
           @click:transaction="openTransaction(message)"
         />
 
@@ -72,6 +73,7 @@ import { Formatter } from '@adamant/message-formatter'
 import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'
+import transaction from '@/mixins/transaction'
 
 /**
  * Create Formatter instance.
@@ -224,6 +226,7 @@ export default {
   filters: {
     msg: message => formatter.format(message)
   },
+  mixins: [transaction],
   components: {
     AChat,
     AChatMessage,

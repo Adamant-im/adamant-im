@@ -20,6 +20,12 @@
           </div>
           <v-icon @click="$emit('click:transaction', id)" class="mr-2">mdi-open-in-new</v-icon>
           <span :title="date" class="a-chat__timestamp">{{ time }}</span>
+          <div class="a-chat__status">
+            <v-icon
+              size="15"
+              :color="status === 'rejected' ? 'red' : ''"
+            >{{ statusIcon }}</v-icon>
+          </div>
         </div>
 
         <div class="a-chat__message-card-body">
@@ -42,6 +48,15 @@ export default {
     },
     date () {
       return moment(this.timestamp).format('LLLL')
+    },
+    statusIcon () {
+      if (this.status === 'sent') {
+        return 'mdi-clock-outline'
+      } else if (this.status === 'rejected') {
+        return 'mdi-clock-outline'
+      } else {
+        return 'mdi-check-all'
+      }
     }
   },
   props: {
@@ -83,6 +98,11 @@ export default {
     locale: {
       type: String,
       default: 'en'
+    },
+    status: {
+      type: String,
+      default: 'confirmed',
+      validator: v => ['sent', 'confirmed', 'rejected'].includes(v)
     }
   }
 }

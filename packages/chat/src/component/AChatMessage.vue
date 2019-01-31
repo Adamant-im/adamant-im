@@ -68,7 +68,8 @@ export default {
     },
     status: {
       type: String,
-      default: 'confirmed'
+      default: 'confirmed',
+      validator: v => ['sent', 'confirmed', 'rejected'].includes(v)
     },
     userId: {
       type: String,

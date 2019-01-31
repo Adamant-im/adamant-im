@@ -267,6 +267,7 @@ export default {
 
       this.$store.dispatch('chat/pushTransaction', {
         transactionId,
+        hash: transactionId,
         recipientId: this.address,
         type: this.currency,
         status: 'confirmed',

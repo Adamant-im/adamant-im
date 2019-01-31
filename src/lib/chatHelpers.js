@@ -113,6 +113,7 @@ export function createTransaction (payload) {
     senderId,
     amount,
     comment,
+    hash,
     type = 'ADM',
     status = 'sent'
   } = payload
@@ -122,6 +123,7 @@ export function createTransaction (payload) {
     recipientId,
     senderId,
     amount,
+    hash,
     type,
     status,
     timestamp: Date.now()
