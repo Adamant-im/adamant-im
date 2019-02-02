@@ -65,7 +65,10 @@ export default function storeData () {
     if (value !== 'undefined') {
       if (value) {
         value = JSON.parse(value)
-        delete value.areChatsLoading // for users who already have this property
+        delete value.areChatsLoading
+        delete value.lastChatHeight
+        delete value.firstChatLoad
+        delete value.chats
       }
     }
     if (typeof value === 'object' && value !== null) {
@@ -182,10 +185,12 @@ export default function storeData () {
         let storeNow = false
         if (mutation.type === 'change_storage_method') {
           if (!mutation.payload) {
-            useStorage = sessionStorage.setItem(
-              'adm-persist',
-              JSON.stringify(state, (k, v) => (k === 'areChatsLoading' ? undefined : v))
-            )
+            const clonedState = Object.assign({}, state)
+            delete clonedState.areChatsLoading
+            delete clonedState.lastChatHeight
+            delete clonedState.firstChatLoad
+            delete clonedState.chats
+            useStorage = sessionStorage.setItem('adm-persist', JSON.stringify(clonedState))
           }
           try {
             mainStorage.setItem('storeInLocalStorage', mutation.payload)
@@ -232,10 +237,12 @@ export default function storeData () {
         }
         if (storeNow) {
           try {
-            useStorage.setItem(
-              'adm-persist',
-              JSON.stringify(state, (k, v) => (k === 'areChatsLoading' ? undefined : v))
-            )
+            const clonedState = Object.assign({}, state)
+            delete clonedState.areChatsLoading
+            delete clonedState.lastChatHeight
+            delete clonedState.firstChatLoad
+            delete clonedState.chats
+            useStorage.setItem('adm-persist', JSON.stringify(clonedState))
           } catch (e) {
           }
         } else {

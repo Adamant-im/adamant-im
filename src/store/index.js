@@ -125,7 +125,7 @@ const store = {
     disabled: deviceIsDisabled(),
     is_new_account: false,
     ajaxIsOngoing: false,
-    firstChatLoad: false,
+    firstChatLoad: true,
     lastErrorMsg: '',
     transactions: {},
     showPanel: false,
@@ -459,6 +459,7 @@ const store = {
       state.notifyDesktop = payload
     },
     change_lang (state, payload) {
+      i18n.locale = payload
       state.language = payload
     },
     change_storage_method (state, payload) {
