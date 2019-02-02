@@ -8,7 +8,9 @@
       <chat-avatar v-else :size="40" :user-id="partnerId" use-public-key/>
 
       <v-badge overlap color="primary">
-        <span v-if="numOfNewMessages" slot="badge">{{ numOfNewMessages }}</span>
+        <span v-if="numOfNewMessages > 99" slot="badge">99+</span>
+        <span v-else-if="numOfNewMessages > 0 && numOfNewMessages < 100" slot="badge">
+          {{ numOfNewMessages }}</span>
       </v-badge>
     </v-list-tile-avatar>
 
