@@ -38,6 +38,8 @@
 </template>
 
 <script>
+import { clearDb } from '@/lib/idb'
+
 export default {
   computed: {
     password: {
@@ -65,7 +67,9 @@ export default {
         })
     },
     removePassword () {
-      return this.$store.dispatch('removePassword')
+      clearDb().finally(() => {
+        this.$store.dispatch('removePassword')
+      })
     }
   },
   props: {
