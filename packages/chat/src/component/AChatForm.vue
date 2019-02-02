@@ -53,6 +53,8 @@ export default {
     submitMessage () {
       this.$emit('message', this.message)
       this.message = ''
+      // Fix textarea height to 1 row after miltiline message send
+      document.querySelector('.v-input.v-textarea textarea').style.height = '33px'
     }
   },
   props: {
