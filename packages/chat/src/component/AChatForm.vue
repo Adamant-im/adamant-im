@@ -8,6 +8,7 @@
       hide-details
       single-line
       auto-grow
+      ref="messageTextarea"
       rows="1"
 
       :append-icon="showSendButton && message ? 'mdi-send' : ''"
@@ -54,7 +55,7 @@ export default {
       this.$emit('message', this.message)
       this.message = ''
       // Fix textarea height to 1 row after miltiline message send
-      document.querySelector('.v-input.v-textarea textarea').style.height = '33px'
+      this.$refs.messageTextarea.$refs.input.style.height = '33px'
     }
   },
   props: {
