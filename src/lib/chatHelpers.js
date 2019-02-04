@@ -174,6 +174,7 @@ export function transformMessage (abstract) {
   if (abstract.message && abstract.message.type) { // cryptos
     transaction.message = abstract.message.comments || ''
     transaction.amount = isNumeric(abstract.message.amount) ? +abstract.message.amount : 0
+    transaction.status = 'sent'
 
     const knownCrypto = knownCryptos[abstract.message.type.toLowerCase()]
     if (knownCrypto) {

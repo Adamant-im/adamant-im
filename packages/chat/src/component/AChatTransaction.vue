@@ -42,6 +42,9 @@
 import moment from 'moment'
 
 export default {
+  mounted () {
+    this.$emit('mount')
+  },
   computed: {
     time () {
       return moment(this.timestamp).format('hh:mm A')

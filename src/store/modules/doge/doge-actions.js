@@ -126,7 +126,7 @@ export default {
       }])
     }
 
-    api.getTransaction(payload.hash)
+    return api.getTransaction(payload.hash)
       .then(
         tx => {
           if (tx) context.commit('transactions', [tx])

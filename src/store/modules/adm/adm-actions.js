@@ -78,7 +78,7 @@ export default {
    * @param {string} id transaction ID
    */
   getTransaction (context, { hash }) {
-    admApi.getTransaction(hash).then(
+    return admApi.getTransaction(hash).then(
       transaction => context.commit('transactions', [transaction])
     )
   }

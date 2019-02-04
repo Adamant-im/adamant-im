@@ -3,32 +3,37 @@ import { Cryptos } from '@/lib/constants'
 export default {
   methods: {
     /**
-     * Get transaction status for ETH, ERC20, DOGE.
-     * @param {any} transaction Transaction object
-     * @returns {string} sent, confirmed, rejected
+     * Get transaction status from ETH, ERC20, DOGE modules
+     * and update chat message status.
+     * @param {{ id: string, type: string, hash: string }} transaction
+     * @param {string} partnerId Partner ADM address
      */
-    transactionStatus (transaction) {
-      if (transaction.type === Cryptos.ADM) {
-        return transaction.status
-      }
+    fetchTransactionStatus ({ id, type, hash }, partnerId) {
+      // ADM transactions already has property `status`
+      if (type === Cryptos.ADM) return
 
-      const getterName = transaction.type.toLowerCase() + '/transaction'
+      const getterName = type.toLowerCase() + '/transaction'
       const getter = this.$store.getters[getterName]
 
-      if (!getter) return 'rejected'
+      if (!getter) return
 
-      this.fetchTransaction(transaction.type, transaction.hash)
+      this.fetchTransaction(type, hash)
+        .then(() => {
+          const tx = getter(hash)
+          let status = tx && tx.status
 
-      const tx = getter(transaction.hash)
-      const status = tx && tx.status
+          status = status === 'SUCCESS'
+            ? 'confirmed'
+            : status === 'PENDING'
+              ? 'sent'
+              : 'rejected'
 
-      if (status === 'SUCCESS') {
-        return 'confirmed'
-      } else if (status === 'PENDING') {
-        return 'sent'
-      } else {
-        return 'rejected'
-      }
+          this.$store.commit('chat/updateMessage', {
+            partnerId,
+            id,
+            status
+          })
+        })
     },
     /**
      * Fetch transaction and save to state.
@@ -39,7 +44,7 @@ export default {
     fetchTransaction (type, hash) {
       const cryptoModule = type.toLowerCase()
 
-      this.$store.dispatch(`${cryptoModule}/getTransaction`, {
+      return this.$store.dispatch(`${cryptoModule}/getTransaction`, {
         hash
       })
     }

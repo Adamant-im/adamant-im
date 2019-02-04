@@ -156,34 +156,38 @@ export default function createActions (config) {
         }])
       }
 
-      const key = 'transaction:' + payload.hash
-      const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
-        if (!err && tx && tx.input) {
-          let transaction = parseTransaction(context, tx)
-          if (transaction) {
-            // Override transaction status until getting at least one confirmation from backend
-            if (transaction.status === 'SUCCESS' && !checkBlockCount(transaction, context.rootState)) {
-              transaction.status = 'PENDING'
+      return new Promise((resolve) => {
+        const key = 'transaction:' + payload.hash
+        const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
+          if (!err && tx && tx.input) {
+            let transaction = parseTransaction(context, tx)
+            if (transaction) {
+              // Override transaction status until getting at least one confirmation from backend
+              if (transaction.status === 'SUCCESS' && !checkBlockCount(transaction, context.rootState)) {
+                transaction.status = 'PENDING'
+              }
+              context.commit('transactions', [transaction])
+
+              // Fetch receipt details: status and actual gas consumption
+              const { attempt, ...receiptPayload } = payload
+              context.dispatch('getTransactionReceipt', receiptPayload)
+
+              resolve(transaction)
             }
-            context.commit('transactions', [transaction])
-
-            // Fetch receipt details: status and actual gas consumption
-            const { attempt, ...receiptPayload } = payload
-            context.dispatch('getTransactionReceipt', receiptPayload)
           }
-        }
-        if (!tx && payload.attempt === MAX_ATTEMPTS) {
-          // Give up, if transaction could not be found after so many attempts
-          context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-        } else if (err || (tx && !tx.blockNumber) || (!tx && payload.isNew)) {
-          // In case of an error or a pending transaction fetch its details once again later
-          // Increment attempt counter, if no transaction was found so far
-          const newPayload = tx ? payload : { ...payload, attempt: 1 + (payload.attempt || 0) }
-          context.dispatch('getTransaction', newPayload)
-        }
-      })
+          if (!tx && payload.attempt === MAX_ATTEMPTS) {
+            // Give up, if transaction could not be found after so many attempts
+            context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
+          } else if (err || (tx && !tx.blockNumber) || (!tx && payload.isNew)) {
+            // In case of an error or a pending transaction fetch its details once again later
+            // Increment attempt counter, if no transaction was found so far
+            const newPayload = tx ? payload : { ...payload, attempt: 1 + (payload.attempt || 0) }
+            context.dispatch('getTransaction', newPayload)
+          }
+        })
 
-      queue.enqueue(key, supplier)
+        queue.enqueue(key, supplier)
+      })
     },
 
     /**
@@ -198,10 +202,10 @@ export default function createActions (config) {
       const gasPrice = transaction.gasPrice
 
       const supplier = () => api.eth.getTransactionReceipt.request(payload.hash, (err, tx) => {
-        if (!err && tx && checkBlockCount(tx, context.rootState) && gasPrice) {
+        if (!err && tx && checkBlockCount(tx, context.rootState)) {
           context.commit('transactions', [{
             hash: payload.hash,
-            fee: utils.calculateFee(tx.gasUsed, parseInt(gasPrice, 16)),
+            fee: utils.calculateFee(tx.gasUsed, gasPrice),
             status: tx.status ? 'SUCCESS' : 'ERROR'
           }])
         }

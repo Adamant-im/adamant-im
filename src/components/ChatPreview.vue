@@ -19,7 +19,10 @@
 
       <!-- Transaction -->
       <template v-if="lastTransaction">
-        <v-list-tile-sub-title>{{ transactionMessage }}</v-list-tile-sub-title>
+        <v-list-tile-sub-title>
+          <v-icon size="15">{{ status === 'confirmed' ? 'mdi-check-all' : 'mdi-clock-outline' }}</v-icon>
+          {{ transactionMessage }}
+        </v-list-tile-sub-title>
       </template>
 
       <!-- Message -->
@@ -40,8 +43,10 @@
 
 <script>
 import moment from 'moment'
-import dateFilter from '@/filters/date'
 import { removeFormats } from '@adamant/message-formatter'
+
+import transaction from '@/mixins/transaction'
+import dateFilter from '@/filters/date'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import Icon from '@/components/icons/BaseIcon'
 import AdmFillIcon from '@/components/icons/AdmFill'
@@ -49,6 +54,11 @@ import AdmFillIcon from '@/components/icons/AdmFill'
 export default {
   mounted () {
     moment.locale(this.$store.state.language.currentLocale)
+
+    // fetch status if last message is transaction
+    if (this.lastTransaction) {
+      this.fetchTransactionStatus(this.lastTransaction, this.partnerId)
+    }
   },
   computed: {
     userId () {
@@ -61,7 +71,7 @@ export default {
       return this.$store.getters['chat/lastMessage'](this.partnerId)
     },
     isMessageI18n () {
-      return (this.lastMessage.i18n)
+      return this.lastMessage.i18n
     },
     lastMessageText () {
       return this.$store.getters['chat/lastMessageText'](this.partnerId)
@@ -99,6 +109,9 @@ export default {
     },
     createdAt () {
       return this.lastMessageTimestamp
+    },
+    status () {
+      return this.lastMessage.status
     }
   },
   data: () => ({
@@ -106,6 +119,7 @@ export default {
   filters: {
     date: dateFilter
   },
+  mixins: [transaction],
   components: {
     ChatAvatar,
     Icon,

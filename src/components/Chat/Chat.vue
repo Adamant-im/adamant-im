@@ -41,8 +41,9 @@
           :currency="message.type"
           :i18n="{ sent: $t('chats.sent_label'), received: $t('chats.received_label') }"
           :locale="locale"
-          :status="transactionStatus(message)"
+          :status="message.status"
           @click:transaction="openTransaction(message)"
+          @mount="fetchTransactionStatus(message, partnerId)"
         />
 
       </template>
