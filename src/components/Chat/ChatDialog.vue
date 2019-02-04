@@ -50,9 +50,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.v-card__title.headline {
-  font-family: 'Exo 2', sans-serif !important;
-}
-</style>

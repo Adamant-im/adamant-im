@@ -217,9 +217,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.title {
-  font-family: 'Exo 2', sans-serif !important;
-}
-</style>
