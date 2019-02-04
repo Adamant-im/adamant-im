@@ -1,4 +1,4 @@
-import cloneDeep from 'lodash'
+import { cloneDeep } from 'lodash'
 import merge from 'deepmerge'
 import Modules from './stores/Modules'
 import Chats from './stores/Chats'

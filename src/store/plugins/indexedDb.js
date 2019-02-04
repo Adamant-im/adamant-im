@@ -1,5 +1,5 @@
 import throttle from 'throttle-promise'
-import cloneDeep from 'lodash'
+import { cloneDeep } from 'lodash'
 
 import router from '@/router'
 import { Modules, Chats, Security, clearDb } from '@/lib/idb'
