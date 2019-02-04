@@ -71,7 +71,6 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
        
       <v-btn-stub
         activeclass="v-btn--active"
-        color="primary"
         flat="true"
         tag="button"
         type="button"

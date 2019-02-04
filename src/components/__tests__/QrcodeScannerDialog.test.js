@@ -12,6 +12,9 @@ Vue.use(Vuex)
 Vue.use(VueI18n)
 Vue.use(Vuetify)
 
+/** Mock Instascan **/
+jest.mock('instascan', () => {})
+
 /**
  * Mockup store helper.
  */
