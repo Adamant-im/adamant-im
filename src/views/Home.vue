@@ -7,7 +7,7 @@
 
         <!-- Wallets -->
         <v-card class="home-page__wallets">
-          <v-tabs grow fixed-tabs slider-color="white">
+          <v-tabs grow slider-color="white">
             <v-tab
               v-for="wallet in wallets"
               :key="wallet.cryptoCurrency"

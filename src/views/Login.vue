@@ -4,7 +4,9 @@
     <v-flex xs12 sm12 md8 lg8>
 
       <div class="text-xs-right">
-        <language-switcher/>
+        <language-switcher>
+          <v-icon slot="prepend" size="18">mdi-chevron-right</v-icon>
+        </language-switcher>
       </div>
 
       <v-card flat color="transparent" class="text-xs-center mt-3">
@@ -42,8 +44,7 @@
               <template slot="qrcode-renderer">
                 <div @click="saveQrcode" :style="{ cursor: 'pointer' }">
                   <transition name="slide-fade">
-                    <QrcodeRenderer v-if="showQrcodeRenderer" :text="passphrase"
-                      ref="qrcode" />
+                    <QrcodeRenderer v-if="showQrcodeRenderer" :text="passphrase" ref="qrcode" />
                   </transition>
                 </div>
               </template>
@@ -56,7 +57,6 @@
           <v-btn
             icon
             flat
-            large
             fab
             @click="showQrcodeScanner = true"
             :title="$t('login.scan_qr_code_button_tooltip')"
@@ -64,7 +64,7 @@
             <icon><qr-code-scan-icon/></icon>
           </v-btn>
 
-          <v-btn @click="openFileDialog" :title="$t('login.login_by_qr_code_tooltip')" icon flat large fab>
+          <v-btn @click="openFileDialog" :title="$t('login.login_by_qr_code_tooltip')" icon flat fab>
             <icon><file-icon/></icon>
           </v-btn>
 

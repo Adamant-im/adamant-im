@@ -10,7 +10,7 @@
     <transition name="slide-fade">
       <div v-if="showPassphrase">
         <div
-          v-html="$t('login.new_password_label')"
+          v-html="$t('login.new_passphrase_label')"
           class="caption grey--text mt-2"
           ref="el"
         ></div>
@@ -22,6 +22,7 @@
           readonly
           rows="2"
           class="pt-0"
+          color="grey"
           ref="textarea"
         >
           <icon @click="copyToClipboard" :width="24" :height="24" shape-rendering="crispEdges" slot="append">

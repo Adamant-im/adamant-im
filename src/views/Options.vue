@@ -15,10 +15,12 @@
           <h3 class="title mt-3 mb-3">{{ $t('options.general_title') }}</h3>
           <v-layout row wrap align-center>
             <v-flex xs6>
-              <v-subheader class="pa-0">{{ $t('options.language_label') }}</v-subheader>
+              <v-subheader class="subheading font-weight-regular pa-0">{{ $t('options.language_label') }}</v-subheader>
             </v-flex>
             <v-flex xs6 class="text-xs-right">
-              <language-switcher/>
+              <language-switcher
+                append-icon="mdi-chevron-down"
+              />
             </v-flex>
             <v-flex xs12 class="mt-2">
               <v-checkbox
