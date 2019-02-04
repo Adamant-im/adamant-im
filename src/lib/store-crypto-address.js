@@ -3,7 +3,13 @@ import * as admApi from './adamant-api'
 const queue = { }
 const stored = []
 
-function storeAddresses () {
+export function storeCryptoAddress (crypto, address) {
+  if (!queue[crypto] && !stored.includes(crypto)) {
+    queue[crypto] = address
+  }
+}
+
+export function flushCryptoAddresses () {
   if (!admApi.isReady()) return
 
   Object.keys(queue).forEach(crypto => {
@@ -15,12 +21,4 @@ function storeAddresses () {
       }
     })
   })
-}
-
-setInterval(storeAddresses, 10 * 1000)
-
-export default function storeCryptoAddress (crypto, address) {
-  if (!queue[crypto] && !stored.includes(crypto)) {
-    queue[crypto] = address
-  }
 }

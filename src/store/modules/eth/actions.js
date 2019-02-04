@@ -2,7 +2,7 @@ import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
 import { ETH_TRANSFER_GAS } from '../../../lib/constants'
-import storeCryptoAddress from '../../../lib/store-crypto-address'
+import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
