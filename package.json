@@ -41,7 +41,6 @@
     "qrcode": "^1.3.2",
     "qs": "^6.6.0",
     "register-service-worker": "^1.0.0",
-    "roboto-fontface": "^0.10.0",
     "rxjs": "^6.3.3",
     "semver": "^5.5.1",
     "simple-audio": "^1.0.1",
@@ -58,8 +57,7 @@
     "vuetify": "1.4.1",
     "vuex": "^3.0.1",
     "vuex-persist": "^2.0.0",
-    "web3": "0.20.6",
-    "wfk-montserrat": "^1.0.0"
+    "web3": "0.20.6"
   },
   "devDependencies": {
     "@kazupon/vue-i18n-loader": "^0.3.0",

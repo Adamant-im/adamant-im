@@ -3,7 +3,7 @@
 
 
 "@adamant/chat@file:packages/chat":
-  version "0.0.2"
+  version "0.0.3"
   dependencies:
     moment "^2.23.0"
     vuetify "^1.4.1"
@@ -8976,11 +8976,6 @@ rlp@^2.0.0:
   dependencies:
     safe-buffer "^5.1.1"
 
-roboto-fontface@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/roboto-fontface/-/roboto-fontface-0.10.0.tgz#7eee40cfa18b1f7e4e605eaf1a2740afb6fd71b0"
-  integrity sha512-OlwfYEgA2RdboZohpldlvJ1xngOins5d7ejqnIBWr9KaMxsnBqotpptRXTyfNRLnFpqzX6sTDt+X+a+6udnU8g==
-
 rsvp@^3.3.3:
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-3.6.2.tgz#2e96491599a96cde1b515d5674a8f7a91452926a"
@@ -10784,11 +10779,6 @@ websocket-extensions@>=0.1.1:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/websocket-extensions/-/websocket-extensions-0.1.3.tgz#5d2ff22977003ec687a4b87073dfbbac146ccf29"
   integrity sha512-nqHUnMXmBzT0w570r2JpJxfiSD1IzoI+HGVdd3aZ0yNi3ngvQ4jv1dtHt5VGxfI2yj5yqImPhOK4vmIh2xMbGg==
-
-wfk-montserrat@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/wfk-montserrat/-/wfk-montserrat-1.0.0.tgz#44b81f6bd9faed3a75fa43c41f429f25a7b21b24"
-  integrity sha512-XgRPn20Qp20BHs1UXyvMVQgblHSwl3bMhrNeXF921fqxIOT0ZPMynqWa60q5wU5RkRTxQfZsgv0Rt6prMSpvhQ==
 
 whatwg-encoding@^1.0.1, whatwg-encoding@^1.0.3:
   version "1.0.5"
