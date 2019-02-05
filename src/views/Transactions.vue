@@ -1,11 +1,12 @@
 <template>
   <div>
     <app-toolbar-centered
+      app
       :title="$t('transaction.transactions')"
       flat
     />
 
-    <v-container fluid>
+    <v-container fluid class="pa-0">
       <v-layout row wrap justify-center>
 
         <v-flex v-if="isFulfilled" xs12 sm12 md8 lg5>

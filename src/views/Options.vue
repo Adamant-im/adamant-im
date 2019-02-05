@@ -1,6 +1,7 @@
 <template>
   <div class="options-page">
     <app-toolbar-centered
+      app
       :title="$t('options.page_title')"
       :show-back="true"
       flat

@@ -1,13 +1,13 @@
 <template>
-  <v-container fluid class="pa-0">
+  <v-container fluid class="app-toolbar-centered" :class="classes">
     <v-layout row wrap justify-center>
 
       <v-flex xs12 sm12 md8 lg5>
 
         <v-toolbar
-          class="app-toolbar-centered"
           :flat="flat"
           :height="height"
+          ref="toolbar"
         >
           <v-btn v-if="showBack" @click="goBack" icon>
             <v-icon>mdi-arrow-left</v-icon>
@@ -26,12 +26,39 @@
 </template>
 
 <script>
+import Applicationable from 'vuetify/es5/mixins/applicationable'
+
 export default {
+  computed: {
+    classes () {
+      return {
+        'v-toolbar--fixed': this.app
+      }
+    }
+  },
   methods: {
     goBack () {
       this.$router.back()
+    },
+    updateApplication () {
+      // Forward function call from `Applicationable` mixin to `VToolbar`
+      //
+      // 1. Do not `updateApplication` when created() because VToolbar is not mounted,
+      // it will be called again when mounted().
+      if (this.$refs.toolbar) { // [1]
+        return this.$refs.toolbar.updateApplication()
+      }
     }
   },
+  mixins: [
+    Applicationable('top', [
+      'clippedLeft',
+      'clippedRight',
+      'computedHeight',
+      'invertedScroll',
+      'manualScroll'
+    ])
+  ],
   props: {
     title: {
       type: String,
@@ -56,3 +83,8 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.app-toolbar-centered
+  padding: 0
+</style>

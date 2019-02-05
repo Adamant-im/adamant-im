@@ -1,6 +1,7 @@
 <template>
   <div>
     <app-toolbar-centered
+      app
       :title="$t('home.send_btn')"
       flat
     />

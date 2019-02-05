@@ -1,6 +1,7 @@
 <template>
   <div>
     <app-toolbar-centered
+      app
       :title="$t('votes.page_title')"
       flat
     />

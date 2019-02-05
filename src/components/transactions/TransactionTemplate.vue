@@ -2,6 +2,7 @@
   <v-layout row wrap justify-center>
 
     <app-toolbar-centered
+      app
       :title="`#${id}`"
       flat
     />
