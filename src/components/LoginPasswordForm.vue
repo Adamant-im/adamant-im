@@ -32,7 +32,9 @@
       </v-flex>
 
       <v-flex xs12 class="mt-2">
-        <v-btn flat @click="removePassword">Remove password</v-btn>
+        <v-btn flat @click="removePassword">
+          {{ $t('login_via_password.remove_password') }}
+        </v-btn>
       </v-flex>
     </v-layout>
 
