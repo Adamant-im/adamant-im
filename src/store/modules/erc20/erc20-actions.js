@@ -61,7 +61,9 @@ const createSpecificActions = (api, queue) => ({
 
     ethUtils.promisify(contract.balanceOf.call, context.state.address)
       .then(
-        balance => context.commit('balance', ethUtils.toFraction(balance.toString(10), context.state.decimals)),
+        balance => context.commit('balance', Number(
+          ethUtils.toFraction(balance.toString(10), context.state.decimals)
+        )),
         error => console.warn(`${context.state.crypto} balance failed: `, error)
       )
       .then(() => {

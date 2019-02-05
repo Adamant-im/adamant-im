@@ -55,7 +55,11 @@ const createSpecificActions = (api, queue) => ({
       return [
         // Balance
         api.eth.getBalance.request(context.state.address, block || 'latest', (err, balance) => {
-          if (!err) context.commit('balance', utils.toEther(balance.toString(10)))
+          if (!err) {
+            context.commit('balance', Number(
+              utils.toEther(balance.toString())
+            ))
+          }
         }),
         // Current gas price
         api.eth.getGasPrice.request((err, price) => {

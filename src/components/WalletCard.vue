@@ -54,7 +54,7 @@ export default {
       required: true
     },
     balance: {
-      type: [Number, String], // @todo fix erc20 balance string => number
+      type: Number,
       required: true
     },
     cryptoCurrency: {
