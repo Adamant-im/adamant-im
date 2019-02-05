@@ -3,8 +3,10 @@
 
     <v-layout>
       <v-text-field
+        autocomplete="new-password"
         v-model="password"
         :label="$t('login_via_password.user_password_title')"
+        :name="Date.now()"
         type="password"
         class="text-xs-center"
       />

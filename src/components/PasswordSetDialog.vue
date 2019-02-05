@@ -8,9 +8,11 @@
 
       <v-card-text>
         <v-text-field
+          autocomplete="new-password"
           v-model="password"
           type="password"
           :label="$t('login_via_password.enter_password')"
+          :name="Date.now()"
         />
 
         <div>{{ $t('login_via_password.article_hint') }} <a :href="userPasswordAgreementLink">{{$t('login_via_password.article')}}</a></div>
