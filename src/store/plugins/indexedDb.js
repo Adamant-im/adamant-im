@@ -1,11 +1,11 @@
 import throttle from 'throttle-promise'
-import { cloneDeep } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
+import { Base64 } from 'js-base64'
 
 import router from '@/router'
 import { Modules, Chats, Security, clearDb } from '@/lib/idb'
 import { restoreState, modules } from '@/lib/idb/state'
 import AppInterval from '@/lib/AppInterval'
-import { Base64 } from 'js-base64'
 
 const chatModuleMutations = ['setHeight', 'setFulfilled']
 const multipleChatMutations = ['markAllAsRead', 'createEmptyChat', 'createAdamantChats']
