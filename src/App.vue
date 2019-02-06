@@ -1,14 +1,15 @@
 <template>
   <v-app :dark="isDarkTheme" class="application--linear-gradient">
-    <transition mode="out-in" name="fade">
+    <TransitionEffect>
       <component :is="layout">
         <router-view />
       </component>
-    </transition>
+    </TransitionEffect>
   </v-app>
 </template>
 
 <script>
+import TransitionEffect from '@/components/TransitionEffect'
 import Notifications from '@/lib/notifications'
 import AppInterval from '@/lib/AppInterval'
 
@@ -26,6 +27,7 @@ export default {
     this.notifications.stop()
     AppInterval.unsubscribe()
   },
+  components: { TransitionEffect },
   computed: {
     layout () {
       return this.$route.meta.layout || 'default'
@@ -74,8 +76,4 @@ export default {
     #212121 0,
     #212121 5px
   )
-.fade-enter-active, .fade-leave-active
-  transition: opacity .5s
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
-  opacity: 0
 </style>

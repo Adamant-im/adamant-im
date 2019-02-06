@@ -1,9 +1,9 @@
 <template>
   <v-content>
     <v-container fluid :class="{ 'pa-0': containerNoPadding }">
-      <transition mode="out-in" name="fade">
+      <TransitionEffect>
         <router-view />
-      </transition>
+      </TransitionEffect>
     </v-container>
     <app-snackbar/>
     <app-navigation v-if="showNavigation"/>
@@ -13,6 +13,7 @@
 <script>
 import AppSnackbar from '@/components/AppSnackbar'
 import AppNavigation from '@/components/AppNavigation'
+import TransitionEffect from '@/components/TransitionEffect'
 
 export default {
   computed: {
@@ -25,14 +26,8 @@ export default {
   },
   components: {
     AppSnackbar,
-    AppNavigation
+    AppNavigation,
+    TransitionEffect
   }
 }
 </script>
-
-<style lang="stylus" scoped>
-.fade-enter-active, .fade-leave-active
-  transition: opacity .5s
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
-  opacity: 0
-</style>
