@@ -1,7 +1,9 @@
 <template>
   <v-app :dark="isDarkTheme" class="application--linear-gradient">
     <component :is="layout">
-      <router-view/>
+      <transition mode="out-in" name="fade">
+        <router-view />
+      </transition>
     </component>
   </v-app>
 </template>
@@ -72,4 +74,8 @@ export default {
     #212121 0,
     #212121 5px
   )
+.fade-enter-active, .fade-leave-active
+  transition: opacity .5s
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
+  opacity: 0
 </style>
