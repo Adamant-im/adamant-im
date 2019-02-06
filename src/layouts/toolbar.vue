@@ -1,9 +1,10 @@
 <template>
   <v-content>
     <v-container fluid :class="{ 'pa-0': containerNoPadding }">
-      <router-view/>
+      <transition mode="out-in" name="fade">
+        <router-view />
+      </transition>
     </v-container>
-
     <app-snackbar/>
     <app-navigation v-if="showNavigation"/>
   </v-content>
@@ -28,3 +29,10 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.fade-enter-active, .fade-leave-active
+  transition: opacity .5s
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
+  opacity: 0
+</style>

@@ -1,10 +1,10 @@
 <template>
   <v-app :dark="isDarkTheme" class="application--linear-gradient">
-    <component :is="layout">
-      <transition mode="out-in" name="fade">
+    <transition mode="out-in" name="fade">
+      <component :is="layout">
         <router-view />
-      </transition>
-    </component>
+      </component>
+    </transition>
   </v-app>
 </template>
 
