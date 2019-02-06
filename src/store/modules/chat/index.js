@@ -616,6 +616,7 @@ const actions = {
    * @param {string} type ADM, ETH...
    * @param {string} status Can be: `sent`, `confirmed`, 'rejected'
    * @param {number} amount
+   * @param {string} hash Transaction hash
    * @param {string} comment Transaction comment
    * @returns {number} Transaction ID
    */

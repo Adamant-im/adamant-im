@@ -17,8 +17,6 @@ const queue = new Queue(1, Infinity)
 let myKeypair = { }
 let myAddress = null
 
-const publicKeysCache = { }
-
 /** Lists cryptos for which addresses are currently being stored to the KVS */
 const pendingAddresses = { }
 

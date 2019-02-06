@@ -30,6 +30,8 @@
 
         </v-flex>
 
+        <ProgressIndicator v-else-if="!isRejected" :show="true" />
+
       </v-layout>
     </v-container>
   </div>
@@ -39,12 +41,20 @@
 import { Cryptos } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import TransactionListItem from '@/components/TransactionListItem'
+import ProgressIndicator from '@/components/ProgressIndicator'
 
 export default {
   mounted () {
     this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
       .then(() => {
         this.isFulfilled = true
+      })
+      .catch(err => {
+        this.isRejected = true
+
+        this.$store.dispatch('snackbar/show', {
+          message: err.message
+        })
       })
   },
   computed: {
@@ -64,7 +74,8 @@ export default {
     }
   },
   data: () => ({
-    isFulfilled: false
+    isFulfilled: false,
+    isRejected: false
   }),
   methods: {
     goToTransaction (transactionId) {
@@ -86,6 +97,7 @@ export default {
     }
   },
   components: {
+    ProgressIndicator,
     AppToolbarCentered,
     TransactionListItem
   }

@@ -145,17 +145,6 @@ export default function createActions (config) {
       const existing = context.state.transactions[payload.hash]
       if (existing && existing.status !== 'PENDING' && !payload.force) return
 
-      // Set a stub so far
-      if (!existing || existing.status === 'ERROR') {
-        context.commit('transactions', [{
-          hash: payload.hash,
-          timestamp: payload.timestamp,
-          amount: payload.amount,
-          status: 'PENDING',
-          direction: payload.direction
-        }])
-      }
-
       return new Promise((resolve) => {
         const key = 'transaction:' + payload.hash
         const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {

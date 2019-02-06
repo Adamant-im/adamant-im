@@ -116,17 +116,7 @@ export default {
     const existing = context.state.transactions[payload.hash]
     if (existing && existing.status !== 'PENDING' && !payload.force) return
 
-    // Set a stub so far
-    if (!existing || existing.status === 'ERROR') {
-      context.commit('transactions', [{
-        hash: payload.hash,
-        timestamp: payload.timestamp,
-        amount: payload.amount,
-        status: 'PENDING'
-      }])
-    }
-
-    api.getTransaction(payload.hash)
+    return api.getTransaction(payload.hash)
       .then(
         tx => {
           if (tx) context.commit('transactions', [tx])

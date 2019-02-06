@@ -169,12 +169,12 @@ export default class DogeApi {
   }
 
   _mapTransaction (tx) {
-    const senders = getUnique(tx.vin.map(x => x.addr))
+    const senders = getUnique(tx.vin.map(x => x.addr).filter(x => x))
     const senderId = senders.length === 1 ? senders[0] : null
 
     const direction = senders.includes(this._address) ? 'from' : 'to'
 
-    const recipients = getUnique(tx.vout.reduce((list, out) => {
+    let recipients = getUnique(tx.vout.reduce((list, out) => {
       list.push(...out.scriptPubKey.addresses)
       return list
     }, []))
@@ -183,6 +183,8 @@ export default class DogeApi {
       // Disregard our address for the outgoing transaction
       const idx = recipients.indexOf(this._address)
       if (idx >= 0) recipients.splice(idx, 1)
+    } else if (direction === 'to') {
+      recipients = [this._address]
     }
     const recipientId = recipients.length === 1 ? recipients[0] : null
 

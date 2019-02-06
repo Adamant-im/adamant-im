@@ -1,7 +1,7 @@
 <template>
   <v-list-tile avatar @click="onClickTransaction">
     <v-list-tile-avatar>
-      <v-icon>{{ senderId === userId ? 'mdi-airplane-landing' : 'mdi-airplane-takeoff' }}</v-icon>
+      <v-icon>{{ senderId === userId ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}</v-icon>
     </v-list-tile-avatar>
 
     <v-list-tile-content>
