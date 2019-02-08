@@ -2,7 +2,7 @@
     <div class="transaction transaction_list" ref="txListElement">
 
       <template v-if="isFulfilled">
-        <h3 v-if="!hasTransactions" class="md-headline">{{ $t('transaction.no_transactions') }}</h3>
+        <h3 v-if="!hasTransactions" class="transaction__title">{{ $t('transaction.no_transactions') }}</h3>
 
         <md-list v-else class="custom-list md-triple-line md-transparent">
           <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
@@ -146,6 +146,12 @@ export default {
 
   .transaction_list .transaction_list__loader .md-list-item-container {
     justify-content: center;
+  }
+
+  .transaction__title {
+    font-size: 16px;
+    font-weight: 500;
+    padding-top: 20px;
   }
 </style>
 
