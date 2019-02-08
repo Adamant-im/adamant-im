@@ -7,6 +7,7 @@
     :brief="brief"
     :readOnly="readOnly"
     :message="message"
+    :show-confirm-icon="message.amount > 0"
   >
     <p v-if="message.amount">
       {{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}
