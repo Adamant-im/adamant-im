@@ -113,13 +113,10 @@
     "enable_desktop_tooltip": "Utiliser les notifications de navigateur intégré (besoin de votre acceptation)",
     "enable_sound": "Son",
     "enable_sound_tooltip": "Jouer un son quand un nouveau message arrive. Il ne travaille pas sur tous les appareils. Les navigateurs mobiles ne jouent pas un son lorsque le navigateur n'est pas activé.",
-    "endpoints_fastest_title": "",
-    "endpoints_fastest_tooltip": "",
-    "endpoints_title": "",
     "exit_on_close": "Déconnexion sur l'onglet Fermer",
-    "exit_on_close_tooltip": "Pour votre sécurité de portefeuille nous vous recommandons de garder cette option. Dans le cas où vous la décocher, votre mot de passe sera enregistré dans le stockage du navigateur, et la prochaine fois que vous ouvrez le porte-monnaie, il sera decrypté sans avoir besoin d'entrer un mot de passe. Il est acceptable que dans le cas où personne d'autre peut accéder à votre appareil.",
+    "exit_on_close_tooltip": "",
     "general_title": "General",
-    "language_label": "Langue: ",
+    "language_label": "Langue",
     "notification_title": "Notifications",
     "security_title": "Sécurité",
     "send_on_enter": "Envoyer un message sur Enter",
@@ -158,9 +155,9 @@
     "txid": "Transaction #"
   },
   "transfer": {
-    "amount_label": "Montant à envoyer",
+    "amount_label": "Montant",
     "comments_label": "Comments",
-    "commission_label": "Frais de transfert",
+    "commission_label": "Frais",
     "confirm_approve": "Confirmer",
     "confirm_cancel": "Annuler",
     "confirm_message": "Confirmer le transfert de {amount} {crypto} pour répondre <span class='address-in-confirm'>{target}</span>..",
@@ -177,9 +174,9 @@
     "no_address_text": "This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.",
     "no_address_title": "Recipient has no {crypto} wallet yet",
     "send_button": "Envoyez de l'argent",
-    "send_button_tooltip": "Après avoir cliqué sur le bouton, vous voyez une demande de confirmation.",
+    "send_button_tooltip": "",
     "to_address_label": "Adresse",
-    "to_address_label_tooltip": "Entrez un identifiant de recepient, comme U1234567890",
+    "to_address_label_tooltip": "",
     "to_label": "To"
   },
   "votes": {
@@ -201,7 +198,7 @@
     "table_head_vote": "Vote",
     "total_new_votes": "Total new votes",
     "total_votes": "Total votes",
-    "transaction_confirm_await": "Transaction is running yet, please be patient…",
+    "transaction_confirm_await": "Transaction is running, please be patient…",
     "upvotes": "Upvotes",
     "vote_button_text": "Vote",
     "voting_cost": "Voting cost"
