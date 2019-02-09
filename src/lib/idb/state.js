@@ -5,7 +5,7 @@ import Chats from './stores/Chats'
 import Security from './stores/Security'
 
 /** Modules that will be stored in IDB **/
-const modules = ['adm', 'eth', 'doge', 'bnb', 'bz', 'partners', 'delegates']
+const modules = ['adm', 'eth', 'doge', 'bnb', 'bz', 'contacts', 'delegates']
 
 /**
  * Clone modules from state.
@@ -87,6 +87,16 @@ function cloneSecurity (state) {
   security.push({
     name: 'publicKeys',
     value: state.publicKeys
+  })
+
+  security.push({
+    name: 'publicKey',
+    value: state.publicKey
+  })
+
+  security.push({
+    name: 'privateKey',
+    value: state.privateKey
   })
 
   return security

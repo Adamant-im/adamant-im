@@ -1,11 +1,8 @@
 import throttle from 'throttle-promise'
 import cloneDeep from 'lodash/cloneDeep'
-import { Base64 } from 'js-base64'
 
-import router from '@/router'
-import { Modules, Chats, Security, clearDb } from '@/lib/idb'
-import { restoreState, modules } from '@/lib/idb/state'
-import AppInterval from '@/lib/AppInterval'
+import { Modules, Chats, Security } from '@/lib/idb'
+import { modules } from '@/lib/idb/state'
 
 const chatModuleMutations = ['setHeight', 'setFulfilled']
 const multipleChatMutations = ['markAllAsRead', 'createEmptyChat', 'createAdamantChats']
@@ -93,50 +90,6 @@ function chatThrottle (chatId) {
 }
 
 export default store => {
-  if (store.getters['options/isLoginViaPassword']) {
-    if (store.state.password) {
-      restoreState(store)
-        .then(() => {
-          store.commit('setIDBReady', true)
-        })
-        .then(() => {
-          if (!store.state.chat.isFulfilled) {
-            store.commit('chat/createAdamantChats')
-            return store.dispatch('chat/loadChats')
-          }
-        })
-        .then(() => {
-          store.dispatch('unlock')
-          AppInterval.subscribe()
-        })
-        .catch(() => {
-          console.error('Can not decode IDB with current password. Fallback to Login via Passphrase.')
-
-          clearDb()
-            .then(() => {
-              store.commit('options/updateOption', {
-                key: 'logoutOnTabClose',
-                value: true
-              })
-              store.commit('reset')
-            })
-            .catch(err => {
-              console.error(err)
-            })
-            .finally(() => {
-              router.push('/')
-            })
-        })
-    }
-  } else if (store.getters.isLogged) { // is logged with passphrase
-    store.dispatch('unlock')
-    store.commit('chat/createAdamantChats')
-    store.dispatch('chat/loadChats')
-      .then(() => AppInterval.subscribe())
-
-    store.dispatch('afterLogin', Base64.decode(store.state.passphrase))
-  }
-
   store.subscribe((mutation, state) => {
     // start sync if state has been saved to IDB
     if (state.IDBReady && store.getters['options/isLoginViaPassword']) {

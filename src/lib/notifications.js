@@ -130,7 +130,7 @@ export default class Notifications {
     return this.lastUnreadMessage && this.lastUnreadMessage.senderId
   }
   get partnerIdentity () {
-    return this.store.getters['partners/displayName'](this.partnerAddress) || this.partnerAddress
+    return this.store.getters['contacts/contactName'](this.partnerAddress) || this.partnerAddress
   }
   get pushAllowed () {
     return this.store.state.options.allowPushNotifications

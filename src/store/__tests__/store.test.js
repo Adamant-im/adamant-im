@@ -1,6 +1,5 @@
 import sinon from 'sinon'
 
-import { Base64 } from 'js-base64'
 import storeModule, { store } from '@/store'
 
 // mockup languageModule to avoid importing i18n dependency
@@ -59,7 +58,7 @@ describe('store', () => {
 
     expect(state.address).toBe('U123456')
     expect(state.balance).toBe(1000)
-    expect(state.passphrase).toBe(Base64.encode('lorem ipsum'))
+    expect(state.passphrase).toBe('lorem ipsum')
   })
 
   it('should reset state', () => {
@@ -88,30 +87,6 @@ describe('store', () => {
       IDBReady: false,
       publicKeys: {}
     })
-  })
-
-  it('should fetch messages from node if is logged', () => {
-    const dispatch = sinon.spy(() => ({ catch: () => {} })) // also mock `catch` attr
-    const mockGetters = {
-      isLogged: true
-    }
-
-    actions.update({ dispatch, getters: mockGetters })
-
-    expect(dispatch.args).toEqual([
-      ['chat/getNewMessages']
-    ])
-  })
-
-  it('should commit nothing if is not logged', () => {
-    const dispatch = sinon.spy(() => ({ catch: () => {} })) // also mock `catch` attr
-    const mockGetters = {
-      isLogged: false
-    }
-
-    actions.update({ dispatch, getters: mockGetters })
-
-    expect(dispatch.args).toEqual([])
   })
 
   it('should update state when login success', async () => {

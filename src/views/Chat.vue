@@ -21,7 +21,7 @@ export default {
       return this.$route.params.partner
     },
     partnerName () {
-      return this.$store.getters['partners/displayName'](this.partnerId)
+      return this.$store.getters['contacts/contactName'](this.partnerId)
     }
   },
   components: {

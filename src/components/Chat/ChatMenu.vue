@@ -134,9 +134,9 @@ export default {
         return Promise.resolve()
       }
 
-      return this.$store.dispatch('partners/fetchAddress', {
-        crypto,
-        partner: this.partnerId
+      return this.$store.dispatch('contacts/fetchCryptoAddress', {
+        userId: this.partnerId,
+        cryptoCurrency: crypto
       }).then(address => {
         if (!address) throw new Error('No crypto wallet address')
 

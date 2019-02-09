@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { Base64 } from 'js-base64'
 
 import { loginOrRegister, loginViaPassword, storeCryptoAddress } from '@/lib/adamant-api'
 import { Cryptos } from '@/lib/constants'
@@ -38,7 +37,7 @@ const store = {
   getters: {
     isLogged: state => state.passphrase.length > 0,
     getPassPhrase: state => state.passphrase, // compatibility getter for ERC20 modules
-    publicKey: state => adamantAddress => state.publicKeys[adamantAddress]
+    contactPublicKey: state => adamantAddress => state.publicKeys[adamantAddress]
   },
   mutations: {
     setAddress (state, address) {
@@ -48,7 +47,7 @@ const store = {
       state.balance = balance
     },
     setPassphrase (state, passphrase) {
-      state.passphrase = Base64.encode(passphrase)
+      state.passphrase = passphrase
     },
     setPublicKey (state, publicKey) {
       state.publicKey = publicKey
@@ -105,14 +104,6 @@ const store = {
     },
     logout ({ dispatch }) {
       dispatch('reset')
-    },
-    unlock ({ state, dispatch }) {
-      const passphrase = Base64.decode(state.passphrase)
-
-      unlock(passphrase)
-
-      // retrieve eth & erc20 data
-      dispatch('afterLogin', passphrase)
     },
     /** Stores user address for the specified crypto in the ADM KVS */
     storeCryptoAddress ({ state }, { crypto, address }) {

@@ -25,6 +25,12 @@ export default {
   },
   beforeDestroy () {
     this.notifications.stop()
+
+    // Just a trick for `webpack-dev-server`,
+    // after hot update this interval must be destroyed.
+    //
+    // In production `beforeDestroy` will never fire,
+    // because is not possible to destroy the root component.
     AppInterval.unsubscribe()
   },
   components: { TransitionEffect },
@@ -43,7 +49,6 @@ export default {
     }
   },
   data: () => ({
-    interval: null
   }),
   methods: {
     setLocale () {
@@ -53,6 +58,7 @@ export default {
       // Subsequent mutations of `language.currentLocale`
       // will be synchronized with `i18n.locale`.
       const localeFromStorage = this.$store.state.language.currentLocale
+
       this.$i18n.locale = localeFromStorage
     }
   }

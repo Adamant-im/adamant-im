@@ -6,6 +6,8 @@ import store from './store'
 import i18n from './i18n'
 import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
+import AppInit from '@/lib/AppInit'
+
 import './plugins/vuetify'
 import './plugins/layout'
 import './registerServiceWorker'
@@ -16,6 +18,8 @@ Vue.use(VueFormatters)
 document.title = i18n.t('app_title')
 
 Vue.config.productionTip = false
+
+AppInit()
 
 window.ep = new Vue({
   version: packageJSON.version,

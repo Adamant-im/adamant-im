@@ -1,5 +1,4 @@
 import Queue from 'promise-queue'
-import { Base64 } from 'js-base64'
 
 import { Transactions, Delegates } from './constants'
 import utils from './adamant'
@@ -9,16 +8,10 @@ import { encryptPassword } from '@/lib/idb/crypto'
 import { restoreState } from '@/lib/idb/state'
 import store from '@/store'
 
-import store from '@/store'
-
 Queue.configure(Promise)
 
 /** Promises queue to execute them sequentially */
 const queue = new Queue(1, Infinity)
-
-/** @type {{privateKey: Buffer, publicKey: Buffer}} */
-let myKeypair = { }
-let myAddress = null
 
 /** Lists cryptos for which addresses are currently being stored to the KVS */
 const pendingAddresses = { }
@@ -131,7 +124,7 @@ export function isReady () {
  * @returns {Promise<string>}
  */
 export function getPublicKey (address = '') {
-  const publicKeyCached = store.getters.publicKey(address)
+  const publicKeyCached = store.getters.contactPublicKey(address)
 
   if (publicKeyCached) {
     return Promise.resolve(publicKeyCached)
@@ -142,7 +135,7 @@ export function getPublicKey (address = '') {
       const publicKey = response.publicKey
 
       if (publicKey) {
-        store.commit('setPublicKey', {
+        store.commit('setContactPublicKey', {
           adamantAddress: address,
           publicKey
         })
@@ -537,15 +530,9 @@ export function loginViaPassword (password, store) {
       return restoreState(store)
     })
     .then(() => {
-      const passphrase = Base64.decode(store.state.passphrase)
+      const passphrase = store.state.passphrase
 
-      try {
-        unlock(passphrase)
-      } catch (e) {
-        return Promise.reject(e)
-      }
-
-      return getCurrentAccount()
+      return getCurrentAccount(store.state.publicKey)
         .then(account => ({
           ...account,
           passphrase

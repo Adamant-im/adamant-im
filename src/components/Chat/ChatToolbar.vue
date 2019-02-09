@@ -26,8 +26,6 @@
 <script>
 import { debounce } from 'underscore'
 
-import ChatMenu from '@/components/Chat/ChatMenu'
-
 /**
  * Update contact name no more than every 2 seconds.
  * @param {string} Contact name
