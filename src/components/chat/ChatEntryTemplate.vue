@@ -8,7 +8,7 @@
       }"
       v-if="!brief"
     >
-      <div v-if="amount > 0 || direction === 'from'" class="message-tick" :data-confirmation="confirm">
+      <div class="message-tick" :data-confirmation="confirm">
         <md-icon>{{ messageTick[confirm] || 'done' }}</md-icon>
       </div>
       <div v-if="readOnly" class="adamant-avatar"></div>
@@ -28,7 +28,7 @@
       </div>
     </md-layout>
     <div v-if="brief" class="brief-message-wrapper">
-      <div class="brief-message-tick" :direction="direction" :data-confirmation="confirm">
+      <div v-if="showConfirmIcon" class="brief-message-tick" :direction="direction" :data-confirmation="confirm">
         <md-icon>{{ messageTick[confirm] }}</md-icon>
       </div>
       <div class="brief-message-text" :direction="direction">
@@ -57,7 +57,7 @@ export default {
     }
   },
   name: 'chat-entry-template',
-  props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly', 'message', 'amount'],
+  props: ['confirm', 'direction', 'timestamp', 'brief', 'readOnly', 'message', 'amount', 'showConfirmIcon'],
   methods: {
     retryMessage () {
       this.$store.dispatch('retry_message', this.message.id)

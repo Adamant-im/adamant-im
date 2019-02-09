@@ -21,7 +21,7 @@ function checkBlockCount (transaction, rootState) {
 
 export default function createActions (config) {
   const endpoint = getEndpointUrl('ETH')
-  const api = new Web3(new Web3.providers.HttpProvider(endpoint, 2000))
+  const api = new Web3(new Web3.providers.HttpProvider(endpoint, 10000))
   const queue = new utils.BatchQueue(() => api.createBatch())
 
   const {
