@@ -1,7 +1,8 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <app-toolbar
+    <app-toolbar-centered
+      app
       :title="`#${id}`"
       flat
     />
@@ -119,7 +120,7 @@
 <script>
 import { Symbols } from '@/lib/constants'
 
-import AppToolbar from '@/components/AppToolbar'
+import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 export default {
   name: 'transaction-template',
@@ -142,7 +143,6 @@ export default {
       }
     },
     openChat: function () {
-      this.$store.commit('select_chat', this.partner)
       this.$router.push('/chats/' + this.partner + '/')
     }
   },
@@ -157,7 +157,7 @@ export default {
     }
   },
   components: {
-    AppToolbar
+    AppToolbarCentered
   }
 }
 </script>

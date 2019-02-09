@@ -10,6 +10,8 @@ import chatModule from '@/store/modules/chat'
 
 const { getters, mutations, actions } = chatModule
 
+jest.mock('@/store', () => {})
+
 describe('Store: chat.js', () => {
   let state = null
 
@@ -875,15 +877,35 @@ describe('Store: chat.js', () => {
      * mutations.createAdamantChats
      */
     describe('mutations.createAdamantChats', () => {
-      it('should push `Adamant Bounty` & `Adamant Tokens` to state.chats', () => {
+      it('should push `Adamant Bounty` to state.chats', () => {
         const state = {
           chats: {}
         }
 
         mutations.createAdamantChats(state)
 
-        expect(state.chats['Adamant Tokens']).toBeTruthy()
         expect(state.chats['Adamant Bounty']).toBeTruthy()
+      })
+    })
+
+    /**
+     * mutations.reset
+     */
+    describe('mutations.reset', () => {
+      it('should reset state', () => {
+        const state = {
+          chats: { U123456: {} },
+          lastMessageHeight: 1000,
+          isFulfilled: true
+        }
+
+        mutations.reset(state)
+
+        expect(state).toEqual({
+          chats: {},
+          lastMessageHeight: 0,
+          isFulfilled: false
+        })
       })
     })
   })
@@ -950,6 +972,59 @@ describe('Store: chat.js', () => {
         actions.pushMessages({ commit, rootState }, messages)
 
         expect(commit.callCount).toBe(0)
+      })
+    })
+
+    /**
+     * actions.getNewMessages
+     */
+    describe('actions.getNewMessages', () => {
+      it('should reject promise when `state.isFulfilled = false`', async () => {
+        const state = {
+          isFulfilled: false
+        }
+
+        await expect(actions.getNewMessages({ state })).rejects.toEqual(new Error('Chat is not fulfilled'))
+      })
+
+      it('should only dispatch `pushMessages` when `lastMessageHeight = 0`', async () => {
+        chatModule.__Rewire__('getChats', () => Promise.resolve({
+          messages: [],
+          lastMessageHeight: 0
+        }))
+
+        const state = {
+          isFulfilled: true
+        }
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await expect(actions.getNewMessages({ state, commit, dispatch })).resolves.toEqual(undefined)
+        expect(commit.args).toEqual([])
+        expect(dispatch.args).toEqual([
+          ['pushMessages', []]
+        ])
+      })
+
+      it('should dispatch `pushMessages` & commit `setHeight`', async () => {
+        chatModule.__Rewire__('getChats', () => Promise.resolve({
+          messages: [],
+          lastMessageHeight: 100
+        }))
+
+        const state = {
+          isFulfilled: true
+        }
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await expect(actions.getNewMessages({ state, commit, dispatch })).resolves.toEqual(undefined)
+        expect(commit.args).toEqual([
+          ['setHeight', 100]
+        ])
+        expect(dispatch.args).toEqual([
+          ['pushMessages', []]
+        ])
       })
     })
 
@@ -1151,6 +1226,61 @@ describe('Store: chat.js', () => {
             status: 'rejected',
             partnerId: recipientId
           }]
+        ])
+      })
+    })
+
+    /**
+     * actions.pushTransaction
+     */
+    describe('actions.pushTransaction', () => {
+      it('should commit `pushMessage`', () => {
+        const rootState = {
+          address: 'U123456'
+        }
+
+        const payload = {
+          transactionId: '1234567',
+          recipientId: 'U654321',
+          type: 'ETH',
+          status: 'sent',
+          amount: 1,
+          hash: '0x01234567890ABCDEF',
+          comment: 'comment'
+        }
+
+        const commit = sinon.spy()
+
+        actions.pushTransaction({ commit, rootState }, payload)
+
+        const transactionObject = Object.assign({}, payload)
+        transactionObject.id = payload.transactionId
+        transactionObject.message = payload.comment
+        transactionObject.senderId = 'U123456'
+        delete transactionObject.comment
+        delete transactionObject.transactionId
+
+        delete commit.args[0][1].message.timestamp // impossible to check since it generated
+        expect(commit.args).toEqual([
+          ['pushMessage', {
+            message: transactionObject,
+            userId: 'U123456'
+          }]
+        ])
+      })
+    })
+
+    /**
+     * actions.reset
+     */
+    describe('actions.reset', () => {
+      it('should commit `reset`', () => {
+        const commit = sinon.spy()
+
+        actions.reset.handler({ commit })
+
+        expect(commit.args).toEqual([
+          ['reset']
         ])
       })
     })

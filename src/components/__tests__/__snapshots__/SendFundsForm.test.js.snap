@@ -9,126 +9,85 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     value="true"
   >
     <v-select-stub
-      items="ADM,ETH,BNB,BZ"
-      label="Cryptocurrency"
+      items="ADM,ETH,BNB,DOGE,BZ"
     />
      
     <v-text-field-stub
-      label="To Address"
-      rules="v => !!v || this.$t('transfer.error_field_is_required'),v => _get__(\\"validateAddress\\")('ADM', v) || this.$t('transfer.error_incorrect_address', {
-          crypto: 'ADM'
+      rules="v => !!v || this.$t('transfer.error_field_is_required'),v => _get__(\\"validateAddress\\")(this.currency, v) || this.$t('transfer.error_incorrect_address', {
+          crypto: this.currency
         })"
       type="text"
+    >
+      <template>
+        <span
+          class="font-weight-medium"
+        >
+          
+          Recipient address
+        
+        </span>
+      </template>
+    </v-text-field-stub>
+     
+    <v-text-field-stub
+      rules="v => !!v || this.$t('transfer.error_field_is_required'),v => v > 0 || this.$t('transfer.error_incorrect_amount'),v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units')"
+      type="number"
+    >
+      <template>
+        <span
+          class="font-weight-medium"
+        >
+          Amount
+        </span>
+         
+        <span
+          class="body-1"
+        >
+          
+          (max: 9999.5 ADM)
+        
+        </span>
+      </template>
+    </v-text-field-stub>
+     
+    <v-text-field-stub
+      disabled=""
+      label="Transfer fee"
+      value="0.5 ADM"
+    />
+     
+    <v-text-field-stub
+      disabled=""
+      label="Amount including transfer fee"
+      value="0.5 ADM"
     />
      
     <!---->
      
-    <v-text-field-stub
-      label="Amount to send"
-      rules="v => !!v || this.$t('transfer.error_field_is_required'),v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough')"
-      type="number"
-    />
-     
-    <v-textarea-stub
-      label="Comments"
-      multi-line=""
-      rowheight="24"
-      rows="5"
-      type="text"
-    />
-     
-    <v-list-stub
-      class="list-info transparent"
+    <div
+      class="text-xs-center"
     >
-      <v-list-tile-stub
-        activeclass="primary--text"
+      <v-btn-stub
+        activeclass="v-btn--active"
+        disabled="true"
+        tag="button"
+        type="button"
       >
-        <v-list-tile-content-stub>
-          <v-list-tile-sub-title-stub>
-            Balance
-          </v-list-tile-sub-title-stub>
-        </v-list-tile-content-stub>
-         
-        <v-list-tile-action-stub>
-          <v-list-tile-title-stub
-            class="text-xs-right"
-          >
-            10000 ADM
-          </v-list-tile-title-stub>
-        </v-list-tile-action-stub>
-      </v-list-tile-stub>
-      <v-list-tile-stub
-        activeclass="primary--text"
-      >
-        <v-list-tile-content-stub>
-          <v-list-tile-sub-title-stub>
-            Max to transfer
-          </v-list-tile-sub-title-stub>
-        </v-list-tile-content-stub>
-         
-        <v-list-tile-action-stub>
-          <v-list-tile-title-stub
-            class="text-xs-right"
-          >
-            9999.5 ADM
-          </v-list-tile-title-stub>
-        </v-list-tile-action-stub>
-      </v-list-tile-stub>
-      <v-list-tile-stub
-        activeclass="primary--text"
-      >
-        <v-list-tile-content-stub>
-          <v-list-tile-sub-title-stub>
-            Transfer fee
-          </v-list-tile-sub-title-stub>
-        </v-list-tile-content-stub>
-         
-        <v-list-tile-action-stub>
-          <v-list-tile-title-stub
-            class="text-xs-right"
-          >
-            0.5 ADM
-          </v-list-tile-title-stub>
-        </v-list-tile-action-stub>
-      </v-list-tile-stub>
-      <v-list-tile-stub
-        activeclass="primary--text"
-      >
-        <v-list-tile-content-stub>
-          <v-list-tile-sub-title-stub>
-            Amount including transfer fee
-          </v-list-tile-sub-title-stub>
-        </v-list-tile-content-stub>
-         
-        <v-list-tile-action-stub>
-          <v-list-tile-title-stub
-            class="text-xs-right"
-          >
-            0.5 ADM
-          </v-list-tile-title-stub>
-        </v-list-tile-action-stub>
-      </v-list-tile-stub>
-    </v-list-stub>
-     
-    <v-btn-stub
-      activeclass="v-btn--active"
-      tag="button"
-      type="button"
-    >
-      <v-progress-circular-stub
-        class="mr-3"
-        color="primary"
-        indeterminate="true"
-        rotate="0"
-        size="24"
-        style="display: none;"
-        value="0"
-        width="4"
-      />
+        <v-progress-circular-stub
+          class="mr-3"
+          color="primary"
+          indeterminate="true"
+          rotate="0"
+          size="24"
+          style="display: none;"
+          value="0"
+          width="4"
+        />
+        
+        Send
       
-      Send Funds
-    
-    </v-btn-stub>
+      </v-btn-stub>
+    </div>
   </v-form-stub>
    
   <v-dialog-stub
@@ -164,7 +123,6 @@ exports[`SendFundsForm renders the correct markup 1`] = `
          
         <v-btn-stub
           activeclass="v-btn--active"
-          flat="true"
           tag="button"
           type="button"
         >

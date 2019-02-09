@@ -20,12 +20,6 @@
     </v-toolbar-title>
 
     <v-spacer></v-spacer>
-
-    <chat-menu
-      v-if="!isChatReadOnly"
-      :partner-id="partnerId"
-    />
-
   </v-toolbar>
 </template>
 
@@ -64,9 +58,6 @@ export default {
     goBack () {
       this.$router.back()
     }
-  },
-  components: {
-    ChatMenu
   },
   props: {
     partnerId: {

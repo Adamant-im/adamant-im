@@ -23,7 +23,7 @@ const router = new Router({
       component: Nodes,
       meta: {
         requiresAuth: true,
-        layout: 'toolbar'
+        layout: 'no-container'
       }
     },
     {
@@ -32,7 +32,7 @@ const router = new Router({
       component: Votes,
       meta: {
         requiresAuth: true,
-        layout: 'toolbar'
+        layout: 'no-container'
       }
     },
     {
@@ -42,7 +42,7 @@ const router = new Router({
       props: true,
       meta: {
         requiresAuth: true,
-        layout: 'toolbar',
+        layout: 'no-container',
         containerNoPadding: true
       }
     },
@@ -52,7 +52,7 @@ const router = new Router({
       component: Transactions,
       meta: {
         requiresAuth: true,
-        layout: 'toolbar',
+        layout: 'no-container',
         containerNoPadding: true
       }
     },
@@ -62,7 +62,7 @@ const router = new Router({
       component: Options,
       meta: {
         requiresAuth: true,
-        layout: 'toolbar',
+        layout: 'no-container',
         showNavigation: true
       }
     },
@@ -93,7 +93,7 @@ const router = new Router({
       props: true,
       meta: {
         requiresAuth: true,
-        layout: 'toolbar'
+        layout: 'no-container'
       }
     },
     {

@@ -5,7 +5,6 @@ import VueI18n from 'vue-i18n'
 import Vuetify from 'vuetify'
 
 import formatters from '@/lib/formatters'
-import { EPOCH } from '@/lib/constants'
 import mockupI18n from './__mocks__/plugins/i18n'
 import ChatPreview from '@/components/ChatPreview'
 
@@ -31,7 +30,7 @@ function createFakeVars () {
       message: 'you are death if you touch me'
     },
     lastMessageText: 'you are death if you touch me',
-    lastMessageTimestamp: 0, // Sep 2, 20:00
+    lastMessageTimestamp: 0, // 01.01.1970
     numOfNewMessages: 0
   }
 }
@@ -129,6 +128,6 @@ describe('ChatPreview.vue', () => {
     expect(wrapper.vm.lastMessageText).toBe('ok')
     expect(wrapper.vm.lastMessageTimestamp).toBe(3600)
     expect(wrapper.vm.numOfNewMessages).toBe(1)
-    expect(wrapper.vm.createdAt).toBe(3600 * 1000 + EPOCH)
+    expect(wrapper.vm.createdAt).toBe(3600)
   })
 })

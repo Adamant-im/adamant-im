@@ -57,7 +57,6 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
-          color="primary"
           flat
           @click="show = false"
         >
@@ -145,13 +144,7 @@ export default {
       return this.scanner && this.scanner.stop()
     },
     async getCameras () {
-      try {
-        this.cameras = await this.Instascan.Camera.getCameras()
-      } catch (err) {
-        this.$store.dispatch('snackbar/show', {
-          message: err.message
-        })
-      }
+      this.cameras = await this.Instascan.Camera.getCameras()
     },
     onScan (content) {
       this.$emit('scan', content)

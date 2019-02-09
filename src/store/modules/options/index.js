@@ -1,5 +1,5 @@
 const state = () => ({
-  logoutOnTabClose: false, // if true, localStorage will be cleared after logout
+  logoutOnTabClose: true, // if true, localStorage will be cleared after logout
   sendMessageOnEnter: false,
   allowSoundNotifications: false,
   allowTabNotifications: false,
@@ -7,12 +7,13 @@ const state = () => ({
   darkTheme: false
 })
 
+const getters = {
+  isLoginViaPassword: state => !state.logoutOnTabClose
+}
+
 const mutations = {
   updateOption (state, { key, value }) {
-    const keyExists = Object.keys(state)
-      .find(findKey => findKey === key)
-
-    if (keyExists) {
+    if (key in state) {
       state[key] = value
     }
   }
@@ -20,6 +21,7 @@ const mutations = {
 
 export default {
   state,
+  getters,
   mutations,
   namespaced: true
 }

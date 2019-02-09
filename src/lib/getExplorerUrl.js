@@ -13,6 +13,8 @@ export default function getExplorerUrl (crypto, transactionId) {
       return 'https://explorer.adamant.im/tx/' + transactionId
     case Cryptos.ETH:
       return 'https://etherscan.io/tx/' + transactionId
+    case Cryptos.DOGE:
+      return 'https://dogechain.info/tx/' + transactionId
   }
 
   return ''

@@ -5,38 +5,49 @@
     app
     class="app-navigation"
   >
+    <v-layout justify-center>
+      <v-flex xs12 sm12 md8 lg5 class="app-navigation__container">
 
-    <!-- Wallet -->
-    <v-btn to="/home" flat>
-      <span>{{ $t('bottom.wallet_button') }}</span>
-      <v-icon>mdi-wallet</v-icon>
-    </v-btn>
+        <v-layout justify-center>
+          <!-- Wallet -->
+          <v-btn to="/home" flat>
+            <span>{{ $t('bottom.wallet_button') }}</span>
+            <v-icon>mdi-wallet</v-icon>
+          </v-btn>
 
-    <!-- Chat -->
-    <v-btn to="/chats" flat>
-      <span>{{ $t('bottom.chats_button') }}</span>
-      <v-badge overlap color="primary">
-        <span v-if="numOfNewMessages > 0" slot="badge">{{ numOfNewMessages }}</span>
-        <v-icon>mdi-forum</v-icon>
-      </v-badge>
-    </v-btn>
+          <!-- Chat -->
+          <v-btn to="/chats" flat>
+            <span>{{ $t('bottom.chats_button') }}</span>
+            <v-badge overlap color="primary">
+              <span v-if="numOfNewMessages > 0" slot="badge">
+                {{ numOfNewMessages > 99 ? '99+' : numOfNewMessages }}
+              </span>
+              <v-icon>mdi-forum</v-icon>
+            </v-badge>
+          </v-btn>
 
-    <!-- Settings -->
-    <v-btn to="/options" flat>
-      <span>{{ $t('bottom.settings_button') }}</span>
-      <v-icon>mdi-settings</v-icon>
-    </v-btn>
+          <!-- Settings -->
+          <v-btn to="/options" flat>
+            <span>{{ $t('bottom.settings_button') }}</span>
+            <v-icon>mdi-settings</v-icon>
+          </v-btn>
 
-    <!-- Logout -->
-    <v-btn @click="logout" flat>
-      <span>{{ $t('bottom.exit_button') }}</span>
-      <v-icon>mdi-logout-variant</v-icon>
-    </v-btn>
+          <!-- Logout -->
+          <v-btn @click="logout" flat>
+            <span>{{ $t('bottom.exit_button') }}</span>
+            <v-icon>mdi-logout-variant</v-icon>
+          </v-btn>
+        </v-layout>
 
+      </v-flex>
+    </v-layout>
   </v-bottom-nav>
 </template>
 
 <script>
+import { clearDb } from '@/lib/idb'
+import AppInterval from '@/lib/AppInterval'
+
 export default {
   mounted () {
     this.currentPageIndex = this.getCurrentPageIndex()
@@ -74,9 +85,15 @@ export default {
   }),
   methods: {
     logout () {
+      AppInterval.unsubscribe()
       this.$store.dispatch('logout')
-      this.$store.dispatch('reset')
-      this.$router.push('/')
+
+      return clearDb().then(() => {
+        // turn off IDB sync
+        this.$store.commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
+
+        this.$router.push('/')
+      })
     },
     getCurrentPageIndex () {
       const currentPage = this.pages.find(page => {
@@ -91,7 +108,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="stylus" scoped>
 /**
  * Disable grayscale filter.
  */

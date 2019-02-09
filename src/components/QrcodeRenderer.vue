@@ -1,5 +1,5 @@
 <template>
-  <img :src="dataURL" alt="" />
+  <img :src="dataUrl" alt="" />
 </template>
 
 <script>
@@ -7,21 +7,49 @@ import QRCode from 'qrcode'
 
 export default {
   data: () => ({
-    dataURL: ''
+    dataUrl: ''
   }),
-  watch: {
-    async text () {
-      try {
-        this.dataURL = await QRCode.toDataURL(this.text)
-      } catch (error) {
-        console.error(error)
+  mounted () {
+    this.render()
+  },
+  methods: {
+    render () {
+      if (this.text) {
+        if (this.logo) {
+          QRCode.toCanvas(this.text, this.opts).then(canvas => {
+            const dHeight = canvas.height / 6
+            const dWidth = canvas.width / 6
+            const dy = canvas.height / 2 - dHeight / 2
+            const dx = canvas.width / 2 - dWidth / 2
+            const ctx = canvas.getContext('2d')
+            const image = new Image(dWidth, dHeight)
+            image.src = this.logo
+            ctx.drawImage(image, dx, dy, dWidth, dHeight)
+            this.dataUrl = canvas.toDataURL()
+          }).catch(error => console.error(error))
+        } else {
+          QRCode.toDataURL(this.text, this.opts).then(dataUrl => {
+            this.dataUrl = dataUrl
+          }).catch(error => console.error(error))
+        }
       }
     }
   },
   props: {
+    logo: {
+      type: String
+    },
+    opts: {
+      type: Object
+    },
     text: {
-      type: String,
-      required: true
+      required: true,
+      type: String
+    }
+  },
+  watch: {
+    text () {
+      this.render()
     }
   }
 }

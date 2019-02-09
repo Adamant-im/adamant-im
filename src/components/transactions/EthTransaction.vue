@@ -24,9 +24,6 @@ export default {
   components: {
     TransactionTemplate
   },
-  mounted () {
-    this.$store.dispatch('eth/getTransaction', { hash: this.id })
-  },
   data () {
     return { }
   },
@@ -79,7 +76,7 @@ export default {
 
       if (!admAddress) {
         // Bad news, everyone: we'll have to scan the messages
-        Object.values(this.$store.state.chats).some(chat => {
+        Object.values(this.$store.state.chat.chats).some(chat => {
           Object.values(chat.messages).some(msg => {
             if (msg.message && msg.message.hash === this.id) {
               admAddress = msg.senderId === this.$store.state.address ? msg.recipientId : msg.senderId

@@ -4,7 +4,9 @@
     <v-flex xs12 sm12 md8 lg8>
 
       <div class="text-xs-right">
-        <language-switcher/>
+        <language-switcher>
+          <v-icon slot="prepend" size="18">mdi-chevron-right</v-icon>
+        </language-switcher>
       </div>
 
       <v-card flat color="transparent" class="text-xs-center mt-3">
@@ -17,7 +19,7 @@
         <h2 class="hidden-sm-and-down login-page__subtitle mt-3">{{ $t('login.subheader') }}</h2>
       </v-card>
 
-      <v-card flat color="transparent" class="text-xs-center mt-3">
+      <v-card v-if="!isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
         <v-layout justify-center>
           <v-flex xs12 sm8 md8 lg6>
 
@@ -41,7 +43,9 @@
 
               <template slot="qrcode-renderer">
                 <div @click="saveQrcode" :style="{ cursor: 'pointer' }">
-                  <QrcodeRenderer v-show="showQrcodeRenderer" :text="passphrase" ref="qrcode" />
+                  <transition name="slide-fade">
+                    <QrcodeRenderer v-if="showQrcodeRenderer" :text="passphrase" ref="qrcode" />
+                  </transition>
                 </div>
               </template>
             </login-form>
@@ -53,7 +57,6 @@
           <v-btn
             icon
             flat
-            large
             fab
             @click="showQrcodeScanner = true"
             :title="$t('login.scan_qr_code_button_tooltip')"
@@ -61,7 +64,7 @@
             <icon><qr-code-scan-icon/></icon>
           </v-btn>
 
-          <v-btn @click="openFileDialog" :title="$t('login.login_by_qr_code_tooltip')" icon flat large fab>
+          <v-btn @click="openFileDialog" :title="$t('login.login_by_qr_code_tooltip')" icon flat fab>
             <icon><file-icon/></icon>
           </v-btn>
 
@@ -69,13 +72,27 @@
         </v-layout>
       </v-card>
 
-      <v-layout justify-center class="mt-2">
+      <v-layout v-if="!isLoginViaPassword" justify-center class="mt-2">
         <v-flex xs12 sm8 md8 lg6>
           <passphrase-generator
             @copy="onCopyPassphraze"
           />
         </v-flex>
       </v-layout>
+
+      <v-card v-if="isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
+        <v-layout justify-center>
+          <v-flex xs12 sm8 md8 lg6>
+
+            <login-password-form
+              v-model="password"
+              @login="onLogin"
+              @error="onLoginError"
+            />
+
+          </v-flex>
+        </v-layout>
+      </v-card>
 
       <qrcode-scanner-dialog
         v-if="showQrcodeScanner"
@@ -102,15 +119,21 @@ import Icon from '@/components/icons/BaseIcon'
 import QrCodeIcon from '@/components/icons/common/QrCode'
 import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
 import FileIcon from '@/components/icons/common/File'
+import LoginPasswordForm from '@/components/LoginPasswordForm'
+import AppInterval from '@/lib/AppInterval'
 
 export default {
   computed: {
     showQrcodeRenderer () {
       return this.isQrcodeRendererActive && this.passphrase
+    },
+    isLoginViaPassword () {
+      return this.$store.getters['options/isLoginViaPassword']
     }
   },
   data: () => ({
     passphrase: '',
+    password: '',
     showQrcodeScanner: false,
     isQrcodeRendererActive: false,
     logo: '/img/adamant-logo-transparent-512x512.png'
@@ -133,12 +156,19 @@ export default {
     },
     onLogin () {
       this.$router.push('/chats')
+
+      if (!this.$store.state.chat.isFulfilled) {
+        this.$store.commit('chat/createAdamantChats')
+        this.$store.dispatch('chat/loadChats')
+          .then(() => AppInterval.subscribe())
+      } else {
+        AppInterval.subscribe()
+      }
     },
-    onLoginError (err) {
+    onLoginError (key) {
       this.$store.dispatch('snackbar/show', {
-        message: this.$t('login.invalid_passphrase')
+        message: this.$t(key)
       })
-      console.error(err)
     },
     onCopyPassphraze () {
       this.$store.dispatch('snackbar/show', {
@@ -179,7 +209,8 @@ export default {
     Icon,
     QrCodeIcon,
     QrCodeScanIcon,
-    FileIcon
+    FileIcon,
+    LoginPasswordForm
   }
 }
 </script>

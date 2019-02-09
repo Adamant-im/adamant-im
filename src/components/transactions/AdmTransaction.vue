@@ -24,19 +24,6 @@ export default {
   components: {
     TransactionTemplate
   },
-  mounted () {
-    this.update()
-    clearInterval(this.bgTimer)
-    this.bgTimer = setInterval(() => this.update(), 5000)
-  },
-  beforeDestroy () {
-    clearInterval(this.bgTimer)
-  },
-  data () {
-    return {
-      bgTimer: null
-    }
-  },
   computed: {
     transaction () {
       return this.$store.state.adm.transactions[this.id] || { }
@@ -74,9 +61,6 @@ export default {
         result = address
       }
       return result
-    },
-    update () {
-      this.$store.dispatch('adm/getTransaction', this.id)
     }
   }
 }

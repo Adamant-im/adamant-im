@@ -17,6 +17,7 @@ export const Cryptos = {
   ADM: 'ADM',
   ETH: 'ETH',
   BNB: 'BNB',
+  DOGE: 'DOGE',
   BZ: 'BZ'
 }
 
@@ -32,7 +33,16 @@ export const CryptoAmountPrecision = {
   ADM: 2,
   ETH: 6,
   BNB: 6,
+  DOGE: 8,
   BZ: 6
+}
+
+export const CryptoNaturalUnits = {
+  ADM: 8,
+  ETH: 18,
+  BNB: 18,
+  DOGE: 8,
+  BZ: 18
 }
 
 /** Fees for the misc ADM operations */

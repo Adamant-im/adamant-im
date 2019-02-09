@@ -1,12 +1,17 @@
 <template>
-  <v-menu offset-y>
+  <v-menu offset-y class="language-switcher">
     <v-btn
       class="ma-0"
       slot="activator"
       flat
     >
+      <slot name="prepend">
+        <v-icon v-if="prependIcon" left>{{ prependIcon }}</v-icon>
+      </slot>
       {{ currentLanguageName }}
-      <v-icon right>mdi-chevron-down</v-icon>
+      <slot name="append">
+        <v-icon v-if="appendIcon" right>{{ appendIcon }}</v-icon>
+      </slot>
     </v-btn>
     <v-list>
       <v-list-tile
@@ -45,6 +50,26 @@ export default {
     onSelect (locale) {
       this.currentLocale = locale
     }
+  },
+  props: {
+    prependIcon: {
+      type: String,
+      default: ''
+    },
+    appendIcon: {
+      type: String,
+      default: ''
+    }
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_colors.styl'
+
+/** Themes **/
+.theme--light
+  .language-switcher
+    .v-btn
+      color: $grey.darken-2
+</style>

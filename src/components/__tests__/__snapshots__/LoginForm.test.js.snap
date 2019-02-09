@@ -11,6 +11,7 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
     <v-text-field-stub
       browser-autocomplete="current-password"
       class="text-xs-center"
+      color="grey"
       label="Input your passphrase to login"
       type="password"
     />
@@ -19,7 +20,6 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
    
   <v-layout-stub
     align-center=""
-    class="mt-2"
     justify-center=""
     row=""
     tag="div"
@@ -27,6 +27,7 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
   >
     <v-btn-stub
       activeclass="v-btn--active"
+      class="login-button v-btn--primary"
       tag="button"
       type="button"
     >
@@ -47,7 +48,6 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
   </v-layout-stub>
    
   <v-layout-stub
-    class="mt-3"
     justify-center=""
     name="slide-fade"
     tag="div"

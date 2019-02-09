@@ -2,26 +2,34 @@
   <v-card flat class="wallet-card">
     <div class="wallet-card__container">
       <div class="wallet-card__left">
-        <h3 class="wallet-card__title">{{ cryptoName }} {{ $t('home.wallet') }}</h3>
-        <div class="wallet-card__subtitle mb-2">{{ address }}</div>
+        <v-layout
+          align-end
+          :style="{ cursor: 'pointer' }"
+          @click="copyToClipboard(address)"
+        >
+          <div>
+            <h3 class="wallet-card__title">{{ cryptoName }} {{ $t('home.wallet') }}</h3>
+            <div class="wallet-card__subtitle">{{ address }}</div>
+          </div>
 
-        <h3 class="wallet-card__title">{{ $t('home.balance') }}</h3>
-        <div
-          class="wallet-card__subtitle"
+          <div class="ml-3"><v-icon>mdi-content-copy</v-icon></div>
+        </v-layout>
+
+        <v-layout
+          align-center
+          class="mt-2"
           :style="{ cursor: 'pointer' }"
           @click="$emit('click:balance', cryptoCurrency)"
         >
-          {{ balance }} {{ cryptoCurrency }}
-        </div>
+          <div>
+            <h3 class="wallet-card__title">{{ $t('home.balance') }}</h3>
+            <div class="wallet-card__subtitle">{{ balance }} {{ cryptoCurrency }}</div>
+          </div>
+        </v-layout>
       </div>
 
       <div class="wallet-card__right">
         <slot name="icon"/>
-        <div>
-          <v-btn class="wallet-card__action" @click="copyToClipboard(address)" flat>
-            {{ $t('home.copy') }}
-          </v-btn>
-        </div>
       </div>
     </div>
   </v-card>
@@ -46,7 +54,7 @@ export default {
       required: true
     },
     balance: {
-      type: [Number, String], // @todo fix erc20 balance string => number
+      type: Number,
       required: true
     },
     cryptoCurrency: {
@@ -87,25 +95,30 @@ export default {
       color: $grey.darken-1
   &__title
     font-size: 16px
-    font-weight: 400
+    font-weight: 500
   &__subtitle
-    font-size: 16px
+    font-size: 14px
     font-weight: 400
     word-break: break-word
+    font-style: italic
 
 /** Themes **/
 .theme--light
   .wallet-card
+    background-color: transparent
+
     &__title
-      color: $grey.base
+      color: $grey.darken-3
     &__subtitle
-      color: $shades.black
+      color: $grey.darken-2
     &__action
       color: $blue.base
 .theme--dark
   .wallet-card
+    background-color: transparent
+
     &__title
-      color: $grey.base
+      color: $shades.white
     &__subtitle
       color: $shades.white
     &__action

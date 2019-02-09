@@ -11,10 +11,7 @@ const vuexPersistence = new VuexPersistence({
       passphrase: state.passphrase,
       publicKey: state.publicKey,
       privateKey: state.privateKey,
-
-      // modules
-      chat: state.chat,
-      contacts: state.contacts
+      password: state.password
     }
   }
 })

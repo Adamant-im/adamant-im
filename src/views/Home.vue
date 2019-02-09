@@ -1,13 +1,13 @@
 <template>
-  <v-layout row wrap justify-center>
+  <v-layout row wrap justify-center class="home-page">
 
     <v-flex xs12 sm12 md8 lg5>
 
       <v-card flat class="transparent white--text">
 
         <!-- Wallets -->
-        <v-card>
-          <v-tabs grow fixed-tabs slider-color="blue">
+        <v-card class="home-page__wallets">
+          <v-tabs grow slider-color="white">
             <v-tab
               v-for="wallet in wallets"
               :key="wallet.cryptoCurrency"
@@ -55,6 +55,16 @@
               <v-list-tile-title>{{ $t('home.invest_btn') }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
+
+          <v-list-tile v-if="!hasAdmTokens" @click="getFreeTokens" avatar>
+            <v-list-tile-avatar>
+              <v-icon class="action-list__icon">mdi-gift</v-icon>
+            </v-list-tile-avatar>
+
+            <v-list-tile-content>
+              <v-list-tile-title>{{ $t('home.free_adm_btn') }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
         </v-list>
 
       </v-card>
@@ -71,6 +81,7 @@ import AdmFillIcon from '@/components/icons/AdmFill'
 import BnbFillIcon from '@/components/icons/BnbFill'
 import EthFillIcon from '@/components/icons/EthFill'
 import BnzFillIcon from '@/components/icons/BnzFill'
+import DogeFillIcon from '@/components/icons/DogeFill'
 
 export default {
   computed: {
@@ -103,8 +114,18 @@ export default {
           cryptoCurrency: 'BZ',
           cryptoName: 'Bit-Z',
           icon: 'bnz-fill-icon'
+        },
+        {
+          address: this.$store.state.doge.address,
+          balance: this.$store.state.doge.balance,
+          cryptoCurrency: 'DOGE',
+          cryptoName: 'DOGE',
+          icon: 'doge-fill-icon'
         }
       ]
+    },
+    hasAdmTokens () {
+      return this.$store.state.balance > 0
     }
   },
   data: () => ({
@@ -115,6 +136,11 @@ export default {
     },
     buyTokens () {
       window.open('https://adamant.im/buy-tokens/?wallet=U9203183357885757380', '_blank')
+    },
+    getFreeTokens () {
+      const link = 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
+
+      window.open(link, '_blank')
     },
     goToTransactions (crypto) {
       this.$router.push({
@@ -131,7 +157,8 @@ export default {
     AdmFillIcon,
     BnbFillIcon,
     EthFillIcon,
-    BnzFillIcon
+    BnzFillIcon,
+    DogeFillIcon
   }
 }
 </script>

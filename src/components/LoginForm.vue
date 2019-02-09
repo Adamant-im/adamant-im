@@ -8,6 +8,7 @@
           :label="$t('login.password_label')"
           browser-autocomplete="current-password"
           class="text-xs-center"
+          color="grey"
           type="password"
         />
       </slot>
@@ -15,10 +16,11 @@
       <slot name="append-outer"></slot>
     </v-layout>
 
-    <v-layout row wrap align-center justify-center class="mt-2">
+    <v-layout row wrap align-center justify-center>
       <slot name="button">
         <v-btn
           :disabled="!validForm || disabledButton"
+          class="login-button v-btn--primary"
           @click="submit"
         >
           <v-progress-circular
@@ -34,7 +36,7 @@
     </v-layout>
 
     <transition name="slide-fade">
-      <v-layout justify-center class="mt-3">
+      <v-layout justify-center>
         <slot name="qrcode-renderer"/>
       </v-layout>
     </transition>
@@ -74,8 +76,8 @@ export default {
         .then(() => {
           this.$emit('login')
         })
-        .catch(err => {
-          this.$emit('error', err)
+        .catch(() => {
+          this.$emit('error', 'login.invalid_passphrase')
         })
         .finally(() => {
           this.antiFreeze()
@@ -101,7 +103,7 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="stylus" scoped>
 /**
  * Centering input text and label.
  *
@@ -124,14 +126,6 @@ export default {
   font-size: 12px;
 }
 
-/**
- * Slide Fade animation.
- */
-.slide-fade-enter-active, .slide-fade-leave-active {
-  transition: all .3s ease;
-}
-.slide-fade-enter, .slide-fade-leave-to {
-  transform: translateY(10px);
-  opacity: 0;
-}
+.login-button
+  min-width: 126px
 </style>

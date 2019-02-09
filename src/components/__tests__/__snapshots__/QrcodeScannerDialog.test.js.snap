@@ -56,7 +56,7 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
           class="subheading text-xs-center"
         >
           
-          Hold your device steady for 2-3 seconds towards the QR Code you want to scan.
+          Hold your device steady for 2-3 seconds towards the QR code you want to scan
         
         </h3>
       </v-flex-stub>
@@ -71,7 +71,6 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
        
       <v-btn-stub
         activeclass="v-btn--active"
-        color="primary"
         flat="true"
         tag="button"
         type="button"

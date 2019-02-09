@@ -1,108 +1,130 @@
 <template>
-  <v-layout row wrap justify-center>
-
-    <app-toolbar
+  <div>
+    <app-toolbar-centered
+      app
       :title="$t('votes.page_title')"
       flat
     />
 
-    <v-flex xs12 sm12 md8 lg5>
+    <v-container fluid class="px-0">
+      <v-layout row wrap justify-center>
 
-      <v-card>
-        <v-card-title>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            :label="$t('votes.search')"
-            single-line
-            hide-details
-          />
-        </v-card-title>
+        <v-flex xs12 sm12 md8 lg5>
 
-        <v-data-table
-          :headers="headers"
-          :pagination.sync="pagination"
-          :items="delegates"
-          :search="search"
-          item-key="username"
-          class="elevation-1"
-        >
-          <div slot="no-data" class="text-xs-center">
-            <div v-if="waitingForConfirmation">
-              <v-progress-circular
-                indeterminate
-                color="grey darken-1"
-                size="24"
-                class="mr-3"
+          <v-card>
+            <v-card-title>
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                :label="$t('votes.search')"
+                single-line
+                hide-details
               />
-              <span>{{ $t('votes.waiting_confirmations') }}</span>
-            </div>
-            <div v-else>
-              {{ $t('votes.no_data_available') }}
-            </div>
-          </div>
+            </v-card-title>
 
-          <template slot="headerCell" slot-scope="props">
-            <span slot="activator">
-              {{ $t(props.header.text) }}
-            </span>
-          </template>
+            <v-data-table
+              :headers="headers"
+              :pagination.sync="pagination"
+              :items="delegates"
+              :rows-per-page-text="$t('rows_per_page')"
+              :search="search"
+              hide-actions
+              item-key="username"
+              class="elevation-1"
+            >
+              <div slot="no-data" class="text-xs-center">
+                <div v-if="waitingForConfirmation">
+                  <v-progress-circular
+                    indeterminate
+                    color="grey darken-1"
+                    size="24"
+                    class="mr-3"
+                  />
+                  <span>{{ $t('votes.waiting_confirmations') }}</span>
+                </div>
+                <div v-else>
+                  {{ $t('votes.no_data_available') }}
+                </div>
+              </div>
 
-          <template slot="items" slot-scope="props">
-            <td>{{ props.item.username }}</td>
-            <td>{{ props.item.rank }}</td>
-            <td>
-              <v-icon v-if="props.item._voted" @click="downVote(props.item.address)">mdi-thumb-up</v-icon>
-              <v-icon v-else @click="upVote(props.item.address)">mdi-thumb-up-outline</v-icon>
-            </td>
-            <td>
-              <v-btn icon @click="toggleDetails(props.item, props)">
-                <v-icon>mdi-chevron-down</v-icon>
-              </v-btn>
-            </td>
-          </template>
+              <template slot="headerCell" slot-scope="props">
+                <span slot="activator">
+                  {{ $t(props.header.text) }}
+                </span>
+              </template>
 
-          <template slot="expand" slot-scope="props">
-            <v-card flat>
+              <template slot="items" slot-scope="props">
+                <td @click="toggleDetails(props.item, props)" style="cursor:pointer">{{ props.item.username }}</td>
+                <td>{{ props.item.rank }}</td>
+                <td>
+                  <v-icon v-if="props.item._voted" @click="downVote(props.item.address)">mdi-thumb-up</v-icon>
+                  <v-icon v-else @click="upVote(props.item.address)">mdi-thumb-up-outline</v-icon>
+                </td>
+              </template>
 
-              <v-list>
-                <v-list-tile>
-                  <v-list-tile-content>
-                    <v-list-tile-title>
-                      <a :href="'https://explorer.adamant.im/delegate/' + props.item.address" target="_blank">
-                        {{ props.item.address }}
-                      </a>
-                    </v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
+              <template slot="expand" slot-scope="props">
+                <v-card flat>
 
-                <v-list-tile
-                  v-for="(item, i) in delegateDetails"
-                  :key="i"
-                >
-                  <v-list-tile-content>
-                    <v-list-tile-title>
-                      {{ item.title }}
-                    </v-list-tile-title>
-                  </v-list-tile-content>
-                  <v-list-tile-content>
-                    <v-list-tile-title class="text-xs-right">
-                      {{ item.format ? item.format(item.value.call(props.item)) : item.value.call(props.item) }}
-                    </v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
+                  <v-list>
+                    <v-list-tile>
+                      <v-list-tile-content>
+                        <v-list-tile-title>
+                          <a :href="'https://explorer.adamant.im/delegate/' + props.item.address" target="_blank">
+                            {{ props.item.address }}
+                          </a>
+                        </v-list-tile-title>
+                      </v-list-tile-content>
+                    </v-list-tile>
 
-            </v-card>
-          </template>
+                    <v-list-tile
+                      v-for="(item, i) in delegateDetails"
+                      :key="i"
+                    >
+                      <v-list-tile-content>
+                        <v-list-tile-title>
+                          {{ item.title }}
+                        </v-list-tile-title>
+                      </v-list-tile-content>
+                      <v-list-tile-content>
+                        <v-list-tile-title class="text-xs-right">
+                          {{ item.format ? item.format(item.value.call(props.item)) : item.value.call(props.item) }}
+                        </v-list-tile-title>
+                      </v-list-tile-content>
+                    </v-list-tile>
+                  </v-list>
 
-          <v-alert slot="no-results" :value="true" color="error" icon="warning">
-            Your search for "{{ search }}" found no results.
-          </v-alert>
-        </v-data-table>
-      </v-card>
+                </v-card>
+              </template>
 
-      <v-card class="vote-card mt-2">
+              <v-alert slot="no-results" :value="true" color="error" icon="mdi-alert">
+                Your search for "{{ search }}" found no results.
+              </v-alert>
+
+              <template slot="footer">
+                <td :colspan="headers.length" class="pa-0">
+
+                  <v-layout row wrap align-center justify-space-between>
+                    <v-btn dark @click="showConfirmationDialog">
+                      {{ $t('votes.vote_button_text') }}
+                    </v-btn>
+                    <pagination v-model="pagination.page" :pages="pages"></pagination>
+                  </v-layout>
+
+                </td>
+              </template>
+            </v-data-table>
+          </v-card>
+
+        </v-flex>
+
+      </v-layout>
+    </v-container>
+
+    <v-dialog
+      v-model="dialog"
+      width="500"
+    >
+      <v-card>
         <v-card-title>
           <div>
             <h3 class="headline mb-0">{{ $t('votes.summary_title') }}</h3>
@@ -114,20 +136,31 @@
             </div>
           </div>
         </v-card-title>
-        <v-card-text>
-          <v-btn @click="sendVotes">
-            {{ $t('votes.vote_button_text') }}
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            flat="flat"
+            @click="dialog = false"
+          >
+            {{ $t('transfer.confirm_cancel') }}
           </v-btn>
-        </v-card-text>
+
+          <v-btn
+            flat="flat"
+            @click="sendVotes"
+          >
+            {{ $t('transfer.confirm_approve') }}
+          </v-btn>
+        </v-card-actions>
       </v-card>
-
-    </v-flex>
-
-  </v-layout>
+    </v-dialog>
+  </div>
 </template>
 
 <script>
-import AppToolbar from '@/components/AppToolbar'
+import AppToolbarCentered from '@/components/AppToolbarCentered'
+import Pagination from '@/components/Pagination'
 
 export default {
   mounted () {
@@ -197,6 +230,13 @@ export default {
           }
         }
       ]
+    },
+    pages () {
+      if (this.delegates.length <= 0) {
+        return 0
+      }
+
+      return Math.ceil(this.delegates.length / this.pagination.rowsPerPage)
     }
   },
   data: () => ({
@@ -205,13 +245,16 @@ export default {
     headers: [
       { text: 'votes.table_head_name', value: 'username' },
       { text: 'votes.table_head_rank', value: 'rank' },
-      { text: 'votes.table_head_vote', value: '_voted' },
-      { text: '', value: 'expand' }
+      { text: 'votes.table_head_vote', value: '_voted' }
     ],
     pagination: {
-      rowsPerPage: 10
+      rowsPerPage: 10,
+      sortBy: 'rank',
+      descending: true,
+      page: 1
     },
-    waitingForConfirmation: false
+    waitingForConfirmation: false,
+    dialog: false
   }),
   methods: {
     upVote (id) {
@@ -242,6 +285,7 @@ export default {
       }
 
       this.waitingForConfirmation = true
+      this.dialog = false
 
       this.$store.dispatch('delegates/voteForDelegates', {
         votes: [...upVotes, ...downVotes],
@@ -295,18 +339,22 @@ export default {
       } else {
         return `${seconds} ${this.$t('votes.sec')}`
       }
+    },
+    showConfirmationDialog () {
+      this.dialog = true
     }
   },
   components: {
-    AppToolbar
+    AppToolbarCentered,
+    Pagination
   }
 }
 </script>
 
 <style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
+  @import '~vuetify/src/stylus/settings/_colors.styl'
 
-.theme--light
-  .vote-card
-    background-color: $grey.lighten-2
+  .theme--light
+    .vote-card
+      background-color: $grey.lighten-2
 </style>

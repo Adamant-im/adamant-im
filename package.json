@@ -1,6 +1,6 @@
 {
   "name": "adamant-im",
-  "version": "1.9.1",
+  "version": "1.10.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -12,35 +12,40 @@
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
-    "@adamant/chat": "file:packages/chat",
-    "@adamant/message-formatter": "file:packages/message-formatter",
     "@mdi/font": "^2.6.95",
     "@stablelib/utf8": "^0.10.1",
     "abi-decoder": "^1.2.0",
     "axios": "^0.18.0",
     "b64-to-blob": "^1.2.19",
     "bignumber.js": "^8.0.1",
+    "bitcoinjs-lib": "^4.0.2",
     "bitcore-mnemonic": "^1.2.5",
     "bytebuffer": "^5.0.1",
+    "coininfo": "^4.3.0",
     "deepmerge": "^2.1.1",
     "ed2curve": "^0.2.1",
     "ethereumjs-tx": "^1.3.7",
     "ethereumjs-util": "^5.2.0",
     "file-saver": "^1.3.8",
     "hdkey": "^0.8.0",
+    "idb": "^3.0.2",
     "instascan": "git+https://github.com/schmich/instascan.git#master",
     "js-base64": "^2.5.0",
     "js-md5": "^0.7.3",
+    "lodash": "^4.17.11",
     "moment": "^2.22.2",
     "notifyjs": "^3.0.0",
     "promise-queue": "^2.2.3",
     "qrcode": "^1.3.2",
+    "qs": "^6.6.0",
     "register-service-worker": "^1.0.0",
-    "roboto-fontface": "^0.10.0",
+    "rxjs": "^6.3.3",
     "semver": "^5.5.1",
     "simple-audio": "^1.0.1",
     "sodium-browserify-tweetnacl": "^0.2.3",
+    "throttle-promise": "^1.0.4",
     "underscore": "^1.9.1",
+    "visibilityjs": "^2.0.2",
     "vue": "^2.5.17",
     "vue-i18n": "^8.0.0",
     "vue-material": "^0.8.1",
@@ -50,8 +55,7 @@
     "vuetify": "1.4.1",
     "vuex": "^3.0.1",
     "vuex-persist": "^2.0.0",
-    "web3": "0.20.6",
-    "wfk-montserrat": "^1.0.0"
+    "web3": "0.20.6"
   },
   "devDependencies": {
     "@kazupon/vue-i18n-loader": "^0.3.0",
@@ -67,9 +71,11 @@
     "babel-jest": "^23.0.1",
     "babel-plugin-rewire": "^1.2.0",
     "cross-env": "^5.2.0",
+    "lorem-ipsum": "^1.0.6",
     "sinon": "^7.2.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
+    "uuid": "^3.3.2",
     "vue-cli-plugin-i18n": "^0.5.0",
     "vue-cli-plugin-vuetify": "^0.4.5",
     "vue-cli-plugin-webpack-bundle-analyzer": "^1.2.0",
@@ -125,7 +131,10 @@
     "testMatch": [
       "**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/**/*.(test|spec).(js|jsx|ts|tsx)"
     ],
-    "testURL": "http://localhost/"
+    "testURL": "http://localhost/",
+    "setupFiles": [
+      "<rootDir>/tests/__mocks__/globals.js"
+    ]
   },
   "author": "ADAMANT Tech Labs <devs@adamant.im>",
   "license": "GPLv3",

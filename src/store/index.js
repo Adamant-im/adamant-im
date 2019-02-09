@@ -2,20 +2,22 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { Base64 } from 'js-base64'
 
-import { loginOrRegister } from '@/lib/adamant-api'
+import { loginOrRegister, loginViaPassword, storeCryptoAddress } from '@/lib/adamant-api'
 import { Cryptos } from '@/lib/constants'
+import { encryptPassword } from '@/lib/idb/crypto'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
+import indexedDbPlugin from './plugins/indexedDb'
 import ethModule from './modules/eth'
 import erc20Module from './modules/erc20'
 import contactsModule from './modules/contacts'
 import admModule from './modules/adm'
+import dogeModule from './modules/doge'
 import nodesModule from './modules/nodes'
 import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
 import snackbar from './modules/snackbar'
 import language from './modules/language'
-import noise from './modules/noise'
 import chat from './modules/chat'
 import options from './modules/options'
 import identicon from './modules/identicon'
@@ -28,10 +30,15 @@ const store = {
     balance: 0,
     passphrase: '',
     publicKey: '',
-    privateKey: ''
+    privateKey: '',
+    password: '',
+    IDBReady: false, // set `true` when state has been saved in IDB
+    publicKeys: {}
   }),
   getters: {
-    isLogged: state => state.passphrase.length > 0
+    isLogged: state => state.passphrase.length > 0,
+    getPassPhrase: state => state.passphrase, // compatibility getter for ERC20 modules
+    publicKey: state => adamantAddress => state.publicKeys[adamantAddress]
   },
   mutations: {
     setAddress (state, address) {
@@ -49,25 +56,30 @@ const store = {
     setPrivateKey (state, privateKey) {
       state.privateKey = privateKey
     },
-    resetState (state) {
+    setPassword (state, password) {
+      state.password = password
+    },
+    resetPassword (state) {
+      state.password = ''
+    },
+    setIDBReady (state, value) {
+      state.IDBReady = value
+    },
+    setContactPublicKey (state, { adamantAddress, publicKey }) {
+      state.publicKeys[adamantAddress] = publicKey
+    },
+    reset (state) {
       state.address = ''
       state.balance = 0
       state.passphrase = ''
       state.publicKey = ''
       state.privateKey = ''
+      state.password = ''
+      state.IDBReady = false
+      state.publicKeys = {}
     }
   },
   actions: {
-    /**
-     * Updates current application status: balance, chat messages, transactions and so on
-     * @param {any} context Vuex action context
-     */
-    update ({ dispatch, getters }) {
-      if (getters.isLogged) {
-        dispatch('chat/getNewMessages')
-          .catch(() => {})
-      }
-    },
     login ({ commit, dispatch }, passphrase) {
       return loginOrRegister(passphrase)
         .then(account => {
@@ -82,21 +94,58 @@ const store = {
           dispatch('contacts/fetchContacts', null, true)
         })
     },
-    logout ({ commit }) {
-      commit('resetState')
+    loginViaPassword ({ commit, dispatch, state }, password) {
+      return loginViaPassword(password, this)
+        .then(account => {
+          commit('setIDBReady', true)
+
+          // retrieve eth & erc20 data
+          dispatch('afterLogin', account.passphrase)
+        })
+    },
+    logout ({ dispatch }) {
+      dispatch('reset')
+    },
+    unlock ({ state, dispatch }) {
+      const passphrase = Base64.decode(state.passphrase)
+
+      unlock(passphrase)
+
+      // retrieve eth & erc20 data
+      dispatch('afterLogin', passphrase)
+    },
+    /** Stores user address for the specified crypto in the ADM KVS */
+    storeCryptoAddress ({ state }, { crypto, address }) {
+      return storeCryptoAddress(crypto, address)
+    },
+    reset ({ commit }) {
+      commit('reset', null, { root: true })
+    },
+    setPassword ({ commit }, password) {
+      return encryptPassword(password)
+        .then(encryptedPassword => {
+          commit('setPassword', encryptedPassword)
+
+          return encryptedPassword
+        })
+    },
+    removePassword ({ commit }) {
+      commit('resetPassword')
+      commit('setIDBReady', false)
+      commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
     }
   },
-  plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin],
+  plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin, indexedDbPlugin],
   modules: {
     eth: ethModule, // Ethereum-related data
     bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
     bz: erc20Module(Cryptos.BZ, '0x4375e7ad8a01b8ec3ed041399f62d9cd120e0063', 18),
     adm: admModule, // ADM transfers
+    doge: dogeModule,
     contacts: contactsModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes
     snackbar,
-    noise,
     language,
     chat,
     options,

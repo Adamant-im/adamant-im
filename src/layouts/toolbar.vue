@@ -1,9 +1,10 @@
 <template>
   <v-content>
     <v-container fluid :class="{ 'pa-0': containerNoPadding }">
-      <router-view/>
+      <TransitionEffect>
+        <router-view />
+      </TransitionEffect>
     </v-container>
-
     <app-snackbar/>
     <app-navigation v-if="showNavigation"/>
   </v-content>
@@ -12,6 +13,7 @@
 <script>
 import AppSnackbar from '@/components/AppSnackbar'
 import AppNavigation from '@/components/AppNavigation'
+import TransitionEffect from '@/components/TransitionEffect'
 
 export default {
   computed: {
@@ -24,7 +26,8 @@ export default {
   },
   components: {
     AppSnackbar,
-    AppNavigation
+    AppNavigation,
+    TransitionEffect
   }
 }
 </script>

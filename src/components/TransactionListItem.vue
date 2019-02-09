@@ -1,7 +1,7 @@
 <template>
   <v-list-tile avatar @click="onClickTransaction">
     <v-list-tile-avatar>
-      <v-icon>{{ senderId === userId ? 'mdi-airplane-landing' : 'mdi-airplane-takeoff' }}</v-icon>
+      <v-icon>{{ senderId === userId ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}</v-icon>
     </v-list-tile-avatar>
 
     <v-list-tile-content>
@@ -14,7 +14,7 @@
       </v-list-tile-title>
       <v-list-tile-sub-title>
         <v-layout>
-          {{ amountFormatted }} ADM
+          {{ amountFormatted }} {{ crypto }}
           <v-spacer/>
           {{ createdAt | date }}
         </v-layout>
@@ -32,12 +32,25 @@
 </template>
 
 <script>
-import validateAddress from '@/lib/validateAddress'
 import dateFilter from '@/filters/date'
-import { EPOCH } from '@/lib/constants'
+import { EPOCH, Cryptos } from '@/lib/constants'
 
 export default {
   computed: {
+    userId () {
+      if (this.crypto === Cryptos.ADM) {
+        return this.$store.state.address
+      } else {
+        const cryptoModule = this.crypto.toLowerCase()
+
+        return this.$store.state[cryptoModule].address
+      }
+    },
+    partnerId () {
+      return this.senderId === this.userId
+        ? this.recipientId
+        : this.senderId
+    },
     partnerName () {
       return this.$store.getters['contacts/contactName'](this.partnerId) || ''
     },
@@ -52,7 +65,7 @@ export default {
       return this.$store.getters['chat/isPartnerInChatList'](this.partnerId)
     },
     amountFormatted () {
-      return this.$formatAmount(this.amount)
+      return this.$formatAmount(this.amount, this.crypto)
     }
   },
   methods: {
@@ -71,32 +84,26 @@ export default {
       type: String,
       required: true
     },
-    userId: {
-      type: String,
-      required: true,
-      validator: value => validateAddress('ADM', value)
-    },
     senderId: {
       type: String,
-      required: true,
-      validator: value => validateAddress('ADM', value)
+      required: true
     },
-    partnerId: {
+    recipientId: {
       type: String,
-      required: true,
-      validator: value => validateAddress('ADM', value)
+      required: true
     },
     timestamp: {
       type: Number,
       required: true
     },
     amount: {
-      type: Number,
+      type: [Number, String],
       required: true
     },
     crypto: {
       type: String,
-      default: 'ADM'
+      default: 'ADM',
+      validator: v => v in Cryptos
     }
   }
 }
