@@ -1,7 +1,7 @@
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuetify from 'vuetify'
 
-import AChat from '../src/component/AChat.vue'
+import AChat from '../AChat.vue'
 
 const localVue = createLocalVue()
 localVue.use(Vuetify)

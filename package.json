@@ -12,8 +12,6 @@
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
-    "@adamant/chat": "file:packages/chat",
-    "@adamant/message-formatter": "file:packages/message-formatter",
     "@mdi/font": "^2.6.95",
     "@stablelib/utf8": "^0.10.1",
     "abi-decoder": "^1.2.0",
@@ -73,9 +71,11 @@
     "babel-jest": "^23.0.1",
     "babel-plugin-rewire": "^1.2.0",
     "cross-env": "^5.2.0",
+    "lorem-ipsum": "^1.0.6",
     "sinon": "^7.2.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
+    "uuid": "^3.3.2",
     "vue-cli-plugin-i18n": "^0.5.0",
     "vue-cli-plugin-vuetify": "^0.4.5",
     "vue-cli-plugin-webpack-bundle-analyzer": "^1.2.0",

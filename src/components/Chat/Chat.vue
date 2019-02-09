@@ -68,9 +68,9 @@
 
 <script>
 import { Cryptos } from '@/lib/constants'
-import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@adamant/chat'
-import { Formatter } from '@adamant/message-formatter'
+import { Formatter } from '@/lib/message-formatter'
 
+import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@/components/AChat'
 import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'

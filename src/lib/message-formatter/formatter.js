@@ -1,5 +1,3 @@
-import { defaults } from 'underscore'
-
 import { inline, block } from './formats'
 import escapeHtml from './escapeHtml'
 import defaultRenderer from './renderer'
@@ -13,8 +11,8 @@ export class Formatter {
   renderer = {}
 
   constructor (options = {}, renderer = {}) {
-    this.options = defaults(options, defaultOptions)
-    this.renderer = defaults(renderer, defaultRenderer)
+    this.options = Object.assign({}, defaultOptions, options)
+    this.renderer = Object.assign({}, defaultRenderer, renderer)
   }
 
   /**

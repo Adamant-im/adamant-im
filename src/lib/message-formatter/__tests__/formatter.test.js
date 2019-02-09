@@ -1,4 +1,4 @@
-import { Formatter } from '../src/formatter'
+import { Formatter } from '../formatter'
 
 describe('Formatter', () => {
   let formatter
