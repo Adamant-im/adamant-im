@@ -16,7 +16,7 @@ import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
 
 import * as admApi from '../lib/adamant-api'
-import { base64regex, WelcomeMessage, UserPasswordHashSettings, Cryptos, Fees } from '../lib/constants'
+import { base64regex, UserPasswordHashSettings, Cryptos, Fees } from '../lib/constants'
 import Queue from 'promise-queue'
 import utils from '../lib/adamant'
 import i18n from '../i18n'
@@ -571,8 +571,8 @@ const store = {
     },
     mock_messages (state) {
       const newAccount = store.state.is_new_account
-      createMockMessage(state, newAccount, WelcomeMessage.ADAMANT_ICO, 'ico_message')
-      createMockMessage(state, newAccount, WelcomeMessage.ADAMANT_BOUNTY, 'welcome_message')
+      // TODO: rewrite mock function. i18n should not be as a partner
+      createMockMessage(state, newAccount, i18n.t('chats.welcome_message_title'), 'welcome_message')
     },
     create_chat (state, payload) {
       var partner = payload

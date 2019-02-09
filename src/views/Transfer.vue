@@ -6,7 +6,6 @@
       </md-button>
       <h1 class="md-title">{{ $t('home.send_btn') }}</h1>
     </md-toolbar>
-      <!--<spinner v-if="isWaiting" />-->
       <form novalidate @submit.stop.prevent="submit">
         <md-input-container>
           <md-select v-model="crypto" style="text-align: left;" :disabled="!!this.fixedCrypto">
@@ -73,7 +72,7 @@ import { Cryptos, CryptoAmountPrecision, Fees, isErc20 } from '../lib/constants'
 import { sendTokens, sendMessage } from '../lib/adamant-api'
 import Vue from 'vue'
 import utils from '../lib/adamant'
-import { changeMessageClass, replaceMessageAndDelete, updateLastChatMessage } from '../store'
+import { replaceMessageAndDelete, updateLastChatMessage } from '../store'
 
 export default {
   name: 'home',
