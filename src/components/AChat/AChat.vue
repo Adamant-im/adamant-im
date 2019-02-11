@@ -18,13 +18,13 @@
         </div>
 
         <div ref="messages" class="a-chat__body-messages">
-          <slot name="messages" :messages="filledMessages">
+          <slot name="messages" :messages="messages">
 
-              <template v-for="message in filledMessages">
+              <template v-for="message in messages">
 
                 <slot name="message"
                   :message="message"
-                  :sender="message.sender"
+                  :sender="getSenderMeta(message.senderId)"
                   :user-id="userId"
                   :locale="locale"
                 />
@@ -51,19 +51,6 @@ export default {
   },
   beforeDestroy () {
     this.destroyScrollListener()
-  },
-  computed: {
-    /**
-     * Add sender info for each message.
-     * `message.sender` is a reference to `this.partners`
-     */
-    filledMessages () {
-      return this.messages.map(message => {
-        message.sender = this.partners.find(partner => partner.id === message.senderId)
-
-        return message
-      })
-    }
   },
   data: () => ({
     currentScrollHeight: 0,
@@ -109,6 +96,15 @@ export default {
     // Called from parent component.
     scrollToBottom () {
       this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
+    },
+
+    /**
+     * Returns sender address and name.
+     * @param {string} senderId Sender address
+     * @returns {{ id: string, name: string }}
+     */
+    getSenderMeta (senderId) {
+      return this.partners.find(partner => partner.id === senderId)
     }
   },
   components: {

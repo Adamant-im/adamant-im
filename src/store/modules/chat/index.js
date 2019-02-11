@@ -151,18 +151,9 @@ const getters = {
    * @returns {string}
    */
   lastMessageText: (state, getters) => senderId => {
-    const abstract = getters.lastMessage(senderId) || {}
+    const message = getters.lastMessage(senderId) || {}
 
-    // if ETH Transaction
-    if (abstract.message && abstract.message.type === 'eth_transaction') {
-      return abstract.message.comments || ''
-    }
-
-    if (typeof abstract.message === 'string') {
-      return abstract.message
-    }
-
-    return ''
+    return (message && message.message) || ''
   },
 
   /**

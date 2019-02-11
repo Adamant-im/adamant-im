@@ -103,7 +103,7 @@ export default {
             this.$router.push('/')
           })
       } else {
-        this.$router.push('/')
+        return Promise.resolve(this.$router.push('/'))
       }
     },
     getCurrentPageIndex () {
