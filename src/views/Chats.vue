@@ -40,8 +40,6 @@
 </template>
 
 <script>
-import cloneDeep from 'lodash/cloneDeep'
-
 import ChatPreview from '@/components/ChatPreview'
 import ChatStartDialog from '@/components/ChatStartDialog'
 import ProgressIndicator from '@/components/ProgressIndicator'
@@ -73,11 +71,11 @@ export default {
     },
     /**
      * Sort messages by timestamp.
-     * @returns {ServerMessage[]}
+     * @returns {Message[]}
      */
     messagesSorted () {
-      // clone array to avoid original array mutations
-      const messages = cloneDeep(this.messages)
+      // clone only array with references
+      const messages = [...this.messages]
 
       return messages.sort((left, right) => right.timestamp - left.timestamp)
     }

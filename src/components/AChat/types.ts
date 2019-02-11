@@ -1,6 +1,8 @@
 export type Message = {
   id: number,
+  hash?: string, // transactionId for third-party cryptos
   senderId: string,
+  recipientId: string,
   message: string,
   timestamp: number,
   admTimestamp: number,
@@ -13,7 +15,10 @@ export type Message = {
 export enum MessageType {
   Message = 'message',
   ADM = 'ADM',
-  ETH = 'ETH'
+  ETH = 'ETH',
+  BZ = 'BZ',
+  BNB = 'BNB',
+  DOGE = 'DOGE'
 }
 
 export enum MessageStatus {

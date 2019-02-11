@@ -225,17 +225,6 @@ describe('Store: chat.js', () => {
           })
         })()
         expect(lastMessageText).toBe('hello world')
-
-        // type eth transaction
-        lastMessageText = getters.lastMessageText({}, {
-          lastMessage: () => ({
-            message: {
-              type: 'eth_transaction',
-              comments: 'eth transaction comment'
-            }
-          })
-        })()
-        expect(lastMessageText).toBe('eth transaction comment')
       })
 
       it('should return empty string', () => {
@@ -244,17 +233,6 @@ describe('Store: chat.js', () => {
         // when `lastMessage = null`
         lastMessageText = getters.lastMessageText({}, {
           lastMessage: () => null
-        })()
-        expect(lastMessageText).toBe('')
-
-        // invalid transaction type
-        lastMessageText = getters.lastMessageText({}, {
-          lastMessage: () => ({
-            message: {
-              type: 'invalid_type',
-              comments: 'transaction comment'
-            }
-          })
         })()
         expect(lastMessageText).toBe('')
       })

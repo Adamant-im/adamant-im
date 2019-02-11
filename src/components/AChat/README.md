@@ -262,7 +262,7 @@ export type User = {
 |Name|Arguments|Description|
 |:--:|:----:|:-------------|
 |**[`@click:transaction`](#)**|`(transactionId: string)`|On click transaction icon|
-
+|**[`@mount`](#)**||Emit mount when mounted|
 
 ## AChatForm.vue
 
