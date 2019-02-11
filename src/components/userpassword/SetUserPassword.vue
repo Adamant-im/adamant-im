@@ -14,7 +14,7 @@
         </md-input-container>
         <div style="display: flex; flex-direction: row;">
           <div class="middle-align-text">
-            <div>{{$t('login_via_password.article_hint')}} <a :href="userPasswordAgreementLink">{{$t('login_via_password.article')}}</a></div>
+            <div>{{$t('login_via_password.article_hint')}} <a :href="userPasswordAgreementLink">{{$t('login_via_password.article')}}</a>.</div>
           </div>
         </div>
       </md-dialog-content>

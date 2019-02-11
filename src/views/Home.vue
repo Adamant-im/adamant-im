@@ -9,7 +9,6 @@
             @click="copy"
             v-clipboard="addr.address"
             @success="copySuccess"
-            :title="addr.tooltip ? $t(addr.tooltip) : ''"
           >
               <md-avatar class="md-avatar-icon">
                 <md-icon :md-src="addr.addressIcon"></md-icon>
@@ -28,8 +27,7 @@
           <md-list-item
             v-for="wallet in wallets"
             v-bind:key="'bal_' + wallet.system"
-            v-on:click="goToTransactions(wallet.system)"
-            :title="wallet.balanceTooltip ? $t(wallet.balanceTooltip) : ''"
+            @click="goToTransactions(wallet.system)"
           >
             <md-avatar class="md-avatar-icon">
                 <md-icon :md-src="wallet.balanceIcon"></md-icon>
@@ -40,7 +38,7 @@
             </div>
           </md-list-item>
 
-          <md-list-item v-on:click="$router.push('/transfer/')" :title="$t('home.send_btn_tooltip')">
+          <md-list-item v-on:click="$router.push('/transfer/')">
               <md-avatar class="md-avatar-icon">
                 <md-icon md-src="/img/Wallet/send.svg"></md-icon>
               </md-avatar>
@@ -122,8 +120,6 @@ export default {
           system: c,
           address: state.address,
           balance: state.balance,
-          tooltip: `home.your_address_tooltip_${c}`,
-          balanceTooltip: `home.your_balance_tooltip_${c}`,
           addressIcon: `/img/Wallet/${lower}-address.svg`,
           balanceIcon: `/img/Wallet/${lower}-balance.svg`
         }

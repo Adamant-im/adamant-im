@@ -15,11 +15,9 @@
     "date_tomorrow": "Demain",
     "date_yesterday": "Hier",
     "estimate_fee": "Frais d'estimation",
-    "ico_message": "<p>Now you have a possibility to buy tokens of ADAMANT, the most secure and anonymous messenger, with the cheapest price.</p><p>Please make sure your have saved the passphrase to this account — exit your account and open it again. Better save your password on a sheet of paper also. But remember, only <b>you are responsible for the passphrase safety</b>. It cannot be recovered. And if other person will get it, your money will be stolen. Treat this question as secure, as if tokens in your wallet will cost a billion dollars some time.</p><p>To buy ADM tokens, go to Wallet tab and click Buy tokens, or open the page Adamant.im/buy-tokens/ in the web browser. In the form enter your ADAMANT address — you will receive ADM tokens there. If you moved from Messenger App, your ADM address will be filled already, other way go back to Messenger and click ADAMANT address to copy it to clipboard. Next, choose crypto you want to spend and its amount. You'll see how much ADM tokens you will receive, including volume bonus: 20–30 ETH: +20%, 30–50 ETH: +30%, 50–90 ETH: +40%, 90+ ETH: +50%. Click Buy ADAMANT tokens. You'll get unique address where you need to send crypto. As soon as your transaction will be confirmed, you'll receive ADM tokens. Transaction can be done <b>from any wallet or exchange</b>. It is not necessary to transfer exact amount including transaction fees, the payment will be processed anyway.</p>><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>",
     "incorrect_address": "adresse du destinataire incorrect",
     "message": "Tapez votre message",
     "new_chat": "Démarrer un nouveau chat",
-    "new_chat_tooltip": "Cliquez pour démarrer une conversation avec un nouvel interlocuteur",
     "no_address": "S'il vous plaît indiquer l'adresse du destinataire",
     "no_connection": "Problèmes de connexion",
     "no_empty": "Le message ne peut être vide",
@@ -39,45 +37,26 @@
     "sent_label": "Sent",
     "title": "Chats",
     "too_long": "Le message est trop long",
-    "welcome_message": "<p>Welcome to ADAMANT, the most secure and anonymous messenger. Remember, your security and anonymity is up to you also. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. Better to share your ADM address personally, but not using other messengers. Keep your secret passphrase secure. Set a password on your device or logout before leaving.</p><p>Learn more about security and anonymity at <a href='https://adamant.im/staysecured/' target='_blank'>https://adamant.im/staysecured/</a>.</p><p>All the transactions within the blockchain do need to have their minimal fees. This is necessary to support the network infrastructure. To start messaging now, <b>get free tokens</b> — go to Wallet tab and click Free ADM tokens. Then click Start new chat on Chats tab and put your interlocutor's address. To copy your address, click on ADAMANT address on Wallet tab.</p><p>Do not reply to this message, it is a system account. If you still have any questions, contact account U15677078342684640219.</p>"
-  },
-  "ednpoints": {
-    "active": ""
-  },
-  "endpoints": {
-    "host": "",
-    "ms": "",
-    "offline": "",
-    "ping": ""
+    "welcome_message": "<p>ADAMANT is a true Blockchain messenger, independent from governments, corporations and even developers. It is possible due to a decentralized network infrastructure, fully open source and run by users. That's why every action, including sending message or saving contact name, has its network fee of 0.001 ADM.</p><p>Blockchain offers superior security and privacy, not available for typical P2P and centralized messengers. Also, Blockchain provides new possibilities. You can store and transfer cryptos In-Chat with full control of your private keys, use ADAMANT as 2FA and more.</p><p>In ADAMANT, nobody can control, block, deactivate, restrict or censor accounts. Users take full responsibility for content, messages, media, and goals and intentions of using the Messenger.</p><p>Remember, your security and anonymity is up to you. Do not follow links you receive, otherwise your IP can be compromised. Set a password on your device. Learn more about security and anonymity at <a href=\"https://adamant.im/staysecured/\" target=\"_blank\">https://adamant.im/staysecured/</a>.</p><p>Make sure you've saved the passPhrase for this account — logout and login again. Write your passPhrase on a sheet of paper as well. Only <strong>you are responsible for passPhrase safety</strong>. It cannot be recovered. And if other person will get it, your tokens will be stolen and correspondence read. Treat this question with outmost importance, as if tokens in your wallet will cost a billion dollars some time.</p><p>To start messaging now, <strong>get free welcome tokens</strong> on Account tab. Then create new chat and put your friend's ADM address. It is recommended to share your ADM address personally, not using other messengers.</p>"
   },
   "error": "Error",
   "home": {
     "copied": "Copié",
     "free_adm_btn": "Free ADM tokens",
-    "invest_btn": "Investir dans l'ICO",
+    "invest_btn": "Buy tokens",
     "invest_btn_link": "https://adamant.im/buy-tokens/",
-    "invest_btn_tooltip": "Now you have a possibility to buy tokens of ADAMANT, the most secure and anonymous messenger, with the cheapest price. Click to go to ICO form Adamant.im/buy-tokens/.",
+    "invest_btn_tooltip": "Buy ADM tokens anonymously. You also have possibility to buy and sell ADM on exchanges.",
     "send_btn": "Send funds",
-    "send_btn_tooltip": "Click to transfer supported tokens to other account or ADAMANT user",
     "your_address_ADM": "ADAMANT address",
-    "your_address_DOGE": "",
+    "your_address_DOGE": "Dogecoin address",
     "your_address_ETH": "Ethereum address",
     "your_address_BZ": "Bit-Z address",
-    "your_address_tooltip_ADM": "Ceci est votre identifiant ADAMANT unique. Cliquez pour le copier dans le presse-papiers.",
-    "your_address_tooltip_DOGE": "",
-    "your_address_tooltip_ETH": "Ceci est votre identifiant Ethereum unique. Cliquez pour le copier dans le presse-papiers.",
-    "your_address_tooltip_BZ": "Ceci est votre identifiant Bit-Z unique. Cliquez pour le copier dans le presse-papiers.",
     "your_balance_ADM": "ADAMANT Balance",
-    "your_balance_DOGE": "",
+    "your_balance_DOGE": "Dogecoin Balance",
     "your_balance_ETH": "Ethereum Balance",
-    "your_balance_BZ": "Bit-Z Balance",
-    "your_balance_tooltip_ADM": "Il est de votre équilibre ADAMANT. Cliquez pour voir toutes les transactions d'entrée et de sortie.",
-    "your_balance_tooltip_DOGE": "",
-    "your_balance_tooltip_ETH": "It is your ADAMANT ETH balance.",
-    "your_balance_tooltip_BZ": "It is your ADAMANT BZ balance."
+    "your_balance_BZ": "Bit-Z Balance"
   },
   "login": {
-    "copy_button_tooltip": "Cliquez pour copier le mot de passe dans le presse papier. Enregistrer dans une application mot de passe deuxième. Pour entrer votre nouveau portefeuille, collez-le champ de mot de passe.",
     "create_address_label": "Ou créer une nouvelle adresse anonyme:",
     "device_unsupported": "Votre appareil n'est pas compatible",
     "invalid_passphrase": "Passphrase non valide",
@@ -114,10 +93,7 @@
     "ping": ""
   },
   "options": {
-    "already_delegate_text": "You are already a delegate. Your delegate name is",
     "chats_title": "Chats",
-    "delegate_name_input": "Enter delegate name",
-    "delegate_register_button": "Register delegate",
     "delegates_title": "Delegates",
     "enable_bar": "Changer le titre de l'onglet du navigateur",
     "enable_bar_tooltip": "Affiche nouveau compteur de messages dans le titre de l'onglet quand un nouveau message arrive. Fonctionne pour les navigateurs de bureau.",
@@ -125,13 +101,9 @@
     "enable_desktop_tooltip": "Utiliser les notifications de navigateur intégré (besoin de votre acceptation)",
     "enable_sound": "Son",
     "enable_sound_tooltip": "Jouer un son quand un nouveau message arrive. Il ne travaille pas sur tous les appareils. Les navigateurs mobiles ne jouent pas un son lorsque le navigateur n'est pas activé.",
-    "endpoints_fastest_title": "",
-    "endpoints_fastest_tooltip": "",
-    "endpoints_title": "",
     "exit_on_close": "Déconnexion sur l'onglet Fermer",
-    "exit_on_close_tooltip": "Pour votre sécurité de portefeuille nous vous recommandons de garder cette option. Dans le cas où vous la décocher, votre mot de passe sera enregistré dans le stockage du navigateur, et la prochaine fois que vous ouvrez le porte-monnaie, il sera decrypté sans avoir besoin d'entrer un mot de passe. Il est acceptable que dans le cas où personne d'autre peut accéder à votre appareil.",
     "general_title": "General",
-    "language_label": "Langue: ",
+    "language_label": "Langue",
     "notification_title": "Notifications",
     "security_title": "Sécurité",
     "send_on_enter": "Envoyer un message sur Enter",
@@ -170,9 +142,9 @@
     "txid": "Transaction #"
   },
   "transfer": {
-    "amount_label": "Montant à envoyer",
+    "amount_label": "Montant",
     "comments_label": "Comments",
-    "commission_label": "Frais de transfert",
+    "commission_label": "Frais",
     "confirm_approve": "Confirmer",
     "confirm_cancel": "Annuler",
     "confirm_message": "Confirmer le transfert de {amount} {crypto} pour répondre <span class='address-in-confirm'>{target}</span>..",
@@ -189,9 +161,7 @@
     "no_address_text": "This user does not have a public {crypto} wallet yet. To get it, he should login into messenger when his balance is more than 0.001 ADM.",
     "no_address_title": "Recipient has no {crypto} wallet yet",
     "send_button": "Envoyez de l'argent",
-    "send_button_tooltip": "Après avoir cliqué sur le bouton, vous voyez une demande de confirmation.",
     "to_address_label": "Adresse",
-    "to_address_label_tooltip": "Entrez un identifiant de recepient, comme U1234567890",
     "to_label": "To"
   },
   "votes": {
@@ -213,7 +183,7 @@
     "table_head_vote": "Vote",
     "total_new_votes": "Total new votes",
     "total_votes": "Total votes",
-    "transaction_confirm_await": "Transaction is running yet, please be patient…",
+    "transaction_confirm_await": "Transaction is running, please be patient…",
     "upvotes": "Upvotes",
     "vote_button_text": "Vote",
     "voting_cost": "Voting cost"
