@@ -60,6 +60,9 @@ export default {
   computed: {
     numOfNewMessages () {
       return this.$store.getters['chat/totalNumOfNewMessages']
+    },
+    isLoginViaPassword () {
+      return this.$store.getters['options/isLoginViaPassword']
     }
   },
   data: () => ({
@@ -88,12 +91,20 @@ export default {
       AppInterval.unsubscribe()
       this.$store.dispatch('logout')
 
-      return clearDb().then(() => {
-        // turn off IDB sync
-        this.$store.commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
+      if (this.isLoginViaPassword) {
+        return clearDb()
+          .catch(err => {
+            console.error(err)
+          })
+          .finally(() => {
+            // turn off `loginViaPassword` option
+            this.$store.commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
 
+            this.$router.push('/')
+          })
+      } else {
         this.$router.push('/')
-      })
+      }
     },
     getCurrentPageIndex () {
       const currentPage = this.pages.find(page => {
