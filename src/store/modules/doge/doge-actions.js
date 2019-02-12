@@ -138,7 +138,7 @@ export default {
         const attempt = payload.attempt || 0
         if (replay && attempt < MAX_ATTEMPTS) {
           const newPayload = { ...payload, attempt: attempt + 1 }
-          setTimeout(() => context.dispatch('getTransaction', newPayload), 3000)
+          setTimeout(() => context.dispatch('getTransaction', newPayload), 10000)
         }
       })
   },
