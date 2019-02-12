@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="txListElement">
     <app-toolbar-centered
       app
       :title="$t('transaction.transactions')"
@@ -24,13 +24,16 @@
               @click:transaction="goToTransaction"
               @click:icon="goToChat"
             />
+            <v-list-tile v-if="isLoading">
+              <InlineSpinner />
+            </v-list-tile>
           </v-list>
 
-          <h3 v-else class="headline text-xs-center mt-4">{{ $t('transaction.no_transactions') }}</h3>
+          <h3 v-else class="headline text-xs-center mt-4">
+            {{ $t('transaction.no_transactions') }}
+          </h3>
 
         </v-flex>
-
-        <ProgressIndicator v-else-if="!isRejected" :show="true" />
 
       </v-layout>
     </v-container>
@@ -40,8 +43,8 @@
 <script>
 import { Cryptos } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
+import InlineSpinner from '@/components/InlineSpinner'
 import TransactionListItem from '@/components/TransactionListItem'
-import ProgressIndicator from '@/components/ProgressIndicator'
 
 export default {
   mounted () {
@@ -56,6 +59,7 @@ export default {
           message: err.message
         })
       })
+    window.addEventListener('scroll', this.onScroll)
   },
   computed: {
     transactions () {
@@ -63,6 +67,9 @@ export default {
     },
     hasTransactions () {
       return this.transactions && this.transactions.length > 0
+    },
+    isLoading () {
+      return this.$store.getters[`${this.cryptoModule}/areTransactionsLoading`]
     },
     crypto () {
       return this.$route.params.crypto in Cryptos
@@ -94,11 +101,21 @@ export default {
           partner: partnerId
         }
       })
+    },
+    onScroll () {
+      const height = document.getElementById('txListElement').offsetHeight
+      const windowHeight = window.innerHeight
+      const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop +
+        (document.documentElement.scrollTop || 0)
+      // If we've scrolled to the very bottom, fetch the older transactions from server
+      if (windowHeight + scrollPosition >= height) {
+        this.$store.dispatch(`${this.cryptoModule}/getOldTransactions`)
+      }
     }
   },
   components: {
-    ProgressIndicator,
     AppToolbarCentered,
+    InlineSpinner,
     TransactionListItem
   }
 }

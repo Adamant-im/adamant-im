@@ -57,7 +57,12 @@ export default {
       state.maxHeight = maxHeight
     }
   },
-
+  areOlderLoading (state, areLoading) {
+    state.areOlderLoading = areLoading
+  },
+  areRecentLoading (state, areLoading) {
+    state.areRecentLoading = areLoading
+  },
   areTransactionsLoading (state, areLoading) {
     state.areTransactionsLoading = areLoading
   }

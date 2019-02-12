@@ -57,7 +57,9 @@ export default {
       options.to = context.state.minHeight - 1
     }
 
+    context.commit('areTransactionsLoading', true)
     return admApi.getTransactions(options).then(response => {
+      context.commit('areTransactionsLoading', false)
       const hasResult = Array.isArray(response.transactions) && response.transactions.length
 
       if (hasResult) {
@@ -69,6 +71,9 @@ export default {
       if (response.success && !hasResult) {
         context.commit('bottom')
       }
+    }, error => {
+      context.commit('areTransactionsLoading', false)
+      return Promise.reject(error)
     })
   },
 
