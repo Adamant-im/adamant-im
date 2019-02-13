@@ -34,7 +34,7 @@
           </h3>
 
         </v-flex>
-
+        <InlineSpinner v-else-if="!isRejected" class="pt-4" />
       </v-layout>
     </v-container>
   </div>
@@ -47,6 +47,9 @@ import InlineSpinner from '@/components/InlineSpinner'
 import TransactionListItem from '@/components/TransactionListItem'
 
 export default {
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.onScroll)
+  },
   mounted () {
     this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
       .then(() => {
