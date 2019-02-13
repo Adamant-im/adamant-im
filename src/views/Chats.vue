@@ -1,6 +1,5 @@
 <template>
   <v-layout row wrap justify-center>
-    <ProgressIndicator :show="!isFulfilled" />
     <v-flex xs12 sm12 md8 lg5>
       <v-layout row wrap>
         <v-flex xs12>
@@ -16,7 +15,7 @@
               </v-list-tile-content>
             </v-list-tile>
 
-            <transition-group name="messages">
+            <transition-group name="messages" v-if="isFulfilled">
               <chat-preview
                 v-for="message in messagesSorted"
                 :key="message.partnerId"
@@ -28,6 +27,7 @@
           </v-list>
 
         </v-flex>
+        <InlineSpinner v-if="!isFulfilled" />
       </v-layout>
 
     </v-flex>
@@ -42,7 +42,7 @@
 <script>
 import ChatPreview from '@/components/ChatPreview'
 import ChatStartDialog from '@/components/ChatStartDialog'
-import ProgressIndicator from '@/components/ProgressIndicator'
+import InlineSpinner from '@/components/InlineSpinner'
 
 export default {
   computed: {
@@ -94,7 +94,7 @@ export default {
   components: {
     ChatPreview,
     ChatStartDialog,
-    ProgressIndicator
+    InlineSpinner
   }
 }
 </script>
