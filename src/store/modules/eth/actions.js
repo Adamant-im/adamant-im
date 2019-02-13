@@ -35,7 +35,8 @@ const parseTransaction = (context, tx) => {
     amount: utils.toEther(tx.value.toString(10)),
     fee: utils.calculateFee(tx.gas, tx.gasPrice.toString(10)),
     status: tx.blockNumber ? 'SUCCESS' : 'PENDING',
-    blockNumber: tx.blockNumber
+    blockNumber: tx.blockNumber,
+    gasPrice: tx.gasPrice.toNumber(10)
   }
 }
 
