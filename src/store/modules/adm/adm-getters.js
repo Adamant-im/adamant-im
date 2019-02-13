@@ -1,6 +1,10 @@
 const sortFunc = (a, b) => ((b && b.timestamp) || 0) - ((a && a.timestamp) || 0)
 
 export default {
+  areTransactionsLoading (state) {
+    return state.areTransactionsLoading
+  },
+
   /**
    * Returnes transactions list sorted by timestamp (from the newest to the oldest)
    * @param {{transactions: Object.<string, object>}} state module state

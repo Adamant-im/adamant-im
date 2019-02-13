@@ -48,5 +48,14 @@ export default {
     if (maxHeight > 0) {
       state.maxHeight = maxHeight
     }
+  },
+
+  /**
+   * Sets a flag that indicates whether older transactions are being retrieved at the moment.
+   * @param {{areTransactionsLoading: boolean}} state module state
+   * @param {boolean} value flag value
+   */
+  areTransactionsLoading (state, value) {
+    state.areTransactionsLoading = value
   }
 }
