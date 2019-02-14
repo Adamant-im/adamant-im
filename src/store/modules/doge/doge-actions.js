@@ -122,7 +122,7 @@ export default {
         hash: payload.hash,
         timestamp: payload.timestamp,
         amount: payload.amount,
-        status: 'PENDING'
+        status: existing ? existing.status : 'PENDING'
       }])
     }
 
@@ -130,7 +130,7 @@ export default {
       .then(
         tx => {
           if (tx) context.commit('transactions', [tx])
-          return (!tx && payload.isNew) || (tx && tx.status !== 'SUCCESS')
+          return !tx || tx.status !== 'SUCCESS'
         },
         () => true
       )

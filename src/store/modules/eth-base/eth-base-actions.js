@@ -154,7 +154,7 @@ export default function createActions (config) {
           hash: payload.hash,
           timestamp: payload.timestamp,
           amount: payload.amount,
-          status: 'PENDING',
+          status: existing ? existing.status : 'PENDING',
           direction: payload.direction
         }])
       }
@@ -178,7 +178,7 @@ export default function createActions (config) {
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
           context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-        } else if (err || (tx && !tx.blockNumber) || (!tx && payload.isNew)) {
+        } else if (err || !tx || !tx.blockNumber) {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = tx ? payload : { ...payload, attempt: 1 + (payload.attempt || 0) }
