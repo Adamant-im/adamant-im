@@ -38,7 +38,7 @@ export default {
       return this.transaction.amount + ' ' + Cryptos.ETH
     },
     fee () {
-      if (!this.transaction.fee) return ''
+      if (!Number(this.transaction.fee)) return ''
       return this.transaction.fee + ' ' + Cryptos.ETH
     },
     sender () {
