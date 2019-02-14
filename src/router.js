@@ -11,6 +11,7 @@ import Options from '@/views/Options'
 import Home from '@/views/Home'
 import Votes from '@/views/Votes'
 import Nodes from '@/views/Nodes'
+import store from './store'
 
 Vue.use(Router)
 
@@ -73,6 +74,13 @@ const router = new Router({
       meta: {
         requiresAuth: true,
         layout: 'chat'
+      },
+      beforeEnter: (to, from, next) => {
+        if (store.state.partners.list.hasOwnProperty(to.params.partner)) {
+          next()
+        } else {
+          next('/chats')
+        }
       }
     },
     {
