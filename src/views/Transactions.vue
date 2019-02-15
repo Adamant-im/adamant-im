@@ -41,7 +41,6 @@
 </template>
 
 <script>
-import { Cryptos } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import InlineSpinner from '@/components/InlineSpinner'
 import TransactionListItem from '@/components/TransactionListItem'

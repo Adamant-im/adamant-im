@@ -14,7 +14,6 @@ export default {
   name: 'transaction',
   props: {
     crypto: {
-      default: 'ADM',
       required: true,
       type: String
     },
