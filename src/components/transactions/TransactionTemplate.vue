@@ -59,38 +59,35 @@
 
         <v-divider/>
 
-        <v-list-tile>
+        <v-list-tile :title="id || placeholder">
           <v-list-tile-content>
             <v-list-tile-title>{{ $t('transaction.txid') }}</v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{ id || placeholder }}
+            </v-list-tile-sub-title>
           </v-list-tile-content>
-
-          <div>
-            <v-list-tile-title>{{ id || placeholder }}</v-list-tile-title>
-          </div>
         </v-list-tile>
 
         <v-divider/>
 
-        <v-list-tile>
+        <v-list-tile :title="sender || placeholder">
           <v-list-tile-content>
             <v-list-tile-title>{{ $t('transaction.sender') }}</v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{ sender || placeholder }}
+            </v-list-tile-sub-title>
           </v-list-tile-content>
-
-          <div>
-            <v-list-tile-title>{{ sender || placeholder }}</v-list-tile-title>
-          </div>
         </v-list-tile>
 
         <v-divider/>
 
-        <v-list-tile>
+        <v-list-tile :title="recipient || placeholder">
           <v-list-tile-content>
             <v-list-tile-title>{{ $t('transaction.recipient') }}</v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{ recipient || placeholder }}
+            </v-list-tile-sub-title>
           </v-list-tile-content>
-
-          <div>
-            <v-list-tile-title>{{ recipient || placeholder }}</v-list-tile-title>
-          </div>
         </v-list-tile>
 
         <v-divider/>
