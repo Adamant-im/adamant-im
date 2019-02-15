@@ -170,7 +170,7 @@ export default class DogeApi {
 
   _mapTransaction (tx) {
     const senders = getUnique(tx.vin.map(x => x.addr).filter(x => x))
-    const senderId = senders.length === 1 ? senders[0] : null
+    const senderId = senders.length === 1 ? senders[0] : senders.join(', ')
 
     const direction = senders.includes(this._address) ? 'from' : 'to'
 
