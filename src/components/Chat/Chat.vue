@@ -218,7 +218,7 @@ export default {
         name: 'Transaction',
         params: {
           crypto: transaction.type,
-          tx_id: transaction.hash
+          txId: transaction.hash
         }
       })
     },

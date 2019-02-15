@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import navigationGuard from '@/router/navigationGuard'
 
 import AuthMiddleware from '@/middlewares/auth'
 import Chats from '@/views/Chats'
@@ -11,7 +12,6 @@ import Options from '@/views/Options'
 import Home from '@/views/Home'
 import Votes from '@/views/Votes'
 import Nodes from '@/views/Nodes'
-import store from './store'
 
 Vue.use(Router)
 
@@ -37,7 +37,7 @@ const router = new Router({
       }
     },
     {
-      path: '/transactions/:crypto/:tx_id',
+      path: '/transactions/:crypto/:txId',
       component: Transaction,
       name: 'Transaction',
       props: true,
@@ -45,17 +45,20 @@ const router = new Router({
         requiresAuth: true,
         layout: 'no-container',
         containerNoPadding: true
-      }
+      },
+      beforeEnter: navigationGuard.transaction
     },
     {
-      path: '/transactions/:crypto',
-      name: 'Transactions',
+      path: '/transactions/:crypto?',
       component: Transactions,
+      name: 'Transactions',
+      props: true,
       meta: {
         requiresAuth: true,
         layout: 'no-container',
         containerNoPadding: true
-      }
+      },
+      beforeEnter: navigationGuard.transactions
     },
     {
       path: '/options',
@@ -68,20 +71,15 @@ const router = new Router({
       }
     },
     {
-      path: '/chats/:partner/',
+      path: '/chats/:partnerId/',
       component: Chat,
       name: 'Chat',
+      props: true,
       meta: {
         requiresAuth: true,
         layout: 'chat'
       },
-      beforeEnter: (to, from, next) => {
-        if (store.state.partners.list.hasOwnProperty(to.params.partner)) {
-          next()
-        } else {
-          next('/chats')
-        }
-      }
+      beforeEnter: navigationGuard.chats
     },
     {
       path: '/chats',
