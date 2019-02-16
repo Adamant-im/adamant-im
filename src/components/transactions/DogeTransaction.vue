@@ -1,9 +1,9 @@
 <template>
   <transaction-template
-    :amount="amount"
+    :amount="transaction.amount | currency('DOGE')"
     :timestamp="transaction.timestamp"
     :id="transaction.hash"
-    :fee="fee"
+    :fee="transaction.fee | currency('DOGE')"
     :confirmations="confirmations"
     :sender="sender"
     :recipient="recipient"
@@ -20,7 +20,12 @@ import { Cryptos } from '../../lib/constants'
 
 export default {
   name: 'doge-transaction',
-  props: ['id'],
+  props: {
+    id: {
+      required: true,
+      type: String
+    }
+  },
   components: {
     TransactionTemplate
   },
@@ -33,14 +38,6 @@ export default {
   computed: {
     transaction () {
       return this.$store.getters['doge/transaction'](this.id) || { }
-    },
-    amount () {
-      if (!this.transaction.amount) return ''
-      return this.transaction.amount + ' ' + Cryptos.DOGE
-    },
-    fee () {
-      if (!this.transaction.fee) return ''
-      return this.transaction.fee + ' ' + Cryptos.DOGE
     },
     sender () {
       const { senders, senderId } = this.transaction

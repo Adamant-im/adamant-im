@@ -161,6 +161,7 @@
 <script>
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import Pagination from '@/components/Pagination'
+import currencyFilter from '@/filters/currency'
 
 export default {
   mounted () {
@@ -215,7 +216,7 @@ export default {
           value () {
             return this.forged
           },
-          format: value => `${this.$formatAmount(value).toFixed()} ADM`
+          format: value => currencyFilter(value)
         },
         {
           title: this.$t('votes.delegate_link'),

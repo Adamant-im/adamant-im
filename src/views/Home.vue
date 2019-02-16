@@ -22,7 +22,7 @@
               <wallet-card
                 :address="wallet.address"
                 :balance="wallet.balance"
-                :crypto-currency="wallet.cryptoCurrency"
+                :crypto="wallet.cryptoCurrency"
                 :crypto-name="wallet.cryptoName"
                 @click:balance="goToTransactions"
               >

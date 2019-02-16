@@ -81,7 +81,7 @@ export function getCurrentAccount () {
       throw new Error(response.error)
     })
     .then(account => {
-      account.balance = utils.toAdm(account.balance)
+      account.balance = Number(account.balance)
       account.unconfirmedBalance = utils.toAdm(account.unconfirmedBalance)
       account.publicKey = myKeypair.publicKey
       return account
