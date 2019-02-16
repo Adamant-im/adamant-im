@@ -41,7 +41,6 @@
 </template>
 
 <script>
-import { Cryptos } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import InlineSpinner from '@/components/InlineSpinner'
 import TransactionListItem from '@/components/TransactionListItem'
@@ -74,11 +73,6 @@ export default {
     isLoading () {
       return this.$store.getters[`${this.cryptoModule}/areTransactionsLoading`]
     },
-    crypto () {
-      return this.$route.params.crypto in Cryptos
-        ? this.$route.params.crypto
-        : 'ADM'
-    },
     cryptoModule () {
       return this.crypto.toLowerCase()
     }
@@ -93,7 +87,7 @@ export default {
         name: 'Transaction',
         params: {
           crypto: this.crypto,
-          tx_id: transactionId
+          txId: transactionId
         }
       })
     },
@@ -114,6 +108,12 @@ export default {
       if (windowHeight + scrollPosition >= height) {
         this.$store.dispatch(`${this.cryptoModule}/getOldTransactions`)
       }
+    }
+  },
+  props: {
+    crypto: {
+      default: 'ADM',
+      type: String
     }
   },
   components: {

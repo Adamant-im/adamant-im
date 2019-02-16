@@ -14,7 +14,7 @@
       </v-list-tile-title>
       <v-list-tile-sub-title>
         <v-layout>
-          {{ amountFormatted }} {{ crypto }}
+          {{ amount | currency(crypto) }}
           <v-spacer/>
           {{ createdAt | date }}
         </v-layout>
@@ -63,9 +63,6 @@ export default {
     },
     isPartnerInChatList () {
       return this.$store.getters['chat/isPartnerInChatList'](this.partnerId)
-    },
-    amountFormatted () {
-      return this.$formatAmount(this.amount, this.crypto)
     }
   },
   methods: {

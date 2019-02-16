@@ -191,10 +191,10 @@ export default function createActions (config) {
       const gasPrice = transaction.gasPrice
 
       const supplier = () => api.eth.getTransactionReceipt.request(payload.hash, (err, tx) => {
-        if (!err && tx && checkBlockCount(tx, context.rootState) && gasPrice) {
+        if (!err && tx && checkBlockCount(tx, context.rootState)) {
           context.commit('transactions', [{
             hash: payload.hash,
-            fee: utils.calculateFee(tx.gasUsed, parseInt(gasPrice, 16)),
+            fee: utils.calculateFee(tx.gasUsed, gasPrice),
             status: tx.status ? 'SUCCESS' : 'ERROR'
           }])
         }

@@ -17,9 +17,6 @@ import PartnerInfo from '@/components/PartnerInfo'
 
 export default {
   computed: {
-    partnerId () {
-      return this.$route.params.partner
-    },
     partnerName () {
       return this.$store.getters['partners/displayName'](this.partnerId)
     }
@@ -30,6 +27,12 @@ export default {
   },
   data: () => ({
     partnerInfoValue: false
-  })
+  }),
+  props: {
+    partnerId: {
+      required: true,
+      type: String
+    }
+  }
 }
 </script>

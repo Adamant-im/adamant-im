@@ -39,7 +39,7 @@
           :key="message.id"
           :user-id="userId"
           :sender="sender"
-          :amount="$formatAmount(message.amount, message.type)"
+          :amount="message.amount | currency(message.type)"
           :currency="message.type"
           :i18n="{ sent: $t('chats.sent_label'), received: $t('chats.received_label') }"
           :locale="locale"
@@ -218,7 +218,7 @@ export default {
         name: 'Transaction',
         params: {
           crypto: transaction.type,
-          tx_id: transaction.hash
+          txId: transaction.hash
         }
       })
     },

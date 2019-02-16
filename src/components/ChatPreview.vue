@@ -21,7 +21,7 @@
       <template v-if="lastTransaction">
         <v-list-tile-sub-title>
           <v-icon size="15">{{ status === 'confirmed' ? 'mdi-check-all' : 'mdi-clock-outline' }}</v-icon>
-          {{ transactionMessage }}
+          {{ transactionDirection }} {{ lastTransaction.amount | currency(lastTransaction.type) }}
         </v-list-tile-sub-title>
       </template>
 
@@ -93,16 +93,12 @@ export default {
 
       return null
     },
-    transactionMessage () {
-      const amount = this.$formatAmount(this.lastTransaction.amount, this.lastTransaction.type)
-
+    transactionDirection () {
       const direction = this.userId === this.lastTransaction.senderId
         ? this.$t('chats.sent_label')
         : this.$t('chats.received_label')
 
-      const crypto = this.lastTransaction.type
-
-      return `${direction} ${amount} ${crypto}`
+      return direction
     },
     numOfNewMessages () {
       return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
