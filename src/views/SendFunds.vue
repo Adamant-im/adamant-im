@@ -17,6 +17,7 @@
             :amount-to-send="amountToSend"
             :address-readonly="comeFromChat"
             @send="onSend"
+            @error="onError"
           />
 
         </v-flex>
@@ -77,6 +78,9 @@ export default {
       } else {
         this.$router.replace(`/transactions/${this.cryptoCurrency}/${transactionId}`)
       }
+    },
+    onError (message) {
+      this.$store.dispatch('snackbar/show', { message })
     }
   },
   components: {
