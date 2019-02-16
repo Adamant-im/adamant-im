@@ -19,11 +19,11 @@
           align-center
           class="mt-2"
           :style="{ cursor: 'pointer' }"
-          @click="$emit('click:balance', cryptoCurrency)"
+          @click="$emit('click:balance', crypto)"
         >
           <div>
             <h3 class="wallet-card__title">{{ $t('home.balance') }}</h3>
-            <div class="wallet-card__subtitle">{{ balance }} {{ cryptoCurrency }}</div>
+            <div class="wallet-card__subtitle">{{ balance | currency(crypto) }}</div>
           </div>
         </v-layout>
       </div>
@@ -57,7 +57,7 @@ export default {
       type: Number,
       required: true
     },
-    cryptoCurrency: {
+    crypto: {
       type: String,
       default: 'ADM'
     },
