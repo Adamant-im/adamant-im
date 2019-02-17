@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { Base64 } from 'js-base64'
 
-import { unlock, loginOrRegister, loginViaPassword, storeCryptoAddress } from '@/lib/adamant-api'
+import { unlock, loginOrRegister, loginViaPassword, storeCryptoAddress, sendSpecialMessage } from '@/lib/adamant-api'
 import { Cryptos } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
 import sessionStoragePlugin from './plugins/sessionStorage'
@@ -104,6 +104,21 @@ const store = {
     /** Stores user address for the specified crypto in the ADM KVS */
     storeCryptoAddress ({ state }, { crypto, address }) {
       return storeCryptoAddress(crypto, address)
+    },
+    sendCryptoTransferMessage (context, payload) {
+      const msg = {
+        type: `${payload.crypto}_transaction`,
+        amount: payload.amount,
+        hash: payload.hash,
+        comments: payload.comments
+      }
+
+      return sendSpecialMessage(payload.address, msg).then(result => {
+        if (!result.success) {
+          throw new Error(`Failed to send "${msg.type}"`)
+        }
+        return result.success
+      })
     },
     reset ({ commit }) {
       commit('reset', null, { root: true })
