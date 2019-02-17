@@ -267,7 +267,7 @@ export default {
             this.pushTransactionToChat(transactionId)
           }
 
-          this.$emit('send', transactionId)
+          this.$emit('send', transactionId, this.currency)
         })
         .catch(err => {
           console.error(err)

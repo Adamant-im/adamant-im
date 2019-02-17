@@ -70,13 +70,13 @@ export default {
         this.amountToSend = parseFloat(this.$route.params.amountToSend)
       }
     },
-    onSend (transactionId) {
+    onSend (transactionId, crypto) {
       const userComeFrom = this.$route.query.from
 
       if (userComeFrom) {
         this.$router.replace(userComeFrom)
       } else {
-        this.$router.replace(`/transactions/${this.cryptoCurrency}/${transactionId}`)
+        this.$router.replace(`/transactions/${crypto}/${transactionId}`)
       }
     },
     onError (message) {
