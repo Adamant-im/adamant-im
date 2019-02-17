@@ -23,7 +23,9 @@
         >
           <div>
             <h3 class="wallet-card__title">{{ $t('home.balance') }}</h3>
-            <div class="wallet-card__subtitle">{{ balance | currency(crypto) }}</div>
+            <div class="wallet-card__subtitle">
+              {{ crypto === 'ADM' ? balance * 1e8 : balance | currency(crypto) }}
+            </div>
           </div>
         </v-layout>
       </div>
