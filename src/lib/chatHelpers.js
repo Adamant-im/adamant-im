@@ -170,6 +170,7 @@ export function transformMessage (abstract) {
   transaction.i18n = !!abstract.i18n
   transaction.amount = abstract.amount ? abstract.amount : 0
   transaction.message = ''
+  transaction.height = abstract.height
 
   if (abstract.message && abstract.message.type) { // cryptos
     transaction.message = abstract.message.comments || ''
