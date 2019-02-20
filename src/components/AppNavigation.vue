@@ -6,7 +6,7 @@
     class="app-navigation"
   >
     <v-layout justify-center>
-      <v-flex xs12 sm12 md8 lg5 class="app-navigation__container">
+      <container class="app-navigation__container">
 
         <v-layout justify-center>
           <!-- Wallet -->
@@ -39,7 +39,7 @@
           </v-btn>
         </v-layout>
 
-      </v-flex>
+      </container>
     </v-layout>
   </v-bottom-nav>
 </template>

@@ -10,7 +10,7 @@
     <v-container fluid>
       <v-layout row wrap justify-center>
 
-        <v-flex xs12 sm12 md8 lg5>
+        <container>
 
           <v-data-table
             :headers="headers"
@@ -62,7 +62,7 @@
             v-model="preferFastestNodeOption"
           />
 
-        </v-flex>
+        </container>
 
       </v-layout>
     </v-container>

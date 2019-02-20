@@ -7,7 +7,7 @@
       flat
     />
 
-    <v-flex xs12 sm12 md8 lg5>
+    <container>
 
       <v-list class="transparent">
 
@@ -109,7 +109,7 @@
 
       </v-list>
 
-    </v-flex>
+    </container>
 
   </v-layout>
 </template>

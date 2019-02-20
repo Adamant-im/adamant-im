@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap justify-center class="home-page">
 
-    <v-flex xs12 sm12 md8 lg5>
+    <container>
 
       <v-card flat class="transparent white--text">
 
@@ -69,7 +69,7 @@
 
       </v-card>
 
-    </v-flex>
+    </container>
 
   </v-layout>
 </template>

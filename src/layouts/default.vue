@@ -1,7 +1,7 @@
 <template>
   <v-content>
     <v-container fluid fill-height>
-      <router-view/>
+      <slot/>
     </v-container>
 
     <app-snackbar/>

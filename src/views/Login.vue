@@ -1,7 +1,7 @@
 <template>
   <v-layout row fill-height justify-center class="login-page">
 
-    <v-flex xs12 sm12 md8 lg8>
+    <container>
 
       <div class="text-xs-right">
         <language-switcher>
@@ -21,7 +21,7 @@
 
       <v-card v-if="!isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
         <v-layout justify-center>
-          <v-flex xs12 sm8 md8 lg6>
+          <v-flex xs12 sm8 md8 lg8>
 
             <login-form
               v-model="passphrase"
@@ -73,7 +73,7 @@
       </v-card>
 
       <v-layout v-if="!isLoginViaPassword" justify-center class="mt-2">
-        <v-flex xs12 sm8 md8 lg6>
+        <v-flex xs12 sm8 md8 lg8>
           <passphrase-generator
             @copy="onCopyPassphraze"
           />
@@ -82,7 +82,7 @@
 
       <v-card v-if="isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
         <v-layout justify-center>
-          <v-flex xs12 sm8 md8 lg6>
+          <v-flex xs12 sm8 md8 lg8>
 
             <login-password-form
               v-model="password"
@@ -100,7 +100,7 @@
         @scan="onScanQrcode"
       />
 
-    </v-flex>
+    </container>
 
   </v-layout>
 </template>

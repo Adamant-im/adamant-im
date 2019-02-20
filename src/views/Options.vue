@@ -10,7 +10,7 @@
     <v-container fluid>
       <v-layout row wrap justify-center>
 
-        <v-flex xs12 sm12 md8 lg5>
+        <container>
 
           <!-- General -->
           <h3 class="title mt-3 mb-3">{{ $t('options.general_title') }}</h3>
@@ -105,7 +105,7 @@
            </v-flex>
           </v-layout>
 
-        </v-flex>
+        </container>
 
       </v-layout>
     </v-container>
