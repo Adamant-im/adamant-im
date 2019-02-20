@@ -21,6 +21,7 @@
           v-bind="message"
           :key="message.id"
           :message="isChatReadOnly ? $t(message.message) : message.message | msg"
+          :time="message.timestamp | date"
           :user-id="userId"
           :sender="sender"
           :show-avatar="!isChatReadOnly"
@@ -40,6 +41,7 @@
           :user-id="userId"
           :sender="sender"
           :amount="message.amount | currency(message.type)"
+          :time="message.timestamp | date"
           :currency="message.type"
           :i18n="{ sent: $t('chats.sent_label'), received: $t('chats.received_label') }"
           :locale="locale"
@@ -77,6 +79,7 @@ import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'
 import transaction from '@/mixins/transaction'
+import dateFilter from '@/filters/date'
 
 /**
  * Create Formatter instance.
@@ -227,7 +230,8 @@ export default {
     }
   },
   filters: {
-    msg: message => formatter.format(message)
+    msg: message => formatter.format(message),
+    date: dateFilter
   },
   mixins: [transaction],
   components: {
