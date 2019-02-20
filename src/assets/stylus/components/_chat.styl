@@ -46,7 +46,7 @@ $chat-avatar-size := 40px
 
     /* Scrollbar styles (WebKit) */
     &::-webkit-scrollbar
-      width: 2px
+      width: 4px
     &::-webkit-scrollbar-track
       background: transparent
     &::-webkit-scrollbar-thumb
@@ -104,9 +104,6 @@ $chat-avatar-size := 40px
     flex-direction: row
     align-items: center
 
-  &__message-card-body
-    margin-top: 2px
-
   &__message-text
     font-size: $chat-message.font-size
     overflow-wrap: break-word
@@ -142,8 +139,14 @@ $chat-avatar-size := 40px
     margin-right: 8px
 
   &__timestamp
-    font-size: 12px
+    font-size: 8px
     line-height: 1
+
+  &__amount
+    font-size: 24px
+    font-weight: 500
+    line-height: 1
+    cursor: pointer
 
   &__status
     line-height: 1

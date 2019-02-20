@@ -20,8 +20,8 @@
           <div v-else v-text="message" class="a-chat__message-text"></div>
         </div>
 
-        <div class="a-chat__message-card-header mt-2">
-          <div :title="date" class="a-chat__timestamp">{{ time }}</div>
+        <div class="a-chat__message-card-header mt-1">
+          <div :title="timeTitle" class="a-chat__timestamp font-italic">{{ time }}</div>
           <div class="a-chat__status">
             <v-icon v-if="status === 'sent'" size="15">mdi-clock-outline</v-icon>
             <v-icon
@@ -39,20 +39,7 @@
 </template>
 
 <script>
-import moment from 'moment'
-
 export default {
-  mounted () {
-    moment.locale(this.locale)
-  },
-  computed: {
-    time () {
-      return moment(this.timestamp).format('hh:mm A')
-    },
-    date () {
-      return moment(this.timestamp).format('LLLL')
-    }
-  },
   props: {
     id: {
       type: null,
@@ -62,9 +49,13 @@ export default {
       type: String,
       default: ''
     },
-    timestamp: {
-      type: Number,
-      default: 0
+    time: {
+      type: String,
+      default: ''
+    },
+    timeTitle: {
+      type: String,
+      default: ''
     },
     status: {
       type: String,

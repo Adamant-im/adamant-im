@@ -141,7 +141,8 @@ export default {
   position: relative
 
   &__date
-    font-size: 12px
+    font-size: 8px
+    font-style: italic
     color: $grey.base
     position: absolute
     top: 16px
