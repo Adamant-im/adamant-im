@@ -9,7 +9,7 @@
     <v-container fluid class="px-0">
       <v-layout row wrap justify-center>
 
-        <v-flex xs12 sm12 md8 lg5>
+        <container>
 
           <v-card>
             <v-card-title>
@@ -115,7 +115,7 @@
             </v-data-table>
           </v-card>
 
-        </v-flex>
+        </container>
 
       </v-layout>
     </v-container>

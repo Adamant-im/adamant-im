@@ -9,7 +9,7 @@
     <v-container fluid class="pa-0">
       <v-layout row wrap justify-center>
 
-        <v-flex v-if="isFulfilled" xs12 sm12 md8 lg5>
+        <container v-if="isFulfilled">
 
           <v-list v-if="hasTransactions" two-line class="transparent">
             <transaction-list-item
@@ -33,8 +33,10 @@
             {{ $t('transaction.no_transactions') }}
           </h3>
 
-        </v-flex>
+        </container>
+
         <InlineSpinner v-else-if="!isRejected" class="pt-4" />
+
       </v-layout>
     </v-container>
   </div>

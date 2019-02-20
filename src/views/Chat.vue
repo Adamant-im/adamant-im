@@ -1,12 +1,12 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex xs12 sm12 md8 lg5>
+    <container>
 
       <chat :partner-id="partnerId" @partner-info="partnerInfoValue = true"/>
       <PartnerInfo :address="partnerId" :name="partnerName" v-model="partnerInfoValue" />
 
-    </v-flex>
+    </container>
 
   </v-layout>
 </template>

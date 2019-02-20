@@ -1,6 +1,6 @@
 <template>
   <v-layout row wrap justify-center>
-    <v-flex xs12 sm12 md8 lg5>
+    <container>
       <v-layout row wrap>
         <v-flex xs12>
 
@@ -29,8 +29,7 @@
         </v-flex>
         <InlineSpinner v-if="!isFulfilled" />
       </v-layout>
-
-    </v-flex>
+    </container>
 
     <chat-start-dialog
       v-model="showChatStartDialog"

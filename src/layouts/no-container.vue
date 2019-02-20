@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <router-view/>
+    <slot/>
 
     <app-snackbar/>
     <app-navigation v-if="showNavigation"/>

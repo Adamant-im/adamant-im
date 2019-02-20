@@ -2,7 +2,7 @@
   <v-container fluid class="app-toolbar-centered" :class="classes">
     <v-layout row wrap justify-center>
 
-      <v-flex xs12 sm12 md8 lg5>
+      <container>
 
         <v-toolbar
           :flat="flat"
@@ -19,7 +19,7 @@
           </v-toolbar-title>
         </v-toolbar>
 
-      </v-flex>
+      </container>
 
     </v-layout>
   </v-container>

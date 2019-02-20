@@ -1,7 +1,7 @@
 <template>
   <v-content>
     <v-container fluid class="pa-0">
-      <router-view/>
+      <slot/>
     </v-container>
 
     <app-snackbar/>
