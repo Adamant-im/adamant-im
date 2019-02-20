@@ -19,6 +19,7 @@ export default {
   },
   mounted () {
     this.notifications = new Notifications(this)
+    this.notifications.start()
   },
   updated () {
     this.notifications.update(this)
@@ -42,9 +43,6 @@ export default {
       return this.$store.getters['options/isLoginViaPassword']
     }
   },
-  data: () => ({
-    interval: null
-  }),
   methods: {
     setLocale () {
       // Set language from `localStorage`.
