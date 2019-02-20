@@ -7,7 +7,7 @@
     :brief="brief"
     :readOnly="readOnly"
     :message="message"
-    :show-confirm-icon="message.amount > 0"
+    :show-confirm-icon="message.amount > 0 || message.direction === 'from'"
   >
     <p v-if="message.amount">
       {{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}
@@ -15,9 +15,6 @@
     <p v-if="message.amount" class='transaction-amount' v-on:click="goToTransaction()">
       <span v-text="$formatAmount(message.amount)"></span> ADM
     </p>
-    <div v-if="message.direction === 'to'" class="message-tick received-message-tick" :data-confirmation="'confirmed'">
-      <md-icon>done</md-icon>
-    </div>
     <p v-html="message.message" v-bind:class="{ transfer_comment: !!message.amount }" ></p>
 
     <template slot="brief-view">

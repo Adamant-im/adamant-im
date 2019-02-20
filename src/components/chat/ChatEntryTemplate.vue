@@ -8,7 +8,7 @@
       }"
       v-if="!brief"
     >
-      <div class="message-tick" :data-confirmation="confirm">
+      <div v-if="showConfirmIcon" class="message-tick" :data-confirmation="confirm">
         <md-icon>{{ messageTick[confirm] || 'done' }}</md-icon>
       </div>
       <div v-if="readOnly" class="adamant-avatar"></div>
