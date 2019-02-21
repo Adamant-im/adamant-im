@@ -2,6 +2,7 @@ import { isValidAddress } from 'ethereumjs-util'
 import { Cryptos, isErc20 } from './constants'
 
 const RE_ADM_ADDRESS = /^U([0-9]{6,})$/
+const RE_DOGE_ADDRES = /^D([0-9a-Z]{10,})$/
 
 /**
  * Checks if `address` is a valid address for the specified `crypto`.
@@ -15,6 +16,8 @@ export default function validateAddress (crypto, address) {
     return RE_ADM_ADDRESS.test(address)
   } else if (crypto === Cryptos.ETH || isErc20(crypto)) {
     return isValidAddress(address)
+  } else if (crypto === Cryptos.DOGE) {
+    return RE_DOGE_ADDRESS.test(address)
   }
   return true
 }
