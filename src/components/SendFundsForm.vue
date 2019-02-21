@@ -21,7 +21,7 @@
       >
         <template slot="label">
           <span v-if="addressReadonly && currency !== 'ADM'" class="font-weight-medium">
-            {{ $t('transfer.to_label') }} {{ recipientName || address  }}
+            {{ $t('transfer.to_label') }} {{ recipientName || address }}
           </span>
           <span v-else class="font-weight-medium">
             {{ $t('transfer.to_address_label') }}
@@ -262,8 +262,8 @@ export default {
             throw new Error('No hash')
           }
 
-          // send message if come from chat
-          if (this.address) {
+          // send message if come from chat or if currency is ADM
+          if (this.address || this.currency === Cryptos.ADM) {
             this.pushTransactionToChat(transactionId)
           }
 
@@ -281,9 +281,19 @@ export default {
     },
     sendFunds () {
       if (this.currency === Cryptos.ADM) {
-        const promise = this.address // if come from chat
-          ? sendMessage({ to: this.cryptoAddress, message: this.comment, amount: this.amount })
-          : sendTokens(this.cryptoAddress, this.amount)
+        let promise
+        if (this.address) { // if come from chat
+          promise = sendMessage({
+            amount: this.amount,
+            message: this.comment,
+            to: this.cryptoAddress
+          })
+        } else {
+          promise = this.$store.dispatch('adm/sendTokens', {
+            address: this.cryptoAddress,
+            amount: this.amount
+          })
+        }
         return promise.then(result => result.transactionId)
       } else {
         return this.$store.dispatch(this.currency.toLowerCase() + '/sendTokens', {
