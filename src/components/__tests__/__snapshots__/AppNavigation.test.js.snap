@@ -12,13 +12,8 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
     justify-center=""
     tag="div"
   >
-    <v-flex-stub
+    <container-stub
       class="app-navigation__container"
-      lg5=""
-      md8=""
-      sm12=""
-      tag="div"
-      xs12=""
     >
       <v-layout-stub
         justify-center=""
@@ -96,7 +91,7 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
           </v-icon-stub>
         </v-btn-stub>
       </v-layout-stub>
-    </v-flex-stub>
+    </container-stub>
   </v-layout-stub>
 </v-bottom-nav-stub>
 `;
