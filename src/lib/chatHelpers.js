@@ -3,6 +3,7 @@ import Queue from 'promise-queue'
 import utils from '@/lib/adamant'
 import * as admApi from '@/lib/adamant-api'
 import { isNumeric } from './numericHelpers'
+import { TransactionStatus as TS } from './constants'
 
 const maxConcurent = 1
 const maxQueue = Infinity
@@ -84,7 +85,7 @@ export function createChat () {
  * @param {string} message
  * @param {string} status Can be: `sent`, `confirmed`, `rejected`
  */
-export function createMessage ({ recipientId, senderId, message, status = 'sent' }) {
+export function createMessage ({ recipientId, senderId, message, status = TS.DELIVERED }) {
   return {
     id: utils.epochTime(), // @todo uuid will be better
     recipientId,
@@ -115,7 +116,7 @@ export function createTransaction (payload) {
     comment,
     hash,
     type = 'ADM',
-    status = 'sent'
+    status = TS.PENDING
   } = payload
 
   const transaction = {
@@ -149,7 +150,7 @@ export function getRealTimestamp (admTimestamp) {
 /**
  * Transform message for better integration into Vue components.
  * @param {Object} abstract Message object returned by the server.
- * @returns {Message} See `packages/chat/src/types.ts`
+ * @returns {Message} See `components/AChat/types.ts`
  */
 export function transformMessage (abstract) {
   let transaction = {}
@@ -166,16 +167,18 @@ export function transformMessage (abstract) {
   transaction.recipientId = abstract.recipientId
   transaction.admTimestamp = abstract.timestamp
   transaction.timestamp = getRealTimestamp(abstract.timestamp)
-  transaction.status = abstract.status || 'confirmed'
+  transaction.status = abstract.status || TS.DELIVERED
   transaction.i18n = !!abstract.i18n
   transaction.amount = abstract.amount ? abstract.amount : 0
   transaction.message = ''
   transaction.height = abstract.height
+  transaction.asset = {}
 
   if (abstract.message && abstract.message.type) { // cryptos
+    transaction.asset = abstract.message
     transaction.message = abstract.message.comments || ''
     transaction.amount = isNumeric(abstract.message.amount) ? +abstract.message.amount : 0
-    transaction.status = 'sent'
+    transaction.status = TS.PENDING
 
     const knownCrypto = knownCryptos[abstract.message.type.toLowerCase()]
     if (knownCrypto) {

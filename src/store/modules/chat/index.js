@@ -10,7 +10,7 @@ import {
   transformMessage
 } from '@/lib/chatHelpers'
 import { isNumeric } from '@/lib/numericHelpers'
-import { EPOCH } from '@/lib/constants'
+import { EPOCH, TransactionStatus as TS } from '@/lib/constants'
 
 /**
  * type State {
@@ -27,40 +27,6 @@ import { EPOCH } from '@/lib/constants'
  *   readOnly?: boolean // for Adamant Bounty & Adamant Tokens chats
  * }
  *
- * type ServerMessage {
- *   id: number,
- *   message: {string|Object}, // `Object` when eth transaction
- *   senderId: string,
- *   recipientId: string,
- *   amount: number,
- *   timestamp: number
- *   ...
- * }
- *
- * type Message = {
- *   id: number,
- *   senderId: string,
- *   recipientId: string,
- *   message: string,
- *   timestamp: number,
- *   admTimestamp: number,
- *   amount: number,
- *   i18n: boolean,
- *   status: MessageStatus,
- *   type: MessageType
- * }
- *
- * enum MessageType {
- *   Message = 'message',
- *   ADM = 'ADM',
- *   ETH = 'ETH'
- * }
- *
- * enum MessageStatus {
- *   sent,
- *   confirmed,
- *   rejected
- * }
  */
 const state = () => ({
   chats: {},
@@ -534,7 +500,7 @@ const actions = {
         commit('updateMessage', {
           id: messageObject.id,
           realId: res.transactionId,
-          status: 'confirmed',
+          status: TS.DELIVERED,
           partnerId: recipientId
         })
 
@@ -544,7 +510,7 @@ const actions = {
         // update `message.status` to 'rejected'
         commit('updateMessage', {
           id: messageObject.id,
-          status: 'rejected',
+          status: TS.REJECTED,
           partnerId: recipientId
         })
 
@@ -565,7 +531,7 @@ const actions = {
     // and then resendMessage
     commit('updateMessage', {
       id: messageId,
-      status: 'sent',
+      status: TS.PENDING,
       partnerId: recipientId
     })
 
@@ -579,7 +545,7 @@ const actions = {
           commit('updateMessage', {
             id: messageId,
             realId: res.transactionId,
-            status: 'confirmed',
+            status: TS.DELIVERED,
             partnerId: recipientId
           })
 
@@ -588,7 +554,7 @@ const actions = {
         .catch(err => {
           commit('updateMessage', {
             id: messageId,
-            status: 'rejected',
+            status: TS.REJECTED,
             partnerId: recipientId
           })
 

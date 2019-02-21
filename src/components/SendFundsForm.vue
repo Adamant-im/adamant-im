@@ -111,7 +111,7 @@
 import { BigNumber } from 'bignumber.js'
 
 import { sendTokens, sendMessage } from '@/lib/adamant-api'
-import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits } from '@/lib/constants'
+import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { isNumeric } from '@/lib/numericHelpers'
 
@@ -307,7 +307,7 @@ export default {
         hash: transactionId,
         recipientId: this.address,
         type: this.currency,
-        status: 'confirmed',
+        status: TS.PENDING,
         amount,
         comment: this.comment
       })

@@ -22,9 +22,10 @@ export enum MessageType {
 }
 
 export enum MessageStatus {
-  sent,
-  confirmed,
-  rejected
+  DELIVERED,
+  PENDING,
+  REJECTED,
+  INVALID
 }
 
 export type User = {

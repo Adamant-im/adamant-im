@@ -23,14 +23,7 @@
         <div class="a-chat__message-card-header mt-1">
           <div :title="timeTitle" class="a-chat__timestamp font-italic">{{ time }}</div>
           <div class="a-chat__status">
-            <v-icon v-if="status === 'sent'" size="15">mdi-clock-outline</v-icon>
-            <v-icon
-              v-else-if="status === 'rejected'"
-              size="15"
-              color="red"
-              @click="$emit('resend')"
-            >mdi-clock-outline</v-icon>
-            <v-icon v-else size="15">mdi-check-all</v-icon>
+            <v-icon size="15">{{ statusIcon }}</v-icon>
           </div>
         </div>
       </div>
@@ -40,6 +33,17 @@
 
 <script>
 export default {
+  computed: {
+    statusIcon () {
+      if (this.status === 'delivered') {
+        return 'mdi-check'
+      } else if (this.status === 'pending') {
+        return 'mdi-clock-outline'
+      } else {
+        return 'mdi-close-circle-outline'
+      }
+    }
+  },
   props: {
     id: {
       type: null,
@@ -60,7 +64,7 @@ export default {
     status: {
       type: String,
       default: 'confirmed',
-      validator: v => ['sent', 'confirmed', 'rejected'].includes(v)
+      validator: v => ['delivered', 'pending', 'rejected'].includes(v)
     },
     userId: {
       type: String,

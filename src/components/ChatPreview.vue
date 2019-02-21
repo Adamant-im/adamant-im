@@ -20,7 +20,7 @@
       <!-- Transaction -->
       <template v-if="lastTransaction">
         <v-list-tile-sub-title>
-          <v-icon size="15">{{ status === 'confirmed' ? 'mdi-check-all' : 'mdi-clock-outline' }}</v-icon>
+          <v-icon size="15">{{ statusIcon }}</v-icon>
           {{ transactionDirection }} {{ lastTransaction.amount | currency(lastTransaction.type) }}
         </v-list-tile-sub-title>
       </template>
@@ -57,6 +57,12 @@ export default {
 
     // fetch status if last message is transaction
     if (this.lastTransaction) {
+      this.fetchTransactionStatus(this.lastTransaction, this.partnerId)
+    }
+  },
+  watch: {
+    // fetch status when new message received
+    lastTransaction () {
       this.fetchTransactionStatus(this.lastTransaction, this.partnerId)
     }
   },
@@ -107,7 +113,18 @@ export default {
       return this.lastMessageTimestamp
     },
     status () {
-      return this.lastMessage.status
+      return this.getTransactionStatus(this.lastMessage)
+    },
+    statusIcon () {
+      if (this.status === 'delivered') {
+        return 'mdi-check'
+      } else if (this.status === 'pending') {
+        return 'mdi-clock-outline'
+      } else if (this.status === 'rejected') {
+        return 'mdi-close-circle-outline'
+      } else {
+        return 'mdi-alert-outline'
+      }
     }
   },
   data: () => ({

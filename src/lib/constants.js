@@ -91,3 +91,10 @@ export const UserPasswordHashSettings = {
   KEYLEN: 64,
   DIGEST: 'sha512'
 }
+
+export const TransactionStatus = {
+  DELIVERED: 'delivered',
+  PENDING: 'pending',
+  REJECTED: 'rejected',
+  INVALID: 'invalid'
+}

@@ -29,10 +29,7 @@
         <div class="a-chat__message-card-header">
           <div :title="timeTitle" class="a-chat__timestamp font-italic">{{ time }}</div>
           <div class="a-chat__status">
-            <v-icon
-              size="15"
-              :color="status === 'rejected' ? 'red' : ''"
-            >{{ statusIcon }}</v-icon>
+            <v-icon size="15">{{ statusIcon }}</v-icon>
           </div>
         </div>
       </div>
@@ -47,12 +44,14 @@ export default {
   },
   computed: {
     statusIcon () {
-      if (this.status === 'sent') {
+      if (this.status === 'delivered') {
+        return 'mdi-check'
+      } else if (this.status === 'pending') {
         return 'mdi-clock-outline'
       } else if (this.status === 'rejected') {
-        return 'mdi-clock-outline'
+        return 'mdi-close-circle-outline'
       } else {
-        return 'mdi-check-all'
+        return 'mdi-alert-outline'
       }
     }
   },
@@ -103,7 +102,7 @@ export default {
     status: {
       type: String,
       default: 'confirmed',
-      validator: v => ['sent', 'confirmed', 'rejected'].includes(v)
+      validator: v => ['delivered', 'pending', 'rejected', 'invalid'].includes(v)
     }
   }
 }
