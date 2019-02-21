@@ -2,7 +2,7 @@ import { isValidAddress } from 'ethereumjs-util'
 import { Cryptos, isErc20 } from './constants'
 
 const RE_ADM_ADDRESS = /^U([0-9]{6,})$/
-const RE_DOGE_ADDRES = /^D([0-9a-Z]{10,})$/
+const RE_DOGE_ADDRESS = /^D([0-9a-zA-Z]{10,})$/
 
 /**
  * Checks if `address` is a valid address for the specified `crypto`.
