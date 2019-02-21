@@ -31,12 +31,15 @@ export default {
       this.$store.commit('leave_chat')
       const params = { crypto: this.crypto, tx_id: this.hash }
       this.$router.push({ name: 'Transaction', params })
+    },
+    getTransaction () {
+      const timestamp = adm.toTimestamp(this.message.timestamp)
+      const prefix = this.crypto.toLowerCase()
+      this.$store.dispatch(prefix + '/getTransaction', { hash: this.hash, timestamp, amount: this.amount })
     }
   },
   mounted () {
-    const timestamp = adm.toTimestamp(this.message.timestamp)
-    const prefix = this.crypto.toLowerCase()
-    this.$store.dispatch(prefix + '/getTransaction', { hash: this.hash, timestamp, amount: this.amount })
+    this.getTransaction()
   },
   computed: {
     hash () {
@@ -65,6 +68,11 @@ export default {
       const type = this.message.message && this.message.message.type
       const crypto = type.substr(0, type.indexOf('_')).toUpperCase()
       return crypto
+    }
+  },
+  watch: {
+    hash () {
+      this.getTransaction()
     }
   }
 }
