@@ -96,7 +96,7 @@
                 </v-card>
               </template>
 
-              <v-alert slot="no-results" :value="true" color="error" icon="mdi-alert">
+              <v-alert slot="no-results" :value="true" color="grey darken-1" icon="mdi-alert">
                 Your search for "{{ search }}" found no results.
               </v-alert>
 
