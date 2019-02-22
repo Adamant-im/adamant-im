@@ -33,7 +33,7 @@ export default {
           if (e.code === 'Enter') {
             if (this.sendOnEnter) {
               if (e.ctrlKey) { // add LF and calculate height when CTRL+ENTER
-                this.message += '\n'
+                this.addLineFeed()
                 this.calculateInputHeight()
                 return
               }
@@ -65,6 +65,9 @@ export default {
     },
     calculateInputHeight () {
       this.$nextTick(this.$refs.messageTextarea.calculateInputHeight)
+    },
+    addLineFeed () {
+      this.message += '\n'
     }
   },
   props: {
