@@ -11,7 +11,7 @@
       ref="messageTextarea"
       rows="1"
 
-      :append-icon="showSendButton && message ? 'mdi-send' : ''"
+      :append-icon="showSendButton ? 'mdi-send' : ''"
       @click:append="submitMessage"
     >
       <template slot="prepend">
@@ -25,14 +25,20 @@
 export default {
   computed: {
     /**
-     * Processing `shift + enter` and `enter`
+     * Processing `ctrl+enter`, `shift + enter` and `enter`
      */
     listeners () {
       return {
         keydown: (e) => {
           if (e.code === 'Enter') {
             if (this.sendOnEnter) {
-              if (!e.ctrlKey && !e.shiftKey) {
+              if (e.ctrlKey) { // add LF and calculate height when CTRL+ENTER
+                this.message += '\n'
+                this.calculateInputHeight()
+                return
+              }
+
+              if (!e.shiftKey) { // send message if shiftKey is not pressed
                 e.preventDefault()
                 this.submitMessage()
               }
@@ -55,7 +61,10 @@ export default {
       this.$emit('message', this.message)
       this.message = ''
       // Fix textarea height to 1 row after miltiline message send
-      this.$refs.messageTextarea.$refs.input.style.height = '33px'
+      this.calculateInputHeight()
+    },
+    calculateInputHeight () {
+      this.$nextTick(this.$refs.messageTextarea.calculateInputHeight)
     }
   },
   props: {
