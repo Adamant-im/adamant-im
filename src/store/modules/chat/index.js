@@ -349,7 +349,8 @@ const mutations = {
         timestamp: EPOCH,
         senderId: 'Adamant Bounty',
         type: 'message',
-        i18n: true
+        i18n: true,
+        status: TS.DELIVERED
       }
     ]
 

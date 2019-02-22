@@ -131,12 +131,16 @@ export class Formatter {
 }
 
 export function removeFormats (message = '') {
-  return String(message)
+  const multiline = String(message)
     .replace(block.pre, '$1')
     .replace(block.quote, '$1')
     .replace(inline.bold, '$1')
     .replace(inline.italic, '$1')
     .replace(inline.strike, '$1')
     .replace(inline.code, '$1')
-    .replace(inline.br, '')
+
+  // get first line
+  const exec = /^([^\n]*)\n?/.exec(multiline)
+
+  return exec[1]
 }
