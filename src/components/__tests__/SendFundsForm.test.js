@@ -382,7 +382,7 @@ describe('SendFundsForm', () => {
       expect(wrapper.vm.showSpinner).toBe(false)
       expect(wrapper.vm.dialog).toBe(false)
       expect(wrapper.emitted('send')).toEqual([[transactionId, 'ADM']])
-      expect(wrapper.vm.pushTransactionToChat).not.toHaveBeenCalled()
+      expect(wrapper.vm.pushTransactionToChat).toHaveBeenCalled()
     })
 
     it('should sendFunds and push transaction to chat', async () => {
