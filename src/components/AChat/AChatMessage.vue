@@ -23,7 +23,13 @@
         <div class="a-chat__message-card-header mt-1">
           <div :title="timeTitle" class="a-chat__timestamp font-italic">{{ time }}</div>
           <div class="a-chat__status">
-            <v-icon size="15">{{ statusIcon }}</v-icon>
+            <v-icon
+              :title="i18n.retry"
+              size="15"
+              v-if="status === 'rejected'"
+              @click="$emit('resend')"
+            >{{ statusIcon }}</v-icon>
+            <v-icon size="15" v-else>{{ statusIcon }}</v-icon>
           </div>
         </div>
       </div>
@@ -85,6 +91,12 @@ export default {
     html: {
       type: Boolean,
       default: false
+    },
+    i18n: {
+      type: Object,
+      default: () => ({
+        'retry': 'Message did not sent, weak connection. Click to retry'
+      })
     }
   }
 }

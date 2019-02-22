@@ -12,7 +12,13 @@
               v-for="wallet in wallets"
               :key="wallet.cryptoCurrency"
             >
-              {{ wallet.cryptoCurrency }}
+              <div>
+                <icon :width="36" :height="36" fill="#BDBDBD" slot="icon" class="mb-2">
+                  <component :is="wallet.icon"/>
+                </icon>
+                <div>{{ wallet.balance }}</div>
+                <div>{{ wallet.cryptoCurrency }}</div>
+              </div>
             </v-tab>
 
             <v-tab-item
@@ -33,39 +39,6 @@
             </v-tab-item>
           </v-tabs>
         </v-card>
-
-        <!-- Actions -->
-        <v-list class="action-list transparent">
-          <v-list-tile @click="sendFunds" avatar>
-            <v-list-tile-avatar>
-              <v-icon class="action-list__icon">mdi-cube-send</v-icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t('home.send_btn') }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile @click="buyTokens" avatar>
-            <v-list-tile-avatar>
-              <v-icon class="action-list__icon">mdi-cash-usd</v-icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t('home.invest_btn') }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile v-if="!hasAdmTokens" @click="getFreeTokens" avatar>
-            <v-list-tile-avatar>
-              <v-icon class="action-list__icon">mdi-gift</v-icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t('home.free_adm_btn') }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
 
       </v-card>
 
@@ -123,25 +96,9 @@ export default {
           icon: 'doge-fill-icon'
         }
       ]
-    },
-    hasAdmTokens () {
-      return this.$store.state.balance > 0
     }
   },
-  data: () => ({
-  }),
   methods: {
-    sendFunds () {
-      this.$router.push('/transfer')
-    },
-    buyTokens () {
-      window.open('https://adamant.im/buy-tokens/?wallet=U9203183357885757380', '_blank')
-    },
-    getFreeTokens () {
-      const link = 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
-
-      window.open(link, '_blank')
-    },
     goToTransactions (crypto) {
       this.$router.push({
         name: 'Transactions',
@@ -165,6 +122,12 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_colors.styl'
+
+/**
+ * 1. Reset VTabs container fixed height.
+ */
+.home-page__wallets >>> .v-tabs__container
+  height: auto // [1]
 
 /** Themes **/
 .theme--light

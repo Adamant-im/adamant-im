@@ -3,9 +3,8 @@ import { Cryptos, TransactionStatus as TS } from '@/lib/constants'
 export default {
   methods: {
     /**
-     * Get transaction status from ETH, ERC20, DOGE modules
-     * and update chat message status.
-     * @param {{ id: string, type: string, hash: string }} transaction
+     * Get transaction status from ETH, ERC20, DOGE modules.
+     * @param {{ id: string, type: string, hash: string }} admSpecialMessage
      * @param {string} partnerId Partner ADM address
      */
     fetchTransactionStatus (admSpecialMessage, partnerId) {
@@ -19,7 +18,6 @@ export default {
     },
     /**
      * Fetch transaction and save to state.
-     * Used in `transactionStatus` to check transaction status.
      * @param {string} type Transaction type
      * @param {string} hash Transaction hash
      */
@@ -64,7 +62,7 @@ export default {
       const { hash, type, senderId, recipientId } = admSpecialMessage
 
       // ADM transaction already has property `status`
-      if (type === Cryptos.ADM) return TS.DELIVERED
+      if (type === Cryptos.ADM) return admSpecialMessage.status
 
       const getterName = type.toLowerCase() + '/transaction'
       const getter = this.$store.getters[getterName]

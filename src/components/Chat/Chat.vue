@@ -27,6 +27,7 @@
           :show-avatar="!isChatReadOnly"
           :locale="locale"
           :html="true"
+          :i18n="{ retry: $t('chats.retry_message') }"
           @resend="resendMessage(partnerId, message.id)"
         >
           <div @click="showPartnerInfo" slot="avatar" v-if="!isChatReadOnly">

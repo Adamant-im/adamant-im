@@ -83,9 +83,9 @@ export function createChat () {
  * @param {string} recipientId
  * @param {string} senderId
  * @param {string} message
- * @param {string} status Can be: `sent`, `confirmed`, `rejected`
+ * @param {string} status
  */
-export function createMessage ({ recipientId, senderId, message, status = TS.DELIVERED }) {
+export function createMessage ({ recipientId, senderId, message, status = TS.PENDING }) {
   return {
     id: utils.epochTime(), // @todo uuid will be better
     recipientId,
@@ -105,7 +105,7 @@ export function createMessage ({ recipientId, senderId, message, status = TS.DEL
  * @param {number} amount
  * @param {string} comment Transaction comment
  * @param {string} type ADM, ETH...
- * @param {string} status Can be: `sent`, `confirmed`, `rejected`
+ * @param {string} status
  */
 export function createTransaction (payload) {
   const {

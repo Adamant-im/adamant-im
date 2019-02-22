@@ -110,5 +110,19 @@ P3 Line2
 
       expect(formatter.format(message)).toBe('<p>P1 Line1<br>P1 Line2</p><p>P2 Line1</p><p>P3 Line1<br>P3 Line2</p>')
     })
+
+    it('should not format inline elements when `LF` is present', () => {
+      expect(formatter.format('*bold*')).toBe('<p><strong>bold</strong></p>')
+      expect(formatter.format('*bo\nld*')).toBe('<p>*bo<br>ld*</p>')
+
+      expect(formatter.format('_italic_')).toBe('<p><i>italic</i></p>')
+      expect(formatter.format('_ita\nlic_')).toBe('<p>_ita<br>lic_</p>')
+
+      expect(formatter.format('~strike~')).toBe('<p><strike>strike</strike></p>')
+      expect(formatter.format('~str\nike~')).toBe('<p>~str<br>ike~</p>')
+
+      expect(formatter.format('`code`')).toBe('<p><code>code</code></p>')
+      expect(formatter.format('`co\nde`')).toBe('<p>`co<br>de`</p>')
+    })
   })
 })
