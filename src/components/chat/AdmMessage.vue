@@ -10,15 +10,18 @@
     :show-confirm-icon="message.amount > 0 || message.direction === 'from'"
   >
     <p v-if="message.amount">
-      {{ $t("chats." + (message.direction === "from" ? "sent_label" : "received_label")) }}
+      {{ transferLabel }}
     </p>
     <p v-if="message.amount" class='transaction-amount' v-on:click="goToTransaction()">
-      <span v-text="$formatAmount(message.amount)"></span> ADM
+      <span v-text="amountText"></span> ADM
     </p>
     <p v-html="message.message" v-bind:class="{ transfer_comment: !!message.amount }" ></p>
 
     <template slot="brief-view">
-      <span v-html="message.message"></span>
+      <span v-if="message.amount">
+        {{ transferLabel }} {{ amountText }} ADM
+      </span>
+      <span v-else v-html="message.message"></span>
     </template>
   </chat-entry-template>
 </template>
@@ -36,6 +39,15 @@ export default {
       this.$store.commit('leave_chat')
       const params = { crypto: Cryptos.ADM, tx_id: this.message.id }
       this.$router.push({ name: 'Transaction', params })
+    }
+  },
+  computed: {
+    transferLabel () {
+      const label = this.message.direction === 'from' ? 'sent_label' : 'received_label'
+      return this.$t(`chats.${label}`)
+    },
+    amountText () {
+      return this.$formatAmount(this.message.amount)
     }
   }
 }
