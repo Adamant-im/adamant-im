@@ -213,6 +213,7 @@
     "error_no_address": "Enter recipient wallet address",
     "error_no_amount": "Enter amount to send",
     "error_not_enough": "Not enough tokens",
+    "error_same_recipient": "Recipient address can not be same as sender address",
     "error_transfer_send": "Error while sending transfer",
     "final_amount_label": "Amount including transfer fee",
     "max_transfer": "Max to transfer",

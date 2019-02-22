@@ -21,7 +21,7 @@
       >
         <template slot="label">
           <span v-if="addressReadonly && currency !== 'ADM'" class="font-weight-medium">
-            {{ $t('transfer.to_label') }} {{ recipientName || address  }}
+            {{ $t('transfer.to_label') }} {{ recipientName || address }}
           </span>
           <span v-else class="font-weight-medium">
             {{ $t('transfer.to_address_label') }}
@@ -110,7 +110,7 @@
 <script>
 import { BigNumber } from 'bignumber.js'
 
-import { sendTokens, sendMessage } from '@/lib/adamant-api'
+import { sendMessage } from '@/lib/adamant-api'
 import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { isNumeric } from '@/lib/numericHelpers'
@@ -185,6 +185,13 @@ export default {
       return BigNumber(this.maxToTransfer).toFixed() // ??? this.exponent
     },
 
+    /**
+     * Own address depending on selected currency
+     * @returns {string}
+     */
+    ownAddress () {
+      return this.$store.state[this.currency.toLowerCase()].address
+    },
     recipientName () {
       if (this.currency === Cryptos.ADM) {
         return this.$store.getters['partners/displayName'](this.cryptoAddress)
@@ -262,8 +269,8 @@ export default {
             throw new Error('No hash')
           }
 
-          // send message if come from chat
-          if (this.address) {
+          // send message if come from chat or if currency is ADM
+          if (this.address || this.currency === Cryptos.ADM) {
             this.pushTransactionToChat(transactionId)
           }
 
@@ -271,7 +278,7 @@ export default {
         })
         .catch(err => {
           console.error(err)
-          this.$emit('error', err.message)
+          this.$emit('error', err.message || err)
         })
         .finally(() => {
           this.disabledButton = false
@@ -280,18 +287,34 @@ export default {
         })
     },
     sendFunds () {
-      if (this.currency === Cryptos.ADM) {
-        const promise = this.address // if come from chat
-          ? sendMessage({ to: this.cryptoAddress, message: this.comment, amount: this.amount })
-          : sendTokens(this.cryptoAddress, this.amount)
-        return promise.then(result => result.transactionId)
+      if (this.ownAddress !== this.cryptoAddress) {
+        if (this.currency === Cryptos.ADM) {
+          let promise
+          if (this.address) { // if come from chat
+            promise = sendMessage({
+              amount: this.amount,
+              message: this.comment,
+              to: this.cryptoAddress
+            })
+          } else {
+            promise = this.$store.dispatch('adm/sendTokens', {
+              address: this.cryptoAddress,
+              amount: this.amount
+            })
+          }
+          return promise.then(result => result.transactionId)
+        } else {
+          return this.$store.dispatch(this.currency.toLowerCase() + '/sendTokens', {
+            amount: this.amount,
+            admAddress: this.address,
+            address: this.cryptoAddress,
+            comments: this.comment
+          })
+        }
       } else {
-        return this.$store.dispatch(this.currency.toLowerCase() + '/sendTokens', {
-          amount: this.amount,
-          admAddress: this.address,
-          address: this.cryptoAddress,
-          comments: this.comment
-        })
+        return Promise.reject(
+          this.$t('transfer.error_same_recipient')
+        )
       }
     },
     pushTransactionToChat (transactionId) {

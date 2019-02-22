@@ -1,4 +1,4 @@
-import * as admApi from '../../../lib/adamant-api'
+import * as admApi from '@/lib/adamant-api'
 
 export default {
 
@@ -86,5 +86,22 @@ export default {
     return admApi.getTransaction(hash).then(
       transaction => context.commit('transactions', [transaction])
     )
+  },
+
+  /**
+   * Sends the specified amount of ADM to the specified ADM address
+   * @param {any} context Vuex action context
+   * @param {{address: string, amount: number}} options send options
+   * @returns {Promise<{nodeTimestamp: number, success: boolean, transactionId: string}>}
+   */
+  sendTokens (context, options) {
+    return admApi.sendTokens(options.address, options.amount).then(result => {
+      context.commit('transactions', [{
+        id: result.transactionId,
+        recipientId: options.address,
+        senderId: context.state.address
+      }])
+      return result
+    })
   }
 }
