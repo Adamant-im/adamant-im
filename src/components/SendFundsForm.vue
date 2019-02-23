@@ -54,7 +54,7 @@
       />
 
       <v-text-field
-        v-if="this.address"
+        v-if="this.address || this.isRecipientInChatList"
         v-model="comment"
         :label="$t('transfer.comments_label')"
         counter
@@ -209,7 +209,8 @@ export default {
       return {
         cryptoAddress: [
           fieldRequired,
-          v => validateAddress(this.currency, v) || this.$t('transfer.error_incorrect_address', { crypto: this.currency })
+          v => validateAddress(this.currency, v) || this.$t('transfer.error_incorrect_address', { crypto: this.currency }),
+          v => v !== this.ownAddress || this.$t('transfer.error_same_recipient')
         ],
         amount: [
           fieldRequired,
@@ -228,6 +229,12 @@ export default {
 
       const msgType = this.recipientName ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
       return this.$t(msgType, { amount: BigNumber(this.amount).toFixed(), target, crypto: this.currency })
+    },
+    isRecipientInChatList () {
+      return (
+        this.currency === Cryptos.ADM &&
+        this.$store.getters['chat/isPartnerInChatList'](this.cryptoAddress)
+      )
     }
   },
   watch: {
@@ -269,16 +276,24 @@ export default {
             throw new Error('No hash')
           }
 
-          // send message if come from chat
-          if (this.address) {
-            this.pushTransactionToChat(transactionId)
+          if (this.currency === Cryptos.ADM) {
+            // push fast transaction if come from chat
+            // or if recipient is in chat list
+            if (this.address || this.isRecipientInChatList) {
+              this.pushTransactionToChat(transactionId, this.cryptoAddress)
+            }
+          } else { // other cryptos
+            // if come from chat
+            if (this.address) {
+              this.pushTransactionToChat(transactionId, this.address)
+            }
           }
 
           this.$emit('send', transactionId, this.currency)
         })
         .catch(err => {
           console.error(err)
-          this.$emit('error', err.message || err)
+          this.$emit('error', err.message)
         })
         .finally(() => {
           this.disabledButton = false
@@ -287,37 +302,34 @@ export default {
         })
     },
     sendFunds () {
-      if (this.ownAddress !== this.cryptoAddress) {
-        if (this.currency === Cryptos.ADM) {
-          let promise
-          if (this.address) { // if come from chat
-            promise = sendMessage({
-              amount: this.amount,
-              message: this.comment,
-              to: this.cryptoAddress
-            })
-          } else {
-            promise = this.$store.dispatch('adm/sendTokens', {
-              address: this.cryptoAddress,
-              amount: this.amount
-            })
-          }
-          return promise.then(result => result.transactionId)
-        } else {
-          return this.$store.dispatch(this.currency.toLowerCase() + '/sendTokens', {
+      if (this.currency === Cryptos.ADM) {
+        let promise
+        // 1. sendMessage if come from chat
+        //    or if recipient is in chat list
+        // 2. else send regular transaction with `type = 0`
+        if (this.address || this.isRecipientInChatList) {
+          promise = sendMessage({
             amount: this.amount,
-            admAddress: this.address,
+            message: this.comment,
+            to: this.cryptoAddress
+          })
+        } else {
+          promise = this.$store.dispatch('adm/sendTokens', {
             address: this.cryptoAddress,
-            comments: this.comment
+            amount: this.amount
           })
         }
+        return promise.then(result => result.transactionId)
       } else {
-        return Promise.reject(
-          this.$t('transfer.error_same_recipient')
-        )
+        return this.$store.dispatch(this.currency.toLowerCase() + '/sendTokens', {
+          amount: this.amount,
+          admAddress: this.address,
+          address: this.cryptoAddress,
+          comments: this.comment
+        })
       }
     },
-    pushTransactionToChat (transactionId) {
+    pushTransactionToChat (transactionId, adamantAddress) {
       let amount = this.amount
 
       // unformat ADM `amount`
@@ -328,7 +340,7 @@ export default {
       this.$store.dispatch('chat/pushTransaction', {
         transactionId,
         hash: transactionId,
-        recipientId: this.address,
+        recipientId: adamantAddress,
         type: this.currency,
         status: TS.PENDING,
         amount,

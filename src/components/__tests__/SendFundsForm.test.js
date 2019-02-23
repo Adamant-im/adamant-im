@@ -3,6 +3,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VueI18n from 'vue-i18n'
 import Vuetify from 'vuetify'
+import sinon from 'sinon'
 
 import { Cryptos } from '@/lib/constants'
 import SendFundsForm from '@/components/SendFundsForm'
@@ -113,26 +114,41 @@ function mockupStore () {
     namespaced: true
   })
 
+  const chatModule = () => ({
+    getters: {
+      isPartnerInChatList: state => partnerId => {
+        if (partnerId === 'U111111') {
+          return true
+        }
+
+        return false
+      }
+    },
+    namespaced: true
+  })
+
   return {
     mainModule,
     admModule,
     ethModule,
     bnbModule,
-    partnersModule
+    partnersModule,
+    chatModule
   }
 }
 
 describe('SendFundsForm', () => {
-  let i18n, store, main, adm, eth, bnb, partners, wrapper
+  let i18n, store, main, adm, eth, bnb, partners, chat, wrapper
 
   beforeEach(() => {
-    const { mainModule, admModule, ethModule, bnbModule, partnersModule } = mockupStore()
+    const { mainModule, admModule, ethModule, bnbModule, partnersModule, chatModule } = mockupStore()
 
     main = mainModule()
     adm = admModule()
     eth = ethModule()
     bnb = bnbModule()
     partners = partnersModule()
+    chat = chatModule()
 
     store = new Vuex.Store({
       ...main,
@@ -140,7 +156,8 @@ describe('SendFundsForm', () => {
         adm,
         eth,
         bnb,
-        partners
+        partners,
+        chat
       }
     })
 
@@ -388,13 +405,15 @@ describe('SendFundsForm', () => {
     it('should sendFunds and push transaction to chat', async () => {
       wrapper.setMethods({
         sendFunds: () => Promise.resolve(transactionId),
-        pushTransactionToChat: jest.fn()
+        pushTransactionToChat: sinon.spy()
       })
-      wrapper.setData({ address: 'U111111' })
+      wrapper.setData({ cryptoAddress: 'U111111' })
 
       await wrapper.vm.submit()
 
-      expect(wrapper.vm.pushTransactionToChat).toHaveBeenCalledWith(transactionId)
+      expect(wrapper.vm.pushTransactionToChat.args).toEqual([
+        [transactionId, 'U111111']
+      ])
     })
 
     it('should emit error when sendFunds rejected', async () => {

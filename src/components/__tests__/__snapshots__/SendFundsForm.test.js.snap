@@ -15,7 +15,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     <v-text-field-stub
       rules="v => !!v || this.$t('transfer.error_field_is_required'),v => _get__(\\"validateAddress\\")(this.currency, v) || this.$t('transfer.error_incorrect_address', {
           crypto: this.currency
-        })"
+        }),v => v !== this.ownAddress || this.$t('transfer.error_same_recipient')"
       type="text"
     >
       <template>
