@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @click="$emit('click')" :style="isClickable ? 'cursor:pointer' : ''">
     <img class="chat-avatar" v-if="avatar" :src="avatar" :width="size" :height="size"/>
     <canvas
       :width="canvasSize"
@@ -13,6 +13,7 @@
 <script>
 import { getPublicKey } from '@/lib/adamant-api'
 import Identicon from '@/lib/identicon'
+import clickable from '@/mixins/clickable'
 
 export default {
   mounted () {
@@ -68,6 +69,7 @@ export default {
       return Promise.resolve(el.toDataURL())
     }
   },
+  mixins: [clickable],
   props: {
     size: {
       type: Number,

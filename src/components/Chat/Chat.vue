@@ -30,9 +30,12 @@
           :i18n="{ retry: $t('chats.retry_message') }"
           @resend="resendMessage(partnerId, message.id)"
         >
-          <div @click="showPartnerInfo" slot="avatar" v-if="!isChatReadOnly">
-            <ChatAvatar :user-id="sender.id" style="cursor: pointer" use-public-key />
-          </div>
+          <ChatAvatar
+            @click="showPartnerInfo"
+            :user-id="sender.id"
+            use-public-key
+            slot="avatar"
+          />
         </a-chat-message>
 
         <a-chat-transaction

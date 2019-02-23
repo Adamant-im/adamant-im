@@ -4,7 +4,7 @@
     <container>
 
       <chat :partner-id="partnerId" @partner-info="partnerInfoValue = true"/>
-      <PartnerInfo :address="partnerId" :name="partnerName" v-model="partnerInfoValue" />
+      <PartnerInfo :address="partnerId" :name="partnerName" v-if="!isChatReadOnly" v-model="partnerInfoValue" />
 
     </container>
 
@@ -19,6 +19,9 @@ export default {
   computed: {
     partnerName () {
       return this.$store.getters['partners/displayName'](this.partnerId)
+    },
+    isChatReadOnly () {
+      return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
     }
   },
   components: {
