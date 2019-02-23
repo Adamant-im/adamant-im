@@ -10,7 +10,7 @@ import {
   transformMessage
 } from '@/lib/chatHelpers'
 import { isNumeric } from '@/lib/numericHelpers'
-import { EPOCH, TransactionStatus as TS } from '@/lib/constants'
+import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
 
 /**
  * type State {
@@ -261,22 +261,22 @@ const mutations = {
 
     const chat = state.chats[partnerId]
 
-    // shouldn't duplicate local messages added directly
-    // when dispatch('getNewMessages')
-    const isMessageInList = chat.messages.find(localMessage => localMessage.id === message.id)
-    if (isMessageInList) {
+    // Shouldn't duplicate local messages added directly
+    // when dispatch('getNewMessages'). Just update `status`.
+    const localMessage = chat.messages.find(localMessage => localMessage.id === message.id)
+    if (localMessage) { // is message in state
+      localMessage.status = message.status
       return
     }
 
-    // find transaction by `hash` and update `status`
-    if (message.type && message.type !== 'message') {
-      const transaction = chat.messages.find(localTransaction => localTransaction.hash === message.hash)
-
-      if (transaction) {
-        transaction.status = message.status
-
-        return
-      }
+    // Shouldn't duplicate third-party crypto transactions
+    if (
+      message.type &&
+      message.type !== 'message' &&
+      message.type !== Cryptos.ADM
+    ) {
+      const localTransaction = chat.messages.find(localTransaction => localTransaction.hash === message.hash)
+      if (localTransaction) return
     }
 
     chat.messages.push(message)
@@ -284,7 +284,11 @@ const mutations = {
     // If this is a new message, increment `numOfNewMessages`.
     // Exception only when `height = 0`, this means that the
     // user cleared `localStorage` or logged in first time.
-    if (message.height > state.lastMessageHeight && state.lastMessageHeight > 0) {
+    if (
+      message.height > state.lastMessageHeight &&
+      state.lastMessageHeight > 0 &&
+      userId !== message.senderId // do not notify yourself when send message from other device
+    ) {
       chat.numOfNewMessages += 1
     }
   },

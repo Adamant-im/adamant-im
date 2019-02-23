@@ -8,6 +8,8 @@ export default {
      * @param {string} partnerId Partner ADM address
      */
     fetchTransactionStatus (admSpecialMessage, partnerId) {
+      if (!admSpecialMessage || !partnerId) return
+
       const { type, hash, senderId, recipientId } = admSpecialMessage
 
       // ADM transaction already has property `status`
@@ -46,6 +48,9 @@ export default {
       recipientCryptoAddress,
       senderCryptoAddress
     }) {
+      if (!recipientCryptoAddress || !senderCryptoAddress) return false
+      if (!transaction.senderId || !transaction.recipientId) return false
+
       if (
         transaction.hash === admSpecialMessage.hash &&
         +transaction.amount === +admSpecialMessage.amount &&
@@ -59,6 +64,8 @@ export default {
     },
 
     getTransactionStatus (admSpecialMessage) {
+      if (!admSpecialMessage) return TS.PENDING
+
       const { hash, type, senderId, recipientId } = admSpecialMessage
 
       // ADM transaction already has property `status`

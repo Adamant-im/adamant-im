@@ -269,8 +269,8 @@ export default {
             throw new Error('No hash')
           }
 
-          // send message if come from chat or if currency is ADM
-          if (this.address || this.currency === Cryptos.ADM) {
+          // send message if come from chat
+          if (this.address) {
             this.pushTransactionToChat(transactionId)
           }
 
