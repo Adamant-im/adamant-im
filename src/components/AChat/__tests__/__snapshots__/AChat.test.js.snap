@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AChat.vue renders the correct markup 1`] = `
+<div
+  class="a-chat"
+>
+  <div
+    class="a-chat__content"
+  >
+     
+    <v-divider-stub />
+     
+    <div
+      class="a-chat__body"
+    >
+      <div
+        class="text-xs-center py-2"
+      >
+        <v-progress-circular-stub
+          color="primary"
+          indeterminate="true"
+          rotate="0"
+          size="24"
+          style="z-index: 100; display: none;"
+          value="0"
+          width="4"
+        />
+      </div>
+       
+      <div
+        class="a-chat__body-messages"
+      />
+    </div>
+     
+  </div>
+</div>
+`;

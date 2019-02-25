@@ -3,27 +3,18 @@
   "server": {
     "adm": [
       {
-        "ip": "clown.adamant.im",
-        "protocol": "https",
-        "port": ""
-      },
-      {
-        "ip": "lake.adamant.im",
-        "protocol": "https",
-        "port": ""
-      },
-      {
-        "ip": "endless.adamant.im",
-        "protocol": "https",
-        "port": ""
+        "url": "http://163.172.161.218:36667"
       }
     ],
     "eth": [
       {
-        "ip": "ethnode1.adamant.im",
-        "protocol": "https",
-        "port": ""
+        "url": "https://ethnode1.adamant.im",
+        "hasIndex": true
       }
+    ],
+    "doge": [
+      { "url": "https://dogenode1.adamant.im/api/" }
     ]
-  }
+  },
+  "env": "test"
 }

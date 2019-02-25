@@ -2,60 +2,63 @@
   <v-form v-model="validForm" @submit.prevent="submit" ref="form" class="login-form">
 
     <v-layout>
-      <v-text-field
-        v-model="passphrase"
-        :label="$t('login.password_label')"
-        browser-autocomplete="current-password"
-        class="text-xs-center"
-        type="password"
-      />
-      <v-icon
-        class="ml-2"
-        :color="showQrcodeRenderer ? 'primary' : ''"
-        @click="toggleQrcodeRenderer"
-      >
-        mdi-qrcode
-      </v-icon>
+      <slot>
+        <v-text-field
+          v-model="passphrase"
+          :label="$t('login.password_label')"
+          browser-autocomplete="current-password"
+          class="text-xs-center"
+          color="grey"
+          type="password"
+        />
+      </slot>
+
+      <slot name="append-outer"></slot>
     </v-layout>
 
-    <v-layout row wrap align-center justify-center class="mt-2">
-      <v-btn
-        :disabled="!validForm || disabledButton"
-        @click="submit"
-      >
-        <v-progress-circular
-          v-show="showSpinner"
-          indeterminate
-          color="primary"
-          size="24"
-          class="mr-3"
-        />
-        {{ $t('login.login_button') }}
-      </v-btn>
+    <v-layout row wrap align-center justify-center>
+      <slot name="button">
+        <v-btn
+          :disabled="!validForm || disabledButton"
+          class="login-button v-btn--primary"
+          @click="submit"
+        >
+          <v-progress-circular
+            v-show="showSpinner"
+            indeterminate
+            color="primary"
+            size="24"
+            class="mr-3"
+          />
+          {{ $t('login.login_button') }}
+        </v-btn>
+      </slot>
     </v-layout>
 
     <transition name="slide-fade">
-      <v-layout v-if="showQrcodeRenderer && passphrase" justify-center class="mt-3">
-        <button @click="saveQrcode" type="button">
-          <QrcodeRenderer :text="passphrase" ref="qrcode" />
-        </button>
+      <v-layout justify-center>
+        <slot name="qrcode-renderer"/>
       </v-layout>
     </transition>
   </v-form>
 </template>
 
 <script>
-import b64toBlob from 'b64-to-blob'
-import FileSaver from 'file-saver'
-import QrcodeRenderer from '@/components/QrcodeRenderer'
-
 export default {
+  computed: {
+    passphrase: {
+      get () {
+        return this.value
+      },
+      set (value) {
+        this.$emit('input', value)
+      }
+    }
+  },
   data: () => ({
     validForm: true,
     disabledButton: false,
-    passphrase: '',
-    showSpinner: false,
-    showQrcodeRenderer: false
+    showSpinner: false
   }),
   methods: {
     submit () {
@@ -73,21 +76,14 @@ export default {
         .then(() => {
           this.$emit('login')
         })
-        .catch(err => {
-          this.$emit('error', err)
+        .catch(() => {
+          this.$emit('error', 'login.invalid_passphrase')
         })
         .finally(() => {
           this.antiFreeze()
         })
 
       return promise
-    },
-    saveQrcode () {
-      const imgUrl = this.$refs.qrcode.$el.src
-      const base64Data = imgUrl.slice(22, imgUrl.length)
-      const byteCharacters = b64toBlob(base64Data)
-      const blob = new Blob([byteCharacters], { type: 'image/png' })
-      FileSaver.saveAs(blob, 'adamant-im.png')
     },
     freeze () {
       this.disabledButton = true
@@ -96,28 +92,18 @@ export default {
     antiFreeze () {
       this.disabledButton = false
       this.showSpinner = false
-    },
-    toggleQrcodeRenderer () {
-      this.showQrcodeRenderer = !this.showQrcodeRenderer
     }
-  },
-  components: {
-    QrcodeRenderer
   },
   props: {
-    qrcodePassphrase: {
-      type: String
-    }
-  },
-  watch: {
-    qrcodePassphrase () {
-      this.passphrase = this.qrcodePassphrase
+    value: {
+      type: String,
+      default: ''
     }
   }
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="stylus" scoped>
 /**
  * Centering input text and label.
  *
@@ -140,14 +126,6 @@ export default {
   font-size: 12px;
 }
 
-/**
- * Slide Fade animation.
- */
-.slide-fade-enter-active, .slide-fade-leave-active {
-  transition: all .3s ease;
-}
-.slide-fade-enter, .slide-fade-leave-to {
-  transform: translateY(10px);
-  opacity: 0;
-}
+.login-button
+  min-width: 126px
 </style>

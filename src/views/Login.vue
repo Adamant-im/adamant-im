@@ -1,10 +1,12 @@
 <template>
   <v-layout row fill-height justify-center class="login-page">
 
-    <v-flex xs12 sm12 md8 lg8>
+    <container>
 
       <div class="text-xs-right">
-        <language-switcher/>
+        <language-switcher>
+          <v-icon slot="prepend" size="18">mdi-chevron-right</v-icon>
+        </language-switcher>
       </div>
 
       <v-card flat color="transparent" class="text-xs-center mt-3">
@@ -17,74 +19,133 @@
         <h2 class="hidden-sm-and-down login-page__subtitle mt-3">{{ $t('login.subheader') }}</h2>
       </v-card>
 
-      <v-card flat color="transparent" class="text-xs-center mt-3">
+      <v-card v-if="!isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
         <v-layout justify-center>
-          <v-flex xs12 sm8 md8 lg6>
+          <v-flex xs12 sm8 md8 lg8>
+
             <login-form
+              v-model="passphrase"
               @login="onLogin"
               @error="onLoginError"
-              :qrcodePassphrase="decodedPassphrase"
-            />
+            >
+              <template slot="append-outer">
+                <icon
+                  class="ml-2"
+                  :width="24"
+                  :height="24"
+                  shape-rendering="crispEdges"
+                  :color="showQrcodeRenderer ? this.$vuetify.theme.primary : ''"
+                  @click="toggleQrcodeRenderer"
+                >
+                  <qr-code-icon/>
+                </icon>
+              </template>
+
+              <template slot="qrcode-renderer">
+                <div @click="saveQrcode" :style="{ cursor: 'pointer' }">
+                  <transition name="slide-fade">
+                    <QrcodeRenderer v-if="showQrcodeRenderer" :text="passphrase" ref="qrcode" />
+                  </transition>
+                </div>
+              </template>
+            </login-form>
+
           </v-flex>
         </v-layout>
-        <qrcode-capture @detect="onDetect" ref="qrcodeCapture" style="display: none"/>
+
         <v-layout justify-center>
           <v-btn
             icon
             flat
-            large
             fab
             @click="showQrcodeScanner = true"
             :title="$t('login.scan_qr_code_button_tooltip')"
           >
-            <v-icon>mdi-qrcode-scan</v-icon>
+            <icon><qr-code-scan-icon/></icon>
           </v-btn>
-          <v-btn @click="openFileDialog" :title="$t('login.login_by_qr_code_tooltip')" icon flat large fab>
-            <v-icon>mdi-file-upload-outline</v-icon>
+
+          <v-btn @click="openFileDialog" :title="$t('login.login_by_qr_code_tooltip')" icon flat fab>
+            <icon><file-icon/></icon>
           </v-btn>
+
+          <qrcode-capture @detect="onDetect" ref="qrcodeCapture" style="display: none"/>
         </v-layout>
       </v-card>
 
-      <v-layout justify-center class="mt-2">
-        <v-flex xs12 sm8 md8 lg6>
+      <v-layout v-if="!isLoginViaPassword" justify-center class="mt-2">
+        <v-flex xs12 sm8 md8 lg8>
           <passphrase-generator
             @copy="onCopyPassphraze"
           />
         </v-flex>
       </v-layout>
 
-      <qrcode-scanner
+      <v-card v-if="isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
+        <v-layout justify-center>
+          <v-flex xs12 sm8 md8 lg8>
+
+            <login-password-form
+              v-model="password"
+              @login="onLogin"
+              @error="onLoginError"
+            />
+
+          </v-flex>
+        </v-layout>
+      </v-card>
+
+      <qrcode-scanner-dialog
         v-if="showQrcodeScanner"
         v-model="showQrcodeScanner"
         @scan="onScanQrcode"
       />
 
-    </v-flex>
+    </container>
 
   </v-layout>
 </template>
 
 <script>
+import b64toBlob from 'b64-to-blob'
+import FileSaver from 'file-saver'
+import { QrcodeCapture } from 'vue-qrcode-reader'
+
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
 import LoginForm from '@/components/LoginForm'
-import QrcodeScanner from '@/components/QrcodeScanner'
-import { QrcodeCapture } from 'vue-qrcode-reader'
+import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
+import QrcodeRenderer from '@/components/QrcodeRenderer'
+import Icon from '@/components/icons/BaseIcon'
+import QrCodeIcon from '@/components/icons/common/QrCode'
+import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
+import FileIcon from '@/components/icons/common/File'
+import LoginPasswordForm from '@/components/LoginPasswordForm'
+import AppInterval from '@/lib/AppInterval'
 
 export default {
+  computed: {
+    showQrcodeRenderer () {
+      return this.isQrcodeRendererActive && this.passphrase
+    },
+    isLoginViaPassword () {
+      return this.$store.getters['options/isLoginViaPassword']
+    }
+  },
   data: () => ({
+    passphrase: '',
+    password: '',
     showQrcodeScanner: false,
-    logo: '/img/adamant-logo-transparent-512x512.png', // @todo maybe svg will be better
-    decodedPassphrase: ''
+    isQrcodeRendererActive: false,
+    logo: '/img/adamant-logo-transparent-512x512.png'
   }),
   methods: {
     async onDetect (promise) {
       try {
         const { content } = await promise // Decoded string or null
         if (content && /^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(content.trim())) {
-          this.decodedPassphrase = content
+          this.passphrase = content
         } else {
-          this.decodedPassphrase = ''
+          this.passphrase = ''
           this.$store.dispatch('snackbar/show', {
             message: this.$t('login.invalid_qr_code')
           })
@@ -95,12 +156,19 @@ export default {
     },
     onLogin () {
       this.$router.push('/chats')
+
+      if (!this.$store.state.chat.isFulfilled) {
+        this.$store.commit('chat/createAdamantChats')
+        this.$store.dispatch('chat/loadChats')
+          .then(() => AppInterval.subscribe())
+      } else {
+        AppInterval.subscribe()
+      }
     },
-    onLoginError (err) {
+    onLoginError (key) {
       this.$store.dispatch('snackbar/show', {
-        message: this.$t('login.invalid_passphrase')
+        message: this.$t(key)
       })
-      console.error(err)
     },
     onCopyPassphraze () {
       this.$store.dispatch('snackbar/show', {
@@ -119,14 +187,30 @@ export default {
     },
     openFileDialog () {
       this.$refs.qrcodeCapture.$el.click()
+    },
+    saveQrcode () {
+      const imgUrl = this.$refs.qrcode.$el.src
+      const base64Data = imgUrl.slice(22, imgUrl.length)
+      const byteCharacters = b64toBlob(base64Data)
+      const blob = new Blob([byteCharacters], { type: 'image/png' })
+      FileSaver.saveAs(blob, 'adamant-im.png')
+    },
+    toggleQrcodeRenderer () {
+      this.isQrcodeRendererActive = !this.isQrcodeRendererActive
     }
   },
   components: {
     LanguageSwitcher,
     PassphraseGenerator,
     LoginForm,
-    QrcodeScanner,
-    QrcodeCapture
+    QrcodeScannerDialog,
+    QrcodeRenderer,
+    QrcodeCapture,
+    Icon,
+    QrCodeIcon,
+    QrCodeScanIcon,
+    FileIcon,
+    LoginPasswordForm
   }
 }
 </script>

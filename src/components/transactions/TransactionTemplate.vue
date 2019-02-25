@@ -1,12 +1,13 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <app-toolbar
+    <app-toolbar-centered
+      app
       :title="`#${id}`"
       flat
     />
 
-    <v-flex xs12 sm12 md8 lg5>
+    <container>
 
       <v-list class="transparent">
 
@@ -58,38 +59,35 @@
 
         <v-divider/>
 
-        <v-list-tile>
+        <v-list-tile :title="id || placeholder">
           <v-list-tile-content>
             <v-list-tile-title>{{ $t('transaction.txid') }}</v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{ id || placeholder }}
+            </v-list-tile-sub-title>
           </v-list-tile-content>
-
-          <div>
-            <v-list-tile-title>{{ id || placeholder }}</v-list-tile-title>
-          </div>
         </v-list-tile>
 
         <v-divider/>
 
-        <v-list-tile>
+        <v-list-tile :title="sender || placeholder">
           <v-list-tile-content>
             <v-list-tile-title>{{ $t('transaction.sender') }}</v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{ sender || placeholder }}
+            </v-list-tile-sub-title>
           </v-list-tile-content>
-
-          <div>
-            <v-list-tile-title>{{ sender || placeholder }}</v-list-tile-title>
-          </div>
         </v-list-tile>
 
         <v-divider/>
 
-        <v-list-tile>
+        <v-list-tile :title="recipient || placeholder">
           <v-list-tile-content>
             <v-list-tile-title>{{ $t('transaction.recipient') }}</v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{ recipient || placeholder }}
+            </v-list-tile-sub-title>
           </v-list-tile-content>
-
-          <div>
-            <v-list-tile-title>{{ recipient || placeholder }}</v-list-tile-title>
-          </div>
         </v-list-tile>
 
         <v-divider/>
@@ -111,7 +109,7 @@
 
       </v-list>
 
-    </v-flex>
+    </container>
 
   </v-layout>
 </template>
@@ -119,7 +117,7 @@
 <script>
 import { Symbols } from '@/lib/constants'
 
-import AppToolbar from '@/components/AppToolbar'
+import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 export default {
   name: 'transaction-template',
@@ -142,7 +140,6 @@ export default {
       }
     },
     openChat: function () {
-      this.$store.commit('select_chat', this.partner)
       this.$router.push('/chats/' + this.partner + '/')
     }
   },
@@ -157,7 +154,7 @@ export default {
     }
   },
   components: {
-    AppToolbar
+    AppToolbarCentered
   }
 }
 </script>

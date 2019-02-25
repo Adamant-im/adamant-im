@@ -14,14 +14,12 @@ export default {
    * @param {{partner: string, displayName: string}} payload partner address and display name
    */
   displayName (state, { partner, displayName }) {
-    const partnerObject = state.list[partner]
-
-    // if partner is not list, create
-    if (!partnerObject) {
-      Vue.set(state.list, partner, { displayName: '' })
+    if (state.list.hasOwnProperty(partner)) {
+      state.list[partner].displayName = displayName
+    } else {
+      // if partner is not in the list, add
+      Vue.set(state.list, partner, { displayName })
     }
-
-    partnerObject.displayName = displayName
     state.lastChange = Date.now()
   },
 

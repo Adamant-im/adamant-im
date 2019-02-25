@@ -5,7 +5,7 @@
   >
     <v-card>
       <v-card-title
-        class="headline grey lighten-2"
+        class="headline"
         primary-title
       >
         {{ $t('chats.new_chat') }}
@@ -35,7 +35,7 @@
       </v-layout>
     </v-card>
 
-    <qrcode-scanner
+    <qrcode-scanner-dialog
       v-if="showQrcodeScanner"
       v-model="showQrcodeScanner"
       @scan="onScanQrcode"
@@ -45,7 +45,7 @@
 
 <script>
 import validateAddress from '@/lib/validateAddress'
-import QrcodeScanner from '@/components/QrcodeScanner'
+import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 
 export default {
   computed: {
@@ -99,7 +99,7 @@ export default {
     }
   },
   components: {
-    QrcodeScanner
+    QrcodeScannerDialog
   },
   props: {
     value: {

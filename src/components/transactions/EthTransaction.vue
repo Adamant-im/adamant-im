@@ -1,9 +1,9 @@
 <template>
   <transaction-template
-    :amount="amount"
+    :amount="transaction.amount | currency('ETH')"
     :timestamp="transaction.timestamp"
     :id="transaction.hash"
-    :fee="fee"
+    :fee="transaction.fee | currency('ETH')"
     :confirmations="confirmations"
     :sender="sender"
     :recipient="recipient"
@@ -20,12 +20,14 @@ import { Cryptos } from '../../lib/constants'
 
 export default {
   name: 'eth-transaction',
-  props: ['id'],
+  props: {
+    id: {
+      required: true,
+      type: String
+    }
+  },
   components: {
     TransactionTemplate
-  },
-  mounted () {
-    this.$store.dispatch('eth/getTransaction', { hash: this.id })
   },
   data () {
     return { }
@@ -33,14 +35,6 @@ export default {
   computed: {
     transaction () {
       return this.$store.state.eth.transactions[this.id] || { }
-    },
-    amount () {
-      if (!this.transaction.amount) return ''
-      return this.transaction.amount + ' ' + Cryptos.ETH
-    },
-    fee () {
-      if (!this.transaction.fee) return ''
-      return this.transaction.fee + ' ' + Cryptos.ETH
     },
     sender () {
       return this.formatAddress(this.transaction.senderId)
@@ -79,7 +73,7 @@ export default {
 
       if (!admAddress) {
         // Bad news, everyone: we'll have to scan the messages
-        Object.values(this.$store.state.chats).some(chat => {
+        Object.values(this.$store.state.chat.chats).some(chat => {
           Object.values(chat.messages).some(msg => {
             if (msg.message && msg.message.hash === this.id) {
               admAddress = msg.senderId === this.$store.state.address ? msg.recipientId : msg.senderId

@@ -16,11 +16,14 @@ export const Transactions = {
 export const Cryptos = {
   ADM: 'ADM',
   ETH: 'ETH',
-  BNB: 'BNB'
+  BNB: 'BNB',
+  DOGE: 'DOGE',
+  BZ: 'BZ'
 }
 
 export const ERC20 = Object.freeze([
-  Cryptos.BNB
+  Cryptos.BNB,
+  Cryptos.BZ
 ])
 
 export const isErc20 = crypto => ERC20.includes(crypto)
@@ -29,7 +32,17 @@ export const isErc20 = crypto => ERC20.includes(crypto)
 export const CryptoAmountPrecision = {
   ADM: 2,
   ETH: 6,
-  BNB: 6
+  BNB: 6,
+  DOGE: 8,
+  BZ: 6
+}
+
+export const CryptoNaturalUnits = {
+  ADM: 8,
+  ETH: 18,
+  BNB: 18,
+  DOGE: 8,
+  BZ: 18
 }
 
 /** Fees for the misc ADM operations */
@@ -68,4 +81,20 @@ export const ERC20_TRANSFER_GAS = ETH_TRANSFER_GAS * 10
 export default {
   EPOCH,
   Transactions
+}
+
+export const UserPasswordArticleLink = 'https://medium.com/adamant-im/more-convenience-login-to-the-web-messenger-with-user-password-9d48a736dfd8'
+
+export const UserPasswordHashSettings = {
+  SALT: 'salt',
+  ITERATIONS: 100000,
+  KEYLEN: 64,
+  DIGEST: 'sha512'
+}
+
+export const TransactionStatus = {
+  DELIVERED: 'delivered',
+  PENDING: 'pending',
+  REJECTED: 'rejected',
+  INVALID: 'invalid'
 }

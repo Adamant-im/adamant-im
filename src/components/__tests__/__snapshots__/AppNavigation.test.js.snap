@@ -8,76 +8,90 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
   height="56"
   value="true"
 >
-  <v-btn-stub
-    activeclass="v-btn--active"
-    flat="true"
-    tag="button"
-    to="/home"
-    type="button"
+  <v-layout-stub
+    justify-center=""
+    tag="div"
   >
-    <span>
-      Wallet
-    </span>
-     
-    <v-icon-stub>
-      mdi-wallet
-    </v-icon-stub>
-  </v-btn-stub>
-   
-  <v-btn-stub
-    activeclass="v-btn--active"
-    flat="true"
-    tag="button"
-    to="/chats"
-    type="button"
-  >
-    <span>
-      Chats
-    </span>
-     
-    <v-badge-stub
-      color="primary"
-      overlap="true"
-      transition="fab-transition"
-      value="true"
+    <container-stub
+      class="app-navigation__container"
     >
-      <!---->
-       
-      <v-icon-stub>
-        mdi-forum
-      </v-icon-stub>
-    </v-badge-stub>
-  </v-btn-stub>
-   
-  <v-btn-stub
-    activeclass="v-btn--active"
-    flat="true"
-    tag="button"
-    to="/options"
-    type="button"
-  >
-    <span>
-      Settings
-    </span>
-     
-    <v-icon-stub>
-      mdi-settings
-    </v-icon-stub>
-  </v-btn-stub>
-   
-  <v-btn-stub
-    activeclass="v-btn--active"
-    flat="true"
-    tag="button"
-    type="button"
-  >
-    <span>
-      Logout
-    </span>
-     
-    <v-icon-stub>
-      mdi-logout-variant
-    </v-icon-stub>
-  </v-btn-stub>
+      <v-layout-stub
+        justify-center=""
+        tag="div"
+      >
+        <v-btn-stub
+          activeclass="v-btn--active"
+          flat="true"
+          tag="button"
+          to="/home"
+          type="button"
+        >
+          <span>
+            Wallet
+          </span>
+           
+          <v-icon-stub>
+            mdi-wallet
+          </v-icon-stub>
+        </v-btn-stub>
+         
+        <v-btn-stub
+          activeclass="v-btn--active"
+          flat="true"
+          tag="button"
+          to="/chats"
+          type="button"
+        >
+          <span>
+            Chats
+          </span>
+           
+          <v-badge-stub
+            color="primary"
+            overlap="true"
+            transition="fab-transition"
+            value="true"
+          >
+            <!---->
+             
+            <v-icon-stub>
+              mdi-forum
+            </v-icon-stub>
+          </v-badge-stub>
+        </v-btn-stub>
+         
+        <v-btn-stub
+          activeclass="v-btn--active"
+          flat="true"
+          tag="button"
+          to="/options"
+          type="button"
+        >
+          <span>
+            Settings
+          </span>
+           
+          <v-icon-stub>
+            mdi-settings
+          </v-icon-stub>
+        </v-btn-stub>
+         
+        <v-btn-stub
+          activeclass="v-btn--active"
+          flat="true"
+          tag="button"
+          type="button"
+        >
+          <span>
+            Logout
+          </span>
+           
+          <v-icon-stub>
+            mdi-logout-variant
+          </v-icon-stub>
+        </v-btn-stub>
+      </v-layout-stub>
+    </container-stub>
+  </v-layout-stub>
 </v-bottom-nav-stub>
 `;

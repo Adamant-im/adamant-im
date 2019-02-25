@@ -44,6 +44,8 @@ export default class Identicon {
     ]
     this.cache = null
     this.avatar = function (canvas, key, size) {
+      // Sizes lower than 40 may cause aspect ration distortion
+      if (size && size < 40) throw Error('Identicon size can not be smaller than 40')
       this.cache = canvas.getContext('2d')
       this.Hexa16(key, size || 40)
     }

@@ -21,7 +21,15 @@ module.exports = {
       new webpack.ContextReplacementPlugin(
         /moment[/\\]locale$/,
         /it|de|en|fr|ru/
-      )
+      ),
+      // replace `config.json` for different environments
+      new webpack.NormalModuleReplacementPlugin(/(.*){ENV}(.*)/, (resource) => {
+        const configName = process.env.ADM_CONFIG_FILE
+          ? process.env.ADM_CONFIG_FILE
+          : process.env.NODE_ENV
+
+        resource.request = resource.request.replace('{ENV}', configName)
+      })
     ]
   },
   transpileDependencies: [

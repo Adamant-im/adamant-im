@@ -1,8 +1,12 @@
 import Queue from 'promise-queue'
+import { Base64 } from 'js-base64'
 
 import { Transactions, Delegates } from './constants'
 import utils from './adamant'
 import client from './adamant-api-client'
+import { encryptPassword } from '@/lib/idb/crypto'
+import { restoreState } from '@/lib/idb/state'
+import store from '@/store'
 
 Queue.configure(Promise)
 
@@ -13,7 +17,8 @@ const queue = new Queue(1, Infinity)
 let myKeypair = { }
 let myAddress = null
 
-const publicKeysCache = { }
+/** Lists cryptos for which addresses are currently being stored to the KVS */
+const pendingAddresses = { }
 
 /**
  * Creates a new transaction with the common fields pre-filled
@@ -97,15 +102,26 @@ export function isReady () {
  * @returns {Promise<string>}
  */
 export function getPublicKey (address = '') {
-  if (publicKeysCache[address]) {
-    return Promise.resolve(publicKeysCache[address])
+  const publicKeyCached = store.getters.publicKey(address)
+
+  if (publicKeyCached) {
+    return Promise.resolve(publicKeyCached)
   }
 
   return client.get('/api/accounts/getPublicKey', { address })
     .then(response => {
-      const key = response.publicKey
-      publicKeysCache[address] = key
-      return key
+      const publicKey = response.publicKey
+
+      if (publicKey) {
+        store.commit('setPublicKey', {
+          adamantAddress: address,
+          publicKey
+        })
+
+        return publicKey
+      }
+
+      throw new Error('No public key')
     })
 }
 
@@ -282,6 +298,37 @@ export function getForgedByAccount (accountPublicKey) {
 }
 
 /**
+ * Stores user address for the specified crypto
+ * @param {string} crypto crypto
+ * @param {*} address user address for `crypto`
+ * @returns {Promise<boolean>}
+ */
+export function storeCryptoAddress (crypto, address) {
+  const canProceed = crypto && address && isReady() && !pendingAddresses[crypto]
+  if (!canProceed) return Promise.resolve(false)
+
+  const key = `${crypto.toLowerCase()}:address`
+  pendingAddresses[crypto] = true
+
+  return getStored(key)
+    .then(stored => (stored)
+      ? true
+      : storeValue(key, address).then(response => response.success)
+    )
+    .then(
+      success => {
+        delete pendingAddresses[crypto]
+        return success
+      },
+      error => {
+        console.warn(`Failed to store ${key}`, error)
+        delete pendingAddresses[crypto]
+        return false
+      }
+    )
+}
+
+/**
  * Retrieves ADM transactions.
  * @param {{type: number, from: number, to: number}} options specifies height range
  * @returns {Promise<{success: boolean, transactions: Array}>}
@@ -289,7 +336,7 @@ export function getForgedByAccount (accountPublicKey) {
 export function getTransactions (options = { }) {
   const query = {
     inId: myAddress,
-    'and:type': options.type || Transactions.SEND,
+    'and:minAmount': 1,
     orderBy: 'timestamp:desc'
   }
 
@@ -299,6 +346,10 @@ export function getTransactions (options = { }) {
 
   if (options.from) {
     query['and:fromHeight'] = options.from
+  }
+
+  if (options.type) {
+    query['and:type'] = options.type
   }
 
   return client.get('/api/transactions', query)
@@ -410,16 +461,11 @@ function getI18nMessage (message, senderId) {
   // P.S. I hate this function, but there's no way to get rid of it now.
 
   const isI18n =
-    (message.indexOf('chats.welcome_message') > -1 && senderId === 'U15423595369615486571') ||
-    (message.indexOf('chats.preico_message') > -1 && senderId === 'U7047165086065693428') ||
-    (message.indexOf('chats.ico_message') > -1 && senderId === 'U7047165086065693428')
+    (message.indexOf('chats.welcome_message') > -1 && senderId === 'U15423595369615486571')
 
   if (isI18n) {
     if (senderId === 'U15423595369615486571') {
       return 'chats.welcome_message'
-    }
-    if (senderId === 'U7047165086065693428') {
-      return 'chats.ico_message'
     }
   }
 
@@ -439,4 +485,34 @@ export function loginOrRegister (passphrase) {
   }
 
   return getCurrentAccount()
+}
+
+/**
+ * Login via password.
+ * @param {string} password
+ * @param {any} store
+ * @returns {Promise} Encrypted password
+ */
+export function loginViaPassword (password, store) {
+  return encryptPassword(password)
+    .then(encryptedPassword => {
+      store.commit('setPassword', encryptedPassword)
+
+      return restoreState(store)
+    })
+    .then(() => {
+      const passphrase = Base64.decode(store.state.passphrase)
+
+      try {
+        unlock(passphrase)
+      } catch (e) {
+        return Promise.reject(e)
+      }
+
+      return getCurrentAccount()
+        .then(account => ({
+          ...account,
+          passphrase
+        }))
+    })
 }

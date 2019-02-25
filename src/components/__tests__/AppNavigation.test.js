@@ -6,10 +6,14 @@ import Vuetify from 'vuetify'
 
 import mockupI18n from './__mocks__/plugins/i18n'
 import AppNavigation from '@/components/AppNavigation'
+import Container from '@/components/Container'
+
+jest.mock('@/store', () => {})
 
 Vue.use(Vuex)
 Vue.use(VueI18n)
 Vue.use(Vuetify)
+Vue.component('container', Container)
 
 /**
  * Mockup store helper
@@ -30,26 +34,38 @@ function mockupStore () {
     namespaced: true
   }
 
+  const options = {
+    state: {
+      logoutOnTabClose: false
+    },
+    mutations: {
+      updateOption: jest.fn()
+    },
+    namespaced: true
+  }
+
   const store = new Vuex.Store({
     actions,
     modules: {
-      chat
+      chat,
+      options
     }
   })
 
   return {
     store,
     chat,
+    options,
     actions
   }
 }
 
-// @todo Update tests after refactor store
 describe('AppNavigation.vue', () => {
   let i18n = null
   let store = null
   let actions = null
   let chat = null
+  let options = null
 
   beforeEach(() => {
     // mockup chat module
@@ -57,6 +73,7 @@ describe('AppNavigation.vue', () => {
     store = vuex.store
     actions = vuex.actions
     chat = vuex.chat
+    options = vuex.options
 
     // mockup i18n
     i18n = mockupI18n()
@@ -96,7 +113,7 @@ describe('AppNavigation.vue', () => {
     expect(vm.showNav).toBe(true)
   })
 
-  it('should cause mutations in store & call $router.push("/") when logout()', () => {
+  it('should cause mutations in store & call $router.push("/") when logout()', async () => {
     const wrapper = shallowMount(AppNavigation, {
       store,
       i18n,
@@ -110,10 +127,10 @@ describe('AppNavigation.vue', () => {
       }
     })
 
-    wrapper.vm.logout()
+    const promise = wrapper.vm.logout()
 
+    await expect(promise).resolves.toEqual(undefined) // clearDb
     expect(actions.logout).toHaveBeenCalled()
-    expect(actions.reset).toHaveBeenCalled()
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith('/')
   })
 

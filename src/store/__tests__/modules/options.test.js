@@ -12,7 +12,7 @@ describe('Store: options.js', () => {
   })
 
   it('should mutate existing option', () => {
-    expect(state.logoutOnTabClose).toBe(false)
+    expect(state.logoutOnTabClose).toBe(true)
 
     module.mutations.updateOption(state, {
       key: 'logoutOnTabClose',

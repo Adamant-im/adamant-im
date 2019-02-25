@@ -1,6 +1,12 @@
+import { Fees } from '@/lib/constants'
+
 const sortFunc = (a, b) => ((b && b.timestamp) || 0) - ((a && a.timestamp) || 0)
 
 export default {
+  areTransactionsLoading (state) {
+    return state.areTransactionsLoading
+  },
+
   /**
    * Returnes transactions list sorted by timestamp (from the newest to the oldest)
    * @param {{transactions: Object.<string, object>}} state module state
@@ -15,5 +21,9 @@ export default {
    * This getter was added to support transactions display in chats and supposed to be removed
    * as soon as we add an endpoint to fetch transactions for chats.
    */
-  partnerTransactions: state => partner => Object.values(state.transactions).filter(tx => tx.partner === partner)
+  partnerTransactions: state => partner => Object.values(state.transactions).filter(tx => tx.partner === partner),
+
+  fee () {
+    return Fees.ADM_TRANSFER
+  }
 }

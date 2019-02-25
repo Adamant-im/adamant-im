@@ -8,7 +8,9 @@
       <chat-avatar v-else :size="40" :user-id="partnerId" use-public-key/>
 
       <v-badge overlap color="primary">
-        <span v-if="numOfNewMessages" slot="badge">{{ numOfNewMessages }}</span>
+        <span v-if="numOfNewMessages > 0" slot="badge">
+          {{ numOfNewMessages > 99 ? '99+' : numOfNewMessages }}
+        </span>
       </v-badge>
     </v-list-tile-avatar>
 
@@ -17,7 +19,10 @@
 
       <!-- Transaction -->
       <template v-if="lastTransaction">
-        <v-list-tile-sub-title>{{ transactionMessage }}</v-list-tile-sub-title>
+        <v-list-tile-sub-title>
+          <v-icon size="15">{{ statusIcon }}</v-icon>
+          {{ transactionDirection }} {{ lastTransaction.amount | currency(lastTransaction.type) }}
+        </v-list-tile-sub-title>
       </template>
 
       <!-- Message -->
@@ -38,17 +43,28 @@
 
 <script>
 import moment from 'moment'
+import { removeFormats } from '@/lib/message-formatter'
+
+import transaction from '@/mixins/transaction'
 import dateFilter from '@/filters/date'
-import { EPOCH } from '@/lib/constants'
-import { removeFormats } from '@adamant/message-formatter'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import Icon from '@/components/icons/BaseIcon'
 import AdmFillIcon from '@/components/icons/AdmFill'
-import { transformMessage } from '@/lib/chatHelpers'
 
 export default {
   mounted () {
     moment.locale(this.$store.state.language.currentLocale)
+
+    // fetch status if last message is transaction
+    if (this.lastTransaction) {
+      this.fetchTransactionStatus(this.lastTransaction, this.partnerId)
+    }
+  },
+  watch: {
+    // fetch status when new message received
+    lastTransaction () {
+      this.fetchTransactionStatus(this.lastTransaction, this.partnerId)
+    }
   },
   computed: {
     userId () {
@@ -61,7 +77,7 @@ export default {
       return this.$store.getters['chat/lastMessage'](this.partnerId)
     },
     isMessageI18n () {
-      return (this.lastMessage.i18n)
+      return this.lastMessage.i18n
     },
     lastMessageText () {
       return this.$store.getters['chat/lastMessageText'](this.partnerId)
@@ -73,32 +89,42 @@ export default {
       return this.$store.getters['chat/lastMessageTimestamp'](this.partnerId)
     },
     lastTransaction () {
-      const abstract = transformMessage(this.lastMessage)
+      if (this.lastMessage) {
+        const abstract = this.lastMessage
 
-      if (abstract.type !== 'message') {
-        return abstract
+        if (abstract.type !== 'message') {
+          return abstract
+        }
       }
 
       return null
     },
-    transactionMessage () {
-      const amount = this.lastTransaction.type === 'ADM'
-        ? this.$formatAmount(this.lastTransaction.amount)
-        : this.lastTransaction.amount
-
+    transactionDirection () {
       const direction = this.userId === this.lastTransaction.senderId
         ? this.$t('chats.sent_label')
         : this.$t('chats.received_label')
 
-      const crypto = this.lastTransaction.type
-
-      return `${direction} ${amount} ${crypto}`
+      return direction
     },
     numOfNewMessages () {
       return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
     },
     createdAt () {
-      return this.lastMessageTimestamp * 1000 + EPOCH // transform ADM timestamp
+      return this.lastMessageTimestamp
+    },
+    status () {
+      return this.getTransactionStatus(this.lastMessage)
+    },
+    statusIcon () {
+      if (this.status === 'delivered') {
+        return 'mdi-check'
+      } else if (this.status === 'pending') {
+        return 'mdi-clock-outline'
+      } else if (this.status === 'rejected') {
+        return 'mdi-close-circle-outline'
+      } else {
+        return 'mdi-alert-outline'
+      }
     }
   },
   data: () => ({
@@ -106,6 +132,7 @@ export default {
   filters: {
     date: dateFilter
   },
+  mixins: [transaction],
   components: {
     ChatAvatar,
     Icon,
@@ -131,7 +158,8 @@ export default {
   position: relative
 
   &__date
-    font-size: 12px
+    font-size: 8px
+    font-style: italic
     color: $grey.base
     position: absolute
     top: 16px

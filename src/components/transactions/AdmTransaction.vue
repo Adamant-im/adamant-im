@@ -1,9 +1,9 @@
 <template>
   <transaction-template
-    :amount="amount"
+    :amount="transaction.amount | currency"
     :timestamp="transaction.timestamp"
     :id="transaction.id"
-    :fee="fee"
+    :fee="transaction.fee | currency"
     :confirmations="transaction.confirmations"
     :sender="sender"
     :recipient="recipient"
@@ -20,34 +20,18 @@ import { Cryptos } from '../../lib/constants'
 
 export default {
   name: 'adm-transaction',
-  props: ['id'],
+  props: {
+    id: {
+      required: true,
+      type: String
+    }
+  },
   components: {
     TransactionTemplate
-  },
-  mounted () {
-    this.update()
-    clearInterval(this.bgTimer)
-    this.bgTimer = setInterval(() => this.update(), 5000)
-  },
-  beforeDestroy () {
-    clearInterval(this.bgTimer)
-  },
-  data () {
-    return {
-      bgTimer: null
-    }
   },
   computed: {
     transaction () {
       return this.$store.state.adm.transactions[this.id] || { }
-    },
-    amount () {
-      if (!this.transaction.amount) return ''
-      return this.$formatAmount(this.transaction.amount) + ' ' + Cryptos.ADM
-    },
-    fee () {
-      if (!this.transaction.fee) return ''
-      return this.$formatAmount(this.transaction.fee) + ' ' + Cryptos.ADM
     },
     sender () {
       return this.formatAddress(this.transaction.senderId)
@@ -74,9 +58,6 @@ export default {
         result = address
       }
       return result
-    },
-    update () {
-      this.$store.dispatch('adm/getTransaction', this.id)
     }
   }
 }

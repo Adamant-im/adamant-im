@@ -1,70 +1,76 @@
 <template>
-  <v-layout row wrap justify-center>
-
-    <app-toolbar
+  <div>
+    <app-toolbar-centered
+      app
       :title="$t('options.nodes_list')"
+      :show-back="true"
       flat
     />
 
-    <v-flex xs12 sm12 md8 lg5>
+    <v-container fluid>
+      <v-layout row wrap justify-center>
 
-      <v-data-table
-        :headers="headers"
-        :items="nodes"
-        item-key="url"
-        select-all
-        hide-actions
-        class="elevation-1"
-      >
-        <template slot="headers" slot-scope="props">
-          <tr>
-            <th></th>
-            <th
-              v-for="header in props.headers"
-              :key="header.text"
-              :class="{ 'text-xs-left': header.align === 'left' }"
-            >
-              {{ $t(header.text) }}
-            </th>
-          </tr>
-        </template>
+        <container>
 
-        <template slot="items" slot-scope="props">
-          <td>
-            <v-checkbox
-              :input-value="props.item.active"
-              hide-details
-              color="grey darken-1"
-              @click.native="toggle(props.item)"
-            ></v-checkbox>
-          </td>
-          <td>{{ props.item.url }}</td>
-          <td>
+          <v-data-table
+            :headers="headers"
+            :items="nodes"
+            item-key="url"
+            select-all
+            hide-actions
+            class="elevation-1"
+          >
+            <template slot="headers" slot-scope="props">
+              <tr>
+                <th></th>
+                <th
+                  v-for="header in props.headers"
+                  :key="header.text"
+                  :class="{ 'text-xs-left': header.align === 'left' }"
+                >
+                  {{ $t(header.text) }}
+                </th>
+              </tr>
+            </template>
+
+            <template slot="items" slot-scope="props">
+              <td>
+                <v-checkbox
+                  :input-value="props.item.active"
+                  hide-details
+                  color="grey darken-1"
+                  @click.native="toggle(props.item)"
+                ></v-checkbox>
+              </td>
+              <td>{{ props.item.url }}</td>
+              <td>
             <span>
               {{ props.item.online ? `${props.item.ping} ms` : $t('nodes.offline') }}
             </span>
-            <v-icon
-              :color="props.item.online ? 'green lighten-1' : 'red lighten-1'"
-              size="small"
-            >mdi-checkbox-blank-circle</v-icon>
-          </td>
-        </template>
-      </v-data-table>
+                <v-icon
+                  :color="props.item.online ? 'green lighten-1' : 'red lighten-1'"
+                  size="small"
+                >mdi-checkbox-blank-circle</v-icon>
+              </td>
+            </template>
+          </v-data-table>
 
-      <v-checkbox
-        :label="$t('nodes.fastest_title')"
-        :title="$t('nodes.fastest_tooltip')"
-        color="grey darken-1"
-        v-model="preferFastestNodeOption"
-      />
+          <v-checkbox
+            :label="$t('nodes.fastest_title')"
+            :title="$t('nodes.fastest_tooltip')"
+            color="grey darken-1"
+            v-model="preferFastestNodeOption"
+          />
 
-    </v-flex>
+        </container>
 
-  </v-layout>
+      </v-layout>
+    </v-container>
+  </div>
 </template>
 
 <script>
-import AppToolbar from '@/components/AppToolbar'
+import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 export default {
   mounted () {
@@ -117,7 +123,7 @@ export default {
     }
   },
   components: {
-    AppToolbar
+    AppToolbarCentered
   }
 }
 </script>

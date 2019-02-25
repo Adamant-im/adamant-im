@@ -1,47 +1,69 @@
 <template>
-  <v-layout row wrap justify-center>
-
-    <app-toolbar
+  <div id="txListElement">
+    <app-toolbar-centered
+      app
       :title="$t('transaction.transactions')"
       flat
     />
 
-    <v-flex v-if="isFulfilled" xs12 sm12 md8 lg5>
+    <v-container fluid class="pa-0">
+      <v-layout row wrap justify-center>
 
-      <v-list v-if="hasTransactions" two-line class="transparent">
-        <transaction-list-item
-          v-for="(transaction, i) in transactions"
-          :key="i"
-          :id="transaction.id"
-          :user-id="userId"
-          :sender-id="transaction.senderId"
-          :partner-id="transaction.partner"
-          :timestamp="transaction.timestamp"
-          :amount="transaction.amount"
-          :crypto="crypto"
-          @click:transaction="goToTransaction"
-          @click:icon="goToChat"
-        />
-      </v-list>
+        <container v-if="isFulfilled">
 
-      <h3 v-else class="headline text-xs-center mt-4">{{ $t('transaction.no_transactions') }}</h3>
+          <v-list v-if="hasTransactions" two-line class="transparent">
+            <transaction-list-item
+              v-for="(transaction, i) in transactions"
+              :key="i"
+              :id="transaction.id"
+              :sender-id="transaction.senderId"
+              :recipient-id="transaction.recipientId"
+              :timestamp="transaction.timestamp"
+              :amount="transaction.amount"
+              :crypto="crypto"
+              @click:transaction="goToTransaction"
+              @click:icon="goToChat"
+            />
+            <v-list-tile v-if="isLoading">
+              <InlineSpinner />
+            </v-list-tile>
+          </v-list>
 
-    </v-flex>
+          <h3 v-else class="headline text-xs-center mt-4">
+            {{ $t('transaction.no_transactions') }}
+          </h3>
 
-  </v-layout>
+        </container>
+
+        <InlineSpinner v-else-if="!isRejected" class="pt-4" />
+
+      </v-layout>
+    </v-container>
+  </div>
 </template>
 
 <script>
-import { Cryptos } from '@/lib/constants'
-import AppToolbar from '@/components/AppToolbar'
+import AppToolbarCentered from '@/components/AppToolbarCentered'
+import InlineSpinner from '@/components/InlineSpinner'
 import TransactionListItem from '@/components/TransactionListItem'
 
 export default {
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.onScroll)
+  },
   mounted () {
     this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
       .then(() => {
         this.isFulfilled = true
       })
+      .catch(err => {
+        this.isRejected = true
+
+        this.$store.dispatch('snackbar/show', {
+          message: err.message
+        })
+      })
+    window.addEventListener('scroll', this.onScroll)
   },
   computed: {
     transactions () {
@@ -50,28 +72,24 @@ export default {
     hasTransactions () {
       return this.transactions && this.transactions.length > 0
     },
-    userId () {
-      return this.$store.state.address
-    },
-    crypto () {
-      return ['ADM', 'ETH', 'BNB'].includes(this.$route.params.crypto)
-        ? this.$route.params.crypto
-        : 'ADM'
+    isLoading () {
+      return this.$store.getters[`${this.cryptoModule}/areTransactionsLoading`]
     },
     cryptoModule () {
       return this.crypto.toLowerCase()
     }
   },
   data: () => ({
-    isFulfilled: false
+    isFulfilled: false,
+    isRejected: false
   }),
   methods: {
     goToTransaction (transactionId) {
       this.$router.push({
         name: 'Transaction',
         params: {
-          crypto: Cryptos.ADM,
-          tx_id: transactionId
+          crypto: this.crypto,
+          txId: transactionId
         }
       })
     },
@@ -82,10 +100,27 @@ export default {
           partner: partnerId
         }
       })
+    },
+    onScroll () {
+      const height = document.getElementById('txListElement').offsetHeight
+      const windowHeight = window.innerHeight
+      const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop +
+        (document.documentElement.scrollTop || 0)
+      // If we've scrolled to the very bottom, fetch the older transactions from server
+      if (windowHeight + scrollPosition >= height) {
+        this.$store.dispatch(`${this.cryptoModule}/getOldTransactions`)
+      }
+    }
+  },
+  props: {
+    crypto: {
+      default: 'ADM',
+      type: String
     }
   },
   components: {
-    AppToolbar,
+    AppToolbarCentered,
+    InlineSpinner,
     TransactionListItem
   }
 }

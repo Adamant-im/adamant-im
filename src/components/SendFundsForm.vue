@@ -10,63 +10,72 @@
       <v-select
         v-model="currency"
         :items="cryptoList"
-        :label="$t('transfer.crypto')"
+        :disabled="addressReadonly"
       />
 
       <v-text-field
-        v-model="address"
-        :rules="validationRulus.admAddress"
-        :label="$t('transfer.to_address_label')"
+        v-model="cryptoAddress"
+        :rules="validationRules.cryptoAddress"
+        :disabled="addressReadonly"
         type="text"
-      />
+      >
+        <template slot="label">
+          <span v-if="addressReadonly && currency !== 'ADM'" class="font-weight-medium">
+            {{ $t('transfer.to_label') }} {{ recipientName || address }}
+          </span>
+          <span v-else class="font-weight-medium">
+            {{ $t('transfer.to_address_label') }}
+          </span>
+        </template>
+      </v-text-field>
 
       <v-text-field
-        v-if="cryptoAddress"
-        :value="cryptoAddress"
-        :label="currency"
-        type="text"
-        readonly
-      />
-
-      <v-text-field
-        v-model.number="amount"
-        :rules="validationRulus.amount"
-        :label="$t('transfer.amount_label')"
+        v-model="amountString"
+        :rules="validationRules.amount"
         type="number"
+      >
+        <template slot="label">
+          <span class="font-weight-medium">{{ $t('transfer.amount_label') }}</span>
+          <span class="body-1">
+            {{ `(max: ${maxToTransferFixed} ${currency})` }}
+          </span>
+        </template>
+      </v-text-field>
+
+      <v-text-field
+        :value="`${this.transferFeeFixed} ${this.currency}`"
+        :label="$t('transfer.commission_label')"
+        disabled
+      />
+      <v-text-field
+        :value="`${this.finalAmountFixed} ${this.currency}`"
+        :label="$t('transfer.final_amount_label')"
+        disabled
       />
 
-      <v-textarea
+      <v-text-field
+        v-if="this.address || this.isRecipientInChatList"
         v-model="comment"
         :label="$t('transfer.comments_label')"
-        type="text"
-        multi-line
+        counter
+        maxlength="100"
       />
 
-      <v-list class="list-info transparent">
-        <v-list-tile v-for="item in listInfo" :key="item.title">
-          <v-list-tile-content>
-            <v-list-tile-sub-title>{{ item.title }}</v-list-tile-sub-title>
-          </v-list-tile-content>
-
-          <v-list-tile-action>
-            <v-list-tile-title class="text-xs-right">{{ item.value }}</v-list-tile-title>
-          </v-list-tile-action>
-        </v-list-tile>
-      </v-list>
-
-      <v-btn
-        :disabled="!validForm || disabledButton"
-        @click="confirm"
-      >
-        <v-progress-circular
-          v-show="showSpinner"
-          indeterminate
-          color="primary"
-          size="24"
-          class="mr-3"
-        />
-        {{ $t('transfer.send_button') }}
-      </v-btn>
+      <div class="text-xs-center">
+        <v-btn
+          :disabled="!validForm || disabledButton || !amount"
+          @click="confirm"
+        >
+          <v-progress-circular
+            v-show="showSpinner"
+            indeterminate
+            color="primary"
+            size="24"
+            class="mr-3"
+          />
+          {{ $t('transfer.send_button') }}
+        </v-btn>
+      </div>
 
     </v-form>
 
@@ -89,10 +98,7 @@
             {{ $t('transfer.confirm_cancel') }}
           </v-btn>
 
-          <v-btn
-            flat="flat"
-            @click="submit"
-          >
+          <v-btn @click="submit">
             {{ $t('transfer.confirm_approve') }}
           </v-btn>
         </v-card-actions>
@@ -102,11 +108,12 @@
 </template>
 
 <script>
-import { throttle } from 'underscore'
 import { BigNumber } from 'bignumber.js'
-import { sendTokens, sendMessage } from '@/lib/adamant-api'
-import { Cryptos, CryptoAmountPrecision, Fees, isErc20 } from '@/lib/constants'
+
+import { sendMessage } from '@/lib/adamant-api'
+import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
+import { isNumeric } from '@/lib/numericHelpers'
 
 export default {
   created () {
@@ -115,104 +122,135 @@ export default {
     this.amount = this.amountToSend
   },
   mounted () {
-    this.fetchAddress = throttle(this.fetchUserCryptoAddress, 1000)
-  },
-  watch: {
-    address () {
-      this.fetchAddress()
-    },
-    currency () {
-      this.fetchAddress()
-    }
+    this.fetchUserCryptoAddress()
   },
   computed: {
+    /**
+     * @returns {number}
+     */
     transferFee () {
-      if (this.currency === Cryptos.ADM) return Fees.ADM_TRANSFER
-
       return this.$store.getters[`${this.currency.toLowerCase()}/fee`]
     },
-    finalAmount () {
-      const amount = this.amount > 0 ? this.amount : 0
 
-      const finalAmount = BigNumber.sum(amount, this.transferFee)
-        .toFixed(this.exponent)
-
-      return parseFloat(finalAmount)
+    /**
+     * String representation of `this.transferFee`
+     * @returns {string}
+     */
+    transferFeeFixed () {
+      return BigNumber(this.transferFee).toFixed()
     },
+
+    /**
+     * @returns {number}
+     */
+    finalAmount () {
+      return BigNumber.sum(this.amount, this.transferFee)
+        .toNumber()
+    },
+
+    /**
+     * String representation of `this.finalAmount`
+     * @returns {string}
+     */
+    finalAmountFixed () {
+      return BigNumber(this.finalAmount).toFixed()
+    },
+
+    /**
+     * Return balance of specific cryptocurrency
+     * @returns {number}
+     */
     balance () {
       return this.currency === Cryptos.ADM
         ? this.$store.state.balance
         : this.$store.state[this.currency.toLowerCase()].balance
     },
+
+    /**
+     * @returns {number}
+     */
     maxToTransfer () {
-      const fee = isErc20(this.currency) ? 0 : this.transferFee
+      if (this.balance < this.transferFee) return 0
 
-      const maxToTransfer = BigNumber(this.balance)
-        .minus(fee)
-        .toFixed(this.exponent)
-
-      return maxToTransfer > 0 ? parseFloat(maxToTransfer) : 0
+      return BigNumber(this.balance)
+        .minus(this.transferFee)
+        .toNumber()
     },
-    cryptoAddress () {
-      return this.currency === Cryptos.ADM
-        ? ''
-        : this.$store.getters['partners/cryptoAddress'](this.address, this.currency)
+
+    /**
+     * String representation of `this.maxToTransfer`
+     * @returns {string}
+     */
+    maxToTransferFixed () {
+      return BigNumber(this.maxToTransfer).toFixed() // ??? this.exponent
+    },
+
+    /**
+     * Own address depending on selected currency
+     * @returns {string}
+     */
+    ownAddress () {
+      return this.$store.state[this.currency.toLowerCase()].address
     },
     recipientName () {
-      return this.$store.getters['partners/displayName'](this.address)
+      if (this.currency === Cryptos.ADM) {
+        return this.$store.getters['partners/displayName'](this.cryptoAddress)
+      }
     },
     exponent () {
       return CryptoAmountPrecision[this.currency]
     },
-    listInfo () {
-      return [
-        {
-          title: this.$t('transfer.balance'),
-          value: `${this.balance} ${this.currency}`
-        },
-        {
-          title: this.$t('transfer.max_transfer'),
-          value: `${this.maxToTransfer} ${this.currency}`
-        },
-        {
-          title: this.$t('transfer.commission_label'),
-          value: `${this.transferFee} ${this.currency}`
-        },
-        {
-          title: this.$t('transfer.final_amount_label'),
-          value: `${this.finalAmount} ${this.currency}`
-        }
-      ]
-    },
     cryptoList () {
       return Object.keys(Cryptos)
     },
-    validationRulus () {
+    validationRules () {
+      const fieldRequired = v => !!v || this.$t('transfer.error_field_is_required')
+
       return {
-        admAddress: [
-          v => !!v || this.$t('transfer.error_field_is_required'),
-          v => validateAddress('ADM', v) || this.$t('transfer.error_incorrect_address', { crypto: 'ADM' })
+        cryptoAddress: [
+          fieldRequired,
+          v => validateAddress(this.currency, v) || this.$t('transfer.error_incorrect_address', { crypto: this.currency }),
+          v => v !== this.ownAddress || this.$t('transfer.error_same_recipient')
         ],
         amount: [
-          v => !!v || this.$t('transfer.error_field_is_required'),
-          v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough')
+          fieldRequired,
+          v => v > 0 || this.$t('transfer.error_incorrect_amount'),
+          v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
+          v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units')
         ]
       }
     },
     confirmMessage () {
-      let target = this.recipientName || this.cryptoAddress
+      let target = this.cryptoAddress
 
-      if (target !== this.address) {
-        target += ` (${this.address})`
+      if (this.recipientName) {
+        target += ` (${this.recipientName})`
       }
 
       const msgType = this.recipientName ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
-      return this.$t(msgType, { amount: this.amount, target, crypto: this.currency })
+      return this.$t(msgType, { amount: BigNumber(this.amount).toFixed(), target, crypto: this.currency })
+    },
+    isRecipientInChatList () {
+      return (
+        this.currency === Cryptos.ADM &&
+        this.$store.getters['chat/isPartnerInChatList'](this.cryptoAddress)
+      )
+    }
+  },
+  watch: {
+    amountString (value) {
+      if (isNumeric(value) && value > 0) {
+        this.amount = +value
+      } else {
+        this.amount = 0
+      }
     }
   },
   data: () => ({
     currency: '',
     address: '',
+    cryptoAddress: '',
+    amountString: '',
     amount: 0,
     comment: '',
 
@@ -229,66 +267,121 @@ export default {
     submit () {
       if (!this.$refs.form.validate()) return false
 
-      this.freeze()
-      this.sendFunds()
+      this.disabledButton = true
+      this.showSpinner = true
+
+      return this.sendFunds()
         .then(transactionId => {
-          // @todo this check must be done inside `store`
           if (!transactionId) {
             throw new Error('No hash')
           }
 
-          this.$emit('send', transactionId)
+          if (this.currency === Cryptos.ADM) {
+            // push fast transaction if come from chat
+            // or if recipient is in chat list
+            if (this.address || this.isRecipientInChatList) {
+              this.pushTransactionToChat(transactionId, this.cryptoAddress)
+            }
+          } else { // other cryptos
+            // if come from chat
+            if (this.address) {
+              this.pushTransactionToChat(transactionId, this.address)
+            }
+          }
+
+          this.$emit('send', transactionId, this.currency)
         })
         .catch(err => {
           console.error(err)
-          this.$store.dispatch('snackbar/show', {
-            message: err.message
-          })
+          this.$emit('error', err.message)
         })
         .finally(() => {
-          this.antiFreeze()
+          this.disabledButton = false
+          this.showSpinner = false
           this.dialog = false
         })
     },
     sendFunds () {
       if (this.currency === Cryptos.ADM) {
-        const promise = (this.comment && this.address)
-          ? sendMessage({ to: this.address, message: this.comment, amount: this.amount })
-          : sendTokens(this.address, this.amount)
+        let promise
+        // 1. sendMessage if come from chat
+        //    or if recipient is in chat list
+        // 2. else send regular transaction with `type = 0`
+        if (this.address || this.isRecipientInChatList) {
+          promise = sendMessage({
+            amount: this.amount,
+            message: this.comment,
+            to: this.cryptoAddress
+          })
+        } else {
+          promise = this.$store.dispatch('adm/sendTokens', {
+            address: this.cryptoAddress,
+            amount: this.amount
+          })
+        }
         return promise.then(result => result.transactionId)
       } else {
         return this.$store.dispatch(this.currency.toLowerCase() + '/sendTokens', {
           amount: this.amount,
           admAddress: this.address,
-          ethAddress: this.cryptoAddress,
+          address: this.cryptoAddress,
           comments: this.comment
         })
       }
     },
-    freeze () {
-      this.disabledButton = true
-      this.showSpinner = true
-    },
-    antiFreeze () {
-      this.disabledButton = false
-      this.showSpinner = false
+    pushTransactionToChat (transactionId, adamantAddress) {
+      let amount = this.amount
+
+      // unformat ADM `amount`
+      if (this.currency === Cryptos.ADM) {
+        amount = amount * 1e8
+      }
+
+      this.$store.dispatch('chat/pushTransaction', {
+        transactionId,
+        hash: transactionId,
+        recipientId: adamantAddress,
+        type: this.currency,
+        status: TS.PENDING,
+        amount,
+        comment: this.comment
+      })
     },
     fetchUserCryptoAddress () {
+      if (this.currency === Cryptos.ADM) {
+        this.cryptoAddress = this.address
+
+        return
+      }
+
       if (validateAddress('ADM', this.address)) {
         this.$store.dispatch('partners/fetchAddress', {
           crypto: this.currency,
           partner: this.address
+        }).then(address => {
+          this.cryptoAddress = address
         })
       }
+    },
+    validateNaturalUnits (amount, currency) {
+      const units = CryptoNaturalUnits[currency]
+
+      const [ , right = '' ] = BigNumber(amount).toFixed().split('.')
+
+      return right.length <= units
     }
+  },
+  filters: {
+    /**
+     * @param {BigNumber} bigNumber
+     */
+    toFixed: bigNumber => bigNumber.toFixed()
   },
   props: {
     cryptoCurrency: {
       type: String,
       default: 'ADM',
-      validator: value => {
-        return ['ADM', 'ETH', 'BNB'].includes(value)
-      }
+      validator: value => value in Cryptos
     },
     recipientAddress: {
       type: String,
@@ -296,7 +389,11 @@ export default {
     },
     amountToSend: {
       type: Number,
-      default: undefined
+      default: 0
+    },
+    addressReadonly: {
+      type: Boolean,
+      default: false
     }
   }
 }

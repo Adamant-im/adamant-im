@@ -9,9 +9,7 @@ const vuexPersistence = new VuexPersistence({
       address: state.address,
       balance: state.balance,
       passphrase: state.passphrase,
-
-      // modules
-      chat: state.chat
+      password: state.password
     }
   }
 })

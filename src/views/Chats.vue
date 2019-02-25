@@ -1,6 +1,6 @@
 <template>
   <v-layout row wrap justify-center>
-    <v-flex xs12 sm12 md8 lg5>
+    <container>
       <v-layout row wrap>
         <v-flex xs12>
 
@@ -15,19 +15,21 @@
               </v-list-tile-content>
             </v-list-tile>
 
-            <chat-preview
-              v-for="partnerId in partners"
-              :key="partnerId"
-              :partner-id="partnerId"
-              :read-only="isChatReadOnly(partnerId)"
-              @click="openChat(partnerId)"
-            />
+            <transition-group name="messages" v-if="isFulfilled">
+              <chat-preview
+                v-for="message in messagesSorted"
+                :key="message.partnerId"
+                :partner-id="message.partnerId"
+                :read-only="isChatReadOnly(message.partnerId)"
+                @click="openChat(message.partnerId)"
+              />
+            </transition-group>
           </v-list>
 
         </v-flex>
+        <InlineSpinner v-if="!isFulfilled" />
       </v-layout>
-
-    </v-flex>
+    </container>
 
     <chat-start-dialog
       v-model="showChatStartDialog"
@@ -37,21 +39,44 @@
 </template>
 
 <script>
-// @todo refactoring `store`, put chat logic in separate module and then refactor this
 import ChatPreview from '@/components/ChatPreview'
 import ChatStartDialog from '@/components/ChatStartDialog'
+import InlineSpinner from '@/components/InlineSpinner'
 
 export default {
-  mounted () {
-    this.$store.commit('chat/createAdamantChats')
-    this.$store.dispatch('chat/loadChats')
-  },
   computed: {
     isFulfilled () {
       return this.$store.state.chat.isFulfilled
     },
     partners () {
       return this.$store.getters['chat/partners']
+    },
+    /**
+     * Create array of last messages with timestamp.
+     *
+     * Important: `timestamp` is Adamant Timestamp.
+     *
+     * @returns {Array<{partnerId: string, timestamp: number}>}
+     */
+    messages () {
+      return this.partners.map(partnerId => {
+        const timestamp = this.$store.getters['chat/lastMessageTimestamp'](partnerId)
+
+        return {
+          partnerId,
+          timestamp
+        }
+      })
+    },
+    /**
+     * Sort messages by timestamp.
+     * @returns {Message[]}
+     */
+    messagesSorted () {
+      // clone only array with references
+      const messages = [...this.messages]
+
+      return messages.sort((left, right) => right.timestamp - left.timestamp)
     }
   },
   data: () => ({
@@ -67,7 +92,8 @@ export default {
   },
   components: {
     ChatPreview,
-    ChatStartDialog
+    ChatStartDialog,
+    InlineSpinner
   }
 }
 </script>
@@ -75,6 +101,7 @@ export default {
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_colors.styl'
 
+/** Themes **/
 .theme--light
   .chat-icon
     color: $shades.white
@@ -84,4 +111,8 @@ export default {
   .chat-icon
     color: $shades.white
     background-color: $grey.darken-1
+
+/** Animations **/
+.messages-move
+  transition: transform 0.5s
 </style>

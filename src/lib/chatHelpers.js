@@ -1,6 +1,9 @@
 import Queue from 'promise-queue'
+
 import utils from '@/lib/adamant'
 import * as admApi from '@/lib/adamant-api'
+import { isNumeric } from './numericHelpers'
+import { TransactionStatus as TS } from './constants'
 
 const maxConcurent = 1
 const maxQueue = Infinity
@@ -80,17 +83,58 @@ export function createChat () {
  * @param {string} recipientId
  * @param {string} senderId
  * @param {string} message
- * @param {string} status Can be: `sent`, `confirmed`, `rejected`
+ * @param {string} status
  */
-export function createMessage ({ recipientId, senderId, message, status = 'sent' }) {
+export function createMessage ({ recipientId, senderId, message, status = TS.PENDING }) {
   return {
     id: utils.epochTime(), // @todo uuid will be better
     recipientId,
     senderId,
     message,
     status,
-    timestamp: utils.epochTime()
+    timestamp: Date.now(),
+    type: 'message'
   }
+}
+
+/**
+ * Create a transaction object with uniq ID.
+ * @param {number} transactionId
+ * @param {string} recipientId
+ * @param {string} senderId
+ * @param {number} amount
+ * @param {string} comment Transaction comment
+ * @param {string} type ADM, ETH...
+ * @param {string} status
+ */
+export function createTransaction (payload) {
+  const {
+    transactionId,
+    recipientId,
+    senderId,
+    amount,
+    comment,
+    hash,
+    type = 'ADM',
+    status = TS.PENDING
+  } = payload
+
+  const transaction = {
+    id: transactionId,
+    recipientId,
+    senderId,
+    amount,
+    hash,
+    type,
+    status,
+    timestamp: Date.now()
+  }
+
+  if (comment) {
+    transaction.message = comment
+  }
+
+  return transaction
 }
 
 /**
@@ -106,30 +150,57 @@ export function getRealTimestamp (admTimestamp) {
 /**
  * Transform message for better integration into Vue components.
  * @param {Object} abstract Message object returned by the server.
- * @returns {Message} See `packages/chat/src/types.ts`
+ * @returns {Message} See `components/AChat/types.ts`
  */
 export function transformMessage (abstract) {
   let transaction = {}
+  const knownCryptos = {
+    eth_transaction: 'ETH',
+    bz_transaction: 'BZ',
+    bnb_transaction: 'BNB',
+    doge_transaction: 'DOGE'
+  }
+  const notSupportedYetCryptos = {
+    lsk_transaction: 'LSK',
+    dash_transaction: 'DASH'
+  }
 
   // common properties for all transaction types
   transaction.id = abstract.id
   transaction.senderId = abstract.senderId
+  transaction.recipientId = abstract.recipientId
   transaction.admTimestamp = abstract.timestamp
   transaction.timestamp = getRealTimestamp(abstract.timestamp)
-  transaction.status = abstract.status || 'confirmed'
-  transaction.i18n = (abstract.i18n)
+  transaction.status = abstract.status || TS.DELIVERED
+  transaction.i18n = !!abstract.i18n
   transaction.amount = abstract.amount ? abstract.amount : 0
   transaction.message = ''
+  transaction.height = abstract.height
+  transaction.asset = {}
 
-  if (abstract.message && abstract.message.type === 'eth_transaction') {
-    transaction.type = 'ETH'
+  if (abstract.message && abstract.message.type) { // cryptos
+    transaction.asset = abstract.message
     transaction.message = abstract.message.comments || ''
-  } else if (abstract.amount > 0) { // ADM transaction
-    transaction.type = 'ADM'
-    transaction.message = abstract.message
-  } else {
-    transaction.type = 'message'
-    transaction.message = abstract.message
+    transaction.amount = isNumeric(abstract.message.amount) ? +abstract.message.amount : 0
+    transaction.status = TS.PENDING
+    transaction.hash = abstract.message.hash || ''
+
+    const cryptoType = abstract.message.type.toLowerCase()
+    const knownCrypto = knownCryptos[cryptoType]
+    const notSupportedYetCrypto = notSupportedYetCryptos[cryptoType]
+    if (knownCrypto) {
+      transaction.type = knownCrypto
+    } else {
+      transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
+      transaction.status = TS.INVALID
+    }
+  } else { // ADM transaction or Message
+    transaction.message = abstract.message || ''
+    transaction.hash = abstract.id // adm transaction id (hash)
+
+    abstract.amount > 0
+      ? transaction.type = 'ADM'
+      : transaction.type = 'message'
   }
 
   return transaction

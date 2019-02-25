@@ -1,26 +1,4 @@
-import { EPOCH, Cryptos } from './constants'
-
-function formatAmount (amount, crypto = Cryptos.ADM) {
-  if (crypto !== Cryptos.ADM) return amount // TODO: formatting for other cryptos maybe?
-
-  amount = amount / 100000000
-  var e
-  if (Math.abs(amount) < 1.0) {
-    e = parseInt(amount.toString().split('e-')[1])
-    if (e) {
-      amount *= Math.pow(10, e - 1)
-      amount = '0.' + (new Array(e)).join('0') + amount.toString().substring(2)
-    }
-  } else {
-    e = parseInt(amount.toString().split('+')[1])
-    if (e > 20) {
-      e -= 20
-      amount /= Math.pow(10, e)
-      amount += (new Array(e + 1)).join('0')
-    }
-  }
-  return amount
-}
+import { EPOCH } from './constants'
 
 function getTime (date) {
   var hours = date.getHours()
@@ -74,7 +52,6 @@ function formatDate (timestamp) {
 }
 
 function install (Vue) {
-  Vue.prototype.$formatAmount = formatAmount
   Vue.prototype.$formatDate = formatDate
 }
 

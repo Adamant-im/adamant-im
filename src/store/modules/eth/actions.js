@@ -1,43 +1,20 @@
-import * as admApi from '../../../lib/adamant-api'
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { Fees, ETH_TRANSFER_GAS } from '../../../lib/constants'
-
-const KVS_ADDRESS = 'eth:address'
+import { ETH_TRANSFER_GAS } from '../../../lib/constants'
+import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
 /** Status update interval */
 const STATUS_INTERVAL = 8000
 
-// const CHUNK_SIZE = 25
-
-let isAddressBeingStored = null
 /**
  * Stores ETH address to the Adamant KVS if it's not there yet
  * @param {*} context
  */
 function storeEthAddress (context) {
-  if (isAddressBeingStored) return
-  if (!admApi.isReady()) return
-  if (!context.state.address) return
-  if (context.rootState.balance < Fees.KVS) return
-  if (context.state.isPublished) return
-
-  isAddressBeingStored = true
-  admApi.getStored(KVS_ADDRESS)
-    .then(address => (address)
-      ? true
-      : admApi.storeValue(KVS_ADDRESS, context.state.address).then(response => response.success)
-    )
-    .then(
-      success => {
-        isAddressBeingStored = false
-        if (success) context.commit('isPublished')
-      },
-      () => { isAddressBeingStored = false }
-    )
+  storeCryptoAddress(context.state.crypto, context.state.address)
 }
 
 const initTransaction = (api, context, ethAddress, amount) => {
@@ -58,19 +35,12 @@ const parseTransaction = (context, tx) => {
     amount: utils.toEther(tx.value.toString(10)),
     fee: utils.calculateFee(tx.gas, tx.gasPrice.toString(10)),
     status: tx.blockNumber ? 'SUCCESS' : 'PENDING',
-    blockNumber: tx.blockNumber
+    blockNumber: tx.blockNumber,
+    gasPrice: tx.gasPrice.toNumber(10)
   }
 }
 
 const createSpecificActions = (api, queue) => ({
-  /** On account update this handler ensures that ETH address is in the KVS */
-  updateAccount: {
-    root: true,
-    handler (context) {
-      storeEthAddress(context)
-    }
-  },
-
   /**
    * Requests ETH account status: balance, gas price, etc.
    * @param {*} context Vuex action context
@@ -86,7 +56,11 @@ const createSpecificActions = (api, queue) => ({
       return [
         // Balance
         api.eth.getBalance.request(context.state.address, block || 'latest', (err, balance) => {
-          if (!err) context.commit('balance', utils.toEther(balance.toString(10)))
+          if (!err) {
+            context.commit('balance', Number(
+              utils.toEther(balance.toString())
+            ))
+          }
         }),
         // Current gas price
         api.eth.getGasPrice.request((err, price) => {

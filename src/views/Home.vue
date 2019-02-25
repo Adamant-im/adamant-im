@@ -1,18 +1,24 @@
 <template>
-  <v-layout row wrap justify-center>
+  <v-layout row wrap justify-center class="home-page">
 
-    <v-flex xs12 sm12 md8 lg5>
+    <container>
 
       <v-card flat class="transparent white--text">
 
         <!-- Wallets -->
-        <v-card>
-          <v-tabs grow fixed-tabs slider-color="blue">
+        <v-card class="home-page__wallets">
+          <v-tabs grow slider-color="white">
             <v-tab
               v-for="wallet in wallets"
               :key="wallet.cryptoCurrency"
             >
-              {{ wallet.cryptoCurrency }}
+              <div>
+                <icon :width="36" :height="36" fill="#BDBDBD" slot="icon" class="mb-2">
+                  <component :is="wallet.icon"/>
+                </icon>
+                <div>{{ wallet.balance | numberFormat(4)  }}</div>
+                <div>{{ wallet.cryptoCurrency }}</div>
+              </div>
             </v-tab>
 
             <v-tab-item
@@ -22,7 +28,7 @@
               <wallet-card
                 :address="wallet.address"
                 :balance="wallet.balance"
-                :crypto-currency="wallet.cryptoCurrency"
+                :crypto="wallet.cryptoCurrency"
                 :crypto-name="wallet.cryptoName"
                 @click:balance="goToTransactions"
               >
@@ -34,32 +40,9 @@
           </v-tabs>
         </v-card>
 
-        <!-- Actions -->
-        <v-list class="action-list transparent">
-          <v-list-tile @click="sendFunds" avatar>
-            <v-list-tile-avatar>
-              <v-icon class="action-list__icon">mdi-cube-send</v-icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t('home.send_btn') }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile @click="buyTokens" avatar>
-            <v-list-tile-avatar>
-              <v-icon class="action-list__icon">mdi-cash-usd</v-icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t('home.invest_btn') }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
-
       </v-card>
 
-    </v-flex>
+    </container>
 
   </v-layout>
 </template>
@@ -70,6 +53,8 @@ import Icon from '@/components/icons/BaseIcon'
 import AdmFillIcon from '@/components/icons/AdmFill'
 import BnbFillIcon from '@/components/icons/BnbFill'
 import EthFillIcon from '@/components/icons/EthFill'
+import BnzFillIcon from '@/components/icons/BnzFill'
+import DogeFillIcon from '@/components/icons/DogeFill'
 
 export default {
   computed: {
@@ -95,19 +80,25 @@ export default {
           cryptoCurrency: 'ETH',
           cryptoName: 'Ethereum',
           icon: 'eth-fill-icon'
+        },
+        {
+          address: this.$store.state.bz.address,
+          balance: this.$store.state.bz.balance,
+          cryptoCurrency: 'BZ',
+          cryptoName: 'Bit-Z',
+          icon: 'bnz-fill-icon'
+        },
+        {
+          address: this.$store.state.doge.address,
+          balance: this.$store.state.doge.balance,
+          cryptoCurrency: 'DOGE',
+          cryptoName: 'DOGE',
+          icon: 'doge-fill-icon'
         }
       ]
     }
   },
-  data: () => ({
-  }),
   methods: {
-    sendFunds () {
-      this.$router.push('/transfer')
-    },
-    buyTokens () {
-      window.open('https://adamant.im/buy-tokens/?wallet=U9203183357885757380', '_blank')
-    },
     goToTransactions (crypto) {
       this.$router.push({
         name: 'Transactions',
@@ -122,13 +113,21 @@ export default {
     Icon,
     AdmFillIcon,
     BnbFillIcon,
-    EthFillIcon
+    EthFillIcon,
+    BnzFillIcon,
+    DogeFillIcon
   }
 }
 </script>
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_colors.styl'
+
+/**
+ * 1. Reset VTabs container fixed height.
+ */
+.home-page__wallets >>> .v-tabs__container
+  height: auto // [1]
 
 /** Themes **/
 .theme--light

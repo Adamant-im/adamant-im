@@ -9,7 +9,7 @@ exports[`TransactionListItem renders the correct markup 1`] = `
     size="40"
   >
     <v-icon-stub>
-      mdi-airplane-takeoff
+      mdi-airplane-landing
     </v-icon-stub>
   </v-list-tile-avatar-stub>
    

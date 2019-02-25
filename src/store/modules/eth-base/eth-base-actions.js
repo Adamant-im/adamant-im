@@ -3,7 +3,6 @@ import Tx from 'ethereumjs-tx'
 import { toBuffer } from 'ethereumjs-util'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
-import * as admApi from '../../../lib/adamant-api'
 import * as utils from '../../../lib/eth-utils'
 import { getTransactions } from '../../../lib/eth-index'
 
@@ -14,7 +13,7 @@ const CHUNK_SIZE = 25
 
 export default function createActions (config) {
   const endpoint = getEndpointUrl('ETH')
-  const api = new Web3(new Web3.providers.HttpProvider(endpoint, 2000))
+  const api = new Web3(new Web3.providers.HttpProvider(endpoint, 10000))
   const queue = new utils.BatchQueue(() => api.createBatch())
 
   const {
@@ -70,10 +69,10 @@ export default function createActions (config) {
       }
     },
 
-    sendTokens (context, { amount, admAddress, ethAddress, comments }) {
-      ethAddress = ethAddress.trim()
+    sendTokens (context, { amount, admAddress, address, comments }) {
+      address = address.trim()
       const crypto = context.state.crypto
-      const ethTx = initTransaction(api, context, ethAddress, amount)
+      const ethTx = initTransaction(api, context, address, amount)
 
       return utils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
         .then(count => {
@@ -84,17 +83,21 @@ export default function createActions (config) {
           const serialized = '0x' + tx.serialize().toString('hex')
           const hash = api.sha3(serialized, { encoding: 'hex' })
 
-          if (!admAddress) return serialized
+          if (!admAddress) {
+            return serialized
+          }
+
+          const msgPayload = {
+            address: admAddress,
+            amount,
+            comments,
+            crypto,
+            hash
+          }
+
           // Send a special message to indicate that we're performing an ETH transfer
-          const type = crypto.toLowerCase() + '_transaction'
-          const msg = { type, amount, hash, comments }
-          return admApi.sendSpecialMessage(admAddress, msg)
-            .then(() => {
-              return serialized
-            })
-            .catch(() => {
-              return Promise.reject(new Error('adm_message'))
-            })
+          return context.dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
+            .then(success => success ? serialized : Promise.reject(new Error('adm_message')))
         })
         .then(tx => {
           return utils.promisify(api.eth.sendRawTransaction, tx).then(
@@ -111,15 +114,14 @@ export default function createActions (config) {
             context.commit('transactions', [{
               hash,
               senderId: ethTx.from,
-              recipientId: ethAddress,
+              recipientId: address,
               amount,
               fee: utils.calculateFee(ethTx.gas, ethTx.gasPrice),
               status: 'PENDING',
               timestamp: Date.now(),
               gasPrice: ethTx.gasPrice
             }])
-
-            context.dispatch('getTransaction', { hash, isNew: true })
+            context.dispatch('getTransaction', { hash, isNew: true, direction: 'from' })
 
             return hash
           }
@@ -129,25 +131,27 @@ export default function createActions (config) {
     /**
      * Enqueues a background request to retrieve the transaction details
      * @param {object} context Vuex action context
-     * @param {{hash: string, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
+     * @param {{hash: string, force: boolean, timestamp: number, amount: number, direction: 'from' | 'to'}} payload hash and timestamp of the transaction to fetch
      */
     getTransaction (context, payload) {
       const existing = context.state.transactions[payload.hash]
-      if (existing && existing.status !== 'PENDING') return
+      if (existing && existing.status !== 'PENDING' && !payload.force) return
 
       // Set a stub so far
-      context.commit('transactions', [{
-        hash: payload.hash,
-        timestamp: payload.timestamp,
-        amount: payload.amount,
-        status: 'PENDING'
-      }])
+      if (!existing || existing.status === 'ERROR') {
+        context.commit('transactions', [{
+          hash: payload.hash,
+          timestamp: payload.timestamp,
+          amount: payload.amount,
+          status: existing ? existing.status : 'PENDING',
+          direction: payload.direction
+        }])
+      }
 
       const key = 'transaction:' + payload.hash
       const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
         if (!err && tx && tx.input) {
-          const transaction = parseTransaction(context, tx)
-
+          let transaction = parseTransaction(context, tx)
           if (transaction) {
             context.commit('transactions', [transaction])
 
@@ -156,11 +160,10 @@ export default function createActions (config) {
             context.dispatch('getTransactionReceipt', receiptPayload)
           }
         }
-
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
-          context.commit('transactions', [{ hash: tx.hash, status: 'ERROR' }])
-        } else if (err || (tx && !tx.blockNumber) || (!tx && payload.isNew)) {
+          context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
+        } else if (err || !tx) {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = tx ? payload : { ...payload, attempt: 1 + (payload.attempt || 0) }
@@ -190,14 +193,13 @@ export default function createActions (config) {
             status: tx.status ? 'SUCCESS' : 'ERROR'
           }])
         }
-
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
           context.commit('transactions', [{ hash: tx.hash, status: 'ERROR' }])
-        } else if (err || (tx && !tx.blockNumber) || (!tx && payload.isNew)) {
+        } else if (err || !tx || !tx.status) {
           // In case of an error or a pending transaction fetch its receipt once again later
           // Increment attempt counter, if no transaction was found so far
-          const newPayload = tx ? payload : { ...payload, attempt: 1 + (payload.attempt || 0) }
+          const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
           context.dispatch('getTransactionReceipt', newPayload)
         }
       })
@@ -218,10 +220,18 @@ export default function createActions (config) {
         limit
       }
 
-      return getTransactions(options).then(result => {
-        context.commit('transactions', result.items)
-        context.commit('areTransactionsLoading', false)
-      })
+      context.commit('areRecentLoading', true)
+
+      return getTransactions(options).then(
+        result => {
+          context.commit('areRecentLoading', false)
+          context.commit('transactions', result.items)
+        },
+        error => {
+          context.commit('areRecentLoading', false)
+          return Promise.reject(error)
+        }
+      )
     },
 
     getOldTransactions (context) {
@@ -239,14 +249,22 @@ export default function createActions (config) {
         options.to = minHeight - 1
       }
 
-      return getTransactions(options).then(result => {
-        context.commit('transactions', result.items)
-        context.commit('areTransactionsLoading', false)
+      context.commit('areOlderLoading', true)
 
-        if (!result.items.length) {
-          context.commit('bottom')
+      return getTransactions(options).then(
+        result => {
+          context.commit('areOlderLoading', false)
+          context.commit('transactions', result.items)
+
+          if (!result.items.length) {
+            context.commit('bottom')
+          }
+        },
+        error => {
+          context.commit('areOlderLoading', false)
+          return Promise.reject(error)
         }
-      })
+      )
     }
   }
 }

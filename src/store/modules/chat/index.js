@@ -1,8 +1,16 @@
 import Vue from 'vue'
 import validateAddress from '@/lib/validateAddress'
 import * as admApi from '@/lib/adamant-api'
-import { createChat, getChats, queueMessage, createMessage } from '@/lib/chatHelpers'
+import {
+  createChat,
+  getChats,
+  queueMessage,
+  createMessage,
+  createTransaction,
+  transformMessage
+} from '@/lib/chatHelpers'
 import { isNumeric } from '@/lib/numericHelpers'
+import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
 
 /**
  * type State {
@@ -19,45 +27,11 @@ import { isNumeric } from '@/lib/numericHelpers'
  *   readOnly?: boolean // for Adamant Bounty & Adamant Tokens chats
  * }
  *
- * type ServerMessage {
- *   id: number,
- *   message: {string|Object}, // `Object` when eth transaction
- *   senderId: string,
- *   recipientId: string,
- *   amount: number,
- *   timestamp: number
- *   ...
- * }
- *
- * type Message = {
- *   id: number,
- *   senderId: string,
- *   recipientId: string,
- *   message: string,
- *   timestamp: number,
- *   admTimestamp: number,
- *   amount: number,
- *   i18n: boolean,
- *   status: MessageStatus,
- *   type: MessageType
- * }
- *
- * enum MessageType {
- *   Message = 'message',
- *   ADM = 'ADM',
- *   ETH = 'ETH'
- * }
- *
- * enum MessageStatus {
- *   sent,
- *   confirmed,
- *   rejected
- * }
  */
 const state = () => ({
   chats: {},
   lastMessageHeight: 0, // `height` value of the last message
-  isFulfilled: false
+  isFulfilled: false // false - getChats did not start or in progress, true - getChats finished
 })
 
 const getters = {
@@ -143,18 +117,9 @@ const getters = {
    * @returns {string}
    */
   lastMessageText: (state, getters) => senderId => {
-    const abstract = getters.lastMessage(senderId) || {}
+    const message = getters.lastMessage(senderId) || {}
 
-    // if ETH Transaction
-    if (abstract.message && abstract.message.type === 'eth_transaction') {
-      return abstract.message.comments || ''
-    }
-
-    if (typeof abstract.message === 'string') {
-      return abstract.message
-    }
-
-    return ''
+    return (message && message.message) || ''
   },
 
   /**
@@ -296,11 +261,22 @@ const mutations = {
 
     const chat = state.chats[partnerId]
 
-    // shouldn't duplicate local messages added directly
-    // when dispatch('getNewMessages')
-    const isMessageInList = chat.messages.find(localMessage => localMessage.id === message.id)
-    if (isMessageInList) {
+    // Shouldn't duplicate local messages added directly
+    // when dispatch('getNewMessages'). Just update `status`.
+    const localMessage = chat.messages.find(localMessage => localMessage.id === message.id)
+    if (localMessage) { // is message in state
+      localMessage.status = message.status
       return
+    }
+
+    // Shouldn't duplicate third-party crypto transactions
+    if (
+      message.type &&
+      message.type !== 'message' &&
+      message.type !== Cryptos.ADM
+    ) {
+      const localTransaction = chat.messages.find(localTransaction => localTransaction.hash === message.hash)
+      if (localTransaction) return
     }
 
     chat.messages.push(message)
@@ -308,7 +284,11 @@ const mutations = {
     // If this is a new message, increment `numOfNewMessages`.
     // Exception only when `height = 0`, this means that the
     // user cleared `localStorage` or logged in first time.
-    if (message.height > state.lastMessageHeight && state.lastMessageHeight > 0) {
+    if (
+      message.height > state.lastMessageHeight &&
+      state.lastMessageHeight > 0 &&
+      userId !== message.senderId // do not notify yourself when send message from other device
+    ) {
       chat.numOfNewMessages += 1
     }
   },
@@ -370,19 +350,11 @@ const mutations = {
       {
         id: 'b1',
         message: 'chats.welcome_message',
-        timestamp: 0,
+        timestamp: EPOCH,
         senderId: 'Adamant Bounty',
-        i18n: true
-      }
-    ]
-
-    const tokensMessages = [
-      {
-        id: 't1',
-        message: 'chats.ico_message',
-        timestamp: 0,
-        senderId: 'Adamant Tokens',
-        i18n: true
+        type: 'message',
+        i18n: true,
+        status: TS.DELIVERED
       }
     ]
 
@@ -391,11 +363,12 @@ const mutations = {
       numOfNewMessages: 0,
       readOnly: true
     })
-    Vue.set(state.chats, 'Adamant Tokens', {
-      messages: tokensMessages,
-      numOfNewMessages: 0,
-      readOnly: true
-    })
+  },
+
+  reset (state) {
+    state.chats = {}
+    state.lastMessageHeight = 0
+    state.isFulfilled = false
   }
 }
 
@@ -433,7 +406,7 @@ const actions = {
   pushMessages ({ commit, rootState }, messages) {
     messages.forEach(message => {
       commit('pushMessage', {
-        message,
+        message: transformMessage(message),
         userId: rootState.address
       })
     })
@@ -532,7 +505,7 @@ const actions = {
         commit('updateMessage', {
           id: messageObject.id,
           realId: res.transactionId,
-          status: 'confirmed',
+          status: TS.DELIVERED,
           partnerId: recipientId
         })
 
@@ -542,7 +515,7 @@ const actions = {
         // update `message.status` to 'rejected'
         commit('updateMessage', {
           id: messageObject.id,
-          status: 'rejected',
+          status: TS.REJECTED,
           partnerId: recipientId
         })
 
@@ -563,7 +536,7 @@ const actions = {
     // and then resendMessage
     commit('updateMessage', {
       id: messageId,
-      status: 'sent',
+      status: TS.PENDING,
       partnerId: recipientId
     })
 
@@ -577,7 +550,7 @@ const actions = {
           commit('updateMessage', {
             id: messageId,
             realId: res.transactionId,
-            status: 'confirmed',
+            status: TS.DELIVERED,
             partnerId: recipientId
           })
 
@@ -586,7 +559,7 @@ const actions = {
         .catch(err => {
           commit('updateMessage', {
             id: messageId,
-            status: 'rejected',
+            status: TS.REJECTED,
             partnerId: recipientId
           })
 
@@ -595,6 +568,56 @@ const actions = {
     }
 
     return Promise.reject(new Error('Message not found in history'))
+  },
+
+  /**
+   * Fast crypto-transfer, to display transaction in chat
+   * before confirmation.
+   * @param {number} transactionId
+   * @param {string} recipientId
+   * @param {string} type ADM, ETH...
+   * @param {string} status Can be: `sent`, `confirmed`, 'rejected'
+   * @param {number} amount
+   * @param {string} hash Transaction hash
+   * @param {string} comment Transaction comment
+   * @returns {number} Transaction ID
+   */
+  pushTransaction ({ commit, rootState }, payload) {
+    const {
+      transactionId,
+      recipientId,
+      type,
+      status,
+      amount,
+      hash,
+      comment = ''
+    } = payload
+
+    const transactionObject = createTransaction({
+      transactionId,
+      recipientId,
+      type,
+      status,
+      amount,
+      hash,
+      comment,
+      senderId: rootState.address
+    })
+
+    commit('pushMessage', {
+      message: transactionObject,
+      userId: rootState.address
+    })
+
+    return transactionObject.id
+  },
+
+  /** Resets module state **/
+  reset: {
+    root: true,
+    handler ({ commit }) {
+      commit('reset')
+    }
   }
 }
 

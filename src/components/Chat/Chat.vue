@@ -21,25 +21,41 @@
           v-bind="message"
           :key="message.id"
           :message="isChatReadOnly ? $t(message.message) : message.message | msg"
+          :time="message.timestamp | date"
           :user-id="userId"
+          :sender="sender"
           :show-avatar="!isChatReadOnly"
           :locale="locale"
           :html="true"
+          :i18n="{ retry: $t('chats.retry_message') }"
           @resend="resendMessage(partnerId, message.id)"
         >
-          <chat-avatar v-if="!isChatReadOnly" :user-id="sender.id" use-public-key slot="avatar"/>
+          <ChatAvatar
+            @click="showPartnerInfo"
+            :user-id="sender.id"
+            use-public-key
+            slot="avatar"
+          />
         </a-chat-message>
 
         <a-chat-transaction
-          v-else-if="['ADM', 'ETH'].includes(message.type)"
+          v-else-if="isTransaction(message.type)"
           v-bind="message"
           :key="message.id"
           :user-id="userId"
-          :amount="message.amount"
+          :sender="sender"
+          :amount="message.amount | currency(message.type)"
+          :time="message.timestamp | date"
           :currency="message.type"
-          :i18n="{ sent: $t('chats.sent_label'), received: $t('chats.received_label') }"
+          :i18n="{
+            sent: $t('chats.sent_label'),
+            received: $t('chats.received_label'),
+            statuses: $t('chats.transaction_statuses')
+          }"
           :locale="locale"
+          :status="getTransactionStatus(message, partnerId)"
           @click:transaction="openTransaction(message)"
+          @mount="fetchTransactionStatus(message, partnerId)"
         />
 
       </template>
@@ -52,18 +68,26 @@
         :send-on-enter="sendMessageOnEnter"
         :show-divider="true"
         :label="$t('chats.message')"
-      />
+      >
+        <chat-menu
+          slot="prepend"
+          :partner-id="partnerId"
+        />
+      </a-chat-form>
     </a-chat>
   </v-card>
 </template>
 
 <script>
-import { transformMessage } from '@/lib/chatHelpers'
-import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@adamant/chat'
-import { Formatter } from '@adamant/message-formatter'
+import { Cryptos } from '@/lib/constants'
+import { Formatter } from '@/lib/message-formatter'
 
+import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@/components/AChat'
 import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
+import ChatMenu from '@/components/Chat/ChatMenu'
+import transaction from '@/mixins/transaction'
+import dateFilter from '@/filters/date'
 
 /**
  * Create Formatter instance.
@@ -96,7 +120,8 @@ function getUserMeta (userId) {
  * @returns {boolean}
  */
 function validateMessage (message) {
-  if (!message) {
+  // Ensure that message contains at least one non-whitespace character
+  if (!message.trim().length) {
     return false
   }
 
@@ -119,8 +144,14 @@ function validateMessage (message) {
 
 export default {
   mounted () {
-    this.$refs.chat.scrollToBottom()
+    this.$nextTick(() => this.$refs.chat.scrollToBottom())
     this.markAsRead()
+  },
+  watch: {
+    // scroll to bottom when received new message
+    messages () {
+      this.$nextTick(() => this.$refs.chat.scrollToBottom())
+    }
   },
   computed: {
     /**
@@ -128,9 +159,7 @@ export default {
      * @returns {Message[]}
      */
     messages () {
-      let messages = this.$store.getters['chat/messages'](this.partnerId)
-
-      return messages.map(message => transformMessage(message))
+      return this.$store.getters['chat/messages'](this.partnerId)
     },
     /**
      * Returns array of partners who participate in chat.
@@ -141,9 +170,6 @@ export default {
         getUserMeta.call(this, this.userId),
         getUserMeta.call(this, this.partnerId)
       ]
-    },
-    partnerName () {
-      return this.$store.getters['partners/displayName'](this.partnerId)
     },
     userId () {
       return this.$store.state.address
@@ -177,6 +203,9 @@ export default {
           console.error(err.message)
         })
     },
+    showPartnerInfo () {
+      this.$emit('partner-info', true)
+    },
     resendMessage (recipientId, messageId) {
       return this.$store.dispatch('chat/resendMessage', { recipientId, messageId })
         .catch(err => {
@@ -200,21 +229,33 @@ export default {
         name: 'Transaction',
         params: {
           crypto: transaction.type,
-          tx_id: transaction.id
+          txId: transaction.hash
         }
       })
+    },
+    isTransaction (type) {
+      // @todo remove LSK & DASH when will be supported
+      return (
+        type in Cryptos ||
+        type === 'LSK' ||
+        type === 'DASH' ||
+        type === 'UNKNOWN_CRYPTO'
+      )
     }
   },
   filters: {
-    msg: message => formatter.format(message)
+    msg: message => formatter.format(message),
+    date: dateFilter
   },
+  mixins: [transaction],
   components: {
     AChat,
     AChatMessage,
     AChatTransaction,
     AChatForm,
     ChatToolbar,
-    ChatAvatar
+    ChatAvatar,
+    ChatMenu
   },
   props: {
     partnerId: {

@@ -1,36 +1,54 @@
 <template>
-  <v-card flat class="wallet-card">
-    <div class="wallet-card__container">
-      <div class="wallet-card__left">
-        <h3 class="wallet-card__title">{{ cryptoName }} {{ $t('home.wallet') }}</h3>
-        <div class="wallet-card__subtitle mb-2">{{ address }}</div>
+  <v-card flat :class="className">
+    <v-list two-line :class="`${className}__list`">
+      <v-list-tile @click="copyToClipboard(address)">
+        <v-list-tile-content>
+          <v-list-tile-title :class="`${className}__title`">
+            {{ cryptoName }} {{ $t('home.wallet') }}
+          </v-list-tile-title>
+          <v-list-tile-sub-title :class="`${className}__subtitle`">
+            {{ address }}
+          </v-list-tile-sub-title>
+        </v-list-tile-content>
 
-        <h3 class="wallet-card__title">{{ $t('home.balance') }}</h3>
-        <div
-          class="wallet-card__subtitle"
-          :style="{ cursor: 'pointer' }"
-          @click="$emit('click:balance', cryptoCurrency)"
-        >
-          {{ balance }} {{ cryptoCurrency }}
-        </div>
-      </div>
-
-      <div class="wallet-card__right">
-        <slot name="icon"/>
-        <div>
-          <v-btn class="wallet-card__action" @click="copyToClipboard(address)" flat>
-            {{ $t('home.copy') }}
+        <v-list-tile-action>
+          <v-btn icon ripple>
+            <v-icon :class="`${className}__action`">mdi-content-copy</v-icon>
           </v-btn>
-        </div>
-      </div>
-    </div>
+        </v-list-tile-action>
+      </v-list-tile>
+
+      <v-list-tile @click="$emit('click:balance', crypto)">
+        <v-list-tile-content>
+          <v-list-tile-title :class="`${className}__title`">
+            {{ $t('home.balance') }}
+          </v-list-tile-title>
+          <v-list-tile-sub-title :class="`${className}__subtitle`">
+            {{ balance | currency(crypto, true) }}
+          </v-list-tile-sub-title>
+        </v-list-tile-content>
+      </v-list-tile>
+    </v-list>
+
+    <v-divider></v-divider>
+
+    <WalletCardListActions
+      :class="`${className}__list`"
+      :crypto="crypto"
+    />
   </v-card>
 </template>
 
 <script>
 import { copyToClipboard } from '@/lib/textHelpers'
+import WalletCardListActions from '@/components/WalletCardListActions'
 
 export default {
+  computed: {
+    className () {
+      return 'wallet-card'
+    }
+  },
   methods: {
     copyToClipboard (text) {
       copyToClipboard(text)
@@ -40,16 +58,19 @@ export default {
       })
     }
   },
+  components: {
+    WalletCardListActions
+  },
   props: {
     address: {
       type: String,
       required: true
     },
     balance: {
-      type: [Number, String], // @todo fix erc20 balance string => number
+      type: Number,
       required: true
     },
-    cryptoCurrency: {
+    crypto: {
       type: String,
       default: 'ADM'
     },
@@ -65,49 +86,34 @@ export default {
 @import '~vuetify/src/stylus/settings/_colors.styl'
 
 .wallet-card
-  height: 200px
-
-  &__container
-    display: flex
-    align-items: center
-    justify-content: space-between
-    height: inherit
-    margin: 0 16px 0 16px
-    position: relative
-  &__left
-    margin-right: 120px
-    z-index: 1
-  &__right
-    text-align: center
-    position: absolute
-    right: 0
-
-    h3
-      text-transform: uppercase
-      color: $grey.darken-1
   &__title
     font-size: 16px
-    font-weight: 400
+    font-weight: 500
   &__subtitle
-    font-size: 16px
+    font-size: 14px
     font-weight: 400
     word-break: break-word
+    font-style: italic
 
 /** Themes **/
 .theme--light
   .wallet-card
+    background-color: transparent
+
+    &__list
+      background: inherit
     &__title
-      color: $grey.base
+      color: $grey.darken-3
     &__subtitle
-      color: $shades.black
-    &__action
-      color: $blue.base
+      color: $grey.darken-2
 .theme--dark
   .wallet-card
+    background-color: transparent
+
+    &__list
+      background: inherit
     &__title
-      color: $grey.base
-    &__subtitle
       color: $shades.white
-    &__action
+    &__subtitle
       color: $shades.white
 </style>
