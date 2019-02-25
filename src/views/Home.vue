@@ -16,7 +16,7 @@
                 <icon :width="36" :height="36" fill="#BDBDBD" slot="icon" class="mb-2">
                   <component :is="wallet.icon"/>
                 </icon>
-                <div>{{ wallet.balance }}</div>
+                <div>{{ wallet.balance | numberFormat(4)  }}</div>
                 <div>{{ wallet.cryptoCurrency }}</div>
               </div>
             </v-tab>
