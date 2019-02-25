@@ -5,6 +5,7 @@ import router from './router'
 import store from './store'
 import i18n from './i18n'
 import currencyFilter from './filters/currency'
+import numberFormatFilter from './filters/numberFormat'
 import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
 import './plugins/vuetify'
@@ -18,6 +19,7 @@ document.title = i18n.t('app_title')
 
 Vue.config.productionTip = false
 Vue.filter('currency', currencyFilter)
+Vue.filter('numberFormat', numberFormatFilter)
 
 window.ep = new Vue({
   version: packageJSON.version,
