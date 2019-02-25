@@ -43,7 +43,13 @@
     "too_long": "Message is too long",
     "welcome_message": "Welcome to ADAMANT, the most secure and anonymous messenger. Remember, your security and anonymity is also up to you. Do not follow links you receive, otherwise your IP can be compromised. Do not trust browser extensions. It is better to share your ADAMANT address personally, but not using other messengers. Keep your passphrase secure. Set a password on your device or log out after completion of usage.\n\nLearn more about security and anonymity at https://adamant.im/staysecured/.\n\nAll the transactions within the blockchain do need to have their minimal fees. This is necessary to support the network infrastructure. To start messaging now, *get free tokens* — go to Wallet tab and click Free ADM tokens. Then click \"Start new chat\" on Chats tab and enter your partner's addres or scan his QR code. To copy your address, click \"COPY\" on on Wallet tab.\n\nDo not reply to this message, it is a system account. If you still have any questions, contact us by U15677078342684640219",
     "you": "YOU",
-    "ok": "OK"
+    "ok": "OK",
+    "transaction_statuses": {
+      "delivered": "Transaction is confirmed on token’s network",
+      "pending": "Transaction is not confirmed yet",
+      "rejected": "Transaction is cancelled or not accepted on token’s network",
+      "invalid": "Information about transaction, fetched from rich message in ADAMANT newtwork, differs from information, fetched from token’s network or this type of cryptocurrency is not supported"
+    }
   },
   "error": "Error",
   "home": {

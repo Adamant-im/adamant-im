@@ -47,7 +47,11 @@
           :amount="message.amount | currency(message.type)"
           :time="message.timestamp | date"
           :currency="message.type"
-          :i18n="{ sent: $t('chats.sent_label'), received: $t('chats.received_label') }"
+          :i18n="{
+            sent: $t('chats.sent_label'),
+            received: $t('chats.received_label'),
+            statuses: $t('chats.transaction_statuses')
+          }"
           :locale="locale"
           :status="getTransactionStatus(message, partnerId)"
           @click:transaction="openTransaction(message)"
@@ -230,7 +234,13 @@ export default {
       })
     },
     isTransaction (type) {
-      return type in Cryptos || type === 'UNKNOWN_CRYPTO'
+      // @todo remove LSK & DASH when will be supported
+      return (
+        type in Cryptos ||
+        type === 'LSK' ||
+        type === 'DASH' ||
+        type === 'UNKNOWN_CRYPTO'
+      )
     }
   },
   filters: {

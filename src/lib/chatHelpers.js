@@ -160,6 +160,10 @@ export function transformMessage (abstract) {
     bnb_transaction: 'BNB',
     doge_transaction: 'DOGE'
   }
+  const notSupportedYetCryptos = {
+    lsk_transaction: 'LSK',
+    dash_transaction: 'DASH'
+  }
 
   // common properties for all transaction types
   transaction.id = abstract.id
@@ -179,13 +183,16 @@ export function transformMessage (abstract) {
     transaction.message = abstract.message.comments || ''
     transaction.amount = isNumeric(abstract.message.amount) ? +abstract.message.amount : 0
     transaction.status = TS.PENDING
+    transaction.hash = abstract.message.hash || ''
 
-    const knownCrypto = knownCryptos[abstract.message.type.toLowerCase()]
+    const cryptoType = abstract.message.type.toLowerCase()
+    const knownCrypto = knownCryptos[cryptoType]
+    const notSupportedYetCrypto = notSupportedYetCryptos[cryptoType]
     if (knownCrypto) {
       transaction.type = knownCrypto
-      transaction.hash = abstract.message.hash // other cryptos hash
     } else {
-      transaction.type = 'UNKNOWN_CRYPTO'
+      transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
+      transaction.status = TS.INVALID
     }
   } else { // ADM transaction or Message
     transaction.message = abstract.message || ''

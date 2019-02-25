@@ -15,7 +15,11 @@
           <div>
             {{ sender.id === userId ? i18n.sent : i18n.received }}
           </div>
-          <div @click="$emit('click:transaction', id)" class="a-chat__amount my-1">
+          <div
+            @click="onClickAmount"
+            class="a-chat__amount my-1"
+            :class="{ 'a-chat__amount--clickable': isStatusValid }"
+          >
             {{ amount }}
           </div>
         </div>
@@ -29,7 +33,11 @@
         <div class="a-chat__message-card-header">
           <div :title="timeTitle" class="a-chat__timestamp font-italic">{{ time }}</div>
           <div class="a-chat__status">
-            <v-icon size="15">{{ statusIcon }}</v-icon>
+            <v-icon
+              size="15"
+              :title="i18n.statuses[status]"
+              :color="statusColor"
+            >{{ statusIcon }}</v-icon>
           </div>
         </div>
       </div>
@@ -52,6 +60,25 @@ export default {
         return 'mdi-close-circle-outline'
       } else {
         return 'mdi-alert-outline'
+      }
+    },
+    statusColor () {
+      if (this.status === 'rejected') {
+        return 'red'
+      } else if (this.status === 'invalid') {
+        return 'yellow'
+      }
+
+      return ''
+    },
+    isStatusValid () {
+      return this.status !== 'invalid'
+    }
+  },
+  methods: {
+    onClickAmount () {
+      if (this.isStatusValid) {
+        this.$emit('click:transaction', this.id)
       }
     }
   },
@@ -91,8 +118,14 @@ export default {
     i18n: {
       type: Object,
       default: () => ({
-        'sent': 'Sent',
-        'received': 'Received'
+        sent: 'Sent',
+        received: 'Received',
+        statuses: {
+          delivered: '',
+          pending: '',
+          rejected: '',
+          invalid: ''
+        }
       })
     },
     locale: {

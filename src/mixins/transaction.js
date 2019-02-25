@@ -15,8 +15,10 @@ export default {
       // ADM transaction already has property `status`
       if (type === Cryptos.ADM) return
 
-      this.fetchCryptoAddresses(type, recipientId, senderId)
-      this.fetchTransaction(type, hash)
+      if (type in Cryptos) {
+        this.fetchCryptoAddresses(type, recipientId, senderId)
+        this.fetchTransaction(type, hash)
+      }
     },
     /**
      * Fetch transaction and save to state.
@@ -70,9 +72,12 @@ export default {
 
       // ADM transaction already has property `status`
       if (type === Cryptos.ADM) return admSpecialMessage.status
+      if (!Cryptos[type]) return admSpecialMessage.status // if crypto is not supported
 
       const getterName = type.toLowerCase() + '/transaction'
       const getter = this.$store.getters[getterName]
+
+      if (!getter) return admSpecialMessage.status
 
       const transaction = getter(hash)
       let status = (transaction && transaction.status) || TS.PENDING
