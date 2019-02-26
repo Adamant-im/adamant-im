@@ -33,12 +33,15 @@ export default {
 
       Object.keys(tx).forEach(key => tx[key] === undefined && delete tx[key])
 
-      const direction = tx.recipientId === address ? 'to' : 'from'
       const newTx = Object.assign(
-        { direction, id: tx.hash },
+        { id: tx.hash },
         state.transactions[tx.hash],
         tx
       )
+
+      if (tx.recipientId) {
+        newTx.direction = tx.recipientId === address ? 'to' : 'from'
+      }
 
       Vue.set(state.transactions, tx.hash, newTx)
 
