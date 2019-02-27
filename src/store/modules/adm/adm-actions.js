@@ -3,6 +3,7 @@ import i18n from '../../../i18n'
 import Vue from 'vue'
 import router from '../../../router'
 import utils from '../../../lib/adamant'
+import { Transactions } from '../../../lib/constants'
 
 function getExistedChatWithSender (chats, senderAddress) {
   const chatListWithSender = Object.values(chats).filter(chat => chat.partner === senderAddress)
@@ -68,7 +69,7 @@ export default {
           }
           if (options.from) {
             // Mark chat as unread, if user is on another page
-            if (router.currentRoute.path.indexOf(senderId) < 0) {
+            if (router.currentRoute.path.indexOf(senderId) < 0 && tx.type === Transactions.SEND) {
               let newMessages = context.rootState.newChats[chatWithSender.partner]
               if (!newMessages) {
                 newMessages = 0
