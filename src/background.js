@@ -47,18 +47,20 @@ function createWindow () {
         { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
     ]}
   ];
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-  var darkMode = false;
-  if (systemPreferences.isDarkMode()){
-    darkMode = true;
-  }
-  win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: "+darkMode+" })");
-  systemPreferences.subscribeNotification(
-    'AppleInterfaceThemeChangedNotification',
-    function theThemeHasChanged () {
-	win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: "+systemPreferences.isDarkMode()+" })");
+  if (process.platform === 'darwin') {
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+    var darkMode = false;
+    if (systemPreferences.isDarkMode()){
+      darkMode = true;
     }
-  )
+    win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: "+darkMode+" })");
+    systemPreferences.subscribeNotification(
+      'AppleInterfaceThemeChangedNotification',
+      function theThemeHasChanged () {
+  	  win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: "+systemPreferences.isDarkMode()+" })");
+      }
+    )
+  }
 }
 
 // Quit when all windows are closed.
