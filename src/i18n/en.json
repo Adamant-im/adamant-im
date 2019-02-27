@@ -159,6 +159,8 @@
     "notification_title": "Notifications",
     "other": "Other",
     "page_title": "Settings",
+    "push_denied": "PUSH notifications has been denied in browser settings",
+    "push_not_supported": "PUSH notifications not supperted by this browser",
     "security_title": "Security",
     "send_on_enter": "Send messages by Enter key",
     "send_on_enter_tooltip": "Send messages by Enter key, new line by combination Shift+Enter. By default, combination Ctrl+Enter or Cmd+Enter (Mac) is used to send messages",
