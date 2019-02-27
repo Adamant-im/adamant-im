@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, Menu, systemPreferences } from 'electron'
 import {
   createProtocol,
   installVueDevtools
@@ -15,8 +15,7 @@ let win
 protocol.registerStandardSchemes(['app'], { secure: true })
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({ width: 1200, height: 800 })
-
+  win = new BrowserWindow({ width: 800, height: 800, "max-width": 800 })
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
@@ -30,6 +29,36 @@ function createWindow () {
   win.on('closed', () => {
     win = null
   })
+  var template = [{
+    label: "ADAMANT Messenger",
+    submenu: [
+        { label: "About", selector: "orderFrontStandardAboutPanel:" },
+        { type: "separator" },
+        { label: "Quit", accelerator: "Command+Q", click: function() { app.quit(); }}
+    ]}, {
+    label: "Edit",
+    submenu: [
+        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+        { type: "separator" },
+        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+        { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+    ]}
+  ];
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  var darkMode = false;
+  if (systemPreferences.isDarkMode()){
+    darkMode = true;
+  }
+  win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: "+darkMode+" })");
+  systemPreferences.subscribeNotification(
+    'AppleInterfaceThemeChangedNotification',
+    function theThemeHasChanged () {
+	win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: "+systemPreferences.isDarkMode()+" })");
+    }
+  )
 }
 
 // Quit when all windows are closed.
