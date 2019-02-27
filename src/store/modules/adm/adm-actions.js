@@ -55,7 +55,7 @@ export default {
           if (tx.recipientId !== currentAdmAddress && tx.senderId === currentAdmAddress && chats[tx.recipientId]) {
             // Update sent message
             Vue.set(chats[tx.recipientId].messages, tx.id, {
-              ...tx,
+              ...chats[tx.recipientId].messages[tx.id] || tx,
               direction: 'from',
               confirmation_class: 'confirmed'
             })
