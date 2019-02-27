@@ -1,8 +1,8 @@
 const state = () => ({
   logoutOnTabClose: true, // if true, localStorage will be cleared after logout
-  sendMessageOnEnter: false,
-  allowSoundNotifications: false,
-  allowTabNotifications: false,
+  sendMessageOnEnter: true,
+  allowSoundNotifications: true,
+  allowTabNotifications: true,
   allowPushNotifications: false,
   darkTheme: false
 })
