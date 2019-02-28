@@ -37,7 +37,7 @@ export default {
       return this.$store.getters['doge/transaction'](this.id) || { }
     },
     amount () {
-      if (!this.transaction.amount) return ''
+      if (!isFinite(this.transaction.amount)) return ''
       return this.transaction.amount + ' ' + Cryptos.DOGE
     },
     fee () {
