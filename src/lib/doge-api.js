@@ -119,7 +119,7 @@ export default class DogeApi {
    * @returns {string}
    */
   _buildTransaction (address, amount, unspents) {
-    amount = Number(amount) * MULTIPLIER
+    amount = Math.floor(Number(amount) * MULTIPLIER)
 
     const txb = new bitcoin.TransactionBuilder(network)
     txb.setVersion(1)

@@ -46,7 +46,7 @@ export function calculateFee (gasUsed, gasPrice) {
 }
 
 export function toWhole (amount, decimals) {
-  let [whole, fraction] = String(amount).split('.')
+  let [whole, fraction] = Number(amount).toFixed(decimals).replace(/0+$/, '').split('.')
   if (!whole) whole = '0'
   if (!fraction) fraction = '0'
 
