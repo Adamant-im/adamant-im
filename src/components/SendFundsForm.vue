@@ -8,6 +8,7 @@
     >
 
       <v-select
+        @change="validateFields"
         v-model="currency"
         :items="cryptoList"
         :disabled="addressReadonly"
@@ -15,8 +16,9 @@
 
       <v-text-field
         v-model="cryptoAddress"
-        :rules="validationRules.cryptoAddress"
         :disabled="addressReadonly"
+        :rules="addressRules"
+        @input="validateAddr"
         type="text"
       >
         <template slot="label">
@@ -30,8 +32,9 @@
       </v-text-field>
 
       <v-text-field
+        :rules="amountRules"
+        @input="validateAmount"
         v-model="amountString"
-        :rules="validationRules.amount"
         type="number"
       >
         <template slot="label">
@@ -203,22 +206,13 @@ export default {
     cryptoList () {
       return Object.keys(Cryptos)
     },
-    validationRules () {
-      const fieldRequired = v => !!v || this.$t('transfer.error_field_is_required')
-
-      return {
-        cryptoAddress: [
-          fieldRequired,
-          v => validateAddress(this.currency, v) || this.$t('transfer.error_incorrect_address', { crypto: this.currency }),
-          v => v !== this.ownAddress || this.$t('transfer.error_same_recipient')
-        ],
-        amount: [
-          fieldRequired,
-          v => v > 0 || this.$t('transfer.error_incorrect_amount'),
-          v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
-          v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units')
-        ]
-      }
+    addressRules () {
+      // Validate address on currency change
+      return [this.addressNote || true]
+    },
+    amountRules () {
+      // Validate amount on currency change
+      return [this.amountNote || true]
     },
     confirmMessage () {
       let target = this.cryptoAddress
@@ -249,6 +243,8 @@ export default {
   data: () => ({
     currency: '',
     address: '',
+    addressNote: '',
+    amountNote: '',
     cryptoAddress: '',
     amountString: '',
     amount: 0,
@@ -362,6 +358,38 @@ export default {
           this.cryptoAddress = address
         })
       }
+    },
+    validateFields (currency) {
+      this.validateAddr(this.cryptoAddress, currency)
+      this.validateAmount(this.amount, currency)
+    },
+    validateAddr (address, curr) {
+      const currency = curr || this.currency
+      let note = ''
+      switch (false) {
+        case Boolean(address):
+          note = this.$t('transfer.error_field_is_required'); break
+        case validateAddress(currency, address):
+          note = this.$t('transfer.error_incorrect_address', { crypto: currency }); break
+        case address !== this.ownAddress:
+          note = this.$t('transfer.error_same_recipient')
+      }
+      this.addressNote = note
+    },
+    validateAmount (amount, curr) {
+      const currency = curr || this.currency
+      let note = ''
+      switch (false) {
+        case Boolean(amount):
+          note = this.$t('transfer.error_field_is_required'); break
+        case amount > 0:
+          note = this.$t('transfer.error_incorrect_amount'); break
+        case this.finalAmount <= this.balance:
+          note = this.$t('transfer.error_not_enough'); break
+        case this.validateNaturalUnits(amount, currency):
+          note = this.$t('transfer.error_natural_units')
+      }
+      this.amountNote = note
     },
     validateNaturalUnits (amount, currency) {
       const units = CryptoNaturalUnits[currency]
