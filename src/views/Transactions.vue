@@ -96,9 +96,7 @@ export default {
     goToChat (partnerId) {
       this.$router.push({
         name: 'Chat',
-        params: {
-          partner: partnerId
-        }
+        params: { partnerId }
       })
     },
     onScroll () {
