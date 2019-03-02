@@ -4,20 +4,19 @@
       <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
 
-    <v-toolbar-title>
-      <div v-if="isChatReadOnly">{{ partnerId }}</div>
-      <v-edit-dialog v-else>
-        <div>{{ partnerName ? partnerName : partnerId }}</div>
+    <div>
+      <div v-if="isChatReadOnly" class="title" :style="{ paddingLeft: '12px' }">{{ partnerId }}</div>
+      <div v-else>
         <v-text-field
+          class="chat-text-field"
+          box
+          full-width
+          background-color="transparent"
           v-model="partnerName"
-          slot="input"
-          :label="$t('chats.partner_name')"
-          single-line
-        />
-      </v-edit-dialog>
-
-      <div class="body-1" v-if="partnerName">{{ partnerId }}</div>
-    </v-toolbar-title>
+          :label="partnerId"
+        ></v-text-field>
+      </div>
+    </div>
 
     <v-spacer></v-spacer>
   </v-toolbar>
@@ -54,3 +53,41 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus">
+@import '~vuetify/src/stylus/settings/_variables.styl'
+
+$chat-text-field-font-size := 20px
+
+.chat-text-field.v-text-field
+  font-size: $chat-text-field-font-size
+
+  .v-label
+    max-width: unset
+    font-size: $chat-text-field-font-size
+  .v-input__control
+    padding: 0
+  .v-input__control > .v-input__slot
+    padding: 0
+    margin-bottom: 0
+  .v-label--active
+    transform: translateY(-6px) scale(0.6875)
+
+/** Themes **/
+.theme--light
+  .chat-text-field.v-text-field
+    .primary--text
+      color: $grey.darken-1 !important
+    .v-label
+      color: $grey.darken-4
+    .v-label--active
+      color: $grey.darken-1
+.theme--dark
+  .chat-text-field.v-text-field
+    .primary--text
+      color: $shades.white !important
+    .v-label
+      color: $shades.white
+    .v-label--active
+      color: $shades.white
+</style>
