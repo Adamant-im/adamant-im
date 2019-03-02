@@ -124,5 +124,28 @@ P3 Line2
       expect(formatter.format('`code`')).toBe('<p><code>code</code></p>')
       expect(formatter.format('`co\nde`')).toBe('<p>`co<br>de`</p>')
     })
+
+    it('should not format inline elements when space or start of a line is not present at the left', () => {
+      const shouldNotMatch = [
+        'Lorem`text`ipsum',
+        'Lorem`text` ipsum',
+        'Lorem ipsum`text`'
+      ]
+
+      const shouldMatch = [
+        'Lorem `text`ipsum',
+        'Lorem\t`text`ipsum',
+        'Lorem ipsum\n`text`',
+        '`text`Lorem ipsum'
+      ]
+
+      shouldNotMatch.forEach(message => {
+        expect(formatter.format(message)).toBe(`<p>${message}</p>`)
+      })
+
+      shouldMatch.forEach(message => {
+        expect(formatter.format(message)).not.toEqual(`<p>${message}</p>`)
+      })
+    })
   })
 })

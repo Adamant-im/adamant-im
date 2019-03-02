@@ -6,10 +6,10 @@ const inline = {
   email: /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/g,
   link: /((eth|bch|bitcoin|https?|s?ftp|magnet|tor|onion|tg):([^\s\x00-\x1f<>]+[^\s\x00-\x1f<>.]))/g,
   autolink: /([^\s\x00-\x1f<>]+.(zones))/g, // not implemented
-  bold: /\*([^\n]+)\*/g,
-  italic: /_([^\n]+)_/g,
-  strike: /~([^\n]+)~/g,
-  code: /`([^\n]+)`/g,
+  bold: /([\s]+|^)\*([^\n]+)\*/g,
+  italic: /([\s]+|^)_([^\n]+)_/g,
+  strike: /([\s]+|^)~([^\n]+)~/g,
+  code: /([\s]+|^)`([^\n]+)`/g,
   br: /\n/g
 }
 
