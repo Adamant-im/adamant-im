@@ -121,18 +121,48 @@ import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 export default {
   name: 'transaction-template',
-  props: [
-    'amount',
-    'timestamp',
-    'id',
-    'confirmations',
-    'fee',
-    'recipient',
-    'sender',
-    'explorerLink',
-    'partner',
-    'status'
-  ],
+  props: {
+    amount: {
+      required: true,
+      type: String
+    },
+    confirmations: {
+      required: true,
+      type: Number
+    },
+    explorerLink: {
+      required: true,
+      type: String
+    },
+    fee: {
+      required: true,
+      type: String
+    },
+    id: {
+      required: true,
+      type: String
+    },
+    partner: {
+      required: true,
+      type: String
+    },
+    recipient: {
+      required: true,
+      type: String
+    },
+    sender: {
+      required: true,
+      type: String
+    },
+    status: {
+      required: true,
+      type: String
+    },
+    timestamp: {
+      required: true,
+      type: Number
+    }
+  },
   methods: {
     openInExplorer: function () {
       if (this.explorerLink) {
