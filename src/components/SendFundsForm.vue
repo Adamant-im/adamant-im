@@ -123,6 +123,7 @@ export default {
   },
   mounted () {
     this.fetchUserCryptoAddress()
+    this.prevCurrency = this.currency
   },
   computed: {
     /**
@@ -244,8 +245,11 @@ export default {
         this.amount = 0
       }
     },
-    currency () {
-      this.$refs.form.validate()
+    currency (v) {
+      // Do not validate first time
+      if (v !== this.prevCurrency) {
+        this.$refs.form.validate()
+      }
     }
   },
   data: () => ({
@@ -255,6 +259,7 @@ export default {
     amountString: '',
     amount: 0,
     comment: '',
+    prevCurrency: null,
 
     validForm: true,
     disabledButton: false,
