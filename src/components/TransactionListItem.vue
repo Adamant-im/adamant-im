@@ -1,34 +1,39 @@
 <template>
-  <v-list-tile avatar @click="onClickTransaction">
-    <v-list-tile-avatar>
-      <v-icon>{{ senderId === userId ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}</v-icon>
-    </v-list-tile-avatar>
+  <div :class="className">
+    <v-list-tile avatar @click="onClickTransaction">
+      <v-list-tile-avatar>
+        <v-icon>{{ senderId === userId ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}</v-icon>
+      </v-list-tile-avatar>
 
-    <v-list-tile-content>
-      <v-list-tile-title v-if="partnerName">
-        {{ partnerName }}
-        <span class="body-1 grey--text text--darken-1">({{ partnerId }})</span>
-      </v-list-tile-title>
-      <v-list-tile-title v-else>
-        {{ partnerId }}
-      </v-list-tile-title>
-      <v-list-tile-sub-title>
-        <v-layout>
+      <v-list-tile-content>
+        <v-list-tile-title v-if="partnerName">
+          <span :class="`${className}__head-title`">{{ partnerName }}</span>
+          <span :class="`${className}__head-subtitle`" class="body-1"> ({{ partnerId }})</span>
+        </v-list-tile-title>
+        <v-list-tile-title v-else>
+          <span :class="`${className}__head-title`">{{ partnerId }}</span>
+        </v-list-tile-title>
+
+        <v-list-tile-sub-title :class="`${className}__title`">
           {{ amount | currency(crypto) }}
-          <v-spacer/>
-          {{ createdAt | date }}
-        </v-layout>
-      </v-list-tile-sub-title>
-    </v-list-tile-content>
+        </v-list-tile-sub-title>
 
-    <v-list-tile-action v-if="isPartnerInChatList">
-      <v-btn icon ripple @click.stop="onClickIcon">
-        <v-icon color="grey darken-2">
-          mdi-comment
-        </v-icon>
-      </v-btn>
-    </v-list-tile-action>
-  </v-list-tile>
+        <v-list-tile-sub-title :class="`${className}__subtitle`">
+          {{ createdAt | date }}
+        </v-list-tile-sub-title>
+      </v-list-tile-content>
+
+      <v-list-tile-action v-if="isPartnerInChatList">
+        <v-btn icon ripple @click.stop="onClickIcon">
+          <v-icon color="grey darken-2">
+            mdi-message-text
+          </v-icon>
+        </v-btn>
+      </v-list-tile-action>
+    </v-list-tile>
+
+    <v-divider :inset="true"></v-divider>
+  </div>
 </template>
 
 <script>
@@ -63,6 +68,9 @@ export default {
     },
     isPartnerInChatList () {
       return this.$store.getters['chat/isPartnerInChatList'](this.partnerId)
+    },
+    className () {
+      return 'transaction-item'
     }
   },
   methods: {
@@ -105,3 +113,19 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_colors.styl'
+
+/** Themes **/
+.theme--light.v-list
+  .transaction-item
+    &__head-title
+      color: $grey.darken-3
+    &__head-subtitle
+      color: $grey.darken-1
+    &__title
+      color: $grey.darken-4
+    &__subtitle
+      color: $grey.darken-1
+</style>

@@ -11,7 +11,7 @@
 
         <container v-if="isFulfilled">
 
-          <v-list v-if="hasTransactions" two-line class="transparent">
+          <v-list v-if="hasTransactions" three-line class="transparent">
             <transaction-list-item
               v-for="(transaction, i) in transactions"
               :key="i"
