@@ -505,7 +505,7 @@ const actions = {
         commit('updateMessage', {
           id: messageObject.id,
           realId: res.transactionId,
-          status: TS.DELIVERED,
+          status: TS.PENDING, // not confirmed yet, wait to be stored in the blockchain (optional line)
           partnerId: recipientId
         })
 

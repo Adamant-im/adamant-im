@@ -1112,7 +1112,7 @@ describe('Store: chat.js', () => {
           ['updateMessage', {
             id: messageObject.id,
             realId: transactionId,
-            status: TS.DELIVERED,
+            status: TS.PENDING,
             partnerId: recipientId
           }]
         ])
