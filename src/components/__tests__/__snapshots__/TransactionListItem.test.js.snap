@@ -48,7 +48,23 @@ exports[`TransactionListItem renders the correct markup 1`] = `
       </v-list-tile-sub-title-stub>
     </v-list-tile-content-stub>
      
-    <!---->
+    <v-list-tile-action-stub>
+      <v-btn-stub
+        activeclass="v-btn--active"
+        icon="true"
+        ripple="true"
+        tag="button"
+        type="button"
+      >
+        <v-icon-stub
+          color="grey darken-2"
+        >
+          
+          mdi-message-outline
+        
+        </v-icon-stub>
+      </v-btn-stub>
+    </v-list-tile-action-stub>
   </v-list-tile-stub>
    
   <v-divider-stub
