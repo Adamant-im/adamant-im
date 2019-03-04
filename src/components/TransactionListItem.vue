@@ -23,10 +23,10 @@
         </v-list-tile-sub-title>
       </v-list-tile-content>
 
-      <v-list-tile-action v-if="isPartnerInChatList">
+      <v-list-tile-action>
         <v-btn icon ripple @click.stop="onClickIcon">
           <v-icon color="grey darken-2">
-            mdi-message-text
+            {{ isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline' }}
           </v-icon>
         </v-btn>
       </v-list-tile-action>
