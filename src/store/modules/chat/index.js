@@ -24,7 +24,7 @@ import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
  * type Chat {
  *   messages: Message[],
  *   numOfNewMessages: number,
- *   readOnly?: boolean // for Adamant Bounty & Adamant Tokens chats
+ *   readOnly?: boolean // for Welcome to ADAMANT & ADAMANT Tokens chats
  * }
  *
  */
@@ -343,7 +343,7 @@ const mutations = {
   },
 
   /**
-   * Add `Adamant Bounty` & `Adamant Tokens` to state.chats.
+   * Add `Welcome to ADAMANT` & `ADAMANT Tokens` to state.chats.
    */
   createAdamantChats (state) {
     const bountyMessages = [
@@ -351,14 +351,14 @@ const mutations = {
         id: 'b1',
         message: 'chats.welcome_message',
         timestamp: EPOCH,
-        senderId: 'Adamant Bounty',
+        senderId: 'chats.welcome_message_title',
         type: 'message',
         i18n: true,
         status: TS.DELIVERED
       }
     ]
 
-    Vue.set(state.chats, 'Adamant Bounty', {
+    Vue.set(state.chats, 'chats.welcome_message_title', {
       messages: bountyMessages,
       numOfNewMessages: 0,
       readOnly: true

@@ -5,7 +5,7 @@
     </v-btn>
 
     <div>
-      <div v-if="isChatReadOnly" class="title" :style="{ paddingLeft: '12px' }">{{ partnerId }}</div>
+      <div v-if="isChatReadOnly" class="title" :style="{ paddingLeft: '12px' }">{{ $t(partnerId) }}</div>
       <div v-else>
         <v-text-field
           class="chat-text-field"
