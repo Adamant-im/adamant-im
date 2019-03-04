@@ -37,7 +37,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
         <span
           class="font-weight-medium"
         >
-          Amount
+          Amount to send
         </span>
          
         <span

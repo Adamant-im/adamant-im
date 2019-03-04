@@ -27,7 +27,7 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
           type="button"
         >
           <span>
-            Wallet
+            Account
           </span>
            
           <v-icon-stub>
