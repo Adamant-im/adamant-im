@@ -197,9 +197,6 @@ export default {
         recipientId: this.partnerId
       })
         .catch(err => {
-          this.$store.dispatch('snackbar/show', {
-            message: err.message
-          })
           console.error(err.message)
         })
     },

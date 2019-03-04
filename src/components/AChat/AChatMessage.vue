@@ -26,6 +26,7 @@
             <v-icon
               :title="i18n.retry"
               size="15"
+              color="red"
               v-if="status === 'rejected'"
               @click="$emit('resend')"
             >{{ statusIcon }}</v-icon>
