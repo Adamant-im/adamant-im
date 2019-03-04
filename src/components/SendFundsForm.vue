@@ -85,13 +85,17 @@
           <v-spacer></v-spacer>
 
           <v-btn
-            flat="flat"
+            flat
             @click="dialog = false"
           >
             {{ $t('transfer.confirm_cancel') }}
           </v-btn>
 
-          <v-btn @click="submit" :disabled="disabledButton">
+          <v-btn
+            flat
+            @click="submit"
+            :disabled="disabledButton"
+          >
             <v-progress-circular
               v-show="showSpinner"
               indeterminate
