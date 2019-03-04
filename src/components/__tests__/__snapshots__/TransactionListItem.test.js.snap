@@ -57,7 +57,7 @@ exports[`TransactionListItem renders the correct markup 1`] = `
         type="button"
       >
         <v-icon-stub
-          color="grey darken-2"
+          class="transaction-item__icon"
         >
           
           mdi-message-outline

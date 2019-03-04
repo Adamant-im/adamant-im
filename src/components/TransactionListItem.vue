@@ -23,9 +23,9 @@
         </v-list-tile-sub-title>
       </v-list-tile-content>
 
-      <v-list-tile-action>
+      <v-list-tile-action v-if="isCryptoADM">
         <v-btn icon ripple @click.stop="onClickIcon">
-          <v-icon color="grey darken-2">
+          <v-icon :class="`${className}__icon`">
             {{ isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline' }}
           </v-icon>
         </v-btn>
@@ -71,6 +71,9 @@ export default {
     },
     className () {
       return 'transaction-item'
+    },
+    isCryptoADM () {
+      return this.crypto === Cryptos.ADM
     }
   },
   methods: {
@@ -128,4 +131,6 @@ export default {
       color: $grey.darken-4
     &__subtitle
       color: $grey.darken-1
+    &__icon
+      color: $grey.darken-2
 </style>
