@@ -2,9 +2,17 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { Base64 } from 'js-base64'
 
-import { unlock, loginOrRegister, loginViaPassword, storeCryptoAddress, sendSpecialMessage } from '@/lib/adamant-api'
-import { Cryptos } from '@/lib/constants'
+import {
+  unlock,
+  loginOrRegister,
+  loginViaPassword,
+  storeCryptoAddress,
+  sendSpecialMessage,
+  getCurrentAccount
+} from '@/lib/adamant-api'
+import { Cryptos, Fees } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
+import { flushCryptoAddresses } from '@/lib/store-crypto-address'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
@@ -135,6 +143,16 @@ const store = {
       commit('resetPassword')
       commit('setIDBReady', false)
       commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
+    },
+    updateBalance ({ commit }) {
+      return getCurrentAccount()
+        .then(account => {
+          commit('setBalance', account.balance)
+
+          if (account.balance > Fees.KVS) {
+            flushCryptoAddresses()
+          }
+        })
     }
   },
   plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin, indexedDbPlugin],
