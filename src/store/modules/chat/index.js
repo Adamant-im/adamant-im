@@ -550,7 +550,7 @@ const actions = {
           commit('updateMessage', {
             id: messageId,
             realId: res.transactionId,
-            status: TS.DELIVERED,
+            status: TS.PENDING,
             partnerId: recipientId
           })
 
