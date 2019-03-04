@@ -1,45 +1,74 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`TransactionListItem renders the correct markup 1`] = `
-<v-list-tile-stub
-  activeclass="primary--text"
-  avatar="true"
+<div
+  class="transaction-item"
 >
-  <v-list-tile-avatar-stub
-    size="40"
+  <v-list-tile-stub
+    activeclass="primary--text"
+    avatar="true"
   >
-    <v-icon-stub>
-      mdi-airplane-landing
-    </v-icon-stub>
-  </v-list-tile-avatar-stub>
-   
-  <v-list-tile-content-stub>
-    <v-list-tile-title-stub>
-      
-      Rick
-      
-      <span
-        class="body-1 grey--text text--darken-1"
-      >
-        (U654321)
-      </span>
-    </v-list-tile-title-stub>
+    <v-list-tile-avatar-stub
+      size="40"
+    >
+      <v-icon-stub>
+        mdi-airplane-landing
+      </v-icon-stub>
+    </v-list-tile-avatar-stub>
      
-    <v-list-tile-sub-title-stub>
-      <v-layout-stub
-        tag="div"
+    <v-list-tile-content-stub>
+      <v-list-tile-title-stub>
+        <span
+          class="transaction-item__head-title"
+        >
+          Rick
+        </span>
+         
+        <span
+          class="body-1 transaction-item__head-subtitle"
+        >
+           (U654321)
+        </span>
+      </v-list-tile-title-stub>
+       
+      <v-list-tile-sub-title-stub
+        class="transaction-item__title"
       >
         
         1 ADM
-        
-        <v-spacer-stub />
+      
+      </v-list-tile-sub-title-stub>
+       
+      <v-list-tile-sub-title-stub
+        class="transaction-item__subtitle"
+      >
         
         Nov 14, 2018, 16:51
       
-      </v-layout-stub>
-    </v-list-tile-sub-title-stub>
-  </v-list-tile-content-stub>
+      </v-list-tile-sub-title-stub>
+    </v-list-tile-content-stub>
+     
+    <v-list-tile-action-stub>
+      <v-btn-stub
+        activeclass="v-btn--active"
+        icon="true"
+        ripple="true"
+        tag="button"
+        type="button"
+      >
+        <v-icon-stub
+          color="grey darken-2"
+        >
+          
+          mdi-message-outline
+        
+        </v-icon-stub>
+      </v-btn-stub>
+    </v-list-tile-action-stub>
+  </v-list-tile-stub>
    
-  <!---->
-</v-list-tile-stub>
+  <v-divider-stub
+    inset="true"
+  />
+</div>
 `;
