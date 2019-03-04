@@ -850,14 +850,14 @@ describe('Store: chat.js', () => {
      * mutations.createAdamantChats
      */
     describe('mutations.createAdamantChats', () => {
-      it('should push `Adamant Bounty` to state.chats', () => {
+      it('should push `Welcome to ADAMANT` to state.chats', () => {
         const state = {
           chats: {}
         }
 
         mutations.createAdamantChats(state)
 
-        expect(state.chats['Adamant Bounty']).toBeTruthy()
+        expect(state.chats['Welcome to ADAMANT']).toBeTruthy()
       })
     })
 
