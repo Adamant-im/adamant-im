@@ -73,16 +73,6 @@ exports[`SendFundsForm renders the correct markup 1`] = `
         tag="button"
         type="button"
       >
-        <v-progress-circular-stub
-          class="mr-3"
-          color="primary"
-          indeterminate="true"
-          rotate="0"
-          size="24"
-          style="display: none;"
-          value="0"
-          width="4"
-        />
         
         Send
       
@@ -123,9 +113,20 @@ exports[`SendFundsForm renders the correct markup 1`] = `
          
         <v-btn-stub
           activeclass="v-btn--active"
+          flat="true"
           tag="button"
           type="button"
         >
+          <v-progress-circular-stub
+            class="mr-3"
+            color="primary"
+            indeterminate="true"
+            rotate="0"
+            size="24"
+            style="display: none;"
+            value="0"
+            width="4"
+          />
           
           Confirm
         

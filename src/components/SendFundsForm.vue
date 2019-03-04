@@ -63,16 +63,9 @@
 
       <div class="text-xs-center">
         <v-btn
-          :disabled="!validForm || disabledButton || !amount"
+          :disabled="!validForm || !amount"
           @click="confirm"
         >
-          <v-progress-circular
-            v-show="showSpinner"
-            indeterminate
-            color="primary"
-            size="24"
-            class="mr-3"
-          />
           {{ $t('transfer.send_button') }}
         </v-btn>
       </div>
@@ -92,13 +85,24 @@
           <v-spacer></v-spacer>
 
           <v-btn
-            flat="flat"
+            flat
             @click="dialog = false"
           >
             {{ $t('transfer.confirm_cancel') }}
           </v-btn>
 
-          <v-btn @click="submit">
+          <v-btn
+            flat
+            @click="submit"
+            :disabled="disabledButton"
+          >
+            <v-progress-circular
+              v-show="showSpinner"
+              indeterminate
+              color="primary"
+              size="24"
+              class="mr-3"
+            />
             {{ $t('transfer.confirm_approve') }}
           </v-btn>
         </v-card-actions>
