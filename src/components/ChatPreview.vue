@@ -15,7 +15,7 @@
     </v-list-tile-avatar>
 
     <v-list-tile-content>
-      <v-list-tile-title>{{ partnerName }}</v-list-tile-title>
+      <v-list-tile-title v-text="readOnly ? $t(partnerName) : partnerName"></v-list-tile-title>
 
       <!-- Transaction -->
       <template v-if="lastTransaction">

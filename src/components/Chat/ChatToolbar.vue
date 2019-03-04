@@ -5,7 +5,7 @@
     </v-btn>
 
     <v-toolbar-title>
-      <div v-if="isChatReadOnly">{{ partnerId }}</div>
+      <div v-if="isChatReadOnly">{{ $t(partnerId) }}</div>
       <v-edit-dialog v-else>
         <div>{{ partnerName ? partnerName : partnerId }}</div>
         <v-text-field

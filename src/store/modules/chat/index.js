@@ -351,14 +351,14 @@ const mutations = {
         id: 'b1',
         message: 'chats.welcome_message',
         timestamp: EPOCH,
-        senderId: 'Welcome to ADAMANT',
+        senderId: 'chats.welcome_message_title',
         type: 'message',
         i18n: true,
         status: TS.DELIVERED
       }
     ]
 
-    Vue.set(state.chats, 'Welcome to ADAMANT', {
+    Vue.set(state.chats, 'chats.welcome_message_title', {
       messages: bountyMessages,
       numOfNewMessages: 0,
       readOnly: true
