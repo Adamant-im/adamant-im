@@ -3,9 +3,22 @@ import store from '@/store'
 
 export default {
   chats: (to, from, next) => {
-    if (store.state.chat.chats.hasOwnProperty(to.params.partnerId)) {
-      next()
-    } else next('/chats')
+    // 1. If come from `$router.push()` then
+    //    a. If `IsPartnerInChatList()`, then grant access
+    //    b. Else go back to /chats
+    // 2. Else watch `state.chat.isFulfilled` until the getChats request is completed
+    // 3. Repeat a, b from point 1
+    if (store.state.chat.isFulfilled) {
+      if (store.state.chat.chats.hasOwnProperty(to.params.partnerId)) {
+        next()
+      } else next('/chats')
+    } else {
+      store.watch(state => state.chat.isFulfilled, () => {
+        if (store.state.chat.chats.hasOwnProperty(to.params.partnerId)) {
+          next()
+        } else next('/chats')
+      })
+    }
   },
   transaction: (to, from, next) => {
     const crypto = to.params.crypto.toUpperCase()
