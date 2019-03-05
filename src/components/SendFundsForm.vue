@@ -124,10 +124,14 @@ export default {
     this.currency = this.cryptoCurrency
     this.address = this.recipientAddress
     this.amount = this.amountToSend
+
+    // create watcher after setting default from props
+    this.$watch('currency', () => {
+      this.$refs.form.validate()
+    })
   },
   mounted () {
     this.fetchUserCryptoAddress()
-    this.prevCurrency = this.currency
   },
   computed: {
     /**
@@ -248,12 +252,6 @@ export default {
       } else {
         this.amount = 0
       }
-    },
-    currency (v) {
-      // Do not validate first time
-      if (v !== this.prevCurrency) {
-        this.$refs.form.validate()
-      }
     }
   },
   data: () => ({
@@ -263,7 +261,6 @@ export default {
     amountString: '',
     amount: 0,
     comment: '',
-    prevCurrency: null,
 
     validForm: true,
     disabledButton: false,
