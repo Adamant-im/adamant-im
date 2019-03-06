@@ -27,7 +27,8 @@
           </v-list>
 
         </v-flex>
-        <InlineSpinner v-if="!isFulfilled" />
+
+        <ChatSpinner :value="!isFulfilled" />
       </v-layout>
     </container>
 
@@ -41,7 +42,7 @@
 <script>
 import ChatPreview from '@/components/ChatPreview'
 import ChatStartDialog from '@/components/ChatStartDialog'
-import InlineSpinner from '@/components/InlineSpinner'
+import ChatSpinner from '@/components/ChatSpinner'
 
 export default {
   computed: {
@@ -93,7 +94,7 @@ export default {
   components: {
     ChatPreview,
     ChatStartDialog,
-    InlineSpinner
+    ChatSpinner
   }
 }
 </script>
