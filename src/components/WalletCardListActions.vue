@@ -20,7 +20,7 @@
       </v-list-tile-content>
     </v-list-tile>
 
-    <v-list-tile v-if="!hasAdmTokens" @click="getFreeTokens" avatar>
+    <v-list-tile v-if="isADMCrypto && !hasAdmTokens" @click="getFreeTokens" avatar>
       <v-list-tile-avatar>
         <v-icon class="action-list__icon">mdi-gift</v-icon>
       </v-list-tile-avatar>
@@ -39,6 +39,9 @@ export default {
   computed: {
     hasAdmTokens () {
       return this.$store.state.balance > 0
+    },
+    isADMCrypto () {
+      return this.crypto === Cryptos.ADM
     }
   },
   methods: {
