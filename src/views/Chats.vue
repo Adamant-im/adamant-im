@@ -85,7 +85,7 @@ export default {
   }),
   methods: {
     openChat (userId) {
-      this.$router.push(`/chats/${userId}`)
+      this.$router.push(`/chats/${userId}/`)
     },
     isChatReadOnly (partnerId) {
       return this.$store.getters['chat/isChatReadOnly'](partnerId)
