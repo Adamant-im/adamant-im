@@ -5,6 +5,7 @@
 
       <chat :partner-id="partnerId" @partner-info="partnerInfoValue = true"/>
       <PartnerInfo :address="partnerId" :name="partnerName" v-if="!isChatReadOnly" v-model="partnerInfoValue" />
+      <ProgressIndicator :show="!isFulfilled" />
 
     </container>
 
@@ -14,6 +15,7 @@
 <script>
 import Chat from '@/components/Chat/Chat'
 import PartnerInfo from '@/components/PartnerInfo'
+import ProgressIndicator from '@/components/ProgressIndicator'
 
 export default {
   computed: {
@@ -22,9 +24,13 @@ export default {
     },
     isChatReadOnly () {
       return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
+    },
+    isFulfilled () {
+      return this.$store.state.chat.isFulfilled
     }
   },
   components: {
+    ProgressIndicator,
     Chat,
     PartnerInfo
   },
