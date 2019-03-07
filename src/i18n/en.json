@@ -88,6 +88,8 @@
     "password_label": "Input your passphrase to login",
     "save_button_tooltip": "Save passphrase in a text file. Save it in the secure place!",
     "scan_qr_code_button_tooltip": "Scan a QR code with passphrase via device camera",
+    "save_qr_code_tooltip": "Save your passphrase as an QR code image on device. Save it in the secure place!",
+    "save_qr_code_to_images": "Save to Images",
     "subheader": "A top-notch anonymous messenger encrypted with a blockchain"
   },
   "login_via_password": {

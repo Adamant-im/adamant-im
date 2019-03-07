@@ -1,5 +1,5 @@
 <template>
-  <v-layout row fill-height justify-center class="login-page">
+  <v-layout row fill-height justify-center :class="className">
 
     <container>
 
@@ -15,8 +15,8 @@
           class="logo"
         />
 
-        <h1 class="login-page__title">{{ $t('login.brand_title') }}</h1>
-        <h2 class="hidden-sm-and-down login-page__subtitle mt-3">{{ $t('login.subheader') }}</h2>
+        <h1 :class="`${className}__title`">{{ $t('login.brand_title') }}</h1>
+        <h2 :class="`${className}__subtitle`" class="hidden-sm-and-down mt-3">{{ $t('login.subheader') }}</h2>
       </v-card>
 
       <v-card v-if="!isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
@@ -27,44 +27,29 @@
               v-model="passphrase"
               @login="onLogin"
               @error="onLoginError"
-            >
-              <template slot="append-outer">
-                <icon
-                  class="ml-2"
-                  :width="24"
-                  :height="24"
-                  shape-rendering="crispEdges"
-                  :color="showQrcodeRenderer ? this.$vuetify.theme.primary : ''"
-                  @click="toggleQrcodeRenderer"
-                >
-                  <qr-code-icon/>
-                </icon>
-              </template>
-
-              <template slot="qrcode-renderer">
-                <div @click="saveQrcode" :style="{ cursor: 'pointer' }">
-                  <transition name="slide-fade">
-                    <QrcodeRenderer v-if="showQrcodeRenderer" :text="passphrase" ref="qrcode" />
-                  </transition>
-                </div>
-              </template>
-            </login-form>
+            />
 
           </v-flex>
         </v-layout>
 
-        <v-layout justify-center>
+        <v-layout justify-center class="mt-2">
           <v-btn
-            icon
-            flat
-            fab
             @click="showQrcodeScanner = true"
             :title="$t('login.scan_qr_code_button_tooltip')"
+            icon
+            flat
+            :class="`${className}__icon`"
           >
             <icon><qr-code-scan-icon/></icon>
           </v-btn>
 
-          <v-btn @click="openFileDialog" :title="$t('login.login_by_qr_code_tooltip')" icon flat fab>
+          <v-btn
+            @click="openFileDialog"
+            :title="$t('login.login_by_qr_code_tooltip')"
+            icon
+            flat
+            :class="`${className}__icon`"
+          >
             <icon><file-icon/></icon>
           </v-btn>
 
@@ -72,11 +57,13 @@
         </v-layout>
       </v-card>
 
-      <v-layout v-if="!isLoginViaPassword" justify-center class="mt-2">
+      <v-layout v-if="!isLoginViaPassword" justify-center class="mt-5">
         <v-flex xs12 sm8 md8 lg8>
+
           <passphrase-generator
-            @copy="onCopyPassphraze"
+            @copy="onCopyPassphrase"
           />
+
         </v-flex>
       </v-layout>
 
@@ -106,17 +93,13 @@
 </template>
 
 <script>
-import b64toBlob from 'b64-to-blob'
-import FileSaver from 'file-saver'
 import { QrcodeCapture } from 'vue-qrcode-reader'
 
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
 import LoginForm from '@/components/LoginForm'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
-import QrcodeRenderer from '@/components/QrcodeRenderer'
 import Icon from '@/components/icons/BaseIcon'
-import QrCodeIcon from '@/components/icons/common/QrCode'
 import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
 import FileIcon from '@/components/icons/common/File'
 import LoginPasswordForm from '@/components/LoginPasswordForm'
@@ -124,8 +107,8 @@ import AppInterval from '@/lib/AppInterval'
 
 export default {
   computed: {
-    showQrcodeRenderer () {
-      return this.isQrcodeRendererActive && this.passphrase
+    className () {
+      return 'login-page'
     },
     isLoginViaPassword () {
       return this.$store.getters['options/isLoginViaPassword']
@@ -135,7 +118,6 @@ export default {
     passphrase: '',
     password: '',
     showQrcodeScanner: false,
-    isQrcodeRendererActive: false,
     logo: '/img/adamant-logo-transparent-512x512.png'
   }),
   methods: {
@@ -170,7 +152,7 @@ export default {
         message: this.$t(key)
       })
     },
-    onCopyPassphraze () {
+    onCopyPassphrase () {
       this.$store.dispatch('snackbar/show', {
         message: this.$t('home.copied'),
         timeout: 1500
@@ -187,16 +169,6 @@ export default {
     },
     openFileDialog () {
       this.$refs.qrcodeCapture.$el.click()
-    },
-    saveQrcode () {
-      const imgUrl = this.$refs.qrcode.$el.src
-      const base64Data = imgUrl.slice(22, imgUrl.length)
-      const byteCharacters = b64toBlob(base64Data)
-      const blob = new Blob([byteCharacters], { type: 'image/png' })
-      FileSaver.saveAs(blob, 'adamant-im.png')
-    },
-    toggleQrcodeRenderer () {
-      this.isQrcodeRendererActive = !this.isQrcodeRendererActive
     }
   },
   components: {
@@ -204,10 +176,8 @@ export default {
     PassphraseGenerator,
     LoginForm,
     QrcodeScannerDialog,
-    QrcodeRenderer,
     QrcodeCapture,
     Icon,
-    QrCodeIcon,
     QrCodeScanIcon,
     FileIcon,
     LoginPasswordForm
@@ -238,4 +208,15 @@ export default {
   .logo
     width: 300px
     height: 300px
+
+/** Themes **/
+.theme--light
+  .login-page
+    &__icon
+      color: $grey.darken-3
+
+.theme--dark
+  .login-page
+    &__icon
+      color: $shades.white
 </style>
