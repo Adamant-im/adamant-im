@@ -95,11 +95,23 @@ export default {
 
 <style lang="stylus" scoped>
 /**
- * Remove extra margins & paddings.
+ * 1. Limit height of message form.
+ * 2. Align icons at the bottom.
  */
-.v-chat__form >>> .v-text-field
-  padding-top: 0
-  margin-top: 0
+.a-chat__form
+  >>> .v-text-field__slot textarea // [1]
+    max-height: 230px // magic number
+    overflow-y: auto
+  >>> .v-text-field // [2]
+    align-items: flex-end
+  >>> .v-textarea // [2]
+    .v-input__prepend-outer
+      margin-bottom: 2px
+    .v-input__append-inner
+      margin-top: auto
+      margin-bottom: 4px
+    .v-input__control
+      margin-bottom: 2px
 
 .a-chat__divider
   position: absolute
