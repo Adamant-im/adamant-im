@@ -32,7 +32,9 @@ export default {
         keydown: (e) => {
           if (e.code === 'Enter') {
             if (this.sendOnEnter) {
-              if (e.ctrlKey) { // add LF and calculate height when CTRL+ENTER
+              // add LF and calculate height when CTRL+ENTER or ALT+ENTER or CMD+ENTER (Mac & Windows)
+              // no need to add LF for shiftKey, it will be added automatically
+              if (e.ctrlKey || e.altKey || e.metaKey) {
                 this.addLineFeed()
                 this.calculateInputHeight()
                 return
@@ -43,7 +45,7 @@ export default {
                 this.submitMessage()
               }
             } else {
-              if (e.ctrlKey || e.shiftKey) {
+              if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
                 e.preventDefault()
                 this.submitMessage()
               }
