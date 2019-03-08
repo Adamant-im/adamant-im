@@ -3,7 +3,7 @@ import { Cryptos, TransactionStatus as TS } from '@/lib/constants'
 export default {
   methods: {
     /**
-     * Get transaction status from ETH, ERC20, DOGE modules.
+     * Fetch transaction status from ETH, ERC20, DOGE modules.
      * @param {{ id: string, type: string, hash: string }} admSpecialMessage
      * @param {string} partnerId Partner ADM address
      */
@@ -20,6 +20,7 @@ export default {
         this.fetchTransaction(type, hash)
       }
     },
+
     /**
      * Fetch transaction and save to state.
      * @param {string} type Transaction type
@@ -33,6 +34,13 @@ export default {
       })
     },
 
+    /**
+     * Fetch recipientId & senderId crypto addresses.
+     * @param type Crypto name
+     * @param recipientId
+     * @param senderId
+     * @returns {Promise}
+     */
     fetchCryptoAddresses (type, recipientId, senderId) {
       const recipientCryptoAddress = this.$store.dispatch('partners/fetchAddress', {
         crypto: type,
@@ -80,7 +88,7 @@ export default {
       if (!getter) return admSpecialMessage.status
 
       const transaction = getter(hash)
-      let status = (transaction && transaction.status) || TS.PENDING
+      let status = (transaction && transaction.status) || 'PENDING'
 
       const recipientCryptoAddress = this.$store.getters['partners/cryptoAddress'](recipientId, type)
       const senderCryptoAddress = this.$store.getters['partners/cryptoAddress'](senderId, type)
