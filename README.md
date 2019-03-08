@@ -49,4 +49,21 @@ yarn run test:unit
 ```
 yarn run test:e2e
 ```
+
+### Run electron version
+```
+yarn run electron:serve
+```
+
+### Build electron version
+
+```
+yarn run electron:build
+```
+
+#### Note for Windows users
+To build on Windows you must install build tools for windows, it is easier to do this with [windows-build-tools](https://github.com/felixrieseberg/windows-build-tools) npm package.
+
+
+
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
