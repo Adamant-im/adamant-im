@@ -250,7 +250,7 @@ export default {
     ],
     pagination: {
       rowsPerPage: 10,
-      sortBy: 'rank',
+      sortBy: '',
       descending: true,
       page: 1
     },
