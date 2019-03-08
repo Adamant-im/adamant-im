@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import navigationGuard from '@/router/navigationGuard'
 
 import AuthMiddleware from '@/middlewares/auth'
+import DocumentTitle from '@/middlewares/title'
 import Chats from '@/views/Chats'
 import Chat from '@/views/Chat'
 import SendFunds from '@/views/SendFunds'
@@ -132,5 +133,6 @@ const router = new Router({
 })
 
 router.beforeEach(AuthMiddleware)
+router.beforeEach(DocumentTitle)
 
 export default router
