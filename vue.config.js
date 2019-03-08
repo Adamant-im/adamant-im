@@ -17,7 +17,11 @@ module.exports = {
         },
         mac: {
           icon: './build/osx/icon.icns',
-          darkModeSupport: true
+          darkModeSupport: true,
+          category: 'public.app-category.social-networking'
+        },
+        linux: {
+          category: 'InstantMessaging'
         }
       }
     },
