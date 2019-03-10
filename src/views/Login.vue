@@ -200,6 +200,13 @@ export default {
     font-weight: 100
     font-size: 18px
 
+.v-menu__activator
+  .mdi-chevron-right:before
+    transition: 0.2s linear
+.v-menu__activator--active 
+  .mdi-chevron-right:before
+    transform: rotate(90deg)
+    
 .logo
   width: 213px
   height: 213px
