@@ -411,7 +411,7 @@ export function getChats (from = 0, offset = 0, orderBy = 'desc') {
 
     return Promise.all(promises).then(decoded => ({
       count,
-      transactions: decoded
+      transactions: decoded.filter(v => v)
     }))
   })
 }
