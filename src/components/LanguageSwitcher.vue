@@ -67,6 +67,14 @@ export default {
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_colors.styl'
 
+.language-switcher
+  >>> .v-menu__activator
+    .v-icon:before
+      transition: 0.2s linear
+  >>> .v-menu__activator--active
+    .v-icon:before
+      transform: rotate(90deg)
+
 /** Themes **/
 .theme--light
   .language-switcher
