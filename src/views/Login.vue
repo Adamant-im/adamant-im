@@ -199,7 +199,7 @@ export default {
     font-family: 'Exo 2'
     font-weight: 100
     font-size: 18px
-.login__icon, .v-icon--link
+.login-page__icon, .v-icon--link
   opacity:0.7
   transition: 0.2s linear
   &:hover
