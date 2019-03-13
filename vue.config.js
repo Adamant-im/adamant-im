@@ -16,12 +16,13 @@ module.exports = {
           icon: './build/win/icon.ico'
         },
         mac: {
-          icon: './build/osx/icon.icns',
+          category: 'public.app-category.social-networking',
           darkModeSupport: true,
-          category: 'public.app-category.social-networking'
+          icon: './build/osx/icon.icns'
         },
         linux: {
-          category: 'InstantMessaging'
+          category: 'InstantMessaging',
+          icon: './build/linux/'
         }
       }
     },
