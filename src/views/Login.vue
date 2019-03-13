@@ -199,6 +199,11 @@ export default {
     font-family: 'Exo 2'
     font-weight: 100
     font-size: 18px
+  &__icon
+    opacity:0.7
+    transition: 0.2s linear
+    &:hover
+      opacity:1
 
 .logo
   width: 213px
