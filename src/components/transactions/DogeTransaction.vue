@@ -87,7 +87,7 @@ export default {
         // Bad news, everyone: we'll have to scan the messages
         Object.values(this.$store.state.chat.chats).some(chat => {
           Object.values(chat.messages).some(msg => {
-            if (msg.message && msg.message.hash === this.id) {
+            if (msg.hash && msg.hash === this.id) {
               admAddress = msg.senderId === this.$store.state.address ? msg.recipientId : msg.senderId
             }
             return !!admAddress
