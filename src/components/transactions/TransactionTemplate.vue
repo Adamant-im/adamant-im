@@ -3,7 +3,7 @@
 
     <app-toolbar-centered
       app
-      :title="`#${id}`"
+      :title="`${id}`"
       flat
     />
 
@@ -96,13 +96,17 @@
           <v-list-tile-content>
             <v-list-tile-title>{{ $t('transaction.explorer') }}</v-list-tile-title>
           </v-list-tile-content>
+
+          <div>
+            <v-list-tile-title><v-icon>mdi-chevron-right</v-icon></v-list-tile-title>
+          </div>
         </v-list-tile>
 
         <v-list-tile v-if="partner">
           <v-list-tile-content>
             <v-btn @click="openChat" flat>
               <v-icon left>{{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}</v-icon>
-              {{ $t('transaction.startChat') }}
+              {{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}
             </v-btn>
           </v-list-tile-content>
         </v-list-tile>
