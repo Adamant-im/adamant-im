@@ -21,7 +21,7 @@ module.exports = {
           icon: './build/osx/icon.icns'
         },
         linux: {
-          category: 'InstantMessaging',
+          category: 'Network',
           icon: './build/linux/'
         }
       }
