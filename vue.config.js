@@ -22,7 +22,15 @@ module.exports = {
         },
         linux: {
           category: 'Network',
-          icon: './build/linux/'
+          desktop: {
+            Icon: './build/linux/icon.png',
+            Name: 'ADAMANT Messenger',
+            Terminal: false,
+            Type: 'Application'
+          },
+          artifactName: 'ADAMANT-Messenger-${version}.${ext}',
+          icon: './build/linux/',
+          target: ['AppImage']
         }
       }
     },
