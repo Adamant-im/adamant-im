@@ -10,7 +10,7 @@
       </v-list-tile-content>
     </v-list-tile>
 
-    <v-list-tile @click="buyTokens" avatar>
+    <v-list-tile v-if="isADMCrypto" @click="buyTokens" avatar>
       <v-list-tile-avatar>
         <v-icon class="action-list__icon">mdi-cash-usd</v-icon>
       </v-list-tile-avatar>
