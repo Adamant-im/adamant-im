@@ -17,7 +17,7 @@ import Nodes from '@/views/Nodes'
 Vue.use(Router)
 
 const router = new Router({
-  mode: 'history',
+  mode: process.env.VUE_APP_ELECTRON_MODE === 'production' ? 'hash' : 'history',
   routes: [
     {
       path: '/options/nodes',
