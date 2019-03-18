@@ -75,13 +75,21 @@
 
     @keyframes myload {
         0% {stroke: #CDCCCC;}
-        50% {stroke: #6794CE;}
+        50% {stroke: rgba(103, 148, 206, 0.2);}
         100% {stroke: #CDCCCC;}
     }
-    #sidestroke {
+    @keyframes myload2 {
+        0% {stroke: #CDCCCC;}
+        50% {stroke: rgba(103, 148, 206, 0.8);}
+        100% {stroke: #CDCCCC;}
+    }
+    .st9 {
         animation: myload 5s;
         animation-iteration-count: infinite;
-
+    }
+    #sidestroke {
+        animation: myload2 5s;
+        animation-iteration-count: infinite;
     }
 </style>
         <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="203.0141" y1="92.7316" x2="222.2751" y2="126.0926" gradientTransform="matrix(-1 0 0 1 308.7937 0)">
