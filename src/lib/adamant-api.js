@@ -439,7 +439,7 @@ function decodeChat (transaction, key) {
     if (i18nMsg) {
       // Yeap, that's a i18n one
       transaction.message = i18nMsg
-      transaction.isI18n = true
+      transaction.i18n = true
     } else {
       transaction.message = message
     }

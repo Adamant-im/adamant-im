@@ -20,7 +20,7 @@
           v-if="message.type === 'message'"
           v-bind="message"
           :key="message.id"
-          :message="isChatReadOnly ? $t(message.message) : message.message | msg"
+          :message="(isChatReadOnly || message.i18n) ? $t(message.message) : message.message | msg"
           :time="message.timestamp | date"
           :user-id="userId"
           :sender="sender"
@@ -30,6 +30,7 @@
           :i18n="{ retry: $t('chats.retry_message') }"
           @resend="resendMessage(partnerId, message.id)"
         >
+          {{ message.isI18n }}
           <ChatAvatar
             @click="showPartnerInfo"
             :user-id="sender.id"
