@@ -20,7 +20,7 @@
           v-if="message.type === 'message'"
           v-bind="message"
           :key="message.id"
-          :message="isChatReadOnly ? $t(message.message) : message.message | msg"
+          :message="formatMessage(message.message)"
           :time="message.timestamp | date"
           :user-id="userId"
           :sender="sender"
@@ -238,10 +238,20 @@ export default {
         type === 'DASH' ||
         type === 'UNKNOWN_CRYPTO'
       )
+    },
+    formatMessage (message) {
+      if (this.isChatReadOnly) {
+        return formatter.format(this.$t(message))
+      }
+
+      if (this.$store.state.options.formatMessages) {
+        return formatter.format(message)
+      }
+
+      return message
     }
   },
   filters: {
-    msg: message => formatter.format(message),
     date: dateFilter
   },
   mixins: [transaction],

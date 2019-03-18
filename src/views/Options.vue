@@ -59,6 +59,12 @@
                 color="grey darken-1"
                 v-model="sendMessageOnEnter"
               />
+              <v-checkbox
+                :label="$t('options.format_messages')"
+                :title="$t('options.format_messages_tooltip')"
+                color="grey darken-1"
+                v-model="formatMessages"
+              />
             </v-flex>
           </v-layout>
 
@@ -130,6 +136,17 @@ export default {
       set (value) {
         this.$store.commit('options/updateOption', {
           key: 'sendMessageOnEnter',
+          value
+        })
+      }
+    },
+    formatMessages: {
+      get () {
+        return this.$store.state.options.formatMessages
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'formatMessages',
           value
         })
       }

@@ -83,7 +83,14 @@ export default {
       return this.$store.getters['chat/lastMessageText'](this.partnerId)
     },
     lastMessageTextNoFormats () {
-      return removeFormats(this.lastMessageText)
+      if (
+        this.readOnly ||
+        this.$store.state.options.formatMessages
+      ) {
+        return removeFormats(this.lastMessageText)
+      }
+
+      return this.lastMessageText
     },
     lastMessageTimestamp () {
       return this.$store.getters['chat/lastMessageTimestamp'](this.partnerId)
