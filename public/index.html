@@ -72,6 +72,17 @@
     .st10{fill:#6794CE;stroke:#CDCCCC;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
     .st11{fill:#CBCACA;stroke:#CDCCCC;stroke-width:0.5;stroke-miterlimit:10;}
     .st12{fill:none;stroke:#CDCCCC;stroke-width:0.5;stroke-miterlimit:10;}
+
+    @keyframes myload {
+        0% {stroke: #CDCCCC;}
+        50% {stroke: #6794CE;}
+        100% {stroke: #CDCCCC;}
+    }
+    #sidestroke {
+        animation: myload 5s;
+        animation-iteration-count: infinite;
+
+    }
 </style>
         <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="203.0141" y1="92.7316" x2="222.2751" y2="126.0926" gradientTransform="matrix(-1 0 0 1 308.7937 0)">
 	<stop  offset="0" style="stop-color:#DEDEDE"/>
@@ -119,7 +130,7 @@
 </linearGradient>
         <polyline class="st8" points="63.3,79.5 51.4,99.1 74.5,118.7 "/>
         <line class="st9" x1="75.1" y1="27.2" x2="33.3" y2="99.2"/>
-        <line class="st9" x1="117.6" y1="99.2" x2="75.3" y2="27"/>
+        <line class="st9" id="sidestroke" x1="117.6" y1="99.2" x2="75.3" y2="27"/>
         <line class="st9" x1="33.3" y1="99.2" x2="51.1" y2="99.3"/>
         <line class="st9" x1="99.4" y1="99.3" x2="117.3" y2="99.4"/>
         <line class="st9" x1="75.2" y1="58.2" x2="51.4" y2="99.2"/>
