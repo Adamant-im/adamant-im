@@ -147,5 +147,17 @@ P3 Line2
         expect(formatter.format(message)).not.toEqual(`<p>${message}</p>`)
       })
     })
+
+    it('should not format inline elements that contains inside a space at the edges', () => {
+      const shouldNotMatch = [
+        'Lorem ` text` ipsum',
+        'Lorem *text * ipsum',
+        'Lorem ~ text ~ ipsum'
+      ]
+
+      shouldNotMatch.forEach(message => {
+        expect(formatter.format(message)).toBe(`<p>${message}</p>`)
+      })
+    })
   })
 })
