@@ -4,7 +4,13 @@ import store from '@/store'
 
 export default {
   chats: (to, from, next) => {
-    if (validateAddress('ADM', to.params.partnerId)) {
+    const chat = store.state.chat.chats[to.params.partnerId]
+
+    // is valid ADM address or is Adamant Chat
+    if (
+      validateAddress('ADM', to.params.partnerId) ||
+      (chat && chat.readOnly)
+    ) {
       return next()
     }
 
