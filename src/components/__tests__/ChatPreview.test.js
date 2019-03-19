@@ -8,6 +8,14 @@ import formatters from '@/lib/formatters'
 import mockupI18n from './__mocks__/plugins/i18n'
 import ChatPreview from '@/components/ChatPreview'
 
+// mocking `moment` to always be UTC for tests
+jest.mock('moment', () => {
+  const moment = require.requireActual('moment-timezone')
+  moment.tz.setDefault('UTC')
+
+  return moment
+})
+
 Vue.use(Vuetify)
 Vue.use(VueI18n)
 Vue.use(Vuex)
@@ -63,11 +71,19 @@ function mockupStore () {
     namespaced: true
   }
 
+  const options = {
+    state: {
+      formatMessages: true
+    },
+    namespaced: true
+  }
+
   const store = new Vuex.Store({
     modules: {
       partners,
       chat,
-      language
+      language,
+      options
     }
   })
 
@@ -75,7 +91,8 @@ function mockupStore () {
     store,
     partners,
     chat,
-    language
+    language,
+    options
   }
 }
 
@@ -85,6 +102,7 @@ describe('ChatPreview.vue', () => {
   let chat = null
   let partners = null
   let language = null
+  let options = null
 
   beforeEach(() => {
     const vuex = mockupStore()
@@ -92,6 +110,7 @@ describe('ChatPreview.vue', () => {
     chat = vuex.chat
     partners = vuex.partners
     language = vuex.language
+    options = vuex.options
 
     i18n = mockupI18n()
     fake = createFakeVars() // reset fake vars

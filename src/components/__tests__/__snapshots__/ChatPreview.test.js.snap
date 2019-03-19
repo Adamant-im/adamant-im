@@ -36,7 +36,7 @@ exports[`ChatPreview.vue renders the correct markup 1`] = `
     class="chat-preview__date"
   >
     
-    Jan 01, 1970, 02:00
+    Jan 01, 1970, 00:00
   
   </div>
 </v-list-tile-stub>
