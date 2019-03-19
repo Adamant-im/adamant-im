@@ -9,7 +9,7 @@
     >
       <div
         v-if="showAvatar"
-        class="a-chat__message-avatar"
+        class="a-chat__message-avatar hidden-xs-only"
         :class="{ 'a-chat__message-avatar--right': sender.id === userId }"
       >
         <slot name="avatar"></slot>
