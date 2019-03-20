@@ -57,6 +57,7 @@ import EthFillIcon from '@/components/icons/EthFill'
 import BnbFillIcon from '@/components/icons/BnbFill'
 import BnzFillIcon from '@/components/icons/BnzFill'
 import DogeFillIcon from '@/components/icons/DogeFill'
+import DashFillIcon from '@/components/icons/DashFill'
 
 export default {
   data: () => ({
@@ -90,6 +91,12 @@ export default {
         title: 'chats.send_doge',
         icon: 'doge-fill-icon',
         currency: 'DOGE'
+      },
+      {
+        type: 'crypto',
+        title: 'chats.send_dash',
+        icon: 'dash-fill-icon',
+        currency: 'DASH'
       },
       {
         type: 'action',
@@ -151,7 +158,8 @@ export default {
     EthFillIcon,
     BnbFillIcon,
     BnzFillIcon,
-    DogeFillIcon
+    DogeFillIcon,
+    DashFillIcon
   },
   props: {
     partnerId: {

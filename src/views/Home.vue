@@ -55,6 +55,7 @@ import BnbFillIcon from '@/components/icons/BnbFill'
 import EthFillIcon from '@/components/icons/EthFill'
 import BnzFillIcon from '@/components/icons/BnzFill'
 import DogeFillIcon from '@/components/icons/DogeFill'
+import DashFillIcon from '@/components/icons/DashFill'
 
 export default {
   computed: {
@@ -94,6 +95,13 @@ export default {
           cryptoCurrency: 'DOGE',
           cryptoName: 'DOGE',
           icon: 'doge-fill-icon'
+        },
+        {
+          address: this.$store.state.dash.address,
+          balance: this.$store.state.dash.balance,
+          cryptoCurrency: 'DASH',
+          cryptoName: 'DASH',
+          icon: 'dash-fill-icon'
         }
       ]
     }
@@ -115,7 +123,8 @@ export default {
     BnbFillIcon,
     EthFillIcon,
     BnzFillIcon,
-    DogeFillIcon
+    DogeFillIcon,
+    DashFillIcon
   }
 }
 </script>
