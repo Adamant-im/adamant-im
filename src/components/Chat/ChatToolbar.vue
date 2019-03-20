@@ -4,7 +4,7 @@
       <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
     <div v-if="!isChatReadOnly">
-      <slot name="avatarToolbar"></slot>
+      <slot name="avatar-toolbar"></slot>
     </div>
     <div>
       <div v-if="isChatReadOnly" class="title" :style="{ paddingLeft: '12px' }">{{ $t(partnerId) }}</div>

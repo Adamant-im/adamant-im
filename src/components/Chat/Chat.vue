@@ -14,10 +14,10 @@
     >
       <chat-toolbar :partner-id="partnerId" slot="header">
         <ChatAvatar
-                @click="showPartnerInfo"
-                :user-id="partnerId"
-                use-public-key
-                slot="avatarToolbar"
+          @click="showPartnerInfo"
+          :user-id="partnerId"
+          use-public-key
+          slot="avatar-toolbar"
         />
       </chat-toolbar>
       <template slot="message" slot-scope="{ message, userId, sender, locale }">
