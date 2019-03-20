@@ -155,7 +155,6 @@ export default class BtcBaseApi {
 
   _mapTransaction (tx) {
     const senders = getUnique(tx.vin.map(x => x.addr))
-    const senderId = senders.length === 1 ? senders[0] : null
 
     const direction = senders.includes(this._address) ? 'from' : 'to'
 
@@ -169,7 +168,15 @@ export default class BtcBaseApi {
       const idx = recipients.indexOf(this._address)
       if (idx >= 0) recipients.splice(idx, 1)
     }
-    const recipientId = recipients.length === 1 ? recipients[0] : null
+
+    let senderId, recipientId
+    if (direction === 'from') {
+      senderId = this._address
+      recipientId = recipients.length === 1 ? recipients[0] : undefined
+    } else {
+      senderId = senders.length === 1 ? senders[0] : undefined
+      recipientId = this._address
+    }
 
     // Calculate amount from outputs:
     // * for the outgoing transactions take outputs that DO NOT target us
