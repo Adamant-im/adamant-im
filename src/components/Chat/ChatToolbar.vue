@@ -3,7 +3,9 @@
     <v-btn @click="goBack" icon>
       <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
-
+    <div v-if="!isChatReadOnly">
+      <slot name="avatar-toolbar"></slot>
+    </div>
     <div>
       <div v-if="isChatReadOnly" class="title" :style="{ paddingLeft: '12px' }">{{ $t(partnerId) }}</div>
       <div v-else>
@@ -23,6 +25,7 @@
 </template>
 
 <script>
+import ChatAvatar from '@/components/Chat/ChatAvatar'
 export default {
   computed: {
     partnerName: {
@@ -43,7 +46,13 @@ export default {
   methods: {
     goBack () {
       this.$router.back()
+    },
+    showPartnerInfo () {
+      this.$emit('partner-info', true)
     }
+  },
+  components: {
+    ChatAvatar
   },
   props: {
     partnerId: {
