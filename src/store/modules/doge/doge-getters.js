@@ -1,4 +1,4 @@
-import { TX_FEE } from '../../../lib/doge-api'
+import { TX_FEE } from '@/lib/bitcoin/doge-api'
 import baseGetters from '../btc-base/btc-base-getters'
 
 export default {
