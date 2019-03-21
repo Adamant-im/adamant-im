@@ -67,7 +67,9 @@ export default {
   },
   computed: {
     transactions () {
-      return this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
+      const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
+
+      return transactions.filter(transaction => transaction.hasOwnProperty('amount'))
     },
     hasTransactions () {
       return this.transactions && this.transactions.length > 0
