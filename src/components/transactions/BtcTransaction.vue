@@ -40,7 +40,7 @@ export default {
       return this.$store.getters[`${this.cryptoKey}/transaction`](this.id) || { }
     },
     amount () {
-      if (!this.transaction.amount) return ''
+      if (!isFinite(this.transaction.amount)) return ''
       return this.transaction.amount + ' ' + this.crypto
     },
     fee () {

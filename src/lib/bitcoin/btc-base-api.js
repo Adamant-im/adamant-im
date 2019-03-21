@@ -164,9 +164,10 @@ export default class BtcBaseApi {
     }, []))
 
     if (direction === 'from') {
-      // Disregard our address for the outgoing transaction
+      // Disregard our address for the outgoing transaction unless it's the only address
+      // (i.e. we're sending to ourselves)
       const idx = recipients.indexOf(this._address)
-      if (idx >= 0) recipients.splice(idx, 1)
+      if (idx >= 0 && recipients.length > 1) recipients.splice(idx, 1)
     }
 
     let senderId, recipientId
