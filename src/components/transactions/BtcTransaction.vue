@@ -47,7 +47,7 @@ export default {
       if (!this.transaction.fee) return ''
       const fee = Number(this.transaction.fee)
         .toFixed(CryptoAmountPrecision[this.crypto])
-        .replace(/0+$/, '')
+        .replace(/\.?0+$/, '')
       return fee + ' ' + this.crypto
     },
     sender () {
