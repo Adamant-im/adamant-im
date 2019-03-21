@@ -115,6 +115,7 @@ export default class BtcBaseApi {
    */
   _buildTransaction (address, amount, unspents) {
     amount = new BigNumber(amount).times(this.multiplier).toNumber()
+    amount = Math.floor(amount)
 
     const txb = new bitcoin.TransactionBuilder(this._network)
     txb.setVersion(1)
