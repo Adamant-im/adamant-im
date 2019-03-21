@@ -246,7 +246,7 @@ export default {
       )
     },
     formatMessage (message) {
-      if (this.isChatReadOnly) {
+      if (this.isChatReadOnly || message.i18n) {
         return formatter.format(this.$t(message))
       }
 
