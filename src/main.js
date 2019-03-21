@@ -28,9 +28,5 @@ window.ep = new Vue({
   template: '<App/>',
   components: { App },
   i18n,
-  render: h => h(App),
-  // Prevent blank screen in Electron builds
-  mounted () {
-    this.$router.push('/')
-  }
+  render: h => h(App)
 }).$mount('#app')

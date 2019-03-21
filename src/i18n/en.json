@@ -147,6 +147,8 @@
     "enable_sound_tooltip": "Play a sound notification when new message received. Some devices does not support it (a mobile browser stay silent if not active)",
     "exit_on_close": "Logout on tab close",
     "exit_on_close_tooltip": "For your wallet security we recommend you keep this checkbox turned on. If you turn it off, your passphrase will be saved in browser, and next time you open the wallet it will be decrypted without a need to enter passphrase. This option only acceptable in a case when nobody else can access your device",
+    "format_messages": "Format messages using Markdown",
+    "format_messages_tooltip": "",
     "general_title": "General",
     "idb_not_supported": "Your browser does not support IndexedDB or in Private Browsing mode",
     "language_label": "Language",

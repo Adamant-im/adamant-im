@@ -1,4 +1,4 @@
-import { Formatter } from '../formatter'
+import { Formatter, removeFormats } from '../formatter'
 
 describe('Formatter', () => {
   let formatter
@@ -158,6 +158,15 @@ P3 Line2
       shouldNotMatch.forEach(message => {
         expect(formatter.format(message)).toBe(`<p>${message}</p>`)
       })
+    })
+
+    it('should remove formats correctly', () => {
+      const inline = '~lorem~ *ipsum* _dolor_ sit a `met`'
+      const multiline = `First line.
+Second line.`
+
+      expect(removeFormats(inline)).toBe('lorem ipsum dolor sit a met')
+      expect(removeFormats(multiline)).toBe('First line.')
     })
   })
 })

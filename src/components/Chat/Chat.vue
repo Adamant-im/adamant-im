@@ -12,15 +12,21 @@
 
       ref="chat"
     >
-      <chat-toolbar :partner-id="partnerId" slot="header"/>
-
+      <chat-toolbar :partner-id="partnerId" slot="header">
+        <ChatAvatar
+          @click="showPartnerInfo"
+          :user-id="partnerId"
+          use-public-key
+          slot="avatar-toolbar"
+        />
+      </chat-toolbar>
       <template slot="message" slot-scope="{ message, userId, sender, locale }">
 
         <a-chat-message
           v-if="message.type === 'message'"
           v-bind="message"
           :key="message.id"
-          :message="(isChatReadOnly || message.i18n) ? $t(message.message) : message.message | msg"
+          :message="formatMessage(message.message)"
           :time="message.timestamp | date"
           :user-id="userId"
           :sender="sender"
@@ -239,10 +245,20 @@ export default {
         type === 'DASH' ||
         type === 'UNKNOWN_CRYPTO'
       )
+    },
+    formatMessage (message) {
+      if (this.isChatReadOnly || message.i18n) {
+        return formatter.format(this.$t(message))
+      }
+
+      if (this.$store.state.options.formatMessages) {
+        return formatter.format(message)
+      }
+
+      return message
     }
   },
   filters: {
-    msg: message => formatter.format(message),
     date: dateFilter
   },
   mixins: [transaction],

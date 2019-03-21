@@ -134,10 +134,10 @@ export function removeFormats (message = '') {
   const multiline = String(message)
     .replace(block.pre, '$1')
     .replace(block.quote, '$1')
-    .replace(inline.bold, '$1')
-    .replace(inline.italic, '$1')
-    .replace(inline.strike, '$1')
-    .replace(inline.code, '$1')
+    .replace(inline.bold, '$1$2')
+    .replace(inline.italic, '$1$2')
+    .replace(inline.strike, '$1$2')
+    .replace(inline.code, '$1$2')
 
   // get first line
   const exec = /^([^\n]*)\n?/.exec(multiline)

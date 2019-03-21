@@ -4,7 +4,8 @@ const state = () => ({
   allowSoundNotifications: true,
   allowTabNotifications: true,
   allowPushNotifications: false,
-  darkTheme: false
+  darkTheme: false,
+  formatMessages: true
 })
 
 const getters = {
