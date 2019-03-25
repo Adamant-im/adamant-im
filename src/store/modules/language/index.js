@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import i18n from '@/i18n'
 
 const locales = ['it', 'de', 'en', 'fr', 'ru']
@@ -13,6 +14,7 @@ const mutations = {
     if (newLocale) {
       state.currentLocale = newLocale
       i18n.locale = newLocale
+      dayjs.locale(newLocale)
     }
   }
 }

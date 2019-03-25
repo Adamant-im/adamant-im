@@ -13,6 +13,12 @@ import './plugins/layout'
 import './registerServiceWorker'
 import '@/assets/stylus/app.styl'
 
+import 'dayjs/locale/de'
+import 'dayjs/locale/en'
+import 'dayjs/locale/fr'
+import 'dayjs/locale/it'
+import 'dayjs/locale/ru'
+
 Vue.use(VueFormatters)
 
 document.title = i18n.t('app_title')
