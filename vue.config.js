@@ -61,7 +61,16 @@ module.exports = {
 
         resource.request = resource.request.replace('{ENV}', configName)
       })
-    ]
+    ],
+    module: {
+      rules: [
+        {
+          // tree-shaking `bitcore-mnemonic/lib/words/*` except english.js
+          test: /node_modules\/bitcore-mnemonic\/lib\/words\/(chinese|french|italian|japanese|korean|spanish)\.js/,
+          use: 'null-loader'
+        }
+      ]
+    }
   },
   transpileDependencies: [
     '@adamant/chat',
