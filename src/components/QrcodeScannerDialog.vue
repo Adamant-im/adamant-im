@@ -69,7 +69,8 @@
 </template>
 
 <script>
-// @todo [Deprecation] URL.createObjectURL with media streams is deprecated and will be removed in M71, around December 2018. Please use HTMLMediaElement.srcObject instead. See https://www.chromestatus.com/features/5618491470118912 for more details.
+import { Scanner } from '@/lib/zxing'
+
 export default {
   mounted () {
     this.init()
@@ -91,7 +92,8 @@ export default {
     cameras (cameras) {
       if (cameras.length > 0) {
         this.currentCamera = this.cameras[0]
-        this.scanner.start(this.currentCamera)
+        this.scanner.start(this.currentCamera.deviceId)
+          .then(content => this.onScan(content))
 
         this.cameraStatus = 'active'
       } else {
@@ -121,21 +123,11 @@ export default {
         })
     },
     async initScanner () {
-      const instascanModule = import(/* webpackMode: "lazy" */ 'instascan')
-
-      // save reference
-      this.Instascan = await instascanModule
-
-      this.scanner = new this.Instascan.Scanner({
-        video: this.$refs.camera,
-        scanPeriod: 1,
-        mirror: false
+      this.scanner = new Scanner({
+        videoElement: this.$refs.camera
       })
 
-      // attach scan event
-      this.scanner.addListener('scan', (content) => {
-        this.onScan(content)
-      })
+      return Promise.resolve()
     },
     destroyScanner () {
       // First check if the scanner was initialized.
@@ -144,7 +136,7 @@ export default {
       return this.scanner && this.scanner.stop()
     },
     async getCameras () {
-      this.cameras = await this.Instascan.Camera.getCameras()
+      this.cameras = await this.scanner.getCameras()
     },
     onScan (content) {
       this.$emit('scan', content)
