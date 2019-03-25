@@ -75,7 +75,6 @@
     "cross-env": "^5.2.0",
     "electron": "^3.0.0",
     "lorem-ipsum": "^1.0.6",
-    "moment-timezone": "^0.5.23",
     "null-loader": "^0.1.1",
     "sinon": "^7.2.2",
     "stylus": "^0.54.5",
