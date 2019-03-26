@@ -60,6 +60,11 @@ yarn run electron:serve
 ```
 yarn run electron:build
 ```
+### Build electron version for all platforms (win/osx/linux)
+
+```
+yarn run electron:buildall
+```
 
 #### Note for Windows users
 To build on Windows you must install build tools for windows, it is easier to do this with [windows-build-tools](https://github.com/felixrieseberg/windows-build-tools) npm package.
