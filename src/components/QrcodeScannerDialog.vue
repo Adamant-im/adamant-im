@@ -127,7 +127,7 @@ export default {
         videoElement: this.$refs.camera
       })
 
-      return Promise.resolve()
+      return this.scanner.init()
     },
     destroyScanner () {
       // First check if the scanner was initialized.

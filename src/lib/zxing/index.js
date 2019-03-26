@@ -1,9 +1,15 @@
-import { BrowserQRCodeReader } from '@zxing/library'
-
 export class Scanner {
   constructor ({ videoElement }) {
-    this.codeReader = new BrowserQRCodeReader()
     this.videoElement = videoElement
+  }
+
+  async init () {
+    const { BrowserQRCodeReader } = await import(
+      /* webpackChunkName: "zxing" */
+      '@zxing/library'
+    )
+
+    this.codeReader = new BrowserQRCodeReader()
   }
 
   start (deviceId) {

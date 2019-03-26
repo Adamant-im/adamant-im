@@ -26,10 +26,6 @@
 </template>
 
 <script>
-import { BrowserQRCodeReader } from '@zxing/library'
-
-const codeReader = new BrowserQRCodeReader()
-
 export default {
   computed: {
     className () {
@@ -39,13 +35,19 @@ export default {
   data: () => ({
     selectedImage: undefined,
     imageBase64: '',
-    qrCodeText: ''
+    qrCodeText: '',
+    codeReader: undefined
   }),
   methods: {
     async onFileSelect (event) {
       this.selectedImage = event.target.files[0]
 
       try {
+        const { BrowserQRCodeReader } = await import(
+          /* webpackChunkName: "zxing" */
+          '@zxing/library'
+        )
+        this.codeReader = new BrowserQRCodeReader()
         this.imageBase64 = await this.getImageBase64()
         this.qrCodeText = await this.tryToDecode()
 
@@ -77,7 +79,7 @@ export default {
     async getQrcode () {
       // heisenbug: zxing cause mutation on `imageElement.src`,
       // so need to clone element before
-      const result = await codeReader.decodeFromImage(this.$refs.imageElement.cloneNode())
+      const result = await this.codeReader.decodeFromImage(this.$refs.imageElement.cloneNode())
 
       return result.text
     },
