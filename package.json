@@ -8,7 +8,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "electron:build": "vue-cli-service electron:build --mode electron",
-    "electron:buildall": "vue-cli-service electron:build --mode electron",
+    "electron:buildall": "vue-cli-service electron:build --mode electron --win --linux --mac",
     "electron:serve": "vue-cli-service electron:serve",
     "https": "vue-cli-service serve --https",
     "test:unit": "vue-cli-service test:unit",
