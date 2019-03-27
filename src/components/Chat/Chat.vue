@@ -237,11 +237,10 @@ export default {
       })
     },
     isTransaction (type) {
-      // @todo remove LSK & DASH when will be supported
+      // @todo remove LSK when will be supported
       return (
         type in Cryptos ||
         type === 'LSK' ||
-        type === 'DASH' ||
         type === 'UNKNOWN_CRYPTO'
       )
     },

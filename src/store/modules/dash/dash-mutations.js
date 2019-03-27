@@ -1,5 +1,5 @@
 import baseMutations from '../btc-base/btc-base-mutations'
-import state from './doge-state'
+import state from './dash-state'
 
 export default {
   ...baseMutations(state)

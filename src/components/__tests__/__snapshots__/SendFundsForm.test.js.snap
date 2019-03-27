@@ -9,7 +9,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     value="true"
   >
     <v-select-stub
-      items="ADM,ETH,BNB,DOGE,BZ"
+      items="ADM,ETH,BNB,DOGE,BZ,DASH"
     />
      
     <v-text-field-stub

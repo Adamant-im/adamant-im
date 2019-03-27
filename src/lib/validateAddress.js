@@ -3,6 +3,7 @@ import { Cryptos, isErc20 } from './constants'
 
 const RE_ADM_ADDRESS = /^U([0-9]{6,})$/
 const RE_DOGE_ADDRESS = /^D([0-9a-zA-Z]{10,})$/
+const RE_DASH_ADDRESS = /^X[1-9A-HJ-NP-Za-km-z]{33,}$/
 
 /**
  * Checks if `address` is a valid address for the specified `crypto`.
@@ -18,6 +19,8 @@ export default function validateAddress (crypto, address) {
     return isValidAddress(address)
   } else if (crypto === Cryptos.DOGE) {
     return RE_DOGE_ADDRESS.test(address)
+  } else if (crypto === Cryptos.DASH) {
+    return RE_DASH_ADDRESS.test(address)
   }
   return true
 }
