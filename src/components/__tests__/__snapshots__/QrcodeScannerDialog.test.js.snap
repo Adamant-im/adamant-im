@@ -52,6 +52,12 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
         tag="div"
         xs12=""
       >
+        <v-select-stub
+          item-text="label"
+          item-value="deviceId"
+          items=""
+        />
+         
         <h3
           class="subheading text-xs-center"
         >

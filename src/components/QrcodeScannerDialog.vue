@@ -31,6 +31,12 @@
           <video ref="camera" class="camera"></video>
         </v-flex>
         <v-flex xs12 class="pa-4">
+          <v-select
+            v-model="currentCamera"
+            :items="cameras"
+            item-text="label"
+            item-value="deviceId"
+          />
           <h3 class="subheading text-xs-center">
             {{ $t('scan.hold_your_device') }}
           </h3>
@@ -92,18 +98,19 @@ export default {
     cameras (cameras) {
       if (cameras.length > 0) {
         this.currentCamera = this.cameras[0]
-        this.scanner.start(this.currentCamera.deviceId)
-          .then(content => this.onScan(content))
 
         this.cameraStatus = 'active'
       } else {
         this.cameraStatus = 'nocamera'
       }
+    },
+    currentCamera () {
+      this.scanner.start(this.currentCamera.deviceId)
+        .then(content => this.onScan(content))
     }
   },
   data: () => ({
     cameraStatus: 'waiting', // can be: waiting, active, nocamera
-    Instascan: null, // ref
     scanner: null,
     currentCamera: null,
     cameras: []
