@@ -52,7 +52,7 @@ function signTransaction (transaction, timeDelta) {
 }
 
 export function unlock (passphrase) {
-  const hash = utils.createPassPhraseHash(passphrase)
+  const hash = utils.createPassphraseHash(passphrase)
   myKeypair = utils.makeKeypair(hash)
   myAddress = utils.getAddressFromPublicKey(myKeypair.publicKey)
   return myAddress
