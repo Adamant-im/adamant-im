@@ -1,6 +1,7 @@
 <template>
   <v-dialog
     v-model="show"
+    :class="className"
     width="500"
   >
     <v-card>
@@ -28,15 +29,29 @@
         wrap
       >
         <v-flex xs12>
-          <video ref="camera" class="camera"></video>
+          <div :class="`${className}__camera`">
+            <video ref="camera"></video>
+            <v-menu
+              v-if="cameras.length > 1"
+              offset-y
+              :class="`${className}__camera-select`"
+            >
+              <v-btn slot="activator" flat color="white">
+                <v-icon large>mdi-camera</v-icon>
+              </v-btn>
+              <v-list>
+                <v-list-tile
+                  v-for="camera in cameras"
+                  :key="camera.deviceId"
+                  @click="currentCamera = camera.deviceId"
+                >
+                  <v-list-tile-title>{{ camera.label }}</v-list-tile-title>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
+          </div>
         </v-flex>
         <v-flex xs12 class="pa-4">
-          <v-select
-            v-model="currentCamera"
-            :items="cameras"
-            item-text="label"
-            item-value="deviceId"
-          />
           <h3 class="subheading text-xs-center">
             {{ $t('scan.hold_your_device') }}
           </h3>
@@ -85,6 +100,9 @@ export default {
     this.destroyScanner()
   },
   computed: {
+    className () {
+      return 'qrcode-scanner'
+    },
     show: {
       get () {
         return this.value
@@ -97,7 +115,7 @@ export default {
   watch: {
     cameras (cameras) {
       if (cameras.length > 0) {
-        this.currentCamera = this.cameras[0]
+        this.currentCamera = this.cameras[0].deviceId
 
         this.cameraStatus = 'active'
       } else {
@@ -105,7 +123,7 @@ export default {
       }
     },
     currentCamera () {
-      this.scanner.start(this.currentCamera.deviceId)
+      this.scanner.start(this.currentCamera)
         .then(content => this.onScan(content))
     }
   },
@@ -160,10 +178,27 @@ export default {
 }
 </script>
 
-<style scoped>
-.camera {
-  width: 100%;
-  height: 300px;
-  background-color: #000;
-}
+<style lang="stylus" scoped>
+.qrcode-scanner
+  &__camera
+    width: 100%
+    height: 300px
+    background-color: #000
+    position: relative
+
+    video
+      width: inherit
+      height: inherit
+      position: absolute
+      left: 0
+      top: 0
+
+  &__camera-select
+    position: absolute
+    right: 0
+    bottom: 0
+
+    >>> .v-btn
+      min-width: auto
+      padding: 0 8px
 </style>
