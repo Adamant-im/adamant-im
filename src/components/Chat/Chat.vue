@@ -86,7 +86,7 @@
 
 <script>
 import { Cryptos } from '@/lib/constants'
-import { Formatter } from '@/lib/message-formatter'
+import { renderMarkdown } from '@/lib/markdown'
 
 import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@/components/AChat'
 import ChatToolbar from '@/components/Chat/ChatToolbar'
@@ -94,11 +94,6 @@ import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'
 import transaction from '@/mixins/transaction'
 import dateFilter from '@/filters/date'
-
-/**
- * Create Formatter instance.
- */
-const formatter = new Formatter()
 
 /**
  * Returns user meta by userId.
@@ -246,11 +241,11 @@ export default {
     },
     formatMessage (message) {
       if (this.isChatReadOnly) {
-        return formatter.format(this.$t(message))
+        return renderMarkdown(this.$t(message))
       }
 
       if (this.$store.state.options.formatMessages) {
-        return formatter.format(message)
+        return renderMarkdown(message)
       }
 
       return message

@@ -36,6 +36,7 @@
     "js-base64": "^2.5.0",
     "js-md5": "^0.7.3",
     "lodash": "^4.17.11",
+    "marked": "^0.6.1",
     "moment": "^2.22.2",
     "notifyjs": "^3.0.0",
     "promise-queue": "^2.2.3",
