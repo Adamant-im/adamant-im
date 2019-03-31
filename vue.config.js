@@ -1,4 +1,5 @@
 const webpack = require('webpack')
+const path = require('path')
 
 module.exports = {
   pluginOptions: {
@@ -65,9 +66,9 @@ module.exports = {
     module: {
       rules: [
         {
-          // tree-shaking `bitcore-mnemonic/lib/words/*` except english.js
-          test: /node_modules\/bitcore-mnemonic\/lib\/words\/(chinese|french|italian|japanese|korean|spanish)\.js/,
-          use: 'null-loader'
+          // tree-shaking `bip39/wordlists/*` except english.json
+          test: /node_modules\/bip39\/wordlists\/(chinese_simplified|chinese_traditional|french|italian|japanese|korean|spanish)\.json/,
+          use: path.resolve(__dirname, 'empty.loader.js')
         }
       ]
     }
