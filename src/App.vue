@@ -62,7 +62,7 @@ export default {
   background: repeating-linear-gradient(
     140deg,
     #f6f6f6,
-    #f6f6f6 1px,
+    #f6f6f6 0.7px,
     #fefefe 0,
     #fefefe 5px
   )
@@ -70,7 +70,7 @@ export default {
   background: repeating-linear-gradient(
     140deg,
     #191919,
-    #191919 1px,
+    #191919 0.7px,
     #212121 0,
     #212121 5px
   )

@@ -18,6 +18,7 @@
           <v-btn
             :disabled="!validForm || disabledButton"
             @click="submit"
+            class="login-form__button v-btn--primary"
           >
             <v-progress-circular
               v-show="showSpinner"
@@ -84,27 +85,3 @@ export default {
   }
 }
 </script>
-
-<style lang="css" scoped>
-/**
- * Centering input text and label.
- *
- * 1. Override `style` attribute.
- * 2. Align input text to center.
- * 3. Fix label centering after `scaleY` animation, using `transition font-size` instead.
- */
-.login-form >>> .v-label { /* [1] */
-  width: 100% !important;
-  max-width: 100% !important;
-  left: 0;
-}
-.login-form >>> .v-input input {
-  text-align: center; /* [2] */
-}
-.login-form >>> .v-input .v-label--active { /* [3] */
-  transition: font .3s ease;
-  transform: translateY(-18px);
-  -webkit-transform: translateY(-18px);
-  font-size: 12px;
-}
-</style>

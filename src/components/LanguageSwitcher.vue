@@ -74,6 +74,8 @@ export default {
   >>> .v-menu__activator--active
     .v-icon:before
       transform: rotate(90deg)
+  >>> .v-btn
+    text-transform: capitalize
 
 /** Themes **/
 .theme--light
