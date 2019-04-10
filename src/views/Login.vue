@@ -205,7 +205,7 @@ export default {
 /** Themes **/
 .theme--light
   .login-page
-    &__icon
+    &__icon, &__title, &__subtitle
       color: $adm-colors.regular
 
 .theme--dark

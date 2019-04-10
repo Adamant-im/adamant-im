@@ -8,7 +8,7 @@
           :label="$t('login.password_label')"
           browser-autocomplete="current-password"
           class="text-xs-center"
-          color="primary"
+          color="#BBDEFB"
           type="password"
         />
       </slot>

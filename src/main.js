@@ -10,6 +10,7 @@ import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
 import './plugins/vuetify'
 import './plugins/layout'
+import './plugins/scrollTo'
 import './registerServiceWorker'
 import '@/assets/stylus/app.styl'
 

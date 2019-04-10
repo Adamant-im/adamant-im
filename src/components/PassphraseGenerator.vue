@@ -20,7 +20,7 @@
           type="text"
           multi-line
           readonly
-          rows="2"
+          rows="3"
           class="pt-0"
           color="grey"
           no-resize
@@ -116,6 +116,11 @@ export default {
       this.passphrase = new Mnemonic(Mnemonic.Words.ENGLISH).toString()
 
       this.showPassphrase = true
+
+      // callback after Vue rerender
+      setTimeout(() => {
+        this.$scrollTo(this.$refs.textarea.$el, { easing: 'ease-in' })
+      }, 0)
     }
   },
   components: {
@@ -155,9 +160,11 @@ export default {
         border-width: 0 // [2]
 
   &__icons
+    margin-top: 10px
+
     > *:not(:first-child)
       margin-left: 8px
-      margin-top: 10px
+
   .v-input--is-focused
     .v-icon
       opacity: 0.3 // [1]

@@ -87,6 +87,7 @@
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_variables.styl'
+@import '../../../assets/stylus/settings/_colors.styl'
 
 .st0{fill:url(#SVGID_1_);}
 .st1{fill:url(#SVGID_2_);}
@@ -102,30 +103,17 @@
 .st11{fill:#CBCACA;stroke:#CDCCCC;stroke-width:0.5;stroke-miterlimit:10;}
 .st12{fill:none;stroke:#CDCCCC;stroke-width:0.5;stroke-miterlimit:10;}
 
-@keyframes myload {
-  0% {stroke: #CDCCCC;}
-  50% {stroke: rgba(103, 148, 206, 0.2);}
-  100% {stroke: #CDCCCC;}
-}
-@keyframes myload2 {
-  0% {stroke: #CDCCCC;}
-  50% {stroke: rgba(103, 148, 206, 0.8);}
-  100% {stroke: #CDCCCC;}
-}
-
 .logo
   width: 213px
   height: 213px
   border: 1px solid #f1f1f1
   border-radius: 50% !important
+  background-color: $shades.white
 
-  &:hover
-    .st9
-      animation: myload 5s
-      animation-iteration-count: infinite
-    #sidestroke
-      animation: myload2 5s
-      animation-iteration-count: infinite
+  .st9
+    stroke: $adm-colors.primary
+  #sidestroke
+    stroke: $adm-colors.primary
 
 @media $display-breakpoints.sm-and-up
   .logo
