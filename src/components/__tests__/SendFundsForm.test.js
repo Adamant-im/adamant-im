@@ -402,7 +402,22 @@ describe('SendFundsForm', () => {
       expect(wrapper.vm.pushTransactionToChat).not.toHaveBeenCalled()
     })
 
-    it('should sendFunds and push transaction to chat', async () => {
+    it('In-chat Transfer: should sendFunds and push transaction to chat', async () => {
+      wrapper.setMethods({
+        sendFunds: () => Promise.resolve(transactionId),
+        pushTransactionToChat: sinon.spy()
+      })
+      wrapper.setData({ address: 'U111111' })
+      wrapper.setData({ cryptoAddress: 'U111111' })
+
+      await wrapper.vm.submit()
+
+      expect(wrapper.vm.pushTransactionToChat.args).toEqual([
+        [transactionId, 'U111111']
+      ])
+    })
+
+    it('Direct Transfer: should sendFunds', async () => {
       wrapper.setMethods({
         sendFunds: () => Promise.resolve(transactionId),
         pushTransactionToChat: sinon.spy()
@@ -411,9 +426,7 @@ describe('SendFundsForm', () => {
 
       await wrapper.vm.submit()
 
-      expect(wrapper.vm.pushTransactionToChat.args).toEqual([
-        [transactionId, 'U111111']
-      ])
+      expect(wrapper.vm.pushTransactionToChat.args).toEqual([])
     })
 
     it('should emit error when sendFunds rejected', async () => {
