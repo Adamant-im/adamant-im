@@ -22,6 +22,15 @@ export const Cryptos = {
   DASH: 'DASH'
 }
 
+export const CryptosNames = {
+  [Cryptos.ADM]: 'ADAMANT',
+  [Cryptos.BNB]: 'Binance Coin',
+  [Cryptos.ETH]: 'Ethereum',
+  [Cryptos.BZ]: 'Bit-Z',
+  [Cryptos.DOGE]: 'DOGE',
+  [Cryptos.DASH]: 'DASH'
+}
+
 export const ERC20 = Object.freeze([
   Cryptos.BNB,
   Cryptos.BZ
