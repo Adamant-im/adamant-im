@@ -43,7 +43,7 @@
 
 <script>
 import moment from 'moment'
-import { removeFormats } from '@/lib/message-formatter'
+import { removeFormats } from '@/lib/markdown'
 
 import transaction from '@/mixins/transaction'
 import dateFilter from '@/filters/date'

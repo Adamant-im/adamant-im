@@ -36,6 +36,10 @@ export default {
         if (store.state.eth.transactions.hasOwnProperty(txId)) {
           next()
         } else next('/transactions/ETH')
+      } else if (crypto === 'DASH') {
+        if (store.state.dash.transactions.hasOwnProperty(txId)) {
+          next()
+        } else next('/transactions/DASH')
       } else next('/home')
     } else next('/home')
   },

@@ -158,11 +158,11 @@ export function transformMessage (abstract) {
     eth_transaction: 'ETH',
     bz_transaction: 'BZ',
     bnb_transaction: 'BNB',
-    doge_transaction: 'DOGE'
+    doge_transaction: 'DOGE',
+    dash_transaction: 'DASH'
   }
   const notSupportedYetCryptos = {
-    lsk_transaction: 'LSK',
-    dash_transaction: 'DASH'
+    lsk_transaction: 'LSK'
   }
 
   // common properties for all transaction types

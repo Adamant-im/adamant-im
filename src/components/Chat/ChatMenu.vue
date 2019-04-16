@@ -19,7 +19,7 @@
               </icon>
             </v-list-tile-avatar>
 
-            <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
+            <v-list-tile-title>{{ $t('chats.send_crypto', { crypto: item.currency }) }}</v-list-tile-title>
           </v-list-tile>
 
           <!-- Actions -->
@@ -57,39 +57,40 @@ import EthFillIcon from '@/components/icons/EthFill'
 import BnbFillIcon from '@/components/icons/BnbFill'
 import BnzFillIcon from '@/components/icons/BnzFill'
 import DogeFillIcon from '@/components/icons/DogeFill'
+import DashFillIcon from '@/components/icons/DashFill'
 
 export default {
   data: () => ({
     menuItems: [
       {
         type: 'crypto',
-        title: 'chats.send_adm',
         icon: 'adm-fill-icon',
         currency: 'ADM'
       },
       {
         type: 'crypto',
-        title: 'chats.send_eth',
         icon: 'eth-fill-icon',
         currency: 'ETH'
       },
       {
         type: 'crypto',
-        title: 'chats.send_bnb',
         icon: 'bnb-fill-icon',
         currency: 'BNB'
       },
       {
         type: 'crypto',
-        title: 'chats.send_bz',
         icon: 'bnz-fill-icon',
         currency: 'BZ'
       },
       {
         type: 'crypto',
-        title: 'chats.send_doge',
         icon: 'doge-fill-icon',
         currency: 'DOGE'
+      },
+      {
+        type: 'crypto',
+        icon: 'dash-fill-icon',
+        currency: 'DASH'
       },
       {
         type: 'action',
@@ -151,7 +152,8 @@ export default {
     EthFillIcon,
     BnbFillIcon,
     BnzFillIcon,
-    DogeFillIcon
+    DogeFillIcon,
+    DashFillIcon
   },
   props: {
     partnerId: {
