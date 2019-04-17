@@ -162,8 +162,9 @@ export default {
      * @returns {number}
      */
     finalAmount () {
-      return BigNumber.sum(this.amount, this.transferFee)
-        .toNumber()
+      return isErc20(this.currency)
+        ? this.amount
+        : BigNumber.sum(this.amount, this.transferFee).toNumber()
     },
 
     /**
@@ -196,6 +197,11 @@ export default {
      * @returns {number}
      */
     maxToTransfer () {
+      // ERC20 tokens are feed in ETH, so the fee itself does not affect balance
+      if (isErc20(this.currency)) {
+        return this.balance
+      }
+
       if (this.balance < this.transferFee) return 0
 
       return BigNumber(this.balance)
