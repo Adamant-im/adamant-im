@@ -13,9 +13,12 @@
               :key="wallet.cryptoCurrency"
             >
               <div>
-                <icon :width="36" :height="36" fill="#BDBDBD" slot="icon" class="mb-2">
-                  <component :is="wallet.icon"/>
-                </icon>
+                <crypto-icon
+                  :crypto="wallet.cryptoCurrency"
+                  size="small"
+                  slot="icon"
+                  class="mb-2"
+                />
                 <div>{{ wallet.balance | numberFormat(4) }}</div>
                 <div>{{ wallet.cryptoCurrency }}</div>
               </div>
@@ -32,9 +35,11 @@
                 :crypto-name="wallet.cryptoName"
                 @click:balance="goToTransactions"
               >
-                <icon :width="125" :height="125" fill="#BDBDBD" slot="icon">
-                  <component :is="wallet.icon"/>
-                </icon>
+                <crypto-icon
+                  :crypto="wallet.cryptoCurrency"
+                  size="large"
+                  slot="icon"
+                />
               </wallet-card>
             </v-tab-item>
           </v-tabs>
@@ -49,61 +54,26 @@
 
 <script>
 import WalletCard from '@/components/WalletCard'
-import Icon from '@/components/icons/BaseIcon'
-import AdmFillIcon from '@/components/icons/AdmFill'
-import BnbFillIcon from '@/components/icons/BnbFill'
-import EthFillIcon from '@/components/icons/EthFill'
-import BnzFillIcon from '@/components/icons/BnzFill'
-import DogeFillIcon from '@/components/icons/DogeFill'
-import DashFillIcon from '@/components/icons/DashFill'
+import CryptoIcon from '@/components/icons/CryptoIcon'
+
+import { Cryptos, CryptosNames } from '@/lib/constants'
 
 export default {
   computed: {
     wallets () {
-      return [
-        {
-          address: this.$store.state.address,
-          balance: this.$store.state.balance,
-          cryptoCurrency: 'ADM',
-          cryptoName: 'ADAMANT',
-          icon: 'adm-fill-icon'
-        },
-        {
-          address: this.$store.state.bnb.address,
-          balance: this.$store.state.bnb.balance,
-          cryptoCurrency: 'BNB',
-          cryptoName: 'Binance Coin',
-          icon: 'bnb-fill-icon'
-        },
-        {
-          address: this.$store.state.eth.address,
-          balance: this.$store.state.eth.balance,
-          cryptoCurrency: 'ETH',
-          cryptoName: 'Ethereum',
-          icon: 'eth-fill-icon'
-        },
-        {
-          address: this.$store.state.bz.address,
-          balance: this.$store.state.bz.balance,
-          cryptoCurrency: 'BZ',
-          cryptoName: 'Bit-Z',
-          icon: 'bnz-fill-icon'
-        },
-        {
-          address: this.$store.state.doge.address,
-          balance: this.$store.state.doge.balance,
-          cryptoCurrency: 'DOGE',
-          cryptoName: 'DOGE',
-          icon: 'doge-fill-icon'
-        },
-        {
-          address: this.$store.state.dash.address,
-          balance: this.$store.state.dash.balance,
-          cryptoCurrency: 'DASH',
-          cryptoName: 'DASH',
-          icon: 'dash-fill-icon'
+      return Object.keys(Cryptos).map(crypto => {
+        const state = this.$store.state
+        const key = crypto.toLowerCase()
+        const address = crypto === Cryptos.ADM ? state.address : state[key].address
+        const balance = crypto === Cryptos.ADM ? state.balance : state[key].balance
+
+        return {
+          address,
+          balance,
+          cryptoCurrency: crypto,
+          cryptoName: CryptosNames[crypto]
         }
-      ]
+      })
     }
   },
   methods: {
@@ -118,13 +88,7 @@ export default {
   },
   components: {
     WalletCard,
-    Icon,
-    AdmFillIcon,
-    BnbFillIcon,
-    EthFillIcon,
-    BnzFillIcon,
-    DogeFillIcon,
-    DashFillIcon
+    CryptoIcon
   }
 }
 </script>
