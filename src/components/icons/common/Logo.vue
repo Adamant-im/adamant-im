@@ -87,7 +87,6 @@
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_variables.styl'
-@import '../../../assets/stylus/settings/_colors.styl'
 
 .st0{fill:url(#SVGID_1_);}
 .st1{fill:url(#SVGID_2_);}
@@ -111,9 +110,9 @@
   background-color: $shades.white
 
   .st9
-    stroke: $adm-colors.primary
+    stroke: rgba(103, 148, 206, .2)
   #sidestroke
-    stroke: $adm-colors.primary
+    stroke: rgba(103, 148, 206, .8)
 
 @media $display-breakpoints.sm-and-up
   .logo
