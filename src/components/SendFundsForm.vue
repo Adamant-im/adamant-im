@@ -237,6 +237,9 @@ export default {
           v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units')
         ]
       }
+    },
+    hasComment () {
+      return this.comment.length > 0
     }
   },
   watch: {
@@ -280,7 +283,7 @@ export default {
 
           if (this.currency === Cryptos.ADM) {
             // push fast transaction if come from chat
-            if (this.address) {
+            if (this.address && this.hasComment) {
               this.pushTransactionToChat(transactionId, this.cryptoAddress)
             }
           } else { // other cryptos
@@ -305,9 +308,9 @@ export default {
     sendFunds () {
       if (this.currency === Cryptos.ADM) {
         let promise
-        // 1. sendMessage if come from chat
+        // 1. sendMessage if come from Chat and Comment Field is not empty
         // 2. else send regular transaction with `type = 0`
-        if (this.address) {
+        if (this.address && this.hasComment) {
           promise = sendMessage({
             amount: this.amount,
             message: this.comment,
