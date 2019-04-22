@@ -439,7 +439,7 @@ function decodeChat (transaction, key) {
     if (i18nMsg) {
       // Yeap, that's a i18n one
       transaction.message = i18nMsg
-      transaction.isI18n = true
+      transaction.i18n = true
     } else {
       transaction.message = message
     }
@@ -461,10 +461,11 @@ function getI18nMessage (message, senderId) {
   // P.S. I hate this function, but there's no way to get rid of it now.
 
   const isI18n =
-    (message.indexOf('chats.welcome_message') > -1 && senderId === 'U15423595369615486571')
+    (message.indexOf('chats.welcome_message') > -1 && senderId === 'U15423595369615486571') ||
+    (message.indexOf('chats.ico_message') > -1 && senderId === 'U7047165086065693428')
 
   if (isI18n) {
-    if (senderId === 'U15423595369615486571') {
+    if (senderId === 'U15423595369615486571' || senderId === 'U7047165086065693428') {
       return 'chats.welcome_message'
     }
   }

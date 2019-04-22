@@ -21,6 +21,7 @@ import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
 import dogeModule from './modules/doge'
+import dashModule from './modules/dash'
 import nodesModule from './modules/nodes'
 import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
@@ -162,6 +163,7 @@ const store = {
     bz: erc20Module(Cryptos.BZ, '0x4375e7ad8a01b8ec3ed041399f62d9cd120e0063', 18),
     adm: admModule, // ADM transfers
     doge: dogeModule,
+    dash: dashModule,
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes

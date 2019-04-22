@@ -8,7 +8,7 @@
     </div>
 
     <transition name="slide-fade">
-      <div v-if="showPassphrase">
+      <div :class="`${className}__box`" v-if="showPassphrase">
         <div
           v-html="$t('login.new_passphrase_label')"
           class="caption grey--text mt-2"
@@ -20,7 +20,7 @@
           type="text"
           multi-line
           readonly
-          rows="2"
+          rows="3"
           class="pt-0"
           color="grey"
           no-resize
@@ -116,6 +116,11 @@ export default {
       this.passphrase = bip39.generateMnemonic()
 
       this.showPassphrase = true
+
+      // callback after Vue rerender
+      setTimeout(() => {
+        this.$scrollTo(this.$refs.textarea.$el, { easing: 'ease-in' })
+      }, 0)
     }
   },
   components: {
@@ -130,9 +135,11 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_variables.styl'
+@import '../assets/stylus/settings/_colors.styl'
 
 /**
  * 1. Blur icons when focus textarea.
+ * 2. Remove textarea border bottom.
  */
 .passphrase-generator
   &__title
@@ -143,9 +150,21 @@ export default {
     font-weight: 500
     text-decoration: underline
     text-transform: unset
+  &__box
+    margin-top: 30px
+    >>> .v-textarea textarea
+      font-size: 14px
+      font-weight: 300
+    >>> .v-textarea
+      .v-input__slot:before, .v-input__slot:after
+        border-width: 0 // [2]
+
   &__icons
+    margin-top: 10px
+
     > *:not(:first-child)
       margin-left: 8px
+
   .v-input--is-focused
     .v-icon
       opacity: 0.3 // [1]
@@ -154,7 +173,9 @@ export default {
 .theme--light
   .passphrase-generator
     &__title, &__button
-      color: $grey.darken-3
+      color: inherit
+    >>> .v-textarea textarea
+      color: $adm-colors.regular
 .theme--dark
   .passphrase-generator
     &__title, &__button

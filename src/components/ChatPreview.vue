@@ -28,7 +28,7 @@
       <!-- Message -->
       <template v-else>
         <v-list-tile-sub-title
-          v-if="readOnly"
+          v-if="readOnly || isMessageI18n"
           v-text="isMessageI18n ? $t(lastMessageText) : lastMessageText"
         />
         <v-list-tile-sub-title v-else>{{ lastMessageTextNoFormats }}</v-list-tile-sub-title>
@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { removeFormats } from '@/lib/message-formatter'
+import { removeFormats } from '@/lib/markdown'
 
 import transaction from '@/mixins/transaction'
 import dateFilter from '@/filters/date'

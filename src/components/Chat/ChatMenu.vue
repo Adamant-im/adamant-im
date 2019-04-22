@@ -4,38 +4,31 @@
       <v-icon medium class="chat-menu__icon" slot="activator">mdi-plus-circle-outline</v-icon>
 
       <v-list>
+        <!-- Cryptos -->
+        <v-list-tile
+          v-for="c in cryptos"
+          :key="c"
+          @click="sendFunds(c)"
+        >
+          <v-list-tile-avatar>
+            <crypto-icon :crypto="c" />
+          </v-list-tile-avatar>
 
-        <template v-for="item in menuItems">
+          <v-list-tile-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-tile-title>
+        </v-list-tile>
 
-          <!-- Cryptos -->
-          <v-list-tile
-            v-if="item.type === 'crypto'"
-            :key="item.title"
-            @click="sendFunds(item)"
-          >
-            <v-list-tile-avatar>
-              <icon fill="#BDBDBD">
-                <component :is="item.icon"/>
-              </icon>
-            </v-list-tile-avatar>
+        <!-- Actions -->
+        <v-list-tile
+          v-for="item in menuItems"
+          :key="item.title"
+          :disabled="item.disabled"
+        >
+          <v-list-tile-avatar>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-tile-avatar>
 
-            <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
-          </v-list-tile>
-
-          <!-- Actions -->
-          <v-list-tile
-            v-else-if="item.type === 'action'"
-            :key="item.title"
-            :disabled="item.disabled"
-          >
-            <v-list-tile-avatar>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
-          </v-list-tile>
-
-        </template>
+          <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
+        </v-list-tile>
 
       </v-list>
     </v-menu>
@@ -52,45 +45,12 @@
 import { Cryptos } from '@/lib/constants'
 import ChatDialog from '@/components/Chat/ChatDialog'
 import Icon from '@/components/icons/BaseIcon'
-import AdmFillIcon from '@/components/icons/AdmFill'
-import EthFillIcon from '@/components/icons/EthFill'
-import BnbFillIcon from '@/components/icons/BnbFill'
-import BnzFillIcon from '@/components/icons/BnzFill'
-import DogeFillIcon from '@/components/icons/DogeFill'
+import CryptoIcon from '@/components/icons/CryptoIcon'
 
 export default {
   data: () => ({
+    cryptos: Object.keys(Cryptos),
     menuItems: [
-      {
-        type: 'crypto',
-        title: 'chats.send_adm',
-        icon: 'adm-fill-icon',
-        currency: 'ADM'
-      },
-      {
-        type: 'crypto',
-        title: 'chats.send_eth',
-        icon: 'eth-fill-icon',
-        currency: 'ETH'
-      },
-      {
-        type: 'crypto',
-        title: 'chats.send_bnb',
-        icon: 'bnb-fill-icon',
-        currency: 'BNB'
-      },
-      {
-        type: 'crypto',
-        title: 'chats.send_bz',
-        icon: 'bnz-fill-icon',
-        currency: 'BZ'
-      },
-      {
-        type: 'crypto',
-        title: 'chats.send_doge',
-        icon: 'doge-fill-icon',
-        currency: 'DOGE'
-      },
       {
         type: 'action',
         title: 'chats.attach_image',
@@ -108,15 +68,15 @@ export default {
     crypto: ''
   }),
   methods: {
-    sendFunds (item) {
+    sendFunds (crypto) {
       // check if user has crypto wallet
       // otherwise show dialog
-      this.fetchCryptoAddress(item.currency)
+      this.fetchCryptoAddress(crypto)
         .then(() => {
           this.$router.push({
             name: 'SendFunds',
             params: {
-              cryptoCurrency: item.currency,
+              cryptoCurrency: crypto,
               recipientAddress: this.partnerId
             },
             query: {
@@ -125,7 +85,7 @@ export default {
           })
         })
         .catch(() => {
-          this.crypto = item.currency
+          this.crypto = crypto
           this.dialog = true
         })
     },
@@ -147,11 +107,7 @@ export default {
   components: {
     ChatDialog,
     Icon,
-    AdmFillIcon,
-    EthFillIcon,
-    BnbFillIcon,
-    BnzFillIcon,
-    DogeFillIcon
+    CryptoIcon
   },
   props: {
     partnerId: {
