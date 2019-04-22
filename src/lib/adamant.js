@@ -10,7 +10,8 @@ import bignum from './bignumber.js'
 import ByteBuffer from 'bytebuffer'
 import constants from './constants.js'
 import { hexToBytes, bytesToHex } from './hex'
-const bip39 = require('bip39')
+import * as bip39 from 'bip39'
+
 /**
  * Crypto functions that implements sodium.
  * @memberof module:helpers
