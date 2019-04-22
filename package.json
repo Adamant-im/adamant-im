@@ -22,7 +22,7 @@
     "axios": "^0.18.0",
     "b64-to-blob": "^1.2.19",
     "bignumber.js": "^8.0.1",
-    "bip39": "^2.5.0",
+    "bip39": "^3.0.1",
     "bitcoinjs-lib": "^4.0.2",
     "bytebuffer": "^5.0.1",
     "coininfo": "^4.3.0",

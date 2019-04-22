@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import bip39 from 'bip39'
+import * as bip39 from 'bip39'
 
 import { copyToClipboard, downloadFile } from '@/lib/textHelpers'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'

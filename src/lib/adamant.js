@@ -2,7 +2,7 @@
 'use strict'
 
 import sodium from 'sodium-browserify-tweetnacl'
-import bip39 from 'bip39'
+import * as bip39 from 'bip39'
 import crypto from 'crypto'
 import nacl from 'tweetnacl/nacl-fast'
 import ed2curve from 'ed2curve'
@@ -73,7 +73,7 @@ adamant.parseURI = function (uri) {
  * @return {string} hash
  */
 adamant.createPassphraseHash = function (passphrase) {
-  const seedHex = bip39.mnemonicToSeedHex(passphrase)
+  const seedHex = bip39.mnemonicToSeedSync(passphrase).toString('hex')
   return crypto.createHash('sha256').update(seedHex, 'hex').digest()
 }
 
