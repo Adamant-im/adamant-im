@@ -1,3 +1,6 @@
+@import '~vuetify/src/stylus/settings/_variables.styl'
+@import '../settings/_colors.styl'
+
 /** Vuetify context styles **/
 
 /**
@@ -18,3 +21,19 @@
     opacity: 1
     -webkit-transform: none
     transform: none
+
+/**
+ * Vuetify container padding.
+ */
+@media $display-breakpoints.md-and-down
+  .container
+    padding: 20px
+
+/**
+ * Application styles.
+ */
+.application
+  font-weight: 300
+
+.theme--light.application
+  color: $adm-colors.regular

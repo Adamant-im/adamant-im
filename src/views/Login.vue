@@ -10,10 +10,7 @@
       </div>
 
       <v-card flat color="transparent" class="text-xs-center mt-3">
-        <img
-          :src="logo"
-          class="logo"
-        />
+        <logo/>
 
         <h1 :class="`${className}__title`">{{ $t('login.brand_title') }}</h1>
         <h2 :class="`${className}__subtitle`" class="hidden-sm-and-down mt-3">{{ $t('login.subheader') }}</h2>
@@ -103,6 +100,7 @@ import Icon from '@/components/icons/BaseIcon'
 import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
 import FileIcon from '@/components/icons/common/File'
 import LoginPasswordForm from '@/components/LoginPasswordForm'
+import Logo from '@/components/icons/common/Logo'
 import AppInterval from '@/lib/AppInterval'
 
 export default {
@@ -180,19 +178,21 @@ export default {
     Icon,
     QrCodeScanIcon,
     FileIcon,
-    LoginPasswordForm
+    LoginPasswordForm,
+    Logo
   }
 }
 </script>
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_variables.styl'
+@import '../assets/stylus/settings/_colors.styl'
 
 .login-page
   &__title
     font-family: 'Exo 2'
     font-weight: 100
-    font-size: 45px
+    font-size: 40px
     line-height: 40px
     text-transform: uppercase
   &__subtitle
@@ -200,25 +200,13 @@ export default {
     font-weight: 100
     font-size: 18px
   &__icon
-    opacity:0.7
     transition: 0.2s linear
-    &:hover
-      opacity:1
-
-.logo
-  width: 213px
-  height: 213px
-
-@media $display-breakpoints.sm-and-up
-  .logo
-    width: 300px
-    height: 300px
 
 /** Themes **/
 .theme--light
   .login-page
-    &__icon
-      color: $grey.darken-3
+    &__icon, &__title, &__subtitle
+      color: $adm-colors.regular
 
 .theme--dark
   .login-page
