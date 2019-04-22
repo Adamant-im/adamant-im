@@ -69,14 +69,14 @@
 </template>
 
 <script>
-import bip39 from 'bip39'
-
 import { copyToClipboard, downloadFile } from '@/lib/textHelpers'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
 import Icon from '@/components/icons/BaseIcon'
 import CopyIcon from '@/components/icons/common/Copy'
 import SaveIcon from '@/components/icons/common/Save'
 import QrCodeIcon from '@/components/icons/common/QrCode'
+
+const bip39 = require('bip39')
 
 export default {
   computed: {

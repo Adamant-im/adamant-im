@@ -2,7 +2,6 @@
 'use strict'
 
 import sodium from 'sodium-browserify-tweetnacl'
-import bip39 from 'bip39'
 import crypto from 'crypto'
 import nacl from 'tweetnacl/nacl-fast'
 import ed2curve from 'ed2curve'
@@ -11,7 +10,7 @@ import bignum from './bignumber.js'
 import ByteBuffer from 'bytebuffer'
 import constants from './constants.js'
 import { hexToBytes, bytesToHex } from './hex'
-
+const bip39 = require('bip39')
 /**
  * Crypto functions that implements sodium.
  * @memberof module:helpers
@@ -73,7 +72,7 @@ adamant.parseURI = function (uri) {
  * @return {string} hash
  */
 adamant.createPassphraseHash = function (passphrase) {
-  const seedHex = bip39.mnemonicToSeedHex(passphrase)
+  const seedHex = bip39.mnemonicToSeedSync(passphrase).toString('hex')
   return crypto.createHash('sha256').update(seedHex, 'hex').digest()
 }
 
