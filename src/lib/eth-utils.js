@@ -1,7 +1,7 @@
+import * as bip39 from 'bip39'
 import hdkey from 'hdkey'
 import Web3 from 'web3'
 import { BN, bufferToHex, privateToAddress } from 'ethereumjs-util'
-import * as bip39 from 'bip39'
 
 const HD_KEY_PATH = "m/44'/60'/3'/1/0"
 const web3 = new Web3()
