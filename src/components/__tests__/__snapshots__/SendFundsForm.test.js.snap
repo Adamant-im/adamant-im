@@ -86,9 +86,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     transition="dialog-transition"
     width="500"
   >
-    <v-card-stub
-      elevation="2"
-    >
+    <v-card-stub>
       <v-card-title-stub
         class="headline"
       >

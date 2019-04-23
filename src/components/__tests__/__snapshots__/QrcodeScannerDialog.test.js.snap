@@ -8,7 +8,7 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
   width="500"
 >
   <v-card-stub
-    elevation="2"
+    class="qrcode-scanner-dialog"
   >
     <v-layout-stub
       align-center=""
@@ -43,7 +43,7 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
         xs12=""
       >
         <video
-          class="camera"
+          class="qrcode-scanner-dialog__camera"
         />
       </v-flex-stub>
        
@@ -53,7 +53,7 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
         xs12=""
       >
         <h3
-          class="subheading text-xs-center"
+          class="subheading text-xs-center qrcode-scanner-dialog__title"
         >
           
           Hold your device steady for 2-3 seconds towards the QR code you want to scan
@@ -71,6 +71,7 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
        
       <v-btn-stub
         activeclass="v-btn--active"
+        class="a-button-regular"
         flat="true"
         tag="button"
         type="button"

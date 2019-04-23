@@ -29,6 +29,7 @@ exports[`ChatPreview.vue renders the correct markup 1`] = `
      
     <v-list-tile-sub-title-stub>
       you are death if you touch me
+
     </v-list-tile-sub-title-stub>
   </v-list-tile-content-stub>
    
