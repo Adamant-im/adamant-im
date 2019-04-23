@@ -107,6 +107,12 @@
                {{ $t('options.vote_for_delegates_button') }}
              </v-btn>
 
+             <!-- Logout -->
+             <v-btn @click="logout" flat>
+               <v-icon left>mdi-logout-variant</v-icon>
+               <span>{{ $t('bottom.exit_button') }}</span>
+             </v-btn>
+
              <div class="text-xs-right">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
            </v-flex>
           </v-layout>
@@ -123,6 +129,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import PasswordSetDialog from '@/components/PasswordSetDialog'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
+import AppInterval from '@/lib/AppInterval'
 
 export default {
   computed: {
@@ -194,6 +201,9 @@ export default {
           value
         })
       }
+    },
+    isLoginViaPassword () {
+      return this.$store.getters['options/isLoginViaPassword']
     }
   },
   data: () => ({
@@ -227,6 +237,25 @@ export default {
 
           this.$store.commit('resetPassword')
         })
+      }
+    },
+    logout () {
+      AppInterval.unsubscribe()
+      this.$store.dispatch('logout')
+
+      if (this.isLoginViaPassword) {
+        return clearDb()
+          .catch(err => {
+            console.error(err)
+          })
+          .finally(() => {
+            // turn off `loginViaPassword` option
+            this.$store.commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
+
+            this.$router.push('/')
+          })
+      } else {
+        return Promise.resolve(this.$router.push('/'))
       }
     }
   },
