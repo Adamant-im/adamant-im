@@ -138,7 +138,7 @@ export default {
 @import '../assets/stylus/settings/_colors.styl'
 
 /**
- * 1. Blur icons when focus textarea.
+ * 1. Change color icons when focus textarea.
  * 2. Remove textarea border bottom.
  */
 .passphrase-generator
@@ -165,9 +165,9 @@ export default {
     > *:not(:first-child)
       margin-left: 8px
 
-  .v-input--is-focused
-    .v-icon
-      opacity: 0.3 // [1]
+  >>> .v-input--is-focused
+    .v-icon .svg-icon
+      fill: $adm-colors.regular
 
 /** Themes **/
 .theme--light

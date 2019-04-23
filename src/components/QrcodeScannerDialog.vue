@@ -3,7 +3,7 @@
     v-model="show"
     width="500"
   >
-    <v-card>
+    <v-card :class="className">
 
       <!-- Camera Waiting -->
       <v-layout
@@ -28,10 +28,13 @@
         wrap
       >
         <v-flex xs12>
-          <video ref="camera" class="camera"></video>
+          <video ref="camera" :class="`${className}__camera`"></video>
         </v-flex>
         <v-flex xs12 class="pa-4">
-          <h3 class="subheading text-xs-center">
+          <h3
+            :class="`${className}__title`"
+            class="subheading text-xs-center"
+          >
             {{ $t('scan.hold_your_device') }}
           </h3>
         </v-flex>
@@ -59,6 +62,7 @@
         <v-btn
           flat
           @click="show = false"
+          class="a-button-regular"
         >
           {{ $t('scan.close_button') }}
         </v-btn>
@@ -78,6 +82,7 @@ export default {
     this.destroyScanner()
   },
   computed: {
+    className: () => 'qrcode-scanner-dialog',
     show: {
       get () {
         return this.value
@@ -161,10 +166,18 @@ export default {
 }
 </script>
 
-<style scoped>
-.camera {
-  width: 100%;
-  height: 300px;
-  background-color: #000;
-}
+<style lang="stylus" scoped>
+@import '../assets/stylus/settings/_colors.styl'
+
+.qrcode-scanner-dialog
+  &__camera
+    width: 100%
+    height: 300px
+    background-color: #000
+
+/** Themes **/
+.theme--light
+  .qrcode-scanner-dialog
+    &__title
+       color: $adm-colors.regular
 </style>
