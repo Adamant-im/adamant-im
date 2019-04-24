@@ -58,9 +58,5 @@ module.exports = {
         resource.request = resource.request.replace('{ENV}', configName)
       })
     ]
-  },
-  transpileDependencies: [
-    '@adamant/chat',
-    '@adamant/message-formatter'
-  ]
+  }
 }
