@@ -1,5 +1,4 @@
 const webpack = require('webpack')
-const path = require('path')
 
 module.exports = {
   pluginOptions: {
@@ -58,16 +57,7 @@ module.exports = {
 
         resource.request = resource.request.replace('{ENV}', configName)
       })
-    ],
-    module: {
-      rules: [
-        {
-          // tree-shaking `bip39/wordlists/*` except english.json
-          test: /node_modules\/bip39\/wordlists\/(chinese_simplified|chinese_traditional|french|italian|japanese|korean|spanish)\.json/,
-          use: path.resolve(__dirname, 'empty.loader.js')
-        }
-      ]
-    }
+    ]
   },
   transpileDependencies: [
     '@adamant/chat',
