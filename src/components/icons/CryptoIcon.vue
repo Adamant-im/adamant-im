@@ -1,5 +1,5 @@
 <template>
-  <icon :width="sizePx" :height="sizePx" :fill="fillColor">
+  <icon :width="sizePx" :height="sizePx" :color="fill">
     <component :is="componentName"/>
   </icon>
 </template>
@@ -17,8 +17,6 @@ import { Cryptos } from '@/lib/constants'
 
 const SMALL_SIZE = 36
 const LARGE_SIZE = 125
-
-const DEFAULT_FILL = '#BDBDBD'
 
 /**
  * Displays a crypto icon
@@ -48,7 +46,7 @@ export default {
     /** Fill color, e.g. '#BDBDBD' */
     fill: {
       type: String,
-      default: DEFAULT_FILL
+      default: undefined
     }
   },
   computed: {
@@ -62,9 +60,6 @@ export default {
         return LARGE_SIZE
       }
       return undefined
-    },
-    fillColor () {
-      return this.fill || DEFAULT_FILL
     }
   }
 }
