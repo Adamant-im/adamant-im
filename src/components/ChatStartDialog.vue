@@ -2,14 +2,18 @@
   <v-dialog
     v-model="show"
     width="500"
+    :class="className"
   >
     <v-card>
       <v-card-title
         class="headline"
         primary-title
+        :class="`${className}__title`"
       >
         {{ $t('chats.new_chat') }}
       </v-card-title>
+
+      <v-divider></v-divider>
 
       <v-layout row wrap justify-center align-center class="pa-3">
 
@@ -29,10 +33,23 @@
         </v-flex>
 
         <v-flex xs4 class="text-xs-center">
-          <v-btn @click="startChat">{{ $t('chats.start_chat') }}</v-btn>
+          <v-btn @click="startChat" class="v-btn--primary">{{ $t('chats.start_chat') }}</v-btn>
         </v-flex>
 
       </v-layout>
+
+      <v-divider></v-divider>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          flat
+          @click="show = false"
+          class="a-button-regular"
+        >
+          {{ $t('scan.close_button') }}
+        </v-btn>
+      </v-card-actions>
     </v-card>
 
     <qrcode-scanner-dialog
@@ -49,6 +66,7 @@ import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 
 export default {
   computed: {
+    className: () => 'chat-start-dialog',
     show: {
       get () {
         return this.value
@@ -109,3 +127,13 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '../assets/stylus/settings/_colors.styl'
+
+/** Themes **/
+.theme--light
+  .chat-start-dialog
+    &__title
+      color: $adm-colors.regular
+</style>
