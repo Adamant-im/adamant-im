@@ -1,5 +1,5 @@
 <template>
-  <div class="a-chat__form">
+  <div :class="classes">
     <v-divider v-if="showDivider" class="a-chat__divider"/>
     <v-textarea
       v-model="message"
@@ -24,6 +24,15 @@
 <script>
 export default {
   computed: {
+    className: () => 'a-chat',
+    classes () {
+      return [
+        `${this.className}__form`,
+        {
+          [`${this.className}__form--is-active`]: !!this.message
+        }
+      ]
+    },
     /**
      * Processing `ctrl+enter`, `shift + enter` and `enter`
      */

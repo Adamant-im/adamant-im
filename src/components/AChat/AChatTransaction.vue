@@ -5,14 +5,10 @@
   >
     <div
       class="a-chat__message"
-      :class="{
-        'a-chat__message--red': sender.id === userId,
-        'a-chat__message--green': sender.id !== userId
-      }"
     >
       <div class="a-chat__message-card">
         <div>
-          <div>
+          <div class="a-chat__direction">
             {{ sender.id === userId ? i18n.sent : i18n.received }}
           </div>
           <div
@@ -20,7 +16,10 @@
             class="a-chat__amount my-1"
             :class="{ 'a-chat__amount--clickable': isStatusValid }"
           >
-            {{ amount }}
+            <v-layout align-center>
+              <slot name="crypto"></slot>
+              <span class="ml-2">{{ amount }}</span>
+            </v-layout>
           </div>
         </div>
 
@@ -110,10 +109,6 @@ export default {
     amount: {
       type: [Number, String],
       default: 0
-    },
-    currency: {
-      type: String,
-      default: 'ADM'
     },
     i18n: {
       type: Object,
