@@ -1,14 +1,20 @@
 <template>
   <div :class="className">
-    <v-list-tile avatar @click="onClickTransaction">
+    <v-list-tile
+      @click="onClickTransaction"
+      avatar
+      :class="`${className}__tile`"
+    >
       <v-list-tile-avatar>
-        <v-icon>{{ senderId === userId ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}</v-icon>
+        <v-icon :class="`${className}__icon`">
+          {{ senderId === userId ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}
+        </v-icon>
       </v-list-tile-avatar>
 
       <v-list-tile-content>
         <v-list-tile-title v-if="partnerName">
           <span :class="`${className}__head-title`">{{ partnerName }}</span>
-          <span :class="`${className}__head-subtitle`" class="body-1"> ({{ partnerId }})</span>
+          <span :class="`${className}__head-subtitle`"> ({{ partnerId }})</span>
         </v-list-tile-title>
         <v-list-tile-title v-else>
           <span :class="`${className}__head-title`">{{ partnerId }}</span>
@@ -118,19 +124,31 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../assets/stylus/settings/_colors.styl'
+
+.transaction-item
+  &__head-title
+    font-weight: 300
+  &__head-subtitle
+    font-weight: 300
+  &__title
+    font-weight: 400
+    font-size: 16px
+  &__tile
+    >>> .v-list__tile
+      padding: 0 20px
 
 /** Themes **/
 .theme--light.v-list
   .transaction-item
     &__head-title
-      color: $grey.darken-3
+      color: $adm-colors.regular
     &__head-subtitle
-      color: $grey.darken-1
+      color: $adm-colors.muted
     &__title
-      color: $grey.darken-4
+      color: $adm-colors.regular
     &__subtitle
-      color: $grey.darken-1
+      color: $adm-colors.muted
     &__icon
-      color: $grey.darken-2
+      color: $adm-colors.muted
 </style>
