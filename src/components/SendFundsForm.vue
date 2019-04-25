@@ -1,10 +1,9 @@
 <template>
-  <div class="send-funds-form">
+  <div :class="className">
     <v-form
       v-model="validForm"
       @submit.prevent="confirm"
       ref="form"
-      class="send-funds-form"
     >
 
       <v-select
@@ -65,6 +64,7 @@
         <v-btn
           :disabled="!validForm || !amount"
           @click="confirm"
+          class="v-btn--primary"
         >
           {{ $t('transfer.send_button') }}
         </v-btn>
@@ -134,6 +134,8 @@ export default {
     this.fetchUserCryptoAddress()
   },
   computed: {
+    className: () => 'send-funds-form',
+
     /**
      * @returns {number}
      */
@@ -407,11 +409,36 @@ export default {
 }
 </script>
 
-<style scoped>
-/**
- * Remove paddings.
- */
-.list-info >>> .v-list__tile {
-  padding: 0;
-}
+<style lang="stylus" scoped>
+@import '../assets/stylus/settings/_colors.styl'
+
+.send-funds-form
+  >>> .v-input__slot
+    font-weight: 400
+  >>> .v-text-field > .v-input__control > .v-input__slot
+    &:before
+      border-top-width: 1px
+    &:after
+      transition: unset
+
+/** Themes **/
+.theme--light
+  .send-funds-form
+    >>> .v-input .v-label
+        color: $adm-colors.muted
+    >>> .v-input:not(.v-input--is-disabled) input
+        color: $adm-colors.regular
+    >>> .v-select .v-select__selections
+      color: $adm-colors.regular
+    >>> .v-input .v-label.v-label--active
+      color: $adm-colors.muted !important
+
+    // Border bottom (normal, hover, active)
+    >>> .v-text-field > .v-input__control > .v-input__slot:before
+      border-color: rgba(0, 0, 0, .12)
+    >>> .v-text-field:not(.v-input--has-state) > .v-input__control > .v-input__slot:hover:before
+      border-color: rgba(0, 0, 0, .12)
+    >>> .v-text-field.v-input--is-focused > .v-input__control > .v-input__slot:after
+      border-width: thin 0 0 0
+      color: $adm-colors.primary2
 </style>
