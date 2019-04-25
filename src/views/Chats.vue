@@ -1,5 +1,5 @@
 <template>
-  <v-layout row wrap justify-center>
+  <v-layout row wrap justify-center :class="className">
     <container>
       <v-layout row wrap>
         <v-flex xs12>
@@ -7,11 +7,13 @@
           <v-list two-line subheader class="transparent">
             <v-list-tile @click="showChatStartDialog = true">
               <v-list-tile-avatar>
-                <v-icon class="chat-icon">mdi-plus</v-icon>
+                <v-icon :class="`${className}__icon`">mdi-plus</v-icon>
               </v-list-tile-avatar>
 
               <v-list-tile-content>
-                <v-list-tile-title>{{ $t('chats.new_chat') }}</v-list-tile-title>
+                <v-list-tile-title :class="`${className}__title`">
+                  {{ $t('chats.new_chat') }}
+                </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
 
@@ -46,6 +48,7 @@ import ChatSpinner from '@/components/ChatSpinner'
 
 export default {
   computed: {
+    className: () => 'chats-view',
     isFulfilled () {
       return this.$store.state.chat.isFulfilled
     },
@@ -101,17 +104,26 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../assets/stylus/settings/_colors.styl'
+
+.chats-view
+  &__title
+    font-weight: 300
 
 /** Themes **/
 .theme--light
-  .chat-icon
-    color: $shades.white
-    background-color: $grey.lighten-1
+  .chats-view
+    &__title
+      color: $adm-colors.muted
+    &__icon
+      color: $shades.white
+      background-color: $grey.lighten-1
 
 .theme--dark
-  .chat-icon
-    color: $shades.white
-    background-color: $grey.darken-1
+  .chats-view
+    &__icon
+      color: $shades.white
+      background-color: $grey.darken-1
 
 /** Animations **/
 .messages-move

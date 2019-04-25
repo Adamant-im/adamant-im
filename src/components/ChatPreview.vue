@@ -1,10 +1,10 @@
 <template>
   <v-list-tile
-    class="chat-preview"
+    :class="className"
     @click="$emit('click')"
   >
     <v-list-tile-avatar>
-      <icon v-if="readOnly" class="adm-icon"><adm-fill-icon/></icon>
+      <icon v-if="readOnly" :class="`${className}__icon`"><adm-fill-icon/></icon>
       <chat-avatar v-else :size="40" :user-id="partnerId" use-public-key/>
 
       <v-badge overlap color="primary">
@@ -15,7 +15,10 @@
     </v-list-tile-avatar>
 
     <v-list-tile-content>
-      <v-list-tile-title v-text="readOnly ? $t(partnerName) : partnerName"></v-list-tile-title>
+      <v-list-tile-title
+        v-text="readOnly ? $t(partnerName) : partnerName"
+        :class="`${className}__title`"
+      ></v-list-tile-title>
 
       <!-- Transaction -->
       <template v-if="lastTransaction">
@@ -35,7 +38,7 @@
       </template>
     </v-list-tile-content>
 
-    <div class="chat-preview__date">
+    <div :class="`${className}__date`">
       {{ createdAt | date }}
     </div>
   </v-list-tile>
@@ -67,6 +70,7 @@ export default {
     }
   },
   computed: {
+    className: () => 'chat-brief',
     userId () {
       return this.$store.state.address
     },
@@ -159,28 +163,35 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../assets/stylus/settings/_colors.styl'
 
-.chat-preview
+/**
+ * 1. Message/Transaction content.
+ */
+.chat-brief
   position: relative
 
+  &__title
+    font-weight: 300
   &__date
     font-size: 8px
     font-style: italic
-    color: $grey.base
     position: absolute
     top: 16px
     right: 16px
+  >>> .v-list__tile__sub-title // [1]
+    font-size: 16px
+    font-weight: 300
 
 /** Themes **/
 .theme--light
-  .chat-preview__icon
-    background-color: $grey.lighten-1
-    color: $shades.white
-  .adm-icon
-    fill: #BDBDBD
-
-.theme--dark
-  .chat-preview__icon
-    background-color: $grey.darken-1
+  .chat-brief
+    &__title
+      color: $adm-colors.regular
+    &__date
+      color: $adm-colors.muted
+    &__icon
+      fill: #BDBDBD
+    >>> .v-list__tile__sub-title // [1]
+      color: $adm-colors.muted
 </style>
