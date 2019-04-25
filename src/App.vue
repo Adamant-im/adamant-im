@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import dayjs from 'dayjs'
+
 import TransitionEffect from '@/components/TransitionEffect'
 import Notifications from '@/lib/notifications'
 import AppInterval from '@/lib/AppInterval'
@@ -52,6 +54,7 @@ export default {
       // will be synchronized with `i18n.locale`.
       const localeFromStorage = this.$store.state.language.currentLocale
       this.$i18n.locale = localeFromStorage
+      dayjs.locale(localeFromStorage)
     }
   }
 }

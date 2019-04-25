@@ -42,7 +42,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import { removeFormats } from '@/lib/markdown'
 
 import transaction from '@/mixins/transaction'
@@ -53,8 +52,6 @@ import AdmFillIcon from '@/components/icons/AdmFill'
 
 export default {
   mounted () {
-    moment.locale(this.$store.state.language.currentLocale)
-
     // fetch status if last message is transaction
     if (this.lastTransaction) {
       this.fetchTransactionStatus(this.lastTransaction, this.partnerId)

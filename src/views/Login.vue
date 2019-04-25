@@ -40,17 +40,19 @@
             <icon><qr-code-scan-icon/></icon>
           </v-btn>
 
-          <v-btn
-            @click="openFileDialog"
-            :title="$t('login.login_by_qr_code_tooltip')"
-            icon
-            flat
-            :class="`${className}__icon`"
+          <qrcode-capture
+            @detect="onDetectQrcode"
+            @error="onDetectQrcodeError"
           >
-            <icon><file-icon/></icon>
-          </v-btn>
-
-          <qrcode-capture @detect="onDetect" ref="qrcodeCapture" style="display: none"/>
+            <v-btn
+              :title="$t('login.login_by_qr_code_tooltip')"
+              icon
+              flat
+              :class="`${className}__icon`"
+            >
+              <icon><file-icon/></icon>
+            </v-btn>
+          </qrcode-capture>
         </v-layout>
       </v-card>
 
@@ -90,8 +92,7 @@
 </template>
 
 <script>
-import { QrcodeCapture } from 'vue-qrcode-reader'
-
+import QrcodeCapture from '@/components/QrcodeCapture'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
 import LoginForm from '@/components/LoginForm'
@@ -119,20 +120,21 @@ export default {
     logo: '/img/adamant-logo-transparent-512x512.png'
   }),
   methods: {
-    async onDetect (promise) {
-      try {
-        const { content } = await promise // Decoded string or null
-        if (content && /^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(content.trim())) {
-          this.passphrase = content
-        } else {
-          this.passphrase = ''
-          this.$store.dispatch('snackbar/show', {
-            message: this.$t('login.invalid_qr_code')
-          })
-        }
-      } catch (error) {
-        console.error(error)
+    onDetectQrcode (passphrase) {
+      // is valid passphrase
+      if (/^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(passphrase)) {
+        this.passphrase = passphrase
+      } else {
+        this.passphrase = ''
+        this.onLoginError('login.invalid_passphrase')
       }
+    },
+    onDetectQrcodeError (err) {
+      this.passphrase = ''
+      this.$store.dispatch('snackbar/show', {
+        message: this.$t('login.invalid_qr_code')
+      })
+      console.warn(err)
     },
     onLogin () {
       this.$router.push('/chats')
@@ -157,6 +159,11 @@ export default {
       })
     },
     onScanQrcode (passphrase) {
+      // is not valid passphrase
+      if (!/^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(passphrase)) {
+        return this.onLoginError('login.invalid_passphrase')
+      }
+
       this.$store.dispatch('login', passphrase)
         .then(() => {
           this.onLogin()
@@ -164,9 +171,6 @@ export default {
         .catch(err => {
           this.onLoginError(err)
         })
-    },
-    openFileDialog () {
-      this.$refs.qrcodeCapture.$el.click()
     }
   },
   components: {
