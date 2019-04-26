@@ -29,7 +29,8 @@ export const CryptosNames = {
   [Cryptos.ETH]: 'Ethereum',
   [Cryptos.BZ]: 'Bit-Z',
   [Cryptos.DOGE]: 'DOGE',
-  [Cryptos.DASH]: 'DASH'
+  [Cryptos.DASH]: 'DASH',
+  [Cryptos.KCS]: 'KuCoin Shares'
 }
 
 export const ERC20 = Object.freeze([
