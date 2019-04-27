@@ -146,6 +146,7 @@
     }
   },
   "options": {
+    "actions": "Actions",
     "chats_title": "Chats",
     "dark_theme": "Enable dark theme",
     "delegates_title": "Delegates",
@@ -165,7 +166,6 @@
     "language_label": "Language",
     "nodes_list": "Nodes list",
     "notification_title": "Notifications",
-    "other": "Other",
     "page_title": "Settings",
     "push_denied": "PUSH notifications has been denied in browser settings",
     "push_not_supported": "PUSH notifications not supported by this browser",

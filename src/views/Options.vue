@@ -1,5 +1,5 @@
 <template>
-  <div class="options-page">
+  <div :class="className">
     <app-toolbar-centered
       app
       :title="$t('options.page_title')"
@@ -13,10 +13,20 @@
         <container>
 
           <!-- General -->
-          <h3 class="title mt-3 mb-3">{{ $t('options.general_title') }}</h3>
+          <h3
+            :class="`${className}__title`"
+            class="mt-3 mb-3"
+          >
+            {{ $t('options.general_title') }}
+          </h3>
           <v-layout row wrap align-center>
             <v-flex xs6>
-              <v-subheader class="subheading font-weight-regular pa-0">{{ $t('options.language_label') }}</v-subheader>
+              <v-subheader
+                :class="`${className}__label`"
+                class="pa-0"
+              >
+                {{ $t('options.language_label') }}
+              </v-subheader>
             </v-flex>
             <v-flex xs6 class="text-xs-right">
               <language-switcher
@@ -33,7 +43,12 @@
           </v-layout>
 
           <!-- Security -->
-          <h3 class="title mt-4 mb-4">{{ $t('options.security_title') }}</h3>
+          <h3
+            :class="`${className}__title`"
+            class="mt-4 mb-4"
+          >
+            {{ $t('options.security_title') }}
+          </h3>
           <v-layout row wrap align-center>
             <v-flex xs12>
               <v-checkbox
@@ -50,7 +65,12 @@
           </v-layout>
 
           <!-- Chats -->
-          <h3 class="title mt-4 mb-4">{{ $t('options.chats_title') }}</h3>
+          <h3
+            :class="`${className}__title`"
+            class="mt-4 mb-4"
+          >
+            {{ $t('options.chats_title') }}
+          </h3>
           <v-layout row wrap align-center>
             <v-flex xs12>
               <v-checkbox
@@ -69,7 +89,12 @@
           </v-layout>
 
           <!-- Notifications -->
-          <h3 class="title mt-4 mb-4">{{ $t('options.notification_title') }}</h3>
+          <h3
+            :class="`${className}__title`"
+            class="mt-4 mb-4"
+          >
+            {{ $t('options.notification_title') }}
+          </h3>
           <v-layout row wrap align-center>
             <v-flex xs12>
               <v-checkbox
@@ -97,24 +122,46 @@
             </v-flex>
           </v-layout>
 
-          <!-- Delegates -->
-          <h3 class="title mt-4 mb-4">{{ $t('options.other') }}</h3>
+          <!-- Actions -->
+          <h3
+            :class="`${className}__title`"
+            class="mt-4 mb-4"
+          >
+            {{ $t('options.actions') }}
+          </h3>
+          <v-layout row wrap>
+            <v-flex xs12>
+              <a
+                @click="$router.push('/options/nodes')"
+                :class="`${className}__action`"
+              >
+                {{ $t('options.nodes_list') }}
+              </a>
+            </v-flex>
+
+            <v-flex xs12>
+              <a
+                @click="$router.push('/votes')"
+                :class="`${className}__action`"
+                class="text-xs-left"
+              >
+                {{ $t('options.vote_for_delegates_button') }}
+              </a>
+            </v-flex>
+          </v-layout>
           <v-layout row wrap align-center>
-           <v-flex xs12>
-             <v-btn flat @click="$router.push('/options/nodes')">{{ $t('options.nodes_list') }}</v-btn>
+            <!-- Logout -->
+            <v-btn @click="logout" flat>
+              <v-icon left>mdi-logout-variant</v-icon>
+              <span>{{ $t('bottom.exit_button') }}</span>
+            </v-btn>
 
-             <v-btn flat class="text-xs-left" @click="$router.push('/votes')">
-               {{ $t('options.vote_for_delegates_button') }}
-             </v-btn>
-
-             <!-- Logout -->
-             <v-btn @click="logout" flat>
-               <v-icon left>mdi-logout-variant</v-icon>
-               <span>{{ $t('bottom.exit_button') }}</span>
-             </v-btn>
-
-             <div class="text-xs-right">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
-           </v-flex>
+            <div
+              :class="`${className}__version`"
+              class="ml-auto"
+            >
+              {{ $t('options.version') }} {{ this.$root.$options.version }}
+            </div>
           </v-layout>
 
         </container>
@@ -133,6 +180,7 @@ import AppInterval from '@/lib/AppInterval'
 
 export default {
   computed: {
+    className: () => 'settings-view',
     logoutOnTabClose () {
       return this.$store.state.options.logoutOnTabClose
     },
@@ -266,3 +314,42 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../assets/stylus/settings/_colors.styl'
+
+.settings-view
+  &__title
+    font-size: 16px
+    font-weight: 500
+  &__action
+    display: block
+    font-size: 16px
+    font-weight: 500
+    text-decoration-line: underline
+    margin: 6px 8px
+    padding: 0 16px
+  >>> .v-input--selection-controls
+    margin-top: 0
+  >>> .v-label, &__label
+    font-size: 14px
+    font-weight: 300
+
+/** Themes **/
+.theme--light
+  .settings-view
+    &__title
+      background-color: $adm-colors.secondary2
+      color: $adm-colors.regular
+    &__action
+      color: $adm-colors.regular
+    &__version
+      color: $adm-colors.muted
+    >>> .v-label, &__label
+      color: $adm-colors.regular
+.theme--dark
+  .settings-view
+    &__action
+      color: $shades.white
+</style>

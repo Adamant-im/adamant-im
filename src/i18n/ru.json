@@ -147,6 +147,7 @@
     }
   },
   "options": {
+    "actions": "Действия",
     "chats_title": "Чаты",
     "dark_theme": "Включить темную тему",
     "delegates_title": "Делегаты",
@@ -166,7 +167,6 @@
     "language_label": "Язык",
     "nodes_list": "Список узлов",
     "notification_title": "Уведомления",
-    "other": "Другое",
     "page_title": "Настройки",
     "push_denied": "PUSH-уведомления запрещены в настройках браузера",
     "push_not_supported": "PUSH-уведомления не поддерживаются этим браузером",
