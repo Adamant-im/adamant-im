@@ -208,7 +208,7 @@ export default function createActions (config) {
     },
 
     getNewTransactions (context, payload) {
-      const { address, maxHeight, contractAddress } = context.state
+      const { address, maxHeight, contractAddress, decimals } = context.state
 
       const from = maxHeight > 0 ? maxHeight + 1 : 0
       const limit = from ? undefined : CHUNK_SIZE
@@ -217,7 +217,8 @@ export default function createActions (config) {
         address,
         contract: contractAddress,
         from,
-        limit
+        limit,
+        decimals
       }
 
       context.commit('areRecentLoading', true)
@@ -238,12 +239,13 @@ export default function createActions (config) {
       // If we already have the most old transaction for this address, no need to request anything
       if (context.state.bottomReached) return Promise.resolve()
 
-      const { address, contractAddress: contract, minHeight } = context.state
+      const { address, contractAddress: contract, minHeight, decimals } = context.state
 
       const options = {
         limit: CHUNK_SIZE,
         address,
-        contract
+        contract,
+        decimals
       }
       if (minHeight > 1) {
         options.to = minHeight - 1

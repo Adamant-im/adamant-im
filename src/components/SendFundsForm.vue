@@ -43,13 +43,14 @@
       </v-text-field>
 
       <v-text-field
-        :value="`${this.transferFeeFixed} ${this.currency}`"
+        :value="`${this.transferFeeFixed} ${this.transferFeeCurrency}`"
         :label="$t('transfer.commission_label')"
         disabled
       />
       <v-text-field
         :value="`${this.finalAmountFixed} ${this.currency}`"
         :label="$t('transfer.final_amount_label')"
+        v-if="!this.hideFinalAmount"
         disabled
       />
 
@@ -115,7 +116,7 @@
 import { BigNumber } from 'bignumber.js'
 
 import { sendMessage } from '@/lib/adamant-api'
-import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS } from '@/lib/constants'
+import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20 } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { isNumeric } from '@/lib/numericHelpers'
 
@@ -150,11 +151,20 @@ export default {
     },
 
     /**
+     * Transfer currency (may differ from the amount currency in case of ERC-20 tokens)
+     * @returns {string}
+     */
+    transferFeeCurrency () {
+      return isErc20(this.currency) ? Cryptos.ETH : this.currency
+    },
+
+    /**
      * @returns {number}
      */
     finalAmount () {
-      return BigNumber.sum(this.amount, this.transferFee)
-        .toNumber()
+      return isErc20(this.currency)
+        ? this.amount
+        : BigNumber.sum(this.amount, this.transferFee).toNumber()
     },
 
     /**
@@ -163,6 +173,14 @@ export default {
      */
     finalAmountFixed () {
       return BigNumber(this.finalAmount).toFixed()
+    },
+
+    /**
+     * Indicates whether final amount field should be hidden (e.g., for the ERC20 tokens)
+     * @returns {boolean}
+     */
+    hideFinalAmount () {
+      return isErc20(this.currency)
     },
 
     /**
@@ -179,6 +197,11 @@ export default {
      * @returns {number}
      */
     maxToTransfer () {
+      // ERC20 tokens are feed in ETH, so the fee itself does not affect balance
+      if (isErc20(this.currency)) {
+        return this.balance
+      }
+
       if (this.balance < this.transferFee) return 0
 
       return BigNumber(this.balance)

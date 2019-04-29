@@ -37,7 +37,7 @@ const cache = { }
  * @returns {Promise<{total: number, items: Array<EthTx>}>}
  */
 export function getTransactions (options) {
-  const { address, contract, from, to, limit } = options
+  const { address, contract, from, to, limit, decimals } = options
 
   const filters = []
 
@@ -85,7 +85,7 @@ export function getTransactions (options) {
 
         return {
           total,
-          items: data.map(parseTxFromIndex)
+          items: data.map(x => parseTxFromIndex(x, decimals))
         }
       },
       error => {
@@ -117,7 +117,7 @@ function getUrl () {
  * Parses ETH index entry.
  * @param {EthTx} tx entry
  */
-function parseTxFromIndex (tx) {
+function parseTxFromIndex (tx, decimals) {
   const hash = tx.txhash.replace(/^.*x/, '0x').toLowerCase()
 
   const recipientId = tx.contract_to
@@ -133,7 +133,7 @@ function parseTxFromIndex (tx) {
     hash,
     senderId: tx.txfrom.toLowerCase(),
     recipientId,
-    amount: utils.toEther(value),
+    amount: utils.toFraction(value, decimals),
     fee: utils.calculateFee(tx.gas, tx.gasprice),
     status: 'SUCCESS',
     timestamp: tx.time * 1000,
