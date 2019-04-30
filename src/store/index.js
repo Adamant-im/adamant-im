@@ -6,7 +6,6 @@ import {
   unlock,
   loginOrRegister,
   loginViaPassword,
-  storeCryptoAddress,
   sendSpecialMessage,
   getCurrentAccount
 } from '@/lib/adamant-api'
@@ -109,10 +108,6 @@ const store = {
 
       // retrieve eth & erc20 data
       dispatch('afterLogin', passphrase)
-    },
-    /** Stores user address for the specified crypto in the ADM KVS */
-    storeCryptoAddress ({ state }, { crypto, address }) {
-      return storeCryptoAddress(crypto, address)
     },
     sendCryptoTransferMessage (context, payload) {
       const msg = {
