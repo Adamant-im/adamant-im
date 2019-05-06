@@ -1,17 +1,17 @@
 <template>
-  <div>
+  <div :class="className">
     <app-toolbar-centered
       app
       :title="$t('votes.page_title')"
       flat
     />
 
-    <v-container fluid class="px-0">
+    <v-container fluid class="pa-0">
       <v-layout row wrap justify-center>
 
         <container>
 
-          <v-card>
+          <v-card flat>
             <v-card-title>
               <v-text-field
                 v-model="search"
@@ -30,7 +30,6 @@
               :search="search"
               hide-actions
               item-key="username"
-              class="elevation-1"
             >
               <div slot="no-data" class="text-xs-center">
                 <div v-if="waitingForConfirmation">
@@ -48,14 +47,18 @@
               </div>
 
               <template slot="headerCell" slot-scope="props">
-                <span slot="activator">
+                <span :class="`${className}__header`" slot="activator">
                   {{ $t(props.header.text) }}
                 </span>
               </template>
 
               <template slot="items" slot-scope="props">
-                <td @click="toggleDetails(props.item, props)" style="cursor:pointer">{{ props.item.username }}</td>
-                <td>{{ props.item.rank }}</td>
+                <td
+                  @click="toggleDetails(props.item, props)"
+                  :class="`${className}__body`"
+                  style="cursor:pointer"
+                >{{ props.item.username }}</td>
+                <td :class="`${className}__body`">{{ props.item.rank }}</td>
                 <td>
                   <v-icon v-if="props.item._voted" @click="downVote(props.item.address)">mdi-thumb-up</v-icon>
                   <v-icon v-else @click="upVote(props.item.address)">mdi-thumb-up-outline</v-icon>
@@ -104,8 +107,8 @@
                 <td :colspan="headers.length" class="pa-0">
 
                   <v-layout row wrap align-center justify-space-between>
-                    <v-btn dark @click="showConfirmationDialog">
-                      {{ $t('votes.vote_button_text') }}
+                    <v-btn class="v-btn--primary" @click="showConfirmationDialog">
+                      {{ $t('votes.summary_title') }}
                     </v-btn>
                     <pagination v-model="pagination.page" :pages="pages"></pagination>
                   </v-layout>
@@ -127,13 +130,14 @@
       <v-card>
         <v-card-title>
           <div>
-            <h3 class="headline mb-0">{{ $t('votes.summary_title') }}</h3>
-            <div>
+            <h3 :class="`${className}__dialog-title`">{{ $t('votes.summary_title') }}</h3>
+            <div :class="`${className}__dialog-summary`">
               {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
               {{ $t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
               {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
               {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
             </div>
+            <div :class="`${className}__dialog-info`" v-html="$t('votes.summary_info')"></div>
           </div>
         </v-card-title>
         <v-card-actions>
@@ -147,10 +151,10 @@
           </v-btn>
 
           <v-btn
-            flat="flat"
+            class="v-btn--primary"
             @click="sendVotes"
           >
-            {{ $t('transfer.confirm_approve') }}
+            {{ $t('votes.vote_button_text') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -170,6 +174,7 @@ export default {
     })
   },
   computed: {
+    className: () => 'delegates-view',
     delegates () {
       const delegates = this.$store.state.delegates.delegates || {}
 
@@ -249,7 +254,7 @@ export default {
       { text: 'votes.table_head_vote', value: '_voted' }
     ],
     pagination: {
-      rowsPerPage: 10,
+      rowsPerPage: 50,
       sortBy: '',
       descending: true,
       page: 1
@@ -353,9 +358,34 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-  @import '~vuetify/src/stylus/settings/_colors.styl'
+@import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../assets/stylus/settings/_colors.styl'
 
-  .theme--light
-    .vote-card
-      background-color: $grey.lighten-2
+.delegates-view
+  &__header, &__body
+    font-size: 14px
+    font-weight: 300
+  &__dialog-title
+    font-size: 16px
+    font-weight: 500
+  &__dialog-info
+    margin-top: 16px
+    >>> a
+      text-decoration-line: none
+      &:hover
+        text-decoration-line: underline
+
+/** Themes **/
+.theme--light
+  .delegates-view
+    &__header
+      color: $adm-colors.muted
+    &__body
+      color: $adm-colors.regular
+    &__dialog-title
+      color: $adm-colors.regular
+    &__dialog-summary
+      color: $adm-colors.regular
+    &__dialog-info
+      color: $adm-colors.muted
 </style>
