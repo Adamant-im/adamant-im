@@ -7,12 +7,17 @@ exports[`TransactionListItem renders the correct markup 1`] = `
   <v-list-tile-stub
     activeclass="primary--text"
     avatar="true"
+    class="transaction-item__tile"
   >
     <v-list-tile-avatar-stub
       size="40"
     >
-      <v-icon-stub>
+      <v-icon-stub
+        class="transaction-item__icon"
+      >
+        
         mdi-airplane-landing
+      
       </v-icon-stub>
     </v-list-tile-avatar-stub>
      
@@ -25,7 +30,7 @@ exports[`TransactionListItem renders the correct markup 1`] = `
         </span>
          
         <span
-          class="body-1 transaction-item__head-subtitle"
+          class="transaction-item__head-subtitle"
         >
            (U654321)
         </span>

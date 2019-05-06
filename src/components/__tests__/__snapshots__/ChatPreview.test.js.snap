@@ -3,7 +3,7 @@
 exports[`ChatPreview.vue renders the correct markup 1`] = `
 <v-list-tile-stub
   activeclass="primary--text"
-  class="chat-preview"
+  class="chat-brief"
 >
   <v-list-tile-avatar-stub
     size="40"
@@ -25,7 +25,9 @@ exports[`ChatPreview.vue renders the correct markup 1`] = `
   </v-list-tile-avatar-stub>
    
   <v-list-tile-content-stub>
-    <v-list-tile-title-stub />
+    <v-list-tile-title-stub
+      class="chat-brief__title"
+    />
      
     <v-list-tile-sub-title-stub>
       you are death if you touch me
@@ -34,7 +36,7 @@ exports[`ChatPreview.vue renders the correct markup 1`] = `
   </v-list-tile-content-stub>
    
   <div
-    class="chat-preview__date"
+    class="chat-brief__date"
   >
     
     Jan 01, 1970, 00:00

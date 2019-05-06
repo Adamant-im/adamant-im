@@ -2,6 +2,7 @@
 
 exports[`ChatStartDialog.vue renders the correct markup 1`] = `
 <v-dialog-stub
+  class="chat-start-dialog"
   maxwidth="none"
   origin="center center"
   transition="dialog-transition"
@@ -9,13 +10,15 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
 >
   <v-card-stub>
     <v-card-title-stub
-      class="headline"
+      class="headline chat-start-dialog__title"
       primarytitle="true"
     >
       
       Start new chat
     
     </v-card-title-stub>
+     
+    <v-divider-stub />
      
     <v-layout-stub
       align-center=""
@@ -61,6 +64,7 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
       >
         <v-btn-stub
           activeclass="v-btn--active"
+          class="v-btn--primary"
           tag="button"
           type="button"
         >
@@ -68,6 +72,24 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
         </v-btn-stub>
       </v-flex-stub>
     </v-layout-stub>
+     
+    <v-divider-stub />
+     
+    <v-card-actions-stub>
+      <v-spacer-stub />
+       
+      <v-btn-stub
+        activeclass="v-btn--active"
+        class="a-button-regular"
+        flat="true"
+        tag="button"
+        type="button"
+      >
+        
+        Close
+      
+      </v-btn-stub>
+    </v-card-actions-stub>
   </v-card-stub>
    
   <!---->
