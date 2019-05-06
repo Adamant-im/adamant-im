@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="className">
     <app-toolbar-centered
       app
       :title="$t('options.nodes_list')"
@@ -15,6 +15,7 @@
           <v-data-table
             :headers="headers"
             :items="nodes"
+            :class="`${className}__table`"
             item-key="url"
             select-all
             hide-actions
@@ -26,7 +27,10 @@
                 <th
                   v-for="header in props.headers"
                   :key="header.text"
-                  :class="{ 'text-xs-left': header.align === 'left' }"
+                  :class="[
+                    `${className}__header`,
+                    { 'text-xs-left': header.align === 'left' }
+                  ]"
                 >
                   {{ $t(header.text) }}
                 </th>
@@ -37,16 +41,17 @@
               <td>
                 <v-checkbox
                   :input-value="props.item.active"
+                  :class="`${className}__checkbox`"
                   hide-details
                   color="grey darken-1"
                   @click.native="toggle(props.item)"
                 ></v-checkbox>
               </td>
-              <td>{{ props.item.url }}</td>
-              <td>
-            <span>
-              {{ props.item.online ? `${props.item.ping} ms` : $t('nodes.offline') }}
-            </span>
+              <td :class="`${className}__body`">{{ props.item.url }}</td>
+              <td :class="`${className}__body`">
+                <span>
+                  {{ props.item.online ? `${props.item.ping} ms` : $t('nodes.offline') }}
+                </span>
                 <v-icon
                   :color="props.item.online ? 'green lighten-1' : 'red lighten-1'"
                   size="small"
@@ -58,9 +63,15 @@
           <v-checkbox
             :label="$t('nodes.fastest_title')"
             :title="$t('nodes.fastest_tooltip')"
+            :class="`${className}__checkbox`"
             color="grey darken-1"
             v-model="preferFastestNodeOption"
           />
+
+          <div
+            :class="`${className}__info`"
+            v-html="$t('nodes.nodeLabelDescription')"
+          ></div>
 
         </container>
 
@@ -84,6 +95,7 @@ export default {
     clearInterval(this.timer)
   },
   computed: {
+    className: () => 'nodes-view',
     preferFastestNodeOption: {
       get () {
         return this.$store.state.nodes.useFastest
@@ -127,3 +139,41 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_variables.styl'
+@import '../assets/stylus/settings/_colors.styl'
+
+.nodes-view
+  &__header, &__body
+    font-size: 14px
+    font-weight: 300
+  &__info
+    font-size: 14px
+    >>> a
+      text-decoration-line: none
+      &:hover
+        text-decoration-line: underline
+
+/** Themes **/
+.theme--light
+  .nodes-view
+    &__header
+      color: $adm-colors.muted
+    &__body
+      color: $adm-colors.regular
+    &__checkbox
+      >>> .v-input--selection-controls__ripple
+      >>> .v-input--selection-controls__input i
+        color: $adm-colors.regular !important
+        caret-color: $adm-colors.regular !important
+
+/**
+ * 1. Style VTable to be full width.
+ */
+@media $display-breakpoints.sm-and-down
+  .nodes-view
+    &__table // [1]
+      margin-left: -20px
+      margin-right: -20px
+</style>

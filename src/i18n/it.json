@@ -125,15 +125,7 @@
     "host": "Ospite",
     "inactive": "Inattivo",
     "ms": "ms",
-    "nodeLabelDescription": {
-      "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",
-      "link_one_content": "seguendo le istruzioni. ",
-      "link_two": "https://github.com/Adamant-im/adamant-im/",
-      "link_two_content": "per distribuire l'applicazione Web su un dominio separato. ",
-      "part_one": "Supporta il decentramento e migliora il livello di privacy: esegui il tuo nodo ADAMANT e l'applicazione web per la messaggistica. Il nodo può essere eseguito ",
-      "part_three": "Questa limitazione è collegata a Content Security Policy (CSP). Nelle applicazioni iOS e Android non ci sono limitazioni di questo tipo.",
-      "part_two": "Per aggiungere i nodi nell'elenco per la connessione, è necessario "
-    },
+    "nodeLabelDescription": "Supporta il decentramento e migliora il livello di privacy: esegui il tuo nodo ADAMANT e l'applicazione web per la messaggistica. Il nodo può essere eseguito <a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">seguendo le istruzioni</a>. Per aggiungere i nodi nell'elenco per la connessione, è necessario <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">per distribuire l'applicazione Web su un dominio separato</a>. Questa limitazione è collegata a Content Security Policy (CSP). Nelle applicazioni iOS e Android non ci sono limitazioni di questo tipo.",
     "offline": "Disconnessa",
     "ping": "Ping"
   },
