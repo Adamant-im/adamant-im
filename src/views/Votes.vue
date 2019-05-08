@@ -9,7 +9,7 @@
     <v-container fluid class="px-0">
       <v-layout row wrap justify-center>
 
-        <v-flex xs12 sm12 md8 lg5>
+        <container>
 
           <v-card>
             <v-card-title>
@@ -96,7 +96,7 @@
                 </v-card>
               </template>
 
-              <v-alert slot="no-results" :value="true" color="error" icon="mdi-alert">
+              <v-alert slot="no-results" :value="true" color="grey darken-1" icon="mdi-alert">
                 Your search for "{{ search }}" found no results.
               </v-alert>
 
@@ -115,7 +115,7 @@
             </v-data-table>
           </v-card>
 
-        </v-flex>
+        </container>
 
       </v-layout>
     </v-container>
@@ -161,6 +161,7 @@
 <script>
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import Pagination from '@/components/Pagination'
+import currencyFilter from '@/filters/currency'
 
 export default {
   mounted () {
@@ -215,7 +216,7 @@ export default {
           value () {
             return this.forged
           },
-          format: value => `${this.$formatAmount(value).toFixed()} ADM`
+          format: value => currencyFilter(value)
         },
         {
           title: this.$t('votes.delegate_link'),
@@ -249,7 +250,7 @@ export default {
     ],
     pagination: {
       rowsPerPage: 10,
-      sortBy: 'rank',
+      sortBy: '',
       descending: true,
       page: 1
     },

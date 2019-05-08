@@ -15,6 +15,8 @@ export default function getExplorerUrl (crypto, transactionId) {
       return 'https://etherscan.io/tx/' + transactionId
     case Cryptos.DOGE:
       return 'https://dogechain.info/tx/' + transactionId
+    case Cryptos.DASH:
+      return 'https://explorer.dash.org/tx/' + transactionId
   }
 
   return ''

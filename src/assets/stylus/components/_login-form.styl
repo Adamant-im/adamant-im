@@ -1,0 +1,53 @@
+@import '../settings/_colors.styl'
+
+/**
+ * Centering input text and label.
+ *
+ * 1. Override `style` attribute.
+ * 2. Align input text to center.
+ * 3. Fix label centering after `scaleY` animation, using `transition font-size` instead.
+ * 4.a. Textarea border bottom.
+ * 4.b. Textarea border on hover.
+ * 4.c. Textarea border on focus.
+ * 5. Disable border bottom animation.
+ */
+.login-form
+  &__button
+    min-width: 126px
+
+  .v-label /* [1] */
+    width: 100% !important
+    max-width: 100% !important
+    left: 0;
+    font-weight: 400
+
+  .v-input
+    input
+      text-align: center /* [2] */
+      font-weight: 400
+      font-size: 14px
+
+    .v-label--active /* [3] */
+      transition: font .3s ease
+      transform: translateY(-18px)
+      -webkit-transform: translateY(-18px)
+      font-size: 12px
+
+  .v-input:not(.v-input--is-disabled) input
+    color: $adm-colors.regular
+  .v-text-field > .v-input__control > .v-input__slot:before /* [4] */
+    border-top-width: 1px
+  .v-text-field > .v-input__control > .v-input__slot:after /* [5] */
+    transition: unset
+
+/** Themes **/
+.theme--light
+  .login-form
+    .v-text-field > .v-input__control > .v-input__slot:before /* [4.a.] */
+      border-color: rgba(0, 0, 0, .12)
+    .v-text-field:not(.v-input--has-state) > .v-input__control > .v-input__slot:hover:before /* [4.b.] */
+      border-color: rgba(0, 0, 0, .12)
+    .v-text-field.v-input--is-focused > .v-input__control > .v-input__slot:after /* [4.c.] */
+      border-width: thin 0 0 0
+    .v-input .v-label.v-label--active
+      color: $adm-colors.muted !important

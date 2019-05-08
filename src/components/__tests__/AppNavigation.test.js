@@ -6,12 +6,14 @@ import Vuetify from 'vuetify'
 
 import mockupI18n from './__mocks__/plugins/i18n'
 import AppNavigation from '@/components/AppNavigation'
+import Container from '@/components/Container'
 
 jest.mock('@/store', () => {})
 
 Vue.use(Vuex)
 Vue.use(VueI18n)
 Vue.use(Vuetify)
+Vue.component('container', Container)
 
 /**
  * Mockup store helper

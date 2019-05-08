@@ -1,6 +1,8 @@
 import chatModule from '@/store/modules/chat'
 import sinon from 'sinon'
 
+import { TransactionStatus as TS } from '@/lib/constants'
+
 const { getters, mutations, actions } = chatModule
 
 jest.mock('@/store', () => {})
@@ -800,11 +802,11 @@ describe('Store: chat.js', () => {
         const messages = [
           {
             id: 'localId1',
-            status: 'sent'
+            status: TS.PENDING
           },
           {
             id: 'localId2',
-            status: 'sent'
+            status: TS.PENDING
           }
         ]
         const state = {
@@ -820,7 +822,7 @@ describe('Store: chat.js', () => {
           partnerId,
           id: 'localId1',
           realId: 'realId1',
-          status: 'confirmed'
+          status: TS.DELIVERED
         })
 
         // update message 2
@@ -828,17 +830,17 @@ describe('Store: chat.js', () => {
           partnerId,
           id: 'localId2',
           realId: 'realId2',
-          status: 'confirmed'
+          status: TS.DELIVERED
         })
 
         expect(messages).toEqual([
           {
             id: 'realId1',
-            status: 'confirmed'
+            status: TS.DELIVERED
           },
           {
             id: 'realId2',
-            status: 'confirmed'
+            status: TS.DELIVERED
           }
         ])
       })
@@ -848,14 +850,14 @@ describe('Store: chat.js', () => {
      * mutations.createAdamantChats
      */
     describe('mutations.createAdamantChats', () => {
-      it('should push `Adamant Bounty` to state.chats', () => {
+      it('should push `chats.welcome_message_title` to state.chats', () => {
         const state = {
           chats: {}
         }
 
         mutations.createAdamantChats(state)
 
-        expect(state.chats['Adamant Bounty']).toBeTruthy()
+        expect(state.chats['chats.welcome_message_title']).toBeTruthy()
       })
     })
 
@@ -1060,7 +1062,7 @@ describe('Store: chat.js', () => {
         const messageObject = {
           id: '1',
           message: 'hello world',
-          status: 'sent'
+          status: TS.PENDING
         }
 
         // mock & replace `createMessage` & `queueMessage` dependency
@@ -1079,17 +1081,17 @@ describe('Store: chat.js', () => {
           ['pushMessage', { message: messageObject, userId }],
           ['updateMessage', {
             id: messageObject.id,
-            status: 'rejected',
+            status: TS.REJECTED,
             partnerId: recipientId
           }]
         ])
       })
 
-      it('should update message status to confirmed', async () => {
+      it('should update message status to `delivered`', async () => {
         const messageObject = {
           id: '1',
           message: 'hello world',
-          status: 'sent'
+          status: TS.PENDING
         }
         const transactionId = 't1'
 
@@ -1110,7 +1112,7 @@ describe('Store: chat.js', () => {
           ['updateMessage', {
             id: messageObject.id,
             realId: transactionId,
-            status: 'confirmed',
+            status: TS.PENDING,
             partnerId: recipientId
           }]
         ])
@@ -1129,7 +1131,7 @@ describe('Store: chat.js', () => {
       const messageObject = {
         id: messageId,
         message,
-        status: 'sent'
+        status: TS.PENDING
       }
       const transactionId = 't1'
 
@@ -1155,13 +1157,13 @@ describe('Store: chat.js', () => {
         expect(commit.args).toEqual([
           ['updateMessage', {
             id: messageId,
-            status: 'sent',
+            status: TS.PENDING,
             partnerId: recipientId
           }],
           ['updateMessage', {
             id: messageId,
             realId: transactionId,
-            status: 'confirmed',
+            status: TS.PENDING,
             partnerId: recipientId
           }]
         ])
@@ -1189,12 +1191,12 @@ describe('Store: chat.js', () => {
         expect(commit.args).toEqual([
           ['updateMessage', {
             id: messageId,
-            status: 'sent',
+            status: TS.PENDING,
             partnerId: recipientId
           }],
           ['updateMessage', {
             id: messageId,
-            status: 'rejected',
+            status: TS.REJECTED,
             partnerId: recipientId
           }]
         ])
@@ -1214,7 +1216,7 @@ describe('Store: chat.js', () => {
           transactionId: '1234567',
           recipientId: 'U654321',
           type: 'ETH',
-          status: 'sent',
+          status: TS.PENDING,
           amount: 1,
           hash: '0x01234567890ABCDEF',
           comment: 'comment'

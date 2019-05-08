@@ -24,8 +24,10 @@ export default {
             const ctx = canvas.getContext('2d')
             const image = new Image(dWidth, dHeight)
             image.src = this.logo
-            ctx.drawImage(image, dx, dy, dWidth, dHeight)
-            this.dataUrl = canvas.toDataURL()
+            image.onload = () => {
+              ctx.drawImage(image, dx, dy, dWidth, dHeight)
+              this.dataUrl = canvas.toDataURL()
+            }
           }).catch(error => console.error(error))
         } else {
           QRCode.toDataURL(this.text, this.opts).then(dataUrl => {

@@ -1,7 +1,6 @@
 <template>
   <v-layout row wrap justify-center>
-    <ProgressIndicator :show="!isFulfilled" />
-    <v-flex xs12 sm12 md8 lg5>
+    <container>
       <v-layout row wrap>
         <v-flex xs12>
 
@@ -16,7 +15,7 @@
               </v-list-tile-content>
             </v-list-tile>
 
-            <transition-group name="messages">
+            <transition-group name="messages" v-if="isFulfilled">
               <chat-preview
                 v-for="message in messagesSorted"
                 :key="message.partnerId"
@@ -28,9 +27,10 @@
           </v-list>
 
         </v-flex>
-      </v-layout>
 
-    </v-flex>
+        <ChatSpinner :value="!isFulfilled" />
+      </v-layout>
+    </container>
 
     <chat-start-dialog
       v-model="showChatStartDialog"
@@ -42,7 +42,7 @@
 <script>
 import ChatPreview from '@/components/ChatPreview'
 import ChatStartDialog from '@/components/ChatStartDialog'
-import ProgressIndicator from '@/components/ProgressIndicator'
+import ChatSpinner from '@/components/ChatSpinner'
 
 export default {
   computed: {
@@ -85,7 +85,7 @@ export default {
   }),
   methods: {
     openChat (userId) {
-      this.$router.push(`/chats/${userId}`)
+      this.$router.push(`/chats/${userId}/`)
     },
     isChatReadOnly (partnerId) {
       return this.$store.getters['chat/isChatReadOnly'](partnerId)
@@ -94,7 +94,7 @@ export default {
   components: {
     ChatPreview,
     ChatStartDialog,
-    ProgressIndicator
+    ChatSpinner
   }
 }
 </script>

@@ -20,6 +20,9 @@
     ],
     "doge": [
       { "url": "https://dogenode1.adamant.im/api/" }
+    ],
+    "dash": [
+      { "url": "https://dashnode1.adamant.im" }
     ]
   },
   "env": "development"

@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap justify-center class="home-page">
 
-    <v-flex xs12 sm12 md8 lg5>
+    <container>
 
       <v-card flat class="transparent white--text">
 
@@ -12,7 +12,16 @@
               v-for="wallet in wallets"
               :key="wallet.cryptoCurrency"
             >
-              {{ wallet.cryptoCurrency }}
+              <div>
+                <crypto-icon
+                  :crypto="wallet.cryptoCurrency"
+                  size="small"
+                  slot="icon"
+                  class="mb-2"
+                />
+                <div>{{ wallet.balance | numberFormat(4) }}</div>
+                <div>{{ wallet.cryptoCurrency }}</div>
+              </div>
             </v-tab>
 
             <v-tab-item
@@ -22,126 +31,52 @@
               <wallet-card
                 :address="wallet.address"
                 :balance="wallet.balance"
-                :crypto-currency="wallet.cryptoCurrency"
+                :crypto="wallet.cryptoCurrency"
                 :crypto-name="wallet.cryptoName"
                 @click:balance="goToTransactions"
               >
-                <icon :width="125" :height="125" fill="#BDBDBD" slot="icon">
-                  <component :is="wallet.icon"/>
-                </icon>
+                <crypto-icon
+                  :crypto="wallet.cryptoCurrency"
+                  size="large"
+                  slot="icon"
+                />
               </wallet-card>
             </v-tab-item>
           </v-tabs>
         </v-card>
 
-        <!-- Actions -->
-        <v-list class="action-list transparent">
-          <v-list-tile @click="sendFunds" avatar>
-            <v-list-tile-avatar>
-              <v-icon class="action-list__icon">mdi-cube-send</v-icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t('home.send_btn') }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile @click="buyTokens" avatar>
-            <v-list-tile-avatar>
-              <v-icon class="action-list__icon">mdi-cash-usd</v-icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t('home.invest_btn') }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
-          <v-list-tile v-if="!hasAdmTokens" @click="getFreeTokens" avatar>
-            <v-list-tile-avatar>
-              <v-icon class="action-list__icon">mdi-gift</v-icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t('home.free_adm_btn') }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
-
       </v-card>
 
-    </v-flex>
+    </container>
 
   </v-layout>
 </template>
 
 <script>
 import WalletCard from '@/components/WalletCard'
-import Icon from '@/components/icons/BaseIcon'
-import AdmFillIcon from '@/components/icons/AdmFill'
-import BnbFillIcon from '@/components/icons/BnbFill'
-import EthFillIcon from '@/components/icons/EthFill'
-import BnzFillIcon from '@/components/icons/BnzFill'
-import DogeFillIcon from '@/components/icons/DogeFill'
+import CryptoIcon from '@/components/icons/CryptoIcon'
+
+import { Cryptos, CryptosNames } from '@/lib/constants'
 
 export default {
   computed: {
     wallets () {
-      return [
-        {
-          address: this.$store.state.address,
-          balance: this.$store.state.balance,
-          cryptoCurrency: 'ADM',
-          cryptoName: 'ADAMANT',
-          icon: 'adm-fill-icon'
-        },
-        {
-          address: this.$store.state.bnb.address,
-          balance: this.$store.state.bnb.balance,
-          cryptoCurrency: 'BNB',
-          cryptoName: 'Binance Coin',
-          icon: 'bnb-fill-icon'
-        },
-        {
-          address: this.$store.state.eth.address,
-          balance: this.$store.state.eth.balance,
-          cryptoCurrency: 'ETH',
-          cryptoName: 'Ethereum',
-          icon: 'eth-fill-icon'
-        },
-        {
-          address: this.$store.state.bz.address,
-          balance: this.$store.state.bz.balance,
-          cryptoCurrency: 'BZ',
-          cryptoName: 'Bit-Z',
-          icon: 'bnz-fill-icon'
-        },
-        {
-          address: this.$store.state.doge.address,
-          balance: this.$store.state.doge.balance,
-          cryptoCurrency: 'DOGE',
-          cryptoName: 'DOGE',
-          icon: 'doge-fill-icon'
+      return Object.keys(Cryptos).map(crypto => {
+        const state = this.$store.state
+        const key = crypto.toLowerCase()
+        const address = crypto === Cryptos.ADM ? state.address : state[key].address
+        const balance = crypto === Cryptos.ADM ? state.balance : state[key].balance
+
+        return {
+          address,
+          balance,
+          cryptoCurrency: crypto,
+          cryptoName: CryptosNames[crypto]
         }
-      ]
-    },
-    hasAdmTokens () {
-      return this.$store.state.balance > 0
+      })
     }
   },
-  data: () => ({
-  }),
   methods: {
-    sendFunds () {
-      this.$router.push('/transfer')
-    },
-    buyTokens () {
-      window.open('https://adamant.im/buy-tokens/?wallet=U9203183357885757380', '_blank')
-    },
-    getFreeTokens () {
-      const link = 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
-
-      window.open(link, '_blank')
-    },
     goToTransactions (crypto) {
       this.$router.push({
         name: 'Transactions',
@@ -153,18 +88,19 @@ export default {
   },
   components: {
     WalletCard,
-    Icon,
-    AdmFillIcon,
-    BnbFillIcon,
-    EthFillIcon,
-    BnzFillIcon,
-    DogeFillIcon
+    CryptoIcon
   }
 }
 </script>
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_colors.styl'
+
+/**
+ * 1. Reset VTabs container fixed height.
+ */
+.home-page__wallets >>> .v-tabs__container
+  height: auto // [1]
 
 /** Themes **/
 .theme--light

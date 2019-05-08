@@ -9,13 +9,13 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     value="true"
   >
     <v-select-stub
-      items="ADM,ETH,BNB,DOGE,BZ"
+      items="ADM,ETH,BNB,DOGE,BZ,DASH"
     />
      
     <v-text-field-stub
       rules="v => !!v || this.$t('transfer.error_field_is_required'),v => _get__(\\"validateAddress\\")(this.currency, v) || this.$t('transfer.error_incorrect_address', {
           crypto: this.currency
-        })"
+        }),v => v !== this.ownAddress || this.$t('transfer.error_same_recipient')"
       type="text"
     >
       <template>
@@ -37,7 +37,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
         <span
           class="font-weight-medium"
         >
-          Amount
+          Amount to send
         </span>
          
         <span
@@ -73,16 +73,6 @@ exports[`SendFundsForm renders the correct markup 1`] = `
         tag="button"
         type="button"
       >
-        <v-progress-circular-stub
-          class="mr-3"
-          color="primary"
-          indeterminate="true"
-          rotate="0"
-          size="24"
-          style="display: none;"
-          value="0"
-          width="4"
-        />
         
         Send
       
@@ -123,9 +113,20 @@ exports[`SendFundsForm renders the correct markup 1`] = `
          
         <v-btn-stub
           activeclass="v-btn--active"
+          flat="true"
           tag="button"
           type="button"
         >
+          <v-progress-circular-stub
+            class="mr-3"
+            color="primary"
+            indeterminate="true"
+            rotate="0"
+            size="24"
+            style="display: none;"
+            value="0"
+            width="4"
+          />
           
           Confirm
         

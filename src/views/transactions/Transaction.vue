@@ -1,43 +1,52 @@
 <template>
-  <component v-bind:is="transactionComponent" :id="tx_id" :crypto="crypto" />
+  <component :is="transactionComponent" :id="txId" :crypto="crypto" />
 </template>
 
 <script>
 import AdmTransaction from '../../components/transactions/AdmTransaction.vue'
 import EthTransaction from '../../components/transactions/EthTransaction.vue'
 import Erc20Transaction from '../../components/transactions/Erc20Transaction.vue'
-import DogeTransaction from '../../components/transactions/DogeTransaction.vue'
+import BtcTransaction from '../../components/transactions/BtcTransaction.vue'
 
-import { Cryptos, isErc20 } from '../../lib/constants'
+import { Cryptos, isErc20, isBtcBased } from '../../lib/constants'
 
 export default {
   name: 'transaction',
-  props: ['tx_id', 'crypto'],
+  props: {
+    crypto: {
+      required: true,
+      type: String
+    },
+    txId: {
+      required: true,
+      type: String
+    }
+  },
   components: {
     AdmTransaction,
     EthTransaction,
     Erc20Transaction,
-    DogeTransaction
+    BtcTransaction
   },
   mounted () {
     this.update()
-    clearInterval(this.timer)
-    this.timer = setInterval(() => this.update(), 10 * 1000)
+    window.clearInterval(this.timer)
+    this.timer = window.setInterval(() => this.update(), 1e4)
   },
   beforeDestroy () {
-    clearInterval(this.timer)
+    window.clearInterval(this.timer)
   },
   methods: {
     update () {
       const action = this.crypto.toLowerCase() + '/getTransaction'
-      this.$store.dispatch(action, { hash: this.tx_id, force: true })
+      this.$store.dispatch(action, { hash: this.txId, force: true })
     }
   },
   computed: {
     transactionComponent () {
       if (this.crypto === Cryptos.ETH) return 'eth-transaction'
       if (isErc20(this.crypto)) return 'erc20-transaction'
-      if (this.crypto === Cryptos.DOGE) return 'doge-transaction'
+      if (isBtcBased(this.crypto)) return 'btc-transaction'
       return 'adm-transaction'
     }
   },

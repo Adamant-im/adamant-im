@@ -12,25 +12,36 @@
 
       ref="chat"
     >
-      <chat-toolbar :partner-id="partnerId" slot="header"/>
-
+      <chat-toolbar :partner-id="partnerId" slot="header">
+        <ChatAvatar
+          @click="showPartnerInfo"
+          :user-id="partnerId"
+          use-public-key
+          slot="avatar-toolbar"
+        />
+      </chat-toolbar>
       <template slot="message" slot-scope="{ message, userId, sender, locale }">
 
         <a-chat-message
           v-if="message.type === 'message'"
           v-bind="message"
           :key="message.id"
-          :message="isChatReadOnly ? $t(message.message) : message.message | msg"
+          :message="formatMessage(message.message)"
+          :time="message.timestamp | date"
           :user-id="userId"
           :sender="sender"
           :show-avatar="!isChatReadOnly"
           :locale="locale"
           :html="true"
+          :i18n="{ retry: $t('chats.retry_message') }"
           @resend="resendMessage(partnerId, message.id)"
         >
-          <div @click="showPartnerInfo" slot="avatar" v-if="!isChatReadOnly">
-            <ChatAvatar :user-id="sender.id" style="cursor: pointer" use-public-key />
-          </div>
+          <ChatAvatar
+            @click="showPartnerInfo"
+            :user-id="sender.id"
+            use-public-key
+            slot="avatar"
+          />
         </a-chat-message>
 
         <a-chat-transaction
@@ -39,11 +50,16 @@
           :key="message.id"
           :user-id="userId"
           :sender="sender"
-          :amount="$formatAmount(message.amount, message.type)"
+          :amount="message.amount | currency(message.type)"
+          :time="message.timestamp | date"
           :currency="message.type"
-          :i18n="{ sent: $t('chats.sent_label'), received: $t('chats.received_label') }"
+          :i18n="{
+            sent: $t('chats.sent_label'),
+            received: $t('chats.received_label'),
+            statuses: $t('chats.transaction_statuses')
+          }"
           :locale="locale"
-          :status="message.status"
+          :status="getTransactionStatus(message, partnerId)"
           @click:transaction="openTransaction(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
         />
@@ -70,18 +86,14 @@
 
 <script>
 import { Cryptos } from '@/lib/constants'
-import { Formatter } from '@/lib/message-formatter'
+import { renderMarkdown } from '@/lib/markdown'
 
 import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@/components/AChat'
 import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'
 import transaction from '@/mixins/transaction'
-
-/**
- * Create Formatter instance.
- */
-const formatter = new Formatter()
+import dateFilter from '@/filters/date'
 
 /**
  * Returns user meta by userId.
@@ -186,9 +198,6 @@ export default {
         recipientId: this.partnerId
       })
         .catch(err => {
-          this.$store.dispatch('snackbar/show', {
-            message: err.message
-          })
           console.error(err.message)
         })
     },
@@ -218,16 +227,32 @@ export default {
         name: 'Transaction',
         params: {
           crypto: transaction.type,
-          tx_id: transaction.hash
+          txId: transaction.hash
         }
       })
     },
     isTransaction (type) {
-      return type in Cryptos || type === 'UNKNOWN_CRYPTO'
+      // @todo remove LSK when will be supported
+      return (
+        type in Cryptos ||
+        type === 'LSK' ||
+        type === 'UNKNOWN_CRYPTO'
+      )
+    },
+    formatMessage (message) {
+      if (this.isChatReadOnly || message.i18n) {
+        return renderMarkdown(this.$t(message))
+      }
+
+      if (this.$store.state.options.formatMessages) {
+        return renderMarkdown(message)
+      }
+
+      return message
     }
   },
   filters: {
-    msg: message => formatter.format(message)
+    date: dateFilter
   },
   mixins: [transaction],
   components: {

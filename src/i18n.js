@@ -15,6 +15,8 @@ function loadLocaleMessages () {
   }
 }
 
+VueI18n.prototype._defaultGetChoiceIndex = VueI18n.prototype.getChoiceIndex
+
 // https://kazupon.github.io/vue-i18n/guide/pluralization.html#custom-pluralization
 /**
  * @param choice {number} a choice index given by the input to $tc: `$tc('path.to.rule', choiceIndex)`
@@ -25,6 +27,7 @@ VueI18n.prototype.getChoiceIndex = function (choice, choicesLength) {
   // this === VueI18n instance, so the locale property also exists here
   if (this.locale !== 'ru') {
     // proceed to the default implementation
+    return this._defaultGetChoiceIndex(choice, choicesLength)
   }
 
   if (choice === 0) {

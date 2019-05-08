@@ -1,44 +1,54 @@
 <template>
-  <v-card flat class="wallet-card">
-    <div class="wallet-card__container">
-      <div class="wallet-card__left">
-        <v-layout
-          align-end
-          :style="{ cursor: 'pointer' }"
-          @click="copyToClipboard(address)"
-        >
-          <div>
-            <h3 class="wallet-card__title">{{ cryptoName }} {{ $t('home.wallet') }}</h3>
-            <div class="wallet-card__subtitle">{{ address }}</div>
-          </div>
+  <v-card flat :class="className">
+    <v-list two-line :class="`${className}__list`">
+      <v-list-tile @click="copyToClipboard(address)">
+        <v-list-tile-content>
+          <v-list-tile-title :class="`${className}__title`">
+            {{ cryptoName }} {{ $t('home.wallet') }}
+          </v-list-tile-title>
+          <v-list-tile-sub-title :class="`${className}__subtitle`">
+            {{ address }}
+          </v-list-tile-sub-title>
+        </v-list-tile-content>
 
-          <div class="ml-3"><v-icon>mdi-content-copy</v-icon></div>
-        </v-layout>
+        <v-list-tile-action>
+          <v-btn icon ripple>
+            <v-icon :class="`${className}__action`">mdi-content-copy</v-icon>
+          </v-btn>
+        </v-list-tile-action>
+      </v-list-tile>
 
-        <v-layout
-          align-center
-          class="mt-2"
-          :style="{ cursor: 'pointer' }"
-          @click="$emit('click:balance', cryptoCurrency)"
-        >
-          <div>
-            <h3 class="wallet-card__title">{{ $t('home.balance') }}</h3>
-            <div class="wallet-card__subtitle">{{ balance }} {{ cryptoCurrency }}</div>
-          </div>
-        </v-layout>
-      </div>
+      <v-list-tile @click="$emit('click:balance', crypto)">
+        <v-list-tile-content>
+          <v-list-tile-title :class="`${className}__title`">
+            {{ $t('home.balance') }}
+          </v-list-tile-title>
+          <v-list-tile-sub-title :class="`${className}__subtitle`">
+            {{ balance | currency(crypto, true) }}
+          </v-list-tile-sub-title>
+        </v-list-tile-content>
+      </v-list-tile>
+    </v-list>
 
-      <div class="wallet-card__right">
-        <slot name="icon"/>
-      </div>
-    </div>
+    <v-divider></v-divider>
+
+    <WalletCardListActions
+      :class="`${className}__list`"
+      :crypto="crypto"
+    />
   </v-card>
 </template>
 
 <script>
 import { copyToClipboard } from '@/lib/textHelpers'
+import WalletCardListActions from '@/components/WalletCardListActions'
 
 export default {
+  computed: {
+    className () {
+      return 'wallet-card'
+    }
+  },
   methods: {
     copyToClipboard (text) {
       copyToClipboard(text)
@@ -47,6 +57,9 @@ export default {
         message: this.$t('home.copied')
       })
     }
+  },
+  components: {
+    WalletCardListActions
   },
   props: {
     address: {
@@ -57,7 +70,7 @@ export default {
       type: Number,
       required: true
     },
-    cryptoCurrency: {
+    crypto: {
       type: String,
       default: 'ADM'
     },
@@ -73,26 +86,6 @@ export default {
 @import '~vuetify/src/stylus/settings/_colors.styl'
 
 .wallet-card
-  height: 200px
-
-  &__container
-    display: flex
-    align-items: center
-    justify-content: space-between
-    height: inherit
-    margin: 0 16px 0 16px
-    position: relative
-  &__left
-    margin-right: 120px
-    z-index: 1
-  &__right
-    text-align: center
-    position: absolute
-    right: 0
-
-    h3
-      text-transform: uppercase
-      color: $grey.darken-1
   &__title
     font-size: 16px
     font-weight: 500
@@ -107,20 +100,20 @@ export default {
   .wallet-card
     background-color: transparent
 
+    &__list
+      background: inherit
     &__title
       color: $grey.darken-3
     &__subtitle
       color: $grey.darken-2
-    &__action
-      color: $blue.base
 .theme--dark
   .wallet-card
     background-color: transparent
 
+    &__list
+      background: inherit
     &__title
       color: $shades.white
     &__subtitle
-      color: $shades.white
-    &__action
       color: $shades.white
 </style>

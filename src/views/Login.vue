@@ -1,7 +1,7 @@
 <template>
-  <v-layout row fill-height justify-center class="login-page">
+  <v-layout row fill-height justify-center :class="className">
 
-    <v-flex xs12 sm12 md8 lg8>
+    <container>
 
       <div class="text-xs-right">
         <language-switcher>
@@ -10,79 +10,65 @@
       </div>
 
       <v-card flat color="transparent" class="text-xs-center mt-3">
-        <img
-          :src="logo"
-          class="logo"
-        />
+        <logo/>
 
-        <h1 class="login-page__title">{{ $t('login.brand_title') }}</h1>
-        <h2 class="hidden-sm-and-down login-page__subtitle mt-3">{{ $t('login.subheader') }}</h2>
+        <h1 :class="`${className}__title`">{{ $t('login.brand_title') }}</h1>
+        <h2 :class="`${className}__subtitle`" class="hidden-sm-and-down mt-3">{{ $t('login.subheader') }}</h2>
       </v-card>
 
       <v-card v-if="!isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
         <v-layout justify-center>
-          <v-flex xs12 sm8 md8 lg6>
+          <v-flex xs12 sm8 md8 lg8>
 
             <login-form
               v-model="passphrase"
               @login="onLogin"
               @error="onLoginError"
-            >
-              <template slot="append-outer">
-                <icon
-                  class="ml-2"
-                  :width="24"
-                  :height="24"
-                  shape-rendering="crispEdges"
-                  :color="showQrcodeRenderer ? this.$vuetify.theme.primary : ''"
-                  @click="toggleQrcodeRenderer"
-                >
-                  <qr-code-icon/>
-                </icon>
-              </template>
-
-              <template slot="qrcode-renderer">
-                <div @click="saveQrcode" :style="{ cursor: 'pointer' }">
-                  <transition name="slide-fade">
-                    <QrcodeRenderer v-if="showQrcodeRenderer" :text="passphrase" ref="qrcode" />
-                  </transition>
-                </div>
-              </template>
-            </login-form>
+            />
 
           </v-flex>
         </v-layout>
 
-        <v-layout justify-center>
+        <v-layout justify-center class="mt-2">
           <v-btn
-            icon
-            flat
-            fab
             @click="showQrcodeScanner = true"
             :title="$t('login.scan_qr_code_button_tooltip')"
+            icon
+            flat
+            :class="`${className}__icon`"
           >
             <icon><qr-code-scan-icon/></icon>
           </v-btn>
 
-          <v-btn @click="openFileDialog" :title="$t('login.login_by_qr_code_tooltip')" icon flat fab>
-            <icon><file-icon/></icon>
-          </v-btn>
-
-          <qrcode-capture @detect="onDetect" ref="qrcodeCapture" style="display: none"/>
+          <qrcode-capture
+            @detect="onDetectQrcode"
+            @error="onDetectQrcodeError"
+          >
+            <v-btn
+              :title="$t('login.login_by_qr_code_tooltip')"
+              icon
+              flat
+              :class="`${className}__icon`"
+            >
+              <icon><file-icon/></icon>
+            </v-btn>
+          </qrcode-capture>
         </v-layout>
       </v-card>
 
-      <v-layout v-if="!isLoginViaPassword" justify-center class="mt-2">
-        <v-flex xs12 sm8 md8 lg6>
+      <v-layout v-if="!isLoginViaPassword" justify-center class="mt-5">
+        <v-flex xs12 sm8 md8 lg8>
+
           <passphrase-generator
-            @copy="onCopyPassphraze"
+            @copy="onCopyPassphrase"
           />
+
         </v-flex>
       </v-layout>
 
       <v-card v-if="isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
         <v-layout justify-center>
-          <v-flex xs12 sm8 md8 lg6>
+          <v-flex xs12 sm8 md8 lg8>
 
             <login-password-form
               v-model="password"
@@ -100,32 +86,28 @@
         @scan="onScanQrcode"
       />
 
-    </v-flex>
+    </container>
 
   </v-layout>
 </template>
 
 <script>
-import b64toBlob from 'b64-to-blob'
-import FileSaver from 'file-saver'
-import { QrcodeCapture } from 'vue-qrcode-reader'
-
+import QrcodeCapture from '@/components/QrcodeCapture'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
 import LoginForm from '@/components/LoginForm'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
-import QrcodeRenderer from '@/components/QrcodeRenderer'
 import Icon from '@/components/icons/BaseIcon'
-import QrCodeIcon from '@/components/icons/common/QrCode'
 import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
 import FileIcon from '@/components/icons/common/File'
 import LoginPasswordForm from '@/components/LoginPasswordForm'
+import Logo from '@/components/icons/common/Logo'
 import AppInterval from '@/lib/AppInterval'
 
 export default {
   computed: {
-    showQrcodeRenderer () {
-      return this.isQrcodeRendererActive && this.passphrase
+    className () {
+      return 'login-page'
     },
     isLoginViaPassword () {
       return this.$store.getters['options/isLoginViaPassword']
@@ -135,24 +117,24 @@ export default {
     passphrase: '',
     password: '',
     showQrcodeScanner: false,
-    isQrcodeRendererActive: false,
     logo: '/img/adamant-logo-transparent-512x512.png'
   }),
   methods: {
-    async onDetect (promise) {
-      try {
-        const { content } = await promise // Decoded string or null
-        if (content && /^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(content.trim())) {
-          this.passphrase = content
-        } else {
-          this.passphrase = ''
-          this.$store.dispatch('snackbar/show', {
-            message: this.$t('login.invalid_qr_code')
-          })
-        }
-      } catch (error) {
-        console.error(error)
+    onDetectQrcode (passphrase) {
+      // is valid passphrase
+      if (/^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(passphrase)) {
+        this.passphrase = passphrase
+      } else {
+        this.passphrase = ''
+        this.onLoginError('login.invalid_passphrase')
       }
+    },
+    onDetectQrcodeError (err) {
+      this.passphrase = ''
+      this.$store.dispatch('snackbar/show', {
+        message: this.$t('login.invalid_qr_code')
+      })
+      console.warn(err)
     },
     onLogin () {
       this.$router.push('/chats')
@@ -170,13 +152,18 @@ export default {
         message: this.$t(key)
       })
     },
-    onCopyPassphraze () {
+    onCopyPassphrase () {
       this.$store.dispatch('snackbar/show', {
         message: this.$t('home.copied'),
         timeout: 1500
       })
     },
     onScanQrcode (passphrase) {
+      // is not valid passphrase
+      if (!/^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(passphrase)) {
+        return this.onLoginError('login.invalid_passphrase')
+      }
+
       this.$store.dispatch('login', passphrase)
         .then(() => {
           this.onLogin()
@@ -184,19 +171,6 @@ export default {
         .catch(err => {
           this.onLoginError(err)
         })
-    },
-    openFileDialog () {
-      this.$refs.qrcodeCapture.$el.click()
-    },
-    saveQrcode () {
-      const imgUrl = this.$refs.qrcode.$el.src
-      const base64Data = imgUrl.slice(22, imgUrl.length)
-      const byteCharacters = b64toBlob(base64Data)
-      const blob = new Blob([byteCharacters], { type: 'image/png' })
-      FileSaver.saveAs(blob, 'adamant-im.png')
-    },
-    toggleQrcodeRenderer () {
-      this.isQrcodeRendererActive = !this.isQrcodeRendererActive
     }
   },
   components: {
@@ -204,38 +178,42 @@ export default {
     PassphraseGenerator,
     LoginForm,
     QrcodeScannerDialog,
-    QrcodeRenderer,
     QrcodeCapture,
     Icon,
-    QrCodeIcon,
     QrCodeScanIcon,
     FileIcon,
-    LoginPasswordForm
+    LoginPasswordForm,
+    Logo
   }
 }
 </script>
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_variables.styl'
+@import '../assets/stylus/settings/_colors.styl'
 
 .login-page
   &__title
     font-family: 'Exo 2'
     font-weight: 100
-    font-size: 45px
+    font-size: 40px
     line-height: 40px
     text-transform: uppercase
   &__subtitle
     font-family: 'Exo 2'
     font-weight: 100
     font-size: 18px
+  &__icon
+    transition: 0.2s linear
 
-.logo
-  width: 213px
-  height: 213px
+/** Themes **/
+.theme--light
+  .login-page
+    &__icon, &__title, &__subtitle
+      color: $adm-colors.regular
 
-@media $display-breakpoints.sm-and-up
-  .logo
-    width: 300px
-    height: 300px
+.theme--dark
+  .login-page
+    &__icon
+      color: $shades.white
 </style>

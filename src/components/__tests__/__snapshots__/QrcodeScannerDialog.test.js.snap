@@ -2,6 +2,7 @@
 
 exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
 <v-dialog-stub
+  class="qrcode-scanner"
   maxwidth="none"
   origin="center center"
   transition="dialog-transition"
@@ -42,9 +43,13 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
         tag="div"
         xs12=""
       >
-        <video
-          class="camera"
-        />
+        <div
+          class="qrcode-scanner__camera"
+        >
+          <video />
+           
+          <!---->
+        </div>
       </v-flex-stub>
        
       <v-flex-stub

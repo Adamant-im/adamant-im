@@ -10,7 +10,7 @@
     <v-container fluid>
       <v-layout row wrap justify-center>
 
-        <v-flex xs12 sm12 md8 lg5>
+        <container>
 
           <!-- General -->
           <h3 class="title mt-3 mb-3">{{ $t('options.general_title') }}</h3>
@@ -59,6 +59,12 @@
                 color="grey darken-1"
                 v-model="sendMessageOnEnter"
               />
+              <v-checkbox
+                :label="$t('options.format_messages')"
+                :title="$t('options.format_messages_tooltip')"
+                color="grey darken-1"
+                v-model="formatMessages"
+              />
             </v-flex>
           </v-layout>
 
@@ -105,7 +111,7 @@
            </v-flex>
           </v-layout>
 
-        </v-flex>
+        </container>
 
       </v-layout>
     </v-container>
@@ -130,6 +136,17 @@ export default {
       set (value) {
         this.$store.commit('options/updateOption', {
           key: 'sendMessageOnEnter',
+          value
+        })
+      }
+    },
+    formatMessages: {
+      get () {
+        return this.$store.state.options.formatMessages
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'formatMessages',
           value
         })
       }

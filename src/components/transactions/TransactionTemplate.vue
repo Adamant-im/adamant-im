@@ -3,11 +3,11 @@
 
     <app-toolbar-centered
       app
-      :title="`#${id}`"
+      :title="`${id}`"
       flat
     />
 
-    <v-flex xs12 sm12 md8 lg5>
+    <container>
 
       <v-list class="transparent">
 
@@ -59,38 +59,35 @@
 
         <v-divider/>
 
-        <v-list-tile>
+        <v-list-tile :title="id || placeholder">
           <v-list-tile-content>
             <v-list-tile-title>{{ $t('transaction.txid') }}</v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{ id || placeholder }}
+            </v-list-tile-sub-title>
           </v-list-tile-content>
-
-          <div>
-            <v-list-tile-title>{{ id || placeholder }}</v-list-tile-title>
-          </div>
         </v-list-tile>
 
         <v-divider/>
 
-        <v-list-tile>
+        <v-list-tile :title="sender || placeholder">
           <v-list-tile-content>
             <v-list-tile-title>{{ $t('transaction.sender') }}</v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{ sender || placeholder }}
+            </v-list-tile-sub-title>
           </v-list-tile-content>
-
-          <div>
-            <v-list-tile-title>{{ sender || placeholder }}</v-list-tile-title>
-          </div>
         </v-list-tile>
 
         <v-divider/>
 
-        <v-list-tile>
+        <v-list-tile :title="recipient || placeholder">
           <v-list-tile-content>
             <v-list-tile-title>{{ $t('transaction.recipient') }}</v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{ recipient || placeholder }}
+            </v-list-tile-sub-title>
           </v-list-tile-content>
-
-          <div>
-            <v-list-tile-title>{{ recipient || placeholder }}</v-list-tile-title>
-          </div>
         </v-list-tile>
 
         <v-divider/>
@@ -99,20 +96,24 @@
           <v-list-tile-content>
             <v-list-tile-title>{{ $t('transaction.explorer') }}</v-list-tile-title>
           </v-list-tile-content>
+
+          <div>
+            <v-list-tile-title><v-icon>mdi-chevron-right</v-icon></v-list-tile-title>
+          </div>
         </v-list-tile>
 
         <v-list-tile v-if="partner">
           <v-list-tile-content>
             <v-btn @click="openChat" flat>
               <v-icon left>{{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}</v-icon>
-              {{ $t('transaction.startChat') }}
+              {{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}
             </v-btn>
           </v-list-tile-content>
         </v-list-tile>
 
       </v-list>
 
-    </v-flex>
+    </container>
 
   </v-layout>
 </template>
@@ -124,18 +125,48 @@ import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 export default {
   name: 'transaction-template',
-  props: [
-    'amount',
-    'timestamp',
-    'id',
-    'confirmations',
-    'fee',
-    'recipient',
-    'sender',
-    'explorerLink',
-    'partner',
-    'status'
-  ],
+  props: {
+    amount: {
+      required: true,
+      type: String
+    },
+    confirmations: {
+      required: true,
+      type: Number
+    },
+    explorerLink: {
+      required: true,
+      type: String
+    },
+    fee: {
+      required: true,
+      type: String
+    },
+    id: {
+      required: true,
+      type: String
+    },
+    partner: {
+      required: true,
+      type: String
+    },
+    recipient: {
+      required: true,
+      type: String
+    },
+    sender: {
+      required: true,
+      type: String
+    },
+    status: {
+      required: true,
+      type: String
+    },
+    timestamp: {
+      required: true,
+      type: Number
+    }
+  },
   methods: {
     openInExplorer: function () {
       if (this.explorerLink) {

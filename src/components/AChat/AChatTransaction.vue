@@ -11,26 +11,33 @@
       }"
     >
       <div class="a-chat__message-card">
-        <div class="a-chat__message-card-header">
-          <div v-if="sender.id === userId" class="a-chat__sender">
-            {{ i18n.sent }} {{ amount }} {{ currency }}
+        <div>
+          <div>
+            {{ sender.id === userId ? i18n.sent : i18n.received }}
           </div>
-          <div v-else class="a-chat__sender">
-            {{ i18n.received }} {{ amount }} {{ currency }}
-          </div>
-          <v-icon @click="$emit('click:transaction', id)" class="mr-2">mdi-open-in-new</v-icon>
-          <span :title="date" class="a-chat__timestamp">{{ time }}</span>
-          <div class="a-chat__status">
-            <v-icon
-              size="15"
-              :color="status === 'rejected' ? 'red' : ''"
-            >{{ statusIcon }}</v-icon>
+          <div
+            @click="onClickAmount"
+            class="a-chat__amount my-1"
+            :class="{ 'a-chat__amount--clickable': isStatusValid }"
+          >
+            {{ amount }}
           </div>
         </div>
 
         <div class="a-chat__message-card-body">
-          <div class="a-chat__message-text">
+          <div class="a-chat__message-text font-italic mb-1">
             {{ message }}
+          </div>
+        </div>
+
+        <div class="a-chat__message-card-header">
+          <div :title="timeTitle" class="a-chat__timestamp font-italic">{{ time }}</div>
+          <div class="a-chat__status">
+            <v-icon
+              size="15"
+              :title="i18n.statuses[status]"
+              :color="statusColor"
+            >{{ statusIcon }}</v-icon>
           </div>
         </div>
       </div>
@@ -39,26 +46,39 @@
 </template>
 
 <script>
-import moment from 'moment'
-
 export default {
   mounted () {
     this.$emit('mount')
   },
   computed: {
-    time () {
-      return moment(this.timestamp).format('hh:mm A')
-    },
-    date () {
-      return moment(this.timestamp).format('LLLL')
-    },
     statusIcon () {
-      if (this.status === 'sent') {
+      if (this.status === 'delivered') {
+        return 'mdi-check'
+      } else if (this.status === 'pending') {
         return 'mdi-clock-outline'
       } else if (this.status === 'rejected') {
-        return 'mdi-clock-outline'
+        return 'mdi-close-circle-outline'
       } else {
-        return 'mdi-check-all'
+        return 'mdi-alert-outline'
+      }
+    },
+    statusColor () {
+      if (this.status === 'rejected') {
+        return 'red'
+      } else if (this.status === 'invalid') {
+        return 'yellow'
+      }
+
+      return ''
+    },
+    isStatusValid () {
+      return this.status !== 'invalid'
+    }
+  },
+  methods: {
+    onClickAmount () {
+      if (this.isStatusValid) {
+        this.$emit('click:transaction', this.id)
       }
     }
   },
@@ -71,9 +91,13 @@ export default {
       type: String,
       default: ''
     },
-    timestamp: {
-      type: Number,
-      default: 0
+    time: {
+      type: String,
+      default: ''
+    },
+    timeTitle: {
+      type: String,
+      default: ''
     },
     userId: {
       type: String,
@@ -94,8 +118,14 @@ export default {
     i18n: {
       type: Object,
       default: () => ({
-        'sent': 'Sent',
-        'received': 'Received'
+        sent: 'Sent',
+        received: 'Received',
+        statuses: {
+          delivered: '',
+          pending: '',
+          rejected: '',
+          invalid: ''
+        }
       })
     },
     locale: {
@@ -105,7 +135,7 @@ export default {
     status: {
       type: String,
       default: 'confirmed',
-      validator: v => ['sent', 'confirmed', 'rejected'].includes(v)
+      validator: v => ['delivered', 'pending', 'rejected', 'invalid'].includes(v)
     }
   }
 }

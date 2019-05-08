@@ -9,7 +9,7 @@
     >
       <div
         v-if="showAvatar"
-        class="a-chat__message-avatar"
+        class="a-chat__message-avatar hidden-xs-only"
         :class="{ 'a-chat__message-avatar--right': sender.id === userId }"
       >
         <slot name="avatar"></slot>
@@ -20,17 +20,17 @@
           <div v-else v-text="message" class="a-chat__message-text"></div>
         </div>
 
-        <div class="a-chat__message-card-header mt-2">
-          <div :title="date" class="a-chat__timestamp">{{ time }}</div>
-          <div class="a-chat__status">
-            <v-icon v-if="status === 'sent'" size="15">mdi-clock-outline</v-icon>
+        <div class="a-chat__message-card-header mt-1">
+          <div :title="timeTitle" class="a-chat__timestamp font-italic">{{ time }}</div>
+          <div v-if="isOutgoingMessage" class="a-chat__status">
             <v-icon
-              v-else-if="status === 'rejected'"
+              :title="i18n.retry"
               size="15"
               color="red"
+              v-if="status === 'rejected'"
               @click="$emit('resend')"
-            >mdi-clock-outline</v-icon>
-            <v-icon v-else size="15">mdi-check-all</v-icon>
+            >{{ statusIcon }}</v-icon>
+            <v-icon size="15" v-else>{{ statusIcon }}</v-icon>
           </div>
         </div>
       </div>
@@ -39,18 +39,19 @@
 </template>
 
 <script>
-import moment from 'moment'
-
 export default {
-  mounted () {
-    moment.locale(this.locale)
-  },
   computed: {
-    time () {
-      return moment(this.timestamp).format('hh:mm A')
+    statusIcon () {
+      if (this.status === 'delivered') {
+        return 'mdi-check'
+      } else if (this.status === 'pending') {
+        return 'mdi-clock-outline'
+      } else {
+        return 'mdi-close-circle-outline'
+      }
     },
-    date () {
-      return moment(this.timestamp).format('LLLL')
+    isOutgoingMessage () {
+      return this.sender.id === this.userId
     }
   },
   props: {
@@ -62,14 +63,18 @@ export default {
       type: String,
       default: ''
     },
-    timestamp: {
-      type: Number,
-      default: 0
+    time: {
+      type: String,
+      default: ''
+    },
+    timeTitle: {
+      type: String,
+      default: ''
     },
     status: {
       type: String,
       default: 'confirmed',
-      validator: v => ['sent', 'confirmed', 'rejected'].includes(v)
+      validator: v => ['delivered', 'pending', 'rejected'].includes(v)
     },
     userId: {
       type: String,
@@ -90,6 +95,12 @@ export default {
     html: {
       type: Boolean,
       default: false
+    },
+    i18n: {
+      type: Object,
+      default: () => ({
+        'retry': 'Message did not sent, weak connection. Click to retry'
+      })
     }
   }
 }

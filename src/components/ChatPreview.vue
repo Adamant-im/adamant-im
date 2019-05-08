@@ -15,20 +15,20 @@
     </v-list-tile-avatar>
 
     <v-list-tile-content>
-      <v-list-tile-title>{{ partnerName }}</v-list-tile-title>
+      <v-list-tile-title v-text="readOnly ? $t(partnerName) : partnerName"></v-list-tile-title>
 
       <!-- Transaction -->
       <template v-if="lastTransaction">
         <v-list-tile-sub-title>
-          <v-icon size="15">{{ status === 'confirmed' ? 'mdi-check-all' : 'mdi-clock-outline' }}</v-icon>
-          {{ transactionMessage }}
+          <v-icon size="15">{{ statusIcon }}</v-icon>
+          {{ transactionDirection }} {{ lastTransaction.amount | currency(lastTransaction.type) }}
         </v-list-tile-sub-title>
       </template>
 
       <!-- Message -->
       <template v-else>
         <v-list-tile-sub-title
-          v-if="readOnly"
+          v-if="readOnly || isMessageI18n"
           v-text="isMessageI18n ? $t(lastMessageText) : lastMessageText"
         />
         <v-list-tile-sub-title v-else>{{ lastMessageTextNoFormats }}</v-list-tile-sub-title>
@@ -42,8 +42,7 @@
 </template>
 
 <script>
-import moment from 'moment'
-import { removeFormats } from '@/lib/message-formatter'
+import { removeFormats } from '@/lib/markdown'
 
 import transaction from '@/mixins/transaction'
 import dateFilter from '@/filters/date'
@@ -53,10 +52,14 @@ import AdmFillIcon from '@/components/icons/AdmFill'
 
 export default {
   mounted () {
-    moment.locale(this.$store.state.language.currentLocale)
-
     // fetch status if last message is transaction
     if (this.lastTransaction) {
+      this.fetchTransactionStatus(this.lastTransaction, this.partnerId)
+    }
+  },
+  watch: {
+    // fetch status when new message received
+    lastTransaction () {
       this.fetchTransactionStatus(this.lastTransaction, this.partnerId)
     }
   },
@@ -77,7 +80,14 @@ export default {
       return this.$store.getters['chat/lastMessageText'](this.partnerId)
     },
     lastMessageTextNoFormats () {
-      return removeFormats(this.lastMessageText)
+      if (
+        this.readOnly ||
+        this.$store.state.options.formatMessages
+      ) {
+        return removeFormats(this.lastMessageText)
+      }
+
+      return this.lastMessageText
     },
     lastMessageTimestamp () {
       return this.$store.getters['chat/lastMessageTimestamp'](this.partnerId)
@@ -93,16 +103,12 @@ export default {
 
       return null
     },
-    transactionMessage () {
-      const amount = this.$formatAmount(this.lastTransaction.amount, this.lastTransaction.type)
-
+    transactionDirection () {
       const direction = this.userId === this.lastTransaction.senderId
         ? this.$t('chats.sent_label')
         : this.$t('chats.received_label')
 
-      const crypto = this.lastTransaction.type
-
-      return `${direction} ${amount} ${crypto}`
+      return direction
     },
     numOfNewMessages () {
       return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
@@ -111,7 +117,18 @@ export default {
       return this.lastMessageTimestamp
     },
     status () {
-      return this.lastMessage.status
+      return this.getTransactionStatus(this.lastMessage)
+    },
+    statusIcon () {
+      if (this.status === 'delivered') {
+        return 'mdi-check'
+      } else if (this.status === 'pending') {
+        return 'mdi-clock-outline'
+      } else if (this.status === 'rejected') {
+        return 'mdi-close-circle-outline'
+      } else {
+        return 'mdi-alert-outline'
+      }
     }
   },
   data: () => ({
@@ -145,7 +162,8 @@ export default {
   position: relative
 
   &__date
-    font-size: 12px
+    font-size: 8px
+    font-style: italic
     color: $grey.base
     position: absolute
     top: 16px

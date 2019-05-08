@@ -1,9 +1,10 @@
 import baseState from '../eth-base/eth-base-state'
-import { Cryptos } from '../../../lib/constants'
+import { Cryptos, CryptoNaturalUnits } from '../../../lib/constants'
 
 export default () => {
   return {
     crypto: Cryptos.ETH,
+    decimals: CryptoNaturalUnits.ETH,
     gasPrice: 0,
     blockNumber: 0,
     fee: 0,

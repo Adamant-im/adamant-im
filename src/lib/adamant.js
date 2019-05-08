@@ -2,8 +2,8 @@
 'use strict'
 
 import sodium from 'sodium-browserify-tweetnacl'
+import * as bip39 from 'bip39'
 import crypto from 'crypto'
-import Mnemonic from 'bitcore-mnemonic'
 import nacl from 'tweetnacl/nacl-fast'
 import ed2curve from 'ed2curve'
 import { decode } from '@stablelib/utf8'
@@ -72,9 +72,9 @@ adamant.parseURI = function (uri) {
  * @param {string} passPhrase
  * @return {string} hash
  */
-adamant.createPassPhraseHash = function (passPhrase) {
-  var secretMnemonic = new Mnemonic(passPhrase, Mnemonic.Words.ENGLISH)
-  return crypto.createHash('sha256').update(secretMnemonic.toSeed().toString('hex'), 'hex').digest()
+adamant.createPassphraseHash = function (passphrase) {
+  const seedHex = bip39.mnemonicToSeedSync(passphrase).toString('hex')
+  return crypto.createHash('sha256').update(seedHex, 'hex').digest()
 }
 
 /**

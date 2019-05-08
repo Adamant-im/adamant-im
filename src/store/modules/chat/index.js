@@ -10,7 +10,7 @@ import {
   transformMessage
 } from '@/lib/chatHelpers'
 import { isNumeric } from '@/lib/numericHelpers'
-import { EPOCH } from '@/lib/constants'
+import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
 
 /**
  * type State {
@@ -24,43 +24,9 @@ import { EPOCH } from '@/lib/constants'
  * type Chat {
  *   messages: Message[],
  *   numOfNewMessages: number,
- *   readOnly?: boolean // for Adamant Bounty & Adamant Tokens chats
+ *   readOnly?: boolean // for Welcome to ADAMANT & ADAMANT Tokens chats
  * }
  *
- * type ServerMessage {
- *   id: number,
- *   message: {string|Object}, // `Object` when eth transaction
- *   senderId: string,
- *   recipientId: string,
- *   amount: number,
- *   timestamp: number
- *   ...
- * }
- *
- * type Message = {
- *   id: number,
- *   senderId: string,
- *   recipientId: string,
- *   message: string,
- *   timestamp: number,
- *   admTimestamp: number,
- *   amount: number,
- *   i18n: boolean,
- *   status: MessageStatus,
- *   type: MessageType
- * }
- *
- * enum MessageType {
- *   Message = 'message',
- *   ADM = 'ADM',
- *   ETH = 'ETH'
- * }
- *
- * enum MessageStatus {
- *   sent,
- *   confirmed,
- *   rejected
- * }
  */
 const state = () => ({
   chats: {},
@@ -295,22 +261,22 @@ const mutations = {
 
     const chat = state.chats[partnerId]
 
-    // shouldn't duplicate local messages added directly
-    // when dispatch('getNewMessages')
-    const isMessageInList = chat.messages.find(localMessage => localMessage.id === message.id)
-    if (isMessageInList) {
+    // Shouldn't duplicate local messages added directly
+    // when dispatch('getNewMessages'). Just update `status`.
+    const localMessage = chat.messages.find(localMessage => localMessage.id === message.id)
+    if (localMessage) { // is message in state
+      localMessage.status = message.status
       return
     }
 
-    // find transaction by `hash` and update `status`
-    if (message.type && message.type !== 'message') {
-      const transaction = chat.messages.find(localTransaction => localTransaction.hash === message.hash)
-
-      if (transaction) {
-        transaction.status = message.status
-
-        return
-      }
+    // Shouldn't duplicate third-party crypto transactions
+    if (
+      message.type &&
+      message.type !== 'message' &&
+      message.type !== Cryptos.ADM
+    ) {
+      const localTransaction = chat.messages.find(localTransaction => localTransaction.hash === message.hash)
+      if (localTransaction) return
     }
 
     chat.messages.push(message)
@@ -318,7 +284,11 @@ const mutations = {
     // If this is a new message, increment `numOfNewMessages`.
     // Exception only when `height = 0`, this means that the
     // user cleared `localStorage` or logged in first time.
-    if (message.height > state.lastMessageHeight && state.lastMessageHeight > 0) {
+    if (
+      message.height > state.lastMessageHeight &&
+      state.lastMessageHeight > 0 &&
+      userId !== message.senderId // do not notify yourself when send message from other device
+    ) {
       chat.numOfNewMessages += 1
     }
   },
@@ -373,7 +343,7 @@ const mutations = {
   },
 
   /**
-   * Add `Adamant Bounty` & `Adamant Tokens` to state.chats.
+   * Add `Welcome to ADAMANT` & `ADAMANT Tokens` to state.chats.
    */
   createAdamantChats (state) {
     const bountyMessages = [
@@ -381,13 +351,14 @@ const mutations = {
         id: 'b1',
         message: 'chats.welcome_message',
         timestamp: EPOCH,
-        senderId: 'Adamant Bounty',
+        senderId: 'chats.welcome_message_title',
         type: 'message',
-        i18n: true
+        i18n: true,
+        status: TS.DELIVERED
       }
     ]
 
-    Vue.set(state.chats, 'Adamant Bounty', {
+    Vue.set(state.chats, 'chats.welcome_message_title', {
       messages: bountyMessages,
       numOfNewMessages: 0,
       readOnly: true
@@ -534,7 +505,7 @@ const actions = {
         commit('updateMessage', {
           id: messageObject.id,
           realId: res.transactionId,
-          status: 'confirmed',
+          status: TS.PENDING, // not confirmed yet, wait to be stored in the blockchain (optional line)
           partnerId: recipientId
         })
 
@@ -544,7 +515,7 @@ const actions = {
         // update `message.status` to 'rejected'
         commit('updateMessage', {
           id: messageObject.id,
-          status: 'rejected',
+          status: TS.REJECTED,
           partnerId: recipientId
         })
 
@@ -565,7 +536,7 @@ const actions = {
     // and then resendMessage
     commit('updateMessage', {
       id: messageId,
-      status: 'sent',
+      status: TS.PENDING,
       partnerId: recipientId
     })
 
@@ -579,7 +550,7 @@ const actions = {
           commit('updateMessage', {
             id: messageId,
             realId: res.transactionId,
-            status: 'confirmed',
+            status: TS.PENDING,
             partnerId: recipientId
           })
 
@@ -588,7 +559,7 @@ const actions = {
         .catch(err => {
           commit('updateMessage', {
             id: messageId,
-            status: 'rejected',
+            status: TS.REJECTED,
             partnerId: recipientId
           })
 

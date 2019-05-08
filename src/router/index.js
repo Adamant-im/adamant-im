@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import navigationGuard from '@/router/navigationGuard'
 
 import AuthMiddleware from '@/middlewares/auth'
+import DocumentTitle from '@/middlewares/title'
 import Chats from '@/views/Chats'
 import Chat from '@/views/Chat'
 import SendFunds from '@/views/SendFunds'
@@ -11,11 +13,12 @@ import Options from '@/views/Options'
 import Home from '@/views/Home'
 import Votes from '@/views/Votes'
 import Nodes from '@/views/Nodes'
+import Login from '@/views/Login'
 
 Vue.use(Router)
 
 const router = new Router({
-  mode: 'history',
+  mode: process.env.VUE_APP_ELECTRON_MODE === 'production' ? 'hash' : 'history',
   routes: [
     {
       path: '/options/nodes',
@@ -36,7 +39,7 @@ const router = new Router({
       }
     },
     {
-      path: '/transactions/:crypto/:tx_id',
+      path: '/transactions/:crypto/:txId',
       component: Transaction,
       name: 'Transaction',
       props: true,
@@ -47,14 +50,16 @@ const router = new Router({
       }
     },
     {
-      path: '/transactions/:crypto',
-      name: 'Transactions',
+      path: '/transactions/:crypto?',
       component: Transactions,
+      name: 'Transactions',
+      props: true,
       meta: {
         requiresAuth: true,
         layout: 'no-container',
         containerNoPadding: true
-      }
+      },
+      beforeEnter: navigationGuard.transactions
     },
     {
       path: '/options',
@@ -67,13 +72,15 @@ const router = new Router({
       }
     },
     {
-      path: '/chats/:partner/',
+      path: '/chats/:partnerId/',
       component: Chat,
       name: 'Chat',
+      props: true,
       meta: {
         requiresAuth: true,
         layout: 'chat'
-      }
+      },
+      beforeEnter: navigationGuard.chats
     },
     {
       path: '/chats',
@@ -109,7 +116,7 @@ const router = new Router({
     {
       path: '/',
       name: 'Login',
-      component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue')
+      component: Login
     },
     {
       path: '*',
@@ -126,5 +133,6 @@ const router = new Router({
 })
 
 router.beforeEach(AuthMiddleware)
+router.beforeEach(DocumentTitle)
 
 export default router

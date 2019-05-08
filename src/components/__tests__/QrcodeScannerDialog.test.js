@@ -12,8 +12,29 @@ Vue.use(Vuex)
 Vue.use(VueI18n)
 Vue.use(Vuetify)
 
-/** Mock Instascan **/
-jest.mock('instascan', () => {})
+jest.mock('@zxing/library', () => ({
+  BrowserQRCodeReader: class BrowserQRCodeReader {
+    constructor () {}
+
+    getVideoInputDevices () {
+      return Promise.resolve([
+        {
+          deviceId: 1
+        }
+      ])
+    }
+
+    decodeFromInputVideoDevice () {
+      return Promise.resolve({
+        text: 'decoded text'
+      })
+    }
+
+    reset () {
+      return Promise.resolve()
+    }
+  }
+}))
 
 /**
  * Mockup store helper.

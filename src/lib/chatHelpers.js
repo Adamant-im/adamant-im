@@ -3,6 +3,7 @@ import Queue from 'promise-queue'
 import utils from '@/lib/adamant'
 import * as admApi from '@/lib/adamant-api'
 import { isNumeric } from './numericHelpers'
+import { TransactionStatus as TS } from './constants'
 
 const maxConcurent = 1
 const maxQueue = Infinity
@@ -82,9 +83,9 @@ export function createChat () {
  * @param {string} recipientId
  * @param {string} senderId
  * @param {string} message
- * @param {string} status Can be: `sent`, `confirmed`, `rejected`
+ * @param {string} status
  */
-export function createMessage ({ recipientId, senderId, message, status = 'sent' }) {
+export function createMessage ({ recipientId, senderId, message, status = TS.PENDING }) {
   return {
     id: utils.epochTime(), // @todo uuid will be better
     recipientId,
@@ -104,7 +105,7 @@ export function createMessage ({ recipientId, senderId, message, status = 'sent'
  * @param {number} amount
  * @param {string} comment Transaction comment
  * @param {string} type ADM, ETH...
- * @param {string} status Can be: `sent`, `confirmed`, `rejected`
+ * @param {string} status
  */
 export function createTransaction (payload) {
   const {
@@ -115,7 +116,7 @@ export function createTransaction (payload) {
     comment,
     hash,
     type = 'ADM',
-    status = 'sent'
+    status = TS.PENDING
   } = payload
 
   const transaction = {
@@ -149,7 +150,7 @@ export function getRealTimestamp (admTimestamp) {
 /**
  * Transform message for better integration into Vue components.
  * @param {Object} abstract Message object returned by the server.
- * @returns {Message} See `packages/chat/src/types.ts`
+ * @returns {Message} See `components/AChat/types.ts`
  */
 export function transformMessage (abstract) {
   let transaction = {}
@@ -157,7 +158,12 @@ export function transformMessage (abstract) {
     eth_transaction: 'ETH',
     bz_transaction: 'BZ',
     bnb_transaction: 'BNB',
-    doge_transaction: 'DOGE'
+    doge_transaction: 'DOGE',
+    dash_transaction: 'DASH',
+    kcs_transaction: 'KCS'
+  }
+  const notSupportedYetCryptos = {
+    lsk_transaction: 'LSK'
   }
 
   // common properties for all transaction types
@@ -166,22 +172,28 @@ export function transformMessage (abstract) {
   transaction.recipientId = abstract.recipientId
   transaction.admTimestamp = abstract.timestamp
   transaction.timestamp = getRealTimestamp(abstract.timestamp)
-  transaction.status = abstract.status || 'confirmed'
+  transaction.status = abstract.status || TS.DELIVERED
   transaction.i18n = !!abstract.i18n
   transaction.amount = abstract.amount ? abstract.amount : 0
   transaction.message = ''
+  transaction.height = abstract.height
+  transaction.asset = {}
 
   if (abstract.message && abstract.message.type) { // cryptos
+    transaction.asset = abstract.message
     transaction.message = abstract.message.comments || ''
     transaction.amount = isNumeric(abstract.message.amount) ? +abstract.message.amount : 0
-    transaction.status = 'sent'
+    transaction.status = TS.PENDING
+    transaction.hash = abstract.message.hash || ''
 
-    const knownCrypto = knownCryptos[abstract.message.type.toLowerCase()]
+    const cryptoType = abstract.message.type.toLowerCase()
+    const knownCrypto = knownCryptos[cryptoType]
+    const notSupportedYetCrypto = notSupportedYetCryptos[cryptoType]
     if (knownCrypto) {
       transaction.type = knownCrypto
-      transaction.hash = abstract.message.hash // other cryptos hash
     } else {
-      transaction.type = 'UNKNOWN_CRYPTO'
+      transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
+      transaction.status = TS.INVALID
     }
   } else { // ADM transaction or Message
     transaction.message = abstract.message || ''

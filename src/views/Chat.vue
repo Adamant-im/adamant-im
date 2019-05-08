@@ -1,12 +1,13 @@
 <template>
   <v-layout row wrap justify-center>
 
-    <v-flex xs12 sm12 md8 lg5>
+    <container>
 
       <chat :partner-id="partnerId" @partner-info="partnerInfoValue = true"/>
-      <PartnerInfo :address="partnerId" :name="partnerName" v-model="partnerInfoValue" />
+      <PartnerInfo :address="partnerId" :name="partnerName" v-if="!isChatReadOnly" v-model="partnerInfoValue" />
+      <ProgressIndicator :show="!isFulfilled" />
 
-    </v-flex>
+    </container>
 
   </v-layout>
 </template>
@@ -14,22 +15,33 @@
 <script>
 import Chat from '@/components/Chat/Chat'
 import PartnerInfo from '@/components/PartnerInfo'
+import ProgressIndicator from '@/components/ProgressIndicator'
 
 export default {
   computed: {
-    partnerId () {
-      return this.$route.params.partner
-    },
     partnerName () {
       return this.$store.getters['partners/displayName'](this.partnerId)
+    },
+    isChatReadOnly () {
+      return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
+    },
+    isFulfilled () {
+      return this.$store.state.chat.isFulfilled
     }
   },
   components: {
+    ProgressIndicator,
     Chat,
     PartnerInfo
   },
   data: () => ({
     partnerInfoValue: false
-  })
+  }),
+  props: {
+    partnerId: {
+      required: true,
+      type: String
+    }
+  }
 }
 </script>

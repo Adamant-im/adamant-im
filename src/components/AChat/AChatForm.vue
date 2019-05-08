@@ -11,7 +11,7 @@
       ref="messageTextarea"
       rows="1"
 
-      :append-icon="showSendButton && message ? 'mdi-send' : ''"
+      :append-icon="showSendButton ? 'mdi-send' : ''"
       @click:append="submitMessage"
     >
       <template slot="prepend">
@@ -25,19 +25,27 @@
 export default {
   computed: {
     /**
-     * Processing `shift + enter` and `enter`
+     * Processing `ctrl+enter`, `shift + enter` and `enter`
      */
     listeners () {
       return {
         keydown: (e) => {
           if (e.code === 'Enter') {
             if (this.sendOnEnter) {
-              if (!e.ctrlKey && !e.shiftKey) {
+              // add LF and calculate height when CTRL+ENTER or ALT+ENTER or CMD+ENTER (Mac & Windows)
+              // no need to add LF for shiftKey, it will be added automatically
+              if (e.ctrlKey || e.altKey || e.metaKey) {
+                this.addLineFeed()
+                this.calculateInputHeight()
+                return
+              }
+
+              if (!e.shiftKey) { // send message if shiftKey is not pressed
                 e.preventDefault()
                 this.submitMessage()
               }
             } else {
-              if (e.ctrlKey || e.shiftKey) {
+              if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
                 e.preventDefault()
                 this.submitMessage()
               }
@@ -55,7 +63,13 @@ export default {
       this.$emit('message', this.message)
       this.message = ''
       // Fix textarea height to 1 row after miltiline message send
-      this.$refs.messageTextarea.$refs.input.style.height = '33px'
+      this.calculateInputHeight()
+    },
+    calculateInputHeight () {
+      this.$nextTick(this.$refs.messageTextarea.calculateInputHeight)
+    },
+    addLineFeed () {
+      this.message += '\n'
     }
   },
   props: {
@@ -81,11 +95,23 @@ export default {
 
 <style lang="stylus" scoped>
 /**
- * Remove extra margins & paddings.
+ * 1. Limit height of message form.
+ * 2. Align icons at the bottom.
  */
-.v-chat__form >>> .v-text-field
-  padding-top: 0
-  margin-top: 0
+.a-chat__form
+  >>> .v-text-field__slot textarea // [1]
+    max-height: 230px // magic number
+    overflow-y: auto
+  >>> .v-text-field // [2]
+    align-items: flex-end
+  >>> .v-textarea // [2]
+    .v-input__prepend-outer
+      margin-bottom: 2px
+    .v-input__append-inner
+      margin-top: auto
+      margin-bottom: 4px
+    .v-input__control
+      margin-bottom: 2px
 
 .a-chat__divider
   position: absolute
