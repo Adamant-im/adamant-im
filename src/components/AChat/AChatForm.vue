@@ -10,14 +10,20 @@
       auto-grow
       ref="messageTextarea"
       rows="1"
-
-      :append-icon="showSendButton ? 'mdi-send' : ''"
-      @click:append="submitMessage"
     >
+      <template v-if="showSendButton" slot="append">
+        <v-icon medium>mdi-send</v-icon>
+      </template>
       <template slot="prepend">
         <slot name="prepend"></slot>
       </template>
     </v-textarea>
+
+    <div
+      v-if="showSendButton"
+      @click="submitMessage"
+      class="a-chat__form-send-area"
+    ></div>
   </div>
 </template>
 
@@ -118,4 +124,12 @@ export default {
   top: 0
   left: 0
   width: 100%
+
+.a-chat__form-send-area
+  position: absolute
+  bottom: 0
+  right: 0
+  width: 50px
+  height: 50px
+  cursor: pointer
 </style>
