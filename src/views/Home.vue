@@ -7,9 +7,14 @@
 
         <!-- Wallets -->
         <v-card class="home-page__wallets">
-          <v-tabs grow slider-color="white">
+          <v-tabs
+            v-model="currentWallet"
+            grow
+            slider-color="white"
+          >
             <v-tab
               v-for="wallet in wallets"
+              :href="`#${wallet.cryptoCurrency}`"
               :key="wallet.cryptoCurrency"
             >
               <div>
@@ -26,6 +31,7 @@
 
             <v-tab-item
               v-for="wallet in wallets"
+              :value="wallet.cryptoCurrency"
               :key="wallet.cryptoCurrency"
             >
               <wallet-card
@@ -74,6 +80,17 @@ export default {
           cryptoName: CryptosNames[crypto]
         }
       })
+    },
+    currentWallet: {
+      get () {
+        return this.$store.state.options.currentWallet
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'currentWallet',
+          value
+        })
+      }
     }
   },
   methods: {
