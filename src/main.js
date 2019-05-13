@@ -1,3 +1,4 @@
+import 'core-js/features/array/flat-map'
 import Vue from 'vue'
 
 import App from './App.vue'
