@@ -13,7 +13,7 @@ import { isNumeric } from '@/lib/numericHelpers'
 import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
 
 /**
- * type State {
+ * type State = {
  *   chats: {
  *     [senderId: string]: Chat
  *   },
@@ -21,10 +21,12 @@ import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
  *   isFulfilled: boolean
  * }
  *
- * type Chat {
+ * type Chat = {
  *   messages: Message[],
  *   numOfNewMessages: number,
  *   readOnly?: boolean // for Welcome to ADAMANT & ADAMANT Tokens chats
+ *   offset: 0 // for loading chat history
+ *   page: 0 // for loading chat history
  * }
  *
  */
@@ -211,6 +213,21 @@ const getters = {
     const length = getters.unreadMessages.length
 
     return getters.unreadMessages[length - 1] || null
+  },
+
+  chatOffset: state => contactId => {
+    const chat = state.chats[contactId]
+
+    return chat && chat.offset
+  },
+
+  /**
+   * Current chat history page.
+   */
+  chatPage: state => contactId => {
+    const chat = state.chats[contactId]
+
+    return chat && chat.page
   }
 }
 
@@ -220,6 +237,22 @@ const mutations = {
    */
   setHeight (state, height) {
     state.lastMessageHeight = height
+  },
+
+  setChatOffset (state, { contactId, offset }) {
+    const chat = state.chats[contactId]
+
+    if (chat) {
+      chat.offset = offset
+    }
+  },
+
+  setChatPage (state, { contactId, page }) {
+    const chat = state.chats[contactId]
+
+    if (chat) {
+      chat.page = page
+    }
   },
 
   /**
@@ -249,7 +282,7 @@ const mutations = {
    * Push an message to a specific chat by senderId.
    * @param {string} userId Your address
    */
-  pushMessage (state, { message, userId }) {
+  pushMessage (state, { message, userId, unshift = false }) {
     let partnerId = message.senderId === userId
       ? message.recipientId
       : message.senderId
@@ -279,7 +312,12 @@ const mutations = {
       if (localTransaction) return
     }
 
-    chat.messages.push(message)
+    // use unshift when loading chat history
+    if (unshift) {
+      chat.messages.unshift(message)
+    } else {
+      chat.messages.push(message)
+    }
 
     // If this is a new message, increment `numOfNewMessages`.
     // Exception only when `height = 0`, this means that the
@@ -374,18 +412,17 @@ const mutations = {
 
 const actions = {
   /**
-   * Get all messages from the server starting from the oldest.
-   * Must be called once during initialization.
+   * Get chat rooms.
    *
    * Important:
-   *  - `getChats` is a recursive function
+   *  - Must be called once during initialization.
    *
    * @returns {Promise}
    */
-  loadChats ({ state, commit, dispatch }) {
+  loadChats ({ commit, dispatch, rootState }) {
     commit('setFulfilled', false)
 
-    return getChats(state.lastMessageHeight)
+    return admApi.getChatRooms(rootState.address)
       .then(result => {
         const { messages, lastMessageHeight } = result
 
@@ -400,6 +437,36 @@ const actions = {
   },
 
   /**
+   * Get chat room messages.
+   *
+   * @param {string} contactId Adamant address
+   * @param {number} perPage Messages per page
+   * @returns {Promise}
+   */
+  getChatRoomMessages ({ rootState, dispatch, commit, getters }, { contactId, perPage = 25 }) {
+    let offset = getters.chatOffset(contactId)
+    let page = getters.chatPage(contactId)
+
+    if (offset === -1) {
+      return Promise.reject(new Error('No more messages'))
+    }
+
+    return admApi.getChatRoomMessages(rootState.address, contactId, { offset, limit: perPage })
+      .then(({ messages }) => {
+        dispatch('unshiftMessages', messages)
+
+        if (messages.length <= 0) {
+          commit('setChatOffset', { contactId, offset: -1 }) // no more messages
+        } else {
+          offset = offset + perPage
+
+          commit('setChatOffset', { contactId, offset })
+          commit('setChatPage', { contactId, page: ++page })
+        }
+      })
+  },
+
+  /**
    * Push array of messages and sort by senderId.
    * @param {Message[]} messages Array of messages
    */
@@ -408,6 +475,17 @@ const actions = {
       commit('pushMessage', {
         message: transformMessage(message),
         userId: rootState.address
+      })
+    })
+  },
+
+  unshiftMessages ({ commit, rootState }, messages) {
+    messages.forEach(message => {
+      commit('pushMessage', {
+        message: transformMessage(message),
+        userId: rootState.address,
+
+        unshift: true
       })
     })
   },

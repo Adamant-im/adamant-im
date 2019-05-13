@@ -504,6 +504,50 @@ describe('Store: chat.js', () => {
         expect(lastUnreadMessage).toEqual({ id: 3 })
       })
     })
+
+    /**
+     * getters.chatOffset
+     */
+    describe('getters.chatOffset', () => {
+      let state = {
+        chats: {
+          U111111: {
+            offset: 0
+          }
+        }
+      }
+      const chatOffset = getters.chatOffset(state)
+
+      it('should return chat offset', () => {
+        expect(chatOffset('U111111')).toBe(0)
+      })
+
+      it('should return `undefined` for non-existing chat', () => {
+        expect(chatOffset('U222222')).toBe(undefined)
+      })
+    })
+
+    /**
+     * getters.chatPage
+     */
+    describe('getters.chatPage', () => {
+      let state = {
+        chats: {
+          U111111: {
+            page: 0
+          }
+        }
+      }
+      const chatPage = getters.chatPage(state)
+
+      it('should return chat page', () => {
+        expect(chatPage('U111111')).toBe(0)
+      })
+
+      it('should return `undefined` for non-existing chat', () => {
+        expect(chatPage('U222222')).toBe(undefined)
+      })
+    })
   })
 
   /**
@@ -522,6 +566,52 @@ describe('Store: chat.js', () => {
         mutations.setHeight(state, 100)
 
         expect(state.lastMessageHeight).toBe(100)
+      })
+    })
+
+    /**
+     * mutations.setChatOffset
+     */
+    describe('mutations.setChatOffset', () => {
+      let state
+
+      beforeEach(() => {
+        state = {
+          chats: {
+            U111111: {
+              offset: 0
+            }
+          }
+        }
+      })
+
+      it('should update chat offset', () => {
+        mutations.setChatOffset(state, { contactId: 'U111111', offset: 100 })
+
+        expect(state.chats.U111111.offset).toBe(100)
+      })
+    })
+
+    /**
+     * mutations.setChatPage
+     */
+    describe('mutations.setChatPage', () => {
+      let state
+
+      beforeEach(() => {
+        state = {
+          chats: {
+            U111111: {
+              page: 0
+            }
+          }
+        }
+      })
+
+      it('should update chat page', () => {
+        mutations.setChatPage(state, { contactId: 'U111111', page: 100 })
+
+        expect(state.chats.U111111.page).toBe(100)
       })
     })
 
@@ -554,7 +644,9 @@ describe('Store: chat.js', () => {
         expect(state.chats).toEqual({
           U123456: {
             messages: [],
-            numOfNewMessages: 0
+            numOfNewMessages: 0,
+            offset: 0,
+            page: 0
           }
         })
       })
@@ -892,20 +984,25 @@ describe('Store: chat.js', () => {
      */
     describe('actions.loadChats', () => {
       it('should commit and dispatch after success response', async () => {
-        // mock & replace `getChats` dependency
-        chatModule.__Rewire__('getChats', () => Promise.resolve({
-          messages: [],
-          lastMessageHeight: 100
-        }))
+        // mock `admApi.getChatRooms` method
+        chatModule.__Rewire__('admApi', {
+          getChatRooms: () => Promise.resolve({
+            messages: [],
+            lastMessageHeight: 100
+          })
+        })
 
         const state = {
           lastMessageHeight: 0
+        }
+        const rootState = {
+          address: 'U123456'
         }
 
         const commit = sinon.spy()
         const dispatch = sinon.spy()
 
-        await actions.loadChats({ state, commit, dispatch })
+        await actions.loadChats({ state, commit, dispatch, rootState })
 
         expect(commit.args).toEqual([
           ['setFulfilled', false],
@@ -916,6 +1013,61 @@ describe('Store: chat.js', () => {
         expect(dispatch.args).toEqual([
           ['pushMessages', []]
         ])
+      })
+    })
+
+    /**
+     * actions.getChatRoomMessages
+     */
+    describe('actions.getChatRoomMessages', () => {
+      const rootState = {
+        address: 'U111111'
+      }
+      const contactId = 'U222222'
+
+      it('should unshift messages and set chat `height`', async () => {
+        // mock `admApi.getChatRoomMessages` method
+        chatModule.__Rewire__('admApi', {
+          getChatRoomMessages: () => Promise.resolve({
+            messages: [1, 2, 3]
+          })
+        })
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+        const perPage = 25
+        const getters = {
+          chatOffset: () => 0,
+          chatPage: () => 0
+        }
+
+        await actions.getChatRoomMessages({ rootState, dispatch, commit, getters }, { contactId, perPage })
+
+        expect(dispatch.args).toEqual([
+          ['unshiftMessages', [1, 2, 3]]
+        ])
+
+        expect(commit.args).toEqual([
+          ['setChatOffset', { contactId, offset: perPage  }],
+          ['setChatPage', { contactId, page: 1  }]
+        ])
+      })
+
+      it('should reject when no more messages', async () => {
+        // mock `admApi.getChatRoomMessages` method
+        chatModule.__Rewire__('admApi', {
+          getChatRoomMessages: () => Promise.resolve({
+            messages: [1, 2, 3]
+          })
+        })
+
+        const getters = {
+          chatOffset: () => -1,
+          chatPage: () => 0
+        }
+
+        await expect(actions.getChatRoomMessages({ rootState, getters }, { contactId }))
+          .rejects.toEqual(new Error('No more messages'))
       })
     })
 

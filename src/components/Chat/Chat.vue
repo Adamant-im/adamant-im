@@ -145,13 +145,19 @@ function validateMessage (message) {
 
 export default {
   mounted () {
+    if (this.isFulfilled && this.chatPage <= 0) this.fetchChatMessages()
+
     this.$nextTick(() => this.$refs.chat.scrollToBottom())
     this.markAsRead()
   },
   watch: {
     // scroll to bottom when received new message
-    messages () {
+    lastMessage () {
       this.$nextTick(() => this.$refs.chat.scrollToBottom())
+    },
+    // watch `isFulfilled` when opening chat directly from address bar
+    isFulfilled (value) {
+      if (value && this.chatPage <= 0) this.fetchChatMessages()
     }
   },
   computed: {
@@ -180,10 +186,20 @@ export default {
     },
     sendMessageOnEnter () {
       return this.$store.state.options.sendMessageOnEnter
+    },
+    isFulfilled () {
+      return this.$store.state.chat.isFulfilled
+    },
+    lastMessage () {
+      return this.$store.getters['chat/lastMessage'](this.partnerId)
+    },
+    chatPage () {
+      return this.$store.getters['chat/chatPage'](this.partnerId)
     }
   },
   data: () => ({
-    loading: false
+    loading: false,
+    noMoreMessages: false
   }),
   methods: {
     onMessage (message) {
@@ -217,7 +233,7 @@ export default {
       this.$store.commit('chat/markAsRead', this.partnerId)
     },
     onScrollTop () {
-      //
+      this.fetchChatMessages()
     },
     onScrollBottom () {
       //
@@ -249,6 +265,21 @@ export default {
       }
 
       return message
+    },
+    fetchChatMessages () {
+      if (this.noMoreMessages) return
+      if (this.loading) return
+
+      this.loading = true
+
+      return this.$store.dispatch('chat/getChatRoomMessages', { contactId: this.partnerId })
+        .catch(() => {
+          this.noMoreMessages = true
+        })
+        .finally(() => {
+          this.loading = false
+          this.$refs.chat.maintainScrollPosition()
+        })
     }
   },
   filters: {

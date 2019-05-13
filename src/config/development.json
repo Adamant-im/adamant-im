@@ -3,13 +3,7 @@
   "server": {
     "adm": [
       {
-        "url": "https://clown.adamant.im"
-      },
-      {
-        "url": "https://lake.adamant.im"
-      },
-      {
-        "url": "https://endless.adamant.im"
+        "url": "https://bid.adamant.im"
       }
     ],
     "eth": [
