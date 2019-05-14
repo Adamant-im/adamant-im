@@ -539,6 +539,10 @@ export async function getChatRooms (address, params) {
       : chat.lastTransaction.senderPublicKey
 
     try {
+      if (chat.lastTransaction.type === 0) {
+        return [chat.lastTransaction]
+      }
+
       return [decodeChat(chat.lastTransaction, publicKey)]
     } catch (err) {
       console.warn('Failed to parse chat message', { chat, err })
@@ -581,6 +585,10 @@ export async function getChatRoomMessages (address1, address2, params) {
       : message.senderPublicKey
 
     try {
+      if (message.type === 0) {
+        return [message]
+      }
+
       return [decodeChat(message, publicKey)]
     } catch (err) {
       console.warn('Failed to parse chat message', { message, err })
