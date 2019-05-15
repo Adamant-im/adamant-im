@@ -26,6 +26,15 @@
             </transition-group>
           </v-list>
 
+          <div class="text-xs-center">
+            <v-progress-circular
+              v-show="loading"
+              indeterminate
+              color="primary"
+              size="24"
+            />
+          </div>
+
         </v-flex>
 
         <ChatSpinner :value="!isFulfilled" />
@@ -45,6 +54,12 @@ import ChatStartDialog from '@/components/ChatStartDialog'
 import ChatSpinner from '@/components/ChatSpinner'
 
 export default {
+  mounted () {
+    this.attachScrollListener()
+  },
+  beforeDestroy () {
+    this.destroyScrollListener()
+  },
   computed: {
     isFulfilled () {
       return this.$store.state.chat.isFulfilled
@@ -81,7 +96,9 @@ export default {
     }
   },
   data: () => ({
-    showChatStartDialog: false
+    showChatStartDialog: false,
+    loading: false,
+    noMoreChats: false
   }),
   methods: {
     openChat (userId) {
@@ -89,6 +106,39 @@ export default {
     },
     isChatReadOnly (partnerId) {
       return this.$store.getters['chat/isChatReadOnly'](partnerId)
+    },
+
+    attachScrollListener () {
+      window.addEventListener('scroll', this.onScroll)
+    },
+
+    destroyScrollListener () {
+      window.removeEventListener('scroll', this.onScroll)
+    },
+
+    onScroll () {
+      const scrollHeight = document.documentElement.scrollHeight
+      const scrollTop = document.documentElement.scrollTop
+      const clientHeight = document.documentElement.clientHeight
+
+      // if scrolled to bottom
+      if (scrollHeight - scrollTop === clientHeight) {
+        this.loadChatsPaged()
+      }
+    },
+
+    loadChatsPaged () {
+      if (this.loading) return
+      if (this.noMoreChats) return
+
+      this.loading = true
+      this.$store.dispatch('chat/loadChatsPaged')
+        .catch(() => {
+          this.noMoreChats = true
+        })
+        .finally(() => {
+          this.loading = false
+        })
     }
   },
   components: {

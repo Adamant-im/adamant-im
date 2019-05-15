@@ -616,6 +616,21 @@ describe('Store: chat.js', () => {
     })
 
     /**
+     * mutations.setOffset
+     */
+    describe('mutations.setOffset', () => {
+      it('should update `offset`', () => {
+        const state = {
+          offset: 0
+        }
+
+        mutations.setOffset(state, 100)
+
+        expect(state.offset).toBe(100)
+      })
+    })
+
+    /**
      * mutations.setFulfilled
      */
     describe('mutations.setFulfilled', () => {
@@ -1002,17 +1017,60 @@ describe('Store: chat.js', () => {
         const commit = sinon.spy()
         const dispatch = sinon.spy()
 
-        await actions.loadChats({ state, commit, dispatch, rootState })
+        await actions.loadChats({ state, commit, dispatch, rootState }, { perPage: 50 })
 
         expect(commit.args).toEqual([
           ['setFulfilled', false],
           ['setHeight', 100],
+          ['setOffset', 50],
           ['setFulfilled', true]
         ])
 
         expect(dispatch.args).toEqual([
           ['pushMessages', []]
         ])
+      })
+    })
+
+    /**
+     * actions.loadChatsPaged
+     */
+    describe('actions.loadChatsPaged', () => {
+      it('should resolve', async () => {
+        // mock `admApi.getChatRooms` method
+        chatModule.__Rewire__('admApi', {
+          getChatRooms: () => Promise.resolve({
+            messages: [1, 2, 3]
+          })
+        })
+
+        const state = {
+          offset: 10
+        }
+        const rootState = {
+          address: 'U123456'
+        }
+
+        const commit = sinon.spy()
+        const dispatch = sinon.spy()
+
+        await actions.loadChatsPaged({ commit, dispatch, rootState, state }, { perPage: 50 })
+
+        expect(dispatch.args).toEqual([
+          ['pushMessages', [1, 2, 3]]
+        ])
+
+        expect(commit.args).toEqual([
+          ['setOffset', 60] // offset: 10 + perPage: 50
+        ])
+      })
+
+      it('should reject when no more chats', async () => {
+        const state = {
+          offset: -1
+        }
+
+        await expect(actions.loadChatsPaged({ state })).rejects.toEqual(new Error('No more chats'))
       })
     })
 

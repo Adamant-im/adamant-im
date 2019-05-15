@@ -526,7 +526,11 @@ export function loginViaPassword (password, store) {
  * @returns {Promise}
  */
 export async function getChatRooms (address, params) {
-  const defaultParams = { orderBy: 'timestamp:desc' }
+  const defaultParams = {
+    orderBy: 'timestamp:desc',
+    limit: 25,
+    offset: 0
+  }
 
   const { count, chats } = await client.get(`/api/chatrooms/${address}`, {
     ...defaultParams,

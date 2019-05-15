@@ -33,7 +33,8 @@ import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
 const state = () => ({
   chats: {},
   lastMessageHeight: 0, // `height` value of the last message
-  isFulfilled: false // false - getChats did not start or in progress, true - getChats finished
+  isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
+  offset: 0 // for loading chat list with pagination
 })
 
 const getters = {
@@ -255,6 +256,10 @@ const mutations = {
     }
   },
 
+  setOffset (state, offset) {
+    state.offset = offset
+  },
+
   /**
    * When chats are loaded, set to `true`.
    * @param {boolean} value
@@ -419,7 +424,7 @@ const actions = {
    *
    * @returns {Promise}
    */
-  loadChats ({ commit, dispatch, rootState }) {
+  loadChats ({ commit, dispatch, rootState }, { perPage = 25 } = {}) {
     commit('setFulfilled', false)
 
     return admApi.getChatRooms(rootState.address)
@@ -430,9 +435,29 @@ const actions = {
 
         if (lastMessageHeight > 0) {
           commit('setHeight', lastMessageHeight)
+          commit('setOffset', perPage)
         }
 
         commit('setFulfilled', true)
+      })
+  },
+
+  loadChatsPaged ({ commit, dispatch, rootState, state }, { perPage = 25 } = {}) {
+    const offset = state.offset
+
+    if (offset === -1) {
+      return Promise.reject(new Error('No more chats'))
+    }
+
+    return admApi.getChatRooms(rootState.address, { offset, limit: perPage })
+      .then(({ messages }) => {
+        dispatch('pushMessages', messages)
+
+        if (messages.length <= 0) {
+          commit('setOffset', -1)
+        } else {
+          commit('setOffset', offset + perPage)
+        }
       })
   },
 
@@ -443,7 +468,7 @@ const actions = {
    * @param {number} perPage Messages per page
    * @returns {Promise}
    */
-  getChatRoomMessages ({ rootState, dispatch, commit, getters }, { contactId, perPage = 25 }) {
+  getChatRoomMessages ({ rootState, dispatch, commit, getters }, { contactId, perPage = 25 } = {}) {
     let offset = getters.chatOffset(contactId)
     let page = getters.chatPage(contactId)
 
