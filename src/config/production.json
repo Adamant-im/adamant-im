@@ -1,9 +1,12 @@
 {
-  "minApiVersion": "0.3.1",
+  "minApiVersion": "0.5.1",
   "server": {
     "adm": [
       {
         "url": "https://clown.adamant.im"
+      },
+      {
+        "url": "https://bid.adamant.im"
       },
       {
         "url": "https://lake.adamant.im"
