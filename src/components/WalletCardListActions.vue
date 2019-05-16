@@ -6,7 +6,7 @@
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title`">{{ $t('home.send_btn') }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title`">{{ $t('home.send_crypto', { crypto }) }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
 

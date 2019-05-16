@@ -5,16 +5,20 @@
         <v-flex xs12>
 
           <v-list two-line subheader class="transparent">
-            <v-list-tile @click="showChatStartDialog = true">
-              <v-list-tile-avatar>
-                <v-icon :class="`${className}__icon`">mdi-plus</v-icon>
+            <v-list-tile
+              v-if="isFulfilled"
+              @click="showChatStartDialog = true"
+              :class="`${className}__tile`"
+            >
+              <v-list-tile-avatar size="36">
+                <v-icon :class="`${className}__icon`" size="24">mdi-pencil</v-icon>
               </v-list-tile-avatar>
 
-              <v-list-tile-content>
+              <div>
                 <v-list-tile-title :class="`${className}__title`">
                   {{ $t('chats.new_chat') }}
                 </v-list-tile-title>
-              </v-list-tile-content>
+              </div>
             </v-list-tile>
 
             <transition-group name="messages" v-if="isFulfilled">
@@ -107,8 +111,15 @@ export default {
 @import '../assets/stylus/settings/_colors.styl'
 
 .chats-view
+  &__tile
+    >>> .v-list__tile
+      justify-content: flex-end
+      height: 56px
+    >>> .v-list__tile__avatar
+      min-width: 48px
   &__title
     font-weight: 300
+    font-size: 14px
 
 /** Themes **/
 .theme--light

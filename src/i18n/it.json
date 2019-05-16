@@ -227,7 +227,7 @@
     "no_address_title": "Il destinatario non ha ancora il portafoglio {crypto}",
     "send_button": "Invia fondi",
     "to_address_label": "Indirizzare",
-    "to_label": "A"
+    "to_name_label": "A {name}"
   },
   "votes": {
     "delegate_approval": "Approvazione",

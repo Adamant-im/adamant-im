@@ -76,40 +76,37 @@
         <v-divider/>
 
         <v-list-tile :title="id || placeholder">
-          <v-list-tile-content>
-            <v-list-tile-title :class="`${className}__title`">
-              {{ $t('transaction.txid') }}
-            </v-list-tile-title>
-            <v-list-tile-sub-title :class="`${className}__value`">
-              {{ id || placeholder }}
-            </v-list-tile-sub-title>
-          </v-list-tile-content>
+          <v-list-tile-title :class="`${className}__title`">
+            {{ $t('transaction.txid') }}
+          </v-list-tile-title>
+
+          <v-list-tile-title :class="`${className}__value`">
+            {{ id || placeholder }}
+          </v-list-tile-title>
         </v-list-tile>
 
         <v-divider/>
 
         <v-list-tile :title="sender || placeholder">
-          <v-list-tile-content>
-            <v-list-tile-title :class="`${className}__title`">
-              {{ $t('transaction.sender') }}
-            </v-list-tile-title>
-            <v-list-tile-sub-title :class="`${className}__value`">
-              {{ sender || placeholder }}
-            </v-list-tile-sub-title>
-          </v-list-tile-content>
+          <v-list-tile-title :class="`${className}__title`">
+            {{ $t('transaction.sender') }}
+          </v-list-tile-title>
+
+          <div :class="`${className}__value`">
+            {{ sender || placeholder }}
+          </div>
         </v-list-tile>
 
         <v-divider/>
 
         <v-list-tile :title="recipient || placeholder">
-          <v-list-tile-content>
-            <v-list-tile-title :class="`${className}__title`">
-              {{ $t('transaction.recipient') }}
-            </v-list-tile-title>
-            <v-list-tile-sub-title :class="`${className}__value`">
-              {{ recipient || placeholder }}
-            </v-list-tile-sub-title>
-          </v-list-tile-content>
+          <v-list-tile-title :class="`${className}__title`">
+            {{ $t('transaction.recipient') }}
+          </v-list-tile-title>
+
+          <div :class="`${className}__value`">
+            {{ recipient || placeholder }}
+          </div>
         </v-list-tile>
 
         <v-divider/>
@@ -127,6 +124,8 @@
             </v-list-tile-title>
           </div>
         </v-list-tile>
+
+        <v-divider/>
 
         <v-list-tile v-if="partner" @click="openChat">
           <v-list-tile-content>
@@ -229,8 +228,12 @@ export default {
 @import '../../assets/stylus/settings/_colors.styl'
 
 .transaction-view
-  &__title, &__value
+  &__title
     font-weight: 300
+  &__value
+    font-weight: 300
+    font-size: 14px
+    text-align: right
 
 /** Themes **/
 .theme--light

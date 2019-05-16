@@ -13,7 +13,7 @@
 
         <v-list-tile-action>
           <v-btn icon ripple :class="`${className}__action`">
-            <v-icon :class="`${className}__icon`">mdi-content-copy</v-icon>
+            <v-icon :class="`${className}__icon`" size="20">mdi-content-copy</v-icon>
           </v-btn>
         </v-list-tile-action>
       </v-list-tile>
@@ -30,7 +30,7 @@
 
         <v-list-tile-action>
           <v-btn icon ripple :class="`${className}__action`">
-            <v-icon :class="`${className}__icon`">mdi-chevron-right</v-icon>
+            <v-icon :class="`${className}__icon`" size="20">mdi-chevron-right</v-icon>
           </v-btn>
         </v-list-tile-action>
       </v-list-tile>
@@ -99,7 +99,7 @@ export default {
     font-weight: 300
     word-break: break-word
   &__list
-    padding: 0
+    padding: 8px 0 0
   &__tile
     height: 60px
 

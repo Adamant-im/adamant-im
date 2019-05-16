@@ -24,7 +24,7 @@
           {{ amount | currency(crypto) }}
         </v-list-tile-sub-title>
 
-        <v-list-tile-sub-title :class="`${className}__subtitle`">
+        <v-list-tile-sub-title :class="`${className}__date`">
           {{ createdAt | date }}
         </v-list-tile-sub-title>
       </v-list-tile-content>
@@ -38,7 +38,7 @@
       </v-list-tile-action>
     </v-list-tile>
 
-    <v-divider :inset="true"></v-divider>
+    <v-divider :inset="true" :class="`${className}__divider`"></v-divider>
   </div>
 </template>
 
@@ -131,12 +131,16 @@ export default {
     font-weight: 300
   &__head-subtitle
     font-weight: 300
+    font-size: 14px
   &__title
     font-weight: 400
     font-size: 16px
+  &__date
+    font-weight: 300
+    font-size: 12px
   &__tile
     >>> .v-list__tile
-      padding: 0 20px
+      padding: 0 12px
 
 /** Themes **/
 .theme--light.v-list
@@ -147,8 +151,12 @@ export default {
       color: $adm-colors.muted
     &__title
       color: $adm-colors.regular
+    &__date
+      color: $adm-colors.muted
     &__subtitle
       color: $adm-colors.muted
     &__icon
       color: $adm-colors.muted
+    &__divider
+      border-color: $adm-colors.secondary2
 </style>

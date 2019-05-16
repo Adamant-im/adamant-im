@@ -19,8 +19,8 @@
         type="text"
       >
         <template slot="label">
-          <span v-if="addressReadonly && currency !== 'ADM'" class="font-weight-medium">
-            {{ $t('transfer.to_label') }} {{ recipientName || address }}
+          <span v-if="recipientName" class="font-weight-medium">
+            {{ $t('transfer.to_name_label', { name: recipientName }) }}
           </span>
           <span v-else class="font-weight-medium">
             {{ $t('transfer.to_address_label') }}
@@ -63,6 +63,7 @@
       <div class="text-xs-center">
         <v-btn
           :disabled="!validForm || !amount"
+          :class="`${className}__button`"
           @click="confirm"
           class="v-btn--primary"
         >
@@ -204,9 +205,7 @@ export default {
       return this.$store.state[this.currency.toLowerCase()].address
     },
     recipientName () {
-      if (this.currency === Cryptos.ADM) {
-        return this.$store.getters['partners/displayName'](this.cryptoAddress)
-      }
+      return this.$store.getters['partners/displayName'](this.address)
     },
     exponent () {
       return CryptoAmountPrecision[this.currency]
@@ -413,6 +412,8 @@ export default {
 @import '../assets/stylus/settings/_colors.styl'
 
 .send-funds-form
+  &__button
+    margin-top: 15px
   >>> .v-input__slot
     font-weight: 400
   >>> .v-text-field > .v-input__control > .v-input__slot
@@ -423,11 +424,18 @@ export default {
 
 /** Themes **/
 .theme--light
+  /**
+   * 1. Override `.primary--text` class.
+   */
   .send-funds-form
+    >>> .v-input // [1]
+      caret-color: $adm-colors.primary2 !important
     >>> .v-input .v-label
-        color: $adm-colors.muted
+      color: $adm-colors.muted
+    >>> .v-input--is-disabled input
+      color: $adm-colors.muted
     >>> .v-input:not(.v-input--is-disabled) input
-        color: $adm-colors.regular
+      color: $adm-colors.regular
     >>> .v-select .v-select__selections
       color: $adm-colors.regular
     >>> .v-input .v-label.v-label--active

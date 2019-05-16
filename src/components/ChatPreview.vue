@@ -23,8 +23,9 @@
       <!-- Transaction -->
       <template v-if="lastTransaction">
         <v-list-tile-sub-title>
-          <v-icon size="15">{{ statusIcon }}</v-icon>
+          <v-icon size="15" v-if="!isIncomingTransaction">{{ statusIcon }}</v-icon>
           {{ transactionDirection }} {{ lastTransaction.amount | currency(lastTransaction.type) }}
+          <v-icon size="15" v-if="isIncomingTransaction">{{ statusIcon }}</v-icon>
         </v-list-tile-sub-title>
       </template>
 
@@ -38,7 +39,7 @@
       </template>
     </v-list-tile-content>
 
-    <div :class="`${className}__date`">
+    <div v-if="!readOnly" :class="`${className}__date`">
       {{ createdAt | date }}
     </div>
   </v-list-tile>
@@ -117,6 +118,9 @@ export default {
 
       return direction
     },
+    isIncomingTransaction () {
+      return this.userId !== this.lastTransaction.senderId
+    },
     numOfNewMessages () {
       return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
     },
@@ -174,13 +178,13 @@ export default {
   &__title
     font-weight: 300
   &__date
-    font-size: 8px
-    font-style: italic
+    font-weight: 300
+    font-size: 10px
     position: absolute
     top: 16px
     right: 16px
   >>> .v-list__tile__sub-title // [1]
-    font-size: 16px
+    font-size: 14px
     font-weight: 300
 
 /** Themes **/

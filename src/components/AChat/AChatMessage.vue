@@ -21,7 +21,7 @@
         </div>
 
         <div class="a-chat__message-card-header mt-1">
-          <div :title="timeTitle" class="a-chat__timestamp font-italic">{{ time }}</div>
+          <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
           <div v-if="isOutgoingMessage" class="a-chat__status">
             <v-icon
               :title="i18n.retry"

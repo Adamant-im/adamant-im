@@ -60,6 +60,7 @@
     "invest_btn_tooltip": "Теперь у Вас есть возможность купить токены самого защищенного мессенджера АДАМАНТ по низкой цене. Нажмите, чтобы перейти к странице покупки токенов https://adamant.im/buy-tokens/",
     "send_btn": "Отправить средства",
     "send_btn_tooltip": "Нажмите, чтобы сделать перевод на другой аккуунт или другому пользователю АДАМАНТа",
+    "send_crypto": "Отправить {crypto}",
     "wallet": "кошелек",
     "your_address_ADM": "ADAMANT address",
     "your_address_BNB": "Кошелек Binance Coin",
@@ -232,7 +233,7 @@
     "no_address_title": "У получателя пока еще нет {crypto}-кошелька",
     "send_button": "Отправить",
     "to_address_label": "Адрес получателя",
-    "to_label": "Кому"
+    "to_name_label": "{name}"
   },
   "votes": {
     "delegate_approval": "Блоков подтверждено",

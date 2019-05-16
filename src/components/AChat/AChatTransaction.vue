@@ -13,7 +13,7 @@
           </div>
           <div
             @click="onClickAmount"
-            class="a-chat__amount my-1"
+            class="a-chat__amount"
             :class="{ 'a-chat__amount--clickable': isStatusValid }"
           >
             <v-layout align-center>
@@ -24,13 +24,13 @@
         </div>
 
         <div class="a-chat__message-card-body">
-          <div class="a-chat__message-text font-italic mb-1">
+          <div class="a-chat__message-text mb-1">
             {{ message }}
           </div>
         </div>
 
         <div class="a-chat__message-card-header">
-          <div :title="timeTitle" class="a-chat__timestamp font-italic">{{ time }}</div>
+          <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
           <div class="a-chat__status">
             <v-icon
               size="15"

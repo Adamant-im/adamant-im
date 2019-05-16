@@ -59,6 +59,7 @@
     "invest_btn_link": "https://adamant.im/buy-tokens/",
     "invest_btn_tooltip": "Buy ADM tokens anonymously. You also have possibility to buy and sell ADM on exchanges",
     "send_btn": "Send funds",
+    "send_crypto": "Send {crypto}",
     "wallet": "wallet",
     "your_address_ADM": "ADAMANT address",
     "your_address_BNB": "Binance Coin address",
@@ -230,8 +231,8 @@
     "no_address_text": "This user does not have a public {crypto} wallet yet. To retrieve it, he should log in to the messenger with more than 0.001 ADM at balance",
     "no_address_title": "Recipient has no {crypto} wallet yet",
     "send_button": "Send",
-    "to_address_label": "Recipient address",
-    "to_label": "To"
+    "to_address_label": "To Address",
+    "to_name_label": "To {name}"
   },
   "votes": {
     "delegate_approval": "Blocks approved",

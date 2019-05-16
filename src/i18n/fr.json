@@ -227,7 +227,7 @@
     "no_address_title": "Recipient has no {crypto} wallet yet",
     "send_button": "Envoyez de l'argent",
     "to_address_label": "Adresse",
-    "to_label": "To"
+    "to_name_label": "To {name}"
   },
   "votes": {
     "delegate_approval": "Blocks approved",
