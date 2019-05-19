@@ -78,14 +78,17 @@
       width="500"
     >
       <v-card>
-        <v-card-title class="headline">{{ $t('transfer.confirm_title') }}</v-card-title>
+        <v-card-title :class="`${className}__dialog-title`">{{ $t('transfer.confirm_title') }}</v-card-title>
 
-        <v-card-text v-html="confirmMessage"/>
+        <v-divider :class="`${className}__divider`"></v-divider>
+
+        <v-card-text :class="`${className}__dialog-content`" v-html="confirmMessage"/>
 
         <v-card-actions>
           <v-spacer></v-spacer>
 
           <v-btn
+            class="a-btn-regular"
             flat
             @click="dialog = false"
           >
@@ -93,6 +96,7 @@
           </v-btn>
 
           <v-btn
+            class="a-btn-regular"
             flat
             @click="submit"
             :disabled="disabledButton"
@@ -214,14 +218,14 @@ export default {
       return Object.keys(Cryptos)
     },
     confirmMessage () {
-      let target = this.cryptoAddress
-
-      if (this.recipientName) {
-        target += ` (${this.recipientName})`
-      }
-
       const msgType = this.recipientName ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
-      return this.$t(msgType, { amount: BigNumber(this.amount).toFixed(), target, crypto: this.currency })
+
+      return this.$t(msgType, {
+        amount: BigNumber(this.amount).toFixed(),
+        crypto: this.currency,
+        name: this.recipientName,
+        address: this.cryptoAddress
+      })
     },
     isRecipientInChatList () {
       return (
@@ -414,6 +418,9 @@ export default {
 .send-funds-form
   &__button
     margin-top: 15px
+  &__dialog-title
+    font-weight: 500
+    font-size: 20px
   >>> .v-input__slot
     font-weight: 400
   >>> .v-text-field > .v-input__control > .v-input__slot
@@ -428,6 +435,10 @@ export default {
    * 1. Override `.primary--text` class.
    */
   .send-funds-form
+    &__dialog-content
+      color: $adm-colors.regular
+    &__divider
+      border-color: $adm-colors.secondary2
     >>> .v-input // [1]
       caret-color: $adm-colors.primary2 !important
     >>> .v-input .v-label

@@ -155,10 +155,11 @@
               <v-icon left>mdi-logout-variant</v-icon>
               <span>{{ $t('bottom.exit_button') }}</span>
             </v-btn>
+          </v-layout>
 
+          <v-layout>
             <div
-              :class="`${className}__version`"
-              class="ml-auto"
+              class="a-text-explanation ml-auto"
             >
               {{ $t('options.version') }} {{ this.$root.$options.version }}
             </div>
@@ -344,8 +345,6 @@ export default {
       color: $adm-colors.regular
     &__action
       color: $adm-colors.regular
-    &__version
-      color: $adm-colors.muted
     >>> .v-label, &__label
       color: $adm-colors.regular
 .theme--dark

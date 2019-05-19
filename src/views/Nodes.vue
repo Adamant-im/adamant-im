@@ -7,7 +7,7 @@
       flat
     />
 
-    <v-container fluid>
+    <v-container fluid class="pt-0">
       <v-layout row wrap justify-center>
 
         <container>
@@ -19,16 +19,16 @@
             item-key="url"
             select-all
             hide-actions
-            class="elevation-1"
           >
             <template slot="headers" slot-scope="props">
               <tr>
-                <th></th>
+                <th style="width:56px"></th>
                 <th
                   v-for="header in props.headers"
                   :key="header.text"
                   :class="[
                     `${className}__header`,
+                    'pa-0',
                     { 'text-xs-left': header.align === 'left' }
                   ]"
                 >
@@ -38,7 +38,7 @@
             </template>
 
             <template slot="items" slot-scope="props">
-              <td>
+              <td class="pl-3 pr-2">
                 <v-checkbox
                   :input-value="props.item.active"
                   :class="`${className}__checkbox`"
@@ -47,8 +47,8 @@
                   @click.native="toggle(props.item)"
                 ></v-checkbox>
               </td>
-              <td :class="`${className}__body`">{{ props.item.url }}</td>
-              <td :class="`${className}__body`">
+              <td :class="`${className}__body`" class="pl-0">{{ props.item.url }}</td>
+              <td :class="`${className}__body`" class="pl-0">
                 <span>
                   {{ props.item.online ? `${props.item.ping} ms` : $t('nodes.offline') }}
                 </span>
@@ -145,7 +145,10 @@ export default {
 @import '../assets/stylus/settings/_colors.styl'
 
 .nodes-view
-  &__header, &__body
+  &__header
+    font-size: 12px
+    font-weight: 300
+  &__body
     font-size: 14px
     font-weight: 300
   &__info
@@ -167,6 +170,9 @@ export default {
       >>> .v-input--selection-controls__input i
         color: $adm-colors.regular !important
         caret-color: $adm-colors.regular !important
+
+    >>> .v-table tbody tr:not(:last-child)
+      border-bottom: 1px solid $adm-colors.secondary2
 
 /**
  * 1. Style VTable to be full width.

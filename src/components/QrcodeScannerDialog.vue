@@ -62,7 +62,7 @@
         <v-btn
           flat
           @click="show = false"
-          class="a-button-regular"
+          class="a-btn-regular"
         >
           {{ $t('scan.close_button') }}
         </v-btn>

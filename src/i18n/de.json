@@ -207,7 +207,7 @@
     "confirm_approve": "Bestätigt",
     "confirm_cancel": "Abbrechen",
     "confirm_message": "Transaktionsbestätigung von  <b>{amount} {crypto}</b> an die Adresse <span class='address-in-confirm'>{target}</span>.",
-    "confirm_message_with_name": "Confirm transfer of <b>{amount} {crypto}</b> to <span class='address-in-confirm'>{target}</span>.",
+    "confirm_message_with_name": "Confirm transfer of <b>{amount} {crypto}</b> to {name} <span class=\"a-text-explanation\">({address})</span>.",
     "confirm_title": "Transaktionsbestätigung",
     "crypto": "Cryptocurrency",
     "error_chat_fee": "To send {crypto} from chat, you also need 0.001 ADM",

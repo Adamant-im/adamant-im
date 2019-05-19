@@ -1,4 +1,5 @@
 @import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../settings/_colors.styl'
 
 /** Buttons **/
 .theme--light
@@ -8,3 +9,73 @@
 .theme--dark
   .v-btn.v-btn--primary:not(.v-btn--icon):not(.v-btn--flat)
     background-color: $adm-colors.primary
+
+.theme--light
+  .a-btn-regular
+    color: $adm-colors.regular
+
+    &.v-btn--active:before
+    &.v-btn:hover:before
+    &.v-btn:focus:before
+      background-color: $adm-colors.secondary2
+      opacity: 1
+
+    &.v-btn.v-btn--disabled
+      color: $adm-colors.muted !important
+
+/** Inputs **/
+.a-input
+  font-weight: 400
+
+  /**
+   * 1. Override border bottom height.
+   * 2. Disable border bottom animation.
+   * 3.a. Textarea border bottom.
+   * 3.b. Textarea border on hover.
+   * 3.c. Textarea border on focus.
+   */
+  .v-input__control > .v-input__slot
+    &:before // [1]
+      border-top-width: 1px
+    &:after // [2]
+      transition: unset
+
+.theme--light
+  .a-input
+    .v-label
+      color: $adm-colors.muted
+    .v-label.v-label--active
+      color: $adm-colors.muted !important
+    .v-label--is-disabled
+      color: $adm-colors.muted
+    &.v-input--is-disabled
+      input, textarea
+        color: $adm-colors.muted
+    &:not(.v-input--is-disabled)
+      input, textarea
+        color: $adm-colors.regular
+        caret-color: $adm-colors.primary2
+
+    .v-input__control > .v-input__slot:before // [3.a.]
+      border-color: rgba(0, 0, 0, .12)
+    &:not(.v-input--has-state) > .v-input__control > .v-input__slot:hover:before // [3.b.]
+      border-color: $adm-colors.primary2
+    &.v-input--is-focused > .v-input__control > .v-input__slot:after // [3.c.]
+      border-color: $adm-colors.primary2
+      border-width: thin 0 0 0
+
+/** Typography **/
+.a-text-explanation
+  font-weight: 300
+  font-size: 12px
+
+.a-text-active
+  font-weight: 500
+  font-size: 16px
+  text-decoration: underline
+
+.theme--light
+  .a-text-explanation
+    color: $adm-colors.muted
+  .a-text-active
+    color: $adm-colors.regular

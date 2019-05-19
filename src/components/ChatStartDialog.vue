@@ -6,50 +6,38 @@
   >
     <v-card>
       <v-card-title
-        class="headline"
         primary-title
         :class="`${className}__title`"
       >
         {{ $t('chats.new_chat') }}
       </v-card-title>
 
-      <v-divider></v-divider>
+      <v-divider :class="`${className}__divider`"></v-divider>
 
       <v-layout row wrap justify-center align-center class="pa-3">
 
-        <v-flex xs10>
-          <v-text-field
-            v-model="recipientAddress"
-            :rules="validationRules"
-            :label="$t('chats.recipient')"
-            :title="$t('chats.recipient_tooltip')"
-          />
-        </v-flex>
+        <v-text-field
+          class="a-input"
+          v-model="recipientAddress"
+          :label="$t('chats.recipient')"
+          :title="$t('chats.recipient_tooltip')"
+        />
 
-        <v-flex xs2 class="text-xs-right">
-          <v-btn @click="showQrcodeScanner = true" icon flat>
-            <v-icon>mdi-qrcode-scan</v-icon>
-          </v-btn>
-        </v-flex>
+        <v-btn @click="showQrcodeScanner = true" class="ml-3 mr-0" icon flat>
+          <icon><qr-code-scan-icon/></icon>
+        </v-btn>
 
-        <v-flex xs4 class="text-xs-center">
+        <v-flex xs12 class="text-xs-center">
           <v-btn @click="startChat" class="v-btn--primary">{{ $t('chats.start_chat') }}</v-btn>
         </v-flex>
 
+        <v-flex xs12 class="text-xs-center mt-2">
+          <a @click="showQrcodeRendererDialog = true" class="a-text-active">
+            {{ $t('chats.show_my_qr_code') }}
+          </a>
+        </v-flex>
+
       </v-layout>
-
-      <v-divider></v-divider>
-
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          flat
-          @click="show = false"
-          class="a-button-regular"
-        >
-          {{ $t('scan.close_button') }}
-        </v-btn>
-      </v-card-actions>
     </v-card>
 
     <qrcode-scanner-dialog
@@ -57,12 +45,22 @@
       v-model="showQrcodeScanner"
       @scan="onScanQrcode"
     />
+
+    <qrcode-renderer-dialog
+      v-model="showQrcodeRendererDialog"
+      :passphrase="passphrase"
+    />
   </v-dialog>
 </template>
 
 <script>
+import { Base64 } from 'js-base64'
+
 import validateAddress from '@/lib/validateAddress'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
+import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
+import Icon from '@/components/icons/BaseIcon'
+import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
 
 export default {
   computed: {
@@ -75,15 +73,16 @@ export default {
         this.$emit('input', value)
       }
     },
-    validationRules () {
-      return [
-        v => validateAddress('ADM', v) || this.$t('chats.incorrect_address')
-      ]
+    passphrase () {
+      const passphrase = Base64.decode(this.$store.state.passphrase)
+
+      return passphrase
     }
   },
   data: () => ({
     recipientAddress: '',
-    showQrcodeScanner: false
+    showQrcodeScanner: false,
+    showQrcodeRendererDialog: false
   }),
   methods: {
     startChat () {
@@ -117,7 +116,10 @@ export default {
     }
   },
   components: {
-    QrcodeScannerDialog
+    QrcodeScannerDialog,
+    QrcodeRendererDialog,
+    Icon,
+    QrCodeScanIcon
   },
   props: {
     value: {
@@ -131,9 +133,16 @@ export default {
 <style lang="stylus" scoped>
 @import '../assets/stylus/settings/_colors.styl'
 
+.chat-start-dialog
+  &__title
+    font-weight: 500
+    font-size: 20px
+
 /** Themes **/
 .theme--light
   .chat-start-dialog
     &__title
       color: $adm-colors.regular
+    &__divider
+      border-color: $adm-colors.secondary2
 </style>
