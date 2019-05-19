@@ -1,16 +1,1 @@
-/** Decorators for overriding Vuetify component styles. **/
 
-/**
- * Button Regular
- *
- * 1. Remove hover bg color.
- */
-.a-button-regular.v-btn
-  &:before
-    transition: unset // [1]
-  &:hover:before
-    color: transparent // [1]
-
-.theme--light
-  .a-button-regular.v-btn
-    color: $adm-colors.regular

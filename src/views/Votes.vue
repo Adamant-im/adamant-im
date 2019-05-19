@@ -115,7 +115,7 @@
                     <v-btn
                       @click="showConfirmationDialog"
                       :disabled="reviewButtonDisabled"
-                      class="v-btn--primary"
+                      class="a-btn-primary"
                     >
                       {{ $t('votes.summary_title') }}
                     </v-btn>

@@ -12,6 +12,7 @@
 <script>
 export default {
   computed: {
+    className: () => 'app-snackbar',
     show: {
       get () {
         return this.$store.state.snackbar.show
@@ -36,3 +37,14 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '../assets/stylus/settings/_colors.styl'
+
+.theme--light
+  .app-snackbar
+    color: $adm-colors.regular
+
+    >>> .v-snack__wrapper
+      background-color: $adm-colors.secondary2
+</style>

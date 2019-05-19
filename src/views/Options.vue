@@ -53,12 +53,13 @@
             <v-flex xs12>
               <v-checkbox
                 :label="$t('options.exit_on_close')"
-                :title="$t('options.exit_on_close_tooltip')"
                 color="grey darken-1"
                 :input-value="logoutOnTabClose"
                 @click="onCheckLogoutOnTabClose"
                 readonly
               />
+
+              <div :class="`${className}__tooltip`">{{ $t('options.exit_on_close_tooltip') }}</div>
 
               <password-set-dialog v-model="passwordDialog" @password="onSetPassword" />
             </v-flex>
@@ -75,16 +76,21 @@
             <v-flex xs12>
               <v-checkbox
                 :label="$t('options.send_on_enter')"
-                :title="$t('options.send_on_enter_tooltip')"
                 color="grey darken-1"
                 v-model="sendMessageOnEnter"
               />
+
+              <div :class="`${className}__tooltip`">{{ $t('options.send_on_enter_tooltip') }}</div>
+            </v-flex>
+
+            <v-flex xs12 class="mt-4">
               <v-checkbox
                 :label="$t('options.format_messages')"
-                :title="$t('options.format_messages_tooltip')"
                 color="grey darken-1"
                 v-model="formatMessages"
               />
+
+              <div :class="`${className}__tooltip`">{{ $t('options.format_messages_tooltip') }}</div>
             </v-flex>
           </v-layout>
 
@@ -99,26 +105,29 @@
             <v-flex xs12>
               <v-checkbox
                 :label="$t('options.enable_sound')"
-                :title="$t('options.enable_sound_tooltip')"
                 color="grey darken-1"
                 v-model="allowSoundNotifications"
               />
+
+              <div :class="`${className}__tooltip`">{{ $t('options.enable_sound_tooltip') }}</div>
             </v-flex>
-            <v-flex xs12>
+            <v-flex xs12 class="mt-4">
               <v-checkbox
                 :label="$t('options.enable_bar')"
-                :title="$t('options.enable_bar_tooltip')"
                 color="grey darken-1"
                 v-model="allowTabNotifications"
               />
+
+              <div :class="`${className}__tooltip`">{{ $t('options.enable_bar_tooltip') }}</div>
             </v-flex>
-            <v-flex xs12>
+            <v-flex xs12 class="mt-4">
               <v-checkbox
                 :label="$t('options.enable_push')"
-                :title="$t('options.enable_push_tooltip')"
                 color="grey darken-1"
                 v-model="allowPushNotifications"
               />
+
+              <div :class="`${className}__tooltip`">{{ $t('options.enable_push_tooltip') }}</div>
             </v-flex>
           </v-layout>
 
@@ -331,6 +340,8 @@ export default {
     text-decoration-line: underline
     margin: 6px 8px
     padding: 0 16px
+  >>> .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot
+    margin-bottom: 0
   >>> .v-input--selection-controls
     margin-top: 0
   >>> .v-label, &__label
@@ -345,6 +356,8 @@ export default {
       color: $adm-colors.regular
     &__action
       color: $adm-colors.regular
+    &__tooltip
+      color: $adm-colors.muted
     >>> .v-label, &__label
       color: $adm-colors.regular
 .theme--dark

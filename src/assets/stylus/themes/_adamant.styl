@@ -3,14 +3,13 @@
 
 /** Buttons **/
 .theme--light
-  .v-btn.v-btn--primary:not(.v-btn--icon):not(.v-btn--flat)
-    background-color: $shades.white
-    color: $adm-colors.primary
-.theme--dark
-  .v-btn.v-btn--primary:not(.v-btn--icon):not(.v-btn--flat)
-    background-color: $adm-colors.primary
-
-.theme--light
+  .a-btn-primary
+    &:not(.v-btn--icon):not(.v-btn--flat)
+      background-color: $shades.white
+      color: $adm-colors.primary
+    &.v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline)
+      background-color: $shades.white !important
+      color: $adm-colors.muted !important
   .a-btn-regular
     color: $adm-colors.regular
 
@@ -22,6 +21,11 @@
 
     &.v-btn.v-btn--disabled
       color: $adm-colors.muted !important
+
+.theme--dark
+  .a-btn-primary
+    &:not(.v-btn--icon):not(.v-btn--flat)
+      background-color: $adm-colors.primary
 
 /** Inputs **/
 .a-input

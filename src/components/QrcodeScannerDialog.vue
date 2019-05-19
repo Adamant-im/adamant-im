@@ -33,7 +33,7 @@
         <v-flex xs12 class="pa-4">
           <h3
             :class="`${className}__title`"
-            class="subheading text-xs-center"
+            class="text-xs-center"
           >
             {{ $t('scan.hold_your_device') }}
           </h3>
@@ -170,6 +170,9 @@ export default {
 @import '../assets/stylus/settings/_colors.styl'
 
 .qrcode-scanner-dialog
+  &__title
+    font-weight: 300
+    font-size: 14px
   &__camera
     width: 100%
     height: 300px

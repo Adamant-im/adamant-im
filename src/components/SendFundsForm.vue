@@ -65,7 +65,7 @@
           :disabled="!validForm || !amount"
           :class="`${className}__button`"
           @click="confirm"
-          class="v-btn--primary"
+          class="a-btn-primary"
         >
           {{ $t('transfer.send_button') }}
         </v-btn>

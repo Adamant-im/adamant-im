@@ -28,7 +28,7 @@
         </v-btn>
 
         <v-flex xs12 class="text-xs-center">
-          <v-btn @click="startChat" class="v-btn--primary">{{ $t('chats.start_chat') }}</v-btn>
+          <v-btn @click="startChat" class="a-btn-primary">{{ $t('chats.start_chat') }}</v-btn>
         </v-flex>
 
         <v-flex xs12 class="text-xs-center mt-2">
