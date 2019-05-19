@@ -26,7 +26,7 @@
           v-if="message.type === 'message'"
           v-bind="message"
           :key="message.id"
-          :message="formatMessage(message.message)"
+          :message="formatMessage(message)"
           :time="message.timestamp | date"
           :user-id="userId"
           :sender="sender"
@@ -239,16 +239,16 @@ export default {
         type === 'UNKNOWN_CRYPTO'
       )
     },
-    formatMessage (message) {
-      if (this.isChatReadOnly || message.i18n) {
-        return renderMarkdown(this.$t(message))
+    formatMessage (transaction) {
+      if (this.isChatReadOnly || transaction.i18n) {
+        return renderMarkdown(this.$t(transaction.message))
       }
 
       if (this.$store.state.options.formatMessages) {
-        return renderMarkdown(message)
+        return renderMarkdown(transaction.message)
       }
 
-      return message
+      return transaction.message
     }
   },
   filters: {
