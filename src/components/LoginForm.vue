@@ -44,9 +44,7 @@
 </template>
 
 <script>
-function validatePassphrase (passphrase) {
-  return passphrase.toLowerCase().trim().split(' ').length === 12
-}
+import { validateMnemonic } from 'bip39'
 
 export default {
   computed: {
@@ -66,7 +64,7 @@ export default {
   }),
   methods: {
     submit () {
-      if (!validatePassphrase(this.passphrase)) {
+      if (!validateMnemonic(this.passphrase)) {
         return this.$emit('error', 'login.invalid_passphrase')
       }
 
@@ -74,9 +72,7 @@ export default {
       this.login()
     },
     login () {
-      const passphrase = this.passphrase.toLowerCase().trim()
-
-      const promise = this.$store.dispatch('login', passphrase)
+      const promise = this.$store.dispatch('login', this.passphrase)
 
       promise
         .then(() => {
