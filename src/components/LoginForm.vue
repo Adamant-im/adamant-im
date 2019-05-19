@@ -44,6 +44,10 @@
 </template>
 
 <script>
+function validatePassphrase (passphrase) {
+  return passphrase.toLowerCase().trim().split(' ').length === 12
+}
+
 export default {
   computed: {
     passphrase: {
@@ -62,7 +66,9 @@ export default {
   }),
   methods: {
     submit () {
-      if (!this.$refs.form.validate()) return false
+      if (!validatePassphrase(this.passphrase)) {
+        return this.$emit('error', 'login.invalid_passphrase')
+      }
 
       this.freeze()
       this.login()
