@@ -59,7 +59,7 @@
                 readonly
               />
 
-              <div :class="`${className}__tooltip`">{{ $t('options.exit_on_close_tooltip') }}</div>
+              <div class="a-text-explanation">{{ $t('options.exit_on_close_tooltip') }}</div>
 
               <password-set-dialog v-model="passwordDialog" @password="onSetPassword" />
             </v-flex>
@@ -80,7 +80,7 @@
                 v-model="sendMessageOnEnter"
               />
 
-              <div :class="`${className}__tooltip`">{{ $t('options.send_on_enter_tooltip') }}</div>
+              <div class="a-text-explanation">{{ $t('options.send_on_enter_tooltip') }}</div>
             </v-flex>
 
             <v-flex xs12 class="mt-4">
@@ -90,7 +90,7 @@
                 v-model="formatMessages"
               />
 
-              <div :class="`${className}__tooltip`">{{ $t('options.format_messages_tooltip') }}</div>
+              <div class="a-text-explanation">{{ $t('options.format_messages_tooltip') }}</div>
             </v-flex>
           </v-layout>
 
@@ -109,7 +109,7 @@
                 v-model="allowSoundNotifications"
               />
 
-              <div :class="`${className}__tooltip`">{{ $t('options.enable_sound_tooltip') }}</div>
+              <div class="a-text-explanation">{{ $t('options.enable_sound_tooltip') }}</div>
             </v-flex>
             <v-flex xs12 class="mt-4">
               <v-checkbox
@@ -118,7 +118,7 @@
                 v-model="allowTabNotifications"
               />
 
-              <div :class="`${className}__tooltip`">{{ $t('options.enable_bar_tooltip') }}</div>
+              <div class="a-text-explanation">{{ $t('options.enable_bar_tooltip') }}</div>
             </v-flex>
             <v-flex xs12 class="mt-4">
               <v-checkbox
@@ -127,7 +127,7 @@
                 v-model="allowPushNotifications"
               />
 
-              <div :class="`${className}__tooltip`">{{ $t('options.enable_push_tooltip') }}</div>
+              <div class="a-text-explanation">{{ $t('options.enable_push_tooltip') }}</div>
             </v-flex>
           </v-layout>
 
@@ -326,6 +326,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_variables.styl'
 @import '~vuetify/src/stylus/settings/_colors.styl'
 @import '../assets/stylus/settings/_colors.styl'
 
@@ -356,12 +357,19 @@ export default {
       color: $adm-colors.regular
     &__action
       color: $adm-colors.regular
-    &__tooltip
-      color: $adm-colors.muted
     >>> .v-label, &__label
       color: $adm-colors.regular
 .theme--dark
   .settings-view
     &__action
       color: $shades.white
+
+/** Breakpoints **/
+@media $display-breakpoints.md-and-down
+  .settings-view
+    &__title
+      margin-left: -20px
+      margin-right: -20px
+      padding-left: 20px
+      padding-right: 20px
 </style>

@@ -1,8 +1,8 @@
 <template>
   <div :class="className">
     <div class="text-xs-center">
-      <h3 :class="`${className}__title`">{{ $t('login.create_address_label') }}</h3>
-      <v-btn @click="generatePassphrase" :class="`${className}__button`" flat small>
+      <h3 class="a-text-regular">{{ $t('login.create_address_label') }}</h3>
+      <v-btn @click="generatePassphrase" class="a-btn-link" flat small>
         {{ $t('login.new_button') }}
       </v-btn>
     </div>
@@ -136,25 +136,17 @@ export default {
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_variables.styl'
 @import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
 
 /**
  * 1. Change color icons when focus textarea.
  * 2. Remove textarea border bottom.
  */
 .passphrase-generator
-  &__title
-    font-size: 14px
-    font-weight: 300
-  &__button
-    font-size: 16px
-    font-weight: 500
-    text-decoration: underline
-    text-transform: unset
   &__box
     margin-top: 30px
     >>> .v-textarea textarea
-      font-size: 14px
-      font-weight: 300
+      a-text-regular()
     >>> .v-textarea
       .v-input__slot:before, .v-input__slot:after
         border-width: 0 // [2]
@@ -172,12 +164,6 @@ export default {
 /** Themes **/
 .theme--light
   .passphrase-generator
-    &__title, &__button
-      color: inherit
     >>> .v-textarea textarea
       color: $adm-colors.regular
-.theme--dark
-  .passphrase-generator
-    &__title, &__button
-      color: $shades.white
 </style>

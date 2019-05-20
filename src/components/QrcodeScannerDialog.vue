@@ -12,7 +12,7 @@
         align-center
         class="pa-5"
       >
-        <div class="title">{{ $t('scan.waiting_camera') }}</div>
+        <div class="a-text-header">{{ $t('scan.waiting_camera') }}</div>
         <v-progress-circular
           indeterminate
           color="primary"
@@ -32,8 +32,7 @@
         </v-flex>
         <v-flex xs12 class="pa-4">
           <h3
-            :class="`${className}__title`"
-            class="text-xs-center"
+            class="a-text-regular text-xs-center"
           >
             {{ $t('scan.hold_your_device') }}
           </h3>
@@ -50,12 +49,12 @@
         class="text-xs-center pa-5"
       >
         <v-flex xs12>
-          <h3 class="headline">{{ $t('scan.no_camera_found') }}</h3>
-          <p class="mt-1 mb-0">{{ $t('scan.connect_camera') }}</p>
+          <h3 class="a-text-header">{{ $t('scan.no_camera_found') }}</h3>
+          <p class="a-text-regular mt-1 mb-0">{{ $t('scan.connect_camera') }}</p>
         </v-flex>
       </v-layout>
 
-      <v-divider></v-divider>
+      <v-divider class="a-divider"></v-divider>
 
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -170,17 +169,8 @@ export default {
 @import '../assets/stylus/settings/_colors.styl'
 
 .qrcode-scanner-dialog
-  &__title
-    font-weight: 300
-    font-size: 14px
   &__camera
     width: 100%
     height: 300px
     background-color: #000
-
-/** Themes **/
-.theme--light
-  .qrcode-scanner-dialog
-    &__title
-       color: $adm-colors.regular
 </style>

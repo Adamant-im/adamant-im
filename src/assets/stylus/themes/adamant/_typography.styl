@@ -1,0 +1,48 @@
+@import '~vuetify/src/stylus/settings/_colors.styl'
+
+@import '_mixins.styl'
+@import '../../settings/_colors.styl'
+
+.a-text-regular
+  a-text-regular()
+
+.a-text-regular-enlarged
+  a-text-regular-enlarged()
+
+.a-text-explanation
+  a-text-explanation()
+
+.a-text-explanation-small
+  a-text-explanation-small()
+
+.a-text-explanation-enlarged
+  a-text-explanation-enlarged()
+
+.a-text-header
+  a-text-header()
+
+.a-text-headline
+  a-text-headline()
+
+.a-text-active
+  a-text-active()
+
+.theme--light
+  .a-text-regular,
+  .a-text-regular-enlarged,
+  .a-text-header,
+  .a-text-headline,
+  .a-text-active // ??? надо подумать
+    color: $adm-colors.regular
+
+  .a-text-explanation,
+  .a-text-explanation-small,
+  .a-text-explanation-enlarged
+    color: $adm-colors.muted
+
+  .a-divider
+    border-color: $adm-colors.secondary2
+
+.theme--dark
+  .a-text-regular
+    color: $shades.white

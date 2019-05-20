@@ -4,12 +4,15 @@
     width="500"
   >
     <v-card>
-      <v-card-title class="headline">{{ $t('login_via_password.popup_title') }}</v-card-title>
+      <v-card-title class="a-text-header">{{ $t('login_via_password.popup_title') }}</v-card-title>
+
+      <v-divider class="a-divider"></v-divider>
 
       <v-card-text>
         <v-text-field
           autocomplete="new-password"
           v-model="password"
+          class="a-input"
           type="password"
           :label="$t('login_via_password.enter_password')"
           :name="Date.now()"
@@ -23,6 +26,7 @@
 
         <v-btn
           flat="flat"
+          class="a-btn-regular"
           @click="show = false"
         >
           {{ $t('transfer.confirm_cancel') }}
@@ -30,6 +34,7 @@
 
         <v-btn
           flat="flat"
+          class="a-btn-regular"
           @click="submit"
           :disabled="!isValidForm || disabledButton"
         >

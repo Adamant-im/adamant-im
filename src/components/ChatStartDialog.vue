@@ -6,13 +6,12 @@
   >
     <v-card>
       <v-card-title
-        primary-title
-        :class="`${className}__title`"
+        class="a-text-header"
       >
         {{ $t('chats.new_chat') }}
       </v-card-title>
 
-      <v-divider :class="`${className}__divider`"></v-divider>
+      <v-divider class="a-divider"></v-divider>
 
       <v-layout row wrap justify-center align-center class="pa-3">
 
@@ -129,20 +128,3 @@ export default {
   }
 }
 </script>
-
-<style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
-
-.chat-start-dialog
-  &__title
-    font-weight: 500
-    font-size: 20px
-
-/** Themes **/
-.theme--light
-  .chat-start-dialog
-    &__title
-      color: $adm-colors.regular
-    &__divider
-      border-color: $adm-colors.secondary2
-</style>

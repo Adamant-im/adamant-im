@@ -3,10 +3,10 @@
 
     <container>
 
-      <v-card flat class="transparent white--text">
+      <v-card flat class="transparent white--text" :class="`${className}__card`">
 
         <!-- Wallets -->
-        <v-card :class="`${className}__wallets`">
+        <v-card :class="`${className}__wallets`" flat>
           <v-tabs
             grow
             slider-color="none"
@@ -98,6 +98,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_variables.styl'
 @import '~vuetify/src/stylus/settings/_colors.styl'
 @import '../assets/stylus/settings/_colors.styl'
 
@@ -106,6 +107,8 @@ export default {
  * 2. Reset VTabItem opacity.
  */
 .account-view
+  &__card
+    margin: -24px
   &__wallets
     &.v-card
       background-color: transparent
@@ -147,4 +150,10 @@ export default {
         color: $adm-colors.white
         .svg-icon
           fill: $adm-colors.white
+
+/** Breakpoints **/
+@media $display-breakpoints.md-and-down
+  .account-view
+    &__card
+      margin: -20px
 </style>

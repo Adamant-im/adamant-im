@@ -16,7 +16,7 @@
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
 
-          <v-toolbar-title v-if="title" :class="`${className}__title`">
+          <v-toolbar-title v-if="title" class="a-text-regular">
             <div>{{ title }}</div>
             <div v-if="subtitle" class="body-1">{{ subtitle }}</div>
           </v-toolbar-title>
@@ -95,15 +95,9 @@ export default {
 .app-toolbar-centered
   padding: 0
 
-  &__title
-    font-size: 14px
-    font-weight: 300
-
 /** Themes **/
 .theme--light
   .app-toolbar-centered
-    &__title
-      color: $adm-colors.regular
     .v-toolbar
       background-color: $adm-colors.secondary2
 .theme--dark

@@ -62,15 +62,16 @@
 
           <v-checkbox
             :label="$t('nodes.fastest_title')"
-            :title="$t('nodes.fastest_tooltip')"
             :class="`${className}__checkbox`"
             color="grey darken-1"
             v-model="preferFastestNodeOption"
           />
+          <div class="a-text-explanation">{{ $t('nodes.fastest_tooltip') }}</div>
 
           <div
             :class="`${className}__info`"
             v-html="$t('nodes.nodeLabelDescription')"
+            class="mt-4"
           ></div>
 
         </container>
@@ -157,6 +158,11 @@ export default {
       text-decoration-line: none
       &:hover
         text-decoration-line: underline
+  &__checkbox
+    >>> .v-label
+      font-size: 14px
+  >>> .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot
+    margin-bottom: 0
 
 /** Themes **/
 .theme--light

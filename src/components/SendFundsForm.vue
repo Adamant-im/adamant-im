@@ -8,6 +8,7 @@
 
       <v-select
         v-model="currency"
+        class="a-input"
         :items="cryptoList"
         :disabled="addressReadonly"
       />
@@ -15,7 +16,7 @@
       <v-text-field
         v-model="cryptoAddress"
         :disabled="addressReadonly"
-        :rules="validationRules.cryptoAddress"
+        class="a-input"
         type="text"
       >
         <template slot="label">
@@ -29,8 +30,8 @@
       </v-text-field>
 
       <v-text-field
-        :rules="validationRules.amount"
         v-model="amountString"
+        class="a-input"
         type="number"
       >
         <template slot="label">
@@ -44,11 +45,13 @@
       <v-text-field
         :value="`${this.transferFeeFixed} ${this.currency}`"
         :label="$t('transfer.commission_label')"
+        class="a-input"
         disabled
       />
       <v-text-field
         :value="`${this.finalAmountFixed} ${this.currency}`"
         :label="$t('transfer.final_amount_label')"
+        class="a-input"
         disabled
       />
 
@@ -56,13 +59,13 @@
         v-if="this.address || this.isRecipientInChatList"
         v-model="comment"
         :label="$t('transfer.comments_label')"
+        class="a-input"
         counter
         maxlength="100"
       />
 
       <div class="text-xs-center">
         <v-btn
-          :disabled="!validForm || !amount"
           :class="`${className}__button`"
           @click="confirm"
           class="a-btn-primary"
@@ -78,11 +81,11 @@
       width="500"
     >
       <v-card>
-        <v-card-title :class="`${className}__dialog-title`">{{ $t('transfer.confirm_title') }}</v-card-title>
+        <v-card-title class="a-text-header">{{ $t('transfer.confirm_title') }}</v-card-title>
 
-        <v-divider :class="`${className}__divider`"></v-divider>
+        <v-divider class="a-divider"></v-divider>
 
-        <v-card-text :class="`${className}__dialog-content`" v-html="confirmMessage"/>
+        <v-card-text class="a-text-regular" v-html="confirmMessage"/>
 
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -123,6 +126,27 @@ import { sendMessage } from '@/lib/adamant-api'
 import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { isNumeric } from '@/lib/numericHelpers'
+
+/**
+ * @returns {string | boolean}
+ */
+function validateForm () {
+  const errorMessage = Object
+    .entries(this.validationRules)
+    .flatMap(([property, validators]) => {
+      const propertyValue = this[property]
+
+      return validators
+        .map(validator => {
+          return validator.call(this, propertyValue)
+        })
+        .filter(v => v !== true) // returns only errors
+    })
+    .slice(0, 1) // get first error
+    .join() // array to string
+
+  return errorMessage || true
+}
 
 export default {
   created () {
@@ -234,15 +258,12 @@ export default {
       )
     },
     validationRules () {
-      const fieldRequired = v => !!v || this.$t('transfer.error_field_is_required')
       return {
         cryptoAddress: [
-          fieldRequired,
           v => validateAddress(this.currency, v) || this.$t('transfer.error_incorrect_address', { crypto: this.currency }),
           v => v !== this.ownAddress || this.$t('transfer.error_same_recipient')
         ],
         amount: [
-          fieldRequired,
           v => v > 0 || this.$t('transfer.error_incorrect_amount'),
           v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
           v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units')
@@ -275,11 +296,18 @@ export default {
   }),
   methods: {
     confirm () {
-      this.dialog = true
+      const abstract = validateForm.call(this)
+
+      if (abstract === true) {
+        this.dialog = true
+      } else {
+        this.$store.dispatch('snackbar/show', {
+          message: abstract,
+          timeout: 3000
+        })
+      }
     },
     submit () {
-      if (!this.$refs.form.validate()) return false
-
       this.disabledButton = true
       this.showSpinner = true
 
@@ -418,46 +446,4 @@ export default {
 .send-funds-form
   &__button
     margin-top: 15px
-  &__dialog-title
-    font-weight: 500
-    font-size: 20px
-  >>> .v-input__slot
-    font-weight: 400
-  >>> .v-text-field > .v-input__control > .v-input__slot
-    &:before
-      border-top-width: 1px
-    &:after
-      transition: unset
-
-/** Themes **/
-.theme--light
-  /**
-   * 1. Override `.primary--text` class.
-   */
-  .send-funds-form
-    &__dialog-content
-      color: $adm-colors.regular
-    &__divider
-      border-color: $adm-colors.secondary2
-    >>> .v-input // [1]
-      caret-color: $adm-colors.primary2 !important
-    >>> .v-input .v-label
-      color: $adm-colors.muted
-    >>> .v-input--is-disabled input
-      color: $adm-colors.muted
-    >>> .v-input:not(.v-input--is-disabled) input
-      color: $adm-colors.regular
-    >>> .v-select .v-select__selections
-      color: $adm-colors.regular
-    >>> .v-input .v-label.v-label--active
-      color: $adm-colors.muted !important
-
-    // Border bottom (normal, hover, active)
-    >>> .v-text-field > .v-input__control > .v-input__slot:before
-      border-color: rgba(0, 0, 0, .12)
-    >>> .v-text-field:not(.v-input--has-state) > .v-input__control > .v-input__slot:hover:before
-      border-color: rgba(0, 0, 0, .12)
-    >>> .v-text-field.v-input--is-focused > .v-input__control > .v-input__slot:after
-      border-width: thin 0 0 0
-      color: $adm-colors.primary2
 </style>

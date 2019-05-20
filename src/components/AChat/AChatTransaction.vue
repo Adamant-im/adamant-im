@@ -13,8 +13,7 @@
           </div>
           <div
             @click="onClickAmount"
-            class="a-chat__amount"
-            :class="{ 'a-chat__amount--clickable': isStatusValid }"
+            class="a-chat__amount a-chat__amount--clickable"
           >
             <v-layout align-center>
               <slot name="crypto"></slot>
@@ -69,16 +68,11 @@ export default {
       }
 
       return ''
-    },
-    isStatusValid () {
-      return this.status !== 'invalid'
     }
   },
   methods: {
     onClickAmount () {
-      if (this.isStatusValid) {
-        this.$emit('click:transaction', this.id)
-      }
+      this.$emit('click:transaction', this.id)
     }
   },
   props: {

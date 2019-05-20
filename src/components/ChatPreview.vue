@@ -17,7 +17,7 @@
     <v-list-tile-content>
       <v-list-tile-title
         v-text="readOnly ? $t(partnerName) : partnerName"
-        :class="`${className}__title`"
+        class="a-text-regular-enlarged"
       ></v-list-tile-title>
 
       <!-- Transaction -->
@@ -168,6 +168,7 @@ export default {
 
 <style lang="stylus" scoped>
 @import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
 
 /**
  * 1. Message/Transaction content.
@@ -175,23 +176,17 @@ export default {
 .chat-brief
   position: relative
 
-  &__title
-    font-weight: 300
   &__date
-    font-weight: 300
-    font-size: 10px
+    a-text-explanation-small()
     position: absolute
     top: 16px
     right: 16px
   >>> .v-list__tile__sub-title // [1]
-    font-size: 14px
-    font-weight: 300
+    a-text-regular()
 
 /** Themes **/
 .theme--light
   .chat-brief
-    &__title
-      color: $adm-colors.regular
     &__date
       color: $adm-colors.muted
     &__icon

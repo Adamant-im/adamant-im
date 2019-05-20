@@ -13,18 +13,18 @@
 
       <v-list-tile-content>
         <v-list-tile-title v-if="partnerName">
-          <span :class="`${className}__head-title`">{{ partnerName }}</span>
-          <span :class="`${className}__head-subtitle`"> ({{ partnerId }})</span>
+          <span class="a-text-regular-enlarged">{{ partnerName }}</span>
+          <span class="a-text-explanation-enlarged"> ({{ partnerId }})</span>
         </v-list-tile-title>
         <v-list-tile-title v-else>
-          <span :class="`${className}__head-title`">{{ partnerId }}</span>
+          <span class="a-text-regular-enlarged">{{ partnerId }}</span>
         </v-list-tile-title>
 
-        <v-list-tile-sub-title :class="`${className}__title`">
+        <v-list-tile-sub-title :class="`${className}__amount`">
           {{ amount | currency(crypto) }}
         </v-list-tile-sub-title>
 
-        <v-list-tile-sub-title :class="`${className}__date`">
+        <v-list-tile-sub-title class="a-text-explanation">
           {{ createdAt | date }}
         </v-list-tile-sub-title>
       </v-list-tile-content>
@@ -38,7 +38,7 @@
       </v-list-tile-action>
     </v-list-tile>
 
-    <v-divider :inset="true" :class="`${className}__divider`"></v-divider>
+    <v-divider :inset="true" class="a-divider"></v-divider>
   </div>
 </template>
 
@@ -127,17 +127,8 @@ export default {
 @import '../assets/stylus/settings/_colors.styl'
 
 .transaction-item
-  &__head-title
-    font-weight: 300
-  &__head-subtitle
-    font-weight: 300
-    font-size: 14px
-  &__title
-    font-weight: 400
-    font-size: 16px
-  &__date
-    font-weight: 300
-    font-size: 12px
+  &__amount
+    a-text-regular(16px, 400)
   &__tile
     >>> .v-list__tile
       padding: 0 12px
@@ -145,18 +136,8 @@ export default {
 /** Themes **/
 .theme--light.v-list
   .transaction-item
-    &__head-title
+    &__amount
       color: $adm-colors.regular
-    &__head-subtitle
-      color: $adm-colors.muted
-    &__title
-      color: $adm-colors.regular
-    &__date
-      color: $adm-colors.muted
-    &__subtitle
-      color: $adm-colors.muted
     &__icon
       color: $adm-colors.muted
-    &__divider
-      border-color: $adm-colors.secondary2
 </style>

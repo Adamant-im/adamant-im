@@ -1,0 +1,48 @@
+/** Typography **/
+a-text-regular(size = 14px, weight = 300)
+  font-size: size
+  font-weight: weight
+
+a-text-regular-enlarged()
+  a-text-regular(16px)
+
+a-text-explanation()
+  a-text-regular(12px)
+
+a-text-explanation-small()
+  a-text-regular(10px)
+
+a-text-explanation-enlarged()
+  a-text-regular(14px)
+
+a-text-active()
+  a-text-regular(16px, 500)
+  text-decoration: underline
+  text-transform: unset
+
+a-text-header()
+  a-text-regular(20px, 500)
+
+a-text-headline()
+  a-text-regular(40px, 100)
+  text-transform: uppercase
+
+
+/** Gradients **/
+linear-gradient-light()
+  background: repeating-linear-gradient(
+    140deg,
+    #f6f6f6,
+    #f6f6f6 0.7px,
+    #fefefe 0,
+    #fefefe 5px
+  )
+
+linear-gradient-dark()
+  background: repeating-linear-gradient(
+    140deg,
+    #191919,
+    #191919 0.7px,
+    #212121 0,
+    #212121 5px
+  )

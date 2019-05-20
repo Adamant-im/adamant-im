@@ -12,11 +12,12 @@
         <container>
 
           <v-card flat>
-            <v-card-title>
+            <v-card-title class="pa-0">
               <v-text-field
                 v-model="search"
                 append-icon="mdi-magnify"
                 :label="$t('votes.search')"
+                :class="`${className}__search`"
                 single-line
                 hide-details
                 class="a-input"
@@ -406,7 +407,10 @@ export default {
   &__review
     padding-top: 30px !important
     padding-bottom: 50px !important
-
+  &__search
+    >>> .v-input__slot
+      padding-left: 16px
+      padding-right: 16px
 /** Themes **/
 .theme--light
   .delegates-view

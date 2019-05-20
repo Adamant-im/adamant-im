@@ -101,7 +101,7 @@ export default {
   &__list
     padding: 8px 0 0
   &__tile
-    height: 60px
+    // height: 60px // too small height
 
 /** Themes **/
 .theme--light
