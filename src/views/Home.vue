@@ -1,185 +1,143 @@
 <template>
-  <!--TODO: absolute paths must be relative again-->
-  <div class="home" v-if="isLogged">
-      <md-layout md-align="center" md-gutter="16">
-      <md-list class="md-double-line md-transparent">
-          <md-list-item
-            v-for="addr in wallets"
-            :key="'addr_' + addr.system"
-            @click="copy"
-            v-clipboard="addr.address"
-            @success="copySuccess"
-            :title="addr.tooltip ? $t(addr.tooltip) : ''"
-          >
-              <md-avatar class="md-avatar-icon">
-                <md-icon :md-src="addr.addressIcon"></md-icon>
-              </md-avatar>
+  <v-layout row wrap justify-center class="home-page">
 
-              <div class="md-list-text-container for-address">
-                  <div class="block_entry_title">{{ $t('home.your_address_'+addr.system) }}</div>
-                  <p> {{ addr.address }}</p>
+    <container>
+
+      <v-card flat class="transparent white--text">
+
+        <!-- Wallets -->
+        <v-card class="home-page__wallets">
+          <v-tabs grow slider-color="white">
+            <v-tab
+              v-for="wallet in wallets"
+              :key="wallet.cryptoCurrency"
+            >
+              <div>
+                <icon :width="36" :height="36" fill="#BDBDBD" slot="icon" class="mb-2">
+                  <component :is="wallet.icon"/>
+                </icon>
+                <div>{{ wallet.balance | numberFormat(4) }}</div>
+                <div>{{ wallet.cryptoCurrency }}</div>
               </div>
+            </v-tab>
 
-              <div class='md-list-action'>
-                <md-icon class="custom-icon">content_copy</md-icon>
-              </div>
-          </md-list-item>
+            <v-tab-item
+              v-for="wallet in wallets"
+              :key="wallet.cryptoCurrency"
+            >
+              <wallet-card
+                :address="wallet.address"
+                :balance="wallet.balance"
+                :crypto="wallet.cryptoCurrency"
+                :crypto-name="wallet.cryptoName"
+                @click:balance="goToTransactions"
+              >
+                <icon :width="125" :height="125" fill="#BDBDBD" slot="icon">
+                  <component :is="wallet.icon"/>
+                </icon>
+              </wallet-card>
+            </v-tab-item>
+          </v-tabs>
+        </v-card>
 
-          <md-list-item
-            v-for="wallet in wallets"
-            v-bind:key="'bal_' + wallet.system"
-            v-on:click="goToTransactions(wallet.system)"
-            :title="wallet.balanceTooltip ? $t(wallet.balanceTooltip) : ''"
-          >
-            <md-avatar class="md-avatar-icon">
-                <md-icon :md-src="wallet.balanceIcon"></md-icon>
-            </md-avatar>
-            <div class="md-list-text-container">
-                <span>{{ $t('home.your_balance_' + wallet.system) }}</span>
-                <p> <span v-text="wallet.balance"></span> {{ wallet.system }}</p>
-            </div>
-          </md-list-item>
+      </v-card>
 
-          <md-list-item v-on:click="$router.push('/transfer/')" :title="$t('home.send_btn_tooltip')">
-              <md-avatar class="md-avatar-icon">
-                <md-icon md-src="/img/Wallet/send.svg"></md-icon>
-              </md-avatar>
-              <div class="md-list-text-container">
-                  <span>{{ $t('home.send_btn') }}</span>
-                  <p></p>
-              </div>
+    </container>
 
-          </md-list-item>
-        <md-list-item v-if="showFreeTokenButton" :href="freeAdmAddress" target="_blank">
-              <md-avatar class="md-avatar-icon">
-                <md-icon md-src="/img/Wallet/free-tokens.svg"></md-icon>
-              </md-avatar>
-
-              <div class="md-list-text-container">
-                  <span>{{ $t('home.free_adm_btn') }} </span>
-                  <p></p>
-              </div>
-          </md-list-item>
-
-          <md-list-item :href="$t('home.invest_btn_link')+'?wallet='+this.$store.state.address" target="_blank" :title="$t('home.invest_btn_tooltip')">
-
-              <md-avatar class="md-avatar-icon">
-                <md-icon md-src="/img/Wallet/join-ico.svg"></md-icon>
-              </md-avatar>
-
-              <div class="md-list-text-container">
-                  <span>{{ $t('home.invest_btn') }} </span>
-                  <p></p>
-              </div>
-          </md-list-item>
-      </md-list>
-      </md-layout>
-      <md-snackbar md-position="bottom center" md-accent ref="homeSnackbar" md-duration="2000">
-          <span>{{ $t('home.copied') }}</span>
-      </md-snackbar>
-  </div>
+  </v-layout>
 </template>
 
 <script>
-import { Cryptos } from '../lib/constants'
+import WalletCard from '@/components/WalletCard'
+import Icon from '@/components/icons/BaseIcon'
+import AdmFillIcon from '@/components/icons/AdmFill'
+import BnbFillIcon from '@/components/icons/BnbFill'
+import EthFillIcon from '@/components/icons/EthFill'
+import BnzFillIcon from '@/components/icons/BnzFill'
+import DogeFillIcon from '@/components/icons/DogeFill'
 
 export default {
-  name: 'home',
-  methods: {
-    copySuccess (e) {
-      this.$refs.homeSnackbar.open()
-    },
-    copy () {
-    },
-    goToTransactions (crypto) {
-      const params = { crypto }
-      this.$router.push({ name: 'Transactions', params })
-    },
-    update () {
-      this.$store.dispatch('updateBalance')
+  computed: {
+    wallets () {
+      return [
+        {
+          address: this.$store.state.address,
+          balance: this.$store.state.balance,
+          cryptoCurrency: 'ADM',
+          cryptoName: 'ADAMANT',
+          icon: 'adm-fill-icon'
+        },
+        {
+          address: this.$store.state.bnb.address,
+          balance: this.$store.state.bnb.balance,
+          cryptoCurrency: 'BNB',
+          cryptoName: 'Binance Coin',
+          icon: 'bnb-fill-icon'
+        },
+        {
+          address: this.$store.state.eth.address,
+          balance: this.$store.state.eth.balance,
+          cryptoCurrency: 'ETH',
+          cryptoName: 'Ethereum',
+          icon: 'eth-fill-icon'
+        },
+        {
+          address: this.$store.state.bz.address,
+          balance: this.$store.state.bz.balance,
+          cryptoCurrency: 'BZ',
+          cryptoName: 'Bit-Z',
+          icon: 'bnz-fill-icon'
+        },
+        {
+          address: this.$store.state.doge.address,
+          balance: this.$store.state.doge.balance,
+          cryptoCurrency: 'DOGE',
+          cryptoName: 'DOGE',
+          icon: 'doge-fill-icon'
+        }
+      ]
     }
   },
-  computed: {
-    showFreeTokenButton () {
-      return this.$store.state.balance <= 0
-    },
-    freeAdmAddress () {
-      return 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
-    },
-    // isNewUser: function () {
-    //   return this.$store.state.is_new_account
-    // },
-    languageList: function () {
-      var messages = require('../i18n').default
-      return messages
-    },
-    wallets: function () {
-      return Object.keys(Cryptos).map(c => {
-        const lower = c.toLowerCase()
-        const state = c === Cryptos.ADM ? this.$store.state : this.$store.state[lower]
-
-        return {
-          system: c,
-          address: state.address,
-          balance: state.balance,
-          tooltip: `home.your_address_tooltip_${c}`,
-          balanceTooltip: `home.your_balance_tooltip_${c}`,
-          addressIcon: `/img/Wallet/${lower}-address.svg`,
-          balanceIcon: `/img/Wallet/${lower}-balance.svg`
+  methods: {
+    goToTransactions (crypto) {
+      this.$router.push({
+        name: 'Transactions',
+        params: {
+          crypto
         }
       })
     }
   },
-  watch: {
-    'language' (to, from) {
-      this.$i18n.locale = to
-    }
-  },
-  mounted () {
-    this.$store.commit('last_visited_chat', null)
-    this.isLogged = this.$store.getters.isLogged
-
-    this.update()
-    this.timer = setInterval(() => this.update(), 20000)
-  },
-  beforeDestroy () {
-    clearInterval(this.timer)
-  },
-  data () {
-    return {
-      passPhrase: '',
-      language: 'en',
-      showCreate: false,
-      isLogged: false,
-      timer: null
-    }
+  components: {
+    WalletCard,
+    Icon,
+    AdmFillIcon,
+    BnbFillIcon,
+    EthFillIcon,
+    BnzFillIcon,
+    DogeFillIcon
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
-  .home .md-list {
-      max-width: 90%;
-  }
-  .for-address p {
-      text-overflow: ellipsis;
-      max-width: 100%;
-      display: inline-block;
-  }
-  .home .md-list-text-container p
-  {
-      font-style: italic;
-  }
-  .block_entry_title {
-    font-weight: 500;
-  }
-  .md-icon.custom-icon {
-    vertical-align: top !important;
-    width: 20px !important;
-    min-width: 20px !important;
-    height: 20px !important;
-    min-height: 20px !important;
-    font-size: 20px !important;
-  }
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_colors.styl'
+
+/**
+ * 1. Reset VTabs container fixed height.
+ */
+.home-page__wallets >>> .v-tabs__container
+  height: auto // [1]
+
+/** Themes **/
+.theme--light
+  .action-list
+    &__icon
+      background-color: $grey.lighten-1
+      color: $shades.white
+.theme--dark
+  .action-list
+    &__icon
+      background-color: $grey.darken-3
+      color: $shades.white
 </style>

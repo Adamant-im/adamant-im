@@ -1,5 +1,5 @@
 <template>
-  <component v-bind:is="transactionComponent" :id="tx_id" :crypto="crypto" />
+  <component :is="transactionComponent" :id="txId" :crypto="crypto" />
 </template>
 
 <script>
@@ -12,7 +12,16 @@ import { Cryptos, isErc20 } from '../../lib/constants'
 
 export default {
   name: 'transaction',
-  props: ['tx_id', 'crypto'],
+  props: {
+    crypto: {
+      required: true,
+      type: String
+    },
+    txId: {
+      required: true,
+      type: String
+    }
+  },
   components: {
     AdmTransaction,
     EthTransaction,
@@ -21,16 +30,16 @@ export default {
   },
   mounted () {
     this.update()
-    clearInterval(this.timer)
-    this.timer = setInterval(() => this.update(), 10 * 1000)
+    window.clearInterval(this.timer)
+    this.timer = window.setInterval(() => this.update(), 1e4)
   },
   beforeDestroy () {
-    clearInterval(this.timer)
+    window.clearInterval(this.timer)
   },
   methods: {
     update () {
       const action = this.crypto.toLowerCase() + '/getTransaction'
-      this.$store.dispatch(action, { hash: this.tx_id, force: true })
+      this.$store.dispatch(action, { hash: this.txId, force: true })
     }
   },
   computed: {

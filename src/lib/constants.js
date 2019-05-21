@@ -37,6 +37,14 @@ export const CryptoAmountPrecision = {
   BZ: 6
 }
 
+export const CryptoNaturalUnits = {
+  ADM: 8,
+  ETH: 18,
+  BNB: 18,
+  DOGE: 8,
+  BZ: 18
+}
+
 /** Fees for the misc ADM operations */
 export const Fees = {
   /** Storing a value into the KVS */
@@ -82,4 +90,11 @@ export const UserPasswordHashSettings = {
   ITERATIONS: 100000,
   KEYLEN: 64,
   DIGEST: 'sha512'
+}
+
+export const TransactionStatus = {
+  DELIVERED: 'delivered',
+  PENDING: 'pending',
+  REJECTED: 'rejected',
+  INVALID: 'invalid'
 }

@@ -1,546 +1,361 @@
 <template>
-  <div class="votes">
-    <md-layout class='chat_loads' v-show="!delegatesLoaded">
-      <md-spinner :md-size="150" :md-stroke="1" md-indeterminate class="md-accent" style="margin: 0px -75px;position: fixed;left: 50%;"></md-spinner>
-    </md-layout>
-    <div class="white-color-table" style="max-width:95%; margin:auto;" v-show="delegatesLoaded">
-      <md-table-card class='votes-card' style="box-shadow:none">
-        <md-toolbar class="custom-votes-toolbar">
-          <md-layout class="white-color-search-bar">
-            <md-layout md-flex="100">
-              <md-input-container>
-                <md-button class="md-icon-button">
-                  <md-icon>search</md-icon>
-                </md-button>
-                <md-input style="width:100%" v-model="filterString" v-bind:placeholder="$t('votes.filter_placeholder')"></md-input>
-              </md-input-container>
-            </md-layout>
-          </md-layout>
-        </md-toolbar>
-          <md-table md-sort="rank" md-sort-type="desc" @sort="onSort" v-bind:style="tableStyle">
-            <md-table-header>
-              <md-table-row>
-                <md-table-head>{{$t('votes.table_head_vote')}}</md-table-head>
-                <md-table-head md-sort-by="rank">{{$t('votes.table_head_rank')}}</md-table-head>
-                <md-table-head md-sort-by="username">{{$t('votes.table_head_name')}}</md-table-head>
-                <md-table-head></md-table-head>
-              </md-table-row>
-            </md-table-header>
-            <md-table-body>
-              <template v-for="(delegate, index) in delegates">
-                <md-table-row style="cursor:pointer"
-                              class="delegate-row"
-                              :key="delegate.address+index"
-                              v-bind:class="{upvoted: delegate.upvoted, downvoted: delegate.downvoted, active: delegate.showDetails}"
-                              v-on:click.native="toggleDetails(delegate)">
-                  <md-table-cell>
-                    <md-checkbox v-model="delegate.voted" title="vote" v-on:change="vote(delegate)"></md-checkbox>
-                  </md-table-cell>
-                  <md-table-cell style="text-align: left">{{ delegate.rank }}</md-table-cell>
-                  <md-table-cell style="text-align: left"><span>{{ delegate.username }}</span></md-table-cell>
-                  <md-table-cell>
-                    <md-icon>{{ delegate.showDetails ? 'keyboard_arrow_down' : 'chevron_right' }}</md-icon>
-                  </md-table-cell>
-                </md-table-row>
-                <md-table-row v-show="delegate.showDetails"
-                              style="border-top-width: 0; padding-bottom: 10px"
-                              class="delegate-row"
-                              :key="index+delegate.address"
-                              v-bind:class="{upvoted: delegate.upvoted, downvoted: delegate.downvoted, active: delegate.showDetails}">
-                  <md-table-cell collspan="4" class="delegate-details">
-                    <md-layout md-column>
+  <div>
+    <app-toolbar-centered
+      app
+      :title="$t('votes.page_title')"
+      flat
+    />
 
-                      <md-layout md-gutter md-column-xsmall>
-                        <md-layout class="delegate-info-box">
-                          <span class="status-indicator"
-                                v-bind:style="delegate.style"
-                                v-bind:title="delegate.tooltip"></span>
-                          <a target="_blank"
-                             v-bind:href="'https://explorer.adamant.im/delegate/'+delegate.address">
-                            {{ delegate.address }}
-                          </a>
-                        </md-layout>
-                        <md-layout md-hide-xsmall></md-layout>
-                      </md-layout>
+    <v-container fluid class="px-0">
+      <v-layout row wrap justify-center>
 
-                      <md-layout md-gutter md-column-xsmall>
+        <container>
 
-                        <md-layout class="delegate-info-box">
-                          {{ $t('votes.delegate_uptime') }}:&nbsp;
-                          <strong>{{ delegate.productivity }}%</strong>
-                        </md-layout>
+          <v-card>
+            <v-card-title>
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                :label="$t('votes.search')"
+                single-line
+                hide-details
+              />
+            </v-card-title>
 
-                        <md-layout class="delegate-info-box">
-                          {{ $t('votes.delegate_approval') }}:&nbsp;
-                          <strong>{{ delegate.approval }}%</strong>
-                        </md-layout>
+            <v-data-table
+              :headers="headers"
+              :pagination.sync="pagination"
+              :items="delegates"
+              :rows-per-page-text="$t('rows_per_page')"
+              :search="search"
+              hide-actions
+              item-key="username"
+              class="elevation-1"
+            >
+              <div slot="no-data" class="text-xs-center">
+                <div v-if="waitingForConfirmation">
+                  <v-progress-circular
+                    indeterminate
+                    color="grey darken-1"
+                    size="24"
+                    class="mr-3"
+                  />
+                  <span>{{ $t('votes.waiting_confirmations') }}</span>
+                </div>
+                <div v-else>
+                  {{ $t('votes.no_data_available') }}
+                </div>
+              </div>
 
-                      </md-layout>
-
-                      <md-layout md-gutter md-column-xsmall>
-
-                        <md-layout class="delegate-info-box">
-                          {{ $t('votes.delegate_forging_time') }}:&nbsp;
-                          <strong>{{ formatForgingTime(delegate.forgingTime) }}</strong>
-                        </md-layout>
-
-                        <md-layout class="delegate-info-box">
-                          {{ $t('votes.delegate_forged') }}:&nbsp;
-                          <strong>{{ (delegate.forged  / 100000000).toFixed(4) }}ADM</strong>
-                        </md-layout>
-
-                      </md-layout>
-
-                      <md-layout md-gutter md-column-xsmall>
-                        <md-layout class="delegate-info-box">
-                          {{ $t('votes.delegate_link') }}:&nbsp;
-                          <strong>{{ delegate.link }}</strong>
-                        </md-layout>
-
-                        <md-layout class="delegate-info-box">
-                          {{ $t('votes.delegate_description') }}:&nbsp;
-                          <strong>{{ delegate.description }}</strong>
-                        </md-layout>
-                      </md-layout>
-
-                    </md-layout>
-                  </md-table-cell>
-                </md-table-row>
+              <template slot="headerCell" slot-scope="props">
+                <span slot="activator">
+                  {{ $t(props.header.text) }}
+                </span>
               </template>
-            </md-table-body>
-          </md-table>
-      </md-table-card>
-      <md-card>
-          <md-card-header>
-            <div class="md-title">{{ $t('votes.summary_title') }}</div>
-            <div class="md-subhead">
-              {{$t('votes.upvotes')}}: <strong>{{ upvotedCount }}</strong>,&nbsp;
-              {{$t('votes.downvotes')}}: <strong>{{ downvotedCount }}</strong>,&nbsp;
-              {{$t('votes.total_new_votes')}}: <strong>{{ downvotedCount + upvotedCount }}</strong> / {{ voteRequestLimit }},&nbsp;
-              {{$t('votes.total_votes')}}: <strong>{{ originVotesCount }} / {{ delegatesLength }}</strong>
+
+              <template slot="items" slot-scope="props">
+                <td @click="toggleDetails(props.item, props)" style="cursor:pointer">{{ props.item.username }}</td>
+                <td>{{ props.item.rank }}</td>
+                <td>
+                  <v-icon v-if="props.item._voted" @click="downVote(props.item.address)">mdi-thumb-up</v-icon>
+                  <v-icon v-else @click="upVote(props.item.address)">mdi-thumb-up-outline</v-icon>
+                </td>
+              </template>
+
+              <template slot="expand" slot-scope="props">
+                <v-card flat>
+
+                  <v-list>
+                    <v-list-tile>
+                      <v-list-tile-content>
+                        <v-list-tile-title>
+                          <a :href="'https://explorer.adamant.im/delegate/' + props.item.address" target="_blank">
+                            {{ props.item.address }}
+                          </a>
+                        </v-list-tile-title>
+                      </v-list-tile-content>
+                    </v-list-tile>
+
+                    <v-list-tile
+                      v-for="(item, i) in delegateDetails"
+                      :key="i"
+                    >
+                      <v-list-tile-content>
+                        <v-list-tile-title>
+                          {{ item.title }}
+                        </v-list-tile-title>
+                      </v-list-tile-content>
+                      <v-list-tile-content>
+                        <v-list-tile-title class="text-xs-right">
+                          {{ item.format ? item.format(item.value.call(props.item)) : item.value.call(props.item) }}
+                        </v-list-tile-title>
+                      </v-list-tile-content>
+                    </v-list-tile>
+                  </v-list>
+
+                </v-card>
+              </template>
+
+              <v-alert slot="no-results" :value="true" color="grey darken-1" icon="mdi-alert">
+                Your search for "{{ search }}" found no results.
+              </v-alert>
+
+              <template slot="footer">
+                <td :colspan="headers.length" class="pa-0">
+
+                  <v-layout row wrap align-center justify-space-between>
+                    <v-btn dark @click="showConfirmationDialog">
+                      {{ $t('votes.vote_button_text') }}
+                    </v-btn>
+                    <pagination v-model="pagination.page" :pages="pages"></pagination>
+                  </v-layout>
+
+                </td>
+              </template>
+            </v-data-table>
+          </v-card>
+
+        </container>
+
+      </v-layout>
+    </v-container>
+
+    <v-dialog
+      v-model="dialog"
+      width="500"
+    >
+      <v-card>
+        <v-card-title>
+          <div>
+            <h3 class="headline mb-0">{{ $t('votes.summary_title') }}</h3>
+            <div>
+              {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
+              {{ $t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
+              {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
+              {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
             </div>
-          </md-card-header>
-          <md-card-expand>
-            <md-card-actions>
-              <md-button v-bind:disabled="upvotedCount + downvotedCount === 0"
-                         v-on:click="sendVotes">{{$t('votes.vote_button_text')}}</md-button>
-              <span style="flex: 1"></span>
-              <md-button class="md-icon-button" md-expand-trigger>
-                <md-icon>keyboard_arrow_down</md-icon>
-              </md-button>
-            </md-card-actions>
-            <md-card-content style="text-align: left">
-                <div class="vote-group" v-if="upVotedList.length > 0">
-                    <div class="voteTextLabel">{{$t('options.upvote_for_label')}}</div>
-                    <div class="voted-list-wrapper">
-                        <template v-for="(votedDelegate, index) in upVotedList">
-                            <div v-bind:key="index" class="voted-delegates-item">
-                                <div class="voted-element">
-                                    {{votedDelegate.username}}
-                                </div>
-                                <div class="remove-voted-element" v-on:click="vote(votedDelegate)">&#9587;</div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-                <div class="vote-group" v-if="downVotedList.length > 0">
-                    <div class="voteTextLabel">{{$t('options.downvote_for_label')}}</div>
-                    <div class="voted-list-wrapper">
-                        <template v-for="(votedDelegate, index) in downVotedList">
-                            <div v-bind:key="index" class="voted-delegates-item">
-                                <div class="voted-element">
-                                    <label>{{votedDelegate.username}}</label>
-                                </div>
-                                <div class="remove-voted-element" v-on:click="vote(votedDelegate)">&#9587;</div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-                {{$t('votes.summary_info')}} <a href="https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516" target="_blank">{{$t('votes.summary_info_link_text')}}</a>.
-            </md-card-content>
-          </md-card-expand>
-      </md-card>
-    </div>
-    <md-snackbar md-position="bottom center" md-accent ref="votesSnackbar" md-duration="5000">
-      <span>{{ votesErrorMsg}}</span>
-    </md-snackbar>
+          </div>
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            flat="flat"
+            @click="dialog = false"
+          >
+            {{ $t('transfer.confirm_cancel') }}
+          </v-btn>
+
+          <v-btn
+            flat="flat"
+            @click="sendVotes"
+          >
+            {{ $t('transfer.confirm_approve') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
+import AppToolbarCentered from '@/components/AppToolbarCentered'
+import Pagination from '@/components/Pagination'
+import currencyFilter from '@/filters/currency'
+
 export default {
-  name: 'votes',
-  data () {
-    return {
-      voteRequestLimit: 30,
-      sortParams: {
-        name: 'rank',
-        type: 'desc'
-      },
-      filterString: '',
-      status: [
-        { style: { 'background-color': 'green', 'border-color': 'green' }, tooltip: 'Forging' },
-        { style: { 'background-color': 'orange', 'border-color': 'orange' }, tooltip: 'Missed block' },
-        { style: { 'background-color': 'red', 'border-color': 'red' }, tooltip: 'Not forging' },
-        { style: { 'border-color': 'green' }, tooltip: 'Awaiting slot' },
-        { style: { 'border-color': 'orange' }, tooltip: 'Awaiting slot' },
-        { style: { 'border-color': 'gray' }, tooltip: 'Awaiting status' }
-      ],
-      tableStyle: {
-        height: this.formatHeight(window.innerHeight)
-      },
-      votesErrorMsg: ''
+  mounted () {
+    this.$store.dispatch('delegates/getDelegates', {
+      address: this.$store.state.address
+    })
+  },
+  computed: {
+    delegates () {
+      const delegates = this.$store.state.delegates.delegates || {}
+
+      return Object.values(delegates)
+    },
+    numOfUpvotes () {
+      return this.delegates
+        .filter(delegate => delegate.upvoted && !delegate.voted)
+        .length
+    },
+    numOfDownvotes () {
+      return this.delegates
+        .filter(delegate => delegate.downvoted && delegate.voted)
+        .length
+    },
+    totalVotes () {
+      return this.delegates.filter(delegate => delegate._voted).length
+    },
+    delegateDetails () {
+      return [
+        {
+          title: this.$t('votes.delegate_uptime'),
+          value () {
+            return this.productivity
+          },
+          format: value => `${value}%`
+        },
+        {
+          title: this.$t('votes.delegate_approval'),
+          value () {
+            return this.approval
+          },
+          format: value => `${value}%`
+        },
+        {
+          title: this.$t('votes.delegate_forging_time'),
+          value () {
+            return this.forgingTime
+          },
+          format: value => this.formatForgingTime(value)
+        },
+        {
+          title: this.$t('votes.delegate_forged'),
+          value () {
+            return this.forged
+          },
+          format: value => currencyFilter(value)
+        },
+        {
+          title: this.$t('votes.delegate_link'),
+          value () {
+            return this.link
+          }
+        },
+        {
+          title: this.$t('votes.delegate_description'),
+          value () {
+            return this.description
+          }
+        }
+      ]
+    },
+    pages () {
+      if (this.delegates.length <= 0) {
+        return 0
+      }
+
+      return Math.ceil(this.delegates.length / this.pagination.rowsPerPage)
     }
   },
-  mounted: function () {
-    this.$nextTick(() => {
-      window.addEventListener('resize', () => {
-        this.tableStyle.height = this.formatHeight(window.innerHeight)
-      })
-    })
-    this.$store.dispatch('delegates/getDelegates', { address: this.$store.state.address })
-  },
-  methods: {
-    vote (delegate) {
-      if (this.votedCount + this.unvotedCount > this.voteRequestLimit) {
-        return false
-      }
-      // Downvoting
-      if (delegate.voted) {
-        if (this.$store.getters.getDelegateList[delegate.address]._voted) {
-          this.$store.getters.getDelegateList[delegate.address].downvoted = true
-        }
-        delegate.upvoted = false
-        delegate.voted = false
-      // Upvoting
-      } else {
-        if (!this.$store.getters.getDelegateList[delegate.address]._voted) {
-          this.$store.getters.getDelegateList[delegate.address].upvoted = true
-        }
-        delegate.downvoted = false
-        delegate.voted = true
-      }
-      this.$store.dispatch('update_delegates_grid', delegate)
+  data: () => ({
+    voteRequestLimit: 30,
+    search: '',
+    headers: [
+      { text: 'votes.table_head_name', value: 'username' },
+      { text: 'votes.table_head_rank', value: 'rank' },
+      { text: 'votes.table_head_vote', value: '_voted' }
+    ],
+    pagination: {
+      rowsPerPage: 10,
+      sortBy: '',
+      descending: true,
+      page: 1
     },
-    onSort (params) {
-      this.sortParams = params
+    waitingForConfirmation: false,
+    dialog: false
+  }),
+  methods: {
+    upVote (id) {
+      this.$store.commit('delegates/upVote', id)
+    },
+    downVote (id) {
+      this.$store.commit('delegates/downVote', id)
     },
     sendVotes () {
-      if (this.$store.state.balance < 50) {
-        this.votesErrorMsg = this.$t('votes.no_money')
-        this.$refs.votesSnackbar.open()
-      } else {
-        const votes = (Object.values(this.$store.getters.getDelegateList).filter(x => x.downvoted).map(x => `-${x.publicKey}`)).concat(this.delegates.filter(x => x.upvoted).map(x => `+${x.publicKey}`))
-        this.$store.dispatch('delegates/voteForDelegates', { votes: votes, address: this.$store.state.address })
+      if (!this.validateVotes()) {
+        return
       }
+
+      const upVotes = this.delegates
+        .filter(delegate => delegate.upvoted && !delegate.voted)
+        .map(delegate => `+${delegate.publicKey}`)
+      const downVotes = this.delegates
+        .filter(delegate => delegate.downvoted && delegate.voted)
+        .map(delegate => `-${delegate.publicKey}`)
+      const allVotes = [...upVotes, ...downVotes]
+
+      if (allVotes.length <= 0) {
+        this.$store.dispatch('snackbar/show', {
+          message: this.$t('votes.select_delegates')
+        })
+
+        return
+      }
+
+      this.waitingForConfirmation = true
+      this.dialog = false
+
+      this.$store.dispatch('delegates/voteForDelegates', {
+        votes: [...upVotes, ...downVotes],
+        address: this.$store.state.address
+      })
+
+      this.$store.dispatch('snackbar/show', {
+        message: this.$t('votes.sent')
+      })
     },
-    toggleDetails (delegate) {
-      if (!delegate.showDetails) {
+    validateVotes () {
+      if (this.upvotedCount + this.downvotedCount > this.voteRequestLimit) {
+        this.$store.dispatch('snackbar/show', {
+          message: this.$t('votes.vote_request_limit', { limit: this.voteRequestLimit })
+        })
+
+        return false
+      }
+
+      if (this.$store.state.balance < 50) {
+        this.$store.dispatch('snackbar/show', {
+          message: this.$t('votes.no_money')
+        })
+
+        return false
+      }
+
+      return true
+    },
+    toggleDetails (delegate, props) {
+      props.expanded = !props.expanded
+
+      if (!props.expaned) {
         this.$store.dispatch('delegates/getForgedByAccount', delegate)
         this.$store.dispatch('delegates/getForgingTimeForDelegate', delegate)
       }
-      delegate.showDetails = !delegate.showDetails
     },
     formatForgingTime (seconds) {
       if (!seconds) {
         return '...'
       }
       if (seconds === 0) {
-        return 'Now!'
+        return this.$t('votes.now')
       }
       const minutes = Math.floor(seconds / 60)
       seconds = seconds - (minutes * 60)
       if (minutes && seconds) {
-        return `${minutes} min ${seconds} sec`
+        return `${minutes} ${this.$t('votes.min')} ${seconds} ${this.$t('votes.sec')}`
       } else if (minutes) {
-        return `${minutes} min `
+        return `${minutes} ${this.$t('votes.min')}`
       } else {
-        return `${seconds} sec`
+        return `${seconds} ${this.$t('votes.sec')}`
       }
     },
-    statusStyle (delegate) {
-      return this.status[delegate.status || 5].style
-    },
-    statusTooltip (delegate) {
-      return this.status[delegate.status || 5].tooltip
-    },
-    formatHeight (height) {
-      return `${height * 0.60}px !important`
+    showConfirmationDialog () {
+      this.dialog = true
     }
   },
-  watch: {
-    errorMsg (value) {
-      this.votesErrorMsg = value
-      this.$refs.votesSnackbar.open()
-      window.setTimeout(() => this.$store.commit('send_error', { msg: '' }), 5000) // cleanup error msg
-    }
-  },
-  computed: {
-    delegatesLength () {
-      return Object.values(this.$store.getters.getDelegateList).length
-    },
-    downVotedList () {
-      return Object.values(this.$store.getters.getDelegateList).filter(x => x.downvoted)
-    },
-    upVotedList () {
-      return Object.values(this.$store.getters.getDelegateList).filter(x => x.upvoted)
-    },
-    delegates () {
-      const compare = (a, b) => {
-        const compareNumbers = (x, y) => this.sortParams.type === 'desc' ? x - y : y - x
-        const compareString = (x, y) => {
-          x = x.toUpperCase()
-          y = y.toUpperCase()
-          if (x < y) {
-            return this.sortParams.type === 'desc' ? -1 : 1
-          }
-          if (x > y) {
-            return this.sortParams.type === 'desc' ? 1 : -1
-          }
-          return 0
-        }
-        const lVal = a[this.sortParams.name]
-        const rVal = b[this.sortParams.name]
-        if (typeof lVal === 'string' && typeof rVal === 'string') {
-          // check for ADAMANT ID field
-          let [x, ...xs] = lVal
-          if (x === 'U') {
-            let [, ...ys] = rVal
-            return compareNumbers(parseInt(xs.join('')), parseInt(ys.join('')))
-          } else {
-            return compareString(lVal, rVal)
-          }
-        }
-        if (typeof lVal === 'number' && typeof rVal === 'number') {
-          return compareNumbers(lVal, rVal)
-        }
-        return 0
-      }
-      const filterDelegates = (x) => {
-        const regexp = new RegExp(this.filterString, 'i')
-        return this.filterString !== '' ? (regexp.test(x.address) || regexp.test(x.username)) : true
-      }
-      return Object.values(this.$store.getters.getDelegateList)
-        .filter(filterDelegates)
-        .sort(compare)
-        .map((x) => {
-          x.style = this.status[x.status].style
-          x.tooltip = this.status[x.status].tooltip
-          return x
-        })
-    },
-    delegatesCount () {
-      return this.delegates.length
-    },
-    upvotedCount () {
-      return Object.values(this.$store.getters.getDelegateList).filter(x => x.upvoted).length
-    },
-    downvotedCount () {
-      return Object.values(this.$store.getters.getDelegateList).filter(x => x.downvoted).length
-    },
-    originVotesCount () {
-      return Object.values(this.$store.getters.getDelegateList).filter(x => x._voted).length
-    },
-    totalVotes () {
-      return this.downvotedCount + this.originVotesCount - this.downvotedCount
-    },
-    delegatesLoaded () {
-      if (this.$store.getters.getDelegateList) {
-        return Object.keys(this.$store.getters.getDelegateList).length > 0
-      }
-    },
-    errorMsg () {
-      return this.$store.state.lastErrorMsg
-    }
+  components: {
+    AppToolbarCentered,
+    Pagination
   }
 }
 </script>
-<style>
-.votes {
-  position: relative;
-}
-.votes .md-checkbox .md-checkbox-container:after {
-  border: 2px solid gray;
-  border-top: 0;
-  border-left: 0;
-}
-.votes .md-table {
-  display: block;
-  overflow: hidden;
-}
-.votes .md-table table, .votes .md-table thead, .votes .md-table tbody, .votes .md-table tr {
-  width: 100%;
-  display: block;
-}
-.votes .md-table .md-table-row:hover .md-table-cell {
-  background-color: transparent !important;
-}
-.votes .md-table tr:hover {
-  background-color: #eee;
-}
-.votes .md-table td, .votes .md-table th {
-  width: 24%;
-  display: inline-block;
-  padding: 10px;
-}
-.votes .md-table tbody, .votes .md-table thead {
-  overflow: auto;
-}
 
-.votes .md-table-head {
-  padding-bottom: 0 !important;
-}
+<style lang="stylus" scoped>
+  @import '~vuetify/src/stylus/settings/_colors.styl'
 
-.votes .md-table table {
-  height: 100%;
-}
-
-.votes .md-table tbody {
-  height: calc(100% - 66px);
-  overflow-x: hidden;
-}
-
-.votes .md-checkbox {
-  margin-top: 0;
-}
-.votes .md-toolbar.md-theme-grey {
-  border-bottom: none;
-  padding-top: 25px;
-}
-.votes .delegate-details {
-  width: 100% !important;
-  height: auto !important;
-}
-.votes .delegate-details ul {
-  list-style: none;
-}
-.md-table-row.delegate-row.active {
-  background-color: #eee;
-}
-.md-table-row.delegate-row.downvoted,.md-table-row.delegate-row.downvoted:hover {
-  background-color: antiquewhite;
-}
-.md-table-row.delegate-row.upvoted,.md-table-row.delegate-row.upvoted:hover {
-  background-color: azure;
-}
-
-.table-summary span {
-  padding: 5px;
-  margin-top: 20px;
-}
-
-.status-indicator {
-  width: 10px;
-  height: 10px;
-  border-radius: 10px;
-  border: 2px solid gray;
-  display: inline-block;
-  margin: 5px 5px 0 0;
-}
-.chat_loads {
-  position: absolute;
-  background: rgba(0,0,0,0.3);
-  height: 100%;
-  width: 100%;
-  min-height: 100vh;
-  left: 0;
-
-  padding-top: 15%;
-  z-index: 10;
-  top: -25px;
-}
-.md-spinner.md-accent .md-spinner-path
-{
-  stroke: #4A4A4A;
-}
-
-.md-table-cell.delegate-details, .md-table-cell.delegate-details .md-table-cell-container {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  margin-left: 5px;
-}
-.md-table-cell ul {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.votes .md-card {
-  margin-top: 20px;
-  padding-bottom: 10px;
-}
-
-.votes .md-card-header {
-  text-align: left;
-}
-@media (max-width: 600px) {
-  .votes .md-column-xsmall .delegate-info-box {
-    padding: 0 3px 10px 0;
-  }
-}
-
-.white-color-table {
-  background-color: #FFFFFF;
-}
-
-.white-color-search-bar {
-  background-color: #FFF;
-  padding: 35px 0 0 0;
-  margin-top: -25px;
-  margin-left: 0px;
-  margin-right: 0px;
-}
-
-.custom-votes-toolbar {
-  background: repeating-linear-gradient(140deg,#f6f6f6,#f6f6f6 1px,#fefefe 0,#fefefe 5px) !important;
-  margin-left: 0px !important;
-  margin-right: 0px !important;
-  padding-right: 0px !important;
-  padding-left: 0px !important;
-  position: relative !important;
-}
-
-.voted-delegates {
-  margin: 15px 0 0 18px;
-  display: flex;
-  padding-left: 1px;
-  flex-direction: column;
-}
-
-.voted-delegates-item {
-  display: flex;
-  margin-right: 10px;
-  height: 20px;
-}
-
-.voted-list-wrapper {
-  overflow: visible;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
-.voteTextLabel {
-  margin-right: 5px;
-  white-space: nowrap;
-}
-
-.voted-element {
-  cursor: default;
-}
-
-.remove-voted-element {
-  font-size: 8px;
-  top: 1px;
-  left: 3px;
-  position: relative;
-  cursor: pointer;
-  margin-right: 5px;
-}
-
-.vote-group {
-  margin: 5px 0px;
-  display: flex;
-  flex-direction: row;
-}
-
+  .theme--light
+    .vote-card
+      background-color: $grey.lighten-2
 </style>

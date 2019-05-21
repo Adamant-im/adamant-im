@@ -1,6 +1,12 @@
+import { Fees } from '@/lib/constants'
+
 const sortFunc = (a, b) => ((b && b.timestamp) || 0) - ((a && a.timestamp) || 0)
 
 export default {
+  areTransactionsLoading (state) {
+    return state.areTransactionsLoading
+  },
+
   /**
    * Returnes transactions list sorted by timestamp (from the newest to the oldest)
    * @param {{transactions: Object.<string, object>}} state module state
@@ -17,12 +23,7 @@ export default {
    */
   partnerTransactions: state => partner => Object.values(state.transactions).filter(tx => tx.partner === partner),
 
-  /**
-   * Returns a flag, indicating whether older transactions are being retrieved at the moment.
-   * @param {any} state module state
-   * @returns {boolean}
-   */
-  areTransactionsLoading (state) {
-    return state.areTransactionsLoading
+  fee () {
+    return Fees.ADM_TRANSFER
   }
 }

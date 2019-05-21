@@ -1,0 +1,234 @@
+@import '~vuetify/src/stylus/settings/_colors.styl'
+
+$chat-form-height := 52px
+
+$chat-sender := {
+  font-size: 15px
+  line-height: 1.2
+}
+
+$chat-message := {
+  font-size: 15px
+  line-height: 1
+}
+
+$chat-avatar-size := 40px
+
+.a-chat
+  display: block
+  text-decoration: none
+  height: 100%
+  position: relative
+  padding-bottom: $chat-form-height
+
+  &__content
+    height: inherit
+    display: flex
+    flex-direction: column
+
+  &__body
+    position: relative
+    flex: 1
+    background-color: inherit
+    color: inherit
+
+  &__body-messages
+    position: absolute
+    top: 0
+    left: 0
+    overflow-y: scroll
+    width: 100%
+    height: 100%
+
+    /* Scrollbar styles (Firefox) */
+    scrollbar-color: $grey.lighten-2 transparent
+    scrollbar-width: thin
+
+    /* Scrollbar styles (WebKit) */
+    &::-webkit-scrollbar
+      width: 4px
+    &::-webkit-scrollbar-track
+      background: transparent
+    &::-webkit-scrollbar-thumb
+      background: $grey.lighten-2
+    &::-webkit-scrollbar-thumb:hover
+      background: $grey.lighten-1
+
+  &__message-container
+    display: inline-block
+    clear: both
+    float: left
+    max-width: 80%
+
+    &:last-child
+      margin-bottom: 0
+    &--right
+      float: right
+
+  &__message
+    display: flex
+    flex-direction: row
+    padding-top: 8px
+    padding-bottom: 8px
+    padding-left: 16px
+    padding-right: 16px
+
+  /**
+   * 1. Аvatar must have width/height even if empty.
+   */
+  &__message-avatar
+    width: $chat-avatar-size
+    height: $chat-avatar-size
+    min-width: $chat-avatar-size // [1]
+    min-height: $chat-avatar-size // [1]
+    margin-right: 8px
+    border-radius: 4px
+
+    img
+      border-radius: inherit
+    &--right
+      order: 2
+      margin-right: 0px
+      margin-left: 8px
+
+  /**
+   * 1. Element `pre` must not overflow the parent flex element.
+   */
+  &__message-card
+    text-align: left
+    display: inline-block
+    min-width: 0 // [1]
+
+  &__message-card-header
+    display: flex
+    flex-direction: row
+    align-items: center
+
+  &__message-text
+    font-size: $chat-message.font-size
+    overflow-wrap: break-word
+    word-break: break-word
+    word-wrap: break-word
+
+    p
+      margin-bottom: 0
+    p:not(:last-child)
+      margin-bottom: 8px
+    a
+      text-decoration: none
+      &:hover
+        text-decoration: underline
+    pre
+      font-size: 12px
+      padding: 8px
+      margin-bottom: 8px
+      tab-size: 4
+      border-radius: 4px
+      border-style: solid
+      border-width: 1px
+      overflow-x: auto
+      max-width: 100%
+
+  /**
+   * 1. align text to top
+   */
+  &__sender
+    font-size: $chat-sender.font-size
+    line-height: $chat-sender.line-height
+    font-weight: 700
+    margin-right: 8px
+
+  &__timestamp
+    font-size: 8px
+    line-height: 1
+
+  &__amount
+    font-size: 24px
+    font-weight: 500
+    line-height: 1
+
+    &--clickable
+      cursor: pointer
+
+  &__status
+    line-height: 1
+    margin-left: 8px
+
+    i
+      line-height: 1.2
+
+  &__form
+    padding: 8px
+    position: absolute
+    left: 0
+    bottom: 0
+    width: 100%
+
+    /**
+     * Vuetify
+     * 1. fix Firefox `textarea` height.
+     * 2. reset textarea extra margins.
+     */
+    textarea
+      height: 32px // [1]
+
+    .v-text-field { // [2]
+      padding-top: 0
+      margin-top: 0
+    }
+
+  &__form-append
+    margin-right: 8px
+
+/** Themes **/
+.theme--light
+  .a-chat
+    &__content
+      background-color: $shades.white
+      color: $shades.black
+    &__message
+      &--red
+        background-color: $red.lighten-5
+      &--green
+        background-color: $green.lighten-5
+      &:hover
+        background-color: $grey.lighten-4
+    &__sender
+      color: $grey.darken-4
+    &__timestamp
+      color: $grey.darken-1
+    &__message-text
+      a
+        color: $blue.base
+      pre
+        background-color: $grey.lighten-4
+        color: $grey.darken-3
+        border-color: $grey.lighten-2
+    &__form
+      background-color: $grey.lighten-4
+
+.theme--dark
+  .a-chat
+    &__content
+      background-color: $grey.darken-4
+      color: $shades.white
+    &__message
+      &--red
+        background-color: $grey.darken-3
+      &--green
+        background-color: $grey.darken-3
+      &:hover
+        background-color: $grey.darken-3
+    &__sender
+      color: $shades.white
+    &__timestamp
+      color: $grey.base
+    &__message-text
+      a
+        color: $blue.lighten-2
+      pre
+        background-color: $grey.darken-4
+        color: inherit
+        border-color: $grey.darken-2
+    &__form
+      background-color: $grey.darken-4

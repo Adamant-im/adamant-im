@@ -28,6 +28,7 @@ export default {
     let maxHeight = 0
 
     const address = state.address
+
     transactions.forEach(tx => {
       if (!tx) return
 
@@ -56,12 +57,13 @@ export default {
       state.maxHeight = maxHeight
     }
   },
-
+  areOlderLoading (state, areLoading) {
+    state.areOlderLoading = areLoading
+  },
   areRecentLoading (state, areLoading) {
     state.areRecentLoading = areLoading
   },
-
-  areOlderLoading (state, areLoading) {
-    state.areOlderLoading = areLoading
+  areTransactionsLoading (state, areLoading) {
+    state.areTransactionsLoading = areLoading
   }
 }

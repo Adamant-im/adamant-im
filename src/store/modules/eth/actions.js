@@ -2,6 +2,7 @@ import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
 import { ETH_TRANSFER_GAS } from '../../../lib/constants'
+import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -13,11 +14,7 @@ const STATUS_INTERVAL = 8000
  * @param {*} context
  */
 function storeEthAddress (context) {
-  const payload = {
-    crypto: context.state.crypto,
-    address: context.state.address
-  }
-  context.dispatch('storeCryptoAddress', payload, { root: true })
+  storeCryptoAddress(context.state.crypto, context.state.address)
 }
 
 const initTransaction = (api, context, ethAddress, amount) => {
@@ -38,19 +35,12 @@ const parseTransaction = (context, tx) => {
     amount: utils.toEther(tx.value.toString(10)),
     fee: utils.calculateFee(tx.gas, tx.gasPrice.toString(10)),
     status: tx.blockNumber ? 'SUCCESS' : 'PENDING',
-    blockNumber: tx.blockNumber
+    blockNumber: tx.blockNumber,
+    gasPrice: tx.gasPrice.toNumber(10)
   }
 }
 
 const createSpecificActions = (api, queue) => ({
-  /** On account update this handler ensures that ETH address is in the KVS */
-  updateAccount: {
-    root: true,
-    handler (context) {
-      storeEthAddress(context)
-    }
-  },
-
   /**
    * Requests ETH account status: balance, gas price, etc.
    * @param {*} context Vuex action context
@@ -66,7 +56,11 @@ const createSpecificActions = (api, queue) => ({
       return [
         // Balance
         api.eth.getBalance.request(context.state.address, block || 'latest', (err, balance) => {
-          if (!err) context.commit('balance', utils.toEther(balance.toString(10)))
+          if (!err) {
+            context.commit('balance', Number(
+              utils.toEther(balance.toString())
+            ))
+          }
         }),
         // Current gas price
         api.eth.getGasPrice.request((err, price) => {

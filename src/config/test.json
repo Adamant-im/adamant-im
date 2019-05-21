@@ -1,0 +1,20 @@
+{
+  "minApiVersion": "0.3.1",
+  "server": {
+    "adm": [
+      {
+        "url": "http://163.172.161.218:36667"
+      }
+    ],
+    "eth": [
+      {
+        "url": "https://ethnode1.adamant.im",
+        "hasIndex": true
+      }
+    ],
+    "doge": [
+      { "url": "https://dogenode1.adamant.im/api/" }
+    ]
+  },
+  "env": "test"
+}

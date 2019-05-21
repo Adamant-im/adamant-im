@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ChatStartDialog.vue renders the correct markup 1`] = `
+<v-dialog-stub
+  maxwidth="none"
+  origin="center center"
+  transition="dialog-transition"
+  width="500"
+>
+  <v-card-stub
+    elevation="2"
+  >
+    <v-card-title-stub
+      class="headline"
+      primarytitle="true"
+    >
+      
+      Start new chat
+    
+    </v-card-title-stub>
+     
+    <v-layout-stub
+      align-center=""
+      class="pa-3"
+      justify-center=""
+      row=""
+      tag="div"
+      wrap=""
+    >
+      <v-flex-stub
+        tag="div"
+        xs10=""
+      >
+        <v-text-field-stub
+          label="Partner address"
+          rules="v => _get__(\\"validateAddress\\")('ADM', v) || this.$t('chats.incorrect_address')"
+          title="Enter a partner address in the format U1234567890"
+        />
+      </v-flex-stub>
+       
+      <v-flex-stub
+        class="text-xs-right"
+        tag="div"
+        xs2=""
+      >
+        <v-btn-stub
+          activeclass="v-btn--active"
+          flat="true"
+          icon="true"
+          tag="button"
+          type="button"
+        >
+          <v-icon-stub>
+            mdi-qrcode-scan
+          </v-icon-stub>
+        </v-btn-stub>
+      </v-flex-stub>
+       
+      <v-flex-stub
+        class="text-xs-center"
+        tag="div"
+        xs4=""
+      >
+        <v-btn-stub
+          activeclass="v-btn--active"
+          tag="button"
+          type="button"
+        >
+          Start chat
+        </v-btn-stub>
+      </v-flex-stub>
+    </v-layout-stub>
+  </v-card-stub>
+   
+  <!---->
+</v-dialog-stub>
+`;

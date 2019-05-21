@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import config from '../config.json'
+import config from '../config'
 import * as utils from './eth-utils'
 
 const cache = { }
@@ -32,7 +32,7 @@ const cache = { }
  */
 
 /**
- * Retrieves ETH transactions list according to the specified criteriae.
+ * Retrieves ETH transactions list according to the specified criteria.
  * @param {Request} options request options
  * @returns {Promise<{total: number, items: Array<EthTx>}>}
  */

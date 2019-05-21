@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LoginForm.vue renders the correct markup 1`] = `
+<v-form-stub
+  class="login-form"
+  value="true"
+>
+  <v-layout-stub
+    tag="div"
+  >
+    <v-text-field-stub
+      browser-autocomplete="current-password"
+      class="text-xs-center"
+      color="grey"
+      label="Input your passphrase to login"
+      type="password"
+    />
+     
+  </v-layout-stub>
+   
+  <v-layout-stub
+    align-center=""
+    justify-center=""
+    row=""
+    tag="div"
+    wrap=""
+  >
+    <v-btn-stub
+      activeclass="v-btn--active"
+      class="login-button v-btn--primary"
+      tag="button"
+      type="button"
+    >
+      <v-progress-circular-stub
+        class="mr-3"
+        color="primary"
+        indeterminate="true"
+        rotate="0"
+        size="24"
+        style="display: none;"
+        value="0"
+        width="4"
+      />
+      
+        Login
+      
+    </v-btn-stub>
+  </v-layout-stub>
+   
+  <v-layout-stub
+    justify-center=""
+    name="slide-fade"
+    tag="div"
+  />
+</v-form-stub>
+`;

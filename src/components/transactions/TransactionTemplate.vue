@@ -1,74 +1,172 @@
 <template>
-  <div class="transaction transaction_detail">
-    <md-table>
-      <md-table-body>
-        <md-table-row >
-          <md-table-cell class='label_td'>{{ $t('transaction.amount') }}</md-table-cell>
-          <md-table-cell >{{ amount || placeholder }}</md-table-cell>
-        </md-table-row>
-        <md-table-row>
-          <md-table-cell  class='label_td'>{{ $t('transaction.date') }}</md-table-cell>
-          <md-table-cell >{{ timestamp ? $formatDate(timestamp) : placeholder }}</md-table-cell>
-        </md-table-row>
-        <md-table-row>
-          <md-table-cell  class='label_td'>{{ $t('transaction.confirmations') }}</md-table-cell>
-          <md-table-cell >{{ confirmations || placeholder }}</md-table-cell>
-        </md-table-row>
-        <md-table-row >
-          <md-table-cell  class='label_td'>{{ $t('transaction.commission') }}</md-table-cell>
-          <md-table-cell >{{ fee || placeholder }}</md-table-cell>
-        </md-table-row>
-        <md-table-row >
-          <md-table-cell  class='label_td'>{{ $t('transaction.txid') }}</md-table-cell>
-          <md-table-cell class='data_td'>{{ id || placeholder }}</md-table-cell>
-        </md-table-row>
-        <md-table-row >
-          <md-table-cell  class='label_td'>{{ $t('transaction.sender') }}</md-table-cell>
-          <md-table-cell class='data_td'>{{sender || placeholder }}</md-table-cell>
-        </md-table-row>
-        <md-table-row >
-          <md-table-cell  class='label_td'>{{ $t('transaction.recipient') }}</md-table-cell>
-          <md-table-cell class='data_td'>{{ recipient || placeholder }} </md-table-cell>
-        </md-table-row>
-        <md-table-row class='open_in_explorer' v-if="explorerLink">
-          <md-table-cell  class='label_td'>
-            <div v-on:click="openInExplorer">{{ $t('transaction.explorer') }}</div>
-          </md-table-cell>
-          <md-table-cell class='data_td'>
-            <div v-on:click="openInExplorer">&gt;</div>
-          </md-table-cell>
-        </md-table-row>
-        <md-table-row class='open_chat' v-if="partner">
-          <md-table-cell class='label_td'>
-            <div v-on:click="openChat">
-              <md-icon class="md-size-2x">{{ hasMessages ? "chat" : "chat_bubble_outline" }}</md-icon>
-              <span>{{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}</span>
-            </div>
-          </md-table-cell>
-          <md-table-cell class='data_td'></md-table-cell>
-        </md-table-row>
-      </md-table-body>
-    </md-table>
-  </div>
+  <v-layout row wrap justify-center>
+
+    <app-toolbar-centered
+      app
+      :title="`${id}`"
+      flat
+    />
+
+    <container>
+
+      <v-list class="transparent">
+
+        <v-list-tile>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ $t('transaction.amount') }}</v-list-tile-title>
+          </v-list-tile-content>
+
+          <div>
+            <v-list-tile-title>{{ amount || placeholder }}</v-list-tile-title>
+          </div>
+        </v-list-tile>
+
+        <v-divider/>
+
+        <v-list-tile>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ $t('transaction.date') }}</v-list-tile-title>
+          </v-list-tile-content>
+
+          <div>
+            <v-list-tile-title>{{ timestamp ? $formatDate(timestamp) : placeholder }}</v-list-tile-title>
+          </div>
+        </v-list-tile>
+
+        <v-divider/>
+
+        <v-list-tile>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ $t('transaction.confirmations') }}</v-list-tile-title>
+          </v-list-tile-content>
+
+          <div>
+            <v-list-tile-title>{{ confirmations || placeholder }}</v-list-tile-title>
+          </div>
+        </v-list-tile>
+
+        <v-divider/>
+
+        <v-list-tile>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ $t('transaction.commission') }}</v-list-tile-title>
+          </v-list-tile-content>
+
+          <div>
+            <v-list-tile-title>{{ fee || placeholder }}</v-list-tile-title>
+          </div>
+        </v-list-tile>
+
+        <v-divider/>
+
+        <v-list-tile :title="id || placeholder">
+          <v-list-tile-content>
+            <v-list-tile-title>{{ $t('transaction.txid') }}</v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{ id || placeholder }}
+            </v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+        <v-divider/>
+
+        <v-list-tile :title="sender || placeholder">
+          <v-list-tile-content>
+            <v-list-tile-title>{{ $t('transaction.sender') }}</v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{ sender || placeholder }}
+            </v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+        <v-divider/>
+
+        <v-list-tile :title="recipient || placeholder">
+          <v-list-tile-content>
+            <v-list-tile-title>{{ $t('transaction.recipient') }}</v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{ recipient || placeholder }}
+            </v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+        <v-divider/>
+
+        <v-list-tile v-if="explorerLink" @click="openInExplorer">
+          <v-list-tile-content>
+            <v-list-tile-title>{{ $t('transaction.explorer') }}</v-list-tile-title>
+          </v-list-tile-content>
+
+          <div>
+            <v-list-tile-title><v-icon>mdi-chevron-right</v-icon></v-list-tile-title>
+          </div>
+        </v-list-tile>
+
+        <v-list-tile v-if="partner">
+          <v-list-tile-content>
+            <v-btn @click="openChat" flat>
+              <v-icon left>{{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}</v-icon>
+              {{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}
+            </v-btn>
+          </v-list-tile-content>
+        </v-list-tile>
+
+      </v-list>
+
+    </container>
+
+  </v-layout>
 </template>
 
 <script>
-import { Symbols } from '../../lib/constants'
+import { Symbols } from '@/lib/constants'
+
+import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 export default {
   name: 'transaction-template',
-  props: [
-    'amount',
-    'timestamp',
-    'id',
-    'confirmations',
-    'fee',
-    'recipient',
-    'sender',
-    'explorerLink',
-    'partner',
-    'status'
-  ],
+  props: {
+    amount: {
+      required: true,
+      type: String
+    },
+    confirmations: {
+      required: true,
+      type: Number
+    },
+    explorerLink: {
+      required: true,
+      type: String
+    },
+    fee: {
+      required: true,
+      type: String
+    },
+    id: {
+      required: true,
+      type: String
+    },
+    partner: {
+      required: true,
+      type: String
+    },
+    recipient: {
+      required: true,
+      type: String
+    },
+    sender: {
+      required: true,
+      type: String
+    },
+    status: {
+      required: true,
+      type: String
+    },
+    timestamp: {
+      required: true,
+      type: Number
+    }
+  },
   methods: {
     openInExplorer: function () {
       if (this.explorerLink) {
@@ -76,51 +174,21 @@ export default {
       }
     },
     openChat: function () {
-      this.$store.commit('select_chat', this.partner)
       this.$router.push('/chats/' + this.partner + '/')
     }
   },
   computed: {
     hasMessages: function () {
-      const chat = this.$store.state.chats[this.partner]
+      const chat = this.$store.state.chat.chats[this.partner]
       return chat && chat.messages && Object.keys(chat.messages).length > 0
     },
     placeholder () {
       if (!this.status) return Symbols.CLOCK
       return this.status === 'ERROR' ? Symbols.CROSS : Symbols.HOURGLASS
     }
+  },
+  components: {
+    AppToolbarCentered
   }
 }
 </script>
-<style>
-  .label_td {
-    text-align: left;
-  }
-  .transaction_detail {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  .data_td {
-    word-break: break-all;
-  }
-  @media (max-width: 380px) {
-    .label_td {
-      text-align:left;
-      max-width:100px;
-    }
-  }
-
-  .open_in_explorer {
-    cursor: pointer;
-  }
-
-  .md-table .md-table-row.open_chat .md-table-cell.label_td .md-table-cell-container {
-    display: inherit;
-    cursor: pointer;
-  }
-
-  .md-table .md-table-row.open_chat .md-table-cell.label_td .md-icon {
-    margin-left: -2px;
-    margin-right: 8px;
-  }
-</style>

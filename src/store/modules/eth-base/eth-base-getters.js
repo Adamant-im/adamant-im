@@ -13,6 +13,6 @@ export default {
   },
 
   areTransactionsLoading (state) {
-    return state.areOlderLoading || (state.areRecentLoading && !Object.values(state.transactions).length)
+    return state.areTransactionsLoading
   }
 }

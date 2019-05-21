@@ -1,10 +1,12 @@
 import Queue from 'promise-queue'
+import { Base64 } from 'js-base64'
 
 import { Transactions, Delegates } from './constants'
 import utils from './adamant'
 import client from './adamant-api-client'
-import renderMarkdown from './markdown'
-import { decryptData, encryptData, getAdmDataBase, getPublicKeysCache, updatePublicKeysCache } from './indexedDb'
+import { encryptPassword } from '@/lib/idb/crypto'
+import { restoreState } from '@/lib/idb/state'
+import store from '@/store'
 
 Queue.configure(Promise)
 
@@ -14,8 +16,6 @@ const queue = new Queue(1, Infinity)
 /** @type {{privateKey: Buffer, publicKey: Buffer}} */
 let myKeypair = { }
 let myAddress = null
-
-const publicKeysCache = { }
 
 /** Lists cryptos for which addresses are currently being stored to the KVS */
 const pendingAddresses = { }
@@ -62,11 +62,9 @@ export function unlock (passphrase) {
  * Retrieves current account details, creating it if necessary.
  * @returns {Promise<any>}
  */
-export function getCurrentAccount (context) {
-  if (myKeypair.publicKey === undefined) {
-    unlock(context.getters.getPassPhrase)
-  }
+export function getCurrentAccount () {
   const publicKey = myKeypair.publicKey.toString('hex')
+
   return client.get('/api/accounts', { publicKey })
     .then(response => {
       if (response.success) {
@@ -104,61 +102,26 @@ export function isReady () {
  * @returns {Promise<string>}
  */
 export function getPublicKey (address = '') {
-  if (publicKeysCache[address]) {
-    return Promise.resolve(publicKeysCache[address])
+  const publicKeyCached = store.getters.publicKey(address)
+
+  if (publicKeyCached) {
+    return Promise.resolve(publicKeyCached)
   }
 
-  // In case of login via password
-  if (sessionStorage.getItem('storeInLocalStorage') === 'true') {
-    return getAdmDataBase().then((db) => {
-      return getPublicKeysCache(db, encryptData(address)).then(encryptedPublicKeysCache => {
-        if (!encryptedPublicKeysCache) {
-          return getPublicKeyFromBackend(address)
-        }
-        const decryptedPublicKey = decryptData(encryptedPublicKeysCache.value)
-        publicKeysCache[address] = decryptedPublicKey
-        return decryptedPublicKey
-      }).catch(err => {
-        console.warn('Something going wrong, get public key from backend', err)
-        return getPublicKeyFromBackend(address)
-      })
-    })
-  }
-  return getPublicKeyFromBackend(address)
-}
-
-function getPublicKeyFromBackend (address) {
   return client.get('/api/accounts/getPublicKey', { address })
     .then(response => {
-      const key = response.publicKey
-      publicKeysCache[address] = key
-      if (key && sessionStorage.getItem('storeInLocalStorage') === 'true') {
-        getAdmDataBase().then((db) => {
-          updatePublicKeysCache(db, encryptData(address), encryptData(key))
+      const publicKey = response.publicKey
+
+      if (publicKey) {
+        store.commit('setPublicKey', {
+          adamantAddress: address,
+          publicKey
         })
-      }
-      return key
-    })
-}
 
-export function getPublicKeyWithAddress (address = '') {
-  if (publicKeysCache[address]) {
-    return Promise.resolve({
-      address: address,
-      publicKey: publicKeysCache[address]
-    })
-  }
-  return client.get('/api/accounts/getPublicKey', { address })
-    .then(response => {
-      const key = response.publicKey
-      publicKeysCache[address] = key
-      getAdmDataBase().then((db) => {
-        updatePublicKeysCache(db, encryptData(address), encryptData(key))
-      })
-      return {
-        address: address,
-        publicKey: key
+        return publicKey
       }
+
+      throw new Error('No public key')
     })
 }
 
@@ -373,7 +336,7 @@ export function storeCryptoAddress (crypto, address) {
 export function getTransactions (options = { }) {
   const query = {
     inId: myAddress,
-    'and:type': options.type || Transactions.SEND,
+    'and:minAmount': 1,
     orderBy: 'timestamp:desc'
   }
 
@@ -383,6 +346,10 @@ export function getTransactions (options = { }) {
 
   if (options.from) {
     query['and:fromHeight'] = options.from
+  }
+
+  if (options.type) {
+    query['and:type'] = options.type
   }
 
   return client.get('/api/transactions', query)
@@ -405,14 +372,15 @@ export function getTransaction (id) {
 
 /**
  * Retrieves chat messages for the current account.
- * @param {number} from fetch messages starting from the specified height
- * @param {number} offset offset (defaults to 0)
+ * @param {number} from Fetch messages starting from the specified height
+ * @param {number} offset Offset (defaults to 0)
+ * @param {string} orderBy Can be: `asc` || `desc`
  * @returns {Promise<{count: number, transactions: Array}>}
  */
-export function getChats (from = 0, offset = 0) {
+export function getChats (from = 0, offset = 0, orderBy = 'desc') {
   const params = {
     isIn: myAddress,
-    orderBy: 'timestamp:desc'
+    orderBy: `timestamp:${orderBy}`
   }
 
   if (from) {
@@ -443,7 +411,7 @@ export function getChats (from = 0, offset = 0) {
 
     return Promise.all(promises).then(decoded => ({
       count,
-      transactions: decoded
+      transactions: decoded.filter(v => v)
     }))
   })
 }
@@ -473,7 +441,7 @@ function decodeChat (transaction, key) {
       transaction.message = i18nMsg
       transaction.isI18n = true
     } else {
-      transaction.message = renderMarkdown(message)
+      transaction.message = message
     }
   }
 
@@ -493,18 +461,58 @@ function getI18nMessage (message, senderId) {
   // P.S. I hate this function, but there's no way to get rid of it now.
 
   const isI18n =
-    (message.indexOf('chats.welcome_message') > -1 && senderId === 'U15423595369615486571') ||
-    (message.indexOf('chats.preico_message') > -1 && senderId === 'U7047165086065693428') ||
-    (message.indexOf('chats.ico_message') > -1 && senderId === 'U7047165086065693428')
+    (message.indexOf('chats.welcome_message') > -1 && senderId === 'U15423595369615486571')
 
   if (isI18n) {
     if (senderId === 'U15423595369615486571') {
       return 'chats.welcome_message'
     }
-    if (senderId === 'U7047165086065693428') {
-      return 'chats.ico_message'
-    }
   }
 
   return ''
+}
+
+/**
+ * Performs application login
+ * @param {string} Passphrase
+ * @return Promise<string> User address
+ */
+export function loginOrRegister (passphrase) {
+  try {
+    unlock(passphrase)
+  } catch (e) {
+    return Promise.reject(e)
+  }
+
+  return getCurrentAccount()
+}
+
+/**
+ * Login via password.
+ * @param {string} password
+ * @param {any} store
+ * @returns {Promise} Encrypted password
+ */
+export function loginViaPassword (password, store) {
+  return encryptPassword(password)
+    .then(encryptedPassword => {
+      store.commit('setPassword', encryptedPassword)
+
+      return restoreState(store)
+    })
+    .then(() => {
+      const passphrase = Base64.decode(store.state.passphrase)
+
+      try {
+        unlock(passphrase)
+      } catch (e) {
+        return Promise.reject(e)
+      }
+
+      return getCurrentAccount()
+        .then(account => ({
+          ...account,
+          passphrase
+        }))
+    })
 }

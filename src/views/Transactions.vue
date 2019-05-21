@@ -1,130 +1,127 @@
 <template>
-    <div class="transaction transaction_list" ref="txListElement">
-      <md-list class="custom-list md-triple-line md-transparent">
-        <md-list-item v-for="(transaction) in transactions" :key="transaction.id" style="cursor:pointer">
-          <md-avatar>
-            <md-icon>{{ transaction.direction === 'from' ? 'flight_takeoff' : 'flight_land' }}</md-icon>
-          </md-avatar>
+  <div id="txListElement">
+    <app-toolbar-centered
+      app
+      :title="$t('transaction.transactions')"
+      flat
+    />
 
-          <div class="md-list-text-container" v-on:click="goToTransaction(transaction.id)">
-            <div>
-              {{ displayName(transaction) }}
-              <span class="partner_display_name">{{ formatPartnerAddress(transaction) }}</span>
-            </div>
-            <span>{{ $formatAmount(transaction.amount, crypto) }} {{crypto}}</span>
-            <p>{{ $formatDate(transaction.timestamp) }}</p>
-          </div>
+    <v-container fluid class="pa-0">
+      <v-layout row wrap justify-center>
 
-          <md-button
-            class="md-icon-button md-list-action"
-            v-if="showChat"
-            @click="openChat(transaction)"
-          >
-            <md-icon>{{ hasMessages(transaction) ? "chat" : "chat_bubble_outline" }}</md-icon>
-          </md-button>
+        <container v-if="isFulfilled">
 
-          <md-divider class="md-inset"></md-divider>
-        </md-list-item>
-        <md-list-item class="transaction_list__loader" v-if="isLoading">
-          <inline-spinner />
-        </md-list-item>
-      </md-list>
+          <v-list v-if="hasTransactions" three-line class="transparent">
+            <transaction-list-item
+              v-for="(transaction, i) in transactions"
+              :key="i"
+              :id="transaction.id"
+              :sender-id="transaction.senderId"
+              :recipient-id="transaction.recipientId"
+              :timestamp="transaction.timestamp"
+              :amount="transaction.amount"
+              :crypto="crypto"
+              @click:transaction="goToTransaction"
+              @click:icon="goToChat"
+            />
+            <v-list-tile v-if="isLoading">
+              <InlineSpinner />
+            </v-list-tile>
+          </v-list>
 
-    </div>
+          <h3 v-else class="headline text-xs-center mt-4">
+            {{ $t('transaction.no_transactions') }}
+          </h3>
+
+        </container>
+
+        <InlineSpinner v-else-if="!isRejected" class="pt-4" />
+
+      </v-layout>
+    </v-container>
+  </div>
 </template>
 
 <script>
-
-import { Cryptos } from '../lib/constants'
-import InlineSpinner from '@/components/InlineSpinner.vue'
+import AppToolbarCentered from '@/components/AppToolbarCentered'
+import InlineSpinner from '@/components/InlineSpinner'
+import TransactionListItem from '@/components/TransactionListItem'
 
 export default {
-  name: 'transactions',
-  components: { InlineSpinner },
-  data () {
-    return {
-      bgTimer: null,
-      prefix: this.crypto.toLowerCase(),
-      showChat: this.crypto === Cryptos.ADM
-    }
-  },
-  mounted () {
-    this.update()
-    clearInterval(this.bgTimer)
-    this.bgTimer = setInterval(() => this.update(), 20000)
-    window.addEventListener('scroll', this.onScroll)
-  },
   beforeDestroy () {
-    clearInterval(this.bgTimer)
     window.removeEventListener('scroll', this.onScroll)
   },
+  mounted () {
+    this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
+      .then(() => {
+        this.isFulfilled = true
+      })
+      .catch(err => {
+        this.isRejected = true
+
+        this.$store.dispatch('snackbar/show', {
+          message: err.message
+        })
+      })
+    window.addEventListener('scroll', this.onScroll)
+  },
+  computed: {
+    transactions () {
+      const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
+
+      return transactions.filter(transaction => transaction.hasOwnProperty('amount'))
+    },
+    hasTransactions () {
+      return this.transactions && this.transactions.length > 0
+    },
+    isLoading () {
+      return this.$store.getters[`${this.cryptoModule}/areTransactionsLoading`]
+    },
+    cryptoModule () {
+      return this.crypto.toLowerCase()
+    }
+  },
+  data: () => ({
+    isFulfilled: false,
+    isRejected: false
+  }),
   methods: {
-    hasMessages (transaction) {
-      const chat = this.$store.state.chats[transaction.partner]
-      return chat && chat.messages && Object.keys(chat.messages).length > 0
+    goToTransaction (transactionId) {
+      this.$router.push({
+        name: 'Transaction',
+        params: {
+          crypto: this.crypto,
+          txId: transactionId
+        }
+      })
     },
-    openChat (transaction) {
-      const partner = transaction.partner
-      this.$store.commit('select_chat', partner)
-      this.$router.push('/chats/' + partner + '/')
-    },
-    goToTransaction (id) {
-      const params = { crypto: this.crypto, tx_id: id }
-      this.$router.push({ name: 'Transaction', params })
-    },
-    getPartner (tx) {
-      return tx.partner || (tx.direction === 'to' ? tx.senderId : tx.recipientId)
-    },
-    displayName (tx) {
-      const partner = this.getPartner(tx)
-      return this.crypto === Cryptos.ADM
-        ? this.$store.getters['partners/displayName'](partner) || ''
-        : ''
-    },
-    formatPartnerAddress (tx) {
-      const partner = this.getPartner(tx)
-      return this.crypto === Cryptos.ADM
-        ? '(' + partner + ')'
-        : partner
-    },
-    update () {
-      this.$store.dispatch(`${this.prefix}/getNewTransactions`)
+    goToChat (partnerId) {
+      this.$router.push({
+        name: 'Chat',
+        params: { partnerId }
+      })
     },
     onScroll () {
-      const height = this.$refs['txListElement'].offsetHeight
+      const height = document.getElementById('txListElement').offsetHeight
       const windowHeight = window.innerHeight
-      const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop + (document.documentElement.scrollTop || 0)
-
+      const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop +
+        (document.documentElement.scrollTop || 0)
       // If we've scrolled to the very bottom, fetch the older transactions from server
       if (windowHeight + scrollPosition >= height) {
-        this.$store.dispatch(`${this.prefix}/getOldTransactions`)
+        this.$store.dispatch(`${this.cryptoModule}/getOldTransactions`)
       }
     }
   },
-  computed: {
-    transactions: function () {
-      return this.$store.getters[`${this.prefix}/sortedTransactions`]
-    },
-    isLoading () {
-      return this.$store.getters[`${this.prefix}/areTransactionsLoading`]
+  props: {
+    crypto: {
+      default: 'ADM',
+      type: String
     }
   },
-  props: ['crypto']
+  components: {
+    AppToolbarCentered,
+    InlineSpinner,
+    TransactionListItem
+  }
 }
 </script>
-<style>
-  .transaction_list .md-list-item .md-list-item-container .md-list-action:nth-child(3) {
-    margin: 0 -3px 0 16px !important;
-  }
-
-  .transaction_list .transaction_list__loader .md-list-item-container {
-    justify-content: center;
-  }
-</style>
-
-<style>
-  .partner_display_name {
-    color: rgba(0, 0, 0, .54);
-    font-size: 14px;
-  }
-</style>

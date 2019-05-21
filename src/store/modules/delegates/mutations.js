@@ -15,5 +15,23 @@ export default {
   },
   set_last_transaction_status (state, payload) {
     state.lastTransactionConfirmed = payload
+  },
+  upVote (state, delegateId) {
+    const delegate = state.delegates[delegateId]
+
+    if (delegate) {
+      Vue.set(delegate, 'upvoted', true)
+      Vue.set(delegate, 'downvoted', false)
+      Vue.set(delegate, '_voted', true)
+    }
+  },
+  downVote (state, delegateId) {
+    const delegate = state.delegates[delegateId]
+
+    if (delegate) {
+      Vue.set(delegate, 'upvoted', false)
+      Vue.set(delegate, 'downvoted', true)
+      Vue.set(delegate, '_voted', false)
+    }
   }
 }

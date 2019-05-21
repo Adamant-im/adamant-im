@@ -1,13 +1,4 @@
-import * as admApi from '../../../lib/adamant-api'
-import i18n from '../../../i18n'
-import Vue from 'vue'
-import router from '../../../router'
-import utils from '../../../lib/adamant'
-
-function getExistedChatWithSender (chats, senderAddress) {
-  const chatListWithSender = Object.values(chats).filter(chat => chat.partner === senderAddress)
-  return chatListWithSender && chatListWithSender[0] && chatListWithSender[0].partner ? chatListWithSender[0] : undefined
-}
+import * as admApi from '@/lib/adamant-api'
 
 export default {
 
@@ -47,54 +38,7 @@ export default {
       options.from = context.state.maxHeight + 1
     }
     return admApi.getTransactions(options).then(response => {
-      if (Array.isArray(response.transactions) && response.transactions.length) {
-        const currentAdmAddress = context.rootGetters.getAdmAddress
-        let chats = context.rootGetters.getChats
-        response.transactions.forEach(tx => {
-          context.dispatch('updateChatHeight', tx.height, { root: true })
-          if (tx.recipientId !== currentAdmAddress && tx.senderId === currentAdmAddress && chats[tx.recipientId]) {
-            // Update sent message
-            Vue.set(chats[tx.recipientId].messages, tx.id, {
-              ...tx,
-              direction: 'from',
-              confirmation_class: 'confirmed'
-            })
-            return
-          }
-          const senderId = tx.senderId
-          const chatWithSender = getExistedChatWithSender(chats, senderId)
-          if (!chatWithSender) {
-            return
-          }
-          if (options.from) {
-            // Mark chat as unread, if user is on another page
-            if (router.currentRoute.path.indexOf(senderId) < 0) {
-              let newMessages = context.rootState.newChats[chatWithSender.partner]
-              if (!newMessages) {
-                newMessages = 0
-              }
-              Vue.set(context.rootState.newChats, chatWithSender.partner, newMessages + 1)
-              context.rootState.totalNewChats = context.rootState.totalNewChats + 1
-              // Play notification sound
-              if (context.rootState.notifySound) {
-                try {
-                  window.audio.playSound('newMessageNotification')
-                } catch (e) {
-                }
-              }
-            }
-            // Update last chat message
-            if (chatWithSender) {
-              const textLabel = tx.recipientId === currentAdmAddress ? 'received_label' : 'sent_label'
-              Vue.set(chatWithSender, 'last_message', {
-                ...chatWithSender.last_message,
-                message: i18n.t('chats.' + textLabel) + ' ' + tx.amount / 100000000 + ' ADM',
-                confirm_class: 'confirmed',
-                timestamp: utils.epochTime()
-              })
-            }
-          }
-        })
+      if (response.transactions.length > 0) {
         context.commit('transactions', response.transactions)
       }
     })
@@ -114,27 +58,23 @@ export default {
     }
 
     context.commit('areTransactionsLoading', true)
+    return admApi.getTransactions(options).then(response => {
+      context.commit('areTransactionsLoading', false)
+      const hasResult = Array.isArray(response.transactions) && response.transactions.length
 
-    return admApi.getTransactions(options).then(
-      response => {
-        context.commit('areTransactionsLoading', false)
-        const hasResult = Array.isArray(response.transactions) && response.transactions.length
-
-        if (hasResult) {
-          context.commit('transactions', response.transactions)
-        }
-
-        // Successful but empty response means, that the oldest transaction for the current
-        // address has been received already
-        if (response.success && !hasResult) {
-          context.commit('bottom')
-        }
-      },
-      error => {
-        context.commit('areTransactionsLoading', false)
-        return Promise.reject(error)
+      if (hasResult) {
+        context.commit('transactions', response.transactions)
       }
-    )
+
+      // Successful but empty response means, that the oldest transaction for the current
+      // address has been received already
+      if (response.success && !hasResult) {
+        context.commit('bottom')
+      }
+    }, error => {
+      context.commit('areTransactionsLoading', false)
+      return Promise.reject(error)
+    })
   },
 
   /**
@@ -143,8 +83,25 @@ export default {
    * @param {string} id transaction ID
    */
   getTransaction (context, { hash }) {
-    admApi.getTransaction(hash).then(
+    return admApi.getTransaction(hash).then(
       transaction => context.commit('transactions', [transaction])
     )
+  },
+
+  /**
+   * Sends the specified amount of ADM to the specified ADM address
+   * @param {any} context Vuex action context
+   * @param {{address: string, amount: number}} options send options
+   * @returns {Promise<{nodeTimestamp: number, success: boolean, transactionId: string}>}
+   */
+  sendTokens (context, options) {
+    return admApi.sendTokens(options.address, options.amount).then(result => {
+      context.commit('transactions', [{
+        id: result.transactionId,
+        recipientId: options.address,
+        senderId: context.state.address
+      }])
+      return result
+    })
   }
 }

@@ -1,18 +1,16 @@
 <template>
-  <div>
-    <transaction-template
-      :amount="amount"
-      :timestamp="transaction.timestamp"
-      :id="transaction.id"
-      :fee="fee"
-      :confirmations="transaction.confirmations"
-      :sender="sender"
-      :recipient="recipient"
-      :explorerLink="explorerLink"
-      :partner="transaction.partner"
-      :status="status"
-    />
-  </div>
+  <transaction-template
+    :amount="transaction.amount | currency"
+    :timestamp="transaction.timestamp"
+    :id="transaction.id"
+    :fee="transaction.fee | currency"
+    :confirmations="transaction.confirmations"
+    :sender="sender"
+    :recipient="recipient"
+    :explorerLink="explorerLink"
+    :partner="transaction.partner"
+    :status="status"
+  />
 </template>
 
 <script>
@@ -22,21 +20,18 @@ import { Cryptos } from '../../lib/constants'
 
 export default {
   name: 'adm-transaction',
-  props: ['id'],
+  props: {
+    id: {
+      required: true,
+      type: String
+    }
+  },
   components: {
     TransactionTemplate
   },
   computed: {
     transaction () {
       return this.$store.state.adm.transactions[this.id] || { }
-    },
-    amount () {
-      if (!this.transaction.amount) return ''
-      return this.$formatAmount(this.transaction.amount) + ' ' + Cryptos.ADM
-    },
-    fee () {
-      if (!this.transaction.fee) return ''
-      return this.$formatAmount(this.transaction.fee) + ' ' + Cryptos.ADM
     },
     sender () {
       return this.formatAddress(this.transaction.senderId)

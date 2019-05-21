@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import utils from './adamant'
-import config from '../config.json'
+import config from '../config'
 import semver from 'semver'
 
 /**
