@@ -115,7 +115,7 @@ export default {
     >>> .v-tabs__container
       height: auto // [1]
     >>> .v-tabs__slider
-      height: 1px
+      height: 2px
     >>> .v-tabs__bar
       background-color: transparent
     >>> .v-tabs__item
