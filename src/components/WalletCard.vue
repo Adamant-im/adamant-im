@@ -102,7 +102,7 @@ export default {
     padding: 8px 0 0
   &__tile
     // height: 60px // too small height
-
+  
 .v-tabs__wrapper
   padding: 10px 0px 1px 0px;
   margin-bottom: 10px;
