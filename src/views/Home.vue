@@ -18,7 +18,7 @@
               <div>
                 <crypto-icon
                   :crypto="wallet.cryptoCurrency"
-                  size="small"
+                  size="medium"
                   slot="icon"
                   :class="`${className}__icon`"
                 />
@@ -127,6 +127,9 @@ export default {
   &__icon
     margin-bottom: 3px
 
+.v-tabs__div
+  font-size: 16px
+  
 /** Themes **/
 .theme--light
   .account-view
