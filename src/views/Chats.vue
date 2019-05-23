@@ -10,7 +10,7 @@
               @click="showChatStartDialog = true"
               :class="`${className}__tile`"
             >
-              <v-list-tile-avatar size="36">
+              <v-list-tile-avatar size="24">
                 <v-icon :class="`${className}__icon`" size="24">mdi-pencil</v-icon>
               </v-list-tile-avatar>
 
@@ -115,13 +115,17 @@ export default {
     >>> .v-list__tile
       justify-content: flex-end
       height: 56px
-      border-bottom: 1px $adm-colors.secondary-2 solid;
+      background-color: $adm-colors.secondary-2-transparent
     >>> .v-list__tile__avatar
-      min-width: 48px
+      min-width: 28px
   &__title
     font-weight: 300
     font-size: 14px
 
+.chat-brief
+    .v-list__tile
+      border-bottom: 1px $adm-colors.secondary-2 solid
+      
 /** Themes **/
 .theme--light
   .chats-view
