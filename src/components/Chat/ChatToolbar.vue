@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar flat height="64" :class="`${className}`">
+  <v-toolbar flat height="56" :class="`${className}`">
     <v-btn @click="goBack" icon>
       <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
@@ -65,19 +65,21 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_variables.styl'
-
-$chat-text-field-font-size := 20px
+@import '../../assets/stylus/themes/adamant/_mixins.styl'
+@import '../../assets/stylus/settings/_colors.styl'
 
 .chat-toolbar
+  >>> .chat-avatar
+    padding-top: 5px
+
   &__textfield-container
     width: 100%
 
   >>> .v-text-field
-    font-size: $chat-text-field-font-size
-
+    a-text-regular-enlarged-bold()
     .v-label
       max-width: unset
-      font-size: $chat-text-field-font-size
+      a-text-explanation-enlarged-bold()
     .v-input__control
       padding: 0
     .v-input__control > .v-input__slot
@@ -88,6 +90,7 @@ $chat-text-field-font-size := 20px
 /** Themes **/
 .theme--light
   .chat-toolbar
+    background-color: $adm-colors.secondary2-transparent
     >>> .v-text-field
       .primary--text
         color: $grey.darken-1 !important

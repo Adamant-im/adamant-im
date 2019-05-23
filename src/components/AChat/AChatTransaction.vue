@@ -8,7 +8,7 @@
     >
       <div class="a-chat__message-card">
         <div>
-          <div class="a-chat__direction">
+          <div class="a-chat__direction a-text-regular-bold">
             {{ sender.id === userId ? i18n.sent : i18n.received }}
           </div>
           <div
@@ -23,7 +23,7 @@
         </div>
 
         <div class="a-chat__message-card-body">
-          <div class="a-chat__message-text mb-1">
+          <div class="a-chat__message-text mb-1 a-text-regular-enlarged">
             {{ message }}
           </div>
         </div>
@@ -129,3 +129,13 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="stylus">
+@import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../../assets/stylus/settings/_colors.styl'
+.a-chat__message-container
+   >>> .a-chat__direction
+      padding-bottom: 5px
+      margin-bottom: 15px
+      border-bottom: 1px $adm-colors.secondary2 solid
+</style>

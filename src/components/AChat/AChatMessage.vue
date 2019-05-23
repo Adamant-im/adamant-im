@@ -16,8 +16,8 @@
       </div>
       <div class="a-chat__message-card">
         <div class="a-chat__message-card-body">
-          <div v-if="html" v-html="message" class="a-chat__message-text"></div>
-          <div v-else v-text="message" class="a-chat__message-text"></div>
+          <div v-if="html" v-html="message" class="a-chat__message-text a-text-regular-enlarged"></div>
+          <div v-else v-text="message" class="a-chat__message-text a-text-regular-enlarged"></div>
         </div>
 
         <div class="a-chat__message-card-header mt-1">

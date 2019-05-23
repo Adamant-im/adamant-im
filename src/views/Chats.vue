@@ -11,7 +11,7 @@
               :class="`${className}__tile`"
             >
               <v-list-tile-avatar size="24">
-                <v-icon :class="`${className}__icon`" size="24">mdi-pencil</v-icon>
+                <v-icon :class="`${className}__icon`" size="16">mdi-pencil</v-icon>
               </v-list-tile-avatar>
 
               <div>
@@ -115,7 +115,7 @@ export default {
     >>> .v-list__tile
       justify-content: flex-end
       height: 56px
-      background-color: $adm-colors.secondary-2-transparent
+      background-color: $adm-colors.secondary2-transparent
     >>> .v-list__tile__avatar
       min-width: 28px
   &__title
@@ -123,23 +123,21 @@ export default {
     font-size: 14px
 
 .chat-brief
-    .v-list__tile
-      border-bottom: 1px $adm-colors.secondary-2 solid
-      
+    >>> .v-list__tile
+      border-bottom: 1px $adm-colors.secondary2 solid
+
 /** Themes **/
 .theme--light
   .chats-view
     &__title
       color: $adm-colors.muted
     &__icon
-      color: $shades.white
-      background-color: $grey.lighten-1
+      color: $adm-colors.regular
 
 .theme--dark
   .chats-view
     &__icon
-      color: $shades.white
-      background-color: $grey.darken-1
+      color: $adm-colors.regular
 
 /** Animations **/
 .messages-move

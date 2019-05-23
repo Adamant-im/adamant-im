@@ -16,7 +16,7 @@
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
 
-          <v-toolbar-title v-if="title" class="a-text-regular">
+          <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
             <div>{{ title }}</div>
             <div v-if="subtitle" class="body-1">{{ subtitle }}</div>
           </v-toolbar-title>
@@ -78,7 +78,7 @@ export default {
     },
     height: {
       type: Number,
-      default: 40
+      default: 56
     },
     showBack: {
       type: Boolean,
@@ -95,11 +95,14 @@ export default {
 .app-toolbar-centered
   padding: 0
 
+.v-toolbar__title:not(:first-child)
+  margin-left: 0px
+
 /** Themes **/
 .theme--light
   .app-toolbar-centered
     .v-toolbar
-      background-color: $adm-colors.secondary2
+       background-color: $adm-colors.secondary2-transparent
 .theme--dark
   .app-toolbar-centered
     .v-toolbar

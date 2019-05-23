@@ -287,10 +287,4 @@ export default {
   height: 100vh
   box-shadow: none
   background-color: transparent !important
-
-/** Themes **/
-.theme--light
-  .chat
-    .v-toolbar
-      background-color: $grey.lighten-2
 </style>
