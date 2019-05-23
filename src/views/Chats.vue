@@ -115,6 +115,7 @@ export default {
     >>> .v-list__tile
       justify-content: flex-end
       height: 56px
+      border-bottom: 1px $adm-colors.secondary-2 solid;
     >>> .v-list__tile__avatar
       min-width: 48px
   &__title
