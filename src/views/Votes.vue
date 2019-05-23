@@ -138,7 +138,7 @@
     >
       <v-card>
         <v-card-title
-          :class="`${className}__dialog-title` a-text-header"
+          :class="`${className}__dialog-title  a-text-header`"
         >
           {{ $t('votes.summary_title') }}
         </v-card-title>
@@ -146,13 +146,13 @@
         <v-divider></v-divider>
 
         <v-layout row wrap class="pa-3">
-          <div :class="`${className}__dialog-summary` a-text-regular-enlarged">
+          <div :class="`${className}__dialog-summary a-text-regular-enlarged`">
             {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
             {{ $t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
             {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
             {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
           </div>
-          <div :class="`${className}__dialog-info` a-text-regular-enlarged" v-html="$t('votes.summary_info')"></div>
+          <div :class="`${className}__dialog-info a-text-regular-enlarged`" v-html="$t('votes.summary_info')"></div>
         </v-layout>
 
         <v-card-actions>

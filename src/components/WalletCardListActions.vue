@@ -6,7 +6,7 @@
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title` a-text-caption">{{ $t('home.send_crypto', { crypto }) }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title a-text-caption`">{{ $t('home.send_crypto', { crypto }) }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
 
@@ -16,7 +16,7 @@
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title` a-text-caption">{{ $t('home.invest_btn') }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title  a-text-caption`">{{ $t('home.invest_btn') }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
 
@@ -26,7 +26,7 @@
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title` a-text-caption">{{ $t('home.free_adm_btn') }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title a-text-caption`">{{ $t('home.free_adm_btn') }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
   </v-list>

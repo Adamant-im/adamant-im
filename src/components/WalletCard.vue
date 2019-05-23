@@ -3,10 +3,10 @@
     <v-list two-line :class="`${className}__list`">
       <v-list-tile @click="copyToClipboard(address)" :class="`${className}__tile`">
         <v-list-tile-content>
-          <v-list-tile-title :class="`${className}__title` a-text-caption">
+          <v-list-tile-title :class="`${className}__title a-text-caption`">
             {{ cryptoName }} {{ $t('home.wallet') }}
           </v-list-tile-title>
-          <v-list-tile-sub-title :class="`${className}__subtitle` a-text-regular-enlarged">
+          <v-list-tile-sub-title :class="`${className}__subtitle a-text-regular-enlarged`">
             {{ address }}
           </v-list-tile-sub-title>
         </v-list-tile-content>
@@ -20,10 +20,10 @@
 
       <v-list-tile @click="$emit('click:balance', crypto)">
         <v-list-tile-content>
-          <v-list-tile-title :class="`${className}__title` a-text-caption">
+          <v-list-tile-title :class="`${className}__title a-text-caption`">
             {{ $t('home.balance') }}
           </v-list-tile-title>
-          <v-list-tile-sub-title :class="`${className}__subtitle`  a-text-regular-enlarged">
+          <v-list-tile-sub-title :class="`${className}__subtitle a-text-regular-enlarged`">
             {{ balance | currency(crypto, true) }}
           </v-list-tile-sub-title>
         </v-list-tile-content>
@@ -102,11 +102,11 @@ export default {
     padding: 8px 0 0
   &__tile
     // height: 60px // too small height
-  
+
 .v-tabs__wrapper
   padding: 10px 0px 1px 0px;
   margin-bottom: 10px;
-  
+
 /** Themes **/
 .theme--light
   .v-tabs__bar
