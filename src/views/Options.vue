@@ -14,7 +14,7 @@
 
           <!-- General -->
           <h3
-            :class="`${className}__title`"
+            :class="`${className}__title a-text-caption`"
             class="mt-3 mb-3"
           >
             {{ $t('options.general_title') }}
@@ -44,13 +44,13 @@
 
           <!-- Security -->
           <h3
-            :class="`${className}__title`"
+            :class="`${className}__title a-text-caption`"
             class="mt-4 mb-4"
           >
             {{ $t('options.security_title') }}
           </h3>
           <v-layout row wrap align-center>
-            <v-flex xs12>
+            <v-flex xs12 a-text-regular-enlarged>
               <v-checkbox
                 :label="$t('options.exit_on_close')"
                 color="grey darken-1"
@@ -59,7 +59,7 @@
                 readonly
               />
 
-              <div class="a-text-explanation">{{ $t('options.exit_on_close_tooltip') }}</div>
+              <div class="a-text-explanation-enlarged">{{ $t('options.exit_on_close_tooltip') }}</div>
 
               <password-set-dialog v-model="passwordDialog" @password="onSetPassword" />
             </v-flex>
@@ -67,7 +67,7 @@
 
           <!-- Chats -->
           <h3
-            :class="`${className}__title`"
+            :class="`${className}__title a-text-caption`"
             class="mt-4 mb-4"
           >
             {{ $t('options.chats_title') }}
@@ -80,7 +80,7 @@
                 v-model="sendMessageOnEnter"
               />
 
-              <div class="a-text-explanation">{{ $t('options.send_on_enter_tooltip') }}</div>
+              <div class="a-text-explanation-enlarged">{{ $t('options.send_on_enter_tooltip') }}</div>
             </v-flex>
 
             <v-flex xs12 class="mt-4">
@@ -90,13 +90,13 @@
                 v-model="formatMessages"
               />
 
-              <div class="a-text-explanation">{{ $t('options.format_messages_tooltip') }}</div>
+              <div class="a-text-explanation-enlarged">{{ $t('options.format_messages_tooltip') }}</div>
             </v-flex>
           </v-layout>
 
           <!-- Notifications -->
           <h3
-            :class="`${className}__title`"
+            :class="`${className}__title a-text-caption`"
             class="mt-4 mb-4"
           >
             {{ $t('options.notification_title') }}
@@ -109,7 +109,7 @@
                 v-model="allowSoundNotifications"
               />
 
-              <div class="a-text-explanation">{{ $t('options.enable_sound_tooltip') }}</div>
+              <div class="a-text-explanation-enlarged">{{ $t('options.enable_sound_tooltip') }}</div>
             </v-flex>
             <v-flex xs12 class="mt-4">
               <v-checkbox
@@ -118,7 +118,7 @@
                 v-model="allowTabNotifications"
               />
 
-              <div class="a-text-explanation">{{ $t('options.enable_bar_tooltip') }}</div>
+              <div class="a-text-explanation-enlarged">{{ $t('options.enable_bar_tooltip') }}</div>
             </v-flex>
             <v-flex xs12 class="mt-4">
               <v-checkbox
@@ -127,13 +127,13 @@
                 v-model="allowPushNotifications"
               />
 
-              <div class="a-text-explanation">{{ $t('options.enable_push_tooltip') }}</div>
+              <div class="a-text-explanation-enlarged">{{ $t('options.enable_push_tooltip') }}</div>
             </v-flex>
           </v-layout>
 
           <!-- Actions -->
           <h3
-            :class="`${className}__title`"
+            :class="`${className}__title a-text-caption`"
             class="mt-4 mb-4"
           >
             {{ $t('options.actions') }}
@@ -329,11 +329,12 @@ export default {
 @import '~vuetify/src/stylus/settings/_variables.styl'
 @import '~vuetify/src/stylus/settings/_colors.styl'
 @import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
 
 .settings-view
   &__title
-    font-size: 16px
-    font-weight: 500
+    padding-top: 15px
+    padding-bottom: 5px
   &__action
     display: block
     font-size: 16px
@@ -346,14 +347,13 @@ export default {
   >>> .v-input--selection-controls
     margin-top: 0
   >>> .v-label, &__label
-    font-size: 14px
-    font-weight: 300
+    a-text-regular-enlarged()
 
 /** Themes **/
 .theme--light
   .settings-view
     &__title
-      background-color: $adm-colors.secondary2
+      background-color: $adm-colors.secondary2-transparent
       color: $adm-colors.regular
     &__action
       color: $adm-colors.regular

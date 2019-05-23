@@ -120,7 +120,7 @@
 
           <div>
             <v-list-tile-title :class="`${className}__value`">
-              <v-icon>mdi-chevron-right</v-icon>
+              <v-icon size="20">mdi-chevron-right</v-icon>
             </v-list-tile-title>
           </div>
         </v-list-tile>
@@ -136,7 +136,7 @@
 
           <div>
             <v-list-tile-title :class="`${className}__value`">
-              <v-icon>{{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}</v-icon>
+              <v-icon size="20">{{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}</v-icon>
             </v-list-tile-title>
           </div>
         </v-list-tile>

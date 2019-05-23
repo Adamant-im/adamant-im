@@ -27,10 +27,10 @@
         </v-btn>
 
         <v-flex xs12 class="text-xs-center">
-          <v-btn @click="startChat" class="a-btn-primary">{{ $t('chats.start_chat') }}</v-btn>
+          <v-btn @click="startChat" class="a-btn-primary start-chat-button">{{ $t('chats.start_chat') }}</v-btn>
         </v-flex>
 
-        <v-flex xs12 class="text-xs-center mt-2">
+        <v-flex xs12 class="text-xs-center mt-2 show-my-qrcode">
           <a @click="showQrcodeRendererDialog = true" class="a-text-active">
             {{ $t('chats.show_my_qr_code') }}
           </a>
@@ -128,3 +128,16 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '../assets/stylus/settings/_colors.styl'
+
+.show-my-qrcode
+   margin-bottom: 15px
+
+.v-dialog .v-card .a-btn-primary.start-chat-button
+   width: 24px
+   margin-top: 15px
+   color: $adm-colors.regular
+
+</style>

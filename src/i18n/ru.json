@@ -214,7 +214,7 @@
     "confirm_approve": "Подтвердить",
     "confirm_cancel": "Отмена",
     "confirm_message": "Подтвердите перевод <b>{amount} {crypto}</b> на адрес <span class='address-in-confirm'>{target}</span>.",
-    "confirm_message_with_name": "Подтвердите перевод <b>{amount} {crypto}</b> получателю {name} <span class=\"a-text-explanation\">({address})</span>.",
+    "confirm_message_with_name": "Подтвердите перевод <b>{amount} {crypto}</b> получателю {name} <span class=\"a-text-explanation-enlarged\">({address})</span>.",
     "confirm_title": "Подтверждение перевода",
     "crypto": "Криптовалюта",
     "error_chat_fee": "Чтобы отправить {crypto} в чате, вам также нужно 0.001 ADM",

@@ -66,10 +66,10 @@
             color="grey darken-1"
             v-model="preferFastestNodeOption"
           />
-          <div class="a-text-explanation">{{ $t('nodes.fastest_tooltip') }}</div>
+          <div class="a-text-explanation-enlarged">{{ $t('nodes.fastest_tooltip') }}</div>
 
           <div
-            :class="`${className}__info`"
+            :class="`${className}__info a-text-regular-enlarged`"
             v-html="$t('nodes.nodeLabelDescription')"
             class="mt-4"
           ></div>
@@ -144,6 +144,7 @@ export default {
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_variables.styl'
 @import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
 
 .nodes-view
   &__header
@@ -153,14 +154,13 @@ export default {
     font-size: 14px
     font-weight: 300
   &__info
-    font-size: 14px
     >>> a
       text-decoration-line: none
       &:hover
         text-decoration-line: underline
   &__checkbox
     >>> .v-label
-      font-size: 14px
+      a-text-regular-enlarged()
   >>> .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot
     margin-bottom: 0
 

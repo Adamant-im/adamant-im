@@ -23,7 +23,7 @@
                 class="a-input"
               />
             </v-card-title>
-
+            <div class="vote-table-spacer"></div>
             <v-data-table
               :headers="headers"
               :pagination.sync="pagination"
@@ -110,7 +110,7 @@
               <template slot="footer">
                 <td :class="`${className}__review`" :colspan="headers.length" class="pa-0">
 
-                  <v-layout row wrap align-center justify-space-between>
+                  <v-layout row wrap align-center justify-space-between footer-buttons-container>
                     <pagination v-if="showPagination" v-model="pagination.page" :pages="pages"></pagination>
 
                     <v-btn
@@ -405,12 +405,24 @@ export default {
       padding-left: 20px
       padding-right: 20px
   &__review
-    padding-top: 30px !important
-    padding-bottom: 50px !important
+    padding-top: 15px !important
+    padding-bottom: 15px !important
   &__search
     >>> .v-input__slot
       padding-left: 16px
       padding-right: 16px
+tfoot
+    background: repeating-linear-gradient(140deg,#f6f6f6,#f6f6f6 .7px,#fefefe 0,#fefefe 5px)
+
+.vote-table-spacer
+      background: repeating-linear-gradient(140deg,#f6f6f6,#f6f6f6 .7px,#fefefe 0,#fefefe 5px)
+      height: 20px
+      margin-top: 5px
+
+.footer-buttons-container
+    >>> button:only-child
+      margin-left: auto
+
 /** Themes **/
 .theme--light
   .v-divider

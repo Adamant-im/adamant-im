@@ -20,11 +20,11 @@
           <span class="a-text-regular-enlarged">{{ partnerId }}</span>
         </v-list-tile-title>
 
-        <v-list-tile-sub-title :class="`${className}__amount`">
+        <v-list-tile-sub-title :class="`${className}__amount ${directionClass}`">
           {{ amount | currency(crypto) }}
         </v-list-tile-sub-title>
 
-        <v-list-tile-sub-title class="a-text-explanation">
+        <v-list-tile-sub-title class="a-text-explanation-small transaction-item__date">
           {{ createdAt | date }}
         </v-list-tile-sub-title>
       </v-list-tile-content>
@@ -80,6 +80,15 @@ export default {
     },
     isCryptoADM () {
       return this.crypto === Cryptos.ADM
+    },
+    directionClass () {
+      if (this.senderId === this.userId && this.recipientId === this.userId) {
+        return 'is-itself'
+      } else if (this.senderId === this.userId) {
+        return 'is-outgoing'
+      } else {
+        return 'is-incoming'
+      }
     }
   },
   methods: {
@@ -125,19 +134,37 @@ export default {
 
 <style lang="stylus" scoped>
 @import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
 
 .transaction-item
   &__amount
-    a-text-regular(16px, 400)
+    a-text-regular-enlarged-bold()
   &__tile
     >>> .v-list__tile
       padding: 0 12px
+    >>> .v-list__tile__avatar
+      min-width: 36px
+  &__date
+    padding-top: 4px
+  &__icon
+    min-width: 30px
+    font-size: 20px
+    margin-top: -14px
+
+.v-avatar
+    height: 24px!important
+    width: 50px!important
+    padding-right: 15px
 
 /** Themes **/
 .theme--light.v-list
   .transaction-item
     &__amount
       color: $adm-colors.regular
+      &.is-incoming
+         color: $adm-colors.good
+      &.is-outgoing
+        color: $adm-colors.danger
     &__icon
       color: $adm-colors.muted
 </style>

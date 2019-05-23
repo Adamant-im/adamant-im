@@ -85,7 +85,7 @@
 
         <v-divider class="a-divider"></v-divider>
 
-        <v-card-text class="a-text-regular" v-html="confirmMessage"/>
+        <v-card-text class="a-text-regular-enlarged" v-html="confirmMessage"/>
 
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -441,8 +441,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
-
 .send-funds-form
   &__button
     margin-top: 15px
