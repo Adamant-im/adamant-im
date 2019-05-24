@@ -11,7 +11,7 @@
 
         <container>
 
-          <v-card flat>
+          <v-card flat class="transparent">
             <v-card-title class="pa-0">
               <v-text-field
                 v-model="search"
@@ -23,7 +23,9 @@
                 class="a-input"
               />
             </v-card-title>
-            <div class="vote-table-spacer"></div>
+
+            <div :class="`${className}__spacer`"></div>
+
             <v-data-table
               :headers="headers"
               :pagination.sync="pagination"
@@ -110,7 +112,7 @@
               <template slot="footer">
                 <td :class="`${className}__review`" :colspan="headers.length" class="pa-0">
 
-                  <v-layout row wrap align-center justify-space-between footer-buttons-container>
+                  <v-layout row wrap align-center justify-space-between>
                     <pagination v-if="showPagination" v-model="pagination.page" :pages="pages"></pagination>
 
                     <v-btn
@@ -138,21 +140,21 @@
     >
       <v-card>
         <v-card-title
-          :class="`${className}__dialog-title  a-text-header`"
+          :class="`${className}__dialog-title`"
         >
           {{ $t('votes.summary_title') }}
         </v-card-title>
 
-        <v-divider></v-divider>
+        <v-divider :class="`${className}__divider`"></v-divider>
 
         <v-layout row wrap class="pa-3">
-          <div :class="`${className}__dialog-summary a-text-regular-enlarged`">
+          <div :class="`${className}__dialog-summary`">
             {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
             {{ $t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
             {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
             {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
           </div>
-          <div :class="`${className}__dialog-info a-text-regular-enlarged`" v-html="$t('votes.summary_info')"></div>
+          <div :class="`${className}__dialog-info`" v-html="$t('votes.summary_info')"></div>
         </v-layout>
 
         <v-card-actions>
@@ -383,6 +385,7 @@ export default {
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_colors.styl'
 @import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
 
 .delegates-view
   &__header
@@ -392,9 +395,11 @@ export default {
     font-size: 14px
     font-weight: 300
   &__dialog-title
-    font-size: 20px
-    font-weight: 500
+    a-text-header()
+  &__dialog-summary
+    a-text-regular-enlarged()
   &__dialog-info
+    a-text-regular-enlarged()
     margin-top: 16px
     >>> a
       text-decoration-line: none
@@ -411,22 +416,12 @@ export default {
     >>> .v-input__slot
       padding-left: 16px
       padding-right: 16px
-tfoot
-    background: repeating-linear-gradient(140deg,#f6f6f6,#f6f6f6 .7px,#fefefe 0,#fefefe 5px)
-
-.vote-table-spacer
-      background: repeating-linear-gradient(140deg,#f6f6f6,#f6f6f6 .7px,#fefefe 0,#fefefe 5px)
-      height: 20px
-      margin-top: 5px
-
-.footer-buttons-container
-    >>> button:only-child
-      margin-left: auto
+  &__spacer
+    height: 20px
+    margin-top: 5px
 
 /** Themes **/
 .theme--light
-  .v-divider
-    border-color: $adm-colors.secondary2
   .delegates-view
     &__header
       color: $adm-colors.muted
@@ -442,6 +437,8 @@ tfoot
       background-color: $adm-colors.primary2
     &__expand-list
       background-color: transparent
+    &__divider
+      border-color: $adm-colors.secondary2
     >>> .v-table tbody tr:not(:last-child)
       border-bottom: 1px solid $adm-colors.secondary2
 </style>
