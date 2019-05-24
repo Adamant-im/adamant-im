@@ -3,10 +3,10 @@
     <v-list two-line :class="`${className}__list`">
       <v-list-tile @click="copyToClipboard(address)" :class="`${className}__tile`">
         <v-list-tile-content>
-          <v-list-tile-title :class="`${className}__title a-text-caption`">
+          <v-list-tile-title :class="`${className}__title`">
             {{ cryptoName }} {{ $t('home.wallet') }}
           </v-list-tile-title>
-          <v-list-tile-sub-title :class="`${className}__subtitle a-text-regular-enlarged`">
+          <v-list-tile-sub-title :class="`${className}__subtitle`">
             {{ address }}
           </v-list-tile-sub-title>
         </v-list-tile-content>
@@ -20,10 +20,10 @@
 
       <v-list-tile @click="$emit('click:balance', crypto)">
         <v-list-tile-content>
-          <v-list-tile-title :class="`${className}__title a-text-caption`">
+          <v-list-tile-title :class="`${className}__title`">
             {{ $t('home.balance') }}
           </v-list-tile-title>
-          <v-list-tile-sub-title :class="`${className}__subtitle a-text-regular-enlarged`">
+          <v-list-tile-sub-title :class="`${className}__subtitle`">
             {{ balance | currency(crypto, true) }}
           </v-list-tile-sub-title>
         </v-list-tile-content>
@@ -89,14 +89,13 @@ export default {
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_colors.styl'
 @import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
 
 .wallet-card
   &__title
-    font-size: 16px
-    font-weight: 300
+    a-text-caption()
   &__subtitle
-    font-size: 14px
-    font-weight: 300
+    a-text-regular-enlarged()
     word-break: break-word
   &__list
     padding: 8px 0 0

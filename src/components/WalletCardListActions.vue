@@ -6,7 +6,7 @@
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title a-text-caption`">{{ $t('home.send_crypto', { crypto }) }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title`">{{ $t('home.send_crypto', { crypto }) }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
 
@@ -16,7 +16,7 @@
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title  a-text-caption`">{{ $t('home.invest_btn') }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title`">{{ $t('home.invest_btn') }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
 
@@ -26,7 +26,7 @@
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title a-text-caption`">{{ $t('home.free_adm_btn') }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title`">{{ $t('home.free_adm_btn') }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
   </v-list>
@@ -75,11 +75,11 @@ export default {
 
 <style lang="stylus" scoped>
 @import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
 
 .wallet-actions
   &__title
-    font-size: 16px
-    font-weight: 300
+    a-text-caption()
   &__avatar
     min-width: unset
     .v-avatar
