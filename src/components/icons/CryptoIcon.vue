@@ -58,7 +58,7 @@ export default {
       if (this.size === 'small') {
         return SMALL_SIZE
       } else if (this.size === 'medium') {
-        return MEDIUM_SIZE     
+        return MEDIUM_SIZE
       } else if (this.size === 'large') {
         return LARGE_SIZE
       }
