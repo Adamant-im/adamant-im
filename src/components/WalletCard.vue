@@ -103,14 +103,8 @@ export default {
   &__tile
     // height: 60px // too small height
 
-.v-tabs__wrapper
-  padding: 10px 0px 1px 0px;
-  margin-bottom: 10px;
-
 /** Themes **/
 .theme--light
-  .v-tabs__bar
-    background-color: $adm-colors.secondary2-transparent
   .wallet-card
     background-color: transparent
 
