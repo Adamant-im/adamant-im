@@ -5,7 +5,7 @@
   >
     <v-list-tile-avatar>
       <icon v-if="readOnly" :class="`${className}__icon`"><adm-fill-icon/></icon>
-      <chat-avatar v-else :size="40" style='padding-top: 5px' :user-id="partnerId" use-public-key/>
+      <chat-avatar v-else :size="40" :user-id="partnerId" use-public-key/>
 
       <v-badge overlap color="primary">
         <span v-if="numOfNewMessages > 0" slot="badge">
