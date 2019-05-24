@@ -124,12 +124,11 @@ export default {
       font-weight: 500
     >>> .v-tabs__item:not(.v-tabs__item--active) // [2]
       opacity: 1
+    >>> .v-tabs__div
+      font-size: 16px
   &__icon
     margin-bottom: 3px
 
-.v-tabs__div
-  font-size: 16px
-  
 /** Themes **/
 .theme--light
   .account-view
