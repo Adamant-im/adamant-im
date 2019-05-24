@@ -129,13 +129,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="stylus">
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../../assets/stylus/settings/_colors.styl'
-.a-chat__message-container
-   >>> .a-chat__direction
-      padding-bottom: 5px
-      margin-bottom: 15px
-      border-bottom: 1px $adm-colors.secondary2 solid
-</style>

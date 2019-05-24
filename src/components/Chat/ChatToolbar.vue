@@ -69,14 +69,12 @@ export default {
 @import '../../assets/stylus/settings/_colors.styl'
 
 .chat-toolbar
-  >>> .chat-avatar
-    padding-top: 5px
-
   &__textfield-container
     width: 100%
 
   >>> .v-text-field
     a-text-regular-enlarged-bold()
+
     .v-label
       max-width: unset
       a-text-explanation-enlarged-bold()
@@ -91,6 +89,7 @@ export default {
 .theme--light
   .chat-toolbar
     background-color: $adm-colors.secondary2-transparent
+
     >>> .v-text-field
       .primary--text
         color: $grey.darken-1 !important

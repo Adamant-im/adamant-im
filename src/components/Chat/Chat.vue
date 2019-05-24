@@ -281,8 +281,6 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-@import '~vuetify/src/stylus/settings/_colors.styl'
-
 .chat
   height: 100vh
   box-shadow: none

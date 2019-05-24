@@ -135,7 +135,7 @@ export default {
 .theme--dark
   .chats-view
     &__icon
-      color: $adm-colors.regular
+      color: $shades.white
 
 /** Animations **/
 .messages-move

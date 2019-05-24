@@ -95,14 +95,15 @@ export default {
 .app-toolbar-centered
   padding: 0
 
-.v-toolbar__title:not(:first-child)
-  margin-left: 0px
+  >>> .v-toolbar__title:not(:first-child)
+    margin-left: 0px
 
 /** Themes **/
 .theme--light
   .app-toolbar-centered
     .v-toolbar
-       background-color: $adm-colors.secondary2-transparent
+      background-color: $adm-colors.secondary2-transparent
+
 .theme--dark
   .app-toolbar-centered
     .v-toolbar

@@ -5,8 +5,8 @@
       avatar
       :class="`${className}__tile`"
     >
-      <v-list-tile-avatar>
-        <v-icon :class="`${className}__icon`">
+      <v-list-tile-avatar :class="`${className}__icon-avatar`" :size="40">
+        <v-icon :class="`${className}__icon`" :size="20">
           {{ senderId === userId ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}
         </v-icon>
       </v-list-tile-avatar>
@@ -24,14 +24,14 @@
           {{ amount | currency(crypto) }}
         </v-list-tile-sub-title>
 
-        <v-list-tile-sub-title class="a-text-explanation-small transaction-item__date">
+        <v-list-tile-sub-title :class="`${className}__date`" class="a-text-explanation-small">
           {{ createdAt | date }}
         </v-list-tile-sub-title>
       </v-list-tile-content>
 
       <v-list-tile-action v-if="isCryptoADM">
         <v-btn icon ripple @click.stop="onClickIcon">
-          <v-icon :class="`${className}__icon`">
+          <v-icon :class="`${className}__icon`" :size="20">
             {{ isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline' }}
           </v-icon>
         </v-btn>
@@ -83,11 +83,11 @@ export default {
     },
     directionClass () {
       if (this.senderId === this.userId && this.recipientId === this.userId) {
-        return 'is-itself'
+        return `${this.className}__amount--is-itself`
       } else if (this.senderId === this.userId) {
-        return 'is-outgoing'
+        return `${this.className}__amount--is-outgoing`
       } else {
-        return 'is-incoming'
+        return `${this.className}__amount--is-incoming`
       }
     }
   },
@@ -139,32 +139,30 @@ export default {
 .transaction-item
   &__amount
     a-text-regular-enlarged-bold()
-  &__tile
-    >>> .v-list__tile
-      padding: 0 12px
-    >>> .v-list__tile__avatar
-      min-width: 36px
   &__date
-    padding-top: 4px
-  &__icon
-    min-width: 30px
-    font-size: 20px
-    margin-top: -14px
+    margin-top: 4px
+  &__icon-avatar
+    >>> .v-avatar
+      position: relative
+      margin-top: -16px
+      margin-left: -10px
 
-.v-avatar
-    height: 24px!important
-    width: 50px!important
-    padding-right: 15px
+  // Do not break computed length of v-divider
+  /*&__tile*/
+    /*>>> .v-list__tile*/
+    /*padding: 0 12px*/
 
 /** Themes **/
 .theme--light.v-list
   .transaction-item
     &__amount
       color: $adm-colors.regular
-      &.is-incoming
-         color: $adm-colors.good
-      &.is-outgoing
+
+      &--is-incoming
+        color: $adm-colors.good
+      &--is-outgoing
         color: $adm-colors.danger
+
     &__icon
       color: $adm-colors.muted
 </style>
