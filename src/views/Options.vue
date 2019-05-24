@@ -365,7 +365,7 @@ export default {
       color: $shades.white
 
 /** Breakpoints **/
-@media $display-breakpoints.md-and-down
+@media $display-breakpoints.sm-and-down
   .settings-view
     &__title
       margin-left: -20px
