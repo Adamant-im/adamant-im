@@ -115,20 +115,18 @@ export default {
     >>> .v-list__tile
       justify-content: flex-end
       height: 56px
-      background-color: $adm-colors.secondary2-transparent
     >>> .v-list__tile__avatar
       min-width: 28px
   &__title
     font-weight: 300
     font-size: 14px
 
-.chat-brief
-    >>> .v-list__tile
-      border-bottom: 1px $adm-colors.secondary2 solid
-
 /** Themes **/
 .theme--light
   .chats-view
+    &__tile
+      >>> .v-list__tile
+        background-color: $adm-colors.secondary2-transparent
     &__title
       color: $adm-colors.muted
     &__icon

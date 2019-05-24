@@ -188,6 +188,8 @@ export default {
 /** Themes **/
 .theme--light
   .chat-brief
+    border-bottom: 1px solid $adm-colors.secondary2
+
     &__date
       color: $adm-colors.muted
     &__icon
