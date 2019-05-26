@@ -3,6 +3,7 @@
     v-model="show"
     :timeout="timeout"
     :color="color"
+    :class="className"
     bottom
   >
     {{ message }}
@@ -47,4 +48,6 @@ export default {
 
     >>> .v-snack__wrapper
       background-color: $adm-colors.secondary2
+      a-text-regular-enlarged()
+
 </style>
