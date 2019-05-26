@@ -140,32 +140,38 @@
           </h3>
           <v-layout row wrap>
             <v-flex xs12>
-              <a
-                @click="$router.push('/options/nodes')"
-                :class="`${className}__action`"
-              >
-                {{ $t('options.nodes_list') }}
-              </a>
-            </v-flex>
+            <v-list>
+              <v-list-tile @click="$router.push('/options/nodes')">
+                <v-list-tile-content>
+                  <v-list-tile-title  :class="`${className}__list__title`" >
+                    {{ $t('options.nodes_list') }}
+                  </v-list-tile-title>
+                </v-list-tile-content>
+                <div>
+                  <v-list-tile-title :class="`${className}__list__value`">
+                    <v-icon size="20">mdi-chevron-right</v-icon>
+                  </v-list-tile-title>
+                </div>
+              </v-list-tile>
 
-            <v-flex xs12>
-              <a
-                @click="$router.push('/votes')"
-                :class="`${className}__action`"
-                class="text-xs-left"
-              >
-                {{ $t('options.vote_for_delegates_button') }}
-              </a>
+              <v-divider/>
+
+            <v-list-tile  @click="$router.push('/votes')">
+              <v-list-tile-content>
+                <v-list-tile-title :class="`${className}__list__title`" >
+                  {{ $t('options.vote_for_delegates_button') }}
+                </v-list-tile-title>
+              </v-list-tile-content>
+              <div>
+                <v-list-tile-title :class="`${className}__value`">
+                  <v-icon size="20">mdi-chevron-right</v-icon>
+                </v-list-tile-title>
+              </div>
+            </v-list-tile>
+
+            </v-list>
             </v-flex>
           </v-layout>
-          <v-layout row wrap align-center>
-            <!-- Logout -->
-            <v-btn @click="logout" flat>
-              <v-icon left>mdi-logout-variant</v-icon>
-              <span>{{ $t('bottom.exit_button') }}</span>
-            </v-btn>
-          </v-layout>
-
           <v-layout>
             <div
               class="a-text-explanation ml-auto"
@@ -346,8 +352,13 @@ export default {
     margin-bottom: 0
   >>> .v-input--selection-controls
     margin-top: 0
-  >>> .v-label, &__label
+  >>> .v-label, &__label, &__list__title
     a-text-regular-enlarged()
+  >>> .v-list
+    background: transparent
+    padding: 0
+  >>> .v-list__tile
+    padding: 0
 
 /** Themes **/
 .theme--light
@@ -359,6 +370,8 @@ export default {
       color: $adm-colors.regular
     >>> .v-label, &__label
       color: $adm-colors.regular
+    .v-divider
+      border-color: $adm-colors.secondary2
 .theme--dark
   .settings-view
     &__action

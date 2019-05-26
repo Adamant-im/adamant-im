@@ -22,8 +22,8 @@
           :title="$t('chats.recipient_tooltip')"
         />
 
-        <v-btn @click="showQrcodeScanner = true" class="ml-3 mr-0" icon flat>
-          <icon><qr-code-scan-icon/></icon>
+        <v-btn @click="showQrcodeScanner = true" :class="`${className}__btn-scan ml-3 mr-0`" icon flat>
+          <icon width="24" height="24"><qr-code-scan-icon/></icon>
         </v-btn>
 
         <v-flex xs12 class="text-xs-center">
@@ -137,15 +137,12 @@ export default {
 .chat-start-dialog
   &__btn-start-chat
     margin-top: 15px
-
   &__btn-show-qrcode
     margin-top: 8px
     margin-bottom: 15px
     text-align: center
-
 .theme--light
   .chat-start-dialog
-    &__btn-start-chat
-      &:not(.v-btn--icon):not(.v-btn--flat)
-        color: $adm-colors.regular
+     >>> &__btn-scan
+      color: $adm-colors.regular
 </style>
