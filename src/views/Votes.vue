@@ -419,8 +419,6 @@ export default {
   &__spacer
     height: 20px
     margin-top: 5px
-  >>> tfoot
-       background: repeating-linear-gradient(140deg,#f6f6f6,#f6f6f6 .7px,#fefefe 0,#fefefe 5px)
 
 /** Themes **/
 .theme--light
@@ -443,4 +441,10 @@ export default {
       border-color: $adm-colors.secondary
     >>> .v-table tbody tr:not(:last-child)
       border-bottom: 1px solid $adm-colors.secondary2
+    >>> tfoot
+      linear-gradient-light()
+.theme--dark
+  .delegates-view
+    >>> tfoot
+      linear-gradient-dark()
 </style>
