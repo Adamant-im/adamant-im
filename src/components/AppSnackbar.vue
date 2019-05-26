@@ -41,6 +41,7 @@ export default {
 
 <style lang="stylus" scoped>
 @import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
 
 .theme--light
   .app-snackbar

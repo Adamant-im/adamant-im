@@ -116,8 +116,9 @@ export default {
       height: auto // [1]
     >>> .v-tabs__slider
       height: 2px
-    >>> .v-tabs__bar
-      background-color: transparent
+    >>> .v-tabs__wrapper
+      padding: 10px 0px 1px 0px
+      margin-bottom: 10px
     >>> .v-tabs__item
       font-weight: 300
     >>> .v-tabs__item--active
@@ -133,6 +134,8 @@ export default {
 .theme--light
   .account-view
     &__wallets
+      >>> .v-tabs__bar
+        background-color: $adm-colors.secondary2-transparent
       >>> .v-tabs__slider
         background-color: $adm-colors.primary2
       >>> .v-tabs__item
@@ -144,6 +147,8 @@ export default {
 .theme--dark
   .account-view
     &__wallets
+      >>> .v-tabs__bar
+        background-color: transparent
       >>> .v-tabs__slider
         background-color: $shades.white
       >>> .v-tabs__item
