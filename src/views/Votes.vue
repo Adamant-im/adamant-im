@@ -419,6 +419,8 @@ export default {
   &__spacer
     height: 20px
     margin-top: 5px
+  >>> tfoot
+       background: repeating-linear-gradient(140deg,#f6f6f6,#f6f6f6 .7px,#fefefe 0,#fefefe 5px)
 
 /** Themes **/
 .theme--light
