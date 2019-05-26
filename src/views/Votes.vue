@@ -438,7 +438,7 @@ export default {
     &__expand-list
       background-color: transparent
     &__divider
-      border-color: $adm-colors.secondary2
+      border-color: $adm-colors.secondary
     >>> .v-table tbody tr:not(:last-child)
       border-bottom: 1px solid $adm-colors.secondary2
 </style>
