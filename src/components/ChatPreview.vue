@@ -183,7 +183,7 @@ export default {
     top: 16px
     right: 16px
   >>> .v-list__tile__sub-title // [1]
-    a-text-regular()
+    a-text-explanation-enlarged-bold()
 
 /** Themes **/
 .theme--light

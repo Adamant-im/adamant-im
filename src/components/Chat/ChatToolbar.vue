@@ -84,6 +84,7 @@ export default {
       margin-bottom: 0
     .v-label--active
       transform: translateY(-6px) scale(0.6875)
+      font-size: 20px
 
 /** Themes **/
 .theme--light
@@ -97,6 +98,8 @@ export default {
         color: $grey.darken-4
       .v-label--active
         color: $grey.darken-1
+      input
+        caret-color: $adm-colors.primary2
 
 .theme--dark
   .chat-toolbar
