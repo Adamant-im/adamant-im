@@ -74,7 +74,8 @@ export function getChats (startHeight = 0, startOffset = 0, recursive = true) {
 export function createChat () {
   return {
     messages: [],
-    numOfNewMessages: 0
+    numOfNewMessages: 0,
+    scrollPosition: undefined
   }
 }
 

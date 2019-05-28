@@ -42,8 +42,14 @@
 </template>
 
 <script>
+import throttle from 'lodash/throttle'
+
 import AChatMessage from './AChatMessage'
 import AChatTransaction from './AChatTransaction'
+
+const emitScroll = throttle(function () {
+  this.$emit('scroll', this.currentScrollTop)
+}, 500)
 
 export default {
   mounted () {
@@ -83,6 +89,8 @@ export default {
       // Save currentScrollTop.
       // Used when scrolled bottom while loading messages.
       this.currentScrollTop = this.$refs.messages.scrollTop
+
+      emitScroll.call(this)
     },
 
     // Fix scroll position after unshift new messages.
@@ -96,6 +104,10 @@ export default {
     // Called from parent component.
     scrollToBottom () {
       this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
+    },
+
+    scrollTo (position) {
+      this.$refs.messages.scrollTop = position
     },
 
     /**
