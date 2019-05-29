@@ -90,5 +90,5 @@ export default {
 .theme--light
   .wallet-actions
     &__title, &__icon
-      color: $adm-colors.muted
+      color: $adm-colors.regular
 </style>
