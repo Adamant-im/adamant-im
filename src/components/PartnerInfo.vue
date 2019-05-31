@@ -5,7 +5,7 @@
         <v-card-title class="a-text-header">
           {{ $t('chats.partner_info') }}
           <v-spacer></v-spacer>
-          <v-btn @click="show = false" flat icon>
+          <v-btn @click="show = false" flat icon class="close-icon">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
@@ -75,3 +75,7 @@ export default {
   }
 }
 </script>
+<style lang="stylus"  scoped>
+.close-icon
+  height: 18px;
+</style>
