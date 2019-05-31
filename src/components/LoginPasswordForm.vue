@@ -35,7 +35,7 @@
       <v-flex xs12 class=" a-text-regular password-hint">
         {{ $t('login_via_password.remove_password_hint') }}
       </v-flex>
-      <v-flex xs12 class="mt-2">
+      <v-flex xs12>
         <v-btn class="a-btn-link" flat small @click="removePassword">
           {{ $t('login_via_password.remove_password') }}
         </v-btn>
