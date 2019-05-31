@@ -16,9 +16,11 @@
           type="password"
           :label="$t('login_via_password.enter_password')"
           :name="Date.now()"
+          v-on:keyup.enter="submit"
+          ref="passwordField"
         />
 
-        <div>{{ $t('login_via_password.article_hint') }} <a :href="userPasswordAgreementLink">{{$t('login_via_password.article')}}</a></div>
+        <div class="a-text-regular-enlarged">{{ $t('login_via_password.article_hint') }} <a :href="userPasswordAgreementLink">{{$t('login_via_password.article')}}</a>.</div>
       </v-card-text>
 
       <v-card-actions>
@@ -63,6 +65,9 @@ export default {
     disabledButton: false,
     userPasswordAgreementLink: UserPasswordArticleLink
   }),
+  updated: function () {
+    this.$refs.passwordField.focus()
+  },
   computed: {
     show: {
       get () {
@@ -78,6 +83,9 @@ export default {
   },
   methods: {
     submit () {
+      if (!this.isValidForm) {
+        return
+      }
       this.disabledButton = true
       this.showSpinner = true
 
