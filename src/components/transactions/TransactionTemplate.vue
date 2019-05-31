@@ -5,6 +5,7 @@
       app
       :title="`${id}`"
       flat
+      :class="`${className}__toolbar`"
     />
 
     <container>
@@ -234,6 +235,15 @@ export default {
     font-weight: 300
     font-size: 14px
     text-align: right
+    text-overflow: ellipsis
+    overflow: hidden
+    max-width: 100%
+    width: 100%
+  &__toolbar
+    >>> .v-toolbar__title div
+      text-overflow: ellipsis
+      max-width: 100%
+      overflow: hidden
 
 /** Themes **/
 .theme--light
