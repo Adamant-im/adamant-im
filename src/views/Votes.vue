@@ -76,7 +76,7 @@
                   <v-list :class="`${className}__expand-list`">
                     <v-list-tile :class="`${className}__expand-list-tile`">
                       <v-list-tile-content>
-                        <v-list-tile-title>
+                        <v-list-tile-title class="a-text-active">
                           <a :href="'https://explorer.adamant.im/delegate/' + props.item.address" target="_blank">
                             {{ props.item.address }}
                           </a>
@@ -227,13 +227,6 @@ export default {
             return this.approval
           },
           format: value => `${value}%`
-        },
-        {
-          title: this.$t('votes.delegate_forging_time'),
-          value () {
-            return this.forgingTime
-          },
-          format: value => this.formatForgingTime(value)
         },
         {
           title: this.$t('votes.delegate_forged'),
@@ -405,7 +398,10 @@ export default {
       text-decoration-line: none
       &:hover
         text-decoration-line: underline
+  &__expand
+    margin: 20px
   &__expand-list-tile
+    height: 36px
     >>> .v-list__tile
       padding-left: 20px
       padding-right: 20px
@@ -434,7 +430,7 @@ export default {
     &__dialog-info
       color: $adm-colors.regular
     &__expand
-      background-color: $adm-colors.primary2
+      background-color: $adm-colors.secondary2
     &__expand-list
       background-color: transparent
     &__divider
