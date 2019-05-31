@@ -5,7 +5,7 @@
       avatar
       :class="`${className}__tile`"
     >
-      <v-list-tile-avatar :class="`${className}__icon-avatar`" :size="50">
+      <v-list-tile-avatar :class="`${className}__icon-avatar`" :size="40">
         <v-icon :class="`${className}__icon`" :size="20">
           {{ senderId === userId ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}
         </v-icon>
@@ -142,7 +142,7 @@ export default {
   &__date
     margin-top: 4px
   &__icon-avatar
-      min-width: 36px;
+      min-width: 40px;
     >>> .v-avatar
       position: relative
       padding-right: 15px;
