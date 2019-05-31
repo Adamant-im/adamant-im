@@ -135,6 +135,8 @@ export default {
 @import '../assets/stylus/settings/_colors.styl'
 
 .chat-start-dialog
+  &__btn-scan
+    width: 24px
   &__btn-start-chat
     margin-top: 15px
   &__btn-show-qrcode
