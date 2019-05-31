@@ -9,6 +9,7 @@
         :name="Date.now()"
         type="password"
         class="text-xs-center"
+        ref="passwordField"
       />
     </v-layout>
 
@@ -31,9 +32,11 @@
           </v-btn>
         </slot>
       </v-flex>
-
+      <v-flex xs12 class=" a-text-regular password-hint">
+        {{ $t('login_via_password.remove_password_hint') }}
+      </v-flex>
       <v-flex xs12 class="mt-2">
-        <v-btn flat @click="removePassword">
+        <v-btn class="a-btn-link" flat small @click="removePassword">
           {{ $t('login_via_password.remove_password') }}
         </v-btn>
       </v-flex>
@@ -41,6 +44,11 @@
 
   </v-form>
 </template>
+
+<style lang="stylus" scoped>
+.password-hint
+  margin-top: 48px
+</style>
 
 <script>
 import { clearDb } from '@/lib/idb'
@@ -55,6 +63,9 @@ export default {
         this.$emit('input', value)
       }
     }
+  },
+  updated: function () {
+    this.$refs.passwordField.focus()
   },
   data: () => ({
     validForm: true,
