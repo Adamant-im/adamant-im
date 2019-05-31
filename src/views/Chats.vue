@@ -11,7 +11,7 @@
               :class="`${className}__tile`"
             >
               <v-list-tile-avatar size="24">
-                <v-icon :class="`${className}__icon`" size="16">mdi-pencil</v-icon>
+                <v-icon :class="`${className}__icon`" size="16">mdi-message-outline</v-icon>
               </v-list-tile-avatar>
 
               <div>
