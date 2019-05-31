@@ -287,7 +287,7 @@ export default {
     passwordDialog: false
   }),
   methods: {
-    onSetPassword (password) {
+    onSetPassword () {
       this.$store.commit('options/updateOption', {
         key: 'logoutOnTabClose',
         value: false
