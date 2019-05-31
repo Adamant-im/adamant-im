@@ -222,13 +222,6 @@ export default {
           format: value => `${value}%`
         },
         {
-          title: this.$t('votes.delegate_approval'),
-          value () {
-            return this.approval
-          },
-          format: value => `${value}%`
-        },
-        {
           title: this.$t('votes.delegate_forged'),
           value () {
             return this.forged
@@ -431,6 +424,8 @@ export default {
       color: $adm-colors.regular
     &__expand
       background-color: $adm-colors.secondary2
+      >>> .a-text-active
+        color: $adm-colors.regular
     &__expand-list
       background-color: transparent
     &__divider
