@@ -169,6 +169,19 @@
               </div>
             </v-list-tile>
 
+              <v-list-tile  @click="logout">
+                <v-list-tile-content>
+                  <v-list-tile-title :class="`${className}__list__title`" >
+                    {{ $t('bottom.exit_button') }}
+                  </v-list-tile-title>
+                </v-list-tile-content>
+                <div>
+                  <v-list-tile-title :class="`${className}__value`">
+                    <v-icon size="20">mdi-logout-variant</v-icon>
+                  </v-list-tile-title>
+                </div>
+              </v-list-tile>
+
             </v-list>
             </v-flex>
           </v-layout>
