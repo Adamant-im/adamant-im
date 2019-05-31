@@ -79,7 +79,7 @@ export default {
 
 .wallet-actions
   &__title
-    a-text-caption()
+    a-text-caption-light()
   &__avatar
     min-width: unset
     .v-avatar
