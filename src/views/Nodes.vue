@@ -161,7 +161,6 @@ export default {
   &__checkbox
     >>> .v-label
       a-text-regular-enlarged()
-      color: $adm-colors.regular
   >>> .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot
     margin-bottom: 0
 
@@ -173,6 +172,8 @@ export default {
     &__body
       color: $adm-colors.regular
     &__checkbox
+      >>> .v-label
+        color: $adm-colors.regular
       >>> .v-input--selection-controls__ripple
       >>> .v-input--selection-controls__input i
         color: $adm-colors.regular !important
