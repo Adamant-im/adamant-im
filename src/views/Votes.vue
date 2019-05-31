@@ -424,7 +424,7 @@ export default {
       color: $adm-colors.regular
     &__expand
       background-color: $adm-colors.secondary2
-      >>> .a-text-active
+      >>> .a-text-active a
         color: $adm-colors.regular
     &__expand-list
       background-color: transparent
