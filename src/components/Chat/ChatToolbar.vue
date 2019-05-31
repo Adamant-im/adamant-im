@@ -77,7 +77,7 @@ export default {
 
     .v-label
       max-width: unset
-      a-text-explanation-enlarged-bold()
+      a-text-regular-enlarged-bold()
     .v-input__control
       padding: 0
     .v-input__control > .v-input__slot
