@@ -147,8 +147,8 @@ export default {
       position: relative
       padding-right: 15px;
   >>> .v-divider--inset:not(.v-divider--vertical)
-      margin-left: 62px;
-      max-width: calc(100% - 62px);
+      margin-left: 56px;
+      max-width: calc(100% - 56px);
   &__action
     margin-top: -14px;
     min-width: 36px;
