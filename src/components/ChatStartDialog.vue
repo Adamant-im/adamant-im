@@ -136,7 +136,8 @@ export default {
 
 .chat-start-dialog
   &__btn-scan
-    width: 24px
+    margin-left: 5px!important;
+    margin-right: -5px!important;
   &__btn-start-chat
     margin-top: 15px
   &__btn-show-qrcode
