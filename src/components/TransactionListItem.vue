@@ -5,7 +5,7 @@
       avatar
       :class="`${className}__tile`"
     >
-      <v-list-tile-avatar :class="`${className}__icon-avatar`" :size="40">
+      <v-list-tile-avatar :class="`${className}__icon-avatar`" :size="50">
         <v-icon :class="`${className}__icon`" :size="20">
           {{ senderId === userId ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}
         </v-icon>
@@ -29,7 +29,7 @@
         </v-list-tile-sub-title>
       </v-list-tile-content>
 
-      <v-list-tile-action v-if="isCryptoADM">
+      <v-list-tile-action :class="`${className}__action`" v-if="isCryptoADM">
         <v-btn icon ripple @click.stop="onClickIcon">
           <v-icon :class="`${className}__icon`" :size="20">
             {{ isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline' }}
@@ -142,11 +142,16 @@ export default {
   &__date
     margin-top: 4px
   &__icon-avatar
+      min-width: 36px;
     >>> .v-avatar
       position: relative
-      margin-top: -16px
-      margin-left: -10px
-
+      padding-right: 15px;
+  >>> .v-divider--inset:not(.v-divider--vertical)
+      margin-left: 62px;
+      max-width: calc(100% - 62px);
+  &__action
+    margin-top: -14px;
+    min-width: 36px;
   // Do not break computed length of v-divider
   /*&__tile*/
     /*>>> .v-list__tile*/
