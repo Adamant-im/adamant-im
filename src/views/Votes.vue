@@ -69,7 +69,7 @@
                     <v-list-tile>
                       <v-list-tile-content>
                         <v-list-tile-title>
-                          <a :href="'https://explorer.adamant.im/delegate/' + props.item.address" target="_blank">
+                          <a :href="'https://explorer.adamant.im/delegate/' + props.item.address" target="_blank" rel="noopener">
                             {{ props.item.address }}
                           </a>
                         </v-list-tile-title>
