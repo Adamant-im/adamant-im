@@ -174,7 +174,7 @@
           </v-layout>
           <v-layout>
             <div
-              class="a-text-explanation ml-auto"
+              :class="`${className}__version_info ml-auto`"
             >
               {{ $t('options.version') }} {{ this.$root.$options.version }}
             </div>
@@ -341,6 +341,9 @@ export default {
   &__title
     padding-top: 15px
     padding-bottom: 5px
+  &__version_info
+    a-text-explanation()
+    margin-top: 24px
   &__action
     display: block
     font-size: 16px
@@ -363,6 +366,8 @@ export default {
 /** Themes **/
 .theme--light
   .settings-view
+    &__version_info
+      color: $adm-colors.muted
     &__title
       background-color: $adm-colors.secondary2-transparent
       color: $adm-colors.regular
