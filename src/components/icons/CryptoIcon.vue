@@ -12,6 +12,7 @@ import EthFillIcon from './EthFill'
 import BzFillIcon from './BnzFill'
 import DogeFillIcon from './DogeFill'
 import DashFillIcon from './DashFill'
+import KcsFillIcon from './KcsFill'
 
 import { Cryptos } from '@/lib/constants'
 
@@ -30,7 +31,8 @@ export default {
     EthFillIcon,
     BzFillIcon,
     DogeFillIcon,
-    DashFillIcon
+    DashFillIcon,
+    KcsFillIcon
   },
   props: {
     /** Crypto to show an icon for */

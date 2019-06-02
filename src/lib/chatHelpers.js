@@ -159,7 +159,8 @@ export function transformMessage (abstract) {
     bz_transaction: 'BZ',
     bnb_transaction: 'BNB',
     doge_transaction: 'DOGE',
-    dash_transaction: 'DASH'
+    dash_transaction: 'DASH',
+    kcs_transaction: 'KCS'
   }
   const notSupportedYetCryptos = {
     lsk_transaction: 'LSK'

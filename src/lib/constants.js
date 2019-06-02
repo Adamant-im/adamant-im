@@ -16,10 +16,11 @@ export const Transactions = {
 export const Cryptos = {
   ADM: 'ADM',
   ETH: 'ETH',
-  BNB: 'BNB',
-  DOGE: 'DOGE',
   BZ: 'BZ',
-  DASH: 'DASH'
+  KCS: 'KCS',
+  DOGE: 'DOGE',
+  DASH: 'DASH',
+  BNB: 'BNB'
 }
 
 export const CryptosNames = {
@@ -28,12 +29,14 @@ export const CryptosNames = {
   [Cryptos.ETH]: 'Ethereum',
   [Cryptos.BZ]: 'Bit-Z',
   [Cryptos.DOGE]: 'DOGE',
-  [Cryptos.DASH]: 'DASH'
+  [Cryptos.DASH]: 'DASH',
+  [Cryptos.KCS]: 'KuCoin Shares'
 }
 
 export const ERC20 = Object.freeze([
   Cryptos.BNB,
-  Cryptos.BZ
+  Cryptos.BZ,
+  Cryptos.KCS
 ])
 
 export const BTC_BASED = Object.freeze([
@@ -52,7 +55,8 @@ export const CryptoAmountPrecision = {
   BNB: 6,
   DOGE: 8,
   BZ: 6,
-  DASH: 8
+  DASH: 8,
+  KCS: 6
 }
 
 export const CryptoNaturalUnits = {
@@ -61,7 +65,8 @@ export const CryptoNaturalUnits = {
   BNB: 18,
   DOGE: 8,
   BZ: 18,
-  DASH: 8
+  DASH: 8,
+  KCS: 6
 }
 
 /** Fees for the misc ADM operations */

@@ -13,6 +13,7 @@ import Options from '@/views/Options'
 import Home from '@/views/Home'
 import Votes from '@/views/Votes'
 import Nodes from '@/views/Nodes'
+import Login from '@/views/Login'
 
 Vue.use(Router)
 
@@ -46,8 +47,7 @@ const router = new Router({
         requiresAuth: true,
         layout: 'no-container',
         containerNoPadding: true
-      },
-      beforeEnter: navigationGuard.transaction
+      }
     },
     {
       path: '/transactions/:crypto?',
@@ -116,7 +116,7 @@ const router = new Router({
     {
       path: '/',
       name: 'Login',
-      component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue')
+      component: Login
     },
     {
       path: '*',

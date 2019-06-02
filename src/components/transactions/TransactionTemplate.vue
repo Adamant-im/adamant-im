@@ -201,7 +201,7 @@ export default {
   methods: {
     openInExplorer: function () {
       if (this.explorerLink) {
-        window.open(this.explorerLink, '_blank')
+        window.open(this.explorerLink, '_blank', 'resizable,scrollbars,status,noopener')
       }
     },
     openChat: function () {

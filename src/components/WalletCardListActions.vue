@@ -55,12 +55,12 @@ export default {
       })
     },
     buyTokens () {
-      window.open('https://adamant.im/buy-tokens/?wallet=U9203183357885757380', '_blank')
+      const link = 'https://adamant.im/buy-tokens/?wallet=' + this.$store.state.address
+      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
     },
     getFreeTokens () {
       const link = 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
-
-      window.open(link, '_blank')
+      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
     }
   },
   props: {

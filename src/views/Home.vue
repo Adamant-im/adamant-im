@@ -8,11 +8,14 @@
         <!-- Wallets -->
         <v-card :class="`${className}__wallets`" flat>
           <v-tabs
+            v-model="currentWallet"
             grow
-            slider-color="none"
+            slider-color="white"
+            ref="vtabs"
           >
             <v-tab
               v-for="wallet in wallets"
+              :href="`#${wallet.cryptoCurrency}`"
               :key="wallet.cryptoCurrency"
             >
               <div>
@@ -29,6 +32,7 @@
 
             <v-tab-item
               v-for="wallet in wallets"
+              :value="wallet.cryptoCurrency"
               :key="wallet.cryptoCurrency"
             >
               <wallet-card
@@ -61,7 +65,33 @@ import CryptoIcon from '@/components/icons/CryptoIcon'
 
 import { Cryptos, CryptosNames } from '@/lib/constants'
 
+/**
+ * Center VTab element on click.
+ *
+ * @override vuetify.VTabs.methods.scrollIntoView()
+ */
+function scrollIntoView () {
+  if (!this.activeTab) return
+  if (!this.isOverflowing) return (this.scrollOffset = 0)
+
+  const totalWidth = this.widths.wrapper + this.scrollOffset
+  const { clientWidth, offsetLeft } = this.activeTab.$el
+
+  const scrollOffset = this.scrollOffset - (totalWidth - offsetLeft - clientWidth / 2 - this.widths.wrapper / 2)
+
+  if (scrollOffset <= 0) {
+    this.scrollOffset = 0
+  } else if (scrollOffset >= this.widths.container - this.widths.wrapper) {
+    this.scrollOffset = this.widths.container - this.widths.wrapper
+  } else {
+    this.scrollOffset = scrollOffset
+  }
+}
+
 export default {
+  mounted () {
+    this.$refs.vtabs.scrollIntoView = scrollIntoView
+  },
   computed: {
     className: () => 'account-view',
     wallets () {
@@ -78,6 +108,17 @@ export default {
           cryptoName: CryptosNames[crypto]
         }
       })
+    },
+    currentWallet: {
+      get () {
+        return this.$store.state.options.currentWallet
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'currentWallet',
+          value
+        })
+      }
     }
   },
   methods: {

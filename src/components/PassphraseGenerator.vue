@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import Mnemonic from 'bitcore-mnemonic'
+import * as bip39 from 'bip39'
 
 import { copyToClipboard, downloadFile } from '@/lib/textHelpers'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
@@ -113,7 +113,7 @@ export default {
         .select()
     },
     generatePassphrase () {
-      this.passphrase = new Mnemonic(Mnemonic.Words.ENGLISH).toString()
+      this.passphrase = bip39.generateMnemonic()
 
       this.showPassphrase = true
 

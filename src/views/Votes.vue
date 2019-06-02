@@ -77,7 +77,7 @@
                     <v-list-tile :class="`${className}__expand-list-tile`">
                       <v-list-tile-content>
                         <v-list-tile-title class="a-text-active">
-                          <a :href="'https://explorer.adamant.im/delegate/' + props.item.address" target="_blank">
+                          <a :href="'https://explorer.adamant.im/delegate/' + props.item.address" target="_blank" rel="noopener">
                             {{ props.item.address }}
                           </a>
                         </v-list-tile-title>

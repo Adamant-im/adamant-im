@@ -44,6 +44,8 @@
 </template>
 
 <script>
+import { validateMnemonic } from 'bip39'
+
 export default {
   computed: {
     passphrase: {
@@ -62,15 +64,15 @@ export default {
   }),
   methods: {
     submit () {
-      if (!this.$refs.form.validate()) return false
+      if (!validateMnemonic(this.passphrase)) {
+        return this.$emit('error', 'login.invalid_passphrase')
+      }
 
       this.freeze()
       this.login()
     },
     login () {
-      const passphrase = this.passphrase.toLowerCase().trim()
-
-      const promise = this.$store.dispatch('login', passphrase)
+      const promise = this.$store.dispatch('login', this.passphrase)
 
       promise
         .then(() => {
