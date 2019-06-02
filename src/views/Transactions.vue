@@ -29,7 +29,7 @@
             </v-list-tile>
           </v-list>
 
-          <h3 v-else class="headline text-xs-center mt-4">
+          <h3 v-else class="a-text-caption text-xs-center mt-4">
             {{ $t('transaction.no_transactions') }}
           </h3>
 

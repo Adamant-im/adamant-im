@@ -1,26 +1,30 @@
 <template>
-  <div>
+  <div :class="className">
     <app-toolbar-centered
       app
       :title="$t('votes.page_title')"
       flat
     />
 
-    <v-container fluid class="px-0">
+    <v-container fluid class="pa-0">
       <v-layout row wrap justify-center>
 
         <container>
 
-          <v-card>
-            <v-card-title>
+          <v-card flat class="transparent">
+            <v-card-title class="pa-0">
               <v-text-field
                 v-model="search"
                 append-icon="mdi-magnify"
                 :label="$t('votes.search')"
+                :class="`${className}__search`"
                 single-line
                 hide-details
+                class="a-input"
               />
             </v-card-title>
+
+            <div :class="`${className}__spacer`"></div>
 
             <v-data-table
               :headers="headers"
@@ -30,7 +34,6 @@
               :search="search"
               hide-actions
               item-key="username"
-              class="elevation-1"
             >
               <div slot="no-data" class="text-xs-center">
                 <div v-if="waitingForConfirmation">
@@ -48,14 +51,19 @@
               </div>
 
               <template slot="headerCell" slot-scope="props">
-                <span slot="activator">
+                <span :class="`${className}__header`" slot="activator">
                   {{ $t(props.header.text) }}
                 </span>
               </template>
 
               <template slot="items" slot-scope="props">
-                <td @click="toggleDetails(props.item, props)" style="cursor:pointer">{{ props.item.username }}</td>
-                <td>{{ props.item.rank }}</td>
+                <td
+                  @click="toggleDetails(props.item, props)"
+                  :class="`${className}__body`"
+                  class="pr-0"
+                  style="cursor:pointer"
+                >{{ props.item.username }}</td>
+                <td :class="`${className}__body`">{{ props.item.rank }}</td>
                 <td>
                   <v-icon v-if="props.item._voted" @click="downVote(props.item.address)">mdi-thumb-up</v-icon>
                   <v-icon v-else @click="upVote(props.item.address)">mdi-thumb-up-outline</v-icon>
@@ -63,12 +71,12 @@
               </template>
 
               <template slot="expand" slot-scope="props">
-                <v-card flat>
+                <v-card flat :class="`${className}__expand`">
 
-                  <v-list>
-                    <v-list-tile>
+                  <v-list :class="`${className}__expand-list`">
+                    <v-list-tile :class="`${className}__expand-list-tile`">
                       <v-list-tile-content>
-                        <v-list-tile-title>
+                        <v-list-tile-title class="a-text-active">
                           <a :href="'https://explorer.adamant.im/delegate/' + props.item.address" target="_blank" rel="noopener">
                             {{ props.item.address }}
                           </a>
@@ -78,15 +86,16 @@
 
                     <v-list-tile
                       v-for="(item, i) in delegateDetails"
+                      :class="`${className}__expand-list-tile`"
                       :key="i"
                     >
                       <v-list-tile-content>
-                        <v-list-tile-title>
+                        <v-list-tile-title class="a-text-explanation">
                           {{ item.title }}
                         </v-list-tile-title>
                       </v-list-tile-content>
                       <v-list-tile-content>
-                        <v-list-tile-title class="text-xs-right">
+                        <v-list-tile-title class="a-text-explanation text-xs-right">
                           {{ item.format ? item.format(item.value.call(props.item)) : item.value.call(props.item) }}
                         </v-list-tile-title>
                       </v-list-tile-content>
@@ -101,13 +110,18 @@
               </v-alert>
 
               <template slot="footer">
-                <td :colspan="headers.length" class="pa-0">
+                <td :class="`${className}__review`" :colspan="headers.length" class="pa-0">
 
                   <v-layout row wrap align-center justify-space-between>
-                    <v-btn dark @click="showConfirmationDialog">
-                      {{ $t('votes.vote_button_text') }}
+                    <pagination v-if="showPagination" v-model="pagination.page" :pages="pages"></pagination>
+
+                    <v-btn
+                      @click="showConfirmationDialog"
+                      :disabled="reviewButtonDisabled"
+                      class="a-btn-primary"
+                    >
+                      {{ $t('votes.summary_title') }}
                     </v-btn>
-                    <pagination v-model="pagination.page" :pages="pages"></pagination>
                   </v-layout>
 
                 </td>
@@ -125,32 +139,41 @@
       width="500"
     >
       <v-card>
-        <v-card-title>
-          <div>
-            <h3 class="headline mb-0">{{ $t('votes.summary_title') }}</h3>
-            <div>
-              {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
-              {{ $t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
-              {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
-              {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
-            </div>
-          </div>
+        <v-card-title
+          :class="`${className}__dialog-title`"
+        >
+          {{ $t('votes.summary_title') }}
         </v-card-title>
+
+        <v-divider :class="`${className}__divider`"></v-divider>
+
+        <v-layout row wrap class="pa-3">
+          <div :class="`${className}__dialog-summary`">
+            {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
+            {{ $t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
+            {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
+            {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
+          </div>
+          <div :class="`${className}__dialog-info`" v-html="$t('votes.summary_info')"></div>
+        </v-layout>
+
         <v-card-actions>
           <v-spacer></v-spacer>
 
           <v-btn
             flat="flat"
+            class="a-btn-regular"
             @click="dialog = false"
           >
             {{ $t('transfer.confirm_cancel') }}
           </v-btn>
 
           <v-btn
-            flat="flat"
+            flat
+            class="a-btn-regular"
             @click="sendVotes"
           >
-            {{ $t('transfer.confirm_approve') }}
+            {{ $t('votes.vote_button_text') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -161,7 +184,7 @@
 <script>
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import Pagination from '@/components/Pagination'
-import currencyFilter from '@/filters/currency'
+import numberFormat from '@/filters/numberFormat'
 
 export default {
   mounted () {
@@ -170,6 +193,7 @@ export default {
     })
   },
   computed: {
+    className: () => 'delegates-view',
     delegates () {
       const delegates = this.$store.state.delegates.delegates || {}
 
@@ -198,25 +222,11 @@ export default {
           format: value => `${value}%`
         },
         {
-          title: this.$t('votes.delegate_approval'),
-          value () {
-            return this.approval
-          },
-          format: value => `${value}%`
-        },
-        {
-          title: this.$t('votes.delegate_forging_time'),
-          value () {
-            return this.forgingTime
-          },
-          format: value => this.formatForgingTime(value)
-        },
-        {
           title: this.$t('votes.delegate_forged'),
           value () {
             return this.forged
           },
-          format: value => currencyFilter(value)
+          format: value => `${numberFormat(value / 1e8, 1)} ADM`
         },
         {
           title: this.$t('votes.delegate_link'),
@@ -238,6 +248,12 @@ export default {
       }
 
       return Math.ceil(this.delegates.length / this.pagination.rowsPerPage)
+    },
+    showPagination () {
+      return this.search.length === 0
+    },
+    reviewButtonDisabled () {
+      return (this.numOfUpvotes + this.numOfDownvotes) === 0
     }
   },
   data: () => ({
@@ -249,7 +265,7 @@ export default {
       { text: 'votes.table_head_vote', value: '_voted' }
     ],
     pagination: {
-      rowsPerPage: 10,
+      rowsPerPage: 50,
       sortBy: '',
       descending: true,
       page: 1
@@ -353,9 +369,73 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-  @import '~vuetify/src/stylus/settings/_colors.styl'
+@import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
 
-  .theme--light
-    .vote-card
-      background-color: $grey.lighten-2
+.delegates-view
+  &__header
+    font-size: 12px
+    font-weight: 300
+  &__body
+    font-size: 14px
+    font-weight: 300
+  &__dialog-title
+    a-text-header()
+  &__dialog-summary
+    a-text-regular-enlarged()
+  &__dialog-info
+    a-text-regular-enlarged()
+    margin-top: 16px
+    >>> a
+      text-decoration-line: none
+      &:hover
+        text-decoration-line: underline
+  &__expand
+    margin: 20px
+  &__expand-list-tile
+    height: 36px
+    >>> .v-list__tile
+      padding-left: 20px
+      padding-right: 20px
+  &__review
+    padding-top: 15px !important
+    padding-bottom: 15px !important
+  &__search
+    >>> .v-input__slot
+      padding-left: 16px
+      padding-right: 16px
+  &__spacer
+    height: 20px
+    margin-top: 5px
+
+/** Themes **/
+.theme--light
+  .delegates-view
+    &__header
+      color: $adm-colors.muted
+    &__body
+      color: $adm-colors.regular
+    &__dialog-title
+      color: $adm-colors.regular
+    &__dialog-summary
+      color: $adm-colors.regular
+    &__dialog-info
+      color: $adm-colors.regular
+    &__expand
+      background-color: $adm-colors.secondary2
+      >>> .a-text-active a
+        color: $adm-colors.regular
+    &__expand-list
+      background-color: transparent
+    &__divider
+      border-color: $adm-colors.secondary
+    >>> .v-table tbody tr:not(:last-child)
+      border-bottom: 1px solid $adm-colors.secondary2
+    >>> tfoot
+      linear-gradient-light()
+.theme--dark
+  .delegates-view
+    >>> tfoot
+      linear-gradient-dark()
 </style>

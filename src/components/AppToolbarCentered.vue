@@ -1,5 +1,8 @@
 <template>
-  <v-container fluid class="app-toolbar-centered" :class="classes">
+  <v-container
+    :class="[classes, className]"
+    fluid
+  >
     <v-layout row wrap justify-center>
 
       <container>
@@ -9,11 +12,11 @@
           :height="height"
           ref="toolbar"
         >
-          <v-btn v-if="showBack" @click="goBack" icon>
+          <v-btn v-if="showBack" @click="goBack" icon small>
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
 
-          <v-toolbar-title v-if="title">
+          <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
             <div>{{ title }}</div>
             <div v-if="subtitle" class="body-1">{{ subtitle }}</div>
           </v-toolbar-title>
@@ -34,7 +37,8 @@ export default {
       return {
         'v-toolbar--fixed': this.app
       }
-    }
+    },
+    className: () => 'app-toolbar-centered'
   },
   methods: {
     goBack () {
@@ -74,7 +78,7 @@ export default {
     },
     height: {
       type: Number,
-      default: 64
+      default: 56
     },
     showBack: {
       type: Boolean,
@@ -85,6 +89,23 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../assets/stylus/settings/_colors.styl'
+
 .app-toolbar-centered
   padding: 0
+
+  >>> .v-toolbar__title:not(:first-child)
+    margin-left: 0px
+
+/** Themes **/
+.theme--light
+  .app-toolbar-centered
+    .v-toolbar
+      background-color: $adm-colors.secondary2-transparent
+
+.theme--dark
+  .app-toolbar-centered
+    .v-toolbar
+      background-color: $shades.black
 </style>

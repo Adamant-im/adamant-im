@@ -5,33 +5,31 @@
   >
     <div
       class="a-chat__message"
-      :class="{
-        'a-chat__message--red': sender.id === userId,
-        'a-chat__message--green': sender.id !== userId
-      }"
     >
       <div class="a-chat__message-card">
         <div>
-          <div>
+          <div class="a-chat__direction a-text-regular-bold">
             {{ sender.id === userId ? i18n.sent : i18n.received }}
           </div>
           <div
             @click="onClickAmount"
-            class="a-chat__amount my-1"
-            :class="{ 'a-chat__amount--clickable': isStatusValid }"
+            class="a-chat__amount a-chat__amount--clickable"
           >
-            {{ amount }}
+            <v-layout align-center>
+              <slot name="crypto"></slot>
+              <span class="ml-2">{{ amount }}</span>
+            </v-layout>
           </div>
         </div>
 
         <div class="a-chat__message-card-body">
-          <div class="a-chat__message-text font-italic mb-1">
+          <div class="a-chat__message-text mb-1 a-text-regular-enlarged">
             {{ message }}
           </div>
         </div>
 
         <div class="a-chat__message-card-header">
-          <div :title="timeTitle" class="a-chat__timestamp font-italic">{{ time }}</div>
+          <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
           <div class="a-chat__status">
             <v-icon
               size="15"
@@ -70,16 +68,11 @@ export default {
       }
 
       return ''
-    },
-    isStatusValid () {
-      return this.status !== 'invalid'
     }
   },
   methods: {
     onClickAmount () {
-      if (this.isStatusValid) {
-        this.$emit('click:transaction', this.id)
-      }
+      this.$emit('click:transaction', this.id)
     }
   },
   props: {
@@ -110,10 +103,6 @@ export default {
     amount: {
       type: [Number, String],
       default: 0
-    },
-    currency: {
-      type: String,
-      default: 'ADM'
     },
     i18n: {
       type: Object,

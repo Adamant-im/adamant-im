@@ -62,7 +62,12 @@
           :status="getTransactionStatus(message, partnerId)"
           @click:transaction="openTransaction(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
-        />
+        >
+          <crypto-icon
+            slot="crypto"
+            :crypto="message.type"
+          />
+        </a-chat-transaction>
 
       </template>
 
@@ -94,6 +99,7 @@ import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'
 import transaction from '@/mixins/transaction'
 import dateFilter from '@/filters/date'
+import CryptoIcon from '@/components/icons/CryptoIcon'
 
 /**
  * Returns user meta by userId.
@@ -262,7 +268,8 @@ export default {
     AChatForm,
     ChatToolbar,
     ChatAvatar,
-    ChatMenu
+    ChatMenu,
+    CryptoIcon
   },
   props: {
     partnerId: {
@@ -276,4 +283,6 @@ export default {
 <style scoped lang="stylus">
 .chat
   height: 100vh
+  box-shadow: none
+  background-color: transparent !important
 </style>

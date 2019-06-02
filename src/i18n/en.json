@@ -35,6 +35,7 @@
     "send_button_tooltip": "Click to send a message",
     "send_crypto": "Send {crypto}",
     "sent_label": "Sent",
+    "show_my_qr_code": "Show my QR code",
     "start_chat": "Start chat",
     "title": "Chats",
     "too_long": "Message is too long",
@@ -59,6 +60,7 @@
     "invest_btn_link": "https://adamant.im/buy-tokens/",
     "invest_btn_tooltip": "Buy ADM tokens anonymously. You also have possibility to buy and sell ADM on exchanges",
     "send_btn": "Send funds",
+    "send_crypto": "Send {crypto}",
     "wallet": "wallet",
     "your_address_ADM": "ADAMANT address",
     "your_address_BNB": "Binance Coin address",
@@ -131,15 +133,7 @@
     "host": "Host",
     "inactive": "Inactive",
     "ms": "ms",
-    "nodeLabelDescription": {
-      "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",
-      "link_one_content": "following instructions",
-      "link_two": "https://github.com/Adamant-im/adamant-im/",
-      "link_two_content": "to deploy web application on separate domain",
-      "part_one": "Support decentralization and enhance privacy level—run your own ADAMANT node and web application for messaging. Node can be run ",
-      "part_three": ". This limitation refers to Content Security Policy (CSP). In iOS and Android applications there are no such limitations",
-      "part_two": ". To add your nodes in the list for connection, you need "
-    },
+    "nodeLabelDescription": "Support decentralization and enhance privacy level—run your own ADAMANT node and web application for messaging. Node can be run <a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">following instructions</a>. To add your nodes in the list for connection, you need <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">to deploy web application on separate domain</a>. This limitation refers to Content Security Policy (CSP). In iOS and Android applications there are no such limitations.",
     "offline": "Offline",
     "ping": "Ping"
   },
@@ -150,6 +144,7 @@
     }
   },
   "options": {
+    "actions": "Actions",
     "chats_title": "Chats",
     "dark_theme": "Enable dark theme",
     "delegates_title": "Delegates",
@@ -169,7 +164,6 @@
     "language_label": "Language",
     "nodes_list": "Nodes list",
     "notification_title": "Notifications",
-    "other": "Other",
     "page_title": "Settings",
     "push_denied": "PUSH notifications has been denied in browser settings",
     "push_not_supported": "PUSH notifications not supported by this browser",
@@ -222,8 +216,8 @@
     "commission_label": "Transfer fee",
     "confirm_approve": "Confirm",
     "confirm_cancel": "Cancel",
-    "confirm_message": "Confirm transfer of <b>{amount} {crypto}</b> to address <span class='address-in-confirm'>{target}</span>.",
-    "confirm_message_with_name": "Confirm transfer of <b>{amount} {crypto}</b> to <span class='address-in-confirm'>{target}</span>.",
+    "confirm_message": "Confirm transfer of <b>{amount} {crypto}</b> to address {address}.",
+    "confirm_message_with_name": "Confirm transfer of <b>{amount} {crypto}</b> to {name} <span class=\"a-text-explanation-enlarged\">({address})</span>.",
     "confirm_title": "Transfer confirmation",
     "crypto": "Cryptocurrency",
     "error_chat_fee": "To send {crypto} in the chat, you also need 0.001 ADM",
@@ -242,8 +236,8 @@
     "no_address_text": "This user does not have a public {crypto} wallet yet. To retrieve it, he should log in to the messenger with more than 0.001 ADM at balance",
     "no_address_title": "Recipient has no {crypto} wallet yet",
     "send_button": "Send",
-    "to_address_label": "Recipient address",
-    "to_label": "To"
+    "to_address_label": "To Address",
+    "to_name_label": "To {name}"
   },
   "votes": {
     "delegate_approval": "Blocks approved",
@@ -264,8 +258,7 @@
     "sec": "sec",
     "select_delegates": "First select delegates",
     "sent": "Votes have been sent",
-    "summary_info": "Voting cost: 50 ADM. ",
-    "summary_info_link_text": "Read about voting and forging",
+    "summary_info": "Voting cost: 50 ADM. <a target=\"_blank\" href=\"https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516\">Read about voting and forging</a>.",
     "summary_title": "Review voting",
     "table_head_name": "Name",
     "table_head_rank": "Rank",

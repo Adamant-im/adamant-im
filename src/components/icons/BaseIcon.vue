@@ -69,7 +69,7 @@ export default {
 /* Themes */
 .theme--light
   .svg-icon
-    fill: rgba(0,0,0,0.54)
+    fill: rgba(0, 0, 0, 0.54)
 .theme--dark
   .svg-icon
     fill: $shades.white

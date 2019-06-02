@@ -24,7 +24,7 @@
     "no_empty": "Сообщение не может быть пустым",
     "no_money": "Недостаточно токенов. Пожалуйста, пополните баланс",
     "ok": "OK",
-    "partner_info": "Информация о собеседнике",
+    "partner_info": "Собеседник",
     "partner_name": "Имя собеседника",
     "received_label": "Получено",
     "recipient": "Адрес собеседника",
@@ -35,6 +35,7 @@
     "send_button_tooltip": "Нажмите, чтобы отправить сообщение",
     "send_crypto": "Отправить {crypto}",
     "sent_label": "Отправлено",
+    "show_my_qr_code": "Показать мой QR код",
     "start_chat": "Начать чат",
     "title": "Чаты",
     "too_long": "Сообщение слишком длинное",
@@ -60,6 +61,7 @@
     "invest_btn_tooltip": "Теперь у Вас есть возможность купить токены самого защищенного мессенджера АДАМАНТ по низкой цене. Нажмите, чтобы перейти к странице покупки токенов https://adamant.im/buy-tokens/",
     "send_btn": "Отправить средства",
     "send_btn_tooltip": "Нажмите, чтобы сделать перевод на другой аккуунт или другому пользователю АДАМАНТа",
+    "send_crypto": "Отправить {crypto}",
     "wallet": "кошелек",
     "your_address_ADM": "ADAMANT address",
     "your_address_BNB": "Кошелек Binance Coin",
@@ -132,15 +134,7 @@
     "host": "Хост",
     "inactive": "Неактивен",
     "ms": "мс",
-    "nodeLabelDescription": {
-      "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",
-      "link_one_content": "следуя инструкции",
-      "link_two": "https://github.com/Adamant-im/adamant-im/",
-      "link_two_content": "развернуть веб-приложение на отдельном домене",
-      "part_one": "Поддержите децентрализацию и повысьте уровень приватности — настройте свой узел (ноду) АДАМАНТа и свое веб-приложение. Узел можно установить, ",
-      "part_three": ". Это ограничение связано с политикой безопасности Content Security Policy (CSP). В приложениях для iOS и Android таких ограничений нет",
-      "part_two": ". Чтобы добавить свои узлы в список для подключения, вам нужно "
-    },
+    "nodeLabelDescription": "Поддержите децентрализацию и повысьте уровень приватности — настройте свой узел (ноду) АДАМАНТа и свое веб-приложение. Узел можно установить, <a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">следуя инструкции</a>. Чтобы добавить свои узлы в список для подключения, вам нужно <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">развернуть веб-приложение на отдельном домене</a>. Это ограничение связано с политикой безопасности Content Security Policy (CSP). В приложениях для iOS и Android таких ограничений нет.",
     "offline": "Недоступен",
     "ping": "Пинг"
   },
@@ -151,6 +145,7 @@
     }
   },
   "options": {
+    "actions": "Действия",
     "chats_title": "Чаты",
     "dark_theme": "Включить темную тему",
     "delegates_title": "Делегаты",
@@ -170,7 +165,6 @@
     "language_label": "Язык",
     "nodes_list": "Список узлов",
     "notification_title": "Уведомления",
-    "other": "Другое",
     "page_title": "Настройки",
     "push_denied": "PUSH-уведомления запрещены в настройках браузера",
     "push_not_supported": "PUSH-уведомления не поддерживаются этим браузером",
@@ -224,7 +218,7 @@
     "confirm_approve": "Подтвердить",
     "confirm_cancel": "Отмена",
     "confirm_message": "Подтвердите перевод <b>{amount} {crypto}</b> на адрес <span class='address-in-confirm'>{target}</span>.",
-    "confirm_message_with_name": "Подтвердите перевод <b>{amount} {crypto}</b> получателю <span class='address-in-confirm'>{target}</span>.",
+    "confirm_message_with_name": "Подтвердите перевод <b>{amount} {crypto}</b> получателю {name} <span class=\"a-text-explanation-enlarged\">({address})</span>.",
     "confirm_title": "Подтверждение перевода",
     "crypto": "Криптовалюта",
     "error_chat_fee": "Чтобы отправить {crypto} в чате, вам также нужно 0.001 ADM",
@@ -244,7 +238,7 @@
     "no_address_title": "У получателя пока еще нет {crypto}-кошелька",
     "send_button": "Отправить",
     "to_address_label": "Адрес получателя",
-    "to_label": "Кому"
+    "to_name_label": "{name}"
   },
   "votes": {
     "delegate_approval": "Блоков подтверждено",
@@ -265,8 +259,7 @@
     "sec": "сек",
     "select_delegates": "Сначала выберите делегатов",
     "sent": "Голоса отправлены",
-    "summary_info": "Стоимость голосования: 50 ADM. ",
-    "summary_info_link_text": "Читайте о голосовании и форжинге",
+    "summary_info": "Стоимость голосования: 50 ADM. <a target=\"_blank\" href=\"https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516\">Читайте о голосовании и форжинге</a>.",
     "summary_title": "Голосование",
     "table_head_name": "Имя",
     "table_head_rank": "Ранг",

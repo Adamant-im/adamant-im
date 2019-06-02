@@ -1,12 +1,12 @@
 <template>
-  <v-layout row wrap justify-center class="home-page">
+  <v-layout row wrap justify-center :class="className">
 
     <container>
 
-      <v-card flat class="transparent white--text">
+      <v-card flat class="transparent white--text" :class="`${className}__card`">
 
         <!-- Wallets -->
-        <v-card class="home-page__wallets">
+        <v-card :class="`${className}__wallets`" flat>
           <v-tabs
             v-model="currentWallet"
             grow
@@ -21,9 +21,9 @@
               <div>
                 <crypto-icon
                   :crypto="wallet.cryptoCurrency"
-                  size="small"
+                  size="medium"
                   slot="icon"
-                  class="mb-2"
+                  :class="`${className}__icon`"
                 />
                 <div>{{ wallet.balance | numberFormat(4) }}</div>
                 <div>{{ wallet.cryptoCurrency }}</div>
@@ -93,6 +93,7 @@ export default {
     this.$refs.vtabs.scrollIntoView = scrollIntoView
   },
   computed: {
+    className: () => 'account-view',
     wallets () {
       return Object.keys(Cryptos).map(crypto => {
         const state = this.$store.state
@@ -138,23 +139,69 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_variables.styl'
 @import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../assets/stylus/settings/_colors.styl'
 
 /**
  * 1. Reset VTabs container fixed height.
+ * 2. Reset VTabItem opacity.
  */
-.home-page__wallets >>> .v-tabs__container
-  height: auto // [1]
+.account-view
+  &__card
+    margin: -24px
+  &__wallets
+    &.v-card
+      background-color: transparent
+    >>> .v-tabs__container
+      height: auto // [1]
+    >>> .v-tabs__slider
+      height: 2px
+    >>> .v-tabs__wrapper
+      padding: 10px 0px 1px 0px
+      margin-bottom: 10px
+    >>> .v-tabs__item
+      font-weight: 300
+    >>> .v-tabs__item--active
+      font-weight: 500
+    >>> .v-tabs__item:not(.v-tabs__item--active) // [2]
+      opacity: 1
+    >>> .v-tabs__div
+      font-size: 16px
+  &__icon
+    margin-bottom: 3px
 
 /** Themes **/
 .theme--light
-  .action-list
-    &__icon
-      background-color: $grey.lighten-1
-      color: $shades.white
+  .account-view
+    &__wallets
+      >>> .v-tabs__bar
+        background-color: $adm-colors.secondary2-transparent
+      >>> .v-tabs__slider
+        background-color: $adm-colors.primary2
+      >>> .v-tabs__item
+        color: $adm-colors.regular
+      >>> .v-tabs__item--active
+        color: $adm-colors.primary
+        .svg-icon
+          fill: $adm-colors.primary
 .theme--dark
-  .action-list
-    &__icon
-      background-color: $grey.darken-3
-      color: $shades.white
+  .account-view
+    &__wallets
+      >>> .v-tabs__bar
+        background-color: transparent
+      >>> .v-tabs__slider
+        background-color: $shades.white
+      >>> .v-tabs__item
+        color: $shades.white
+      >>> .v-tabs__item--active
+        color: $adm-colors.white
+        .svg-icon
+          fill: $adm-colors.white
+
+/** Breakpoints **/
+@media $display-breakpoints.md-and-down
+  .account-view
+    &__card
+      margin: -20px
 </style>

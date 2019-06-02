@@ -20,7 +20,7 @@
       <slot name="button">
         <v-btn
           :disabled="!validForm || disabledButton"
-          class="login-form__button v-btn--primary"
+          class="login-form__button a-btn-primary"
           @click="submit"
         >
           <v-progress-circular

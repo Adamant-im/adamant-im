@@ -1,0 +1,44 @@
+@import '_mixins.styl'
+@import '../../settings/_colors.styl'
+
+.a-input
+  font-weight: 400
+
+  /**
+   * 1. Override border bottom height.
+   * 2. Disable border bottom animation.
+   * 3.a. Textarea border bottom.
+   * 3.b. Textarea border on hover.
+   * 3.c. Textarea border on focus.
+   */
+  .v-input__control > .v-input__slot
+    &:before // [1]
+      border-top-width: 1px
+    &:after // [2]
+      transition: unset
+
+.theme--light
+  .a-input
+    .v-label
+      color: $adm-colors.muted
+    .v-label.v-label--active
+      color: $adm-colors.muted !important
+    .v-label--is-disabled
+      color: $adm-colors.muted
+    &.v-input--is-disabled
+      input, textarea
+        color: $adm-colors.muted
+    &:not(.v-input--is-disabled)
+      input, textarea
+        color: $adm-colors.regular
+        caret-color: $adm-colors.primary2
+    &.v-select .v-select__selections
+      color: $adm-colors.regular
+
+    .v-input__control > .v-input__slot:before // [3.a.]
+      border-color: rgba(0, 0, 0, .12)
+    &:not(.v-input--has-state) > .v-input__control > .v-input__slot:hover:before // [3.b.]
+      border-color: $adm-colors.primary2
+    &.v-input--is-focused > .v-input__control > .v-input__slot:after // [3.c.]
+      border-color: $adm-colors.primary2
+      border-width: thin 0 0 0
