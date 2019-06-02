@@ -27,7 +27,7 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
   >
     <v-btn-stub
       activeclass="v-btn--active"
-      class="login-form__button v-btn--primary"
+      class="login-form__button a-btn-primary"
       tag="button"
       type="button"
     >

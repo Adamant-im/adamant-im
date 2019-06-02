@@ -10,15 +10,16 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
 >
   <v-card-stub>
     <v-card-title-stub
-      class="headline chat-start-dialog__title"
-      primarytitle="true"
+      class="a-text-header"
     >
       
       Start new chat
     
     </v-card-title-stub>
      
-    <v-divider-stub />
+    <v-divider-stub
+      class="a-divider"
+    />
      
     <v-layout-stub
       align-center=""
@@ -28,70 +29,67 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
       tag="div"
       wrap=""
     >
-      <v-flex-stub
-        tag="div"
-        xs10=""
-      >
-        <v-text-field-stub
-          label="Partner address"
-          rules="v => _get__(\\"validateAddress\\")('ADM', v) || this.$t('chats.incorrect_address')"
-          title="Enter a partner address in the format U1234567890"
-        />
-      </v-flex-stub>
+      <v-text-field-stub
+        class="a-input"
+        label="Partner address"
+        title="Enter a partner address in the format U1234567890"
+      />
        
-      <v-flex-stub
-        class="text-xs-right"
-        tag="div"
-        xs2=""
+      <v-btn-stub
+        activeclass="v-btn--active"
+        class="chat-start-dialog__btn-scan ml-3 mr-0"
+        flat="true"
+        icon="true"
+        tag="button"
+        type="button"
       >
-        <v-btn-stub
-          activeclass="v-btn--active"
-          flat="true"
-          icon="true"
-          tag="button"
-          type="button"
+        <icon-stub
+          height="24"
+          shaperendering="auto"
+          viewbox="0 0 512 512"
+          width="24"
         >
-          <v-icon-stub>
-            mdi-qrcode-scan
-          </v-icon-stub>
-        </v-btn-stub>
-      </v-flex-stub>
+          <qr-code-scan-icon-stub />
+        </icon-stub>
+      </v-btn-stub>
        
       <v-flex-stub
         class="text-xs-center"
         tag="div"
-        xs4=""
+        xs12=""
       >
         <v-btn-stub
           activeclass="v-btn--active"
-          class="v-btn--primary"
+          class="chat-start-dialog__btn-start-chat a-btn-primary"
           tag="button"
           type="button"
         >
+          
           Start chat
+        
         </v-btn-stub>
       </v-flex-stub>
-    </v-layout-stub>
-     
-    <v-divider-stub />
-     
-    <v-card-actions-stub>
-      <v-spacer-stub />
        
-      <v-btn-stub
-        activeclass="v-btn--active"
-        class="a-button-regular"
-        flat="true"
-        tag="button"
-        type="button"
+      <v-flex-stub
+        class="chat-start-dialog__btn-show-qrcode"
+        tag="div"
+        xs12=""
       >
+        <a
+          class="a-text-active"
+        >
+          
+          Show my QR code
         
-        Close
-      
-      </v-btn-stub>
-    </v-card-actions-stub>
+        </a>
+      </v-flex-stub>
+    </v-layout-stub>
   </v-card-stub>
    
   <!---->
+   
+  <qrcode-renderer-dialog-stub
+    passphrase="�w^~)�"
+  />
 </v-dialog-stub>
 `;
