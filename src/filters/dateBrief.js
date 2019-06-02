@@ -10,9 +10,14 @@ export default (timestamp) => {
     return date.format(`[${i18n.t('chats.date_today')}], HH:mm`)
   } else if (diffDays < 2) {
     return date.format(`[${i18n.t('chats.date_yesterday')}], HH:mm`)
-  } else if (diffDays <= 7) {
-    return date.format('ddd, HH:mm')
   } else {
-    return date.format('MMM DD, YYYY, HH:mm')
+    const currentYear = (new Date()).getFullYear()
+    const messageYear = (new Date(timestamp)).getFullYear()
+
+    if (currentYear === messageYear) {
+      return date.format('MMM DD')
+    } else {
+      return date.format('MMM DD, YYYY')
+    }
   }
 }
