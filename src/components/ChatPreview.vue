@@ -5,7 +5,7 @@
   >
     <v-list-tile-avatar>
       <icon v-if="readOnly" class="adm-icon"><adm-fill-icon/></icon>
-      <chat-avatar v-else :size="40" :user-id="partnerId" use-public-key/>
+      <chat-avatar v-else :size="40" :user-id="contactId" use-public-key/>
 
       <v-badge overlap color="primary">
         <span v-if="numOfNewMessages > 0" slot="badge">
@@ -15,13 +15,13 @@
     </v-list-tile-avatar>
 
     <v-list-tile-content>
-      <v-list-tile-title v-text="readOnly ? $t(partnerName) : partnerName"></v-list-tile-title>
+      <v-list-tile-title v-text="readOnly ? $t(contactName) : contactName"></v-list-tile-title>
 
       <!-- Transaction -->
-      <template v-if="lastTransaction">
+      <template v-if="isTransferType">
         <v-list-tile-sub-title>
           <v-icon size="15">{{ statusIcon }}</v-icon>
-          {{ transactionDirection }} {{ lastTransaction.amount | currency(lastTransaction.type) }}
+          {{ transactionDirection }} {{ transaction.amount | currency(transaction.type) }}
         </v-list-tile-sub-title>
       </template>
 
@@ -29,7 +29,7 @@
       <template v-else>
         <v-list-tile-sub-title
           v-if="readOnly || isMessageI18n"
-          v-text="isMessageI18n ? $t(lastMessageText) : lastMessageText"
+          v-text="isMessageI18n ? $t(transaction.message) : transaction.message"
         />
         <v-list-tile-sub-title v-else>{{ lastMessageTextNoFormats }}</v-list-tile-sub-title>
       </template>
@@ -52,32 +52,34 @@ import AdmFillIcon from '@/components/icons/AdmFill'
 
 export default {
   mounted () {
-    // fetch status if last message is transaction
-    if (this.lastTransaction) {
-      this.fetchTransactionStatus(this.lastTransaction, this.partnerId)
+    // fetch status if transaction is transfer
+    if (this.isTransferType) {
+      this.fetchTransactionStatus(this.transaction, this.contactId)
     }
   },
   watch: {
     // fetch status when new message received
-    lastTransaction () {
-      this.fetchTransactionStatus(this.lastTransaction, this.partnerId)
+    transaction () {
+      this.fetchTransactionStatus(this.transaction, this.contactId)
     }
   },
   computed: {
-    userId () {
-      return this.$store.state.address
+    contactName () {
+      return this.$store.getters['partners/displayName'](this.contactId) || this.contactId
     },
-    partnerName () {
-      return this.$store.getters['partners/displayName'](this.partnerId) || this.partnerId
+
+    isTransferType () {
+      return this.transaction.type !== 'message'
     },
+
     lastMessage () {
-      return this.$store.getters['chat/lastMessage'](this.partnerId)
+      return this.transaction
     },
     isMessageI18n () {
-      return this.lastMessage.i18n
+      return this.transaction.i18n
     },
     lastMessageText () {
-      return this.$store.getters['chat/lastMessageText'](this.partnerId)
+      return this.transaction.message || ''
     },
     lastMessageTextNoFormats () {
       if (
@@ -89,35 +91,21 @@ export default {
 
       return this.lastMessageText
     },
-    lastMessageTimestamp () {
-      return this.$store.getters['chat/lastMessageTimestamp'](this.partnerId)
-    },
-    lastTransaction () {
-      if (this.lastMessage) {
-        const abstract = this.lastMessage
-
-        if (abstract.type !== 'message') {
-          return abstract
-        }
-      }
-
-      return null
-    },
     transactionDirection () {
-      const direction = this.userId === this.lastTransaction.senderId
+      const direction = this.userId === this.transaction.senderId
         ? this.$t('chats.sent_label')
         : this.$t('chats.received_label')
 
       return direction
     },
     numOfNewMessages () {
-      return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
+      return this.$store.getters['chat/numOfNewMessages'](this.contactId)
     },
     createdAt () {
-      return this.lastMessageTimestamp
+      return this.transaction.timestamp
     },
     status () {
-      return this.getTransactionStatus(this.lastMessage)
+      return this.getTransactionStatus(this.transaction)
     },
     statusIcon () {
       if (this.status === 'delivered') {
@@ -143,8 +131,16 @@ export default {
     AdmFillIcon
   },
   props: {
-    partnerId: {
+    userId: {
       type: String,
+      required: true
+    },
+    contactId: {
+      type: String,
+      required: true
+    },
+    transaction: {
+      type: Object,
       required: true
     },
     readOnly: {
