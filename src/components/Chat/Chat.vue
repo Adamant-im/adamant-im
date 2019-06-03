@@ -9,6 +9,7 @@
 
       @scroll:top="onScrollTop"
       @scroll:bottom="onScrollBottom"
+      @scroll="onScroll"
 
       ref="chat"
     >
@@ -151,7 +152,7 @@ function validateMessage (message) {
 
 export default {
   mounted () {
-    this.$nextTick(() => this.$refs.chat.scrollToBottom())
+    this.scrollBehavior()
     this.markAsRead()
   },
   watch: {
@@ -186,6 +187,9 @@ export default {
     },
     sendMessageOnEnter () {
       return this.$store.state.options.sendMessageOnEnter
+    },
+    scrollPosition () {
+      return this.$store.getters['chat/scrollPosition'](this.partnerId)
     }
   },
   data: () => ({
@@ -228,6 +232,12 @@ export default {
     onScrollBottom () {
       //
     },
+    onScroll (scrollPosition) {
+      this.$store.commit('chat/updateScrollPosition', {
+        contactId: this.partnerId,
+        scrollPosition
+      })
+    },
     openTransaction (transaction) {
       this.$router.push({
         name: 'Transaction',
@@ -255,6 +265,15 @@ export default {
       }
 
       return transaction.message
+    },
+    scrollBehavior () {
+      this.$nextTick(() => {
+        if (this.scrollPosition !== false) {
+          this.$refs.chat.scrollTo(this.scrollPosition)
+        } else {
+          this.$refs.chat.scrollToBottom()
+        }
+      })
     }
   },
   filters: {
