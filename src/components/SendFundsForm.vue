@@ -224,6 +224,10 @@ export default {
         : this.$store.state[this.currency.toLowerCase()].balance
     },
 
+    ethBalance () {
+      return this.$store.state.eth.balance
+    },
+
     /**
      * @returns {number}
      */
@@ -289,7 +293,10 @@ export default {
         amount: [
           v => v > 0 || this.$t('transfer.error_incorrect_amount'),
           v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
-          v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units')
+          v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units'),
+          v => isErc20(this.currency)
+            ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
+            : true
         ]
       }
     }
