@@ -52,11 +52,12 @@
   "error": "Ошибка",
   "home": {
     "balance": "Баланс",
+    "buy_tokens_anonymously": "Купить ADM анонимно",
     "copied": "Скопировано",
     "copy": "Копировать",
     "create_qrcode": "Создать QR-код",
     "free_adm_btn": "Бесплатные токены",
-    "invest_btn": "Купить токены",
+    "invest_btn": "Купить или продать токены",
     "invest_btn_link": "https://adamant.im/ru-buy-tokens/",
     "invest_btn_tooltip": "Теперь у Вас есть возможность купить токены самого защищенного мессенджера АДАМАНТ по низкой цене. Нажмите, чтобы перейти к странице покупки токенов https://adamant.im/buy-tokens/",
     "send_btn": "Отправить средства",
