@@ -1,7 +1,7 @@
 <template>
   <v-card flat :class="className">
     <v-list two-line :class="`${className}__list`">
-      <v-list-tile @click="copyToClipboard(address)">
+      <v-list-tile @click="copyToClipboard(address)" :class="`${className}__tile`">
         <v-list-tile-content>
           <v-list-tile-title :class="`${className}__title`">
             {{ cryptoName }} {{ $t('home.wallet') }}
@@ -12,8 +12,8 @@
         </v-list-tile-content>
 
         <v-list-tile-action>
-          <v-btn icon ripple>
-            <v-icon :class="`${className}__action`">mdi-content-copy</v-icon>
+          <v-btn icon ripple :class="`${className}__action`">
+            <v-icon :class="`${className}__icon`" size="20">mdi-content-copy</v-icon>
           </v-btn>
         </v-list-tile-action>
       </v-list-tile>
@@ -27,10 +27,14 @@
             {{ balance | currency(crypto, true) }}
           </v-list-tile-sub-title>
         </v-list-tile-content>
+
+        <v-list-tile-action>
+          <v-btn icon ripple :class="`${className}__action`">
+            <v-icon :class="`${className}__icon`" size="20">mdi-chevron-right</v-icon>
+          </v-btn>
+        </v-list-tile-action>
       </v-list-tile>
     </v-list>
-
-    <v-divider></v-divider>
 
     <WalletCardListActions
       :class="`${className}__list`"
@@ -84,16 +88,19 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
 
 .wallet-card
   &__title
-    font-size: 16px
-    font-weight: 500
+    a-text-caption()
   &__subtitle
-    font-size: 14px
-    font-weight: 400
+    a-text-regular-enlarged()
     word-break: break-word
-    font-style: italic
+  &__list
+    padding: 8px 0 0
+  &__tile
+    // height: 60px // too small height
 
 /** Themes **/
 .theme--light
@@ -103,9 +110,11 @@ export default {
     &__list
       background: inherit
     &__title
-      color: $grey.darken-3
+      color: $adm-colors.regular
     &__subtitle
-      color: $grey.darken-2
+      color: $adm-colors.muted
+    &__action
+      color: $adm-colors.muted
 .theme--dark
   .wallet-card
     background-color: transparent

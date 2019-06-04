@@ -1,5 +1,5 @@
 <template>
-  <div class="options-page">
+  <div :class="className">
     <app-toolbar-centered
       app
       :title="$t('options.page_title')"
@@ -13,10 +13,20 @@
         <container>
 
           <!-- General -->
-          <h3 class="title mt-3 mb-3">{{ $t('options.general_title') }}</h3>
+          <h3
+            :class="`${className}__title a-text-caption`"
+            class="mt-3 mb-3"
+          >
+            {{ $t('options.general_title') }}
+          </h3>
           <v-layout row wrap align-center>
             <v-flex xs6>
-              <v-subheader class="subheading font-weight-regular pa-0">{{ $t('options.language_label') }}</v-subheader>
+              <v-subheader
+                :class="`${className}__label`"
+                class="pa-0"
+              >
+                {{ $t('options.language_label') }}
+              </v-subheader>
             </v-flex>
             <v-flex xs6 class="text-xs-right">
               <language-switcher
@@ -33,82 +43,154 @@
           </v-layout>
 
           <!-- Security -->
-          <h3 class="title mt-4 mb-4">{{ $t('options.security_title') }}</h3>
+          <h3
+            :class="`${className}__title a-text-caption`"
+            class="mt-4 mb-4"
+          >
+            {{ $t('options.security_title') }}
+          </h3>
           <v-layout row wrap align-center>
-            <v-flex xs12>
+            <v-flex xs12 a-text-regular-enlarged>
               <v-checkbox
                 :label="$t('options.exit_on_close')"
-                :title="$t('options.exit_on_close_tooltip')"
                 color="grey darken-1"
                 :input-value="logoutOnTabClose"
                 @click="onCheckLogoutOnTabClose"
                 readonly
               />
 
+              <div class="a-text-explanation-enlarged">{{ $t('options.exit_on_close_tooltip') }}</div>
+
               <password-set-dialog v-model="passwordDialog" @password="onSetPassword" />
             </v-flex>
           </v-layout>
 
           <!-- Chats -->
-          <h3 class="title mt-4 mb-4">{{ $t('options.chats_title') }}</h3>
+          <h3
+            :class="`${className}__title a-text-caption`"
+            class="mt-4 mb-4"
+          >
+            {{ $t('options.chats_title') }}
+          </h3>
           <v-layout row wrap align-center>
             <v-flex xs12>
               <v-checkbox
                 :label="$t('options.send_on_enter')"
-                :title="$t('options.send_on_enter_tooltip')"
                 color="grey darken-1"
                 v-model="sendMessageOnEnter"
               />
+
+              <div class="a-text-explanation-enlarged">{{ $t('options.send_on_enter_tooltip') }}</div>
+            </v-flex>
+
+            <v-flex xs12 class="mt-4">
               <v-checkbox
                 :label="$t('options.format_messages')"
-                :title="$t('options.format_messages_tooltip')"
                 color="grey darken-1"
                 v-model="formatMessages"
               />
+
+              <div class="a-text-explanation-enlarged">{{ $t('options.format_messages_tooltip') }}</div>
             </v-flex>
           </v-layout>
 
           <!-- Notifications -->
-          <h3 class="title mt-4 mb-4">{{ $t('options.notification_title') }}</h3>
+          <h3
+            :class="`${className}__title a-text-caption`"
+            class="mt-4 mb-4"
+          >
+            {{ $t('options.notification_title') }}
+          </h3>
           <v-layout row wrap align-center>
             <v-flex xs12>
               <v-checkbox
                 :label="$t('options.enable_sound')"
-                :title="$t('options.enable_sound_tooltip')"
                 color="grey darken-1"
                 v-model="allowSoundNotifications"
               />
+
+              <div class="a-text-explanation-enlarged">{{ $t('options.enable_sound_tooltip') }}</div>
             </v-flex>
-            <v-flex xs12>
+            <v-flex xs12 class="mt-4">
               <v-checkbox
                 :label="$t('options.enable_bar')"
-                :title="$t('options.enable_bar_tooltip')"
                 color="grey darken-1"
                 v-model="allowTabNotifications"
               />
+
+              <div class="a-text-explanation-enlarged">{{ $t('options.enable_bar_tooltip') }}</div>
             </v-flex>
-            <v-flex xs12>
+            <v-flex xs12 class="mt-4">
               <v-checkbox
                 :label="$t('options.enable_push')"
-                :title="$t('options.enable_push_tooltip')"
                 color="grey darken-1"
                 v-model="allowPushNotifications"
               />
+
+              <div class="a-text-explanation-enlarged">{{ $t('options.enable_push_tooltip') }}</div>
             </v-flex>
           </v-layout>
 
-          <!-- Delegates -->
-          <h3 class="title mt-4 mb-4">{{ $t('options.other') }}</h3>
-          <v-layout row wrap align-center>
-           <v-flex xs12>
-             <v-btn flat @click="$router.push('/options/nodes')">{{ $t('options.nodes_list') }}</v-btn>
+          <!-- Actions -->
+          <h3
+            :class="`${className}__title a-text-caption`"
+            class="mt-4 mb-4"
+          >
+            {{ $t('options.actions') }}
+          </h3>
+          <v-layout row wrap>
+            <v-flex xs12>
+            <v-list>
+              <v-list-tile @click="$router.push('/options/nodes')">
+                <v-list-tile-content>
+                  <v-list-tile-title  :class="`${className}__list__title`" >
+                    {{ $t('options.nodes_list') }}
+                  </v-list-tile-title>
+                </v-list-tile-content>
+                <div>
+                  <v-list-tile-title :class="`${className}__list__value`">
+                    <v-icon size="20">mdi-chevron-right</v-icon>
+                  </v-list-tile-title>
+                </div>
+              </v-list-tile>
 
-             <v-btn flat class="text-xs-left" @click="$router.push('/votes')">
-               {{ $t('options.vote_for_delegates_button') }}
-             </v-btn>
+              <v-divider/>
 
-             <div class="text-xs-right">{{ $t('options.version') }} {{ this.$root.$options.version }}</div>
-           </v-flex>
+            <v-list-tile  @click="$router.push('/votes')">
+              <v-list-tile-content>
+                <v-list-tile-title :class="`${className}__list__title`" >
+                  {{ $t('options.vote_for_delegates_button') }}
+                </v-list-tile-title>
+              </v-list-tile-content>
+              <div>
+                <v-list-tile-title :class="`${className}__value`">
+                  <v-icon size="20">mdi-chevron-right</v-icon>
+                </v-list-tile-title>
+              </div>
+            </v-list-tile>
+
+              <v-list-tile  @click="logout">
+                <v-list-tile-content>
+                  <v-list-tile-title :class="`${className}__list__title`" >
+                    {{ $t('bottom.exit_button') }}
+                  </v-list-tile-title>
+                </v-list-tile-content>
+                <div>
+                  <v-list-tile-title :class="`${className}__value`">
+                    <v-icon size="20">mdi-logout-variant</v-icon>
+                  </v-list-tile-title>
+                </div>
+              </v-list-tile>
+
+            </v-list>
+            </v-flex>
+          </v-layout>
+          <v-layout>
+            <div
+              :class="`${className}__version_info ml-auto`"
+            >
+              {{ $t('options.version') }} {{ this.$root.$options.version }}
+            </div>
           </v-layout>
 
         </container>
@@ -123,9 +205,11 @@ import LanguageSwitcher from '@/components/LanguageSwitcher'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import PasswordSetDialog from '@/components/PasswordSetDialog'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
+import AppInterval from '@/lib/AppInterval'
 
 export default {
   computed: {
+    className: () => 'settings-view',
     logoutOnTabClose () {
       return this.$store.state.options.logoutOnTabClose
     },
@@ -194,13 +278,16 @@ export default {
           value
         })
       }
+    },
+    isLoginViaPassword () {
+      return this.$store.getters['options/isLoginViaPassword']
     }
   },
   data: () => ({
     passwordDialog: false
   }),
   methods: {
-    onSetPassword (password) {
+    onSetPassword () {
       this.$store.commit('options/updateOption', {
         key: 'logoutOnTabClose',
         value: false
@@ -228,6 +315,25 @@ export default {
           this.$store.commit('resetPassword')
         })
       }
+    },
+    logout () {
+      AppInterval.unsubscribe()
+      this.$store.dispatch('logout')
+
+      if (this.isLoginViaPassword) {
+        return clearDb()
+          .catch(err => {
+            console.error(err)
+          })
+          .finally(() => {
+            // turn off `loginViaPassword` option
+            this.$store.commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
+
+            this.$router.push('/')
+          })
+      } else {
+        return Promise.resolve(this.$router.push('/'))
+      }
     }
   },
   components: {
@@ -237,3 +343,64 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_variables.styl'
+@import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
+
+.settings-view
+  &__title
+    padding-top: 15px
+    padding-bottom: 5px
+  &__version_info
+    a-text-explanation()
+    margin-top: 24px
+  &__action
+    display: block
+    font-size: 16px
+    font-weight: 500
+    text-decoration-line: underline
+    margin: 6px 8px
+    padding: 0 16px
+  >>> .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot
+    margin-bottom: 0
+  >>> .v-input--selection-controls
+    margin-top: 0
+  >>> .v-label, &__label, &__list__title
+    a-text-regular-enlarged()
+  >>> .v-list
+    background: transparent
+    padding: 0
+  >>> .v-list__tile
+    padding: 0
+
+/** Themes **/
+.theme--light
+  .settings-view
+    &__version_info
+      color: $adm-colors.muted
+    &__title
+      background-color: $adm-colors.secondary2-transparent
+      color: $adm-colors.regular
+    &__action
+      color: $adm-colors.regular
+    >>> .v-label, &__label
+      color: $adm-colors.regular
+    .v-divider
+      border-color: $adm-colors.secondary2
+.theme--dark
+  .settings-view
+    &__action
+      color: $shades.white
+
+/** Breakpoints **/
+@media $display-breakpoints.sm-and-down
+  .settings-view
+    &__title
+      margin-left: -20px
+      margin-right: -20px
+      padding-left: 20px
+      padding-right: 20px
+</style>

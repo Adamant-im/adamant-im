@@ -1,16 +1,15 @@
 <template>
-  <v-toolbar flat height="64">
+  <v-toolbar flat height="56" :class="`${className}`">
     <v-btn @click="goBack" icon>
       <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
     <div v-if="!isChatReadOnly">
       <slot name="avatar-toolbar"></slot>
     </div>
-    <div>
+    <div :class="`${className}__textfield-container`">
       <div v-if="isChatReadOnly" class="title" :style="{ paddingLeft: '12px' }">{{ $t(partnerId) }}</div>
       <div v-else>
         <v-text-field
-          class="chat-text-field"
           box
           full-width
           background-color="transparent"
@@ -28,6 +27,7 @@
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 export default {
   computed: {
+    className: () => 'chat-toolbar',
     partnerName: {
       get () {
         return this.$store.getters['partners/displayName'](this.partnerId)
@@ -63,40 +63,51 @@ export default {
 }
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_variables.styl'
+@import '../../assets/stylus/themes/adamant/_mixins.styl'
+@import '../../assets/stylus/settings/_colors.styl'
 
-$chat-text-field-font-size := 20px
+.chat-toolbar
+  &__textfield-container
+    width: 100%
 
-.chat-text-field.v-text-field
-  font-size: $chat-text-field-font-size
+  >>> .v-text-field
+    a-text-regular-enlarged-bold()
 
-  .v-label
-    max-width: unset
-    font-size: $chat-text-field-font-size
-  .v-input__control
-    padding: 0
-  .v-input__control > .v-input__slot
-    padding: 0
-    margin-bottom: 0
-  .v-label--active
-    transform: translateY(-6px) scale(0.6875)
+    .v-label
+      max-width: unset
+      a-text-regular-enlarged-bold()
+    .v-input__control
+      padding: 0
+    .v-input__control > .v-input__slot
+      margin-bottom: 0
+    .v-label--active
+      transform: translateY(-6px) scale(0.6875)
+      font-size: 20px
 
 /** Themes **/
 .theme--light
-  .chat-text-field.v-text-field
-    .primary--text
-      color: $grey.darken-1 !important
-    .v-label
-      color: $grey.darken-4
-    .v-label--active
-      color: $grey.darken-1
+  .chat-toolbar
+    background-color: $adm-colors.secondary2-transparent
+
+    >>> .v-text-field
+      .primary--text
+        color: $grey.darken-1 !important
+      .v-label
+        color: $grey.darken-4
+      .v-label--active
+        color: $grey.darken-1
+      input
+        caret-color: $adm-colors.primary2
+
 .theme--dark
-  .chat-text-field.v-text-field
-    .primary--text
-      color: $shades.white !important
-    .v-label
-      color: $shades.white
-    .v-label--active
-      color: $shades.white
+  .chat-toolbar
+    >>> .v-text-field
+      .primary--text
+        color: $shades.white !important
+      .v-label
+        color: $shades.white
+      .v-label--active
+        color: $shades.white
 </style>

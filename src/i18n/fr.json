@@ -129,15 +129,7 @@
     "host": "Host",
     "inactive": "Inactive",
     "ms": "ms",
-    "nodeLabelDescription": {
-      "link_one": "https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc",
-      "link_one_content": "following instructions",
-      "link_two": "https://github.com/Adamant-im/adamant-im/",
-      "link_two_content": "to deploy web application on separate domain",
-      "part_one": "Support decentralization and enhance privacy level—run your own ADAMANT node and web application for messaging. Node can be run ",
-      "part_three": ". This limitation is connected to Content Security Policy (CSP). In iOS and Android applications there are no such limitations.",
-      "part_two": ". To add your nodes in the list for connection, you need "
-    },
+    "nodeLabelDescription": "Support decentralization and enhance privacy level—run your own ADAMANT node and web application for messaging. Node can be run <a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">following instructions</a>. To add your nodes in the list for connection, you need <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">to deploy web application on separate domain</a>. This limitation refers to Content Security Policy (CSP). In iOS and Android applications there are no such limitations.",
     "offline": "Offline",
     "ping": "Ping"
   },
@@ -219,7 +211,7 @@
     "confirm_approve": "Confirmer",
     "confirm_cancel": "Annuler",
     "confirm_message": "Confirmer le transfert de {amount} {crypto} pour répondre <span class='address-in-confirm'>{target}</span>..",
-    "confirm_message_with_name": "Confirm transfer of <b>{amount} {crypto}</b> to <span class='address-in-confirm'>{target}</span>.",
+    "confirm_message_with_name": "Confirm transfer of <b>{amount} {crypto}</b> to {name} <span class=\"a-text-explanation-enlarged\">({address})</span>.",
     "confirm_title": "confirmation de transfert",
     "crypto": "Cryptocurrency",
     "error_chat_fee": "To send {crypto} from chat, you also need 0.001 ADM",
@@ -239,7 +231,7 @@
     "no_address_title": "Recipient has no {crypto} wallet yet",
     "send_button": "Envoyez de l'argent",
     "to_address_label": "Adresse",
-    "to_label": "To"
+    "to_name_label": "To {name}"
   },
   "votes": {
     "delegate_approval": "Blocks approved",
@@ -260,8 +252,7 @@
     "sec": "sec",
     "select_delegates": "First select delegates",
     "sent": "Votes have been sent",
-    "summary_info": "Voting cost: 50 ADM. ",
-    "summary_info_link_text": "Read about voting and forging",
+    "summary_info": "Voting cost: 50 ADM. <a target=\"_blank\" href=\"https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516\">Read about voting and forging</a>.",
     "summary_title": "Review voting",
     "table_head_name": "Name",
     "table_head_rank": "Rank",

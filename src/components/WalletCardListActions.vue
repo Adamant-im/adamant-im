@@ -1,32 +1,32 @@
 <template>
-  <v-list>
+  <v-list :class="className">
     <v-list-tile @click="sendFunds" avatar>
-      <v-list-tile-avatar>
-        <v-icon class="action-list__icon">mdi-cube-send</v-icon>
+      <v-list-tile-avatar :class="`${className}__avatar`">
+        <v-icon :class="`${className}__icon`">mdi-cube-send</v-icon>
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title>{{ $t('home.send_btn') }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title`">{{ $t('home.send_crypto', { crypto }) }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
 
     <v-list-tile v-if="isADMCrypto" @click="buyTokens" avatar>
-      <v-list-tile-avatar>
-        <v-icon class="action-list__icon">mdi-cash-usd</v-icon>
+      <v-list-tile-avatar :class="`${className}__avatar`">
+        <v-icon :class="`${className}__icon`">mdi-cash-usd</v-icon>
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title>{{ $t('home.invest_btn') }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title`">{{ $t('home.invest_btn') }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
 
     <v-list-tile v-if="isADMCrypto && !hasAdmTokens" @click="getFreeTokens" avatar>
-      <v-list-tile-avatar>
-        <v-icon class="action-list__icon">mdi-gift</v-icon>
+      <v-list-tile-avatar :class="`${className}__avatar`">
+        <v-icon :class="`${className}__icon`">mdi-gift</v-icon>
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title>{{ $t('home.free_adm_btn') }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title`">{{ $t('home.free_adm_btn') }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
   </v-list>
@@ -37,6 +37,7 @@ import { Cryptos } from '@/lib/constants'
 
 export default {
   computed: {
+    className: () => 'wallet-actions',
     hasAdmTokens () {
       return this.$store.state.balance > 0
     },
@@ -54,12 +55,12 @@ export default {
       })
     },
     buyTokens () {
-      window.open('https://adamant.im/buy-tokens/?wallet=U9203183357885757380', '_blank')
+      const link = 'https://adamant.im/buy-tokens/?wallet=' + this.$store.state.address
+      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
     },
     getFreeTokens () {
       const link = 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
-
-      window.open(link, '_blank')
+      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
     }
   },
   props: {
@@ -71,3 +72,23 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
+
+.wallet-actions
+  &__title
+    a-text-caption-light()
+  &__avatar
+    min-width: unset
+    .v-avatar
+      width: unset !important
+      padding-right: 15px
+
+/** Themes **/
+.theme--light
+  .wallet-actions
+    &__title, &__icon
+      color: $adm-colors.regular
+</style>
