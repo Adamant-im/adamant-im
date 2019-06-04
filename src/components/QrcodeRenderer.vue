@@ -63,4 +63,5 @@ export default {
  */
 img
   display: block // [1]
+  max-width: 100%
 </style>

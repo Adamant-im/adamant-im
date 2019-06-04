@@ -1,14 +1,14 @@
 <template>
-  <div class="send-funds-form">
+  <div :class="className">
     <v-form
       v-model="validForm"
       @submit.prevent="confirm"
       ref="form"
-      class="send-funds-form"
     >
 
       <v-select
         v-model="currency"
+        class="a-input"
         :items="cryptoList"
         :disabled="addressReadonly"
       />
@@ -16,12 +16,12 @@
       <v-text-field
         v-model="cryptoAddress"
         :disabled="addressReadonly"
-        :rules="validationRules.cryptoAddress"
+        class="a-input"
         type="text"
       >
         <template slot="label">
-          <span v-if="addressReadonly && currency !== 'ADM'" class="font-weight-medium">
-            {{ $t('transfer.to_label') }} {{ recipientName || address }}
+          <span v-if="recipientName" class="font-weight-medium">
+            {{ $t('transfer.to_name_label', { name: recipientName }) }}
           </span>
           <span v-else class="font-weight-medium">
             {{ $t('transfer.to_address_label') }}
@@ -30,8 +30,8 @@
       </v-text-field>
 
       <v-text-field
-        :rules="validationRules.amount"
         v-model="amountString"
+        class="a-input"
         type="number"
       >
         <template slot="label">
@@ -45,11 +45,13 @@
       <v-text-field
         :value="`${this.transferFeeFixed} ${this.transferFeeCurrency}`"
         :label="$t('transfer.commission_label')"
+        class="a-input"
         disabled
       />
       <v-text-field
         :value="`${this.finalAmountFixed} ${this.currency}`"
         :label="$t('transfer.final_amount_label')"
+        class="a-input"
         v-if="!this.hideFinalAmount"
         disabled
       />
@@ -58,14 +60,16 @@
         v-if="this.address || this.isRecipientInChatList"
         v-model="comment"
         :label="$t('transfer.comments_label')"
+        class="a-input"
         counter
         maxlength="100"
       />
 
       <div class="text-xs-center">
         <v-btn
-          :disabled="!validForm || !amount"
+          :class="`${className}__button`"
           @click="confirm"
+          class="a-btn-primary"
         >
           {{ $t('transfer.send_button') }}
         </v-btn>
@@ -78,14 +82,17 @@
       width="500"
     >
       <v-card>
-        <v-card-title class="headline">{{ $t('transfer.confirm_title') }}</v-card-title>
+        <v-card-title class="a-text-header">{{ $t('transfer.confirm_title') }}</v-card-title>
 
-        <v-card-text v-html="confirmMessage"/>
+        <v-divider class="a-divider"></v-divider>
+
+        <v-card-text class="a-text-regular-enlarged" v-html="confirmMessage"/>
 
         <v-card-actions>
           <v-spacer></v-spacer>
 
           <v-btn
+            class="a-btn-regular"
             flat
             @click="dialog = false"
           >
@@ -93,6 +100,7 @@
           </v-btn>
 
           <v-btn
+            class="a-btn-regular"
             flat
             @click="submit"
             :disabled="disabledButton"
@@ -120,6 +128,27 @@ import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus a
 import validateAddress from '@/lib/validateAddress'
 import { isNumeric } from '@/lib/numericHelpers'
 
+/**
+ * @returns {string | boolean}
+ */
+function validateForm () {
+  const errorMessage = Object
+    .entries(this.validationRules)
+    .flatMap(([property, validators]) => {
+      const propertyValue = this[property]
+
+      return validators
+        .map(validator => {
+          return validator.call(this, propertyValue)
+        })
+        .filter(v => v !== true) // returns only errors
+    })
+    .slice(0, 1) // get first error
+    .join() // array to string
+
+  return errorMessage || true
+}
+
 export default {
   created () {
     this.currency = this.cryptoCurrency
@@ -135,6 +164,8 @@ export default {
     this.fetchUserCryptoAddress()
   },
   computed: {
+    className: () => 'send-funds-form',
+
     /**
      * @returns {number}
      */
@@ -193,6 +224,10 @@ export default {
         : this.$store.state[this.currency.toLowerCase()].balance
     },
 
+    ethBalance () {
+      return this.$store.state.eth.balance
+    },
+
     /**
      * @returns {number}
      */
@@ -225,9 +260,7 @@ export default {
       return this.$store.state[this.currency.toLowerCase()].address
     },
     recipientName () {
-      if (this.currency === Cryptos.ADM) {
-        return this.$store.getters['partners/displayName'](this.cryptoAddress)
-      }
+      return this.$store.getters['partners/displayName'](this.address)
     },
     exponent () {
       return CryptoAmountPrecision[this.currency]
@@ -236,14 +269,14 @@ export default {
       return Object.keys(Cryptos)
     },
     confirmMessage () {
-      let target = this.cryptoAddress
-
-      if (this.recipientName) {
-        target += ` (${this.recipientName})`
-      }
-
       const msgType = this.recipientName ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
-      return this.$t(msgType, { amount: BigNumber(this.amount).toFixed(), target, crypto: this.currency })
+
+      return this.$t(msgType, {
+        amount: BigNumber(this.amount).toFixed(),
+        crypto: this.currency,
+        name: this.recipientName,
+        address: this.cryptoAddress
+      })
     },
     isRecipientInChatList () {
       return (
@@ -252,18 +285,18 @@ export default {
       )
     },
     validationRules () {
-      const fieldRequired = v => !!v || this.$t('transfer.error_field_is_required')
       return {
         cryptoAddress: [
-          fieldRequired,
           v => validateAddress(this.currency, v) || this.$t('transfer.error_incorrect_address', { crypto: this.currency }),
           v => v !== this.ownAddress || this.$t('transfer.error_same_recipient')
         ],
         amount: [
-          fieldRequired,
           v => v > 0 || this.$t('transfer.error_incorrect_amount'),
           v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
-          v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units')
+          v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units'),
+          v => isErc20(this.currency)
+            ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
+            : true
         ]
       }
     }
@@ -293,11 +326,18 @@ export default {
   }),
   methods: {
     confirm () {
-      this.dialog = true
+      const abstract = validateForm.call(this)
+
+      if (abstract === true) {
+        this.dialog = true
+      } else {
+        this.$store.dispatch('snackbar/show', {
+          message: abstract,
+          timeout: 3000
+        })
+      }
     },
     submit () {
-      if (!this.$refs.form.validate()) return false
-
       this.disabledButton = true
       this.showSpinner = true
 
@@ -430,11 +470,8 @@ export default {
 }
 </script>
 
-<style scoped>
-/**
- * Remove paddings.
- */
-.list-info >>> .v-list__tile {
-  padding: 0;
-}
+<style lang="stylus" scoped>
+.send-funds-form
+  &__button
+    margin-top: 15px
 </style>
