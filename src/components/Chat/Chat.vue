@@ -244,6 +244,9 @@ export default {
         params: {
           crypto: transaction.type,
           txId: transaction.hash
+        },
+        query: {
+          fromChat: true
         }
       })
     },

@@ -128,7 +128,7 @@
 
         <v-divider/>
 
-        <v-list-tile v-if="partner" @click="openChat">
+        <v-list-tile v-if="partner && !ifComeFromChat" @click="openChat">
           <v-list-tile-content>
             <v-list-tile-title :class="`${className}__title`">
               {{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}
@@ -217,6 +217,9 @@ export default {
     placeholder () {
       if (!this.status) return Symbols.CLOCK
       return this.status === 'ERROR' ? Symbols.CROSS : Symbols.HOURGLASS
+    },
+    ifComeFromChat () {
+      return this.$route.query.hasOwnProperty('fromChat')
     }
   },
   components: {
