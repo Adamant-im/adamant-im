@@ -14,6 +14,7 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
       color="#BBDEFB"
       label="Input your passphrase to login"
       type="password"
+      value=""
     />
      
   </v-layout-stub>
