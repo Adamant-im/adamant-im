@@ -23,11 +23,13 @@
 
             <transition-group name="messages" v-if="isFulfilled">
               <chat-preview
-                v-for="message in messagesSorted"
-                :key="message.partnerId"
-                :partner-id="message.partnerId"
-                :read-only="isChatReadOnly(message.partnerId)"
-                @click="openChat(message.partnerId)"
+                v-for="transaction in messages"
+                :key="transaction.contactId"
+                :user-id="userId"
+                :contact-id="transaction.contactId"
+                :transaction="transaction"
+                :read-only="isChatReadOnly(transaction.contactId)"
+                @click="openChat(transaction.contactId)"
               />
             </transition-group>
           </v-list>
@@ -59,32 +61,11 @@ export default {
     partners () {
       return this.$store.getters['chat/partners']
     },
-    /**
-     * Create array of last messages with timestamp.
-     *
-     * Important: `timestamp` is Adamant Timestamp.
-     *
-     * @returns {Array<{partnerId: string, timestamp: number}>}
-     */
     messages () {
-      return this.partners.map(partnerId => {
-        const timestamp = this.$store.getters['chat/lastMessageTimestamp'](partnerId)
-
-        return {
-          partnerId,
-          timestamp
-        }
-      })
+      return this.$store.getters['chat/lastMessages']
     },
-    /**
-     * Sort messages by timestamp.
-     * @returns {Message[]}
-     */
-    messagesSorted () {
-      // clone only array with references
-      const messages = [...this.messages]
-
-      return messages.sort((left, right) => right.timestamp - left.timestamp)
+    userId () {
+      return this.$store.state.address
     }
   },
   data: () => ({

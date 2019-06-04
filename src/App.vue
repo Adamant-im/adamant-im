@@ -1,17 +1,14 @@
 <template>
   <v-app :dark="isDarkTheme" class="application--linear-gradient">
-    <TransitionEffect>
-      <component :is="layout">
-        <router-view />
-      </component>
-    </TransitionEffect>
+    <component :is="layout">
+      <router-view />
+    </component>
   </v-app>
 </template>
 
 <script>
 import dayjs from 'dayjs'
 
-import TransitionEffect from '@/components/TransitionEffect'
 import Notifications from '@/lib/notifications'
 import AppInterval from '@/lib/AppInterval'
 
@@ -30,7 +27,6 @@ export default {
     this.notifications.stop()
     AppInterval.unsubscribe()
   },
-  components: { TransitionEffect },
   computed: {
     layout () {
       return this.$route.meta.layout || 'default'

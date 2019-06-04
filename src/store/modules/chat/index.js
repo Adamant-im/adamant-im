@@ -214,6 +214,21 @@ const getters = {
     return getters.unreadMessages[length - 1] || null
   },
 
+  lastMessages: (state, getters) => {
+    const partners = getters.partners
+
+    return partners
+      .map(partnerId => {
+        const message = getters.lastMessage(partnerId)
+
+        return {
+          ...message,
+          contactId: partnerId
+        }
+      })
+      .sort((left, right) => right.timestamp - left.timestamp)
+  },
+
   scrollPosition: state => contactId => {
     const chat = state.chats[contactId]
 

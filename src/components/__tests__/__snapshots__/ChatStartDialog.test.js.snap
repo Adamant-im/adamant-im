@@ -6,9 +6,12 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
   maxwidth="none"
   origin="center center"
   transition="dialog-transition"
+  value="true"
   width="500"
 >
-  <v-card-stub>
+  <v-card-stub
+    elevation="2"
+  >
     <v-card-title-stub
       class="a-text-header"
     >
@@ -33,6 +36,7 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
         class="a-input"
         label="Partner address"
         title="Enter a partner address in the format U1234567890"
+        value=""
       />
        
       <v-btn-stub
