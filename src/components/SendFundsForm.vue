@@ -57,7 +57,7 @@
       />
 
       <v-text-field
-        v-if="this.address || this.isRecipientInChatList"
+        v-if="this.address"
         v-model="comment"
         :label="$t('transfer.comments_label')"
         class="a-input"
@@ -278,12 +278,6 @@ export default {
         address: this.cryptoAddress
       })
     },
-    isRecipientInChatList () {
-      return (
-        this.currency === Cryptos.ADM &&
-        this.$store.getters['chat/isPartnerInChatList'](this.cryptoAddress)
-      )
-    },
     validationRules () {
       return {
         cryptoAddress: [
@@ -299,6 +293,9 @@ export default {
             : true
         ]
       }
+    },
+    hasComment () {
+      return this.comment.length > 0
     }
   },
   watch: {
@@ -349,8 +346,7 @@ export default {
 
           if (this.currency === Cryptos.ADM) {
             // push fast transaction if come from chat
-            // or if recipient is in chat list
-            if (this.address || this.isRecipientInChatList) {
+            if (this.address && this.hasComment) {
               this.pushTransactionToChat(transactionId, this.cryptoAddress)
             }
           } else { // other cryptos
@@ -375,10 +371,9 @@ export default {
     sendFunds () {
       if (this.currency === Cryptos.ADM) {
         let promise
-        // 1. sendMessage if come from chat
-        //    or if recipient is in chat list
+        // 1. sendMessage if come from Chat and Comment Field is not empty
         // 2. else send regular transaction with `type = 0`
-        if (this.address || this.isRecipientInChatList) {
+        if (this.address && this.hasComment) {
           promise = sendMessage({
             amount: this.amount,
             message: this.comment,
