@@ -24,9 +24,10 @@ import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
  * type Chat = {
  *   messages: Message[],
  *   numOfNewMessages: number,
- *   readOnly?: boolean // for Welcome to ADAMANT & ADAMANT Tokens chats
- *   offset: 0 // for loading chat history
- *   page: 0 // for loading chat history
+ *   readOnly?: boolean, // for Welcome to ADAMANT & ADAMANT Tokens chats
+ *   offset: number, // for loading chat history,
+ *   page: number, // for loading chat history,
+ *   scrollPosition: number // current scroll position of AChat component
  * }
  *
  */
@@ -214,6 +215,31 @@ const getters = {
     const length = getters.unreadMessages.length
 
     return getters.unreadMessages[length - 1] || null
+  },
+
+  lastMessages: (state, getters) => {
+    const partners = getters.partners
+
+    return partners
+      .map(partnerId => {
+        const message = getters.lastMessage(partnerId)
+
+        return {
+          ...message,
+          contactId: partnerId
+        }
+      })
+      .sort((left, right) => right.timestamp - left.timestamp)
+  },
+
+  scrollPosition: state => contactId => {
+    const chat = state.chats[contactId]
+
+    if (chat && chat.scrollPosition !== undefined) {
+      return chat.scrollPosition
+    }
+
+    return false
   },
 
   chatOffset: state => contactId => {
@@ -406,6 +432,14 @@ const mutations = {
       numOfNewMessages: 0,
       readOnly: true
     })
+  },
+
+  updateScrollPosition (state, { contactId, scrollPosition }) {
+    const chat = state.chats[contactId]
+
+    if (chat) {
+      chat.scrollPosition = scrollPosition
+    }
   },
 
   reset (state) {

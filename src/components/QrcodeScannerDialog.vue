@@ -4,7 +4,7 @@
     :class="className"
     width="500"
   >
-    <v-card>
+    <v-card :class="className">
 
       <!-- Camera Waiting -->
       <v-layout
@@ -13,7 +13,7 @@
         align-center
         class="pa-5"
       >
-        <div class="title">{{ $t('scan.waiting_camera') }}</div>
+        <div class="a-text-header">{{ $t('scan.waiting_camera') }}</div>
         <v-progress-circular
           indeterminate
           color="primary"
@@ -52,7 +52,9 @@
           </div>
         </v-flex>
         <v-flex xs12 class="pa-4">
-          <h3 class="subheading text-xs-center">
+          <h3
+            class="a-text-regular text-xs-center"
+          >
             {{ $t('scan.hold_your_device') }}
           </h3>
         </v-flex>
@@ -68,18 +70,19 @@
         class="text-xs-center pa-5"
       >
         <v-flex xs12>
-          <h3 class="headline">{{ $t('scan.no_camera_found') }}</h3>
-          <p class="mt-1 mb-0">{{ $t('scan.connect_camera') }}</p>
+          <h3 class="a-text-header">{{ $t('scan.no_camera_found') }}</h3>
+          <p class="a-text-regular mt-1 mb-0">{{ $t('scan.connect_camera') }}</p>
         </v-flex>
       </v-layout>
 
-      <v-divider></v-divider>
+      <v-divider class="a-divider"></v-divider>
 
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
           flat
           @click="show = false"
+          class="a-btn-regular"
         >
           {{ $t('scan.close_button') }}
         </v-btn>
@@ -100,9 +103,7 @@ export default {
     this.destroyScanner()
   },
   computed: {
-    className () {
-      return 'qrcode-scanner'
-    },
+    className: () => 'qrcode-scanner-dialog',
     show: {
       get () {
         return this.value
@@ -179,7 +180,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.qrcode-scanner
+.qrcode-scanner-dialog
   &__camera
     width: 100%
     height: 300px

@@ -548,6 +548,26 @@ describe('Store: chat.js', () => {
         expect(chatPage('U222222')).toBe(undefined)
       })
     })
+
+    /**
+     * getters.scrollPosition
+     */
+    describe('getters.scrollPosition', () => {
+      it('should return scrollPosition', () => {
+        const state = {
+          chats: {
+            U111111: {
+              scrollPosition: 100
+            }
+          }
+        }
+
+        const scrollPosition = getters.scrollPosition(state)
+
+        expect(scrollPosition('U111111')).toBe(100)
+        expect(scrollPosition('U222222')).toBe(false) // non-existing chat
+      })
+    })
   })
 
   /**
@@ -965,6 +985,28 @@ describe('Store: chat.js', () => {
         mutations.createAdamantChats(state)
 
         expect(state.chats['chats.welcome_message_title']).toBeTruthy()
+      })
+    })
+
+    /**
+     * mutations.updateScrollPosition
+     */
+    describe('mutations.updateScrollPosition', () => {
+      it('should update scroll position', () => {
+        const state = {
+          chats: {
+            U111111: {
+              scrollPosition: undefined
+            }
+          }
+        }
+
+        const contactId = 'U111111'
+        const scrollPosition = 1000
+
+        mutations.updateScrollPosition(state, { contactId, scrollPosition })
+
+        expect(state.chats.U111111.scrollPosition).toBe(scrollPosition)
       })
     })
 

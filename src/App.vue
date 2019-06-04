@@ -1,17 +1,14 @@
 <template>
   <v-app :dark="isDarkTheme" class="application--linear-gradient">
-    <TransitionEffect>
-      <component :is="layout">
-        <router-view />
-      </component>
-    </TransitionEffect>
+    <component :is="layout">
+      <router-view />
+    </component>
   </v-app>
 </template>
 
 <script>
 import dayjs from 'dayjs'
 
-import TransitionEffect from '@/components/TransitionEffect'
 import Notifications from '@/lib/notifications'
 import AppInterval from '@/lib/AppInterval'
 
@@ -30,7 +27,6 @@ export default {
     this.notifications.stop()
     AppInterval.unsubscribe()
   },
-  components: { TransitionEffect },
   computed: {
     layout () {
       return this.$route.meta.layout || 'default'
@@ -61,20 +57,10 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import './assets/stylus/themes/adamant/_mixins.styl'
+
 .theme--light.application--linear-gradient
-  background: repeating-linear-gradient(
-    140deg,
-    #f6f6f6,
-    #f6f6f6 0.7px,
-    #fefefe 0,
-    #fefefe 5px
-  )
+  linear-gradient-light()
 .theme--dark.application--linear-gradient
-  background: repeating-linear-gradient(
-    140deg,
-    #191919,
-    #191919 0.7px,
-    #212121 0,
-    #212121 5px
-  )
+  linear-gradient-dark()
 </style>

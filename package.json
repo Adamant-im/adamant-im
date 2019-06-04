@@ -56,7 +56,7 @@
     "vue-material": "^0.8.1",
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.11.0",
-    "vuetify": "1.4.1",
+    "vuetify": "^1.5.12",
     "vuex": "^3.0.1",
     "vuex-persist": "^2.0.0",
     "web3": "0.20.6"

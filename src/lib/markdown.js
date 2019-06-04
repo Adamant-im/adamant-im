@@ -43,7 +43,7 @@ export function removeFormats (text = '') {
   const line = /^([^\n]*)\n?/.exec(text)[1]
 
   const node = document.createElement('div')
-  node.innerHTML = marked(line)
+  node.innerHTML = marked(line, { renderer })
 
   return node.textContent || node.innerText || ''
 }

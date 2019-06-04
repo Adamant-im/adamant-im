@@ -16,12 +16,12 @@
       </div>
       <div class="a-chat__message-card">
         <div class="a-chat__message-card-body">
-          <div v-if="html" v-html="message" class="a-chat__message-text"></div>
-          <div v-else v-text="message" class="a-chat__message-text"></div>
+          <div v-if="html" v-html="message" class="a-chat__message-text a-text-regular-enlarged"></div>
+          <div v-else v-text="message" class="a-chat__message-text a-text-regular-enlarged"></div>
         </div>
 
         <div class="a-chat__message-card-header mt-1">
-          <div :title="timeTitle" class="a-chat__timestamp font-italic">{{ time }}</div>
+          <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
           <div v-if="isOutgoingMessage" class="a-chat__status">
             <v-icon
               :title="i18n.retry"

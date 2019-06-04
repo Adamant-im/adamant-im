@@ -1,5 +1,5 @@
 <template>
-  <icon :width="sizePx" :height="sizePx" :fill="fillColor">
+  <icon :width="sizePx" :height="sizePx" :color="fill">
     <component :is="componentName"/>
   </icon>
 </template>
@@ -17,9 +17,8 @@ import KcsFillIcon from './KcsFill'
 import { Cryptos } from '@/lib/constants'
 
 const SMALL_SIZE = 36
+const MEDIUM_SIZE = 48
 const LARGE_SIZE = 125
-
-const DEFAULT_FILL = '#BDBDBD'
 
 /**
  * Displays a crypto icon
@@ -42,15 +41,15 @@ export default {
       required: true,
       validator: value => !!Cryptos[value]
     },
-    /** Icon size: can be either 'small' (36x36) or 'large' (125x125) or undefined */
+    /** Icon size: can be either 'small' (36x36), 'medium' (48x48) or 'large' (125x125) or undefined */
     size: {
       type: String,
-      validator: value => ['small', 'large'].indexOf(value) >= 0
+      validator: value => ['small', 'medium', 'large'].indexOf(value) >= 0
     },
     /** Fill color, e.g. '#BDBDBD' */
     fill: {
       type: String,
-      default: DEFAULT_FILL
+      default: undefined
     }
   },
   computed: {
@@ -60,13 +59,12 @@ export default {
     sizePx () {
       if (this.size === 'small') {
         return SMALL_SIZE
+      } else if (this.size === 'medium') {
+        return MEDIUM_SIZE
       } else if (this.size === 'large') {
         return LARGE_SIZE
       }
       return undefined
-    },
-    fillColor () {
-      return this.fill || DEFAULT_FILL
     }
   }
 }

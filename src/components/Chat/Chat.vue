@@ -9,6 +9,7 @@
 
       @scroll:top="onScrollTop"
       @scroll:bottom="onScrollBottom"
+      @scroll="onScroll"
 
       ref="chat"
     >
@@ -26,7 +27,7 @@
           v-if="message.type === 'message'"
           v-bind="message"
           :key="message.id"
-          :message="formatMessage(message.message)"
+          :message="formatMessage(message)"
           :time="message.timestamp | date"
           :user-id="userId"
           :sender="sender"
@@ -62,7 +63,12 @@
           :status="getTransactionStatus(message, partnerId)"
           @click:transaction="openTransaction(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
-        />
+        >
+          <crypto-icon
+            slot="crypto"
+            :crypto="message.type"
+          />
+        </a-chat-transaction>
 
       </template>
 
@@ -94,6 +100,7 @@ import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'
 import transaction from '@/mixins/transaction'
 import dateFilter from '@/filters/date'
+import CryptoIcon from '@/components/icons/CryptoIcon'
 
 /**
  * Returns user meta by userId.
@@ -147,7 +154,7 @@ export default {
   mounted () {
     if (this.isFulfilled && this.chatPage <= 0) this.fetchChatMessages()
 
-    this.$nextTick(() => this.$refs.chat.scrollToBottom())
+    this.scrollBehavior()
     this.markAsRead()
   },
   watch: {
@@ -195,6 +202,9 @@ export default {
     },
     chatPage () {
       return this.$store.getters['chat/chatPage'](this.partnerId)
+    },
+    scrollPosition () {
+      return this.$store.getters['chat/scrollPosition'](this.partnerId)
     }
   },
   data: () => ({
@@ -238,6 +248,12 @@ export default {
     onScrollBottom () {
       //
     },
+    onScroll (scrollPosition) {
+      this.$store.commit('chat/updateScrollPosition', {
+        contactId: this.partnerId,
+        scrollPosition
+      })
+    },
     openTransaction (transaction) {
       this.$router.push({
         name: 'Transaction',
@@ -255,16 +271,16 @@ export default {
         type === 'UNKNOWN_CRYPTO'
       )
     },
-    formatMessage (message) {
-      if (this.isChatReadOnly || message.i18n) {
-        return renderMarkdown(this.$t(message))
+    formatMessage (transaction) {
+      if (this.isChatReadOnly || transaction.i18n) {
+        return renderMarkdown(this.$t(transaction.message))
       }
 
       if (this.$store.state.options.formatMessages) {
-        return renderMarkdown(message)
+        return renderMarkdown(transaction.message)
       }
 
-      return message
+      return transaction.message
     },
     fetchChatMessages () {
       if (this.noMoreMessages) return
@@ -280,6 +296,15 @@ export default {
           this.loading = false
           this.$refs.chat.maintainScrollPosition()
         })
+    },
+    scrollBehavior () {
+      this.$nextTick(() => {
+        if (this.scrollPosition !== false) {
+          this.$refs.chat.scrollTo(this.scrollPosition)
+        } else {
+          this.$refs.chat.scrollToBottom()
+        }
+      })
     }
   },
   filters: {
@@ -293,7 +318,8 @@ export default {
     AChatForm,
     ChatToolbar,
     ChatAvatar,
-    ChatMenu
+    ChatMenu,
+    CryptoIcon
   },
   props: {
     partnerId: {
@@ -307,4 +333,6 @@ export default {
 <style scoped lang="stylus">
 .chat
   height: 100vh
+  box-shadow: none
+  background-color: transparent !important
 </style>

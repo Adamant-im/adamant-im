@@ -9,7 +9,7 @@
           <QrcodeRenderer :text="passphrase" ref="qrcode" />
         </div>
 
-        <v-btn @click="saveQrcode" class="v-btn--primary mt-3">{{ $t('login.save_qr_code_to_images') }}</v-btn>
+        <v-btn @click="saveQrcode" class="a-btn-primary mt-3">{{ $t('login.save_qr_code_to_images') }}</v-btn>
       </v-layout>
     </v-card>
   </v-dialog>

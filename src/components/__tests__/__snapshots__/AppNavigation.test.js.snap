@@ -5,7 +5,7 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
   active="0"
   app=""
   class="app-navigation"
-  height="56"
+  height="50"
   value="true"
 >
   <v-layout-stub
@@ -30,7 +30,9 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
             Account
           </span>
            
-          <v-icon-stub>
+          <v-icon-stub
+            size="20"
+          >
             mdi-wallet
           </v-icon-stub>
         </v-btn-stub>
@@ -54,7 +56,9 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
           >
             <!---->
              
-            <v-icon-stub>
+            <v-icon-stub
+              size="20"
+            >
               mdi-forum
             </v-icon-stub>
           </v-badge-stub>
@@ -71,23 +75,10 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
             Settings
           </span>
            
-          <v-icon-stub>
+          <v-icon-stub
+            size="20"
+          >
             mdi-settings
-          </v-icon-stub>
-        </v-btn-stub>
-         
-        <v-btn-stub
-          activeclass="v-btn--active"
-          flat="true"
-          tag="button"
-          type="button"
-        >
-          <span>
-            Logout
-          </span>
-           
-          <v-icon-stub>
-            mdi-logout-variant
           </v-icon-stub>
         </v-btn-stub>
       </v-layout-stub>
