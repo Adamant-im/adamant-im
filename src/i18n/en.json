@@ -52,11 +52,12 @@
   "error": "Error",
   "home": {
     "balance": "Balance",
+    "buy_tokens_anonymously": "Buy ADM anonymously",
     "copied": "Copied",
     "copy": "Copy",
     "create_qrcode": "Create QR code",
     "free_adm_btn": "Free ADM tokens",
-    "invest_btn": "Buy tokens",
+    "invest_btn": "Buy & Sell tokens",
     "invest_btn_link": "https://adamant.im/buy-tokens/",
     "invest_btn_tooltip": "Buy ADM tokens anonymously. You also have possibility to buy and sell ADM on exchanges",
     "send_btn": "Send funds",
