@@ -55,8 +55,6 @@
 </template>
 
 <script>
-import { Base64 } from 'js-base64'
-
 import validateAddress from '@/lib/validateAddress'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
