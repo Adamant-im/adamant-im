@@ -11,6 +11,7 @@
             v-model="currentWallet"
             grow
             ref="vtabs"
+            show-arrows
           >
             <v-tab
               v-for="wallet in wallets"
