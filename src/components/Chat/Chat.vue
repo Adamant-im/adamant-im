@@ -61,6 +61,7 @@
           }"
           :locale="locale"
           :status="getTransactionStatus(message, partnerId)"
+          :is-clickable="message.type !== 'UNKNOWN_CRYPTO'"
           @click:transaction="openTransaction(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
         >
