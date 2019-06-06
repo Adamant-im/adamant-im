@@ -49,7 +49,7 @@
 
     <qrcode-renderer-dialog
       v-model="showQrcodeRendererDialog"
-      :passphrase="address"
+      :text="address"
     />
   </v-dialog>
 </template>
