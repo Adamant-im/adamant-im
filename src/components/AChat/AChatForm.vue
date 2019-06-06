@@ -44,8 +44,10 @@ export default {
      */
     listeners () {
       return {
-        keydown: (e) => {
-          if (e.code === 'Enter') {
+        keypress: (e) => {
+          // on some devices keyCode for CTRL+ENTER is 10
+          // https://bugs.chromium.org/p/chromium/issues/detail?id=79407
+          if (e.keyCode === 13 || e.keyCode === 10) { // Enter || Ctrl+Enter
             if (this.sendOnEnter) {
               // add LF and calculate height when CTRL+ENTER or ALT+ENTER or CMD+ENTER (Mac & Windows)
               // no need to add LF for shiftKey, it will be added automatically
