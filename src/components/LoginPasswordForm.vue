@@ -32,7 +32,7 @@
           </v-btn>
         </slot>
       </v-flex>
-      <v-flex xs12 class=" a-text-regular password-hint">
+      <v-flex xs12 class="a-text-regular mt-5">
         {{ $t('login_via_password.remove_password_hint') }}
       </v-flex>
       <v-flex xs12>
@@ -44,11 +44,6 @@
 
   </v-form>
 </template>
-
-<style lang="stylus" scoped>
-.password-hint
-  margin-top: 48px
-</style>
 
 <script>
 import { clearDb } from '@/lib/idb'
@@ -64,7 +59,7 @@ export default {
       }
     }
   },
-  updated: function () {
+  updated () {
     this.$refs.passwordField.focus()
   },
   data: () => ({
@@ -74,12 +69,19 @@ export default {
   }),
   methods: {
     submit () {
+      this.showSpinner = true
+      this.disabledButton = true
+
       return this.$store.dispatch('loginViaPassword', this.password)
         .then(() => {
           this.$emit('login')
         })
         .catch(() => {
           this.$emit('error', 'login_via_password.incorrect_password')
+        })
+        .finally(() => {
+          this.showSpinner = false
+          this.disabledButton = false
         })
     },
     removePassword () {
