@@ -49,7 +49,7 @@
 
     <qrcode-renderer-dialog
       v-model="showQrcodeRendererDialog"
-      :passphrase="passphrase"
+      :passphrase="address"
     />
   </v-dialog>
 </template>
@@ -74,10 +74,10 @@ export default {
         this.$emit('input', value)
       }
     },
-    passphrase () {
-      const passphrase = Base64.decode(this.$store.state.passphrase)
+    address () {
+      const passphrase = Base64.decode(this.$store.state.address)
 
-      return passphrase
+      return address
     }
   },
   data: () => ({
