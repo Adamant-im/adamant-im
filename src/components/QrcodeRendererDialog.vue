@@ -6,7 +6,7 @@
     <v-card>
       <v-layout justify-center row wrap class="py-3">
         <div @click="saveQrcode" :style="{ cursor: 'pointer' }">
-          <QrcodeRenderer :text="passphrase" ref="qrcode" />
+          <QrcodeRenderer :text="text" ref="qrcode" />
         </div>
 
         <v-btn @click="saveQrcode" class="a-btn-primary mt-3">{{ $t('login.save_qr_code_to_images') }}</v-btn>
@@ -49,7 +49,7 @@ export default {
       type: Boolean,
       required: true
     },
-    passphrase: {
+    text: {
       type: String,
       default: ''
     }
