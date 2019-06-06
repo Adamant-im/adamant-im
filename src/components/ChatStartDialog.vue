@@ -75,9 +75,7 @@ export default {
       }
     },
     address () {
-      const passphrase = Base64.decode(this.$store.state.address)
-
-      return address
+      return this.$store.state.address
     }
   },
   data: () => ({
