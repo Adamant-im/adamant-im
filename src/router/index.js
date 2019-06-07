@@ -47,7 +47,8 @@ const router = new Router({
         requiresAuth: true,
         layout: 'no-container',
         containerNoPadding: true
-      }
+      },
+      beforeEnter: navigationGuard.transactions
     },
     {
       path: '/transactions/:crypto?',

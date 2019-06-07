@@ -239,16 +239,18 @@ export default {
       })
     },
     openTransaction (transaction) {
-      this.$router.push({
-        name: 'Transaction',
-        params: {
-          crypto: transaction.type,
-          txId: transaction.hash
-        },
-        query: {
-          fromChat: true
-        }
-      })
+      if (transaction.type in Cryptos) {
+        this.$router.push({
+          name: 'Transaction',
+          params: {
+            crypto: transaction.type,
+            txId: transaction.hash
+          },
+          query: {
+            fromChat: true
+          }
+        })
+      }
     },
     isTransaction (type) {
       // @todo remove LSK when will be supported
