@@ -267,7 +267,7 @@ export default {
     pagination: {
       rowsPerPage: 50,
       sortBy: 'rank',
-      descending: true,
+      descending: false,
       page: 1
     },
     waitingForConfirmation: false,
