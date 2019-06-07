@@ -23,7 +23,7 @@
             </v-list-tile>
           </template>
         </v-list>
-        <v-layout align-center justify-center>
+        <v-layout align-center justify-center class="pb-4">
           <QrcodeRenderer :logo="logo" :opts="opts" :text="text" />
         </v-layout>
       </v-card>
@@ -77,5 +77,5 @@ export default {
 </script>
 <style lang="stylus"  scoped>
 .close-icon
-  height: 18px;
+  margin: 0
 </style>
