@@ -51,6 +51,7 @@
 import ChatPreview from '@/components/ChatPreview'
 import ChatStartDialog from '@/components/ChatStartDialog'
 import ChatSpinner from '@/components/ChatSpinner'
+import scrollPosition from '@/mixins/scrollPosition'
 
 export default {
   computed: {
@@ -79,6 +80,7 @@ export default {
       return this.$store.getters['chat/isChatReadOnly'](partnerId)
     }
   },
+  mixins: [scrollPosition],
   components: {
     ChatPreview,
     ChatStartDialog,
