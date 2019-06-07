@@ -63,7 +63,7 @@
 
     <QrcodeRendererDialog
       v-model="showQrcodeRendererDialog"
-      :passphrase="passphrase"
+      :text="passphrase"
     />
   </div>
 </template>

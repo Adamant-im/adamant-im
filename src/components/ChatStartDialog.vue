@@ -49,14 +49,12 @@
 
     <qrcode-renderer-dialog
       v-model="showQrcodeRendererDialog"
-      :passphrase="passphrase"
+      :text="address"
     />
   </v-dialog>
 </template>
 
 <script>
-import { Base64 } from 'js-base64'
-
 import validateAddress from '@/lib/validateAddress'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
@@ -74,10 +72,8 @@ export default {
         this.$emit('input', value)
       }
     },
-    passphrase () {
-      const passphrase = Base64.decode(this.$store.state.passphrase)
-
-      return passphrase
+    address () {
+      return this.$store.state.address
     }
   },
   data: () => ({
