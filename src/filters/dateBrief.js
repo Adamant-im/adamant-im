@@ -10,7 +10,7 @@ export default (timestamp) => {
   } else if (isYesterday(new Date(timestamp))) {
     return date.format(`[${i18n.t('chats.date_yesterday')}], HH:mm`)
   } else if (isCurrentWeek(new Date(timestamp))) {
-    return date.format('dddd')
+    return date.format('ddd')
   } else {
     const currentYear = (new Date()).getFullYear()
     const messageYear = (new Date(timestamp)).getFullYear()

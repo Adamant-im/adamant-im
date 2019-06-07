@@ -10,15 +10,15 @@ export default (timestamp) => {
   } else if (isYesterday(new Date(timestamp))) {
     return date.format(`[${i18n.t('chats.date_yesterday')}], HH:mm`)
   } else if (isCurrentWeek(new Date(timestamp))) {
-    return date.format('dddd, HH:mm')
+    return date.format('ddd, HH:mm')
   } else {
     const currentYear = (new Date()).getFullYear()
     const messageYear = (new Date(timestamp)).getFullYear()
 
     if (currentYear === messageYear) {
-      return date.format('MMM DD')
+      return date.format('MMM DD, HH:mm')
     } else {
-      return date.format('MMM DD, YYYY')
+      return date.format('MMM DD, YYYY, HH:mm')
     }
   }
 }
