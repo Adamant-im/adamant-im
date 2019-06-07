@@ -7,10 +7,10 @@
       flat
     />
 
-    <v-container fluid>
+    <v-container fluid class="pa-0">
       <v-layout row wrap justify-center>
 
-        <container>
+        <container padding>
 
           <!-- General -->
           <h3
@@ -356,6 +356,10 @@ export default {
   &__title
     padding-top: 15px
     padding-bottom: 5px
+    margin-left: -24px
+    margin-right: -24px
+    padding-left: 24px
+    padding-right: 24px
   &__version_info
     a-text-explanation()
     margin-top: 24px
@@ -401,8 +405,8 @@ export default {
 @media $display-breakpoints.sm-and-down
   .settings-view
     &__title
-      margin-left: -20px
-      margin-right: -20px
-      padding-left: 20px
-      padding-right: 20px
+      margin-left: -16px
+      margin-right: -16px
+      padding-left: 16px
+      padding-right: 16px
 </style>
