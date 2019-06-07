@@ -50,6 +50,7 @@
     <qrcode-renderer-dialog
       v-model="showQrcodeRendererDialog"
       :text="address"
+      logo
     />
   </v-dialog>
 </template>
