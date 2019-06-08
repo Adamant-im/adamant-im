@@ -42,10 +42,10 @@ export default {
       return this.$store.getters[prefix + '/transaction'](this.id) || { }
     },
     sender () {
-      return this.formatAddress(this.transaction.senderId)
+      return this.transaction.senderId ? this.formatAddress(this.transaction.senderId) : ''
     },
     recipient () {
-      return this.formatAddress(this.transaction.recipientId)
+      return this.transaction.recipientId ? this.formatAddress(this.transaction.recipientId) : ''
     },
     partner () {
       if (this.transaction.partner) return this.transaction.partner
@@ -101,6 +101,7 @@ export default {
       let name = this.$store.getters['partners/displayName'](admAddress)
 
       let result = address || ''
+
       if (admAddress) {
         result += ' (' + (name || admAddress) + ')'
       }
