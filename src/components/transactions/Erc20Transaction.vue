@@ -67,7 +67,7 @@ export default {
       let admAddress = ''
 
       // First, check the known partners
-      const partners = this.$store.state.partners
+      const partners = this.$store.state.partners.list
       Object.keys(partners).some(uid => {
         const partner = partners[uid]
         if (partner[Cryptos.ETH] === address) {
