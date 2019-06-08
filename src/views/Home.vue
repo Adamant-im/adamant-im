@@ -181,6 +181,12 @@ export default {
         background-color: $adm-colors.primary !important
       >>> .v-tabs__item
         color: $adm-colors.regular
+      >>> .v-tabs__icon
+        color: $adm-colors.primary2
+        pointer-events: none
+      >>> .v-tabs__wrapper--show-arrows
+        margin-left: 0
+        margin-right: 0
       >>> .v-tabs__item--active
         color: $adm-colors.primary
         .svg-icon
