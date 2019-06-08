@@ -6,10 +6,10 @@
       flat
     />
 
-    <v-container fluid>
+    <v-container fluid class="px-0">
       <v-layout row wrap justify-center>
 
-        <container>
+        <container padding>
 
           <send-funds-form
             :crypto-currency="cryptoCurrency"
