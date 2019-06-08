@@ -33,6 +33,7 @@
               :rows-per-page-text="$t('rows_per_page')"
               :search="search"
               hide-actions
+              must-sort
               item-key="username"
             >
               <div slot="no-data" class="text-xs-center">
