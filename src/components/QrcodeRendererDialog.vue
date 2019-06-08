@@ -6,7 +6,12 @@
     <v-card>
       <v-layout justify-center row wrap class="py-3">
         <div @click="saveQrcode" :style="{ cursor: 'pointer' }">
-          <QrcodeRenderer :text="text" ref="qrcode" />
+          <QrcodeRenderer
+            :text="text"
+            :logo="logoURL"
+            :opts="opts"
+            ref="qrcode"
+          />
         </div>
 
         <v-btn @click="saveQrcode" class="a-btn-primary mt-3">{{ $t('login.save_qr_code_to_images') }}</v-btn>
@@ -30,8 +35,16 @@ export default {
       set (value) {
         this.$emit('input', value)
       }
+    },
+    logoURL () {
+      return this.logo ? '/img/adamant-logo-transparent-512x512.png' : ''
     }
   },
+  data: () => ({
+    opts: {
+      scale: 8.8
+    }
+  }),
   methods: {
     saveQrcode () {
       const imgUrl = this.$refs.qrcode.$el.src
@@ -52,6 +65,10 @@ export default {
     text: {
       type: String,
       default: ''
+    },
+    logo: {
+      type: Boolean,
+      default: undefined
     }
   }
 }

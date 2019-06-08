@@ -68,7 +68,11 @@ const router = new Router({
       meta: {
         requiresAuth: true,
         layout: 'no-container',
-        showNavigation: true
+        showNavigation: true,
+        scrollPosition: {
+          x: 0,
+          y: 0
+        }
       }
     },
     {
@@ -90,7 +94,11 @@ const router = new Router({
         requiresAuth: true,
         layout: 'toolbar',
         containerNoPadding: true,
-        showNavigation: true
+        showNavigation: true,
+        scrollPosition: {
+          x: 0,
+          y: 0
+        }
       }
     },
     {
@@ -127,7 +135,7 @@ const router = new Router({
     if (savedPosition) {
       return savedPosition
     } else {
-      return { x: 0, y: 0 }
+      return to.meta.scrollPosition
     }
   }
 })

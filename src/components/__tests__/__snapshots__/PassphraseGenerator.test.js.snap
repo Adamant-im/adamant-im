@@ -30,7 +30,7 @@ exports[`PassphraseGenerator.vue renders the correct markup 1`] = `
   <!---->
    
   <qrcoderendererdialog-stub
-    passphrase=""
+    text=""
   />
 </div>
 `;

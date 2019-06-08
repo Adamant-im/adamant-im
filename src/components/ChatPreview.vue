@@ -50,7 +50,7 @@
 import { removeFormats } from '@/lib/markdown'
 
 import transaction from '@/mixins/transaction'
-import dateFilter from '@/filters/date'
+import dateFilter from '@/filters/dateBrief'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import Icon from '@/components/icons/BaseIcon'
 import AdmFillIcon from '@/components/icons/AdmFill'

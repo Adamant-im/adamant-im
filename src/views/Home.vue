@@ -10,8 +10,8 @@
           <v-tabs
             v-model="currentWallet"
             grow
-            slider-color="white"
             ref="vtabs"
+            show-arrows
           >
             <v-tab
               v-for="wallet in wallets"
@@ -178,9 +178,15 @@ export default {
       >>> .v-tabs__bar
         background-color: $adm-colors.secondary2-transparent
       >>> .v-tabs__slider
-        background-color: $adm-colors.primary2
+        background-color: $adm-colors.primary !important
       >>> .v-tabs__item
         color: $adm-colors.regular
+      >>> .v-tabs__icon
+        color: $adm-colors.primary2
+        pointer-events: none
+      >>> .v-tabs__wrapper--show-arrows
+        margin-left: 0
+        margin-right: 0
       >>> .v-tabs__item--active
         color: $adm-colors.primary
         .svg-icon
@@ -191,7 +197,7 @@ export default {
       >>> .v-tabs__bar
         background-color: transparent
       >>> .v-tabs__slider
-        background-color: $shades.white
+        background-color: $shades.white !important
       >>> .v-tabs__item
         color: $shades.white
       >>> .v-tabs__item--active

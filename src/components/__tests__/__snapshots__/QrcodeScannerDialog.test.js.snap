@@ -6,12 +6,10 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
   maxwidth="none"
   origin="center center"
   transition="dialog-transition"
-  value="true"
   width="500"
 >
   <v-card-stub
     class="qrcode-scanner-dialog"
-    elevation="2"
   >
     <v-layout-stub
       align-center=""

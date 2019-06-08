@@ -10,13 +10,11 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     <v-select-stub
       class="a-input"
       items="ADM,ETH,BZ,KCS,DOGE,DASH,BNB"
-      value="ADM"
     />
      
     <v-text-field-stub
       class="a-input"
       type="text"
-      value=""
     >
       <template>
         <span
@@ -32,7 +30,6 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     <v-text-field-stub
       class="a-input"
       type="number"
-      value=""
     >
       <template>
         <span
@@ -89,9 +86,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     transition="dialog-transition"
     width="500"
   >
-    <v-card-stub
-      elevation="2"
-    >
+    <v-card-stub>
       <v-card-title-stub
         class="a-text-header"
       >

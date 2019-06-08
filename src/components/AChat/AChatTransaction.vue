@@ -13,7 +13,8 @@
           </div>
           <div
             @click="onClickAmount"
-            class="a-chat__amount a-chat__amount--clickable"
+            class="a-chat__amount"
+            :class="isClickable ? 'a-chat__amount--clickable': ''"
           >
             <v-layout align-center>
               <slot name="crypto"></slot>
@@ -72,7 +73,9 @@ export default {
   },
   methods: {
     onClickAmount () {
-      this.$emit('click:transaction', this.id)
+      if (this.isClickable) {
+        this.$emit('click:transaction', this.id)
+      }
     }
   },
   props: {
@@ -125,6 +128,10 @@ export default {
       type: String,
       default: 'confirmed',
       validator: v => ['delivered', 'pending', 'rejected', 'invalid'].includes(v)
+    },
+    isClickable: {
+      type: Boolean,
+      default: false
     }
   }
 }

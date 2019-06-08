@@ -266,8 +266,8 @@ export default {
     ],
     pagination: {
       rowsPerPage: 50,
-      sortBy: '',
-      descending: true,
+      sortBy: 'rank',
+      descending: false,
       page: 1
     },
     waitingForConfirmation: false,
@@ -380,6 +380,7 @@ export default {
   &__body
     font-size: 14px
     font-weight: 300
+    padding: 0 16px !important
   &__dialog-title
     a-text-header()
   &__dialog-summary
@@ -408,6 +409,9 @@ export default {
   &__spacer
     height: 20px
     margin-top: 5px
+  >>> table.v-table thead th:not(:nth-child(1)),
+  >>> table.v-table tbody td:not(:nth-child(1))
+      padding: 0 16px
 
 /** Themes **/
 .theme--light
