@@ -218,7 +218,7 @@
     "commission_label": "Комиссия за перевод",
     "confirm_approve": "Подтвердить",
     "confirm_cancel": "Отмена",
-    "confirm_message": "Подтвердите перевод <b>{amount} {crypto}</b> на адрес <span class='address-in-confirm'>{target}</span>.",
+    "confirm_message": "Подтвердите перевод <b>{amount} {crypto}</b> на адрес <span class=\"address-in-confirm\">{address}</span>.",
     "confirm_message_with_name": "Подтвердите перевод <b>{amount} {crypto}</b> получателю {name} <span class=\"a-text-explanation-enlarged\">({address})</span>.",
     "confirm_title": "Подтверждение перевода",
     "crypto": "Криптовалюта",

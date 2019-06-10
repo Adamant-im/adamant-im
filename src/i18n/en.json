@@ -217,7 +217,7 @@
     "commission_label": "Transfer fee",
     "confirm_approve": "Confirm",
     "confirm_cancel": "Cancel",
-    "confirm_message": "Confirm transfer of <b>{amount} {crypto}</b> to address {address}.",
+    "confirm_message": "Confirm transfer of <b>{amount} {crypto}</b> to address <span class=\"address-in-confirm\">{address}</span>.",
     "confirm_message_with_name": "Confirm transfer of <b>{amount} {crypto}</b> to {name} <span class=\"a-text-explanation-enlarged\">({address})</span>.",
     "confirm_title": "Transfer confirmation",
     "crypto": "Cryptocurrency",
