@@ -1,3 +1,4 @@
+import BigNumber from '@/lib/bignumber'
 import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
@@ -72,7 +73,7 @@ export default options => {
 
           const msgPayload = {
             address: admAddress,
-            amount,
+            amount: BigNumber(amount).toFixed(),
             comments,
             crypto,
             hash: tx.txid
