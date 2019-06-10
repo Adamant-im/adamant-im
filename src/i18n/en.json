@@ -251,6 +251,7 @@
     "downvote_for_label": "Downvote for:",
     "downvotes": "Downvotes",
     "filter_placeholder": "Name or ADAMANT wallet address",
+    "loading_delegates": "Loading delegates…",
     "min": "min",
     "no_data_available": "No data available",
     "no_money": "You need 50 ADM to vote",
