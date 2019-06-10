@@ -643,6 +643,12 @@ const actions = {
       userId: rootState.address
     })
 
+    // reset scroll position
+    commit('updateScrollPosition', {
+      contactId: recipientId,
+      scrollPosition: undefined
+    })
+
     return transactionObject.id
   },
 

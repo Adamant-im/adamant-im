@@ -1280,6 +1280,10 @@ describe('Store: chat.js', () => {
           ['pushMessage', {
             message: transactionObject,
             userId: 'U123456'
+          }],
+          ['updateScrollPosition', {
+            contactId: 'U654321',
+            scrollPosition: undefined
           }]
         ])
       })
