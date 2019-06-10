@@ -360,7 +360,11 @@ export default {
         })
         .catch(err => {
           console.error(err)
-          this.$emit('error', err.message)
+          let message = err.message
+          if (err.response.status === 500 && err.response.data.error.code === -26) {
+            message = this.$t('transfer.error_dust_amount')
+          }
+          this.$emit('error', message)
         })
         .finally(() => {
           this.disabledButton = false
