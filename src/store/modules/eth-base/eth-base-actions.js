@@ -129,6 +129,36 @@ export default function createActions (config) {
     },
 
     /**
+     * Retrieves block info: timestamp.
+     * @param {any} context Vuex action context
+     * @param {{ attempt: Number, blockNumber: Number, hash: String }} payload action payload
+     */
+    getBlock (context, payload) {
+      const transaction = context.state.transactions[payload.hash]
+      if (!transaction) return
+
+      const supplier = () => api.eth.getBlock.request(payload.blockNumber, (err, tx) => {
+        if (!err && tx) {
+          context.commit('transactions', [{
+            hash: payload.hash,
+            timestamp: tx.timestamp * 1000
+          }])
+        }
+        if (!tx && payload.attempt === MAX_ATTEMPTS) {
+          // Give up, if transaction could not be found after so many attempts
+          context.commit('transactions', [{ hash: tx.hash, status: 'ERROR' }])
+        } else if (err || !tx || !tx.status) {
+          // In case of an error or a pending transaction fetch its receipt once again later
+          // Increment attempt counter, if no transaction was found so far
+          const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
+          context.dispatch('getBlock', newPayload)
+        }
+      })
+
+      queue.enqueue('block:' + payload.blockNumber, supplier)
+    },
+
+    /**
      * Enqueues a background request to retrieve the transaction details
      * @param {object} context Vuex action context
      * @param {{hash: string, force: boolean, timestamp: number, amount: number, direction: 'from' | 'to'}} payload hash and timestamp of the transaction to fetch
@@ -158,6 +188,10 @@ export default function createActions (config) {
             // Fetch receipt details: status and actual gas consumption
             const { attempt, ...receiptPayload } = payload
             context.dispatch('getTransactionReceipt', receiptPayload)
+            context.dispatch('getBlock', {
+              ...payload,
+              blockNumber: transaction.blockNumber
+            })
           }
         }
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
