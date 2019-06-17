@@ -52,18 +52,19 @@ export default {
     window.removeEventListener('scroll', this.onScroll)
   },
   mounted () {
-    this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
-      .then(() => {
-        this.isFulfilled = true
-      })
-      .catch(err => {
-        this.isRejected = true
+    if (
+      !this.$store.getters['options/isLoginViaPassword'] ||
+      this.$store.state.IDBReady
+    ) {
+      this.getNewTransactions()
+    }
 
-        this.$store.dispatch('snackbar/show', {
-          message: err.message
-        })
-      })
     window.addEventListener('scroll', this.onScroll)
+  },
+  watch: {
+    '$store.state.IDBReady' () {
+      if (this.$store.state.IDBReady) this.getNewTransactions()
+    }
   },
   computed: {
     transactions () {
@@ -110,6 +111,19 @@ export default {
       if (windowHeight + scrollPosition >= height) {
         this.$store.dispatch(`${this.cryptoModule}/getOldTransactions`)
       }
+    },
+    getNewTransactions () {
+      this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
+        .then(() => {
+          this.isFulfilled = true
+        })
+        .catch(err => {
+          this.isRejected = true
+
+          this.$store.dispatch('snackbar/show', {
+            message: err.message
+          })
+        })
     }
   },
   props: {
