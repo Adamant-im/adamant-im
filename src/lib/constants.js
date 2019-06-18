@@ -55,7 +55,7 @@ export const CryptoAmountPrecision = {
   BNB: 6,
   DOGE: 8,
   BZ: 6,
-  DASH: 8,
+  DASH: 6,
   KCS: 6
 }
 
