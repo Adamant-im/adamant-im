@@ -97,6 +97,7 @@ export default store => {
     if (store.state.password) {
       restoreState(store)
         .then(() => {
+          store.dispatch('unlock')
           store.commit('setIDBReady', true)
         })
         .then(() => {
@@ -106,7 +107,6 @@ export default store => {
           }
         })
         .then(() => {
-          store.dispatch('unlock')
           AppInterval.subscribe()
         })
         .catch(() => {
