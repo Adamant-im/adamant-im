@@ -33,21 +33,24 @@
               :rows-per-page-text="$t('rows_per_page')"
               :search="search"
               hide-actions
+              must-sort
               item-key="username"
             >
               <div slot="no-data" class="text-xs-center">
-                <div v-if="waitingForConfirmation">
+                <v-layout align-center justify-center>
                   <v-progress-circular
                     indeterminate
-                    color="grey darken-1"
+                    color="primary"
                     size="24"
                     class="mr-3"
                   />
-                  <span>{{ $t('votes.waiting_confirmations') }}</span>
-                </div>
-                <div v-else>
-                  {{ $t('votes.no_data_available') }}
-                </div>
+                  <div
+                    class="a-text-regular"
+                    style="line-height:1"
+                  >
+                    {{ waitingForConfirmation ? $t('votes.waiting_confirmations') : $t('votes.loading_delegates') }}
+                  </div>
+                </v-layout>
               </div>
 
               <template slot="headerCell" slot-scope="props">
@@ -105,7 +108,7 @@
                 </v-card>
               </template>
 
-              <v-alert slot="no-results" :value="true" color="grey darken-1" icon="mdi-alert">
+              <v-alert :class="`${className}__alert`" slot="no-results" :value="true" icon="mdi-alert">
                 Your search for "{{ search }}" found no results.
               </v-alert>
 
@@ -409,6 +412,8 @@ export default {
   &__spacer
     height: 20px
     margin-top: 5px
+  &__alert
+    border: none
   >>> table.v-table thead th:not(:nth-child(1)),
   >>> table.v-table tbody td:not(:nth-child(1))
       padding: 0 16px
@@ -434,12 +439,20 @@ export default {
       background-color: transparent
     &__divider
       border-color: $adm-colors.secondary
+    &__alert
+      background-color: $adm-colors.muted !important
+      >>> .v-icon
+        color: $shades.white
     >>> .v-table tbody tr:not(:last-child)
       border-bottom: 1px solid $adm-colors.secondary2
     >>> tfoot
       linear-gradient-light()
 .theme--dark
   .delegates-view
+    &__alert
+      background-color: $adm-colors.muted !important
+      >>> .v-icon
+        color: $shades.white
     >>> tfoot
       linear-gradient-dark()
 </style>

@@ -121,13 +121,7 @@ export default {
   }),
   methods: {
     onDetectQrcode (passphrase) {
-      // is valid passphrase
-      if (/^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(passphrase)) {
-        this.passphrase = passphrase
-      } else {
-        this.passphrase = ''
-        this.onLoginError('login.invalid_passphrase')
-      }
+      this.onScanQrcode(passphrase)
     },
     onDetectQrcodeError (err) {
       this.passphrase = ''

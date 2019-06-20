@@ -51,7 +51,7 @@ export default {
   },
   data () {
     return {
-      logo: '/img/adamant-logo-transparent-512x512.png',
+      logo: '/img/adm-qr-invert.png',
       opts: {
         scale: 8.8
       }

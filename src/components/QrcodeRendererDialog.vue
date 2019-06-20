@@ -37,7 +37,7 @@ export default {
       }
     },
     logoURL () {
-      return this.logo ? '/img/adamant-logo-transparent-512x512.png' : ''
+      return this.logo ? '/img/adm-qr-invert.png' : ''
     }
   },
   data: () => ({

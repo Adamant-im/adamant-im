@@ -252,6 +252,7 @@
     "downvote_for_label": "Отозвать голос для:",
     "downvotes": "Против",
     "filter_placeholder": "Имя или адрес кошелька АДАМАНТ",
+    "loading_delegates": "Загрузка делегатов…",
     "min": "мин",
     "no_data_available": "Нет данных",
     "no_money": "Вам нужно 50 ADM, чтобы проголосовать",
