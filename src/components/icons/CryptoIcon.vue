@@ -1,5 +1,5 @@
 <template>
-  <icon :width="sizePx" :height="sizePx" :color="fill">
+  <icon :width="sizePx" :height="sizePx" :color="fill" :viewBox="viewBox">
     <component :is="componentName"/>
   </icon>
 </template>
@@ -13,6 +13,8 @@ import BzFillIcon from './BnzFill'
 import DogeFillIcon from './DogeFill'
 import DashFillIcon from './DashFill'
 import KcsFillIcon from './KcsFill'
+import LskFillIcon from './LskFill'
+import UnknownCryptoFillIcon from './UnknownCryptoFill'
 
 import { Cryptos } from '@/lib/constants'
 
@@ -32,7 +34,9 @@ export default {
     BzFillIcon,
     DogeFillIcon,
     DashFillIcon,
-    KcsFillIcon
+    KcsFillIcon,
+    LskFillIcon,
+    UnknownCryptoFillIcon
   },
   props: {
     /** Crypto to show an icon for */
@@ -54,7 +58,7 @@ export default {
   },
   computed: {
     componentName () {
-      return `${this.crypto.toLowerCase()}-fill-icon`
+      return `${this.crypto.toLowerCase().replace('_', '-')}-fill-icon`
     },
     sizePx () {
       if (this.size === 'small') {
@@ -65,6 +69,9 @@ export default {
         return LARGE_SIZE
       }
       return undefined
+    },
+    viewBox () {
+      if (this.crypto === 'UNKNOWN_CRYPTO') return '0 0 192 192'
     }
   }
 }
