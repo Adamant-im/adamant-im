@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     goBack () {
-      this.$router.back()
+      this.$router.push({ name: 'Chats' })
     },
     showPartnerInfo () {
       this.$emit('partner-info', true)
