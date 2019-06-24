@@ -1,5 +1,5 @@
 <template>
-  <icon :width="sizePx" :height="sizePx" :color="fill" :viewBox="viewBox">
+  <icon :width="sizePx" :height="sizePx" :color="fill">
     <component :is="componentName"/>
   </icon>
 </template>
@@ -43,7 +43,7 @@ export default {
     crypto: {
       type: String,
       required: true,
-      validator: value => !!Cryptos[value]
+      validator: value => !!Cryptos[value] || value === 'UNKNOWN_CRYPTO'
     },
     /** Icon size: can be either 'small' (36x36), 'medium' (48x48) or 'large' (125x125) or undefined */
     size: {
@@ -69,9 +69,6 @@ export default {
         return LARGE_SIZE
       }
       return undefined
-    },
-    viewBox () {
-      if (this.crypto === 'UNKNOWN_CRYPTO') return '0 0 192 192'
     }
   }
 }
