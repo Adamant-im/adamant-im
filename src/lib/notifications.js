@@ -7,6 +7,7 @@ class Notification {
   constructor (ctx) {
     this.i18n = ctx.$i18n
     this.route = ctx.$route
+    this.router = ctx.$router
     this.store = ctx.$store
     this.interval = null
   }
@@ -63,6 +64,12 @@ class PushNotification extends Notification {
               if (tag !== this.options.tag) {
                 this.options = {
                   body: `${this.partnerIdentity}: ${this.lastUnread.message}`,
+                  icon: 'img/icons/android-chrome-192x192.png',
+                  image: 'img/icons/android-chrome-192x192.png',
+                  notifyClick: () => this.router.push({
+                    name: 'Chat',
+                    params: { partnerId: this.partnerAddress }
+                  }),
                   tag
                 }
                 const notification = new Notify(this.i18n.t('app_title'), this.options)
