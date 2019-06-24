@@ -155,7 +155,6 @@ function validateMessage (message) {
 export default {
   mounted () {
     this.scrollBehavior()
-    this.markAsRead()
   },
   watch: {
     // scroll to bottom when received new message
@@ -192,6 +191,9 @@ export default {
     },
     scrollPosition () {
       return this.$store.getters['chat/scrollPosition'](this.partnerId)
+    },
+    numOfNewMessages () {
+      return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
     }
   },
   data: () => ({
@@ -276,8 +278,10 @@ export default {
         if (this.scrollPosition !== false) {
           this.$refs.chat.scrollTo(this.scrollPosition)
         } else {
-          this.$refs.chat.scrollToBottom()
+          this.$refs.chat.scrollToMessage(this.numOfNewMessages - 1)
         }
+
+        this.markAsRead()
       })
     }
   },

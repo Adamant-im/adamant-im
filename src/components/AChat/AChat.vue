@@ -111,6 +111,23 @@ export default {
     },
 
     /**
+     * Scroll to message by index, starting with the last.
+     */
+    scrollToMessage (index) {
+      const elements = this.$refs.messages.children
+
+      if (!elements) return
+
+      const element = elements[elements.length - 1 - index]
+
+      if (element) {
+        this.$refs.messages.scrollTop = element.offsetTop - 16
+      } else {
+        this.scrollToBottom()
+      }
+    },
+
+    /**
      * Returns sender address and name.
      * @param {string} senderId Sender address
      * @returns {{ id: string, name: string }}
