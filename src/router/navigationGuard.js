@@ -17,8 +17,8 @@ export default {
     next('/chats')
   },
   transactions: (to, from, next) => {
-    const crypto = to.params.crypto.toUpperCase()
-    if (crypto && (crypto in Cryptos)) {
+    const crypto = (to.params.crypto || '').toUpperCase()
+    if (crypto in Cryptos) {
       next()
     } else next('/home')
   }
