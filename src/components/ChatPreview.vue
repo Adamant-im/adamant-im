@@ -20,8 +20,13 @@
         class="a-text-regular-enlarged-bold"
       ></v-list-tile-title>
 
+      <!-- New chat (no messages yet) -->
+      <template v-if="isNewChat">
+        <v-list-tile-sub-title>&nbsp;</v-list-tile-sub-title>
+      </template>
+
       <!-- Transaction -->
-      <template v-if="isTransferType">
+      <template v-else-if="isTransferType">
         <v-list-tile-sub-title>
           <v-icon size="15" v-if="!isIncomingTransaction">{{ statusIcon }}</v-icon>
           {{ transactionDirection }} {{ transaction.amount | currency(transaction.type) }}
@@ -76,6 +81,9 @@ export default {
 
     isTransferType () {
       return this.transaction.type !== 'message'
+    },
+    isNewChat () {
+      return !this.transaction.type
     },
 
     lastMessage () {
