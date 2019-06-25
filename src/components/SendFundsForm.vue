@@ -371,7 +371,7 @@ export default {
         .catch(err => {
           console.error(err)
           let message = err.message
-          if (/*err.response.status === 500 &&*/ err.response.data.error.code === -26) {
+          if (/* err.response.status === 500 && */err.response.data.error.code === -26) {
             message = this.$t('transfer.error_dust_amount')
           }
           this.$emit('error', message)
