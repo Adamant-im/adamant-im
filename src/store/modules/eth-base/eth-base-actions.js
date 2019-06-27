@@ -224,7 +224,7 @@ export default function createActions (config) {
           context.commit('transactions', [{
             hash: payload.hash,
             fee: utils.calculateFee(tx.gasUsed, gasPrice),
-            status: tx.status ? 'SUCCESS' : 'ERROR'
+            status: Number(tx.status) ? 'SUCCESS' : 'ERROR'
           }])
         }
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
