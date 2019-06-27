@@ -94,12 +94,14 @@ export default {
         return Promise.reject(new Error(this.$t('chats.incorrect_address')))
       }
 
+      const recipientAddress = this.recipientAddress.toUpperCase()
+
       return this.$store.dispatch('chat/createChat', {
-        partnerId: this.recipientAddress,
+        partnerId: recipientAddress,
         partnerName: this.recipientName
       })
         .then((key) => {
-          this.$emit('start-chat', this.recipientAddress)
+          this.$emit('start-chat', recipientAddress)
           this.show = false
         })
         .catch(err => {
