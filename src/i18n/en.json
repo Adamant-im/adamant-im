@@ -207,6 +207,12 @@
     "recipient": "To",
     "sender": "From",
     "startChat": "Start chat",
+    "status": "Status",
+    "statuses": {
+      "error": "Error",
+      "pending": "Pending",
+      "success": "Success"
+    },
     "transactions": "Transactions",
     "txid": "Transaction #"
   },
