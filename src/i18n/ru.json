@@ -95,6 +95,7 @@
   },
   "login": {
     "brand_title": "АДАМАНТ",
+    "copy_button_tooltip": "Скопировать",
     "create_address_label": "Или создайте новый анонимный адрес:",
     "device_unsupported": "Ваше устройство не поддерживается",
     "invalid_passphrase": "Парольная фраза неверна",
