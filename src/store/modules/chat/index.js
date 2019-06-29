@@ -222,6 +222,7 @@ const getters = {
         const message = getters.lastMessage(partnerId)
 
         return {
+          timestamp: Date.now(), // give priority to new chats without messages (will be overwritten by ...message)
           ...message,
           contactId: partnerId
         }
