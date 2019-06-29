@@ -154,20 +154,20 @@
                 </div>
               </v-list-tile>
 
-              <v-divider/>
+              <v-list-tile  @click="$router.push('/votes')">
+                <v-list-tile-content>
+                  <v-list-tile-title :class="`${className}__list__title`" >
+                    {{ $t('options.vote_for_delegates_button') }}
+                  </v-list-tile-title>
+                </v-list-tile-content>
+                <div>
+                  <v-list-tile-title :class="`${className}__value`">
+                    <v-icon size="20">mdi-chevron-right</v-icon>
+                  </v-list-tile-title>
+                </div>
+              </v-list-tile>
 
-            <v-list-tile  @click="$router.push('/votes')">
-              <v-list-tile-content>
-                <v-list-tile-title :class="`${className}__list__title`" >
-                  {{ $t('options.vote_for_delegates_button') }}
-                </v-list-tile-title>
-              </v-list-tile-content>
-              <div>
-                <v-list-tile-title :class="`${className}__value`">
-                  <v-icon size="20">mdi-chevron-right</v-icon>
-                </v-list-tile-title>
-              </div>
-            </v-list-tile>
+              <v-divider/>
 
               <v-list-tile  @click="logout">
                 <v-list-tile-content>
@@ -378,8 +378,6 @@ export default {
     a-text-regular-enlarged()
   >>> .v-list
     background: transparent
-    padding: 0
-  >>> .v-list__tile
     padding: 0
 
 /** Themes **/
