@@ -17,6 +17,7 @@
               v-for="wallet in wallets"
               :href="`#${wallet.cryptoCurrency}`"
               :key="wallet.cryptoCurrency"
+              @wheel="onWheel"
             >
               <div>
                 <crypto-icon
@@ -129,6 +130,15 @@ export default {
           crypto
         }
       })
+    },
+    onWheel (e) {
+      const currentWallet = this.wallets.find(wallet => wallet.cryptoCurrency === this.currentWallet)
+      const currentWalletIndex = this.wallets.indexOf(currentWallet)
+
+      const nextWalletIndex = e.deltaY < 0 ? currentWalletIndex + 1 : currentWalletIndex - 1
+      const nextWallet = this.wallets[nextWalletIndex]
+
+      if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
     }
   },
   components: {
