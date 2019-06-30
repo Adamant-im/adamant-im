@@ -13,6 +13,8 @@ import BzFillIcon from './BnzFill'
 import DogeFillIcon from './DogeFill'
 import DashFillIcon from './DashFill'
 import KcsFillIcon from './KcsFill'
+import LskFillIcon from './LskFill'
+import UnknownCryptoFillIcon from './UnknownCryptoFill'
 
 import { Cryptos } from '@/lib/constants'
 
@@ -32,14 +34,16 @@ export default {
     BzFillIcon,
     DogeFillIcon,
     DashFillIcon,
-    KcsFillIcon
+    KcsFillIcon,
+    LskFillIcon,
+    UnknownCryptoFillIcon
   },
   props: {
     /** Crypto to show an icon for */
     crypto: {
       type: String,
       required: true,
-      validator: value => !!Cryptos[value]
+      validator: value => !!Cryptos[value] || value === 'UNKNOWN_CRYPTO'
     },
     /** Icon size: can be either 'small' (36x36), 'medium' (48x48) or 'large' (125x125) or undefined */
     size: {
@@ -54,7 +58,7 @@ export default {
   },
   computed: {
     componentName () {
-      return `${this.crypto.toLowerCase()}-fill-icon`
+      return `${this.crypto.toLowerCase().replace('_', '-')}-fill-icon`
     },
     sizePx () {
       if (this.size === 'small') {
