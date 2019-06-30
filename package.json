@@ -52,10 +52,9 @@
     "visibilityjs": "^2.0.2",
     "vue": "^2.5.17",
     "vue-i18n": "^8.0.0",
-    "vue-material": "^0.8.1",
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.11.0",
-    "vuetify": "^1.5.12",
+    "vuetify": "^1.5.16",
     "vuex": "^3.0.1",
     "vuex-persist": "^2.0.0",
     "web3": "0.20.6"
@@ -85,7 +84,7 @@
     "vue-cli-plugin-vuetify": "^0.4.5",
     "vue-cli-plugin-webpack-bundle-analyzer": "^1.2.0",
     "vue-template-compiler": "^2.5.17",
-    "vuetify-loader": "^1.1.1"
+    "vuetify-loader": "^1.2.2"
   },
   "eslintConfig": {
     "root": true,
