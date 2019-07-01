@@ -3,8 +3,19 @@
 
     <container>
 
-      <chat :partner-id="partnerId" @partner-info="partnerInfoValue = true"/>
-      <PartnerInfo :address="partnerId" :name="partnerName" v-if="!isChatReadOnly" v-model="partnerInfoValue" />
+      <chat
+        :partner-id="partnerId"
+        @click:chat-avatar="onClickChatAvatar"
+      />
+
+      <PartnerInfo
+        v-if="contactAddress"
+        v-model="show"
+        :address="contactAddress"
+        :name="contactName"
+        :owner-address="address"
+      />
+
       <ProgressIndicator :show="!isFulfilled" />
 
     </container>
@@ -19,11 +30,8 @@ import ProgressIndicator from '@/components/ProgressIndicator'
 
 export default {
   computed: {
-    partnerName () {
-      return this.$store.getters['partners/displayName'](this.partnerId)
-    },
-    isChatReadOnly () {
-      return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
+    address () {
+      return this.$store.state.address
     },
     isFulfilled () {
       return this.$store.state.chat.isFulfilled
@@ -35,8 +43,21 @@ export default {
     PartnerInfo
   },
   data: () => ({
-    partnerInfoValue: false
+    show: false,
+    contactAddress: '',
+    contactName: ''
   }),
+  methods: {
+    /**
+     * @param {string} address ADAMANT address
+     */
+    onClickChatAvatar (address) {
+      this.contactAddress = address
+      this.contactName = this.$store.getters['partners/displayName'](address) || ''
+
+      this.show = true
+    }
+  },
   props: {
     partnerId: {
       required: true,

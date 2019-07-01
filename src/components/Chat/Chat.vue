@@ -15,7 +15,7 @@
     >
       <chat-toolbar :partner-id="partnerId" slot="header">
         <ChatAvatar
-          @click="showPartnerInfo"
+          @click="onClickAvatar(partnerId)"
           :user-id="partnerId"
           use-public-key
           slot="avatar-toolbar"
@@ -39,7 +39,7 @@
           @resend="resendMessage(partnerId, message.id)"
         >
           <ChatAvatar
-            @click="showPartnerInfo"
+            @click="onClickAvatar(sender.id)"
             :user-id="sender.id"
             use-public-key
             slot="avatar"
@@ -215,9 +215,6 @@ export default {
           console.error(err.message)
         })
     },
-    showPartnerInfo () {
-      this.$emit('partner-info', true)
-    },
     resendMessage (recipientId, messageId) {
       return this.$store.dispatch('chat/resendMessage', { recipientId, messageId })
         .catch(err => {
@@ -241,6 +238,12 @@ export default {
         contactId: this.partnerId,
         scrollPosition
       })
+    },
+    /**
+     * @param {string} address ADAMANT address
+     */
+    onClickAvatar (address) {
+      this.$emit('click:chat-avatar', address)
     },
     openTransaction (transaction) {
       if (transaction.type in Cryptos) {
