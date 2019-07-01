@@ -3,6 +3,7 @@
     v-model="show"
     width="500"
     :class="className"
+    @keydown.enter="onEnter"
   >
     <v-card>
       <v-card-title
@@ -130,6 +131,9 @@ export default {
     },
     isValidUserAddress () {
       return validateAddress('ADM', this.recipientAddress)
+    },
+    onEnter () {
+      this.startChat()
     }
   },
   components: {
