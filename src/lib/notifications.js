@@ -66,10 +66,13 @@ class PushNotification extends Notification {
                   body: `${this.partnerIdentity}: ${this.lastUnread.message}`,
                   icon: 'img/icons/android-chrome-192x192.png',
                   image: 'img/icons/android-chrome-192x192.png',
-                  notifyClick: () => this.router.push({
-                    name: 'Chat',
-                    params: { partnerId: this.partnerAddress }
-                  }),
+                  notifyClick: () => {
+                    this.router.push({
+                      name: 'Chat',
+                      params: { partnerId: this.partnerAddress }
+                    })
+                    window.focus()
+                  },
                   tag
                 }
                 const notification = new Notify(this.i18n.t('app_title'), this.options)
