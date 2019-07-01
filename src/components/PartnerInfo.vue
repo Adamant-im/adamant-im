@@ -17,8 +17,8 @@
                 <ChatAvatar :user-id="address" use-public-key />
               </v-list-tile-avatar>
               <v-list-tile-content>
-                <v-list-tile-title v-html="address"></v-list-tile-title>
-                <v-list-tile-sub-title v-html="isMe ? $t('chats.me') : name"></v-list-tile-sub-title>
+                <v-list-tile-title v-text="address"></v-list-tile-title>
+                <v-list-tile-sub-title v-text="isMe ? $t('chats.me') : name"></v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
           </template>
@@ -89,7 +89,7 @@ export default {
   }
 }
 </script>
-<style lang="stylus"  scoped>
+<style lang="stylus" scoped>
 .close-icon
   margin: 0
 </style>
