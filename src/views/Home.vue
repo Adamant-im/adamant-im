@@ -158,8 +158,6 @@ export default {
  * 2. Reset VTabItem opacity.
  */
 .account-view
-  &__card
-    margin: -24px
   &__wallets
     &.v-card
       background-color: transparent
@@ -214,10 +212,4 @@ export default {
         color: $adm-colors.white
         .svg-icon
           fill: $adm-colors.white
-
-/** Breakpoints **/
-@media $display-breakpoints.md-and-down
-  .account-view
-    &__card
-      margin: -20px
 </style>

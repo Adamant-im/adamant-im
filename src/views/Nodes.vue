@@ -7,10 +7,10 @@
       flat
     />
 
-    <v-container fluid class="pt-0">
+    <v-container fluid class="pa-0">
       <v-layout row wrap justify-center>
 
-        <container>
+        <container padding>
 
           <v-data-table
             :headers="headers"
@@ -38,7 +38,7 @@
             </template>
 
             <template slot="items" slot-scope="props">
-              <td class="pl-3 pr-2">
+              <td class="pr-2">
                 <v-checkbox
                   :input-value="props.item.active"
                   :class="`${className}__checkbox`"
@@ -47,8 +47,8 @@
                   @click.native="toggle(props.item)"
                 ></v-checkbox>
               </td>
-              <td :class="`${className}__body`" class="pl-0">{{ props.item.url }}</td>
-              <td :class="`${className}__body`" class="pl-0">
+              <td :class="`${className}__body`" class="pl-0 pr-2">{{ props.item.url }}</td>
+              <td :class="`${className}__body`" class="pl-0 pr-2">
                 <span>
                   {{ props.item.online ? `${props.item.ping} ms` : $t('nodes.offline') }}
                 </span>
@@ -147,6 +147,13 @@ export default {
 @import '../assets/stylus/themes/adamant/_mixins.styl'
 
 .nodes-view
+  &__table
+    margin-left: -24px
+    margin-right: -24px
+
+    >>> table.v-table tbody td:first-child
+      padding-left: 24px
+
   &__header
     font-size: 12px
     font-weight: 300
@@ -188,6 +195,9 @@ export default {
 @media $display-breakpoints.sm-and-down
   .nodes-view
     &__table // [1]
-      margin-left: -20px
-      margin-right: -20px
+      margin-left: -16px
+      margin-right: -16px
+
+    >>> table.v-table tbody td:first-child
+      padding-left: 16px
 </style>

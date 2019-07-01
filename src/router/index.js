@@ -119,7 +119,8 @@ const router = new Router({
       meta: {
         requiresAuth: true,
         layout: 'toolbar',
-        showNavigation: true
+        showNavigation: true,
+        containerNoPadding: true
       }
     },
     {
