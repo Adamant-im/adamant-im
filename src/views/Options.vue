@@ -379,6 +379,11 @@ export default {
   >>> .v-list
     background: transparent
     padding: 0
+  >>> .v-list__tile
+    padding: 0
+
+    &:hover
+      padding: 0 16px
 
 /** Themes **/
 .theme--light
