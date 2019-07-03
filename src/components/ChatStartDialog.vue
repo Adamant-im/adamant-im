@@ -3,6 +3,7 @@
     v-model="show"
     width="500"
     :class="className"
+    @keydown.enter="onEnter"
   >
     <v-card>
       <v-card-title
@@ -86,6 +87,10 @@ export default {
   }),
   methods: {
     startChat () {
+      this.recipientAddress = this.recipientAddress
+        .trim()
+        .toUpperCase()
+
       if (!this.isValidUserAddress()) {
         this.$store.dispatch('snackbar/show', {
           message: this.$t('chats.incorrect_address')
@@ -94,14 +99,12 @@ export default {
         return Promise.reject(new Error(this.$t('chats.incorrect_address')))
       }
 
-      const recipientAddress = this.recipientAddress.toUpperCase()
-
       return this.$store.dispatch('chat/createChat', {
-        partnerId: recipientAddress,
+        partnerId: this.recipientAddress,
         partnerName: this.recipientName
       })
         .then((key) => {
-          this.$emit('start-chat', recipientAddress)
+          this.$emit('start-chat', this.recipientAddress)
           this.show = false
         })
         .catch(err => {
@@ -128,6 +131,9 @@ export default {
     },
     isValidUserAddress () {
       return validateAddress('ADM', this.recipientAddress)
+    },
+    onEnter () {
+      this.startChat()
     }
   },
   components: {
