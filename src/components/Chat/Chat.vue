@@ -280,10 +280,12 @@ export default {
     },
     scrollBehavior () {
       this.$nextTick(() => {
-        if (this.scrollPosition !== false) {
+        if (this.numOfNewMessages > 0) {
+          this.$refs.chat.scrollToMessage(this.numOfNewMessages - 1)
+        } else if (this.scrollPosition !== false) {
           this.$refs.chat.scrollTo(this.scrollPosition)
         } else {
-          this.$refs.chat.scrollToMessage(this.numOfNewMessages - 1)
+          this.$refs.chat.scrollToBottom()
         }
 
         this.markAsRead()
