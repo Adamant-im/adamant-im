@@ -1,4 +1,4 @@
-import { parseURI } from '@/lib/uri'
+import { parseURI, generateURI } from '@/lib/uri'
 
 describe('uri', () => {
   describe('parseURI', () => {
@@ -46,6 +46,28 @@ describe('uri', () => {
           label: 'Рик'
         }
       })
+    })
+
+    it('with param which contains a space', () => {
+      expect(parseURI(`adm:U123456?label=Rick Sanchez`)).toEqual({
+        address: 'U123456',
+        params: {
+          label: 'Rick Sanchez'
+        }
+      })
+    })
+  })
+
+  describe('generateURI', () => {
+    it('without contactName', () => {
+      expect(generateURI('U123456')).toBe('adm:U123456')
+      expect(generateURI('U123456', '')).toBe('adm:U123456')
+      expect(generateURI('U123456', undefined)).toBe('adm:U123456')
+    })
+
+    it('with contactName', () => {
+      expect(generateURI('U123456', 'Rick')).toBe('adm:U123456?label=Rick')
+      expect(generateURI('U123456', 'Rick Sanchez')).toBe('adm:U123456?label=Rick Sanchez')
     })
   })
 })
