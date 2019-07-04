@@ -159,7 +159,11 @@ export default {
   watch: {
     // scroll to bottom when received new message
     messages () {
-      this.$nextTick(() => this.$refs.chat.scrollToBottom())
+      this.$nextTick(() => {
+        if (this.isScrolledToBottom) {
+          this.$refs.chat.scrollToBottom()
+        }
+      })
     }
   },
   computed: {
