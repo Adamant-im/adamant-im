@@ -1,0 +1,29 @@
+{
+  "minApiVersion": "0.3.1",
+  "server": {
+    "adm": [
+      {
+        "url": "http://37g5to2z6bdoeegun4hms2hvkfbdxh4rcon4e3p267wtfkh4ji2ns6id.onion"
+      },
+      {
+        "url": "http://fqjcvsibnbwhlwxndzqzziapiwoidgn24avfiauu4wo2fc3yyiy2qcid.onion"
+      },
+      {
+        "url": "http://omhrhpc45njpgzp4fggtndazaodwuwvb5in6hsn3k7tvaqennmfaa2qd.onion"
+      }
+    ],
+    "eth": [
+      {
+        "url": "http://vj3qid4h2d4cj2gexivjuuybah3mjzenpdyr5bj6z4hctp52jn6qsgid.onion",
+        "hasIndex": true
+      }
+    ],
+    "doge": [
+      { "url": "http://mtg4mq43p67cbj6qwcqgppjv7uzm7ximjlzapsbnbh5ls6zqkjsq26ad.onion/api/" }
+    ],
+    "dash": [
+      { "url": "http://ldod53womnlwjmd4noq5yuq26xx3mmbrr4uogkfymuakhofjcuqeygad.onion" }
+    ]
+  },
+  "env": "production"
+}
