@@ -163,6 +163,8 @@ export default {
         if (this.isScrolledToBottom) {
           this.$refs.chat.scrollToBottom()
         }
+
+        this.markAsRead()
       })
     }
   },
