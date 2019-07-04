@@ -88,6 +88,19 @@
           :partner-id="partnerId"
         />
       </a-chat-form>
+
+      <v-btn
+        v-if="!isScrolledToBottom"
+        @click="$refs.chat.scrollToBottom()"
+        class="ma-0 grey--text"
+        color="grey lighten-3"
+        depressed
+        fab
+        slot="fab"
+        small
+      >
+        <v-icon large>mdi-chevron-down</v-icon>
+      </v-btn>
     </a-chat>
   </v-card>
 </template>
@@ -203,7 +216,8 @@ export default {
     }
   },
   data: () => ({
-    loading: false
+    loading: false,
+    isScrolledToBottom: false
   }),
   methods: {
     onMessage (message) {
@@ -242,7 +256,9 @@ export default {
     onScrollBottom () {
       //
     },
-    onScroll (scrollPosition) {
+    onScroll (scrollPosition, isBottom) {
+      this.isScrolledToBottom = isBottom
+
       this.$store.commit('chat/updateScrollPosition', {
         contactId: this.partnerId,
         scrollPosition

@@ -34,6 +34,10 @@
           </slot>
         </div>
 
+        <div class="a-chat__fab">
+          <slot name="fab"></slot>
+        </div>
+
       </div>
 
       <slot name="form"></slot>
@@ -48,8 +52,13 @@ import AChatMessage from './AChatMessage'
 import AChatTransaction from './AChatTransaction'
 
 const emitScroll = throttle(function () {
-  this.$emit('scroll', this.currentScrollTop)
-}, 500)
+  // is scrolled to bottom
+  const isBottom = (
+    this.$refs.messages.scrollHeight - this.$refs.messages.scrollTop === this.$refs.messages.clientHeight
+  )
+
+  this.$emit('scroll', this.currentScrollTop, isBottom)
+}, 200)
 
 export default {
   mounted () {
