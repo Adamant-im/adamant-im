@@ -43,7 +43,14 @@ export default {
     crypto: {
       type: String,
       required: true,
-      validator: value => !!Cryptos[value] || value === 'UNKNOWN_CRYPTO'
+      validator: value => {
+        // @todo remove LSK when will be supported
+        return (
+          value in Cryptos ||
+          value === 'LSK' ||
+          value === 'UNKNOWN_CRYPTO'
+        )
+      }
     },
     /** Icon size: can be either 'small' (36x36), 'medium' (48x48) or 'large' (125x125) or undefined */
     size: {
