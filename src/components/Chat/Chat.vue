@@ -168,6 +168,9 @@ function validateMessage (message) {
 export default {
   mounted () {
     this.scrollBehavior()
+    this.$nextTick(() => {
+      this.isScrolledToBottom = this.$refs.chat.isScrolledToBottom()
+    })
   },
   watch: {
     // scroll to bottom when received new message
@@ -217,7 +220,7 @@ export default {
   },
   data: () => ({
     loading: false,
-    isScrolledToBottom: false
+    isScrolledToBottom: true
   }),
   methods: {
     onMessage (message) {

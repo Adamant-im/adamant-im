@@ -52,12 +52,7 @@ import AChatMessage from './AChatMessage'
 import AChatTransaction from './AChatTransaction'
 
 const emitScroll = throttle(function () {
-  // is scrolled to bottom
-  const isBottom = (
-    this.$refs.messages.scrollHeight - this.$refs.messages.scrollTop === this.$refs.messages.clientHeight
-  )
-
-  this.$emit('scroll', this.currentScrollTop, isBottom)
+  this.$emit('scroll', this.currentScrollTop, this.isScrolledToBottom())
 }, 200)
 
 export default {
@@ -134,6 +129,10 @@ export default {
       } else {
         this.scrollToBottom()
       }
+    },
+
+    isScrolledToBottom () {
+      return this.$refs.messages.scrollHeight - this.$refs.messages.scrollTop === this.$refs.messages.clientHeight
     },
 
     /**
