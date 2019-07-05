@@ -194,7 +194,7 @@ export function transformMessage (abstract) {
       transaction.type = knownCrypto
     } else {
       transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
-      transaction.status = TS.INVALID
+      transaction.status = TS.UNKNOWN
     }
   } else { // ADM transaction or Message
     transaction.message = abstract.message || ''

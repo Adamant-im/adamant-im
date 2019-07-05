@@ -120,5 +120,6 @@ export const TransactionStatus = {
   DELIVERED: 'delivered',
   PENDING: 'pending',
   REJECTED: 'rejected',
-  INVALID: 'invalid'
+  INVALID: 'invalid',
+  UNKNOWN: 'unknown'
 }
