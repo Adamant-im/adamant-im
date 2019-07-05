@@ -20,8 +20,7 @@ export const Cryptos = {
   KCS: 'KCS',
   DOGE: 'DOGE',
   DASH: 'DASH',
-  BNB: 'BNB',
-  // UNKNOWN_CRYPTO: 'UNKNOWN_CRYPTO'
+  BNB: 'BNB'
 }
 
 export const CryptosNames = {
