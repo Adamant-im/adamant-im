@@ -81,13 +81,16 @@ export default {
       this.message = ''
       // Fix textarea height to 1 row after miltiline message send
       this.calculateInputHeight()
-      this.$refs.messageTextarea.focus()
+      this.focus()
     },
     calculateInputHeight () {
       this.$nextTick(this.$refs.messageTextarea.calculateInputHeight)
     },
     addLineFeed () {
       this.message += '\n'
+    },
+    focus () {
+      this.$refs.messageTextarea.focus()
     }
   },
   props: {

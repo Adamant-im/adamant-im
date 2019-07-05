@@ -76,6 +76,7 @@
 
       <a-chat-form
         v-if="!isChatReadOnly"
+        ref="chatForm"
         slot="form"
         @message="onMessage"
         :show-send-button="true"
@@ -153,6 +154,12 @@ function validateMessage (message) {
 }
 
 export default {
+  created () {
+    window.addEventListener('keyup', this.onKeyPress)
+  },
+  beforeDestroy () {
+    window.removeEventListener('keyup', this.onKeyPress)
+  },
   mounted () {
     this.scrollBehavior()
   },
@@ -290,6 +297,9 @@ export default {
 
         this.markAsRead()
       })
+    },
+    onKeyPress (e) {
+      if (e.code === 'Enter') this.$refs.chatForm.focus()
     }
   },
   filters: {
