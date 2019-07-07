@@ -62,7 +62,7 @@
           }"
           :locale="locale"
           :status="getTransactionStatus(message, partnerId)"
-          :is-clickable="message.type !== 'UNKNOWN_CRYPTO'"
+          :is-clickable="isCryptoSupported(message.type)"
           @click:transaction="openTransaction(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
         >
@@ -266,6 +266,9 @@ export default {
         type === 'LSK' ||
         type === 'UNKNOWN_CRYPTO'
       )
+    },
+    isCryptoSupported (type) {
+      return type in Cryptos
     },
     formatMessage (transaction) {
       if (this.isChatReadOnly || transaction.i18n) {

@@ -43,9 +43,10 @@
     "too_long": "Message is too long",
     "transaction_statuses": {
       "delivered": "Transaction is confirmed on token’s network",
-      "invalid": "Information about transaction, fetched from rich message in ADAMANT newtwork, differs from information, fetched from token’s network or this type of cryptocurrency is not supported",
+      "invalid": "Information about transaction, fetched from rich message in ADAMANT network, differs from information, fetched from token’s network",
       "pending": "Transaction is not confirmed yet",
-      "rejected": "Transaction is cancelled or not accepted on token’s network"
+      "rejected": "Transaction is cancelled or not accepted on token’s network",
+      "unknown": "This type of cryptocurrency is not supported yet"
     },
     "welcome_message": "ADAMANT is a true Blockchain messenger, independent from governments, corporations and even developers. It is possible due to a decentralized network infrastructure, fully open source and run by users. That's why every action, including sending message or saving contact name, has its network fee of 0.001 ADM.\n\nBlockchain offers superior security and privacy, not available for typical P2P and centralized messengers. Also, Blockchain provides new possibilities. You can store and transfer cryptos In-Chat with full control of your private keys, use ADAMANT as 2FA and more.\n\nIn ADAMANT, nobody can control, block, deactivate, restrict or censor accounts. Users take full responsibility for content, messages, media, and goals and intentions of using the Messenger.\n\nRemember, your security and anonymity is up to you. Do not follow links you receive, otherwise your IP can be compromised. Set a password on your device. Learn more about security and anonymity at https://adamant.im/staysecured/.\n\nMake sure you've saved the passPhrase for this account — logout and login again. Write your passPhrase on a sheet of paper as well. Only *you are responsible for passPhrase safety*. It cannot be recovered. And if other person will get it, your tokens will be stolen and correspondence read. Treat this question with outmost importance, as if tokens in your wallet will cost a billion dollars some time.\n\nTo start messaging now, *get free welcome tokens* on Account tab. Then create new chat and put your friend's ADM address. It is recommended to share your ADM address personally, not using other messengers.",
     "welcome_message_title": "Welcome to ADAMANT",
