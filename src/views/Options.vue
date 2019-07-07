@@ -379,6 +379,9 @@ export default {
   >>> .v-list
     background: transparent
     padding: 0
+  >>> .v-list__tile
+    padding: 0 24px
+    margin: 0 -24px
 
 /** Themes **/
 .theme--light
@@ -407,4 +410,8 @@ export default {
       margin-right: -16px
       padding-left: 16px
       padding-right: 16px
+
+    >>> .v-list__tile
+      padding: 0 16px
+      margin: 0 -16px
 </style>
