@@ -88,6 +88,19 @@
           :partner-id="partnerId"
         />
       </a-chat-form>
+
+      <v-btn
+        v-if="!isScrolledToBottom"
+        @click="$refs.chat.scrollToBottom()"
+        class="ma-0 grey--text"
+        color="grey lighten-3"
+        depressed
+        fab
+        slot="fab"
+        small
+      >
+        <v-icon large>mdi-chevron-down</v-icon>
+      </v-btn>
     </a-chat>
   </v-card>
 </template>
@@ -155,11 +168,20 @@ function validateMessage (message) {
 export default {
   mounted () {
     this.scrollBehavior()
+    this.$nextTick(() => {
+      this.isScrolledToBottom = this.$refs.chat.isScrolledToBottom()
+    })
   },
   watch: {
     // scroll to bottom when received new message
     messages () {
-      this.$nextTick(() => this.$refs.chat.scrollToBottom())
+      this.$nextTick(() => {
+        if (this.isScrolledToBottom) {
+          this.$refs.chat.scrollToBottom()
+        }
+
+        this.markAsRead()
+      })
     }
   },
   computed: {
@@ -197,7 +219,8 @@ export default {
     }
   },
   data: () => ({
-    loading: false
+    loading: false,
+    isScrolledToBottom: true
   }),
   methods: {
     onMessage (message) {
@@ -233,7 +256,9 @@ export default {
     onScrollBottom () {
       //
     },
-    onScroll (scrollPosition) {
+    onScroll (scrollPosition, isBottom) {
+      this.isScrolledToBottom = isBottom
+
       this.$store.commit('chat/updateScrollPosition', {
         contactId: this.partnerId,
         scrollPosition

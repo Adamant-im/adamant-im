@@ -11,12 +11,6 @@ class Notification {
     this.store = ctx.$store
     this.interval = null
   }
-  // Returns true once message appeared in chat
-  get messageAppeared () {
-    return this.route.name === 'Chat' &&
-      this.route.params.partnerId && this.partnerAddress &&
-      this.route.params.partnerId === this.partnerAddress
-  }
   get lastUnread () {
     return this.store.getters['chat/lastUnreadMessage']
   }
@@ -174,9 +168,6 @@ export default class extends Notification {
       }
       if (this.tabAllowed) {
         this.tab.notify()
-      }
-      if (!this.tabHidden && this.messageAppeared) {
-        this.store.commit('chat/markAsRead', this.partnerAddress)
       }
       this.prevAmount = this.unreadAmount
     }, 3e3)
