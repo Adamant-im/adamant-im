@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import navigationGuard from '@/router/navigationGuard'
 
+import IsLogged from '@/middlewares/isLogged'
 import AuthMiddleware from '@/middlewares/auth'
 import DocumentTitle from '@/middlewares/title'
 import Chats from '@/views/Chats'
@@ -142,6 +143,7 @@ const router = new Router({
   }
 })
 
+router.beforeEach(IsLogged)
 router.beforeEach(AuthMiddleware)
 router.beforeEach(DocumentTitle)
 
