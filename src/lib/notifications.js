@@ -7,14 +7,9 @@ class Notification {
   constructor (ctx) {
     this.i18n = ctx.$i18n
     this.route = ctx.$route
+    this.router = ctx.$router
     this.store = ctx.$store
     this.interval = null
-  }
-  // Returns true once message appeared in chat
-  get messageAppeared () {
-    return this.route.name === 'Chat' &&
-      this.route.params.partnerId && this.partnerAddress &&
-      this.route.params.partnerId === this.partnerAddress
   }
   get lastUnread () {
     return this.store.getters['chat/lastUnreadMessage']
@@ -63,6 +58,15 @@ class PushNotification extends Notification {
               if (tag !== this.options.tag) {
                 this.options = {
                   body: `${this.partnerIdentity}: ${this.lastUnread.message}`,
+                  icon: 'img/icons/android-chrome-192x192.png',
+                  image: 'img/icons/android-chrome-192x192.png',
+                  notifyClick: () => {
+                    this.router.push({
+                      name: 'Chat',
+                      params: { partnerId: this.partnerAddress }
+                    })
+                    window.focus()
+                  },
                   tag
                 }
                 const notification = new Notify(this.i18n.t('app_title'), this.options)
@@ -164,9 +168,6 @@ export default class extends Notification {
       }
       if (this.tabAllowed) {
         this.tab.notify()
-      }
-      if (!this.tabHidden && this.messageAppeared) {
-        this.store.commit('chat/markAsRead', this.partnerAddress)
       }
       this.prevAmount = this.unreadAmount
     }, 3e3)

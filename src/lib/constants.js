@@ -55,7 +55,7 @@ export const CryptoAmountPrecision = {
   BNB: 6,
   DOGE: 8,
   BZ: 6,
-  DASH: 8,
+  DASH: 6,
   KCS: 6
 }
 
@@ -120,5 +120,6 @@ export const TransactionStatus = {
   DELIVERED: 'delivered',
   PENDING: 'pending',
   REJECTED: 'rejected',
-  INVALID: 'invalid'
+  INVALID: 'invalid',
+  UNKNOWN: 'unknown'
 }

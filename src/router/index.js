@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import navigationGuard from '@/router/navigationGuard'
 
+import IsLogged from '@/middlewares/isLogged'
 import AuthMiddleware from '@/middlewares/auth'
 import DocumentTitle from '@/middlewares/title'
 import Chats from '@/views/Chats'
@@ -47,7 +48,8 @@ const router = new Router({
         requiresAuth: true,
         layout: 'no-container',
         containerNoPadding: true
-      }
+      },
+      beforeEnter: navigationGuard.transactions
     },
     {
       path: '/transactions/:crypto?',
@@ -118,7 +120,8 @@ const router = new Router({
       meta: {
         requiresAuth: true,
         layout: 'toolbar',
-        showNavigation: true
+        showNavigation: true,
+        containerNoPadding: true
       }
     },
     {
@@ -140,6 +143,7 @@ const router = new Router({
   }
 })
 
+router.beforeEach(IsLogged)
 router.beforeEach(AuthMiddleware)
 router.beforeEach(DocumentTitle)
 

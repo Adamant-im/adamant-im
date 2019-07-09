@@ -15,7 +15,7 @@
     >
       <chat-toolbar :partner-id="partnerId" slot="header">
         <ChatAvatar
-          @click="showPartnerInfo"
+          @click="onClickAvatar(partnerId)"
           :user-id="partnerId"
           use-public-key
           slot="avatar-toolbar"
@@ -39,7 +39,7 @@
           @resend="resendMessage(partnerId, message.id)"
         >
           <ChatAvatar
-            @click="showPartnerInfo"
+            @click="onClickAvatar(sender.id)"
             :user-id="sender.id"
             use-public-key
             slot="avatar"
@@ -62,7 +62,7 @@
           }"
           :locale="locale"
           :status="getTransactionStatus(message, partnerId)"
-          :is-clickable="message.type !== 'UNKNOWN_CRYPTO'"
+          :is-clickable="isCryptoSupported(message.type)"
           @click:transaction="openTransaction(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
         >
@@ -76,6 +76,7 @@
 
       <a-chat-form
         v-if="!isChatReadOnly"
+        ref="chatForm"
         slot="form"
         @message="onMessage"
         :show-send-button="true"
@@ -88,6 +89,19 @@
           :partner-id="partnerId"
         />
       </a-chat-form>
+
+      <v-btn
+        v-if="!isScrolledToBottom"
+        @click="$refs.chat.scrollToBottom()"
+        class="ma-0 grey--text"
+        color="grey lighten-3"
+        depressed
+        fab
+        slot="fab"
+        small
+      >
+        <v-icon large>mdi-chevron-down</v-icon>
+      </v-btn>
     </a-chat>
   </v-card>
 </template>
@@ -153,14 +167,28 @@ function validateMessage (message) {
 }
 
 export default {
+  created () {
+    window.addEventListener('keyup', this.onKeyPress)
+  },
+  beforeDestroy () {
+    window.removeEventListener('keyup', this.onKeyPress)
+  },
   mounted () {
     this.scrollBehavior()
-    this.markAsRead()
+    this.$nextTick(() => {
+      this.isScrolledToBottom = this.$refs.chat.isScrolledToBottom()
+    })
   },
   watch: {
     // scroll to bottom when received new message
     messages () {
-      this.$nextTick(() => this.$refs.chat.scrollToBottom())
+      this.$nextTick(() => {
+        if (this.isScrolledToBottom) {
+          this.$refs.chat.scrollToBottom()
+        }
+
+        this.markAsRead()
+      })
     }
   },
   computed: {
@@ -192,10 +220,14 @@ export default {
     },
     scrollPosition () {
       return this.$store.getters['chat/scrollPosition'](this.partnerId)
+    },
+    numOfNewMessages () {
+      return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
     }
   },
   data: () => ({
-    loading: false
+    loading: false,
+    isScrolledToBottom: true
   }),
   methods: {
     onMessage (message) {
@@ -212,9 +244,6 @@ export default {
         .catch(err => {
           console.error(err.message)
         })
-    },
-    showPartnerInfo () {
-      this.$emit('partner-info', true)
     },
     resendMessage (recipientId, messageId) {
       return this.$store.dispatch('chat/resendMessage', { recipientId, messageId })
@@ -234,23 +263,33 @@ export default {
     onScrollBottom () {
       //
     },
-    onScroll (scrollPosition) {
+    onScroll (scrollPosition, isBottom) {
+      this.isScrolledToBottom = isBottom
+
       this.$store.commit('chat/updateScrollPosition', {
         contactId: this.partnerId,
         scrollPosition
       })
     },
+    /**
+     * @param {string} address ADAMANT address
+     */
+    onClickAvatar (address) {
+      this.$emit('click:chat-avatar', address)
+    },
     openTransaction (transaction) {
-      this.$router.push({
-        name: 'Transaction',
-        params: {
-          crypto: transaction.type,
-          txId: transaction.hash
-        },
-        query: {
-          fromChat: true
-        }
-      })
+      if (transaction.type in Cryptos) {
+        this.$router.push({
+          name: 'Transaction',
+          params: {
+            crypto: transaction.type,
+            txId: transaction.hash
+          },
+          query: {
+            fromChat: true
+          }
+        })
+      }
     },
     isTransaction (type) {
       // @todo remove LSK when will be supported
@@ -259,6 +298,9 @@ export default {
         type === 'LSK' ||
         type === 'UNKNOWN_CRYPTO'
       )
+    },
+    isCryptoSupported (type) {
+      return type in Cryptos
     },
     formatMessage (transaction) {
       if (this.isChatReadOnly || transaction.i18n) {
@@ -273,12 +315,19 @@ export default {
     },
     scrollBehavior () {
       this.$nextTick(() => {
-        if (this.scrollPosition !== false) {
+        if (this.numOfNewMessages > 0) {
+          this.$refs.chat.scrollToMessage(this.numOfNewMessages - 1)
+        } else if (this.scrollPosition !== false) {
           this.$refs.chat.scrollTo(this.scrollPosition)
         } else {
           this.$refs.chat.scrollToBottom()
         }
+
+        this.markAsRead()
       })
+    },
+    onKeyPress (e) {
+      if (e.code === 'Enter') this.$refs.chatForm.focus()
     }
   },
   filters: {

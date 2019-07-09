@@ -3,6 +3,7 @@
     v-model="show"
     width="500"
     :class="className"
+    @keydown.enter="onEnter"
   >
     <v-card>
       <v-card-title
@@ -57,6 +58,7 @@
 
 <script>
 import validateAddress from '@/lib/validateAddress'
+import { parseURI } from '@/lib/uri'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
 import Icon from '@/components/icons/BaseIcon'
@@ -79,11 +81,16 @@ export default {
   },
   data: () => ({
     recipientAddress: '',
+    recipientName: '',
     showQrcodeScanner: false,
     showQrcodeRendererDialog: false
   }),
   methods: {
     startChat () {
+      this.recipientAddress = this.recipientAddress
+        .trim()
+        .toUpperCase()
+
       if (!this.isValidUserAddress()) {
         this.$store.dispatch('snackbar/show', {
           message: this.$t('chats.incorrect_address')
@@ -93,7 +100,8 @@ export default {
       }
 
       return this.$store.dispatch('chat/createChat', {
-        partnerId: this.recipientAddress
+        partnerId: this.recipientAddress,
+        partnerName: this.recipientName
       })
         .then((key) => {
           this.$emit('start-chat', this.recipientAddress)
@@ -105,12 +113,27 @@ export default {
           })
         })
     },
-    onScanQrcode (userId) {
-      this.recipientAddress = userId
+    onScanQrcode (abstract) {
+      this.recipientAddress = ''
+
+      if (validateAddress('ADM', abstract)) {
+        this.recipientAddress = abstract
+      } else {
+        const recipient = parseURI(abstract)
+
+        if (recipient) {
+          this.recipientAddress = recipient.address
+          this.recipientName = recipient.params.hasOwnProperty('label') ? recipient.params.label : ''
+        }
+      }
+
       this.startChat()
     },
     isValidUserAddress () {
       return validateAddress('ADM', this.recipientAddress)
+    },
+    onEnter () {
+      this.startChat()
     }
   },
   components: {

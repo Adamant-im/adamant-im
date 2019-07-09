@@ -1,10 +1,10 @@
 <template>
   <div>
     <transaction-template
-      :amount="amount"
+      :amount="transaction.amount | currency(crypto)"
       :timestamp="transaction.timestamp"
       :id="transaction.hash"
-      :fee="fee"
+      :fee="transaction.fee | currency(crypto)"
       :confirmations="confirmations"
       :sender="sender"
       :recipient="recipient"
@@ -18,7 +18,6 @@
 <script>
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
-import { CryptoAmountPrecision } from '../../lib/constants'
 
 export default {
   name: 'btc-transaction',
@@ -38,17 +37,6 @@ export default {
     },
     transaction () {
       return this.$store.getters[`${this.cryptoKey}/transaction`](this.id) || { }
-    },
-    amount () {
-      if (!isFinite(this.transaction.amount)) return ''
-      return this.transaction.amount + ' ' + this.crypto
-    },
-    fee () {
-      if (!this.transaction.fee) return ''
-      const fee = Number(this.transaction.fee)
-        .toFixed(CryptoAmountPrecision[this.crypto])
-        .replace(/\.?0+$/, '')
-      return fee + ' ' + this.crypto
     },
     sender () {
       const { senders, senderId } = this.transaction

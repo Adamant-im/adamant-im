@@ -21,6 +21,7 @@
           <v-flex xs12 sm8 md8 lg8>
 
             <login-form
+              ref="loginForm"
               v-model="passphrase"
               @login="onLogin"
               @error="onLoginError"
@@ -121,13 +122,7 @@ export default {
   }),
   methods: {
     onDetectQrcode (passphrase) {
-      // is valid passphrase
-      if (/^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(passphrase)) {
-        this.passphrase = passphrase
-      } else {
-        this.passphrase = ''
-        this.onLoginError('login.invalid_passphrase')
-      }
+      this.onScanQrcode(passphrase)
     },
     onDetectQrcodeError (err) {
       this.passphrase = ''
@@ -159,18 +154,8 @@ export default {
       })
     },
     onScanQrcode (passphrase) {
-      // is not valid passphrase
-      if (!/^([a-z]{3,8}\x20){11}[A-z]{3,8}$/i.test(passphrase)) {
-        return this.onLoginError('login.invalid_passphrase')
-      }
-
-      this.$store.dispatch('login', passphrase)
-        .then(() => {
-          this.onLogin()
-        })
-        .catch(err => {
-          this.onLoginError(err)
-        })
+      this.passphrase = passphrase
+      this.$nextTick(() => this.$refs.loginForm.submit())
     }
   },
   components: {
