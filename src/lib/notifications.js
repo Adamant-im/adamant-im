@@ -57,7 +57,7 @@ class PushNotification extends Notification {
       Notify.requestPermission(
         // Permission granted
         () => {
-          if (messageArrived /* && this.tabHidden */) {
+          if (messageArrived && this.tabHidden) {
             if (this.lastUnread) {
               const tag = this.lastUnread.id
               // Message not shown yet
