@@ -2,11 +2,12 @@
 
 import Notify from 'notifyjs'
 import Visibility from 'visibilityjs'
+import currency from '@/filters/currency'
+import { removeFormats } from '@/lib/markdown'
 
 class Notification {
   constructor (ctx) {
     this.i18n = ctx.$i18n
-    this.route = ctx.$route
     this.router = ctx.$router
     this.store = ctx.$store
     this.interval = null
@@ -40,26 +41,30 @@ class Notification {
 class PushNotification extends Notification {
   constructor (ctx) {
     super(ctx)
-    this.options = {
-      body: null,
-      tag: null,
-      timeout: 5
+    this.tag = null
+  }
+  get messageBody () {
+    let message
+    if (this.lastUnread.type !== 'message') {
+      message = `${this.i18n.t('chats.received_label')} ${currency(this.lastUnread.amount, this.lastUnread.type)}`
+    } else {
+      message = this.lastUnread.message
     }
+    return `${this.partnerIdentity}: ${removeFormats(message)}`
   }
   notify (messageArrived) {
     try {
       Notify.requestPermission(
         // Permission granted
         () => {
-          if (messageArrived && this.tabHidden) {
+          if (messageArrived /* && this.tabHidden */) {
             if (this.lastUnread) {
               const tag = this.lastUnread.id
               // Message not shown yet
-              if (tag !== this.options.tag) {
-                this.options = {
-                  body: `${this.partnerIdentity}: ${this.lastUnread.message}`,
+              if (tag !== this.tag) {
+                const notification = new Notify(this.i18n.t('app_title'), {
+                  body: this.messageBody,
                   icon: 'img/icons/android-chrome-192x192.png',
-                  image: 'img/icons/android-chrome-192x192.png',
                   notifyClick: () => {
                     this.router.push({
                       name: 'Chat',
@@ -68,9 +73,9 @@ class PushNotification extends Notification {
                     window.focus()
                   },
                   tag
-                }
-                const notification = new Notify(this.i18n.t('app_title'), this.options)
+                })
                 notification.show()
+                this.tag = tag
               }
             }
           }
@@ -178,8 +183,5 @@ export default class extends Notification {
       this.interval = null
       this.tab.stop()
     }
-  }
-  update (ctx) {
-    this.route = ctx.$route
   }
 }
