@@ -212,6 +212,12 @@
     "recipient": "Получатель",
     "sender": "Отправитель",
     "startChat": "Начать чат",
+    "status": "Статус",
+    "statuses": {
+      "error": "Ошибка",
+      "pending": "Ожидание",
+      "success": "Успешно"
+    },
     "transactions": "Транзакции",
     "txid": "№ транзакции"
   },
