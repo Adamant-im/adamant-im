@@ -132,7 +132,11 @@ export default {
     },
 
     isScrolledToBottom () {
-      return this.$refs.messages.scrollHeight - this.$refs.messages.scrollTop === this.$refs.messages.clientHeight
+      const scrollOffset = (
+        this.$refs.messages.scrollHeight - this.$refs.messages.scrollTop - this.$refs.messages.clientHeight
+      )
+
+      return scrollOffset <= 60
     },
 
     /**
