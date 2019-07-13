@@ -206,10 +206,16 @@ export default {
         background-color: transparent
       >>> .v-tabs__slider
         background-color: $shades.white !important
+      >>> .v-tabs__icon
+        color: $adm-colors.primary2
+        pointer-events: none
+      >>> .v-tabs__wrapper--show-arrows
+        margin-left: 0
+        margin-right: 0
       >>> .v-tabs__item
         color: $shades.white
       >>> .v-tabs__item--active
-        color: $adm-colors.white
+        color: $adm-colors.primary
         .svg-icon
-          fill: $adm-colors.white
+          fill: $adm-colors.primary
 </style>
