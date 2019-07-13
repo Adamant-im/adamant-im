@@ -41,7 +41,10 @@
           v-text="isMessageI18n ? $t(transaction.message) : transaction.message"
           class="a-text-explanation-enlarged-bold"
         />
-        <v-list-tile-sub-title class="a-text-explanation-enlarged-bold" v-else>{{ lastMessageTextNoFormats }}</v-list-tile-sub-title>
+        <v-list-tile-sub-title class="a-text-explanation-enlarged-bold" v-else>
+          <v-icon size="15" v-if="!isIncomingTransaction">{{ statusIcon }}</v-icon>
+          {{ lastMessageTextNoFormats }}
+        </v-list-tile-sub-title>
       </template>
     </v-list-tile-content>
 
