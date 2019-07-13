@@ -205,7 +205,7 @@ export default {
       >>> .v-tabs__bar
         background-color: transparent
       >>> .v-tabs__slider
-        background-color: $shades.white !important
+        background-color: $adm-colors.primary !important
       >>> .v-tabs__icon
         color: $adm-colors.primary2
         pointer-events: none

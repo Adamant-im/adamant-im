@@ -170,4 +170,15 @@ export default {
 
     &__icon
       color: $adm-colors.muted
+
+.theme--dark.v-list
+  .transaction-item
+    &__amount
+      color: $adm-colors.regular
+
+      &--is-incoming
+        color: $adm-colors.good
+      &--is-outgoing
+        color: $adm-colors.danger
+
 </style>
