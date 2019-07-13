@@ -134,8 +134,10 @@ export default {
         return 'mdi-clock-outline'
       } else if (this.status === 'rejected') {
         return 'mdi-close-circle-outline'
-      } else {
+      } else if (this.status === 'invalid') {
         return 'mdi-alert-outline'
+      } else if (this.status === 'unknown') {
+        return 'mdi-help-circle-outline'
       }
     }
   },
