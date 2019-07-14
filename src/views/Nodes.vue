@@ -50,10 +50,10 @@
               <td :class="`${className}__body`" class="pl-0 pr-2">{{ props.item.url }}</td>
               <td :class="`${className}__body`" class="pl-0 pr-2">
                 <span>
-                  {{ props.item.online ? `${props.item.ping} ms` : $t('nodes.offline') }}
+                  {{ getStatus(props.item) }}
                 </span>
                 <v-icon
-                  :color="props.item.online ? 'green lighten-1' : 'red lighten-1'"
+                  :color="getStatusColor(props.item)"
                   size="small"
                 >mdi-checkbox-blank-circle</v-icon>
               </td>
@@ -133,6 +133,23 @@ export default {
         url: node.url,
         active: !node.active
       })
+    },
+    isInactive (node) {
+      return node.ping === Infinity
+    },
+    getStatus (node) {
+      return this.isInactive(node)
+        ? this.$t('nodes.inactive')
+        : node.online
+          ? `${node.ping} ms`
+          : this.$t('nodes.offline')
+    },
+    getStatusColor (node) {
+      return this.isInactive(node)
+        ? 'grey lighten-1'
+        : node.online
+          ? 'green lighten-1'
+          : 'red lighten-1'
     }
   },
   components: {
