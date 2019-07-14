@@ -15,6 +15,7 @@ import { flushCryptoAddresses } from '@/lib/store-crypto-address'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
+import navigatorOnline from './plugins/navigatorOnline'
 import ethModule from './modules/eth'
 import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
@@ -151,7 +152,7 @@ const store = {
         })
     }
   },
-  plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin, indexedDbPlugin],
+  plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin, indexedDbPlugin, navigatorOnline],
   modules: {
     eth: ethModule, // Ethereum-related data
     bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
