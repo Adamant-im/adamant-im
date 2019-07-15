@@ -52,6 +52,10 @@
     "welcome_message_title": "Welcome to ADAMANT",
     "you": "YOU"
   },
+  "connection": {
+    "offline": "Offline - no network connection available",
+    "online": "Online - network connection restored"
+  },
   "error": "Error",
   "home": {
     "balance": "Balance",
