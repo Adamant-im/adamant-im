@@ -63,7 +63,7 @@ export default {
 
       if (
         transaction.hash === admSpecialMessage.hash &&
-        +transaction.amount === +admSpecialMessage.amount &&
+        this.verifyAmount(+transaction.amount, +admSpecialMessage.amount) &&
         transaction.senderId.toLowerCase() === senderCryptoAddress.toLowerCase() &&
         transaction.recipientId.toLowerCase() === recipientCryptoAddress.toLowerCase()
       ) {
@@ -109,6 +109,16 @@ export default {
       }
 
       return status
+    },
+
+    /**
+     * Delta should be <= 0.5%
+     */
+    verifyAmount (transactionAmount, specialMessageAmount) {
+      const margin = transactionAmount / (100 / 0.5)
+      const delta = Math.abs(transactionAmount - specialMessageAmount)
+
+      return delta <= margin
     }
   }
 }
