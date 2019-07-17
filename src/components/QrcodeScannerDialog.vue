@@ -1,9 +1,10 @@
 <template>
   <v-dialog
     v-model="show"
+    :class="className"
     width="500"
   >
-    <v-card>
+    <v-card :class="className">
 
       <!-- Camera Waiting -->
       <v-layout
@@ -12,7 +13,7 @@
         align-center
         class="pa-5"
       >
-        <div class="title">{{ $t('scan.waiting_camera') }}</div>
+        <div class="a-text-header">{{ $t('scan.waiting_camera') }}</div>
         <v-progress-circular
           indeterminate
           color="primary"
@@ -28,10 +29,32 @@
         wrap
       >
         <v-flex xs12>
-          <video ref="camera" class="camera"></video>
+          <div :class="`${className}__camera`">
+            <video ref="camera"></video>
+            <v-menu
+              v-if="cameras.length > 1"
+              offset-y
+              :class="`${className}__camera-select`"
+            >
+              <v-btn slot="activator" flat color="white">
+                <v-icon large>mdi-camera</v-icon>
+              </v-btn>
+              <v-list>
+                <v-list-tile
+                  v-for="camera in cameras"
+                  :key="camera.deviceId"
+                  @click="currentCamera = camera.deviceId"
+                >
+                  <v-list-tile-title>{{ camera.label }}</v-list-tile-title>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
+          </div>
         </v-flex>
         <v-flex xs12 class="pa-4">
-          <h3 class="subheading text-xs-center">
+          <h3
+            class="a-text-regular text-xs-center"
+          >
             {{ $t('scan.hold_your_device') }}
           </h3>
         </v-flex>
@@ -47,18 +70,19 @@
         class="text-xs-center pa-5"
       >
         <v-flex xs12>
-          <h3 class="headline">{{ $t('scan.no_camera_found') }}</h3>
-          <p class="mt-1 mb-0">{{ $t('scan.connect_camera') }}</p>
+          <h3 class="a-text-header">{{ $t('scan.no_camera_found') }}</h3>
+          <p class="a-text-regular mt-1 mb-0">{{ $t('scan.connect_camera') }}</p>
         </v-flex>
       </v-layout>
 
-      <v-divider></v-divider>
+      <v-divider class="a-divider"></v-divider>
 
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
           flat
           @click="show = false"
+          class="a-btn-regular"
         >
           {{ $t('scan.close_button') }}
         </v-btn>
@@ -69,7 +93,8 @@
 </template>
 
 <script>
-// @todo [Deprecation] URL.createObjectURL with media streams is deprecated and will be removed in M71, around December 2018. Please use HTMLMediaElement.srcObject instead. See https://www.chromestatus.com/features/5618491470118912 for more details.
+import { Scanner } from '@/lib/zxing'
+
 export default {
   mounted () {
     this.init()
@@ -78,6 +103,7 @@ export default {
     this.destroyScanner()
   },
   computed: {
+    className: () => 'qrcode-scanner-dialog',
     show: {
       get () {
         return this.value
@@ -90,18 +116,21 @@ export default {
   watch: {
     cameras (cameras) {
       if (cameras.length > 0) {
-        this.currentCamera = this.cameras[0]
-        this.scanner.start(this.currentCamera)
+        const cameraKey = cameras.length === 2 ? 1 : 0
+        this.currentCamera = this.cameras[cameraKey].deviceId
 
         this.cameraStatus = 'active'
       } else {
         this.cameraStatus = 'nocamera'
       }
+    },
+    currentCamera () {
+      this.scanner.start(this.currentCamera)
+        .then(content => this.onScan(content))
     }
   },
   data: () => ({
     cameraStatus: 'waiting', // can be: waiting, active, nocamera
-    Instascan: null, // ref
     scanner: null,
     currentCamera: null,
     cameras: []
@@ -121,21 +150,11 @@ export default {
         })
     },
     async initScanner () {
-      const instascanModule = import(/* webpackMode: "lazy" */ 'instascan')
-
-      // save reference
-      this.Instascan = await instascanModule
-
-      this.scanner = new this.Instascan.Scanner({
-        video: this.$refs.camera,
-        scanPeriod: 1,
-        mirror: false
+      this.scanner = new Scanner({
+        videoElement: this.$refs.camera
       })
 
-      // attach scan event
-      this.scanner.addListener('scan', (content) => {
-        this.onScan(content)
-      })
+      return this.scanner.init()
     },
     destroyScanner () {
       // First check if the scanner was initialized.
@@ -144,7 +163,7 @@ export default {
       return this.scanner && this.scanner.stop()
     },
     async getCameras () {
-      this.cameras = await this.Instascan.Camera.getCameras()
+      this.cameras = await this.scanner.getCameras()
     },
     onScan (content) {
       this.$emit('scan', content)
@@ -161,10 +180,27 @@ export default {
 }
 </script>
 
-<style scoped>
-.camera {
-  width: 100%;
-  height: 300px;
-  background-color: #000;
-}
+<style lang="stylus" scoped>
+.qrcode-scanner-dialog
+  &__camera
+    width: 100%
+    height: 300px
+    background-color: #000
+    position: relative
+
+    video
+      width: inherit
+      height: inherit
+      position: absolute
+      left: 0
+      top: 0
+
+  &__camera-select
+    position: absolute
+    right: 0
+    bottom: 0
+
+    >>> .v-btn
+      min-width: auto
+      padding: 0 8px
 </style>

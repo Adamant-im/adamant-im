@@ -129,6 +129,36 @@ export default function createActions (config) {
     },
 
     /**
+     * Retrieves block info: timestamp.
+     * @param {any} context Vuex action context
+     * @param {{ attempt: Number, blockNumber: Number, hash: String }} payload action payload
+     */
+    getBlock (context, payload) {
+      const transaction = context.state.transactions[payload.hash]
+      if (!transaction) return
+
+      const supplier = () => api.eth.getBlock.request(payload.blockNumber, (err, tx) => {
+        if (!err && tx) {
+          context.commit('transactions', [{
+            hash: payload.hash,
+            timestamp: tx.timestamp * 1000
+          }])
+        }
+        if (!tx && payload.attempt === MAX_ATTEMPTS) {
+          // Give up, if transaction could not be found after so many attempts
+          context.commit('transactions', [{ hash: tx.hash, status: 'ERROR' }])
+        } else if (err || !tx || !tx.status) {
+          // In case of an error or a pending transaction fetch its receipt once again later
+          // Increment attempt counter, if no transaction was found so far
+          const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
+          context.dispatch('getBlock', newPayload)
+        }
+      })
+
+      queue.enqueue('block:' + payload.blockNumber, supplier)
+    },
+
+    /**
      * Enqueues a background request to retrieve the transaction details
      * @param {object} context Vuex action context
      * @param {{hash: string, force: boolean, timestamp: number, amount: number, direction: 'from' | 'to'}} payload hash and timestamp of the transaction to fetch
@@ -158,6 +188,10 @@ export default function createActions (config) {
             // Fetch receipt details: status and actual gas consumption
             const { attempt, ...receiptPayload } = payload
             context.dispatch('getTransactionReceipt', receiptPayload)
+            context.dispatch('getBlock', {
+              ...payload,
+              blockNumber: transaction.blockNumber
+            })
           }
         }
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
@@ -190,7 +224,7 @@ export default function createActions (config) {
           context.commit('transactions', [{
             hash: payload.hash,
             fee: utils.calculateFee(tx.gasUsed, gasPrice),
-            status: tx.status ? 'SUCCESS' : 'ERROR'
+            status: Number(tx.status) ? 'SUCCESS' : 'ERROR'
           }])
         }
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
@@ -208,7 +242,7 @@ export default function createActions (config) {
     },
 
     getNewTransactions (context, payload) {
-      const { address, maxHeight, contractAddress } = context.state
+      const { address, maxHeight, contractAddress, decimals } = context.state
 
       const from = maxHeight > 0 ? maxHeight + 1 : 0
       const limit = from ? undefined : CHUNK_SIZE
@@ -217,7 +251,8 @@ export default function createActions (config) {
         address,
         contract: contractAddress,
         from,
-        limit
+        limit,
+        decimals
       }
 
       context.commit('areRecentLoading', true)
@@ -238,12 +273,13 @@ export default function createActions (config) {
       // If we already have the most old transaction for this address, no need to request anything
       if (context.state.bottomReached) return Promise.resolve()
 
-      const { address, contractAddress: contract, minHeight } = context.state
+      const { address, contractAddress: contract, minHeight, decimals } = context.state
 
       const options = {
         limit: CHUNK_SIZE,
         address,
-        contract
+        contract,
+        decimals
       }
       if (minHeight > 1) {
         options.to = minHeight - 1

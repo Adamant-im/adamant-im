@@ -63,7 +63,8 @@ export default {
 
       if (
         transaction.hash === admSpecialMessage.hash &&
-        +transaction.amount === +admSpecialMessage.amount &&
+        this.verifyAmount(+transaction.amount, +admSpecialMessage.amount) &&
+        this.verifyTimestamp(transaction.timestamp, admSpecialMessage.timestamp) &&
         transaction.senderId.toLowerCase() === senderCryptoAddress.toLowerCase() &&
         transaction.recipientId.toLowerCase() === recipientCryptoAddress.toLowerCase()
       ) {
@@ -109,6 +110,23 @@ export default {
       }
 
       return status
+    },
+
+    /**
+     * Delta should be <= 0.5%
+     */
+    verifyAmount (transactionAmount, specialMessageAmount) {
+      const margin = transactionAmount / (100 / 0.5)
+      const delta = Math.abs(transactionAmount - specialMessageAmount)
+
+      return delta <= margin
+    },
+
+    verifyTimestamp (transactionTimestamp, specialMessageTimestamp) {
+      const margin = 1800 // 30 min
+      const delta = Math.abs(transactionTimestamp - specialMessageTimestamp) / 1000
+
+      return delta < margin
     }
   }
 }

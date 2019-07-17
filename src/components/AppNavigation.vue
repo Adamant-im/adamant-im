@@ -3,6 +3,7 @@
     :active.sync="currentPageIndex"
     :value="showNav"
     app
+    height="50"
     class="app-navigation"
   >
     <v-layout justify-center>
@@ -12,7 +13,7 @@
           <!-- Wallet -->
           <v-btn to="/home" flat>
             <span>{{ $t('bottom.wallet_button') }}</span>
-            <v-icon>mdi-wallet</v-icon>
+            <v-icon size="20">mdi-wallet</v-icon>
           </v-btn>
 
           <!-- Chat -->
@@ -22,20 +23,14 @@
               <span v-if="numOfNewMessages > 0" slot="badge">
                 {{ numOfNewMessages > 99 ? '99+' : numOfNewMessages }}
               </span>
-              <v-icon>mdi-forum</v-icon>
+              <v-icon size="20">mdi-forum</v-icon>
             </v-badge>
           </v-btn>
 
           <!-- Settings -->
           <v-btn to="/options" flat>
             <span>{{ $t('bottom.settings_button') }}</span>
-            <v-icon>mdi-settings</v-icon>
-          </v-btn>
-
-          <!-- Logout -->
-          <v-btn @click="logout" flat>
-            <span>{{ $t('bottom.exit_button') }}</span>
-            <v-icon>mdi-logout-variant</v-icon>
+            <v-icon size="20">mdi-settings</v-icon>
           </v-btn>
         </v-layout>
 
@@ -45,9 +40,6 @@
 </template>
 
 <script>
-import { clearDb } from '@/lib/idb'
-import AppInterval from '@/lib/AppInterval'
-
 export default {
   mounted () {
     this.currentPageIndex = this.getCurrentPageIndex()
@@ -60,9 +52,6 @@ export default {
   computed: {
     numOfNewMessages () {
       return this.$store.getters['chat/totalNumOfNewMessages']
-    },
-    isLoginViaPassword () {
-      return this.$store.getters['options/isLoginViaPassword']
     }
   },
   data: () => ({
@@ -87,25 +76,6 @@ export default {
     showNav: true
   }),
   methods: {
-    logout () {
-      AppInterval.unsubscribe()
-      this.$store.dispatch('logout')
-
-      if (this.isLoginViaPassword) {
-        return clearDb()
-          .catch(err => {
-            console.error(err)
-          })
-          .finally(() => {
-            // turn off `loginViaPassword` option
-            this.$store.commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
-
-            this.$router.push('/')
-          })
-      } else {
-        return Promise.resolve(this.$router.push('/'))
-      }
-    },
     getCurrentPageIndex () {
       const currentPage = this.pages.find(page => {
         const pattern = new RegExp(`^${page.link}`)
@@ -120,10 +90,48 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../assets/stylus/settings/_colors.styl'
+
 /**
- * Disable grayscale filter.
+ * 1. Navigation Button.
+ *    a. Active
+ *    b. Inactive
  */
-.app-navigation >>> .v-btn:not(.v-btn--active) {
-  filter: unset;
-}
+.app-navigation
+  &.v-bottom-nav
+    box-shadow: none
+  &.v-bottom-nav .v-btn // [1]
+    font-weight: 300
+    padding-bottom: 8px
+  >>> .v-btn.v-btn--active // [1.a]
+    padding-top: 4px
+  >>> .v-btn:not(.v-btn--active) // [1.b]
+    filter: unset
+    padding-top: 6px
+    font-size: 12px
+
+.theme--light
+  .app-navigation
+    &__container
+      border-top: 1px solid $grey.lighten-2
+    &.v-bottom-nav
+      background-color: $shades.white
+    >>> .v-btn.v-btn--active // [1.a]
+      color: $adm-colors.regular
+    >>> .v-btn:not(.v-btn--active) // [1.b]
+      color: $adm-colors.muted !important
+
+.theme--dark
+  .app-navigation
+    &.v-bottom-nav
+      background-color: $shades.black
+    .v-btn--active
+      background: repeating-linear-gradient(
+        140deg,
+        #191919,
+        #191919 1px,
+        #212121 0,
+        #212121 15px
+      ) !important
 </style>

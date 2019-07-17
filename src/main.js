@@ -1,3 +1,4 @@
+import 'core-js/features/array/flat-map'
 import Vue from 'vue'
 
 import App from './App.vue'
@@ -10,8 +11,15 @@ import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
 import './plugins/vuetify'
 import './plugins/layout'
+import './plugins/scrollTo'
 import './registerServiceWorker'
 import '@/assets/stylus/app.styl'
+
+import 'dayjs/locale/de'
+import 'dayjs/locale/en'
+import 'dayjs/locale/fr'
+import 'dayjs/locale/it'
+import 'dayjs/locale/ru'
 
 Vue.use(VueFormatters)
 

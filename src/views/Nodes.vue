@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="className">
     <app-toolbar-centered
       app
       :title="$t('options.nodes_list')"
@@ -7,26 +7,30 @@
       flat
     />
 
-    <v-container fluid>
+    <v-container fluid class="pa-0">
       <v-layout row wrap justify-center>
 
-        <container>
+        <container padding>
 
           <v-data-table
             :headers="headers"
             :items="nodes"
+            :class="`${className}__table`"
             item-key="url"
             select-all
             hide-actions
-            class="elevation-1"
           >
             <template slot="headers" slot-scope="props">
               <tr>
-                <th></th>
+                <th style="width:56px"></th>
                 <th
                   v-for="header in props.headers"
                   :key="header.text"
-                  :class="{ 'text-xs-left': header.align === 'left' }"
+                  :class="[
+                    `${className}__header`,
+                    'pa-0',
+                    { 'text-xs-left': header.align === 'left' }
+                  ]"
                 >
                   {{ $t(header.text) }}
                 </th>
@@ -34,19 +38,20 @@
             </template>
 
             <template slot="items" slot-scope="props">
-              <td>
+              <td class="pr-2">
                 <v-checkbox
                   :input-value="props.item.active"
+                  :class="`${className}__checkbox`"
                   hide-details
                   color="grey darken-1"
                   @click.native="toggle(props.item)"
                 ></v-checkbox>
               </td>
-              <td>{{ props.item.url }}</td>
-              <td>
-            <span>
-              {{ getNodeStatus(props.item) }}
-            </span>
+              <td :class="`${className}__body`" class="pl-0 pr-2">{{ props.item.url }}</td>
+              <td :class="`${className}__body`" class="pl-0 pr-2">
+                <span>
+                  {{ getNodeStatus(props.item) }}
+                </span>
                 <v-icon
                   :color="getNodeColor(props.item)"
                   size="small"
@@ -57,10 +62,17 @@
 
           <v-checkbox
             :label="$t('nodes.fastest_title')"
-            :title="$t('nodes.fastest_tooltip')"
+            :class="`${className}__checkbox`"
             color="grey darken-1"
             v-model="preferFastestNodeOption"
           />
+          <div class="a-text-explanation-enlarged">{{ $t('nodes.fastest_tooltip') }}</div>
+
+          <div
+            :class="`${className}__info a-text-regular-enlarged`"
+            v-html="$t('nodes.nodeLabelDescription')"
+            class="mt-4"
+          ></div>
 
         </container>
 
@@ -84,6 +96,7 @@ export default {
     clearInterval(this.timer)
   },
   computed: {
+    className: () => 'nodes-view',
     preferFastestNodeOption: {
       get () {
         return this.$store.state.nodes.useFastest
@@ -136,7 +149,7 @@ export default {
       let color = 'green'
 
       if (!node.active) {
-        color = 'gray'
+        color = 'grey'
       } else if (!node.online) {
         color = 'red'
       } else if (node.outOfSync) {
@@ -151,3 +164,64 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_variables.styl'
+@import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
+
+.nodes-view
+  &__table
+    margin-left: -24px
+    margin-right: -24px
+
+    >>> table.v-table tbody td:first-child
+      padding-left: 24px
+
+  &__header
+    font-size: 12px
+    font-weight: 300
+  &__body
+    font-size: 14px
+    font-weight: 300
+  &__info
+    >>> a
+      text-decoration-line: none
+      &:hover
+        text-decoration-line: underline
+  &__checkbox
+    >>> .v-label
+      a-text-regular-enlarged()
+  >>> .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot
+    margin-bottom: 0
+
+/** Themes **/
+.theme--light
+  .nodes-view
+    &__header
+      color: $adm-colors.muted
+    &__body
+      color: $adm-colors.regular
+    &__checkbox
+      >>> .v-label
+        color: $adm-colors.regular
+      >>> .v-input--selection-controls__ripple
+      >>> .v-input--selection-controls__input i
+        color: $adm-colors.regular !important
+        caret-color: $adm-colors.regular !important
+
+    >>> .v-table tbody tr:not(:last-child)
+      border-bottom: 1px solid $adm-colors.secondary2
+
+/**
+ * 1. Style VTable to be full width.
+ */
+@media $display-breakpoints.sm-and-down
+  .nodes-view
+    &__table // [1]
+      margin-left: -16px
+      margin-right: -16px
+
+    >>> table.v-table tbody td:first-child
+      padding-left: 16px
+</style>

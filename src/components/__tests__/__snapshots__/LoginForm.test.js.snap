@@ -11,7 +11,7 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
     <v-text-field-stub
       browser-autocomplete="current-password"
       class="text-xs-center"
-      color="grey"
+      color="#BBDEFB"
       label="Input your passphrase to login"
       type="password"
     />
@@ -27,7 +27,7 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
   >
     <v-btn-stub
       activeclass="v-btn--active"
-      class="login-button v-btn--primary"
+      class="login-form__button a-btn-primary"
       tag="button"
       type="button"
     >

@@ -5,17 +5,15 @@ exports[`SendFundsForm renders the correct markup 1`] = `
   class="send-funds-form"
 >
   <v-form-stub
-    class="send-funds-form"
     value="true"
   >
     <v-select-stub
-      items="ADM,ETH,BNB,DOGE,BZ"
+      class="a-input"
+      items="ADM,ETH,BZ,KCS,DOGE,DASH,BNB"
     />
      
     <v-text-field-stub
-      rules="v => !!v || this.$t('transfer.error_field_is_required'),v => _get__(\\"validateAddress\\")(this.currency, v) || this.$t('transfer.error_incorrect_address', {
-          crypto: this.currency
-        }),v => v !== this.ownAddress || this.$t('transfer.error_same_recipient')"
+      class="a-input"
       type="text"
     >
       <template>
@@ -23,14 +21,14 @@ exports[`SendFundsForm renders the correct markup 1`] = `
           class="font-weight-medium"
         >
           
-          Recipient address
+          To Address
         
         </span>
       </template>
     </v-text-field-stub>
      
     <v-text-field-stub
-      rules="v => !!v || this.$t('transfer.error_field_is_required'),v => v > 0 || this.$t('transfer.error_incorrect_amount'),v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units')"
+      class="a-input"
       type="number"
     >
       <template>
@@ -51,12 +49,14 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     </v-text-field-stub>
      
     <v-text-field-stub
+      class="a-input"
       disabled=""
       label="Transfer fee"
       value="0.5 ADM"
     />
      
     <v-text-field-stub
+      class="a-input"
       disabled=""
       label="Amount including transfer fee"
       value="0.5 ADM"
@@ -69,7 +69,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     >
       <v-btn-stub
         activeclass="v-btn--active"
-        disabled="true"
+        class="a-btn-primary send-funds-form__button"
         tag="button"
         type="button"
       >
@@ -86,22 +86,27 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     transition="dialog-transition"
     width="500"
   >
-    <v-card-stub
-      elevation="2"
-    >
+    <v-card-stub>
       <v-card-title-stub
-        class="headline"
+        class="a-text-header"
       >
         Transfer confirmation
       </v-card-title-stub>
        
-      <v-card-text-stub />
+      <v-divider-stub
+        class="a-divider"
+      />
+       
+      <v-card-text-stub
+        class="a-text-regular-enlarged"
+      />
        
       <v-card-actions-stub>
         <v-spacer-stub />
          
         <v-btn-stub
           activeclass="v-btn--active"
+          class="a-btn-regular"
           flat="true"
           tag="button"
           type="button"
@@ -113,6 +118,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
          
         <v-btn-stub
           activeclass="v-btn--active"
+          class="a-btn-regular"
           flat="true"
           tag="button"
           type="button"

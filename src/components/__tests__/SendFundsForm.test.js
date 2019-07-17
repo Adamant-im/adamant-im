@@ -52,6 +52,9 @@ function mockupStore () {
   })
 
   const admModule = () => ({
+    state: {
+      address: 'U123456'
+    },
     getters: {
       fee: () => 0.5
     },
@@ -270,7 +273,7 @@ describe('SendFundsForm', () => {
 
   describe('computed.recipientName', () => {
     it('should return `recipientName`', () => {
-      wrapper.setData({ cryptoAddress: 'U111111' })
+      wrapper.setData({ address: 'U111111' })
 
       expect(wrapper.vm.recipientName).toBe('Rick')
     })
@@ -283,27 +286,27 @@ describe('SendFundsForm', () => {
   })
 
   describe('computed.validationRules', () => {
-    it('field is required', () => {
-      const isRequired = wrapper.vm.validationRules.cryptoAddress[0].bind(wrapper.vm)
-      const errorMessage = i18n.t('transfer.error_field_is_required')
-
-      expect(isRequired()).toBe(errorMessage)
-      expect(isRequired('U123456')).toBe(true)
-    })
-
     it('cryptoAddress: validateAddress', () => {
-      const validateAddress = wrapper.vm.validationRules.cryptoAddress[1].bind(wrapper.vm)
+      const validateAddress = wrapper.vm.validationRules.cryptoAddress[0].bind(wrapper.vm)
       const errorMessage = i18n.t('transfer.error_incorrect_address', { crypto: 'ADM' })
 
       wrapper.setData({ currency: 'ADM' })
 
       expect(validateAddress()).toBe(errorMessage)
       expect(validateAddress('U1')).toBe(errorMessage)
-      expect(validateAddress('U123456')).toBe(true)
+      expect(validateAddress('U654321')).toBe(true)
+    })
+
+    it('cryptoAddress: validateSameRecipient', () => {
+      const validateSameRecipient = wrapper.vm.validationRules.cryptoAddress[1].bind(wrapper.vm)
+      const errorMessage = i18n.t('transfer.error_same_recipient')
+
+      expect(validateSameRecipient('U123456')).toBe(errorMessage)
+      expect(validateSameRecipient('U654321')).toBe(true)
     })
 
     it('amount: incorrectAmount', () => {
-      const correctAmount = wrapper.vm.validationRules.amount[1].bind(wrapper.vm)
+      const correctAmount = wrapper.vm.validationRules.amount[0].bind(wrapper.vm)
       const errorMessage = i18n.t('transfer.error_incorrect_amount')
 
       expect(correctAmount('100')).toBe(true)
@@ -313,7 +316,7 @@ describe('SendFundsForm', () => {
     })
 
     it('amount: notEnoughTokens', () => {
-      const hasEnoughTokens = wrapper.vm.validationRules.amount[2].bind(wrapper.vm)
+      const hasEnoughTokens = wrapper.vm.validationRules.amount[1].bind(wrapper.vm)
       const errorMessage = i18n.t('transfer.error_not_enough')
 
       main.state.balance = 100
@@ -340,32 +343,24 @@ describe('SendFundsForm', () => {
       })
 
       expect(wrapper.vm.confirmMessage).toBe(
-        i18n.t('transfer.confirm_message', { amount: 1, target: 'U333333', crypto: 'ADM' })
+        i18n.t('transfer.confirm_message', { amount: 1, address: 'U333333', crypto: 'ADM' })
       )
     })
 
     it('confirm message with `recipientName`', () => {
       wrapper.setData({
         amount: 1,
-        cryptoAddress: 'U111111'
+        cryptoAddress: 'U111111',
+        address: 'U111111'
       })
 
       expect(wrapper.vm.confirmMessage).toBe(
-        i18n.t('transfer.confirm_message_with_name', { amount: 1, target: 'U111111 (Rick)', crypto: 'ADM' })
+        i18n.t('transfer.confirm_message_with_name', { amount: 1, name: 'Rick', address: 'U111111', crypto: 'ADM' })
       )
     })
   })
 
   /** methods **/
-  describe('methods.confirm', () => {
-    it('should show dialog', () => {
-      expect(wrapper.vm.dialog).toBe(false)
-
-      wrapper.vm.confirm()
-      expect(wrapper.vm.dialog).toBe(true)
-    })
-  })
-
   describe('methods.submit', () => {
     const transactionId = 'T1'
 
@@ -402,7 +397,22 @@ describe('SendFundsForm', () => {
       expect(wrapper.vm.pushTransactionToChat).not.toHaveBeenCalled()
     })
 
-    it('should sendFunds and push transaction to chat', async () => {
+    it('In-chat Transfer: should sendFunds and push transaction to chat', async () => {
+      wrapper.setMethods({
+        sendFunds: () => Promise.resolve(transactionId),
+        pushTransactionToChat: sinon.spy()
+      })
+      wrapper.setData({ address: 'U111111' })
+      wrapper.setData({ cryptoAddress: 'U111111' })
+
+      await wrapper.vm.submit()
+
+      expect(wrapper.vm.pushTransactionToChat.args).toEqual([
+        [transactionId, 'U111111']
+      ])
+    })
+
+    it('Direct Transfer: should sendFunds', async () => {
       wrapper.setMethods({
         sendFunds: () => Promise.resolve(transactionId),
         pushTransactionToChat: sinon.spy()
@@ -411,9 +421,7 @@ describe('SendFundsForm', () => {
 
       await wrapper.vm.submit()
 
-      expect(wrapper.vm.pushTransactionToChat.args).toEqual([
-        [transactionId, 'U111111']
-      ])
+      expect(wrapper.vm.pushTransactionToChat.args).toEqual([])
     })
 
     it('should emit error when sendFunds rejected', async () => {

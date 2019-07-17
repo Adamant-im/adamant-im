@@ -74,7 +74,8 @@ export function getChats (startHeight = 0, startOffset = 0, recursive = true) {
 export function createChat () {
   return {
     messages: [],
-    numOfNewMessages: 0
+    numOfNewMessages: 0,
+    scrollPosition: undefined
   }
 }
 
@@ -158,11 +159,12 @@ export function transformMessage (abstract) {
     eth_transaction: 'ETH',
     bz_transaction: 'BZ',
     bnb_transaction: 'BNB',
-    doge_transaction: 'DOGE'
+    doge_transaction: 'DOGE',
+    dash_transaction: 'DASH',
+    kcs_transaction: 'KCS'
   }
   const notSupportedYetCryptos = {
-    lsk_transaction: 'LSK',
-    dash_transaction: 'DASH'
+    lsk_transaction: 'LSK'
   }
 
   // common properties for all transaction types
@@ -192,7 +194,7 @@ export function transformMessage (abstract) {
       transaction.type = knownCrypto
     } else {
       transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
-      transaction.status = TS.INVALID
+      transaction.status = TS.UNKNOWN
     }
   } else { // ADM transaction or Message
     transaction.message = abstract.message || ''
