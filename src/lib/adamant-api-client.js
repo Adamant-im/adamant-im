@@ -235,7 +235,8 @@ class ApiClient {
       ping: node.ping,
       version: node.version,
       active: node.active,
-      outOfSync: node.outOfSync
+      outOfSync: node.outOfSync,
+      hasMinApiVersion: node.version >= this._minApiVersion
     })
 
     this._onInit = null

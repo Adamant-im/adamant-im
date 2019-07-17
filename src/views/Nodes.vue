@@ -135,7 +135,9 @@ export default {
       })
     },
     getNodeStatus (node) {
-      if (!node.active) {
+      if (!node.hasMinApiVersion) {
+        return this.$t('nodes.unsupported')
+      } else if (!node.active) {
         return this.$t('nodes.inactive')
       } else if (!node.online) {
         return this.$t('nodes.offline')
@@ -148,7 +150,9 @@ export default {
     getNodeColor (node) {
       let color = 'green'
 
-      if (!node.active) {
+      if (!node.hasMinApiVersion) {
+        color = 'red'
+      } else if (!node.active) {
         color = 'grey'
       } else if (!node.online) {
         color = 'red'
