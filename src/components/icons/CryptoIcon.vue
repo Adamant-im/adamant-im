@@ -14,6 +14,7 @@ import DogeFillIcon from './DogeFill'
 import DashFillIcon from './DashFill'
 import KcsFillIcon from './KcsFill'
 import LskFillIcon from './LskFill'
+import UsdsFillIcon from './UsdsFill'
 import UnknownCryptoFillIcon from './UnknownCryptoFill'
 
 import { Cryptos } from '@/lib/constants'
@@ -36,6 +37,7 @@ export default {
     DashFillIcon,
     KcsFillIcon,
     LskFillIcon,
+    UsdsFillIcon,
     UnknownCryptoFillIcon
   },
   props: {
