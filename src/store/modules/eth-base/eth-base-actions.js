@@ -180,6 +180,11 @@ export default function createActions (config) {
 
       const key = 'transaction:' + payload.hash
       const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
+        // Non-existent transaction with valid hash returns: `err = null` and `tx = null`
+        if (!err && !tx) {
+          return context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
+        }
+
         if (!err && tx && tx.input) {
           let transaction = parseTransaction(context, tx)
           if (transaction) {
