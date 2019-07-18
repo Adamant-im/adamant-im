@@ -137,17 +137,17 @@ export default function createActions (config) {
       const transaction = context.state.transactions[payload.hash]
       if (!transaction) return
 
-      const supplier = () => api.eth.getBlock.request(payload.blockNumber, (err, tx) => {
-        if (!err && tx) {
+      const supplier = () => api.eth.getBlock.request(payload.blockNumber, (err, block) => {
+        if (!err && block) {
           context.commit('transactions', [{
-            hash: payload.hash,
-            timestamp: tx.timestamp * 1000
+            hash: transaction.hash,
+            timestamp: block.timestamp * 1000
           }])
         }
-        if (!tx && payload.attempt === MAX_ATTEMPTS) {
+        if (!block && payload.attempt === MAX_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
-          context.commit('transactions', [{ hash: tx.hash, status: 'ERROR' }])
-        } else if (err || !tx || !tx.status) {
+          context.commit('transactions', [{ hash: transaction.hash, status: 'ERROR' }])
+        } else if (err || !block) {
           // In case of an error or a pending transaction fetch its receipt once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
