@@ -50,10 +50,10 @@
               <td :class="`${className}__body`" class="pl-0 pr-2">{{ props.item.url }}</td>
               <td :class="`${className}__body`" class="pl-0 pr-2">
                 <span>
-                  {{ getStatus(props.item) }}
+                  {{ getNodeStatus(props.item) }}
                 </span>
                 <v-icon
-                  :color="getStatusColor(props.item)"
+                  :color="getNodeColor(props.item)"
                   size="small"
                 >mdi-checkbox-blank-circle</v-icon>
               </td>
@@ -134,22 +134,33 @@ export default {
         active: !node.active
       })
     },
-    isInactive (node) {
-      return node.ping === Infinity
+    getNodeStatus (node) {
+      if (!node.hasMinApiVersion) {
+        return this.$t('nodes.unsupported')
+      } else if (!node.active) {
+        return this.$t('nodes.inactive')
+      } else if (!node.online) {
+        return this.$t('nodes.offline')
+      } else if (node.outOfSync) {
+        return this.$t('nodes.sync')
+      }
+
+      return node.ping + ' ' + this.$t('nodes.ms')
     },
-    getStatus (node) {
-      return this.isInactive(node)
-        ? this.$t('nodes.inactive')
-        : node.online
-          ? `${node.ping} ms`
-          : this.$t('nodes.offline')
-    },
-    getStatusColor (node) {
-      return this.isInactive(node)
-        ? 'grey lighten-1'
-        : node.online
-          ? 'green lighten-1'
-          : 'red lighten-1'
+    getNodeColor (node) {
+      let color = 'green'
+
+      if (!node.hasMinApiVersion) {
+        color = 'red'
+      } else if (!node.active) {
+        color = 'grey'
+      } else if (!node.online) {
+        color = 'red'
+      } else if (node.outOfSync) {
+        color = 'orange'
+      }
+
+      return color + ' lighten-1'
     }
   },
   components: {

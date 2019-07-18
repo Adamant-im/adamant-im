@@ -141,10 +141,12 @@
     "fastest_tooltip": "When turned on, most of requests will be processed with a single node. To keep anonymity on high level, we do not recommend turning on this option",
     "host": "Host",
     "inactive": "Inactive",
+    "sync": "Sync",
     "ms": "ms",
     "nodeLabelDescription": "Support decentralization and enhance privacy level—run your own ADAMANT node and web application for messaging. Node can be run <a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">following instructions</a>. To add your nodes in the list for connection, you need <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">to deploy web application on separate domain</a>. This limitation refers to Content Security Policy (CSP). In iOS and Android applications there are no such limitations.",
     "offline": "Offline",
-    "ping": "Ping"
+    "ping": "Ping",
+    "unsupported": "Unsupported"
   },
   "notifications": {
     "tabMessage": {

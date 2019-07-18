@@ -5,6 +5,14 @@ import config from '../config'
 import semver from 'semver'
 
 /**
+ * Allowed height delta for the nodes.
+ *
+ * If two nodes' heights differ by no more than this value,
+ * they are considered to be in sync with each other.
+ */
+const HEIGHT_EPSILON = 10
+
+/**
  * @typedef {Object} RequestConfig
  * @property {String} url request relative URL
  * @property {string} method request method (defaults to 'get')
@@ -38,11 +46,19 @@ class ApiNode {
      */
     this.active = true
 
+    /**
+     * Indicates whether node is out of sync (i.e. its block height is
+     * either too big or too small compared to the other nodes)
+     * @type {Boolean}
+     */
+    this.outOfSync = false
+
     this._baseUrl = baseUrl
     this._online = false
     this._ping = Infinity
     this._timeDelta = 0
     this._version = ''
+    this._height = 0
 
     this._client = axios.create({
       baseURL: this._baseUrl
@@ -87,6 +103,14 @@ class ApiNode {
    */
   get timeDelta () {
     return this._timeDelta
+  }
+
+  /**
+   * Current block height
+   * @type {Number}
+   */
+  get height () {
+    return this._height
   }
 
   /**
@@ -138,18 +162,34 @@ class ApiNode {
    * @returns {PromiseLike}
    */
   updateStatus () {
-    const time = Date.now()
-    return this.request({ url: '/api/peers/version' }).then(
-      body => {
-        // A decent node must have version
-        this._online = !!body.version
-        this._version = body.version
-        this._ping = Date.now() - time
-      },
-      () => {
+    return Promise.all([this._getVersion(), this._getHeight()])
+      .catch(() => {
         this._online = false
-      }
-    )
+      })
+  }
+
+  /**
+   * Gets node version and ping
+   * @returns {Promise}
+   */
+  _getVersion () {
+    const time = Date.now()
+    return this.request({ url: '/api/peers/version' }).then(body => {
+      // A decent node must have version
+      this._online = !!body.version
+      this._version = body.version
+      this._ping = Date.now() - time
+    })
+  }
+
+  /**
+   * Gets node block height
+   * @returns {Promise}
+   */
+  _getHeight () {
+    return this.request({ url: '/api/blocks/getHeight' }).then(body => {
+      this._height = Number(body.height)
+    })
   }
 }
 
@@ -194,7 +234,9 @@ class ApiClient {
       online: node.online,
       ping: node.ping,
       version: node.version,
-      active: node.active
+      active: node.active,
+      outOfSync: node.outOfSync,
+      hasMinApiVersion: node.version >= this._minApiVersion
     })
 
     this._onInit = null
@@ -247,6 +289,8 @@ class ApiClient {
           reject(new Error('No compatible nodes at the moment'))
           // Schedule a status update after a while
           setTimeout(() => this.updateStatus(), 1000)
+        } else {
+          this._updateSyncStatuses()
         }
       })
     }).then(
@@ -310,6 +354,8 @@ class ApiClient {
         if (error.code === 'NODE_OFFLINE') {
           // Notify the world that the node is down
           this._fireStatusUpdate(node)
+          // Initiate nodes status check
+          this.updateStatus()
           // If the selected node is not available, repeat the request with another one.
           return this.request(config)
         }
@@ -334,6 +380,7 @@ class ApiClient {
     const onlineNodes = this._nodes.filter(x =>
       x.online &&
       x.active &&
+      !x.outOfSync &&
       this._isCompatible(x.version)
     )
     const node = onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
@@ -346,7 +393,7 @@ class ApiClient {
    */
   _getFastestNode () {
     return this._nodes.reduce((fastest, current) => {
-      if (!current.online || !current.active || !this._isCompatible(current.version)) {
+      if (!current.online || !current.active || current.outOfSync || !this._isCompatible(current.version)) {
         return fastest
       }
       return (!fastest || fastest.ping > current.ping) ? current : fastest
@@ -366,6 +413,42 @@ class ApiClient {
    */
   _isCompatible (version) {
     return !!(version && semver.gte(version, this._minApiVersion))
+  }
+
+  /**
+   * Updates `outOfSync` status of the nodes.
+   *
+   * Basic idea is the following: we look for the biggest group of nodes that have the same
+   * height (considering HEIGHT_EPSILON). These nodes are considered to be in sync with the network,
+   * all the others are not.
+   */
+  _updateSyncStatuses () {
+    const nodes = this._nodes.filter(x => x.online)
+
+    // For each node we take its height and list of nodes that have the same height ± epsilon
+    const grouped = nodes.map(node => {
+      return {
+        /** In case of "win" this height will be considered to be real height of the network */
+        height: node.height,
+        /** List of nodes with the same (or close) height, including current one */
+        nodes: nodes.filter(x => Math.abs(node.height - x.height) <= HEIGHT_EPSILON)
+      }
+    })
+
+    // A group with the longest same-height nodes list wins.
+    // If two groups have the same number of nodes, the one with the biggest height wins.
+    const winner = grouped.reduce((out, x) => {
+      if (!out) return x
+      if (out.nodes.length < x.nodes.length || out.height < x.height) return x
+      return out
+    }, null)
+
+    // Finally, all the nodes from the winner list are considered to be in sync, all the
+    // others are not
+    nodes.forEach(node => {
+      node.outOfSync = !winner.nodes.includes(node)
+      this._fireStatusUpdate(node)
+    })
   }
 }
 

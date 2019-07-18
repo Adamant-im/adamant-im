@@ -128,6 +128,7 @@
     "fastest_tooltip": "Se selezionato, la maggior parte delle richieste verrà elaborata con un singolo nodo. Raccomandiamo di mantenere questa opzione deselezionata per un migliore anonimato.",
     "host": "Ospite",
     "inactive": "Inattivo",
+    "sync": "Sync",
     "ms": "ms",
     "nodeLabelDescription": "Supporta il decentramento e migliora il livello di privacy: esegui il tuo nodo ADAMANT e l'applicazione web per la messaggistica. Il nodo può essere eseguito <a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">seguendo le istruzioni</a>. Per aggiungere i nodi nell'elenco per la connessione, è necessario <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">per distribuire l'applicazione Web su un dominio separato</a>. Questa limitazione è collegata a Content Security Policy (CSP). Nelle applicazioni iOS e Android non ci sono limitazioni di questo tipo.",
     "offline": "Disconnessa",
