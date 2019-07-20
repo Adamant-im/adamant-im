@@ -64,6 +64,7 @@ class PushNotification extends Notification {
               if (tag !== this.tag) {
                 const notification = new Notify(this.i18n.t('app_title'), {
                   body: this.messageBody,
+                  closeOnClick: true,
                   icon: 'img/icons/android-chrome-192x192.png',
                   notifyClick: () => {
                     this.router.push({
@@ -72,7 +73,8 @@ class PushNotification extends Notification {
                     })
                     window.focus()
                   },
-                  tag
+                  tag,
+                  timeout: 5
                 })
                 notification.show()
                 this.tag = tag
