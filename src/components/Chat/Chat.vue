@@ -107,6 +107,8 @@
 </template>
 
 <script>
+import Visibility from 'visibilityjs'
+
 import { Cryptos } from '@/lib/constants'
 import { renderMarkdown } from '@/lib/markdown'
 
@@ -187,7 +189,7 @@ export default {
           this.$refs.chat.scrollToBottom()
         }
 
-        this.markAsRead()
+        if (!Visibility.hidden()) this.markAsRead()
       })
     }
   },

@@ -36,6 +36,9 @@ class Notification {
   get unreadAmount () {
     return this.store.getters['chat/totalNumOfNewMessages']
   }
+  markAsRead () {
+    this.store.commit('chat/markAsRead', this.partnerAddress)
+  }
 }
 
 class PushNotification extends Notification {
@@ -72,6 +75,7 @@ class PushNotification extends Notification {
                       params: { partnerId: this.partnerAddress }
                     })
                     window.focus()
+                    this.markAsRead()
                   },
                   tag,
                   timeout: 5
@@ -125,12 +129,14 @@ class TabNotification extends Notification {
     this.showAmount = true
   }
   notify () {
-    if (this.unreadAmount > 0 && (this.lastUnread || this.tabHidden)) {
-      if (!this.interval) {
-        this.showAmount = true
-        this.start()
+    if (this.tabHidden) {
+      if (this.unreadAmount > 0 && this.lastUnread) {
+        if (!this.interval) {
+          this.showAmount = true
+          this.start()
+        }
       }
-    }
+    } else this.markAsRead() // unreadAmount becomes 0, thereby stopping the interval
   }
   start () {
     this.interval = window.setInterval(() => {
