@@ -7,7 +7,9 @@ import * as utils from '../../../lib/eth-utils'
 import { getTransactions } from '../../../lib/eth-index'
 
 /** Max number of attempts to retrieve the transaction details */
-const MAX_ATTEMPTS = 150
+const MAX_ATTEMPTS = 5
+const NEW_TRANSACTION_TIMEOUT = 60
+const OLD_TRANSACTION_TIMEOUT = 5
 
 const CHUNK_SIZE = 25
 
@@ -201,7 +203,9 @@ export default function createActions (config) {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = tx ? payload : { ...payload, attempt: 1 + (payload.attempt || 0) }
-          context.dispatch('getTransaction', newPayload)
+
+          const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
+          setTimeout(() => context.dispatch('getTransaction', newPayload), timeout * 1000)
         }
       })
 
