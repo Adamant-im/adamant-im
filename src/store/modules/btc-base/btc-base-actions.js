@@ -140,10 +140,7 @@ export default options => {
             if (tx) context.commit('transactions', [tx])
             return (!tx && payload.isNew) || (tx && tx.status !== 'SUCCESS')
           },
-          () => {
-            context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-            return false
-          }
+          () => true
         )
         .then(replay => {
           const attempt = payload.attempt || 0
