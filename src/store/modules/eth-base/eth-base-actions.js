@@ -187,7 +187,10 @@ export default function createActions (config) {
         if (!err && tx && tx.input) {
           let transaction = parseTransaction(context, tx)
           if (transaction) {
-            context.commit('transactions', [transaction])
+            context.commit('transactions', [{
+              ...transaction,
+              status: 'PENDING'
+            }])
 
             // Fetch receipt details: status and actual gas consumption
             const { attempt, ...receiptPayload } = payload
