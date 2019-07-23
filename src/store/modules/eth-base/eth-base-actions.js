@@ -153,7 +153,9 @@ export default function createActions (config) {
           // In case of an error or a pending transaction fetch its receipt once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
-          context.dispatch('getBlock', newPayload)
+
+          const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
+          setTimeout(() => context.dispatch('getBlock', newPayload), timeout * 1000)
         }
       })
 
@@ -192,6 +194,7 @@ export default function createActions (config) {
             context.dispatch('getTransactionReceipt', receiptPayload)
             context.dispatch('getBlock', {
               ...payload,
+              attempt: 0,
               blockNumber: transaction.blockNumber
             })
           }
@@ -238,7 +241,9 @@ export default function createActions (config) {
           // In case of an error or a pending transaction fetch its receipt once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
-          context.dispatch('getTransactionReceipt', newPayload)
+
+          const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
+          setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), timeout * 1000)
         }
       })
 
