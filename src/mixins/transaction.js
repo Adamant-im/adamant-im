@@ -94,6 +94,9 @@ export default {
       const recipientCryptoAddress = this.$store.getters['partners/cryptoAddress'](recipientId, type)
       const senderCryptoAddress = this.$store.getters['partners/cryptoAddress'](senderId, type)
 
+      // do not update status until cryptoAddresses and transaction are received
+      if (!recipientCryptoAddress || !senderCryptoAddress || !transaction) return TS.PENDING
+
       if (status === 'SUCCESS') {
         if (this.verifyTransactionDetails(transaction, admSpecialMessage, {
           recipientCryptoAddress,
