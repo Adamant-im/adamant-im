@@ -102,6 +102,9 @@ export default {
       if (!recipientCryptoAddress || !senderCryptoAddress || !transaction) return TS.PENDING
 
       if (status === 'SUCCESS') {
+        // sometimes timestamp is missing (ETHLike transactions)
+        if (!transaction.timestamp) return TS.PENDING
+
         if (this.verifyTransactionDetails(transaction, admSpecialMessage, {
           recipientCryptoAddress,
           senderCryptoAddress
