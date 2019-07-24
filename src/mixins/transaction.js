@@ -17,7 +17,7 @@ export default {
 
       if (type in Cryptos) {
         this.fetchCryptoAddresses(type, recipientId, senderId)
-        this.fetchTransaction(type, hash)
+        this.fetchTransaction(type, hash, admSpecialMessage.timestamp)
       }
     },
 
@@ -25,12 +25,16 @@ export default {
      * Fetch transaction and save to state.
      * @param {string} type Transaction type
      * @param {string} hash Transaction hash
+     * @param {number} timestamp ADAMANT special message timestamp
      */
-    fetchTransaction (type, hash) {
+    fetchTransaction (type, hash, timestamp) {
       const cryptoModule = type.toLowerCase()
+      const NEW_TRANSACTION_DELTA = 900 // 15 min
+      const isNew = (Date.now() - timestamp) / 1000 < NEW_TRANSACTION_DELTA
 
       return this.$store.dispatch(`${cryptoModule}/getTransaction`, {
-        hash
+        hash,
+        isNew
       })
     },
 
@@ -98,6 +102,9 @@ export default {
       if (!recipientCryptoAddress || !senderCryptoAddress || !transaction) return TS.PENDING
 
       if (status === 'SUCCESS') {
+        // sometimes timestamp is missing (ETHLike transactions)
+        if (!transaction.timestamp) return TS.PENDING
+
         if (this.verifyTransactionDetails(transaction, admSpecialMessage, {
           recipientCryptoAddress,
           senderCryptoAddress
