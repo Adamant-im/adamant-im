@@ -43,7 +43,7 @@ export default {
       return getExplorerUrl(Cryptos.ADM, this.id)
     },
     status () {
-      return ''
+      return this.transaction.status
     }
   },
   methods: {
