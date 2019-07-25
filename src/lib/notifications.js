@@ -129,14 +129,12 @@ class TabNotification extends Notification {
     this.showAmount = true
   }
   notify () {
-    if (this.tabHidden) {
-      if (this.unreadAmount > 0 && this.lastUnread) {
-        if (!this.interval) {
-          this.showAmount = true
-          this.start()
-        }
+    if (this.unreadAmount > 0 && this.lastUnread && this.tabHidden) {
+      if (!this.interval) {
+        this.showAmount = true
+        this.start()
       }
-    } else this.markAsRead() // unreadAmount becomes 0, thereby stopping the interval
+    }
   }
   start () {
     this.interval = window.setInterval(() => {
