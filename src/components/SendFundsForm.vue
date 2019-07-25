@@ -14,7 +14,7 @@
       />
 
       <v-text-field
-        v-model="cryptoAddress"
+        v-model.trim="cryptoAddress"
         :disabled="addressReadonly"
         class="a-input"
         type="text"
