@@ -239,7 +239,6 @@
     "error_field_is_required": "Поле не заполнено",
     "error_incorrect_address": "Неверный адрес кошелька {crypto}",
     "error_incorrect_amount": "Неверное количество",
-    "error_natural_units": "Слишком много натуральных единиц для этой криптовалюты",
     "error_no_address": "Введите адрес кошелька получателя",
     "error_no_amount": "Введите сумму перевода",
     "error_not_enough": "Недостаточно токенов",

@@ -91,7 +91,6 @@ export default options => {
         ))
         .then(({ hash, error }) => {
           if (error) {
-            console.error(`Failed to send ${crypto} transaction`, error)
             context.commit('transactions', [{ hash, status: 'ERROR' }])
             throw error
           } else {
