@@ -249,6 +249,7 @@
     "error_not_enough_eth_fee": "Not enough tokens for ETH fee",
     "error_same_recipient": "Recipient address can not be same as sender address",
     "error_transfer_send": "Error while sending transfer",
+    "error_unknown": "Unknown error",
     "final_amount_label": "Amount including transfer fee",
     "max_transfer": "Max to transfer",
     "no_address_text": "This user does not have a public {crypto} wallet yet. To retrieve it, he should log in to the messenger with more than 0.001 ADM at balance",
