@@ -226,6 +226,7 @@
     "error_not_enough": "Non abbastanza token",
     "error_same_recipient": "Recipient address can not be same as sender address",
     "error_transaction_send": "Errore durante l'invio della transazione",
+    "error_unknown": "Unknown error",
     "final_amount_label": "Importo comprensivo della tassa di trasferimento",
     "max_transfer": "Max to transfer",
     "no_address_text": "Questo utente non ha ancora un portafoglio {crypto} pubblico. Per ottenerlo, deve accedere a Messenger quando il suo saldo è superiore a 0,001 ADM.",

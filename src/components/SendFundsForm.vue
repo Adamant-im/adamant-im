@@ -370,6 +370,8 @@ export default {
           let message = err.message
           if (this.currency === Cryptos.DASH && get(err, 'response.data.error.code') === -26) {
             message = this.$t('transfer.error_dust_amount')
+          } else if (this.currency === Cryptos.ETH && /Invalid JSON RPC Response/.test(message)) {
+            message = this.$t('transfer.error_unknown')
           }
           this.$emit('error', message)
         })
