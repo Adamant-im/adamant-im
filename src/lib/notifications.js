@@ -36,6 +36,9 @@ class Notification {
   get unreadAmount () {
     return this.store.getters['chat/totalNumOfNewMessages']
   }
+  markAsRead () {
+    this.store.commit('chat/markAsRead', this.partnerAddress)
+  }
 }
 
 class PushNotification extends Notification {
@@ -64,6 +67,7 @@ class PushNotification extends Notification {
               if (tag !== this.tag) {
                 const notification = new Notify(this.i18n.t('app_title'), {
                   body: this.messageBody,
+                  closeOnClick: true,
                   icon: 'img/icons/android-chrome-192x192.png',
                   notifyClick: () => {
                     this.router.push({
@@ -71,8 +75,10 @@ class PushNotification extends Notification {
                       params: { partnerId: this.partnerAddress }
                     })
                     window.focus()
+                    this.markAsRead()
                   },
-                  tag
+                  tag,
+                  timeout: 5
                 })
                 notification.show()
                 this.tag = tag
@@ -123,7 +129,7 @@ class TabNotification extends Notification {
     this.showAmount = true
   }
   notify () {
-    if (this.unreadAmount > 0 && (this.lastUnread || this.tabHidden)) {
+    if (this.unreadAmount > 0 && this.lastUnread && this.tabHidden) {
       if (!this.interval) {
         this.showAmount = true
         this.start()

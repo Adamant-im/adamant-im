@@ -162,34 +162,37 @@ class ApiNode {
    * @returns {PromiseLike}
    */
   updateStatus () {
-    return Promise.all([this._getVersion(), this._getHeight()])
+    return this._getNodeStatus()
+      .then(status => {
+        this._version = status.version
+        this._height = status.height
+        this._ping = status.ping
+        this._online = true
+      })
       .catch(() => {
         this._online = false
       })
   }
 
   /**
-   * Gets node version and ping
-   * @returns {Promise}
+   * Gets node version, block height and ping.
+   * @returns {Promise<{version: string, height: number, ping: number}>}
    */
-  _getVersion () {
+  _getNodeStatus () {
     const time = Date.now()
-    return this.request({ url: '/api/peers/version' }).then(body => {
-      // A decent node must have version
-      this._online = !!body.version
-      this._version = body.version
-      this._ping = Date.now() - time
-    })
-  }
 
-  /**
-   * Gets node block height
-   * @returns {Promise}
-   */
-  _getHeight () {
-    return this.request({ url: '/api/blocks/getHeight' }).then(body => {
-      this._height = Number(body.height)
-    })
+    return this.request({ url: '/api/node/status' })
+      .then(res => {
+        if (res.success) {
+          return {
+            version: res.version.version,
+            height: Number(res.network.height),
+            ping: Date.now() - time
+          }
+        }
+
+        throw new Error('Something went wrong')
+      })
   }
 }
 

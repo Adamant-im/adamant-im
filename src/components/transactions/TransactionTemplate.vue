@@ -276,6 +276,9 @@ export default {
       color: $adm-colors.muted !important
     >>> .v-divider
       border-color: $adm-colors.secondary2
+
+.theme--light, .theme--dark
+  .transaction-view
     &__value-error
       color: $adm-colors.danger !important
     &__value-pending

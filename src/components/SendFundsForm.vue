@@ -14,7 +14,7 @@
       />
 
       <v-text-field
-        v-model="cryptoAddress"
+        v-model.trim="cryptoAddress"
         :disabled="addressReadonly"
         class="a-input"
         type="text"
@@ -124,6 +124,7 @@
 </template>
 
 <script>
+import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
 
 import { sendMessage } from '@/lib/adamant-api'
@@ -297,7 +298,7 @@ export default {
         amount: [
           v => v > 0 || this.$t('transfer.error_incorrect_amount'),
           v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
-          v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units'),
+          v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_dust_amount'),
           v => isErc20(this.currency)
             ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
             : true
@@ -366,10 +367,11 @@ export default {
           this.$emit('send', transactionId, this.currency)
         })
         .catch(err => {
-          console.error(err)
           let message = err.message
-          if (/* err.response.status === 500 && */err.response.data.error.code === -26) {
+          if (this.currency === Cryptos.DASH && get(err, 'response.data.error.code') === -26) {
             message = this.$t('transfer.error_dust_amount')
+          } else if (this.currency === Cryptos.ETH && /Invalid JSON RPC Response/.test(message)) {
+            message = this.$t('transfer.error_unknown')
           }
           this.$emit('error', message)
         })
