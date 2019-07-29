@@ -7,7 +7,9 @@ import * as utils from '../../../lib/eth-utils'
 import { getTransactions } from '../../../lib/eth-index'
 
 /** Max number of attempts to retrieve the transaction details */
-const MAX_ATTEMPTS = 150
+const MAX_ATTEMPTS = 5
+const NEW_TRANSACTION_TIMEOUT = 60
+const OLD_TRANSACTION_TIMEOUT = 5
 
 const CHUNK_SIZE = 25
 
@@ -137,21 +139,23 @@ export default function createActions (config) {
       const transaction = context.state.transactions[payload.hash]
       if (!transaction) return
 
-      const supplier = () => api.eth.getBlock.request(payload.blockNumber, (err, tx) => {
-        if (!err && tx) {
+      const supplier = () => api.eth.getBlock.request(payload.blockNumber, (err, block) => {
+        if (!err && block) {
           context.commit('transactions', [{
-            hash: payload.hash,
-            timestamp: tx.timestamp * 1000
+            hash: transaction.hash,
+            timestamp: block.timestamp * 1000
           }])
         }
-        if (!tx && payload.attempt === MAX_ATTEMPTS) {
+        if (!block && payload.attempt === MAX_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
-          context.commit('transactions', [{ hash: tx.hash, status: 'ERROR' }])
-        } else if (err || !tx || !tx.status) {
+          context.commit('transactions', [{ hash: transaction.hash, status: 'ERROR' }])
+        } else if (err || !block) {
           // In case of an error or a pending transaction fetch its receipt once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
-          context.dispatch('getBlock', newPayload)
+
+          const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
+          setTimeout(() => context.dispatch('getBlock', newPayload), timeout * 1000)
         }
       })
 
@@ -183,13 +187,17 @@ export default function createActions (config) {
         if (!err && tx && tx.input) {
           let transaction = parseTransaction(context, tx)
           if (transaction) {
-            context.commit('transactions', [transaction])
+            context.commit('transactions', [{
+              ...transaction,
+              status: 'PENDING'
+            }])
 
             // Fetch receipt details: status and actual gas consumption
             const { attempt, ...receiptPayload } = payload
             context.dispatch('getTransactionReceipt', receiptPayload)
             context.dispatch('getBlock', {
               ...payload,
+              attempt: 0,
               blockNumber: transaction.blockNumber
             })
           }
@@ -201,7 +209,9 @@ export default function createActions (config) {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = tx ? payload : { ...payload, attempt: 1 + (payload.attempt || 0) }
-          context.dispatch('getTransaction', newPayload)
+
+          const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
+          setTimeout(() => context.dispatch('getTransaction', newPayload), timeout * 1000)
         }
       })
 
@@ -234,7 +244,9 @@ export default function createActions (config) {
           // In case of an error or a pending transaction fetch its receipt once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
-          context.dispatch('getTransactionReceipt', newPayload)
+
+          const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
+          setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), timeout * 1000)
         }
       })
 

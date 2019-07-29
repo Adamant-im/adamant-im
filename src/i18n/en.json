@@ -52,6 +52,10 @@
     "welcome_message_title": "Welcome to ADAMANT",
     "you": "YOU"
   },
+  "connection": {
+    "offline": "Offline - no network connection available",
+    "online": "Online - network connection restored"
+  },
   "error": "Error",
   "home": {
     "balance": "Balance",
@@ -73,6 +77,7 @@
     "your_address_DOGE": "DOGE address",
     "your_address_ETH": "Ethereum address",
     "your_address_KCS": "KuCoin Shares address",
+    "your_address_USDS": "StableUSD address",
     "your_address_tooltip_ADM": "This is your ADAMANT unique identifier. Click to copy it in the clipboard.",
     "your_address_tooltip_BNB": "This is your ADAMANT BNB wallet unique identifier. Click to copy it in the clipboard.",
     "your_address_tooltip_BZ": "This is your ADAMANT BZ wallet unique identifier. Click to copy it in the clipboard.",
@@ -80,6 +85,7 @@
     "your_address_tooltip_DOGE": "This is your ADAMANT DOGE wallet unique identifier. Click to copy it in the clipboard.",
     "your_address_tooltip_ETH": "This is your ADAMANT ETH wallet unique identifier. Click to copy it in the clipboard.",
     "your_address_tooltip_KCS": "This is your ADAMANT KCS wallet unique identifier. Click to copy it in the clipboard.",
+    "your_address_tooltip_USDS": "This is your ADAMANT USDS wallet unique identifier. Click to copy it in the clipboard.",
     "your_balance_ADM": "ADAMANT balance",
     "your_balance_BNB": "Binance Coin balance",
     "your_balance_BZ": "Bit-Z balance",
@@ -87,13 +93,15 @@
     "your_balance_DOGE": "DOGE balance",
     "your_balance_ETH": "Ethereum balance",
     "your_balance_KCS": "KuCoin Shares balance",
+    "your_balance_USDS": "StableUSD balance",
     "your_balance_tooltip_ADM": "It is your ADAMANT balance. Click to see all of input and output transactions.",
     "your_balance_tooltip_BNB": "It is your ADAMANT BNB balance.",
     "your_balance_tooltip_BZ": "It is your ADAMANT BZ balance.",
     "your_balance_tooltip_DASH": "It is your ADAMANT DASH balance.",
     "your_balance_tooltip_DOGE": "It is your ADAMANT DOGE balance.",
     "your_balance_tooltip_ETH": "It is your ADAMANT ETH balance.",
-    "your_balance_tooltip_KCS": "It is your ADAMANT KCS balance."
+    "your_balance_tooltip_KCS": "It is your ADAMANT KCS balance.",
+    "your_balance_tooltip_USDS": "It is your ADAMANT USDS balance."
   },
   "login": {
     "brand_title": "ADAMANT",
@@ -137,10 +145,12 @@
     "fastest_tooltip": "When turned on, most of requests will be processed with a single node. To keep anonymity on high level, we do not recommend turning on this option",
     "host": "Host",
     "inactive": "Inactive",
+    "sync": "Sync",
     "ms": "ms",
     "nodeLabelDescription": "Support decentralization and enhance privacy level—run your own ADAMANT node and web application for messaging. Node can be run <a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">following instructions</a>. To add your nodes in the list for connection, you need <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">to deploy web application on separate domain</a>. This limitation refers to Content Security Policy (CSP). In iOS and Android applications there are no such limitations.",
     "offline": "Offline",
-    "ping": "Ping"
+    "ping": "Ping",
+    "unsupported": "Unsupported"
   },
   "notifications": {
     "tabMessage": {
@@ -211,6 +221,12 @@
     "recipient": "To",
     "sender": "From",
     "startChat": "Start chat",
+    "status": "Status",
+    "statuses": {
+      "error": "Error",
+      "pending": "Pending",
+      "success": "Success"
+    },
     "transactions": "Transactions",
     "txid": "Transaction #"
   },
@@ -231,13 +247,13 @@
     "error_field_is_required": "Field is required",
     "error_incorrect_address": "Incorrect {crypto} wallet address",
     "error_incorrect_amount": "Incorrect amount",
-    "error_natural_units": "Too many natural units for this cryptocurrency",
     "error_no_address": "Enter recipient wallet address",
     "error_no_amount": "Enter amount to send",
     "error_not_enough": "Not enough tokens",
     "error_not_enough_eth_fee": "Not enough tokens for ETH fee",
     "error_same_recipient": "Recipient address can not be same as sender address",
     "error_transfer_send": "Error while sending transfer",
+    "error_unknown": "Unknown error",
     "final_amount_label": "Amount including transfer fee",
     "max_transfer": "Max to transfer",
     "no_address_text": "This user does not have a public {crypto} wallet yet. To retrieve it, he should log in to the messenger with more than 0.001 ADM at balance",

@@ -17,7 +17,7 @@ export default {
 
       if (type in Cryptos) {
         this.fetchCryptoAddresses(type, recipientId, senderId)
-        this.fetchTransaction(type, hash)
+        this.fetchTransaction(type, hash, admSpecialMessage.timestamp)
       }
     },
 
@@ -25,12 +25,16 @@ export default {
      * Fetch transaction and save to state.
      * @param {string} type Transaction type
      * @param {string} hash Transaction hash
+     * @param {number} timestamp ADAMANT special message timestamp
      */
-    fetchTransaction (type, hash) {
+    fetchTransaction (type, hash, timestamp) {
       const cryptoModule = type.toLowerCase()
+      const NEW_TRANSACTION_DELTA = 900 // 15 min
+      const isNew = (Date.now() - timestamp) / 1000 < NEW_TRANSACTION_DELTA
 
       return this.$store.dispatch(`${cryptoModule}/getTransaction`, {
-        hash
+        hash,
+        isNew
       })
     },
 
@@ -63,7 +67,8 @@ export default {
 
       if (
         transaction.hash === admSpecialMessage.hash &&
-        +transaction.amount === +admSpecialMessage.amount &&
+        this.verifyAmount(+transaction.amount, +admSpecialMessage.amount) &&
+        this.verifyTimestamp(transaction.timestamp, admSpecialMessage.timestamp) &&
         transaction.senderId.toLowerCase() === senderCryptoAddress.toLowerCase() &&
         transaction.recipientId.toLowerCase() === recipientCryptoAddress.toLowerCase()
       ) {
@@ -93,7 +98,13 @@ export default {
       const recipientCryptoAddress = this.$store.getters['partners/cryptoAddress'](recipientId, type)
       const senderCryptoAddress = this.$store.getters['partners/cryptoAddress'](senderId, type)
 
+      // do not update status until cryptoAddresses and transaction are received
+      if (!recipientCryptoAddress || !senderCryptoAddress || !transaction) return TS.PENDING
+
       if (status === 'SUCCESS') {
+        // sometimes timestamp is missing (ETHLike transactions)
+        if (!transaction.timestamp) return TS.PENDING
+
         if (this.verifyTransactionDetails(transaction, admSpecialMessage, {
           recipientCryptoAddress,
           senderCryptoAddress
@@ -109,6 +120,23 @@ export default {
       }
 
       return status
+    },
+
+    /**
+     * Delta should be <= 0.5%
+     */
+    verifyAmount (transactionAmount, specialMessageAmount) {
+      const margin = transactionAmount / (100 / 0.5)
+      const delta = Math.abs(transactionAmount - specialMessageAmount)
+
+      return delta <= margin
+    },
+
+    verifyTimestamp (transactionTimestamp, specialMessageTimestamp) {
+      const margin = 1800 // 30 min
+      const delta = Math.abs(transactionTimestamp - specialMessageTimestamp) / 1000
+
+      return delta < margin
     }
   }
 }

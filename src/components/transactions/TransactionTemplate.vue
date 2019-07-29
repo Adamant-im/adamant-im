@@ -31,6 +31,22 @@
         <v-list-tile>
           <v-list-tile-content>
             <v-list-tile-title :class="`${className}__title`">
+              {{ $t('transaction.status') }}
+            </v-list-tile-title>
+          </v-list-tile-content>
+
+          <div>
+            <v-list-tile-title :class="`${className}__value ${className}__value-${lowerCaseStatus}`">
+              {{ $t(`transaction.statuses.${lowerCaseStatus}`) }}
+            </v-list-tile-title>
+          </div>
+        </v-list-tile>
+
+        <v-divider/>
+
+        <v-list-tile>
+          <v-list-tile-content>
+            <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.date') }}
             </v-list-tile-title>
           </v-list-tile-content>
@@ -220,6 +236,9 @@ export default {
     },
     ifComeFromChat () {
       return this.$route.query.hasOwnProperty('fromChat')
+    },
+    lowerCaseStatus () {
+      return this.status ? this.status.toLowerCase() : 'pending'
     }
   },
   components: {
@@ -257,4 +276,13 @@ export default {
       color: $adm-colors.muted !important
     >>> .v-divider
       border-color: $adm-colors.secondary2
+
+.theme--light, .theme--dark
+  .transaction-view
+    &__value-error
+      color: $adm-colors.danger !important
+    &__value-pending
+      color: $adm-colors.attention !important
+    &__value-success
+      color: $adm-colors.good !important
 </style>
