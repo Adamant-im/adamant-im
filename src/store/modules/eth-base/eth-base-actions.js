@@ -195,11 +195,6 @@ export default function createActions (config) {
             // Fetch receipt details: status and actual gas consumption
             const { attempt, ...receiptPayload } = payload
             context.dispatch('getTransactionReceipt', receiptPayload)
-            context.dispatch('getBlock', {
-              ...payload,
-              attempt: 0,
-              blockNumber: transaction.blockNumber
-            })
           }
         }
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
@@ -238,8 +233,15 @@ export default function createActions (config) {
           context.commit('transactions', [{
             hash: payload.hash,
             fee: utils.calculateFee(tx.gasUsed, gasPrice),
-            status: Number(tx.status) ? 'SUCCESS' : 'ERROR'
+            status: Number(tx.status) ? 'SUCCESS' : 'ERROR',
+            blockNumber: tx.blockNumber
           }])
+
+          context.dispatch('getBlock', {
+            ...payload,
+            attempt: 0,
+            blockNumber: tx.blockNumber
+          })
         }
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
