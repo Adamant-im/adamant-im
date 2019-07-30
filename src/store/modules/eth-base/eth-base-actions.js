@@ -123,7 +123,7 @@ export default function createActions (config) {
               timestamp: Date.now(),
               gasPrice: ethTx.gasPrice
             }])
-            context.dispatch('getTransaction', { hash, isNew: true, direction: 'from' })
+            context.dispatch('getTransaction', { hash, isNew: true, direction: 'from', force: true })
 
             return hash
           }
@@ -169,7 +169,7 @@ export default function createActions (config) {
      */
     getTransaction (context, payload) {
       const existing = context.state.transactions[payload.hash]
-      if (existing && existing.status !== 'PENDING' && !payload.force) return
+      if (existing && !payload.force) return
 
       // Set a stub so far
       if (!existing || existing.status === 'ERROR') {
@@ -208,7 +208,11 @@ export default function createActions (config) {
         } else if (err || !tx) {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far
-          const newPayload = tx ? payload : { ...payload, attempt: 1 + (payload.attempt || 0) }
+          const newPayload = tx ? payload : {
+            ...payload,
+            attempt: 1 + (payload.attempt || 0),
+            force: true
+          }
 
           const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
           setTimeout(() => context.dispatch('getTransaction', newPayload), timeout * 1000)
