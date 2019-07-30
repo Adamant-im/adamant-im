@@ -3,7 +3,7 @@ import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
 const MAX_ATTEMPTS = 5
-const NEW_TRANSACTION_TIMEOUT = 60
+const NEW_TRANSACTION_TIMEOUT = 120
 const OLD_TRANSACTION_TIMEOUT = 5
 
 export default options => {
