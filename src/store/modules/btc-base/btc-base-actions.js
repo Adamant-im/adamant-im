@@ -107,7 +107,7 @@ export default options => {
               timestamp: Date.now()
             }])
 
-            context.dispatch('getTransaction', { hash, isNew: true })
+            context.dispatch('getTransaction', { hash, isNew: true, force: true })
 
             return hash
           }
@@ -124,7 +124,7 @@ export default options => {
       if (!payload.hash) return
 
       const existing = context.state.transactions[payload.hash]
-      if (existing && existing.status !== 'PENDING' && !payload.force) return
+      if (existing && !payload.force) return
 
       // Set a stub so far
       if (!existing || existing.status === 'ERROR') {
@@ -147,7 +147,11 @@ export default options => {
         .then(replay => {
           const attempt = payload.attempt || 0
           if (replay && attempt < MAX_ATTEMPTS) {
-            const newPayload = { ...payload, attempt: attempt + 1 }
+            const newPayload = {
+              ...payload,
+              attempt: attempt + 1,
+              force: true
+            }
 
             const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
             setTimeout(() => context.dispatch('getTransaction', newPayload), timeout * 1000)
