@@ -68,7 +68,7 @@ class PushNotification extends Notification {
                 const notification = new Notify(this.i18n.t('app_title'), {
                   body: this.messageBody,
                   closeOnClick: true,
-                  icon: 'img/icons/android-chrome-192x192.png',
+                  icon: '/img/icons/android-chrome-192x192.png',
                   notifyClick: () => {
                     this.router.push({
                       name: 'Chat',
