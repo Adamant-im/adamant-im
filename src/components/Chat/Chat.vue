@@ -263,7 +263,7 @@ export default {
       //
     },
     onScrollBottom () {
-      //
+      this.markAsRead()
     },
     onScroll (scrollPosition, isBottom) {
       this.isScrolledToBottom = isBottom
