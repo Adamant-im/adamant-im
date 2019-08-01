@@ -55,6 +55,9 @@ class PushNotification extends Notification {
     }
     return `${this.partnerIdentity}: ${removeFormats(message)}`
   }
+  increaseCounter () {
+    this.store.commit('notification/increaseDesktopAcivateClickCount')
+  }
   notify (messageArrived) {
     try {
       Notify.requestPermission(
@@ -70,6 +73,7 @@ class PushNotification extends Notification {
                   closeOnClick: true,
                   icon: '/img/icons/android-chrome-192x192.png',
                   notifyClick: () => {
+                    this.increaseCounter()
                     this.router.push({
                       name: 'Chat',
                       params: { partnerId: this.partnerAddress }
