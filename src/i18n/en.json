@@ -3,7 +3,6 @@
   "bottom": {
     "chats_button": "Chats",
     "exit_button": "Logout",
-    "exit_button_tooltip": "Despite of application settings, your passphrase will be deleted from browser. It is recommended to always log out after completion of usage",
     "send_button": "Send Funds",
     "settings_button": "Settings",
     "wallet_button": "Account"
