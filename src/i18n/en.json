@@ -137,22 +137,22 @@
     "enable_push": "Push notifications",
     "enable_push_tooltip": "Notifications on desktop. Requires your permission",
     "enable_sound": "Sound",
-    "enable_sound_tooltip": "Play a sound notification when new message received",
-    "exit_on_close": "Logout on tab close",
-    "exit_on_close_tooltip": "For your wallet security we recommend you keep this checkbox turned on. If you turn it off, your passphrase will be saved in browser, and next time you open the wallet it will be decrypted without a need to enter passphrase. This option only acceptable in a case when nobody else can access your device",
-    "format_messages": "Format messages using Markdown",
-    "format_messages_tooltip": "",
+    "enable_sound_tooltip": "Play a sound when new message received",
+    "exit_on_close": "Logout on close",
+    "exit_on_close_tooltip": "Do not store messages on device and clean data when tab is closed. Switch off: messages and passphase are stored on device, encrypted with user password. Easier login on this device",
+    "format_messages": "Markdown formatting",
+    "format_messages_tooltip": "Recommended. Use _italic_, **bold**, `monospace`, and more.",
     "general_title": "General",
-    "idb_not_supported": "Your browser does not support IndexedDB or in Private Browsing mode",
+    "idb_not_supported": "Browser does not support IndexedDB or in Private Browsing mode",
     "language_label": "Language",
     "nodes_list": "Nodes list",
     "notification_title": "Notifications",
     "page_title": "Settings",
-    "push_denied": "PUSH notifications has been denied in browser settings",
-    "push_not_supported": "PUSH notifications not supported by this browser",
-    "security_title": "Security",
-    "send_on_enter": "Send messages by Enter key",
-    "send_on_enter_tooltip": "Send messages by Enter key, new line by combination Shift+Enter. By default, combination Ctrl+Enter or Cmd+Enter (Mac) is used to send messages",
+    "push_denied": "Push notifications have been denied in browser settings",
+    "push_not_supported": "Push notifications not supported by browser",
+    "security_title": "Security and login",
+    "send_on_enter": "Send by Enter",
+    "send_on_enter_tooltip": "Send messages by Enter key, new line by Ctrl+Enter",
     "upvote_for_label": "Vote for:",
     "version": "App Version:",
     "vote_for_delegates_button": "Vote for delegates"
@@ -162,17 +162,17 @@
   "scan": {
     "camera_button": "Camera",
     "close_button": "Close",
-    "connect_camera": "Connect the camera and try again",
-    "hold_your_device": "Hold your device steady for 2-3 seconds towards the QR code you want to scan",
+    "connect_camera": "Connect camera and try again",
+    "hold_your_device": "Hold your device steady for 2-3 seconds towards the QR code",
     "login": {
-      "modal_header": "Scan QR code with a passphrase"
+      "modal_header": "Scan QR code with passphrase"
     },
     "new-chat": {
-      "modal_header": "Scan QR code with ADAMANT wallet address"
+      "modal_header": "Scan QR code with ADAMANT address"
     },
     "no_camera_found": "No camera found",
-    "something_wrong": "Unexpected error. Check the adm console application",
-    "waiting_camera": "Waiting camera"
+    "something_wrong": "Something went wrong",
+    "waiting_camera": "Waiting for camera…"
   },
   "title": "English",
   "transaction": {
