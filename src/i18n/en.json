@@ -25,11 +25,9 @@
     "partner_name": "Partner name",
     "received_label": "Received",
     "recipient": "Partner address",
-    "recipient_tooltip": "Enter a partner address in the format U1234567890",
-    "retry_message": "Message did not sent, weak connection. Click to retry",
-    "scan_recipient_button": "Scan",
+    "recipient_tooltip": "Partner's ADM address like U1234567890987654321",
+    "retry_message": "Not sent: weak connection. Click to retry",
     "send_button": "Send",
-    "send_button_tooltip": "Click to send a message",
     "send_crypto": "Send {crypto}",
     "sent_label": "Sent",
     "show_my_qr_code": "Show my QR code",
@@ -37,13 +35,13 @@
     "title": "Chats",
     "too_long": "Message is too long",
     "transaction_statuses": {
-      "delivered": "Transaction is confirmed on token’s network",
-      "invalid": "Information about transaction, fetched from rich message in ADAMANT network, differs from information, fetched from token’s network",
-      "pending": "Transaction is not confirmed yet",
-      "rejected": "Transaction is cancelled or not accepted on token’s network",
-      "unknown": "This type of cryptocurrency is not supported yet"
+      "delivered": "Confirmed in token’s blockchain",
+      "invalid": "Inconsistent information. Check transaction in token's blockchain carefully",
+      "pending": "Not confirmed yet",
+      "rejected": "Transaction is cancelled or not accepted",
+      "unknown": "Cryptocurrency is not supported yet"
     },
-    "welcome_message": "ADAMANT is a true Blockchain messenger, independent from governments, corporations and even developers. It is possible due to a decentralized network infrastructure, fully open source and run by users. That's why every action, including sending message or saving contact name, has its network fee of 0.001 ADM.\n\nBlockchain offers superior security and privacy, not available for typical P2P and centralized messengers. Also, Blockchain provides new possibilities. You can store and transfer cryptos In-Chat with full control of your private keys, use ADAMANT as 2FA and more.\n\nIn ADAMANT, nobody can control, block, deactivate, restrict or censor accounts. Users take full responsibility for content, messages, media, and goals and intentions of using the Messenger.\n\nRemember, your security and anonymity is up to you. Do not follow links you receive, otherwise your IP can be compromised. Set a password on your device. Learn more about security and anonymity at https://adamant.im/staysecured/.\n\nMake sure you've saved the passPhrase for this account — logout and login again. Write your passPhrase on a sheet of paper as well. Only *you are responsible for passPhrase safety*. It cannot be recovered. And if other person will get it, your tokens will be stolen and correspondence read. Treat this question with outmost importance, as if tokens in your wallet will cost a billion dollars some time.\n\nTo start messaging now, *get free welcome tokens* on Account tab. Then create new chat and put your friend's ADM address. It is recommended to share your ADM address personally, not using other messengers.",
+    "welcome_message": "ADAMANT is a true Blockchain messenger, independent from governments, corporations and even developers. It is possible due to a decentralized network infrastructure, fully open source and run by users. That's why every action, including sending message or saving contact name, has its network fee of 0.001 ADM.\n\nBlockchain offers superior security and privacy, not available for typical P2P and centralized messengers. Also, Blockchain provides new possibilities. You can store and transfer cryptos In-Chat with full control of your private keys, use ADAMANT as 2FA, anonymously exchange cryptocurrencies, make bets on Bitcoin rate and more.\n\nIn ADAMANT, nobody can control, block, deactivate, restrict or censor accounts. Users take full responsibility for content, messages, media, and goals and intentions of using the Messenger.\n\nADAMANT is anonymous, your IP is hidden from partners, and Tor version is available for paranoids. But remember, your security and anonymity is up to you. Do not follow links you receive, otherwise your IP can be compromised. Set a password on your device. Learn more about security and anonymity at https://adamant.im/staysecured/.\n\nMake sure you've saved the passPhrase for this account — logout and login again. Write your passPhrase on a sheet of paper as well. Only *you are responsible for passPhrase safety*. It cannot be recovered. And if other person will get it, your tokens will be stolen and correspondence read. Treat this question with outmost importance, as if tokens in your wallet will cost a billion dollars some time.\n\nTo start messaging now, *get free welcome tokens* on Account tab. Then create new chat and put your friend's ADM address. It is recommended to share your ADM address personally, not using other messengers.\n\nSearch Internet for ADAMANT bots addresses. They can exchange cryptos, accept bets on crypto rates, and make wishes come true.\n\n",
     "welcome_message_title": "Welcome to ADAMANT",
     "you": "YOU"
   },
