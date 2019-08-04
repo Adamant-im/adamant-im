@@ -174,19 +174,26 @@ export default {
   },
   beforeDestroy () {
     window.removeEventListener('keyup', this.onKeyPress)
+    Visibility.unbind(this.visibilityId)
   },
   mounted () {
     this.scrollBehavior()
     this.$nextTick(() => {
       this.isScrolledToBottom = this.$refs.chat.isScrolledToBottom()
     })
+    this.visibilityId = Visibility.change((event, state) => {
+      if (state === 'visible' && this.isScrolledToBottom) this.markAsRead()
+    })
   },
   watch: {
     // Scroll to the bottom every time window focused by desktop notification
-    '$store.state.notification.desktopAcivateClickCount' () {
-      this.$nextTick(() => {
-        this.$refs.chat.scrollToBottom()
-      })
+    '$store.state.notification.desktopAcivateClickCount': {
+      handler: function () {
+        this.$nextTick(() => {
+          window.setTimeout(this.$refs.chat.scrollToBottom, 1)
+        })
+      },
+      immediate: true
     },
     // scroll to bottom when received new message
     messages () {
@@ -235,7 +242,8 @@ export default {
   },
   data: () => ({
     loading: false,
-    isScrolledToBottom: true
+    isScrolledToBottom: true,
+    visibilityId: null
   }),
   methods: {
     onMessage (message) {
