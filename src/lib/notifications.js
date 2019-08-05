@@ -5,8 +5,11 @@ import Visibility from 'visibilityjs'
 import currency from '@/filters/currency'
 import { removeFormats } from '@/lib/markdown'
 
+let _this
+
 class Notification {
   constructor (ctx) {
+    _this = ctx
     this.i18n = ctx.$i18n
     this.router = ctx.$router
     this.store = ctx.$store
@@ -35,9 +38,6 @@ class Notification {
   }
   get unreadAmount () {
     return this.store.getters['chat/totalNumOfNewMessages']
-  }
-  markAsRead () {
-    this.store.commit('chat/markAsRead', this.partnerAddress)
   }
 }
 
@@ -73,13 +73,13 @@ class PushNotification extends Notification {
                   closeOnClick: true,
                   icon: '/img/icons/android-chrome-192x192.png',
                   notifyClick: () => {
-                    this.increaseCounter()
-                    this.router.push({
-                      name: 'Chat',
-                      params: { partnerId: this.partnerAddress }
-                    })
+                    if (_this.$route.name !== 'Chat') {
+                      this.router.push({
+                        name: 'Chat',
+                        params: { partnerId: this.partnerAddress }
+                      })
+                    } else this.increaseCounter()
                     window.focus()
-                    this.markAsRead()
                   },
                   tag,
                   timeout: 5
