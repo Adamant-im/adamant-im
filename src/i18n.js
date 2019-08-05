@@ -3,14 +3,13 @@ import VueI18n from 'vue-i18n'
 
 import de from './i18n/de'
 import en from './i18n/en'
-import it from './i18n/it'
 import ru from './i18n/ru'
 
 Vue.use(VueI18n)
 
 function loadLocaleMessages () {
   return {
-    de, en, it, ru
+    de, en, ru
   }
 }
 
