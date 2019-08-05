@@ -449,7 +449,7 @@ class ApiClient {
     // Finally, all the nodes from the winner list are considered to be in sync, all the
     // others are not
     nodes.forEach(node => {
-      node.outOfSync = node !== winner.nodes[0]
+      node.outOfSync = !winner.nodes.includes(node)
       this._fireStatusUpdate(node)
     })
   }
