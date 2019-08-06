@@ -36,9 +36,9 @@
     "too_long": "The message is too long",
     "transaction_statuses": { 
       "delivered": "Confirmed in token’s blockchain",
-      "invalid": "Insufficient information. Check transaction in token's blockchain carefully",
+      "invalid": "Incorrect information. Check transaction in token's blockchain carefully",
       "pending": "Not confirmed yet",
-      "rejected": "Your transaction is cancelled or not accepted",
+      "rejected": "The transaction is cancelled or not accepted",
       "unknown": "This cryptocurrency is not supported yet"
     },
     "welcome_message": "ADAMANT is a unqiue Blockchain messenger that is independent from government, corporations and even its developers. It is possible due to a decentralized network, fully open source and users' feedback. That's why every action, including messaging or saving new contacts, has a network fee of 0.001 ADM.\n\nBlockchain offers superior security and privacy, that is not proposed by typical P2P and centralized messengers. What's more, Blockchain provides new possibilities. You can store and transfer cryptocurrencies via chat directly with full control of your private keys; use ADAMANT as 2FA, exchange cryptocurrencies anonymously, make bets on Bitcoin rate and more.\n\nIn Nobody can control, block, deactivate, restrict or censor ADAMANT accounts. Users take full responsibility for their content, messages, media and intentions of using the Messenger.\n\nADAMANT is fully anonymous, your IP is hidden even from partners, and Tor version is available for those that want to take privacy to the next level. But remember, your security and anonymity are up to you. Do not follow links you receive, otherwise your IP can be compromised. Set a password on your device. Learn more about security and anonymity at https://adamant.im/staysecured/.\n\nMake sure you've saved your unique passpharse for this account — logout and login again. Write your passphrase on a sheet of paper as well. Only *you are responsible for the passphrase's safety*. It cannot be recovered. And if other person gets it, your tokens will be stolen and your correspondence will be compromised. Treat this matter with outmost importance, as if tokens in your wallet cost a billion dollars.\n\nTo Start messaging now, *get your free welcoming tokens* on Account tab. Then start a new chat and fill in your friend's ADM address. It is recommended to share your ADM address personally and via ADAMANT only.\n\nSearch Internet for ADAMANT bots' addresses. They can exchange cryptocurrencies, accept bets on crypto rates, and make wishes come true.\n\n",
@@ -49,7 +49,6 @@
     "offline": "Offline—No connection",
     "online": "Online—Connection is set"
   },
-  "error": "Error",
   "home": {
     "balance": "Balance",
     "buy_tokens_anonymously": "Anonymously on website",
@@ -82,7 +81,7 @@
     "login_button": "Login",
     "login_by_qr_code_tooltip": "Login with a passphrase that is included in a QR code file",
     "new_button": "Create new",
-    "new_passphrase_label": "<b>Save</b> the passphrase for your new wallet and account. You can use the passphrase only. If you lose it, there will be no way to recover it",
+    "new_passphrase_label": "<b>Save</b> the passphrase for your new wallet and account. You must use the passphrase only. If you lose it, there will be no way to recover it",
     "password_label": "Enter your passphrase to login",
     "save_button_tooltip": "Save your passphrase in a text file. Store it in a secure place!",
     "save_qr_code_to_images": "Save to images",
@@ -163,7 +162,7 @@
     "camera_button": "Camera",
     "close_button": "Close",
     "connect_camera": "Switch on camera and try again",
-    "hold_your_device": "Hold your device steadi for 2-3 seconds to scan the QR code",
+    "hold_your_device": "Hold your device steady for 2-3 seconds to scan the QR code",
     "login": {
       "modal_header": "Scan the QR code containg a passphrase"
     },
@@ -210,7 +209,7 @@
     "confirm_title": "Transfer confirmation",
     "crypto": "Cryptocurrency",
     "error_chat_fee": "To send {crypto} via chat, you need 0.001 ADM",
-    "error_dust_amount": "Insuffient funds to transfer",
+    "error_dust_amount": "Enter a larger sum to complete the transaction",
     "error_erc20_fee": "You need a {fee} to pay a transfer fee",
     "error_field_is_required": "Field is required",
     "error_incorrect_address": "Incorrect {crypto} wallet address",
