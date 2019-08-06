@@ -9,7 +9,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
   >
     <v-select-stub
       class="a-input"
-      items="ADM,ETH,BZ,KCS,DOGE,DASH,BNB"
+      items="ADM,ETH,BZ,KCS,DOGE,DASH,BNB,USDS"
     />
      
     <v-text-field-stub
@@ -29,6 +29,9 @@ exports[`SendFundsForm renders the correct markup 1`] = `
      
     <v-text-field-stub
       class="a-input"
+      max="9999.5"
+      min="0.01"
+      step="0.01"
       type="number"
     >
       <template>

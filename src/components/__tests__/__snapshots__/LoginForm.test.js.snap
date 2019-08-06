@@ -12,7 +12,7 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
       browser-autocomplete="current-password"
       class="text-xs-center"
       color="#BBDEFB"
-      label="Input your passphrase to login"
+      label="Enter your passphrase for login"
       type="password"
     />
      
