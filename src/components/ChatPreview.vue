@@ -16,7 +16,7 @@
 
     <v-list-tile-content>
       <v-list-tile-title
-        v-text="readOnly ? $t(contactName) : contactName"
+        v-text="isAdamantChat ? $t(contactName) : contactName"
         class="a-text-regular-enlarged-bold"
       ></v-list-tile-title>
 
@@ -166,6 +166,10 @@ export default {
       required: true
     },
     readOnly: {
+      type: Boolean,
+      default: false
+    },
+    isAdamantChat: {
       type: Boolean,
       default: false
     }
