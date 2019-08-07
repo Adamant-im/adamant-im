@@ -7,10 +7,10 @@
       flat
     />
 
-    <v-container fluid>
+    <v-container fluid class="pa-0">
       <v-layout row wrap justify-center>
 
-        <container>
+        <container padding>
 
           <!-- General -->
           <h3
@@ -154,20 +154,20 @@
                 </div>
               </v-list-tile>
 
-              <v-divider/>
+              <v-list-tile  @click="$router.push('/votes')">
+                <v-list-tile-content>
+                  <v-list-tile-title :class="`${className}__list__title`" >
+                    {{ $t('options.vote_for_delegates_button') }}
+                  </v-list-tile-title>
+                </v-list-tile-content>
+                <div>
+                  <v-list-tile-title :class="`${className}__value`">
+                    <v-icon size="20">mdi-chevron-right</v-icon>
+                  </v-list-tile-title>
+                </div>
+              </v-list-tile>
 
-            <v-list-tile  @click="$router.push('/votes')">
-              <v-list-tile-content>
-                <v-list-tile-title :class="`${className}__list__title`" >
-                  {{ $t('options.vote_for_delegates_button') }}
-                </v-list-tile-title>
-              </v-list-tile-content>
-              <div>
-                <v-list-tile-title :class="`${className}__value`">
-                  <v-icon size="20">mdi-chevron-right</v-icon>
-                </v-list-tile-title>
-              </div>
-            </v-list-tile>
+              <v-divider/>
 
               <v-list-tile  @click="logout">
                 <v-list-tile-content>
@@ -206,6 +206,7 @@ import AppToolbarCentered from '@/components/AppToolbarCentered'
 import PasswordSetDialog from '@/components/PasswordSetDialog'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import AppInterval from '@/lib/AppInterval'
+import scrollPosition from '@/mixins/scrollPosition'
 
 export default {
   computed: {
@@ -336,6 +337,7 @@ export default {
       }
     }
   },
+  mixins: [scrollPosition],
   components: {
     LanguageSwitcher,
     AppToolbarCentered,
@@ -354,6 +356,10 @@ export default {
   &__title
     padding-top: 15px
     padding-bottom: 5px
+    margin-left: -24px
+    margin-right: -24px
+    padding-left: 24px
+    padding-right: 24px
   &__version_info
     a-text-explanation()
     margin-top: 24px
@@ -374,7 +380,8 @@ export default {
     background: transparent
     padding: 0
   >>> .v-list__tile
-    padding: 0
+    padding: 0 24px
+    margin: 0 -24px
 
 /** Themes **/
 .theme--light
@@ -399,8 +406,12 @@ export default {
 @media $display-breakpoints.sm-and-down
   .settings-view
     &__title
-      margin-left: -20px
-      margin-right: -20px
-      padding-left: 20px
-      padding-right: 20px
+      margin-left: -16px
+      margin-right: -16px
+      padding-left: 16px
+      padding-right: 16px
+
+    >>> .v-list__tile
+      padding: 0 16px
+      margin: 0 -16px
 </style>

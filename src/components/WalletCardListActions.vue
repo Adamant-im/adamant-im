@@ -29,11 +29,17 @@
         <v-list-tile-title :class="`${className}__title`">{{ $t('home.free_adm_btn') }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
+
+    <buy-tokens-dialog
+      v-model="showBuyTokensDialog"
+      :adamant-address="$store.state.address"
+    />
   </v-list>
 </template>
 
 <script>
 import { Cryptos } from '@/lib/constants'
+import BuyTokensDialog from '@/components/BuyTokensDialog'
 
 export default {
   computed: {
@@ -45,6 +51,9 @@ export default {
       return this.crypto === Cryptos.ADM
     }
   },
+  data: () => ({
+    showBuyTokensDialog: false
+  }),
   methods: {
     sendFunds () {
       this.$router.push({
@@ -55,13 +64,15 @@ export default {
       })
     },
     buyTokens () {
-      const link = 'https://adamant.im/buy-tokens/?wallet=' + this.$store.state.address
-      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+      this.showBuyTokensDialog = true
     },
     getFreeTokens () {
       const link = 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
       window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
     }
+  },
+  components: {
+    BuyTokensDialog
   },
   props: {
     crypto: {

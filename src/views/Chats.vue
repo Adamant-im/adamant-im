@@ -60,6 +60,7 @@
 import ChatPreview from '@/components/ChatPreview'
 import ChatStartDialog from '@/components/ChatStartDialog'
 import ChatSpinner from '@/components/ChatSpinner'
+import scrollPosition from '@/mixins/scrollPosition'
 
 export default {
   mounted () {
@@ -129,6 +130,7 @@ export default {
         })
     }
   },
+  mixins: [scrollPosition],
   components: {
     ChatPreview,
     ChatStartDialog,

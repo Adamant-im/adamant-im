@@ -34,6 +34,10 @@
           </slot>
         </div>
 
+        <div class="a-chat__fab">
+          <slot name="fab"></slot>
+        </div>
+
       </div>
 
       <slot name="form"></slot>
@@ -48,8 +52,8 @@ import AChatMessage from './AChatMessage'
 import AChatTransaction from './AChatTransaction'
 
 const emitScroll = throttle(function () {
-  this.$emit('scroll', this.currentScrollTop)
-}, 500)
+  this.$emit('scroll', this.currentScrollTop, this.isScrolledToBottom())
+}, 200)
 
 export default {
   mounted () {
@@ -108,6 +112,31 @@ export default {
 
     scrollTo (position) {
       this.$refs.messages.scrollTop = position
+    },
+
+    /**
+     * Scroll to message by index, starting with the last.
+     */
+    scrollToMessage (index) {
+      const elements = this.$refs.messages.children
+
+      if (!elements) return
+
+      const element = elements[elements.length - 1 - index]
+
+      if (element) {
+        this.$refs.messages.scrollTop = element.offsetTop - 16
+      } else {
+        this.scrollToBottom()
+      }
+    },
+
+    isScrolledToBottom () {
+      const scrollOffset = (
+        this.$refs.messages.scrollHeight - this.$refs.messages.scrollTop - this.$refs.messages.clientHeight
+      )
+
+      return scrollOffset <= 60
     },
 
     /**

@@ -15,6 +15,7 @@ import { flushCryptoAddresses } from '@/lib/store-crypto-address'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
+import navigatorOnline from './plugins/navigatorOnline'
 import ethModule from './modules/eth'
 import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
@@ -29,6 +30,7 @@ import language from './modules/language'
 import chat from './modules/chat'
 import options from './modules/options'
 import identicon from './modules/identicon'
+import notification from './modules/notification'
 
 Vue.use(Vuex)
 
@@ -151,12 +153,13 @@ const store = {
         })
     }
   },
-  plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin, indexedDbPlugin],
+  plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin, indexedDbPlugin, navigatorOnline],
   modules: {
     eth: ethModule, // Ethereum-related data
     bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
     bz: erc20Module(Cryptos.BZ, '0x4375e7ad8a01b8ec3ed041399f62d9cd120e0063', 18),
     kcs: erc20Module(Cryptos.KCS, '0x039b5649a59967e3e936d7471f9c3700100ee1ab', 6),
+    usds: erc20Module(Cryptos.USDS, '0xa4bdb11dc0a2bec88d24a3aa1e6bb17201112ebe', 6),
     adm: admModule, // ADM transfers
     doge: dogeModule,
     dash: dashModule,
@@ -167,7 +170,8 @@ const store = {
     language,
     chat,
     options,
-    identicon
+    identicon,
+    notification
   }
 }
 

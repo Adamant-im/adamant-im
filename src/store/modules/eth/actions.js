@@ -18,13 +18,15 @@ function storeEthAddress (context) {
 }
 
 const initTransaction = (api, context, ethAddress, amount) => {
-  return {
+  const transaction = {
     from: context.state.address,
     to: ethAddress,
     value: api.fromDecimal(utils.toWei(amount)),
-    gas: api.fromDecimal(ETH_TRANSFER_GAS),
+    // gas: api.fromDecimal(ETH_TRANSFER_GAS),
     gasPrice: api.fromDecimal(context.getters.gasPrice)
   }
+  transaction.gas = '0x' + api.eth.estimateGas(transaction).toString(16)
+  return transaction
 }
 
 const parseTransaction = (context, tx) => {

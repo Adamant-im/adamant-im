@@ -13,7 +13,8 @@
           </div>
           <div
             @click="onClickAmount"
-            class="a-chat__amount a-chat__amount--clickable"
+            class="a-chat__amount"
+            :class="isClickable ? 'a-chat__amount--clickable': ''"
           >
             <v-layout align-center>
               <slot name="crypto"></slot>
@@ -56,14 +57,16 @@ export default {
         return 'mdi-clock-outline'
       } else if (this.status === 'rejected') {
         return 'mdi-close-circle-outline'
-      } else {
+      } else if (this.status === 'invalid') {
         return 'mdi-alert-outline'
+      } else if (this.status === 'unknown') {
+        return 'mdi-help-circle-outline'
       }
     },
     statusColor () {
       if (this.status === 'rejected') {
         return 'red'
-      } else if (this.status === 'invalid') {
+      } else if (this.status === 'invalid' || this.status === 'unknown') {
         return 'yellow'
       }
 
@@ -72,7 +75,9 @@ export default {
   },
   methods: {
     onClickAmount () {
-      this.$emit('click:transaction', this.id)
+      if (this.isClickable) {
+        this.$emit('click:transaction', this.id)
+      }
     }
   },
   props: {
@@ -113,7 +118,8 @@ export default {
           delivered: '',
           pending: '',
           rejected: '',
-          invalid: ''
+          invalid: '',
+          unknown: ''
         }
       })
     },
@@ -124,7 +130,11 @@ export default {
     status: {
       type: String,
       default: 'confirmed',
-      validator: v => ['delivered', 'pending', 'rejected', 'invalid'].includes(v)
+      validator: v => ['delivered', 'pending', 'rejected', 'invalid', 'unknown'].includes(v)
+    },
+    isClickable: {
+      type: Boolean,
+      default: false
     }
   }
 }

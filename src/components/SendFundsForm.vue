@@ -14,7 +14,7 @@
       />
 
       <v-text-field
-        v-model="cryptoAddress"
+        v-model.trim="cryptoAddress"
         :disabled="addressReadonly"
         class="a-input"
         type="text"
@@ -32,6 +32,9 @@
       <v-text-field
         v-model="amountString"
         class="a-input"
+        :max="maxToTransfer"
+        :min="minToTransfer"
+        :step="minToTransfer"
         type="number"
       >
         <template slot="label">
@@ -121,6 +124,7 @@
 </template>
 
 <script>
+import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
 
 import { sendMessage } from '@/lib/adamant-api'
@@ -243,13 +247,20 @@ export default {
         .minus(this.transferFee)
         .toNumber()
     },
-
     /**
      * String representation of `this.maxToTransfer`
      * @returns {string}
      */
     maxToTransferFixed () {
       return BigNumber(this.maxToTransfer).toFixed() // ??? this.exponent
+    },
+
+    /**
+     * Minimum amount to transfer
+     * @returns {number}
+     */
+    minToTransfer () {
+      return 10 ** (this.exponent * -1)
     },
 
     /**
@@ -287,15 +298,12 @@ export default {
         amount: [
           v => v > 0 || this.$t('transfer.error_incorrect_amount'),
           v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
-          v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_natural_units'),
+          v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_dust_amount'),
           v => isErc20(this.currency)
             ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
             : true
         ]
       }
-    },
-    hasComment () {
-      return this.comment.length > 0
     }
   },
   watch: {
@@ -346,7 +354,7 @@ export default {
 
           if (this.currency === Cryptos.ADM) {
             // push fast transaction if come from chat
-            if (this.address && this.hasComment) {
+            if (this.address) {
               this.pushTransactionToChat(transactionId, this.cryptoAddress)
             }
           } else { // other cryptos
@@ -359,8 +367,13 @@ export default {
           this.$emit('send', transactionId, this.currency)
         })
         .catch(err => {
-          console.error(err)
-          this.$emit('error', err.message)
+          let message = err.message
+          if (this.currency === Cryptos.DASH && get(err, 'response.data.error.code') === -26) {
+            message = this.$t('transfer.error_dust_amount')
+          } else if (this.currency === Cryptos.ETH && /Invalid JSON RPC Response/i.test(message)) {
+            message = this.$t('transfer.error_unknown')
+          }
+          this.$emit('error', message)
         })
         .finally(() => {
           this.disabledButton = false
@@ -371,9 +384,9 @@ export default {
     sendFunds () {
       if (this.currency === Cryptos.ADM) {
         let promise
-        // 1. sendMessage if come from Chat and Comment Field is not empty
+        // 1. if come from Chat then sendMessage
         // 2. else send regular transaction with `type = 0`
-        if (this.address && this.hasComment) {
+        if (this.address) {
           promise = sendMessage({
             amount: this.amount,
             message: this.comment,

@@ -15,7 +15,7 @@
     >
       <chat-toolbar :partner-id="partnerId" slot="header">
         <ChatAvatar
-          @click="showPartnerInfo"
+          @click="onClickAvatar(partnerId)"
           :user-id="partnerId"
           use-public-key
           slot="avatar-toolbar"
@@ -35,10 +35,11 @@
           :locale="locale"
           :html="true"
           :i18n="{ retry: $t('chats.retry_message') }"
+          :hide-time="isChatReadOnly"
           @resend="resendMessage(partnerId, message.id)"
         >
           <ChatAvatar
-            @click="showPartnerInfo"
+            @click="onClickAvatar(sender.id)"
             :user-id="sender.id"
             use-public-key
             slot="avatar"
@@ -61,6 +62,7 @@
           }"
           :locale="locale"
           :status="getTransactionStatus(message, partnerId)"
+          :is-clickable="isCryptoSupported(message.type)"
           @click:transaction="openTransaction(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
         >
@@ -74,6 +76,7 @@
 
       <a-chat-form
         v-if="!isChatReadOnly"
+        ref="chatForm"
         slot="form"
         @message="onMessage"
         :show-send-button="true"
@@ -86,11 +89,26 @@
           :partner-id="partnerId"
         />
       </a-chat-form>
+
+      <v-btn
+        v-if="!isScrolledToBottom"
+        @click="$refs.chat.scrollToBottom()"
+        class="ma-0 grey--text"
+        color="grey lighten-3"
+        depressed
+        fab
+        slot="fab"
+        small
+      >
+        <v-icon large>mdi-chevron-down</v-icon>
+      </v-btn>
     </a-chat>
   </v-card>
 </template>
 
 <script>
+import Visibility from 'visibilityjs'
+
 import { Cryptos } from '@/lib/constants'
 import { renderMarkdown } from '@/lib/markdown'
 
@@ -151,16 +169,40 @@ function validateMessage (message) {
 }
 
 export default {
+  created () {
+    window.addEventListener('keyup', this.onKeyPress)
+  },
+  beforeDestroy () {
+    window.removeEventListener('keyup', this.onKeyPress)
+    Visibility.unbind(this.visibilityId)
+  },
   mounted () {
     if (this.isFulfilled && this.chatPage <= 0) this.fetchChatMessages()
 
     this.scrollBehavior()
-    this.markAsRead()
+    this.$nextTick(() => {
+      this.isScrolledToBottom = this.$refs.chat.isScrolledToBottom()
+    })
+    this.visibilityId = Visibility.change((event, state) => {
+      if (state === 'visible' && this.isScrolledToBottom) this.markAsRead()
+    })
   },
   watch: {
+    // Scroll to the bottom every time window focused by desktop notification
+    '$store.state.notification.desktopAcivateClickCount' () {
+      this.$nextTick(() => {
+        this.$refs.chat.scrollToBottom()
+      })
+    },
     // scroll to bottom when received new message
-    lastMessage () {
-      this.$nextTick(() => this.$refs.chat.scrollToBottom())
+    messages () {
+      this.$nextTick(() => {
+        if (this.isScrolledToBottom) {
+          this.$refs.chat.scrollToBottom()
+        }
+
+        if (!Visibility.hidden()) this.markAsRead()
+      })
     },
     // watch `isFulfilled` when opening chat directly from address bar
     isFulfilled (value) {
@@ -205,11 +247,16 @@ export default {
     },
     scrollPosition () {
       return this.$store.getters['chat/scrollPosition'](this.partnerId)
+    },
+    numOfNewMessages () {
+      return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
     }
   },
   data: () => ({
     loading: false,
-    noMoreMessages: false
+    noMoreMessages: false,
+    isScrolledToBottom: true,
+    visibilityId: null
   }),
   methods: {
     onMessage (message) {
@@ -227,9 +274,6 @@ export default {
           console.error(err.message)
         })
     },
-    showPartnerInfo () {
-      this.$emit('partner-info', true)
-    },
     resendMessage (recipientId, messageId) {
       return this.$store.dispatch('chat/resendMessage', { recipientId, messageId })
         .catch(err => {
@@ -246,22 +290,35 @@ export default {
       this.fetchChatMessages()
     },
     onScrollBottom () {
-      //
+      this.markAsRead()
     },
-    onScroll (scrollPosition) {
+    onScroll (scrollPosition, isBottom) {
+      this.isScrolledToBottom = isBottom
+
       this.$store.commit('chat/updateScrollPosition', {
         contactId: this.partnerId,
         scrollPosition
       })
     },
+    /**
+     * @param {string} address ADAMANT address
+     */
+    onClickAvatar (address) {
+      this.$emit('click:chat-avatar', address)
+    },
     openTransaction (transaction) {
-      this.$router.push({
-        name: 'Transaction',
-        params: {
-          crypto: transaction.type,
-          txId: transaction.hash
-        }
-      })
+      if (transaction.type in Cryptos) {
+        this.$router.push({
+          name: 'Transaction',
+          params: {
+            crypto: transaction.type,
+            txId: transaction.hash
+          },
+          query: {
+            fromChat: true
+          }
+        })
+      }
     },
     isTransaction (type) {
       // @todo remove LSK when will be supported
@@ -270,6 +327,9 @@ export default {
         type === 'LSK' ||
         type === 'UNKNOWN_CRYPTO'
       )
+    },
+    isCryptoSupported (type) {
+      return type in Cryptos
     },
     formatMessage (transaction) {
       if (this.isChatReadOnly || transaction.i18n) {
@@ -299,12 +359,19 @@ export default {
     },
     scrollBehavior () {
       this.$nextTick(() => {
-        if (this.scrollPosition !== false) {
+        if (this.numOfNewMessages > 0) {
+          this.$refs.chat.scrollToMessage(this.numOfNewMessages - 1)
+        } else if (this.scrollPosition !== false) {
           this.$refs.chat.scrollTo(this.scrollPosition)
         } else {
           this.$refs.chat.scrollToBottom()
         }
+
+        this.markAsRead()
       })
+    },
+    onKeyPress (e) {
+      if (e.code === 'Enter') this.$refs.chatForm.focus()
     }
   },
   filters: {

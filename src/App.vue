@@ -20,9 +20,6 @@ export default {
     this.notifications = new Notifications(this)
     this.notifications.start()
   },
-  updated () {
-    this.notifications.update(this)
-  },
   beforeDestroy () {
     this.notifications.stop()
     AppInterval.unsubscribe()

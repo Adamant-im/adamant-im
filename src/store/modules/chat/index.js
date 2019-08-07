@@ -225,6 +225,7 @@ const getters = {
         const message = getters.lastMessage(partnerId)
 
         return {
+          timestamp: Date.now(), // give priority to new chats without messages (will be overwritten by ...message)
           ...message,
           contactId: partnerId
         }
@@ -744,6 +745,12 @@ const actions = {
     commit('pushMessage', {
       message: transactionObject,
       userId: rootState.address
+    })
+
+    // reset scroll position
+    commit('updateScrollPosition', {
+      contactId: recipientId,
+      scrollPosition: undefined
     })
 
     return transactionObject.id

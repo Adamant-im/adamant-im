@@ -20,7 +20,7 @@
           <div v-else v-text="message" class="a-chat__message-text a-text-regular-enlarged"></div>
         </div>
 
-        <div class="a-chat__message-card-header mt-1">
+        <div v-if="!hideTime" class="a-chat__message-card-header mt-1">
           <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
           <div v-if="isOutgoingMessage" class="a-chat__status">
             <v-icon
@@ -101,6 +101,10 @@ export default {
       default: () => ({
         'retry': 'Message did not sent, weak connection. Click to retry'
       })
+    },
+    hideTime: {
+      type: Boolean,
+      default: false
     }
   }
 }
