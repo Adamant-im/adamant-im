@@ -20,7 +20,7 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
       <div
         class="a-text-header"
       >
-        Waiting camera
+        Waiting for camera…
       </div>
        
       <v-progress-circular-stub
@@ -61,7 +61,7 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
           class="a-text-regular text-xs-center"
         >
           
-          Hold your device steady for 2-3 seconds towards the QR code you want to scan
+          Hold your device steady for 2-3 seconds to scan the QR code
         
         </h3>
       </v-flex-stub>

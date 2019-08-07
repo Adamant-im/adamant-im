@@ -126,12 +126,4 @@ export default {
   .app-navigation
     &.v-bottom-nav
       background-color: $shades.black
-    .v-btn--active
-      background: repeating-linear-gradient(
-        140deg,
-        #191919,
-        #191919 1px,
-        #212121 0,
-        #212121 15px
-      ) !important
 </style>

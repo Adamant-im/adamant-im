@@ -30,6 +30,7 @@ import language from './modules/language'
 import chat from './modules/chat'
 import options from './modules/options'
 import identicon from './modules/identicon'
+import notification from './modules/notification'
 
 Vue.use(Vuex)
 
@@ -169,7 +170,8 @@ const store = {
     language,
     chat,
     options,
-    identicon
+    identicon,
+    notification
   }
 }
 
