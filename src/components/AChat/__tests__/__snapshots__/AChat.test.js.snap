@@ -30,6 +30,10 @@ exports[`AChat.vue renders the correct markup 1`] = `
       <div
         class="a-chat__body-messages"
       />
+       
+      <div
+        class="a-chat__fab"
+      />
     </div>
      
   </div>

@@ -32,7 +32,7 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
       <v-text-field-stub
         class="a-input"
         label="Partner address"
-        title="Enter a partner address in the format U1234567890"
+        title="Partner's ADM address like U1234567890987654321"
       />
        
       <v-btn-stub
