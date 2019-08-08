@@ -143,6 +143,6 @@
   },
   "author": "ADAMANT Tech Labs <devs@adamant.im>",
   "license": "GPLv3",
-  "description": "Distributed chat",
+  "description": "Decentralized Messenger",
   "main": "background.js"
 }
