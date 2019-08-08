@@ -3,17 +3,17 @@ import VueI18n from 'vue-i18n'
 
 import de from './i18n/de'
 import en from './i18n/en'
-import fr from './i18n/fr'
-import it from './i18n/it'
 import ru from './i18n/ru'
 
 Vue.use(VueI18n)
 
 function loadLocaleMessages () {
   return {
-    de, en, fr, it, ru
+    de, en, ru
   }
 }
+
+VueI18n.prototype._defaultGetChoiceIndex = VueI18n.prototype.getChoiceIndex
 
 // https://kazupon.github.io/vue-i18n/guide/pluralization.html#custom-pluralization
 /**
@@ -25,6 +25,7 @@ VueI18n.prototype.getChoiceIndex = function (choice, choicesLength) {
   // this === VueI18n instance, so the locale property also exists here
   if (this.locale !== 'ru') {
     // proceed to the default implementation
+    return this._defaultGetChoiceIndex(choice, choicesLength)
   }
 
   if (choice === 0) {

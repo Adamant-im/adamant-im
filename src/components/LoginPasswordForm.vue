@@ -9,6 +9,7 @@
         :name="Date.now()"
         type="password"
         class="text-xs-center"
+        ref="passwordField"
       />
     </v-layout>
 
@@ -18,6 +19,7 @@
           <v-btn
             :disabled="!validForm || disabledButton"
             @click="submit"
+            class="login-form__button a-btn-primary"
           >
             <v-progress-circular
               v-show="showSpinner"
@@ -30,9 +32,11 @@
           </v-btn>
         </slot>
       </v-flex>
-
-      <v-flex xs12 class="mt-2">
-        <v-btn flat @click="removePassword">
+      <v-flex xs12 class="a-text-regular mt-5">
+        {{ $t('login_via_password.remove_password_hint') }}
+      </v-flex>
+      <v-flex xs12>
+        <v-btn class="a-btn-link" flat small @click="removePassword">
           {{ $t('login_via_password.remove_password') }}
         </v-btn>
       </v-flex>
@@ -55,6 +59,9 @@ export default {
       }
     }
   },
+  updated () {
+    this.$refs.passwordField.focus()
+  },
   data: () => ({
     validForm: true,
     disabledButton: false,
@@ -62,12 +69,19 @@ export default {
   }),
   methods: {
     submit () {
+      this.showSpinner = true
+      this.disabledButton = true
+
       return this.$store.dispatch('loginViaPassword', this.password)
         .then(() => {
           this.$emit('login')
         })
         .catch(() => {
           this.$emit('error', 'login_via_password.incorrect_password')
+        })
+        .finally(() => {
+          this.showSpinner = false
+          this.disabledButton = false
         })
     },
     removePassword () {
@@ -84,27 +98,3 @@ export default {
   }
 }
 </script>
-
-<style lang="css" scoped>
-/**
- * Centering input text and label.
- *
- * 1. Override `style` attribute.
- * 2. Align input text to center.
- * 3. Fix label centering after `scaleY` animation, using `transition font-size` instead.
- */
-.login-form >>> .v-label { /* [1] */
-  width: 100% !important;
-  max-width: 100% !important;
-  left: 0;
-}
-.login-form >>> .v-input input {
-  text-align: center; /* [2] */
-}
-.login-form >>> .v-input .v-label--active { /* [3] */
-  transition: font .3s ease;
-  transform: translateY(-18px);
-  -webkit-transform: translateY(-18px);
-  font-size: 12px;
-}
-</style>

@@ -1,14 +1,14 @@
 <template>
   <div :class="className">
     <div class="text-xs-center">
-      <h3 :class="`${className}__title`">{{ $t('login.create_address_label') }}</h3>
-      <v-btn @click="generatePassphrase" :class="`${className}__button`" flat small>
+      <h3 class="a-text-regular">{{ $t('login.create_address_label') }}</h3>
+      <v-btn @click="generatePassphrase" class="a-btn-link" flat small>
         {{ $t('login.new_button') }}
       </v-btn>
     </div>
 
     <transition name="slide-fade">
-      <div v-if="showPassphrase">
+      <div :class="`${className}__box`" v-if="showPassphrase">
         <div
           v-html="$t('login.new_passphrase_label')"
           class="caption grey--text mt-2"
@@ -20,7 +20,7 @@
           type="text"
           multi-line
           readonly
-          rows="2"
+          rows="3"
           class="pt-0"
           color="grey"
           no-resize
@@ -63,13 +63,13 @@
 
     <QrcodeRendererDialog
       v-model="showQrcodeRendererDialog"
-      :passphrase="passphrase"
+      :text="passphrase"
     />
   </div>
 </template>
 
 <script>
-import Mnemonic from 'bitcore-mnemonic'
+import * as bip39 from 'bip39'
 
 import { copyToClipboard, downloadFile } from '@/lib/textHelpers'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
@@ -113,9 +113,14 @@ export default {
         .select()
     },
     generatePassphrase () {
-      this.passphrase = new Mnemonic(Mnemonic.Words.ENGLISH).toString()
+      this.passphrase = bip39.generateMnemonic()
 
       this.showPassphrase = true
+
+      // callback after Vue rerender
+      setTimeout(() => {
+        this.$scrollTo(this.$refs.textarea.$el, { easing: 'ease-in' })
+      }, 0)
     }
   },
   components: {
@@ -130,33 +135,35 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_variables.styl'
+@import '../assets/stylus/settings/_colors.styl'
+@import '../assets/stylus/themes/adamant/_mixins.styl'
 
 /**
- * 1. Blur icons when focus textarea.
+ * 1. Change color icons when focus textarea.
+ * 2. Remove textarea border bottom.
  */
 .passphrase-generator
-  &__title
-    font-size: 14px
-    font-weight: 300
-  &__button
-    font-size: 16px
-    font-weight: 500
-    text-decoration: underline
-    text-transform: unset
+  &__box
+    margin-top: 30px
+    >>> .v-textarea textarea
+      a-text-regular()
+    >>> .v-textarea
+      .v-input__slot:before, .v-input__slot:after
+        border-width: 0 // [2]
+
   &__icons
+    margin-top: 10px
+
     > *:not(:first-child)
       margin-left: 8px
-  .v-input--is-focused
-    .v-icon
-      opacity: 0.3 // [1]
+
+  >>> .v-input--is-focused
+    .v-icon .svg-icon
+      fill: $adm-colors.regular
 
 /** Themes **/
 .theme--light
   .passphrase-generator
-    &__title, &__button
-      color: $grey.darken-3
-.theme--dark
-  .passphrase-generator
-    &__title, &__button
-      color: $shades.white
+    >>> .v-textarea textarea
+      color: $adm-colors.regular
 </style>

@@ -20,8 +20,7 @@ Vue.component('container', Container)
  */
 function mockupStore () {
   const actions = {
-    reset: jest.fn(),
-    logout: jest.fn()
+    reset: jest.fn()
   }
 
   const chat = {
@@ -34,28 +33,16 @@ function mockupStore () {
     namespaced: true
   }
 
-  const options = {
-    state: {
-      logoutOnTabClose: false
-    },
-    mutations: {
-      updateOption: jest.fn()
-    },
-    namespaced: true
-  }
-
   const store = new Vuex.Store({
     actions,
     modules: {
-      chat,
-      options
+      chat
     }
   })
 
   return {
     store,
     chat,
-    options,
     actions
   }
 }
@@ -65,7 +52,6 @@ describe('AppNavigation.vue', () => {
   let store = null
   let actions = null
   let chat = null
-  let options = null
 
   beforeEach(() => {
     // mockup chat module
@@ -73,7 +59,6 @@ describe('AppNavigation.vue', () => {
     store = vuex.store
     actions = vuex.actions
     chat = vuex.chat
-    options = vuex.options
 
     // mockup i18n
     i18n = mockupI18n()
@@ -111,27 +96,6 @@ describe('AppNavigation.vue', () => {
     expect(Array.isArray(vm.pages)).toBe(true)
     expect(vm.currentPageIndex).toBe(0)
     expect(vm.showNav).toBe(true)
-  })
-
-  it('should cause mutations in store & call $router.push("/") when logout()', async () => {
-    const wrapper = shallowMount(AppNavigation, {
-      store,
-      i18n,
-      mocks: {
-        $route: {
-          'path': '/home'
-        },
-        $router: {
-          push: jest.fn()
-        }
-      }
-    })
-
-    const promise = wrapper.vm.logout()
-
-    await expect(promise).resolves.toEqual(undefined) // clearDb
-    expect(actions.logout).toHaveBeenCalled()
-    expect(wrapper.vm.$router.push).toHaveBeenCalledWith('/')
   })
 
   it('should return indexOf current page depending on the $route.path', () => {

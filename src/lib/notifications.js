@@ -2,19 +2,18 @@
 
 import Notify from 'notifyjs'
 import Visibility from 'visibilityjs'
+import currency from '@/filters/currency'
+import { removeFormats } from '@/lib/markdown'
+
+let _this
 
 class Notification {
   constructor (ctx) {
+    _this = ctx
     this.i18n = ctx.$i18n
-    this.route = ctx.$route
+    this.router = ctx.$router
     this.store = ctx.$store
     this.interval = null
-  }
-  // Returns true once message appeared in chat
-  get messageAppeared () {
-    return this.route.name === 'Chat' &&
-      this.route.params.partnerId && this.partnerAddress &&
-      this.route.params.partnerId === this.partnerAddress
   }
   get lastUnread () {
     return this.store.getters['chat/lastUnreadMessage']
@@ -45,11 +44,19 @@ class Notification {
 class PushNotification extends Notification {
   constructor (ctx) {
     super(ctx)
-    this.options = {
-      body: null,
-      tag: null,
-      timeout: 5
+    this.tag = null
+  }
+  get messageBody () {
+    let message
+    if (this.lastUnread.type !== 'message') {
+      message = `${this.i18n.t('chats.received_label')} ${currency(this.lastUnread.amount, this.lastUnread.type)}`
+    } else {
+      message = this.lastUnread.message
     }
+    return `${this.partnerIdentity}: ${removeFormats(message)}`
+  }
+  increaseCounter () {
+    this.store.commit('notification/increaseDesktopAcivateClickCount')
   }
   notify (messageArrived) {
     try {
@@ -60,13 +67,25 @@ class PushNotification extends Notification {
             if (this.lastUnread) {
               const tag = this.lastUnread.id
               // Message not shown yet
-              if (tag !== this.options.tag) {
-                this.options = {
-                  body: `${this.partnerIdentity}: ${this.lastUnread.message}`,
-                  tag
-                }
-                const notification = new Notify(this.i18n.t('app_title'), this.options)
+              if (tag !== this.tag) {
+                const notification = new Notify(this.i18n.t('app_title'), {
+                  body: this.messageBody,
+                  closeOnClick: true,
+                  icon: '/img/icons/android-chrome-192x192.png',
+                  notifyClick: () => {
+                    if (_this.$route.name !== 'Chat') {
+                      this.router.push({
+                        name: 'Chat',
+                        params: { partnerId: this.partnerAddress }
+                      })
+                    } else this.increaseCounter()
+                    window.focus()
+                  },
+                  tag,
+                  timeout: 5
+                })
                 notification.show()
+                this.tag = tag
               }
             }
           }
@@ -114,7 +133,7 @@ class TabNotification extends Notification {
     this.showAmount = true
   }
   notify () {
-    if (this.unreadAmount > 0 && (this.lastUnread || this.tabHidden)) {
+    if (this.unreadAmount > 0 && this.lastUnread && this.tabHidden) {
       if (!this.interval) {
         this.showAmount = true
         this.start()
@@ -165,9 +184,6 @@ export default class extends Notification {
       if (this.tabAllowed) {
         this.tab.notify()
       }
-      if (!this.tabHidden && this.messageAppeared) {
-        this.store.commit('chat/markAsRead', this.partnerAddress)
-      }
       this.prevAmount = this.unreadAmount
     }, 3e3)
   }
@@ -177,8 +193,5 @@ export default class extends Notification {
       this.interval = null
       this.tab.stop()
     }
-  }
-  update (ctx) {
-    this.route = ctx.$route
   }
 }

@@ -1,21 +1,31 @@
 <template>
-  <v-layout row wrap justify-center class="home-page">
+  <v-layout row wrap justify-center :class="className">
 
     <container>
 
-      <v-card flat class="transparent white--text">
+      <v-card flat class="transparent white--text" :class="`${className}__card`">
 
         <!-- Wallets -->
-        <v-card class="home-page__wallets">
-          <v-tabs grow slider-color="white">
+        <v-card :class="`${className}__wallets`" flat>
+          <v-tabs
+            v-model="currentWallet"
+            grow
+            ref="vtabs"
+            show-arrows
+          >
             <v-tab
               v-for="wallet in wallets"
+              :href="`#${wallet.cryptoCurrency}`"
               :key="wallet.cryptoCurrency"
+              @wheel="onWheel"
             >
               <div>
-                <icon :width="36" :height="36" fill="#BDBDBD" slot="icon" class="mb-2">
-                  <component :is="wallet.icon"/>
-                </icon>
+                <crypto-icon
+                  :crypto="wallet.cryptoCurrency"
+                  size="medium"
+                  slot="icon"
+                  :class="`${className}__icon`"
+                />
                 <div>{{ wallet.balance | numberFormat(4) }}</div>
                 <div>{{ wallet.cryptoCurrency }}</div>
               </div>
@@ -23,6 +33,7 @@
 
             <v-tab-item
               v-for="wallet in wallets"
+              :value="wallet.cryptoCurrency"
               :key="wallet.cryptoCurrency"
             >
               <wallet-card
@@ -32,9 +43,11 @@
                 :crypto-name="wallet.cryptoName"
                 @click:balance="goToTransactions"
               >
-                <icon :width="125" :height="125" fill="#BDBDBD" slot="icon">
-                  <component :is="wallet.icon"/>
-                </icon>
+                <crypto-icon
+                  :crypto="wallet.cryptoCurrency"
+                  size="large"
+                  slot="icon"
+                />
               </wallet-card>
             </v-tab-item>
           </v-tabs>
@@ -49,53 +62,64 @@
 
 <script>
 import WalletCard from '@/components/WalletCard'
-import Icon from '@/components/icons/BaseIcon'
-import AdmFillIcon from '@/components/icons/AdmFill'
-import BnbFillIcon from '@/components/icons/BnbFill'
-import EthFillIcon from '@/components/icons/EthFill'
-import BnzFillIcon from '@/components/icons/BnzFill'
-import DogeFillIcon from '@/components/icons/DogeFill'
+import CryptoIcon from '@/components/icons/CryptoIcon'
+
+import { Cryptos, CryptosNames } from '@/lib/constants'
+
+/**
+ * Center VTab element on click.
+ *
+ * @override vuetify.VTabs.methods.scrollIntoView()
+ */
+function scrollIntoView () {
+  if (!this.activeTab) return
+  if (!this.isOverflowing) return (this.scrollOffset = 0)
+
+  const totalWidth = this.widths.wrapper + this.scrollOffset
+  const { clientWidth, offsetLeft } = this.activeTab.$el
+
+  const scrollOffset = this.scrollOffset - (totalWidth - offsetLeft - clientWidth / 2 - this.widths.wrapper / 2)
+
+  if (scrollOffset <= 0) {
+    this.scrollOffset = 0
+  } else if (scrollOffset >= this.widths.container - this.widths.wrapper) {
+    this.scrollOffset = this.widths.container - this.widths.wrapper
+  } else {
+    this.scrollOffset = scrollOffset
+  }
+}
 
 export default {
+  mounted () {
+    this.$refs.vtabs.scrollIntoView = scrollIntoView
+  },
   computed: {
+    className: () => 'account-view',
     wallets () {
-      return [
-        {
-          address: this.$store.state.address,
-          balance: this.$store.state.balance,
-          cryptoCurrency: 'ADM',
-          cryptoName: 'ADAMANT',
-          icon: 'adm-fill-icon'
-        },
-        {
-          address: this.$store.state.bnb.address,
-          balance: this.$store.state.bnb.balance,
-          cryptoCurrency: 'BNB',
-          cryptoName: 'Binance Coin',
-          icon: 'bnb-fill-icon'
-        },
-        {
-          address: this.$store.state.eth.address,
-          balance: this.$store.state.eth.balance,
-          cryptoCurrency: 'ETH',
-          cryptoName: 'Ethereum',
-          icon: 'eth-fill-icon'
-        },
-        {
-          address: this.$store.state.bz.address,
-          balance: this.$store.state.bz.balance,
-          cryptoCurrency: 'BZ',
-          cryptoName: 'Bit-Z',
-          icon: 'bnz-fill-icon'
-        },
-        {
-          address: this.$store.state.doge.address,
-          balance: this.$store.state.doge.balance,
-          cryptoCurrency: 'DOGE',
-          cryptoName: 'DOGE',
-          icon: 'doge-fill-icon'
+      return Object.keys(Cryptos).map(crypto => {
+        const state = this.$store.state
+        const key = crypto.toLowerCase()
+        const address = crypto === Cryptos.ADM ? state.address : state[key].address
+        const balance = crypto === Cryptos.ADM ? state.balance : state[key].balance
+
+        return {
+          address,
+          balance,
+          cryptoCurrency: crypto,
+          cryptoName: CryptosNames[crypto]
         }
-      ]
+      })
+    },
+    currentWallet: {
+      get () {
+        return this.$store.state.options.currentWallet
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'currentWallet',
+          value
+        })
+      }
     }
   },
   methods: {
@@ -106,38 +130,92 @@ export default {
           crypto
         }
       })
+    },
+    onWheel (e) {
+      const currentWallet = this.wallets.find(wallet => wallet.cryptoCurrency === this.currentWallet)
+      const currentWalletIndex = this.wallets.indexOf(currentWallet)
+
+      const nextWalletIndex = e.deltaY < 0 ? currentWalletIndex + 1 : currentWalletIndex - 1
+      const nextWallet = this.wallets[nextWalletIndex]
+
+      if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
     }
   },
   components: {
     WalletCard,
-    Icon,
-    AdmFillIcon,
-    BnbFillIcon,
-    EthFillIcon,
-    BnzFillIcon,
-    DogeFillIcon
+    CryptoIcon
   }
 }
 </script>
 
 <style lang="stylus" scoped>
+@import '~vuetify/src/stylus/settings/_variables.styl'
 @import '~vuetify/src/stylus/settings/_colors.styl'
+@import '../assets/stylus/settings/_colors.styl'
 
 /**
  * 1. Reset VTabs container fixed height.
+ * 2. Reset VTabItem opacity.
  */
-.home-page__wallets >>> .v-tabs__container
-  height: auto // [1]
+.account-view
+  &__wallets
+    &.v-card
+      background-color: transparent
+    >>> .v-tabs__container
+      height: auto // [1]
+    >>> .v-tabs__slider
+      height: 2px
+    >>> .v-tabs__wrapper
+      padding: 10px 0px 1px 0px
+      margin-bottom: 10px
+    >>> .v-tabs__item
+      font-weight: 300
+    >>> .v-tabs__item--active
+      font-weight: 500
+    >>> .v-tabs__item:not(.v-tabs__item--active) // [2]
+      opacity: 1
+    >>> .v-tabs__div
+      font-size: 16px
+  &__icon
+    margin-bottom: 3px
 
 /** Themes **/
 .theme--light
-  .action-list
-    &__icon
-      background-color: $grey.lighten-1
-      color: $shades.white
+  .account-view
+    &__wallets
+      >>> .v-tabs__bar
+        background-color: $adm-colors.secondary2-transparent
+      >>> .v-tabs__slider
+        background-color: $adm-colors.primary !important
+      >>> .v-tabs__item
+        color: $adm-colors.regular
+      >>> .v-tabs__icon
+        color: $adm-colors.primary2
+        pointer-events: none
+      >>> .v-tabs__wrapper--show-arrows
+        margin-left: 0
+        margin-right: 0
+      >>> .v-tabs__item--active
+        color: $adm-colors.primary
+        .svg-icon
+          fill: $adm-colors.primary
 .theme--dark
-  .action-list
-    &__icon
-      background-color: $grey.darken-3
-      color: $shades.white
+  .account-view
+    &__wallets
+      >>> .v-tabs__bar
+        background-color: transparent
+      >>> .v-tabs__slider
+        background-color: $adm-colors.primary !important
+      >>> .v-tabs__icon
+        color: $adm-colors.primary2
+        pointer-events: none
+      >>> .v-tabs__wrapper--show-arrows
+        margin-left: 0
+        margin-right: 0
+      >>> .v-tabs__item
+        color: $shades.white
+      >>> .v-tabs__item--active
+        color: $adm-colors.primary
+        .svg-icon
+          fill: $adm-colors.primary
 </style>

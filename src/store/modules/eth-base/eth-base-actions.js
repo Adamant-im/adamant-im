@@ -7,7 +7,9 @@ import * as utils from '../../../lib/eth-utils'
 import { getTransactions } from '../../../lib/eth-index'
 
 /** Max number of attempts to retrieve the transaction details */
-const MAX_ATTEMPTS = 150
+const MAX_ATTEMPTS = 5
+const NEW_TRANSACTION_TIMEOUT = 60
+const OLD_TRANSACTION_TIMEOUT = 5
 
 const CHUNK_SIZE = 25
 
@@ -121,11 +123,43 @@ export default function createActions (config) {
               timestamp: Date.now(),
               gasPrice: ethTx.gasPrice
             }])
-            context.dispatch('getTransaction', { hash, isNew: true, direction: 'from' })
+            context.dispatch('getTransaction', { hash, isNew: true, direction: 'from', force: true })
 
             return hash
           }
         })
+    },
+
+    /**
+     * Retrieves block info: timestamp.
+     * @param {any} context Vuex action context
+     * @param {{ attempt: Number, blockNumber: Number, hash: String }} payload action payload
+     */
+    getBlock (context, payload) {
+      const transaction = context.state.transactions[payload.hash]
+      if (!transaction) return
+
+      const supplier = () => api.eth.getBlock.request(payload.blockNumber, (err, block) => {
+        if (!err && block) {
+          context.commit('transactions', [{
+            hash: transaction.hash,
+            timestamp: block.timestamp * 1000
+          }])
+        }
+        if (!block && payload.attempt === MAX_ATTEMPTS) {
+          // Give up, if transaction could not be found after so many attempts
+          context.commit('transactions', [{ hash: transaction.hash, status: 'ERROR' }])
+        } else if (err || !block) {
+          // In case of an error or a pending transaction fetch its receipt once again later
+          // Increment attempt counter, if no transaction was found so far
+          const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
+
+          const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
+          setTimeout(() => context.dispatch('getBlock', newPayload), timeout * 1000)
+        }
+      })
+
+      queue.enqueue('block:' + payload.blockNumber, supplier)
     },
 
     /**
@@ -135,7 +169,7 @@ export default function createActions (config) {
      */
     getTransaction (context, payload) {
       const existing = context.state.transactions[payload.hash]
-      if (existing && existing.status !== 'PENDING' && !payload.force) return
+      if (existing && !payload.force) return
 
       // Set a stub so far
       if (!existing || existing.status === 'ERROR') {
@@ -153,7 +187,10 @@ export default function createActions (config) {
         if (!err && tx && tx.input) {
           let transaction = parseTransaction(context, tx)
           if (transaction) {
-            context.commit('transactions', [transaction])
+            context.commit('transactions', [{
+              ...transaction,
+              status: 'PENDING'
+            }])
 
             // Fetch receipt details: status and actual gas consumption
             const { attempt, ...receiptPayload } = payload
@@ -166,8 +203,14 @@ export default function createActions (config) {
         } else if (err || !tx) {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far
-          const newPayload = tx ? payload : { ...payload, attempt: 1 + (payload.attempt || 0) }
-          context.dispatch('getTransaction', newPayload)
+          const newPayload = tx ? payload : {
+            ...payload,
+            attempt: 1 + (payload.attempt || 0),
+            force: true
+          }
+
+          const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
+          setTimeout(() => context.dispatch('getTransaction', newPayload), timeout * 1000)
         }
       })
 
@@ -190,8 +233,15 @@ export default function createActions (config) {
           context.commit('transactions', [{
             hash: payload.hash,
             fee: utils.calculateFee(tx.gasUsed, gasPrice),
-            status: tx.status ? 'SUCCESS' : 'ERROR'
+            status: Number(tx.status) ? 'SUCCESS' : 'ERROR',
+            blockNumber: tx.blockNumber
           }])
+
+          context.dispatch('getBlock', {
+            ...payload,
+            attempt: 0,
+            blockNumber: tx.blockNumber
+          })
         }
         if (!tx && payload.attempt === MAX_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
@@ -200,7 +250,9 @@ export default function createActions (config) {
           // In case of an error or a pending transaction fetch its receipt once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
-          context.dispatch('getTransactionReceipt', newPayload)
+
+          const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
+          setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), timeout * 1000)
         }
       })
 
@@ -208,7 +260,7 @@ export default function createActions (config) {
     },
 
     getNewTransactions (context, payload) {
-      const { address, maxHeight, contractAddress } = context.state
+      const { address, maxHeight, contractAddress, decimals } = context.state
 
       const from = maxHeight > 0 ? maxHeight + 1 : 0
       const limit = from ? undefined : CHUNK_SIZE
@@ -217,7 +269,8 @@ export default function createActions (config) {
         address,
         contract: contractAddress,
         from,
-        limit
+        limit,
+        decimals
       }
 
       context.commit('areRecentLoading', true)
@@ -238,12 +291,13 @@ export default function createActions (config) {
       // If we already have the most old transaction for this address, no need to request anything
       if (context.state.bottomReached) return Promise.resolve()
 
-      const { address, contractAddress: contract, minHeight } = context.state
+      const { address, contractAddress: contract, minHeight, decimals } = context.state
 
       const options = {
         limit: CHUNK_SIZE,
         address,
-        contract
+        contract,
+        decimals
       }
       if (minHeight > 1) {
         options.to = minHeight - 1

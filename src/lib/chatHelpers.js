@@ -3,7 +3,30 @@ import Queue from 'promise-queue'
 import utils from '@/lib/adamant'
 import * as admApi from '@/lib/adamant-api'
 import { isNumeric } from './numericHelpers'
-import { TransactionStatus as TS } from './constants'
+import { TransactionStatus as TS, Cryptos } from './constants'
+
+/**
+ * Maps crypto transfer transaction types to the respective cryptos.
+ * E.g.:
+```
+{
+  'eth_transaction': 'ETH',
+  'bnb_transaction': 'BNB'
+}
+```
+ */
+const KnownCryptos = Object.keys(Cryptos).reduce((map, crypto) => {
+  if (crypto !== Cryptos.ADM) {
+    const key = `${crypto.toLowerCase()}_transaction`
+    map[key] = crypto
+  }
+  return map
+}, { })
+
+/** Cryptos, supported by other clients, but not PWA */
+const UnsupportedCryptos = {
+  lsk_transaction: 'LSK'
+}
 
 const maxConcurent = 1
 const maxQueue = Infinity
@@ -74,7 +97,8 @@ export function getChats (startHeight = 0, startOffset = 0, recursive = true) {
 export function createChat () {
   return {
     messages: [],
-    numOfNewMessages: 0
+    numOfNewMessages: 0,
+    scrollPosition: undefined
   }
 }
 
@@ -153,17 +177,7 @@ export function getRealTimestamp (admTimestamp) {
  * @returns {Message} See `components/AChat/types.ts`
  */
 export function transformMessage (abstract) {
-  let transaction = {}
-  const knownCryptos = {
-    eth_transaction: 'ETH',
-    bz_transaction: 'BZ',
-    bnb_transaction: 'BNB',
-    doge_transaction: 'DOGE'
-  }
-  const notSupportedYetCryptos = {
-    lsk_transaction: 'LSK',
-    dash_transaction: 'DASH'
-  }
+  const transaction = {}
 
   // common properties for all transaction types
   transaction.id = abstract.id
@@ -186,13 +200,13 @@ export function transformMessage (abstract) {
     transaction.hash = abstract.message.hash || ''
 
     const cryptoType = abstract.message.type.toLowerCase()
-    const knownCrypto = knownCryptos[cryptoType]
-    const notSupportedYetCrypto = notSupportedYetCryptos[cryptoType]
+    const knownCrypto = KnownCryptos[cryptoType]
+    const notSupportedYetCrypto = UnsupportedCryptos[cryptoType]
     if (knownCrypto) {
       transaction.type = knownCrypto
     } else {
       transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
-      transaction.status = TS.INVALID
+      transaction.status = TS.UNKNOWN
     }
   } else { // ADM transaction or Message
     transaction.message = abstract.message || ''

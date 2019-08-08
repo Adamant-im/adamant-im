@@ -8,7 +8,7 @@
           :label="$t('login.password_label')"
           browser-autocomplete="current-password"
           class="text-xs-center"
-          color="grey"
+          color="#BBDEFB"
           type="password"
         />
       </slot>
@@ -20,7 +20,7 @@
       <slot name="button">
         <v-btn
           :disabled="!validForm || disabledButton"
-          class="login-button v-btn--primary"
+          class="login-form__button a-btn-primary"
           @click="submit"
         >
           <v-progress-circular
@@ -44,6 +44,8 @@
 </template>
 
 <script>
+import { validateMnemonic } from 'bip39'
+
 export default {
   computed: {
     passphrase: {
@@ -62,15 +64,15 @@ export default {
   }),
   methods: {
     submit () {
-      if (!this.$refs.form.validate()) return false
+      if (!validateMnemonic(this.passphrase)) {
+        return this.$emit('error', 'login.invalid_passphrase')
+      }
 
       this.freeze()
       this.login()
     },
     login () {
-      const passphrase = this.passphrase.toLowerCase().trim()
-
-      const promise = this.$store.dispatch('login', passphrase)
+      const promise = this.$store.dispatch('login', this.passphrase)
 
       promise
         .then(() => {
@@ -102,30 +104,3 @@ export default {
   }
 }
 </script>
-
-<style lang="stylus" scoped>
-/**
- * Centering input text and label.
- *
- * 1. Override `style` attribute.
- * 2. Align input text to center.
- * 3. Fix label centering after `scaleY` animation, using `transition font-size` instead.
- */
-.login-form >>> .v-label { /* [1] */
-  width: 100% !important;
-  max-width: 100% !important;
-  left: 0;
-}
-.login-form >>> .v-input input {
-  text-align: center; /* [2] */
-}
-.login-form >>> .v-input .v-label--active { /* [3] */
-  transition: font .3s ease;
-  transform: translateY(-18px);
-  -webkit-transform: translateY(-18px);
-  font-size: 12px;
-}
-
-.login-button
-  min-width: 126px
-</style>

@@ -1,6 +1,10 @@
 <template>
-  <div @click="$emit('click')" :style="isClickable ? 'cursor:pointer' : ''">
-    <img class="chat-avatar" v-if="avatar" :src="avatar" :width="size" :height="size"/>
+  <div
+    @click="$emit('click')"
+    :class="classes"
+    :style="styles"
+  >
+    <img v-if="avatar" :src="avatar" :width="size" :height="size"/>
     <canvas
       :width="canvasSize"
       :height="canvasSize"
@@ -20,6 +24,19 @@ export default {
     this.getAvatar()
   },
   computed: {
+    className: () => 'chat-avatar',
+    classes () {
+      return [
+        this.className,
+        { [`${this.className}--clickable`]: this.isClickable }
+      ]
+    },
+    styles () {
+      return {
+        width: `${this.size}px`,
+        height: `${this.size}px`
+      }
+    },
     avatar () {
       return this.$store.getters['identicon/avatar'](this.userId)
     },
@@ -86,3 +103,9 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.chat-avatar
+  &--clickable
+    cursor: pointer
+</style>

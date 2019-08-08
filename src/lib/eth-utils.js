@@ -1,4 +1,4 @@
-import Mnemonic from 'bitcore-mnemonic'
+import * as bip39 from 'bip39'
 import hdkey from 'hdkey'
 import Web3 from 'web3'
 import { BN, bufferToHex, privateToAddress } from 'ethereumjs-util'
@@ -28,8 +28,7 @@ export function toWei (eth) {
  * @returns {{address: String, privateKey: Buffer}}
  */
 export function getAccountFromPassphrase (passphrase) {
-  const mnemonic = new Mnemonic(passphrase, Mnemonic.Words.ENGLISH)
-  const seed = mnemonic.toSeed()
+  const seed = bip39.mnemonicToSeedSync(passphrase)
   const privateKey = hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey
 
   return {

@@ -1,5 +1,5 @@
 {
-  "minApiVersion": "0.3.1",
+  "minApiVersion": "0.5.0",
   "server": {
     "adm": [
       {
@@ -20,6 +20,9 @@
     ],
     "doge": [
       { "url": "https://dogenode1.adamant.im/api/" }
+    ],
+    "dash": [
+      { "url": "https://dashnode1.adamant.im" }
     ]
   },
   "env": "production"

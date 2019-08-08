@@ -5,7 +5,7 @@ import Chats from './stores/Chats'
 import Security from './stores/Security'
 
 /** Modules that will be stored in IDB **/
-const modules = ['adm', 'eth', 'doge', 'bnb', 'bz', 'partners', 'delegates']
+const modules = ['adm', 'eth', 'doge', 'bnb', 'bz', 'dash', 'kcs', 'usds', 'partners', 'delegates']
 
 /**
  * Clone modules from state.

@@ -1,15 +1,24 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 import i18n from '@/i18n'
+import { isCurrentWeek, isToday, isYesterday } from './helpers'
 
 export default (timestamp) => {
-  const date = moment(timestamp)
+  const date = dayjs(timestamp)
 
-  if (date.isValid()) {
-    return date.calendar(null, {
-      sameDay: `[${i18n.t('chats.date_today')}], HH:mm`,
-      lastDay: `[${i18n.t('chats.date_yesterday')}], HH:mm`,
-      lastWeek: 'ddd, HH:mm',
-      sameElse: 'MMM DD, YYYY, HH:mm'
-    })
-  } else return '' // Replace 'Invalid date' with empty string
+  if (isToday(new Date(timestamp))) {
+    return date.format(`[${i18n.t('chats.date_today')}], HH:mm`)
+  } else if (isYesterday(new Date(timestamp))) {
+    return date.format(`[${i18n.t('chats.date_yesterday')}], HH:mm`)
+  } else if (isCurrentWeek(new Date(timestamp))) {
+    return date.format('ddd, HH:mm')
+  } else {
+    const currentYear = (new Date()).getFullYear()
+    const messageYear = (new Date(timestamp)).getFullYear()
+
+    if (currentYear === messageYear) {
+      return date.format('MMM DD, HH:mm')
+    } else {
+      return date.format('MMM DD, YYYY, HH:mm')
+    }
+  }
 }

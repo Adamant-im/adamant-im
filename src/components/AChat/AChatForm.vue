@@ -1,5 +1,5 @@
 <template>
-  <div class="a-chat__form">
+  <div :class="classes">
     <v-divider v-if="showDivider" class="a-chat__divider"/>
     <v-textarea
       v-model="message"
@@ -10,27 +10,44 @@
       auto-grow
       ref="messageTextarea"
       rows="1"
-
-      :append-icon="showSendButton ? 'mdi-send' : ''"
-      @click:append="submitMessage"
     >
+      <template v-if="showSendButton" slot="append">
+        <v-icon medium>mdi-send</v-icon>
+      </template>
       <template slot="prepend">
         <slot name="prepend"></slot>
       </template>
     </v-textarea>
+
+    <div
+      v-if="showSendButton"
+      @click="submitMessage"
+      class="a-chat__form-send-area"
+    ></div>
   </div>
 </template>
 
 <script>
 export default {
   computed: {
+    className: () => 'a-chat',
+    classes () {
+      return [
+        `${this.className}__form`,
+        {
+          [`${this.className}__form--is-active`]: !!this.message
+        }
+      ]
+    },
     /**
      * Processing `ctrl+enter`, `shift + enter` and `enter`
      */
     listeners () {
       return {
-        keydown: (e) => {
-          if (e.code === 'Enter') {
+        keypress: (e) => {
+          // on some devices keyCode for CTRL+ENTER is 10
+          // https://bugs.chromium.org/p/chromium/issues/detail?id=79407
+          if (e.keyCode === 13 || e.keyCode === 10) { // Enter || Ctrl+Enter
             if (this.sendOnEnter) {
               // add LF and calculate height when CTRL+ENTER or ALT+ENTER or CMD+ENTER (Mac & Windows)
               // no need to add LF for shiftKey, it will be added automatically
@@ -64,12 +81,16 @@ export default {
       this.message = ''
       // Fix textarea height to 1 row after miltiline message send
       this.calculateInputHeight()
+      this.focus()
     },
     calculateInputHeight () {
       this.$nextTick(this.$refs.messageTextarea.calculateInputHeight)
     },
     addLineFeed () {
       this.message += '\n'
+    },
+    focus () {
+      this.$refs.messageTextarea.focus()
     }
   },
   props: {
@@ -118,4 +139,12 @@ export default {
   top: 0
   left: 0
   width: 100%
+
+.a-chat__form-send-area
+  position: absolute
+  bottom: 0
+  right: 0
+  width: 50px
+  height: 50px
+  cursor: pointer
 </style>

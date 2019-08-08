@@ -5,7 +5,7 @@ import initialState from './partners-state'
 export default {
   /** Resets module state */
   reset (state) {
-    resetState(state, initialState)
+    resetState(state, initialState())
   },
 
   /**

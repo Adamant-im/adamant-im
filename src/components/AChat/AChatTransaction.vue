@@ -5,33 +5,32 @@
   >
     <div
       class="a-chat__message"
-      :class="{
-        'a-chat__message--red': sender.id === userId,
-        'a-chat__message--green': sender.id !== userId
-      }"
     >
       <div class="a-chat__message-card">
         <div>
-          <div>
+          <div class="a-chat__direction a-text-regular-bold">
             {{ sender.id === userId ? i18n.sent : i18n.received }}
           </div>
           <div
             @click="onClickAmount"
-            class="a-chat__amount my-1"
-            :class="{ 'a-chat__amount--clickable': isStatusValid }"
+            class="a-chat__amount"
+            :class="isClickable ? 'a-chat__amount--clickable': ''"
           >
-            {{ amount }}
+            <v-layout align-center>
+              <slot name="crypto"></slot>
+              <span class="ml-2">{{ amount }}</span>
+            </v-layout>
           </div>
         </div>
 
         <div class="a-chat__message-card-body">
-          <div class="a-chat__message-text font-italic mb-1">
+          <div class="a-chat__message-text mb-1 a-text-regular-enlarged">
             {{ message }}
           </div>
         </div>
 
         <div class="a-chat__message-card-header">
-          <div :title="timeTitle" class="a-chat__timestamp font-italic">{{ time }}</div>
+          <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
           <div class="a-chat__status">
             <v-icon
               size="15"
@@ -58,26 +57,25 @@ export default {
         return 'mdi-clock-outline'
       } else if (this.status === 'rejected') {
         return 'mdi-close-circle-outline'
-      } else {
+      } else if (this.status === 'invalid') {
         return 'mdi-alert-outline'
+      } else if (this.status === 'unknown') {
+        return 'mdi-help-circle-outline'
       }
     },
     statusColor () {
       if (this.status === 'rejected') {
         return 'red'
-      } else if (this.status === 'invalid') {
+      } else if (this.status === 'invalid' || this.status === 'unknown') {
         return 'yellow'
       }
 
       return ''
-    },
-    isStatusValid () {
-      return this.status !== 'invalid'
     }
   },
   methods: {
     onClickAmount () {
-      if (this.isStatusValid) {
+      if (this.isClickable) {
         this.$emit('click:transaction', this.id)
       }
     }
@@ -111,10 +109,6 @@ export default {
       type: [Number, String],
       default: 0
     },
-    currency: {
-      type: String,
-      default: 'ADM'
-    },
     i18n: {
       type: Object,
       default: () => ({
@@ -124,7 +118,8 @@ export default {
           delivered: '',
           pending: '',
           rejected: '',
-          invalid: ''
+          invalid: '',
+          unknown: ''
         }
       })
     },
@@ -135,7 +130,11 @@ export default {
     status: {
       type: String,
       default: 'confirmed',
-      validator: v => ['delivered', 'pending', 'rejected', 'invalid'].includes(v)
+      validator: v => ['delivered', 'pending', 'rejected', 'invalid', 'unknown'].includes(v)
+    },
+    isClickable: {
+      type: Boolean,
+      default: false
     }
   }
 }
