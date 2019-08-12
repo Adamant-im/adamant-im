@@ -18,7 +18,8 @@ module.exports = {
         mac: {
           category: 'public.app-category.social-networking',
           darkModeSupport: true,
-          icon: './build/osx/icon.icns'
+          icon: './build/osx/icon.icns',
+          gatekeeperAssess: false
         },
         linux: {
           category: 'Network',
