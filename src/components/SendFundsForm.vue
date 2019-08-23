@@ -166,6 +166,7 @@ import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
 
+import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
 import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20 } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
@@ -425,18 +426,12 @@ export default {
     },
 
     /**
-     * Validate address from a QR code
-     * @param {string} address Address
+     * Parse ADAMANT address from ADAMANT URI and fetch address by crypto type
+     * @param {string} uri ADAMANT URI address
      */
-    onScanQrcode (address) {
-      const message = this.validationRules.cryptoAddress
-        .map(v => v(address))
-        .filter(v => v !== true)[0]
-      if (message) {
-        this.$store.dispatch('snackbar/show', { message })
-      } else {
-        this.cryptoAddress = address
-      }
+    onScanQrcode (uri) {
+      this.address = parseURI(uri).address
+      this.fetchUserCryptoAddress()
     },
     submit () {
       this.disabledButton = true
