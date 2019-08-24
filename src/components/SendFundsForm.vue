@@ -27,7 +27,7 @@
             {{ $t('transfer.to_address_label') }}
           </span>
         </template>
-        <template slot="append">
+        <template slot="append" v-if="!addressReadonly">
           <v-menu :offset-overflow="true" :offset-y="false" left>
             <v-icon slot="activator">mdi-dots-vertical</v-icon>
             <v-list>
@@ -505,7 +505,8 @@ export default {
      * @param {number} divider How much less to send
      */
     divideAmount (divider) {
-      this.amountString = BigNumber(this.maxToTransfer / divider).toFixed()
+      this.amountString = BigNumber(this.maxToTransfer / divider)
+        .toFormat(this.exponent, { decimalSeparator: '.' })
     },
     pushTransactionToChat (transactionId, adamantAddress) {
       let amount = this.amount
