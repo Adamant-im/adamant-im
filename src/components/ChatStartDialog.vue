@@ -21,11 +21,25 @@
           v-model="recipientAddress"
           :label="$t('chats.recipient')"
           :title="$t('chats.recipient_tooltip')"
-        />
-
-        <v-btn @click="showQrcodeScanner = true" :class="`${className}__btn-scan ml-3 mr-0`" icon flat>
-          <icon width="24" height="24"><qr-code-scan-icon/></icon>
-        </v-btn>
+        >
+          <template slot="append">
+            <v-menu :offset-overflow="true" :offset-y="false" left>
+              <v-icon slot="activator">mdi-dots-vertical</v-icon>
+              <v-list>
+                <v-list-tile @click="showQrcodeScanner = true">
+                  <v-list-tile-title>{{ $t('transfer.decode_from_camera') }}</v-list-tile-title>
+                </v-list-tile>
+                <v-list-tile class="v-list__tile--link">
+                  <v-list-tile-title>
+                    <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
+                      <span>{{ $t('transfer.decode_from_image') }}</span>
+                    </qrcode-capture>
+                  </v-list-tile-title>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
+          </template>
+        </v-text-field>
 
         <v-flex xs12 class="text-xs-center">
           <v-btn @click="startChat" :class="[`${className}__btn-start-chat`, 'a-btn-primary']">
@@ -59,6 +73,7 @@
 <script>
 import validateAddress from '@/lib/validateAddress'
 import { parseURI } from '@/lib/uri'
+import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
 import Icon from '@/components/icons/BaseIcon'
@@ -113,6 +128,26 @@ export default {
           })
         })
     },
+
+    /**
+     * Handle successful address decode from a QR code
+     * @param {string} address Address
+     */
+    onDetectQrcode (address) {
+      this.onScanQrcode(address)
+    },
+
+    /**
+     * Handle failed address decode from a QR code
+     * @param {string} error Error instance
+     */
+    onDetectQrcodeError (error) {
+      this.cryptoAddress = ''
+      this.$store.dispatch('snackbar/show', {
+        message: this.$t('transfer.invalid_qr_code')
+      })
+      console.warn(error)
+    },
     onScanQrcode (abstract) {
       this.recipientAddress = ''
 
@@ -137,6 +172,7 @@ export default {
     }
   },
   components: {
+    QrcodeCapture,
     QrcodeScannerDialog,
     QrcodeRendererDialog,
     Icon,
