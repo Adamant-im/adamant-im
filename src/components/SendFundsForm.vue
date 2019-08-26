@@ -507,7 +507,7 @@ export default {
     divideAmount (divider) {
       this.amountString = BigNumber(this.maxToTransfer / divider)
         .toFormat(this.exponent, { decimalSeparator: '.' })
-        .replace(/0+$/,'')
+        .replace(/0+$/, '')
     },
     pushTransactionToChat (transactionId, adamantAddress) {
       let amount = this.amount
