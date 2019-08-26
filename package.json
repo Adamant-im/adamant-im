@@ -1,6 +1,6 @@
 {
   "name": "adamant-im",
-  "version": "2.0.0-alpha",
+  "version": "2.0.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -143,6 +143,6 @@
   },
   "author": "ADAMANT Tech Labs <devs@adamant.im>",
   "license": "GPLv3",
-  "description": "Distributed chat",
+  "description": "Decentralized Messenger",
   "main": "background.js"
 }
