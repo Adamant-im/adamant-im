@@ -53,7 +53,7 @@ export const isBtcBased = crypto => BTC_BASED.includes(crypto)
 
 /** Number of decimal places for the different crypto amounts */
 export const CryptoAmountPrecision = {
-  ADM: 2,
+  ADM: 8,
   ETH: 6,
   BNB: 6,
   DOGE: 8,
