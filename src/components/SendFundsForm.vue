@@ -20,7 +20,7 @@
         type="text"
       >
         <template slot="label">
-          <span v-if="recipientName" class="font-weight-medium">
+          <span v-if="recipientName && addressReadonly" class="font-weight-medium">
             {{ $t('transfer.to_name_label', { name: recipientName }) }}
           </span>
           <span v-else class="font-weight-medium">
@@ -91,7 +91,7 @@
       />
 
       <v-text-field
-        v-if="this.address"
+        v-if="addressReadonly"
         v-model="comment"
         :label="$t('transfer.comments_label')"
         class="a-input"
@@ -324,7 +324,7 @@ export default {
       return Object.keys(Cryptos)
     },
     confirmMessage () {
-      const msgType = this.recipientName ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
+      const msgType = this.recipientName && this.addressReadonly ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
 
       return this.$t(msgType, {
         amount: BigNumber(this.amount).toFixed(),
@@ -507,6 +507,7 @@ export default {
     divideAmount (divider) {
       this.amountString = BigNumber(this.maxToTransfer / divider)
         .toFormat(this.exponent, { decimalSeparator: '.' })
+        .replace(/0+$/,'')
     },
     pushTransactionToChat (transactionId, adamantAddress) {
       let amount = this.amount
