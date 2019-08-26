@@ -17,6 +17,8 @@
     "estimate_fee": "Voraussichtliche Gebühr",
     "incorrect_address": "Fehlerhafte Empfängeradresse",
     "message": "Gib deine Nachricht ein",
+    "message_mac_os": "Type a message. Cmd + Ctrl + Space for Emoji picker",
+    "message_windows_10": "Type a message. Win + . for Emoji picker",
     "new_chat": "Starte neuen Chat",
     "new_chat_tooltip": "Klicke hier um eine neue Konversation zu starten",
     "no_address": "Bitte gib die Empfängeradresse an",

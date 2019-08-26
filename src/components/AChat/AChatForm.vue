@@ -104,7 +104,7 @@ export default {
     },
     label: {
       type: String,
-      default: 'Type your message'
+      default: 'Type a message'
     },
     showDivider: {
       type: Boolean,

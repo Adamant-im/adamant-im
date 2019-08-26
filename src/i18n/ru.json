@@ -16,6 +16,8 @@
     "incorrect_address": "Неправильный ADM-адрес",
     "me": "Я",
     "message": "Введите сообщение",
+    "message_mac_os": "Введите сообщение. Cmd + Ctrl + Space для выбора смайлика",
+    "message_windows_10": "Введите сообщение. Win + . для выбора смайлика",
     "my_qr_code": "Мой QR-код",
     "new_chat": "Начать новый чат",
     "no_connection": "Нет подключения к Интернету",
