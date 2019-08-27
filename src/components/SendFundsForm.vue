@@ -170,7 +170,7 @@ import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
 import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20 } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
-import { isNumeric } from '@/lib/numericHelpers'
+import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 
 /**
  * @returns {string | boolean}
@@ -296,7 +296,7 @@ export default {
      * @returns {string}
      */
     maxToTransferFixed () {
-      return BigNumber(this.maxToTransfer).toFixed() // ??? this.exponent
+      return formatNumber(this.exponent)(this.maxToTransfer)
     },
 
     /**
@@ -505,9 +505,7 @@ export default {
      * @param {number} divider How much less to send
      */
     divideAmount (divider) {
-      this.amountString = BigNumber(this.maxToTransfer / divider)
-        .toFormat(this.exponent, { decimalSeparator: '.' })
-        .replace(/0+$/, '')
+      this.amountString = formatNumber(this.exponent)(this.maxToTransfer / divider)
     },
     pushTransactionToChat (transactionId, adamantAddress) {
       let amount = this.amount
