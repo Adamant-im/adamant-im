@@ -55,6 +55,8 @@ export default {
       } catch (err) {
         this.$emit('error', err)
       }
+      // Reset input to trigger change event later if user selects same image (Chrome)
+      this.$refs.fileInput.value = ''
     },
 
     /**
