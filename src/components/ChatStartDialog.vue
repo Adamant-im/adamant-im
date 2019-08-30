@@ -148,21 +148,22 @@ export default {
       })
       console.warn(error)
     },
-    onScanQrcode (abstract) {
+
+    /**
+     * Parse info from an URI
+     * @param {string} uri URI
+     */
+    onScanQrcode (uri) {
+      const partner = parseURI(uri)
+
       this.recipientAddress = ''
-
-      if (validateAddress('ADM', abstract)) {
-        this.recipientAddress = abstract
-      } else {
-        const recipient = parseURI(abstract)
-
-        if (recipient) {
-          this.recipientAddress = recipient.address
-          this.recipientName = recipient.params.hasOwnProperty('label') ? recipient.params.label : ''
+      if (validateAddress('ADM', partner.address)) {
+        this.recipientAddress = partner.address
+        if (!this.$store.getters['partners/displayName'](this.recipientAddress)) {
+          this.recipientName = partner.params.label
         }
+        this.startChat()
       }
-
-      this.startChat()
     },
     isValidUserAddress () {
       return validateAddress('ADM', this.recipientAddress)
