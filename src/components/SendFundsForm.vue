@@ -426,12 +426,25 @@ export default {
     },
 
     /**
-     * Parse ADAMANT address from ADAMANT URI and fetch address by crypto type
-     * @param {string} uri ADAMANT URI address
+     * Parse info from an URI
+     * @param {string} uri URI
      */
     onScanQrcode (uri) {
-      this.address = parseURI(uri).address
-      this.fetchUserCryptoAddress()
+      const recipient = parseURI(uri)
+
+      this.cryptoAddress = ''
+      if (validateAddress(this.currency, recipient.address)) {
+        this.cryptoAddress = recipient.address
+        if (recipient.params.amount) {
+          const amount = formatNumber(this.exponent)(recipient.params.amount)
+
+          if (Number(amount) <= this.maxToTransfer) {
+            this.amountString = amount
+          }
+        }
+      } else {
+        this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: this.currency }))
+      }
     },
     submit () {
       this.disabledButton = true
