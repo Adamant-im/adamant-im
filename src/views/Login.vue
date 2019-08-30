@@ -103,7 +103,6 @@ import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
 import FileIcon from '@/components/icons/common/File'
 import LoginPasswordForm from '@/components/LoginPasswordForm'
 import Logo from '@/components/icons/common/Logo'
-import AppInterval from '@/lib/AppInterval'
 
 export default {
   computed: {
@@ -137,9 +136,9 @@ export default {
       if (!this.$store.state.chat.isFulfilled) {
         this.$store.commit('chat/createAdamantChats')
         this.$store.dispatch('chat/loadChats')
-          .then(() => AppInterval.subscribe())
+          .then(() => this.$store.dispatch('startInterval'))
       } else {
-        AppInterval.subscribe()
+        this.$store.dispatch('startInterval')
       }
     },
     onLoginError (key) {

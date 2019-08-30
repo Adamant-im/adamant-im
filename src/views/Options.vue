@@ -205,7 +205,6 @@ import LanguageSwitcher from '@/components/LanguageSwitcher'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import PasswordSetDialog from '@/components/PasswordSetDialog'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
-import AppInterval from '@/lib/AppInterval'
 import scrollPosition from '@/mixins/scrollPosition'
 
 export default {
@@ -318,7 +317,7 @@ export default {
       }
     },
     logout () {
-      AppInterval.unsubscribe()
+      this.$store.dispatch('stopInterval')
       this.$store.dispatch('logout')
 
       if (this.isLoginViaPassword) {

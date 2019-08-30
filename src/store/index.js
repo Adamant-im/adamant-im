@@ -34,6 +34,8 @@ import notification from './modules/notification'
 
 Vue.use(Vuex)
 
+export let interval
+
 const store = {
   state: () => ({
     address: '',
@@ -151,6 +153,26 @@ const store = {
             flushCryptoAddresses()
           }
         })
+    },
+
+    startInterval: {
+      root: true,
+      handler ({ dispatch }) {
+        function repeat () {
+          dispatch('updateBalance')
+            .catch(err => console.error(err))
+            .then(() => (interval = setTimeout(repeat, 20000)))
+        }
+
+        repeat()
+      }
+    },
+
+    stopInterval: {
+      root: true,
+      handler () {
+        clearTimeout(interval)
+      }
     }
   },
   plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin, indexedDbPlugin, navigatorOnline],

@@ -12,6 +12,8 @@ import {
 import { isNumeric } from '@/lib/numericHelpers'
 import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
 
+export let interval
+
 /**
  * type State {
  *   chats: {
@@ -651,6 +653,26 @@ const actions = {
     })
 
     return transactionObject.id
+  },
+
+  startInterval: {
+    root: true,
+    handler ({ dispatch }) {
+      function repeat () {
+        dispatch('getNewMessages')
+          .catch(err => console.error(err))
+          .then(() => (interval = setTimeout(repeat, 3000)))
+      }
+
+      repeat()
+    }
+  },
+
+  stopInterval: {
+    root: true,
+    handler () {
+      clearTimeout(interval)
+    }
   },
 
   /** Resets module state **/
