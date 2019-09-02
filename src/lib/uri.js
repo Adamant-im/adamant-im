@@ -1,4 +1,7 @@
-import { Cryptos, RE_DASH_ADDRESS, RE_DOGE_ADDRESS } from './constants'
+import { isValidAddress } from 'ethereumjs-util'
+import { Cryptos,
+  RE_BTC_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS, RE_LISK_ADDRESS
+} from './constants'
 
 /**
  * Parse info from an URI containing a cryptocurrency address
@@ -34,7 +37,7 @@ export function parseURI (uri) {
     [protocol, address] = origin.split(':')
     if (protocol === 'ethereum') {
       crypto = Cryptos.ETH
-    } else if (protocol === 'https' && /^\/\/msg.adamant.im$/.test(address)) {
+    } else if (protocol === 'https') {
       crypto = Cryptos.ADM
       address = params.address; delete params.address
     } else if (Cryptos.hasOwnProperty(protocol.toUpperCase())) {
@@ -42,10 +45,16 @@ export function parseURI (uri) {
     }
   } else {
     address = origin
-    if (RE_DASH_ADDRESS.test(address)) {
+    if (RE_BTC_ADDRESS.test(address)) {
+      crypto = Cryptos.BTC
+    } else if (RE_DASH_ADDRESS.test(address)) {
       crypto = Cryptos.DASH
     } else if (RE_DOGE_ADDRESS.test(address)) {
       crypto = Cryptos.DOGE
+    } else if (isValidAddress(address)) {
+      crypto = Cryptos.ETH
+    } else if (RE_LISK_ADDRESS.test(address)) {
+      crypto = Cryptos.LISK
     }
   }
 
