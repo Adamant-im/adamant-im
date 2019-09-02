@@ -2,8 +2,7 @@
  * Provides method for convert a number with specified options:
  * 1. Dot as separator of fraction.
  * 2. Dynamic precision range (no trailing zeros).
- * 4. Without grouping of integer part.
- *
+ * 3. Without grouping of integer part.
  * @param {number} precision
  * @returns {function}
  */
