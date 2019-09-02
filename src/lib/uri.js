@@ -29,7 +29,9 @@ export function parseURI (uri) {
 
       return key && value ? {
         ...accum,
-        [key]: window.decodeURIComponent(value)
+        [key]: window.decodeURIComponent(
+          value.includes('+') ? value.replace(/\+/g, ' ') : value
+        )
       } : accum
     }, Object.create(null))
   }
