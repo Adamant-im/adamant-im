@@ -163,6 +163,8 @@ export default {
           this.recipientName = partner.params.label
         }
         this.startChat()
+      } else {
+        this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: 'ADM' }))
       }
     },
     isValidUserAddress () {
