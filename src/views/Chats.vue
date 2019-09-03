@@ -42,6 +42,7 @@
 
     <chat-start-dialog
       v-model="showChatStartDialog"
+      @error="onError"
       @start-chat="openChat"
     />
   </v-layout>
@@ -78,6 +79,9 @@ export default {
     },
     isChatReadOnly (partnerId) {
       return this.$store.getters['chat/isChatReadOnly'](partnerId)
+    },
+    onError (message) {
+      this.$store.dispatch('snackbar/show', { message })
     }
   },
   mixins: [scrollPosition],

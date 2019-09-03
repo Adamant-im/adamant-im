@@ -20,12 +20,29 @@
         type="text"
       >
         <template slot="label">
-          <span v-if="recipientName" class="font-weight-medium">
+          <span v-if="recipientName && addressReadonly" class="font-weight-medium">
             {{ $t('transfer.to_name_label', { name: recipientName }) }}
           </span>
           <span v-else class="font-weight-medium">
             {{ $t('transfer.to_address_label') }}
           </span>
+        </template>
+        <template slot="append" v-if="!addressReadonly">
+          <v-menu :offset-overflow="true" :offset-y="false" left>
+            <v-icon slot="activator">mdi-dots-vertical</v-icon>
+            <v-list>
+              <v-list-tile @click="showQrcodeScanner = true">
+                <v-list-tile-title>{{ $t('transfer.decode_from_camera') }}</v-list-tile-title>
+              </v-list-tile>
+              <v-list-tile class="v-list__tile--link">
+                <v-list-tile-title>
+                  <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
+                    <span>{{ $t('transfer.decode_from_image') }}</span>
+                  </qrcode-capture>
+                </v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
         </template>
       </v-text-field>
 
@@ -42,6 +59,20 @@
           <span class="body-1">
             {{ `(max: ${maxToTransferFixed} ${currency})` }}
           </span>
+        </template>
+        <template slot="append">
+          <v-menu :offset-overflow="true" :offset-y="false" left>
+            <v-icon slot="activator">mdi-dots-vertical</v-icon>
+            <v-list>
+              <v-list-tile
+                :key="item.title"
+                @click="divideAmount(item.divider)"
+                v-for="item in amountMenuItems"
+              >
+                <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
         </template>
       </v-text-field>
 
@@ -60,7 +91,7 @@
       />
 
       <v-text-field
-        v-if="this.address"
+        v-if="addressReadonly"
         v-model="comment"
         :label="$t('transfer.comments_label')"
         class="a-input"
@@ -120,17 +151,26 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <qrcode-scanner-dialog
+      @scan="onScanQrcode"
+      v-if="showQrcodeScanner"
+      v-model="showQrcodeScanner"
+    />
   </div>
 </template>
 
 <script>
+import QrcodeCapture from '@/components/QrcodeCapture'
+import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
 
+import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
 import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20 } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
-import { isNumeric } from '@/lib/numericHelpers'
+import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 
 /**
  * @returns {string | boolean}
@@ -154,6 +194,10 @@ function validateForm () {
 }
 
 export default {
+  components: {
+    QrcodeCapture,
+    QrcodeScannerDialog
+  },
   created () {
     this.currency = this.cryptoCurrency
     this.address = this.recipientAddress
@@ -252,7 +296,7 @@ export default {
      * @returns {string}
      */
     maxToTransferFixed () {
-      return BigNumber(this.maxToTransfer).toFixed() // ??? this.exponent
+      return formatNumber(this.exponent)(this.maxToTransfer)
     },
 
     /**
@@ -280,7 +324,7 @@ export default {
       return Object.keys(Cryptos)
     },
     confirmMessage () {
-      const msgType = this.recipientName ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
+      const msgType = this.recipientName && this.addressReadonly ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
 
       return this.$t(msgType, {
         amount: BigNumber(this.amount).toFixed(),
@@ -321,10 +365,28 @@ export default {
     cryptoAddress: '',
     amountString: '',
     amount: 0,
+    amountMenuItems: [
+      {
+        divider: 10,
+        title: 'transfer.amount_percent_10'
+      },
+      {
+        divider: 3,
+        title: 'transfer.amount_percent_33'
+      },
+      {
+        divider: 2,
+        title: 'transfer.amount_percent_50'
+      },
+      {
+        divider: 1,
+        title: 'transfer.amount_percent_100'
+      }
+    ],
     comment: '',
-
     validForm: true,
     disabledButton: false,
+    showQrcodeScanner: false,
     showSpinner: false,
     dialog: false,
     fetchAddress: null // fn throttle
@@ -340,6 +402,48 @@ export default {
           message: abstract,
           timeout: 3000
         })
+      }
+    },
+
+    /**
+     * Handle successful address decode from a QR code
+     * @param {string} address Address
+     */
+    onDetectQrcode (address) {
+      this.onScanQrcode(address)
+    },
+
+    /**
+     * Handle failed address decode from a QR code
+     * @param {string} error Error instance
+     */
+    onDetectQrcodeError (error) {
+      this.cryptoAddress = ''
+      this.$store.dispatch('snackbar/show', {
+        message: this.$t('transfer.invalid_qr_code')
+      })
+      console.warn(error)
+    },
+
+    /**
+     * Parse info from an URI
+     * @param {string} uri URI
+     */
+    onScanQrcode (uri) {
+      const recipient = parseURI(uri)
+
+      this.cryptoAddress = ''
+      if (validateAddress(this.currency, recipient.address)) {
+        this.cryptoAddress = recipient.address
+        if (recipient.params.amount) {
+          const amount = formatNumber(this.exponent)(recipient.params.amount)
+
+          if (Number(amount) <= this.maxToTransfer) {
+            this.amountString = amount
+          }
+        }
+      } else {
+        this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: this.currency }))
       }
     },
     submit () {
@@ -407,6 +511,14 @@ export default {
           comments: this.comment
         })
       }
+    },
+
+    /**
+     * Divide amount by predefined value
+     * @param {number} divider How much less to send
+     */
+    divideAmount (divider) {
+      this.amountString = formatNumber(this.exponent)(this.maxToTransfer / divider)
     },
     pushTransactionToChat (transactionId, adamantAddress) {
       let amount = this.amount
@@ -479,6 +591,11 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.a-input >>> input[type=number]
+  -moz-appearance: textfield
+.a-input >>> input[type=number]::-webkit-inner-spin-button,
+.a-input >>> input[type=number]::-webkit-outer-spin-button
+  -webkit-appearance: none
 .send-funds-form
   &__button
     margin-top: 15px
