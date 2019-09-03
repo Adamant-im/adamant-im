@@ -39,7 +39,7 @@ export function parseURI (uri) {
     [protocol, address] = origin.split(':')
     if (protocol === 'ethereum') {
       crypto = Cryptos.ETH
-    } else if (protocol === 'https') {
+    } else if (/^https?$/.test(protocol)) {
       crypto = Cryptos.ADM
       address = params.address; delete params.address
     } else if (Cryptos.hasOwnProperty(protocol.toUpperCase())) {
