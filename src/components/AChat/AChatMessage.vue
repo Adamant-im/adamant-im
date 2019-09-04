@@ -22,7 +22,7 @@
 
         <div v-if="!hideTime" class="a-chat__message-card-header mt-1">
           <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
-          <div v-if="isOutgoingMessage" class="a-chat__status">
+          <div class="a-chat__status">
             <v-icon
               :title="i18n.retry"
               size="15"
