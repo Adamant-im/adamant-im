@@ -46,6 +46,7 @@
     "register-service-worker": "^1.0.0",
     "semver": "^5.5.1",
     "simple-audio": "^1.0.1",
+    "socket.io-client": "^2.2.0",
     "sodium-browserify-tweetnacl": "^0.2.3",
     "throttle-promise": "^1.0.4",
     "underscore": "^1.9.1",

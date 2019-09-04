@@ -423,7 +423,7 @@ export function getChats (from = 0, offset = 0, orderBy = 'desc') {
  * @param {Buffer} key sender public key
  * @returns {{senderId: string, asset: object, message: any, isI18n: boolean}}
  */
-function decodeChat (transaction, key) {
+export function decodeChat (transaction, key) {
   const chat = transaction.asset.chat
   const message = utils.decodeMessage(chat.message, key, myKeypair.privateKey, chat.own_message)
 

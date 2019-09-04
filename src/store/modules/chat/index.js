@@ -291,10 +291,11 @@ const mutations = {
     const chat = state.chats[partnerId]
 
     // Shouldn't duplicate local messages added directly
-    // when dispatch('getNewMessages'). Just update `status`.
+    // when dispatch('getNewMessages'). Just update `status, height`.
     const localMessage = chat.messages.find(localMessage => localMessage.id === message.id)
     if (localMessage) { // is message in state
       localMessage.status = message.status
+      localMessage.height = message.height
       return
     }
 
@@ -657,11 +658,14 @@ const actions = {
 
   startInterval: {
     root: true,
-    handler ({ dispatch }) {
+    handler ({ dispatch, rootState }) {
       function repeat () {
         dispatch('getNewMessages')
           .catch(err => console.error(err))
-          .then(() => (interval = setTimeout(repeat, 3000)))
+          .then(() => {
+            const timeout = rootState.options.useSocketConnection ? 60000 : 3000
+            interval = setTimeout(repeat, timeout)
+          })
       }
 
       repeat()

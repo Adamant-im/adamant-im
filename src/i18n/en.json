@@ -34,7 +34,7 @@
     "start_chat": "Start a chat",
     "title": "Chats",
     "too_long": "The message is too long",
-    "transaction_statuses": { 
+    "transaction_statuses": {
       "delivered": "Confirmed in token’s blockchain",
       "invalid": "Incorrect information. Check transaction in token's blockchain carefully",
       "pending": "Not confirmed yet",
@@ -117,7 +117,10 @@
     "nodeLabelDescription": "Support decentralization and enhance privacy level—<a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">run your own ADAMANT node</a>. To add your nodes to the list, you need <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">to deploy web application on separate domain</a>. This limitation refers to Content Security Policy (CSP).",
     "offline": "Offline",
     "ping": "Ping",
-    "unsupported": "Unsupported"
+    "socket": "Socket",
+    "unsupported": "Unsupported",
+    "use_socket_connection": "Use socket connection by default",
+    "use_socket_connection_tooltip": ""
   },
   "notifications": {
     "tabMessage": {
