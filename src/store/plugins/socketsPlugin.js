@@ -12,7 +12,9 @@ function openSocketConnection (adamantAddress, store) {
       : getPublicKey(transaction.recipientId)
 
     promise.then(publicKey => {
-      const decoded = decodeChat(transaction, publicKey)
+      const decoded = transaction.type === 0
+        ? transaction
+        : decodeChat(transaction, publicKey)
       store.dispatch('chat/pushMessages', [decoded])
     })
   })
