@@ -315,8 +315,10 @@ const mutations = {
     // Exception only when `height = 0`, this means that the
     // user cleared `localStorage` or logged in first time.
     if (
-      message.height > state.lastMessageHeight &&
-      state.lastMessageHeight > 0 &&
+      (
+        message.height === undefined || // unconfirmed transaction (socket)
+        (message.height > state.lastMessageHeight && state.lastMessageHeight > 0)
+      ) &&
       userId !== message.senderId // do not notify yourself when send message from other device
     ) {
       chat.numOfNewMessages += 1
