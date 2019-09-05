@@ -14,6 +14,9 @@ import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
 
 export let interval
 
+const SOCKET_ENABLED_TIMEOUT = 3000
+const SOCKET_DISABLED_TIMEOUT = 3000
+
 /**
  * type State {
  *   chats: {
@@ -665,7 +668,7 @@ const actions = {
         dispatch('getNewMessages')
           .catch(err => console.error(err))
           .then(() => {
-            const timeout = rootState.options.useSocketConnection ? 60000 : 3000
+            const timeout = rootState.options.useSocketConnection ? SOCKET_ENABLED_TIMEOUT : SOCKET_DISABLED_TIMEOUT
             interval = setTimeout(repeat, timeout)
           })
       }
