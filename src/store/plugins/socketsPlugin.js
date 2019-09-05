@@ -7,6 +7,8 @@ function openSocketConnection (adamantAddress, store) {
 
   socketClient.connect(adamantAddress)
   socketClient.on('newTrans', transaction => {
+    if (transaction.type !== 0 && transaction.type !== 8) return
+
     const promise = (transaction.recipientId === store.state.address)
       ? Promise.resolve(transaction.senderPublicKey)
       : getPublicKey(transaction.recipientId)
