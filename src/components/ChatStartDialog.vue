@@ -64,21 +64,21 @@
 
     <qrcode-renderer-dialog
       v-model="showQrcodeRendererDialog"
-      :text="address"
+      :text="uri"
       logo
     />
   </v-dialog>
 </template>
 
 <script>
+import { Cryptos } from '@/lib/constants'
+import { generateURI, parseURI } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
-import { parseURI } from '@/lib/uri'
 import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
 import Icon from '@/components/icons/BaseIcon'
 import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
-
 export default {
   computed: {
     className: () => 'chat-start-dialog',
@@ -90,8 +90,8 @@ export default {
         this.$emit('input', value)
       }
     },
-    address () {
-      return this.$store.state.address
+    uri () {
+      return generateURI(Cryptos.ADM, this.$store.state.address)
     }
   },
   data: () => ({
