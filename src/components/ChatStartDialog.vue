@@ -21,6 +21,7 @@
           v-model="recipientAddress"
           :label="$t('chats.recipient')"
           :title="$t('chats.recipient_tooltip')"
+          @paste="onPasteURI"
         >
           <template slot="append">
             <v-menu :offset-overflow="true" :offset-y="false" left>
@@ -150,7 +151,28 @@ export default {
     },
 
     /**
-     * Parse info from an URI
+     * Parse info from an URI on paste text
+     * @param {string} e Event
+     */
+    onPasteURI (e) {
+      this.$nextTick(() => {
+        const partner = parseURI(e.target.value)
+
+        this.recipientAddress = ''
+        if (validateAddress(Cryptos.ADM, partner.address)) {
+          this.recipientAddress = partner.address
+          if (!this.$store.getters['partners/displayName'](this.recipientAddress)) {
+            this.recipientName = partner.params.label
+          }
+          this.startChat()
+        } else {
+          this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: Cryptos.ADM }))
+        }
+      })
+    },
+
+    /**
+     * Parse info from an URI on QR code scan
      * @param {string} uri URI
      */
     onScanQrcode (uri) {
