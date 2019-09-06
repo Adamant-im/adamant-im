@@ -179,18 +179,18 @@ export default {
       const partner = parseURI(uri)
 
       this.recipientAddress = ''
-      if (validateAddress('ADM', partner.address)) {
+      if (validateAddress(Cryptos.ADM, partner.address)) {
         this.recipientAddress = partner.address
         if (!this.$store.getters['partners/displayName'](this.recipientAddress)) {
           this.recipientName = partner.params.label
         }
         this.startChat()
       } else {
-        this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: 'ADM' }))
+        this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: Cryptos.ADM }))
       }
     },
     isValidUserAddress () {
-      return validateAddress('ADM', this.recipientAddress)
+      return validateAddress(Cryptos.ADM, this.recipientAddress)
     },
     onEnter () {
       this.startChat()
