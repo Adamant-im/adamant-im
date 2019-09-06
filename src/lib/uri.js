@@ -1,5 +1,5 @@
 import { isValidAddress } from 'ethereumjs-util'
-import { Cryptos,
+import { Cryptos, isErc20,
   RE_BTC_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS, RE_LISK_ADDRESS
 } from './constants'
 
@@ -64,12 +64,24 @@ export function parseURI (uri) {
 }
 
 /**
- * Generate ADAMANT URI address.
- *
- * @param {string} address ADAMANT address
- * @param {string} name Contact name
+ * Generate a cryptocurrency URI
+ * Complies with AIP-8, AIP-9
+ * @param {string} address Cryptocurrency address
+ * @param {string} name ADAMANT contact name
  * @returns {string}
  */
-export function generateURI (address, name) {
-  return `adm:${address}${name ? '?label=' + name : ''}`
+export function generateURI (crypto = Cryptos.ADM, address, name) {
+  if (crypto === Cryptos.ADM) {
+    const label = name ? '&label=' + window.encodeURIComponent(name) : ''
+
+    return `${window.location.origin}?address=${address}${label}`
+  }
+  if (crypto === Cryptos.BTC) {
+    return `bitcoin:${address}`
+  }
+  if (crypto === Cryptos.ETH || isErc20(crypto)) {
+    return `ethereum:${address}`
+  }
+
+  return `${crypto.toLowerCase()}:${address}`
 }
