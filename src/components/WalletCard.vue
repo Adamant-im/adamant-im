@@ -1,7 +1,7 @@
 <template>
   <v-card flat :class="className">
     <v-list two-line :class="`${className}__list`">
-      <v-list-tile @click="copyToClipboard(address)" :class="`${className}__tile`">
+      <v-list-tile @click="showShareURIDialog = true" :class="`${className}__tile`">
         <v-list-tile-content>
           <v-list-tile-title :class="`${className}__title`">
             {{ cryptoName }} {{ $t('home.wallet') }}
@@ -13,7 +13,7 @@
 
         <v-list-tile-action>
           <v-btn icon ripple :class="`${className}__action`">
-            <v-icon :class="`${className}__icon`" size="20">mdi-content-copy</v-icon>
+            <v-icon :class="`${className}__icon`" size="20">mdi-share-variant</v-icon>
           </v-btn>
         </v-list-tile-action>
       </v-list-tile>
@@ -39,30 +39,35 @@
     <WalletCardListActions
       :class="`${className}__list`"
       :crypto="crypto"
+      :isADM="isADM"
+    />
+
+    <ShareURIDialog
+      :address="address"
+      :crypto="crypto"
+      :isADM="isADM"
+      v-model="showShareURIDialog"
     />
   </v-card>
 </template>
 
 <script>
-import { copyToClipboard } from '@/lib/textHelpers'
+import ShareURIDialog from '@/components/ShareURIDialog'
 import WalletCardListActions from '@/components/WalletCardListActions'
+import { Cryptos } from '@/lib/constants'
 
 export default {
   computed: {
     className () {
       return 'wallet-card'
+    },
+    isADM () {
+      return this.crypto === Cryptos.ADM
     }
   },
-  methods: {
-    copyToClipboard (text) {
-      copyToClipboard(text)
-
-      this.$store.dispatch('snackbar/show', {
-        message: this.$t('home.copied')
-      })
-    }
-  },
+  data: () => ({ showShareURIDialog: false }),
   components: {
+    ShareURIDialog,
     WalletCardListActions
   },
   props: {

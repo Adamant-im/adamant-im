@@ -10,7 +10,7 @@
       </v-list-tile-content>
     </v-list-tile>
 
-    <v-list-tile v-if="isADMCrypto" @click="buyTokens" avatar>
+    <v-list-tile v-if="isADM" @click="buyTokens" avatar>
       <v-list-tile-avatar :class="`${className}__avatar`">
         <v-icon :class="`${className}__icon`">mdi-cash-usd</v-icon>
       </v-list-tile-avatar>
@@ -20,7 +20,7 @@
       </v-list-tile-content>
     </v-list-tile>
 
-    <v-list-tile v-if="isADMCrypto && !hasAdmTokens" @click="getFreeTokens" avatar>
+    <v-list-tile v-if="isADM && !hasAdmTokens" @click="getFreeTokens" avatar>
       <v-list-tile-avatar :class="`${className}__avatar`">
         <v-icon :class="`${className}__icon`">mdi-gift</v-icon>
       </v-list-tile-avatar>
@@ -46,9 +46,6 @@ export default {
     className: () => 'wallet-actions',
     hasAdmTokens () {
       return this.$store.state.balance > 0
-    },
-    isADMCrypto () {
-      return this.crypto === Cryptos.ADM
     }
   },
   data: () => ({
@@ -79,6 +76,10 @@ export default {
       type: String,
       default: Cryptos.ADM,
       validator: v => v in Cryptos
+    },
+    isADM: {
+      required: true,
+      type: Boolean
     }
   }
 }
