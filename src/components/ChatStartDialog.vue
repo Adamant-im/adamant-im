@@ -99,7 +99,8 @@ export default {
     recipientAddress: '',
     recipientName: '',
     showQrcodeScanner: false,
-    showQrcodeRendererDialog: false
+    showQrcodeRendererDialog: false,
+    uriMessage: ''
   }),
   methods: {
     startChat () {
@@ -120,7 +121,7 @@ export default {
         partnerName: this.recipientName
       })
         .then((key) => {
-          this.$emit('start-chat', this.recipientAddress)
+          this.$emit('start-chat', this.recipientAddress, this.uriMessage)
           this.show = false
         })
         .catch(err => {
@@ -164,6 +165,9 @@ export default {
           if (!this.$store.getters['partners/displayName'](this.recipientAddress)) {
             this.recipientName = partner.params.label
           }
+          if (partner.params.message) {
+            this.uriMessage = partner.params.message
+          }
           this.startChat()
         } else {
           this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: Cryptos.ADM }))
@@ -183,6 +187,9 @@ export default {
         this.recipientAddress = partner.address
         if (!this.$store.getters['partners/displayName'](this.recipientAddress)) {
           this.recipientName = partner.params.label
+        }
+        if (partner.params.message) {
+          this.uriMessage = partner.params.message
         }
         this.startChat()
       } else {

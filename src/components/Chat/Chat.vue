@@ -178,6 +178,7 @@ export default {
     Visibility.unbind(this.visibilityId)
   },
   mounted () {
+    this.onMessage(this.message)
     this.scrollBehavior()
     this.$nextTick(() => {
       this.isScrolledToBottom = this.$refs.chat.isScrolledToBottom()
@@ -364,6 +365,10 @@ export default {
     CryptoIcon
   },
   props: {
+    message: {
+      default: '',
+      type: String
+    },
     partnerId: {
       type: String,
       required: true

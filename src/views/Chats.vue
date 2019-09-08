@@ -74,8 +74,10 @@ export default {
     showChatStartDialog: false
   }),
   methods: {
-    openChat (userId) {
-      this.$router.push(`/chats/${userId}/`)
+    openChat (partnerId, message) {
+      this.$router.push({
+        name: 'Chat', params: { message, partnerId }
+      })
     },
     isChatReadOnly (partnerId) {
       return this.$store.getters['chat/isChatReadOnly'](partnerId)
