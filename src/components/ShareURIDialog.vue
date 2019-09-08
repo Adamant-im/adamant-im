@@ -17,7 +17,7 @@
               <v-list-tile-title v-t="'home.copy_uri'" />
             </v-list-tile-content>
           </v-list-tile>
-          <v-list-tile @click="showQrcodeRendererDialog = true">
+          <v-list-tile @click="openQRCodeRenderer">
             <v-list-tile-content>
               <v-list-tile-title v-t="'home.show_qr_code'" />
             </v-list-tile-content>
@@ -50,10 +50,16 @@ export default {
     copyAddress () {
       copyToClipboard(this.address)
       this.$store.dispatch('snackbar/show', { message: this.$t('home.copied') })
+      this.show = false
     },
     copyURI () {
       copyToClipboard(this.uri)
       this.$store.dispatch('snackbar/show', { message: this.$t('home.copied') })
+      this.show = false
+    },
+    openQRCodeRenderer () {
+      this.showQrcodeRendererDialog = true
+      this.show = false
     }
   },
   props: {
