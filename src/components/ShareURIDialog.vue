@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="value" @input="$emit('input', value)" width="320">
+  <v-dialog v-model="show" width="320">
     <v-card>
       <v-card-title class="a-text-header">
         {{ $t('home.share_uri', { crypto }) }}
@@ -25,7 +25,7 @@
         </v-list>
       </v-card-text>
     </v-card>
-    <QrcodeRendererDialog :text="uri" logo v-model="showQrcodeRendererDialog" />
+    <QrcodeRendererDialog :logo="isADM" :text="uri" v-model="showQrcodeRendererDialog" />
   </v-dialog>
 </template>
 
@@ -37,6 +37,10 @@ import { generateURI } from '@/lib/uri'
 export default {
   components: { QrcodeRendererDialog },
   computed: {
+    show: {
+      get () { return this.value },
+      set (value) { this.$emit('input', value) }
+    },
     uri () {
       return generateURI(this.crypto, this.address)
     }
