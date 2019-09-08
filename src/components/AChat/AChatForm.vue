@@ -93,7 +93,14 @@ export default {
       this.$refs.messageTextarea.focus()
     }
   },
+  mounted () {
+    this.message = this.messageText
+  },
   props: {
+    messageText: {
+      default: '',
+      type: String
+    },
     showSendButton: {
       type: Boolean,
       default: true

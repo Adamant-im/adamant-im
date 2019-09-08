@@ -83,6 +83,7 @@
         :send-on-enter="sendMessageOnEnter"
         :show-divider="true"
         :label="chatFormLabel"
+        :messageText="message"
       >
         <chat-menu
           slot="prepend"
@@ -178,7 +179,6 @@ export default {
     Visibility.unbind(this.visibilityId)
   },
   mounted () {
-    this.onMessage(this.message)
     this.scrollBehavior()
     this.$nextTick(() => {
       this.isScrolledToBottom = this.$refs.chat.isScrolledToBottom()
