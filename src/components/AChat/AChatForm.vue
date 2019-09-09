@@ -94,7 +94,10 @@ export default {
     }
   },
   mounted () {
-    this.message = this.messageText
+    if (this.messageText) {
+      this.message = this.messageText
+      this.focus()
+    }
   },
   props: {
     messageText: {
