@@ -16,6 +16,7 @@
       <v-text-field
         v-model.trim="cryptoAddress"
         :disabled="addressReadonly"
+        @paste="onPasteURIAddress"
         class="a-input"
         type="text"
       >
@@ -94,6 +95,7 @@
         v-if="addressReadonly"
         v-model="comment"
         :label="$t('transfer.comments_label')"
+        @paste="onPasteURIComment"
         class="a-input"
         counter
         maxlength="100"
@@ -423,6 +425,36 @@ export default {
         message: this.$t('transfer.invalid_qr_code')
       })
       console.warn(error)
+    },
+
+    /**
+     * Parse address from an URI on paste text
+     * @param {string} e Event
+     */
+    onPasteURIAddress (e) {
+      this.$nextTick(() => {
+        const address = parseURI(e.target.value).address
+
+        if (validateAddress(this.currency, address)) {
+          this.cryptoAddress = address
+        } else {
+          this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: this.currency }))
+        }
+      })
+    },
+
+    /**
+     * Parse comment from an URI on paste text
+     * @param {string} e Event
+     */
+    onPasteURIComment (e) {
+      this.$nextTick(() => {
+        const params = parseURI(e.target.value).params
+
+        if (params.message) {
+          this.comment = params.message
+        }
+      })
     },
 
     /**

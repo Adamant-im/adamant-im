@@ -83,6 +83,7 @@
         :send-on-enter="sendMessageOnEnter"
         :show-divider="true"
         :label="chatFormLabel"
+        :messageText="message"
       >
         <chat-menu
           slot="prepend"
@@ -364,6 +365,10 @@ export default {
     CryptoIcon
   },
   props: {
+    message: {
+      default: '',
+      type: String
+    },
     partnerId: {
       type: String,
       required: true
