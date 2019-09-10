@@ -21,8 +21,9 @@
         </div>
 
         <div v-if="!hideTime" class="a-chat__message-card-header mt-1">
+          <div v-if="status === 'delivered'" class="a-chat__blockchain-status">&#x26AD;</div>
           <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
-          <div class="a-chat__status">
+          <div v-if="isOutgoingMessage" class="a-chat__status">
             <v-icon
               :title="i18n.retry"
               size="15"
@@ -73,7 +74,7 @@ export default {
     },
     status: {
       type: String,
-      default: 'confirmed',
+      default: 'delivered',
       validator: v => ['delivered', 'pending', 'rejected'].includes(v)
     },
     userId: {
