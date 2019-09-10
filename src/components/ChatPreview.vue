@@ -36,12 +36,7 @@
 
       <!-- Message -->
       <template v-else>
-        <v-list-tile-sub-title
-          v-if="readOnly || isMessageI18n"
-          v-text="isMessageI18n ? $t(transaction.message) : transaction.message"
-          class="a-text-explanation-enlarged-bold"
-        />
-        <v-list-tile-sub-title class="a-text-explanation-enlarged-bold" v-else>
+        <v-list-tile-sub-title class="a-text-explanation-enlarged-bold">
           <v-icon size="15" v-if="!isIncomingTransaction">{{ statusIcon }}</v-icon>
           {{ lastMessageTextNoFormats }}
         </v-list-tile-sub-title>
@@ -98,15 +93,20 @@ export default {
     lastMessageText () {
       return this.transaction.message || ''
     },
+    lastMessageTextLocalized () {
+      return this.isMessageI18n
+        ? this.$t(this.lastMessageText)
+        : this.lastMessageText
+    },
     lastMessageTextNoFormats () {
       if (
-        this.readOnly ||
+        this.isAdamantChat ||
         this.$store.state.options.formatMessages
       ) {
-        return removeFormats(this.lastMessageText)
+        return removeFormats(this.lastMessageTextLocalized)
       }
 
-      return this.lastMessageText
+      return this.lastMessageTextLocalized
     },
     transactionDirection () {
       const direction = this.userId === this.transaction.senderId
