@@ -48,7 +48,7 @@
       </template>
     </v-list-tile-content>
 
-    <div v-if="!readOnly" :class="`${className}__date`">
+    <div v-if="!isAdamantChat" :class="`${className}__date`">
       {{ createdAt | date }}
     </div>
   </v-list-tile>
