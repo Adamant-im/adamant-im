@@ -5,6 +5,7 @@ import { Base64 } from 'js-base64'
 import router from '@/router'
 import { Modules, Chats, Security, clearDb } from '@/lib/idb'
 import { restoreState, modules } from '@/lib/idb/state'
+import { Cryptos } from '@/lib/constants'
 
 const chatModuleMutations = ['setHeight', 'setFulfilled']
 const multipleChatMutations = ['markAllAsRead', 'createEmptyChat', 'createAdamantChats']
@@ -51,7 +52,13 @@ function createThrottles () {
   // throttle modules
   modules.forEach(module => {
     throttles[module] = throttle(({ name, value }) => {
-      return Modules.set({ name, value })
+      const clonedValue = { ...value }
+
+      if (Cryptos[name.toUpperCase()]) {
+        clonedValue.transactions = {}
+      }
+
+      return Modules.set({ name, value: clonedValue })
     }, 1, interval)
   })
 
