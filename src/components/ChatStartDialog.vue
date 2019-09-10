@@ -21,11 +21,26 @@
           v-model="recipientAddress"
           :label="$t('chats.recipient')"
           :title="$t('chats.recipient_tooltip')"
-        />
-
-        <v-btn @click="showQrcodeScanner = true" :class="`${className}__btn-scan ml-3 mr-0`" icon flat>
-          <icon width="24" height="24"><qr-code-scan-icon/></icon>
-        </v-btn>
+          @paste="onPasteURI"
+        >
+          <template slot="append">
+            <v-menu :offset-overflow="true" :offset-y="false" left>
+              <v-icon slot="activator">mdi-dots-vertical</v-icon>
+              <v-list>
+                <v-list-tile @click="showQrcodeScanner = true">
+                  <v-list-tile-title>{{ $t('transfer.decode_from_camera') }}</v-list-tile-title>
+                </v-list-tile>
+                <v-list-tile class="v-list__tile--link">
+                  <v-list-tile-title>
+                    <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
+                      <span>{{ $t('transfer.decode_from_image') }}</span>
+                    </qrcode-capture>
+                  </v-list-tile-title>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
+          </template>
+        </v-text-field>
 
         <v-flex xs12 class="text-xs-center">
           <v-btn @click="startChat" :class="[`${className}__btn-start-chat`, 'a-btn-primary']">
@@ -50,20 +65,21 @@
 
     <qrcode-renderer-dialog
       v-model="showQrcodeRendererDialog"
-      :text="address"
+      :text="uri"
       logo
     />
   </v-dialog>
 </template>
 
 <script>
+import { Cryptos } from '@/lib/constants'
+import { generateURI, parseURI } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
-import { parseURI } from '@/lib/uri'
+import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
 import Icon from '@/components/icons/BaseIcon'
 import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
-
 export default {
   computed: {
     className: () => 'chat-start-dialog',
@@ -75,15 +91,16 @@ export default {
         this.$emit('input', value)
       }
     },
-    address () {
-      return this.$store.state.address
+    uri () {
+      return generateURI(Cryptos.ADM, this.$store.state.address)
     }
   },
   data: () => ({
     recipientAddress: '',
     recipientName: '',
     showQrcodeScanner: false,
-    showQrcodeRendererDialog: false
+    showQrcodeRendererDialog: false,
+    uriMessage: ''
   }),
   methods: {
     startChat () {
@@ -104,7 +121,7 @@ export default {
         partnerName: this.recipientName
       })
         .then((key) => {
-          this.$emit('start-chat', this.recipientAddress)
+          this.$emit('start-chat', this.recipientAddress, this.uriMessage)
           this.show = false
         })
         .catch(err => {
@@ -113,30 +130,81 @@ export default {
           })
         })
     },
-    onScanQrcode (abstract) {
-      this.recipientAddress = ''
 
-      if (validateAddress('ADM', abstract)) {
-        this.recipientAddress = abstract
-      } else {
-        const recipient = parseURI(abstract)
+    /**
+     * Handle successful address decode from a QR code
+     * @param {string} address Address
+     */
+    onDetectQrcode (address) {
+      this.onScanQrcode(address)
+    },
 
-        if (recipient) {
-          this.recipientAddress = recipient.address
-          this.recipientName = recipient.params.hasOwnProperty('label') ? recipient.params.label : ''
+    /**
+     * Handle failed address decode from a QR code
+     * @param {string} error Error instance
+     */
+    onDetectQrcodeError (error) {
+      this.cryptoAddress = ''
+      this.$store.dispatch('snackbar/show', {
+        message: this.$t('transfer.invalid_qr_code')
+      })
+      console.warn(error)
+    },
+
+    /**
+     * Parse info from an URI on paste text
+     * @param {string} e Event
+     */
+    onPasteURI (e) {
+      this.$nextTick(() => {
+        const partner = parseURI(e.target.value)
+
+        this.recipientAddress = ''
+        if (validateAddress(Cryptos.ADM, partner.address)) {
+          this.recipientAddress = partner.address
+          if (!this.$store.getters['partners/displayName'](this.recipientAddress)) {
+            this.recipientName = partner.params.label
+          }
+          if (partner.params.message) {
+            this.uriMessage = partner.params.message
+          }
+          this.startChat()
+        } else {
+          this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: Cryptos.ADM }))
         }
-      }
+      })
+    },
 
-      this.startChat()
+    /**
+     * Parse info from an URI on QR code scan
+     * @param {string} uri URI
+     */
+    onScanQrcode (uri) {
+      const partner = parseURI(uri)
+
+      this.recipientAddress = ''
+      if (validateAddress(Cryptos.ADM, partner.address)) {
+        this.recipientAddress = partner.address
+        if (!this.$store.getters['partners/displayName'](this.recipientAddress)) {
+          this.recipientName = partner.params.label
+        }
+        if (partner.params.message) {
+          this.uriMessage = partner.params.message
+        }
+        this.startChat()
+      } else {
+        this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: Cryptos.ADM }))
+      }
     },
     isValidUserAddress () {
-      return validateAddress('ADM', this.recipientAddress)
+      return validateAddress(Cryptos.ADM, this.recipientAddress)
     },
     onEnter () {
       this.startChat()
     }
   },
   components: {
+    QrcodeCapture,
     QrcodeScannerDialog,
     QrcodeRendererDialog,
     Icon,

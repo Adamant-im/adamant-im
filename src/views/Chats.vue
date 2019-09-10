@@ -43,6 +43,7 @@
 
     <chat-start-dialog
       v-model="showChatStartDialog"
+      @error="onError"
       @start-chat="openChat"
     />
   </v-layout>
@@ -74,14 +75,19 @@ export default {
     showChatStartDialog: false
   }),
   methods: {
-    openChat (userId) {
-      this.$router.push(`/chats/${userId}/`)
+    openChat (partnerId, message) {
+      this.$router.push({
+        name: 'Chat', params: { message, partnerId }
+      })
     },
     isChatReadOnly (partnerId) {
       return this.$store.getters['chat/isChatReadOnly'](partnerId)
     },
     isAdamantChat (partnerId) {
       return this.$store.getters['chat/isAdamantChat'](partnerId)
+    },
+    onError (message) {
+      this.$store.dispatch('snackbar/show', { message })
     }
   },
   mixins: [scrollPosition],

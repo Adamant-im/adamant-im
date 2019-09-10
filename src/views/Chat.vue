@@ -4,6 +4,7 @@
     <container>
 
       <chat
+        :message="message"
         :partner-id="partnerId"
         @click:chat-avatar="onClickChatAvatar"
       />
@@ -59,6 +60,10 @@ export default {
     }
   },
   props: {
+    message: {
+      default: '',
+      type: String
+    },
     partnerId: {
       required: true,
       type: String

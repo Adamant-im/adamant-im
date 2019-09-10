@@ -3,6 +3,7 @@ import merge from 'deepmerge'
 import Modules from './stores/Modules'
 import Chats from './stores/Chats'
 import Security from './stores/Security'
+import { Cryptos } from '@/lib/constants'
 
 /** Modules that will be stored in IDB **/
 const modules = ['adm', 'eth', 'doge', 'bnb', 'bz', 'dash', 'kcs', 'usds', 'partners', 'delegates']
@@ -18,9 +19,15 @@ function cloneModules (state) {
   // clone all modules
   modules.forEach(moduleName => {
     if (state[moduleName]) {
+      const module = { ...state[moduleName] }
+
+      if (Cryptos[moduleName.toUpperCase()]) {
+        module.transactions = {}
+      }
+
       modulesToStore.push({
         name: moduleName,
-        value: state[moduleName]
+        value: module
       })
     }
   })
