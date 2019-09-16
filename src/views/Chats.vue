@@ -41,6 +41,7 @@
     </container>
 
     <chat-start-dialog
+      :partnerId="partnerId"
       v-model="showChatStartDialog"
       @error="onError"
       @start-chat="openChat"
@@ -87,6 +88,13 @@ export default {
     }
   },
   mixins: [scrollPosition],
+  mounted () {
+    this.showChatStartDialog = this.showNewContact
+  },
+  props: {
+    partnerId: { type: String },
+    showNewContact: { default: false, type: Boolean }
+  },
   components: {
     ChatPreview,
     ChatStartDialog,
