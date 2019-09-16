@@ -4,7 +4,7 @@
     <container>
 
       <chat
-        :message="message"
+        :message-text="messageText"
         :partner-id="partnerId"
         @click:chat-avatar="onClickChatAvatar"
       />
@@ -60,7 +60,7 @@ export default {
     }
   },
   props: {
-    message: {
+    messageText: {
       default: '',
       type: String
     },
