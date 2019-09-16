@@ -197,6 +197,11 @@ export default {
       this.startChat()
     }
   },
+  mounted () {
+    if (this.partnerId) {
+      this.recipientAddress = this.partnerId
+    }
+  },
   components: {
     QrcodeCapture,
     QrcodeScannerDialog,
@@ -205,6 +210,9 @@ export default {
     QrCodeScanIcon
   },
   props: {
+    partnerId: {
+      type: String
+    },
     value: {
       type: Boolean,
       required: true
