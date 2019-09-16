@@ -4,6 +4,24 @@ import { Cryptos, isErc20,
 } from './constants'
 
 /**
+ * Get an ADAMANT URI
+ * Complies with AIP-2, AIP-8, AIP-9
+ * @returns {string}
+ */
+export function getURI () {
+  let aip2 = ''
+
+  if (process.env.IS_ELECTRON) {
+    const { remote } = require('electron')
+    const args = remote.getGlobal('process').argv
+
+    aip2 = args.find(v => /^adm:U[0-9]{6,}/.test(v)) || ''
+  }
+
+  return aip2 || document.URL
+}
+
+/**
  * Parse info from an URI containing a cryptocurrency address
  * Complies with AIP-2, AIP-8, AIP-9
  * @param {string} uri URI
@@ -16,7 +34,7 @@ import { Cryptos, isErc20,
  *   }
  * }
  */
-export function parseURI (uri) {
+export function parseURI (uri = getURI()) {
   const [origin, query = ''] = uri.split('?')
   let address = ''
   let crypto = ''
