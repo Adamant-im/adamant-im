@@ -157,21 +157,7 @@ export default {
      */
     onPasteURI (e) {
       this.$nextTick(() => {
-        const partner = parseURI(e.target.value)
-
-        this.recipientAddress = ''
-        if (validateAddress(Cryptos.ADM, partner.address)) {
-          this.recipientAddress = partner.address
-          if (!this.$store.getters['partners/displayName'](this.recipientAddress)) {
-            this.recipientName = partner.params.label
-          }
-          if (partner.params.message) {
-            this.uriMessage = partner.params.message
-          }
-          this.startChat()
-        } else {
-          this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: Cryptos.ADM }))
-        }
+        this.getInfoFromURI(e.target.value)
       })
     },
 
@@ -180,6 +166,14 @@ export default {
      * @param {string} uri URI
      */
     onScanQrcode (uri) {
+      this.getInfoFromURI(uri)
+    },
+
+    /**
+     * Get info from an URI
+     * @param {string} uri URI
+     */
+    getInfoFromURI (uri) {
       const partner = parseURI(uri)
 
       this.recipientAddress = ''
@@ -193,7 +187,7 @@ export default {
         }
         this.startChat()
       } else {
-        this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: Cryptos.ADM }))
+        this.$emit('error', this.$t('chats.incorrect_address', { crypto: Cryptos.ADM }))
       }
     },
     isValidUserAddress () {
