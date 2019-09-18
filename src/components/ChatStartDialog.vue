@@ -18,6 +18,7 @@
 
         <v-text-field
           class="a-input"
+          ref="partnerField"
           v-model="recipientAddress"
           :label="$t('chats.recipient')"
           :title="$t('chats.recipient_tooltip')"
@@ -217,6 +218,12 @@ export default {
       type: Boolean,
       required: true
     }
+  },
+  watch: {
+    // Retain focus from `v-dialog__content`
+    show (v) {
+      if (v) this.$nextTick(() => void this.$refs.partnerField.focus())
+    }
   }
 }
 </script>
@@ -231,7 +238,7 @@ export default {
   &__btn-start-chat
     margin-top: 15px
   &__btn-show-qrcode
-    margin-top: 8px
+    margin-top: 15px
     margin-bottom: 15px
     text-align: center
 .theme--light
