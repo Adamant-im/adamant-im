@@ -75,9 +75,9 @@ export default {
     showChatStartDialog: false
   }),
   methods: {
-    openChat (partnerId, message) {
+    openChat (partnerId, messageText) {
       this.$router.push({
-        name: 'Chat', params: { message, partnerId }
+        name: 'Chat', params: { messageText, partnerId }
       })
     },
     isChatReadOnly (partnerId) {
