@@ -178,7 +178,7 @@ export default {
         this.$store.dispatch('chat/createChat', { partnerId, partnerName })
           .then(key => this.$router.push({
             name: 'Chat',
-            params: { messageText, partnerId, partnerName }
+            params: { messageText, partnerId }
           }))
           .catch(x => {
             this.$router.push({
