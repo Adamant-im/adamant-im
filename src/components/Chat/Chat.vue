@@ -35,7 +35,7 @@
           :locale="locale"
           :html="true"
           :i18n="{ retry: $t('chats.retry_message') }"
-          :hide-time="isChatReadOnly"
+          :hide-time="message.readonly"
           @resend="resendMessage(partnerId, message.id)"
         >
           <ChatAvatar

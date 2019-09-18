@@ -29,6 +29,7 @@
                 :contact-id="transaction.contactId"
                 :transaction="transaction"
                 :read-only="isChatReadOnly(transaction.contactId)"
+                :is-message-readonly="transaction.readonly"
                 :is-adamant-chat="isAdamantChat(transaction.contactId)"
                 @click="openChat(transaction.contactId)"
               />

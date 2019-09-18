@@ -394,7 +394,8 @@ const mutations = {
         senderId: 'chats.virtual.welcome_message_title',
         type: 'message',
         i18n: true,
-        status: TS.DELIVERED
+        status: TS.DELIVERED,
+        readonly: true
       }
     ]
 
@@ -413,7 +414,8 @@ const mutations = {
         senderId: 'U5149447931090026688',
         type: 'message',
         i18n: true,
-        status: TS.DELIVERED
+        status: TS.DELIVERED,
+        readonly: true
       }
     ]
 
@@ -431,7 +433,8 @@ const mutations = {
         senderId: 'U17840858470710371662',
         type: 'message',
         i18n: true,
-        status: TS.DELIVERED
+        status: TS.DELIVERED,
+        readonly: true
       }
     ]
 
