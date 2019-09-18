@@ -137,6 +137,12 @@ export default {
     onLogin () {
       const contact = parseURI()
 
+      if (!this.$store.state.chat.isFulfilled) {
+        this.$store.commit('chat/createAdamantChats')
+        this.$store.dispatch('chat/loadChats')
+          .then(() => AppInterval.subscribe())
+      } else AppInterval.subscribe()
+
       if (contact.address) {
         this.navigateByContact(
           contact.params.message,
@@ -144,14 +150,6 @@ export default {
           contact.params.label
         )
       } else this.$router.push('/chats')
-
-      if (!this.$store.state.chat.isFulfilled) {
-        this.$store.commit('chat/createAdamantChats')
-        this.$store.dispatch('chat/loadChats')
-          .then(() => AppInterval.subscribe())
-      } else {
-        AppInterval.subscribe()
-      }
     },
     onLoginError (key) {
       this.$store.dispatch('snackbar/show', {
