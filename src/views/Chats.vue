@@ -41,6 +41,7 @@
     </container>
 
     <chat-start-dialog
+      :partnerId="partnerId"
       v-model="showChatStartDialog"
       @error="onError"
       @start-chat="openChat"
@@ -74,9 +75,9 @@ export default {
     showChatStartDialog: false
   }),
   methods: {
-    openChat (partnerId, message) {
+    openChat (partnerId, messageText) {
       this.$router.push({
-        name: 'Chat', params: { message, partnerId }
+        name: 'Chat', params: { messageText, partnerId }
       })
     },
     isChatReadOnly (partnerId) {
@@ -87,6 +88,13 @@ export default {
     }
   },
   mixins: [scrollPosition],
+  mounted () {
+    this.showChatStartDialog = this.showNewContact
+  },
+  props: {
+    partnerId: { type: String },
+    showNewContact: { default: false, type: Boolean }
+  },
   components: {
     ChatPreview,
     ChatStartDialog,

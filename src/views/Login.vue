@@ -104,6 +104,9 @@ import FileIcon from '@/components/icons/common/File'
 import LoginPasswordForm from '@/components/LoginPasswordForm'
 import Logo from '@/components/icons/common/Logo'
 import AppInterval from '@/lib/AppInterval'
+import { Cryptos } from '@/lib/constants'
+import { parseURI } from '@/lib/uri'
+import validateAddress from '@/lib/validateAddress'
 
 export default {
   computed: {
@@ -132,15 +135,21 @@ export default {
       console.warn(err)
     },
     onLogin () {
-      this.$router.push('/chats')
+      const contact = parseURI()
 
       if (!this.$store.state.chat.isFulfilled) {
         this.$store.commit('chat/createAdamantChats')
         this.$store.dispatch('chat/loadChats')
           .then(() => AppInterval.subscribe())
-      } else {
-        AppInterval.subscribe()
-      }
+      } else AppInterval.subscribe()
+
+      if (contact.address) {
+        this.navigateByContact(
+          contact.params.message,
+          contact.address,
+          contact.params.label
+        )
+      } else this.$router.push('/chats')
     },
     onLoginError (key) {
       this.$store.dispatch('snackbar/show', {
@@ -156,6 +165,39 @@ export default {
     onScanQrcode (passphrase) {
       this.passphrase = passphrase
       this.$nextTick(() => this.$refs.loginForm.submit())
+    },
+
+    /**
+     * Navigate to view depending on a partner address validity
+     * @param {string} messageText Text of message to place in textarea
+     * @param {string} partnerId Partner address to open chat with
+     * @param {string} partnerName Predefined partner name from label
+     */
+    navigateByContact (messageText, partnerId, partnerName) {
+      if (validateAddress(Cryptos.ADM, partnerId)) {
+        this.$store.dispatch('chat/createChat', { partnerId, partnerName })
+          .then(key => this.$router.push({
+            name: 'Chat',
+            params: { messageText, partnerId }
+          }))
+          .catch(x => {
+            this.$router.push({
+              name: 'Chats',
+              params: { partnerId, showNewContact: true }
+            })
+            this.$store.dispatch('snackbar/show', {
+              message: x.message
+            })
+          })
+      } else {
+        this.$router.push({
+          name: 'Chats',
+          params: { partnerId, showNewContact: false }
+        })
+        this.$store.dispatch('snackbar/show', {
+          message: this.$t('chats.incorrect_address', { crypto: Cryptos.ADM })
+        })
+      }
     }
   },
   components: {
