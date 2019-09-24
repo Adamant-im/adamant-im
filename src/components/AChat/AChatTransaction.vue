@@ -53,7 +53,7 @@ export default {
     statusIcon () {
       if (this.status === 'confirmed') {
         return 'mdi-check'
-      } else if (this.status === 'pending') {
+      } else if (this.status === 'pending' || this.status === 'delivered') {
         return 'mdi-clock-outline'
       } else if (this.status === 'rejected') {
         return 'mdi-close-circle-outline'
