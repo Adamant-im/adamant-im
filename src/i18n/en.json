@@ -37,7 +37,8 @@
     "title": "Chats",
     "too_long": "The message is too long",
     "transaction_statuses": {
-      "delivered": "Confirmed in token’s blockchain",
+      "confirmed": "Confirmed in token’s blockchain",
+      "delivered": "Delivered to Node",
       "invalid": "Incorrect information. Check transaction in token's blockchain carefully",
       "pending": "Not confirmed yet",
       "rejected": "The transaction is cancelled or not accepted",

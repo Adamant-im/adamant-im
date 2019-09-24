@@ -389,7 +389,7 @@ const mutations = {
         senderId: 'chats.welcome_message_title',
         type: 'message',
         i18n: true,
-        status: TS.DELIVERED
+        status: TS.CONFIRMED
       }
     ]
 
@@ -548,7 +548,7 @@ const actions = {
         commit('updateMessage', {
           id: messageObject.id,
           realId: res.transactionId,
-          status: TS.PENDING, // not confirmed yet, wait to be stored in the blockchain (optional line)
+          status: TS.DELIVERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
           partnerId: recipientId
         })
 
@@ -593,7 +593,7 @@ const actions = {
           commit('updateMessage', {
             id: messageId,
             realId: res.transactionId,
-            status: TS.PENDING,
+            status: TS.DELIVERED,
             partnerId: recipientId
           })
 
