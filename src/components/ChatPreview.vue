@@ -16,7 +16,7 @@
 
     <v-list-tile-content>
       <v-list-tile-title
-        v-text="readOnly ? $t(contactName) : contactName"
+        v-text="isAdamantChat ? $t(contactName) : contactName"
         class="a-text-regular-enlarged-bold"
       ></v-list-tile-title>
 
@@ -36,19 +36,14 @@
 
       <!-- Message -->
       <template v-else>
-        <v-list-tile-sub-title
-          v-if="readOnly || isMessageI18n"
-          v-text="isMessageI18n ? $t(transaction.message) : transaction.message"
-          class="a-text-explanation-enlarged-bold"
-        />
-        <v-list-tile-sub-title class="a-text-explanation-enlarged-bold" v-else>
+        <v-list-tile-sub-title class="a-text-explanation-enlarged-bold">
           <v-icon size="15" v-if="!isIncomingTransaction">{{ statusIcon }}</v-icon>
           {{ lastMessageTextNoFormats }}
         </v-list-tile-sub-title>
       </template>
     </v-list-tile-content>
 
-    <div v-if="!readOnly" :class="`${className}__date`">
+    <div v-if="!isMessageReadonly" :class="`${className}__date`">
       {{ createdAt | date }}
     </div>
   </v-list-tile>
@@ -98,15 +93,20 @@ export default {
     lastMessageText () {
       return this.transaction.message || ''
     },
+    lastMessageTextLocalized () {
+      return this.isMessageI18n
+        ? this.$t(this.lastMessageText)
+        : this.lastMessageText
+    },
     lastMessageTextNoFormats () {
       if (
-        this.readOnly ||
+        this.isAdamantChat ||
         this.$store.state.options.formatMessages
       ) {
-        return removeFormats(this.lastMessageText)
+        return removeFormats(this.lastMessageTextLocalized)
       }
 
-      return this.lastMessageText
+      return this.lastMessageTextLocalized
     },
     transactionDirection () {
       const direction = this.userId === this.transaction.senderId
@@ -166,6 +166,14 @@ export default {
       required: true
     },
     readOnly: {
+      type: Boolean,
+      default: false
+    },
+    isMessageReadonly: {
+      type: Boolean,
+      default: false
+    },
+    isAdamantChat: {
       type: Boolean,
       default: false
     }

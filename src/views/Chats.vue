@@ -29,6 +29,8 @@
                 :contact-id="transaction.contactId"
                 :transaction="transaction"
                 :read-only="isChatReadOnly(transaction.contactId)"
+                :is-message-readonly="transaction.readonly"
+                :is-adamant-chat="isAdamantChat(transaction.contactId)"
                 @click="openChat(transaction.contactId)"
               />
             </transition-group>
@@ -82,6 +84,9 @@ export default {
     },
     isChatReadOnly (partnerId) {
       return this.$store.getters['chat/isChatReadOnly'](partnerId)
+    },
+    isAdamantChat (partnerId) {
+      return this.$store.getters['chat/isAdamantChat'](partnerId)
     },
     onError (message) {
       this.$store.dispatch('snackbar/show', { message })
