@@ -35,7 +35,7 @@
           :locale="locale"
           :html="true"
           :i18n="{ retry: $t('chats.retry_message') }"
-          :hide-time="isChatReadOnly"
+          :hide-time="message.readonly"
           @resend="resendMessage(partnerId, message.id)"
         >
           <ChatAvatar
@@ -83,7 +83,7 @@
         :send-on-enter="sendMessageOnEnter"
         :show-divider="true"
         :label="chatFormLabel"
-        :messageText="message"
+        :messageText="messageText"
       >
         <chat-menu
           slot="prepend"
@@ -365,7 +365,7 @@ export default {
     CryptoIcon
   },
   props: {
-    message: {
+    messageText: {
       default: '',
       type: String
     },

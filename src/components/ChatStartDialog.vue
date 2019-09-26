@@ -18,6 +18,7 @@
 
         <v-text-field
           class="a-input"
+          ref="partnerField"
           v-model="recipientAddress"
           :label="$t('chats.recipient')"
           :title="$t('chats.recipient_tooltip')"
@@ -157,21 +158,7 @@ export default {
      */
     onPasteURI (e) {
       this.$nextTick(() => {
-        const partner = parseURI(e.target.value)
-
-        this.recipientAddress = ''
-        if (validateAddress(Cryptos.ADM, partner.address)) {
-          this.recipientAddress = partner.address
-          if (!this.$store.getters['partners/displayName'](this.recipientAddress)) {
-            this.recipientName = partner.params.label
-          }
-          if (partner.params.message) {
-            this.uriMessage = partner.params.message
-          }
-          this.startChat()
-        } else {
-          this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: Cryptos.ADM }))
-        }
+        this.getInfoFromURI(e.target.value)
       })
     },
 
@@ -180,6 +167,14 @@ export default {
      * @param {string} uri URI
      */
     onScanQrcode (uri) {
+      this.getInfoFromURI(uri)
+    },
+
+    /**
+     * Get info from an URI
+     * @param {string} uri URI
+     */
+    getInfoFromURI (uri) {
       const partner = parseURI(uri)
 
       this.recipientAddress = ''
@@ -193,7 +188,7 @@ export default {
         }
         this.startChat()
       } else {
-        this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: Cryptos.ADM }))
+        this.$emit('error', this.$t('chats.incorrect_address', { crypto: Cryptos.ADM }))
       }
     },
     isValidUserAddress () {
@@ -201,6 +196,11 @@ export default {
     },
     onEnter () {
       this.startChat()
+    }
+  },
+  mounted () {
+    if (this.partnerId) {
+      this.recipientAddress = this.partnerId
     }
   },
   components: {
@@ -211,9 +211,18 @@ export default {
     QrCodeScanIcon
   },
   props: {
+    partnerId: {
+      type: String
+    },
     value: {
       type: Boolean,
       required: true
+    }
+  },
+  watch: {
+    // Retain focus from `v-dialog__content`
+    show (v) {
+      if (v) this.$nextTick(() => void this.$refs.partnerField.focus())
     }
   }
 }
@@ -229,7 +238,7 @@ export default {
   &__btn-start-chat
     margin-top: 15px
   &__btn-show-qrcode
-    margin-top: 8px
+    margin-top: 15px
     margin-bottom: 15px
     text-align: center
 .theme--light

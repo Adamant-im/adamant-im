@@ -30,7 +30,11 @@ export default {
     className: () => 'chat-toolbar',
     partnerName: {
       get () {
-        return this.$store.getters['partners/displayName'](this.partnerId)
+        const uidOrName = this.$store.getters['partners/displayName'](this.partnerId)
+
+        if (this.isAdamantChat) return this.$t(uidOrName)
+
+        return uidOrName
       },
       set (value) {
         this.$store.commit('partners/displayName', {
@@ -41,6 +45,9 @@ export default {
     },
     isChatReadOnly () {
       return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
+    },
+    isAdamantChat () {
+      return this.$store.getters['chat/isAdamantChat'](this.partnerId)
     }
   },
   methods: {

@@ -90,6 +90,7 @@ const router = new Router({
     },
     {
       path: '/chats',
+      props: true,
       name: 'Chats',
       component: Chats,
       meta: {

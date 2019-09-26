@@ -178,6 +178,19 @@ const getters = {
   /**
    * @param {string} partnerId
    */
+  isAdamantChat: state => partnerId => {
+    const chat = state.chats[partnerId]
+
+    if (chat && chat.isAdamantChat) {
+      return true
+    }
+
+    return false
+  },
+
+  /**
+   * @param {string} partnerId
+   */
   isChatReadOnly: state => partnerId => {
     const chat = state.chats[partnerId]
 
@@ -384,19 +397,59 @@ const mutations = {
     const bountyMessages = [
       {
         id: 'b1',
-        message: 'chats.welcome_message',
+        message: 'chats.virtual.welcome_message',
         timestamp: EPOCH,
-        senderId: 'chats.welcome_message_title',
+        senderId: 'chats.virtual.welcome_message_title',
         type: 'message',
         i18n: true,
-        status: TS.CONFIRMED
+        status: TS.CONFIRMED,
+        readonly: true
       }
     ]
 
-    Vue.set(state.chats, 'chats.welcome_message_title', {
+    Vue.set(state.chats, 'chats.virtual.welcome_message_title', {
       messages: bountyMessages,
       numOfNewMessages: 0,
+      isAdamantChat: true,
       readOnly: true
+    })
+
+    const exchangeMessages = [
+      {
+        id: 'e1',
+        message: 'chats.virtual.exchange_bot',
+        timestamp: EPOCH,
+        senderId: 'U5149447931090026688',
+        type: 'message',
+        i18n: true,
+        status: TS.CONFIRMED,
+        readonly: true
+      }
+    ]
+
+    Vue.set(state.chats, 'U5149447931090026688', {
+      messages: exchangeMessages,
+      isAdamantChat: true,
+      numOfNewMessages: 0
+    })
+
+    const bitcoinBetMessages = [
+      {
+        id: 't1',
+        message: 'chats.virtual.bitcoin_bet',
+        timestamp: EPOCH,
+        senderId: 'U17840858470710371662',
+        type: 'message',
+        i18n: true,
+        status: TS.CONFIRMED,
+        readonly: true
+      }
+    ]
+
+    Vue.set(state.chats, 'U17840858470710371662', {
+      messages: bitcoinBetMessages,
+      isAdamantChat: true,
+      numOfNewMessages: 0
     })
   },
 
