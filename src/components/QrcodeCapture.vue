@@ -55,6 +55,8 @@ export default {
       } catch (err) {
         this.$emit('error', err)
       }
+      // Reset input to trigger change event later if user selects same image (Chrome)
+      this.$refs.fileInput.value = ''
     },
 
     /**
@@ -77,9 +79,7 @@ export default {
      * @returns {Promise<string>}
      */
     async getQrcode () {
-      // heisenbug: zxing cause mutation on `imageElement.src`,
-      // so need to clone element before
-      const result = await this.codeReader.decodeFromImage(this.$refs.imageElement.cloneNode())
+      const result = await this.codeReader.decodeFromImage(this.$refs.imageElement.src)
 
       return result.text
     },

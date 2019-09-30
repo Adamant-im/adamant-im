@@ -34,8 +34,9 @@
 <script>
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import QrcodeRenderer from '@/components/QrcodeRenderer'
-import validateAddress from '@/lib/validateAddress'
+import { Cryptos } from '@/lib/constants'
 import { generateURI } from '@/lib/uri'
+import validateAddress from '@/lib/validateAddress'
 
 export default {
   computed: {
@@ -48,9 +49,9 @@ export default {
       }
     },
     text () {
-      return this.address === this.ownerAddress
-        ? this.address
-        : generateURI(this.address, this.name)
+      return this.isMe
+        ? generateURI(Cryptos.ADM, this.ownerAddress)
+        : generateURI(Cryptos.ADM, this.address, this.name)
     },
     isMe () {
       return this.address === this.ownerAddress

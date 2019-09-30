@@ -273,7 +273,7 @@ export type User = {
 |**[`showSendButton`](#)**|`boolean`|`true`|Show send button|
 |**[`showDivider`](#)**|`boolean`|`false`|Show divider on top of the form|
 |**[`sendOnEnter`](#)**|`boolean`|`true`|Send message on enter|
-|**[`label`](#)**|`string`|`Type your message`|Input message placeholder|
+|**[`label`](#)**|`string`|`Type a message`|Input message placeholder|
 
 ### Events
 

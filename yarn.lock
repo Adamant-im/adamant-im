@@ -1374,12 +1374,12 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@zxing/library@^0.12.3":
-  version "0.12.3"
-  resolved "https://registry.yarnpkg.com/@zxing/library/-/library-0.12.3.tgz#4ef305097d31ccf668a534207600258527afa9f8"
-  integrity sha512-/PUAFaMe6eV55DLUJzcF1d9OEFOR265CFxKeLDEdJMnAWhNOX9SajLVg2+PkFh+PQTtypoNUuzEY+nhPiPjSLQ==
+"@zxing/library@0.15.1":
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/@zxing/library/-/library-0.15.1.tgz#bf1404394b3f73f7c8d970f7b66475e6cf23fef8"
+  integrity sha512-YeQbmY2nWpIBgR9i74mDnoYxJPSvY7Zy0Zz6+KDCQ+wLb20++9dX2v1iH3Wt/kZ5pntqS0K0V5eZkuk4SibbEw==
   dependencies:
-    ts-custom-error "^2.2.2"
+    ts-custom-error "^3.0.0"
   optionalDependencies:
     text-encoding "^0.7.0"
 
@@ -4003,6 +4003,11 @@ destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
   integrity sha1-l4hXRCxEdJ5CBmE+N5RiBYJqvYA=
+
+detect-browser@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/detect-browser/-/detect-browser-4.6.0.tgz#39e2118150e5b4e9ec9546e3f489b2108bb554ab"
+  integrity sha512-JUPne6M/4CJLCQUZRfR+3GNoDFcChgSnlw7AEn+WTVkdxl+2UjzrMKpzN3bXdSIwwQjs45sduKMqpXWB77wQpQ==
 
 detect-indent@^4.0.0:
   version "4.0.0"
@@ -11341,10 +11346,10 @@ tryer@^1.0.0:
   resolved "https://registry.yarnpkg.com/tryer/-/tryer-1.0.1.tgz#f2c85406800b9b0f74c9f7465b81eaad241252f8"
   integrity sha512-c3zayb8/kWWpycWYg87P71E1S1ZL6b6IJxfb5fvsUgsf0S2MVGaDhDXXjDMpdCpfWXqptc+4mXwmiy1ypXqRAA==
 
-ts-custom-error@^2.2.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/ts-custom-error/-/ts-custom-error-2.2.2.tgz#ee769cd6a9cf35dc2e9fedefbb3842f3a2fbceae"
-  integrity sha512-I0FEdfdatDjeigRqh1JFj67bcIKyRNm12UVGheBjs2pXgyELg2xeiQLVaWu1pVmNGXZVnz/fvycSU41moBIpOg==
+ts-custom-error@^3.0.0:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/ts-custom-error/-/ts-custom-error-3.1.1.tgz#d30c7415461dac93dc2cc9e9eb2dae92e6423901"
+  integrity sha512-f/syoy+pTE4z82qaiRuthEeZtCGNKzlfs0Zc8jpQFcz/CYMaFSwFSdfFt1sSFnPlDLOEm7RCROdIxZ44N8UlwA==
 
 tsconfig@^7.0.0:
   version "7.0.0"
