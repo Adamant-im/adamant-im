@@ -348,6 +348,31 @@ describe('Store: chat.js', () => {
     })
 
     /**
+     * getters.isAdamantChat
+     */
+    describe('getters.isAdamantChat', () => {
+      it('should return boolean', () => {
+        const state = {
+          chats: {
+            adamantBounty: {
+              isAdamantChat: true
+            },
+            adamantTokens: {
+              isAdamantChat: false
+            },
+            U111111: {}
+          }
+        }
+
+        const isAdamantChat = getters.isAdamantChat(state)
+
+        expect(isAdamantChat('adamantBounty')).toBe(true)
+        expect(isAdamantChat('adamantTokens')).toBe(false)
+        expect(isAdamantChat('U111111')).toBe(false)
+      })
+    })
+
+    /**
      * getters.isChatReadOnly
      */
     describe('getters.isChatReadOnly', () => {
@@ -977,14 +1002,16 @@ describe('Store: chat.js', () => {
      * mutations.createAdamantChats
      */
     describe('mutations.createAdamantChats', () => {
-      it('should push `chats.welcome_message_title` to state.chats', () => {
+      it('should push ADAMANT chats to state.chats', () => {
         const state = {
           chats: {}
         }
 
         mutations.createAdamantChats(state)
 
-        expect(state.chats['chats.welcome_message_title']).toBeTruthy()
+        expect(state.chats['chats.virtual.welcome_message_title']).toBeTruthy() // Welcome ADAMANT
+        expect(state.chats['U5149447931090026688']).toBeTruthy() // ADAMANT Exchange Bot
+        expect(state.chats['U17840858470710371662']).toBeTruthy() // Bet on Bitcoin price
       })
     })
 

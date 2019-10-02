@@ -61,7 +61,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     <v-text-field-stub
       class="a-input"
       disabled=""
-      label="Amount including transfer fee"
+      label="Amount including a transfer fee"
       value="0.5 ADM"
     />
      

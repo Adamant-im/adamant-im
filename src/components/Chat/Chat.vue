@@ -35,7 +35,7 @@
           :locale="locale"
           :html="true"
           :i18n="{ retry: $t('chats.retry_message') }"
-          :hide-time="isChatReadOnly"
+          :hide-time="message.readonly"
           @resend="resendMessage(partnerId, message.id)"
         >
           <ChatAvatar
@@ -82,7 +82,8 @@
         :show-send-button="true"
         :send-on-enter="sendMessageOnEnter"
         :show-divider="true"
-        :label="$t('chats.message')"
+        :label="chatFormLabel"
+        :messageText="messageText"
       >
         <chat-menu
           slot="prepend"
@@ -107,6 +108,7 @@
 </template>
 
 <script>
+import { detect } from 'detect-browser'
 import Visibility from 'visibilityjs'
 
 import { Cryptos } from '@/lib/constants'
@@ -186,6 +188,10 @@ export default {
     this.visibilityId = Visibility.change((event, state) => {
       if (state === 'visible' && this.isScrolledToBottom) this.markAsRead()
     })
+    this.chatFormLabel = {
+      'Mac OS': this.$t('chats.message_mac_os'),
+      'Windows 10': this.$t('chats.message_windows_10')
+    }[detect().os] || this.$t('chats.message')
   },
   watch: {
     // Scroll to the bottom every time window focused by desktop notification
@@ -253,6 +259,7 @@ export default {
     }
   },
   data: () => ({
+    chatFormLabel: '',
     loading: false,
     noMoreMessages: false,
     isScrolledToBottom: true,
@@ -389,6 +396,10 @@ export default {
     CryptoIcon
   },
   props: {
+    messageText: {
+      default: '',
+      type: String
+    },
     partnerId: {
       type: String,
       required: true

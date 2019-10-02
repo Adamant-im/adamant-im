@@ -29,6 +29,8 @@
                 :contact-id="transaction.contactId"
                 :transaction="transaction"
                 :read-only="isChatReadOnly(transaction.contactId)"
+                :is-message-readonly="transaction.readonly"
+                :is-adamant-chat="isAdamantChat(transaction.contactId)"
                 @click="openChat(transaction.contactId)"
               />
             </transition-group>
@@ -50,7 +52,9 @@
     </container>
 
     <chat-start-dialog
+      :partnerId="partnerId"
       v-model="showChatStartDialog"
+      @error="onError"
       @start-chat="openChat"
     />
   </v-layout>
@@ -64,6 +68,7 @@ import scrollPosition from '@/mixins/scrollPosition'
 
 export default {
   mounted () {
+    this.showChatStartDialog = this.showNewContact
     this.attachScrollListener()
   },
   beforeDestroy () {
@@ -90,11 +95,19 @@ export default {
     noMoreChats: false
   }),
   methods: {
-    openChat (userId) {
-      this.$router.push(`/chats/${userId}/`)
+    openChat (partnerId, messageText) {
+      this.$router.push({
+        name: 'Chat', params: { messageText, partnerId }
+      })
     },
     isChatReadOnly (partnerId) {
       return this.$store.getters['chat/isChatReadOnly'](partnerId)
+    },
+    isAdamantChat (partnerId) {
+      return this.$store.getters['chat/isAdamantChat'](partnerId)
+    },
+    onError (message) {
+      this.$store.dispatch('snackbar/show', { message })
     },
 
     attachScrollListener () {
@@ -131,6 +144,10 @@ export default {
     }
   },
   mixins: [scrollPosition],
+  props: {
+    partnerId: { type: String },
+    showNewContact: { default: false, type: Boolean }
+  },
   components: {
     ChatPreview,
     ChatStartDialog,
