@@ -21,7 +21,8 @@ export const Cryptos = {
   DOGE: 'DOGE',
   DASH: 'DASH',
   BNB: 'BNB',
-  USDS: 'USDS'
+  USDS: 'USDS',
+  BTC: 'BTC'
 }
 
 export const CryptosNames = {
@@ -32,7 +33,8 @@ export const CryptosNames = {
   [Cryptos.DOGE]: 'DOGE',
   [Cryptos.DASH]: 'DASH',
   [Cryptos.KCS]: 'KuCoin Shares',
-  [Cryptos.USDS]: 'StableUSD'
+  [Cryptos.USDS]: 'StableUSD',
+  [Cryptos.BTC]: 'Bitcoin'
 }
 
 export const ERC20 = Object.freeze([
@@ -60,7 +62,8 @@ export const CryptoAmountPrecision = {
   BZ: 6,
   DASH: 5,
   KCS: 6,
-  USDS: 6
+  USDS: 6,
+  BTC: 8
 }
 
 export const CryptoNaturalUnits = {
@@ -71,7 +74,8 @@ export const CryptoNaturalUnits = {
   BZ: 18,
   DASH: 8,
   KCS: 6,
-  USDS: 6
+  USDS: 6,
+  BTC: 8
 }
 
 /** Fees for the misc ADM operations */
