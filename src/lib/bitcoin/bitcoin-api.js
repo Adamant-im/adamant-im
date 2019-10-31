@@ -31,6 +31,22 @@ export default class BitcoinApi extends BtcBaseApi {
   }
 
   /** @override */
+  getTransactions ({ toTx = '' }) {
+    let url = `/address/${this.address}/txs`
+    if (toTx) {
+      url += `/chain/${toTx}`
+    }
+    return this._get(url).then(transactions => transactions.map(this._mapTransaction))
+  }
+
+  /** @override */
+  _getUnspents () {
+    return this._get(`/address/${this.address}/utxo`).then(outputs =>
+      outputs.map(x => ({ txid: x.txid, amount: x.value, vout: x.vout }))
+    )
+  }
+
+  /** @override */
   _mapTransaction (tx) {
     return super._mapTransaction({
       ...tx,
