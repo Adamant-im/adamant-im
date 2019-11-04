@@ -6,9 +6,11 @@ const MAX_ATTEMPTS = 5
 const NEW_TRANSACTION_TIMEOUT = 120
 const OLD_TRANSACTION_TIMEOUT = 5
 
+const DEFAULT_CUSTOM_ACTIONS = () => ({ })
+
 export default options => {
   const Api = options.apiCtor || BtcBaseApi
-  const { getNewTransactions, getOldTransactions } = options
+  const { getNewTransactions, getOldTransactions, customActions = DEFAULT_CUSTOM_ACTIONS } = options
 
   /** @type {BtcBaseApi} */
   let api = null
@@ -174,6 +176,8 @@ export default options => {
         return getOldTransactions(api, context)
       }
       return Promise.resolve()
-    }
+    },
+
+    ...customActions(() => api)
   }
 }

@@ -3,5 +3,7 @@ import { Cryptos } from '../../../lib/constants'
 
 export default () => ({
   crypto: Cryptos.BTC,
-  ...baseState()
+  ...baseState(),
+  utxo: [],
+  feeRate: 0
 })

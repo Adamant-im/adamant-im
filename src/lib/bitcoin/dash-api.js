@@ -33,7 +33,7 @@ export default class DashApi extends BtcBaseApi {
 
   /** @override */
   getFee () {
-    return TX_FEE
+    return Promise.resolve(TX_FEE)
   }
 
   /** @override */
@@ -68,7 +68,7 @@ export default class DashApi extends BtcBaseApi {
   }
 
   /** @override */
-  _getUnspents () {
+  getUnspents () {
     return this._invoke('getaddressutxos', [this.address]).then(result => {
       if (!Array.isArray(result)) return []
 

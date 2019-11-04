@@ -44,21 +44,22 @@ export default class BtcBaseApi {
   /**
    * Returns transaction fee
    * @abstract
-   * @returns {number}
+   * @returns {Promise<number>}
    */
   getFee () {
-    return 0
+    return Promise.resolve(0)
   }
 
   /**
    * Creates a transfer transaction hex and ID
    * @param {string} address receiver address
    * @param {number} amount amount to transfer (coins, not satoshis)
+   * @param {number} fee transaction fee (coins, not satoshis)
    * @returns {Promise<{hex: string, txid: string}>}
    */
-  createTransaction (address = '', amount = 0) {
-    return this._getUnspents().then(unspents => {
-      const hex = this._buildTransaction(address, amount, unspents)
+  createTransaction (address = '', amount = 0, fee) {
+    return this.getUnspents().then(unspents => {
+      const hex = this._buildTransaction(address, amount, unspents, fee)
 
       let txid = bitcoin.crypto.sha256(Buffer.from(hex, 'hex'))
       txid = bitcoin.crypto.sha256(Buffer.from(txid))
@@ -102,7 +103,7 @@ export default class BtcBaseApi {
    * @abstract
    * @returns {Promise<Array<{txid: string, vout: number, amount: number}>>}
    */
-  _getUnspents () {
+  getUnspents () {
     return Promise.resolve([])
   }
 
@@ -111,16 +112,17 @@ export default class BtcBaseApi {
    * @param {string} address target address
    * @param {number} amount amount to send
    * @param {Array<{txid: string, amount: number, vout: number}>} unspents unspent transaction to use as inputs
+   * @param {number} fee transaction fee in primary units (BTC, DOGE, DASH, etc)
    * @returns {string}
    */
-  _buildTransaction (address, amount, unspents) {
+  _buildTransaction (address, amount, unspents, fee) {
     amount = new BigNumber(amount).times(this.multiplier).toNumber()
     amount = Math.floor(amount)
 
     const txb = new bitcoin.TransactionBuilder(this._network)
     txb.setVersion(1)
 
-    const target = amount + new BigNumber(this.getFee()).times(this.multiplier).toNumber()
+    const target = amount + new BigNumber(fee).times(this.multiplier).toNumber()
     let transferAmount = 0
     let inputs = 0
 

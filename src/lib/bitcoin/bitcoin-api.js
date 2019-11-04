@@ -40,10 +40,14 @@ export default class BitcoinApi extends BtcBaseApi {
   }
 
   /** @override */
-  _getUnspents () {
+  getUnspents () {
     return this._get(`/address/${this.address}/utxo`).then(outputs =>
       outputs.map(x => ({ txid: x.txid, amount: x.value, vout: x.vout }))
     )
+  }
+
+  getFeeRate () {
+    return this._get('/fee-estimates').then(estimates => estimates['2'])
   }
 
   /** @override */

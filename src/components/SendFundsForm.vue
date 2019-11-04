@@ -220,7 +220,7 @@ export default {
      * @returns {number}
      */
     transferFee () {
-      return this.$store.getters[`${this.currency.toLowerCase()}/fee`]
+      return this.$store.getters[`${this.currency.toLowerCase()}/fee`](this.amount)
     },
 
     /**
@@ -332,7 +332,8 @@ export default {
         amount: BigNumber(this.amount).toFixed(),
         crypto: this.currency,
         name: this.recipientName,
-        address: this.cryptoAddress
+        address: this.cryptoAddress,
+        fee: this.transferFee
       })
     },
     validationRules () {
