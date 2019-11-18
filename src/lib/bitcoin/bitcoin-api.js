@@ -11,7 +11,7 @@ export default class BitcoinApi extends BtcBaseApi {
    */
   getBalance () {
     return this._get(`/address/${this.address}`).then(
-      info => (info.funded_txo_sum - info.spent_txo_sum) / this.multiplier
+      data => (data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum) / this.multiplier
     )
   }
 
@@ -27,7 +27,7 @@ export default class BitcoinApi extends BtcBaseApi {
 
   /** @override */
   getTransaction (txid) {
-    return this._get(`/tx/${txid}`).then(this._mapTransaction)
+    return this._get(`/tx/${txid}`).then(x => this._mapTransaction(x))
   }
 
   /** @override */
@@ -36,7 +36,7 @@ export default class BitcoinApi extends BtcBaseApi {
     if (toTx) {
       url += `/chain/${toTx}`
     }
-    return this._get(url).then(transactions => transactions.map(this._mapTransaction))
+    return this._get(url).then(transactions => transactions.map(x => this._mapTransaction(x)))
   }
 
   /** @override */
@@ -52,7 +52,7 @@ export default class BitcoinApi extends BtcBaseApi {
 
   /** @override */
   _mapTransaction (tx) {
-    return super._mapTransaction({
+    const mapped = super._mapTransaction({
       ...tx,
       vin: tx.vin.map(x => ({ ...x, addr: x.prevout.scriptpubkey_address })),
       vout: tx.vout.map(x => ({
@@ -63,6 +63,8 @@ export default class BitcoinApi extends BtcBaseApi {
       time: tx.status.block_time,
       confirmations: tx.status.confirmed ? 1 : 0
     })
+    mapped.amount /= this.multiplier
+    return mapped
   }
 
   /** Executes a GET request to the API */
