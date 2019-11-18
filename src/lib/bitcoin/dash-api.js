@@ -32,11 +32,6 @@ export default class DashApi extends BtcBaseApi {
   }
 
   /** @override */
-  getFee () {
-    return Promise.resolve(TX_FEE)
-  }
-
-  /** @override */
   sendTransaction (txHex) {
     return this._invoke('sendrawtransaction', [txHex])
   }

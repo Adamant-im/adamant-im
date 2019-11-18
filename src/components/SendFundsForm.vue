@@ -541,7 +541,8 @@ export default {
           amount: this.amount,
           admAddress: this.address,
           address: this.cryptoAddress,
-          comments: this.comment
+          comments: this.comment,
+          fee: this.transferFee
         })
       }
     },

@@ -28,11 +28,6 @@ export default class DogeApi extends BtcBaseApi {
   }
 
   /** @override */
-  getFee () {
-    return Promise.resolve(TX_FEE)
-  }
-
-  /** @override */
   sendTransaction (txHex) {
     return this._post('/tx/send', { rawtx: txHex }).then(res => res.txid)
   }

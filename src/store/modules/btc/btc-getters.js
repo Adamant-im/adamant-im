@@ -1,5 +1,6 @@
 import baseGetters from '../btc-base/btc-base-getters'
 import BigNumber from '../../../lib/bignumber'
+import { CryptoAmountPrecision } from '../../../lib/constants'
 
 const MULTIPLIER = 1e8
 
@@ -20,8 +21,9 @@ export default {
         // We assume that there're always 2 outputs: transfer target and the remains
         res.fee = (res.count * 181 + 78) * state.feeRate
       }
+      return res
     }, { total: 0, count: 0, fee: 0 })
 
-    return BigNumber(calculation.fee).div(MULTIPLIER)
+    return BigNumber(calculation.fee).div(MULTIPLIER).decimalPlaces(CryptoAmountPrecision.BTC, 6)
   }
 }

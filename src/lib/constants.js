@@ -46,7 +46,8 @@ export const ERC20 = Object.freeze([
 
 export const BTC_BASED = Object.freeze([
   Cryptos.DOGE,
-  Cryptos.DASH
+  Cryptos.DASH,
+  Cryptos.BTC
 ])
 
 export const isErc20 = crypto => ERC20.includes(crypto)

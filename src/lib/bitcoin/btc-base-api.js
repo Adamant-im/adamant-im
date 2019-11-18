@@ -42,15 +42,6 @@ export default class BtcBaseApi {
   }
 
   /**
-   * Returns transaction fee
-   * @abstract
-   * @returns {Promise<number>}
-   */
-  getFee () {
-    return Promise.resolve(0)
-  }
-
-  /**
    * Creates a transfer transaction hex and ID
    * @param {string} address receiver address
    * @param {number} amount amount to transfer (coins, not satoshis)

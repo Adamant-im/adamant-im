@@ -64,6 +64,7 @@ export default class BitcoinApi extends BtcBaseApi {
       confirmations: tx.status.confirmed ? 1 : 0
     })
     mapped.amount /= this.multiplier
+    mapped.fee /= this.multiplier
     return mapped
   }
 

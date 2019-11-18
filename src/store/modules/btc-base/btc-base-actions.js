@@ -65,13 +65,13 @@ export default options => {
       api.getBalance().then(balance => context.commit('status', { balance }))
     },
 
-    sendTokens (context, { amount, admAddress, address, comments }) {
+    sendTokens (context, { amount, admAddress, address, comments, fee }) {
       if (!api) return
       address = address.trim()
 
       const crypto = context.state.crypto
 
-      return api.createTransaction(address, amount)
+      return api.createTransaction(address, amount, fee)
         .then(tx => {
           if (!admAddress) return tx.hex
 
