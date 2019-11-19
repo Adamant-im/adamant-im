@@ -1,6 +1,6 @@
 {
   "name": "adamant-im",
-  "version": "2.1.0b",
+  "version": "2.1.0c",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
