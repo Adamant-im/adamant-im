@@ -2,15 +2,37 @@ import BigNumber from '@/lib/bignumber'
 import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
-const MAX_ATTEMPTS = 5
+const MAX_ATTEMPTS = 15
 const NEW_TRANSACTION_TIMEOUT = 120
 const OLD_TRANSACTION_TIMEOUT = 5
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({ })
 
-export default options => {
+/**
+ * @typedef {Object} Options
+ * @property {function} apiCtor class to use for interaction with the crypto API
+ * @property {function(BtcBaseApi, object): Promise} getNewTransactions function to get the new transactions list (second arg is a Vuex context)
+ * @property {function(BtcBaseApi, object): Promise} getOldTransactions function to get the old transactions list (second arg is a Vuex context)
+ * @property {function(function(): BtcBaseApi): object} customActions function to create custom actions for the current crypto (optional)
+ * @property {number} maxFetchAttempts max number of attempts to fetch the transaction details
+ * @property {number} newTxFetchTimeout seconds to wait between subsequent attempts to get new transaction details
+ * @property {number} oldTxFetchTimeout seconds to wait between subsequent attempts to get old transaction details
+ */
+
+/**
+  * Creates actions for the BTC-based crypto
+  * @param {Options} options config options
+  */
+function createActions (options) {
   const Api = options.apiCtor || BtcBaseApi
-  const { getNewTransactions, getOldTransactions, customActions = DEFAULT_CUSTOM_ACTIONS } = options
+  const {
+    getNewTransactions,
+    getOldTransactions,
+    customActions = DEFAULT_CUSTOM_ACTIONS,
+    maxFetchAttempts = MAX_ATTEMPTS,
+    newTxFetchTimeout = NEW_TRANSACTION_TIMEOUT,
+    oldTxFetchTimeout = OLD_TRANSACTION_TIMEOUT
+  } = options
 
   /** @type {BtcBaseApi} */
   let api = null
@@ -147,18 +169,18 @@ export default options => {
         )
         .then(replay => {
           const attempt = payload.attempt || 0
-          if (replay && attempt < MAX_ATTEMPTS) {
+          if (replay && attempt < maxFetchAttempts) {
             const newPayload = {
               ...payload,
               attempt: attempt + 1,
               force: true
             }
 
-            const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
+            const timeout = payload.isNew ? newTxFetchTimeout : oldTxFetchTimeout
             setTimeout(() => context.dispatch('getTransaction', newPayload), timeout * 1000)
           }
 
-          if (replay && attempt >= MAX_ATTEMPTS) {
+          if (replay && attempt >= maxFetchAttempts) {
             context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
           }
         })
@@ -181,3 +203,5 @@ export default options => {
     ...customActions(() => api)
   }
 }
+
+export default createActions

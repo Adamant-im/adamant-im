@@ -55,6 +55,8 @@ export default {
     apiCtor: BtcApi,
     getOldTransactions,
     getNewTransactions,
-    customActions
+    customActions,
+    maxFetchAttempts: 180,
+    oldTxFetchTimeout: 10
   })
 }

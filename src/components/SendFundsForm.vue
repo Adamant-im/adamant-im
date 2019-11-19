@@ -101,6 +101,13 @@
         maxlength="100"
       />
 
+      <v-checkbox
+        :label="$t('transfer.increase_fee')"
+        color="grey darken-1"
+        v-model="increaseFee"
+        v-if="allowIncreaseFee"
+      />
+
       <div class="text-xs-center">
         <v-btn
           :class="`${className}__button`"
@@ -220,7 +227,8 @@ export default {
      * @returns {number}
      */
     transferFee () {
-      return this.$store.getters[`${this.currency.toLowerCase()}/fee`](this.amount)
+      const coef = this.increaseFee ? 2 : 1
+      return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](this.amount)
     },
 
     /**
@@ -351,6 +359,9 @@ export default {
             : true
         ]
       }
+    },
+    allowIncreaseFee () {
+      return this.currency === Cryptos.BTC
     }
   },
   watch: {
@@ -392,7 +403,8 @@ export default {
     showQrcodeScanner: false,
     showSpinner: false,
     dialog: false,
-    fetchAddress: null // fn throttle
+    fetchAddress: null, // fn throttle
+    increaseFee: false
   }),
   methods: {
     confirm () {
