@@ -73,15 +73,7 @@
     "send_crypto": "Send {crypto}",
     "share_uri": "Share {crypto} address",
     "show_qr_code": "Show QR code",
-    "wallet": "wallet",
-    "your_address_ADM": "ADAMANT address",
-    "your_address_BNB": "Binance Coin address",
-    "your_address_BZ": "Bit-Z address",
-    "your_address_DASH": "Dash address",
-    "your_address_DOGE": "DOGE address",
-    "your_address_ETH": "Ethereum address",
-    "your_address_KCS": "KuCoin Shares address",
-    "your_address_USDS": "StableUSD address"
+    "wallet": "wallet"
   },
   "login": {
     "brand_title": "ADAMANT",
