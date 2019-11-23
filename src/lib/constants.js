@@ -15,14 +15,14 @@ export const Transactions = {
 
 export const Cryptos = {
   ADM: 'ADM',
+  BTC: 'BTC',
   ETH: 'ETH',
   BZ: 'BZ',
   KCS: 'KCS',
   DOGE: 'DOGE',
   DASH: 'DASH',
   BNB: 'BNB',
-  USDS: 'USDS',
-  BTC: 'BTC'
+  USDS: 'USDS'
 }
 
 export const CryptosNames = {
