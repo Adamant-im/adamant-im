@@ -20,6 +20,11 @@ export default class BitcoinApi extends BtcBaseApi {
     return 0
   }
 
+  /** Returns last block height */
+  getHeight () {
+    return this._get('/blocks/tip/height').then(data => Number(data) || 0)
+  }
+
   /** @override */
   sendTransaction (txHex) {
     return this._getClient().post('/tx', txHex).then(response => response.data)
@@ -63,8 +68,11 @@ export default class BitcoinApi extends BtcBaseApi {
       time: tx.status.block_time,
       confirmations: tx.status.confirmed ? 1 : 0
     })
+
     mapped.amount /= this.multiplier
     mapped.fee /= this.multiplier
+    mapped.height = tx.status.block_height
+
     return mapped
   }
 

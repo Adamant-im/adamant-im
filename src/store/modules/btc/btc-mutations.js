@@ -10,5 +10,9 @@ export default {
 
   feeRate (state, feeRate = 0) {
     state.feeRate = feeRate
+  },
+
+  height (state, height) {
+    state.height = height
   }
 }

@@ -15,6 +15,9 @@ const customActions = getApi => ({
 
     // The estimated fee rate is also needed
     api.getFeeRate().then(rate => context.commit('feeRate', rate))
+
+    // Last block height
+    api.getHeight().then(height => context.commit('height', height))
   }
 })
 

@@ -25,5 +25,9 @@ export default {
     }, { total: 0, count: 0, fee: 0 })
 
     return BigNumber(calculation.fee).div(MULTIPLIER).decimalPlaces(CryptoAmountPrecision.BTC, 6)
+  },
+
+  height (state) {
+    return state.height
   }
 }
