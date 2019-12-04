@@ -66,7 +66,7 @@ export default {
     },
     confirmations () {
       const { height, confirmations } = this.transaction
-      
+
       let result = confirmations
       if (height) {
         // Calculate confirmations count based on the tx block height and the last block height.

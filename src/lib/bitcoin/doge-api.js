@@ -27,6 +27,10 @@ export default class DogeApi extends BtcBaseApi {
       .then(balance => Number(balance) / this.multiplier)
   }
 
+  getFee () {
+    return TX_FEE
+  }
+
   /** @override */
   sendTransaction (txHex) {
     return this._post('/tx/send', { rawtx: txHex }).then(res => res.txid)

@@ -31,6 +31,10 @@ export default class DashApi extends BtcBaseApi {
       .then(result => Number(result.balance) / this.multiplier)
   }
 
+  getFee () {
+    return TX_FEE
+  }
+
   /** @override */
   sendTransaction (txHex) {
     return this._invoke('sendrawtransaction', [txHex])

@@ -126,7 +126,7 @@ export default class BtcBaseApi {
       }
     })
 
-    txb.addOutput(address, amount)
+    txb.addOutput(bitcoin.address.toOutputScript(address, this._network), amount)
     txb.addOutput(this._address, transferAmount - target)
 
     for (let i = 0; i < inputs; ++i) {
