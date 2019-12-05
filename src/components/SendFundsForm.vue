@@ -177,7 +177,7 @@ import { BigNumber } from 'bignumber.js'
 
 import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
-import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20 } from '@/lib/constants'
+import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, getMinAmount } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 
@@ -191,9 +191,7 @@ function validateForm () {
       const propertyValue = this[property]
 
       return validators
-        .map(validator => {
-          return validator.call(this, propertyValue)
-        })
+        .map(validator => validator.call(this, propertyValue))
         .filter(v => v !== true) // returns only errors
     })
     .slice(0, 1) // get first error
@@ -353,6 +351,7 @@ export default {
         amount: [
           v => v > 0 || this.$t('transfer.error_incorrect_amount'),
           v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
+          v => this.validateMinAmount(v, this.currency) || this.$t('transfer.error_dust_amount'),
           v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_dust_amount'),
           v => isErc20(this.currency)
             ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
@@ -599,6 +598,10 @@ export default {
           this.cryptoAddress = address
         })
       }
+    },
+    validateMinAmount (amount, currency) {
+      const min = getMinAmount(currency)
+      return amount > min
     },
     validateNaturalUnits (amount, currency) {
       const units = CryptoNaturalUnits[currency]

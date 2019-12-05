@@ -139,3 +139,26 @@ export const TransactionStatus = {
   INVALID: 'invalid',
   UNKNOWN: 'unknown'
 }
+
+/**
+ * Minimal transferrable amounts for the known cryptos
+ */
+export const MinAmounts = Object.freeze({
+  BTC: 546e-8 // 546 satoshis
+})
+
+/**
+ * Returns minimal amount that can be transferred for the specified crypto
+ * @param {string} crypto crypto
+ * @returns {number}
+ */
+export function getMinAmount (crypto) {
+  let amount = MinAmounts[crypto]
+
+  if (!amount) {
+    const precision = CryptoAmountPrecision[crypto]
+    amount = precision ? Math.pow(10, -precision) : 0
+  }
+
+  return amount
+}
