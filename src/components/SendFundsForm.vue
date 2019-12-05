@@ -225,8 +225,7 @@ export default {
      * @returns {number}
      */
     transferFee () {
-      const coef = this.increaseFee ? 2 : 1
-      return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](this.amount)
+      return this.calculateTransferFee(this.amount)
     },
 
     /**
@@ -296,7 +295,7 @@ export default {
       if (this.balance < this.transferFee) return 0
 
       return BigNumber(this.balance)
-        .minus(this.transferFee)
+        .minus(this.calculateTransferFee(this.balance))
         .toNumber()
     },
     /**
@@ -609,6 +608,10 @@ export default {
       const [ , right = '' ] = BigNumber(amount).toFixed().split('.')
 
       return right.length <= units
+    },
+    calculateTransferFee (amount) {
+      const coef = this.increaseFee ? 2 : 1
+      return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount)
     }
   },
   filters: {
