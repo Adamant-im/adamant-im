@@ -294,7 +294,13 @@ export default {
 
       if (this.balance < this.transferFee) return 0
 
-      return BigNumber(this.balance)
+      let amount = BigNumber(this.balance)
+      // For BTC we keep 1000 satoshis (0.00001 BTC) untouched as there are problems when we try to drain the wallet
+      if (this.currency === Cryptos.BTC) {
+        amount = amount.minus(0.00001)
+      }
+
+      return amount
         .minus(this.calculateTransferFee(this.balance))
         .toNumber()
     },
