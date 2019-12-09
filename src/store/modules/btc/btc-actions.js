@@ -59,7 +59,6 @@ export default {
     getOldTransactions,
     getNewTransactions,
     customActions,
-    maxFetchAttempts: 180,
-    oldTxFetchTimeout: 10
+    fetchRetryTimeout: 60 * 1000
   })
 }

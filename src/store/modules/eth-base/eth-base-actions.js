@@ -5,12 +5,10 @@ import { toBuffer } from 'ethereumjs-util'
 import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as utils from '../../../lib/eth-utils'
 import { getTransactions } from '../../../lib/eth-index'
+import * as tf from '../../../lib/transactionsFetching'
 
-/** Max number of attempts to retrieve the transaction details */
-const MAX_ATTEMPTS = 5
-const NEW_TRANSACTION_TIMEOUT = 60
-const OLD_TRANSACTION_TIMEOUT = 5
-
+/** Interval between attempts to fetch the registered tx details */
+const RETRY_TIMEOUT = 20 * 1000
 const CHUNK_SIZE = 25
 
 export default function createActions (config) {
@@ -146,17 +144,6 @@ export default function createActions (config) {
             timestamp: block.timestamp * 1000
           }])
         }
-        if (!block && payload.attempt === MAX_ATTEMPTS) {
-          // Give up, if transaction could not be found after so many attempts
-          context.commit('transactions', [{ hash: transaction.hash, status: 'ERROR' }])
-        } else if (err || !block) {
-          // In case of an error or a pending transaction fetch its receipt once again later
-          // Increment attempt counter, if no transaction was found so far
-          const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
-
-          const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
-          setTimeout(() => context.dispatch('getBlock', newPayload), timeout * 1000)
-        }
       })
 
       queue.enqueue('block:' + payload.blockNumber, supplier)
@@ -189,18 +176,23 @@ export default function createActions (config) {
           if (transaction) {
             context.commit('transactions', [{
               ...transaction,
-              status: 'PENDING'
+              status: 'REGISTERED'
             }])
 
             // Fetch receipt details: status and actual gas consumption
             const { attempt, ...receiptPayload } = payload
             context.dispatch('getTransactionReceipt', receiptPayload)
+
+            // Now we know that the transaction has been registered by the ETH network.
+            // Nothing else to do here, let's proceed to checking its status (see getTransactionReceipt)
+            return
           }
         }
-        if (!tx && payload.attempt === MAX_ATTEMPTS) {
+
+        if (payload.attempt >= tf.PENDING_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
           context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-        } else if (err || !tx) {
+        } else {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = tx ? payload : {
@@ -209,8 +201,8 @@ export default function createActions (config) {
             force: true
           }
 
-          const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
-          setTimeout(() => context.dispatch('getTransaction', newPayload), timeout * 1000)
+          const timeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp))
+          setTimeout(() => context.dispatch('getTransaction', newPayload), timeout)
         }
       })
 
@@ -242,17 +234,16 @@ export default function createActions (config) {
             attempt: 0,
             blockNumber: tx.blockNumber
           })
+
+          // We're done, the transaction status is known.
+          return
         }
-        if (!tx && payload.attempt === MAX_ATTEMPTS) {
-          // Give up, if transaction could not be found after so many attempts
-          context.commit('transactions', [{ hash: tx.hash, status: 'ERROR' }])
-        } else if (err || !tx || !tx.status) {
+
+        if (err || !tx || !tx.status) {
           // In case of an error or a pending transaction fetch its receipt once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
-
-          const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
-          setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), timeout * 1000)
+          setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), RETRY_TIMEOUT)
         }
       })
 

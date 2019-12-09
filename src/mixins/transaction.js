@@ -114,7 +114,7 @@ export default {
           status = TS.INVALID
         }
       } else {
-        status = status === 'PENDING'
+        status = (status === 'PENDING' || status === 'REGISTERED')
           ? TS.PENDING
           : TS.REJECTED
       }

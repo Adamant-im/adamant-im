@@ -1,10 +1,7 @@
 import BigNumber from '@/lib/bignumber'
 import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
-
-const MAX_ATTEMPTS = 15
-const NEW_TRANSACTION_TIMEOUT = 120
-const OLD_TRANSACTION_TIMEOUT = 5
+import * as tf from '../../../lib/transactionsFetching'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({ })
 
@@ -14,9 +11,7 @@ const DEFAULT_CUSTOM_ACTIONS = () => ({ })
  * @property {function(BtcBaseApi, object): Promise} getNewTransactions function to get the new transactions list (second arg is a Vuex context)
  * @property {function(BtcBaseApi, object): Promise} getOldTransactions function to get the old transactions list (second arg is a Vuex context)
  * @property {function(function(): BtcBaseApi): object} customActions function to create custom actions for the current crypto (optional)
- * @property {number} maxFetchAttempts max number of attempts to fetch the transaction details
- * @property {number} newTxFetchTimeout seconds to wait between subsequent attempts to get new transaction details
- * @property {number} oldTxFetchTimeout seconds to wait between subsequent attempts to get old transaction details
+ * @property {number} fetchRetryTimeout interval (ms) between attempts to fetch the registered transaction details
  */
 
 /**
@@ -29,9 +24,7 @@ function createActions (options) {
     getNewTransactions,
     getOldTransactions,
     customActions = DEFAULT_CUSTOM_ACTIONS,
-    maxFetchAttempts = MAX_ATTEMPTS,
-    newTxFetchTimeout = NEW_TRANSACTION_TIMEOUT,
-    oldTxFetchTimeout = OLD_TRANSACTION_TIMEOUT
+    fetchRetryTimeout
   } = options
 
   /** @type {BtcBaseApi} */
@@ -130,7 +123,7 @@ function createActions (options) {
               timestamp: Date.now()
             }])
 
-            context.dispatch('getTransaction', { hash, isNew: true, force: true })
+            context.dispatch('getTransaction', { hash, force: true })
 
             return hash
           }
@@ -142,14 +135,14 @@ function createActions (options) {
      * @param {object} context Vuex action context
      * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
      */
-    getTransaction (context, payload) {
+    async getTransaction (context, payload) {
       if (!api) return
       if (!payload.hash) return
 
       const existing = context.state.transactions[payload.hash]
       if (existing && !payload.force) return
 
-      // Set a stub so far
+      // Set a stub so far, if the transaction is not in the store yet
       if (!existing || existing.status === 'ERROR') {
         context.commit('transactions', [{
           hash: payload.hash,
@@ -159,31 +152,48 @@ function createActions (options) {
         }])
       }
 
-      api.getTransaction(payload.hash)
-        .then(
-          tx => {
-            if (tx) context.commit('transactions', [tx])
-            return (!tx && payload.isNew) || (tx && tx.status !== 'SUCCESS')
-          },
-          () => true
-        )
-        .then(replay => {
-          const attempt = payload.attempt || 0
-          if (replay && attempt < maxFetchAttempts) {
-            const newPayload = {
-              ...payload,
-              attempt: attempt + 1,
-              force: true
-            }
+      let tx = null
+      try {
+        tx = await api.getTransaction(payload.hash)
+      } catch (e) {
+        console.warn(`Failed to fetch ${context.state.crypto} ${payload.hash}`, e)
+      }
 
-            const timeout = payload.isNew ? newTxFetchTimeout : oldTxFetchTimeout
-            setTimeout(() => context.dispatch('getTransaction', newPayload), timeout * 1000)
-          }
+      let retry = false
+      let retryTimeout = 0
+      const attempt = payload.attempt || 0
 
-          if (replay && attempt >= maxFetchAttempts) {
-            context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-          }
-        })
+      if (tx) {
+        context.commit('transactions', [tx])
+        // The transaction has been confirmed, we're done here
+        if (tx.status === 'SUCCESS') return
+
+        // If it's not confirmed but is already registered, keep on trying to fetch its details
+        retryTimeout = fetchRetryTimeout
+        retry = true
+      } else if (existing.status === 'REGISTERED') {
+        // We've failed to fetch the details for some reason, but the transaction is known to be
+        // accepted by the network - keep on fetching
+        retryTimeout = fetchRetryTimeout
+        retry = true
+      } else {
+        // The network does not yet know this transaction. We'll make several attempts to retrieve it.
+        retry = attempt < tf.PENDING_ATTEMPTS
+        retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp))
+      }
+
+      if (!retry) {
+        // If we're here, we have abandoned any hope to get the transaction details.
+        context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
+      } else {
+        // Try to get the details one more time
+        const newPayload = {
+          ...payload,
+          attempt: attempt + 1,
+          force: true
+        }
+        setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
+      }
     },
 
     getNewTransactions (context) {

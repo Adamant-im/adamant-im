@@ -193,7 +193,7 @@ export default class BtcBaseApi {
       id: tx.txid,
       hash: tx.txid,
       fee,
-      status: confirmations > 0 ? 'SUCCESS' : 'PENDING',
+      status: confirmations > 0 ? 'SUCCESS' : 'REGISTERED',
       timestamp,
       direction,
       senders,
