@@ -221,25 +221,37 @@ export default function createActions (config) {
       const gasPrice = transaction.gasPrice
 
       const supplier = () => api.eth.getTransactionReceipt.request(payload.hash, (err, tx) => {
+        let replay = true
+
         if (!err && tx) {
-          context.commit('transactions', [{
+          const update = {
             hash: payload.hash,
-            fee: utils.calculateFee(tx.gasUsed, gasPrice),
-            status: Number(tx.status) ? 'SUCCESS' : 'ERROR',
-            blockNumber: tx.blockNumber
-          }])
+            fee: utils.calculateFee(tx.gasUsed, gasPrice)
+          }
 
-          context.dispatch('getBlock', {
-            ...payload,
-            attempt: 0,
-            blockNumber: tx.blockNumber
-          })
+          if (Number(tx.status) === 0) {
+            // Status "0x0" means that the transaction has been rejected
+            update.status = 'ERROR'
+          } else if (tx.blockNumber) {
+            // If blockNumber is not null, the transaction is confirmed
+            update.status = 'SUCCESS'
+            update.blockNumber = tx.blockNumber
+          }
 
-          // We're done, the transaction status is known.
-          return
+          context.commit('transactions', [update])
+
+          if (tx.blockNumber) {
+            context.dispatch('getBlock', {
+              ...payload,
+              blockNumber: tx.blockNumber
+            })
+          }
+
+          // Re-fetch tx details if it's status is still unknown
+          replay = !update.status
         }
 
-        if (err || !tx || !tx.status) {
+        if (replay) {
           // In case of an error or a pending transaction fetch its receipt once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
