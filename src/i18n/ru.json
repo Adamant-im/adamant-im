@@ -198,6 +198,7 @@
     "statuses": {
       "error": "Ошибка",
       "pending": "Ожидание",
+      "registered": "Ожидание",
       "success": "Успешно"
     },
     "transactions": "Транзакции",

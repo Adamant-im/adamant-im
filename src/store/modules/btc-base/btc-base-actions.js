@@ -171,7 +171,7 @@ function createActions (options) {
         // If it's not confirmed but is already registered, keep on trying to fetch its details
         retryTimeout = fetchRetryTimeout
         retry = true
-      } else if (existing.status === 'REGISTERED') {
+      } else if (existing && existing.status === 'REGISTERED') {
         // We've failed to fetch the details for some reason, but the transaction is known to be
         // accepted by the network - keep on fetching
         retryTimeout = fetchRetryTimeout
@@ -194,6 +194,18 @@ function createActions (options) {
         }
         setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
       }
+    },
+
+    /**
+     * Updates the transaction details
+     * @param {{ dispatch: function }} param0 Vuex context
+     * @param {{hash: string}} payload action payload
+     */
+    updateTransaction ({ dispatch }, payload) {
+      return dispatch('getTransaction', {
+        hash: payload.hash,
+        force: true
+      })
     },
 
     getNewTransactions (context) {

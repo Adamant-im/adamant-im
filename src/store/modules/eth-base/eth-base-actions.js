@@ -262,6 +262,15 @@ export default function createActions (config) {
       queue.enqueue('transactionReceipt:' + payload.hash, supplier)
     },
 
+    /**
+     * Updates the transaction details
+     * @param {{ dispatch: function }} param0 Vuex context
+     * @param {{hash: string}} payload action payload
+     */
+    updateTransaction ({ dispatch }, payload) {
+      return dispatch('getTransaction', payload)
+    },
+
     getNewTransactions (context, payload) {
       const { address, maxHeight, contractAddress, decimals } = context.state
 
