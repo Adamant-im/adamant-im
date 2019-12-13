@@ -155,9 +155,7 @@ function createActions (options) {
       let tx = null
       try {
         tx = await api.getTransaction(payload.hash)
-      } catch (e) {
-        console.warn(`Failed to fetch ${context.state.crypto} ${payload.hash}`, e)
-      }
+      } catch (e) { }
 
       let retry = false
       let retryTimeout = 0
