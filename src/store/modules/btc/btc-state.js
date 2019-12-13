@@ -5,5 +5,6 @@ export default () => ({
   crypto: Cryptos.BTC,
   ...baseState(),
   utxo: [],
-  feeRate: 0
+  feeRate: 0,
+  height: 0
 })
