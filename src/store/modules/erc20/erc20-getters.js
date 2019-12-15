@@ -7,9 +7,7 @@ export default {
     return rootGetters['eth/gasPrice']
   },
 
-  fee (state, getters) {
-    return calculateFee(ERC20_TRANSFER_GAS, getters.gasPrice)
-  },
+  fee: (state, getters) => amount => calculateFee(ERC20_TRANSFER_GAS, getters.gasPrice),
 
   ...baseGetters
 }

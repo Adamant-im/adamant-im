@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     update () {
-      const action = this.crypto.toLowerCase() + '/getTransaction'
+      const action = this.crypto.toLowerCase() + '/updateTransaction'
       this.$store.dispatch(action, { hash: this.txId })
     }
   },
