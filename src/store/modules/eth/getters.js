@@ -7,7 +7,9 @@ export default {
     return state.gasPrice || DEFAULT_GAS_PRICE
   },
 
-  fee: state => amount => state.fee,
+  fee (state) {
+    return state.fee
+  },
 
   privateKey: state => state.privateKey,
 

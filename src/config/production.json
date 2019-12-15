@@ -23,9 +23,6 @@
     ],
     "dash": [
       { "url": "https://dashnode1.adamant.im" }
-    ],
-    "btc": [
-      { "url": "https://btcnode2.adamant.im" }
     ]
   },
   "env": "production"
