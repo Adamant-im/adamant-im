@@ -13,6 +13,17 @@ const getUnique = values => {
   return Object.keys(map)
 }
 
+const createClient = url => {
+  const client = axios.create({ baseURL: url })
+  client.interceptors.response.use(null, error => {
+    if (error.response && Number(error.response.status) >= 500) {
+      console.error('Request failed', error)
+    }
+    return Promise.reject(error)
+  })
+  return client
+}
+
 export default class BtcBaseApi {
   constructor (crypto, passphrase) {
     const network = this._network = networks[crypto]
@@ -140,9 +151,7 @@ export default class BtcBaseApi {
   _getClient () {
     const url = getEnpointUrl(this._crypto)
     if (!this._clients[url]) {
-      this._clients[url] = axios.create({
-        baseURL: url
-      })
+      this._clients[url] = createClient(url)
     }
     return this._clients[url]
   }
@@ -193,7 +202,7 @@ export default class BtcBaseApi {
       id: tx.txid,
       hash: tx.txid,
       fee,
-      status: confirmations > 0 ? 'SUCCESS' : 'PENDING',
+      status: confirmations > 0 ? 'SUCCESS' : 'REGISTERED',
       timestamp,
       direction,
       senders,
