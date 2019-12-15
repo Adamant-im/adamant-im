@@ -4,7 +4,5 @@ import { TX_FEE } from '../../../lib/bitcoin/dash-api'
 export default {
   ...baseGetters,
 
-  fee () {
-    return TX_FEE
-  }
+  fee: state => amount => TX_FEE
 }

@@ -101,6 +101,13 @@
         maxlength="100"
       />
 
+      <v-checkbox
+        :label="$t('transfer.increase_fee')"
+        color="grey darken-1"
+        v-model="increaseFee"
+        v-if="allowIncreaseFee"
+      />
+
       <div class="text-xs-center">
         <v-btn
           :class="`${className}__button`"
@@ -170,7 +177,7 @@ import { BigNumber } from 'bignumber.js'
 
 import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
-import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20 } from '@/lib/constants'
+import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, getMinAmount } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 
@@ -184,9 +191,7 @@ function validateForm () {
       const propertyValue = this[property]
 
       return validators
-        .map(validator => {
-          return validator.call(this, propertyValue)
-        })
+        .map(validator => validator.call(this, propertyValue))
         .filter(v => v !== true) // returns only errors
     })
     .slice(0, 1) // get first error
@@ -220,7 +225,7 @@ export default {
      * @returns {number}
      */
     transferFee () {
-      return this.$store.getters[`${this.currency.toLowerCase()}/fee`]
+      return this.calculateTransferFee(this.amount)
     },
 
     /**
@@ -289,8 +294,14 @@ export default {
 
       if (this.balance < this.transferFee) return 0
 
-      return BigNumber(this.balance)
-        .minus(this.transferFee)
+      let amount = BigNumber(this.balance)
+      // For BTC we keep 1000 satoshis (0.00001 BTC) untouched as there are problems when we try to drain the wallet
+      if (this.currency === Cryptos.BTC) {
+        amount = amount.minus(0.00001)
+      }
+
+      return amount
+        .minus(this.calculateTransferFee(this.balance))
         .toNumber()
     },
     /**
@@ -332,7 +343,8 @@ export default {
         amount: BigNumber(this.amount).toFixed(),
         crypto: this.currency,
         name: this.recipientName,
-        address: this.cryptoAddress
+        address: this.cryptoAddress,
+        fee: this.transferFee
       })
     },
     validationRules () {
@@ -344,12 +356,16 @@ export default {
         amount: [
           v => v > 0 || this.$t('transfer.error_incorrect_amount'),
           v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
+          v => this.validateMinAmount(v, this.currency) || this.$t('transfer.error_dust_amount'),
           v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_dust_amount'),
           v => isErc20(this.currency)
             ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
             : true
         ]
       }
+    },
+    allowIncreaseFee () {
+      return this.currency === Cryptos.BTC
     }
   },
   watch: {
@@ -391,7 +407,8 @@ export default {
     showQrcodeScanner: false,
     showSpinner: false,
     dialog: false,
-    fetchAddress: null // fn throttle
+    fetchAddress: null, // fn throttle
+    increaseFee: false
   }),
   methods: {
     confirm () {
@@ -540,7 +557,8 @@ export default {
           amount: this.amount,
           admAddress: this.address,
           address: this.cryptoAddress,
-          comments: this.comment
+          comments: this.comment,
+          fee: this.transferFee
         })
       }
     },
@@ -586,12 +604,20 @@ export default {
         })
       }
     },
+    validateMinAmount (amount, currency) {
+      const min = getMinAmount(currency)
+      return amount > min
+    },
     validateNaturalUnits (amount, currency) {
       const units = CryptoNaturalUnits[currency]
 
       const [ , right = '' ] = BigNumber(amount).toFixed().split('.')
 
       return right.length <= units
+    },
+    calculateTransferFee (amount) {
+      const coef = this.increaseFee ? 2 : 1
+      return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount)
     }
   },
   filters: {

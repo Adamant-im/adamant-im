@@ -75,15 +75,7 @@
     "send_crypto": "Отправить {crypto}",
     "share_uri": "Поделиться ссылкой {crypto}",
     "show_qr_code": "Показать QR-код",
-    "wallet": "кошелек",
-    "your_address_ADM": "ADAMANT address",
-    "your_address_BNB": "Кошелек Binance Coin",
-    "your_address_BZ": "Кошелек Bit-Z",
-    "your_address_DASH": "Кошелек Dash",
-    "your_address_DOGE": "Кошелек Dogecoin",
-    "your_address_ETH": "Кошелек Ethereum",
-    "your_address_KCS": "Кошелек KuCoin Shares",
-    "your_address_USDS": "Кошелек StableUSD"
+    "wallet": "кошелек"
   },
   "login": {
     "brand_title": "АДАМАНТ",
@@ -206,6 +198,7 @@
     "statuses": {
       "error": "Ошибка",
       "pending": "Ожидание",
+      "registered": "Ожидание",
       "success": "Успешно"
     },
     "transactions": "Транзакции",
@@ -242,6 +235,7 @@
     "error_transfre_send": "Ошибка при отправке транзакции",
     "error_unknown": "Неизвестная ошибка. Плохое подключение?",
     "final_amount_label": "Количество, включая комиссию за перевод",
+    "increase_fee": "Увеличить комиссию",
     "invalid_qr_code": "QR-код не содержит адрес или не удается распознать",
     "no_address_text": "У этого пользователя еще нет публичного {crypto}-кошелька. Он должен зайти в Мессенджер с балансом более 0.001 ADM",
     "no_address_title": "У получателя нет {crypto}-кошелька",
