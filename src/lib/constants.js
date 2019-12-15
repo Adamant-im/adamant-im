@@ -15,7 +15,6 @@ export const Transactions = {
 
 export const Cryptos = {
   ADM: 'ADM',
-  BTC: 'BTC',
   ETH: 'ETH',
   BZ: 'BZ',
   KCS: 'KCS',
@@ -33,8 +32,7 @@ export const CryptosNames = {
   [Cryptos.DOGE]: 'DOGE',
   [Cryptos.DASH]: 'DASH',
   [Cryptos.KCS]: 'KuCoin Shares',
-  [Cryptos.USDS]: 'StableUSD',
-  [Cryptos.BTC]: 'Bitcoin'
+  [Cryptos.USDS]: 'StableUSD'
 }
 
 export const ERC20 = Object.freeze([
@@ -46,8 +44,7 @@ export const ERC20 = Object.freeze([
 
 export const BTC_BASED = Object.freeze([
   Cryptos.DOGE,
-  Cryptos.DASH,
-  Cryptos.BTC
+  Cryptos.DASH
 ])
 
 export const isErc20 = crypto => ERC20.includes(crypto)
@@ -63,8 +60,7 @@ export const CryptoAmountPrecision = {
   BZ: 6,
   DASH: 5,
   KCS: 6,
-  USDS: 6,
-  BTC: 8
+  USDS: 6
 }
 
 export const CryptoNaturalUnits = {
@@ -75,8 +71,7 @@ export const CryptoNaturalUnits = {
   BZ: 18,
   DASH: 8,
   KCS: 6,
-  USDS: 6,
-  BTC: 8
+  USDS: 6
 }
 
 /** Fees for the misc ADM operations */
@@ -138,27 +133,4 @@ export const TransactionStatus = {
   REJECTED: 'rejected',
   INVALID: 'invalid',
   UNKNOWN: 'unknown'
-}
-
-/**
- * Minimal transferrable amounts for the known cryptos
- */
-export const MinAmounts = Object.freeze({
-  BTC: 546e-8 // 546 satoshis
-})
-
-/**
- * Returns minimal amount that can be transferred for the specified crypto
- * @param {string} crypto crypto
- * @returns {number}
- */
-export function getMinAmount (crypto) {
-  let amount = MinAmounts[crypto]
-
-  if (!amount) {
-    const precision = CryptoAmountPrecision[crypto]
-    amount = precision ? Math.pow(10, -precision) : 0
-  }
-
-  return amount
 }

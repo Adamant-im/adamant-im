@@ -27,9 +27,15 @@ export default {
      * @param {string} hash Transaction hash
      * @param {number} timestamp ADAMANT special message timestamp
      */
-    fetchTransaction (type, hash) {
+    fetchTransaction (type, hash, timestamp) {
       const cryptoModule = type.toLowerCase()
-      return this.$store.dispatch(`${cryptoModule}/getTransaction`, { hash })
+      const NEW_TRANSACTION_DELTA = 900 // 15 min
+      const isNew = (Date.now() - timestamp) / 1000 < NEW_TRANSACTION_DELTA
+
+      return this.$store.dispatch(`${cryptoModule}/getTransaction`, {
+        hash,
+        isNew
+      })
     },
 
     /**
@@ -108,7 +114,7 @@ export default {
           status = TS.INVALID
         }
       } else {
-        status = (status === 'PENDING' || status === 'REGISTERED')
+        status = status === 'PENDING'
           ? TS.PENDING
           : TS.REJECTED
       }

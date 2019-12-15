@@ -64,7 +64,7 @@ const createSpecificActions = (api, queue) => ({
         balance => context.commit('balance', Number(
           ethUtils.toFraction(balance.toString(10), context.state.decimals)
         )),
-        () => { } // Not this time
+        error => console.warn(`${context.state.crypto} balance failed: `, error)
       )
       .then(() => {
         const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)

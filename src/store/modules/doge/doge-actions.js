@@ -21,7 +21,6 @@ export default {
   ...baseActions({
     apiCtor: DogeApi,
     getOldTransactions,
-    getNewTransactions,
-    fetchRetryTimeout: 30 * 1000
+    getNewTransactions
   })
 }

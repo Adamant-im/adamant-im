@@ -23,9 +23,6 @@
     ],
     "dash": [
       { "url": "http://ldod53womnlwjmd4noq5yuq26xx3mmbrr4uogkfymuakhofjcuqeygad.onion" }
-    ],
-    "btc": [
-      { "url": "http://mgplh7en3d6ywsec5h6q3tc6mirsleb5cmlyn6nmp25qrb6gy35nypad.onion" }
     ]
   },
   "env": "production"

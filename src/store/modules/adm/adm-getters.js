@@ -23,5 +23,7 @@ export default {
    */
   partnerTransactions: state => partner => Object.values(state.transactions).filter(tx => tx.partner === partner),
 
-  fee: state => amount => Fees.ADM_TRANSFER
+  fee () {
+    return Fees.ADM_TRANSFER
+  }
 }

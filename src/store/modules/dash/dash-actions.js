@@ -20,7 +20,6 @@ export default {
   ...baseActions({
     apiCtor: DashApi,
     getOldTransactions: getTransactions,
-    getNewTransactions: getTransactions,
-    fetchRetryTimeout: 30 * 1000
+    getNewTransactions: getTransactions
   })
 }
