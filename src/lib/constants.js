@@ -17,13 +17,13 @@ export const Cryptos = {
   ADM: 'ADM',
   BTC: 'BTC',
   ETH: 'ETH',
-  BZ: 'BZ',
-  KCS: 'KCS',
   DOGE: 'DOGE',
   DASH: 'DASH',
-  BNB: 'BNB',
   USDS: 'USDS',
-  RES: 'RES'
+  RES: 'RES',
+  BZ: 'BZ',
+  KCS: 'KCS',
+  BNB: 'BNB'
 }
 
 export const CryptosNames = {
