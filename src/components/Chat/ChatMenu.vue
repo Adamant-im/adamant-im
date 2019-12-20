@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-menu>
+    <v-menu :style="{ maxHeight: '70%', minWidth: '200px' }">
       <v-icon medium class="chat-menu__icon" slot="activator">mdi-plus-circle-outline</v-icon>
 
       <v-list>
