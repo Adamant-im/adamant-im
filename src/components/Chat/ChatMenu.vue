@@ -1,6 +1,6 @@
 <template>
-  <div style="{ 'max-height': '70%', 'min-width': '200px' }">
-    <v-menu class="sendfunds-menu">
+  <div>
+    <v-menu>
       <v-icon medium class="chat-menu__icon" slot="activator">mdi-plus-circle-outline</v-icon>
 
       <v-list>
@@ -124,10 +124,6 @@ export default {
 .v-menu__content
   max-height: 70%
   min-width: 200px!important
-
-.sendfunds-menu
-  max-height: 60%
-  min-width: 250px
 
 /** Themes **/
 .theme--light
