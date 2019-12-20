@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-menu :style="{ maxHeight: '70%', minWidth: '200px' }">
+  <div :style="{ maxHeight: '70%', minWidth: '200px' }">
+    <v-menu>
       <v-icon medium class="chat-menu__icon" slot="activator">mdi-plus-circle-outline</v-icon>
 
       <v-list>
@@ -120,6 +120,10 @@ export default {
 
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_colors.styl'
+
+.v-menu__content
+  max-height: 70%
+  min-width: 200px
 
 /** Themes **/
 .theme--light
