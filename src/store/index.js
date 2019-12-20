@@ -161,6 +161,7 @@ const store = {
     bz: erc20Module(Cryptos.BZ, '0x4375e7ad8a01b8ec3ed041399f62d9cd120e0063', 18),
     kcs: erc20Module(Cryptos.KCS, '0x039b5649a59967e3e936d7471f9c3700100ee1ab', 6),
     usds: erc20Module(Cryptos.USDS, '0xa4bdb11dc0a2bec88d24a3aa1e6bb17201112ebe', 6),
+    res: erc20Module(Cryptos.RES, '0x0a9f693fce6f00a51a8e0db4351b5a8078b4242e', 5),
     adm: admModule, // ADM transfers
     doge: dogeModule,
     dash: dashModule,
