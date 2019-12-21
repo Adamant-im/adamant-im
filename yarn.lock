@@ -3133,10 +3133,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-coininfo@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/coininfo/-/coininfo-4.3.0.tgz#5795c842c3563510c9ddbf3ec5607f4152a80562"
-  integrity sha512-y05vuWLvtIHkCdREhSbopaSzghsjukfJHkokcFGDkGOxL/wqEFokNHqDQS9CSag0tL/Oo7gMeGyUmeD3+MoyUA==
+coininfo@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/coininfo/-/coininfo-5.1.0.tgz#512b850d867e49afe55f15322e891f34ab6b49bd"
+  integrity sha512-q1Bv+yYSca68VpXGvaMwO0xzEJl9Zxxk0g2YWfX8EUHld8t7e3xEnaRa473IqNVWBq9CAwiXzkYR9UCCtUZVrA==
   dependencies:
     safe-buffer "^5.1.1"
 

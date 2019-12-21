@@ -27,7 +27,6 @@ export default class DogeApi extends BtcBaseApi {
       .then(balance => Number(balance) / this.multiplier)
   }
 
-  /** @override */
   getFee () {
     return TX_FEE
   }
@@ -54,7 +53,7 @@ export default class DogeApi extends BtcBaseApi {
   }
 
   /** @override */
-  _getUnspents () {
+  getUnspents () {
     return this._get(`/addr/${this.address}/utxo?noCache=1`)
       .then(unspents => unspents.map(tx => ({
         ...tx,

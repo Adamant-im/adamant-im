@@ -31,7 +31,6 @@ export default class DashApi extends BtcBaseApi {
       .then(result => Number(result.balance) / this.multiplier)
   }
 
-  /** @override */
   getFee () {
     return TX_FEE
   }
@@ -68,7 +67,7 @@ export default class DashApi extends BtcBaseApi {
   }
 
   /** @override */
-  _getUnspents () {
+  getUnspents () {
     return this._invoke('getaddressutxos', [this.address]).then(result => {
       if (!Array.isArray(result)) return []
 

@@ -23,6 +23,7 @@ import partnersModule from './modules/partners'
 import admModule from './modules/adm'
 import dogeModule from './modules/doge'
 import dashModule from './modules/dash'
+import bitcoinModule from './modules/btc'
 import nodesModule from './modules/nodes'
 import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
@@ -186,6 +187,7 @@ const store = {
     adm: admModule, // ADM transfers
     doge: dogeModule,
     dash: dashModule,
+    btc: bitcoinModule,
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes

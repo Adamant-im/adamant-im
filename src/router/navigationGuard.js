@@ -1,6 +1,32 @@
 import { Cryptos } from '@/lib/constants'
+import { parseURI } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
+import i18n from '@/i18n'
+import router from '@/router'
 import store from '@/store'
+
+/**
+ * Navigate by contact info from URI or redirect to chats
+ *
+ * @param {function} next Resolves the hook (redirect to Chats)
+ */
+export function navigateByURI (next) {
+  const contact = parseURI()
+
+  if (contact.address) {
+    _navigateByContact(
+      contact.params.message,
+      contact.address,
+      contact.params.label
+    )
+  } else {
+    if (next) {
+      next({ name: 'Chats' })
+    } else {
+      router.push({ name: 'Chats' })
+    }
+  }
+}
 
 export default {
   chats: (to, from, next) => {
@@ -21,5 +47,39 @@ export default {
     if (crypto in Cryptos) {
       next()
     } else next('/home')
+  }
+}
+
+/**
+ * Navigate to view depending on a partner address validity
+ *
+ * @param {string} messageText Text of message to place in textarea
+ * @param {string} partnerId Partner address to open chat with
+ * @param {string} partnerName Predefined partner name from label
+ */
+function _navigateByContact (messageText, partnerId, partnerName) {
+  if (validateAddress(Cryptos.ADM, partnerId)) {
+    store.dispatch('chat/createChat', { partnerId, partnerName })
+      .then(key => router.push({
+        name: 'Chat',
+        params: { messageText, partnerId }
+      }))
+      .catch(x => {
+        router.push({
+          name: 'Chats',
+          params: { partnerId, showNewContact: true }
+        })
+        store.dispatch('snackbar/show', {
+          message: x.message
+        })
+      })
+  } else {
+    router.push({
+      name: 'Chats',
+      params: { partnerId, showNewContact: false }
+    })
+    store.dispatch('snackbar/show', {
+      message: i18n.$t('chats.incorrect_address', { crypto: Cryptos.ADM })
+    })
   }
 }
