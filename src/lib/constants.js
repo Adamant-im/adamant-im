@@ -33,7 +33,7 @@ export const CryptosNames = {
   [Cryptos.DOGE]: 'DOGE',
   [Cryptos.DASH]: 'DASH',
   [Cryptos.KCS]: 'KuCoin Shares',
-  [Cryptos.USDS]: 'StableUSD',
+  [Cryptos.USDS]: 'Stably Dollar',
   [Cryptos.BTC]: 'Bitcoin'
 }
 
