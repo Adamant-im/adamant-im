@@ -65,7 +65,19 @@ export default {
       return getExplorerUrl(this.crypto, this.id)
     },
     confirmations () {
-      return this.transaction.confirmations || 0
+      const { height, confirmations } = this.transaction
+
+      let result = confirmations
+      if (height) {
+        // Calculate confirmations count based on the tx block height and the last block height.
+        // That's for BTC only as it does not return the confirmations for the transaction.
+        const c = this.$store.getters[`${this.cryptoKey}/height`] - height
+        if (isFinite(c) && c > result) {
+          result = c
+        }
+      }
+
+      return result
     }
   },
   methods: {

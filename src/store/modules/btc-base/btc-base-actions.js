@@ -1,14 +1,31 @@
 import BigNumber from '@/lib/bignumber'
 import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
+import * as tf from '../../../lib/transactionsFetching'
 
-const MAX_ATTEMPTS = 5
-const NEW_TRANSACTION_TIMEOUT = 120
-const OLD_TRANSACTION_TIMEOUT = 5
+const DEFAULT_CUSTOM_ACTIONS = () => ({ })
 
-export default options => {
+/**
+ * @typedef {Object} Options
+ * @property {function} apiCtor class to use for interaction with the crypto API
+ * @property {function(BtcBaseApi, object): Promise} getNewTransactions function to get the new transactions list (second arg is a Vuex context)
+ * @property {function(BtcBaseApi, object): Promise} getOldTransactions function to get the old transactions list (second arg is a Vuex context)
+ * @property {function(function(): BtcBaseApi): object} customActions function to create custom actions for the current crypto (optional)
+ * @property {number} fetchRetryTimeout interval (ms) between attempts to fetch the registered transaction details
+ */
+
+/**
+  * Creates actions for the BTC-based crypto
+  * @param {Options} options config options
+  */
+function createActions (options) {
   const Api = options.apiCtor || BtcBaseApi
-  const { getNewTransactions, getOldTransactions } = options
+  const {
+    getNewTransactions,
+    getOldTransactions,
+    customActions = DEFAULT_CUSTOM_ACTIONS,
+    fetchRetryTimeout
+  } = options
 
   /** @type {BtcBaseApi} */
   let api = null
@@ -63,13 +80,13 @@ export default options => {
       api.getBalance().then(balance => context.commit('status', { balance }))
     },
 
-    sendTokens (context, { amount, admAddress, address, comments }) {
+    sendTokens (context, { amount, admAddress, address, comments, fee }) {
       if (!api) return
       address = address.trim()
 
       const crypto = context.state.crypto
 
-      return api.createTransaction(address, amount)
+      return api.createTransaction(address, amount, fee)
         .then(tx => {
           if (!admAddress) return tx.hex
 
@@ -101,12 +118,12 @@ export default options => {
               senderId: context.state.address,
               recipientId: address,
               amount,
-              fee: api.getFee(amount),
+              fee: api.getFee(amount) || fee,
               status: 'PENDING',
               timestamp: Date.now()
             }])
 
-            context.dispatch('getTransaction', { hash, isNew: true, force: true })
+            context.dispatch('getTransaction', { hash, force: true })
 
             return hash
           }
@@ -118,14 +135,14 @@ export default options => {
      * @param {object} context Vuex action context
      * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
      */
-    getTransaction (context, payload) {
+    async getTransaction (context, payload) {
       if (!api) return
       if (!payload.hash) return
 
       const existing = context.state.transactions[payload.hash]
       if (existing && !payload.force) return
 
-      // Set a stub so far
+      // Set a stub so far, if the transaction is not in the store yet
       if (!existing || existing.status === 'ERROR') {
         context.commit('transactions', [{
           hash: payload.hash,
@@ -135,31 +152,58 @@ export default options => {
         }])
       }
 
-      api.getTransaction(payload.hash)
-        .then(
-          tx => {
-            if (tx) context.commit('transactions', [tx])
-            return (!tx && payload.isNew) || (tx && tx.status !== 'SUCCESS')
-          },
-          () => true
-        )
-        .then(replay => {
-          const attempt = payload.attempt || 0
-          if (replay && attempt < MAX_ATTEMPTS) {
-            const newPayload = {
-              ...payload,
-              attempt: attempt + 1,
-              force: true
-            }
+      let tx = null
+      try {
+        tx = await api.getTransaction(payload.hash)
+      } catch (e) { }
 
-            const timeout = payload.isNew ? NEW_TRANSACTION_TIMEOUT : OLD_TRANSACTION_TIMEOUT
-            setTimeout(() => context.dispatch('getTransaction', newPayload), timeout * 1000)
-          }
+      let retry = false
+      let retryTimeout = 0
+      const attempt = payload.attempt || 0
 
-          if (replay && attempt >= MAX_ATTEMPTS) {
-            context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-          }
-        })
+      if (tx) {
+        context.commit('transactions', [tx])
+        // The transaction has been confirmed, we're done here
+        if (tx.status === 'SUCCESS') return
+
+        // If it's not confirmed but is already registered, keep on trying to fetch its details
+        retryTimeout = fetchRetryTimeout
+        retry = true
+      } else if (existing && existing.status === 'REGISTERED') {
+        // We've failed to fetch the details for some reason, but the transaction is known to be
+        // accepted by the network - keep on fetching
+        retryTimeout = fetchRetryTimeout
+        retry = true
+      } else {
+        // The network does not yet know this transaction. We'll make several attempts to retrieve it.
+        retry = attempt < tf.PENDING_ATTEMPTS
+        retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp))
+      }
+
+      if (!retry) {
+        // If we're here, we have abandoned any hope to get the transaction details.
+        context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
+      } else {
+        // Try to get the details one more time
+        const newPayload = {
+          ...payload,
+          attempt: attempt + 1,
+          force: true
+        }
+        setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
+      }
+    },
+
+    /**
+     * Updates the transaction details
+     * @param {{ dispatch: function }} param0 Vuex context
+     * @param {{hash: string}} payload action payload
+     */
+    updateTransaction ({ dispatch }, payload) {
+      return dispatch('getTransaction', {
+        hash: payload.hash,
+        force: true
+      })
     },
 
     getNewTransactions (context) {
@@ -174,6 +218,10 @@ export default options => {
         return getOldTransactions(api, context)
       }
       return Promise.resolve()
-    }
+    },
+
+    ...customActions(() => api)
   }
 }
+
+export default createActions

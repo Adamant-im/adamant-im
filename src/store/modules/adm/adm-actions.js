@@ -89,6 +89,15 @@ export default {
   },
 
   /**
+   * Updates the transaction details
+   * @param {{ dispatch: function }} param0 Vuex context
+   * @param {{hash: string}} payload action payload
+   */
+  updateTransaction ({ dispatch }, payload) {
+    return dispatch('getTransaction', payload)
+  },
+
+  /**
    * Sends the specified amount of ADM to the specified ADM address
    * @param {any} context Vuex action context
    * @param {{address: string, amount: number}} options send options
