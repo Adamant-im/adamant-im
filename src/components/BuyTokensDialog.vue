@@ -74,6 +74,11 @@ export default {
             : 'https://adamant.im/buy-tokens'
         },
         {
+          icon: 'RES',
+          title: 'Resfinex',
+          link: 'https://trade.resfinex.com/?pair=ADM_USDT'
+        },
+        {
           icon: 'BZ',
           title: 'Bit-Z',
           link: 'https://www.bit-z.com/exchange/adm_usdt'
