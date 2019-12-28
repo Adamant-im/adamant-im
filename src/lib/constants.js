@@ -133,6 +133,7 @@ export const UserPasswordHashSettings = {
 }
 
 export const TransactionStatus = {
+  CONFIRMED: 'confirmed',
   DELIVERED: 'delivered',
   PENDING: 'pending',
   REJECTED: 'rejected',

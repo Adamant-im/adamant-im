@@ -1181,7 +1181,7 @@ describe('Store: chat.js', () => {
           ['updateMessage', {
             id: messageObject.id,
             realId: transactionId,
-            status: TS.PENDING,
+            status: TS.DELIVERED,
             partnerId: recipientId
           }]
         ])
@@ -1232,7 +1232,7 @@ describe('Store: chat.js', () => {
           ['updateMessage', {
             id: messageId,
             realId: transactionId,
-            status: TS.PENDING,
+            status: TS.DELIVERED,
             partnerId: recipientId
           }]
         ])

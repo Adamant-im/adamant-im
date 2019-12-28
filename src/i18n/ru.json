@@ -37,7 +37,8 @@
     "title": "Чаты",
     "too_long": "Сообщение слишком длинное",
     "transaction_statuses": {
-      "delivered": "Подтверждено в блокчейне криптовалюты",
+      "confirmed": "Подтверждено в блокчейне криптовалюты",
+      "delivered": "Доставлено на Ноду",
       "invalid": "Противоречивая информация. Внимательно проверьте перевод в блокчейне криптовалюты",
       "pending": "В ожидании",
       "rejected": "Перевод не принят или отменен",
@@ -123,7 +124,11 @@
     "ms": "мс",
     "nodeLabelDescription": "Поддержите децентрализацию и повысьте уровень приватности — <a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">установите свой узел (ноду) АДАМАНТа</a>. Чтобы добавить свои узлы в список для подключения, вам нужно <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">развернуть свое веб-приложение на отдельном домене</a>. Это ограничение связано с политикой безопасности Content Security Policy (CSP).",
     "offline": "Недоступна",
-    "ping": "Пинг"
+    "ping": "Пинг",
+    "socket": "Сокеты",
+    "unsupported": "Не поддерживается",
+    "use_socket_connection": "Использовать сокеты по умолчанию",
+    "use_socket_connection_tooltip": ""
   },
   "notifications": {
     "tabMessage": {

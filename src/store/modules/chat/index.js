@@ -12,6 +12,11 @@ import {
 import { isNumeric } from '@/lib/numericHelpers'
 import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
 
+export let interval
+
+const SOCKET_ENABLED_TIMEOUT = 3000
+const SOCKET_DISABLED_TIMEOUT = 3000
+
 /**
  * type State {
  *   chats: {
@@ -302,10 +307,11 @@ const mutations = {
     const chat = state.chats[partnerId]
 
     // Shouldn't duplicate local messages added directly
-    // when dispatch('getNewMessages'). Just update `status`.
+    // when dispatch('getNewMessages'). Just update `status, height`.
     const localMessage = chat.messages.find(localMessage => localMessage.id === message.id)
     if (localMessage) { // is message in state
       localMessage.status = message.status
+      localMessage.height = message.height
       return
     }
 
@@ -325,8 +331,10 @@ const mutations = {
     // Exception only when `height = 0`, this means that the
     // user cleared `localStorage` or logged in first time.
     if (
-      message.height > state.lastMessageHeight &&
-      state.lastMessageHeight > 0 &&
+      (
+        message.height === undefined || // unconfirmed transaction (socket)
+        (message.height > state.lastMessageHeight && state.lastMessageHeight > 0)
+      ) &&
       userId !== message.senderId // do not notify yourself when send message from other device
     ) {
       chat.numOfNewMessages += 1
@@ -394,7 +402,7 @@ const mutations = {
         senderId: 'chats.virtual.welcome_message_title',
         type: 'message',
         i18n: true,
-        status: TS.DELIVERED,
+        status: TS.CONFIRMED,
         readonly: true
       }
     ]
@@ -414,7 +422,7 @@ const mutations = {
         senderId: 'U5149447931090026688',
         type: 'message',
         i18n: true,
-        status: TS.DELIVERED,
+        status: TS.CONFIRMED,
         readonly: true
       }
     ]
@@ -433,7 +441,7 @@ const mutations = {
         senderId: 'U17840858470710371662',
         type: 'message',
         i18n: true,
-        status: TS.DELIVERED,
+        status: TS.CONFIRMED,
         readonly: true
       }
     ]
@@ -593,7 +601,7 @@ const actions = {
         commit('updateMessage', {
           id: messageObject.id,
           realId: res.transactionId,
-          status: TS.PENDING, // not confirmed yet, wait to be stored in the blockchain (optional line)
+          status: TS.DELIVERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
           partnerId: recipientId
         })
 
@@ -638,7 +646,7 @@ const actions = {
           commit('updateMessage', {
             id: messageId,
             realId: res.transactionId,
-            status: TS.PENDING,
+            status: TS.DELIVERED,
             partnerId: recipientId
           })
 
@@ -704,6 +712,29 @@ const actions = {
     })
 
     return transactionObject.id
+  },
+
+  startInterval: {
+    root: true,
+    handler ({ dispatch, rootState }) {
+      function repeat () {
+        dispatch('getNewMessages')
+          .catch(err => console.error(err))
+          .then(() => {
+            const timeout = rootState.options.useSocketConnection ? SOCKET_ENABLED_TIMEOUT : SOCKET_DISABLED_TIMEOUT
+            interval = setTimeout(repeat, timeout)
+          })
+      }
+
+      repeat()
+    }
+  },
+
+  stopInterval: {
+    root: true,
+    handler () {
+      clearTimeout(interval)
+    }
   },
 
   /** Resets module state **/

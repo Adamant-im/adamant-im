@@ -103,7 +103,7 @@ export default {
           recipientCryptoAddress,
           senderCryptoAddress
         })) {
-          status = TS.DELIVERED
+          status = TS.CONFIRMED
         } else {
           status = TS.INVALID
         }

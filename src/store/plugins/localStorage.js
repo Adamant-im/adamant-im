@@ -14,7 +14,8 @@ const vuexPersistence = new VuexPersistence({
         allowTabNotifications: state.options.allowTabNotifications,
         allowPushNotifications: state.options.allowPushNotifications,
         darkTheme: state.options.darkTheme,
-        formatMessages: state.options.formatMessages
+        formatMessages: state.options.formatMessages,
+        useSocketConnection: state.options.useSocketConnection
       }
     }
   }
