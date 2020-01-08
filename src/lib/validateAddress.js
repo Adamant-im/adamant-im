@@ -1,4 +1,5 @@
 import { isValidAddress } from 'ethereumjs-util'
+import { isValidAddress as isValidBtcAddress } from './bitcoin/bitcoin-utils'
 import {
   Cryptos, isErc20,
   RE_ADM_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS
@@ -20,6 +21,8 @@ export default function validateAddress (crypto, address) {
     return RE_DOGE_ADDRESS.test(address)
   } else if (crypto === Cryptos.DASH) {
     return RE_DASH_ADDRESS.test(address)
+  } else if (crypto === Cryptos.BTC) {
+    return isValidBtcAddress(address)
   }
   return true
 }
