@@ -121,6 +121,10 @@ export default {
 <style lang="stylus" scoped>
 @import '~vuetify/src/stylus/settings/_colors.styl'
 
+.v-menu__content
+  max-height: 70%
+  min-width: 200px!important
+
 /** Themes **/
 .theme--light
   .chat-menu

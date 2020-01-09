@@ -17,19 +17,21 @@ export const Cryptos = {
   ADM: 'ADM',
   BTC: 'BTC',
   ETH: 'ETH',
-  BZ: 'BZ',
-  KCS: 'KCS',
   DOGE: 'DOGE',
   DASH: 'DASH',
-  BNB: 'BNB',
-  USDS: 'USDS'
+  USDS: 'USDS',
+  RES: 'RES',
+  BZ: 'BZ',
+  KCS: 'KCS',
+  BNB: 'BNB'
 }
 
 export const CryptosNames = {
   [Cryptos.ADM]: 'ADAMANT',
   [Cryptos.BNB]: 'Binance Coin',
   [Cryptos.ETH]: 'Ethereum',
-  [Cryptos.BZ]: 'Bit-Z',
+  [Cryptos.BZ]: 'Bit-Z Token',
+  [Cryptos.RES]: 'Resfinex Token',
   [Cryptos.DOGE]: 'DOGE',
   [Cryptos.DASH]: 'DASH',
   [Cryptos.KCS]: 'KuCoin Shares',
@@ -41,7 +43,8 @@ export const ERC20 = Object.freeze([
   Cryptos.BNB,
   Cryptos.BZ,
   Cryptos.KCS,
-  Cryptos.USDS
+  Cryptos.USDS,
+  Cryptos.RES
 ])
 
 export const BTC_BASED = Object.freeze([
@@ -61,6 +64,7 @@ export const CryptoAmountPrecision = {
   BNB: 6,
   DOGE: 8,
   BZ: 6,
+  RES: 5,
   DASH: 5,
   KCS: 6,
   USDS: 6,
@@ -74,6 +78,7 @@ export const CryptoNaturalUnits = {
   DOGE: 8,
   BZ: 18,
   DASH: 8,
+  RES: 5,
   KCS: 6,
   USDS: 6,
   BTC: 8
