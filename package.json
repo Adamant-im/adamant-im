@@ -17,7 +17,7 @@
   "dependencies": {
     "@mdi/font": "^2.6.95",
     "@stablelib/utf8": "^0.10.1",
-    "@zxing/library": "0.15.1",
+    "@zxing/library": "0.15.2",
     "abi-decoder": "^1.2.0",
     "axios": "^0.18.0",
     "b64-to-blob": "^1.2.19",
