@@ -54,7 +54,10 @@ export default {
      */
     onClickChatAvatar (address) {
       this.contactAddress = address
-      this.contactName = this.$store.getters['partners/displayName'](address) || ''
+
+      const contactName = this.$store.getters['partners/displayName'](address) || ''
+      const isAdmChat = this.$store.getters['chat/isAdamantChat'](address)
+      this.contactName = isAdmChat ? this.$t(contactName) : contactName
 
       this.show = true
     }
