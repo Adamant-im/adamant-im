@@ -300,9 +300,11 @@ export default {
         amount = amount.minus(0.00001)
       }
 
-      return amount
+      const amt = amount
         .minus(this.calculateTransferFee(this.balance))
         .toNumber()
+
+      return Math.max(amt, 0)
     },
     /**
      * String representation of `this.maxToTransfer`
@@ -446,18 +448,18 @@ export default {
 
     /**
      * Parse address from an URI on paste text
-     * @param {string} e Event
+     * @param {ClipboardEvent} e Event
      */
     onPasteURIAddress (e) {
-      this.$nextTick(() => {
-        const address = parseURI(e.target.value).address
+      const data = e.clipboardData.getData('text')
+      const address = parseURI(data).address
 
-        if (validateAddress(this.currency, address)) {
-          this.cryptoAddress = address
-        } else {
-          this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: this.currency }))
-        }
-      })
+      if (validateAddress(this.currency, address)) {
+        e.preventDefault()
+        this.cryptoAddress = address
+      } else {
+        this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: this.currency }))
+      }
     },
 
     /**
