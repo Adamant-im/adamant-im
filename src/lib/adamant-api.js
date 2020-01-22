@@ -7,6 +7,7 @@ import client from './adamant-api-client'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { restoreState } from '@/lib/idb/state'
 import store from '@/store'
+import i18n from '@/i18n'
 
 Queue.configure(Promise)
 
@@ -121,7 +122,7 @@ export function getPublicKey (address = '') {
         return publicKey
       }
 
-      throw new Error('No public key')
+      throw new Error(i18n.$t('chats.no_public_key'))
     })
 }
 
