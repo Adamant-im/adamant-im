@@ -6,8 +6,8 @@ import utils from './adamant'
 import client from './adamant-api-client'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { restoreState } from '@/lib/idb/state'
-import store from '@/store'
 import i18n from '@/i18n'
+import store from '@/store'
 
 Queue.configure(Promise)
 
@@ -121,6 +121,15 @@ export function getPublicKey (address = '') {
 
         return publicKey
       }
+    
+    console.log('chats.no_public_key');
+    console.log('*****');
+    console.log('*****');
+    console.log(i18n);
+    console.log(JSON.stringify(i18n, null, 4));
+    console.log('+++++');
+    console.log('+++++');
+    console.log(i18n.$t('chats.no_public_key'));
 
       throw new Error(i18n.$t('chats.no_public_key'))
     })
