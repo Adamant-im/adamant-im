@@ -180,6 +180,7 @@ import { sendMessage } from '@/lib/adamant-api'
 import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, getMinAmount } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
+import partnerName from '@/mixins/partnerName'
 
 /**
  * @returns {string | boolean}
@@ -201,6 +202,7 @@ function validateForm () {
 }
 
 export default {
+  mixins: [partnerName],
   components: {
     QrcodeCapture,
     QrcodeScannerDialog
@@ -330,7 +332,8 @@ export default {
       return this.$store.state[this.currency.toLowerCase()].address
     },
     recipientName () {
-      return this.$store.getters['partners/displayName'](this.address)
+      // return this.$store.getters['partners/displayName'](this.address)
+      return this.getPartnerName(this.address)
     },
     exponent () {
       return CryptoAmountPrecision[this.currency]
