@@ -332,7 +332,6 @@ export default {
       return this.$store.state[this.currency.toLowerCase()].address
     },
     recipientName () {
-      // return this.$store.getters['partners/displayName'](this.address)
       return this.getPartnerName(this.address)
     },
     exponent () {
