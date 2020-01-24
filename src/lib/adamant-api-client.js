@@ -59,6 +59,7 @@ class ApiNode {
     this._timeDelta = 0
     this._version = ''
     this._height = 0
+    this._socketSupport = false
 
     this._client = axios.create({
       baseURL: this._baseUrl
@@ -111,6 +112,10 @@ class ApiNode {
    */
   get height () {
     return this._height
+  }
+
+  get socketSupport () {
+    return this._socketSupport
   }
 
   /**
@@ -168,6 +173,7 @@ class ApiNode {
         this._height = status.height
         this._ping = status.ping
         this._online = true
+        this._socketSupport = status.socketSupport
       })
       .catch(() => {
         this._online = false
@@ -187,7 +193,8 @@ class ApiNode {
           return {
             version: res.version.version,
             height: Number(res.network.height),
-            ping: Date.now() - time
+            ping: Date.now() - time,
+            socketSupport: res.wsClient && res.wsClient.enabled
           }
         }
 
@@ -239,7 +246,8 @@ class ApiClient {
       version: node.version,
       active: node.active,
       outOfSync: node.outOfSync,
-      hasMinApiVersion: node.version >= this._minApiVersion
+      hasMinApiVersion: node.version >= this._minApiVersion,
+      socketSupport: node.socketSupport
     })
 
     this._onInit = null

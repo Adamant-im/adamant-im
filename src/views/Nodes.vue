@@ -57,6 +57,11 @@
                   size="small"
                 >mdi-checkbox-blank-circle</v-icon>
               </td>
+              <td :class="`${className}__body`" class="pl-0 pr-2">
+                <v-icon :color="props.item.socketSupport ? 'green' : 'red'">
+                  {{ props.item.socketSupport ? 'mdi-check' : 'mdi-close' }}
+                </v-icon>
+              </td>
             </template>
           </v-data-table>
 
@@ -67,6 +72,14 @@
             v-model="preferFastestNodeOption"
           />
           <div class="a-text-explanation-enlarged">{{ $t('nodes.fastest_tooltip') }}</div>
+
+          <v-checkbox
+            :label="$t('nodes.use_socket_connection')"
+            :class="`${className}__checkbox`"
+            color="grey darken-1"
+            v-model="useSocketConnection"
+          />
+          <div class="a-text-explanation-enlarged">{{ $t('nodes.use_socket_connection_tooltip') }}</div>
 
           <div
             :class="`${className}__info a-text-regular-enlarged`"
@@ -97,6 +110,17 @@ export default {
   },
   computed: {
     className: () => 'nodes-view',
+    useSocketConnection: {
+      get () {
+        return this.$store.state.options.useSocketConnection
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'useSocketConnection',
+          value
+        })
+      }
+    },
     preferFastestNodeOption: {
       get () {
         return this.$store.state.nodes.useFastest
@@ -122,6 +146,11 @@ export default {
       {
         text: 'nodes.ping',
         value: 'ping',
+        align: 'left'
+      },
+      {
+        text: 'nodes.socket',
+        value: 'socket',
         align: 'left'
       }
     ],

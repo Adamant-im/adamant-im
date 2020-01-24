@@ -51,9 +51,9 @@ export default {
   },
   computed: {
     statusIcon () {
-      if (this.status === 'delivered') {
+      if (this.status === 'confirmed') {
         return 'mdi-check'
-      } else if (this.status === 'pending') {
+      } else if (this.status === 'pending' || this.status === 'delivered') {
         return 'mdi-clock-outline'
       } else if (this.status === 'rejected') {
         return 'mdi-close-circle-outline'
@@ -115,6 +115,7 @@ export default {
         sent: 'Sent',
         received: 'Received',
         statuses: {
+          confirmed: '',
           delivered: '',
           pending: '',
           rejected: '',
@@ -130,7 +131,7 @@ export default {
     status: {
       type: String,
       default: 'confirmed',
-      validator: v => ['delivered', 'pending', 'rejected', 'invalid', 'unknown'].includes(v)
+      validator: v => ['confirmed', 'delivered', 'pending', 'rejected', 'invalid', 'unknown'].includes(v)
     },
     isClickable: {
       type: Boolean,

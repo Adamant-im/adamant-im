@@ -16,6 +16,7 @@ import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
 import navigatorOnline from './plugins/navigatorOnline'
+import socketsPlugin from './plugins/socketsPlugin'
 import ethModule from './modules/eth'
 import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
@@ -34,6 +35,8 @@ import identicon from './modules/identicon'
 import notification from './modules/notification'
 
 Vue.use(Vuex)
+
+export let interval
 
 const store = {
   state: () => ({
@@ -152,15 +155,36 @@ const store = {
             flushCryptoAddresses()
           }
         })
+    },
+
+    startInterval: {
+      root: true,
+      handler ({ dispatch }) {
+        function repeat () {
+          dispatch('updateBalance')
+            .catch(err => console.error(err))
+            .then(() => (interval = setTimeout(repeat, 20000)))
+        }
+
+        repeat()
+      }
+    },
+
+    stopInterval: {
+      root: true,
+      handler () {
+        clearTimeout(interval)
+      }
     }
   },
-  plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin, indexedDbPlugin, navigatorOnline],
+  plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin, indexedDbPlugin, navigatorOnline, socketsPlugin],
   modules: {
     eth: ethModule, // Ethereum-related data
     bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
     bz: erc20Module(Cryptos.BZ, '0x4375e7ad8a01b8ec3ed041399f62d9cd120e0063', 18),
     kcs: erc20Module(Cryptos.KCS, '0x039b5649a59967e3e936d7471f9c3700100ee1ab', 6),
     usds: erc20Module(Cryptos.USDS, '0xa4bdb11dc0a2bec88d24a3aa1e6bb17201112ebe', 6),
+    res: erc20Module(Cryptos.RES, '0x0a9f693fce6f00a51a8e0db4351b5a8078b4242e', 5),
     adm: admModule, // ADM transfers
     doge: dogeModule,
     dash: dashModule,

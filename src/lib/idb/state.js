@@ -6,7 +6,7 @@ import Security from './stores/Security'
 import { Cryptos } from '@/lib/constants'
 
 /** Modules that will be stored in IDB **/
-const modules = ['adm', 'eth', 'doge', 'bnb', 'bz', 'dash', 'kcs', 'usds', 'partners', 'delegates']
+const modules = ['adm', 'eth', 'doge', 'bnb', 'bz', 'dash', 'kcs', 'usds', 'res', 'partners', 'delegates']
 
 /**
  * Clone modules from state.

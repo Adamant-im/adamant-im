@@ -21,6 +21,7 @@
         </div>
 
         <div v-if="!hideTime" class="a-chat__message-card-header mt-1">
+          <div v-if="status === 'confirmed'" class="a-chat__blockchain-status">&#x26AD;</div>
           <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
           <div v-if="isOutgoingMessage" class="a-chat__status">
             <v-icon
@@ -42,7 +43,7 @@
 export default {
   computed: {
     statusIcon () {
-      if (this.status === 'delivered') {
+      if (this.status === 'confirmed' || this.status === 'delivered') {
         return 'mdi-check'
       } else if (this.status === 'pending') {
         return 'mdi-clock-outline'
@@ -74,7 +75,7 @@ export default {
     status: {
       type: String,
       default: 'confirmed',
-      validator: v => ['delivered', 'pending', 'rejected'].includes(v)
+      validator: v => ['confirmed', 'delivered', 'pending', 'rejected'].includes(v)
     },
     userId: {
       type: String,
