@@ -407,7 +407,7 @@ const mutations = {
       }
     ]
 
-    Vue.set(state.chats, 'U15423595369615486571', {
+    Vue.set(state.chats, 'chats.virtual.welcome_message_title', {
       messages: bountyMessages,
       numOfNewMessages: 0,
       isAdamantChat: true,
