@@ -15,6 +15,7 @@ import DashFillIcon from './DashFill'
 import KcsFillIcon from './KcsFill'
 import LskFillIcon from './LskFill'
 import UsdsFillIcon from './UsdsFill'
+import ResFillIcon from './ResFill'
 import BtcFillIcon from './BtcFill'
 import UnknownCryptoFillIcon from './UnknownCryptoFill'
 
@@ -39,6 +40,7 @@ export default {
     KcsFillIcon,
     LskFillIcon,
     UsdsFillIcon,
+    ResFillIcon,
     BtcFillIcon,
     UnknownCryptoFillIcon
   },

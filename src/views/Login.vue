@@ -103,7 +103,6 @@ import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
 import FileIcon from '@/components/icons/common/File'
 import LoginPasswordForm from '@/components/LoginPasswordForm'
 import Logo from '@/components/icons/common/Logo'
-import AppInterval from '@/lib/AppInterval'
 import { navigateByURI } from '@/router/navigationGuard'
 
 export default {
@@ -136,8 +135,10 @@ export default {
       if (!this.$store.state.chat.isFulfilled) {
         this.$store.commit('chat/createAdamantChats')
         this.$store.dispatch('chat/loadChats')
-          .then(() => AppInterval.subscribe())
-      } else AppInterval.subscribe()
+          .then(() => this.$store.dispatch('startInterval'))
+      } else {
+        this.$store.dispatch('startInterval')
+      }
 
       navigateByURI()
     },

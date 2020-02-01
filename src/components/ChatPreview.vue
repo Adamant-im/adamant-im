@@ -128,7 +128,7 @@ export default {
       return this.getTransactionStatus(this.transaction)
     },
     statusIcon () {
-      if (this.status === 'delivered') {
+      if (this.status === 'confirmed' || this.status === 'delivered') {
         return 'mdi-check'
       } else if (this.status === 'pending') {
         return 'mdi-clock-outline'
