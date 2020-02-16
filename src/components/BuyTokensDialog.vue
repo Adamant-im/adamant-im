@@ -31,7 +31,7 @@
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-list-tile @click="openLink('https://www.idcm.io/trading/ADM_BTC')">
+          <v-list-tile @click="openLink('https://idcm.io/trading/ADM_BTC?code=LM5510')">
             <v-list-tile-avatar>
               <icon><idcm-icon/></icon>
             </v-list-tile-avatar>
@@ -70,18 +70,18 @@ export default {
           icon: 'ADM',
           title: this.$t('home.buy_tokens_anonymously'),
           link: this.adamantAddress
-            ? `https://adamant.im/buy-tokens/?wallet=${this.adamantAddress}`
-            : 'https://adamant.im/buy-tokens'
+            ? `https://adamant.im/buy-tokens/?referal=U1287231934743320628&wallet=${this.adamantAddress}`
+            : 'https://adamant.im/buy-tokens/?referal=U1287231934743320628'
         },
         {
           icon: 'RES',
           title: 'Resfinex',
-          link: 'https://trade.resfinex.com/?pair=ADM_USDT'
+          link: 'https://trade.resfinex.com?ref=7ccb34d867&pair=ADM_USDT'
         },
         {
           icon: 'BZ',
           title: 'Bit-Z',
-          link: 'https://www.bit-z.com/exchange/adm_usdt'
+          link: 'https://www.bit-z.com/exchange/adm_usdt?invite_code=2423317'
         }
       ]
     }
