@@ -14,6 +14,7 @@
     "date_tomorrow": "Завтра",
     "date_yesterday": "Вчера",
     "incorrect_address": "Неправильный ADM-адрес",
+    "no_public_key": "Этот адрес еще не использовался. С ним нельзя начать чат",
     "me": "Я",
     "message": "Введите сообщение",
     "message_mac_os": "Введите сообщение. Cmd + Ctrl + Space для выбора смайлика",
