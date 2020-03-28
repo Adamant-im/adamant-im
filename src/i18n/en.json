@@ -237,6 +237,7 @@
     "error_same_recipient": "Don't send tokens to yourself",
     "error_transfer_send": "Error while completing a transaction",
     "error_unknown": "Unknown error. Weak connection?",
+    "error_no_hash": "Failed. Unable to get Tx hash",
     "final_amount_label": "Amount including a transfer fee",
     "increase_fee": "Increase fee",
     "invalid_qr_code": "QR code does not contain an address or unrecognizable",
