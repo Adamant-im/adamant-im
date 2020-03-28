@@ -154,11 +154,18 @@ export default {
 
     /**
      * Parse info from an URI on paste text
-     * @param {string} e Event
+     * @param {ClipboardEvent} e Event
      */
     onPasteURI (e) {
+      const data = e.clipboardData.getData('text')
       this.$nextTick(() => {
-        this.getInfoFromURI(e.target.value)
+        const address = parseURI(data).address
+        if (validateAddress('ADM', address)) {
+          e.preventDefault()
+          this.getInfoFromURI(data)
+        } else {	        
+          this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: 'ADM' }))
+        }
       })
     },
 
