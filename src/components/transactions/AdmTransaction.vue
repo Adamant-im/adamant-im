@@ -17,8 +17,10 @@
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
 import { Cryptos } from '../../lib/constants'
+import partnerName from '@/mixins/partnerName'
 
 export default {
+  mixins: [partnerName],
   name: 'adm-transaction',
   props: {
     id: {
@@ -51,7 +53,7 @@ export default {
       if (address === this.$store.state.address) {
         return this.$t('transaction.me')
       }
-      let result = this.$store.getters['partners/displayName'](address)
+      let result = this.getPartnerName(address)
       if (result !== '' && result !== undefined) {
         result += ' (' + address + ')'
       } else {

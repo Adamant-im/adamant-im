@@ -81,7 +81,10 @@ import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
 import Icon from '@/components/icons/BaseIcon'
 import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
+import partnerName from '@/mixins/partnerName'
+
 export default {
+  mixins: [partnerName],
   computed: {
     className: () => 'chat-start-dialog',
     show: {
@@ -187,7 +190,7 @@ export default {
       this.recipientAddress = ''
       if (validateAddress(Cryptos.ADM, partner.address)) {
         this.recipientAddress = partner.address
-        if (!this.$store.getters['partners/displayName'](this.recipientAddress)) {
+        if (!this.getPartnerName(this.recipientAddress)) {
           this.recipientName = partner.params.label
         }
         if (partner.params.message) {

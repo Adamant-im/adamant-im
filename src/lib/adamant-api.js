@@ -467,7 +467,7 @@ function getI18nMessage (message, senderId) {
 
   if (isI18n) {
     if (senderId === 'U15423595369615486571' || senderId === 'U7047165086065693428') {
-      return 'chats.welcome_message'
+      return 'chats.virtual.welcome_message'
     }
   }
 

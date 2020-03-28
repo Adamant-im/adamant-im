@@ -119,6 +119,7 @@ import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'
 import transaction from '@/mixins/transaction'
+import partnerName from '@/mixins/partnerName'
 import dateFilter from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 
@@ -136,7 +137,7 @@ function getUserMeta (userId) {
   if (userId === this.userId) {
     user.name = this.$t('chats.you')
   } else {
-    user.name = this.$store.getters['partners/displayName'](userId)
+    user.name = this.getPartnerName(userId)
   }
 
   return user
@@ -353,7 +354,7 @@ export default {
   filters: {
     date: dateFilter
   },
-  mixins: [transaction],
+  mixins: [transaction, partnerName],
   components: {
     AChat,
     AChatMessage,
