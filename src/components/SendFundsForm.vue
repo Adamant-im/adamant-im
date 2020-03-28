@@ -504,7 +504,7 @@ export default {
       return this.sendFunds()
         .then(transactionId => {
           if (transactionId) {
-            throw new Error(this.$t('transfer.no_hash'))
+            throw new Error(this.$t('transfer.error_no_hash'))
           }
 
           if (this.currency === Cryptos.ADM) {
