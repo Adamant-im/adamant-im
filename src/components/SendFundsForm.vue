@@ -503,7 +503,7 @@ export default {
 
       return this.sendFunds()
         .then(transactionId => {
-          if (transactionId) {
+          if (!transactionId) {
             throw new Error(this.$t('transfer.error_no_hash'))
           }
 
