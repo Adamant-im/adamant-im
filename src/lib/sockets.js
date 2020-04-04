@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import io from 'socket.io-client'
 import random from 'lodash/random'
 
@@ -80,7 +82,18 @@ export class SocketClient extends EventEmitter {
       ? this.fastestNode
       : this.randomNode
 
-    return node.wsProtocol + '//' + node.hostname + ':' + node.wsPort
+    let socketUrl = node.wsProtocol + '//'
+    if (node.wsProtocol === 'ws:') {
+      let host = node.ip
+      if (!host || host === undefined) {
+        host = node.hostname
+      }
+      socketUrl += host + ':' + node.wsPort
+    } else {
+      // socketUrl += node.hostname + ':' + node.wsPort
+      socketUrl += node.hostname
+    }
+    return socketUrl
   }
 
   get fastestNode () {
@@ -208,11 +221,11 @@ export class SocketClient extends EventEmitter {
     if (
       (
         this.isOnline &&
-        this.useFastest &&
-        this.currentSocketAddress !== socketAddress
+        this.useFastest //&&
+        // this.currentSocketAddress !== socketAddress
       ) ||
-      !this.isOnline ||
-      !this.isCurrentNodeActive
+      !this.isOnline //||
+//      !this.isCurrentNodeActive
     ) {
       this.disconnect()
       this.connect(socketAddress)

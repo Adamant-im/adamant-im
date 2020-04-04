@@ -197,6 +197,7 @@ class ApiNode {
         if (body && isFinite(body.nodeTimestamp)) {
           this._timeDelta = utils.epochTime() - body.nodeTimestamp
         }
+
         return body
       },
       error => {
