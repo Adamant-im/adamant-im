@@ -1,3 +1,4 @@
+
 import axios from 'axios'
 
 import utils from './adamant'
@@ -11,6 +12,7 @@ import semver from 'semver'
  * they are considered to be in sync with each other.
  */
 const HEIGHT_EPSILON = 10
+const appProtocol = location.protocol
 
 /**
  * @typedef {Object} RequestConfig
@@ -186,23 +188,18 @@ class ApiNode {
    * @returns {PromiseLike}
    */
   updateStatus () {
-    //    console.log(`Updating node ${this._baseUrl} status.. appProtocol: ${appProtocol}`)
-    if (!this._hasSupportedProtocol) {
-      console.log(`Setting node ${this._baseUrl} as offline by protocol.`)
-      this._online = false
-    } else {
-      return this._getNodeStatus()
-        .then(status => {
-          this._version = status.version
-          this._height = status.height
-          this._ping = status.ping
-          this._online = true
-          this._socketSupport = status.socketSupport
-        })
-        .catch(() => {
-          this._online = false
-        })
-    }
+    return this._getNodeStatus()
+      .then(status => {
+        this._version = status.version
+        this._height = status.height
+        this._ping = status.ping
+        this._online = status.online
+        this._socketSupport = status.socketSupport
+      })
+      .catch(() => {
+        this._online = false
+        this._socketSupport = false
+      })
   }
 
   /**
@@ -210,20 +207,31 @@ class ApiNode {
    * @returns {Promise<{version: string, height: number, ping: number}>}
    */
   _getNodeStatus () {
-    const time = Date.now()
-    return this.request({ url: '/api/node/status' })
-      .then(res => {
-        if (res.success) {
-          return {
-            version: res.version.version,
-            height: Number(res.network.height),
-            ping: Date.now() - time,
-            socketSupport: res.wsClient && res.wsClient.enabled
-          }
+    // console.log(`Updating node ${this._baseUrl} status. appProtocol: ${appProtocol}. nodeProtocol: ${this._protocol}. hasSupportedProtocol: ${this._hasSupportedProtocol}`)
+    if (!this._hasSupportedProtocol) {
+      // console.log(`Setting node ${this._baseUrl} as unsupported and offline by protocol.`)
+      return new Promise((resolve, reject) => {
+        return {
+          online: false,
+          socketSupport: false
         }
-
-        throw new Error('Something went wrong')
       })
+    } else {
+      const time = Date.now()
+      return this.request({ url: '/api/node/status' })
+        .then(res => {
+          if (res.success) {
+            return {
+              online: true,
+              version: res.version.version,
+              height: Number(res.network.height),
+              ping: Date.now() - time,
+              socketSupport: res.wsClient && res.wsClient.enabled
+            }
+          }
+          throw new Error('Request to /api/node/status was unsuccessful')
+        })
+    }
   }
 }
 
@@ -492,6 +500,5 @@ class ApiClient {
 
 const endpoints = config.server.adm.map(endpoint => endpoint.url)
 const apiClient = new ApiClient(endpoints, config.minApiVersion)
-const appProtocol = location.protocol
 
 export default apiClient
