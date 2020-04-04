@@ -80,7 +80,7 @@ export class SocketClient extends EventEmitter {
       ? this.fastestNode
       : this.randomNode
 
-    return node.url.replace(/^https?:\/\/(.*)$/, '$1')
+    return node.wsProtocol + '//' + node.hostname + ':' + node.wsPort
   }
 
   get fastestNode () {
@@ -169,18 +169,20 @@ export class SocketClient extends EventEmitter {
   }
 
   connect (socketAddress) {
-    this.connection = io(`wss://${socketAddress}`, { reconnection: false, timeout: 5000 })
+    console.log(`[Socket] Connecting to ${socketAddress}..`)
+    this.connection = io(`${socketAddress}`, { reconnection: false, timeout: 5000 })
 
     this.connection.on('connect', () => {
       this.currentSocketAddress = socketAddress
-      this.connection.emit('msg', this.adamantAddress + ' connected!')
+      // this.connection.emit('msg', this.adamantAddress + ' connected!')
+      console.log(`[Socket] Connected to ${socketAddress} and subscribed to transactions of ${this.adamantAddress}`)
       this.connection.emit('address', this.adamantAddress)
     })
 
     this.connection.on('disconnect', reason => {
-      if (reason === 'ping timeout' || reason === 'io server disconnect') {
-        console.warn('[Socket] Disconnected. Reason:', reason)
-      }
+      // if (reason === 'ping timeout' || reason === 'io server disconnect') {
+      console.warn('[Socket] Disconnected. Reason:', reason)
+      // }
     })
 
     this.connection.on('connect_error', (err) => {

@@ -57,8 +57,12 @@ class ApiNode {
 
     this._baseUrl = baseUrl
     this._protocol = new URL(baseUrl).protocol
-    this._wsProtocol = this._protocol === 'https' ? 'wss:' : 'ws:'
+    this._port = new URL(baseUrl).port
+    this._hostname = new URL(baseUrl).hostname
+    this._wsPort = '36668' // default wsPort
+    this._wsProtocol = this._protocol === 'https:' ? 'wss:' : 'ws:'
     this._hasSupportedProtocol = !(this._protocol === 'http:' && appProtocol === 'https:')
+
     this._online = false
     this._ping = Infinity
     this._timeDelta = 0
@@ -77,6 +81,30 @@ class ApiNode {
    */
   get url () {
     return this._baseUrl
+  }
+
+  /**
+   * Node port like 36666 for http nodes (default)
+   * @type {String}
+   */
+  get port () {
+    return this._port
+  }
+
+  /**
+   * Node socket port like 36668 (default)
+   * @type {String}
+   */
+  get wsPort () {
+    return this._wsPort
+  }
+
+  /**
+   * Node hostname like bid.adamant.im or 185.231.245.26
+   * @type {String}
+   */
+  get hostname () {
+    return this._hostname
   }
 
   /**
@@ -195,6 +223,7 @@ class ApiNode {
         this._ping = status.ping
         this._online = status.online
         this._socketSupport = status.socketSupport
+        this._wsPort = status.wsPort
       })
       .catch(() => {
         this._online = false
@@ -226,7 +255,8 @@ class ApiNode {
               version: res.version.version,
               height: Number(res.network.height),
               ping: Date.now() - time,
-              socketSupport: res.wsClient && res.wsClient.enabled
+              socketSupport: res.wsClient && res.wsClient.enabled,
+              wsPort: res.wsClient ? res.wsClient.port : false
             }
           }
           throw new Error('Request to /api/node/status was unsuccessful')
@@ -273,8 +303,11 @@ class ApiClient {
 
     this._getNodeStatus = node => ({
       url: node.url,
+      port: node.port,
+      hostname: node.hostname,
       protocol: node._protocol,
       wsProtocol: node._wsProtocol,
+      wsPort: node._wsPort,
       online: node.online,
       ping: node.ping,
       version: node.version,
