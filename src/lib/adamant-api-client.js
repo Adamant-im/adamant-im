@@ -54,6 +54,9 @@ class ApiNode {
     this.outOfSync = false
 
     this._baseUrl = baseUrl
+    this._protocol = new URL(baseUrl).protocol
+    this._wsProtocol = this._protocol === 'https' ? 'wss:' : 'ws:'
+    this._hasSupportedProtocol = !(this._protocol === 'http:' && appProtocol === 'https:')
     this._online = false
     this._ping = Infinity
     this._timeDelta = 0
@@ -72,6 +75,22 @@ class ApiNode {
    */
   get url () {
     return this._baseUrl
+  }
+
+  /**
+   * Node protocol, like http: or https:
+   * @type {String}
+   */
+  get protocol () {
+    return this._protocol
+  }
+
+  /**
+   * Socket protocol, ws: or wss:
+   * @type {String}
+   */
+  get wsProtocol () {
+    return this._wsProtocol
   }
 
   /**
@@ -167,17 +186,23 @@ class ApiNode {
    * @returns {PromiseLike}
    */
   updateStatus () {
-    return this._getNodeStatus()
-      .then(status => {
-        this._version = status.version
-        this._height = status.height
-        this._ping = status.ping
-        this._online = true
-        this._socketSupport = status.socketSupport
-      })
-      .catch(() => {
-        this._online = false
-      })
+    //    console.log(`Updating node ${this._baseUrl} status.. appProtocol: ${appProtocol}`)
+    if (!this._hasSupportedProtocol) {
+      console.log(`Setting node ${this._baseUrl} as offline by protocol.`)
+      this._online = false
+    } else {
+      return this._getNodeStatus()
+        .then(status => {
+          this._version = status.version
+          this._height = status.height
+          this._ping = status.ping
+          this._online = true
+          this._socketSupport = status.socketSupport
+        })
+        .catch(() => {
+          this._online = false
+        })
+    }
   }
 
   /**
@@ -186,7 +211,6 @@ class ApiNode {
    */
   _getNodeStatus () {
     const time = Date.now()
-
     return this.request({ url: '/api/node/status' })
       .then(res => {
         if (res.success) {
@@ -241,12 +265,15 @@ class ApiClient {
 
     this._getNodeStatus = node => ({
       url: node.url,
+      protocol: node._protocol,
+      wsProtocol: node._wsProtocol,
       online: node.online,
       ping: node.ping,
       version: node.version,
       active: node.active,
       outOfSync: node.outOfSync,
       hasMinApiVersion: node.version >= this._minApiVersion,
+      hasSupportedProtocol: node._hasSupportedProtocol,
       socketSupport: node.socketSupport
     })
 
@@ -465,5 +492,6 @@ class ApiClient {
 
 const endpoints = config.server.adm.map(endpoint => endpoint.url)
 const apiClient = new ApiClient(endpoints, config.minApiVersion)
+const appProtocol = location.protocol
 
 export default apiClient

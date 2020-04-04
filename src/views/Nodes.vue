@@ -166,6 +166,8 @@ export default {
     getNodeStatus (node) {
       if (!node.hasMinApiVersion) {
         return this.$t('nodes.unsupported')
+      } else if (!node.hasSupportedProtocol) {
+        return this.$t('nodes.unsupported')
       } else if (!node.active) {
         return this.$t('nodes.inactive')
       } else if (!node.online) {
@@ -181,6 +183,8 @@ export default {
 
       if (!node.hasMinApiVersion) {
         color = 'red'
+      } else if (!node.hasSupportedProtocol) {
+        color = 'blue'
       } else if (!node.active) {
         color = 'grey'
       } else if (!node.online) {
