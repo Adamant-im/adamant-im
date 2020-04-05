@@ -1,4 +1,3 @@
-
 import axios from 'axios'
 
 import utils from './adamant'
@@ -12,6 +11,15 @@ import semver from 'semver'
  * they are considered to be in sync with each other.
  */
 const HEIGHT_EPSILON = 10
+
+/**
+ * Interval how often to update node statuses
+ */
+const REVISE_CONNECTION_TIMEOUT = 3000
+
+/**
+ * Protocol on host where app is running, f. e., http: or https:
+ */
 const appProtocol = location.protocol
 
 /**
@@ -368,7 +376,7 @@ class ApiClient {
         if (!done) {
           reject(new Error('No compatible nodes at the moment'))
           // Schedule a status update after a while
-          setTimeout(() => this.updateStatus(), 1000)
+          setTimeout(() => this.updateStatus(), REVISE_CONNECTION_TIMEOUT)
         } else {
           this._updateSyncStatuses()
         }
