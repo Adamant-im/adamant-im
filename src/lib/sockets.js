@@ -210,7 +210,7 @@ export class SocketClient extends EventEmitter {
 
     const node = this.socketNode
 
-    if ((this.isOnline && this.useFastest && this.currentNode.socketAddress !== node.socketAddress) || !this.isOnline || !this.isCurrentNodeActive) {
+    if ((this.isOnline && this.useFastest && this.currentNode.hostname !== node.hostname) || !this.isOnline || !this.isCurrentNodeActive) {
       this.disconnect()
       this.connect(node)
       this.subscribeToEvents()

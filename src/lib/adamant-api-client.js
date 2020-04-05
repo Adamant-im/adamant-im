@@ -511,7 +511,7 @@ class ApiClient {
    * all the others are not.
    */
   _updateSyncStatuses () {
-    const nodes = this._nodes.filter(x => x.online)
+    const nodes = this._nodes.filter(x => x.online && x.active)
 
     // For each node we take its height and list of nodes that have the same height ± epsilon
     const grouped = nodes.map(node => {
