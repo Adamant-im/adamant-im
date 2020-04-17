@@ -166,7 +166,7 @@ export default {
         if (validateAddress('ADM', address)) {
           e.preventDefault()
           this.getInfoFromURI(data)
-        } else {	        
+        } else {
           this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: 'ADM' }))
         }
       })
