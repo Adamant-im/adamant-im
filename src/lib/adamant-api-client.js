@@ -15,7 +15,7 @@ const HEIGHT_EPSILON = 10
 /**
  * Interval how often to update node statuses
  */
-const REVISE_CONNECTION_TIMEOUT = 3000
+const REVISE_CONNECTION_TIMEOUT = 5000
 
 /**
  * Protocol on host where app is running, f. e., http: or https:
@@ -227,12 +227,20 @@ class ApiNode {
   updateStatus () {
     return this._getNodeStatus()
       .then(status => {
-        this._version = status.version
-        this._height = status.height
-        this._ping = status.ping
+        if (status.version) {
+          this._version = status.version
+        }
+        if (status.height) {
+          this._height = status.height
+        }
+        if (status.ping) {
+          this._ping = status.ping
+        }
+        if (status.wsPort) {
+          this._wsPort = status.wsPort
+        }
         this._online = status.online
         this._socketSupport = status.socketSupport
-        this._wsPort = status.wsPort
       })
       .catch(() => {
         this._online = false
@@ -248,11 +256,11 @@ class ApiNode {
     // console.log(`Updating node ${this._baseUrl} status. appProtocol: ${appProtocol}. nodeProtocol: ${this._protocol}. hasSupportedProtocol: ${this._hasSupportedProtocol}`)
     if (!this._hasSupportedProtocol) {
       // console.log(`Setting node ${this._baseUrl} as unsupported and offline by protocol.`)
-      return new Promise((resolve, reject) => {
-        return {
+      return new Promise((resolve) => {
+        resolve({
           online: false,
           socketSupport: false
-        }
+        })
       })
     } else {
       const time = Date.now()
@@ -310,7 +318,7 @@ class ApiClient {
      */
     this.useFastest = false
 
-    this._getNodeStatus = node => ({
+    this._nodeStatus = node => ({
       url: node.url,
       port: node.port,
       hostname: node.hostname,
@@ -348,7 +356,7 @@ class ApiClient {
    * @returns {Array<{ url: string, online: boolean, ping: number }>}
    */
   getNodes () {
-    return this._nodes.map(this._getNodeStatus)
+    return this._nodes.map(this._nodeStatus)
   }
 
   /**
@@ -490,7 +498,7 @@ class ApiClient {
 
   _fireStatusUpdate (node) {
     if (typeof this._onStatusUpdate === 'function') {
-      this._onStatusUpdate(this._getNodeStatus(node))
+      this._onStatusUpdate(this._nodeStatus(node))
     }
   }
 
