@@ -91,8 +91,11 @@ export function parseURI (uri = getURI()) {
 export function generateURI (crypto = Cryptos.ADM, address, name) {
   if (crypto === Cryptos.ADM) {
     const label = name ? '&label=' + window.encodeURIComponent(name) : ''
-
-    return `${window.location.origin}?address=${address}${label}`
+    let hostname = window.location.origin
+    if (!hostname.startsWith('http')) {
+      hostname = 'https://msg.adamant.im'
+    }
+    return `${hostname}?address=${address}${label}`
   }
   if (crypto === Cryptos.BTC) {
     return `bitcoin:${address}`

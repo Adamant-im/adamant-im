@@ -17,8 +17,10 @@
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
 import { Cryptos } from '../../lib/constants'
+import partnerName from '@/mixins/partnerName'
 
 export default {
+  mixins: [partnerName],
   name: 'erc20-transaction',
   props: {
     crypto: {
@@ -98,7 +100,7 @@ export default {
       }
 
       let admAddress = this.getAdmAddress(address)
-      let name = this.$store.getters['partners/displayName'](admAddress)
+      let name = this.getPartnerName(admAddress)
 
       let result = address || ''
 

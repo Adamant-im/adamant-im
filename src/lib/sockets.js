@@ -44,7 +44,7 @@ export class SocketClient extends EventEmitter {
    * The current node to which we are connected
    * @type {string}
    */
-  currentSocketAddress = ''
+  currentNode = {}
 
   /**
    * Set true when chat messages are loaded
@@ -67,6 +67,7 @@ export class SocketClient extends EventEmitter {
   interval = null
 
   /**
+   * Interval to revise socket connection on fastest node update, on disconnect, etc.
    * @type {number}
    */
   REVISE_CONNECTION_TIMEOUT = 5000
@@ -75,12 +76,18 @@ export class SocketClient extends EventEmitter {
    * Get random socket address.
    * @returns {string}
    */
-  get socketAddress () {
+  get socketNode () {
     const node = this.useFastest
       ? this.fastestNode
       : this.randomNode
 
-    return node.url.replace(/^https?:\/\/(.*)$/, '$1')
+    let socketUrl = node.wsProtocol + '//' + node.hostname
+    if (node.wsProtocol === 'ws:') {
+      socketUrl += ':' + node.wsPort
+    }
+
+    node.socketAddress = socketUrl
+    return node
   }
 
   get fastestNode () {
@@ -94,7 +101,6 @@ export class SocketClient extends EventEmitter {
 
   get randomNode () {
     const activeNodes = this.nodes.filter(n => n.online && n.active && !n.outOfSync && n.socketSupport)
-
     return activeNodes[random(activeNodes.length - 1)]
   }
 
@@ -109,7 +115,7 @@ export class SocketClient extends EventEmitter {
 
   get isCurrentNodeActive () {
     return this.nodes.some(
-      node => node.url.match(new RegExp(this.currentSocketAddress)) && node.active
+      node => node.hostname === this.currentNode.hostname && node.active
     )
   }
 
@@ -131,7 +137,6 @@ export class SocketClient extends EventEmitter {
 
   setSocketEnabled (value) {
     this.isSocketEnabled = value
-
     if (!value) this.disconnect()
   }
 
@@ -168,19 +173,21 @@ export class SocketClient extends EventEmitter {
     this.disconnect()
   }
 
-  connect (socketAddress) {
-    this.connection = io(`wss://${socketAddress}`, { reconnection: false, timeout: 5000 })
+  connect (node) {
+    console.log(`[Socket] Connecting to ${node.socketAddress}..`)
+    this.connection = io(`${node.socketAddress}`, { reconnection: false, timeout: 5000 })
 
     this.connection.on('connect', () => {
-      this.currentSocketAddress = socketAddress
-      this.connection.emit('msg', this.adamantAddress + ' connected!')
+      this.currentNode = node
+      console.log(`[Socket] Connected to ${node.socketAddress} and subscribed to transactions of ${this.adamantAddress}`)
       this.connection.emit('address', this.adamantAddress)
     })
 
     this.connection.on('disconnect', reason => {
-      if (reason === 'ping timeout' || reason === 'io server disconnect') {
-        console.warn('[Socket] Disconnected. Reason:', reason)
-      }
+      // if (reason === 'ping timeout' || reason === 'io server disconnect') {
+      // if (reason != 'io client disconnect') {
+      console.warn('[Socket] Disconnected. Reason:', reason)
+      // }
     })
 
     this.connection.on('connect_error', (err) => {
@@ -201,19 +208,11 @@ export class SocketClient extends EventEmitter {
       return
     }
 
-    const socketAddress = this.socketAddress
+    const node = this.socketNode
 
-    if (
-      (
-        this.isOnline &&
-        this.useFastest &&
-        this.currentSocketAddress !== socketAddress
-      ) ||
-      !this.isOnline ||
-      !this.isCurrentNodeActive
-    ) {
+    if ((this.isOnline && this.useFastest && this.currentNode.hostname !== node.hostname) || !this.isOnline || !this.isCurrentNodeActive) {
       this.disconnect()
-      this.connect(socketAddress)
+      this.connect(node)
       this.subscribeToEvents()
     }
   }

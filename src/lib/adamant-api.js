@@ -6,6 +6,7 @@ import utils from './adamant'
 import client from './adamant-api-client'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { restoreState } from '@/lib/idb/state'
+import i18n from '@/i18n'
 import store from '@/store'
 
 Queue.configure(Promise)
@@ -121,7 +122,7 @@ export function getPublicKey (address = '') {
         return publicKey
       }
 
-      throw new Error('No public key')
+      throw new Error(i18n.t('chats.no_public_key'))
     })
 }
 
@@ -466,7 +467,7 @@ function getI18nMessage (message, senderId) {
 
   if (isI18n) {
     if (senderId === 'U15423595369615486571' || senderId === 'U7047165086065693428') {
-      return 'chats.welcome_message'
+      return 'chats.virtual.welcome_message'
     }
   }
 

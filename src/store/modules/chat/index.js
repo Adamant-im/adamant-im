@@ -179,6 +179,11 @@ const getters = {
    * @param {string} partnerId
    */
   isAdamantChat: state => partnerId => {
+    // That's an ancient curse: a special account that sends bounty tokens.
+    if (partnerId === 'U15423595369615486571') {
+      return true
+    }
+
     const chat = state.chats[partnerId]
 
     if (chat && chat.isAdamantChat) {

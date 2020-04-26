@@ -28,8 +28,10 @@
 import Chat from '@/components/Chat/Chat'
 import PartnerInfo from '@/components/PartnerInfo'
 import ProgressIndicator from '@/components/ProgressIndicator'
+import partnerName from '@/mixins/partnerName'
 
 export default {
+  mixins: [partnerName],
   computed: {
     address () {
       return this.$store.state.address
@@ -54,8 +56,7 @@ export default {
      */
     onClickChatAvatar (address) {
       this.contactAddress = address
-      this.contactName = this.$store.getters['partners/displayName'](address) || ''
-
+      this.contactName = this.getPartnerName(address)
       this.show = true
     }
   },
