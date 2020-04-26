@@ -82,7 +82,7 @@ export class SocketClient extends EventEmitter {
       : this.randomNode
 
     let socketUrl = node.wsProtocol + '//' + node.hostname
-    if (node.wsProtocol === 'ws:') {
+    if (node.wsPortNeeded) {
       socketUrl += ':' + node.wsPort
     }
 
