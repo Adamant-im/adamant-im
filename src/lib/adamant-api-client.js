@@ -69,6 +69,7 @@ class ApiNode {
     this._hostname = new URL(baseUrl).hostname
     this._wsPort = '36668' // default wsPort
     this._wsProtocol = this._protocol === 'https:' ? 'wss:' : 'ws:'
+    this._wsPortNeeded = this._wsProtocol === 'ws:' && !this._hostname.includes('.onion')
     this._hasSupportedProtocol = !(this._protocol === 'http:' && appProtocol === 'https:')
 
     this._online = false
@@ -129,6 +130,14 @@ class ApiNode {
    */
   get wsProtocol () {
     return this._wsProtocol
+  }
+
+  /**
+   * If Socket port like :36668 needed for connection
+   * @type {String}
+   */
+  get wsPortNeeded () {
+    return this._wsPortNeeded
   }
 
   /**
@@ -325,6 +334,7 @@ class ApiClient {
       protocol: node._protocol,
       wsProtocol: node._wsProtocol,
       wsPort: node._wsPort,
+      wsPortNeeded: node._wsPortNeeded,
       online: node.online,
       ping: node.ping,
       version: node.version,

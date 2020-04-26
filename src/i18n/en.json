@@ -126,8 +126,8 @@
     "ping": "Ping",
     "socket": "Socket",
     "unsupported": "Unsupported",
-    "use_socket_connection": "Use socket connection by default",
-    "use_socket_connection_tooltip": ""
+    "use_socket_connection": "Use socket connections",
+    "use_socket_connection_tooltip": "WebSockets allow to get new messages instantly like P2P messengers"
   },
   "notifications": {
     "tabMessage": {
