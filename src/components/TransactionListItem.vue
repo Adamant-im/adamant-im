@@ -45,8 +45,10 @@
 <script>
 import dateFilter from '@/filters/date'
 import { EPOCH, Cryptos } from '@/lib/constants'
+import partnerName from '@/mixins/partnerName'
 
 export default {
+  mixins: [partnerName],
   computed: {
     userId () {
       if (this.crypto === Cryptos.ADM) {
@@ -63,7 +65,7 @@ export default {
         : this.senderId
     },
     partnerName () {
-      return this.$store.getters['partners/displayName'](this.partnerId) || ''
+      return this.getPartnerName(this.partnerId) || ''
     },
     createdAt () {
       if (this.crypto === 'ADM') {

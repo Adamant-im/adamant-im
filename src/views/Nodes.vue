@@ -87,6 +87,8 @@
             class="mt-4"
           ></div>
 
+          <div>&nbsp;<br>&nbsp;</div>
+
         </container>
 
       </v-layout>
@@ -164,7 +166,7 @@ export default {
       })
     },
     getNodeStatus (node) {
-      if (!node.hasMinApiVersion) {
+      if (!node.hasMinApiVersion || !node.hasSupportedProtocol) {
         return this.$t('nodes.unsupported')
       } else if (!node.active) {
         return this.$t('nodes.inactive')
@@ -179,7 +181,7 @@ export default {
     getNodeColor (node) {
       let color = 'green'
 
-      if (!node.hasMinApiVersion) {
+      if (!node.hasMinApiVersion || !node.hasSupportedProtocol) {
         color = 'red'
       } else if (!node.active) {
         color = 'grey'

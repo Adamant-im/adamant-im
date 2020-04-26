@@ -1,5 +1,5 @@
 {
-  "minApiVersion": "0.5.0",
+  "minApiVersion": "0.5.2",
   "server": {
     "adm": [
       {
@@ -10,6 +10,24 @@
       },
       {
         "url": "https://endless.adamant.im"
+      },
+      {
+        "url": "https://bid.adamant.im"
+      },
+      {
+        "url": "https://unusual.adamant.im"
+      },
+      {
+        "url": "https://debate.adamant.im"
+      },
+      {
+        "url": "http://51.15.72.190:36666"
+      },
+      {
+        "url": "http://163.172.148.0:36666"
+      },
+      {
+        "url": "http://185.231.245.26:36666"
       }
     ],
     "eth": [

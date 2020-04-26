@@ -25,16 +25,15 @@
 
 <script>
 import ChatAvatar from '@/components/Chat/ChatAvatar'
+import partnerName from '@/mixins/partnerName'
+
 export default {
+  mixins: [partnerName],
   computed: {
     className: () => 'chat-toolbar',
     partnerName: {
       get () {
-        const uidOrName = this.$store.getters['partners/displayName'](this.partnerId)
-
-        if (this.isAdamantChat) return this.$t(uidOrName)
-
-        return uidOrName
+        return this.getPartnerName(this.partnerId)
       },
       set (value) {
         this.$store.commit('partners/displayName', {
@@ -45,9 +44,6 @@ export default {
     },
     isChatReadOnly () {
       return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
-    },
-    isAdamantChat () {
-      return this.$store.getters['chat/isAdamantChat'](this.partnerId)
     }
   },
   methods: {
