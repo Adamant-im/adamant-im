@@ -22,7 +22,7 @@ class Notification {
     return this.lastUnread && this.lastUnread.senderId
   }
   get partnerIdentity () {
-    const isAdmChat = this.$store.getters['chat/isAdamantChat'](this.partnerAddress)
+    const isAdmChat = this.store.getters['chat/isAdamantChat'](this.partnerAddress)
     const name = this.store.getters['partners/displayName'](this.partnerAddress) || this.partnerAddress
     return isAdmChat ? this.i18n.t(name) : name
   }
