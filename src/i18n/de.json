@@ -131,8 +131,6 @@
     "enable_desktop_tooltip": "Verwende integrierte Browser Benachrichtigungen (Erfordert deine Zustimmung)",
     "enable_sound": "Ton",
     "enable_sound_tooltip": "Spiel einen Ton, bei einer neuen Nachricht. Nicht für jedes Gerät verfügbar. Mobile Browser spielen keinen Ton ab, wenn dieser nicht aktiv ist.",
-    "exit_on_close": "Logout nach schließen des Tabs",
-    "exit_on_close_tooltip": "Für die Sicherheit deiner Wallet, empfehlen wir dir dies aktiviert zu lassen. Falls du dies ausstellst, wird deine Passphrase im Browserspeicher abgelegt, und bei der nächsten Anmeldung wird diese entschlüsselt und du brauchst sie nicht wieder eingeben. Dies macht nur Sinn, wenn du der einzige Nutzer dieses Geräts bist.",
     "general_title": "Allgemein",
     "idb_not_supported": "Your browser does not support IndexedDB or in Private Browsing mode",
     "language_label": "Sprache",
