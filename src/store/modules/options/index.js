@@ -6,7 +6,7 @@ const state = () => ({
   allowSoundNotifications: true,
   allowTabNotifications: true,
   allowPushNotifications: false,
-  darkTheme: false,
+  darkTheme: true,
   formatMessages: true,
   currentWallet: Cryptos.ADM, // current Wallet Tab on Account view (this is not an option)
   useSocketConnection: true
