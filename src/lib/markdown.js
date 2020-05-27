@@ -17,7 +17,7 @@ renderer.link = function (href, title, text) {
   const emailPattern = /^(mailto):[^@]+@[^@]+\.[^@]+$/i
 
   if (linkPattern.test(href)) {
-    return `<a href="${href}">${href}</a>`
+    return `<a onClick="window.open('${href}', '_blank', 'resizable,scrollbars,status,noopener'); return false;">${href}</a>`
   } else if (emailPattern.test(href)) {
     return `<a href="${href}">${text}</a>`
   }
