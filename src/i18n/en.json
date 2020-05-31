@@ -199,6 +199,7 @@
     "sender": "From",
     "startChat": "Start a new chat",
     "status": "Status",
+    "comment": "Comment",
     "statuses": {
       "error": "Error",
       "pending": "Pending",

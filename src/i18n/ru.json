@@ -201,6 +201,7 @@
     "sender": "Отправитель",
     "startChat": "Начать чат",
     "status": "Статус",
+    "comment": "Комментарий",
     "statuses": {
       "error": "Ошибка",
       "pending": "Ожидание",
