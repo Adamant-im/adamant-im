@@ -52,14 +52,14 @@
           <v-layout row wrap align-center>
             <v-flex xs12 a-text-regular-enlarged>
               <v-checkbox
-                :label="$t('options.exit_on_close')"
+                :label="$t('options.stay_logged_in')"
                 color="grey darken-1"
-                :input-value="logoutOnTabClose"
-                @click="onCheckLogoutOnTabClose"
+                :input-value="stayLoggedIn"
+                @click="onCheckStayLoggedIn"
                 readonly
               />
 
-              <div class="a-text-explanation-enlarged">{{ $t('options.exit_on_close_tooltip') }}</div>
+              <div class="a-text-explanation-enlarged">{{ $t('options.stay_logged_in_tooltip') }}</div>
 
               <password-set-dialog v-model="passwordDialog" @password="onSetPassword" />
             </v-flex>
@@ -210,8 +210,8 @@ import scrollPosition from '@/mixins/scrollPosition'
 export default {
   computed: {
     className: () => 'settings-view',
-    logoutOnTabClose () {
-      return this.$store.state.options.logoutOnTabClose
+    stayLoggedIn () {
+      return this.$store.state.options.stayLoggedIn
     },
     sendMessageOnEnter: {
       get () {
@@ -289,12 +289,12 @@ export default {
   methods: {
     onSetPassword () {
       this.$store.commit('options/updateOption', {
-        key: 'logoutOnTabClose',
-        value: false
+        key: 'stayLoggedIn',
+        value: true
       })
     },
-    onCheckLogoutOnTabClose () {
-      if (this.logoutOnTabClose) {
+    onCheckStayLoggedIn () {
+      if (!this.stayLoggedIn) {
         isIDBSupported
           .then(() => {
             this.passwordDialog = true
@@ -308,8 +308,8 @@ export default {
       } else {
         clearDb().then(() => {
           this.$store.commit('options/updateOption', {
-            key: 'logoutOnTabClose',
-            value: true
+            key: 'stayLoggedIn',
+            value: false
           })
 
           this.$store.commit('resetPassword')
@@ -327,7 +327,7 @@ export default {
           })
           .finally(() => {
             // turn off `loginViaPassword` option
-            this.$store.commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
+            this.$store.commit('options/updateOption', { key: 'stayLoggedIn', value: false })
 
             this.$router.push('/')
           })

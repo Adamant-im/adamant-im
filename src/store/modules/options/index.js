@@ -1,19 +1,19 @@
 import { Cryptos } from '@/lib/constants'
 
 const state = () => ({
-  logoutOnTabClose: true, // if true, localStorage will be cleared after logout
+  stayLoggedIn: false, // if true, messages and passphase will be stored encrypted. If false, localStorage will be cleared after logout
   sendMessageOnEnter: true,
   allowSoundNotifications: true,
   allowTabNotifications: true,
   allowPushNotifications: false,
-  darkTheme: false,
+  darkTheme: true,
   formatMessages: true,
   currentWallet: Cryptos.ADM, // current Wallet Tab on Account view (this is not an option)
   useSocketConnection: true
 })
 
 const getters = {
-  isLoginViaPassword: state => !state.logoutOnTabClose
+  isLoginViaPassword: state => state.stayLoggedIn
 }
 
 const mutations = {

@@ -50,10 +50,10 @@ function createWindow () {
   ];
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-    var darkMode = false;
-    if (systemPreferences.isDarkMode()){
-      darkMode = true;
-    }
+    var darkMode = true;
+    // if (systemPreferences.isDarkMode()) {
+    //   darkMode = true;
+    // }
     win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: "+darkMode+" })");
     systemPreferences.subscribeNotification(
       'AppleInterfaceThemeChangedNotification',

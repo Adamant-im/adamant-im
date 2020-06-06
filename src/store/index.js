@@ -144,7 +144,7 @@ const store = {
     removePassword ({ commit }) {
       commit('resetPassword')
       commit('setIDBReady', false)
-      commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
+      commit('options/updateOption', { key: 'stayLoggedIn', value: false })
     },
     updateBalance ({ commit }) {
       return getCurrentAccount()

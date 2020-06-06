@@ -121,8 +121,8 @@ export default store => {
           clearDb()
             .then(() => {
               store.commit('options/updateOption', {
-                key: 'logoutOnTabClose',
-                value: true
+                key: 'stayLoggedIn',
+                value: false
               })
               store.commit('reset')
             })
