@@ -11,6 +11,7 @@
       :explorerLink="explorerLink"
       :partner="partner"
       :status="transaction.status"
+      :admTx="admTx"
     />
   </div>
 </template>
@@ -80,6 +81,20 @@ export default {
       }
 
       return result
+    },
+    admTx () {
+      let admTx = {}
+      // Bad news, everyone: we'll have to scan the messages
+      Object.values(this.$store.state.chat.chats).some(chat => {
+        Object.values(chat.messages).some(msg => {
+          if (msg.hash && msg.hash === this.id) {
+            Object.assign(admTx, msg)
+          }
+          return !!admTx.id
+        })
+        return !!admTx.id
+      })
+      return admTx
     }
   },
   methods: {
@@ -113,16 +128,23 @@ export default {
     },
 
     formatAddress (address) {
+      let admAddress = this.getAdmAddress(address)
+      let name = ''
+
       if (address === this.$store.state[this.cryptoKey].address) {
-        return this.$t('transaction.me')
+        name = this.$t('transaction.me')
+      } else {
+        name = this.getPartnerName(admAddress)
       }
 
-      let admAddress = this.getAdmAddress(address)
-      let name = this.getPartnerName(admAddress)
-
-      let result = address || ''
-      if (admAddress) {
-        result += ' (' + (name || admAddress) + ')'
+      let result = ''
+      if (name !== '' && name !== undefined) {
+        result = name + ' (' + (address) + ')'
+      } else {
+        result = address
+        if (admAddress) {
+          result += ' (' + (admAddress) + ')'
+        }
       }
 
       return result

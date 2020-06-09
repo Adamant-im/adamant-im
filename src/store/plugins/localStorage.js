@@ -8,7 +8,7 @@ const vuexPersistence = new VuexPersistence({
       // modules
       language: state.language,
       options: {
-        logoutOnTabClose: state.options.logoutOnTabClose,
+        stayLoggedIn: state.options.stayLoggedIn,
         sendMessageOnEnter: state.options.sendMessageOnEnter,
         allowSoundNotifications: state.options.allowSoundNotifications,
         allowTabNotifications: state.options.allowTabNotifications,
