@@ -69,6 +69,8 @@
     "copy_uri": "Copy Share link",
     "create_qrcode": "Create a QR code",
     "free_adm_btn": "Free ADM tokens",
+    "free_adm_disclaimer": "ADAMANT is a unique Blockchain messenger that is independent from government, corporations and even its developers. It is possible due to a decentralized network, fully open source and run by users. That's why every action, including messaging or saving new contacts, has a network fee of 0.001 ADM. To start messaging now, get your free welcoming tokens.",
+    "free_adm_title": "Get free ADM tokens",
     "invest_btn": "Buy & sell tokens",
     "invest_btn_link": "https://adamant.im/buy-tokens/",
     "send_btn": "Send funds",
