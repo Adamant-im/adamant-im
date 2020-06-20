@@ -3,6 +3,7 @@
     v-model="show"
     width="500"
     :class="className"
+    @keydown.enter="onEnter"
   >
     <v-card>
       <v-card-title class="a-text-header">
@@ -58,6 +59,11 @@ export default {
     showArticle () {
       const link = this.$t('chats.how_to_use_messenger_link')
       window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+    },
+    onEnter () {
+      if (this.show) {
+        this.getFreeTokens()
+      }
     }
   },
   props: {
@@ -74,7 +80,7 @@ export default {
       margin-top: 10px
     &__btn-free-tokens
       margin-top: 15px
-      margin-bottom: 25px
+      margin-bottom: 20px
     &__btn-icon
       margin-right: 8px
     &__btn-show-article

@@ -355,7 +355,7 @@ export default {
       })
     },
     onKeyPress (e) {
-      if (e.code === 'Enter') this.$refs.chatForm.focus()
+      if (e.code === 'Enter' && !this.showFreeTokensDialog) this.$refs.chatForm.focus()
     }
   },
   filters: {
