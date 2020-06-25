@@ -169,7 +169,9 @@
       "title": "Export private keys",
       "disclaimer": "ADAMANT account includes crypto wallets. All of them are connected with your Passphrase, and only you have access to these wallets. You can export private key to use them in other applications. Store the keys in a secure place.",
       "passphrase": "Passphrase",
-      "button": "Export keys"
+      "button": "Export keys",
+      "copy_all": "Copy all",
+      "eth": "Ethereum & ERC20"
     }
   },
   "region": "en-US",
