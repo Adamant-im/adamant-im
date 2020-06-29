@@ -24,18 +24,19 @@
         </v-text-field>
       </div>
 
-      <div class="text-xs-center">
+      <div class="text-xs-right">
         <v-btn
-          :class="`${className}__button`"
+          :class="`${className}__copy_all_button`"
           @click="copyAll"
-          class="a-btn-primary"
+          class="a-btn-link" flat small
         >
           {{ $t('options.export_keys.copy_all') }}
         </v-btn>
       </div>
+
     </div>
 
-    <div :class="`${className}__disclaimer`">
+    <div :class="`${className}__disclaimer a-text-regular-enlarged`">
       {{ $t("options.export_keys.disclaimer") }}
     </div>
 
@@ -70,7 +71,7 @@
 
     <div class="text-xs-center">
       <v-btn
-        :class="`${className}__button`"
+        :class="`${className}__export_keys_button`"
         @click="revealKeys"
         class="a-btn-primary"
       >
@@ -188,8 +189,16 @@ export default {
     &__keys
       margin-bottom: 24px
     &__disclaimer
+      margin-top: 12px
       margin-bottom: 24px
     &__btn-copy
       margin-right: 0
       margin-bottom: 0
+    &__export_keys_button
+      margin-top: 15px
+      margin-bottom: 24px
+    &__copy_all_button
+      padding-right: 0
+      margin-right: 0
+      margin-bottom: 12px
 </style>
