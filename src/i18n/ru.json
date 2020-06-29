@@ -173,7 +173,7 @@
       "passphrase": "Парольная фраза",
       "button": "Сохранить ключи",
       "copy_all": "Скопировать все",
-      "eth": "Ethereum и ERC20"
+      "eth": "Ethereum и токены ERC-20"
     }
   },
   "region": "ru-RU",
