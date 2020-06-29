@@ -3,6 +3,7 @@
     <app-toolbar-centered
       app
       :title="$t('options.export_keys.title')"
+      :show-back="true"
       flat
     />
     <v-container fluid class="px-0">

@@ -1,5 +1,5 @@
 <template>
-  <v-form>
+  <v-form @submit.prevent="revealKeys">
     <div v-if="keys.length" :class="`${className}__keys`">
       <div
         v-for="key in keys"
@@ -99,7 +99,7 @@ function getBtcKey (crypto, passphrase, asWif) {
   const keyPair = getBtcAccount(crypto, passphrase).keyPair
   const key = asWif
     ? keyPair.toWIF()
-    : `0x${keyPair.privateKey.toString('hex')}`
+    : keyPair.privateKey.toString('hex')
 
   return {
     crypto: crypto,
@@ -138,6 +138,7 @@ export default {
 
     onScanQrcode (pass) {
       this.passphrase = pass
+      this.revealKeys()
     },
 
     revealKeys () {
@@ -150,11 +151,13 @@ export default {
         return
       }
 
+      // Keys generation will block the UI thread for a couple of seconds, so we'll use setTimeout
+      // to let the UI changes happen first
       setTimeout(() => {
         const eth = {
           crypto: Cryptos.ETH,
           cryptoName: this.$t('options.export_keys.eth'),
-          key: getEthAccount(this.passphrase).privateKey
+          key: (getEthAccount(this.passphrase).privateKey || '').substr(2)
         }
 
         const bitcoin = getBtcKey(Cryptos.BTC, this.passphrase, true)
@@ -162,7 +165,7 @@ export default {
         const doge = getBtcKey(Cryptos.DOGE, this.passphrase, true)
 
         this.keys = [bitcoin, eth, doge, dash]
-      }, 100)
+      }, 0)
     },
 
     copyKey (key) {
