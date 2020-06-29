@@ -197,5 +197,5 @@ export default {
     &__copy_all_button
       padding-right: 0
       margin-right: 0
-      margin-bottom: 24px
+      margin-bottom: 12px
 </style>
