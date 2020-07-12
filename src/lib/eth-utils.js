@@ -25,7 +25,7 @@ export function toWei (eth) {
 /**
  * Generates a ETH account from the passphrase specified.
  * @param {string} passphrase user-defined passphrase
- * @returns {{address: String, privateKey: Buffer}}
+ * @returns {{address: string, privateKey: string}}
  */
 export function getAccountFromPassphrase (passphrase) {
   const seed = bip39.mnemonicToSeedSync(passphrase)
