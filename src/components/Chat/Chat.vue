@@ -1,5 +1,6 @@
 <template>
   <v-card class="chat">
+    <free-tokens-dialog v-model="showFreeTokensDialog" />
     <a-chat
       :messages="messages"
       :partners="partners"
@@ -122,6 +123,7 @@ import transaction from '@/mixins/transaction'
 import partnerName from '@/mixins/partnerName'
 import dateFilter from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
+import FreeTokensDialog from '@/components/FreeTokensDialog'
 
 /**
  * Returns user meta by userId.
@@ -155,9 +157,13 @@ function validateMessage (message) {
   }
 
   if (this.$store.state.balance < 0.001) {
-    this.$store.dispatch('snackbar/show', {
-      message: this.$t('chats.no_money')
-    })
+    if (Object.keys(this.$store.state.adm.transactions).length) {
+      this.$store.dispatch('snackbar/show', {
+        message: this.$t('chats.no_money')
+      })
+    } else {
+      this.showFreeTokensDialog = true
+    }
     return false
   }
 
@@ -248,7 +254,8 @@ export default {
     chatFormLabel: '',
     loading: false,
     isScrolledToBottom: true,
-    visibilityId: null
+    visibilityId: null,
+    showFreeTokensDialog: false
   }),
   methods: {
     onMessage (message) {
@@ -348,7 +355,7 @@ export default {
       })
     },
     onKeyPress (e) {
-      if (e.code === 'Enter') this.$refs.chatForm.focus()
+      if (e.code === 'Enter' && !this.showFreeTokensDialog) this.$refs.chatForm.focus()
     }
   },
   filters: {
@@ -363,7 +370,8 @@ export default {
     ChatToolbar,
     ChatAvatar,
     ChatMenu,
-    CryptoIcon
+    CryptoIcon,
+    FreeTokensDialog
   },
   props: {
     messageText: {

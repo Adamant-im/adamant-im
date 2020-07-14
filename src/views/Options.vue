@@ -154,6 +154,19 @@
                 </div>
               </v-list-tile>
 
+              <v-list-tile @click="$router.push('/options/export-keys')">
+                <v-list-tile-content>
+                  <v-list-tile-title  :class="`${className}__list__title`" >
+                    {{ $t('options.export_keys.title') }}
+                  </v-list-tile-title>
+                </v-list-tile-content>
+                <div>
+                  <v-list-tile-title :class="`${className}__list__value`">
+                    <v-icon size="20">mdi-chevron-right</v-icon>
+                  </v-list-tile-title>
+                </div>
+              </v-list-tile>
+
               <v-list-tile  @click="$router.push('/votes')">
                 <v-list-tile-content>
                   <v-list-tile-title :class="`${className}__list__title`" >

@@ -37,6 +37,10 @@
     "start_chat": "Start a chat",
     "title": "Chats",
     "too_long": "The message is too long",
+    "free_adm_disclaimer": "ADAMANT differs from other messengers—it is truly decentralized. Every action, including messaging, has a network fee of 0.001 ADM. To start messaging now, get your free welcoming tokens.",
+    "free_adm_title": "Get free ADM tokens",
+    "how_to_use_messenger": "How to start with a Blockchain Messenger",
+    "how_to_use_messenger_link": "https://medium.com/adamant-im/how-to-start-with-a-blockchain-messenger-54d1eb9704e6",
     "transaction_statuses": {
       "confirmed": "Confirmed in token’s blockchain",
       "delivered": "Delivered to Node",
@@ -164,7 +168,15 @@
     "send_on_enter_tooltip": "Send messages with Enter, new line with Ctrl+Enter",
     "upvote_for_label": "Vote for:",
     "version": "App Version:",
-    "vote_for_delegates_button": "Vote for delegates"
+    "vote_for_delegates_button": "Vote for delegates",
+    "export_keys": {
+      "title": "Export private keys",
+      "disclaimer": "ADAMANT account includes the crypto wallets. All of them are connected with your Passphrase, and only you have access to these wallets. You can export the private keys to use them in other applications. Store the keys in a secure place.",
+      "passphrase": "Passphrase",
+      "button": "Export keys",
+      "copy_all": "Copy all",
+      "eth": "Ethereum & ERC-20 tokens"
+    }
   },
   "region": "en-US",
   "rows_per_page": "Rows per page",

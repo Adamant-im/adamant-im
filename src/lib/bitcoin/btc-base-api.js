@@ -24,13 +24,25 @@ const createClient = url => {
   return client
 }
 
+export function getAccount (crypto, passphrase) {
+  const network = networks[crypto]
+  const pwHash = bitcoin.crypto.sha256(Buffer.from(passphrase))
+  const keyPair = bitcoin.ECPair.fromPrivateKey(pwHash, { network })
+
+  return {
+    network,
+    keyPair,
+    address: bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network }).address
+  }
+}
+
 export default class BtcBaseApi {
   constructor (crypto, passphrase) {
-    const network = this._network = networks[crypto]
+    const account = getAccount(crypto, passphrase)
 
-    const pwHash = bitcoin.crypto.sha256(Buffer.from(passphrase))
-    this._keyPair = bitcoin.ECPair.fromPrivateKey(pwHash, { network })
-    this._address = bitcoin.payments.p2pkh({ pubkey: this._keyPair.publicKey, network }).address
+    this._network = account.network
+    this._keyPair = account.keyPair
+    this._address = account.address
     this._clients = { }
     this._crypto = crypto
   }
