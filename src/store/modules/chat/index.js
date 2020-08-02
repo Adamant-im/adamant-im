@@ -478,7 +478,9 @@ const mutations = {
     Vue.set(state.chats, 'U5149447931090026688', {
       messages: exchangeMessages,
       isAdamantChat: true,
-      numOfNewMessages: 0
+      numOfNewMessages: 0,
+      offset: 0,
+      page: 0
     })
 
     const bitcoinBetMessages = [
@@ -497,7 +499,9 @@ const mutations = {
     Vue.set(state.chats, 'U17840858470710371662', {
       messages: bitcoinBetMessages,
       isAdamantChat: true,
-      numOfNewMessages: 0
+      numOfNewMessages: 0,
+      offset: 0,
+      page: 0
     })
   },
 
