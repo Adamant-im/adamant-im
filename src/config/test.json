@@ -1,9 +1,18 @@
 {
-  "minApiVersion": "0.5.0",
+  "minApiVersion": "0.5.2",
   "server": {
     "adm": [
       {
         "url": "http://163.172.161.218:36667"
+      },
+      {
+        "url": "http://51.15.72.190:36666/"
+      },
+      {
+        "url": "http://163.172.148.0:36666/"
+      },
+      {
+        "url": "http://185.231.245.26:36666/"
       }
     ],
     "eth": [
@@ -17,6 +26,9 @@
     ],
     "dash": [
       { "url": "https://dashnode1.adamant.im" }
+    ],
+    "btc": [
+      { "url": "https://btcnode2.adamant.im" }
     ]
   },
   "env": "test"

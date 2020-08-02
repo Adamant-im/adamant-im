@@ -2,16 +2,13 @@
 
 It is a messaging application client for ADAMANT Blockchain. See ADAMANT Project at https://adamant.im.
 
-ADAMANT is the most secure and anonymous messenger, encrypted with Blockchain.
+ADAMANT is a decentralized anonymous messenger based on the blockchain system. It’s independent of any governments or corporations, and even developers due to the distributed network infrastructure that contains an open-source code.
 
-Highlights:
+The ADAMANT blockchain system belongs to its users. Nobody can control, block, deactivate, restrict or censor accounts. Users take full responsibility for their content, messages, media, and goals and intentions of using the messenger.
 
-- The most secure and anonymous messenger (see comparison table on the Website)
-- Trusted. Open-source project.
-- Bran new Fair dPoS consensus
-- The only one which is Blockchain-powered
-- Integrated crypto transfers
-- Get welcome amount of ADM tokens for free messaging now
+Privacy is the main concept of ADAMANT: neither phone numbers nor emails are required. Apps have no access to the contact list or geotags, IPs are hidden from chatters and paranoids can use [ADAMANT via Tor](http://adamantmsg72ixni.onion/).
+
+All the messages are encrypted with the Diffie-Hellman Curve25519, Salsa20, Poly1305 algorithms and signed by SHA-256 + Ed25519 EdDSA. Private keys are never transferred to the network. The sequence of messages and their authenticity is guaranteed by the blockchain.
 
 This application deployed at [msg.adamant.im](https://msg.adamant.im/). Feel free to run your own messenger using this code and Build Setup.
 

@@ -15,36 +15,42 @@ export const Transactions = {
 
 export const Cryptos = {
   ADM: 'ADM',
+  BTC: 'BTC',
   ETH: 'ETH',
-  BZ: 'BZ',
-  KCS: 'KCS',
   DOGE: 'DOGE',
   DASH: 'DASH',
-  BNB: 'BNB',
-  USDS: 'USDS'
+  USDS: 'USDS',
+  RES: 'RES',
+  BZ: 'BZ',
+  KCS: 'KCS',
+  BNB: 'BNB'
 }
 
 export const CryptosNames = {
   [Cryptos.ADM]: 'ADAMANT',
   [Cryptos.BNB]: 'Binance Coin',
   [Cryptos.ETH]: 'Ethereum',
-  [Cryptos.BZ]: 'Bit-Z',
+  [Cryptos.BZ]: 'Bit-Z Token',
+  [Cryptos.RES]: 'Resfinex Token',
   [Cryptos.DOGE]: 'DOGE',
   [Cryptos.DASH]: 'DASH',
   [Cryptos.KCS]: 'KuCoin Shares',
-  [Cryptos.USDS]: 'StableUSD'
+  [Cryptos.USDS]: 'Stably Dollar',
+  [Cryptos.BTC]: 'Bitcoin'
 }
 
 export const ERC20 = Object.freeze([
   Cryptos.BNB,
   Cryptos.BZ,
   Cryptos.KCS,
-  Cryptos.USDS
+  Cryptos.USDS,
+  Cryptos.RES
 ])
 
 export const BTC_BASED = Object.freeze([
   Cryptos.DOGE,
-  Cryptos.DASH
+  Cryptos.DASH,
+  Cryptos.BTC
 ])
 
 export const isErc20 = crypto => ERC20.includes(crypto)
@@ -58,9 +64,11 @@ export const CryptoAmountPrecision = {
   BNB: 6,
   DOGE: 8,
   BZ: 6,
+  RES: 5,
   DASH: 5,
   KCS: 6,
-  USDS: 6
+  USDS: 6,
+  BTC: 8
 }
 
 export const CryptoNaturalUnits = {
@@ -70,8 +78,10 @@ export const CryptoNaturalUnits = {
   DOGE: 8,
   BZ: 18,
   DASH: 8,
+  RES: 5,
   KCS: 6,
-  USDS: 6
+  USDS: 6,
+  BTC: 8
 }
 
 /** Fees for the misc ADM operations */
@@ -128,9 +138,33 @@ export const UserPasswordHashSettings = {
 }
 
 export const TransactionStatus = {
+  CONFIRMED: 'confirmed',
   DELIVERED: 'delivered',
   PENDING: 'pending',
   REJECTED: 'rejected',
   INVALID: 'invalid',
   UNKNOWN: 'unknown'
+}
+
+/**
+ * Minimal transferrable amounts for the known cryptos
+ */
+export const MinAmounts = Object.freeze({
+  BTC: 546e-8 // 546 satoshis
+})
+
+/**
+ * Returns minimal amount that can be transferred for the specified crypto
+ * @param {string} crypto crypto
+ * @returns {number}
+ */
+export function getMinAmount (crypto) {
+  let amount = MinAmounts[crypto]
+
+  if (!amount) {
+    const precision = CryptoAmountPrecision[crypto]
+    amount = precision ? Math.pow(10, -precision) : 0
+  }
+
+  return amount
 }

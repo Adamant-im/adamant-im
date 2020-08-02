@@ -14,6 +14,7 @@
     "date_tomorrow": "Tomorrow",
     "date_yesterday": "Yesterday",
     "incorrect_address": "Incorrect ADM address",
+    "no_public_key": "This address is not active yet. Unable to start a chat",
     "me": "Me",
     "message": "Type a message",
     "message_mac_os": "Type a message. Cmd + Ctrl + Space for Emoji picker",
@@ -36,8 +37,13 @@
     "start_chat": "Start a chat",
     "title": "Chats",
     "too_long": "The message is too long",
-    "transaction_statuses": { 
-      "delivered": "Confirmed in token’s blockchain",
+    "free_adm_disclaimer": "ADAMANT differs from other messengers—it is truly decentralized. Every action, including messaging, has a network fee of 0.001 ADM. To start messaging now, get your free welcoming tokens.",
+    "free_adm_title": "Get free ADM tokens",
+    "how_to_use_messenger": "How to start with a Blockchain Messenger",
+    "how_to_use_messenger_link": "https://medium.com/adamant-im/how-to-start-with-a-blockchain-messenger-54d1eb9704e6",
+    "transaction_statuses": {
+      "confirmed": "Confirmed in token’s blockchain",
+      "delivered": "Delivered to Node",
       "invalid": "Incorrect information. Check transaction in token's blockchain carefully",
       "pending": "Not confirmed yet",
       "rejected": "The transaction is cancelled or not accepted",
@@ -73,15 +79,7 @@
     "send_crypto": "Send {crypto}",
     "share_uri": "Share {crypto} address",
     "show_qr_code": "Show QR code",
-    "wallet": "wallet",
-    "your_address_ADM": "ADAMANT address",
-    "your_address_BNB": "Binance Coin address",
-    "your_address_BZ": "Bit-Z address",
-    "your_address_DASH": "Dash address",
-    "your_address_DOGE": "DOGE address",
-    "your_address_ETH": "Ethereum address",
-    "your_address_KCS": "KuCoin Shares address",
-    "your_address_USDS": "StableUSD address"
+    "wallet": "wallet"
   },
   "login": {
     "brand_title": "ADAMANT",
@@ -130,7 +128,10 @@
     "nodeLabelDescription": "Support decentralization and enhance privacy level—<a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">run your own ADAMANT node</a>. To add your nodes to the list, you need <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">to deploy web application on separate domain</a>. This limitation refers to Content Security Policy (CSP).",
     "offline": "Offline",
     "ping": "Ping",
-    "unsupported": "Unsupported"
+    "socket": "Socket",
+    "unsupported": "Unsupported",
+    "use_socket_connection": "Use socket connections",
+    "use_socket_connection_tooltip": "WebSockets allow to get new messages instantly like P2P messengers"
   },
   "notifications": {
     "tabMessage": {
@@ -150,8 +151,8 @@
     "enable_push_tooltip": "Notifications on desktop. Permission needed",
     "enable_sound": "Sound",
     "enable_sound_tooltip": "Play a sound when new message is received",
-    "exit_on_close": "Logout on close",
-    "exit_on_close_tooltip": "Do not store messages on your device and clear data when tab is closed. Switch off: messages and passphase are stored on a device, encrypted with a user's password. Easier login on this device",
+    "stay_logged_in": "Stay logged in",
+    "stay_logged_in_tooltip": "Set a password to log in on this device faster. Your messages and passphase will be stored encrypted",
     "format_messages": "Markdown formatting",
     "format_messages_tooltip": "Recommended. Use _italic_, **bold**, `monospace`, and more.",
     "general_title": "General",
@@ -167,7 +168,15 @@
     "send_on_enter_tooltip": "Send messages with Enter, new line with Ctrl+Enter",
     "upvote_for_label": "Vote for:",
     "version": "App Version:",
-    "vote_for_delegates_button": "Vote for delegates"
+    "vote_for_delegates_button": "Vote for delegates",
+    "export_keys": {
+      "title": "Export private keys",
+      "disclaimer": "ADAMANT account includes the crypto wallets. All of them are connected with your Passphrase, and only you have access to these wallets. You can export the private keys to use them in other applications. Store the keys in a secure place.",
+      "passphrase": "Passphrase",
+      "button": "Export keys",
+      "copy_all": "Copy all",
+      "eth": "Ethereum & ERC-20 tokens"
+    }
   },
   "region": "en-US",
   "rows_per_page": "Rows per page",
@@ -202,9 +211,11 @@
     "sender": "From",
     "startChat": "Start a new chat",
     "status": "Status",
+    "comment": "Comment",
     "statuses": {
       "error": "Error",
       "pending": "Pending",
+      "registered": "Pending",
       "success": "Success"
     },
     "transactions": "Transactions",
@@ -240,7 +251,9 @@
     "error_same_recipient": "Don't send tokens to yourself",
     "error_transfer_send": "Error while completing a transaction",
     "error_unknown": "Unknown error. Weak connection?",
+    "error_no_hash": "Failed. Unable to get Tx hash",
     "final_amount_label": "Amount including a transfer fee",
+    "increase_fee": "Increase fee",
     "invalid_qr_code": "QR code does not contain an address or unrecognizable",
     "no_address_text": "This user does not have a public {crypto} wallet yet. They must log in the Messenger with more than 0.001 ADM on their balance",
     "no_address_title": "Recipient has no {crypto} wallet yet",

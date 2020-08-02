@@ -8,13 +8,14 @@ const vuexPersistence = new VuexPersistence({
       // modules
       language: state.language,
       options: {
-        logoutOnTabClose: state.options.logoutOnTabClose,
+        stayLoggedIn: state.options.stayLoggedIn,
         sendMessageOnEnter: state.options.sendMessageOnEnter,
         allowSoundNotifications: state.options.allowSoundNotifications,
         allowTabNotifications: state.options.allowTabNotifications,
         allowPushNotifications: state.options.allowPushNotifications,
         darkTheme: state.options.darkTheme,
-        formatMessages: state.options.formatMessages
+        formatMessages: state.options.formatMessages,
+        useSocketConnection: state.options.useSocketConnection
       }
     }
   }

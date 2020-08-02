@@ -13,6 +13,16 @@ import semver from 'semver'
 const HEIGHT_EPSILON = 10
 
 /**
+ * Interval how often to update node statuses
+ */
+const REVISE_CONNECTION_TIMEOUT = 5000
+
+/**
+ * Protocol on host where app is running, f. e., http: or https:
+ */
+const appProtocol = location.protocol
+
+/**
  * @typedef {Object} RequestConfig
  * @property {String} url request relative URL
  * @property {string} method request method (defaults to 'get')
@@ -54,11 +64,20 @@ class ApiNode {
     this.outOfSync = false
 
     this._baseUrl = baseUrl
+    this._protocol = new URL(baseUrl).protocol
+    this._port = new URL(baseUrl).port
+    this._hostname = new URL(baseUrl).hostname
+    this._wsPort = '36668' // default wsPort
+    this._wsProtocol = this._protocol === 'https:' ? 'wss:' : 'ws:'
+    this._wsPortNeeded = this._wsProtocol === 'ws:' && !this._hostname.includes('.onion')
+    this._hasSupportedProtocol = !(this._protocol === 'http:' && appProtocol === 'https:')
+
     this._online = false
     this._ping = Infinity
     this._timeDelta = 0
     this._version = ''
     this._height = 0
+    this._socketSupport = false
 
     this._client = axios.create({
       baseURL: this._baseUrl
@@ -71,6 +90,54 @@ class ApiNode {
    */
   get url () {
     return this._baseUrl
+  }
+
+  /**
+   * Node port like 36666 for http nodes (default)
+   * @type {String}
+   */
+  get port () {
+    return this._port
+  }
+
+  /**
+   * Node socket port like 36668 (default)
+   * @type {String}
+   */
+  get wsPort () {
+    return this._wsPort
+  }
+
+  /**
+   * Node hostname like bid.adamant.im or 185.231.245.26
+   * @type {String}
+   */
+  get hostname () {
+    return this._hostname
+  }
+
+  /**
+   * Node protocol, like http: or https:
+   * @type {String}
+   */
+  get protocol () {
+    return this._protocol
+  }
+
+  /**
+   * Socket protocol, ws: or wss:
+   * @type {String}
+   */
+  get wsProtocol () {
+    return this._wsProtocol
+  }
+
+  /**
+   * If Socket port like :36668 needed for connection
+   * @type {String}
+   */
+  get wsPortNeeded () {
+    return this._wsPortNeeded
   }
 
   /**
@@ -113,6 +180,10 @@ class ApiNode {
     return this._height
   }
 
+  get socketSupport () {
+    return this._socketSupport
+  }
+
   /**
    * Performs an API request.
    *
@@ -143,6 +214,7 @@ class ApiNode {
         if (body && isFinite(body.nodeTimestamp)) {
           this._timeDelta = utils.epochTime() - body.nodeTimestamp
         }
+
         return body
       },
       error => {
@@ -164,13 +236,24 @@ class ApiNode {
   updateStatus () {
     return this._getNodeStatus()
       .then(status => {
-        this._version = status.version
-        this._height = status.height
-        this._ping = status.ping
-        this._online = true
+        if (status.version) {
+          this._version = status.version
+        }
+        if (status.height) {
+          this._height = status.height
+        }
+        if (status.ping) {
+          this._ping = status.ping
+        }
+        if (status.wsPort) {
+          this._wsPort = status.wsPort
+        }
+        this._online = status.online
+        this._socketSupport = status.socketSupport
       })
       .catch(() => {
         this._online = false
+        this._socketSupport = false
       })
   }
 
@@ -179,20 +262,32 @@ class ApiNode {
    * @returns {Promise<{version: string, height: number, ping: number}>}
    */
   _getNodeStatus () {
-    const time = Date.now()
-
-    return this.request({ url: '/api/node/status' })
-      .then(res => {
-        if (res.success) {
-          return {
-            version: res.version.version,
-            height: Number(res.network.height),
-            ping: Date.now() - time
-          }
-        }
-
-        throw new Error('Something went wrong')
+    // console.log(`Updating node ${this._baseUrl} status. appProtocol: ${appProtocol}. nodeProtocol: ${this._protocol}. hasSupportedProtocol: ${this._hasSupportedProtocol}`)
+    if (!this._hasSupportedProtocol) {
+      // console.log(`Setting node ${this._baseUrl} as unsupported and offline by protocol.`)
+      return new Promise((resolve) => {
+        resolve({
+          online: false,
+          socketSupport: false
+        })
       })
+    } else {
+      const time = Date.now()
+      return this.request({ url: '/api/node/status' })
+        .then(res => {
+          if (res.success) {
+            return {
+              online: true,
+              version: res.version.version,
+              height: Number(res.network.height),
+              ping: Date.now() - time,
+              socketSupport: res.wsClient && res.wsClient.enabled,
+              wsPort: res.wsClient ? res.wsClient.port : false
+            }
+          }
+          throw new Error('Request to /api/node/status was unsuccessful')
+        })
+    }
   }
 }
 
@@ -232,14 +327,22 @@ class ApiClient {
      */
     this.useFastest = false
 
-    this._getNodeStatus = node => ({
+    this._nodeStatus = node => ({
       url: node.url,
+      port: node.port,
+      hostname: node.hostname,
+      protocol: node._protocol,
+      wsProtocol: node._wsProtocol,
+      wsPort: node._wsPort,
+      wsPortNeeded: node._wsPortNeeded,
       online: node.online,
       ping: node.ping,
       version: node.version,
       active: node.active,
       outOfSync: node.outOfSync,
-      hasMinApiVersion: node.version >= this._minApiVersion
+      hasMinApiVersion: node.version >= this._minApiVersion,
+      hasSupportedProtocol: node._hasSupportedProtocol,
+      socketSupport: node.socketSupport
     })
 
     this._onInit = null
@@ -263,7 +366,7 @@ class ApiClient {
    * @returns {Array<{ url: string, online: boolean, ping: number }>}
    */
   getNodes () {
-    return this._nodes.map(this._getNodeStatus)
+    return this._nodes.map(this._nodeStatus)
   }
 
   /**
@@ -291,7 +394,7 @@ class ApiClient {
         if (!done) {
           reject(new Error('No compatible nodes at the moment'))
           // Schedule a status update after a while
-          setTimeout(() => this.updateStatus(), 1000)
+          setTimeout(() => this.updateStatus(), REVISE_CONNECTION_TIMEOUT)
         } else {
           this._updateSyncStatuses()
         }
@@ -405,7 +508,7 @@ class ApiClient {
 
   _fireStatusUpdate (node) {
     if (typeof this._onStatusUpdate === 'function') {
-      this._onStatusUpdate(this._getNodeStatus(node))
+      this._onStatusUpdate(this._nodeStatus(node))
     }
   }
 
@@ -426,7 +529,7 @@ class ApiClient {
    * all the others are not.
    */
   _updateSyncStatuses () {
-    const nodes = this._nodes.filter(x => x.online)
+    const nodes = this._nodes.filter(x => x.online && x.active)
 
     // For each node we take its height and list of nodes that have the same height ± epsilon
     const grouped = nodes.map(node => {

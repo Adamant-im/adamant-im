@@ -128,6 +128,18 @@
 
         <v-divider/>
 
+        <v-list-tile v-if="comment" :title="comment">
+          <v-list-tile-title :class="`${className}__title`">
+            {{ $t('transaction.comment') }}
+          </v-list-tile-title>
+
+          <div :class="`${className}__value`">
+            {{ comment || placeholder }}
+          </div>
+        </v-list-tile>
+
+        <v-divider/>
+
         <v-list-tile v-if="explorerLink" @click="openInExplorer">
           <v-list-tile-content>
             <v-list-tile-title :class="`${className}__title`">
@@ -212,6 +224,10 @@ export default {
     timestamp: {
       required: true,
       type: Number
+    },
+    admTx: {
+      required: false,
+      type: Object
     }
   },
   methods: {
@@ -239,6 +255,9 @@ export default {
     },
     lowerCaseStatus () {
       return this.status ? this.status.toLowerCase() : 'pending'
+    },
+    comment () {
+      return this.admTx && this.admTx.message ? this.admTx.message : false
     }
   },
   components: {

@@ -20,16 +20,18 @@
           <span class="a-text-regular-enlarged">{{ partnerId }}</span>
         </v-list-tile-title>
 
-        <v-list-tile-sub-title :class="`${className}__amount ${directionClass}`">
-          {{ amount | currency(crypto) }}
-        </v-list-tile-sub-title>
+        <v-list-tile-title>
+          <span :class="`${className}__amount ${directionClass}`">{{ amount | currency(crypto) }}</span>
+          <span v-if="comment" class="a-text-regular-enlarged-bold" style="font-style: italic;"> "</span>
+          <span v-if="comment" class="a-text-explanation" style="font-weight: 100;">{{ comment }}</span>
+        </v-list-tile-title>
 
         <v-list-tile-sub-title :class="`${className}__date`" class="a-text-explanation-small">
           {{ createdAt | date }}
         </v-list-tile-sub-title>
       </v-list-tile-content>
 
-      <v-list-tile-action :class="`${className}__action`" v-if="isCryptoADM">
+      <v-list-tile-action :class="`${className}__action`" v-if="isClickIcon">
         <v-btn icon ripple @click.stop="onClickIcon">
           <v-icon :class="`${className}__icon`" :size="20">
             {{ isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline' }}
@@ -45,8 +47,10 @@
 <script>
 import dateFilter from '@/filters/date'
 import { EPOCH, Cryptos } from '@/lib/constants'
+import partnerName from '@/mixins/partnerName'
 
 export default {
+  mixins: [partnerName],
   computed: {
     userId () {
       if (this.crypto === Cryptos.ADM) {
@@ -62,24 +66,37 @@ export default {
         ? this.recipientId
         : this.senderId
     },
+    partnerAdmId () {
+      return this.getAdmTx.senderId === this.$store.state.address
+        ? this.getAdmTx.recipientId
+        : this.getAdmTx.senderId
+    },
     partnerName () {
-      return this.$store.getters['partners/displayName'](this.partnerId) || ''
+      let name = this.getPartnerName(this.partnerAdmId) || ''
+      if (this.isCryptoADM()) {
+        return name
+      } else {
+        return name || this.partnerAdmId || ''
+      }
     },
     createdAt () {
       if (this.crypto === 'ADM') {
         return this.timestamp * 1000 + EPOCH
       }
-
       return this.timestamp
     },
     isPartnerInChatList () {
-      return this.$store.getters['chat/isPartnerInChatList'](this.partnerId)
+      return this.$store.getters['chat/isPartnerInChatList'](this.partnerAdmId)
     },
     className () {
       return 'transaction-item'
     },
-    isCryptoADM () {
-      return this.crypto === Cryptos.ADM
+    isClickIcon () {
+      let hasPartnerAddress = this.partnerAdmId && (this.partnerAdmId !== undefined)
+      return this.isCryptoADM() || hasPartnerAddress
+    },
+    getAdmTx () {
+      return this.admTx()
     },
     directionClass () {
       if (this.senderId === this.userId && this.recipientId === this.userId) {
@@ -89,14 +106,38 @@ export default {
       } else {
         return `${this.className}__amount--is-incoming`
       }
+    },
+    comment () {
+      return this.getAdmTx && this.getAdmTx.message ? this.getAdmTx.message : false
     }
   },
   methods: {
+    isCryptoADM () {
+      return this.crypto === Cryptos.ADM
+    },
     onClickTransaction () {
       this.$emit('click:transaction', this.id)
     },
     onClickIcon () {
-      this.$emit('click:icon', this.partnerId)
+      this.$emit('click:icon', this.partnerAdmId)
+    },
+    admTx () {
+      if (this.isCryptoADM()) {
+        return this.$store.getters['chat/messageById'](this.id) || this.$store.state.adm.transactions[this.id] || { }
+      }
+
+      let admTx = {}
+      // Bad news, everyone: we'll have to scan the messages
+      Object.values(this.$store.state.chat.chats).some(chat => {
+        Object.values(chat.messages).some(msg => {
+          if (msg.hash && msg.hash === this.id) {
+            Object.assign(admTx, msg)
+          }
+          return !!admTx.id
+        })
+        return !!admTx.id
+      })
+      return admTx
     }
   },
   filters: {

@@ -117,6 +117,24 @@ $chat-avatar-size := 40px
     word-break: break-word
     word-wrap: break-word
 
+    code
+      line-height: 1rem
+      padding: 5px
+      color: #2e7eed
+      font-weight: inherit
+      font-size: 12px
+      padding: 8px
+      margin-bottom: 8px
+      tab-size: 4
+      border-radius: 4px
+      border-style: solid
+      border-width: 1px
+      border-color: rgb(224, 224, 224)
+      overflow-x: auto
+      max-width: 100%
+
+    code:before
+      letter-spacing: inherit
     p
       margin-bottom: 0
     p:not(:last-child)
@@ -135,6 +153,10 @@ $chat-avatar-size := 40px
       border-width: 1px
       overflow-x: auto
       max-width: 100%
+      border-color: rgb(224, 224, 224)
+      
+      code:before
+        content: ""
 
   /**
    * 1. align text to top
@@ -165,6 +187,11 @@ $chat-avatar-size := 40px
 
     i
       line-height: 1.2
+
+  &__blockchain-status
+    font-size: 12px
+    line-height: 1
+    margin-right: 5px
 
   &__direction
     font-size: 14px
@@ -225,6 +252,8 @@ $chat-avatar-size := 40px
       color: $grey.darken-4
     &__timestamp
       color: $adm-colors.muted
+    &__blockchain-status
+      color: $adm-colors.muted
     &__amount
       color: $adm-colors.regular
     &__direction
@@ -280,6 +309,8 @@ $chat-avatar-size := 40px
     &__sender
       color: $shades.white
     &__timestamp
+      color: $grey.base
+    &__blockchain-status
       color: $grey.base
     &__message-text
       a

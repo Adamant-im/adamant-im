@@ -10,6 +10,7 @@
     :explorerLink="explorerLink"
     :partner="transaction.partner"
     :status="status"
+    :admTx="admTx"
   />
 </template>
 
@@ -17,8 +18,10 @@
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
 import { Cryptos } from '../../lib/constants'
+import partnerName from '@/mixins/partnerName'
 
 export default {
+  mixins: [partnerName],
   name: 'adm-transaction',
   props: {
     id: {
@@ -39,6 +42,9 @@ export default {
     recipient () {
       return this.formatAddress(this.transaction.recipientId)
     },
+    admTx () {
+      return this.$store.getters['chat/messageById'](this.id) || this.$store.state.adm.transactions[this.id] || { }
+    },
     explorerLink () {
       return getExplorerUrl(Cryptos.ADM, this.id)
     },
@@ -48,12 +54,16 @@ export default {
   },
   methods: {
     formatAddress (address) {
+      let name = ''
       if (address === this.$store.state.address) {
-        return this.$t('transaction.me')
+        name = this.$t('transaction.me')
+      } else {
+        name = this.getPartnerName(address)
       }
-      let result = this.$store.getters['partners/displayName'](address)
-      if (result !== '' && result !== undefined) {
-        result += ' (' + address + ')'
+
+      let result = ''
+      if (name !== '' && name !== undefined) {
+        result = name + ' (' + address + ')'
       } else {
         result = address
       }

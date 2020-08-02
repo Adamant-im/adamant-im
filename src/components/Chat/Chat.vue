@@ -1,5 +1,6 @@
 <template>
   <v-card class="chat">
+    <free-tokens-dialog v-model="showFreeTokensDialog" />
     <a-chat
       :messages="messages"
       :partners="partners"
@@ -119,8 +120,10 @@ import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'
 import transaction from '@/mixins/transaction'
+import partnerName from '@/mixins/partnerName'
 import dateFilter from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
+import FreeTokensDialog from '@/components/FreeTokensDialog'
 
 /**
  * Returns user meta by userId.
@@ -136,7 +139,7 @@ function getUserMeta (userId) {
   if (userId === this.userId) {
     user.name = this.$t('chats.you')
   } else {
-    user.name = this.$store.getters['partners/displayName'](userId)
+    user.name = this.getPartnerName(userId)
   }
 
   return user
@@ -154,9 +157,13 @@ function validateMessage (message) {
   }
 
   if (this.$store.state.balance < 0.001) {
-    this.$store.dispatch('snackbar/show', {
-      message: this.$t('chats.no_money')
-    })
+    if (Object.keys(this.$store.state.adm.transactions).length) {
+      this.$store.dispatch('snackbar/show', {
+        message: this.$t('chats.no_money')
+      })
+    } else {
+      this.showFreeTokensDialog = true
+    }
     return false
   }
 
@@ -263,7 +270,8 @@ export default {
     loading: false,
     noMoreMessages: false,
     isScrolledToBottom: true,
-    visibilityId: null
+    visibilityId: null,
+    showFreeTokensDialog: false
   }),
   methods: {
     onMessage (message) {
@@ -378,13 +386,13 @@ export default {
       })
     },
     onKeyPress (e) {
-      if (e.code === 'Enter') this.$refs.chatForm.focus()
+      if (e.code === 'Enter' && !this.showFreeTokensDialog) this.$refs.chatForm.focus()
     }
   },
   filters: {
     date: dateFilter
   },
-  mixins: [transaction],
+  mixins: [transaction, partnerName],
   components: {
     AChat,
     AChatMessage,
@@ -393,7 +401,8 @@ export default {
     ChatToolbar,
     ChatAvatar,
     ChatMenu,
-    CryptoIcon
+    CryptoIcon,
+    FreeTokensDialog
   },
   props: {
     messageText: {

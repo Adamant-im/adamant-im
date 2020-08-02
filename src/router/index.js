@@ -15,6 +15,7 @@ import Home from '@/views/Home'
 import Votes from '@/views/Votes'
 import Nodes from '@/views/Nodes'
 import Login from '@/views/Login'
+import ExportKeys from '@/views/ExportKeys'
 
 Vue.use(Router)
 
@@ -25,6 +26,15 @@ const router = new Router({
       path: '/options/nodes',
       name: 'Nodes',
       component: Nodes,
+      meta: {
+        requiresAuth: true,
+        layout: 'no-container'
+      }
+    },
+    {
+      path: '/options/export-keys',
+      name: 'ExportKeys',
+      component: ExportKeys,
       meta: {
         requiresAuth: true,
         layout: 'no-container'

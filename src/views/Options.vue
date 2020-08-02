@@ -52,14 +52,14 @@
           <v-layout row wrap align-center>
             <v-flex xs12 a-text-regular-enlarged>
               <v-checkbox
-                :label="$t('options.exit_on_close')"
+                :label="$t('options.stay_logged_in')"
                 color="grey darken-1"
-                :input-value="logoutOnTabClose"
-                @click="onCheckLogoutOnTabClose"
+                :input-value="stayLoggedIn"
+                @click="onCheckStayLoggedIn"
                 readonly
               />
 
-              <div class="a-text-explanation-enlarged">{{ $t('options.exit_on_close_tooltip') }}</div>
+              <div class="a-text-explanation-enlarged">{{ $t('options.stay_logged_in_tooltip') }}</div>
 
               <password-set-dialog v-model="passwordDialog" @password="onSetPassword" />
             </v-flex>
@@ -154,6 +154,19 @@
                 </div>
               </v-list-tile>
 
+              <v-list-tile @click="$router.push('/options/export-keys')">
+                <v-list-tile-content>
+                  <v-list-tile-title  :class="`${className}__list__title`" >
+                    {{ $t('options.export_keys.title') }}
+                  </v-list-tile-title>
+                </v-list-tile-content>
+                <div>
+                  <v-list-tile-title :class="`${className}__list__value`">
+                    <v-icon size="20">mdi-chevron-right</v-icon>
+                  </v-list-tile-title>
+                </div>
+              </v-list-tile>
+
               <v-list-tile  @click="$router.push('/votes')">
                 <v-list-tile-content>
                   <v-list-tile-title :class="`${className}__list__title`" >
@@ -205,14 +218,13 @@ import LanguageSwitcher from '@/components/LanguageSwitcher'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import PasswordSetDialog from '@/components/PasswordSetDialog'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
-import AppInterval from '@/lib/AppInterval'
 import scrollPosition from '@/mixins/scrollPosition'
 
 export default {
   computed: {
     className: () => 'settings-view',
-    logoutOnTabClose () {
-      return this.$store.state.options.logoutOnTabClose
+    stayLoggedIn () {
+      return this.$store.state.options.stayLoggedIn
     },
     sendMessageOnEnter: {
       get () {
@@ -290,12 +302,12 @@ export default {
   methods: {
     onSetPassword () {
       this.$store.commit('options/updateOption', {
-        key: 'logoutOnTabClose',
-        value: false
+        key: 'stayLoggedIn',
+        value: true
       })
     },
-    onCheckLogoutOnTabClose () {
-      if (this.logoutOnTabClose) {
+    onCheckStayLoggedIn () {
+      if (!this.stayLoggedIn) {
         isIDBSupported
           .then(() => {
             this.passwordDialog = true
@@ -309,8 +321,8 @@ export default {
       } else {
         clearDb().then(() => {
           this.$store.commit('options/updateOption', {
-            key: 'logoutOnTabClose',
-            value: true
+            key: 'stayLoggedIn',
+            value: false
           })
 
           this.$store.commit('resetPassword')
@@ -318,7 +330,7 @@ export default {
       }
     },
     logout () {
-      AppInterval.unsubscribe()
+      this.$store.dispatch('stopInterval')
       this.$store.dispatch('logout')
 
       if (this.isLoginViaPassword) {
@@ -328,7 +340,7 @@ export default {
           })
           .finally(() => {
             // turn off `loginViaPassword` option
-            this.$store.commit('options/updateOption', { key: 'logoutOnTabClose', value: true })
+            this.$store.commit('options/updateOption', { key: 'stayLoggedIn', value: false })
 
             this.$router.push('/')
           })

@@ -13,7 +13,9 @@ const path = require('path')
 let win
 
 // Standard scheme must be registered before the app is ready
+// before (<= v4.x):
 protocol.registerStandardSchemes(['app'], { secure: true })
+
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({ width: 800, height: 800, "max-width": 800, icon: path.join(__dirname, '/icon.png') })
@@ -50,10 +52,10 @@ function createWindow () {
   ];
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-    var darkMode = false;
-    if (systemPreferences.isDarkMode()){
-      darkMode = true;
-    }
+    var darkMode = true;
+    // if (systemPreferences.isDarkMode()) {
+    //   darkMode = true;
+    // }
     win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: "+darkMode+" })");
     systemPreferences.subscribeNotification(
       'AppleInterfaceThemeChangedNotification',

@@ -20,7 +20,7 @@
           ref="passwordField"
         />
 
-        <div class="a-text-regular-enlarged">{{ $t('login_via_password.article_hint') }} <a :href="userPasswordAgreementLink">{{$t('login_via_password.article')}}</a>.</div>
+        <div class="a-text-regular-enlarged">{{ $t('login_via_password.article_hint') }} <a @click="openLink(userPasswordAgreementLink)">{{$t('login_via_password.article')}}</a>.</div>
       </v-card-text>
 
       <v-card-actions>
@@ -82,6 +82,9 @@ export default {
     }
   },
   methods: {
+    openLink (link) {
+      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+    },
     submit () {
       if (!this.isValidForm) {
         return

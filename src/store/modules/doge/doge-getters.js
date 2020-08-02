@@ -4,7 +4,5 @@ import baseGetters from '../btc-base/btc-base-getters'
 export default {
   ...baseGetters,
 
-  fee () {
-    return TX_FEE
-  }
+  fee: state => amount => TX_FEE
 }

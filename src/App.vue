@@ -10,7 +10,6 @@
 import dayjs from 'dayjs'
 
 import Notifications from '@/lib/notifications'
-import AppInterval from '@/lib/AppInterval'
 
 export default {
   created () {
@@ -22,7 +21,7 @@ export default {
   },
   beforeDestroy () {
     this.notifications.stop()
-    AppInterval.unsubscribe()
+    this.$store.dispatch('stopInterval')
   },
   computed: {
     layout () {

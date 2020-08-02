@@ -6,7 +6,6 @@ import router from '@/router'
 import { Modules, Chats, Security, clearDb } from '@/lib/idb'
 import { restoreState, modules } from '@/lib/idb/state'
 import { Cryptos } from '@/lib/constants'
-import AppInterval from '@/lib/AppInterval'
 
 const chatModuleMutations = ['setHeight', 'setFulfilled']
 const multipleChatMutations = ['markAllAsRead', 'createEmptyChat', 'createAdamantChats']
@@ -114,7 +113,7 @@ export default store => {
           }
         })
         .then(() => {
-          AppInterval.subscribe()
+          store.dispatch('startInterval')
         })
         .catch(() => {
           console.error('Can not decode IDB with current password. Fallback to Login via Passphrase.')
@@ -122,8 +121,8 @@ export default store => {
           clearDb()
             .then(() => {
               store.commit('options/updateOption', {
-                key: 'logoutOnTabClose',
-                value: true
+                key: 'stayLoggedIn',
+                value: false
               })
               store.commit('reset')
             })
@@ -139,7 +138,7 @@ export default store => {
     store.dispatch('unlock')
     store.commit('chat/createAdamantChats')
     store.dispatch('chat/loadChats')
-      .then(() => AppInterval.subscribe())
+      .then(() => store.dispatch('startInterval'))
 
     store.dispatch('afterLogin', Base64.decode(store.state.passphrase))
   }
