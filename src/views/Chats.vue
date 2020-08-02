@@ -66,6 +66,8 @@ import ChatStartDialog from '@/components/ChatStartDialog'
 import ChatSpinner from '@/components/ChatSpinner'
 import scrollPosition from '@/mixins/scrollPosition'
 
+const scrollOffset = 64
+
 export default {
   mounted () {
     this.showChatStartDialog = this.showNewContact
@@ -124,7 +126,7 @@ export default {
       const clientHeight = document.documentElement.clientHeight
 
       // if scrolled to bottom
-      if (scrollHeight - scrollTop === clientHeight) {
+      if (scrollHeight - scrollTop - scrollOffset < clientHeight) {
         this.loadChatsPaged()
       }
     },
