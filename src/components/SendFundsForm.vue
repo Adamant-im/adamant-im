@@ -174,6 +174,7 @@ import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
+import { INCREASE_FEE_MULTIPLIER } from '../lib/constants'
 
 import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
@@ -369,7 +370,7 @@ export default {
       }
     },
     allowIncreaseFee () {
-      return this.currency === Cryptos.BTC
+      return (this.currency === Cryptos.BTC) || (this.currency === Cryptos.ETH) || (isErc20(this.currency))
     }
   },
   watch: {
@@ -423,7 +424,7 @@ export default {
       } else {
         this.$store.dispatch('snackbar/show', {
           message: abstract,
-          timeout: 3000
+          timeout: 5000
         })
       }
     },
@@ -620,7 +621,7 @@ export default {
       return right.length <= units
     },
     calculateTransferFee (amount) {
-      const coef = this.increaseFee ? 2 : 1
+      const coef = this.increaseFee ? INCREASE_FEE_MULTIPLIER : 1
       return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount)
     }
   },

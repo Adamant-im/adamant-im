@@ -1,7 +1,7 @@
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { ETH_TRANSFER_GAS } from '../../../lib/constants'
+import { ETH_TRANSFER_GAS, ETH_GASPRICE_MULTIPLIER, INCREASE_FEE_MULTIPLIER } from '../../../lib/constants'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
@@ -17,15 +17,19 @@ function storeEthAddress (context) {
   storeCryptoAddress(context.state.crypto, context.state.address)
 }
 
-const initTransaction = (api, context, ethAddress, amount) => {
+const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
   const transaction = {
     from: context.state.address,
     to: ethAddress,
     value: api.fromDecimal(utils.toWei(amount)),
-    // gas: api.fromDecimal(ETH_TRANSFER_GAS),
+    // gas: api.fromDecimal(ETH_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
     gasPrice: api.fromDecimal(context.getters.gasPrice)
   }
-  transaction.gas = '0x' + api.eth.estimateGas(transaction).toString(16)
+
+  let gasLimit = api.eth.estimateGas(transaction)
+  gasLimit = increaseFee ? (gasLimit * INCREASE_FEE_MULTIPLIER).toString(16) : gasLimit.toString(16)
+  transaction.gas = '0x' + gasLimit
+
   return transaction
 }
 
@@ -67,10 +71,10 @@ const createSpecificActions = (api, queue) => ({
         // Current gas price
         api.eth.getGasPrice.request((err, price) => {
           if (!err) {
-            const gasPrice = 3 * price.toNumber()
+            const gasPrice = ETH_GASPRICE_MULTIPLIER * price.toNumber()
             context.commit('gasPrice', {
               gasPrice,
-              fee: utils.calculateFee(ETH_TRANSFER_GAS, gasPrice)
+              fee: +(+utils.calculateFee(ETH_TRANSFER_GAS, gasPrice)).toFixed(7)
             })
           }
         }),
