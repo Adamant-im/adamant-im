@@ -79,7 +79,7 @@
 
       <v-text-field
         :value="`${this.transferFeeFixed} ${this.transferFeeCurrency}`"
-        :label="$t('transfer.commission_label')"
+        :label="`${this.transferFeeLabel}`"
         class="a-input"
         disabled
       />
@@ -178,7 +178,7 @@ import { INCREASE_FEE_MULTIPLIER } from '../lib/constants'
 
 import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
-import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, getMinAmount } from '@/lib/constants'
+import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
@@ -237,6 +237,14 @@ export default {
      */
     transferFeeFixed () {
       return BigNumber(this.transferFee).toFixed()
+    },
+
+    /**
+     * Label for fee field. Estimate fee or precise value.
+     * @returns {string}
+     */
+    transferFeeLabel () {
+      return isFeeEstimate(this.currency) ? this.$t('transfer.commission_estimate_label') : this.$t('transfer.commission_label')
     },
 
     /**
@@ -370,7 +378,7 @@ export default {
       }
     },
     allowIncreaseFee () {
-      return (this.currency === Cryptos.BTC) || (this.currency === Cryptos.ETH) || (isErc20(this.currency))
+      return (this.currency === Cryptos.BTC) || isEthBased(this.currency)
     }
   },
   watch: {
@@ -563,7 +571,8 @@ export default {
           admAddress: this.address,
           address: this.cryptoAddress,
           comments: this.comment,
-          fee: this.transferFee
+          fee: this.transferFee,
+          increaseFee: this.increaseFee
         })
       }
     },

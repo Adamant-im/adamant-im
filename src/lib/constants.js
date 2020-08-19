@@ -55,6 +55,10 @@ export const BTC_BASED = Object.freeze([
 
 export const isErc20 = crypto => ERC20.includes(crypto)
 
+export const isEthBased = crypto => isErc20(crypto) || crypto === Cryptos.ETH
+
+export const isFeeEstimate = crypto => isEthBased(crypto)
+
 export const isBtcBased = crypto => BTC_BASED.includes(crypto)
 
 /** Number of decimal places for the different crypto amounts */
