@@ -71,7 +71,7 @@ const createSpecificActions = (api, queue) => ({
         // Current gas price
         api.eth.getGasPrice.request((err, price) => {
           if (!err) {
-            const gasPrice = ETH_GASPRICE_MULTIPLIER * price.toNumber()
+            const gasPrice = Math.round(ETH_GASPRICE_MULTIPLIER * price.toNumber())
             context.commit('gasPrice', {
               gasPrice,
               fee: +(+utils.calculateFee(ETH_TRANSFER_GAS, gasPrice)).toFixed(7)
