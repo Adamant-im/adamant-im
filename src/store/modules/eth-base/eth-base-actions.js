@@ -69,10 +69,10 @@ export default function createActions (config) {
       }
     },
 
-    sendTokens (context, { amount, admAddress, address, comments }) {
+    sendTokens (context, { amount, admAddress, address, comments, increaseFee }) {
       address = address.trim()
       const crypto = context.state.crypto
-      const ethTx = initTransaction(api, context, address, amount)
+      const ethTx = initTransaction(api, context, address, amount, increaseFee)
 
       return utils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
         .then(count => {

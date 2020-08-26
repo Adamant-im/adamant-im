@@ -232,6 +232,7 @@
     "balance": "Баланс",
     "comments_label": "Комментарий",
     "commission_label": "Комиссия за перевод",
+    "commission_estimate_label": "Приблизительная комиссия за перевод",
     "confirm_approve": "Подтвердить",
     "confirm_cancel": "Отмена",
     "confirm_message": "Подтвердите перевод <b>{amount} {crypto}</b> на адрес <span class=\"address-in-confirm\">{address}</span>.",
