@@ -230,6 +230,7 @@
     "balance": "Balance",
     "comments_label": "Comment",
     "commission_label": "Transfer fee",
+    "commission_estimate_label": "Estimated transfer fee",
     "confirm_approve": "Confirm",
     "confirm_cancel": "Cancel",
     "confirm_message": "Confirm transfer of <b>{amount} {crypto}</b> to address <span class=\"address-in-confirm\">{address}</span>.",

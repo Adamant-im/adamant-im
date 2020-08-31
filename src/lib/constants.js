@@ -55,6 +55,10 @@ export const BTC_BASED = Object.freeze([
 
 export const isErc20 = crypto => ERC20.includes(crypto)
 
+export const isEthBased = crypto => isErc20(crypto) || crypto === Cryptos.ETH
+
+export const isFeeEstimate = crypto => isEthBased(crypto)
+
 export const isBtcBased = crypto => BTC_BASED.includes(crypto)
 
 /** Number of decimal places for the different crypto amounts */
@@ -88,7 +92,7 @@ export const CryptoNaturalUnits = {
 export const Fees = {
   /** Storing a value into the KVS */
   KVS: 0.001,
-  /** Transfering tokens */
+  /** Transferring tokens */
   ADM_TRANSFER: 0.5,
   NOT_ADM_TRANSFER: 0.001
 }
@@ -117,11 +121,22 @@ export const WelcomeMessage = {
   ADAMANT_ICO: 'ADAMANT Tokens'
 }
 
-/** Gas value for the ETH transfers */
-export const ETH_TRANSFER_GAS = 21000
+/**
+ * These gas limit values are used only for estimate fees for ETH & ERC-20 transfers in the Send tokens form,
+ * Actual gas limit values are calculated with estimateGas(transactionObject)
+ * when each specific transaction is created
+ */
 
-/** Gas value for the ERC-20 transfers */
-export const ERC20_TRANSFER_GAS = ETH_TRANSFER_GAS * 10
+/** Gas limit value for the ETH transfers */
+export const ETH_TRANSFER_GAS = 22000 // Default gas limit; while to be calculated with estimateGas(transactionObject)
+/** Gas limit value for the ERC-20 transfers */
+export const ERC20_TRANSFER_GAS = ETH_TRANSFER_GAS * 2
+
+/** Gas price multiplier. To be sure a transaction will be confirmed */
+export const ETH_GASPRICE_MULTIPLIER = 1.1
+
+/** Increase fee multiplier. Used in SendFundsForm */
+export const INCREASE_FEE_MULTIPLIER = 2
 
 export default {
   EPOCH,

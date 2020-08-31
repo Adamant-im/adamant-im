@@ -1,7 +1,7 @@
 import abiDecoder from 'abi-decoder'
 
 import * as ethUtils from '../../../lib/eth-utils'
-import { ERC20_TRANSFER_GAS } from '../../../lib/constants'
+import { INCREASE_FEE_MULTIPLIER } from '../../../lib/constants'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
 
@@ -13,17 +13,23 @@ const STATUS_INTERVAL = 8000
 // Setup decoder
 abiDecoder.addABI(Erc20)
 
-const initTransaction = (api, context, ethAddress, amount) => {
+const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
   const contract = api.eth.contract(Erc20).at(context.state.contractAddress)
 
-  return {
+  const transaction = {
     from: context.state.address,
     to: context.state.contractAddress,
     value: api.fromDecimal('0'),
-    gasLimit: api.fromDecimal(ERC20_TRANSFER_GAS),
+    // gasLimit: api.fromDecimal(ERC20_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
     gasPrice: api.fromDecimal(context.getters.gasPrice),
     data: contract.transfer.getData(ethAddress, ethUtils.toWhole(amount, context.state.decimals))
   }
+
+  let gasLimit = api.eth.estimateGas(transaction)
+  gasLimit = increaseFee ? (gasLimit * INCREASE_FEE_MULTIPLIER).toString(16) : gasLimit.toString(16)
+  transaction.gas = '0x' + gasLimit
+
+  return transaction
 }
 
 const parseTransaction = (context, tx) => {
