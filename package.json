@@ -39,7 +39,7 @@
     "js-base64": "^2.5.0",
     "js-md5": "^0.7.3",
     "lodash": "^4.17.11",
-    "marked": "^0.6.1",
+    "marked": "^1.1.1",
     "notifyjs": "^3.0.0",
     "promise-queue": "^2.2.3",
     "qrcode": "^1.4.4",
