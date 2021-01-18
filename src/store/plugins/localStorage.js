@@ -15,6 +15,7 @@ const vuexPersistence = new VuexPersistence({
         allowPushNotifications: state.options.allowPushNotifications,
         darkTheme: state.options.darkTheme,
         formatMessages: state.options.formatMessages,
+        useFullDate: state.options.useFullDate,
         useSocketConnection: state.options.useSocketConnection
       }
     }
