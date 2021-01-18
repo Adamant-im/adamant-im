@@ -230,7 +230,7 @@ class ApiNode {
   }
 
   /**
-   * Intitates node status update: version, ping, online/offline.
+   * Initiates node status update: version, ping, online/offline.
    * @returns {PromiseLike}
    */
   updateStatus () {
@@ -295,7 +295,7 @@ class ApiNode {
  * Provides methods for calling the ADAMANT API.
  *
  * The `ApiClient` instance automatically selects an ADAMANT node to
- * send the API-requests to and swicthes to another node if the current one
+ * send the API-requests to and switches to another node if the current one
  * is not available at the moment.
  */
 class ApiClient {
@@ -362,7 +362,7 @@ class ApiClient {
   }
 
   /**
-   * Returns enpoints statuses
+   * Returns endpoint statuses
    * @returns {Array<{ url: string, online: boolean, ping: number }>}
    */
   getNodes () {

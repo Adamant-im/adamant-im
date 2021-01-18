@@ -438,6 +438,25 @@ const mutations = {
       numOfNewMessages: 0
     })
 
+    const donateMessages = [
+      {
+        id: 'd1',
+        message: 'chats.virtual.donate_bot',
+        timestamp: EPOCH,
+        senderId: 'U380651761819723095',
+        type: 'message',
+        i18n: true,
+        status: TS.CONFIRMED,
+        readonly: true
+      }
+    ]
+
+    Vue.set(state.chats, 'U380651761819723095', {
+      messages: donateMessages,
+      isAdamantChat: true,
+      numOfNewMessages: 0
+    })
+
     const bitcoinBetMessages = [
       {
         id: 't1',
