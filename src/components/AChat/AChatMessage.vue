@@ -15,11 +15,6 @@
         <slot name="avatar"></slot>
       </div>
       <div class="a-chat__message-card">
-        <div class="a-chat__message-card-body">
-          <div v-if="html" v-html="message" class="a-chat__message-text a-text-regular-enlarged"></div>
-          <div v-else v-text="message" class="a-chat__message-text a-text-regular-enlarged"></div>
-        </div>
-
         <div v-if="!hideTime" class="a-chat__message-card-header mt-1">
           <div v-if="status === 'confirmed'" class="a-chat__blockchain-status">&#x26AD;</div>
           <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
@@ -31,8 +26,12 @@
               v-if="status === 'rejected'"
               @click="$emit('resend')"
             >{{ statusIcon }}</v-icon>
-            <v-icon size="15" v-else>{{ statusIcon }}</v-icon>
+            <v-icon size="13" v-else>{{ statusIcon }}</v-icon>
           </div>
+        </div>
+        <div class="a-chat__message-card-body">
+          <div v-if="html" v-html="message" class="a-chat__message-text a-text-regular-enlarged"></div>
+          <div v-else v-text="message" class="a-chat__message-text a-text-regular-enlarged"></div>
         </div>
       </div>
     </div>
