@@ -179,8 +179,8 @@ const getters = {
    * @param {string} partnerId
    */
   isAdamantChat: state => partnerId => {
-    // That's an ancient curse: a special account that sends bounty tokens.
-    if (partnerId === 'U15423595369615486571') {
+    // That's an ancient curse: a special accounts which send bounty tokens
+    if (partnerId === 'U15423595369615486571' || partnerId === 'U1835325601873095435') {
       return true
     }
 
