@@ -109,7 +109,7 @@ class ApiNode {
   }
 
   /**
-   * Node hostname like bid.adamant.im or 185.231.245.26
+   * Node hostname like bid.adamant.im or 23.226.231.225
    * @type {String}
    */
   get hostname () {
