@@ -50,11 +50,11 @@
       "unknown": "This cryptocurrency is not supported yet"
     },
     "virtual": {
-      "bitcoin_bet": "Hi! \uD83D\uDE0A I'm anonymous and Blockchain-proved bet bot. I accept bets on BTC rate and pay rewards to winners. **ℹ**️ Learn more on ADAMANT’s blog or type **/help** to start betting. Support via U15738334853882270577.",
+      "bitcoin_bet": "Hi! I'm anonymous and Blockchain-proved bet bot 🤑. I accept bets on BTC rate and pay rewards to winners. Learn more on ADAMANT’s blog or type **/help** to start betting.",
       "bitcoin_bet_title": "Bet on Bitcoin price",
       "bounty_wallet_title": "ADAMANT Bounty Wallet",
       "bounty_foundation_wallet_title": "Adoption hot Wallet",
-      "exchange_bot": "Hi! \uD83D\uDE0A I'm your exchange bot. I operate instantly and anonymously. Type **/help** to see what I can do. I ask for a higher fee than my fellow bots, so I recommend that you set up your own bot with a competitive fee. **ℹ**️ You can learn more on ADAMANT blog. I'm highly reliable but if you have any troubles, please leave a message here U15738334853882270577.",
+      "exchange_bot": "Hi! I'm your exchange bot ₿. I operate instantly and anonymously. Type **/help** to see what I can do. **ℹ**️ Learn more on ADAMANT blog.",
       "exchange_bot_title": "ADAMANT Exchange",
       "donate_bot": "We develop decentralized ADAMANT Messenger thanks to your support—transfer ADM, BTC, ETH and other coins in this chat. For additional donation wallets, see adamant.im.",
       "donate_bot_title": "Donate to ADAMANT Foundation",
