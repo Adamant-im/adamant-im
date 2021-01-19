@@ -201,7 +201,7 @@ export default {
   },
   watch: {
     // Scroll to the bottom every time window focused by desktop notification
-    '$store.state.notification.desktopAcivateClickCount' () {
+    '$store.state.notification.desktopActivateClickCount' () {
       this.$nextTick(() => {
         this.$refs.chat.scrollToBottom()
       })
