@@ -10,7 +10,7 @@
       </div>
 
       <v-card flat color="transparent" class="text-xs-center mt-3">
-        <logo/>
+        <logo style="width: 300px;"/>
 
         <h1 :class="`${className}__title`">{{ $t('login.brand_title') }}</h1>
         <h2 :class="`${className}__subtitle`" class="hidden-sm-and-down mt-3">{{ $t('login.subheader') }}</h2>
