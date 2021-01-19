@@ -81,8 +81,7 @@
     "new_password_label": "<b>Sichern</b> die Passphrase für deine neue Wallet und Messenger Konto. Es gibt keine andere Möglichkeit zum Login, nur mittels der Passphrase. Es gibt keine Möglichkeit der Wiederherstellung, bei Verlust der Passphrase.",
     "password_label": "Gib hier deine Passphrase ein",
     "save_button_tooltip": "Klick hier um deine Passphrase in einer Textdatei zu speichern. Leg diese an einem sicheren Speicherort ab!",
-    "scan_qr_code_button_tooltip": "Scan QR with passphrase via device camera",
-    "subheader": "Ein erstklassiger Anonymer Messenger mittels Blockchain verschlüsselt"
+    "scan_qr_code_button_tooltip": "Scan QR with passphrase via device camera"
   },
   "login_via_password": {
     "article": "ADAMANT Blog",
