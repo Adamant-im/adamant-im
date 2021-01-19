@@ -28,7 +28,7 @@
     "coininfo": "^5.1.0",
     "core-js": "^3.8.3",
     "dayjs": "^1.10.3",
-    "deepmerge": "^2.1.1",
+    "deepmerge": "^4.2.2",
     "detect-browser": "^5.2.0",
     "ed2curve": "^0.3.0",
     "ethereumjs-tx": "^2.1.2",
@@ -49,9 +49,8 @@
     "semver": "^7.3.4",
     "simple-audio": "^1.0.1",
     "socket.io-client": "^2.4.0",
-    "sodium-browserify-tweetnacl": "^0.2.3",
+    "sodium-browserify-tweetnacl": "^0.2.6",
     "throttle-promise": "^1.0.4",
-    "underscore": "^1.9.1",
     "visibilityjs": "^2.0.2",
     "vue": "^2.5.17",
     "vue-i18n": "^8.0.0",
@@ -143,7 +142,7 @@
       "<rootDir>/tests/__mocks__/globals.js"
     ]
   },
-  "author": "ADAMANT Tech Labs <devs@adamant.im>",
+  "author": "ADAMANT Foundation <devs@adamant.im>",
   "license": "GPLv3",
   "description": "Decentralized Messenger",
   "main": "background.js"
