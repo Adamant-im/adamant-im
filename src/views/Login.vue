@@ -150,7 +150,7 @@ export default {
     onCopyPassphrase () {
       this.$store.dispatch('snackbar/show', {
         message: this.$t('home.copied'),
-        timeout: 1500
+        timeout: 2000
       })
     },
     onScanQrcode (passphrase) {

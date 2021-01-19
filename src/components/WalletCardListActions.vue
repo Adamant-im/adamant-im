@@ -2,7 +2,7 @@
   <v-list :class="className">
     <v-list-tile @click="sendFunds" avatar>
       <v-list-tile-avatar :class="`${className}__avatar`">
-        <v-icon :class="`${className}__icon`">mdi-cube-send</v-icon>
+        <v-icon :class="`${className}__icon`">mdi-bank-transfer-out</v-icon>
       </v-list-tile-avatar>
 
       <v-list-tile-content>
@@ -12,7 +12,7 @@
 
     <v-list-tile v-if="isADM" @click="buyTokens" avatar>
       <v-list-tile-avatar :class="`${className}__avatar`">
-        <v-icon :class="`${className}__icon`">mdi-cash-usd</v-icon>
+        <v-icon :class="`${className}__icon`">mdi-finance</v-icon>
       </v-list-tile-avatar>
 
       <v-list-tile-content>

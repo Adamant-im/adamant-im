@@ -15,11 +15,11 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "@mdi/font": "^2.6.95",
-    "@stablelib/utf8": "^0.10.1",
-    "@zxing/library": "0.16.0",
+    "@mdi/font": "^5.9.55",
+    "@stablelib/utf8": "^1.0.0",
+    "@zxing/library": "0.18.3",
     "abi-decoder": "^1.2.0",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "b64-to-blob": "^1.2.19",
     "bignumber.js": "^8.0.1",
     "bip39": "^3.0.1",
