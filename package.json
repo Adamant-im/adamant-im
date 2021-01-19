@@ -34,7 +34,7 @@
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^7.0.7",
     "file-saver": "^2.0.5",
-    "hdkey": "^0.8.0",
+    "hdkey": "^2.0.1",
     "idb": "^3.0.2",
     "js-base64": "^3.6.0",
     "js-md5": "^0.7.3",
