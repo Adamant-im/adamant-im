@@ -2,10 +2,10 @@
   <div>
     <transaction-template
       :amount="transaction.amount | currency(crypto)"
-      :timestamp="transaction.timestamp"
+      :timestamp="transaction.timestamp || NaN"
       :id="transaction.hash"
       :fee="transaction.fee | currency(crypto)"
-      :confirmations="confirmations"
+      :confirmations="confirmations || NaN"
       :sender="sender"
       :recipient="recipient"
       :explorerLink="explorerLink"

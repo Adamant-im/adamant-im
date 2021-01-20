@@ -18,7 +18,7 @@
               :id="transaction.id"
               :sender-id="transaction.senderId"
               :recipient-id="transaction.recipientId"
-              :timestamp="transaction.timestamp"
+              :timestamp="transaction.timestamp || NaN"
               :amount="transaction.amount"
               :crypto="crypto"
               @click:transaction="goToTransaction"

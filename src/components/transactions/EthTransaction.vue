@@ -1,10 +1,10 @@
 <template>
   <transaction-template
     :amount="transaction.amount | currency('ETH')"
-    :timestamp="transaction.timestamp"
+    :timestamp="transaction.timestamp || NaN"
     :id="transaction.hash"
     :fee="transaction.fee | currency('ETH')"
-    :confirmations="confirmations"
+    :confirmations="confirmations || NaN"
     :sender="sender"
     :recipient="recipient"
     :explorerLink="explorerLink"
