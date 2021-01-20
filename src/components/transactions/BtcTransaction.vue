@@ -4,7 +4,7 @@
       :amount="transaction.amount | currency(crypto)"
       :timestamp="transaction.timestamp || NaN"
       :id="transaction.hash"
-      :fee="transaction.fee | currency(crypto)"
+      :fee="fee"
       :confirmations="confirmations || NaN"
       :sender="sender"
       :recipient="recipient"
@@ -20,6 +20,7 @@
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
 import partnerName from '@/mixins/partnerName'
+import { CryptoNaturalUnits } from '@/lib/constants'
 
 export default {
   mixins: [partnerName],
@@ -35,6 +36,10 @@ export default {
     return { }
   },
   computed: {
+    fee () {
+      const fee = this.transaction.fee
+      return `${+fee.toFixed(CryptoNaturalUnits[this.crypto])} ${this.crypto.toUpperCase()}`
+    },
     cryptoKey () {
       return this.crypto.toLowerCase()
     },
