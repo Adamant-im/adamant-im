@@ -172,14 +172,14 @@ export default class BtcBaseApi {
     // Remove курьи txs like "possibleDoubleSpend" and txs without info
     if (tx.possibleDoubleSpend || (!tx.hash && !tx.time && !tx.valueIn)) return
 
-    const senders = getUnique(tx.vin.map(x => x.addr))
+    const senders = getUnique(tx.vin.map(x => x.addr)).filter(sender => sender !== undefined && sender !== 'undefined')
 
     const direction = senders.includes(this._address) ? 'from' : 'to'
 
     const recipients = getUnique(tx.vout.reduce((list, out) => {
       list.push(...out.scriptPubKey.addresses)
       return list
-    }, []))
+    }, [])).filter(sender => sender !== undefined && sender !== 'undefined')
 
     if (direction === 'from') {
       // Disregard our address for the outgoing transaction unless it's the only address

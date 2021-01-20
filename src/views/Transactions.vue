@@ -16,8 +16,8 @@
               v-for="(transaction, i) in transactions"
               :key="i"
               :id="transaction.id"
-              :sender-id="transaction.senderId"
-              :recipient-id="transaction.recipientId"
+              :sender-id="sender(transaction)"
+              :recipient-id="recipient(transaction)"
               :timestamp="transaction.timestamp || NaN"
               :amount="transaction.amount"
               :crypto="crypto"
@@ -92,6 +92,28 @@ export default {
     isRejected: false
   }),
   methods: {
+    sender (transaction) {
+      const { senders, senderId } = transaction
+      if (senderId) {
+        return senderId
+      } else if (senders) {
+        return this.formatAddresses(senders)
+      }
+    },
+    recipient (transaction) {
+      const { recipientId, recipients } = transaction
+      if (recipientId) {
+        return recipientId
+      } else if (recipients) {
+        return this.formatAddresses(recipients)
+      }
+    },
+    formatAddresses (addresses) {
+      const count = addresses.length
+      return addresses.includes(this.$store.state[this.crypto.toLowerCase()].address)
+        ? `${this.$t('transaction.me_and')} ${this.$tc('transaction.addresses', count - 1)}`
+        : this.$tc('transaction.addresses', count)
+    },
     goToTransaction (transactionId) {
       this.$router.push({
         name: 'Transaction',
