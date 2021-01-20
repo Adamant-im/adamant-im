@@ -94,7 +94,8 @@ export default {
   methods: {
     sender (transaction) {
       const { senders, senderId } = transaction
-      if (senderId) {
+      const onlySender = senderId && (!senders || senders.length === 1)
+      if (onlySender) {
         return senderId
       } else if (senders) {
         return this.formatAddresses(senders)
@@ -102,7 +103,8 @@ export default {
     },
     recipient (transaction) {
       const { recipientId, recipients } = transaction
-      if (recipientId) {
+      const onlyRecipient = recipientId && (!recipients || recipients.length === 1)
+      if (onlyRecipient) {
         return recipientId
       } else if (recipients) {
         return this.formatAddresses(recipients)
@@ -111,7 +113,7 @@ export default {
     formatAddresses (addresses) {
       const count = addresses.length
       return addresses.includes(this.$store.state[this.crypto.toLowerCase()].address)
-        ? `${this.$t('transaction.me_and')} ${this.$tc('transaction.addresses', count - 1)}`
+        ? `${this.$tc('transaction.me_and_addresses', count - 1)}`
         : this.$tc('transaction.addresses', count)
     },
     goToTransaction (transactionId) {
