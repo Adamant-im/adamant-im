@@ -169,6 +169,9 @@ export default class BtcBaseApi {
   }
 
   _mapTransaction (tx) {
+    // Remove курьи txs like "possibleDoubleSpend" and txs without info
+    if (tx.possibleDoubleSpend || (!tx.hash && !tx.time && !tx.valueIn)) return
+
     const senders = getUnique(tx.vin.map(x => x.addr))
 
     const direction = senders.includes(this._address) ? 'from' : 'to'
@@ -196,7 +199,7 @@ export default class BtcBaseApi {
 
     // Calculate amount from outputs:
     // * for the outgoing transactions take outputs that DO NOT target us
-    // * for the incoming transactions take ouputs that DO target us
+    // * for the incoming transactions take outputs that DO target us
     let amount = tx.vout.reduce((sum, t) =>
       ((direction === 'to') === (t.scriptPubKey.addresses.includes(this._address)) ? sum + Number(t.value) : sum), 0)
 
