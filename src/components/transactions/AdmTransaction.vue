@@ -2,14 +2,14 @@
   <transaction-template
     :amount="transaction.amount | currency"
     :timestamp="transaction.timestamp || NaN"
-    :id="transaction.id"
+    :id="transaction.id || '' "
     :fee="transaction.fee | currency"
     :confirmations="transaction.confirmations || NaN"
-    :sender="sender"
-    :recipient="recipient"
+    :sender="sender || '' "
+    :recipient="recipient || '' "
     :explorerLink="explorerLink"
-    :partner="transaction.partner"
-    :status="status"
+    :partner="transaction.partner || '' "
+    :status="status || '' "
     :admTx="admTx"
   />
 </template>

@@ -208,8 +208,8 @@ export default class BtcBaseApi {
 
     let fee = tx.fees
     if (!fee) {
-      const totalIn = tx.vin.reduce((sum, x) => sum + x.value, 0)
-      const totalOut = tx.vout.reduce((sum, x) => sum + x.value, 0)
+      const totalIn = tx.vin.reduce((sum, x) => sum + (x.value ? +x.value : 0), 0)
+      const totalOut = tx.vout.reduce((sum, x) => sum + (x.value ? +x.value : 0), 0)
       fee = totalIn - totalOut
     }
 

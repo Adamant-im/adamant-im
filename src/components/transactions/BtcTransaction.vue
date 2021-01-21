@@ -3,14 +3,14 @@
     <transaction-template
       :amount="transaction.amount | currency(crypto)"
       :timestamp="transaction.timestamp || NaN"
-      :id="transaction.hash"
+      :id="transaction.hash || '' "
       :fee="fee"
       :confirmations="confirmations || NaN"
-      :sender="sender"
-      :recipient="recipient"
+      :sender="sender || '' "
+      :recipient="recipient || '' "
       :explorerLink="explorerLink"
-      :partner="partner"
-      :status="transaction.status"
+      :partner="partner || '' "
+      :status="transaction.status || '' "
       :admTx="admTx"
     />
   </div>
@@ -38,6 +38,7 @@ export default {
   computed: {
     fee () {
       const fee = this.transaction.fee
+      if (!fee) return ''
       return `${+fee.toFixed(CryptoNaturalUnits[this.crypto])} ${this.crypto.toUpperCase()}`
     },
     cryptoKey () {
