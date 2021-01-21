@@ -38,8 +38,8 @@ export function getAccountFromPassphrase (passphrase) {
 }
 
 export function calculateFee (gasUsed, gasPrice) {
-  const gas = new BN(gasUsed, 10)
-  const price = new BN(gasPrice, 10)
+  const gas = new BN(+gasUsed, 10)
+  const price = new BN(+gasPrice, 10)
   const fee = gas.mul(price).toString(10)
   return toEther(fee)
 }
