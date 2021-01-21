@@ -70,13 +70,13 @@ export default {
   },
   voteForDelegates (context, payload) {
     context.commit('reset')
-    context.commit('ajax_start', null, { root: true })
+    // context.commit('ajax_start', null, { root: true })
     admApi.voteForDelegates(payload.votes).then(response => {
       if (response.success) {
         context.commit('set_last_transaction_status', false)
         // removing an UI waiting state if transaction confirmation run to much time
         window.setTimeout(() => {
-          context.commit('ajax_end', null, { root: true })
+          // context.commit('ajax_end', null, { root: true })
           context.dispatch('getDelegates', { address: payload.address })
         }, 15000)
         checkUnconfirmedTransactions(context)
