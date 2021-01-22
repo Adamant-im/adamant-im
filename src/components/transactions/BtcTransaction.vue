@@ -2,15 +2,15 @@
   <div>
     <transaction-template
       :amount="transaction.amount | currency(crypto)"
-      :timestamp="transaction.timestamp"
-      :id="transaction.hash"
-      :fee="transaction.fee | currency(crypto)"
-      :confirmations="confirmations"
-      :sender="sender"
-      :recipient="recipient"
+      :timestamp="transaction.timestamp || NaN"
+      :id="transaction.hash || '' "
+      :fee="fee"
+      :confirmations="confirmations || NaN"
+      :sender="sender || '' "
+      :recipient="recipient || '' "
       :explorerLink="explorerLink"
-      :partner="partner"
-      :status="transaction.status"
+      :partner="partner || '' "
+      :status="transaction.status || '' "
       :admTx="admTx"
     />
   </div>
@@ -20,6 +20,7 @@
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
 import partnerName from '@/mixins/partnerName'
+import { CryptoNaturalUnits } from '@/lib/constants'
 
 export default {
   mixins: [partnerName],
@@ -35,6 +36,11 @@ export default {
     return { }
   },
   computed: {
+    fee () {
+      const fee = this.transaction.fee
+      if (!fee) return ''
+      return `${+fee.toFixed(CryptoNaturalUnits[this.crypto])} ${this.crypto.toUpperCase()}`
+    },
     cryptoKey () {
       return this.crypto.toLowerCase()
     },
@@ -43,7 +49,8 @@ export default {
     },
     sender () {
       const { senders, senderId } = this.transaction
-      if (senderId) {
+      const onlySender = senderId && (!senders || senders.length === 1)
+      if (onlySender) {
         return this.formatAddress(senderId)
       } else if (senders) {
         return this.formatAddresses(senders)
@@ -51,7 +58,8 @@ export default {
     },
     recipient () {
       const { recipientId, recipients } = this.transaction
-      if (recipientId) {
+      const onlyRecipient = recipientId && (!recipients || recipients.length === 1)
+      if (onlyRecipient) {
         return this.formatAddress(recipientId)
       } else if (recipients) {
         return this.formatAddresses(recipients)
@@ -153,7 +161,7 @@ export default {
     formatAddresses (addresses) {
       const count = addresses.length
       return addresses.includes(this.$store.state[this.cryptoKey].address)
-        ? `${this.$t('transaction.me_and')} ${this.$tc('transaction.addresses', count - 1)}`
+        ? `${this.$tc('transaction.me_and_addresses', count - 1)}`
         : this.$tc('transaction.addresses', count)
     }
   }

@@ -2,7 +2,7 @@
   <v-list :class="className">
     <v-list-tile @click="sendFunds" avatar>
       <v-list-tile-avatar :class="`${className}__avatar`">
-        <v-icon :class="`${className}__icon`">mdi-cube-send</v-icon>
+        <v-icon :class="`${className}__icon`">mdi-bank-transfer-out</v-icon>
       </v-list-tile-avatar>
 
       <v-list-tile-content>
@@ -12,11 +12,11 @@
 
     <v-list-tile v-if="isADM" @click="buyTokens" avatar>
       <v-list-tile-avatar :class="`${className}__avatar`">
-        <v-icon :class="`${className}__icon`">mdi-cash-usd</v-icon>
+        <v-icon :class="`${className}__icon`">mdi-finance</v-icon>
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title`">{{ $t('home.invest_btn') }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title`">{{ $t('home.buy_tokens_btn') }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
 
@@ -40,6 +40,7 @@
 <script>
 import { Cryptos } from '@/lib/constants'
 import BuyTokensDialog from '@/components/BuyTokensDialog'
+import { uriToOnion } from '@/lib/uri'
 
 export default {
   computed: {
@@ -64,7 +65,7 @@ export default {
       this.showBuyTokensDialog = true
     },
     getFreeTokens () {
-      const link = 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
+      const link = uriToOnion(this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address)
       window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
     }
   },

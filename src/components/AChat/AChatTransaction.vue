@@ -7,6 +7,18 @@
       class="a-chat__message"
     >
       <div class="a-chat__message-card">
+
+        <div class="a-chat__message-card-header">
+          <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
+          <div class="a-chat__status">
+            <v-icon
+              size="13"
+              :title="i18n.statuses[status]"
+              :color="statusColor"
+            >{{ statusIcon }}</v-icon>
+          </div>
+        </div>
+
         <div>
           <div class="a-chat__direction a-text-regular-bold">
             {{ sender.id === userId ? i18n.sent : i18n.received }}
@@ -29,16 +41,6 @@
           </div>
         </div>
 
-        <div class="a-chat__message-card-header">
-          <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
-          <div class="a-chat__status">
-            <v-icon
-              size="15"
-              :title="i18n.statuses[status]"
-              :color="statusColor"
-            >{{ statusIcon }}</v-icon>
-          </div>
-        </div>
       </div>
     </div>
   </div>

@@ -1,6 +1,6 @@
-import { isValidAddress } from 'ethereumjs-util'
+import { isValidAddress, isHexString } from 'ethereumjs-util'
 import { Cryptos, isErc20,
-  RE_BTC_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS, RE_LISK_ADDRESS
+  RE_ADM_ADDRESS, RE_BTC_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS, RE_LISK_ADDRESS
 } from './constants'
 
 /**
@@ -65,13 +65,15 @@ export function parseURI (uri = getURI()) {
     }
   } else {
     address = origin
-    if (RE_BTC_ADDRESS.test(address)) {
+    if (RE_ADM_ADDRESS.test(address)) {
+      crypto = Cryptos.ADM
+    } else if (RE_BTC_ADDRESS.test(address)) {
       crypto = Cryptos.BTC
     } else if (RE_DASH_ADDRESS.test(address)) {
       crypto = Cryptos.DASH
     } else if (RE_DOGE_ADDRESS.test(address)) {
       crypto = Cryptos.DOGE
-    } else if (isValidAddress(address)) {
+    } else if (isHexString(address) && isValidAddress(address)) {
       crypto = Cryptos.ETH
     } else if (RE_LISK_ADDRESS.test(address)) {
       crypto = Cryptos.LISK
@@ -105,4 +107,22 @@ export function generateURI (crypto = Cryptos.ADM, address, name) {
   }
 
   return `${crypto.toLowerCase()}:${address}`
+}
+
+/**
+ * Replaces https://adamant.im URI to http://adamantmsg72ixni.onion
+ * If host is .onion
+ * @param {string} str String, that may contain https://adamant.im URI
+ * @returns {string}
+ */
+export function uriToOnion (str) {
+  let hostname = window.location.origin
+  console.log('host: ', hostname)
+  if (hostname.includes('.onion')) {
+  // if (hostname.includes('http')) {
+    console.log('replacing..')
+    str = str.replace('https://adamant.im', 'http://adamantmsg72ixni.onion')
+  }
+
+  return str
 }

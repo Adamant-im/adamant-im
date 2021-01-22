@@ -8,6 +8,7 @@ const state = () => ({
   allowPushNotifications: false,
   darkTheme: true,
   formatMessages: true,
+  useFullDate: false,
   currentWallet: Cryptos.ADM, // current Wallet Tab on Account view (this is not an option)
   useSocketConnection: true
 })

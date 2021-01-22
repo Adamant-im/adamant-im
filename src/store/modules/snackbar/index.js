@@ -1,7 +1,7 @@
 const initialState = {
   show: false,
   message: '',
-  timeout: 1500,
+  timeout: 3000,
   color: ''
 }
 
@@ -10,7 +10,7 @@ const state = () => ({
 })
 
 const mutations = {
-  show (state, { message = '', timeout = 1500, color = '' }) {
+  show (state, { message = '', timeout = 3000, color = '' }) {
     if (message) {
       state.message = message
       state.color = color

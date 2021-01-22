@@ -49,7 +49,6 @@
       "rejected": "The transaction is cancelled or not accepted",
       "unknown": "This cryptocurrency is not supported yet"
     },
-    "welcome_message": "ADAMANT ist ein Messenger, der vollständig auf der Blockchain funktioniert. Er ist unabhängig von Staaten, Konzernen und sogar Entwicklern. Das wird dank der dezentralen Netzinfrastruktur ermöglicht, deren Quellcode offen ist und die von Nutzern unterstützt wird. Deswegen kostet jede Transaktion wie Versand von Nachrichten oder Speichern von Kontakten eine Netzwerkgebühr von 0.001 ADM.\n\nDie Blockchain hilft, herausragende Sicherheit und Privatsphäre zu erlangen, die für keinen gewöhnlichen P2P- oder zentralisierten Messenger verfügbar ist. Außerdem stellt die Blockchain neue Möglichkeiten dar. Sie können Kryptowährungen in der Wallet aufbewahren sowie direkt im Chat versenden, ohne dabei die Kontrolle über Ihre privaten Schlüssel zu verlieren, oder auch ADAMANT als eine 2FA-Lösung verwenden.\n\nIn ADAMANT kann kein Konto kontrolliert, geblockt, deaktiviert, eingeschränkt oder zensiert werden. Alle Nutzer tragen die volle Verantwortung für die Inhalte, Nachrichten, Medien, Absichten und Ziele bei der Nutzung des Messenger.\n\nBedenken Sie, dass Sicherheit und Anonymität auch von Ihnen selbst abhängt. Folgen Sie keinen Links in den Chats, andernfalls kann Ihre IP-Adresse für Dritte sichtbar werden. Verwenden Sie einen PIN-Code auf Ihrem Gerät. Mehr Informationen zu Sicherheit und Anonymität lesen Sie hier: https://adamant.im/de-staysecured/.\n\nVergewissern Sie sich, dass sie die Passphrase von Ihrem Konto gespeichert haben – loggen Sie sich aus und wieder ein. Schreiben Sie die Passphrase auf einem Stück Papier. Nur Sie tragen die Verantwortung für die sichere Aufbewahrung Ihrer Passphrase. Diese kann nämlich nicht wiederhergestellt werden. Gelangt Sie in die Hände Dritter, verlieren Sie Ihr Geld und Ihr Chatverlauf wird gelesen. Behandeln Sie Ihre Passphrase so, als würden Tokens in Ihrer Wallet 1.000.000.000 Dollar kosten.\n\nUm mit einer Konversation zu beginnen, erhalten Sie zuerst kostenlose Tokens im Account-Tab. Erstellen Sie einen neuen Chat und geben Sie die ADM-Adresse Ihres Gesprächspartners. Zeigen Sie Ihre ADM-Adresse persönlich und senden Sie sie nicht über andere Messenger.",
     "welcome_message_title": "Willkommen in ADAMANT",
     "you": "YOU"
   },
@@ -62,9 +61,8 @@
     "copy_uri": "Copy Share link",
     "create_qrcode": "Create QR code",
     "free_adm_btn": "Free ADM tokens",
-    "invest_btn": "Investiere in den ICO",
-    "invest_btn_link": "https://adamant.im/buy-tokens/",
-    "invest_btn_tooltip": "Du hast hier die Möglichkeit in ADAMANT den sichersten Anonymen Messenger zu investieren. Klicke hier um zum Investitionsformular auf Adamant.im/ico/ zu gelangen.",
+    "buy_tokens_btn_link": "https://adamant.im/de-buy-tokens/",
+    "free_tokens_link": "https://adamant.im/de-free-adm-tokens/",
     "send_btn": "Send funds",
     "share_uri": "Share {crypto} address",
     "show_qr_code": "Show QR code",
@@ -83,8 +81,7 @@
     "new_password_label": "<b>Sichern</b> die Passphrase für deine neue Wallet und Messenger Konto. Es gibt keine andere Möglichkeit zum Login, nur mittels der Passphrase. Es gibt keine Möglichkeit der Wiederherstellung, bei Verlust der Passphrase.",
     "password_label": "Gib hier deine Passphrase ein",
     "save_button_tooltip": "Klick hier um deine Passphrase in einer Textdatei zu speichern. Leg diese an einem sicheren Speicherort ab!",
-    "scan_qr_code_button_tooltip": "Scan QR with passphrase via device camera",
-    "subheader": "Ein erstklassiger Anonymer Messenger mittels Blockchain verschlüsselt"
+    "scan_qr_code_button_tooltip": "Scan QR with passphrase via device camera"
   },
   "login_via_password": {
     "article": "ADAMANT Blog",

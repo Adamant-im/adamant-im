@@ -8,7 +8,7 @@
       <v-card-title
         class="a-text-header"
       >
-        {{ $t('home.invest_btn') }}
+        {{ $t('home.buy_tokens_btn') }}
       </v-card-title>
 
       <v-divider class="a-divider"></v-divider>
@@ -63,6 +63,7 @@ import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import CdlIcon from '@/components/icons/common/Cdl'
 import AtomarsIcon from '@/components/icons/common/Atomars'
+import { uriToOnion } from '@/lib/uri'
 
 export default {
   computed: {
@@ -80,9 +81,9 @@ export default {
         {
           icon: 'ADM',
           title: this.$t('home.buy_tokens_anonymously'),
-          link: this.adamantAddress
-            ? `https://adamant.im/buy-tokens/?referal=U1287231934743320628&wallet=${this.adamantAddress}`
-            : 'https://adamant.im/buy-tokens/?referal=U1287231934743320628'
+          link: uriToOnion(this.adamantAddress
+            ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
+            : `${this.$t('home.buy_tokens_btn_link')}`)
         },
         {
           icon: 'RES',
