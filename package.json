@@ -1,6 +1,9 @@
 {
   "name": "adamant-im",
-  "version": "2.8.0",
+  "version": "2.9.0",
+  "author": "ADAMANT Foundation <devs@adamant.im>",
+  "license": "GPLv3",
+  "description": "Decentralized Messenger",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -143,9 +146,6 @@
       "<rootDir>/tests/__mocks__/globals.js"
     ]
   },
-  "author": "ADAMANT Foundation <devs@adamant.im>",
-  "license": "GPLv3",
-  "description": "Decentralized Messenger",
   "main": "background.js",
   "keywords": [
     "adm",
