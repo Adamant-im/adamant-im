@@ -110,18 +110,15 @@ export function generateURI (crypto = Cryptos.ADM, address, name) {
 }
 
 /**
- * Replaces https://adamant.im URI to http://adamantmsg72ixni.onion
+ * Replaces https://adamant.im URI to http://adamantim345sddv.onion
  * If host is .onion
  * @param {string} str String, that may contain https://adamant.im URI
  * @returns {string}
  */
 export function uriToOnion (str) {
   let hostname = window.location.origin
-  console.log('host: ', hostname)
   if (hostname.includes('.onion')) {
-  // if (hostname.includes('http')) {
-    console.log('replacing..')
-    str = str.replace('https://adamant.im', 'http://adamantmsg72ixni.onion')
+    str = str.replace('https://adamant.im', 'http://adamantim345sddv.onion')
   }
 
   return str
