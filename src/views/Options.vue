@@ -92,6 +92,16 @@
 
               <div class="a-text-explanation-enlarged">{{ $t('options.format_messages_tooltip') }}</div>
             </v-flex>
+
+            <v-flex xs12 class="mt-4">
+              <v-checkbox
+                :label="$t('options.use_full_date')"
+                color="grey darken-1"
+                v-model="useFullDate"
+              />
+
+              <div class="a-text-explanation-enlarged">{{ $t('options.use_full_date_tooltip') }}</div>
+            </v-flex>
           </v-layout>
 
           <!-- Notifications -->
@@ -244,6 +254,17 @@ export default {
       set (value) {
         this.$store.commit('options/updateOption', {
           key: 'formatMessages',
+          value
+        })
+      }
+    },
+    useFullDate: {
+      get () {
+        return this.$store.state.options.useFullDate
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'useFullDate',
           value
         })
       }

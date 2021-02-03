@@ -1,7 +1,8 @@
 import marked from 'marked'
+import DOMPurify from 'dompurify'
 
 marked.setOptions({
-  sanitize: true,
+  // sanitize: true,
   gfm: true,
   breaks: true
 })
@@ -35,7 +36,9 @@ renderer.heading = function (text) {
  * @returns {string} resulting HTML
  */
 export function renderMarkdown (text = '') {
-  return marked(text, { renderer })
+  // return marked(text, { renderer })
+  // return DOMPurify.sanitize(marked(text, { renderer }))
+  return marked(DOMPurify.sanitize(text), { renderer })
 }
 
 export function removeFormats (text = '') {
@@ -43,7 +46,7 @@ export function removeFormats (text = '') {
   const line = /^([^\n]*)\n?/.exec(text)[1]
 
   const node = document.createElement('div')
-  node.innerHTML = marked(line, { renderer })
+  node.innerHTML = marked(DOMPurify.sanitize(line), { renderer })
 
   return node.textContent || node.innerText || ''
 }

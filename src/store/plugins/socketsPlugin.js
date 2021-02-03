@@ -11,6 +11,7 @@ function subscribe (store) {
       const decoded = transaction.type === 0
         ? transaction
         : decodeChat(transaction, publicKey)
+      // const decoded = decodeChat(transaction, publicKey)
       store.dispatch('chat/pushMessages', [decoded])
     })
   })

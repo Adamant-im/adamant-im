@@ -124,6 +124,7 @@ import partnerName from '@/mixins/partnerName'
 import dateFilter from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import FreeTokensDialog from '@/components/FreeTokensDialog'
+import { uriToOnion } from '@/lib/uri'
 
 /**
  * Returns user meta by userId.
@@ -200,7 +201,7 @@ export default {
   },
   watch: {
     // Scroll to the bottom every time window focused by desktop notification
-    '$store.state.notification.desktopAcivateClickCount' () {
+    '$store.state.notification.desktopActivateClickCount' () {
       this.$nextTick(() => {
         this.$refs.chat.scrollToBottom()
       })
@@ -332,7 +333,7 @@ export default {
     },
     formatMessage (transaction) {
       if (this.isChatReadOnly || transaction.i18n) {
-        return renderMarkdown(this.$t(transaction.message))
+        return renderMarkdown(uriToOnion(this.$t(transaction.message)))
       }
 
       if (this.$store.state.options.formatMessages) {

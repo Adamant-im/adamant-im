@@ -179,8 +179,8 @@ const getters = {
    * @param {string} partnerId
    */
   isAdamantChat: state => partnerId => {
-    // That's an ancient curse: a special account that sends bounty tokens.
-    if (partnerId === 'U15423595369615486571') {
+    // That's an ancient curse: a special accounts which send bounty tokens
+    if (partnerId === 'U15423595369615486571' || partnerId === 'U1835325601873095435') {
       return true
     }
 
@@ -434,6 +434,25 @@ const mutations = {
 
     Vue.set(state.chats, 'U5149447931090026688', {
       messages: exchangeMessages,
+      isAdamantChat: true,
+      numOfNewMessages: 0
+    })
+
+    const donateMessages = [
+      {
+        id: 'd1',
+        message: 'chats.virtual.donate_bot',
+        timestamp: EPOCH,
+        senderId: 'U380651761819723095',
+        type: 'message',
+        i18n: true,
+        status: TS.CONFIRMED,
+        readonly: true
+      }
+    ]
+
+    Vue.set(state.chats, 'U380651761819723095', {
+      messages: donateMessages,
       isAdamantChat: true,
       numOfNewMessages: 0
     })

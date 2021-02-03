@@ -1,15 +1,15 @@
 <template>
   <transaction-template
     :amount="transaction.amount | currency"
-    :timestamp="transaction.timestamp"
-    :id="transaction.id"
+    :timestamp="transaction.timestamp || NaN"
+    :id="transaction.id || '' "
     :fee="transaction.fee | currency"
-    :confirmations="transaction.confirmations"
-    :sender="sender"
-    :recipient="recipient"
+    :confirmations="transaction.confirmations || NaN"
+    :sender="sender || '' "
+    :recipient="recipient || '' "
     :explorerLink="explorerLink"
-    :partner="transaction.partner"
-    :status="status"
+    :partner="transaction.partner || '' "
+    :status="status || '' "
     :admTx="admTx"
   />
 </template>
@@ -37,19 +37,19 @@ export default {
       return this.$store.state.adm.transactions[this.id] || { }
     },
     sender () {
-      return this.formatAddress(this.transaction.senderId)
+      return this.formatAddress(this.transaction.senderId) || ''
     },
     recipient () {
-      return this.formatAddress(this.transaction.recipientId)
+      return this.formatAddress(this.transaction.recipientId) || ''
     },
     admTx () {
       return this.$store.getters['chat/messageById'](this.id) || this.$store.state.adm.transactions[this.id] || { }
     },
     explorerLink () {
-      return getExplorerUrl(Cryptos.ADM, this.id)
+      return getExplorerUrl(Cryptos.ADM, this.id) || ''
     },
     status () {
-      return this.transaction.status
+      return this.transaction.status || ''
     }
   },
   methods: {

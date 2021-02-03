@@ -1,5 +1,5 @@
 import Web3 from 'web3'
-import Tx from 'ethereumjs-tx'
+import { Transaction } from 'ethereumjs-tx'
 import { toBuffer } from 'ethereumjs-util'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
@@ -78,7 +78,7 @@ export default function createActions (config) {
         .then(count => {
           if (count) ethTx.nonce = count
 
-          const tx = new Tx(ethTx)
+          const tx = new Transaction(ethTx)
           tx.sign(toBuffer(context.state.privateKey))
           const serialized = '0x' + tx.serialize().toString('hex')
           const hash = api.sha3(serialized, { encoding: 'hex' })

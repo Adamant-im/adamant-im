@@ -2,7 +2,7 @@ export default () => ({
   state: {
     show: false,
     message: '',
-    timeout: 1500,
+    timeout: 3000,
     color: ''
   },
   mutations: {

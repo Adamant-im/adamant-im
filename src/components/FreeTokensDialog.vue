@@ -38,6 +38,8 @@
 </template>
 
 <script>
+import { uriToOnion } from '@/lib/uri'
+
 export default {
   computed: {
     className: () => 'free-tokens-dialog',
@@ -52,7 +54,7 @@ export default {
   },
   methods: {
     getFreeTokens () {
-      const link = 'https://adamant.im/free-adm-tokens/?wallet=' + this.$store.state.address
+      const link = uriToOnion(this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address)
       window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
       this.show = false
     },
