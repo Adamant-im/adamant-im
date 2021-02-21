@@ -78,7 +78,14 @@ export default {
       const { hash, type, senderId, recipientId } = admSpecialMessage
 
       // ADM transaction already has property `status`
-      if (type === Cryptos.ADM) return admSpecialMessage.status
+      // if (type === Cryptos.ADM) return admSpecialMessage.status
+      if (type === Cryptos.ADM) {
+        // Special case for socket ADM transfer
+        if (admSpecialMessage.amount > 0 && admSpecialMessage.height === undefined && !admSpecialMessage.message && admSpecialMessage.status === 'delivered') {
+          admSpecialMessage.status = 'confirmed'
+        }
+        return admSpecialMessage.status
+      }
       if (!Cryptos[type]) return admSpecialMessage.status // if crypto is not supported
 
       const getterName = type.toLowerCase() + '/transaction'

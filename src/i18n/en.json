@@ -50,12 +50,15 @@
       "unknown": "This cryptocurrency is not supported yet"
     },
     "virtual": {
-      "bitcoin_bet": "Hi! \uD83D\uDE0A I'm anonymous and Blockchain-proved bet bot. I accept bets on BTC rate and pay rewards to winners. **ℹ**️ Learn more on ADAMANT’s blog or type **/help** to start betting. Support via U15738334853882270577.",
+      "bitcoin_bet": "Hi! I'm anonymous and Blockchain-proved bet bot 🤑. I accept bets on BTC rate and pay rewards to winners. Learn more on ADAMANT’s blog or type **/help** to start betting.",
       "bitcoin_bet_title": "Bet on Bitcoin price",
       "bounty_wallet_title": "ADAMANT Bounty Wallet",
-      "exchange_bot": "Hi! \uD83D\uDE0A I'm your exchange bot. I operate instantly and anonymously. Type **/help** to see what I can do. I ask for a higher fee than my fellow bots, so I recommend that you set up your own bot with a competitive fee. **ℹ**️ You can learn more on ADAMANT blog. I'm highly reliable but if you have any troubles, please leave a message here U15738334853882270577.",
+      "bounty_foundation_wallet_title": "Adoption hot Wallet",
+      "exchange_bot": "Hi! I'm your exchange bot ₿. I operate instantly and anonymously. Type **/help** to see what I can do. **ℹ**️ Learn more on ADAMANT blog.",
       "exchange_bot_title": "ADAMANT Exchange",
-      "welcome_message": "ADAMANT is a unqiue Blockchain messenger that is independent from government, corporations and even its developers. It is possible due to a decentralized network, fully open source and users' feedback. That's why every action, including messaging or saving new contacts, has a network fee of 0.001 ADM.\n\nBlockchain offers superior security and privacy, that is not proposed by typical P2P and centralized messengers. What's more, Blockchain provides new possibilities. You can store and transfer cryptocurrencies via chat directly with full control of your private keys; use ADAMANT as 2FA, exchange cryptocurrencies anonymously, make bets on Bitcoin rate and more.\n\nIn Nobody can control, block, deactivate, restrict or censor ADAMANT accounts. Users take full responsibility for their content, messages, media and intentions of using the Messenger.\n\nADAMANT is fully anonymous, your IP is hidden even from partners, and Tor version is available for those that want to take privacy to the next level. But remember, your security and anonymity are up to you. Do not follow links you receive, otherwise your IP can be compromised. Set a password on your device. Learn more about security and anonymity at https://adamant.im/staysecured/.\n\nMake sure you've saved your unique passpharse for this account — logout and login again. Write your passphrase on a sheet of paper as well. Only *you are responsible for the passphrase's safety*. It cannot be recovered. And if other person gets it, your tokens will be stolen and your correspondence will be compromised. Treat this matter with outmost importance, as if tokens in your wallet cost a billion dollars.\n\nTo Start messaging now, *get your free welcoming tokens* on Account tab. Then start a new chat and fill in your friend's ADM address. It is recommended to share your ADM address personally and via ADAMANT only.\n\nSearch Internet for ADAMANT bots' addresses. They can exchange cryptocurrencies, accept bets on crypto rates, and make wishes come true.\n\n",
+      "donate_bot": "We develop decentralized ADAMANT Messenger thanks to your support—transfer ADM, BTC, ETH and other coins in this chat. For additional donation wallets, see https://adamant.im/donate.",
+      "donate_bot_title": "Donate to ADAMANT Foundation",
+      "welcome_message": "ADAMANT is a unqiue Blockchain messenger that is independent from government, corporations and even its developers. It is possible due to a decentralized network, fully open source and users' feedback. That's why every action, including messaging or saving new contacts, has a network fee of 0.001 ADM.\n\nUnlike typical P2P and centralized messengers, the blockchain system offers superior security and privacy. What’s more, it provides users with new possibilities such as storing and transferring cryptocurrencies In-Chat with full control of private keys; use ADAMANT as a 2FA solution, exchange cryptocurrency anonymously and bet on Bitcoin rates and more.\n\nThe ADAMANT blockchain system belongs to its users. Nobody can control, block, deactivate, restrict or censor accounts. Users take full responsibility for their content, messages, media, and goals and intentions of using the messenger.\n\nADAMANT is anonymous, your IP is hidden even from partners, and Tor version is available for those that want to take privacy to the next level. But remember, your security and anonymity are up to you. Do not follow links you receive, otherwise your IP can be compromised. Set a password on your device. Learn more about security and anonymity at https://adamant.im/staysecured/.\n\nMake sure you've saved your unique passpharse for this account — logout and login again. Write your passphrase on a sheet of paper as well. Only *you are responsible for the passphrase's safety*. It cannot be recovered. And if other person gets it, your tokens will be stolen and your correspondence will be compromised. Treat this matter with outmost importance, as if tokens in your wallet cost a billion dollars.\n\nTo Start messaging now, *get your free welcoming tokens* on Account tab. Then start a new chat and fill in your friend's ADM address. It is recommended to share your ADM address personally and via ADAMANT only.\n\nSearch Internet for ADAMANT bots' addresses. They can exchange cryptocurrencies, accept bets on crypto rates, and make wishes come true.\n\n",
       "welcome_message_title": "Welcome to ADAMANT"
     },
     "you": "You"
@@ -73,8 +76,9 @@
     "copy_uri": "Copy Share link",
     "create_qrcode": "Create a QR code",
     "free_adm_btn": "Free ADM tokens",
-    "invest_btn": "Buy & sell tokens",
-    "invest_btn_link": "https://adamant.im/buy-tokens/",
+    "buy_tokens_btn": "Buy & sell tokens",
+    "buy_tokens_btn_link": "https://adamant.im/buy-tokens/",
+    "free_tokens_link": "https://adamant.im/free-adm-tokens/",
     "send_btn": "Send funds",
     "send_crypto": "Send {crypto}",
     "share_uri": "Share {crypto} address",
@@ -98,7 +102,7 @@
     "save_qr_code_to_images": "Save to images",
     "save_qr_code_tooltip": "Save your passphrase as a QR code image. Store it in a secure place!",
     "scan_qr_code_button_tooltip": "Scan your QR code containing a passphrase via your device's camera",
-    "subheader": "Relax. You are safe now."
+    "subheader": "Decentralized messenger"
   },
   "login_via_password": {
     "article": "ADAMANT Blog",
@@ -155,6 +159,8 @@
     "stay_logged_in_tooltip": "Set a password to log in on this device faster. Your messages and passphase will be stored encrypted",
     "format_messages": "Markdown formatting",
     "format_messages_tooltip": "Recommended. Use _italic_, **bold**, `monospace`, and more.",
+    "use_full_date": "Display full dates",
+    "use_full_date_tooltip": "Always display dates in full format like 2021-01-17, instead of 'Yesterday' and 'Today'",
     "general_title": "General",
     "idb_not_supported": "Browser does not support IndexedDB and in Private Browsing mode too",
     "language_label": "Language",
@@ -230,6 +236,7 @@
     "balance": "Balance",
     "comments_label": "Comment",
     "commission_label": "Transfer fee",
+    "commission_estimate_label": "Estimated transfer fee",
     "confirm_approve": "Confirm",
     "confirm_cancel": "Cancel",
     "confirm_message": "Confirm transfer of <b>{amount} {crypto}</b> to address <span class=\"address-in-confirm\">{address}</span>.",

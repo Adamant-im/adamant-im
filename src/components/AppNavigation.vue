@@ -30,7 +30,7 @@
           <!-- Settings -->
           <v-btn to="/options" flat>
             <span>{{ $t('bottom.settings_button') }}</span>
-            <v-icon size="20">mdi-settings</v-icon>
+            <v-icon size="20">mdi-cog</v-icon>
           </v-btn>
         </v-layout>
 
@@ -69,7 +69,7 @@ export default {
       {
         title: 'settings',
         link: '/options',
-        icon: 'mdi-settings'
+        icon: 'mdi-cog'
       }
     ],
     currentPageIndex: 0,

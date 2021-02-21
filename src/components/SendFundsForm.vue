@@ -79,7 +79,7 @@
 
       <v-text-field
         :value="`${this.transferFeeFixed} ${this.transferFeeCurrency}`"
-        :label="$t('transfer.commission_label')"
+        :label="`${this.transferFeeLabel}`"
         class="a-input"
         disabled
       />
@@ -174,10 +174,11 @@ import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
+import { INCREASE_FEE_MULTIPLIER } from '../lib/constants'
 
 import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
-import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, getMinAmount } from '@/lib/constants'
+import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
@@ -236,6 +237,14 @@ export default {
      */
     transferFeeFixed () {
       return BigNumber(this.transferFee).toFixed()
+    },
+
+    /**
+     * Label for fee field. Estimate fee or precise value.
+     * @returns {string}
+     */
+    transferFeeLabel () {
+      return isFeeEstimate(this.currency) ? this.$t('transfer.commission_estimate_label') : this.$t('transfer.commission_label')
     },
 
     /**
@@ -369,7 +378,7 @@ export default {
       }
     },
     allowIncreaseFee () {
-      return this.currency === Cryptos.BTC
+      return (this.currency === Cryptos.BTC) || isEthBased(this.currency)
     }
   },
   watch: {
@@ -423,7 +432,7 @@ export default {
       } else {
         this.$store.dispatch('snackbar/show', {
           message: abstract,
-          timeout: 3000
+          timeout: 7000
         })
       }
     },
@@ -562,7 +571,8 @@ export default {
           admAddress: this.address,
           address: this.cryptoAddress,
           comments: this.comment,
-          fee: this.transferFee
+          fee: this.transferFee,
+          increaseFee: this.increaseFee
         })
       }
     },
@@ -620,7 +630,7 @@ export default {
       return right.length <= units
     },
     calculateTransferFee (amount) {
-      const coef = this.increaseFee ? 2 : 1
+      const coef = this.increaseFee ? INCREASE_FEE_MULTIPLIER : 1
       return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount)
     }
   },

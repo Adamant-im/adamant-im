@@ -1,5 +1,5 @@
 import Web3 from 'web3'
-import Tx from 'ethereumjs-tx'
+import { Transaction } from 'ethereumjs-tx'
 import { toBuffer } from 'ethereumjs-util'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
@@ -69,16 +69,16 @@ export default function createActions (config) {
       }
     },
 
-    sendTokens (context, { amount, admAddress, address, comments }) {
+    sendTokens (context, { amount, admAddress, address, comments, increaseFee }) {
       address = address.trim()
       const crypto = context.state.crypto
-      const ethTx = initTransaction(api, context, address, amount)
+      const ethTx = initTransaction(api, context, address, amount, increaseFee)
 
       return utils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
         .then(count => {
           if (count) ethTx.nonce = count
 
-          const tx = new Tx(ethTx)
+          const tx = new Transaction(ethTx)
           tx.sign(toBuffer(context.state.privateKey))
           const serialized = '0x' + tx.serialize().toString('hex')
           const hash = api.sha3(serialized, { encoding: 'hex' })

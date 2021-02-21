@@ -58,7 +58,7 @@ class PushNotification extends Notification {
     return `${this.partnerIdentity}: ${removeFormats(message)}`
   }
   increaseCounter () {
-    this.store.commit('notification/increaseDesktopAcivateClickCount')
+    this.store.commit('notification/increaseDesktopActivateClickCount')
   }
   notify (messageArrived) {
     try {
