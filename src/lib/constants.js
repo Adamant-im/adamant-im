@@ -17,6 +17,7 @@ export const Cryptos = {
   ADM: 'ADM',
   BTC: 'BTC',
   ETH: 'ETH',
+  LSK: 'LSK',
   DOGE: 'DOGE',
   DASH: 'DASH',
   USDS: 'USDS',
@@ -30,6 +31,7 @@ export const CryptosNames = {
   [Cryptos.ADM]: 'ADAMANT',
   [Cryptos.BNB]: 'Binance Coin',
   [Cryptos.ETH]: 'Ethereum',
+  [Cryptos.LSK]: 'Lisk',
   [Cryptos.BZ]: 'Bit-Z Token',
   [Cryptos.RES]: 'Resfinex Token',
   [Cryptos.DOGE]: 'DOGE',
@@ -72,7 +74,8 @@ export const CryptoAmountPrecision = {
   DASH: 5,
   KCS: 6,
   USDS: 6,
-  BTC: 8
+  BTC: 8,
+  LSK: 8
 }
 
 export const CryptoNaturalUnits = {
@@ -85,7 +88,8 @@ export const CryptoNaturalUnits = {
   RES: 5,
   KCS: 6,
   USDS: 6,
-  BTC: 8
+  BTC: 8,
+  LSK: 8
 }
 
 /** Fees for the misc ADM operations */
@@ -104,7 +108,7 @@ export const RE_ADM_ADDRESS = /^U([0-9]{6,})$/i
 export const RE_BTC_ADDRESS = /^(bc1|[13])[a-km-zA-HJ-NP-Z02-9]{25,39}$/
 export const RE_DASH_ADDRESS = /^[7X][1-9A-HJ-NP-Za-km-z]{33,}$/
 export const RE_DOGE_ADDRESS = /^[A|D|9][A-Z0-9]([0-9a-zA-Z]{9,})$/
-export const RE_LISK_ADDRESS = /^[0-9]{2,21}L$/
+export const RE_LSK_ADDRESS = /^[0-9]{2,21}L$/
 
 export const Symbols = {
   CLOCK: String.fromCharCode(0x23f0), // ⏰

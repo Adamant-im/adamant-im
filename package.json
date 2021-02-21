@@ -18,6 +18,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@liskhq/lisk-client": "^5.0.3",
     "@mdi/font": "^5.9.55",
     "@stablelib/utf8": "^1.0.0",
     "@zxing/library": "0.18.3",
