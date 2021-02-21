@@ -1,6 +1,6 @@
 import { isValidAddress, isHexString } from 'ethereumjs-util'
 import { Cryptos, isErc20,
-  RE_ADM_ADDRESS, RE_BTC_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS, RE_LISK_ADDRESS
+  RE_ADM_ADDRESS, RE_BTC_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS, RE_LSK_ADDRESS
 } from './constants'
 
 /**
@@ -75,7 +75,7 @@ export function parseURI (uri = getURI()) {
       crypto = Cryptos.DOGE
     } else if (isHexString(address) && isValidAddress(address)) {
       crypto = Cryptos.ETH
-    } else if (RE_LISK_ADDRESS.test(address)) {
+    } else if (RE_LSK_ADDRESS.test(address)) {
       crypto = Cryptos.LISK
     }
   }
