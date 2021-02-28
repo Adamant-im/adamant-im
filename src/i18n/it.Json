@@ -2,7 +2,7 @@
   "app_title": "ADAMANT Messenger",
   "bottom": {
     "chats_button": "Chat",
-    "exit_button": "Logout",
+    "exit_button": "Disconnetti",
     "send_button": "Invia Fondi",
     "settings_button": "Impostazioni",
     "wallet_button": "Account"
@@ -22,7 +22,7 @@
     "my_qr_code": "Il mio codice QR",
     "new_chat": "Avvia una nuova chat",
     "no_connection": "Nessuna connessione internet",
-    "no_money": "Not enough tokens. Receive free ADM",
+    "no_money": "Gettoni insufficienti. Ricevi ADM gratuiti",
     "ok": "OK",
     "partner_info": "Informazioni del partner",
     "partner_name": "Nome del partner",
@@ -75,8 +75,8 @@
     "copy_address": "Copia indirizzo",
     "copy_uri": "Copia link Condividi",
     "create_qrcode": "Crea un codice QR",
-    "free_adm_btn": "Free ADM tokens",
-    "buy_tokens_btn": "Buy & sell tokens",
+    "free_adm_btn": "Gratuiti ADM tokens",
+    "buy_tokens_btn": "Compra e vendi tokens",
     "buy_tokens_btn_link": "https://adamant.im/buy-tokens/",
     "free_tokens_link": "https://adamant.im/free-adm-tokens/",
     "send_btn": "Invia fondi",
@@ -270,7 +270,7 @@
   },
   "votes": {
     "delegate_description": "Descrizione",
-    "delegate_forged": "Forged",
+    "delegate_forged": "Forgiato",
     "delegate_link": "Link",
     "delegate_uptime": "Uptime",
     "downvote_for_label": "Voto negativo per:",
