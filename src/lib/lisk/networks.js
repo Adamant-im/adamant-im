@@ -1,6 +1,10 @@
-import coininfo from 'coininfo'
 import { Cryptos } from '../constants'
 
 export default Object.freeze({
-  [Cryptos.LSK]: coininfo.bitcoin.main.toBitcoinJS()
+  [Cryptos.LSK]: {
+    name: 'Lisk',
+    port: 8000,
+    wsPort: 8001,
+    unit: 'LSK'
+  }
 })

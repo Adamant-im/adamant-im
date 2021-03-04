@@ -1,16 +1,19 @@
-import bitcoin from 'bitcoinjs-lib'
+import pbkdf2 from 'pbkdf2'
+import sodium from 'sodium-browserify-tweetnacl'
+import { bytesToHex } from '@/lib/hex'
+import { cryptography } from '@liskhq/lisk-client';
+
 import axios from 'axios'
 
 import networks from './networks'
 import getEnpointUrl from '../getEndpointUrl'
 import BigNumber from '../bignumber'
 
-const getUnique = values => {
-  const map = values.reduce((m, v) => {
-    m[v] = 1
-    return m
-  }, { })
-  return Object.keys(map)
+export const LiskHashSettings = {
+  SALT: 'adm',
+  ITERATIONS: 2048,
+  KEYLEN: 32,
+  DIGEST: 'sha256'
 }
 
 const createClient = url => {
@@ -26,20 +29,20 @@ const createClient = url => {
 
 export function getAccount (crypto, passphrase) {
   const network = networks[crypto]
-  const pwHash = bitcoin.crypto.sha256(Buffer.from(passphrase))
-  const keyPair = bitcoin.ECPair.fromPrivateKey(pwHash, { network })
-
+  var liskSeed = pbkdf2.pbkdf2Sync(passphrase, LiskHashSettings.SALT, LiskHashSettings.ITERATIONS, LiskHashSettings.KEYLEN, LiskHashSettings.DIGEST)
+  var keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
+  var address = cryptography.getAddressFromPublicKey(keyPair.publicKey)
+  console.log('address-1', address)
   return {
     network,
     keyPair,
-    address: bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network }).address
+    address
   }
 }
 
 export default class LskBaseApi {
   constructor (crypto, passphrase) {
     const account = getAccount(crypto, passphrase)
-
     this._network = account.network
     this._keyPair = account.keyPair
     this._address = account.address

@@ -18,7 +18,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "@liskhq/lisk-client": "^5.0.3",
+    "@liskhq/lisk-client": "^2.3.1",
     "@mdi/font": "^5.9.55",
     "@stablelib/utf8": "^1.0.0",
     "@zxing/library": "0.18.3",
@@ -46,6 +46,7 @@
     "lodash": "^4.17.20",
     "marked": "^1.2.7",
     "notifyjs": "^3.0.0",
+    "pbkdf2": "^3.1.1",
     "promise-queue": "^2.2.5",
     "qrcode": "^1.4.4",
     "qs": "^6.9.6",
