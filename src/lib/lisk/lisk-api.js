@@ -19,7 +19,7 @@ export default class LiskApi extends LskBaseApi {
 
   /** @override */
   getFee () {
-    return 0
+    return TX_FEE
   }
 
   /** Returns last block height */

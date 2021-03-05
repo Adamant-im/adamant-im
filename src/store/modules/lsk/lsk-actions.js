@@ -10,11 +10,11 @@ const customActions = getApi => ({
     if (!api) return
     api.getBalance().then(balance => context.commit('status', { balance }))
 
-    // The unspent transactions are needed to estimate the fee
-    api.getUnspents().then(utxo => context.commit('utxo', utxo))
+    // // The unspent transactions are needed to estimate the fee
+    // api.getUnspents().then(utxo => context.commit('utxo', utxo))
 
-    // The estimated fee rate is also needed
-    api.getFeeRate().then(rate => context.commit('feeRate', rate))
+    // // The estimated fee rate is also needed
+    // api.getFeeRate().then(rate => context.commit('feeRate', rate))
 
     // Last block height
     context.dispatch('updateHeight')
@@ -35,7 +35,7 @@ const customActions = getApi => ({
     const tx = getters['transaction'](payload.hash)
 
     if (tx && (tx.status === 'SUCCESS' || tx.status === 'ERROR')) {
-      // If transaction is in one of the final statuses (either succeded or failed),
+      // If transaction is in one of the final statuses (either succeeded or failed),
       // just update the current height to recalculate its confirmations counter.
       return dispatch('updateHeight')
     } else {

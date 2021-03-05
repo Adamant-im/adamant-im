@@ -76,7 +76,7 @@ export function parseURI (uri = getURI()) {
     } else if (isHexString(address) && isValidAddress(address)) {
       crypto = Cryptos.ETH
     } else if (RE_LSK_ADDRESS.test(address)) {
-      crypto = Cryptos.LISK
+      crypto = Cryptos.LSK
     }
   }
 
