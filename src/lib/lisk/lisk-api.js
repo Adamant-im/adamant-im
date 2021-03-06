@@ -1,5 +1,6 @@
 import LskBaseApi from './lsk-base-api'
 import { Cryptos } from '../constants'
+import { getRealTimestamp } from './lisk-utils'
 
 export const TX_FEE = 0.1
 
@@ -45,12 +46,19 @@ export default class LiskApi extends LskBaseApi {
   }
 
   /** @override */
-  getTransactions ({ toTx = '' }) {
-    let url = `/address/${this.address}/txs`
-    if (toTx) {
-      url += `/chain/${toTx}`
-    }
-    return this._get(url).then(transactions => transactions.map(x => this._mapTransaction(x)))
+  getTransactions (options = { }) {
+    let url = `/api/transactions`
+    options.limit = 25
+    options.sort = 'timestamp:desc'
+    options.type = 0
+    options.senderIdOrRecipientId = this.address
+    // additional options: offset, toTimestamp, fromTimestamp, height
+    return this._get(url, options).then(transactions => {
+      console.log(transactions)
+      var mappedTxs = transactions.data.map(x => this._mapTransaction(x))
+      console.log(mappedTxs)
+      return mappedTxs
+    })
   }
 
   /** @override */
@@ -67,26 +75,19 @@ export default class LiskApi extends LskBaseApi {
   /** @override */
   _mapTransaction (tx) {
     const mapped = super._mapTransaction({
-      ...tx,
-      vin: tx.vin.map(x => ({ ...x, addr: x.prevout.scriptpubkey_address })),
-      vout: tx.vout.map(x => ({
-        ...x,
-        scriptPubKey: { addresses: [x.scriptpubkey_address] }
-      })),
-      fees: tx.fee,
-      time: tx.status.block_time,
-      confirmations: tx.status.confirmed ? 1 : 0
+      ...tx
     })
 
     mapped.amount /= this.multiplier
     mapped.fee /= this.multiplier
-    mapped.height = tx.status.block_height
+    mapped.timestamp = getRealTimestamp(mapped.timestamp)
 
     return mapped
   }
 
   /** Executes a GET request to the API */
   _get (url, params) {
+    console.log('_get ', url, 'params:', params)
     return this._getClient().get(url, { params }).then(response => response.data)
   }
 }

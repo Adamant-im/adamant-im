@@ -173,63 +173,22 @@ export default class LskBaseApi {
   }
 
   _mapTransaction (tx) {
-    // Remove курьи txs like "possibleDoubleSpend" and txs without info
-    if (tx.possibleDoubleSpend || (!tx.hash && !tx.time && !tx.valueIn)) return
-
-    const senders = getUnique(tx.vin.map(x => x.addr)).filter(sender => sender !== undefined && sender !== 'undefined')
-
-    const direction = senders.includes(this._address) ? 'from' : 'to'
-
-    const recipients = getUnique(tx.vout.reduce((list, out) => {
-      list.push(...out.scriptPubKey.addresses)
-      return list
-    }, [])).filter(sender => sender !== undefined && sender !== 'undefined')
-
-    if (direction === 'from') {
-      // Disregard our address for the outgoing transaction unless it's the only address
-      // (i.e. we're sending to ourselves)
-      const idx = recipients.indexOf(this._address)
-      if (idx >= 0 && recipients.length > 1) recipients.splice(idx, 1)
-    }
-
-    let senderId, recipientId
-    if (direction === 'from') {
-      senderId = this._address
-      recipientId = recipients.length === 1 ? recipients[0] : undefined
-    } else {
-      senderId = senders.length === 1 ? senders[0] : undefined
-      recipientId = this._address
-    }
-
-    // Calculate amount from outputs:
-    // * for the outgoing transactions take outputs that DO NOT target us
-    // * for the incoming transactions take outputs that DO target us
-    let amount = tx.vout.reduce((sum, t) =>
-      ((direction === 'to') === (t.scriptPubKey.addresses.includes(this._address)) ? sum + Number(t.value) : sum), 0)
-
-    const confirmations = tx.confirmations
-    const timestamp = tx.time ? tx.time * 1000 : undefined
-
-    let fee = tx.fees
-    if (!fee) {
-      const totalIn = tx.vin.reduce((sum, x) => sum + (x.value ? +x.value : 0), 0)
-      const totalOut = tx.vout.reduce((sum, x) => sum + (x.value ? +x.value : 0), 0)
-      fee = totalIn - totalOut
-    }
-
+    const direction = tx.senderId === this._address ? 'from' : 'to'
+    // additional data: asset, receivedAt, blockId, height, type, recipientPublicKey, senderSecondPublicKey
     return {
-      id: tx.txid,
-      hash: tx.txid,
-      fee,
-      status: confirmations > 0 ? 'SUCCESS' : 'REGISTERED',
-      timestamp,
+      id: tx.id,
+      hash: tx.id,
+      fee: tx.fee,
+      status: tx.confirmations > 0 ? 'SUCCESS' : 'REGISTERED',
+      timestamp: tx.timestamp,
       direction,
-      senders,
-      senderId,
-      recipients,
-      recipientId,
-      amount,
-      confirmations
+      // senders,
+      senderId: tx.senderId,
+      // recipients,
+      recipientId: tx.recipientId,
+      amount: tx.amount,
+      confirmations: tx.confirmations,
+      height: tx.height
     }
   }
 }
