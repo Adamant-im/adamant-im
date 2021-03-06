@@ -42,11 +42,9 @@ export default {
   computed: {
     transaction () {
       const prefix = this.crypto.toLowerCase()
-      console.log('/transaction:', prefix, this.$store)
       return this.$store.getters[prefix + '/transaction'](this.id) || { }
     },
     sender () {
-      console.log('sender:', this.transaction, this.transaction.senderId)
       return this.transaction.senderId ? this.formatAddress(this.transaction.senderId) : ''
     },
     recipient () {

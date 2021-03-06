@@ -1,7 +1,7 @@
 import pbkdf2 from 'pbkdf2'
 import sodium from 'sodium-browserify-tweetnacl'
 import { bytesToHex } from '@/lib/hex'
-import { cryptography } from '@liskhq/lisk-client';
+import { cryptography, transactions } from '@liskhq/lisk-client';
 
 import axios from 'axios'
 
@@ -22,7 +22,7 @@ const createClient = url => {
     if (error.response && Number(error.response.status) >= 500) {
       console.error('Request failed', error)
     }
-    console.log('axios client fine:', url)
+    // console.log('axios client fine:', url)
     return Promise.reject(error)
   })
   return client
@@ -33,7 +33,7 @@ export function getAccount (crypto, passphrase) {
   var liskSeed = pbkdf2.pbkdf2Sync(passphrase, LiskHashSettings.SALT, LiskHashSettings.ITERATIONS, LiskHashSettings.KEYLEN, LiskHashSettings.DIGEST)
   var keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
   var address = cryptography.getAddressFromPublicKey(keyPair.publicKey)
-  console.log('address-1', address)
+  // console.log('address-1', address)
   return {
     network,
     keyPair,
@@ -76,15 +76,28 @@ export default class LskBaseApi {
    * @returns {Promise<{hex: string, txid: string}>}
    */
   createTransaction (address = '', amount = 0, fee) {
-    return this.getUnspents().then(unspents => {
-      const hex = this._buildTransaction(address, amount, unspents, fee)
-
-      let txid = bitcoin.crypto.sha256(Buffer.from(hex, 'hex'))
-      txid = bitcoin.crypto.sha256(Buffer.from(txid))
-      txid = txid.toString('hex').match(/.{2}/g).reverse().join('')
-
-      return { hex, txid }
+    amount = transactions.utils.convertLSKToBeddows(amount.toString())
+    var liskTx = transactions.transfer({
+      amount,
+      recipientId: address
+      // data: 'Sent with ADAMANT Messenger'
     })
+    liskTx.senderPublicKey = bytesToHex(this._keyPair.publicKey)
+    liskTx.senderId = this._address
+
+    // to use transactions.utils.signTransaction, passPhrase is necessary
+    // so we'll use cryptography.signDataWithPrivateKey
+    const liskTxBytes = transactions.utils.getTransactionBytes(liskTx)
+    const txSignature = cryptography.signDataWithPrivateKey(cryptography.hash(liskTxBytes), this._keyPair.secretKey)
+    liskTx.signature = txSignature
+    var txid = transactions.utils.getTransactionId(liskTx) 
+    liskTx.id = txid
+    console.log('newTx txid:', txid)
+
+    // console.log('signed tx', liskTx)
+    // console.log('Validate', transactions.utils.validateTransaction(liskTx))
+    // console.log('VERIFY', transactions.utils.verifyTransaction(liskTx))
+    return Promise.resolve({ hex: liskTx, txid })
   }
 
   /**

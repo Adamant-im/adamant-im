@@ -69,6 +69,8 @@ export const isBtcBased = crypto => BTC_BASED.includes(crypto)
 
 export const isLskBased = crypto => LSK_BASED.includes(crypto)
 
+export const isSelfTxAllowed = crypto => LSK_BASED.includes(crypto) || crypto === Cryptos.ADM
+
 /** Number of decimal places for the different crypto amounts */
 export const CryptoAmountPrecision = {
   ADM: 8,

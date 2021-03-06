@@ -36,8 +36,12 @@ export default class LiskApi extends LskBaseApi {
   }
 
   /** @override */
-  sendTransaction (txHex) {
-    return this._getClient().post('/tx', txHex).then(response => response.data)
+  sendTransaction (signedTx) {
+    // console.log('before sendTransaction:', signedTx)
+    return this._getClient().post('/api/transactions', signedTx).then(response => {
+      console.log('sendTransaction:', response)
+      return signedTx.id
+    })
   }
 
   /** @override */
