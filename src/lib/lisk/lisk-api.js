@@ -12,8 +12,11 @@ export default class LiskApi extends LskBaseApi {
    * @override
    */
   getBalance () {
-    return this._get(`/address/${this.address}`).then(
-      data => (data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum) / this.multiplier
+    return this._get(`/api/accounts`, { address: this.address }).then(
+      data => {
+        // console.log(`/api/accounts:`, data)
+        return (data.data[0].balance) / this.multiplier
+      }
     )
   }
 
@@ -53,9 +56,9 @@ export default class LiskApi extends LskBaseApi {
     )
   }
 
-  getFeeRate () {
-    return this._get('/fee-estimates').then(estimates => estimates['2'])
-  }
+  // getFeeRate () {
+  //   return this._get('/fee-estimates').then(estimates => estimates['2'])
+  // }
 
   /** @override */
   _mapTransaction (tx) {
@@ -80,6 +83,6 @@ export default class LiskApi extends LskBaseApi {
 
   /** Executes a GET request to the API */
   _get (url, params) {
-    return this._getClient().get(url, params).then(response => response.data)
+    return this._getClient().get(url, { params }).then(response => response.data)
   }
 }

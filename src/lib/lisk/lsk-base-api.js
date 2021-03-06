@@ -22,6 +22,7 @@ const createClient = url => {
     if (error.response && Number(error.response.status) >= 500) {
       console.error('Request failed', error)
     }
+    console.log('axios client fine:', url)
     return Promise.reject(error)
   })
   return client
@@ -120,9 +121,9 @@ export default class LskBaseApi {
    * @abstract
    * @returns {Promise<Array<{txid: string, vout: number, amount: number}>>}
    */
-  getUnspents () {
-    return Promise.resolve([])
-  }
+  // getUnspents () {
+  //   return Promise.resolve([])
+  // }
 
   /**
    * Creates a raw DOGE transaction as a hex string.
