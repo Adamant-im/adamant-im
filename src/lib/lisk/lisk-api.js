@@ -42,7 +42,11 @@ export default class LiskApi extends LskBaseApi {
 
   /** @override */
   getTransaction (txid) {
-    return this._get(`/tx/${txid}`).then(x => this._mapTransaction(x))
+    return this._get(`/api/transactions`, { id: txid }).then(data => {
+      // console.log(`/api/transactions txid:`, data)
+      // console.log(`tx:`, data.data[0])
+      return this._mapTransaction(data.data[0])
+    })
   }
 
   /** @override */
@@ -54,9 +58,9 @@ export default class LiskApi extends LskBaseApi {
     options.senderIdOrRecipientId = this.address
     // additional options: offset, toTimestamp, fromTimestamp, height
     return this._get(url, options).then(transactions => {
-      console.log(transactions)
-      var mappedTxs = transactions.data.map(x => this._mapTransaction(x))
-      console.log(mappedTxs)
+      // console.log(transactions)
+      var mappedTxs = transactions.data.map(tx => this._mapTransaction(tx))
+      // console.log(mappedTxs)
       return mappedTxs
     })
   }
@@ -87,7 +91,7 @@ export default class LiskApi extends LskBaseApi {
 
   /** Executes a GET request to the API */
   _get (url, params) {
-    console.log('_get ', url, 'params:', params)
+    // console.log('_get ', url, 'params:', params)
     return this._getClient().get(url, { params }).then(response => response.data)
   }
 }
