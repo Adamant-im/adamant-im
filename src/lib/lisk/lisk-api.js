@@ -16,8 +16,7 @@ export default class LiskApi extends LskBaseApi {
       data => {
         // console.log(`/api/accounts:`, data)
         return (data.data[0].balance) / this.multiplier
-      }
-    )
+      })
   }
 
   /** @override */
@@ -27,7 +26,12 @@ export default class LiskApi extends LskBaseApi {
 
   /** Returns last block height */
   getHeight () {
-    return this._get('/blocks/tip/height').then(data => Number(data) || 0)
+    return this._get('/api/node/status').then(
+      data => {
+        // console.log(`/api/node/status:`, data)
+        // console.log(`height:`, data.data.height)
+        return Number(data.data.height) || 0
+      })
   }
 
   /** @override */
@@ -50,11 +54,11 @@ export default class LiskApi extends LskBaseApi {
   }
 
   /** @override */
-  getUnspents () {
-    return this._get(`/address/${this.address}/utxo`).then(outputs =>
-      outputs.map(x => ({ txid: x.txid, amount: x.value, vout: x.vout }))
-    )
-  }
+  // getUnspents () {
+  //   return this._get(`/address/${this.address}/utxo`).then(outputs =>
+  //     outputs.map(x => ({ txid: x.txid, amount: x.value, vout: x.vout }))
+  //   )
+  // }
 
   // getFeeRate () {
   //   return this._get('/fee-estimates').then(estimates => estimates['2'])

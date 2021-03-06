@@ -18,7 +18,7 @@ export const NEW_TRANSACTION_AGE = 30 * 60 * 1000
 export const isNew = timestamp => (Date.now() - timestamp) < NEW_TRANSACTION_AGE
 
 /**
- * Returns a retry interval (ms) for a pending transaction details re-fecthing.
+ * Returns a retry interval (ms) for a pending transaction details re-fetching.
  * @param {number} timestamp transaction timestamp
  * @returns {number}
  */
