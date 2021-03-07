@@ -9,7 +9,11 @@ const customActions = getApi => ({
     const api = getApi()
 
     if (!api) return
-    api.getBalance().then(balance => context.commit('status', { balance }))
+    api.getBalance().then(balance => {
+      if (balance) {
+        context.commit('status', { balance })
+      }
+    })
 
     // // The estimated fee rate is also needed
     // api.getFeeRate().then(rate => context.commit('feeRate', rate))
@@ -21,7 +25,11 @@ const customActions = getApi => ({
   updateHeight ({ commit }) {
     const api = getApi()
     if (!api) return
-    api.getHeight().then(height => commit('height', height))
+    api.getHeight().then(height => {
+      if (height) {
+        commit('height', height)
+      }
+    })
   },
 
   /**

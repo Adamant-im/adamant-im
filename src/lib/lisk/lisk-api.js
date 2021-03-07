@@ -44,7 +44,9 @@ export default class LiskApi extends LskBaseApi {
     return this._get(`/api/accounts`, { address: this.address }).then(
       data => {
         // console.log(`/api/accounts:`, data)
-        return (data.data[0].balance) / this.multiplier
+        if (data && data.data[0] && data.data[0].balance) {
+          return (data.data[0].balance) / this.multiplier
+        }
       })
   }
 
@@ -102,7 +104,9 @@ export default class LiskApi extends LskBaseApi {
     return this._get(`/api/transactions`, { id: txid }).then(data => {
       // console.log(`/api/transactions txid:`, data)
       // console.log(`tx:`, data.data[0])
-      return this._mapTransaction(data.data[0])
+      if (data && data.data[0]) {
+        return this._mapTransaction(data.data[0])
+      }
     })
   }
 
@@ -116,9 +120,11 @@ export default class LiskApi extends LskBaseApi {
     // additional options: offset, toTimestamp, fromTimestamp, height
     return this._get(url, options).then(transactions => {
       // console.log(transactions)
-      var mappedTxs = transactions.data.map(tx => this._mapTransaction(tx))
-      // console.log(mappedTxs)
-      return mappedTxs
+      if (transactions && transactions.data) {
+        var mappedTxs = transactions.data.map(tx => this._mapTransaction(tx))
+        // console.log(mappedTxs)
+        return mappedTxs
+      }
     })
   }
 
