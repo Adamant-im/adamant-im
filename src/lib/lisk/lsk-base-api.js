@@ -1,17 +1,5 @@
-import pbkdf2 from 'pbkdf2'
-import sodium from 'sodium-browserify-tweetnacl'
-import { getAddressFromPublicKey } from '@liskhq/lisk-cryptography'
-
 import axios from 'axios'
-import networks from './networks'
 import getEnpointUrl from '../getEndpointUrl'
-
-export const LiskHashSettings = {
-  SALT: 'adm',
-  ITERATIONS: 2048,
-  KEYLEN: 32,
-  DIGEST: 'sha256'
-}
 
 const createClient = url => {
   const client = axios.create({ baseURL: url })
@@ -25,27 +13,17 @@ const createClient = url => {
   return client
 }
 
-export function getAccount (crypto, passphrase) {
-  const network = networks[crypto]
-  var liskSeed = pbkdf2.pbkdf2Sync(passphrase, LiskHashSettings.SALT, LiskHashSettings.ITERATIONS, LiskHashSettings.KEYLEN, LiskHashSettings.DIGEST)
-  var keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
-  var address = getAddressFromPublicKey(keyPair.publicKey)
-  // console.log('address-1', address)
-  return {
-    network,
-    keyPair,
-    address
-  }
-}
-
 export default class LskBaseApi {
+  /**
+   * Constructor
+   * @abstract
+   */
   constructor (crypto, passphrase) {
-    const account = getAccount(crypto, passphrase)
-    this._network = account.network
-    this._keyPair = account.keyPair
-    this._address = account.address
     this._clients = { }
     this._crypto = crypto
+    this._network = undefined
+    this._keyPair = undefined
+    this._address = undefined
   }
 
   get multiplier () {

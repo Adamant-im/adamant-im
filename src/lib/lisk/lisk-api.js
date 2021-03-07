@@ -4,12 +4,39 @@ import { getRealTimestamp } from './lisk-utils'
 import { bytesToHex } from '@/lib/hex'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import * as transactions from '@liskhq/lisk-transactions'
+import pbkdf2 from 'pbkdf2'
+import sodium from 'sodium-browserify-tweetnacl'
+import networks from './networks'
+
+export const LiskHashSettings = {
+  SALT: 'adm',
+  ITERATIONS: 2048,
+  KEYLEN: 32,
+  DIGEST: 'sha256'
+}
 
 export const TX_FEE = 0.1
+
+export function getAccount (crypto, passphrase) {
+  const network = networks[crypto]
+  var liskSeed = pbkdf2.pbkdf2Sync(passphrase, LiskHashSettings.SALT, LiskHashSettings.ITERATIONS, LiskHashSettings.KEYLEN, LiskHashSettings.DIGEST)
+  var keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
+  var address = cryptography.getAddressFromPublicKey(keyPair.publicKey)
+  // console.log('address-1', address)
+  return {
+    network,
+    keyPair,
+    address
+  }
+}
 
 export default class LiskApi extends LskBaseApi {
   constructor (passphrase) {
     super(Cryptos.LSK, passphrase)
+    const account = getAccount(Cryptos.LSK, passphrase)
+    this._network = account.network
+    this._keyPair = account.keyPair
+    this._address = account.address
   }
 
   /** @override */
