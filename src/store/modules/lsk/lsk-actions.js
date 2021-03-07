@@ -2,6 +2,7 @@ import baseActions from '../lsk-base/lsk-base-actions'
 import LskApi from '../../../lib/lisk/lisk-api'
 
 const TX_CHUNK_SIZE = 25
+const TX_FETCH_INTERVAL = 10 * 1000
 
 const customActions = getApi => ({
   updateStatus (context) {
@@ -9,9 +10,6 @@ const customActions = getApi => ({
 
     if (!api) return
     api.getBalance().then(balance => context.commit('status', { balance }))
-
-    // // The unspent transactions are needed to estimate the fee
-    // api.getUnspents().then(utxo => context.commit('utxo', utxo))
 
     // // The estimated fee rate is also needed
     // api.getFeeRate().then(rate => context.commit('feeRate', rate))
@@ -83,6 +81,6 @@ export default {
     getOldTransactions,
     getNewTransactions,
     customActions,
-    fetchRetryTimeout: 60 * 1000
+    fetchRetryTimeout: TX_FETCH_INTERVAL
   })
 }

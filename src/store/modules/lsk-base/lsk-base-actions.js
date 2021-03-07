@@ -15,7 +15,7 @@ const DEFAULT_CUSTOM_ACTIONS = () => ({ })
  */
 
 /**
-  * Creates actions for the BTC-based crypto
+  * Creates actions for the LSK-based crypto
   * @param {Options} options config options
   */
 function createActions (options) {

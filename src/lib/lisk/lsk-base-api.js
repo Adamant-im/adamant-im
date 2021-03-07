@@ -5,9 +5,8 @@ const createClient = url => {
   const client = axios.create({ baseURL: url })
   client.interceptors.response.use(null, error => {
     if (error.response && Number(error.response.status) >= 500) {
-      console.error('Request failed', error)
+      console.error(`Request to ${url} failed.`, error)
     }
-    // console.log('axios client fine:', url)
     return Promise.reject(error)
   })
   return client

@@ -5,7 +5,6 @@ import { TX_FEE } from '../../../lib/lisk/lisk-api'
 export default () => ({
   crypto: Cryptos.LSK,
   ...baseState(),
-  // utxo: [],
   feeRate: TX_FEE,
   height: 0
 })
