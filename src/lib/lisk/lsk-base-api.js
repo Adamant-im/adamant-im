@@ -1,13 +1,10 @@
 import pbkdf2 from 'pbkdf2'
 import sodium from 'sodium-browserify-tweetnacl'
-import { bytesToHex } from '@/lib/hex'
-import { cryptography, transactions } from '@liskhq/lisk-client';
+import { getAddressFromPublicKey } from '@liskhq/lisk-cryptography'
 
 import axios from 'axios'
-
 import networks from './networks'
 import getEnpointUrl from '../getEndpointUrl'
-import BigNumber from '../bignumber'
 
 export const LiskHashSettings = {
   SALT: 'adm',
@@ -32,7 +29,7 @@ export function getAccount (crypto, passphrase) {
   const network = networks[crypto]
   var liskSeed = pbkdf2.pbkdf2Sync(passphrase, LiskHashSettings.SALT, LiskHashSettings.ITERATIONS, LiskHashSettings.KEYLEN, LiskHashSettings.DIGEST)
   var keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
-  var address = cryptography.getAddressFromPublicKey(keyPair.publicKey)
+  var address = getAddressFromPublicKey(keyPair.publicKey)
   // console.log('address-1', address)
   return {
     network,
@@ -69,35 +66,25 @@ export default class LskBaseApi {
   }
 
   /**
-   * Creates a transfer transaction hex and ID
+   * Returns last block height
+   * @abstract
+   * @returns {Promise<number>}
+   */
+  getHeight () {
+    return Promise.resolve(0)
+  }
+
+  /**
+   * Creates a transfer transaction hex (signed JSON tx object) and ID
+   * Signed JSON tx object is ready for broadcasting to blockchain network
+   * @abstract
    * @param {string} address receiver address
    * @param {number} amount amount to transfer (coins, not satoshis)
    * @param {number} fee transaction fee (coins, not satoshis)
    * @returns {Promise<{hex: string, txid: string}>}
    */
   createTransaction (address = '', amount = 0, fee) {
-    amount = transactions.utils.convertLSKToBeddows(amount.toString())
-    var liskTx = transactions.transfer({
-      amount,
-      recipientId: address
-      // data: 'Sent with ADAMANT Messenger'
-    })
-    liskTx.senderPublicKey = bytesToHex(this._keyPair.publicKey)
-    liskTx.senderId = this._address
-
-    // to use transactions.utils.signTransaction, passPhrase is necessary
-    // so we'll use cryptography.signDataWithPrivateKey
-    const liskTxBytes = transactions.utils.getTransactionBytes(liskTx)
-    const txSignature = cryptography.signDataWithPrivateKey(cryptography.hash(liskTxBytes), this._keyPair.secretKey)
-    liskTx.signature = txSignature
-    var txid = transactions.utils.getTransactionId(liskTx) 
-    liskTx.id = txid
-    console.log('newTx txid:', txid)
-
-    // console.log('signed tx', liskTx)
-    // console.log('Validate', transactions.utils.validateTransaction(liskTx))
-    // console.log('VERIFY', transactions.utils.verifyTransaction(liskTx))
-    return Promise.resolve({ hex: liskTx, txid })
+    return Promise.resolve({ hex: undefined, txid: undefined })
   }
 
   /**
@@ -127,53 +114,6 @@ export default class LskBaseApi {
    */
   getTransactions (options) {
     return Promise.resolve({ hasMore: false, items: [] })
-  }
-
-  /**
-   * Retrieves unspents (UTXO)
-   * @abstract
-   * @returns {Promise<Array<{txid: string, vout: number, amount: number}>>}
-   */
-  // getUnspents () {
-  //   return Promise.resolve([])
-  // }
-
-  /**
-   * Creates a raw DOGE transaction as a hex string.
-   * @param {string} address target address
-   * @param {number} amount amount to send
-   * @param {Array<{txid: string, amount: number, vout: number}>} unspents unspent transaction to use as inputs
-   * @param {number} fee transaction fee in primary units (BTC, DOGE, DASH, etc)
-   * @returns {string}
-   */
-  _buildTransaction (address, amount, unspents, fee) {
-    amount = new BigNumber(amount).times(this.multiplier).toNumber()
-    amount = Math.floor(amount)
-
-    const txb = new bitcoin.TransactionBuilder(this._network)
-    txb.setVersion(1)
-
-    const target = amount + new BigNumber(fee).times(this.multiplier).toNumber()
-    let transferAmount = 0
-    let inputs = 0
-
-    unspents.forEach(tx => {
-      const amt = Math.floor(tx.amount)
-      if (transferAmount < target) {
-        txb.addInput(tx.txid, tx.vout)
-        transferAmount += amt
-        inputs++
-      }
-    })
-
-    txb.addOutput(bitcoin.address.toOutputScript(address, this._network), amount)
-    txb.addOutput(this._address, transferAmount - target)
-
-    for (let i = 0; i < inputs; ++i) {
-      txb.sign(i, this._keyPair)
-    }
-
-    return txb.build().toHex()
   }
 
   /** Picks a client for a random API endpoint */

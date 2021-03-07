@@ -1,6 +1,9 @@
 import LskBaseApi from './lsk-base-api'
 import { Cryptos } from '../constants'
 import { getRealTimestamp } from './lisk-utils'
+import { bytesToHex } from '@/lib/hex'
+import * as cryptography from '@liskhq/lisk-cryptography'
+import * as transactions from '@liskhq/lisk-transactions'
 
 export const TX_FEE = 0.1
 
@@ -9,9 +12,7 @@ export default class LiskApi extends LskBaseApi {
     super(Cryptos.LSK, passphrase)
   }
 
-  /**
-   * @override
-   */
+  /** @override */
   getBalance () {
     return this._get(`/api/accounts`, { address: this.address }).then(
       data => {
@@ -25,7 +26,7 @@ export default class LiskApi extends LskBaseApi {
     return TX_FEE
   }
 
-  /** Returns last block height */
+  /** @override */
   getHeight () {
     return this._get('/api/node/status').then(
       data => {
@@ -36,10 +37,35 @@ export default class LiskApi extends LskBaseApi {
   }
 
   /** @override */
+  createTransaction (address = '', amount = 0, fee) {
+    amount = transactions.utils.convertLSKToBeddows(amount.toString())
+    var liskTx = transactions.transfer({
+      amount,
+      recipientId: address
+      // data: 'Sent with ADAMANT Messenger'
+    })
+    liskTx.senderPublicKey = bytesToHex(this._keyPair.publicKey)
+    liskTx.senderId = this._address
+
+    // To use transactions.utils.signTransaction, passPhrase is necessary
+    // So we'll use cryptography.signDataWithPrivateKey
+    const liskTxBytes = transactions.utils.getTransactionBytes(liskTx)
+    const txSignature = cryptography.signDataWithPrivateKey(cryptography.hash(liskTxBytes), this._keyPair.secretKey)
+    liskTx.signature = txSignature
+    var txid = transactions.utils.getTransactionId(liskTx)
+    liskTx.id = txid
+
+    // console.log('signed tx', liskTx)
+    // console.log('Validate', transactions.utils.validateTransaction(liskTx))
+    // console.log('VERIFY', transactions.utils.verifyTransaction(liskTx))
+    return Promise.resolve({ hex: liskTx, txid })
+  }
+
+  /** @override */
   sendTransaction (signedTx) {
     // console.log('before sendTransaction:', signedTx)
     return this._getClient().post('/api/transactions', signedTx).then(response => {
-      console.log('sendTransaction:', response)
+      // console.log('sendTransaction:', response)
       return signedTx.id
     })
   }
@@ -68,17 +94,6 @@ export default class LiskApi extends LskBaseApi {
       return mappedTxs
     })
   }
-
-  /** @override */
-  // getUnspents () {
-  //   return this._get(`/address/${this.address}/utxo`).then(outputs =>
-  //     outputs.map(x => ({ txid: x.txid, amount: x.value, vout: x.vout }))
-  //   )
-  // }
-
-  // getFeeRate () {
-  //   return this._get('/fee-estimates').then(estimates => estimates['2'])
-  // }
 
   /** @override */
   _mapTransaction (tx) {
