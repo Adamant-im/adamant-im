@@ -9,11 +9,12 @@
     <v-container fluid class="pa-0">
       <v-layout row wrap justify-center>
 
+        <v-list-tile style="position: absolute; top: 20px;" v-if="isRecentLoading">
+          <InlineSpinner />
+        </v-list-tile>
+
         <container v-if="isFulfilled">
 
-          <v-list-tile v-if="isUpdating">
-            <InlineSpinner />
-          </v-list-tile>
           <v-list v-if="hasTransactions" three-line class="transparent">
             <transaction-list-item
               v-for="(transaction, i) in transactions"
@@ -27,7 +28,7 @@
               @click:transaction="goToTransaction"
               @click:icon="goToChat"
             />
-            <v-list-tile v-if="isLoading">
+            <v-list-tile v-if="isOlderLoading">
               <InlineSpinner />
             </v-list-tile>
           </v-list>
@@ -37,8 +38,6 @@
           </h3>
 
         </container>
-
-        <InlineSpinner v-else-if="!isRejected" class="pt-4" />
 
       </v-layout>
     </v-container>
@@ -83,8 +82,11 @@ export default {
     hasTransactions () {
       return this.transactions && this.transactions.length > 0
     },
-    isLoading () {
-      return this.$store.getters[`${this.cryptoModule}/areTransactionsLoading`]
+    isOlderLoading () {
+      return this.$store.getters[`${this.cryptoModule}/areOlderLoading`]
+    },
+    isRecentLoading () {
+      return this.$store.getters[`${this.cryptoModule}/areRecentLoading`]
     },
     cryptoModule () {
       return this.crypto.toLowerCase()
@@ -136,19 +138,18 @@ export default {
       })
     },
     onScroll () {
-      if (!this.isLoading) {
-        const height = document.getElementById('txListElement').offsetHeight
-        const windowHeight = window.innerHeight
-        const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop +
-          (document.documentElement.scrollTop || 0)
-        // If we've scrolled to the very bottom, fetch the older transactions from server
-        if (windowHeight + scrollPosition >= height) {
-          this.$store.dispatch(`${this.cryptoModule}/getOldTransactions`)
-        }
+      const height = document.getElementById('txListElement').offsetHeight
+      const windowHeight = window.innerHeight
+      const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop +
+        (document.documentElement.scrollTop || 0)
+      // If we've scrolled to the very bottom, fetch the older transactions from server
+      if (!this.isOlderLoading && windowHeight + scrollPosition >= height) {
+        this.$store.dispatch(`${this.cryptoModule}/getOldTransactions`)
       }
-      // if (scrollPosition === 0) {
-      //   this.getNewTransactions()
-      // }
+      // If we've scrolled to the very top, fetch the recent transactions from server
+      if (!this.isRecentLoading && scrollPosition === 0) {
+        this.getNewTransactions()
+      }
     },
     getNewTransactions () {
       this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
