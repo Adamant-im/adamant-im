@@ -4,7 +4,7 @@
     :timestamp="transaction.timestamp || NaN"
     :id="transaction.hash || '' "
     :fee="transaction.fee | currency('LSK')"
-    :confirmations="transaction.confirmations || NaN"
+    :confirmations="confirmations || NaN"
     :sender="sender || '' "
     :recipient="recipient || '' "
     :explorerLink="explorerLink"
@@ -40,9 +40,11 @@ export default {
     return { }
   },
   computed: {
+    cryptoKey () {
+      return this.crypto.toLowerCase()
+    },
     transaction () {
-      const prefix = this.crypto.toLowerCase()
-      return this.$store.getters[prefix + '/transaction'](this.id) || { }
+      return this.$store.getters[`${this.cryptoKey}/transaction`](this.id) || { }
     },
     sender () {
       return this.transaction.senderId ? this.formatAddress(this.transaction.senderId) : ''
@@ -59,6 +61,20 @@ export default {
     },
     explorerLink () {
       return getExplorerUrl(Cryptos.LSK, this.id)
+    },
+    confirmations () {
+      const { height, confirmations } = this.transaction
+
+      let result = confirmations
+      if (height) {
+        // Calculate actual confirmations count based on the tx block height and the last block height.
+        const c = this.$store.getters[`${this.cryptoKey}/height`] - height
+        if (isFinite(c) && c > result) {
+          result = c
+        }
+      }
+
+      return result
     },
     admTx () {
       let admTx = {}
