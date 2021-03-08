@@ -21,19 +21,58 @@ export default (initialState) => ({
     state.bottomReached = true
   },
 
+  /**
+   * Adds new transactions
+   * @param {{transactions: object, minTimestamp: number, maxTimestamp: number}} state current state
+   * @param {Array<{hash: string, time: number}>} transactions transactions list
+   */
   transactions (state, transactions) {
+    let minTimestamp = Infinity
+    let maxTimestamp = 0
+
+    // const address = state.address
+    console.log('transactions to merge:', transactions.length)
+
     transactions.forEach(tx => {
       if (!tx) return
 
       Object.keys(tx).forEach(key => tx[key] === undefined && delete tx[key])
 
+      // const direction = tx.recipientId === address ? 'to' : 'from'
+      console.log('adding new tx:', tx.hash)
       const newTx = Object.assign(
+        // { direction, id: tx.hash },
         { },
         state.transactions[tx.hash],
         tx
       )
 
       Vue.set(state.transactions, tx.hash, newTx)
+
+      if (tx.timestamp) {
+        minTimestamp = Math.min(minTimestamp, tx.timestamp)
+        maxTimestamp = Math.max(maxTimestamp, tx.timestamp)
+      }
     })
+
+    if (minTimestamp < state.minTimestamp) {
+      state.minTimestamp = minTimestamp
+      console.log('set minHeight:', minTimestamp)
+    }
+
+    if (maxTimestamp > state.maxTimestamp) {
+      state.maxTimestamp = maxTimestamp
+      console.log('set maxHeight:', maxTimestamp)
+    }
+  },
+
+  areOlderLoading (state, areLoading) {
+    state.areOlderLoading = areLoading
+  },
+  areRecentLoading (state, areLoading) {
+    state.areRecentLoading = areLoading
+  },
+  areTransactionsLoading (state, areLoading) {
+    state.areTransactionsLoading = areLoading
   }
 })

@@ -10,5 +10,9 @@ export default {
    */
   sortedTransactions (state) {
     return Object.values(state.transactions).sort(sortFunc)
+  },
+
+  areTransactionsLoading (state) {
+    return state.areTransactionsLoading || state.areOlderLoading || state.areRecentLoading
   }
 }

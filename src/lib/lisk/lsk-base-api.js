@@ -30,7 +30,8 @@ export default class LskBaseApi {
   }
 
   get address () {
-    return this._address
+    // return this._address
+    return '15610359283786884938L'
   }
 
   /**

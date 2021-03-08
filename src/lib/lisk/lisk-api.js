@@ -1,6 +1,6 @@
 import LskBaseApi from './lsk-base-api'
 import { Cryptos } from '../constants'
-import { getRealTimestamp } from './lisk-utils'
+import { getRealTimestamp, getLiskTimestamp } from './lisk-utils'
 import { bytesToHex } from '@/lib/hex'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import * as transactions from '@liskhq/lisk-transactions'
@@ -16,6 +16,7 @@ export const LiskHashSettings = {
 }
 
 export const TX_FEE = 0.1
+const TX_CHUNK_SIZE = 25
 
 export function getAccount (crypto, passphrase) {
   const network = networks[crypto]
@@ -113,10 +114,19 @@ export default class LiskApi extends LskBaseApi {
   /** @override */
   getTransactions (options = { }) {
     let url = `/api/transactions`
-    options.limit = 25
-    options.sort = 'timestamp:desc'
+    console.log(1)
+    console.log(options)
+    options.limit = TX_CHUNK_SIZE
     options.type = 0
     options.senderIdOrRecipientId = this.address
+    if (options.toTimestamp) {
+      options.toTimestamp = getLiskTimestamp(options.toTimestamp) - 1
+    }
+    if (options.fromTimestamp) {
+      options.fromTimestamp = getLiskTimestamp(options.fromTimestamp) + 1
+    }
+    console.log(2)
+    console.log(options)
     // additional options: offset, toTimestamp, fromTimestamp, height
     return this._get(url, options).then(transactions => {
       // console.log(transactions)

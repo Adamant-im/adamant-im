@@ -45,7 +45,7 @@ export default {
   },
 
   /**
-   * Retrieves new transactions: those that preceed the oldest among the retrieved ones.
+   * Retrieves new transactions: those that preceeded the oldest among the retrieved ones.
    * @param {any} context Vuex action context
    */
   getOldTransactions (context) {

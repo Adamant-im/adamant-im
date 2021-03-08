@@ -4,7 +4,7 @@ export default {
   transaction: state => id => state.transactions[id],
 
   /**
-   * Returnes transactions list sorted by timestamp (from the newest to the oldest)
+   * Returns transactions list sorted by timestamp (from the newest to the oldest)
    * @param {{transactions: Object.<string, object>}} state module state
    * @returns {Array}
    */
