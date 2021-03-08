@@ -36,5 +36,15 @@ export default (initialState) => ({
 
       Vue.set(state.transactions, tx.hash, newTx)
     })
+  },
+
+  areOlderLoading (state, areLoading) {
+    state.areOlderLoading = areLoading
+  },
+  areRecentLoading (state, areLoading) {
+    state.areRecentLoading = areLoading
+  },
+  areTransactionsLoading (state, areLoading) {
+    state.areTransactionsLoading = areLoading
   }
 })
