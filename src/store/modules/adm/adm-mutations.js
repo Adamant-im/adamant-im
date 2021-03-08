@@ -55,7 +55,13 @@ export default {
    * @param {{areTransactionsLoading: boolean}} state module state
    * @param {boolean} value flag value
    */
-  areTransactionsLoading (state, value) {
-    state.areTransactionsLoading = value
+  areOlderLoading (state, areLoading) {
+    state.areOlderLoading = areLoading
+  },
+  areRecentLoading (state, areLoading) {
+    state.areRecentLoading = areLoading
+  },
+  areTransactionsLoading (state, areLoading) {
+    state.areTransactionsLoading = areLoading
   }
 }

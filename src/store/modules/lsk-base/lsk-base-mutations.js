@@ -18,6 +18,7 @@ export default (initialState) => ({
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
   bottom (state) {
+    console.log('bottom set')
     state.bottomReached = true
   },
 
@@ -30,7 +31,6 @@ export default (initialState) => ({
     let minTimestamp = Infinity
     let maxTimestamp = 0
 
-    // const address = state.address
     console.log('transactions to merge:', transactions.length)
 
     transactions.forEach(tx => {
@@ -38,10 +38,8 @@ export default (initialState) => ({
 
       Object.keys(tx).forEach(key => tx[key] === undefined && delete tx[key])
 
-      // const direction = tx.recipientId === address ? 'to' : 'from'
       console.log('adding new tx:', tx.hash)
       const newTx = Object.assign(
-        // { direction, id: tx.hash },
         { },
         state.transactions[tx.hash],
         tx

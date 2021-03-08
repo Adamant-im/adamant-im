@@ -11,6 +11,9 @@
 
         <container v-if="isFulfilled">
 
+          <v-list-tile v-if="isUpdating">
+            <InlineSpinner />
+          </v-list-tile>
           <v-list v-if="hasTransactions" three-line class="transparent">
             <transaction-list-item
               v-for="(transaction, i) in transactions"
@@ -89,7 +92,8 @@ export default {
   },
   data: () => ({
     isFulfilled: false,
-    isRejected: false
+    isRejected: false,
+    isUpdating: false
   }),
   methods: {
     sender (transaction) {
@@ -140,6 +144,10 @@ export default {
       if (windowHeight + scrollPosition >= height) {
         this.$store.dispatch(`${this.cryptoModule}/getOldTransactions`)
       }
+      // if (scrollPosition === 0) {
+      //   this.getNewTransactions()
+      // }
+
     },
     getNewTransactions () {
       this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)

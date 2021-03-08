@@ -37,11 +37,20 @@ export default {
     if (context.state.maxHeight > 0) {
       options.from = context.state.maxHeight + 1
     }
-    return admApi.getTransactions(options).then(response => {
-      if (response.transactions.length > 0) {
-        context.commit('transactions', response.transactions)
+
+    context.commit('areRecentLoading', true)
+    return admApi.getTransactions(options).then(
+      response => {
+        context.commit('areRecentLoading', false)
+        if (response.transactions.length > 0) {
+          context.commit('transactions', response.transactions)
+        }
+      },
+      error => {
+        context.commit('areRecentLoading', false)
+        return Promise.reject(error)
       }
-    })
+    )
   },
 
   /**
@@ -57,9 +66,9 @@ export default {
       options.to = context.state.minHeight - 1
     }
 
-    context.commit('areTransactionsLoading', true)
+    context.commit('areOlderLoading', true)
     return admApi.getTransactions(options).then(response => {
-      context.commit('areTransactionsLoading', false)
+      context.commit('areOlderLoading', false)
       const hasResult = Array.isArray(response.transactions) && response.transactions.length
 
       if (hasResult) {
@@ -72,7 +81,7 @@ export default {
         context.commit('bottom')
       }
     }, error => {
-      context.commit('areTransactionsLoading', false)
+      context.commit('areOlderLoading', false)
       return Promise.reject(error)
     })
   },

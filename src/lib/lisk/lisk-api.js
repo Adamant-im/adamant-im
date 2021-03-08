@@ -23,7 +23,6 @@ export function getAccount (crypto, passphrase) {
   var liskSeed = pbkdf2.pbkdf2Sync(passphrase, LiskHashSettings.SALT, LiskHashSettings.ITERATIONS, LiskHashSettings.KEYLEN, LiskHashSettings.DIGEST)
   var keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
   var address = cryptography.getAddressFromPublicKey(keyPair.publicKey)
-  // console.log('address-1', address)
   return {
     network,
     keyPair,
@@ -85,9 +84,6 @@ export default class LiskApi extends LskBaseApi {
     var txid = transactions.utils.getTransactionId(liskTx)
     liskTx.id = txid
 
-    // console.log('signed tx', liskTx)
-    // console.log('Validate', transactions.utils.validateTransaction(liskTx))
-    // console.log('VERIFY', transactions.utils.verifyTransaction(liskTx))
     return Promise.resolve({ hex: liskTx, txid })
   }
 
@@ -114,8 +110,6 @@ export default class LiskApi extends LskBaseApi {
   /** @override */
   getTransactions (options = { }) {
     let url = `/api/transactions`
-    console.log(1)
-    console.log(options)
     options.limit = TX_CHUNK_SIZE
     options.type = 0
     options.senderIdOrRecipientId = this.address
@@ -125,9 +119,7 @@ export default class LiskApi extends LskBaseApi {
     if (options.fromTimestamp) {
       options.fromTimestamp = getLiskTimestamp(options.fromTimestamp) + 1
     }
-    console.log(2)
-    console.log(options)
-    // additional options: offset, toTimestamp, fromTimestamp, height
+    // additional options: offset, height
     return this._get(url, options).then(transactions => {
       // console.log(transactions)
       if (transactions && transactions.data) {

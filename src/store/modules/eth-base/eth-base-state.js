@@ -1,10 +1,10 @@
 export default () => ({
   balance: 0,
   address: '',
-  areOlderLoading: false,
-  areRecentLoading: false,
   publicKey: null,
   privateKey: null,
+  areOlderLoading: false,
+  areRecentLoading: false,
   transactions: { },
   areTransactionsLoading: false,
   minHeight: -1,

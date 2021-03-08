@@ -208,7 +208,7 @@ function createActions (options) {
      * Retrieves new transactions: those that follow the most recently retrieved one.
      * @param {any} context Vuex action context
      */
-    getNewTransactions: function (context) {
+    async getNewTransactions (context) {
       if (!api) return
       const options = { }
       console.log('getNewTransactions')
