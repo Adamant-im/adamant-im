@@ -63,7 +63,7 @@ export default class DogeApi extends BtcBaseApi {
 
   /** Executes a GET request to the DOGE API */
   _get (url, params) {
-    return this._getClient().get(url, params).then(response => response.data)
+    return this._getClient().get(url, { params }).then(response => response.data)
   }
 
   /** Executes a POST request to the DOGE API */

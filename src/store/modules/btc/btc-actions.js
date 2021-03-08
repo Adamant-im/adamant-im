@@ -68,6 +68,9 @@ const getNewTransactions = async (api, context) => {
 }
 
 const getOldTransactions = async (api, context) => {
+  // If we already have the most old transaction for this address, no need to request anything
+  if (context.state.bottomReached) return Promise.resolve()
+
   const transactions = context.getters['sortedTransactions']
   const oldestTx = transactions[transactions.length - 1]
   const toTx = oldestTx && oldestTx.txid

@@ -9,7 +9,7 @@ const TX_FETCH_INTERVAL = 30 * 1000
  * @param {DashApi} api API client
  * @param {*} context Vuex context
  */
-const getTransactions = (api, context) => {
+const getNewTransactions = (api, context) => {
   const excludes = Object.keys(context.state.transactions)
 
   context.commit('areRecentLoading', true)
@@ -26,11 +26,31 @@ const getTransactions = (api, context) => {
   )
 }
 
+const getOldTransactions = (api, context) => {
+  // If we already have the most old transaction for this address, no need to request anything
+  if (context.state.bottomReached) return Promise.resolve()
+
+  const excludes = Object.keys(context.state.transactions)
+
+  context.commit('areOlderLoading', true)
+  return api.getTransactions({ excludes }).then(
+    result => {
+      context.commit('areOlderLoading', false)
+      context.commit('transactions', result.items)
+      context.commit('bottom')
+    },
+    error => {
+      context.commit('areOlderLoading', false)
+      return Promise.reject(error)
+    }
+  )
+}
+
 export default {
   ...baseActions({
     apiCtor: DashApi,
-    getOldTransactions: getTransactions,
-    getNewTransactions: getTransactions,
+    getOldTransactions,
+    getNewTransactions,
     fetchRetryTimeout: TX_FETCH_INTERVAL
   })
 }

@@ -78,6 +78,6 @@ export default class BitcoinApi extends BtcBaseApi {
 
   /** Executes a GET request to the API */
   _get (url, params) {
-    return this._getClient().get(url, params).then(response => response.data)
+    return this._getClient().get(url, { params }).then(response => response.data)
   }
 }

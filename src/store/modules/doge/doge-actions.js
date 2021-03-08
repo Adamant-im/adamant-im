@@ -18,6 +18,9 @@ const getNewTransactions = (api, context) => {
 }
 
 const getOldTransactions = (api, context) => {
+  // If we already have the most old transaction for this address, no need to request anything
+  if (context.state.bottomReached) return Promise.resolve()
+
   const from = Object.keys(context.state.transactions).length
   context.commit('areOlderLoading', true)
   return api.getTransactions({ from }).then(
