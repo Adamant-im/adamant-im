@@ -21,8 +21,6 @@ const DEFAULT_CUSTOM_ACTIONS = () => ({ })
 function createActions (options) {
   const Api = options.apiCtor || LskBaseApi
   const {
-    getNewTransactions,
-    getOldTransactions,
     customActions = DEFAULT_CUSTOM_ACTIONS,
     fetchRetryTimeout
   } = options
@@ -206,18 +204,75 @@ function createActions (options) {
       })
     },
 
-    getNewTransactions (context) {
-      if (api && typeof getNewTransactions === 'function') {
-        return getNewTransactions(api, context)
+    /**
+     * Retrieves new transactions: those that follow the most recently retrieved one.
+     * @param {any} context Vuex action context
+     */
+    getNewTransactions: function (context) {
+      if (!api) return
+      const options = { }
+      console.log('getNewTransactions')
+      console.log('context.state.maxTimestamp before commit:', context.state.maxTimestamp)
+      if (context.state.maxTimestamp > 0) {
+        options.fromTimestamp = context.state.maxTimestamp
+        options.sort = 'timestamp:asc'
+      } else {
+        // First time we fetch txs — get newest
+        options.sort = 'timestamp:desc'
       }
-      return Promise.resolve()
+
+      context.commit('areRecentLoading', true)
+      return api.getTransactions(options).then(
+        transactions => {
+          context.commit('areRecentLoading', false)
+          if (transactions && transactions.length > 0) {
+            context.commit('transactions', transactions)
+            console.log('context.state.maxTimestamp after commit:', context.state.maxTimestamp)
+            // get new transactions until we fetch the newest one
+            this.dispatch(`${context.state.crypto.toLowerCase()}/getNewTransactions`)
+          }
+        },
+        error => {
+          context.commit('areRecentLoading', false)
+          return Promise.reject(error)
+        }
+      )
     },
 
-    getOldTransactions (context) {
-      if (api && typeof getOldTransactions === 'function') {
-        return getOldTransactions(api, context)
+    /**
+     * Retrieves old transactions: those that preceded the oldest among the retrieved ones.
+     * @param {any} context Vuex action context
+     */
+    async getOldTransactions (context) {
+      if (!api) return
+      console.log('getOldTransactions')
+      // If we already have the most old transaction for this address, no need to request anything
+      if (context.state.bottomReached) return Promise.resolve()
+
+      const options = { }
+      if (context.state.minTimestamp < Infinity) {
+        options.toTimestamp = context.state.minTimestamp
       }
-      return Promise.resolve()
+      options.sort = 'timestamp:desc'
+
+      context.commit('areOlderLoading', true)
+
+      return api.getTransactions(options).then(transactions => {
+        context.commit('areOlderLoading', false)
+
+        if (transactions && transactions.length > 0) {
+          context.commit('transactions', transactions)
+        }
+
+        // Successful but empty response means, that the oldest transaction for the current
+        // address has been received already
+        if (transactions && transactions.length === 0) {
+          context.commit('bottom')
+        }
+      }, error => {
+        context.commit('areOlderLoading', false)
+        return Promise.reject(error)
+      })
     },
 
     ...customActions(() => api)
