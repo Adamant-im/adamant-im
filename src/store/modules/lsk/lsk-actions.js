@@ -39,6 +39,9 @@ const customActions = getApi => ({
   updateTransaction ({ dispatch, getters }, payload) {
     const tx = getters['transaction'](payload.hash)
 
+    console.log('lsk updateTransaction:', tx.hash)
+    console.log('lsk updateTransaction:', Date.now())
+
     if (tx && (tx.status === 'SUCCESS' || tx.status === 'ERROR')) {
       // If transaction is in one of the final statuses (either succeeded or failed),
       // just update the current height to recalculate its confirmations counter.

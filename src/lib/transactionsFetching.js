@@ -1,8 +1,10 @@
+/** Pending transaction may be not known to blockchain yet */
+
 /** Max number of attempts to fetch a pending transaction */
-export const PENDING_ATTEMPTS = 15
+export const PENDING_ATTEMPTS = 20
 
 /** Interval (ms) between attempts to fetch a new pending transaction */
-export const NEW_PENDING_TIMEOUT = 60 * 1000
+export const NEW_PENDING_TIMEOUT = 10 * 1000
 
 /** Interval (ms) between attempts to fetch an old pending transaction */
 export const OLD_PENDING_TIMEOUT = 5 * 1000

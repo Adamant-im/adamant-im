@@ -134,6 +134,9 @@ function createActions (options) {
      * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
      */
     async getTransaction (context, payload) {
+      console.log('lsk getTransaction:', payload.hash)
+      console.log('lsk getTransaction:', Date.now())
+
       if (!api) return
       if (!payload.hash) return
 
@@ -166,11 +169,13 @@ function createActions (options) {
 
         // If it's not confirmed but is already registered, keep on trying to fetch its details
         retryTimeout = fetchRetryTimeout
+        console.log('lsk getTransaction tx exist, retryTimeout:', retryTimeout)
         retry = true
       } else if (existing && existing.status === 'REGISTERED') {
         // We've failed to fetch the details for some reason, but the transaction is known to be
         // accepted by the network - keep on fetching
         retryTimeout = fetchRetryTimeout
+        console.log('lsk getTransaction tx REGISTERED, retryTimeout:', retryTimeout)
         retry = true
       } else {
         // The network does not yet know this transaction. We'll make several attempts to retrieve it.
