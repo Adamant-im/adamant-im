@@ -134,9 +134,6 @@ function createActions (options) {
      * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
      */
     async getTransaction (context, payload) {
-      console.log('lsk getTransaction:', payload.hash)
-      console.log('lsk getTransaction:', Date.now())
-
       if (!api) return
       if (!payload.hash) return
 
@@ -169,13 +166,11 @@ function createActions (options) {
 
         // If it's not confirmed but is already registered, keep on trying to fetch its details
         retryTimeout = fetchRetryTimeout
-        console.log('lsk getTransaction tx exist, retryTimeout:', retryTimeout)
         retry = true
       } else if (existing && existing.status === 'REGISTERED') {
         // We've failed to fetch the details for some reason, but the transaction is known to be
         // accepted by the network - keep on fetching
         retryTimeout = fetchRetryTimeout
-        console.log('lsk getTransaction tx REGISTERED, retryTimeout:', retryTimeout)
         retry = true
       } else {
         // The network does not yet know this transaction. We'll make several attempts to retrieve it.
@@ -216,8 +211,8 @@ function createActions (options) {
     async getNewTransactions (context) {
       if (!api) return
       const options = { }
-      console.log('getNewTransactions')
-      console.log('context.state.maxTimestamp before commit:', context.state.maxTimestamp)
+      // console.log('getNewTransactions')
+      // console.log('context.state.maxTimestamp before commit:', context.state.maxTimestamp)
       if (context.state.maxTimestamp > 0) {
         options.fromTimestamp = context.state.maxTimestamp
         options.sort = 'timestamp:asc'
@@ -232,7 +227,7 @@ function createActions (options) {
           context.commit('areRecentLoading', false)
           if (transactions && transactions.length > 0) {
             context.commit('transactions', transactions)
-            console.log('context.state.maxTimestamp after commit:', context.state.maxTimestamp)
+            // console.log('context.state.maxTimestamp after commit:', context.state.maxTimestamp)
             // get new transactions until we fetch the newest one
             this.dispatch(`${context.state.crypto.toLowerCase()}/getNewTransactions`)
           }
@@ -250,7 +245,6 @@ function createActions (options) {
      */
     async getOldTransactions (context) {
       if (!api) return
-      console.log('getOldTransactions')
       // If we already have the most old transaction for this address, no need to request anything
       if (context.state.bottomReached) return Promise.resolve()
 

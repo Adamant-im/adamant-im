@@ -25,7 +25,6 @@ export default (initialState) => ({
 
   transactions (state, transactions) {
     console.log('transactions btc-based to merge:', transactions.length)
-    var added = 0
 
     transactions.forEach(tx => {
       if (!tx) return
@@ -38,10 +37,8 @@ export default (initialState) => ({
         tx
       )
 
-      added += 1
       Vue.set(state.transactions, tx.hash, newTx)
     })
-    console.log('transactions btc-based ADDED:', added)
   },
 
   areOlderLoading (state, areLoading) {

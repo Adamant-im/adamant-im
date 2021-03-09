@@ -18,7 +18,7 @@ export default (initialState) => ({
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
   bottom (state) {
-    console.log('bottom set')
+    console.log('bottom lsk set')
     state.bottomReached = true
   },
 
@@ -31,14 +31,13 @@ export default (initialState) => ({
     let minTimestamp = Infinity
     let maxTimestamp = 0
 
-    console.log('transactions to merge:', transactions.length)
+    console.log('transactions lsk to merge:', transactions.length)
 
     transactions.forEach(tx => {
       if (!tx) return
 
       Object.keys(tx).forEach(key => tx[key] === undefined && delete tx[key])
 
-      console.log('adding new tx:', tx.hash)
       const newTx = Object.assign(
         { },
         state.transactions[tx.hash],
@@ -55,12 +54,12 @@ export default (initialState) => ({
 
     if (minTimestamp < state.minTimestamp) {
       state.minTimestamp = minTimestamp
-      console.log('set minHeight:', minTimestamp)
+      // console.log('set minHeight:', minTimestamp)
     }
 
     if (maxTimestamp > state.maxTimestamp) {
       state.maxTimestamp = maxTimestamp
-      console.log('set maxHeight:', maxTimestamp)
+      // console.log('set maxHeight:', maxTimestamp)
     }
   },
 
