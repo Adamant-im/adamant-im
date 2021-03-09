@@ -30,6 +30,8 @@ export default {
 
     const address = state.address
 
+    console.log('transactions adm to merge:', transactions.length)
+
     transactions.forEach(tx => {
       if (!tx) return
       Vue.set(state.transactions, tx.id, {
@@ -37,16 +39,21 @@ export default {
         direction: tx.recipientId === address ? 'to' : 'from',
         partner: tx.recipientId === address ? tx.senderId : tx.recipientId
       })
-      minHeight = Math.min(minHeight, tx.height)
-      maxHeight = Math.max(maxHeight, tx.height)
+
+      if (tx.height) {
+        minHeight = Math.min(minHeight, tx.height)
+        maxHeight = Math.max(maxHeight, tx.height)
+      }
     })
 
-    if (minHeight < Infinity) {
+    if (minHeight < state.minHeight) {
       state.minHeight = minHeight
+      console.log('set minHeight:', minHeight)
     }
 
-    if (maxHeight > 0) {
+    if (maxHeight > state.maxHeight) {
       state.maxHeight = maxHeight
+      console.log('set maxHeight:', maxHeight)
     }
   },
 

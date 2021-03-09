@@ -16,7 +16,7 @@ export const LiskHashSettings = {
 }
 
 export const TX_FEE = 0.1
-const TX_CHUNK_SIZE = 25
+export const TX_CHUNK_SIZE = 25
 
 export function getAccount (crypto, passphrase) {
   const network = networks[crypto]

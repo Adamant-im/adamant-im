@@ -6,7 +6,7 @@ export default () => {
     areOlderLoading: false,
     transactions: {},
     maxHeight: -1,
-    minHeight: -1,
+    minHeight: Infinity,
     bottomReached: false
   }
 }

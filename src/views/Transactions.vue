@@ -69,6 +69,7 @@ export default {
   computed: {
     transactions () {
       // debug when after some time txs are not showing
+      console.log('store transactions')
       console.log('store transactions', this.$store.state[this.cryptoModule].transactions)
       const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
       console.log('transactions to list', transactions)

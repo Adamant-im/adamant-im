@@ -229,7 +229,10 @@ function createActions (options) {
             context.commit('transactions', transactions)
             // console.log('context.state.maxTimestamp after commit:', context.state.maxTimestamp)
             // get new transactions until we fetch the newest one
-            this.dispatch(`${context.state.crypto.toLowerCase()}/getNewTransactions`)
+            if (options.fromTimestamp && transactions.length === api.TX_CHUNK_SIZE) {
+              // console.log('once again..', api.TX_CHUNK_SIZE)
+              this.dispatch(`${context.state.crypto.toLowerCase()}/getNewTransactions`)
+            }
           }
         },
         error => {
