@@ -55,10 +55,7 @@ export default {
     window.removeEventListener('scroll', this.onScroll)
   },
   mounted () {
-    if (
-      !this.$store.getters['options/isLoginViaPassword'] ||
-      this.$store.state.IDBReady
-    ) {
+    if (!this.$store.getters['options/isLoginViaPassword'] || this.$store.state.IDBReady) {
       this.getNewTransactions()
     }
 
@@ -71,7 +68,11 @@ export default {
   },
   computed: {
     transactions () {
+      // debug when after some time txs are not showing
+      console.log('store transactions', this.$store.state[this.cryptoModule].transactions)
       const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
+      console.log('transactions to list', transactions)
+      console.log(`${this.crypto.toLowerCase()} state`, this.$store.state[this.crypto.toLowerCase()])
       const address = this.$store.state[this.crypto.toLowerCase()].address
       return transactions.filter(tx => {
         // Filter invalid "fake" transactions (from chat rich message)
@@ -165,6 +166,12 @@ export default {
         // }
         this.isFulfilled = true
       } else {
+        // debug when after some time txs are not showing
+        setTimeout(() => {
+          console.log('store transactions after timeout', this.$store.state[this.cryptoModule].transactions)
+          const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
+          console.log('transactions to list after timeout', transactions)
+        }, 1000)
         this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
           .then(() => {
             this.isFulfilled = true
@@ -174,8 +181,7 @@ export default {
             this.$store.dispatch('snackbar/show', {
               message: err.message
             })
-          }
-        )
+          })
       }
     }
   },
