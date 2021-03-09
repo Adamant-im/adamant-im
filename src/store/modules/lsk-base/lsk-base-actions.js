@@ -198,6 +198,7 @@ function createActions (options) {
      * @param {{hash: string}} payload action payload
      */
     updateTransaction ({ dispatch }, payload) {
+      console.log('lsk updateTransaction', payload)
       return dispatch('getTransaction', {
         hash: payload.hash,
         force: true

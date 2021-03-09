@@ -98,9 +98,10 @@ export default class LiskApi extends LskBaseApi {
 
   /** @override */
   getTransaction (txid) {
+    console.log('lsk getTransaction', txid)
     return this._get(`/api/transactions`, { id: txid }).then(data => {
       // console.log(`/api/transactions txid:`, data)
-      // console.log(`tx:`, data.data[0])
+      console.log(`tx:`, data.data[0])
       if (data && data.data[0]) {
         return this._mapTransaction(data.data[0])
       }
