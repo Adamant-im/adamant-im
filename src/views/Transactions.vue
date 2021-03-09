@@ -48,6 +48,7 @@
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import InlineSpinner from '@/components/InlineSpinner'
 import TransactionListItem from '@/components/TransactionListItem'
+// import scrollPosition from '@/mixins/scrollPosition'
 
 export default {
   beforeDestroy () {
@@ -97,6 +98,7 @@ export default {
     isRejected: false,
     isUpdating: false
   }),
+  // mixins: [scrollPosition],
   methods: {
     sender (transaction) {
       const { senders, senderId } = transaction
@@ -152,17 +154,29 @@ export default {
       }
     },
     getNewTransactions () {
-      this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
-        .then(() => {
-          this.isFulfilled = true
-        })
-        .catch(err => {
-          this.isRejected = true
-
-          this.$store.dispatch('snackbar/show', {
-            message: err.message
+      // If we came from Transactions details sreen, do not update transaction list
+      if (this.$route.meta.previousRoute.params.txId && !this.isFulfilled) {
+        // It seems this code is excessive as Vue restores scroll if we don't udpdate contents anyway
+        // if (this.$route.meta.scrollPositionMultiple[this.crypto]) {
+        //   setTimeout(() => {
+        //     console.log('restore:', this.$route.meta.scrollPositionMultiple[this.crypto].y)
+        //     window.scrollTo(0, this.$route.meta.scrollPositionMultiple[this.crypto].y)
+        //   }, 0)
+        // }
+        this.isFulfilled = true
+      } else {
+        this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
+          .then(() => {
+            this.isFulfilled = true
           })
-        })
+          .catch(err => {
+            this.isRejected = true
+            this.$store.dispatch('snackbar/show', {
+              message: err.message
+            })
+          }
+        )
+      }
     }
   },
   props: {

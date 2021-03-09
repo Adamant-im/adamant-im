@@ -43,6 +43,9 @@ export default {
     next('/chats')
   },
   transactions: (to, from, next) => {
+    if (to.meta.previousRoute) {
+      to.meta.previousRoute = from
+    }
     const crypto = (to.params.crypto || '').toUpperCase()
     if (crypto in Cryptos) {
       next()
