@@ -49,7 +49,7 @@ export default {
       response => {
         context.commit('areRecentLoading', false)
         if (response.transactions.length > 0) {
-          context.commit('transactions', response.transactions)
+          context.commit('transactions', { transactions: response.transactions, updateTimestamps: true })
           // get new transactions until we fetch the newest one
           if (options.fromHeight && response.transactions.length === admApi.TX_CHUNK_SIZE) {
             // console.log('once again..', admApi.TX_CHUNK_SIZE)
@@ -87,7 +87,7 @@ export default {
       const hasResult = Array.isArray(response.transactions) && response.transactions.length
 
       if (hasResult) {
-        context.commit('transactions', response.transactions)
+        context.commit('transactions', { transactions: response.transactions, updateTimestamps: true })
       }
 
       // Successful but empty response means, that the oldest transaction for the current

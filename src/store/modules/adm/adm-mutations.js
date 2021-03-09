@@ -25,6 +25,10 @@ export default {
    * @param {Array<{id: string, height: number}>} transactions transactions list
    */
   transactions (state, transactions) {
+    if (transactions.updateTimestamps) {
+      var updateTimestamps = transactions.updateTimestamps
+      transactions = transactions.transactions
+    }
     let minHeight = Infinity
     let maxHeight = 0
 
@@ -40,7 +44,7 @@ export default {
         partner: tx.recipientId === address ? tx.senderId : tx.recipientId
       })
 
-      if (tx.height) {
+      if (tx.height && updateTimestamps) {
         minHeight = Math.min(minHeight, tx.height)
         maxHeight = Math.max(maxHeight, tx.height)
       }

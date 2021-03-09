@@ -28,8 +28,13 @@ export default (initialState) => ({
    * @param {Array<{hash: string, time: number}>} transactions transactions list
    */
   transactions (state, transactions) {
+    if (transactions.updateTimestamps) {
+      var updateTimestamps = transactions.updateTimestamps
+      transactions = transactions.transactions
+    }
+
     let minTimestamp = Infinity
-    let maxTimestamp = 0
+    let maxTimestamp = -1
 
     console.log('transactions lsk to merge:', transactions.length)
 
@@ -46,7 +51,7 @@ export default (initialState) => ({
 
       Vue.set(state.transactions, tx.hash, newTx)
 
-      if (tx.timestamp) {
+      if (tx.timestamp && updateTimestamps) {
         minTimestamp = Math.min(minTimestamp, tx.timestamp)
         maxTimestamp = Math.max(maxTimestamp, tx.timestamp)
       }
@@ -54,12 +59,12 @@ export default (initialState) => ({
 
     if (minTimestamp < state.minTimestamp) {
       state.minTimestamp = minTimestamp
-      // console.log('set minHeight:', minTimestamp)
+      console.log('set minTimestamp:', minTimestamp)
     }
 
     if (maxTimestamp > state.maxTimestamp) {
       state.maxTimestamp = maxTimestamp
-      // console.log('set maxHeight:', maxTimestamp)
+      console.log('set maxTimestamp:', maxTimestamp)
     }
   },
 

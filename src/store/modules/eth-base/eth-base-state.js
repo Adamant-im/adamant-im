@@ -7,7 +7,7 @@ export default () => ({
   areRecentLoading: false,
   transactions: { },
   areTransactionsLoading: false,
-  minHeight: -1,
+  minHeight: Infinity,
   maxHeight: -1,
   bottomReached: false
 })

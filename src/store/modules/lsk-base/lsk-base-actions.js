@@ -227,7 +227,7 @@ function createActions (options) {
         transactions => {
           context.commit('areRecentLoading', false)
           if (transactions && transactions.length > 0) {
-            context.commit('transactions', transactions)
+            context.commit('transactions', { transactions, updateTimestamps: true })
             // console.log('context.state.maxTimestamp after commit:', context.state.maxTimestamp)
             // get new transactions until we fetch the newest one
             if (options.fromTimestamp && transactions.length === api.TX_CHUNK_SIZE) {
@@ -264,7 +264,7 @@ function createActions (options) {
         context.commit('areOlderLoading', false)
 
         if (transactions && transactions.length > 0) {
-          context.commit('transactions', transactions)
+          context.commit('transactions', { transactions, updateTimestamps: true })
         }
 
         // Successful but empty response means, that the oldest transaction for the current

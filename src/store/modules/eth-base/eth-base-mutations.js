@@ -24,8 +24,12 @@ export default {
    * @param {Array<{hash: string, time: number}>} transactions transactions list
    */
   transactions (state, transactions) {
+    if (transactions.updateTimestamps) {
+      var updateTimestamps = transactions.updateTimestamps
+      transactions = transactions.transactions
+    }
     let minHeight = Infinity
-    let maxHeight = 0
+    let maxHeight = -1
 
     const address = state.address
 
@@ -43,17 +47,17 @@ export default {
 
       Vue.set(state.transactions, tx.hash, newTx)
 
-      if (tx.time) {
+      if (tx.time && updateTimestamps) {
         minHeight = Math.min(minHeight, tx.time)
         maxHeight = Math.max(maxHeight, tx.time)
       }
     })
 
-    if (minHeight < Infinity) {
+    if (minHeight < state.minHeight) {
       state.minHeight = minHeight
     }
 
-    if (maxHeight > 0) {
+    if (maxHeight > state.maxHeight) {
       state.maxHeight = maxHeight
     }
   },
