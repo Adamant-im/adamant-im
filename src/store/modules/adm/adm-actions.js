@@ -33,37 +33,61 @@ export default {
    * @param {any} context Vuex action context
    */
   getNewTransactions (context) {
+    console.log('adm getNewTransactions..', context)
     const options = { }
+    options.minAmount = 1
     if (context.state.maxHeight > 0) {
-      options.from = context.state.maxHeight + 1
+      options.fromHeight = context.state.maxHeight + 1
+      options.orderBy = 'timestamp:asc'
+    } else {
+      // First time we fetch txs — get newest
+      options.orderBy = 'timestamp:desc'
     }
-    return admApi.getTransactions(options).then(response => {
-      if (response.transactions.length > 0) {
-        context.commit('transactions', response.transactions)
+
+    context.commit('areRecentLoading', true)
+    return admApi.getTransactions(options).then(
+      response => {
+        context.commit('areRecentLoading', false)
+        if (response.transactions.length > 0) {
+          context.commit('transactions', { transactions: response.transactions, updateTimestamps: true })
+          // get new transactions until we fetch the newest one
+          if (options.fromHeight && response.transactions.length === admApi.TX_CHUNK_SIZE) {
+            // console.log('once again..', admApi.TX_CHUNK_SIZE)
+            this.dispatch('adm/getNewTransactions')
+          }
+        }
+      },
+      error => {
+        context.commit('areRecentLoading', false)
+        return Promise.reject(error)
       }
-    })
+    )
   },
 
   /**
-   * Retrieves new transactions: those that preceed the oldest among the retrieved ones.
+   * Retrieves old transactions: those that preceded the oldest among the retrieved ones.
    * @param {any} context Vuex action context
    */
   getOldTransactions (context) {
+    console.log('adm getOldTransactions..', context)
     // If we already have the most old transaction for this address, no need to request anything
     if (context.state.bottomReached) return Promise.resolve()
 
     const options = { }
-    if (context.state.minHeight > 1) {
-      options.to = context.state.minHeight - 1
+    options.minAmount = 1
+    if (context.state.minHeight < Infinity) {
+      options.toHeight = context.state.minHeight - 1
     }
+    options.orderBy = 'timestamp:desc'
 
-    context.commit('areTransactionsLoading', true)
+    context.commit('areOlderLoading', true)
+
     return admApi.getTransactions(options).then(response => {
-      context.commit('areTransactionsLoading', false)
+      context.commit('areOlderLoading', false)
       const hasResult = Array.isArray(response.transactions) && response.transactions.length
 
       if (hasResult) {
-        context.commit('transactions', response.transactions)
+        context.commit('transactions', { transactions: response.transactions, updateTimestamps: true })
       }
 
       // Successful but empty response means, that the oldest transaction for the current
@@ -72,7 +96,7 @@ export default {
         context.commit('bottom')
       }
     }, error => {
-      context.commit('areTransactionsLoading', false)
+      context.commit('areOlderLoading', false)
       return Promise.reject(error)
     })
   },

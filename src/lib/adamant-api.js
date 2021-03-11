@@ -20,6 +20,7 @@ let myAddress = null
 
 /** Lists cryptos for which addresses are currently being stored to the KVS */
 const pendingAddresses = { }
+export const TX_CHUNK_SIZE = 25
 
 /**
  * Creates a new transaction with the common fields pre-filled
@@ -335,22 +336,28 @@ export function storeCryptoAddress (crypto, address) {
  * @returns {Promise<{success: boolean, transactions: Array}>}
  */
 export function getTransactions (options = { }) {
+  console.log('adm getTransactions')
   const query = {
     inId: myAddress,
-    'and:minAmount': 1,
-    orderBy: 'timestamp:desc'
+    limit: TX_CHUNK_SIZE
+    // 'and:minAmount': 1,
+    // orderBy: 'timestamp:desc'
   }
 
-  if (options.to) {
-    query['and:toHeight'] = options.to
+  if (options.minAmount) {
+    query['and:minAmount'] = options.minAmount
   }
-
-  if (options.from) {
-    query['and:fromHeight'] = options.from
+  if (options.toHeight) {
+    query['and:toHeight'] = options.toHeight
   }
-
+  if (options.fromHeight) {
+    query['and:fromHeight'] = options.fromHeight
+  }
   if (options.type) {
     query['and:type'] = options.type
+  }
+  if (options.orderBy) {
+    query['orderBy'] = options.orderBy
   }
 
   return client.get('/api/transactions', query)

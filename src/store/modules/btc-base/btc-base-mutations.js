@@ -19,10 +19,13 @@ export default (initialState) => ({
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
   bottom (state) {
+    console.log('btc based bottom')
     state.bottomReached = true
   },
 
   transactions (state, transactions) {
+    console.log('transactions btc-based to merge:', transactions.length)
+
     transactions.forEach(tx => {
       if (!tx) return
 
@@ -36,5 +39,15 @@ export default (initialState) => ({
 
       Vue.set(state.transactions, tx.hash, newTx)
     })
+  },
+
+  areOlderLoading (state, areLoading) {
+    state.areOlderLoading = areLoading
+  },
+  areRecentLoading (state, areLoading) {
+    state.areRecentLoading = areLoading
+  },
+  areTransactionsLoading (state, areLoading) {
+    state.areTransactionsLoading = areLoading
   }
 })

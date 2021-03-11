@@ -69,7 +69,9 @@ const router = new Router({
       meta: {
         requiresAuth: true,
         layout: 'no-container',
-        containerNoPadding: true
+        containerNoPadding: true,
+        // scrollPositionMultiple: {},
+        previousRoute: {}
       },
       beforeEnter: navigationGuard.transactions
     },
@@ -146,11 +148,18 @@ const router = new Router({
     }
   ],
   scrollBehavior (to, from, savedPosition) {
-    if (savedPosition) {
+    if (to.params.txId) {
+      // Don't restore scroll for Transaction details screen
+      return { x: 0, y: 0 }
+    } else if (savedPosition) {
       return savedPosition
-    } else {
+    } else if (to.meta.scrollPosition) {
       return to.meta.scrollPosition
     }
+    // else if (to.meta.scrollPositionMultiple) {
+    //   console.log('to.meta.scrollPositionMultiple for', to.params.crypto)
+    //   return to.meta.scrollPositionMultiple[to.params.crypto]
+    // }
   }
 })
 

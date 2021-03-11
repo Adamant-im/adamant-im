@@ -178,7 +178,7 @@ import { INCREASE_FEE_MULTIPLIER } from '../lib/constants'
 
 import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
-import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount } from '@/lib/constants'
+import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount, isSelfTxAllowed } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
@@ -364,7 +364,7 @@ export default {
       return {
         cryptoAddress: [
           v => validateAddress(this.currency, v) || this.$t('transfer.error_incorrect_address', { crypto: this.currency }),
-          v => v !== this.ownAddress || this.$t('transfer.error_same_recipient')
+          v => (v !== this.ownAddress || isSelfTxAllowed(this.currency)) || this.$t('transfer.error_same_recipient')
         ],
         amount: [
           v => v > 0 || this.$t('transfer.error_incorrect_amount'),

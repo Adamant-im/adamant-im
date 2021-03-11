@@ -1,3 +1,7 @@
+/*
+  Not used file
+*/
+
 export type Message = {
   id: number,
   hash?: string, // transactionId for third-party cryptos

@@ -1,5 +1,5 @@
 {
-  "minApiVersion": "0.3.1",
+  "minApiVersion": "0.5.2",
   "server": {
     "adm": [
       {
@@ -26,6 +26,10 @@
     ],
     "btc": [
       { "url": "http://mgplh7en3d6ywsec5h6q3tc6mirsleb5cmlyn6nmp25qrb6gy35nypad.onion" }
+    ],
+    "lsk": [
+      { "url": "http://4ktlltbfgr2ujaazdplhsuypcbjvd6dqkgoo6tujd2vrgizyfrymuaid.onion" },
+      { "url": "http://lekfdkoo54l2vhmwnttlktxfomyxr3ihparn46kzxmrvh3dekfgy3gyd.onion" }
     ]
   },
   "env": "production"

@@ -78,7 +78,7 @@ adamant.createPassphraseHash = function (passphrase) {
 }
 
 /**
- * Creates a keypar based on a hash.
+ * Creates a keypair based on a hash.
  * @implements {sodium}
  * @param {hash} hash
  * @return {Object} publicKey, privateKey

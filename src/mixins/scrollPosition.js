@@ -7,6 +7,13 @@ const updateRouteScrollPosition = throttle(function () {
       y: window.scrollY
     }
   }
+  // if (this.$route.meta.hasOwnProperty('scrollPositionMultiple')) {
+  //   console.log('saving:', window.scrollY)
+  //   this.$route.meta.scrollPositionMultiple[this.crypto] = {
+  //     x: window.scrollX,
+  //     y: window.scrollY
+  //   }
+  // }
 }, 500)
 
 export default {

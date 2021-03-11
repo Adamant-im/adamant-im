@@ -2,6 +2,7 @@ import baseActions from '../btc-base/btc-base-actions'
 import BtcApi from '../../../lib/bitcoin/bitcoin-api'
 
 const TX_CHUNK_SIZE = 25
+const TX_FETCH_INTERVAL = 60 * 1000
 
 const customActions = getApi => ({
   updateStatus (context) {
@@ -35,7 +36,7 @@ const customActions = getApi => ({
     const tx = getters['transaction'](payload.hash)
 
     if (tx && (tx.status === 'SUCCESS' || tx.status === 'ERROR')) {
-      // If transaction is in one of the final statuses (either succeded or failed),
+      // If transaction is in one of the final statuses (either succeeded or failed),
       // just update the current height to recalculate its confirmations counter.
       return dispatch('updateHeight')
     } else {
@@ -56,21 +57,28 @@ const retrieveNewTransactions = async (api, context, latestTxId, toTx) => {
 }
 
 const getNewTransactions = async (api, context) => {
+  context.commit('areRecentLoading', true)
   // Determine the most recent transaction ID
   const latestTransaction = context.getters['sortedTransactions'][0]
   const latestId = latestTransaction && latestTransaction.txid
   // Now fetch the transactions until we meet that latestId among the
   // retrieved results
   await retrieveNewTransactions(api, context, latestId)
+  context.commit('areRecentLoading', false)
 }
 
 const getOldTransactions = async (api, context) => {
+  // If we already have the most old transaction for this address, no need to request anything
+  if (context.state.bottomReached) return Promise.resolve()
+
   const transactions = context.getters['sortedTransactions']
   const oldestTx = transactions[transactions.length - 1]
   const toTx = oldestTx && oldestTx.txid
 
+  context.commit('areOlderLoading', true)
   const chunk = await api.getTransactions({ toTx })
   context.commit('transactions', chunk)
+  context.commit('areOlderLoading', false)
 
   if (chunk.length < TX_CHUNK_SIZE) {
     context.commit('bottom')
@@ -83,6 +91,6 @@ export default {
     getOldTransactions,
     getNewTransactions,
     customActions,
-    fetchRetryTimeout: 60 * 1000
+    fetchRetryTimeout: TX_FETCH_INTERVAL
   })
 }

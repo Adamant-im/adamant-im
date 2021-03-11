@@ -290,7 +290,7 @@ export default function createActions (config) {
       return getTransactions(options).then(
         result => {
           context.commit('areRecentLoading', false)
-          context.commit('transactions', result.items)
+          context.commit('transactions', { transactions: result.items, updateTimestamps: true })
         },
         error => {
           context.commit('areRecentLoading', false)
@@ -320,7 +320,7 @@ export default function createActions (config) {
       return getTransactions(options).then(
         result => {
           context.commit('areOlderLoading', false)
-          context.commit('transactions', result.items)
+          context.commit('transactions', { transactions: result.items, updateTimestamps: true })
 
           if (!result.items.length) {
             context.commit('bottom')
