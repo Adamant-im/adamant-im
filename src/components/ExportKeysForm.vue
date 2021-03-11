@@ -90,6 +90,7 @@
 import { validateMnemonic } from 'bip39'
 import { getAccountFromPassphrase as getEthAccount } from '@/lib/eth-utils'
 import { getAccount as getBtcAccount } from '@/lib/bitcoin/btc-base-api'
+import { getAccount as getLskAccount } from '@/lib/lisk/lisk-api'
 import { Cryptos, CryptosNames } from '@/lib/constants'
 import { copyToClipboard } from '@/lib/textHelpers'
 
@@ -101,6 +102,17 @@ function getBtcKey (crypto, passphrase, asWif) {
   const key = asWif
     ? keyPair.toWIF()
     : keyPair.privateKey.toString('hex')
+
+  return {
+    crypto: crypto,
+    cryptoName: CryptosNames[crypto],
+    key
+  }
+}
+
+function getLskKey (crypto, passphrase) {
+  const keyPair = getLskAccount(crypto, passphrase).keyPair
+  const key = keyPair.secretKey.toString('hex')
 
   return {
     crypto: crypto,
@@ -165,7 +177,9 @@ export default {
         const dash = getBtcKey(Cryptos.DASH, this.passphrase, false)
         const doge = getBtcKey(Cryptos.DOGE, this.passphrase, true)
 
-        this.keys = [bitcoin, eth, doge, dash]
+        const lsk = getLskKey(Cryptos.LSK, this.passphrase)
+
+        this.keys = [bitcoin, eth, doge, dash, lsk]
       }, 0)
     },
 

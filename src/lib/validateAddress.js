@@ -2,13 +2,13 @@ import { isValidAddress, isHexString } from 'ethereumjs-util'
 import { isValidAddress as isValidBtcAddress } from './bitcoin/bitcoin-utils'
 import {
   Cryptos, isErc20,
-  RE_ADM_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS
+  RE_ADM_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS, RE_LSK_ADDRESS
 } from './constants'
 
 /**
  * Checks if `address` is a valid address for the specified `crypto`.
  *
- * @param {string} crypto one of 'ADM' or 'ETH'
+ * @param {string} crypto like 'ADM' or 'ETH'
  * @param {string} address value to check
  * @returns {boolean} `true` if address is valid, `false` otherwise
  */
@@ -21,6 +21,8 @@ export default function validateAddress (crypto, address) {
     return RE_DOGE_ADDRESS.test(address)
   } else if (crypto === Cryptos.DASH) {
     return RE_DASH_ADDRESS.test(address)
+  } else if (crypto === Cryptos.LSK) {
+    return RE_LSK_ADDRESS.test(address)
   } else if (crypto === Cryptos.BTC) {
     return isValidBtcAddress(address)
   }

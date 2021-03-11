@@ -22,6 +22,7 @@ import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
 import dogeModule from './modules/doge'
+import lskModule from './modules/lsk'
 import dashModule from './modules/dash'
 import bitcoinModule from './modules/btc'
 import nodesModule from './modules/nodes'
@@ -187,6 +188,7 @@ const store = {
     res: erc20Module(Cryptos.RES, '0x0a9f693fce6f00a51a8e0db4351b5a8078b4242e', 5),
     adm: admModule, // ADM transfers
     doge: dogeModule,
+    lsk: lskModule,
     dash: dashModule,
     btc: bitcoinModule,
     partners: partnersModule, // Partners: display names, crypto addresses and so on
