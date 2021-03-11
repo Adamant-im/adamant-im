@@ -2,8 +2,10 @@ export default () => ({
   address: '',
   balance: 0,
   transactions: { },
-  areTransactionsLoading: false,
-  areRecentLoading: false,
   areOlderLoading: false,
+  areRecentLoading: false,
+  areTransactionsLoading: false,
+  maxTimestamp: -1,
+  minTimestamp: Infinity,
   bottomReached: false
 })

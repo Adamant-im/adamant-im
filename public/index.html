@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- Disables pull-to-refresh but allows overscroll glow effects.
+overscroll-behavior-y: contain;  -->
+<html lang="en" style="overscroll-behavior-y: contain;">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -38,7 +40,6 @@
     <!-- Add to home screen for Android and modern mobile browsers -->
     <link rel="manifest" href="<%= htmlWebpackPlugin.files.publicPath %>manifest.json">
 
-
     <!-- Add to home screen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="#4A4A4A">
@@ -48,6 +49,7 @@
 
     <%= htmlWebpackPlugin.options.basePath %>
   </head>
+
   <body style="background: repeating-linear-gradient(140deg, #191919, #191919 0.7px, #212121 0, #212121 5px);">
     <noscript>
       <strong>We're sorry but adamant-im doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>

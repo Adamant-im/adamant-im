@@ -1,26 +1,30 @@
 import Vue from 'vue'
+import { resetState } from '../../../lib/reset-state'
 
-export default {
-  /** Set ETH balance */
-  balance (state, balance) {
-    state.balance = balance
+export default (initialState) => ({
+  /** Resets module state */
+  reset (state) {
+    resetState(state, initialState())
   },
 
-  /** Set ETH account */
-  account (state, account) {
-    state.address = account.address
-    state.publicKey = account.publicKey
-    state.privateKey = account.privateKey
+  address (state, address) {
+    state.address = address
+  },
+
+  status (state, { balance }) {
+    state.balance = balance
+    state.lastStatusUpdate = Date.now()
   },
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
   bottom (state) {
+    console.log('bottom lsk set')
     state.bottomReached = true
   },
 
   /**
    * Adds new transactions
-   * @param {{transactions: object, minHeight: number, maxHeight: number}} state current state
+   * @param {{transactions: object, minTimestamp: number, maxTimestamp: number}} state current state
    * @param {Array<{hash: string, time: number}>} transactions transactions list
    */
   transactions (state, transactions) {
@@ -28,39 +32,42 @@ export default {
       var updateTimestamps = transactions.updateTimestamps
       transactions = transactions.transactions
     }
-    let minHeight = Infinity
-    let maxHeight = -1
 
-    const address = state.address
+    let minTimestamp = Infinity
+    let maxTimestamp = -1
+
+    console.log('transactions lsk to merge:', transactions.length)
 
     transactions.forEach(tx => {
       if (!tx) return
 
       Object.keys(tx).forEach(key => tx[key] === undefined && delete tx[key])
 
-      const direction = tx.recipientId === address ? 'to' : 'from'
       const newTx = Object.assign(
-        { direction, id: tx.hash },
+        { },
         state.transactions[tx.hash],
         tx
       )
 
       Vue.set(state.transactions, tx.hash, newTx)
 
-      if (tx.time && updateTimestamps) {
-        minHeight = Math.min(minHeight, tx.time)
-        maxHeight = Math.max(maxHeight, tx.time)
+      if (tx.timestamp && updateTimestamps) {
+        minTimestamp = Math.min(minTimestamp, tx.timestamp)
+        maxTimestamp = Math.max(maxTimestamp, tx.timestamp)
       }
     })
 
-    if (minHeight < state.minHeight) {
-      state.minHeight = minHeight
+    if (minTimestamp < state.minTimestamp) {
+      state.minTimestamp = minTimestamp
+      console.log('set minTimestamp:', minTimestamp)
     }
 
-    if (maxHeight > state.maxHeight) {
-      state.maxHeight = maxHeight
+    if (maxTimestamp > state.maxTimestamp) {
+      state.maxTimestamp = maxTimestamp
+      console.log('set maxTimestamp:', maxTimestamp)
     }
   },
+
   areOlderLoading (state, areLoading) {
     state.areOlderLoading = areLoading
   },
@@ -70,4 +77,4 @@ export default {
   areTransactionsLoading (state, areLoading) {
     state.areTransactionsLoading = areLoading
   }
-}
+})

@@ -9,6 +9,10 @@
     <v-container fluid class="pa-0">
       <v-layout row wrap justify-center>
 
+        <v-list-tile style="position: absolute; top: 20px;" v-if="isRecentLoading">
+          <InlineSpinner />
+        </v-list-tile>
+
         <container v-if="isFulfilled">
 
           <v-list v-if="hasTransactions" three-line class="transparent">
@@ -24,7 +28,7 @@
               @click:transaction="goToTransaction"
               @click:icon="goToChat"
             />
-            <v-list-tile v-if="isLoading">
+            <v-list-tile v-if="isOlderLoading">
               <InlineSpinner />
             </v-list-tile>
           </v-list>
@@ -35,8 +39,6 @@
 
         </container>
 
-        <InlineSpinner v-else-if="!isRejected" class="pt-4" />
-
       </v-layout>
     </v-container>
   </div>
@@ -46,16 +48,14 @@
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import InlineSpinner from '@/components/InlineSpinner'
 import TransactionListItem from '@/components/TransactionListItem'
+// import scrollPosition from '@/mixins/scrollPosition'
 
 export default {
   beforeDestroy () {
     window.removeEventListener('scroll', this.onScroll)
   },
   mounted () {
-    if (
-      !this.$store.getters['options/isLoginViaPassword'] ||
-      this.$store.state.IDBReady
-    ) {
+    if (!this.$store.getters['options/isLoginViaPassword'] || this.$store.state.IDBReady) {
       this.getNewTransactions()
     }
 
@@ -68,7 +68,12 @@ export default {
   },
   computed: {
     transactions () {
+      // debug when after some time txs are not showing
+      console.log('store transactions')
+      console.log('store transactions', this.$store.state[this.cryptoModule].transactions)
       const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
+      console.log('transactions to list', transactions)
+      console.log(`${this.crypto.toLowerCase()} state`, this.$store.state[this.crypto.toLowerCase()])
       const address = this.$store.state[this.crypto.toLowerCase()].address
       return transactions.filter(tx => {
         // Filter invalid "fake" transactions (from chat rich message)
@@ -80,8 +85,11 @@ export default {
     hasTransactions () {
       return this.transactions && this.transactions.length > 0
     },
-    isLoading () {
-      return this.$store.getters[`${this.cryptoModule}/areTransactionsLoading`]
+    isOlderLoading () {
+      return this.$store.getters[`${this.cryptoModule}/areOlderLoading`]
+    },
+    isRecentLoading () {
+      return this.$store.getters[`${this.cryptoModule}/areRecentLoading`]
     },
     cryptoModule () {
       return this.crypto.toLowerCase()
@@ -89,8 +97,10 @@ export default {
   },
   data: () => ({
     isFulfilled: false,
-    isRejected: false
+    isRejected: false,
+    isUpdating: false
   }),
+  // mixins: [scrollPosition],
   methods: {
     sender (transaction) {
       const { senders, senderId } = transaction
@@ -137,22 +147,43 @@ export default {
       const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop +
         (document.documentElement.scrollTop || 0)
       // If we've scrolled to the very bottom, fetch the older transactions from server
-      if (windowHeight + scrollPosition >= height) {
+      if (!this.isOlderLoading && windowHeight + scrollPosition >= height) {
         this.$store.dispatch(`${this.cryptoModule}/getOldTransactions`)
+      }
+      // If we've scrolled to the very top, fetch the recent transactions from server
+      if (!this.isRecentLoading && scrollPosition === 0) {
+        this.getNewTransactions()
       }
     },
     getNewTransactions () {
-      this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
-        .then(() => {
-          this.isFulfilled = true
-        })
-        .catch(err => {
-          this.isRejected = true
-
-          this.$store.dispatch('snackbar/show', {
-            message: err.message
+      // If we came from Transactions details sreen, do not update transaction list
+      if (this.$route.meta.previousRoute.params.txId && !this.isFulfilled) {
+        // It seems this code is excessive as Vue restores scroll if we don't udpdate contents anyway
+        // if (this.$route.meta.scrollPositionMultiple[this.crypto]) {
+        //   setTimeout(() => {
+        //     console.log('restore:', this.$route.meta.scrollPositionMultiple[this.crypto].y)
+        //     window.scrollTo(0, this.$route.meta.scrollPositionMultiple[this.crypto].y)
+        //   }, 0)
+        // }
+        this.isFulfilled = true
+      } else {
+        // debug when after some time txs are not showing
+        setTimeout(() => {
+          console.log('store transactions after timeout', this.$store.state[this.cryptoModule].transactions)
+          const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
+          console.log('transactions to list after timeout', transactions)
+        }, 1000)
+        this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
+          .then(() => {
+            this.isFulfilled = true
           })
-        })
+          .catch(err => {
+            this.isRejected = true
+            this.$store.dispatch('snackbar/show', {
+              message: err.message
+            })
+          })
+      }
     }
   },
   props: {
