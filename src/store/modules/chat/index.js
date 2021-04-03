@@ -59,7 +59,7 @@ const getters = {
     const chat = state.chats[senderId]
 
     if (chat) {
-      return chat.messages
+      return chat.messages.sort((left, right) => left.timestamp - right.timestamp)
     }
 
     return []
