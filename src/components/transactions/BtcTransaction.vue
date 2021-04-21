@@ -30,7 +30,9 @@ export default {
     TransactionTemplate
   },
   mounted () {
-    this.$store.dispatch(`${this.cryptoKey}/getTransaction`, { hash: this.id })
+    // Not needed, as called from Transaction.vur
+    // console.log('Fetching tx from details..')
+    // this.$store.dispatch(`${this.cryptoKey}/getTransaction`, { hash: this.id })
   },
   data () {
     return { }
@@ -79,10 +81,12 @@ export default {
       const { height, confirmations } = this.transaction
 
       let result = confirmations
+      // console.log(`confirmations: ${confirmations}, height: ${height}`)
       if (height) {
         // Calculate confirmations count based on the tx block height and the last block height.
         // That's for BTC only as it does not return the confirmations for the transaction.
         const c = this.$store.getters[`${this.cryptoKey}/height`] - height
+        // console.log(`New confirmations: ${c}`)
         if (isFinite(c) && c > result) {
           result = c
         }

@@ -29,6 +29,7 @@ export default {
      */
     fetchTransaction (type, hash) {
       const cryptoModule = type.toLowerCase()
+      console.log('Fetching tx from transaction.js..')
       return this.$store.dispatch(`${cryptoModule}/getTransaction`, { hash })
     },
 

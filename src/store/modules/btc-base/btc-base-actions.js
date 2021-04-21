@@ -140,10 +140,13 @@ function createActions (options) {
       if (!payload.hash) return
 
       const existing = context.state.transactions[payload.hash]
+      console.log(`getTransaction ${payload.hash} for ${context.state.crypto}. existing: ${existing}. payload.force: ${payload.force}. existing.status: ${existing && existing.status}`)
+      // if (existing && (!payload.force || existing.status === 'PENDING')) return
       if (existing && !payload.force) return
 
       // Set a stub so far, if the transaction is not in the store yet
       if (!existing || existing.status === 'ERROR') {
+        console.log(`Commiting new transaction ${payload.hash} for ${context.state.crypto}. existing: ${existing}. payload.force: ${payload.force}. existing.status: ${existing && existing.status}`)
         context.commit('transactions', [{
           hash: payload.hash,
           timestamp: payload.timestamp,
@@ -155,6 +158,7 @@ function createActions (options) {
       let tx = null
       try {
         tx = await api.getTransaction(payload.hash)
+        console.log(`Request of transaction ${payload.hash} for ${context.state.crypto}:`, tx)
       } catch (e) { }
 
       let retry = false
@@ -167,29 +171,33 @@ function createActions (options) {
         if (tx.status === 'SUCCESS') return
 
         // If it's not confirmed but is already registered, keep on trying to fetch its details
+        console.log(`Got non-confirmed transaction for ${context.state.crypto}. fetchRetryTimeout: ${fetchRetryTimeout}`)
         retryTimeout = fetchRetryTimeout
         retry = true
       } else if (existing && existing.status === 'REGISTERED') {
         // We've failed to fetch the details for some reason, but the transaction is known to be
         // accepted by the network - keep on fetching
+        console.log(`Didn't get existing transaction for ${context.state.crypto}. fetchRetryTimeout: ${fetchRetryTimeout}`)
         retryTimeout = fetchRetryTimeout
         retry = true
       } else {
         // The network does not yet know this transaction. We'll make several attempts to retrieve it.
         retry = attempt < tf.PENDING_ATTEMPTS
-        retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp))
+        retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+        console.log(`Didn't get unknown transaction for ${context.state.crypto}. retryTimeout: ${retryTimeout}. attempt: ${attempt} of ${tf.PENDING_ATTEMPTS}. payload.timestamp: ${payload.timestamp}. existing.timestamp: ${existing && existing.timestamp}`)
       }
 
       if (!retry) {
         // If we're here, we have abandoned any hope to get the transaction details.
         context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-      } else {
+      } else if (!payload.updateOnly) {
         // Try to get the details one more time
         const newPayload = {
           ...payload,
           attempt: attempt + 1,
           force: true
         }
+        console.log(`getTransaction ${payload.hash} for ${context.state.crypto} in retryTimeout: ${retryTimeout}. Attempt: ${newPayload.attempt}.`)
         setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
       }
     },
@@ -200,10 +208,8 @@ function createActions (options) {
      * @param {{hash: string}} payload action payload
      */
     updateTransaction ({ dispatch }, payload) {
-      return dispatch('getTransaction', {
-        hash: payload.hash,
-        force: true
-      })
+      console.log('Fetching tx from updateTransaction..')
+      return dispatch('getTransaction', { ...payload, force: true, updateOnly: true })
     },
 
     getNewTransactions (context) {

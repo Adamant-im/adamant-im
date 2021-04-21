@@ -192,7 +192,7 @@ export default function createActions (config) {
         if (payload.attempt >= tf.PENDING_ATTEMPTS) {
           // Give up, if transaction could not be found after so many attempts
           context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-        } else {
+        } else if (!payload.updateOnly) {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = tx ? payload : {
@@ -201,7 +201,8 @@ export default function createActions (config) {
             force: true
           }
 
-          const timeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp))
+          const timeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+          console.log(`getTransaction ${payload.hash} for ${context.state.crypto} in timeout: ${timeout}. Attempt: ${newPayload.attempt}.`)
           setTimeout(() => context.dispatch('getTransaction', newPayload), timeout)
         }
       })
@@ -268,7 +269,7 @@ export default function createActions (config) {
      * @param {{hash: string}} payload action payload
      */
     updateTransaction ({ dispatch }, payload) {
-      return dispatch('getTransaction', payload)
+      return dispatch('getTransaction', { ...payload, force: true, updateOnly: true })
     },
 
     getNewTransactions (context, payload) {

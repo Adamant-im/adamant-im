@@ -42,11 +42,11 @@
     "how_to_use_messenger": "How to start with a Blockchain Messenger",
     "how_to_use_messenger_link": "https://medium.com/adamant-im/how-to-start-with-a-blockchain-messenger-54d1eb9704e6",
     "transaction_statuses": {
-      "confirmed": "Confirmed in token’s blockchain",
-      "delivered": "Delivered to Node",
-      "invalid": "Incorrect information. Check transaction in token's blockchain carefully",
-      "pending": "Not confirmed yet",
-      "rejected": "The transaction is cancelled or not accepted",
+      "confirmed": "Confirmed in a blockchain",
+      "delivered": "Delivered to a node",
+      "invalid": "Incorrect information. Check the Tx in a blockchain explorer carefully",
+      "pending": "Not confirmed yet. Fetching…",
+      "rejected": "Unable to fetch Tx info. It may be cancelled or not accepted. Check the Tx in a blockchain explorer",
       "unknown": "This cryptocurrency is not supported yet"
     },
     "virtual": {

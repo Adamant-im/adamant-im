@@ -175,19 +175,20 @@ function createActions (options) {
       } else {
         // The network does not yet know this transaction. We'll make several attempts to retrieve it.
         retry = attempt < tf.PENDING_ATTEMPTS
-        retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp))
+        retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
       }
 
       if (!retry) {
         // If we're here, we have abandoned any hope to get the transaction details.
         context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-      } else {
+      } else if (!payload.updateOnly) {
         // Try to get the details one more time
         const newPayload = {
           ...payload,
           attempt: attempt + 1,
           force: true
         }
+        console.log(`getTransaction ${payload.hash} for ${context.state.crypto} in retryTimeout: ${retryTimeout}. Attempt: ${newPayload.attempt}.`)
         setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
       }
     },
@@ -199,10 +200,7 @@ function createActions (options) {
      */
     updateTransaction ({ dispatch }, payload) {
       console.log('lsk updateTransaction', payload)
-      return dispatch('getTransaction', {
-        hash: payload.hash,
-        force: true
-      })
+      return dispatch('getTransaction', { ...payload, force: true, updateOnly: true })
     },
 
     /**
