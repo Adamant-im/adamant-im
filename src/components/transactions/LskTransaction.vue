@@ -9,7 +9,7 @@
     :recipient="recipient || '' "
     :explorerLink="explorerLink"
     :partner="partner || '' "
-    :status="transaction.status || '' "
+    :status="status || '' "
     :admTx="admTx"
   />
 </template>
@@ -19,6 +19,7 @@ import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
 import { Cryptos } from '../../lib/constants'
 import partnerName from '@/mixins/partnerName'
+// import { Cryptos } from '../../lib/constants'
 
 export default {
   mixins: [partnerName],
@@ -45,6 +46,12 @@ export default {
     },
     transaction () {
       return this.$store.getters[`${this.cryptoKey}/transaction`](this.id) || { }
+    },
+    status () {
+      // console.log(`status for LSK:`, tx.getTransactionStatus(this.transaction))
+      console.log(`status for LSK:`)
+      return this.transaction.status
+      // return tx.getTransactionStatus(this.transaction)
     },
     sender () {
       return this.transaction.senderId ? this.formatAddress(this.transaction.senderId) : ''

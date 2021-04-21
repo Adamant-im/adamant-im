@@ -1,4 +1,5 @@
 import { Cryptos, TransactionStatus as TS } from '@/lib/constants'
+import { verifyTransactionDetails } from '@/lib/txVerify'
 
 export default {
   methods: {
@@ -53,26 +54,6 @@ export default {
       return Promise.all([recipientCryptoAddress, senderCryptoAddress])
     },
 
-    verifyTransactionDetails (transaction, admSpecialMessage, {
-      recipientCryptoAddress,
-      senderCryptoAddress
-    }) {
-      if (!recipientCryptoAddress || !senderCryptoAddress) return false
-      if (!transaction.senderId || !transaction.recipientId) return false
-
-      if (
-        transaction.hash === admSpecialMessage.hash &&
-        this.verifyAmount(+transaction.amount, +admSpecialMessage.amount) &&
-        this.verifyTimestamp(transaction.timestamp, admSpecialMessage.timestamp) &&
-        transaction.senderId.toLowerCase() === senderCryptoAddress.toLowerCase() &&
-        transaction.recipientId.toLowerCase() === recipientCryptoAddress.toLowerCase()
-      ) {
-        return true
-      }
-
-      return false
-    },
-
     getTransactionStatus (admSpecialMessage) {
       if (!admSpecialMessage) return TS.PENDING
 
@@ -107,12 +88,11 @@ export default {
         // sometimes timestamp is missing (ETHLike transactions)
         if (!transaction.timestamp) return TS.PENDING
 
-        if (this.verifyTransactionDetails(transaction, admSpecialMessage, {
-          recipientCryptoAddress,
-          senderCryptoAddress
-        })) {
+        const txVerify = verifyTransactionDetails(transaction, admSpecialMessage, { recipientCryptoAddress, senderCryptoAddress })
+        if (txVerify.isTxConsistent) {
           status = TS.CONFIRMED
         } else {
+          console.log(`Inconsistent ${type} transaction ${hash}:`, txVerify)
           status = TS.INVALID
         }
       } else {
@@ -122,23 +102,6 @@ export default {
       }
 
       return status
-    },
-
-    /**
-     * Delta should be <= 0.5%
-     */
-    verifyAmount (transactionAmount, specialMessageAmount) {
-      const margin = transactionAmount / (100 / 0.5)
-      const delta = Math.abs(transactionAmount - specialMessageAmount)
-
-      return delta <= margin
-    },
-
-    verifyTimestamp (transactionTimestamp, specialMessageTimestamp) {
-      const margin = 1800 // 30 min
-      const delta = Math.abs(transactionTimestamp - specialMessageTimestamp) / 1000
-
-      return delta < margin
     }
   }
 }
