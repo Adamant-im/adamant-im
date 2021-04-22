@@ -11,7 +11,7 @@ import {
 } from '@/lib/adamant-api'
 import { Cryptos, Fees } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
-import { flushCryptoAddresses } from '@/lib/store-crypto-address'
+import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
@@ -38,6 +38,8 @@ import notification from './modules/notification'
 Vue.use(Vuex)
 
 export let interval
+
+const UPDATE_BALANCE_INTERVAL = 10000
 
 const store = {
   state: () => ({
@@ -162,9 +164,10 @@ const store = {
       root: true,
       handler ({ dispatch }) {
         function repeat () {
+          validateStoredCryptoAddresses()
           dispatch('updateBalance')
             .catch(err => console.error(err))
-            .then(() => (interval = setTimeout(repeat, 20000)))
+            .then(() => (interval = setTimeout(repeat, UPDATE_BALANCE_INTERVAL)))
         }
 
         repeat()

@@ -85,6 +85,11 @@
     "show_qr_code": "Show QR code",
     "wallet": "wallet"
   },
+  "warning_on_addresses": {
+    "addresses_title": "Warning",
+    "hide_button": "Got it",
+    "forget_button": "Don't show again on this device"
+  },
   "login": {
     "brand_title": "ADAMANT",
     "copy_button_tooltip": "Copy",

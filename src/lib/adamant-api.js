@@ -221,7 +221,7 @@ function tryDecodeStoredValue (value) {
  * @param {string=} ownerAddress address of the value owner
  * @returns {Promise<any>}
  */
-export function getStored (key, ownerAddress) {
+export function getStored (key, ownerAddress, records = 1) {
   if (!ownerAddress) {
     ownerAddress = myAddress
   }
@@ -230,18 +230,23 @@ export function getStored (key, ownerAddress) {
     senderId: ownerAddress,
     key,
     orderBy: 'timestamp:desc',
-    limit: 1
+    limit: records
   }
 
   return client.get('/api/states/get', params).then(response => {
     let value = null
 
     if (response.success && Array.isArray(response.transactions)) {
-      const tx = response.transactions[0]
-      value = tx && tx.asset && tx.asset.state && tx.asset.state.value
+      if (records > 1) { // return all records
+        return response.transactions
+      } else {
+        const tx = response.transactions[0]
+        value = tx && tx.asset && tx.asset.state && tx.asset.state.value
+        return tryDecodeStoredValue(value)
+      }
     }
 
-    return tryDecodeStoredValue(value)
+    return null
   })
 }
 
