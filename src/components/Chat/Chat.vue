@@ -158,12 +158,10 @@ function validateMessage (message) {
   }
 
   if (this.$store.state.balance < 0.001) {
-    if (Object.keys(this.$store.state.adm.transactions).length) {
-      this.$store.dispatch('snackbar/show', {
-        message: this.$t('chats.no_money')
-      })
-    } else {
+    if (this.$store.getters.isAccountNew()) {
       this.showFreeTokensDialog = true
+    } else {
+      this.$store.dispatch('snackbar/show', { message: this.$t('chats.no_money') })
     }
     return false
   }

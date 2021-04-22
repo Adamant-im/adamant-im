@@ -32,12 +32,11 @@ export function flushCryptoAddresses () {
  * @returns undefined if check wasn't completed, object
  */
 export function validateStoredCryptoAddresses () {
-  if (!admApi.isReady() || validatedCryptos['summary']) return
+  if (!admApi.isReady() || validatedCryptos['summary'] || store.getters.isAccountNew()) return
 
   function skip (crypto) {
     return isErc20(crypto) || crypto === 'ADM'
   }
-
   function uniqueCaseInsensitive (values) {
     return [...new Map(values.map(s => [s.toLowerCase(), s])).values()]
   }
@@ -49,15 +48,17 @@ export function validateStoredCryptoAddresses () {
       if (!validatedCryptos[crypto]) {
         const key = `${crypto.toLowerCase()}:address`
         admApi.getStored(key, store.state.address, 20).then(txs => {
-          let validateInfo = { }
-          validateInfo.txCount = txs.length
-          // validateInfo.storedAddresses = [...new Set(txs.map(tx => tx.asset.state.value))]
-          validateInfo.storedAddresses = uniqueCaseInsensitive(txs.map(tx => tx.asset.state.value))
-          validateInfo.addressesCount = validateInfo.storedAddresses.length
-          validateInfo.mainAddress = validateInfo.storedAddresses[0]
-          validateInfo.isMainAddressValid = validateInfo.mainAddress.toLowerCase() === address.toLowerCase()
-          console.log('validateInfo', validateInfo)
-          validatedCryptos[crypto] = validateInfo
+          if (txs.length > 0) {
+            let validateInfo = { }
+            validateInfo.txCount = txs.length
+            // validateInfo.storedAddresses = [...new Set(txs.map(tx => tx.asset.state.value))]
+            validateInfo.storedAddresses = uniqueCaseInsensitive(txs.map(tx => tx.asset.state.value))
+            validateInfo.addressesCount = validateInfo.storedAddresses.length
+            validateInfo.mainAddress = validateInfo.storedAddresses[0]
+            validateInfo.isMainAddressValid = validateInfo.mainAddress.toLowerCase() === address.toLowerCase()
+            console.log('validateInfo', validateInfo)
+            validatedCryptos[crypto] = validateInfo
+          }
         })
       }
     }

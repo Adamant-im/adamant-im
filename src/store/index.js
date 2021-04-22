@@ -53,7 +53,19 @@ const store = {
   getters: {
     isLogged: state => state.passphrase.length > 0,
     getPassPhrase: state => state.passphrase, // compatibility getter for ERC20 modules
-    publicKey: state => adamantAddress => state.publicKeys[adamantAddress]
+    publicKey: state => adamantAddress => state.publicKeys[adamantAddress],
+    isAccountNew: state => function () {
+      /*
+        It is hard to detect if account is new or not. Let's say:
+        ADM Balance = 0. But old accounts can also have 0 balance
+        ADM transactions count = 0. But any account has 0 transactions in store just after login, before user goes to Tx list screen
+        chat.lastMessageHeight = 0. App stores a height of last message
+        Checking chat.transactions is not effective. There are static chats in any new account.
+      */
+      return state.balance === 0 &&
+        state.chat.lastMessageHeight === 0 &&
+        Object.keys(state.adm.transactions).length === 0
+    }
   },
   mutations: {
     setAddress (state, address) {
