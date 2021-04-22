@@ -34,10 +34,12 @@ export function flushCryptoAddresses () {
 export function validateStoredCryptoAddresses () {
   if (!admApi.isReady() || validatedCryptos['summary']) return
 
-  // vueBus.$emit('warningOnAddressDialog', true)
-
   function skip (crypto) {
     return isErc20(crypto) || crypto === 'ADM'
+  }
+
+  function uniqueCaseInsensitive (values) {
+    return [...new Map(values.map(s => [s.toLowerCase(), s])).values()]
   }
 
   Object.keys(Cryptos).forEach(crypto => {
@@ -49,7 +51,8 @@ export function validateStoredCryptoAddresses () {
         admApi.getStored(key, store.state.address, 20).then(txs => {
           let validateInfo = { }
           validateInfo.txCount = txs.length
-          validateInfo.storedAddresses = [...new Set(txs.map(tx => tx.asset.state.value))]
+          // validateInfo.storedAddresses = [...new Set(txs.map(tx => tx.asset.state.value))]
+          validateInfo.storedAddresses = uniqueCaseInsensitive(txs.map(tx => tx.asset.state.value))
           validateInfo.addressesCount = validateInfo.storedAddresses.length
           validateInfo.mainAddress = validateInfo.storedAddresses[0]
           validateInfo.isMainAddressValid = validateInfo.mainAddress.toLowerCase() === address.toLowerCase()
