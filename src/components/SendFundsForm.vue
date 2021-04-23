@@ -1,5 +1,8 @@
 <template>
   <div :class="className">
+    <warning-on-partner-address-dialog :info="warningOnPartnerInfo"
+      v-model="showWarningOnPartnerAddressDialog" />
+
     <v-form
       v-model="validForm"
       @submit.prevent="confirm"
@@ -183,6 +186,8 @@ import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
 
+import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog'
+
 /**
  * @returns {string | boolean}
  */
@@ -206,7 +211,8 @@ export default {
   mixins: [partnerName],
   components: {
     QrcodeCapture,
-    QrcodeScannerDialog
+    QrcodeScannerDialog,
+    WarningOnPartnerAddressDialog
   },
   created () {
     this.currency = this.cryptoCurrency
@@ -421,10 +427,14 @@ export default {
     showSpinner: false,
     dialog: false,
     fetchAddress: null, // fn throttle
-    increaseFee: false
+    increaseFee: false,
+    showWarningOnPartnerAddressDialog: false,
+    warningOnPartnerInfo: { }
   }),
   methods: {
     confirm () {
+      this.fetchUserCryptoAddress()
+      return
       const abstract = validateForm.call(this)
 
       if (abstract === true) {
@@ -615,6 +625,15 @@ export default {
           partner: this.address
         }).then(address => {
           this.cryptoAddress = address
+          console.log(`got ${this.currency} address for user ${this.address}: ${address}`)
+          this.warningOnPartnerInfo.coin = this.currency
+          this.warningOnPartnerInfo.ADMaddress = this.address
+          this.warningOnPartnerInfo.ADMname = ''
+          if (this.recipientName) {
+            this.warningOnPartnerInfo.ADMname = ' (' + this.recipientName + ')'
+          }
+          this.warningOnPartnerInfo.coinAddresses = address
+          this.showWarningOnPartnerAddressDialog = true
         })
       }
     },

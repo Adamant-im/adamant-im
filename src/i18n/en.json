@@ -291,7 +291,16 @@
     "no_address_title": "Recipient has no {crypto} wallet yet",
     "send_button": "Send",
     "to_address_label": "To Address",
-    "to_name_label": "To {name}"
+    "to_name_label": "To {name}",
+    "warning_on_partner_address": {
+      "warning": "Warning",
+      "headline": "Partner's account may be compromised",
+      "about": "Users can accept in-chat crypto transfers, because of ADAMANT saves wallet addresses in Blockchain. To save them, passphrase is necessary—it means nobody can push wrong addresses on behalf of user.",
+      "specifics_many_addresses": "We've identified more than one {crypto} address, stored for {partner_account}{partner_name} account: {manyAddresses}. It means they may never receive your transfer.",
+      "reasons": "Maybe scammers control this account.",
+      "what_to_do": "Tell your partner about the problem.",
+      "hide_button": "Got it"
+    }
   },
   "votes": {
     "delegate_description": "Description",
