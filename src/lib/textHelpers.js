@@ -61,3 +61,11 @@ export function downloadFile (data, filename, type) {
     }, 0)
   }
 }
+
+/**
+ * Returns array of unique case insensitive values
+ * @param {Array} values
+ */
+export function uniqueCaseInsensitiveArray (values) {
+  return [...new Map(values.map(s => [s.toLowerCase(), s])).values()]
+}

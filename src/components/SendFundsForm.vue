@@ -433,8 +433,6 @@ export default {
   }),
   methods: {
     confirm () {
-      this.fetchUserCryptoAddress()
-      return
       const abstract = validateForm.call(this)
 
       if (abstract === true) {
@@ -622,18 +620,22 @@ export default {
       if (validateAddress('ADM', this.address)) {
         this.$store.dispatch('partners/fetchAddress', {
           crypto: this.currency,
-          partner: this.address
-        }).then(address => {
-          this.cryptoAddress = address
-          console.log(`got ${this.currency} address for user ${this.address}: ${address}`)
-          this.warningOnPartnerInfo.coin = this.currency
-          this.warningOnPartnerInfo.ADMaddress = this.address
-          this.warningOnPartnerInfo.ADMname = ''
-          if (this.recipientName) {
-            this.warningOnPartnerInfo.ADMname = ' (' + this.recipientName + ')'
+          partner: this.address,
+          records: 20
+        }).then(addresses => {
+          this.cryptoAddress = addresses[0]
+          if (addresses.length > 1) {
+            let addressesList = addresses.join(', ')
+            console.log(`got ${this.currency} addresses for user ${this.address}: ${addressesList}`)
+            this.warningOnPartnerInfo.coin = this.currency
+            this.warningOnPartnerInfo.ADMaddress = this.address
+            this.warningOnPartnerInfo.ADMname = ''
+            if (this.recipientName) {
+              this.warningOnPartnerInfo.ADMname = ' (' + this.recipientName + ')'
+            }
+            this.warningOnPartnerInfo.coinAddresses = addressesList
+            this.showWarningOnPartnerAddressDialog = true
           }
-          this.warningOnPartnerInfo.coinAddresses = address
-          this.showWarningOnPartnerAddressDialog = true
         })
       }
     },

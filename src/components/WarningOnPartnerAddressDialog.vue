@@ -7,13 +7,13 @@
   >
     <v-card>
       <v-card-title class="a-text-header">
-        {{ header }}
+        {{ header() }}
       </v-card-title>
 
       <v-divider class="a-divider"></v-divider>
 
       <v-card-text>
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`" v-html="content">
+        <div :class="`${className}__disclaimer a-text-regular-enlarged`" v-html="content()">
         </div>
       </v-card-text>
 
@@ -38,13 +38,6 @@ export default {
     className: () => 'warning-on-partner-address-dialog',
     show: {
       get () {
-        this.header = this.$t('transfer.warning_on_partner_address.warning') + ': ' + this.$t('transfer.warning_on_partner_address.headline')
-        let contents = '<p>' + this.$t('transfer.warning_on_partner_address.about') + '</p>'
-        contents += '<p style="background-color: darkred;">' + this.$t('transfer.warning_on_partner_address.specifics_many_addresses', { crypto: this.info.coin, partner_account: this.info.ADMaddress, partner_name: this.info.ADMname, manyAddresses: this.info.coinAddresses })
-        contents += '</p>'
-        contents += '<p>' + this.$t('transfer.warning_on_partner_address.reasons')
-        contents += ' ' + this.$t('transfer.warning_on_partner_address.what_to_do') + '</p>'
-        this.content = DOMPurify.sanitize(contents)
         return this.value
       },
       set (value) {
@@ -52,11 +45,20 @@ export default {
       }
     }
   },
-  data: () => ({
-    content: '',
-    header: ''
-  }),
   methods: {
+    header: function () {
+      return this.$t('transfer.warning_on_partner_address.warning') + ': ' + this.$t('transfer.warning_on_partner_address.headline')
+    },
+    content: function () {
+      let contents = '<p>' + this.$t('transfer.warning_on_partner_address.about') + '</p>'
+      contents += '<p style="background-color: darkred;">' + this.$t('transfer.warning_on_partner_address.specifics_many_addresses', { crypto: this.info.coin, partner_account: this.info.ADMaddress, partner_name: this.info.ADMname, manyAddresses: this.info.coinAddresses })
+      contents += '</p>'
+      contents += '<p>' + this.$t('transfer.warning_on_partner_address.reasons')
+      contents += ' ' + this.$t('transfer.warning_on_partner_address.what_to_do') + '</p>'
+      contents = DOMPurify.sanitize(contents)
+      console.log('new content:', contents)
+      return contents
+    },
     hide () {
       this.show = false
     },
@@ -72,7 +74,7 @@ export default {
       required: true
     },
     info: {
-      type: Object, 
+      type: Object,
       required: true
     }
   }

@@ -31,6 +31,22 @@ export default {
   address (state, payload) {
     state.list[payload.partner] = Object.assign({ }, state.list[payload.partner],
       { [payload.crypto]: payload.address })
+    state.list[payload.partner] = Object.assign({ }, state.list[payload.partner],
+      { [payload.crypto + '_verifyTimestamp']: Date.now() })
+  },
+
+  /**
+   * Sets partner addresses for the specified crypto
+   * It's bad thing: user must have only one address in KVS for each crypto
+   * @param {object} state current state
+   * @param {{partner: string, crypto: string, addresses: array}} payload partner ADM address, crypto and array of crypto addresses
+   */
+  addresses_inconsistency (state, payload) {
+    console.log('addresses_inconsistency')
+    console.log(state)
+    console.log(payload)
+    state.list[payload.partner] = Object.assign({ }, state.list[payload.partner],
+      { [payload.crypto + '_inconsistency']: payload.addresses })
   },
 
   /**

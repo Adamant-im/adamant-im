@@ -216,9 +216,10 @@ function tryDecodeStoredValue (value) {
 }
 
 /**
- * Retrieves the stored value from the Adamant KVS
+ * Retrieves the stored value from the Adamant KVS or array of KVS transactions
  * @param {string} key key in the KVS
  * @param {string=} ownerAddress address of the value owner
+ * @param {number} records if > 1, returns array of KVS transactions
  * @returns {Promise<any>}
  */
 export function getStored (key, ownerAddress, records = 1) {

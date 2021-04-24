@@ -2,6 +2,7 @@ import * as admApi from './adamant-api'
 import store from '@/store'
 import { Cryptos, isErc20 } from './constants'
 import { vueBus } from '@/main'
+import { uniqueCaseInsensitiveArray } from '@/lib/textHelpers'
 
 const queue = { }
 const stored = []
@@ -28,17 +29,28 @@ export function flushCryptoAddresses () {
 }
 
 /**
- * Validates if crypto addresses, stored in KVS are correct
- * @returns undefined if check wasn't completed, object
+ * Parses KVS transactions for crypto addresses
+ * @returns object for stored addresses
+ */
+export function parseCryptoAddressesKVStxs (txs) {
+  if (!txs || !txs.length || !txs[0].asset || !txs[0].asset.state || !txs[0].asset) return null
+  let addresses = { }
+  // validateInfo.storedAddresses = [...new Set(txs.map(tx => tx.asset.state.value))]
+  addresses.storedAddresses = uniqueCaseInsensitiveArray(txs.map(tx => tx.asset.state.value))
+  addresses.addressesCount = addresses.storedAddresses.length
+  addresses.mainAddress = addresses.storedAddresses[0]
+  return addresses
+}
+
+/**
+ * Validates if crypto addresses, stored in KVS are consistent; emits warningOnAddressDialog if they're not consistent
+ * @returns nothing
  */
 export function validateStoredCryptoAddresses () {
   if (!admApi.isReady() || validatedCryptos['summary'] || store.getters.isAccountNew()) return
 
   function skip (crypto) {
     return isErc20(crypto) || crypto === 'ADM'
-  }
-  function uniqueCaseInsensitive (values) {
-    return [...new Map(values.map(s => [s.toLowerCase(), s])).values()]
   }
 
   Object.keys(Cryptos).forEach(crypto => {
@@ -49,12 +61,7 @@ export function validateStoredCryptoAddresses () {
         const key = `${crypto.toLowerCase()}:address`
         admApi.getStored(key, store.state.address, 20).then(txs => {
           if (txs.length > 0) {
-            let validateInfo = { }
-            validateInfo.txCount = txs.length
-            // validateInfo.storedAddresses = [...new Set(txs.map(tx => tx.asset.state.value))]
-            validateInfo.storedAddresses = uniqueCaseInsensitive(txs.map(tx => tx.asset.state.value))
-            validateInfo.addressesCount = validateInfo.storedAddresses.length
-            validateInfo.mainAddress = validateInfo.storedAddresses[0]
+            let validateInfo = parseCryptoAddressesKVStxs(txs)
             validateInfo.isMainAddressValid = validateInfo.mainAddress.toLowerCase() === address.toLowerCase()
             console.log('validateInfo', validateInfo)
             validatedCryptos[crypto] = validateInfo
