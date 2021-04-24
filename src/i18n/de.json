@@ -197,7 +197,6 @@
     "decode_from_camera": "Scan QR with camera",
     "decode_from_image": "Read QR from image",
     "error_chat_fee": "To send {crypto} from chat, you also need 0.001 ADM",
-    "error_dust_amount": "Enter less decimals for amount",
     "error_erc20_fee": "You also need {fee} to pay the transfer fee",
     "error_field_is_required": "Field is required",
     "error_incorrect_address": "Keine gültige {crypto} Wallet Adresse",

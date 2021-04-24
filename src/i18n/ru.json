@@ -262,7 +262,7 @@
     "decode_from_camera": "Отсканировать QR-код камерой",
     "decode_from_image": "Прочитать QR-код с изображения",
     "error_chat_fee": "Чтобы отправить {crypto} в чате, вам также нужно 0.001 ADM",
-    "error_dust_amount": "Количество знаков после запятой должно быть меньше",
+    "error_dust_amount": "Мелочь — Отправьте больше токенов",
     "error_erc20_fee": "Вам также нужно {fee}, чтобы оплатить комиссию",
     "error_field_is_required": "Поле не заполнено",
     "error_incorrect_address": "Неверный адрес {crypto}-кошелька",

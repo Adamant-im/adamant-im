@@ -1,7 +1,7 @@
 import { Cryptos } from '@/lib/constants'
 
 const state = () => ({
-  stayLoggedIn: false, // if true, messages and passphase will be stored encrypted. If false, localStorage will be cleared after logout
+  stayLoggedIn: false, // if true, messages and passphrase will be stored encrypted. If false, localStorage will be cleared after logout
   sendMessageOnEnter: true,
   allowSoundNotifications: true,
   allowTabNotifications: true,
