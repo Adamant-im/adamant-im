@@ -9,7 +9,8 @@
     :recipient="recipient || '' "
     :explorerLink="explorerLink"
     :partner="partner || '' "
-    :status="status || '' "
+    :status="status() || '' "
+    :status_inconsistent="inconsistent_reason"
     :admTx="admTx"
   />
 </template>
@@ -17,9 +18,9 @@
 <script>
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
-import { Cryptos } from '../../lib/constants'
+import { Cryptos, TransactionStatus as TS } from '../../lib/constants'
 import partnerName from '@/mixins/partnerName'
-// import { Cryptos } from '../../lib/constants'
+import { verifyTransactionDetails } from '@/lib/txVerify'
 
 export default {
   mixins: [partnerName],
@@ -38,7 +39,9 @@ export default {
     TransactionTemplate
   },
   data () {
-    return { }
+    return {
+      inconsistent_reason: ''
+    }
   },
   computed: {
     cryptoKey () {
@@ -46,12 +49,6 @@ export default {
     },
     transaction () {
       return this.$store.getters[`${this.cryptoKey}/transaction`](this.id) || { }
-    },
-    status () {
-      // console.log(`status for LSK:`, tx.getTransactionStatus(this.transaction))
-      console.log(`status for LSK:`)
-      return this.transaction.status
-      // return tx.getTransactionStatus(this.transaction)
     },
     sender () {
       return this.transaction.senderId ? this.formatAddress(this.transaction.senderId) : ''
@@ -99,6 +96,27 @@ export default {
     }
   },
   methods: {
+    status () {
+      let status = this.transaction.status
+      let messageTx = this.admTx
+      console.log(`status for LSK:`)
+      console.log(this.transaction)
+      console.log(messageTx)
+      if (status === 'SUCCESS' && messageTx && messageTx.id) {
+        const txVerify = verifyTransactionDetails(this.transaction, messageTx, { recipientCryptoAddress: this.recipient, senderCryptoAddress: this.sender })
+        if (txVerify.isTxConsistent) {
+          console.log(`Good transaction:`, txVerify)
+          status = TS.CONFIRMED
+        } else {
+          console.log(`Inconsistent transaction:`, txVerify)
+          console.log(this.crypto)
+          console.log(this)
+          this.inconsistent_reason = this.$t(`transaction.inconsistent_reasons.${txVerify.txInconsistentReason}`, { crypto: this.crypto })
+          status = TS.INVALID
+        }
+      }
+      return status
+    },
     getAdmAddress (address) {
       let admAddress = ''
 

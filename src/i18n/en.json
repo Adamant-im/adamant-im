@@ -235,7 +235,9 @@
       "error": "Error",
       "pending": "Pending",
       "registered": "Pending",
-      "success": "Success"
+      "success": "Success",
+      "confirmed": "Success",
+      "invalid": "Inconsistent"
     },
     "inconsistent_reasons": {
       "unknown": "Failed to check Tx. Somethings went wrong",
