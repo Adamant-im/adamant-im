@@ -91,7 +91,7 @@
     "about": "You can accept in-chat crypto transfers, because of ADAMANT saves wallet addresses in Blockchain. To save them, passphrase is necessary—it means nobody can push wrong addresses on behalf of you.",
     "specifics_wrong_addresses": "We've identified inconsistencies in stored addresses for your account. The {crypto} address saved as {storedAddress}, but correct one is {correctAddress}. It means if someone will send you {crypto} in-chat, you'll never receive it.",
     "specifics_many_addresses": "We've identified more than one address, stored for {crypto} in your account: {manyAddresses}. It means somebody has stored fraud addresses.",
-    "full_list_wrong_addresses": "Full list of mismatched addresses: {crypto_list}.",
+    "full_list_wrong_addresses": "Full list of crypto with mismatched addresses: {crypto_list}.",
     "full_list_many_addresses": "Wallets with multiple addresses: {crypto_list}.",
     "reasons": "Maybe scammers control your account. Probably you've used account's passphrase in a fishing app, which may look like authentic, or hackers stole your passphrase.",
     "what_to_do": "We recommend you to transfer all crypto from this account to a new one. Make sure your device is secure, and use only official apps. Be careful: only you are responsible for safety of your account.",
