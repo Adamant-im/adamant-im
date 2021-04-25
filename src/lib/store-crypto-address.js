@@ -105,6 +105,8 @@ export function validateStoredCryptoAddresses () {
   if (isAllValidated) {
     validatedCryptos['summary'] = validateSummary
     console.log('validateSummary', validateSummary)
-    vueBus.$emit('warningOnAddressDialog', validateSummary)
+    if (!store.state.options.suppressWarningOnAddressesNotification) {
+      vueBus.$emit('warningOnAddressDialog', validateSummary)
+    }
   }
 }

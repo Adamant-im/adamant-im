@@ -94,6 +94,10 @@ export default {
       this.show = false
     },
     forget () {
+      this.$store.commit('options/updateOption', {
+        key: 'suppressWarningOnAddressesNotification',
+        value: true
+      })
       this.hide()
     },
     onEnter () {
