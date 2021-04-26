@@ -124,7 +124,7 @@ import partnerName from '@/mixins/partnerName'
 import dateFilter from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import FreeTokensDialog from '@/components/FreeTokensDialog'
-import { uriToOnion } from '@/lib/uri'
+import { websiteUriToOnion } from '@/lib/uri'
 
 /**
  * Returns user meta by userId.
@@ -331,7 +331,7 @@ export default {
     },
     formatMessage (transaction) {
       if (this.isChatReadOnly || transaction.i18n) {
-        return renderMarkdown(uriToOnion(this.$t(transaction.message)))
+        return renderMarkdown(websiteUriToOnion(this.$t(transaction.message)))
       }
 
       if (this.$store.state.options.formatMessages) {

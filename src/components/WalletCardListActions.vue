@@ -40,7 +40,7 @@
 <script>
 import { Cryptos } from '@/lib/constants'
 import BuyTokensDialog from '@/components/BuyTokensDialog'
-import { uriToOnion } from '@/lib/uri'
+import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
   computed: {
@@ -65,7 +65,7 @@ export default {
       this.showBuyTokensDialog = true
     },
     getFreeTokens () {
-      const link = uriToOnion(this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address)
+      const link = websiteUriToOnion(this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address)
       window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
     }
   },

@@ -63,7 +63,7 @@ import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import CdlIcon from '@/components/icons/common/Cdl'
 import AtomarsIcon from '@/components/icons/common/Atomars'
-import { uriToOnion } from '@/lib/uri'
+import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
   computed: {
@@ -81,7 +81,7 @@ export default {
         {
           icon: 'ADM',
           title: this.$t('home.buy_tokens_anonymously'),
-          link: uriToOnion(this.adamantAddress
+          link: websiteUriToOnion(this.adamantAddress
             ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
             : `${this.$t('home.buy_tokens_btn_link')}`)
         },
