@@ -65,6 +65,7 @@
           :status="getTransactionStatus(message, partnerId)"
           :is-clickable="isCryptoSupported(message.type)"
           @click:transaction="openTransaction(message)"
+          @click:transactionStatus="updateTransactionStatus(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
         >
           <crypto-icon
@@ -281,6 +282,9 @@ export default {
           console.error(err.message)
         })
     },
+    updateTransactionStatus (message) {
+      this.$store.dispatch(message.type.toLowerCase() + '/updateTransaction', { hash: message.hash, force: true, updateOnly: false })
+    },
     markAsRead () {
       this.$store.commit('chat/markAsRead', this.partnerId)
     },
@@ -319,10 +323,8 @@ export default {
       }
     },
     isTransaction (type) {
-      // @todo remove LSK when will be supported
       return (
         type in Cryptos ||
-        type === 'LSK' ||
         type === 'UNKNOWN_CRYPTO'
       )
     },

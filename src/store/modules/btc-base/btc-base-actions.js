@@ -145,7 +145,8 @@ function createActions (options) {
       if (existing && !payload.force) return
 
       // Set a stub so far, if the transaction is not in the store yet
-      if (!existing || existing.status === 'ERROR') {
+      // if (!existing || existing.status === 'ERROR') {
+      if (!existing || (payload.force && !payload.updateOnly)) {
         console.log(`Commiting new transaction ${payload.hash} for ${context.state.crypto}. existing: ${existing}. payload.force: ${payload.force}. existing.status: ${existing && existing.status}`)
         context.commit('transactions', [{
           hash: payload.hash,
@@ -182,9 +183,9 @@ function createActions (options) {
         retry = true
       } else {
         // The network does not yet know this transaction. We'll make several attempts to retrieve it.
-        retry = attempt < tf.PENDING_ATTEMPTS
+        retry = attempt < tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
         retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
-        console.log(`Didn't get unknown transaction for ${context.state.crypto}. retryTimeout: ${retryTimeout}. attempt: ${attempt} of ${tf.PENDING_ATTEMPTS}. payload.timestamp: ${payload.timestamp}. existing.timestamp: ${existing && existing.timestamp}`)
+        console.log(`Didn't get unknown transaction for ${context.state.crypto}. retryTimeout: ${retryTimeout}. attempt: ${attempt} of ${tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)}. payload.timestamp: ${payload.timestamp}. existing.timestamp: ${existing && existing.timestamp}`)
       }
 
       if (!retry) {
@@ -209,7 +210,7 @@ function createActions (options) {
      */
     updateTransaction ({ dispatch }, payload) {
       console.log('Fetching tx from updateTransaction..')
-      return dispatch('getTransaction', { ...payload, force: true, updateOnly: true })
+      return dispatch('getTransaction', { ...payload, force: true, updateOnly: payload.updateOnly })
     },
 
     getNewTransactions (context) {

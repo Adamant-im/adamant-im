@@ -3,7 +3,8 @@ import { Cryptos, isErc20 } from './constants'
 /** Pending transaction may be not known to blockchain yet */
 
 /** Max number of attempts to fetch a pending transaction */
-export const PENDING_ATTEMPTS = 20
+export const OLD_PENDING_ATTEMPTS = 3
+export const NEW_PENDING_ATTEMPTS = 20
 
 /** Interval (ms) between attempts to fetch an old pending transaction */
 export const OLD_PENDING_INTERVAL = 5 * 1000
@@ -15,7 +16,7 @@ export const OLD_PENDING_INTERVAL = 5 * 1000
  * @param {string} crypto crypto name
  * @returns {boolean}
  */
-export const isNew = (timestamp, crypto) => (Date.now() - timestamp) < getTxUpdateInterval(crypto) * PENDING_ATTEMPTS
+export const isNew = (timestamp, crypto) => (Date.now() - timestamp) < getTxUpdateInterval(crypto) * NEW_PENDING_ATTEMPTS
 
 /**
  * Returns a retry interval (ms) for a pending transaction details re-fetching
@@ -29,6 +30,20 @@ export const getPendingTxRetryTimeout = function (timestamp, crypto) {
     return getTxUpdateInterval(crypto)
   } else {
     return OLD_PENDING_INTERVAL
+  }
+}
+
+/**
+ * Returns a retry count (times) for a pending transaction details re-fetching
+ * @param {number} timestamp transaction timestamp
+ * @param {string} crypto crypto name
+ * @returns {number}
+ */
+export const getPendingTxRetryCount = function (timestamp, crypto) {
+  if (isNew(timestamp, crypto)) {
+    return NEW_PENDING_ATTEMPTS
+  } else {
+    return OLD_PENDING_ATTEMPTS
   }
 }
 

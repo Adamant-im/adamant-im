@@ -12,9 +12,11 @@
           <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
           <div class="a-chat__status">
             <v-icon
+              @click="updateStatus"
               size="13"
               :title="i18n.statuses[status]"
               :color="statusColor"
+              :style="statusUpdatable ? 'cursor: pointer;': 'cursor: default;'"
             >{{ statusIcon }}</v-icon>
           </div>
         </div>
@@ -65,6 +67,21 @@ export default {
         return 'mdi-help-circle-outline'
       }
     },
+    statusUpdatable () {
+      if (this.currency === 'ADM') {
+        return false
+      } else if (this.status === 'confirmed') {
+        return true
+      } else if (this.status === 'pending' || this.status === 'delivered') {
+        return false
+      } else if (this.status === 'rejected') {
+        return true
+      } else if (this.status === 'invalid') {
+        return true
+      } else if (this.status === 'unknown') {
+        return false
+      }
+    },
     statusColor () {
       if (this.status === 'rejected') {
         return 'red'
@@ -80,12 +97,21 @@ export default {
       if (this.isClickable) {
         this.$emit('click:transaction', this.id)
       }
+    },
+    updateStatus () {
+      if (this.statusUpdatable) {
+        this.$emit('click:transactionStatus', this.id)
+      }
     }
   },
   props: {
     id: {
       type: null,
       required: true
+    },
+    currency: {
+      type: String,
+      default: ''
     },
     message: {
       type: String,

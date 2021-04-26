@@ -159,12 +159,13 @@ export default function createActions (config) {
       if (existing && !payload.force) return
 
       // Set a stub so far
-      if (!existing || existing.status === 'ERROR') {
+      // if (!existing || existing.status === 'ERROR') {
+      if (!existing || (payload.force && !payload.updateOnly)) {
         context.commit('transactions', [{
           hash: payload.hash,
           timestamp: payload.timestamp,
           amount: payload.amount,
-          status: existing ? existing.status : 'PENDING',
+          status: 'PENDING',
           direction: payload.direction
         }])
       }
@@ -189,7 +190,7 @@ export default function createActions (config) {
           }
         }
 
-        if (payload.attempt >= tf.PENDING_ATTEMPTS) {
+        if (payload.attempt >= tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)) {
           // Give up, if transaction could not be found after so many attempts
           context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
         } else if (!payload.updateOnly) {
@@ -269,7 +270,7 @@ export default function createActions (config) {
      * @param {{hash: string}} payload action payload
      */
     updateTransaction ({ dispatch }, payload) {
-      return dispatch('getTransaction', { ...payload, force: true, updateOnly: true })
+      return dispatch('getTransaction', { ...payload, force: true, updateOnly: payload.updateOnly })
     },
 
     getNewTransactions (context, payload) {

@@ -141,7 +141,8 @@ function createActions (options) {
       if (existing && !payload.force) return
 
       // Set a stub so far, if the transaction is not in the store yet
-      if (!existing || existing.status === 'ERROR') {
+      // if (!existing || existing.status === 'ERROR') {
+      if (!existing || (payload.force && !payload.updateOnly)) {
         context.commit('transactions', [{
           hash: payload.hash,
           timestamp: payload.timestamp,
@@ -174,7 +175,7 @@ function createActions (options) {
         retry = true
       } else {
         // The network does not yet know this transaction. We'll make several attempts to retrieve it.
-        retry = attempt < tf.PENDING_ATTEMPTS
+        retry = attempt < tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
         retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
       }
 
@@ -200,7 +201,7 @@ function createActions (options) {
      */
     updateTransaction ({ dispatch }, payload) {
       console.log('lsk updateTransaction', payload)
-      return dispatch('getTransaction', { ...payload, force: true, updateOnly: true })
+      return dispatch('getTransaction', { ...payload, force: true, updateOnly: payload.updateOnly })
     },
 
     /**

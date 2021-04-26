@@ -45,7 +45,7 @@ const customActions = getApi => ({
       return dispatch('updateHeight')
     } else {
       // Otherwise fetch the transaction details
-      return dispatch('getTransaction', { ...payload, force: true, updateOnly: true })
+      return dispatch('getTransaction', { ...payload, force: true, updateOnly: payload.updateOnly })
     }
   }
 })
