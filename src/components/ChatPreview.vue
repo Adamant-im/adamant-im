@@ -58,6 +58,7 @@ import ChatAvatar from '@/components/Chat/ChatAvatar'
 import Icon from '@/components/icons/BaseIcon'
 import AdmFillIcon from '@/components/icons/AdmFill'
 import partnerName from '@/mixins/partnerName'
+import { tsIcon } from '@/lib/constants'
 
 export default {
   mounted () {
@@ -129,17 +130,10 @@ export default {
       return this.getTransactionStatus(this.transaction)
     },
     statusIcon () {
-      if (this.status === 'confirmed' || this.status === 'delivered') {
-        return 'mdi-check'
-      } else if (this.status === 'pending') {
-        return 'mdi-clock-outline'
-      } else if (this.status === 'rejected') {
-        return 'mdi-close-circle-outline'
-      } else if (this.status === 'invalid') {
-        return 'mdi-alert-outline'
-      } else if (this.status === 'unknown') {
-        return 'mdi-help-circle-outline'
-      }
+      // There were a bit change
+      // if (this.status === 'confirmed' || this.status === 'delivered') {
+      //   return 'mdi-check'
+      return tsIcon(this.status)
     }
   },
   data: () => ({

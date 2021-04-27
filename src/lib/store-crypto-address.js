@@ -63,7 +63,6 @@ export function validateStoredCryptoAddresses () {
           if (txs.length > 0) {
             let validateInfo = parseCryptoAddressesKVStxs(txs)
             validateInfo.isMainAddressValid = validateInfo.mainAddress.toLowerCase() === address.toLowerCase()
-            console.log('validateInfo', validateInfo)
             validatedCryptos[crypto] = validateInfo
           }
         })

@@ -41,7 +41,8 @@ export default {
   },
   methods: {
     update () {
-      this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.txId, updateOnly: true })
+      // Regularly update Tx details with confirmations count, do force — fetch details for existing Tx also
+      this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.txId, force: true, updateOnly: true })
     }
   },
   computed: {

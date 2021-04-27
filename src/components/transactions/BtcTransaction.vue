@@ -13,6 +13,7 @@
       :status="status() || '' "
       :status_inconsistent="inconsistent_reason"
       :admTx="admTx"
+      :crypto="crypto"
     />
   </div>
 </template>
@@ -118,14 +119,12 @@ export default {
     status () {
       let status = this.transaction.status
       let messageTx = this.admTx
-      console.log(`status for LSK:`)
-      console.log(this.transaction)
-      console.log(messageTx)
       if (status === 'SUCCESS' && messageTx && messageTx.id) {
         const txVerify = verifyTransactionDetails(this.transaction, messageTx, { recipientCryptoAddress: this.transaction.recipientId, senderCryptoAddress: this.transaction.senderId })
         if (txVerify.isTxConsistent) {
           console.log(`Good transaction:`, txVerify)
           status = TS.CONFIRMED
+          this.inconsistent_reason = ''
         } else {
           console.log(`Inconsistent transaction:`, txVerify)
           console.log(this.crypto)

@@ -158,9 +158,13 @@ export default function createActions (config) {
       const existing = context.state.transactions[payload.hash]
       if (existing && !payload.force) return
 
-      // Set a stub so far
-      // if (!existing || existing.status === 'ERROR') {
-      if (!existing || (payload.force && !payload.updateOnly)) {
+      console.log(`getTransaction ${payload.hash} for ${context.state.crypto}.`)
+      console.log('payload', payload)
+      console.log('existing', existing)
+
+      if (!existing || payload.dropStatus) {
+        console.log(`Commiting new transaction ${payload.hash} for ${context.state.crypto}.`)
+        payload.updateOnly = false
         context.commit('transactions', [{
           hash: payload.hash,
           timestamp: payload.timestamp,
@@ -174,23 +178,31 @@ export default function createActions (config) {
       const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
         if (!err && tx && tx.input) {
           let transaction = parseTransaction(context, tx)
+          console.log('got tx:', transaction)
+          const status = existing ? existing.status : 'REGISTERED'
           if (transaction) {
             context.commit('transactions', [{
               ...transaction,
-              status: 'REGISTERED'
+              status
             }])
-
             // Fetch receipt details: status and actual gas consumption
             const { attempt, ...receiptPayload } = payload
             context.dispatch('getTransactionReceipt', receiptPayload)
-
             // Now we know that the transaction has been registered by the ETH network.
             // Nothing else to do here, let's proceed to checking its status (see getTransactionReceipt)
             return
           }
         }
 
-        if (payload.attempt >= tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)) {
+        const attempt = payload.attempt || 0
+        let retryCount = tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+        let retry = attempt < retryCount
+        let retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+
+        console.log()
+        console.log(`Didn't get unknown transaction for ${context.state.crypto}. retryTimeout: ${retryTimeout}. attempt: ${attempt} of ${retryCount}.`)
+
+        if (!retry) {
           // Give up, if transaction could not be found after so many attempts
           context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
         } else if (!payload.updateOnly) {
@@ -198,13 +210,15 @@ export default function createActions (config) {
           // Increment attempt counter, if no transaction was found so far
           const newPayload = tx ? payload : {
             ...payload,
-            attempt: 1 + (payload.attempt || 0),
-            force: true
+            attempt: attempt + 1,
+            force: true,
+            updateOnly: false,
+            dropStatus: false
           }
 
-          const timeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
-          console.log(`getTransaction ${payload.hash} for ${context.state.crypto} in timeout: ${timeout}. Attempt: ${newPayload.attempt}.`)
-          setTimeout(() => context.dispatch('getTransaction', newPayload), timeout)
+          console.log(`Will getTransaction ${payload.hash} for ${context.state.crypto} in timeout: ${retryTimeout}.`)
+          console.log('newPayload', newPayload)
+          setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
         }
       })
 
@@ -270,7 +284,7 @@ export default function createActions (config) {
      * @param {{hash: string}} payload action payload
      */
     updateTransaction ({ dispatch }, payload) {
-      return dispatch('getTransaction', { ...payload, force: true, updateOnly: payload.updateOnly })
+      return dispatch('getTransaction', { ...payload, force: payload.force, updateOnly: payload.updateOnly })
     },
 
     getNewTransactions (context, payload) {

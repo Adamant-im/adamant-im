@@ -142,7 +142,8 @@ function createActions (options) {
 
       // Set a stub so far, if the transaction is not in the store yet
       // if (!existing || existing.status === 'ERROR') {
-      if (!existing || (payload.force && !payload.updateOnly)) {
+      if (!existing || payload.dropStatus) {
+        payload.updateOnly = false
         context.commit('transactions', [{
           hash: payload.hash,
           timestamp: payload.timestamp,
@@ -187,7 +188,9 @@ function createActions (options) {
         const newPayload = {
           ...payload,
           attempt: attempt + 1,
-          force: true
+          force: true,
+          updateOnly: false,
+          dropStatus: false
         }
         console.log(`getTransaction ${payload.hash} for ${context.state.crypto} in retryTimeout: ${retryTimeout}. Attempt: ${newPayload.attempt}.`)
         setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
@@ -200,8 +203,7 @@ function createActions (options) {
      * @param {{hash: string}} payload action payload
      */
     updateTransaction ({ dispatch }, payload) {
-      console.log('lsk updateTransaction', payload)
-      return dispatch('getTransaction', { ...payload, force: true, updateOnly: payload.updateOnly })
+      return dispatch('getTransaction', { ...payload, force: payload.force, updateOnly: payload.updateOnly })
     },
 
     /**

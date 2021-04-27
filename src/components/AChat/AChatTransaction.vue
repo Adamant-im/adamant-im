@@ -49,47 +49,21 @@
 </template>
 
 <script>
+import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
+
 export default {
   mounted () {
     this.$emit('mount')
   },
   computed: {
     statusIcon () {
-      if (this.status === 'confirmed') {
-        return 'mdi-check'
-      } else if (this.status === 'pending' || this.status === 'delivered') {
-        return 'mdi-clock-outline'
-      } else if (this.status === 'rejected') {
-        return 'mdi-close-circle-outline'
-      } else if (this.status === 'invalid') {
-        return 'mdi-alert-outline'
-      } else if (this.status === 'unknown') {
-        return 'mdi-help-circle-outline'
-      }
+      return tsIcon(this.status)
     },
     statusUpdatable () {
-      if (this.currency === 'ADM') {
-        return false
-      } else if (this.status === 'confirmed') {
-        return true
-      } else if (this.status === 'pending' || this.status === 'delivered') {
-        return false
-      } else if (this.status === 'rejected') {
-        return true
-      } else if (this.status === 'invalid') {
-        return true
-      } else if (this.status === 'unknown') {
-        return false
-      }
+      return tsUpdatable(this.status, this.currency)
     },
     statusColor () {
-      if (this.status === 'rejected') {
-        return 'red'
-      } else if (this.status === 'invalid' || this.status === 'unknown') {
-        return 'yellow'
-      }
-
-      return ''
+      return tsColor(this.status)
     }
   },
   methods: {

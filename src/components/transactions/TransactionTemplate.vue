@@ -31,7 +31,9 @@
         <v-list-tile>
           <v-list-tile-content>
             <v-list-tile-title :class="`${className}__title`" style="width: fit-content;">
-              {{ $t('transaction.status') + '&nbsp;&nbsp;&nbsp;' }}
+              {{ $t('transaction.status') }}
+              <v-icon size="20" v-if="statusUpdatable" @click="updateStatus()">mdi-refresh</v-icon>
+              {{ '&nbsp;&nbsp;&nbsp;' }}
             </v-list-tile-title>
           </v-list-tile-content>
 
@@ -177,14 +179,17 @@
 </template>
 
 <script>
-import { Symbols } from '@/lib/constants'
-
+import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 export default {
   name: 'transaction-template',
   props: {
     amount: {
+      required: true,
+      type: String
+    },
+    crypto: {
       required: true,
       type: String
     },
@@ -241,6 +246,11 @@ export default {
     },
     openChat: function () {
       this.$router.push('/chats/' + this.partner + '/')
+    },
+    updateStatus () {
+      if (this.statusUpdatable) {
+        this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.id, force: true, updateOnly: false, dropStatus: true })
+      }
     }
   },
   computed: {
@@ -261,6 +271,9 @@ export default {
     },
     comment () {
       return this.admTx && this.admTx.message ? this.admTx.message : false
+    },
+    statusUpdatable () {
+      return tsUpdatable(this.status, this.crypto)
     }
   },
   components: {

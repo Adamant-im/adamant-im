@@ -283,7 +283,7 @@ export default {
         })
     },
     updateTransactionStatus (message) {
-      this.$store.dispatch(message.type.toLowerCase() + '/updateTransaction', { hash: message.hash, force: true, updateOnly: false })
+      this.$store.dispatch(message.type.toLowerCase() + '/updateTransaction', { hash: message.hash, force: true, updateOnly: false, dropStatus: true })
     },
     markAsRead () {
       this.$store.commit('chat/markAsRead', this.partnerId)
