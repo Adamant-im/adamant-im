@@ -440,7 +440,7 @@ export default {
       } else {
         this.$store.dispatch('snackbar/show', {
           message: abstract,
-          timeout: 7000
+          timeout: 5000
         })
       }
     },
