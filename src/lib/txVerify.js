@@ -72,7 +72,6 @@ export function verifyTransactionDetails (transaction, admSpecialMessage, { reci
     }
 
     if (transaction.senderId.toLowerCase() !== senderCryptoAddress.toLowerCase()) {
-      console.log('here:', transaction.senderId.toLowerCase(), senderCryptoAddress.toLowerCase())
       return {
         isTxConsistent: false,
         txCoin: coin,
@@ -81,7 +80,6 @@ export function verifyTransactionDetails (transaction, admSpecialMessage, { reci
     }
 
     if (transaction.recipientId.toLowerCase() !== recipientCryptoAddress.toLowerCase()) {
-      console.log('here2:', transaction.recipientId.toLowerCase(), recipientCryptoAddress.toLowerCase())
       return {
         isTxConsistent: false,
         txCoin: coin,

@@ -25,7 +25,6 @@ export const isNew = (timestamp, crypto) => (Date.now() - timestamp) < getTxUpda
  * @returns {number}
  */
 export const getPendingTxRetryTimeout = function (timestamp, crypto) {
-//   console.log(`getPendingTxRetryTimeout timestamp: ${timestamp}, crypto: ${crypto}`)
   if (isNew(timestamp, crypto)) {
     return getTxUpdateInterval(crypto)
   } else {
@@ -53,11 +52,9 @@ export const getPendingTxRetryCount = function (timestamp, crypto) {
  * @returns {number}
  */
 export const getTxUpdateInterval = function (crypto) {
-  //   console.log(`getTxUpdateInterval crypto1: ${crypto}`)
   if (isErc20(crypto)) {
     crypto = Cryptos.ETH
   }
-  //   console.log(`getTxUpdateInterval crypto2: ${crypto}`)
   switch (crypto) {
     case Cryptos.ADM:
       return 5000

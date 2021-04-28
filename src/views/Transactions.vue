@@ -68,12 +68,7 @@ export default {
   },
   computed: {
     transactions () {
-      // debug when after some time txs are not showing
-      console.log('store transactions')
-      console.log('store transactions', this.$store.state[this.cryptoModule].transactions)
       const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
-      console.log('transactions to list', transactions)
-      console.log(`${this.crypto.toLowerCase()} state`, this.$store.state[this.crypto.toLowerCase()])
       const address = this.$store.state[this.crypto.toLowerCase()].address
       return transactions.filter(tx => {
         // Filter invalid "fake" transactions (from chat rich message)

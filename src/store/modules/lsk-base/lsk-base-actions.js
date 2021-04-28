@@ -109,7 +109,7 @@ function createActions (options) {
             context.commit('transactions', [{ hash, status: 'ERROR' }])
             throw error
           } else {
-            console.log(`${crypto} transaction has been sent`)
+            console.log(`${crypto} transaction has been sent: ${hash}`)
 
             context.commit('transactions', [{
               hash,
@@ -192,7 +192,6 @@ function createActions (options) {
           updateOnly: false,
           dropStatus: false
         }
-        console.log(`getTransaction ${payload.hash} for ${context.state.crypto} in retryTimeout: ${retryTimeout}. Attempt: ${newPayload.attempt}.`)
         setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
       }
     },
@@ -233,10 +232,8 @@ function createActions (options) {
           context.commit('areRecentLoading', false)
           if (transactions && transactions.length > 0) {
             context.commit('transactions', { transactions, updateTimestamps: true })
-            // console.log('context.state.maxTimestamp after commit:', context.state.maxTimestamp)
             // get new transactions until we fetch the newest one
             if (options.fromTimestamp && transactions.length === api.TX_CHUNK_SIZE) {
-              // console.log('once again..', api.TX_CHUNK_SIZE)
               this.dispatch(`${context.state.crypto.toLowerCase()}/getNewTransactions`)
             }
           }

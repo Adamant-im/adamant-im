@@ -33,9 +33,6 @@ export default {
     let maxHeight = -1
 
     const address = state.address
-
-    console.log('transactions adm to merge:', transactions.length)
-
     transactions.forEach(tx => {
       if (!tx) return
       Vue.set(state.transactions, tx.id, {
@@ -58,12 +55,9 @@ export default {
 
     if (minHeight < state.minHeight) {
       state.minHeight = minHeight
-      console.log('set minHeight:', minHeight)
     }
-
     if (maxHeight > state.maxHeight) {
       state.maxHeight = maxHeight
-      console.log('set maxHeight:', maxHeight)
     }
   },
 

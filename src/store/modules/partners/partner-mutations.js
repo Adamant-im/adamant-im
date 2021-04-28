@@ -42,9 +42,6 @@ export default {
    * @param {{partner: string, crypto: string, addresses: array}} payload partner ADM address, crypto and array of crypto addresses
    */
   addresses_inconsistency (state, payload) {
-    console.log('addresses_inconsistency')
-    console.log(state)
-    console.log(payload)
     state.list[payload.partner] = Object.assign({ }, state.list[payload.partner],
       { [payload.crypto + '_inconsistency']: payload.addresses })
   },

@@ -43,7 +43,6 @@ export default class LiskApi extends LskBaseApi {
   getBalance () {
     return this._get(`/api/accounts`, { address: this.address }).then(
       data => {
-        // console.log(`/api/accounts:`, data)
         if (data && data.data[0] && data.data[0].balance) {
           return (data.data[0].balance) / this.multiplier
         }
@@ -59,8 +58,6 @@ export default class LiskApi extends LskBaseApi {
   getHeight () {
     return this._get('/api/node/status').then(
       data => {
-        // console.log(`/api/node/status:`, data)
-        // console.log(`height:`, data.data.height)
         return Number(data.data.height) || 0
       })
   }
@@ -89,19 +86,14 @@ export default class LiskApi extends LskBaseApi {
 
   /** @override */
   sendTransaction (signedTx) {
-    // console.log('before sendTransaction:', signedTx)
     return this._getClient().post('/api/transactions', signedTx).then(response => {
-      // console.log('sendTransaction:', response)
       return signedTx.id
     })
   }
 
   /** @override */
   getTransaction (txid) {
-    console.log('lsk getTransaction', txid)
     return this._get(`/api/transactions`, { id: txid }).then(data => {
-      // console.log(`/api/transactions txid:`, data)
-      console.log(`tx:`, data.data[0])
       if (data && data.data[0]) {
         return this._mapTransaction(data.data[0])
       }
@@ -122,10 +114,8 @@ export default class LiskApi extends LskBaseApi {
     }
     // additional options: offset, height
     return this._get(url, options).then(transactions => {
-      // console.log(transactions)
       if (transactions && transactions.data) {
         var mappedTxs = transactions.data.map(tx => this._mapTransaction(tx))
-        // console.log(mappedTxs)
         return mappedTxs
       }
     })
@@ -146,7 +136,6 @@ export default class LiskApi extends LskBaseApi {
 
   /** Executes a GET request to the API */
   _get (url, params) {
-    // console.log('_get ', url, 'params:', params)
     return this._getClient().get(url, { params }).then(response => response.data)
   }
 }

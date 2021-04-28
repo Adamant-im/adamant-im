@@ -18,7 +18,6 @@ export default (initialState) => ({
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
   bottom (state) {
-    console.log('bottom lsk set')
     state.bottomReached = true
   },
 
@@ -35,8 +34,6 @@ export default (initialState) => ({
 
     let minTimestamp = Infinity
     let maxTimestamp = -1
-
-    console.log('transactions lsk to merge:', transactions.length)
 
     transactions.forEach(tx => {
       if (!tx) return
@@ -65,12 +62,9 @@ export default (initialState) => ({
 
     if (minTimestamp < state.minTimestamp) {
       state.minTimestamp = minTimestamp
-      console.log('set minTimestamp:', minTimestamp)
     }
-
     if (maxTimestamp > state.maxTimestamp) {
       state.maxTimestamp = maxTimestamp
-      console.log('set maxTimestamp:', maxTimestamp)
     }
   },
 

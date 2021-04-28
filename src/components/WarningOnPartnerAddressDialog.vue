@@ -56,7 +56,6 @@ export default {
       contents += '<p>' + this.$t('transfer.warning_on_partner_address.reasons')
       contents += ' ' + this.$t('transfer.warning_on_partner_address.what_to_do') + '</p>'
       contents = DOMPurify.sanitize(contents)
-      console.log('new content:', contents)
       return contents
     },
     hide () {

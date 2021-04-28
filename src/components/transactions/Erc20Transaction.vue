@@ -91,11 +91,9 @@ export default {
       if (status === 'SUCCESS' && messageTx && messageTx.id) {
         const txVerify = verifyTransactionDetails(this.transaction, messageTx, { recipientCryptoAddress: this.transaction.recipientId, senderCryptoAddress: this.transaction.senderId })
         if (txVerify.isTxConsistent) {
-          console.log(`Good transaction:`, txVerify)
           status = TS.CONFIRMED
           this.inconsistent_reason = ''
         } else {
-          console.log(`Inconsistent transaction:`, txVerify)
           this.inconsistent_reason = this.$t(`transaction.inconsistent_reasons.${txVerify.txInconsistentReason}`, { crypto: this.crypto })
           status = TS.INVALID
         }

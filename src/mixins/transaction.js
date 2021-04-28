@@ -30,7 +30,6 @@ export default {
      */
     fetchTransaction (type, hash) {
       const cryptoModule = type.toLowerCase()
-      console.log('Fetching tx from transaction.js..')
       return this.$store.dispatch(`${cryptoModule}/getTransaction`, { hash })
     },
 
@@ -92,7 +91,6 @@ export default {
         if (txVerify.isTxConsistent) {
           status = TS.CONFIRMED
         } else {
-          console.log(`Inconsistent ${type} transaction ${hash}:`, txVerify)
           status = TS.INVALID
         }
       } else {

@@ -626,7 +626,6 @@ export default {
           this.cryptoAddress = addresses[0]
           if (addresses.length > 1) {
             let addressesList = addresses.join(', ')
-            console.log(`got ${this.currency} addresses for user ${this.address}: ${addressesList}`)
             this.warningOnPartnerInfo.coin = this.currency
             this.warningOnPartnerInfo.ADMaddress = this.address
             this.warningOnPartnerInfo.ADMname = ''

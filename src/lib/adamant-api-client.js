@@ -262,9 +262,7 @@ class ApiNode {
    * @returns {Promise<{version: string, height: number, ping: number}>}
    */
   _getNodeStatus () {
-    // console.log(`Updating node ${this._baseUrl} status. appProtocol: ${appProtocol}. nodeProtocol: ${this._protocol}. hasSupportedProtocol: ${this._hasSupportedProtocol}`)
     if (!this._hasSupportedProtocol) {
-      // console.log(`Setting node ${this._baseUrl} as unsupported and offline by protocol.`)
       return new Promise((resolve) => {
         resolve({
           online: false,

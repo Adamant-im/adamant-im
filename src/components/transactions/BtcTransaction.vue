@@ -34,8 +34,7 @@ export default {
     TransactionTemplate
   },
   mounted () {
-    // Not needed, as called from Transaction.vur
-    // console.log('Fetching tx from details..')
+    // Not needed, as called from Transaction.vue
     // this.$store.dispatch(`${this.cryptoKey}/getTransaction`, { hash: this.id })
   },
   data () {
@@ -87,12 +86,10 @@ export default {
       const { height, confirmations } = this.transaction
 
       let result = confirmations
-      // console.log(`confirmations: ${confirmations}, height: ${height}`)
       if (height) {
         // Calculate confirmations count based on the tx block height and the last block height.
         // That's for BTC only as it does not return the confirmations for the transaction.
         const c = this.$store.getters[`${this.cryptoKey}/height`] - height
-        // console.log(`New confirmations: ${c}`)
         if (isFinite(c) && c > result) {
           result = c
         }
@@ -122,13 +119,9 @@ export default {
       if (status === 'SUCCESS' && messageTx && messageTx.id) {
         const txVerify = verifyTransactionDetails(this.transaction, messageTx, { recipientCryptoAddress: this.transaction.recipientId, senderCryptoAddress: this.transaction.senderId })
         if (txVerify.isTxConsistent) {
-          console.log(`Good transaction:`, txVerify)
           status = TS.CONFIRMED
           this.inconsistent_reason = ''
         } else {
-          console.log(`Inconsistent transaction:`, txVerify)
-          console.log(this.crypto)
-          console.log(this)
           this.inconsistent_reason = this.$t(`transaction.inconsistent_reasons.${txVerify.txInconsistentReason}`, { crypto: this.crypto })
           status = TS.INVALID
         }

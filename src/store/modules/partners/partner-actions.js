@@ -51,16 +51,12 @@ export default {
     if (!payload.records) payload.records = 1
     const crypto = isErc20(payload.crypto) ? Cryptos.ETH : payload.crypto
 
-    console.log(`fetchAddress ${crypto}`)
-    console.log(context.state)
     const existingPartner = context.state.list[payload.partner]
     const existingAddress = existingPartner && existingPartner[crypto]
     const addressVerifyTimestamp = existingPartner && existingPartner[crypto + '_verifyTimestamp']
 
     if (existingAddress && addressVerifyTimestamp && Date.now() - addressVerifyTimestamp < ADDRESS_VALID_TIMEOUT) {
-      console.log('delta:', Date.now() - addressVerifyTimestamp)
       if (payload.records > 1) {
-        console.log(1, existingPartner[crypto + '_inconsistency'])
         if (existingPartner[crypto + '_inconsistency']) {
           return Promise.resolve(existingPartner[crypto + '_inconsistency'])
         } else {
@@ -71,24 +67,16 @@ export default {
       }
     }
 
-    console.log(`no ${crypto} address, need to fetch`)
     const key = `${crypto}:address`.toLowerCase()
-
-    console.log('records1', payload.records)
-
     return admApi.getStored(key, payload.partner, MAXIMUM_ADDRESSES).then(
       txs => {
         if (txs.length > 0) {
           let addresses = parseCryptoAddressesKVStxs(txs)
-          console.log(3, addresses)
           context.commit('address', { ...payload, crypto, address: addresses.mainAddress })
           if (addresses.addressesCount > 1) {
             context.commit('addresses_inconsistency', { ...payload, crypto, addresses: addresses.storedAddresses })
           }
-          console.log('records2', payload.records)
           if (payload.records > 1) {
-            console.log(4, addresses)
-            console.log(5, addresses.storedAddresses)
             return addresses.storedAddresses
           } else {
             return addresses.mainAddress

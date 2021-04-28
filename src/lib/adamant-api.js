@@ -342,12 +342,9 @@ export function storeCryptoAddress (crypto, address) {
  * @returns {Promise<{success: boolean, transactions: Array}>}
  */
 export function getTransactions (options = { }) {
-  console.log('adm getTransactions')
   const query = {
     inId: myAddress,
     limit: TX_CHUNK_SIZE
-    // 'and:minAmount': 1,
-    // orderBy: 'timestamp:desc'
   }
 
   if (options.minAmount) {

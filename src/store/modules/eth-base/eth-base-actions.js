@@ -158,12 +158,7 @@ export default function createActions (config) {
       const existing = context.state.transactions[payload.hash]
       if (existing && !payload.force) return
 
-      console.log(`getTransaction ${payload.hash} for ${context.state.crypto}.`)
-      console.log('payload', payload)
-      console.log('existing', existing)
-
       if (!existing || payload.dropStatus) {
-        console.log(`Commiting new transaction ${payload.hash} for ${context.state.crypto}.`)
         payload.updateOnly = false
         context.commit('transactions', [{
           hash: payload.hash,
@@ -178,7 +173,6 @@ export default function createActions (config) {
       const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
         if (!err && tx && tx.input) {
           let transaction = parseTransaction(context, tx)
-          console.log('got tx:', transaction)
           const status = existing ? existing.status : 'REGISTERED'
           if (transaction) {
             context.commit('transactions', [{
@@ -199,9 +193,6 @@ export default function createActions (config) {
         let retry = attempt < retryCount
         let retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
 
-        console.log()
-        console.log(`Didn't get unknown transaction for ${context.state.crypto}. retryTimeout: ${retryTimeout}. attempt: ${attempt} of ${retryCount}.`)
-
         if (!retry) {
           // Give up, if transaction could not be found after so many attempts
           context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
@@ -216,8 +207,6 @@ export default function createActions (config) {
             dropStatus: false
           }
 
-          console.log(`Will getTransaction ${payload.hash} for ${context.state.crypto} in timeout: ${retryTimeout}.`)
-          console.log('newPayload', newPayload)
           setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
         }
       })
