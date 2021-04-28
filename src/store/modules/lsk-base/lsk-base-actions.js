@@ -213,8 +213,12 @@ function createActions (options) {
     async getNewTransactions (context) {
       if (!api) return
       const options = { }
-      // console.log('getNewTransactions')
-      // console.log('context.state.maxTimestamp before commit:', context.state.maxTimestamp)
+      // Magic here helps to refresh Tx list when browser deletes it
+      if (Object.keys(context.state.transactions).length < context.state.transactionsCount) {
+        context.state.transactionsCount = 0
+        context.state.maxTimestamp = -1
+        context.state.minTimestamp = Infinity
+      }
       if (context.state.maxTimestamp > 0) {
         options.fromTimestamp = context.state.maxTimestamp
         options.sort = 'timestamp:asc'

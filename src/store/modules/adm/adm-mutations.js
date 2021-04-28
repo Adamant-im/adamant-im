@@ -30,7 +30,7 @@ export default {
       transactions = transactions.transactions
     }
     let minHeight = Infinity
-    let maxHeight = 0
+    let maxHeight = -1
 
     const address = state.address
 
@@ -49,6 +49,12 @@ export default {
         maxHeight = Math.max(maxHeight, tx.height)
       }
     })
+
+    // Magic here helps to refresh Tx list when browser deletes it
+    let txCount = Object.keys(state.transactions).length
+    if (state.transactionsCount < txCount) { // We don't delete transactions, so they can't become in short
+      state.transactionsCount = txCount
+    }
 
     if (minHeight < state.minHeight) {
       state.minHeight = minHeight

@@ -288,8 +288,13 @@ export default function createActions (config) {
     },
 
     getNewTransactions (context, payload) {
+      // Magic here helps to refresh Tx list when browser deletes it
+      if (Object.keys(context.state.transactions).length < context.state.transactionsCount) {
+        context.state.transactionsCount = 0
+        context.state.maxHeight = -1
+        context.state.minHeight = Infinity
+      }
       const { address, maxHeight, contractAddress, decimals } = context.state
-
       const from = maxHeight > 0 ? maxHeight + 1 : 0
       const limit = from ? undefined : CHUNK_SIZE
 
