@@ -1,9 +1,12 @@
+import { resetKVSAddresses } from '@/lib/store-crypto-address'
+
 /**
  * Helper function to reset the Vuex state to the supplied `initialState`
  * @param {object} state Vuex state
  * @param {object} initialState initial state to reset to
  */
 export function resetState (state, initialState) {
+  resetKVSAddresses()
   Object.keys(state).forEach(field => {
     state[field] = initialState[field]
   })

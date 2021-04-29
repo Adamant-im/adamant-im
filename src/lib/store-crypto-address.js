@@ -4,8 +4,14 @@ import { Cryptos, isErc20 } from './constants'
 import { vueBus } from '@/main'
 import { uniqueCaseInsensitiveArray } from '@/lib/textHelpers'
 
-const queue = { }
-const stored = []
+let queue = { }
+let stored = []
+
+// Clear this on logout to store new values after re-login
+export function resetKVSAddresses () {
+  queue = { }
+  stored = []
+}
 
 export function storeCryptoAddress (crypto, address) {
   if (!queue[crypto] && !stored.includes(crypto)) {

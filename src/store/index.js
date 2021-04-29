@@ -100,6 +100,9 @@ const store = {
   },
   actions: {
     login ({ commit, dispatch }, passphrase) {
+      // First, clear previous account data, if it exists. Calls resetState(state, getInitialState()) also
+      dispatch('reset')
+
       return loginOrRegister(passphrase)
         .then(account => {
           commit('setAddress', account.address)

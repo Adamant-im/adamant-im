@@ -318,6 +318,7 @@ export function storeCryptoAddress (crypto, address) {
   const key = `${crypto.toLowerCase()}:address`
   pendingAddresses[crypto] = true
 
+  // Don't store crypto address twice, check it first in KVS
   return getStored(key)
     .then(stored => (stored)
       ? true
@@ -329,7 +330,7 @@ export function storeCryptoAddress (crypto, address) {
         return success
       },
       error => {
-        console.warn(`Failed to store ${key}`, error)
+        console.warn(`Failed to store crypto address for ${key}`, error)
         delete pendingAddresses[crypto]
         return false
       }
