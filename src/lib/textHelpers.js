@@ -8,13 +8,14 @@ export function copyToClipboard (data) {
   el.value = data
   document.body.appendChild(el)
 
+  // this will make fake positive result in Chrome's simulator, and the function will not work
+  // https://chromium.googlesource.com/chromium/src/+/master/docs/ios/user_agent.md
+  // https://stackoverflow.com/questions/28083715/how-to-detect-if-a-mobile-device-is-emulated-by-google-chrome
   var isiOSDevice = navigator.userAgent.match(/ipad|iphone/i)
-  console.log(navigator.userAgent)
+
   if (isiOSDevice) {
-    console.log('iOS+')
     copyToClipboardIos(el)
   } else {
-    console.log('iOS-')
     el.select()
     document.execCommand('copy')
   }
