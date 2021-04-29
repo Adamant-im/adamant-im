@@ -48,8 +48,8 @@
                 ></v-checkbox>
               </td>
               <td :class="`${className}__body`" class="pl-0 pr-2" style="line-height: 1;">
-                {{ props.item.url }}<br>
-                <span :class="`${className}__node-version`">{{ 'v' + props.item.version }}</span>
+                {{ props.item.url }}
+                <span v-if="props.item.version" :class="`${className}__node-version`"><br>{{ 'v' + props.item.version }}</span>
               </td>
               <td :class="`${className}__body`" class="pl-0 pr-2">
                 <span>
