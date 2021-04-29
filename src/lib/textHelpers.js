@@ -9,9 +9,12 @@ export function copyToClipboard (data) {
   document.body.appendChild(el)
 
   var isiOSDevice = navigator.userAgent.match(/ipad|iphone/i)
+  console.log(navigator.userAgent)
   if (isiOSDevice) {
+    console.log('iOS+')
     copyToClipboardIos(el)
   } else {
+    console.log('iOS-')
     el.select()
     document.execCommand('copy')
   }
