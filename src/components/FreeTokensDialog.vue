@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { uriToOnion } from '@/lib/uri'
+import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
   computed: {
@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     getFreeTokens () {
-      const link = uriToOnion(this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address)
+      const link = websiteUriToOnion(this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address)
       window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
       this.show = false
     },

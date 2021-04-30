@@ -166,11 +166,56 @@ export const UserPasswordHashSettings = {
 
 export const TransactionStatus = {
   CONFIRMED: 'confirmed',
-  DELIVERED: 'delivered',
   PENDING: 'pending',
+  DELIVERED: 'delivered',
+  REGISTERED: 'registered', // ~DELIVERED
   REJECTED: 'rejected',
+  ERROR: 'error', // ~REJECTED
   INVALID: 'invalid',
-  UNKNOWN: 'unknown'
+  UNKNOWN: 'unknown' // We don't recognize a cryptocurrency
+}
+
+export const tsIcon = function (status) {
+  status = status.toLowerCase()
+  if (status === TransactionStatus.CONFIRMED) {
+    return 'mdi-check'
+  } else if (status === TransactionStatus.PENDING || status === TransactionStatus.DELIVERED || status === TransactionStatus.REGISTERED) {
+    return 'mdi-clock-outline'
+  } else if (status === TransactionStatus.REJECTED || status === TransactionStatus.ERROR) {
+    return 'mdi-close-circle-outline'
+  } else if (status === TransactionStatus.INVALID) {
+    return 'mdi-alert-outline'
+  } else if (status === TransactionStatus.UNKNOWN) {
+    return 'mdi-help-circle-outline'
+  }
+}
+
+export const tsColor = function (status) {
+  status = status.toLowerCase()
+  if (status === TransactionStatus.REJECTED || status === TransactionStatus.ERROR) {
+    return 'red'
+  } else if (status === TransactionStatus.INVALID || status === TransactionStatus.UNKNOWN) {
+    return 'yellow'
+  }
+  return ''
+}
+
+export const tsUpdatable = function (status, currency) {
+  currency = currency.toUpperCase()
+  status = status.toLowerCase()
+  if (currency === Cryptos.ADM) {
+    return false
+  } else if (status === TransactionStatus.CONFIRMED) {
+    return true
+  } else if (status === TransactionStatus.PENDING || status === TransactionStatus.DELIVERED || status === TransactionStatus.REGISTERED) {
+    return false
+  } else if (status === TransactionStatus.REJECTED || status === TransactionStatus.ERROR) {
+    return true
+  } else if (status === TransactionStatus.INVALID) {
+    return true
+  } else if (status === TransactionStatus.UNKNOWN) {
+    return false
+  }
 }
 
 /**

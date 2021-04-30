@@ -19,13 +19,10 @@ export default (initialState) => ({
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
   bottom (state) {
-    console.log('btc based bottom')
     state.bottomReached = true
   },
 
   transactions (state, transactions) {
-    console.log('transactions btc-based to merge:', transactions.length)
-
     transactions.forEach(tx => {
       if (!tx) return
 

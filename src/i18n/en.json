@@ -42,11 +42,11 @@
     "how_to_use_messenger": "How to start with a Blockchain Messenger",
     "how_to_use_messenger_link": "https://medium.com/adamant-im/how-to-start-with-a-blockchain-messenger-54d1eb9704e6",
     "transaction_statuses": {
-      "confirmed": "Confirmed in token’s blockchain",
-      "delivered": "Delivered to Node",
-      "invalid": "Incorrect information. Check transaction in token's blockchain carefully",
-      "pending": "Not confirmed yet",
-      "rejected": "The transaction is cancelled or not accepted",
+      "confirmed": "Confirmed in a blockchain",
+      "delivered": "Delivered to a node",
+      "invalid": "Incorrect information. Check the Tx in a blockchain explorer carefully",
+      "pending": "Not confirmed yet. Fetching…",
+      "rejected": "Unable to fetch Tx info. It may be cancelled or not accepted. Check the Tx in a blockchain explorer",
       "unknown": "This cryptocurrency is not supported yet"
     },
     "virtual": {
@@ -84,6 +84,19 @@
     "share_uri": "Share {crypto} address",
     "show_qr_code": "Show QR code",
     "wallet": "wallet"
+  },
+  "warning_on_addresses": {
+    "warning": "Warning",
+    "headline": "Your account may be compromised",
+    "about": "You can accept in-chat crypto transfers, because of ADAMANT saves wallet addresses in Blockchain. To save them, passphrase is necessary—it means nobody can push wrong addresses on behalf of you.",
+    "specifics_wrong_addresses": "We've identified inconsistencies in stored addresses for your account. The {crypto} address saved as {storedAddress}, but correct one is {correctAddress}. It means if someone will send you {crypto} in-chat, you'll never receive it.",
+    "specifics_many_addresses": "We've identified more than one address, stored for {crypto} in your account: {manyAddresses}. It means somebody has stored fraud addresses.",
+    "full_list_wrong_addresses": "Full list of crypto with mismatched addresses: {crypto_list}.",
+    "full_list_many_addresses": "Wallets with multiple addresses: {crypto_list}.",
+    "reasons": "Maybe scammers control your account. Probably you've used account's passphrase in a fishing app, which may look like authentic, or hackers stole your passphrase.",
+    "what_to_do": "We recommend you to transfer all crypto from this account to a new one. Make sure your device is secure, and use only official apps. Be careful: only you are responsible for safety of your account.",
+    "hide_button": "Got it",
+    "forget_button": "Don't show again on this device"
   },
   "login": {
     "brand_title": "ADAMANT",
@@ -156,7 +169,7 @@
     "enable_sound": "Sound",
     "enable_sound_tooltip": "Play a sound when new message is received",
     "stay_logged_in": "Stay logged in",
-    "stay_logged_in_tooltip": "Set a password to log in on this device faster. Your messages and passphase will be stored encrypted",
+    "stay_logged_in_tooltip": "Set a password to log in on this device faster. Your messages and passphrase will be stored encrypted",
     "format_messages": "Markdown formatting",
     "format_messages_tooltip": "Recommended. Use _italic_, **bold**, `monospace`, and more.",
     "use_full_date": "Display full dates",
@@ -222,7 +235,21 @@
       "error": "Error",
       "pending": "Pending",
       "registered": "Pending",
-      "success": "Success"
+      "success": "Success",
+      "confirmed": "Success",
+      "invalid": "Inconsistent"
+    },
+    "inconsistent_reasons": {
+      "unknown": "Failed to check Tx. Somethings went wrong",
+      "no_recipient_crypto_address": "Unable to get recipient's {crypto} address",
+      "no_sender_crypto_address": "Unable to get sender's {crypto} address",
+      "no_recipient_adm_id": "Unable to get recipient's ADM address",
+      "no_sender_adm_id": "Unable to get sender's ADM address",
+      "wrong_tx_hash": "Wrong Tx hash. Be aware of fraud",
+      "wrong_amount": "Wrong {crypto} amount. Be aware of fraud",
+      "wrong_timestamp": "Message and {crypto} Tx has different timestamps. It is possible, but check twice",
+      "sender_crypto_address_mismatch": "Sender's {crypto} address differs. Be aware of fraud",
+      "recipient_crypto_address_mismatch": "Recipient's {crypto} address differs. Be aware of fraud"
     },
     "transactions": "Transactions",
     "txid": "Transaction #"
@@ -246,7 +273,7 @@
     "decode_from_camera": "Scan QR with camera",
     "decode_from_image": "Read QR from image",
     "error_chat_fee": "To send {crypto} via chat, you need 0.001 ADM",
-    "error_dust_amount": "Enter less decimals for amount",
+    "error_dust_amount": "Dust amount—Send more tokens",
     "error_erc20_fee": "You need a {fee} to pay a transfer fee",
     "error_field_is_required": "Field is required",
     "error_incorrect_address": "Incorrect {crypto} wallet address",
@@ -266,7 +293,16 @@
     "no_address_title": "Recipient has no {crypto} wallet yet",
     "send_button": "Send",
     "to_address_label": "To Address",
-    "to_name_label": "To {name}"
+    "to_name_label": "To {name}",
+    "warning_on_partner_address": {
+      "warning": "Warning",
+      "headline": "Partner's account may be compromised",
+      "about": "Users can accept in-chat crypto transfers, because of ADAMANT saves wallet addresses in Blockchain. To save them, passphrase is necessary—it means nobody can push wrong addresses on behalf of user.",
+      "specifics_many_addresses": "We've identified more than one {crypto} address, stored for {partner_account}{partner_name} account: {manyAddresses}. It means they may never receive your transfer.",
+      "reasons": "Maybe scammers control this account.",
+      "what_to_do": "Tell your partner about the problem.",
+      "hide_button": "Got it"
+    }
   },
   "votes": {
     "delegate_description": "Description",

@@ -45,6 +45,9 @@ export default {
   transactions: (to, from, next) => {
     if (to.meta.previousRoute) {
       to.meta.previousRoute = from
+      if (to.meta.previousPreviousRoute && from.meta.previousRoute) {
+        to.meta.previousPreviousRoute = from.meta.previousRoute
+      }
     }
     const crypto = (to.params.crypto || '').toUpperCase()
     if (crypto in Cryptos) {

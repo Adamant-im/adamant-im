@@ -158,13 +158,13 @@ export default function createActions (config) {
       const existing = context.state.transactions[payload.hash]
       if (existing && !payload.force) return
 
-      // Set a stub so far
-      if (!existing || existing.status === 'ERROR') {
+      if (!existing || payload.dropStatus) {
+        payload.updateOnly = false
         context.commit('transactions', [{
           hash: payload.hash,
           timestamp: payload.timestamp,
           amount: payload.amount,
-          status: existing ? existing.status : 'PENDING',
+          status: 'PENDING',
           direction: payload.direction
         }])
       }
@@ -173,36 +173,41 @@ export default function createActions (config) {
       const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
         if (!err && tx && tx.input) {
           let transaction = parseTransaction(context, tx)
+          const status = existing ? existing.status : 'REGISTERED'
           if (transaction) {
             context.commit('transactions', [{
               ...transaction,
-              status: 'REGISTERED'
+              status
             }])
-
             // Fetch receipt details: status and actual gas consumption
             const { attempt, ...receiptPayload } = payload
             context.dispatch('getTransactionReceipt', receiptPayload)
-
             // Now we know that the transaction has been registered by the ETH network.
             // Nothing else to do here, let's proceed to checking its status (see getTransactionReceipt)
             return
           }
         }
 
-        if (payload.attempt >= tf.PENDING_ATTEMPTS) {
+        const attempt = payload.attempt || 0
+        let retryCount = tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+        let retry = attempt < retryCount
+        let retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+
+        if (!retry) {
           // Give up, if transaction could not be found after so many attempts
           context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-        } else {
+        } else if (!payload.updateOnly) {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far
           const newPayload = tx ? payload : {
             ...payload,
-            attempt: 1 + (payload.attempt || 0),
-            force: true
+            attempt: attempt + 1,
+            force: true,
+            updateOnly: false,
+            dropStatus: false
           }
 
-          const timeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp))
-          setTimeout(() => context.dispatch('getTransaction', newPayload), timeout)
+          setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
         }
       })
 
@@ -268,12 +273,17 @@ export default function createActions (config) {
      * @param {{hash: string}} payload action payload
      */
     updateTransaction ({ dispatch }, payload) {
-      return dispatch('getTransaction', payload)
+      return dispatch('getTransaction', { ...payload, force: payload.force, updateOnly: payload.updateOnly })
     },
 
     getNewTransactions (context, payload) {
+      // Magic here helps to refresh Tx list when browser deletes it
+      if (Object.keys(context.state.transactions).length < context.state.transactionsCount) {
+        context.state.transactionsCount = 0
+        context.state.maxHeight = -1
+        context.state.minHeight = Infinity
+      }
       const { address, maxHeight, contractAddress, decimals } = context.state
-
       const from = maxHeight > 0 ? maxHeight + 1 : 0
       const limit = from ? undefined : CHUNK_SIZE
 

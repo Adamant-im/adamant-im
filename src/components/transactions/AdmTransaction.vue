@@ -11,6 +11,7 @@
     :partner="transaction.partner || '' "
     :status="status || '' "
     :admTx="admTx"
+    :crypto="crypto"
   />
 </template>
 
@@ -25,6 +26,10 @@ export default {
   name: 'adm-transaction',
   props: {
     id: {
+      required: true,
+      type: String
+    },
+    crypto: {
       required: true,
       type: String
     }

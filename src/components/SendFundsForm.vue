@@ -1,5 +1,8 @@
 <template>
   <div :class="className">
+    <warning-on-partner-address-dialog :info="warningOnPartnerInfo"
+      v-model="showWarningOnPartnerAddressDialog" />
+
     <v-form
       v-model="validForm"
       @submit.prevent="confirm"
@@ -183,6 +186,8 @@ import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
 
+import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog'
+
 /**
  * @returns {string | boolean}
  */
@@ -206,7 +211,8 @@ export default {
   mixins: [partnerName],
   components: {
     QrcodeCapture,
-    QrcodeScannerDialog
+    QrcodeScannerDialog,
+    WarningOnPartnerAddressDialog
   },
   created () {
     this.currency = this.cryptoCurrency
@@ -421,7 +427,9 @@ export default {
     showSpinner: false,
     dialog: false,
     fetchAddress: null, // fn throttle
-    increaseFee: false
+    increaseFee: false,
+    showWarningOnPartnerAddressDialog: false,
+    warningOnPartnerInfo: { }
   }),
   methods: {
     confirm () {
@@ -432,7 +440,7 @@ export default {
       } else {
         this.$store.dispatch('snackbar/show', {
           message: abstract,
-          timeout: 7000
+          timeout: 5000
         })
       }
     },
@@ -534,9 +542,9 @@ export default {
         })
         .catch(err => {
           let message = err.message
-          if (this.currency === Cryptos.DASH && get(err, 'response.data.error.code') === -26) {
+          if (/dust/i.test(message) || get(err, 'response.data.error.code') === -26) {
             message = this.$t('transfer.error_dust_amount')
-          } else if (this.currency === Cryptos.ETH && /Invalid JSON RPC Response/i.test(message)) {
+          } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
           }
           this.$emit('error', message)
@@ -612,9 +620,21 @@ export default {
       if (validateAddress('ADM', this.address)) {
         this.$store.dispatch('partners/fetchAddress', {
           crypto: this.currency,
-          partner: this.address
-        }).then(address => {
-          this.cryptoAddress = address
+          partner: this.address,
+          records: 20
+        }).then(addresses => {
+          this.cryptoAddress = addresses[0]
+          if (addresses.length > 1) {
+            let addressesList = addresses.join(', ')
+            this.warningOnPartnerInfo.coin = this.currency
+            this.warningOnPartnerInfo.ADMaddress = this.address
+            this.warningOnPartnerInfo.ADMname = ''
+            if (this.recipientName) {
+              this.warningOnPartnerInfo.ADMname = ' (' + this.recipientName + ')'
+            }
+            this.warningOnPartnerInfo.coinAddresses = addressesList
+            this.showWarningOnPartnerAddressDialog = true
+          }
         })
       }
     },

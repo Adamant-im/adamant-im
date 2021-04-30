@@ -213,6 +213,8 @@ export default class BtcBaseApi {
       fee = totalIn - totalOut
     }
 
+    let height = tx.height
+
     return {
       id: tx.txid,
       hash: tx.txid,
@@ -225,7 +227,8 @@ export default class BtcBaseApi {
       recipients,
       recipientId,
       amount,
-      confirmations
+      confirmations,
+      height
     }
   }
 }

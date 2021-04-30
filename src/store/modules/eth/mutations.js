@@ -8,7 +8,6 @@ export default {
 
   /** Resets module state */
   reset (state) {
-    console.log('resetting eth state..')
     resetState(state, initialState())
   },
 

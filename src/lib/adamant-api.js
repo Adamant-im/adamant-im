@@ -216,12 +216,13 @@ function tryDecodeStoredValue (value) {
 }
 
 /**
- * Retrieves the stored value from the Adamant KVS
+ * Retrieves the stored value from the Adamant KVS or array of KVS transactions
  * @param {string} key key in the KVS
  * @param {string=} ownerAddress address of the value owner
+ * @param {number} records if > 1, returns array of KVS transactions
  * @returns {Promise<any>}
  */
-export function getStored (key, ownerAddress) {
+export function getStored (key, ownerAddress, records = 1) {
   if (!ownerAddress) {
     ownerAddress = myAddress
   }
@@ -230,18 +231,23 @@ export function getStored (key, ownerAddress) {
     senderId: ownerAddress,
     key,
     orderBy: 'timestamp:desc',
-    limit: 1
+    limit: records
   }
 
   return client.get('/api/states/get', params).then(response => {
     let value = null
 
     if (response.success && Array.isArray(response.transactions)) {
-      const tx = response.transactions[0]
-      value = tx && tx.asset && tx.asset.state && tx.asset.state.value
+      if (records > 1) { // return all records
+        return response.transactions
+      } else {
+        const tx = response.transactions[0]
+        value = tx && tx.asset && tx.asset.state && tx.asset.state.value
+        return tryDecodeStoredValue(value)
+      }
     }
 
-    return tryDecodeStoredValue(value)
+    return null
   })
 }
 
@@ -312,6 +318,7 @@ export function storeCryptoAddress (crypto, address) {
   const key = `${crypto.toLowerCase()}:address`
   pendingAddresses[crypto] = true
 
+  // Don't store crypto address twice, check it first in KVS
   return getStored(key)
     .then(stored => (stored)
       ? true
@@ -323,7 +330,7 @@ export function storeCryptoAddress (crypto, address) {
         return success
       },
       error => {
-        console.warn(`Failed to store ${key}`, error)
+        console.warn(`Failed to store crypto address for ${key}`, error)
         delete pendingAddresses[crypto]
         return false
       }
@@ -336,12 +343,9 @@ export function storeCryptoAddress (crypto, address) {
  * @returns {Promise<{success: boolean, transactions: Array}>}
  */
 export function getTransactions (options = { }) {
-  console.log('adm getTransactions')
   const query = {
     inId: myAddress,
     limit: TX_CHUNK_SIZE
-    // 'and:minAmount': 1,
-    // orderBy: 'timestamp:desc'
   }
 
   if (options.minAmount) {

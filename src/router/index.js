@@ -57,7 +57,8 @@ const router = new Router({
       meta: {
         requiresAuth: true,
         layout: 'no-container',
-        containerNoPadding: true
+        containerNoPadding: true,
+        previousRoute: {}
       },
       beforeEnter: navigationGuard.transactions
     },
@@ -70,8 +71,8 @@ const router = new Router({
         requiresAuth: true,
         layout: 'no-container',
         containerNoPadding: true,
-        // scrollPositionMultiple: {},
-        previousRoute: {}
+        previousRoute: {},
+        previousPreviousRoute: {}
       },
       beforeEnter: navigationGuard.transactions
     },
@@ -156,10 +157,6 @@ const router = new Router({
     } else if (to.meta.scrollPosition) {
       return to.meta.scrollPosition
     }
-    // else if (to.meta.scrollPositionMultiple) {
-    //   console.log('to.meta.scrollPositionMultiple for', to.params.crypto)
-    //   return to.meta.scrollPositionMultiple[to.params.crypto]
-    // }
   }
 })
 

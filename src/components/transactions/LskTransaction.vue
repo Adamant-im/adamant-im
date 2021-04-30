@@ -9,16 +9,19 @@
     :recipient="recipient || '' "
     :explorerLink="explorerLink"
     :partner="partner || '' "
-    :status="transaction.status || '' "
+    :status="status() || '' "
+    :status_inconsistent="inconsistent_reason"
     :admTx="admTx"
+    :crypto="crypto"
   />
 </template>
 
 <script>
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
-import { Cryptos } from '../../lib/constants'
+import { Cryptos, TransactionStatus as TS } from '../../lib/constants'
 import partnerName from '@/mixins/partnerName'
+import { verifyTransactionDetails } from '@/lib/txVerify'
 
 export default {
   mixins: [partnerName],
@@ -37,7 +40,9 @@ export default {
     TransactionTemplate
   },
   data () {
-    return { }
+    return {
+      inconsistent_reason: ''
+    }
   },
   computed: {
     cryptoKey () {
@@ -92,6 +97,21 @@ export default {
     }
   },
   methods: {
+    status () {
+      let status = this.transaction.status
+      let messageTx = this.admTx
+      if (status === 'SUCCESS' && messageTx && messageTx.id) {
+        const txVerify = verifyTransactionDetails(this.transaction, messageTx, { recipientCryptoAddress: this.recipient, senderCryptoAddress: this.sender })
+        if (txVerify.isTxConsistent) {
+          status = TS.CONFIRMED
+          this.inconsistent_reason = ''
+        } else {
+          this.inconsistent_reason = this.$t(`transaction.inconsistent_reasons.${txVerify.txInconsistentReason}`, { crypto: this.crypto })
+          status = TS.INVALID
+        }
+      }
+      return status
+    },
     getAdmAddress (address) {
       let admAddress = ''
 

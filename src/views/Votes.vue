@@ -80,7 +80,7 @@
                     <v-list-tile :class="`${className}__expand-list-tile`">
                       <v-list-tile-content>
                         <v-list-tile-title class="a-text-active">
-                          <a :href="'https://explorer.adamant.im/delegate/' + props.item.address" target="_blank" rel="noopener">
+                          <a :href="getExplorerUrl() + props.item.address" target="_blank" rel="noopener">
                             {{ props.item.address }}
                           </a>
                         </v-list-tile-title>
@@ -188,6 +188,7 @@
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import Pagination from '@/components/Pagination'
 import numberFormat from '@/filters/numberFormat'
+import { explorerUriToOnion } from '@/lib/uri'
 
 export default {
   mounted () {
@@ -277,6 +278,9 @@ export default {
     dialog: false
   }),
   methods: {
+    getExplorerUrl () {
+      return explorerUriToOnion('https://explorer.adamant.im/delegate/')
+    },
     upVote (id) {
       this.$store.commit('delegates/upVote', id)
     },

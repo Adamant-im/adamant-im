@@ -68,12 +68,7 @@ export default {
   },
   computed: {
     transactions () {
-      // debug when after some time txs are not showing
-      console.log('store transactions')
-      console.log('store transactions', this.$store.state[this.cryptoModule].transactions)
       const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
-      console.log('transactions to list', transactions)
-      console.log(`${this.crypto.toLowerCase()} state`, this.$store.state[this.crypto.toLowerCase()])
       const address = this.$store.state[this.crypto.toLowerCase()].address
       return transactions.filter(tx => {
         // Filter invalid "fake" transactions (from chat rich message)
@@ -157,22 +152,13 @@ export default {
     },
     getNewTransactions () {
       // If we came from Transactions details sreen, do not update transaction list
-      if (this.$route.meta.previousRoute.params.txId && !this.isFulfilled) {
-        // It seems this code is excessive as Vue restores scroll if we don't udpdate contents anyway
-        // if (this.$route.meta.scrollPositionMultiple[this.crypto]) {
-        //   setTimeout(() => {
-        //     console.log('restore:', this.$route.meta.scrollPositionMultiple[this.crypto].y)
-        //     window.scrollTo(0, this.$route.meta.scrollPositionMultiple[this.crypto].y)
-        //   }, 0)
-        // }
+      let doNotUpdate = this.$route.meta.previousRoute.params.txId && !this.isFulfilled &&
+        // If we don't just refresh Tx details screen
+        this.$route.meta.previousPreviousRoute && this.$route.meta.previousPreviousRoute.name
+
+      if (doNotUpdate) {
         this.isFulfilled = true
       } else {
-        // debug when after some time txs are not showing
-        setTimeout(() => {
-          console.log('store transactions after timeout', this.$store.state[this.cryptoModule].transactions)
-          const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
-          console.log('transactions to list after timeout', transactions)
-        }, 1000)
         this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
           .then(() => {
             this.isFulfilled = true

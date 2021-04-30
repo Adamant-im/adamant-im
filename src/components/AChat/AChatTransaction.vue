@@ -12,9 +12,11 @@
           <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
           <div class="a-chat__status">
             <v-icon
+              @click="updateStatus"
               size="13"
               :title="i18n.statuses[status]"
               :color="statusColor"
+              :style="statusUpdatable ? 'cursor: pointer;': 'cursor: default;'"
             >{{ statusIcon }}</v-icon>
           </div>
         </div>
@@ -47,32 +49,21 @@
 </template>
 
 <script>
+import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
+
 export default {
   mounted () {
     this.$emit('mount')
   },
   computed: {
     statusIcon () {
-      if (this.status === 'confirmed') {
-        return 'mdi-check'
-      } else if (this.status === 'pending' || this.status === 'delivered') {
-        return 'mdi-clock-outline'
-      } else if (this.status === 'rejected') {
-        return 'mdi-close-circle-outline'
-      } else if (this.status === 'invalid') {
-        return 'mdi-alert-outline'
-      } else if (this.status === 'unknown') {
-        return 'mdi-help-circle-outline'
-      }
+      return tsIcon(this.status)
+    },
+    statusUpdatable () {
+      return tsUpdatable(this.status, this.currency)
     },
     statusColor () {
-      if (this.status === 'rejected') {
-        return 'red'
-      } else if (this.status === 'invalid' || this.status === 'unknown') {
-        return 'yellow'
-      }
-
-      return ''
+      return tsColor(this.status)
     }
   },
   methods: {
@@ -80,12 +71,21 @@ export default {
       if (this.isClickable) {
         this.$emit('click:transaction', this.id)
       }
+    },
+    updateStatus () {
+      if (this.statusUpdatable) {
+        this.$emit('click:transactionStatus', this.id)
+      }
     }
   },
   props: {
     id: {
       type: null,
       required: true
+    },
+    currency: {
+      type: String,
+      default: ''
     },
     message: {
       type: String,

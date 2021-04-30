@@ -21,6 +21,8 @@ import 'dayjs/locale/fr'
 import 'dayjs/locale/it'
 import 'dayjs/locale/ru'
 
+export const vueBus = new Vue()
+
 Vue.use(VueFormatters)
 
 document.title = i18n.t('app_title')

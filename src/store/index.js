@@ -11,7 +11,7 @@ import {
 } from '@/lib/adamant-api'
 import { Cryptos, Fees } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
-import { flushCryptoAddresses } from '@/lib/store-crypto-address'
+import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
@@ -39,6 +39,8 @@ Vue.use(Vuex)
 
 export let interval
 
+const UPDATE_BALANCE_INTERVAL = 10000
+
 const store = {
   state: () => ({
     address: '',
@@ -51,7 +53,19 @@ const store = {
   getters: {
     isLogged: state => state.passphrase.length > 0,
     getPassPhrase: state => state.passphrase, // compatibility getter for ERC20 modules
-    publicKey: state => adamantAddress => state.publicKeys[adamantAddress]
+    publicKey: state => adamantAddress => state.publicKeys[adamantAddress],
+    isAccountNew: state => function () {
+      /*
+        It is hard to detect if account is new or not. Let's say:
+        ADM Balance = 0. But old accounts can also have 0 balance
+        ADM transactions count = 0. But any account has 0 transactions in store just after login, before user goes to Tx list screen
+        chat.lastMessageHeight = 0. App stores a height of last message
+        Checking chat.transactions is not effective. There are static chats in any new account.
+      */
+      return state.balance === 0 &&
+        state.chat.lastMessageHeight === 0 &&
+        Object.keys(state.adm.transactions).length === 0
+    }
   },
   mutations: {
     setAddress (state, address) {
@@ -86,6 +100,9 @@ const store = {
   },
   actions: {
     login ({ commit, dispatch }, passphrase) {
+      // First, clear previous account data, if it exists. Calls resetState(state, getInitialState()) also
+      dispatch('reset')
+
       return loginOrRegister(passphrase)
         .then(account => {
           commit('setAddress', account.address)
@@ -162,9 +179,10 @@ const store = {
       root: true,
       handler ({ dispatch }) {
         function repeat () {
+          validateStoredCryptoAddresses()
           dispatch('updateBalance')
             .catch(err => console.error(err))
-            .then(() => (interval = setTimeout(repeat, 20000)))
+            .then(() => (interval = setTimeout(repeat, UPDATE_BALANCE_INTERVAL)))
         }
 
         repeat()

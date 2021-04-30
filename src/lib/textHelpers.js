@@ -8,7 +8,11 @@ export function copyToClipboard (data) {
   el.value = data
   document.body.appendChild(el)
 
+  // this will make fake positive result in Chrome's simulator, and the function will not work
+  // https://chromium.googlesource.com/chromium/src/+/master/docs/ios/user_agent.md
+  // https://stackoverflow.com/questions/28083715/how-to-detect-if-a-mobile-device-is-emulated-by-google-chrome
   var isiOSDevice = navigator.userAgent.match(/ipad|iphone/i)
+
   if (isiOSDevice) {
     copyToClipboardIos(el)
   } else {
@@ -60,4 +64,12 @@ export function downloadFile (data, filename, type) {
       window.URL.revokeObjectURL(url)
     }, 0)
   }
+}
+
+/**
+ * Returns array of unique case insensitive values
+ * @param {Array} values
+ */
+export function uniqueCaseInsensitiveArray (values) {
+  return [...new Map(values.map(s => [s.toLowerCase(), s])).values()]
 }
