@@ -47,7 +47,10 @@
                   @click.native="toggle(props.item)"
                 ></v-checkbox>
               </td>
-              <td :class="`${className}__body`" class="pl-0 pr-2">{{ props.item.url }}</td>
+              <td :class="`${className}__body`" class="pl-0 pr-2" style="line-height: 1;">
+                {{ props.item.url }}
+                <span v-if="props.item.version" :class="`${className}__node-version`"><br>{{ 'v' + props.item.version }}</span>
+              </td>
               <td :class="`${className}__body`" class="pl-0 pr-2">
                 <span>
                   {{ getNodeStatus(props.item) }}
@@ -224,6 +227,8 @@ export default {
       text-decoration-line: none
       &:hover
         text-decoration-line: underline
+  &__node-version
+    a-text-explanation-small()
   &__checkbox
     >>> .v-label
       a-text-regular-enlarged()
@@ -237,6 +242,8 @@ export default {
       color: $adm-colors.muted
     &__body
       color: $adm-colors.regular
+    &__node-version
+      color: $adm-colors.muted
     &__checkbox
       >>> .v-label
         color: $adm-colors.regular
@@ -247,6 +254,11 @@ export default {
 
     >>> .v-table tbody tr:not(:last-child)
       border-bottom: 1px solid $adm-colors.secondary2
+
+.theme--dark
+  .nodes-view
+    &__node-version
+      opacity: 0.7
 
 /**
  * 1. Style VTable to be full width.

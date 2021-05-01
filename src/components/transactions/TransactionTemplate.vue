@@ -30,15 +30,16 @@
 
         <v-list-tile>
           <v-list-tile-content>
-            <v-list-tile-title :class="`${className}__title`">
+            <v-list-tile-title :class="`${className}__title`" style="width: fit-content;">
               {{ $t('transaction.status') }}
+              <v-icon size="20" v-if="statusUpdatable" @click="updateStatus()">mdi-refresh</v-icon>
+              {{ '&nbsp;&nbsp;&nbsp;' }}
             </v-list-tile-title>
           </v-list-tile-content>
 
-          <div>
-            <v-list-tile-title :class="`${className}__value ${className}__value-${lowerCaseStatus}`">
-              {{ $t(`transaction.statuses.${lowerCaseStatus}`) }}
-            </v-list-tile-title>
+          <div :class="`${className}__value ${className}__value-${lowerCaseStatus}`">
+              <v-icon v-if="status_inconsistent" size="20" style="color: #f8a061 !important;">{{ 'mdi-alert-outline' }}</v-icon>
+              {{ $t(`transaction.statuses.${lowerCaseStatus}`) }}<span v-if="status_inconsistent">{{': ' + status_inconsistent }}</span>
           </div>
         </v-list-tile>
 
@@ -178,14 +179,17 @@
 </template>
 
 <script>
-import { Symbols } from '@/lib/constants'
-
+import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 export default {
   name: 'transaction-template',
   props: {
     amount: {
+      required: true,
+      type: String
+    },
+    crypto: {
       required: true,
       type: String
     },
@@ -221,6 +225,10 @@ export default {
       required: true,
       type: String
     },
+    status_inconsistent: {
+      required: false,
+      type: String
+    },
     timestamp: {
       required: true,
       type: Number
@@ -238,6 +246,11 @@ export default {
     },
     openChat: function () {
       this.$router.push('/chats/' + this.partner + '/')
+    },
+    updateStatus () {
+      if (this.statusUpdatable) {
+        this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.id, force: true, updateOnly: false, dropStatus: true })
+      }
     }
   },
   computed: {
@@ -258,6 +271,9 @@ export default {
     },
     comment () {
       return this.admTx && this.admTx.message ? this.admTx.message : false
+    },
+    statusUpdatable () {
+      return tsUpdatable(this.status, this.crypto)
     }
   },
   components: {
@@ -304,4 +320,8 @@ export default {
       color: $adm-colors.attention !important
     &__value-success
       color: $adm-colors.good !important
+    &__value-confirmed
+      color: $adm-colors.good !important
+    &__value-invalid
+      color: $adm-colors.attention !important
 </style>

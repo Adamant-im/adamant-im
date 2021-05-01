@@ -10,6 +10,7 @@ import BtcTransaction from '../../components/transactions/BtcTransaction.vue'
 import LskTransaction from '../../components/transactions/LskTransaction.vue'
 
 import { Cryptos, isErc20, isBtcBased, isLskBased } from '../../lib/constants'
+import { getTxUpdateInterval } from '../../lib/transactionsFetching'
 
 export default {
   name: 'transaction',
@@ -33,15 +34,15 @@ export default {
   mounted () {
     this.update()
     window.clearInterval(this.timer)
-    this.timer = window.setInterval(() => this.update(), 1e4)
+    this.timer = window.setInterval(() => this.update(), getTxUpdateInterval(this.crypto))
   },
   beforeDestroy () {
     window.clearInterval(this.timer)
   },
   methods: {
     update () {
-      const action = this.crypto.toLowerCase() + '/updateTransaction'
-      this.$store.dispatch(action, { hash: this.txId })
+      // Regularly update Tx details with confirmations count, do force — fetch details for existing Tx also
+      this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.txId, force: true, updateOnly: true })
     }
   },
   computed: {

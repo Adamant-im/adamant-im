@@ -33,9 +33,14 @@ export default {
    * @param {any} context Vuex action context
    */
   getNewTransactions (context) {
-    console.log('adm getNewTransactions..', context)
     const options = { }
     options.minAmount = 1
+    // Magic here helps to refresh Tx list when browser deletes it
+    if (Object.keys(context.state.transactions).length < context.state.transactionsCount) {
+      context.state.transactionsCount = 0
+      context.state.maxHeight = -1
+      context.state.minHeight = Infinity
+    }
     if (context.state.maxHeight > 0) {
       options.fromHeight = context.state.maxHeight + 1
       options.orderBy = 'timestamp:asc'
@@ -52,7 +57,6 @@ export default {
           context.commit('transactions', { transactions: response.transactions, updateTimestamps: true })
           // get new transactions until we fetch the newest one
           if (options.fromHeight && response.transactions.length === admApi.TX_CHUNK_SIZE) {
-            // console.log('once again..', admApi.TX_CHUNK_SIZE)
             this.dispatch('adm/getNewTransactions')
           }
         }
@@ -69,7 +73,6 @@ export default {
    * @param {any} context Vuex action context
    */
   getOldTransactions (context) {
-    console.log('adm getOldTransactions..', context)
     // If we already have the most old transaction for this address, no need to request anything
     if (context.state.bottomReached) return Promise.resolve()
 
@@ -81,15 +84,12 @@ export default {
     options.orderBy = 'timestamp:desc'
 
     context.commit('areOlderLoading', true)
-
     return admApi.getTransactions(options).then(response => {
       context.commit('areOlderLoading', false)
       const hasResult = Array.isArray(response.transactions) && response.transactions.length
-
       if (hasResult) {
         context.commit('transactions', { transactions: response.transactions, updateTimestamps: true })
       }
-
       // Successful but empty response means, that the oldest transaction for the current
       // address has been received already
       if (response.success && !hasResult) {

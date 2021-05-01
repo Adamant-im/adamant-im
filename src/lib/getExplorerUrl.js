@@ -1,4 +1,5 @@
 import { Cryptos } from './constants'
+import { explorerUriToOnion } from '@/lib/uri'
 
 /**
  * Returns external transaction info explorer URL.
@@ -10,7 +11,7 @@ import { Cryptos } from './constants'
 export default function getExplorerUrl (crypto, transactionId) {
   switch (crypto) {
     case Cryptos.ADM:
-      return 'https://explorer.adamant.im/tx/' + transactionId
+      return explorerUriToOnion('https://explorer.adamant.im/tx/' + transactionId)
     case Cryptos.LSK:
       return 'https://explorer.lisk.io/tx/' + transactionId
     case Cryptos.ETH:

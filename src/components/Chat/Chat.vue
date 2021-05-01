@@ -65,6 +65,7 @@
           :status="getTransactionStatus(message, partnerId)"
           :is-clickable="isCryptoSupported(message.type)"
           @click:transaction="openTransaction(message)"
+          @click:transactionStatus="updateTransactionStatus(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
         >
           <crypto-icon
@@ -124,7 +125,7 @@ import partnerName from '@/mixins/partnerName'
 import dateFilter from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import FreeTokensDialog from '@/components/FreeTokensDialog'
-import { uriToOnion } from '@/lib/uri'
+import { websiteUriToOnion } from '@/lib/uri'
 
 /**
  * Returns user meta by userId.
@@ -158,12 +159,10 @@ function validateMessage (message) {
   }
 
   if (this.$store.state.balance < 0.001) {
-    if (Object.keys(this.$store.state.adm.transactions).length) {
-      this.$store.dispatch('snackbar/show', {
-        message: this.$t('chats.no_money')
-      })
-    } else {
+    if (this.$store.getters.isAccountNew()) {
       this.showFreeTokensDialog = true
+    } else {
+      this.$store.dispatch('snackbar/show', { message: this.$t('chats.no_money') })
     }
     return false
   }
@@ -283,6 +282,9 @@ export default {
           console.error(err.message)
         })
     },
+    updateTransactionStatus (message) {
+      this.$store.dispatch(message.type.toLowerCase() + '/updateTransaction', { hash: message.hash, force: true, updateOnly: false, dropStatus: true })
+    },
     markAsRead () {
       this.$store.commit('chat/markAsRead', this.partnerId)
     },
@@ -321,10 +323,8 @@ export default {
       }
     },
     isTransaction (type) {
-      // @todo remove LSK when will be supported
       return (
         type in Cryptos ||
-        type === 'LSK' ||
         type === 'UNKNOWN_CRYPTO'
       )
     },
@@ -333,7 +333,7 @@ export default {
     },
     formatMessage (transaction) {
       if (this.isChatReadOnly || transaction.i18n) {
-        return renderMarkdown(uriToOnion(this.$t(transaction.message)))
+        return renderMarkdown(websiteUriToOnion(this.$t(transaction.message)))
       }
 
       if (this.$store.state.options.formatMessages) {

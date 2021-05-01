@@ -111,7 +111,7 @@ function createActions (options) {
             context.commit('transactions', [{ hash, status: 'ERROR' }])
             throw error
           } else {
-            console.log(`${crypto} transaction has been sent`)
+            console.log(`${crypto} transaction has been sent: ${hash}`)
 
             context.commit('transactions', [{
               hash,
@@ -142,8 +142,8 @@ function createActions (options) {
       const existing = context.state.transactions[payload.hash]
       if (existing && !payload.force) return
 
-      // Set a stub so far, if the transaction is not in the store yet
-      if (!existing || existing.status === 'ERROR') {
+      if (!existing || payload.dropStatus) {
+        payload.updateOnly = false
         context.commit('transactions', [{
           hash: payload.hash,
           timestamp: payload.timestamp,
@@ -165,7 +165,6 @@ function createActions (options) {
         context.commit('transactions', [tx])
         // The transaction has been confirmed, we're done here
         if (tx.status === 'SUCCESS') return
-
         // If it's not confirmed but is already registered, keep on trying to fetch its details
         retryTimeout = fetchRetryTimeout
         retry = true
@@ -176,19 +175,21 @@ function createActions (options) {
         retry = true
       } else {
         // The network does not yet know this transaction. We'll make several attempts to retrieve it.
-        retry = attempt < tf.PENDING_ATTEMPTS
-        retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp))
+        retry = attempt < tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+        retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
       }
 
       if (!retry) {
         // If we're here, we have abandoned any hope to get the transaction details.
         context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-      } else {
+      } else if (!payload.updateOnly) {
         // Try to get the details one more time
         const newPayload = {
           ...payload,
           attempt: attempt + 1,
-          force: true
+          force: true,
+          updateOnly: false,
+          dropStatus: false
         }
         setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
       }
@@ -200,10 +201,7 @@ function createActions (options) {
      * @param {{hash: string}} payload action payload
      */
     updateTransaction ({ dispatch }, payload) {
-      return dispatch('getTransaction', {
-        hash: payload.hash,
-        force: true
-      })
+      return dispatch('getTransaction', { ...payload, force: payload.force, updateOnly: payload.updateOnly })
     },
 
     getNewTransactions (context) {

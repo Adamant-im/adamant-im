@@ -30,12 +30,9 @@ export default {
       transactions = transactions.transactions
     }
     let minHeight = Infinity
-    let maxHeight = 0
+    let maxHeight = -1
 
     const address = state.address
-
-    console.log('transactions adm to merge:', transactions.length)
-
     transactions.forEach(tx => {
       if (!tx) return
       Vue.set(state.transactions, tx.id, {
@@ -50,14 +47,17 @@ export default {
       }
     })
 
-    if (minHeight < state.minHeight) {
-      state.minHeight = minHeight
-      console.log('set minHeight:', minHeight)
+    // Magic here helps to refresh Tx list when browser deletes it
+    let txCount = Object.keys(state.transactions).length
+    if (state.transactionsCount < txCount) { // We don't delete transactions, so they can't become in short
+      state.transactionsCount = txCount
     }
 
+    if (minHeight < state.minHeight) {
+      state.minHeight = minHeight
+    }
     if (maxHeight > state.maxHeight) {
       state.maxHeight = maxHeight
-      console.log('set maxHeight:', maxHeight)
     }
   },
 

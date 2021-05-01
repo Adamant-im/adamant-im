@@ -109,7 +109,7 @@ function createActions (options) {
             context.commit('transactions', [{ hash, status: 'ERROR' }])
             throw error
           } else {
-            console.log(`${crypto} transaction has been sent`)
+            console.log(`${crypto} transaction has been sent: ${hash}`)
 
             context.commit('transactions', [{
               hash,
@@ -141,7 +141,9 @@ function createActions (options) {
       if (existing && !payload.force) return
 
       // Set a stub so far, if the transaction is not in the store yet
-      if (!existing || existing.status === 'ERROR') {
+      // if (!existing || existing.status === 'ERROR') {
+      if (!existing || payload.dropStatus) {
+        payload.updateOnly = false
         context.commit('transactions', [{
           hash: payload.hash,
           timestamp: payload.timestamp,
@@ -174,19 +176,21 @@ function createActions (options) {
         retry = true
       } else {
         // The network does not yet know this transaction. We'll make several attempts to retrieve it.
-        retry = attempt < tf.PENDING_ATTEMPTS
-        retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp))
+        retry = attempt < tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+        retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
       }
 
       if (!retry) {
         // If we're here, we have abandoned any hope to get the transaction details.
         context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-      } else {
+      } else if (!payload.updateOnly) {
         // Try to get the details one more time
         const newPayload = {
           ...payload,
           attempt: attempt + 1,
-          force: true
+          force: true,
+          updateOnly: false,
+          dropStatus: false
         }
         setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
       }
@@ -198,11 +202,7 @@ function createActions (options) {
      * @param {{hash: string}} payload action payload
      */
     updateTransaction ({ dispatch }, payload) {
-      console.log('lsk updateTransaction', payload)
-      return dispatch('getTransaction', {
-        hash: payload.hash,
-        force: true
-      })
+      return dispatch('getTransaction', { ...payload, force: payload.force, updateOnly: payload.updateOnly })
     },
 
     /**
@@ -212,8 +212,12 @@ function createActions (options) {
     async getNewTransactions (context) {
       if (!api) return
       const options = { }
-      // console.log('getNewTransactions')
-      // console.log('context.state.maxTimestamp before commit:', context.state.maxTimestamp)
+      // Magic here helps to refresh Tx list when browser deletes it
+      if (Object.keys(context.state.transactions).length < context.state.transactionsCount) {
+        context.state.transactionsCount = 0
+        context.state.maxTimestamp = -1
+        context.state.minTimestamp = Infinity
+      }
       if (context.state.maxTimestamp > 0) {
         options.fromTimestamp = context.state.maxTimestamp
         options.sort = 'timestamp:asc'
@@ -228,10 +232,8 @@ function createActions (options) {
           context.commit('areRecentLoading', false)
           if (transactions && transactions.length > 0) {
             context.commit('transactions', { transactions, updateTimestamps: true })
-            // console.log('context.state.maxTimestamp after commit:', context.state.maxTimestamp)
             // get new transactions until we fetch the newest one
             if (options.fromTimestamp && transactions.length === api.TX_CHUNK_SIZE) {
-              // console.log('once again..', api.TX_CHUNK_SIZE)
               this.dispatch(`${context.state.crypto.toLowerCase()}/getNewTransactions`)
             }
           }

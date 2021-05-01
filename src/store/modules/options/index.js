@@ -1,7 +1,7 @@
 import { Cryptos } from '@/lib/constants'
 
 const state = () => ({
-  stayLoggedIn: false, // if true, messages and passphase will be stored encrypted. If false, localStorage will be cleared after logout
+  stayLoggedIn: false, // if true, messages and passphrase will be stored encrypted. If false, localStorage will be cleared after logout
   sendMessageOnEnter: true,
   allowSoundNotifications: true,
   allowTabNotifications: true,
@@ -10,7 +10,8 @@ const state = () => ({
   formatMessages: true,
   useFullDate: false,
   currentWallet: Cryptos.ADM, // current Wallet Tab on Account view (this is not an option)
-  useSocketConnection: true
+  useSocketConnection: true,
+  suppressWarningOnAddressesNotification: false
 })
 
 const getters = {

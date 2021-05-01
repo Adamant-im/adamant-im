@@ -1,5 +1,6 @@
 <template>
   <v-app :dark="isDarkTheme" class="application--linear-gradient">
+    <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
     <component :is="layout">
       <router-view />
     </component>
@@ -8,7 +9,7 @@
 
 <script>
 import dayjs from 'dayjs'
-
+import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog'
 import Notifications from '@/lib/notifications'
 
 export default {
@@ -22,6 +23,12 @@ export default {
   beforeDestroy () {
     this.notifications.stop()
     this.$store.dispatch('stopInterval')
+  },
+  data: () => ({
+    showWarningOnAddressesDialog: false
+  }),
+  components: {
+    WarningOnAddressesDialog
   },
   computed: {
     layout () {
