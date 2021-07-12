@@ -28,7 +28,7 @@
     "b64-to-blob": "^1.2.19",
     "bignumber.js": "^9.0.1",
     "bip39": "^3.0.3",
-    "bitcoinjs-lib": "^4.0.2",
+    "bitcoinjs-lib": "^5.2.0",
     "bytebuffer": "^5.0.1",
     "coininfo": "^5.1.0",
     "core-js": "^3.8.3",

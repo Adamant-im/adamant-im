@@ -1,4 +1,4 @@
-import bitcoin from 'bitcoinjs-lib'
+import * as bitcoin from 'bitcoinjs-lib'
 import axios from 'axios'
 
 import networks from './networks'
