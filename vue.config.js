@@ -33,6 +33,7 @@ module.exports = {
             Terminal: false,
             Type: 'Application'
           },
+          /* eslint-disable no-template-curly-in-string */
           artifactName: 'ADAMANT-Messenger-${version}.${ext}',
           icon: './build/linux/',
           target: ['AppImage']
