@@ -172,7 +172,8 @@ export default class BtcBaseApi {
     // Remove курьи txs like "possibleDoubleSpend" and txs without info
     if (tx.possibleDoubleSpend || (!tx.hash && !tx.time && !tx.valueIn)) return
 
-    const senders = getUnique(tx.vin.map(x => x.addr)).filter(sender => sender !== undefined && sender !== 'undefined')
+    let addressField = tx.vin[0].address ? 'address' : 'addr';
+    const senders = getUnique(tx.vin.map(input => input[addressField])).filter(sender => sender !== undefined && sender !== 'undefined')
 
     const direction = senders.includes(this._address) ? 'from' : 'to'
 
