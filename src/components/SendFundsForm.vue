@@ -1,14 +1,15 @@
 <template>
   <div :class="className">
-    <warning-on-partner-address-dialog :info="warningOnPartnerInfo"
-      v-model="showWarningOnPartnerAddressDialog" />
+    <warning-on-partner-address-dialog
+      v-model="showWarningOnPartnerAddressDialog"
+      :info="warningOnPartnerInfo"
+    />
 
     <v-form
+      ref="form"
       v-model="validForm"
       @submit.prevent="confirm"
-      ref="form"
     >
-
       <v-select
         v-model="currency"
         class="a-input"
@@ -19,28 +20,46 @@
       <v-text-field
         v-model.trim="cryptoAddress"
         :disabled="addressReadonly"
-        @paste="onPasteURIAddress"
         class="a-input"
         type="text"
+        @paste="onPasteURIAddress"
       >
         <template slot="label">
-          <span v-if="recipientName && addressReadonly" class="font-weight-medium">
+          <span
+            v-if="recipientName && addressReadonly"
+            class="font-weight-medium"
+          >
             {{ $t('transfer.to_name_label', { name: recipientName }) }}
           </span>
-          <span v-else class="font-weight-medium">
+          <span
+            v-else
+            class="font-weight-medium"
+          >
             {{ $t('transfer.to_address_label') }}
           </span>
         </template>
-        <template slot="append" v-if="!addressReadonly">
-          <v-menu :offset-overflow="true" :offset-y="false" left>
-            <v-icon slot="activator">mdi-dots-vertical</v-icon>
+        <template
+          v-if="!addressReadonly"
+          slot="append"
+        >
+          <v-menu
+            :offset-overflow="true"
+            :offset-y="false"
+            left
+          >
+            <v-icon slot="activator">
+              mdi-dots-vertical
+            </v-icon>
             <v-list>
               <v-list-tile @click="showQrcodeScanner = true">
                 <v-list-tile-title>{{ $t('transfer.decode_from_camera') }}</v-list-tile-title>
               </v-list-tile>
               <v-list-tile class="v-list__tile--link">
                 <v-list-tile-title>
-                  <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
+                  <qrcode-capture
+                    @detect="onDetectQrcode"
+                    @error="onDetectQrcodeError"
+                  >
                     <span>{{ $t('transfer.decode_from_image') }}</span>
                   </qrcode-capture>
                 </v-list-tile-title>
@@ -65,13 +84,19 @@
           </span>
         </template>
         <template slot="append">
-          <v-menu :offset-overflow="true" :offset-y="false" left>
-            <v-icon slot="activator">mdi-dots-vertical</v-icon>
+          <v-menu
+            :offset-overflow="true"
+            :offset-y="false"
+            left
+          >
+            <v-icon slot="activator">
+              mdi-dots-vertical
+            </v-icon>
             <v-list>
               <v-list-tile
+                v-for="item in amountMenuItems"
                 :key="item.title"
                 @click="divideAmount(item.divider)"
-                v-for="item in amountMenuItems"
               >
                 <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
               </v-list-tile>
@@ -81,16 +106,16 @@
       </v-text-field>
 
       <v-text-field
-        :value="`${this.transferFeeFixed} ${this.transferFeeCurrency}`"
-        :label="`${this.transferFeeLabel}`"
+        :value="`${transferFeeFixed} ${transferFeeCurrency}`"
+        :label="`${transferFeeLabel}`"
         class="a-input"
         disabled
       />
       <v-text-field
-        :value="`${this.finalAmountFixed} ${this.currency}`"
+        v-if="!hideFinalAmount"
+        :value="`${finalAmountFixed} ${currency}`"
         :label="$t('transfer.final_amount_label')"
         class="a-input"
-        v-if="!this.hideFinalAmount"
         disabled
       />
 
@@ -98,29 +123,28 @@
         v-if="addressReadonly"
         v-model="comment"
         :label="$t('transfer.comments_label')"
-        @paste="onPasteURIComment"
         class="a-input"
         counter
         maxlength="100"
+        @paste="onPasteURIComment"
       />
 
       <v-checkbox
+        v-if="allowIncreaseFee"
+        v-model="increaseFee"
         :label="$t('transfer.increase_fee')"
         color="grey darken-1"
-        v-model="increaseFee"
-        v-if="allowIncreaseFee"
       />
 
       <div class="text-xs-center">
         <v-btn
           :class="`${className}__button`"
-          @click="confirm"
           class="a-btn-primary"
+          @click="confirm"
         >
           {{ $t('transfer.send_button') }}
         </v-btn>
       </div>
-
     </v-form>
 
     <v-dialog
@@ -128,14 +152,19 @@
       width="500"
     >
       <v-card>
-        <v-card-title class="a-text-header">{{ $t('transfer.confirm_title') }}</v-card-title>
+        <v-card-title class="a-text-header">
+          {{ $t('transfer.confirm_title') }}
+        </v-card-title>
 
-        <v-divider class="a-divider"></v-divider>
+        <v-divider class="a-divider" />
 
-        <v-card-text class="a-text-regular-enlarged" v-html="confirmMessage"/>
+        <v-card-text
+          class="a-text-regular-enlarged"
+          v-html="confirmMessage"
+        />
 
         <v-card-actions>
-          <v-spacer></v-spacer>
+          <v-spacer />
 
           <v-btn
             class="a-btn-regular"
@@ -148,8 +177,8 @@
           <v-btn
             class="a-btn-regular"
             flat
-            @click="submit"
             :disabled="disabledButton"
+            @click="submit"
           >
             <v-progress-circular
               v-show="showSpinner"
@@ -165,9 +194,9 @@
     </v-dialog>
 
     <qrcode-scanner-dialog
-      @scan="onScanQrcode"
       v-if="showQrcodeScanner"
       v-model="showQrcodeScanner"
+      @scan="onScanQrcode"
     />
   </div>
 </template>
@@ -177,11 +206,11 @@ import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
-import { INCREASE_FEE_MULTIPLIER } from '../lib/constants'
+import { INCREASE_FEE_MULTIPLIER, Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount, isSelfTxAllowed } from '../lib/constants'
 
 import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
-import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount, isSelfTxAllowed } from '@/lib/constants'
+
 import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
@@ -208,25 +237,72 @@ function validateForm () {
 }
 
 export default {
-  mixins: [partnerName],
   components: {
     QrcodeCapture,
     QrcodeScannerDialog,
     WarningOnPartnerAddressDialog
   },
-  created () {
-    this.currency = this.cryptoCurrency
-    this.address = this.recipientAddress
-    this.amount = this.amountToSend
-
-    // create watcher after setting default from props
-    this.$watch('currency', () => {
-      this.$refs.form.validate()
-    })
+  filters: {
+    /**
+     * @param {BigNumber} bigNumber
+     */
+    toFixed: bigNumber => bigNumber.toFixed()
   },
-  mounted () {
-    this.fetchUserCryptoAddress()
+  mixins: [partnerName],
+  props: {
+    cryptoCurrency: {
+      type: String,
+      default: 'ADM',
+      validator: value => value in Cryptos
+    },
+    recipientAddress: {
+      type: String,
+      default: ''
+    },
+    amountToSend: {
+      type: Number,
+      default: 0
+    },
+    addressReadonly: {
+      type: Boolean,
+      default: false
+    }
   },
+  data: () => ({
+    currency: '',
+    address: '',
+    cryptoAddress: '',
+    amountString: '',
+    amount: 0,
+    amountMenuItems: [
+      {
+        divider: 10,
+        title: 'transfer.amount_percent_10'
+      },
+      {
+        divider: 3,
+        title: 'transfer.amount_percent_33'
+      },
+      {
+        divider: 2,
+        title: 'transfer.amount_percent_50'
+      },
+      {
+        divider: 1,
+        title: 'transfer.amount_percent_100'
+      }
+    ],
+    comment: '',
+    validForm: true,
+    disabledButton: false,
+    showQrcodeScanner: false,
+    showSpinner: false,
+    dialog: false,
+    fetchAddress: null, // fn throttle
+    increaseFee: false,
+    showWarningOnPartnerAddressDialog: false,
+    warningOnPartnerInfo: { }
+  }),
   computed: {
     className: () => 'send-funds-form',
 
@@ -396,41 +472,19 @@ export default {
       }
     }
   },
-  data: () => ({
-    currency: '',
-    address: '',
-    cryptoAddress: '',
-    amountString: '',
-    amount: 0,
-    amountMenuItems: [
-      {
-        divider: 10,
-        title: 'transfer.amount_percent_10'
-      },
-      {
-        divider: 3,
-        title: 'transfer.amount_percent_33'
-      },
-      {
-        divider: 2,
-        title: 'transfer.amount_percent_50'
-      },
-      {
-        divider: 1,
-        title: 'transfer.amount_percent_100'
-      }
-    ],
-    comment: '',
-    validForm: true,
-    disabledButton: false,
-    showQrcodeScanner: false,
-    showSpinner: false,
-    dialog: false,
-    fetchAddress: null, // fn throttle
-    increaseFee: false,
-    showWarningOnPartnerAddressDialog: false,
-    warningOnPartnerInfo: { }
-  }),
+  created () {
+    this.currency = this.cryptoCurrency
+    this.address = this.recipientAddress
+    this.amount = this.amountToSend
+
+    // create watcher after setting default from props
+    this.$watch('currency', () => {
+      this.$refs.form.validate()
+    })
+  },
+  mounted () {
+    this.fetchUserCryptoAddress()
+  },
   methods: {
     confirm () {
       const abstract = validateForm.call(this)
@@ -625,7 +679,7 @@ export default {
         }).then(addresses => {
           this.cryptoAddress = addresses[0]
           if (addresses.length > 1) {
-            let addressesList = addresses.join(', ')
+            const addressesList = addresses.join(', ')
             this.warningOnPartnerInfo.coin = this.currency
             this.warningOnPartnerInfo.ADMaddress = this.address
             this.warningOnPartnerInfo.ADMname = ''
@@ -645,38 +699,13 @@ export default {
     validateNaturalUnits (amount, currency) {
       const units = CryptoNaturalUnits[currency]
 
-      const [ , right = '' ] = BigNumber(amount).toFixed().split('.')
+      const [, right = ''] = BigNumber(amount).toFixed().split('.')
 
       return right.length <= units
     },
     calculateTransferFee (amount) {
       const coef = this.increaseFee ? INCREASE_FEE_MULTIPLIER : 1
       return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount)
-    }
-  },
-  filters: {
-    /**
-     * @param {BigNumber} bigNumber
-     */
-    toFixed: bigNumber => bigNumber.toFixed()
-  },
-  props: {
-    cryptoCurrency: {
-      type: String,
-      default: 'ADM',
-      validator: value => value in Cryptos
-    },
-    recipientAddress: {
-      type: String,
-      default: ''
-    },
-    amountToSend: {
-      type: Number,
-      default: 0
-    },
-    addressReadonly: {
-      type: Boolean,
-      default: false
     }
   }
 }

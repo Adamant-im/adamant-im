@@ -7,10 +7,10 @@ import NoContainer from '@/layouts/no-container'
 import Container from '@/components/Container'
 
 // Register layouts globally
-Vue.component('default', Default)
-Vue.component('toolbar', Toolbar)
-Vue.component('chat', Chat)
-Vue.component('no-container', NoContainer)
+Vue.component('Default', Default)
+Vue.component('Toolbar', Toolbar)
+Vue.component('Chat', Chat)
+Vue.component('NoContainer', NoContainer)
 
 // Register components
-Vue.component('container', Container)
+Vue.component('Container', Container)

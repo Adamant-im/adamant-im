@@ -4,12 +4,14 @@
     width="500"
   >
     <v-card>
-      <v-card-title class="headline">{{ title }}</v-card-title>
+      <v-card-title class="headline">
+        {{ title }}
+      </v-card-title>
 
       <v-card-text>{{ text }}</v-card-text>
 
       <v-card-actions>
-        <v-spacer></v-spacer>
+        <v-spacer />
 
         <v-btn
           flat="flat"
@@ -24,16 +26,6 @@
 
 <script>
 export default {
-  computed: {
-    show: {
-      get () {
-        return this.value
-      },
-      set (value) {
-        this.$emit('input', value)
-      }
-    }
-  },
   props: {
     value: {
       type: Boolean,
@@ -46,6 +38,16 @@ export default {
     text: {
       type: String,
       default: ''
+    }
+  },
+  computed: {
+    show: {
+      get () {
+        return this.value
+      },
+      set (value) {
+        this.$emit('input', value)
+      }
     }
   }
 }

@@ -39,7 +39,7 @@ export function flushCryptoAddresses () {
  */
 export function parseCryptoAddressesKVStxs (txs) {
   if (!txs || !txs.length || !txs[0].asset || !txs[0].asset.state || !txs[0].asset) return null
-  let addresses = { }
+  const addresses = { }
   // validateInfo.storedAddresses = [...new Set(txs.map(tx => tx.asset.state.value))]
   addresses.storedAddresses = uniqueCaseInsensitiveArray(txs.map(tx => tx.asset.state.value))
   addresses.addressesCount = addresses.storedAddresses.length
@@ -60,13 +60,13 @@ export function validateStoredCryptoAddresses () {
 
   Object.keys(Cryptos).forEach(crypto => {
     if (skip(crypto)) return
-    let address = store.state[crypto.toLowerCase()].address
+    const address = store.state[crypto.toLowerCase()].address
     if (address) {
       if (!store.state.adm.validatedCryptos[crypto]) {
         const key = `${crypto.toLowerCase()}:address`
         admApi.getStored(key, store.state.address, 20).then(txs => {
           if (txs.length > 0) {
-            let validateInfo = parseCryptoAddressesKVStxs(txs)
+            const validateInfo = parseCryptoAddressesKVStxs(txs)
             validateInfo.isMainAddressValid = validateInfo.mainAddress.toLowerCase() === address.toLowerCase()
             store.state.adm.validatedCryptos[crypto] = validateInfo
           }
@@ -76,7 +76,7 @@ export function validateStoredCryptoAddresses () {
   })
 
   let isAllValidated = true
-  let validateSummary = { }
+  const validateSummary = { }
   validateSummary.isAllRight = true
   validateSummary.wrongCoins = []
   validateSummary.manyAddressesCoins = []
@@ -107,7 +107,7 @@ export function validateStoredCryptoAddresses () {
   }
 
   if (isAllValidated) {
-    store.state.adm.validatedCryptos['summary'] = validateSummary
+    store.state.adm.validatedCryptos.summary = validateSummary
     store.state.adm.addressesValidated = true
     if (!store.state.options.suppressWarningOnAddressesNotification) {
       vueBus.$emit('warningOnAddressDialog', validateSummary)

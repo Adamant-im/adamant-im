@@ -96,7 +96,7 @@ export class BatchQueue {
     if (typeof supplier !== 'function') return
     if (this._queue.some(x => x.key === key)) return
 
-    let requests = supplier()
+    const requests = supplier()
     this._queue.push({ key, requests: Array.isArray(requests) ? requests : [requests] })
   }
 

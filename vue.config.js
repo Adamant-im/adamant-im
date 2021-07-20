@@ -13,8 +13,8 @@ module.exports = {
           '!**/{report.html,robots.txt,.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,__pycache__,thumbs.db,.gitignore,.gitattributes,.editorconfig,.flowconfig,.yarn-metadata.json,.idea,appveyor.yml,.travis.yml,circle.yml,npm-debug.log,.nyc_output,yarn.lock,.yarn-integrity}'
         ],
         protocols: {
-          'name': 'ADAMANT Messenger',
-          'schemes': ['adm']
+          name: 'ADAMANT Messenger',
+          schemes: ['adm']
         },
         win: {
           icon: './build/win/icon.ico'

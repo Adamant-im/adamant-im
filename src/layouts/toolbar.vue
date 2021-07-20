@@ -1,10 +1,13 @@
 <template>
   <v-content>
-    <v-container fluid :class="{ 'pa-0': containerNoPadding }">
-      <slot/>
+    <v-container
+      fluid
+      :class="{ 'pa-0': containerNoPadding }"
+    >
+      <slot />
     </v-container>
-    <app-snackbar/>
-    <app-navigation v-if="showNavigation"/>
+    <app-snackbar />
+    <app-navigation v-if="showNavigation" />
   </v-content>
 </template>
 
@@ -13,6 +16,10 @@ import AppSnackbar from '@/components/AppSnackbar'
 import AppNavigation from '@/components/AppNavigation'
 
 export default {
+  components: {
+    AppSnackbar,
+    AppNavigation
+  },
   computed: {
     containerNoPadding () {
       return this.$route.meta.containerNoPadding
@@ -20,10 +27,6 @@ export default {
     showNavigation () {
       return this.$route.meta.showNavigation || false
     }
-  },
-  components: {
-    AppSnackbar,
-    AppNavigation
   }
 }
 </script>

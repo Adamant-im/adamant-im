@@ -1,10 +1,13 @@
 <template>
   <v-content>
-    <v-container fluid fill-height>
-      <slot/>
+    <v-container
+      fluid
+      fill-height
+    >
+      <slot />
     </v-container>
 
-    <app-snackbar/>
+    <app-snackbar />
   </v-content>
 </template>
 

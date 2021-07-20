@@ -1,14 +1,34 @@
 <template>
-  <img :src="dataUrl" alt="" />
+  <img
+    :src="dataUrl"
+    alt=""
+  >
 </template>
 
 <script>
 import QRCode from 'qrcode'
 
 export default {
+  props: {
+    logo: {
+      type: String
+    },
+    opts: {
+      type: Object
+    },
+    text: {
+      required: true,
+      type: String
+    }
+  },
   data: () => ({
     dataUrl: ''
   }),
+  watch: {
+    text () {
+      this.render()
+    }
+  },
   mounted () {
     this.render()
   },
@@ -35,23 +55,6 @@ export default {
           }).catch(error => console.error(error))
         }
       }
-    }
-  },
-  props: {
-    logo: {
-      type: String
-    },
-    opts: {
-      type: Object
-    },
-    text: {
-      required: true,
-      type: String
-    }
-  },
-  watch: {
-    text () {
-      this.render()
     }
   }
 }

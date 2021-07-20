@@ -7,17 +7,23 @@
       class="a-chat__message"
     >
       <div class="a-chat__message-card">
-
         <div class="a-chat__message-card-header">
-          <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
+          <div
+            :title="timeTitle"
+            class="a-chat__timestamp"
+          >
+            {{ time }}
+          </div>
           <div class="a-chat__status">
             <v-icon
-              @click="updateStatus"
               size="13"
               :title="i18n.statuses[status]"
               :color="statusColor"
               :style="statusUpdatable ? 'cursor: pointer;': 'cursor: default;'"
-            >{{ statusIcon }}</v-icon>
+              @click="updateStatus"
+            >
+              {{ statusIcon }}
+            </v-icon>
           </div>
         </div>
 
@@ -26,12 +32,12 @@
             {{ sender.id === userId ? i18n.sent : i18n.received }}
           </div>
           <div
-            @click="onClickAmount"
             class="a-chat__amount"
             :class="isClickable ? 'a-chat__amount--clickable': ''"
+            @click="onClickAmount"
           >
             <v-layout align-center>
-              <slot name="crypto"></slot>
+              <slot name="crypto" />
               <span class="ml-2">{{ amount }}</span>
             </v-layout>
           </div>
@@ -42,7 +48,6 @@
             {{ message }}
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -52,32 +57,6 @@
 import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
 
 export default {
-  mounted () {
-    this.$emit('mount')
-  },
-  computed: {
-    statusIcon () {
-      return tsIcon(this.status)
-    },
-    statusUpdatable () {
-      return tsUpdatable(this.status, this.currency)
-    },
-    statusColor () {
-      return tsColor(this.status)
-    }
-  },
-  methods: {
-    onClickAmount () {
-      if (this.isClickable) {
-        this.$emit('click:transaction', this.id)
-      }
-    },
-    updateStatus () {
-      if (this.statusUpdatable) {
-        this.$emit('click:transactionStatus', this.id)
-      }
-    }
-  },
   props: {
     id: {
       type: null,
@@ -138,6 +117,32 @@ export default {
     isClickable: {
       type: Boolean,
       default: false
+    }
+  },
+  computed: {
+    statusIcon () {
+      return tsIcon(this.status)
+    },
+    statusUpdatable () {
+      return tsUpdatable(this.status, this.currency)
+    },
+    statusColor () {
+      return tsColor(this.status)
+    }
+  },
+  mounted () {
+    this.$emit('mount')
+  },
+  methods: {
+    onClickAmount () {
+      if (this.isClickable) {
+        this.$emit('click:transaction', this.id)
+      }
+    },
+    updateStatus () {
+      if (this.statusUpdatable) {
+        this.$emit('click:transactionStatus', this.id)
+      }
     }
   }
 }

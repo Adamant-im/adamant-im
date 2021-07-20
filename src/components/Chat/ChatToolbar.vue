@@ -1,25 +1,38 @@
 <template>
-  <v-toolbar flat height="56" :class="`${className}`">
-    <v-btn @click="goBack" icon>
+  <v-toolbar
+    flat
+    height="56"
+    :class="`${className}`"
+  >
+    <v-btn
+      icon
+      @click="goBack"
+    >
       <v-icon>mdi-arrow-left</v-icon>
     </v-btn>
     <div v-if="!isChatReadOnly">
-      <slot name="avatar-toolbar"></slot>
+      <slot name="avatar-toolbar" />
     </div>
     <div :class="`${className}__textfield-container`">
-      <div v-if="isChatReadOnly" class="title" :style="{ paddingLeft: '12px' }">{{ $t(partnerId) }}</div>
+      <div
+        v-if="isChatReadOnly"
+        class="title"
+        :style="{ paddingLeft: '12px' }"
+      >
+        {{ $t(partnerId) }}
+      </div>
       <div v-else>
         <v-text-field
+          v-model="partnerName"
           box
           full-width
           background-color="transparent"
-          v-model="partnerName"
           :label="partnerId"
-        ></v-text-field>
+        />
       </div>
     </div>
 
-    <v-spacer></v-spacer>
+    <v-spacer />
   </v-toolbar>
 </template>
 
@@ -28,7 +41,16 @@ import ChatAvatar from '@/components/Chat/ChatAvatar'
 import partnerName from '@/mixins/partnerName'
 
 export default {
+  components: {
+    ChatAvatar
+  },
   mixins: [partnerName],
+  props: {
+    partnerId: {
+      type: String,
+      required: true
+    }
+  },
   computed: {
     className: () => 'chat-toolbar',
     partnerName: {
@@ -52,15 +74,6 @@ export default {
     },
     showPartnerInfo () {
       this.$emit('partner-info', true)
-    }
-  },
-  components: {
-    ChatAvatar
-  },
-  props: {
-    partnerId: {
-      type: String,
-      required: true
     }
   }
 }

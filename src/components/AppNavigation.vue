@@ -8,32 +8,51 @@
   >
     <v-layout justify-center>
       <container class="app-navigation__container">
-
         <v-layout justify-center>
           <!-- Wallet -->
-          <v-btn to="/home" flat>
+          <v-btn
+            to="/home"
+            flat
+          >
             <span>{{ $t('bottom.wallet_button') }}</span>
-            <v-icon size="20">mdi-wallet</v-icon>
+            <v-icon size="20">
+              mdi-wallet
+            </v-icon>
           </v-btn>
 
           <!-- Chat -->
-          <v-btn to="/chats" flat>
+          <v-btn
+            to="/chats"
+            flat
+          >
             <span>{{ $t('bottom.chats_button') }}</span>
-            <v-badge overlap color="primary">
-              <span v-if="numOfNewMessages > 0" slot="badge">
+            <v-badge
+              overlap
+              color="primary"
+            >
+              <span
+                v-if="numOfNewMessages > 0"
+                slot="badge"
+              >
                 {{ numOfNewMessages > 99 ? '99+' : numOfNewMessages }}
               </span>
-              <v-icon size="20">mdi-forum</v-icon>
+              <v-icon size="20">
+                mdi-forum
+              </v-icon>
             </v-badge>
           </v-btn>
 
           <!-- Settings -->
-          <v-btn to="/options" flat>
+          <v-btn
+            to="/options"
+            flat
+          >
             <span>{{ $t('bottom.settings_button') }}</span>
-            <v-icon size="20">mdi-cog</v-icon>
+            <v-icon size="20">
+              mdi-cog
+            </v-icon>
           </v-btn>
         </v-layout>
-
       </container>
     </v-layout>
   </v-bottom-nav>
@@ -41,19 +60,6 @@
 
 <script>
 export default {
-  mounted () {
-    this.currentPageIndex = this.getCurrentPageIndex()
-  },
-  watch: {
-    '$route.path' () {
-      this.currentPageIndex = this.getCurrentPageIndex()
-    }
-  },
-  computed: {
-    numOfNewMessages () {
-      return this.$store.getters['chat/totalNumOfNewMessages']
-    }
-  },
   data: () => ({
     pages: [
       {
@@ -75,6 +81,19 @@ export default {
     currentPageIndex: 0,
     showNav: true
   }),
+  computed: {
+    numOfNewMessages () {
+      return this.$store.getters['chat/totalNumOfNewMessages']
+    }
+  },
+  watch: {
+    '$route.path' () {
+      this.currentPageIndex = this.getCurrentPageIndex()
+    }
+  },
+  mounted () {
+    this.currentPageIndex = this.getCurrentPageIndex()
+  },
   methods: {
     getCurrentPageIndex () {
       const currentPage = this.pages.find(page => {

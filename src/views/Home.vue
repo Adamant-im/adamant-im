@@ -1,29 +1,38 @@
 <template>
-  <v-layout row wrap justify-center :class="className">
-
+  <v-layout
+    row
+    wrap
+    justify-center
+    :class="className"
+  >
     <container>
-
-      <v-card flat class="transparent white--text" :class="`${className}__card`">
-
+      <v-card
+        flat
+        class="transparent white--text"
+        :class="`${className}__card`"
+      >
         <!-- Wallets -->
-        <v-card :class="`${className}__wallets`" flat>
+        <v-card
+          :class="`${className}__wallets`"
+          flat
+        >
           <v-tabs
+            ref="vtabs"
             v-model="currentWallet"
             grow
-            ref="vtabs"
             show-arrows
           >
             <v-tab
               v-for="wallet in wallets"
-              :href="`#${wallet.cryptoCurrency}`"
               :key="wallet.cryptoCurrency"
+              :href="`#${wallet.cryptoCurrency}`"
               @wheel="onWheel"
             >
               <div>
                 <crypto-icon
+                  slot="icon"
                   :crypto="wallet.cryptoCurrency"
                   size="medium"
-                  slot="icon"
                   :class="`${className}__icon`"
                 />
                 <div>{{ wallet.balance | numberFormat(4) }}</div>
@@ -33,8 +42,8 @@
 
             <v-tab-item
               v-for="wallet in wallets"
-              :value="wallet.cryptoCurrency"
               :key="wallet.cryptoCurrency"
+              :value="wallet.cryptoCurrency"
             >
               <wallet-card
                 :address="wallet.address"
@@ -44,19 +53,16 @@
                 @click:balance="goToTransactions"
               >
                 <crypto-icon
+                  slot="icon"
                   :crypto="wallet.cryptoCurrency"
                   size="large"
-                  slot="icon"
                 />
               </wallet-card>
             </v-tab-item>
           </v-tabs>
         </v-card>
-
       </v-card>
-
     </container>
-
   </v-layout>
 </template>
 
@@ -90,8 +96,9 @@ function scrollIntoView () {
 }
 
 export default {
-  mounted () {
-    this.$refs.vtabs.scrollIntoView = scrollIntoView
+  components: {
+    WalletCard,
+    CryptoIcon
   },
   computed: {
     className: () => 'account-view',
@@ -122,6 +129,9 @@ export default {
       }
     }
   },
+  mounted () {
+    this.$refs.vtabs.scrollIntoView = scrollIntoView
+  },
   methods: {
     goToTransactions (crypto) {
       this.$router.push({
@@ -140,10 +150,6 @@ export default {
 
       if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
     }
-  },
-  components: {
-    WalletCard,
-    CryptoIcon
   }
 }
 </script>

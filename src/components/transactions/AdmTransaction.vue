@@ -1,16 +1,16 @@
 <template>
   <transaction-template
+    :id="transaction.id || '' "
     :amount="transaction.amount | currency"
     :timestamp="transaction.timestamp || NaN"
-    :id="transaction.id || '' "
     :fee="transaction.fee | currency"
     :confirmations="transaction.confirmations || NaN"
     :sender="sender || '' "
     :recipient="recipient || '' "
-    :explorerLink="explorerLink"
+    :explorer-link="explorerLink"
     :partner="transaction.partner || '' "
     :status="status || '' "
-    :admTx="admTx"
+    :adm-tx="admTx"
     :crypto="crypto"
   />
 </template>
@@ -22,8 +22,11 @@ import { Cryptos } from '../../lib/constants'
 import partnerName from '@/mixins/partnerName'
 
 export default {
+  name: 'AdmTransaction',
+  components: {
+    TransactionTemplate
+  },
   mixins: [partnerName],
-  name: 'adm-transaction',
   props: {
     id: {
       required: true,
@@ -33,9 +36,6 @@ export default {
       required: true,
       type: String
     }
-  },
-  components: {
-    TransactionTemplate
   },
   computed: {
     transaction () {

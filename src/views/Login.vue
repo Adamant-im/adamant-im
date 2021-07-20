@@ -1,44 +1,74 @@
 <template>
-  <v-layout row fill-height justify-center :class="className">
-
+  <v-layout
+    row
+    fill-height
+    justify-center
+    :class="className"
+  >
     <container>
-
       <div class="text-xs-right">
         <language-switcher>
-          <v-icon slot="prepend" size="18">mdi-chevron-right</v-icon>
+          <v-icon
+            slot="prepend"
+            size="18"
+          >
+            mdi-chevron-right
+          </v-icon>
         </language-switcher>
       </div>
 
-      <v-card flat color="transparent" class="text-xs-center mt-3">
-        <logo style="width: 300px;"/>
+      <v-card
+        flat
+        color="transparent"
+        class="text-xs-center mt-3"
+      >
+        <logo style="width: 300px;" />
 
-        <h1 :class="`${className}__title`">{{ $t('login.brand_title') }}</h1>
-        <h2 :class="`${className}__subtitle`" class="hidden-sm-and-down mt-3">{{ $t('login.subheader') }}</h2>
+        <h1 :class="`${className}__title`">
+          {{ $t('login.brand_title') }}
+        </h1>
+        <h2
+          :class="`${className}__subtitle`"
+          class="hidden-sm-and-down mt-3"
+        >
+          {{ $t('login.subheader') }}
+        </h2>
       </v-card>
 
-      <v-card v-if="!isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
+      <v-card
+        v-if="!isLoginViaPassword"
+        flat
+        color="transparent"
+        class="text-xs-center mt-3"
+      >
         <v-layout justify-center>
-          <v-flex xs12 sm8 md8 lg8>
-
+          <v-flex
+            xs12
+            sm8
+            md8
+            lg8
+          >
             <login-form
               ref="loginForm"
               v-model="passphrase"
               @login="onLogin"
               @error="onLoginError"
             />
-
           </v-flex>
         </v-layout>
 
-        <v-layout justify-center class="mt-2">
+        <v-layout
+          justify-center
+          class="mt-2"
+        >
           <v-btn
-            @click="showQrcodeScanner = true"
             :title="$t('login.scan_qr_code_button_tooltip')"
             icon
             flat
             :class="`${className}__icon`"
+            @click="showQrcodeScanner = true"
           >
-            <icon><qr-code-scan-icon/></icon>
+            <icon><qr-code-scan-icon /></icon>
           </v-btn>
 
           <qrcode-capture
@@ -51,32 +81,47 @@
               flat
               :class="`${className}__icon`"
             >
-              <icon><file-icon/></icon>
+              <icon><file-icon /></icon>
             </v-btn>
           </qrcode-capture>
         </v-layout>
       </v-card>
 
-      <v-layout v-if="!isLoginViaPassword" justify-center class="mt-5">
-        <v-flex xs12 sm8 md8 lg8>
-
+      <v-layout
+        v-if="!isLoginViaPassword"
+        justify-center
+        class="mt-5"
+      >
+        <v-flex
+          xs12
+          sm8
+          md8
+          lg8
+        >
           <passphrase-generator
             @copy="onCopyPassphrase"
           />
-
         </v-flex>
       </v-layout>
 
-      <v-card v-if="isLoginViaPassword" flat color="transparent" class="text-xs-center mt-3">
+      <v-card
+        v-if="isLoginViaPassword"
+        flat
+        color="transparent"
+        class="text-xs-center mt-3"
+      >
         <v-layout justify-center>
-          <v-flex xs12 sm8 md8 lg8>
-
+          <v-flex
+            xs12
+            sm8
+            md8
+            lg8
+          >
             <login-password-form
               v-model="password"
               @login="onLogin"
               @error="onLoginError"
             />
-
           </v-flex>
         </v-layout>
       </v-card>
@@ -86,9 +131,7 @@
         v-model="showQrcodeScanner"
         @scan="onScanQrcode"
       />
-
     </container>
-
   </v-layout>
 </template>
 
@@ -106,6 +149,24 @@ import Logo from '@/components/icons/common/Logo'
 import { navigateByURI } from '@/router/navigationGuard'
 
 export default {
+  components: {
+    LanguageSwitcher,
+    PassphraseGenerator,
+    LoginForm,
+    QrcodeScannerDialog,
+    QrcodeCapture,
+    Icon,
+    QrCodeScanIcon,
+    FileIcon,
+    LoginPasswordForm,
+    Logo
+  },
+  data: () => ({
+    passphrase: '',
+    password: '',
+    showQrcodeScanner: false,
+    logo: '/img/adamant-logo-transparent-512x512.png'
+  }),
   computed: {
     className () {
       return 'login-page'
@@ -114,12 +175,6 @@ export default {
       return this.$store.getters['options/isLoginViaPassword']
     }
   },
-  data: () => ({
-    passphrase: '',
-    password: '',
-    showQrcodeScanner: false,
-    logo: '/img/adamant-logo-transparent-512x512.png'
-  }),
   methods: {
     onDetectQrcode (passphrase) {
       this.onScanQrcode(passphrase)
@@ -157,18 +212,6 @@ export default {
       this.passphrase = passphrase
       this.$nextTick(() => this.$refs.loginForm.submit())
     }
-  },
-  components: {
-    LanguageSwitcher,
-    PassphraseGenerator,
-    LoginForm,
-    QrcodeScannerDialog,
-    QrcodeCapture,
-    Icon,
-    QrCodeScanIcon,
-    FileIcon,
-    LoginPasswordForm,
-    Logo
   }
 }
 </script>

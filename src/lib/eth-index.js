@@ -48,7 +48,7 @@ export function getTransactions (options) {
     )
   } else {
     filters.push(
-      `contract_to.eq.`,
+      'contract_to.eq.',
       `or(txfrom.eq.${address},txto.eq.${address})`
     )
   }

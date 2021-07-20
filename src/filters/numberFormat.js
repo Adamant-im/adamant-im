@@ -6,6 +6,6 @@
  * @returns {string}
  */
 export default (amount, precision = 8) => {
-  let [whole, fraction] = Number(amount).toFixed(precision).replace(/0+$/, '').split('.')
+  const [whole, fraction] = Number(amount).toFixed(precision).replace(/0+$/, '').split('.')
   return fraction ? `${whole}.${fraction}` : `${whole}`
 }

@@ -172,7 +172,7 @@ export default class BtcBaseApi {
     // Remove курьи txs like "possibleDoubleSpend" and txs without info
     if (tx.possibleDoubleSpend || (!tx.hash && !tx.time && !tx.valueIn)) return
 
-    let addressField = tx.vin[0].address ? 'address' : 'addr'
+    const addressField = tx.vin[0].address ? 'address' : 'addr'
     const senders = getUnique(tx.vin.map(input => input[addressField])).filter(sender => sender !== undefined && sender !== 'undefined')
 
     const direction = senders.includes(this._address) ? 'from' : 'to'
@@ -201,7 +201,7 @@ export default class BtcBaseApi {
     // Calculate amount from outputs:
     // * for the outgoing transactions take outputs that DO NOT target us
     // * for the incoming transactions take outputs that DO target us
-    let amount = tx.vout.reduce((sum, t) =>
+    const amount = tx.vout.reduce((sum, t) =>
       ((direction === 'to') === (t.scriptPubKey.addresses.includes(this._address)) ? sum + Number(t.value) : sum), 0)
 
     const confirmations = tx.confirmations
@@ -214,7 +214,7 @@ export default class BtcBaseApi {
       fee = totalIn - totalOut
     }
 
-    let height = tx.height
+    const height = tx.height
 
     return {
       id: tx.txid,

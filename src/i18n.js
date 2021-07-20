@@ -25,7 +25,7 @@ export default new VueI18n({
      * @param choicesLength {number} an overall amount of available choices
      * @returns a final choice index to select plural word by
      */
-    'ru': function (choice, choicesLength) {
+    ru: function (choice, choicesLength) {
       // this === VueI18n instance, so the locale property also exists here
       if (choice === 0) {
         return 0

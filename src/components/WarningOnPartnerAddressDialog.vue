@@ -10,22 +10,31 @@
         {{ header() }}
       </v-card-title>
 
-      <v-divider class="a-divider"></v-divider>
+      <v-divider class="a-divider" />
 
       <v-card-text>
-        <div :class="`${className}__disclaimer a-text-regular-enlarged`" v-html="content()">
-        </div>
+        <div
+          :class="`${className}__disclaimer a-text-regular-enlarged`"
+          v-html="content()"
+        />
       </v-card-text>
 
-      <v-flex xs12 class="text-xs-center">
-        <v-btn :class="[`${className}__btn-hide`, 'a-btn-primary']"
+      <v-flex
+        xs12
+        class="text-xs-center"
+      >
+        <v-btn
+          :class="[`${className}__btn-hide`, 'a-btn-primary']"
           @click="hide()"
         >
-          <v-icon :class="`${className}__btn-icon`">mdi-alert</v-icon>
-          <div :class="`${className}__btn-text`">{{ $t('transfer.warning_on_partner_address.hide_button') }}</div>
+          <v-icon :class="`${className}__btn-icon`">
+            mdi-alert
+          </v-icon>
+          <div :class="`${className}__btn-text`">
+            {{ $t('transfer.warning_on_partner_address.hide_button') }}
+          </div>
         </v-btn>
       </v-flex>
-
     </v-card>
   </v-dialog>
 </template>
@@ -34,6 +43,16 @@
 import DOMPurify from 'dompurify'
 
 export default {
+  props: {
+    value: {
+      type: Boolean,
+      required: true
+    },
+    info: {
+      type: Object,
+      required: true
+    }
+  },
   computed: {
     className: () => 'warning-on-partner-address-dialog',
     show: {
@@ -65,16 +84,6 @@ export default {
       if (this.show) {
         this.hide()
       }
-    }
-  },
-  props: {
-    value: {
-      type: Boolean,
-      required: true
-    },
-    info: {
-      type: Object,
-      required: true
     }
   }
 }

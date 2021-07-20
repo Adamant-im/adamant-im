@@ -300,7 +300,7 @@ const mutations = {
    * @param {string} userId Your address
    */
   pushMessage (state, { message, userId }) {
-    let partnerId = message.senderId === userId
+    const partnerId = message.senderId === userId
       ? message.recipientId
       : message.senderId
 

@@ -38,11 +38,11 @@ export const isYesterday = someDate => {
  * @returns {boolean}
  */
 export const isCurrentWeek = someDate => {
-  let today = new Date()
+  const today = new Date()
 
   for (let i = 1; i <= 7; i++) {
-    let first = today.getDate() - today.getDay() + i
-    let day = new Date(today.setDate(first))
+    const first = today.getDate() - today.getDay() + i
+    const day = new Date(today.setDate(first))
 
     if (
       someDate.getDate() === day.getDate() &&

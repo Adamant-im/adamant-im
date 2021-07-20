@@ -3,27 +3,40 @@
     :class="[classes, className]"
     fluid
   >
-    <v-layout row wrap justify-center>
-
+    <v-layout
+      row
+      wrap
+      justify-center
+    >
       <container>
-
         <v-toolbar
+          ref="toolbar"
           :flat="flat"
           :height="height"
-          ref="toolbar"
         >
-          <v-btn v-if="showBack" @click="goBack" icon small>
+          <v-btn
+            v-if="showBack"
+            icon
+            small
+            @click="goBack"
+          >
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
 
-          <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
+          <v-toolbar-title
+            v-if="title"
+            class="a-text-regular-enlarged"
+          >
             <div>{{ title }}</div>
-            <div v-if="subtitle" class="body-1">{{ subtitle }}</div>
+            <div
+              v-if="subtitle"
+              class="body-1"
+            >
+              {{ subtitle }}
+            </div>
           </v-toolbar-title>
         </v-toolbar>
-
       </container>
-
     </v-layout>
   </v-container>
 </template>
@@ -32,28 +45,6 @@
 import Applicationable from 'vuetify/es5/mixins/applicationable'
 
 export default {
-  computed: {
-    classes () {
-      return {
-        'v-toolbar--fixed': this.app
-      }
-    },
-    className: () => 'app-toolbar-centered'
-  },
-  methods: {
-    goBack () {
-      this.$router.back()
-    },
-    updateApplication () {
-      // Forward function call from `Applicationable` mixin to `VToolbar`
-      //
-      // 1. Do not `updateApplication` when created() because VToolbar is not mounted,
-      // it will be called again when mounted().
-      if (this.$refs.toolbar) { // [1]
-        return this.$refs.toolbar.updateApplication()
-      }
-    }
-  },
   mixins: [
     Applicationable('top', [
       'clippedLeft',
@@ -83,6 +74,28 @@ export default {
     showBack: {
       type: Boolean,
       default: true
+    }
+  },
+  computed: {
+    classes () {
+      return {
+        'v-toolbar--fixed': this.app
+      }
+    },
+    className: () => 'app-toolbar-centered'
+  },
+  methods: {
+    goBack () {
+      this.$router.back()
+    },
+    updateApplication () {
+      // Forward function call from `Applicationable` mixin to `VToolbar`
+      //
+      // 1. Do not `updateApplication` when created() because VToolbar is not mounted,
+      // it will be called again when mounted().
+      if (this.$refs.toolbar) { // [1]
+        return this.$refs.toolbar.updateApplication()
+      }
     }
   }
 }

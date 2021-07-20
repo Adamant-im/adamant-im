@@ -1,6 +1,10 @@
 <template>
-  <v-layout row wrap justify-center :class="className">
-
+  <v-layout
+    row
+    wrap
+    justify-center
+    :class="className"
+  >
     <app-toolbar-centered
       app
       :title="`${id}`"
@@ -9,9 +13,7 @@
     />
 
     <container>
-
       <v-list class="transparent">
-
         <v-list-tile>
           <v-list-tile-content>
             <v-list-tile-title :class="`${className}__title`">
@@ -26,24 +28,39 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile>
           <v-list-tile-content>
-            <v-list-tile-title :class="`${className}__title`" style="width: fit-content;">
+            <v-list-tile-title
+              :class="`${className}__title`"
+              style="width: fit-content;"
+            >
               {{ $t('transaction.status') }}
-              <v-icon size="20" v-if="statusUpdatable" @click="updateStatus()">mdi-refresh</v-icon>
+              <v-icon
+                v-if="statusUpdatable"
+                size="20"
+                @click="updateStatus()"
+              >
+                mdi-refresh
+              </v-icon>
               {{ '&nbsp;&nbsp;&nbsp;' }}
             </v-list-tile-title>
           </v-list-tile-content>
 
           <div :class="`${className}__value ${className}__value-${lowerCaseStatus}`">
-              <v-icon v-if="status_inconsistent" size="20" style="color: #f8a061 !important;">{{ 'mdi-alert-outline' }}</v-icon>
-              {{ $t(`transaction.statuses.${lowerCaseStatus}`) }}<span v-if="status_inconsistent">{{': ' + status_inconsistent }}</span>
+            <v-icon
+              v-if="statusInconsistent"
+              size="20"
+              style="color: #f8a061 !important;"
+            >
+              {{ 'mdi-alert-outline' }}
+            </v-icon>
+            {{ $t(`transaction.statuses.${lowerCaseStatus}`) }}<span v-if="statusInconsistent">{{ ': ' + statusInconsistent }}</span>
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile>
           <v-list-tile-content>
@@ -59,7 +76,7 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile>
           <v-list-tile-content>
@@ -75,7 +92,7 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile>
           <v-list-tile-content>
@@ -91,7 +108,7 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile :title="id || placeholder">
           <v-list-tile-title :class="`${className}__title`">
@@ -103,7 +120,7 @@
           </v-list-tile-title>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile :title="sender || placeholder">
           <v-list-tile-title :class="`${className}__title`">
@@ -115,7 +132,7 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile :title="recipient || placeholder">
           <v-list-tile-title :class="`${className}__title`">
@@ -127,9 +144,12 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
-        <v-list-tile v-if="comment" :title="comment">
+        <v-list-tile
+          v-if="comment"
+          :title="comment"
+        >
           <v-list-tile-title :class="`${className}__title`">
             {{ $t('transaction.comment') }}
           </v-list-tile-title>
@@ -139,9 +159,12 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
-        <v-list-tile v-if="explorerLink" @click="openInExplorer">
+        <v-list-tile
+          v-if="explorerLink"
+          @click="openInExplorer"
+        >
           <v-list-tile-content>
             <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.explorer') }}
@@ -150,14 +173,19 @@
 
           <div>
             <v-list-tile-title :class="`${className}__value`">
-              <v-icon size="20">mdi-chevron-right</v-icon>
+              <v-icon size="20">
+                mdi-chevron-right
+              </v-icon>
             </v-list-tile-title>
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
-        <v-list-tile v-if="partner && !ifComeFromChat" @click="openChat">
+        <v-list-tile
+          v-if="partner && !ifComeFromChat"
+          @click="openChat"
+        >
           <v-list-tile-content>
             <v-list-tile-title :class="`${className}__title`">
               {{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}
@@ -166,15 +194,14 @@
 
           <div>
             <v-list-tile-title :class="`${className}__value`">
-              <v-icon size="20">{{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}</v-icon>
+              <v-icon size="20">
+                {{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}
+              </v-icon>
             </v-list-tile-title>
           </div>
         </v-list-tile>
-
       </v-list>
-
     </container>
-
   </v-layout>
 </template>
 
@@ -183,7 +210,10 @@ import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 export default {
-  name: 'transaction-template',
+  name: 'TransactionTemplate',
+  components: {
+    AppToolbarCentered
+  },
   props: {
     amount: {
       required: true,
@@ -225,7 +255,7 @@ export default {
       required: true,
       type: String
     },
-    status_inconsistent: {
+    statusInconsistent: {
       required: false,
       type: String
     },
@@ -236,6 +266,29 @@ export default {
     admTx: {
       required: false,
       type: Object
+    }
+  },
+  computed: {
+    className: () => 'transaction-view',
+    hasMessages: function () {
+      const chat = this.$store.state.chat.chats[this.partner]
+      return chat && chat.messages && Object.keys(chat.messages).length > 0
+    },
+    placeholder () {
+      if (!this.status) return Symbols.CLOCK
+      return this.status === 'ERROR' ? Symbols.CROSS : Symbols.HOURGLASS
+    },
+    ifComeFromChat () {
+      return Object.prototype.hasOwnProperty.call(this.$route.query, 'fromChat')
+    },
+    lowerCaseStatus () {
+      return this.status ? this.status.toLowerCase() : 'pending'
+    },
+    comment () {
+      return this.admTx && this.admTx.message ? this.admTx.message : false
+    },
+    statusUpdatable () {
+      return tsUpdatable(this.status, this.crypto)
     }
   },
   methods: {
@@ -252,32 +305,6 @@ export default {
         this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.id, force: true, updateOnly: false, dropStatus: true })
       }
     }
-  },
-  computed: {
-    className: () => 'transaction-view',
-    hasMessages: function () {
-      const chat = this.$store.state.chat.chats[this.partner]
-      return chat && chat.messages && Object.keys(chat.messages).length > 0
-    },
-    placeholder () {
-      if (!this.status) return Symbols.CLOCK
-      return this.status === 'ERROR' ? Symbols.CROSS : Symbols.HOURGLASS
-    },
-    ifComeFromChat () {
-      return this.$route.query.hasOwnProperty('fromChat')
-    },
-    lowerCaseStatus () {
-      return this.status ? this.status.toLowerCase() : 'pending'
-    },
-    comment () {
-      return this.admTx && this.admTx.message ? this.admTx.message : false
-    },
-    statusUpdatable () {
-      return tsUpdatable(this.status, this.crypto)
-    }
-  },
-  components: {
-    AppToolbarCentered
   }
 }
 </script>

@@ -1,7 +1,13 @@
 <template>
   <div>
     <v-menu>
-      <v-icon medium class="chat-menu__icon" slot="activator">mdi-plus-circle-outline</v-icon>
+      <v-icon
+        slot="activator"
+        medium
+        class="chat-menu__icon"
+      >
+        mdi-plus-circle-outline
+      </v-icon>
 
       <v-list>
         <!-- Cryptos -->
@@ -29,7 +35,6 @@
 
           <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
         </v-list-tile>
-
       </v-list>
     </v-menu>
 
@@ -48,6 +53,17 @@ import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 
 export default {
+  components: {
+    ChatDialog,
+    Icon,
+    CryptoIcon
+  },
+  props: {
+    partnerId: {
+      type: String,
+      default: ''
+    }
+  },
   data: () => ({
     cryptos: Object.keys(Cryptos),
     menuItems: [
@@ -102,17 +118,6 @@ export default {
 
         return address
       })
-    }
-  },
-  components: {
-    ChatDialog,
-    Icon,
-    CryptoIcon
-  },
-  props: {
-    partnerId: {
-      type: String,
-      default: ''
     }
   }
 }

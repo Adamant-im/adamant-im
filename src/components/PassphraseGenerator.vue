@@ -1,22 +1,32 @@
 <template>
   <div :class="className">
     <div class="text-xs-center">
-      <h3 class="a-text-regular">{{ $t('login.create_address_label') }}</h3>
-      <v-btn @click="generatePassphrase" class="a-btn-link" flat small>
+      <h3 class="a-text-regular">
+        {{ $t('login.create_address_label') }}
+      </h3>
+      <v-btn
+        class="a-btn-link"
+        flat
+        small
+        @click="generatePassphrase"
+      >
         {{ $t('login.new_button') }}
       </v-btn>
     </div>
 
     <transition name="slide-fade">
-      <div :class="`${className}__box`" v-if="showPassphrase">
+      <div
+        v-if="showPassphrase"
+        :class="`${className}__box`"
+      >
         <div
-          v-html="$t('login.new_passphrase_label')"
-          class="caption grey--text mt-2"
           ref="el"
-        ></div>
+          class="caption grey--text mt-2"
+          v-html="$t('login.new_passphrase_label')"
+        />
         <v-textarea
+          ref="textarea"
           :value="passphrase"
-          @click.prevent="selectText"
           type="text"
           multi-line
           readonly
@@ -24,36 +34,36 @@
           class="pt-0"
           color="grey"
           no-resize
-          ref="textarea"
+          @click.prevent="selectText"
         >
           <template slot="append">
             <div :class="`${className}__icons`">
               <icon
-                @click="copyToClipboard"
                 :width="24"
                 :height="24"
                 shape-rendering="crispEdges"
                 :title="$t('login.copy_button_tooltip')"
+                @click="copyToClipboard"
               >
-                <copy-icon/>
+                <copy-icon />
               </icon>
               <icon
-                @click="saveFile"
                 :width="24"
                 :height="24"
                 shape-rendering="auto"
                 :title="$t('login.save_button_tooltip')"
+                @click="saveFile"
               >
-                <save-icon/>
+                <save-icon />
               </icon>
               <icon
-                @click="showQrcodeRendererDialog = true"
                 :width="24"
                 :height="24"
                 shape-rendering="crispEdges"
                 :title="$t('login.save_qr_code_tooltip')"
+                @click="showQrcodeRendererDialog = true"
               >
-                <qr-code-icon/>
+                <qr-code-icon />
               </icon>
             </div>
           </template>
@@ -79,16 +89,23 @@ import SaveIcon from '@/components/icons/common/Save'
 import QrCodeIcon from '@/components/icons/common/QrCode'
 
 export default {
-  computed: {
-    className () {
-      return 'passphrase-generator'
-    }
+  components: {
+    Icon,
+    CopyIcon,
+    SaveIcon,
+    QrCodeIcon,
+    QrcodeRendererDialog
   },
   data: () => ({
     passphrase: '',
     showPassphrase: false,
     showQrcodeRendererDialog: false
   }),
+  computed: {
+    className () {
+      return 'passphrase-generator'
+    }
+  },
   methods: {
     copyToClipboard () {
       copyToClipboard(this.passphrase)
@@ -96,7 +113,7 @@ export default {
       this.$emit('copy')
     },
     saveFile () {
-      var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
+      const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
       if (!iOS) {
         downloadFile(
           this.passphrase,
@@ -122,13 +139,6 @@ export default {
         this.$scrollTo(this.$refs.textarea.$el, { easing: 'ease-in' })
       }, 0)
     }
-  },
-  components: {
-    Icon,
-    CopyIcon,
-    SaveIcon,
-    QrCodeIcon,
-    QrcodeRendererDialog
   }
 }
 </script>

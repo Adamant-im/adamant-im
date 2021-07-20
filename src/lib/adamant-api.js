@@ -361,7 +361,7 @@ export function getTransactions (options = { }) {
     query['and:type'] = options.type
   }
   if (options.orderBy) {
-    query['orderBy'] = options.orderBy
+    query.orderBy = options.orderBy
   }
 
   return client.get('/api/transactions', query)

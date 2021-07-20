@@ -1,10 +1,9 @@
 <template>
   <div class="a-chat">
     <div class="a-chat__content">
+      <slot name="header" />
 
-      <slot name="header"></slot>
-
-      <v-divider/>
+      <v-divider />
 
       <div class="a-chat__body">
         <div class="text-xs-center py-2">
@@ -17,30 +16,32 @@
           />
         </div>
 
-        <div ref="messages" class="a-chat__body-messages">
-          <slot name="messages" :messages="messages">
-
-              <template v-for="message in messages">
-
-                <slot name="message"
-                  :message="message"
-                  :sender="getSenderMeta(message.senderId)"
-                  :user-id="userId"
-                  :locale="locale"
-                />
-
-              </template>
-
+        <div
+          ref="messages"
+          class="a-chat__body-messages"
+        >
+          <slot
+            name="messages"
+            :messages="messages"
+          >
+            <template v-for="message in messages">
+              <slot
+                name="message"
+                :message="message"
+                :sender="getSenderMeta(message.senderId)"
+                :user-id="userId"
+                :locale="locale"
+              />
+            </template>
           </slot>
         </div>
 
         <div class="a-chat__fab">
-          <slot name="fab"></slot>
+          <slot name="fab" />
         </div>
-
       </div>
 
-      <slot name="form"></slot>
+      <slot name="form" />
     </div>
   </div>
 </template>
@@ -56,16 +57,41 @@ const emitScroll = throttle(function () {
 }, 200)
 
 export default {
+  components: {
+    AChatMessage,
+    AChatTransaction
+  },
+  props: {
+    messages: {
+      type: Array,
+      default: () => []
+    },
+    partners: {
+      type: Array,
+      default: () => []
+    },
+    userId: {
+      type: String
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    },
+    locale: {
+      type: String,
+      default: 'en'
+    }
+  },
+  data: () => ({
+    currentScrollHeight: 0,
+    currentScrollTop: 0
+  }),
   mounted () {
     this.attachScrollListener()
   },
   beforeDestroy () {
     this.destroyScrollListener()
   },
-  data: () => ({
-    currentScrollHeight: 0,
-    currentScrollTop: 0
-  }),
   methods: {
     attachScrollListener () {
       this.$refs.messages.addEventListener('scroll', this.onScroll)
@@ -146,31 +172,6 @@ export default {
      */
     getSenderMeta (senderId) {
       return this.partners.find(partner => partner.id === senderId)
-    }
-  },
-  components: {
-    AChatMessage,
-    AChatTransaction
-  },
-  props: {
-    messages: {
-      type: Array,
-      default: () => []
-    },
-    partners: {
-      type: Array,
-      default: () => []
-    },
-    userId: {
-      type: String
-    },
-    loading: {
-      type: Boolean,
-      default: false
-    },
-    locale: {
-      type: String,
-      default: 'en'
     }
   }
 }

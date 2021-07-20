@@ -9,7 +9,7 @@ export default {
     state.delegates = {}
   },
   update_delegate (state, payload) {
-    for (let key in payload.params) {
+    for (const key in payload.params) {
       Vue.set(state.delegates[payload.address], key, payload.params[key])
     }
   },

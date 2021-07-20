@@ -1,16 +1,21 @@
 <template>
   <div
-    @click="$emit('click')"
     :class="classes"
     :style="styles"
+    @click="$emit('click')"
   >
-    <img v-if="avatar" :src="avatar" :width="size" :height="size"/>
+    <img
+      v-if="avatar"
+      :src="avatar"
+      :width="size"
+      :height="size"
+    >
     <canvas
+      ref="avatar"
       :width="canvasSize"
       :height="canvasSize"
       :style="{ display: 'none' }"
-      ref="avatar"
-    ></canvas>
+    />
   </div>
 </template>
 
@@ -20,8 +25,20 @@ import Identicon from '@/lib/identicon'
 import clickable from '@/mixins/clickable'
 
 export default {
-  mounted () {
-    this.getAvatar()
+  mixins: [clickable],
+  props: {
+    size: {
+      type: Number,
+      default: 40
+    },
+    userId: {
+      type: String,
+      required: true
+    },
+    usePublicKey: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     className: () => 'chat-avatar',
@@ -46,6 +63,9 @@ export default {
     isAvatarCached () {
       return this.$store.getters['identicon/isAvatarCached'](this.userId)
     }
+  },
+  mounted () {
+    this.getAvatar()
   },
   methods: {
     /**
@@ -84,21 +104,6 @@ export default {
       }
 
       return Promise.resolve(el.toDataURL())
-    }
-  },
-  mixins: [clickable],
-  props: {
-    size: {
-      type: Number,
-      default: 40
-    },
-    userId: {
-      type: String,
-      required: true
-    },
-    usePublicKey: {
-      type: Boolean,
-      default: false
     }
   }
 }

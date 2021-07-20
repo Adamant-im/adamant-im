@@ -33,7 +33,7 @@ const customActions = getApi => ({
    * @param {{hash: string}} payload action payload
    */
   updateTransaction ({ dispatch, getters }, payload) {
-    const tx = getters['transaction'](payload.hash)
+    const tx = getters.transaction(payload.hash)
 
     if (tx && (tx.status === 'SUCCESS' || tx.status === 'ERROR')) {
       // If transaction is in one of the final statuses (either succeeded or failed),
@@ -59,7 +59,7 @@ const retrieveNewTransactions = async (api, context, latestTxId, toTx) => {
 const getNewTransactions = async (api, context) => {
   context.commit('areRecentLoading', true)
   // Determine the most recent transaction ID
-  const latestTransaction = context.getters['sortedTransactions'][0]
+  const latestTransaction = context.getters.sortedTransactions[0]
   const latestId = latestTransaction && latestTransaction.txid
   // Now fetch the transactions until we meet that latestId among the
   // retrieved results
@@ -71,7 +71,7 @@ const getOldTransactions = async (api, context) => {
   // If we already have the most old transaction for this address, no need to request anything
   if (context.state.bottomReached) return Promise.resolve()
 
-  const transactions = context.getters['sortedTransactions']
+  const transactions = context.getters.sortedTransactions
   const oldestTx = transactions[transactions.length - 1]
   const toTx = oldestTx && oldestTx.txid
 

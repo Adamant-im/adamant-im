@@ -1,17 +1,17 @@
 <template>
   <transaction-template
+    :id="transaction.hash || '' "
     :amount="transaction.amount | currency(crypto)"
     :timestamp="transaction.timestamp || NaN"
-    :id="transaction.hash || '' "
     :fee="transaction.fee | currency(crypto)"
     :confirmations="confirmations || NaN"
     :sender="sender || '' "
     :recipient="recipient || '' "
-    :explorerLink="explorerLink"
+    :explorer-link="explorerLink"
     :partner="partner || '' "
     :status="status() || '' "
-    :status_inconsistent="inconsistent_reason"
-    :admTx="admTx"
+    :status-inconsistent="inconsistent_reason"
+    :adm-tx="admTx"
     :crypto="crypto"
   />
 </template>
@@ -24,8 +24,11 @@ import partnerName from '@/mixins/partnerName'
 import { verifyTransactionDetails } from '@/lib/txVerify'
 
 export default {
+  name: 'EthTransaction',
+  components: {
+    TransactionTemplate
+  },
   mixins: [partnerName],
-  name: 'eth-transaction',
   props: {
     id: {
       required: true,
@@ -35,9 +38,6 @@ export default {
       required: true,
       type: String
     }
-  },
-  components: {
-    TransactionTemplate
   },
   data () {
     return {
@@ -58,7 +58,8 @@ export default {
       if (this.transaction.partner) return this.transaction.partner
 
       const id = this.transaction.senderId !== this.$store.state.eth.address
-        ? this.transaction.senderId : this.transaction.recipientId
+        ? this.transaction.senderId
+        : this.transaction.recipientId
       return this.getAdmAddress(id)
     },
     explorerLink () {
@@ -69,7 +70,7 @@ export default {
       return Math.max(0, this.$store.state.eth.blockNumber - this.transaction.blockNumber)
     },
     admTx () {
-      let admTx = {}
+      const admTx = {}
       // Bad news, everyone: we'll have to scan the messages
       Object.values(this.$store.state.chat.chats).some(chat => {
         Object.values(chat.messages).some(msg => {
@@ -86,7 +87,7 @@ export default {
   methods: {
     status () {
       let status = this.transaction.status
-      let messageTx = this.admTx
+      const messageTx = this.admTx
       if (status === 'SUCCESS' && messageTx && messageTx.id) {
         const txVerify = verifyTransactionDetails(this.transaction, messageTx, { recipientCryptoAddress: this.transaction.recipientId, senderCryptoAddress: this.transaction.senderId })
         if (txVerify.isTxConsistent) {
@@ -129,7 +130,7 @@ export default {
     },
 
     formatAddress (address) {
-      let admAddress = this.getAdmAddress(address)
+      const admAddress = this.getAdmAddress(address)
       let name = ''
 
       if (address === this.$store.state.eth.address) {

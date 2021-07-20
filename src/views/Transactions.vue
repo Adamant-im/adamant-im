@@ -6,20 +6,32 @@
       flat
     />
 
-    <v-container fluid class="pa-0">
-      <v-layout row wrap justify-center>
-
-        <v-list-tile style="position: absolute; top: 20px;" v-if="isRecentLoading">
+    <v-container
+      fluid
+      class="pa-0"
+    >
+      <v-layout
+        row
+        wrap
+        justify-center
+      >
+        <v-list-tile
+          v-if="isRecentLoading"
+          style="position: absolute; top: 20px;"
+        >
           <InlineSpinner />
         </v-list-tile>
 
         <container v-if="isFulfilled">
-
-          <v-list v-if="hasTransactions" three-line class="transparent">
+          <v-list
+            v-if="hasTransactions"
+            three-line
+            class="transparent"
+          >
             <transaction-list-item
               v-for="(transaction, i) in transactions"
-              :key="i"
               :id="transaction.id"
+              :key="i"
               :sender-id="sender(transaction)"
               :recipient-id="recipient(transaction)"
               :timestamp="transaction.timestamp || NaN"
@@ -33,12 +45,13 @@
             </v-list-tile>
           </v-list>
 
-          <h3 v-else class="a-text-caption text-xs-center mt-4">
+          <h3
+            v-else
+            class="a-text-caption text-xs-center mt-4"
+          >
             {{ $t('transaction.no_transactions') }}
           </h3>
-
         </container>
-
       </v-layout>
     </v-container>
   </div>
@@ -51,28 +64,29 @@ import TransactionListItem from '@/components/TransactionListItem'
 // import scrollPosition from '@/mixins/scrollPosition'
 
 export default {
-  beforeDestroy () {
-    window.removeEventListener('scroll', this.onScroll)
+  components: {
+    AppToolbarCentered,
+    InlineSpinner,
+    TransactionListItem
   },
-  mounted () {
-    if (!this.$store.getters['options/isLoginViaPassword'] || this.$store.state.IDBReady) {
-      this.getNewTransactions()
-    }
-
-    window.addEventListener('scroll', this.onScroll)
-  },
-  watch: {
-    '$store.state.IDBReady' () {
-      if (this.$store.state.IDBReady) this.getNewTransactions()
+  props: {
+    crypto: {
+      default: 'ADM',
+      type: String
     }
   },
+  data: () => ({
+    isFulfilled: false,
+    isRejected: false,
+    isUpdating: false
+  }),
   computed: {
     transactions () {
       const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
       const address = this.$store.state[this.crypto.toLowerCase()].address
       return transactions.filter(tx => {
         // Filter invalid "fake" transactions (from chat rich message)
-        return tx.hasOwnProperty('amount') && (
+        return Object.prototype.hasOwnProperty.call(tx, 'amount') && (
           tx.recipientId === address || tx.senderId === address
         )
       })
@@ -90,11 +104,21 @@ export default {
       return this.crypto.toLowerCase()
     }
   },
-  data: () => ({
-    isFulfilled: false,
-    isRejected: false,
-    isUpdating: false
-  }),
+  watch: {
+    '$store.state.IDBReady' () {
+      if (this.$store.state.IDBReady) this.getNewTransactions()
+    }
+  },
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.onScroll)
+  },
+  mounted () {
+    if (!this.$store.getters['options/isLoginViaPassword'] || this.$store.state.IDBReady) {
+      this.getNewTransactions()
+    }
+
+    window.addEventListener('scroll', this.onScroll)
+  },
   // mixins: [scrollPosition],
   methods: {
     sender (transaction) {
@@ -152,7 +176,7 @@ export default {
     },
     getNewTransactions () {
       // If we came from Transactions details sreen, do not update transaction list
-      let doNotUpdate = this.$route.meta.previousRoute.params.txId && !this.isFulfilled &&
+      const doNotUpdate = this.$route.meta.previousRoute.params.txId && !this.isFulfilled &&
         // If we don't just refresh Tx details screen
         this.$route.meta.previousPreviousRoute && this.$route.meta.previousPreviousRoute.name
 
@@ -171,17 +195,6 @@ export default {
           })
       }
     }
-  },
-  props: {
-    crypto: {
-      default: 'ADM',
-      type: String
-    }
-  },
-  components: {
-    AppToolbarCentered,
-    InlineSpinner,
-    TransactionListItem
   }
 }
 </script>

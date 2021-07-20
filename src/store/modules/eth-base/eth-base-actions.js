@@ -17,7 +17,7 @@ export default function createActions (config) {
   const queue = new utils.BatchQueue(() => api.createBatch())
 
   const {
-    onInit = (() => { }),
+    onInit = () => { },
     initTransaction,
     parseTransaction,
     createSpecificActions
@@ -172,7 +172,7 @@ export default function createActions (config) {
       const key = 'transaction:' + payload.hash
       const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
         if (!err && tx && tx.input) {
-          let transaction = parseTransaction(context, tx)
+          const transaction = parseTransaction(context, tx)
           const status = existing ? existing.status : 'REGISTERED'
           if (transaction) {
             context.commit('transactions', [{
@@ -189,9 +189,9 @@ export default function createActions (config) {
         }
 
         const attempt = payload.attempt || 0
-        let retryCount = tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
-        let retry = attempt < retryCount
-        let retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+        const retryCount = tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+        const retry = attempt < retryCount
+        const retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
 
         if (!retry) {
           // Give up, if transaction could not be found after so many attempts
@@ -199,13 +199,15 @@ export default function createActions (config) {
         } else if (!payload.updateOnly) {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far
-          const newPayload = tx ? payload : {
-            ...payload,
-            attempt: attempt + 1,
-            force: true,
-            updateOnly: false,
-            dropStatus: false
-          }
+          const newPayload = tx
+            ? payload
+            : {
+                ...payload,
+                attempt: attempt + 1,
+                force: true,
+                updateOnly: false,
+                dropStatus: false
+              }
 
           setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
         }

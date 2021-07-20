@@ -27,8 +27,8 @@ export default (initialState) => ({
    * @param {Array<{hash: string, time: number}>} transactions transactions list
    */
   transactions (state, transactions) {
-    if (transactions.updateTimestamps) {
-      var updateTimestamps = transactions.updateTimestamps
+    const updateTimestamps = transactions.updateTimestamps
+    if (updateTimestamps) {
       transactions = transactions.transactions
     }
 
@@ -55,7 +55,7 @@ export default (initialState) => ({
     })
 
     // Magic here helps to refresh Tx list when browser deletes it
-    let txCount = Object.keys(state.transactions).length
+    const txCount = Object.keys(state.transactions).length
     if (state.transactionsCount < txCount) { // We don't delete transactions, so they can't become in short
       state.transactionsCount = txCount
     }

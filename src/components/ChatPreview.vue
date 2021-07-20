@@ -4,11 +4,27 @@
     @click="$emit('click')"
   >
     <v-list-tile-avatar>
-      <icon v-if="readOnly" :class="`${className}__icon`"><adm-fill-icon/></icon>
-      <chat-avatar v-else :size="40" :user-id="contactId" use-public-key/>
+      <icon
+        v-if="readOnly"
+        :class="`${className}__icon`"
+      >
+        <adm-fill-icon />
+      </icon>
+      <chat-avatar
+        v-else
+        :size="40"
+        :user-id="contactId"
+        use-public-key
+      />
 
-      <v-badge overlap color="primary">
-        <span v-if="numOfNewMessages > 0" slot="badge">
+      <v-badge
+        overlap
+        color="primary"
+      >
+        <span
+          v-if="numOfNewMessages > 0"
+          slot="badge"
+        >
           {{ numOfNewMessages > 99 ? '99+' : numOfNewMessages }}
         </span>
       </v-badge>
@@ -16,9 +32,9 @@
 
     <v-list-tile-content>
       <v-list-tile-title
-        v-text="isAdamantChat ? $t(contactName) : contactName"
         class="a-text-regular-enlarged-bold"
-      ></v-list-tile-title>
+        v-text="isAdamantChat ? $t(contactName) : contactName"
+      />
 
       <!-- New chat (no messages yet) -->
       <template v-if="isNewChat">
@@ -28,22 +44,40 @@
       <!-- Transaction -->
       <template v-else-if="isTransferType">
         <v-list-tile-sub-title>
-          <v-icon size="15" v-if="!isIncomingTransaction">{{ statusIcon }}</v-icon>
+          <v-icon
+            v-if="!isIncomingTransaction"
+            size="15"
+          >
+            {{ statusIcon }}
+          </v-icon>
           {{ transactionDirection }} {{ transaction.amount | currency(transaction.type) }}
-          <v-icon size="15" v-if="isIncomingTransaction">{{ statusIcon }}</v-icon>
+          <v-icon
+            v-if="isIncomingTransaction"
+            size="15"
+          >
+            {{ statusIcon }}
+          </v-icon>
         </v-list-tile-sub-title>
       </template>
 
       <!-- Message -->
       <template v-else>
         <v-list-tile-sub-title class="a-text-explanation-enlarged-bold">
-          <v-icon size="15" v-if="!isIncomingTransaction">{{ statusIcon }}</v-icon>
+          <v-icon
+            v-if="!isIncomingTransaction"
+            size="15"
+          >
+            {{ statusIcon }}
+          </v-icon>
           {{ lastMessageTextNoFormats }}
         </v-list-tile-sub-title>
       </template>
     </v-list-tile-content>
 
-    <div v-if="!isMessageReadonly" :class="`${className}__date`">
+    <div
+      v-if="!isMessageReadonly"
+      :class="`${className}__date`"
+    >
       {{ createdAt | date }}
     </div>
   </v-list-tile>
@@ -61,18 +95,43 @@ import partnerName from '@/mixins/partnerName'
 import { tsIcon } from '@/lib/constants'
 
 export default {
-  mounted () {
-    // fetch status if transaction is transfer
-    if (this.isTransferType) {
-      this.fetchTransactionStatus(this.transaction, this.contactId)
+  filters: {
+    date: dateFilter
+  },
+  components: {
+    ChatAvatar,
+    Icon,
+    AdmFillIcon
+  },
+  mixins: [transaction, partnerName],
+  props: {
+    userId: {
+      type: String,
+      required: true
+    },
+    contactId: {
+      type: String,
+      required: true
+    },
+    transaction: {
+      type: Object,
+      required: true
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
+    },
+    isMessageReadonly: {
+      type: Boolean,
+      default: false
+    },
+    isAdamantChat: {
+      type: Boolean,
+      default: false
     }
   },
-  watch: {
-    // fetch status when new message received
-    transaction () {
-      this.fetchTransactionStatus(this.transaction, this.contactId)
-    }
-  },
+  data: () => ({
+  }),
   computed: {
     className: () => 'chat-brief',
     contactName () {
@@ -136,41 +195,16 @@ export default {
       return tsIcon(this.status)
     }
   },
-  data: () => ({
-  }),
-  filters: {
-    date: dateFilter
+  watch: {
+    // fetch status when new message received
+    transaction () {
+      this.fetchTransactionStatus(this.transaction, this.contactId)
+    }
   },
-  mixins: [transaction, partnerName],
-  components: {
-    ChatAvatar,
-    Icon,
-    AdmFillIcon
-  },
-  props: {
-    userId: {
-      type: String,
-      required: true
-    },
-    contactId: {
-      type: String,
-      required: true
-    },
-    transaction: {
-      type: Object,
-      required: true
-    },
-    readOnly: {
-      type: Boolean,
-      default: false
-    },
-    isMessageReadonly: {
-      type: Boolean,
-      default: false
-    },
-    isAdamantChat: {
-      type: Boolean,
-      default: false
+  mounted () {
+    // fetch status if transaction is transfer
+    if (this.isTransferType) {
+      this.fetchTransactionStatus(this.transaction, this.contactId)
     }
   }
 }
