@@ -19,11 +19,14 @@
         v-if="showPassphrase"
         :class="`${className}__box`"
       >
+        <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <div
           ref="el"
           class="caption grey--text mt-2"
           v-html="$t('login.new_passphrase_label')"
         />
+        <!-- eslint-enable vue/no-v-html -->
+
         <v-textarea
           ref="textarea"
           :value="passphrase"

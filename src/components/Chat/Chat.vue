@@ -120,7 +120,7 @@ import { detect } from 'detect-browser'
 import Visibility from 'visibilityjs'
 
 import { Cryptos } from '@/lib/constants'
-import { renderMarkdown } from '@/lib/markdown'
+import { renderMarkdown, sanitizeHTML } from '@/lib/markdown'
 
 import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@/components/AChat'
 import ChatToolbar from '@/components/Chat/ChatToolbar'
@@ -371,7 +371,7 @@ export default {
         return renderMarkdown(transaction.message)
       }
 
-      return transaction.message
+      return sanitizeHTML(transaction.message)
     },
     scrollBehavior () {
       this.$nextTick(() => {

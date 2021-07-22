@@ -114,11 +114,13 @@
             {{ $t('nodes.use_socket_connection_tooltip') }}
           </div>
 
+          <!-- eslint-disable vue/no-v-html -- Safe internal content -->
           <div
             :class="`${className}__info a-text-regular-enlarged`"
             class="mt-4"
             v-html="$t('nodes.nodeLabelDescription')"
           />
+          <!-- eslint-enable vue/no-v-html -->
 
           <div>&nbsp;<br>&nbsp;</div>
         </container>

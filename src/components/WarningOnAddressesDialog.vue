@@ -12,12 +12,14 @@
 
       <v-divider class="a-divider" />
 
+      <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
       <v-card-text>
         <div
           :class="`${className}__disclaimer a-text-regular-enlarged`"
           v-html="content"
         />
       </v-card-text>
+      <!-- eslint-enable vue/no-v-html -->
 
       <v-flex
         xs12

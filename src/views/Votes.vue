@@ -220,10 +220,12 @@
             {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
             {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
           </div>
+          <!-- eslint-disable vue/no-v-html -- Safe internal content -->
           <div
             :class="`${className}__dialog-info`"
             v-html="$t('votes.summary_info')"
           />
+          <!-- eslint-enable vue/no-v-html -->
         </v-layout>
 
         <v-card-actions>

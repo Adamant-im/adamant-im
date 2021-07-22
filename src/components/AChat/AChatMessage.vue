@@ -53,11 +53,14 @@
           </div>
         </div>
         <div class="a-chat__message-card-body">
+          <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
+          <!-- AChatMessage :message <- Chat.vue :message="formatMessage(message)" <- formatMessage <- DOMPurify.sanitize() -->
           <div
             v-if="html"
             class="a-chat__message-text a-text-regular-enlarged"
             v-html="message"
           />
+          <!-- eslint-enable vue/no-v-html -->
           <div
             v-else
             class="a-chat__message-text a-text-regular-enlarged"
