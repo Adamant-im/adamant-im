@@ -1,7 +1,7 @@
-import * as bip39 from 'bip39'
 import hdkey from 'hdkey'
 import web3Utils from 'web3-utils'
 import BN from 'bignumber.js'
+import cache from '@/store/cache.js'
 
 const HD_KEY_PATH = "m/44'/60'/3'/1/0"
 
@@ -23,19 +23,14 @@ export function toWei (eth) {
 
 /**
  * Generates a ETH account from the passphrase specified.
+ * bip39.mnemonicToSeedSync is time consuming, so we use cached value, if possible
  * @param {string} passphrase user-defined passphrase
  * @returns {{address: string, privateKey: string}}
  */
 export function getAccountFromPassphrase (passphrase, api) {
-  console.time('mnemonicToSeedSync')
-  const seed = bip39.mnemonicToSeedSync(passphrase)
-  console.timeEnd('mnemonicToSeedSync')
-  console.time('hdkey')
+  const seed = cache.mnemonicToSeedSync(passphrase)
   const privateKey = web3Utils.bytesToHex(hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey)
-  console.timeEnd('hdkey')
-  console.time('privateKeyToAccount')
   const web3Account = api.accounts.privateKeyToAccount(privateKey)
-  console.timeEnd('privateKeyToAccount')
 
   return {
     web3Account,

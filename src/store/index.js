@@ -34,6 +34,7 @@ import chat from './modules/chat'
 import options from './modules/options'
 import identicon from './modules/identicon'
 import notification from './modules/notification'
+import cache from '@/store/cache'
 
 Vue.use(Vuex)
 
@@ -93,6 +94,7 @@ const store = {
       state.password = ''
       state.IDBReady = false
       state.publicKeys = {}
+      cache.resetCachedSeed()
     },
     setPublicKey (state, { adamantAddress, publicKey }) {
       state.publicKeys[adamantAddress] = publicKey
