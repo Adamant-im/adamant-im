@@ -1,6 +1,6 @@
 import hdkey from 'hdkey'
 import web3Utils from 'web3-utils'
-import BN from 'bignumber.js'
+import BigNumber from 'bignumber.js'
 import cache from '@/store/cache.js'
 
 const HD_KEY_PATH = "m/44'/60'/3'/1/0"
@@ -40,10 +40,9 @@ export function getAccountFromPassphrase (passphrase, api) {
 }
 
 export function calculateFee (gasUsed, gasPrice) {
-  const gas = new BN(+gasUsed, 10)
-  const price = new BN(+gasPrice, 10)
-  const fee = gas.mul(price).toString(10)
-  console.log(gas, price, fee)
+  const gas = BigNumber(gasUsed, 10)
+  const price = BigNumber(gasPrice, 10)
+  const fee = gas.times(price).toString(10)
   return toEther(fee)
 }
 
@@ -56,9 +55,9 @@ export function toWhole (amount, decimals) {
     fraction += '0'
   }
 
-  const num = new BN(whole, 10)
-    .mul(new BN(10, 10).pow(new BN(decimals, 10)))
-    .add(new BN(fraction, 10))
+  const num = BigNumber(whole, 10)
+    .times(BigNumber(10, 10).pow(BigNumber(decimals, 10)))
+    .plus(BigNumber(fraction, 10))
     .toString(10)
 
   return num

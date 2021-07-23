@@ -1,7 +1,7 @@
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { ETH_TRANSFER_GAS, ETH_GASPRICE_MULTIPLIER, INCREASE_FEE_MULTIPLIER } from '../../../lib/constants'
+import { ETH_TRANSFER_GAS, INCREASE_FEE_MULTIPLIER } from '../../../lib/constants'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
@@ -27,6 +27,7 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
   }
 
   let gasLimit = api.estimateGas(transaction)
+  console.log('estimateGas for ETH', gasLimit)
   gasLimit = increaseFee ? (gasLimit * INCREASE_FEE_MULTIPLIER).toString(16) : gasLimit.toString(16)
   transaction.gas = '0x' + gasLimit
 
@@ -61,28 +62,20 @@ const createSpecificActions = (api, queue) => ({
       return [
         // Balance
         api.getBalance.request(context.state.address, 'latest', (err, balance) => {
-          console.log('balance', balance)
-          if (!err) {
-            context.commit('balance', Number(
-              utils.toEther(balance.toString())
-            ))
-          }
+          if (!err) context.commit('balance', Number(utils.toEther(balance.toString())))
         }),
         // Current gas price
-        // @todo: Why it is called twice? One success, and one failed
         api.getGasPrice.request((err, price) => {
-          console.log('getGasPrice', price, err)
+          console.log('getGasPrice', price)
           if (!err) {
-            const gasPrice = Math.round(ETH_GASPRICE_MULTIPLIER * price.toNumber())
             context.commit('gasPrice', {
-              gasPrice,
-              fee: +(+utils.calculateFee(ETH_TRANSFER_GAS, gasPrice)).toFixed(7)
+              gasPrice: price, // string type
+              fee: +(+utils.calculateFee(ETH_TRANSFER_GAS, price)).toFixed(8) // number type, in ETH
             })
           }
         }),
         // Current block number
         api.getBlockNumber.request((err, number) => {
-          console.log('getBlockNumber', number)
           if (!err) context.commit('blockNumber', number)
         })
       ]

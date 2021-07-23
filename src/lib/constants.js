@@ -140,14 +140,11 @@ export const WelcomeMessage = {
  */
 
 /** Gas limit value for the ETH transfers */
-export const ETH_TRANSFER_GAS = 22000 // Default gas limit; while to be calculated with estimateGas(transactionObject)
+export const ETH_TRANSFER_GAS = 24000
 /** Gas limit value for the ERC-20 transfers */
-export const ERC20_TRANSFER_GAS = ETH_TRANSFER_GAS * 2
+export const ERC20_TRANSFER_GAS = ETH_TRANSFER_GAS * 2.4
 
-/** Gas price multiplier. To be sure a transaction will be confirmed */
-export const ETH_GASPRICE_MULTIPLIER = 1.1
-
-/** Increase fee multiplier. Used in SendFundsForm */
+/** Increase fee multiplier. Used as a checkbox on SendFundsForm */
 export const INCREASE_FEE_MULTIPLIER = 2
 
 export default {

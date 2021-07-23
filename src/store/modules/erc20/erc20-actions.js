@@ -27,6 +27,7 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
   }
 
   let gasLimit = api.estimateGas(transaction)
+  console.log('estimateGas for ERC20', gasLimit)
   gasLimit = increaseFee ? (gasLimit * INCREASE_FEE_MULTIPLIER).toString(16) : gasLimit.toString(16)
   transaction.gas = '0x' + gasLimit
 
