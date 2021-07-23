@@ -23,6 +23,7 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
     value: '0x0',
     // gasLimit: api.fromDecimal(ERC20_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
     // gasPrice: context.getters.gasPrice, // Set gas price to auto calc
+    // nonce // Let sendTransaction choose it
     data: contract.transfer.getData(ethAddress, ethUtils.toWhole(amount, context.state.decimals))
   }
 
@@ -30,6 +31,7 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
   console.log('estimateGas for ERC20', gasLimit)
   gasLimit = increaseFee ? (gasLimit * INCREASE_FEE_MULTIPLIER).toString(16) : gasLimit.toString(16)
   transaction.gas = '0x' + gasLimit
+  console.log('estimateGas for ERC20', gasLimit)
 
   return transaction
 }
@@ -53,7 +55,7 @@ const parseTransaction = (context, tx) => {
       blockNumber: tx.blockNumber,
       amount,
       recipientId,
-      gasPrice: tx.gasPrice.toNumber(10)
+      gasPrice: +tx.gasPrice
     }
   }
 

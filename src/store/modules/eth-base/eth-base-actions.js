@@ -71,61 +71,81 @@ export default function createActions (config) {
       console.log('sendTokens')
       address = address.trim()
       const crypto = context.state.crypto
-      const ethTx = initTransaction(api, context, address, amount, increaseFee)
 
-      return utils.promisify(api.getTransactionCount, context.state.address, 'pending')
-        .then(count => {
-          console.log('getTransactionCount', count)
-          if (count) ethTx.nonce = count
-
-          // const tx = new Transaction(ethTx)
-          const tx = {}
-          // tx.sign(toBuffer(context.state.privateKey))
-          const serialized = '0x' + tx.serialize().toString('hex')
-          const hash = api.sha3(serialized, { encoding: 'hex' })
-
-          if (!admAddress) {
-            return serialized
+      return initTransaction(api, context, address, amount, increaseFee).then(ethTx => {
+        return api.accounts.signTransaction(ethTx, context.state.privateKey).then(signedTx => {
+          console.log('signed:', signedTx)
+          console.log('hash:', signedTx.transactionHash)
+          const txInfo = {
+            signedTx,
+            ethTx
           }
 
+          if (!admAddress) {
+            return txInfo
+          }
           const msgPayload = {
             address: admAddress,
             amount,
             comments,
             crypto,
-            hash
+            hash: signedTx.transactionHash
           }
-
-          // Send a special message to indicate that we're performing an ETH transfer
+          // Send a rich ADM message to indicate that we're performing an ETH transfer
           return context.dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
-            .then(success => success ? serialized : Promise.reject(new Error('adm_message')))
+            .then(success => success ? txInfo : Promise.reject(new Error('adm_message')))
         })
-        .then(tx => {
-          return utils.promisify(api.sendRawTransaction, tx).then(
-            hash => ({ hash }),
-            error => ({ error })
+      })
+        .then(txInfo => {
+          return api.sendSignedTransaction(txInfo.signedTx.rawTransaction).then(
+            hash => ({ txInfo, hash }),
+            error => {
+              // Known bug that after Tx sent successfully, this error occurred anyway https://github.com/ethereum/web3.js/issues/3145
+              if (!error.toString().includes('Failed to check for transaction receipt')) {
+                return { txInfo, error }
+              } else {
+                return { txInfo, hash: txInfo.signedTx.transactionHash }
+              }
+            }
           )
         })
-        .then(({ hash, error }) => {
-          console.log('sendRawTransaction', hash)
-          if (error) {
-            console.error(`Failed to send ${crypto} transaction`, error)
-            context.commit('transactions', [{ hash, status: 'ERROR' }])
-            throw error
+        .then((sentTxInfo) => {
+          console.log('after sent', sentTxInfo)
+
+          if (sentTxInfo.error) {
+            console.error(`Failed to send ${crypto} transaction`, sentTxInfo.error)
+            context.commit('transactions', [{ hash: sentTxInfo.txInfo.signedTx.transactionHash, status: 'ERROR' }])
+            throw sentTxInfo.error
           } else {
-            context.commit('transactions', [{
-              hash,
-              senderId: ethTx.from,
+            console.log('ethTx', sentTxInfo.txInfo.ethTx)
+            console.log('sendSignedTransaction', sentTxInfo.hash)
+            if (sentTxInfo.hash.toLowerCase() !== sentTxInfo.txInfo.signedTx.transactionHash.toLowerCase()) {
+              console.warn(`Something wrong with sent ETH tx, computed hash and sent tx differs: ${sentTxInfo.txInfo.signedTx.transactionHash} and ${sentTxInfo.hash}`)
+            }
+            console.log('commiting:')
+            console.log({
+              hash: sentTxInfo.hash,
+              senderId: sentTxInfo.txInfo.ethTx.from,
               recipientId: address,
               amount,
-              fee: utils.calculateFee(ethTx.gas, ethTx.gasPrice),
+              fee: utils.calculateFee(sentTxInfo.txInfo.ethTx.gas, sentTxInfo.txInfo.ethTx.gasPrice),
               status: 'PENDING',
               timestamp: Date.now(),
-              gasPrice: ethTx.gasPrice
+              gasPrice: sentTxInfo.txInfo.ethTx.gasPrice
+            })
+            context.commit('transactions', [{
+              hash: sentTxInfo.hash,
+              senderId: sentTxInfo.txInfo.ethTx.from,
+              recipientId: address,
+              amount,
+              fee: utils.calculateFee(sentTxInfo.txInfo.ethTx.gas, sentTxInfo.txInfo.ethTx.gasPrice),
+              status: 'PENDING',
+              timestamp: Date.now(),
+              gasPrice: sentTxInfo.txInfo.ethTx.gasPrice
             }])
-            context.dispatch('getTransaction', { hash, isNew: true, direction: 'from', force: true })
+            context.dispatch('getTransaction', { hash: sentTxInfo.hash, isNew: true, direction: 'from', force: true })
 
-            return hash
+            return sentTxInfo.hash
           }
         })
     },
@@ -174,7 +194,6 @@ export default function createActions (config) {
 
       const key = 'transaction:' + payload.hash
       const supplier = () => api.getTransaction.request(payload.hash, (err, tx) => {
-        console.log('getTransaction', tx)
         if (!err && tx && tx.input) {
           const transaction = parseTransaction(context, tx)
           const status = existing ? existing.status : 'REGISTERED'
@@ -232,7 +251,6 @@ export default function createActions (config) {
       const gasPrice = transaction.gasPrice
 
       const supplier = () => api.getTransactionReceipt.request(payload.hash, (err, tx) => {
-        console.log('getTransactionReceipt', tx)
         let replay = true
 
         if (!err && tx) {
