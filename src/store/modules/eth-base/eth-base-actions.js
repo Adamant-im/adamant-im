@@ -30,7 +30,9 @@ export default function createActions (config) {
     afterLogin: {
       root: true,
       handler (context, passphrase) {
+        console.time('getAccountFromPassphrase')
         const account = utils.getAccountFromPassphrase(passphrase, api)
+        console.timeEnd('getAccountFromPassphrase')
         context.commit('account', account)
         context.dispatch('updateStatus')
         queue.start()

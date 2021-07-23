@@ -56,6 +56,7 @@ const createSpecificActions = (api, queue) => ({
 
     const supplier = () => {
       if (!context.state.address) return []
+      console.log('updateStatus')
 
       return [
         // Balance
@@ -70,7 +71,7 @@ const createSpecificActions = (api, queue) => ({
         // Current gas price
         // @todo: Why it is called twice? One success, and one failed
         api.getGasPrice.request((err, price) => {
-          console.log('getGasPrice', price)
+          console.log('getGasPrice', price, err)
           if (!err) {
             const gasPrice = Math.round(ETH_GASPRICE_MULTIPLIER * price.toNumber())
             context.commit('gasPrice', {

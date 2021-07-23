@@ -27,9 +27,15 @@ export function toWei (eth) {
  * @returns {{address: string, privateKey: string}}
  */
 export function getAccountFromPassphrase (passphrase, api) {
+  console.time('mnemonicToSeedSync')
   const seed = bip39.mnemonicToSeedSync(passphrase)
+  console.timeEnd('mnemonicToSeedSync')
+  console.time('hdkey')
   const privateKey = web3Utils.bytesToHex(hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey)
+  console.timeEnd('hdkey')
+  console.time('privateKeyToAccount')
   const web3Account = api.accounts.privateKeyToAccount(privateKey)
+  console.timeEnd('privateKeyToAccount')
 
   return {
     web3Account,
