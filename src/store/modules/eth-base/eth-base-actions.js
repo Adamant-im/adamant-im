@@ -1,6 +1,4 @@
-import Web3 from 'web3'
-import { Transaction } from 'ethereumjs-tx'
-import { toBuffer } from 'ethereumjs-util'
+import Web3Eth from 'web3-eth'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as utils from '../../../lib/eth-utils'
@@ -13,8 +11,8 @@ const CHUNK_SIZE = 25
 
 export default function createActions (config) {
   const endpoint = getEndpointUrl('ETH')
-  const api = new Web3(new Web3.providers.HttpProvider(endpoint, 10000))
-  const queue = new utils.BatchQueue(() => api.createBatch())
+  const api = new Web3Eth(endpoint)
+  const queue = new utils.BatchQueue(() => new api.BatchRequest())
 
   const {
     onInit = () => { },
@@ -32,7 +30,7 @@ export default function createActions (config) {
     afterLogin: {
       root: true,
       handler (context, passphrase) {
-        const account = utils.getAccountFromPassphrase(passphrase)
+        const account = utils.getAccountFromPassphrase(passphrase, api)
         context.commit('account', account)
         context.dispatch('updateStatus')
         queue.start()
@@ -58,7 +56,7 @@ export default function createActions (config) {
         const address = context.state.address
 
         if (!address && passphrase) {
-          const account = utils.getAccountFromPassphrase(passphrase)
+          const account = utils.getAccountFromPassphrase(passphrase, api)
           context.commit('account', account)
           onInit(context)
         }
@@ -70,16 +68,19 @@ export default function createActions (config) {
     },
 
     sendTokens (context, { amount, admAddress, address, comments, increaseFee }) {
+      console.log('sendTokens')
       address = address.trim()
       const crypto = context.state.crypto
       const ethTx = initTransaction(api, context, address, amount, increaseFee)
 
-      return utils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
+      return utils.promisify(api.getTransactionCount, context.state.address, 'pending')
         .then(count => {
+          console.log('getTransactionCount', count)
           if (count) ethTx.nonce = count
 
-          const tx = new Transaction(ethTx)
-          tx.sign(toBuffer(context.state.privateKey))
+          // const tx = new Transaction(ethTx)
+          const tx = {}
+          // tx.sign(toBuffer(context.state.privateKey))
           const serialized = '0x' + tx.serialize().toString('hex')
           const hash = api.sha3(serialized, { encoding: 'hex' })
 
@@ -100,12 +101,13 @@ export default function createActions (config) {
             .then(success => success ? serialized : Promise.reject(new Error('adm_message')))
         })
         .then(tx => {
-          return utils.promisify(api.eth.sendRawTransaction, tx).then(
+          return utils.promisify(api.sendRawTransaction, tx).then(
             hash => ({ hash }),
             error => ({ error })
           )
         })
         .then(({ hash, error }) => {
+          console.log('sendRawTransaction', hash)
           if (error) {
             console.error(`Failed to send ${crypto} transaction`, error)
             context.commit('transactions', [{ hash, status: 'ERROR' }])
@@ -137,7 +139,8 @@ export default function createActions (config) {
       const transaction = context.state.transactions[payload.hash]
       if (!transaction) return
 
-      const supplier = () => api.eth.getBlock.request(payload.blockNumber, (err, block) => {
+      const supplier = () => api.getBlock.request(payload.blockNumber, (err, block) => {
+        console.log('getBlock', block)
         if (!err && block) {
           context.commit('transactions', [{
             hash: transaction.hash,
@@ -170,7 +173,8 @@ export default function createActions (config) {
       }
 
       const key = 'transaction:' + payload.hash
-      const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
+      const supplier = () => api.getTransaction.request(payload.hash, (err, tx) => {
+        console.log('getTransaction', tx)
         if (!err && tx && tx.input) {
           const transaction = parseTransaction(context, tx)
           const status = existing ? existing.status : 'REGISTERED'
@@ -227,7 +231,8 @@ export default function createActions (config) {
 
       const gasPrice = transaction.gasPrice
 
-      const supplier = () => api.eth.getTransactionReceipt.request(payload.hash, (err, tx) => {
+      const supplier = () => api.getTransactionReceipt.request(payload.hash, (err, tx) => {
+        console.log('getTransactionReceipt', tx)
         let replay = true
 
         if (!err && tx) {

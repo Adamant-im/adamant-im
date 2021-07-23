@@ -6,11 +6,11 @@ import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
-/** Status update interval */
-const STATUS_INTERVAL = 8000
+/** Status update interval is 25 sec: ETH balance, gas price, last block height */
+const STATUS_INTERVAL = 25000
 
 /**
- * Stores ETH address to the Adamant KVS if it's not there yet
+ * Stores ETH address to the ADAMANT KVS if it's not there yet
  * @param {*} context
  */
 function storeEthAddress (context) {
@@ -21,12 +21,12 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
   const transaction = {
     from: context.state.address,
     to: ethAddress,
-    value: api.fromDecimal(utils.toWei(amount)),
+    value: utils.toWei(amount)
     // gas: api.fromDecimal(ETH_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
-    gasPrice: api.fromDecimal(context.getters.gasPrice)
+    // gasPrice: context.getters.gasPrice // Set gas price to auto calc
   }
 
-  let gasLimit = api.eth.estimateGas(transaction)
+  let gasLimit = api.estimateGas(transaction)
   gasLimit = increaseFee ? (gasLimit * INCREASE_FEE_MULTIPLIER).toString(16) : gasLimit.toString(16)
   transaction.gas = '0x' + gasLimit
 
@@ -48,7 +48,7 @@ const parseTransaction = (context, tx) => {
 
 const createSpecificActions = (api, queue) => ({
   /**
-   * Requests ETH account status: balance, gas price, etc.
+   * Requests ETH account status: balance, gas price, last block height
    * @param {*} context Vuex action context
    */
   updateStatus (context) {
@@ -57,11 +57,10 @@ const createSpecificActions = (api, queue) => ({
     const supplier = () => {
       if (!context.state.address) return []
 
-      const block = context.state.blockNumber ? Math.max(0, context.state.blockNumber - 12) : 0
-
       return [
         // Balance
-        api.eth.getBalance.request(context.state.address, block || 'latest', (err, balance) => {
+        api.getBalance.request(context.state.address, 'latest', (err, balance) => {
+          console.log('balance', balance)
           if (!err) {
             context.commit('balance', Number(
               utils.toEther(balance.toString())
@@ -69,7 +68,9 @@ const createSpecificActions = (api, queue) => ({
           }
         }),
         // Current gas price
-        api.eth.getGasPrice.request((err, price) => {
+        // @todo: Why it is called twice? One success, and one failed
+        api.getGasPrice.request((err, price) => {
+          console.log('getGasPrice', price)
           if (!err) {
             const gasPrice = Math.round(ETH_GASPRICE_MULTIPLIER * price.toNumber())
             context.commit('gasPrice', {
@@ -79,7 +80,8 @@ const createSpecificActions = (api, queue) => ({
           }
         }),
         // Current block number
-        api.eth.getBlockNumber.request((err, number) => {
+        api.getBlockNumber.request((err, number) => {
+          console.log('getBlockNumber', number)
           if (!err) context.commit('blockNumber', number)
         })
       ]

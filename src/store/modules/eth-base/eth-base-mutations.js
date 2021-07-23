@@ -11,6 +11,7 @@ export default {
     state.address = account.address
     state.publicKey = account.publicKey
     state.privateKey = account.privateKey
+    state.web3Account = account.web3Account
   },
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */

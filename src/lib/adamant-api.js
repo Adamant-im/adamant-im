@@ -307,6 +307,8 @@ export function getForgedByAccount (accountPublicKey) {
 
 /**
  * Stores user address for the specified crypto
+ * Before it checks if there are any address for this crypto is already stored.
+ * If stored already, the function does nothing
  * @param {string} crypto crypto
  * @param {*} address user address for `crypto`
  * @returns {Promise<boolean>}

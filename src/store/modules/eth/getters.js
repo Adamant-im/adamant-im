@@ -11,5 +11,7 @@ export default {
 
   privateKey: state => state.privateKey,
 
+  web3Account: state => state.web3Account,
+
   ...baseGetters
 }

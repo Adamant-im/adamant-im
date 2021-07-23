@@ -1,17 +1,16 @@
 import * as bip39 from 'bip39'
 import hdkey from 'hdkey'
-import Web3 from 'web3'
-import { BN, bufferToHex, privateToAddress } from 'ethereumjs-util'
+import web3Utils from 'web3-utils'
+import BN from 'bignumber.js'
 
 const HD_KEY_PATH = "m/44'/60'/3'/1/0"
-const web3 = new Web3()
 
 /**
  * Converts Wei amount to Ether.
  * @param {string | number} wei Wei amount
  */
 export function toEther (wei) {
-  return web3.fromWei(String(wei), 'ether')
+  return web3Utils.fromWei(String(wei), 'ether')
 }
 
 /**
@@ -19,7 +18,7 @@ export function toEther (wei) {
  * @param {string | number} eth Ether amount
  */
 export function toWei (eth) {
-  return web3.toWei(String(eth), 'ether')
+  return web3Utils.toWei(String(eth), 'ether')
 }
 
 /**
@@ -27,13 +26,15 @@ export function toWei (eth) {
  * @param {string} passphrase user-defined passphrase
  * @returns {{address: string, privateKey: string}}
  */
-export function getAccountFromPassphrase (passphrase) {
+export function getAccountFromPassphrase (passphrase, api) {
   const seed = bip39.mnemonicToSeedSync(passphrase)
-  const privateKey = hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey
+  const privateKey = web3Utils.bytesToHex(hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey)
+  const web3Account = api.accounts.privateKeyToAccount(privateKey)
 
   return {
-    address: bufferToHex(privateToAddress(privateKey)),
-    privateKey: bufferToHex(privateKey)
+    web3Account,
+    address: web3Account.address,
+    privateKey
   }
 }
 
@@ -41,6 +42,7 @@ export function calculateFee (gasUsed, gasPrice) {
   const gas = new BN(+gasUsed, 10)
   const price = new BN(+gasPrice, 10)
   const fee = gas.mul(price).toString(10)
+  console.log(gas, price, fee)
   return toEther(fee)
 }
 
