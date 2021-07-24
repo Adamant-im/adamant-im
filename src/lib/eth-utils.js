@@ -102,12 +102,6 @@ export function toFraction (amount, decimals, separator = '.') {
   return whole + (fraction ? separator + fraction : '')
 }
 
-export function promisify (func, ...args) {
-  return new Promise((resolve, reject) => {
-    func(...args, (error, result) => error ? reject(error) : resolve(result))
-  })
-}
-
 export class BatchQueue {
   constructor (createBatchRequest) {
     this._createBatchRequest = createBatchRequest
