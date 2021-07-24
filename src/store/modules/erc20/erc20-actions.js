@@ -14,7 +14,6 @@ const STATUS_INTERVAL = 25000
 abiDecoder.addABI(Erc20)
 
 const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
-  console.log('initTransaction', ethAddress, amount, increaseFee)
   const contract = new api.Contract(Erc20, context.state.contractAddress)
 
   const transaction = {
@@ -24,16 +23,14 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
     // gasLimit: api.fromDecimal(ERC20_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
     // gasPrice: context.getters.gasPrice, // Set gas price to auto calc
     // nonce // Let sendTransaction choose it
-    data: contract.transfer.getData(ethAddress, ethUtils.toWhole(amount, context.state.decimals))
+    data: contract.methods.transfer(ethAddress, ethUtils.toWhole(amount, context.state.decimals)).encodeABI()
   }
 
-  let gasLimit = api.estimateGas(transaction)
-  console.log('estimateGas for ERC20', gasLimit)
-  gasLimit = increaseFee ? (gasLimit * INCREASE_FEE_MULTIPLIER).toString(16) : gasLimit.toString(16)
-  transaction.gas = '0x' + gasLimit
-  console.log('estimateGas for ERC20', gasLimit)
-
-  return transaction
+  return api.estimateGas(transaction).then(gasLimit => {
+    gasLimit = increaseFee ? gasLimit * INCREASE_FEE_MULTIPLIER : gasLimit
+    transaction.gas = gasLimit
+    return transaction
+  })
 }
 
 const parseTransaction = (context, tx) => {
@@ -63,7 +60,7 @@ const parseTransaction = (context, tx) => {
 }
 
 const createSpecificActions = (api, queue) => ({
-  /** Updates crypto balance info */
+  /** Updates ERC20 token balance */
   updateStatus (context) {
     if (!context.state.address) return
 

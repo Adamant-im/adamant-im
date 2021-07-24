@@ -39,6 +39,12 @@ export function getAccountFromPassphrase (passphrase, api) {
   }
 }
 
+/**
+ * Calculates Tx fee in ETH (not in wei) based on gas price and used gas.
+ * @param {string|number} gasUsed used gas, generally number, i. e., 51823
+ * @param {string|number} gasPrice gas price in wei. May be string, hex or dec number, i. e., "0x342770c00" (14000000000 wei)
+ * @returns {string} fee in ETH
+ */
 export function calculateFee (gasUsed, gasPrice) {
   const gas = BigNumber(gasUsed, 10)
   const price = BigNumber(gasPrice, 10)
@@ -46,6 +52,13 @@ export function calculateFee (gasUsed, gasPrice) {
   return toEther(fee)
 }
 
+/**
+ * Transforms amount in token to sats.
+ * Used for ERC20 tokens. I. e., 1.00035 RES = 100035 res-sats.
+ * @param {string|number} amount value in token
+ * @param {string|number} decimals decimal places for token's contract
+ * @returns {string} value in sats
+ */
 export function toWhole (amount, decimals) {
   let [whole, fraction] = Number(amount).toFixed(decimals).replace(/0+$/, '').split('.')
   if (!whole) whole = '0'
@@ -63,6 +76,14 @@ export function toWhole (amount, decimals) {
   return num
 }
 
+/**
+ * Transforms amount in token-sats to token.
+ * Used for ERC20 tokens. I. e., 100035 res-sats = 1.00035 RES.
+ * @param {string|number} amount value in sats
+ * @param {string|number} decimals decimal places for token's contract
+ * @param {string} separator decimal separator sign
+ * @returns {string} value in token
+ */
 export function toFraction (amount, decimals, separator = '.') {
   amount = `${amount}`
   const len = amount.length

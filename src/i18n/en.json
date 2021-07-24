@@ -274,6 +274,7 @@
     "decode_from_image": "Read QR from image",
     "error_chat_fee": "To send {crypto} via chat, you need 0.001 ADM",
     "error_dust_amount": "Dust amount—Send more tokens",
+    "error_precision": "Too high precision—Set less decimal places",
     "error_erc20_fee": "You need a {fee} to pay a transfer fee",
     "error_field_is_required": "Field is required",
     "error_incorrect_address": "Incorrect {crypto} wallet address",

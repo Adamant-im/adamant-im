@@ -28,7 +28,6 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
   }
 
   return api.estimateGas(transaction).then(gasLimit => {
-    console.log('estimateGas for ETH', gasLimit, typeof gasLimit)
     gasLimit = increaseFee ? gasLimit * INCREASE_FEE_MULTIPLIER : gasLimit
     transaction.gas = gasLimit
     return transaction
@@ -58,7 +57,6 @@ const createSpecificActions = (api, queue) => ({
 
     const supplier = () => {
       if (!context.state.address) return []
-      console.log('updateStatus')
 
       return [
         // Balance
@@ -67,7 +65,6 @@ const createSpecificActions = (api, queue) => ({
         }),
         // Current gas price
         api.getGasPrice.request((err, price) => {
-          console.log('getGasPrice', price)
           if (!err) {
             context.commit('gasPrice', {
               gasPrice: price, // string type

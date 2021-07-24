@@ -68,14 +68,11 @@ export default function createActions (config) {
     },
 
     sendTokens (context, { amount, admAddress, address, comments, increaseFee }) {
-      console.log('sendTokens')
       address = address.trim()
       const crypto = context.state.crypto
 
       return initTransaction(api, context, address, amount, increaseFee).then(ethTx => {
         return api.accounts.signTransaction(ethTx, context.state.privateKey).then(signedTx => {
-          console.log('signed:', signedTx)
-          console.log('hash:', signedTx.transactionHash)
           const txInfo = {
             signedTx,
             ethTx
@@ -110,29 +107,15 @@ export default function createActions (config) {
           )
         })
         .then((sentTxInfo) => {
-          console.log('after sent', sentTxInfo)
-
           if (sentTxInfo.error) {
             console.error(`Failed to send ${crypto} transaction`, sentTxInfo.error)
             context.commit('transactions', [{ hash: sentTxInfo.txInfo.signedTx.transactionHash, status: 'ERROR' }])
             throw sentTxInfo.error
           } else {
-            console.log('ethTx', sentTxInfo.txInfo.ethTx)
-            console.log('sendSignedTransaction', sentTxInfo.hash)
             if (sentTxInfo.hash.toLowerCase() !== sentTxInfo.txInfo.signedTx.transactionHash.toLowerCase()) {
               console.warn(`Something wrong with sent ETH tx, computed hash and sent tx differs: ${sentTxInfo.txInfo.signedTx.transactionHash} and ${sentTxInfo.hash}`)
             }
-            console.log('commiting:')
-            console.log({
-              hash: sentTxInfo.hash,
-              senderId: sentTxInfo.txInfo.ethTx.from,
-              recipientId: address,
-              amount,
-              fee: utils.calculateFee(sentTxInfo.txInfo.ethTx.gas, sentTxInfo.txInfo.ethTx.gasPrice),
-              status: 'PENDING',
-              timestamp: Date.now(),
-              gasPrice: sentTxInfo.txInfo.ethTx.gasPrice
-            })
+
             context.commit('transactions', [{
               hash: sentTxInfo.hash,
               senderId: sentTxInfo.txInfo.ethTx.from,
@@ -160,7 +143,6 @@ export default function createActions (config) {
       if (!transaction) return
 
       const supplier = () => api.getBlock.request(payload.blockNumber, (err, block) => {
-        console.log('getBlock', block)
         if (!err && block) {
           context.commit('transactions', [{
             hash: transaction.hash,
