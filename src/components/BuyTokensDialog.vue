@@ -42,19 +42,6 @@
               <v-list-tile-title>CoinDeal</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-
-          <v-list-tile
-            avatar
-            @click="openLink('https://atomars.com/refcode/kaba')"
-          >
-            <v-list-tile-avatar>
-              <icon><atomars-icon /></icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>Atomars</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
         </v-list>
       </v-card-text>
     </v-card>
@@ -66,15 +53,13 @@ import validateAddress from '@/lib/validateAddress'
 import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import CdlIcon from '@/components/icons/common/Cdl'
-import AtomarsIcon from '@/components/icons/common/Atomars'
 import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
   components: {
     Icon,
     CryptoIcon,
-    CdlIcon,
-    AtomarsIcon
+    CdlIcon
   },
   props: {
     value: {
