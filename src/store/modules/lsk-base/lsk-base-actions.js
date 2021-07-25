@@ -217,6 +217,7 @@ function createActions (options) {
         context.state.transactionsCount = 0
         context.state.maxTimestamp = -1
         context.state.minTimestamp = Infinity
+        context.commit('bottom', false)
       }
       if (context.state.maxTimestamp > 0) {
         options.fromTimestamp = context.state.maxTimestamp
@@ -272,7 +273,7 @@ function createActions (options) {
         // Successful but empty response means, that the oldest transaction for the current
         // address has been received already
         if (transactions && transactions.length === 0) {
-          context.commit('bottom')
+          context.commit('bottom', true)
         }
       }, error => {
         context.commit('areOlderLoading', false)

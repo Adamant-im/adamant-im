@@ -40,6 +40,7 @@ export default {
       context.state.transactionsCount = 0
       context.state.maxHeight = -1
       context.state.minHeight = Infinity
+      context.commit('bottom', false)
     }
     if (context.state.maxHeight > 0) {
       options.fromHeight = context.state.maxHeight + 1
@@ -93,7 +94,7 @@ export default {
       // Successful but empty response means, that the oldest transaction for the current
       // address has been received already
       if (response.success && !hasResult) {
-        context.commit('bottom')
+        context.commit('bottom', true)
       }
     }, error => {
       context.commit('areOlderLoading', false)

@@ -16,8 +16,8 @@ export default {
   },
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
-  bottom (state) {
-    state.bottomReached = true
+  bottom (state, value) {
+    state.bottomReached = value
   },
 
   /**

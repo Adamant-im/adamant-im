@@ -290,6 +290,7 @@ export default function createActions (config) {
         context.state.transactionsCount = 0
         context.state.maxHeight = -1
         context.state.minHeight = Infinity
+        context.commit('bottom', false)
       }
       const { address, maxHeight, contractAddress, decimals } = context.state
       const from = maxHeight > 0 ? maxHeight + 1 : 0
@@ -341,7 +342,7 @@ export default function createActions (config) {
           context.commit('transactions', { transactions: result.items, updateTimestamps: true })
 
           if (!result.items.length) {
-            context.commit('bottom')
+            context.commit('bottom', true)
           }
         },
         error => {

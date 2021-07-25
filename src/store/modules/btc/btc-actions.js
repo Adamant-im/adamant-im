@@ -81,7 +81,7 @@ const getOldTransactions = async (api, context) => {
   context.commit('areOlderLoading', false)
 
   if (chunk.length < TX_CHUNK_SIZE) {
-    context.commit('bottom')
+    context.commit('bottom', true)
   }
 }
 
