@@ -15,7 +15,7 @@
     <container>
       <v-list class="transparent">
         <v-list-tile>
-          <v-list-tile-content>
+          <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.amount') }}
             </v-list-tile-title>
@@ -31,11 +31,8 @@
         <v-divider />
 
         <v-list-tile>
-          <v-list-tile-content>
-            <v-list-tile-title
-              :class="`${className}__title`"
-              style="width: fit-content;"
-            >
+          <v-list-tile-content :class="`${className}__titlecontent`">
+            <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.status') }}
               <v-icon
                 v-if="statusUpdatable"
@@ -44,7 +41,6 @@
               >
                 mdi-refresh
               </v-icon>
-              {{ '&nbsp;&nbsp;&nbsp;' }}
             </v-list-tile-title>
           </v-list-tile-content>
 
@@ -63,7 +59,7 @@
         <v-divider />
 
         <v-list-tile>
-          <v-list-tile-content>
+          <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.date') }}
             </v-list-tile-title>
@@ -79,7 +75,7 @@
         <v-divider />
 
         <v-list-tile>
-          <v-list-tile-content>
+          <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.confirmations') }}
             </v-list-tile-title>
@@ -95,7 +91,7 @@
         <v-divider />
 
         <v-list-tile>
-          <v-list-tile-content>
+          <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.commission') }}
             </v-list-tile-title>
@@ -165,7 +161,7 @@
           v-if="explorerLink"
           @click="openInExplorer"
         >
-          <v-list-tile-content>
+          <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.explorer') }}
             </v-list-tile-title>
@@ -186,7 +182,7 @@
           v-if="partner && !ifComeFromChat"
           @click="openChat"
         >
-          <v-list-tile-content>
+          <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
               {{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}
             </v-list-tile-title>
@@ -315,6 +311,8 @@ export default {
 .transaction-view
   &__title
     font-weight: 300
+  &__titlecontent
+    flex: 1 0 auto
   &__value
     font-weight: 300
     font-size: 14px
