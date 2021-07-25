@@ -51,6 +51,7 @@ import throttle from 'lodash/throttle'
 
 import AChatMessage from './AChatMessage'
 import AChatTransaction from './AChatTransaction'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 const emitScroll = throttle(function () {
   this.$emit('scroll', this.currentScrollTop, this.isScrolledToBottom())
@@ -171,7 +172,7 @@ export default {
      * @returns {{ id: string, name: string }}
      */
     getSenderMeta (senderId) {
-      return this.partners.find(partner => partner.id === senderId)
+      return this.partners.find(partner => isStringEqualCI(partner.id, senderId))
     }
   }
 }

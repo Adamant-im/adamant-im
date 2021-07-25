@@ -218,6 +218,7 @@ import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
 
 import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 /**
  * @returns {string | boolean}
@@ -448,7 +449,7 @@ export default {
       return {
         cryptoAddress: [
           v => validateAddress(this.currency, v) || this.$t('transfer.error_incorrect_address', { crypto: this.currency }),
-          v => (v !== this.ownAddress || isSelfTxAllowed(this.currency)) || this.$t('transfer.error_same_recipient')
+          v => (!isStringEqualCI(v, this.ownAddress) || isSelfTxAllowed(this.currency)) || this.$t('transfer.error_same_recipient')
         ],
         amount: [
           v => v > 0 || this.$t('transfer.error_incorrect_amount'),

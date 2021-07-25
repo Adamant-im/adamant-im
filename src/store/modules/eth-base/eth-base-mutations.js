@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   /** Set ETH balance */
@@ -39,7 +40,7 @@ export default {
 
       Object.keys(tx).forEach(key => tx[key] === undefined && delete tx[key])
 
-      const direction = tx.recipientId === address ? 'to' : 'from'
+      const direction = isStringEqualCI(tx.recipientId, address) ? 'to' : 'from'
       const newTx = Object.assign(
         { direction, id: tx.hash },
         state.transactions[tx.hash],

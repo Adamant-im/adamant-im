@@ -132,6 +132,7 @@ import dateFilter from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import FreeTokensDialog from '@/components/FreeTokensDialog'
 import { websiteUriToOnion } from '@/lib/uri'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 /**
  * Returns user meta by userId.
@@ -144,7 +145,7 @@ function getUserMeta (userId) {
     name: ''
   }
 
-  if (userId === this.userId) {
+  if (isStringEqualCI(userId, this.userId)) {
     user.name = this.$t('chats.you')
   } else {
     user.name = this.getPartnerName(userId)

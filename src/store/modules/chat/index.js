@@ -11,6 +11,7 @@ import {
 } from '@/lib/chatHelpers'
 import { isNumeric } from '@/lib/numericHelpers'
 import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export let interval
 
@@ -300,7 +301,7 @@ const mutations = {
    * @param {string} userId Your address
    */
   pushMessage (state, { message, userId }) {
-    const partnerId = message.senderId === userId
+    const partnerId = isStringEqualCI(message.senderId, userId)
       ? message.recipientId
       : message.senderId
 
@@ -340,7 +341,7 @@ const mutations = {
         message.height === undefined || // unconfirmed transaction (socket)
         (message.height > state.lastMessageHeight && state.lastMessageHeight > 0)
       ) &&
-      userId !== message.senderId // do not notify yourself when send message from other device
+      !isStringEqualCI(userId, message.senderId) // do not notify yourself when send message from other device
     ) {
       chat.numOfNewMessages += 1
     }

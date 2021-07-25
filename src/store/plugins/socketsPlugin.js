@@ -1,9 +1,10 @@
 import socketClient from '@/lib/sockets'
 import { decodeChat, getPublicKey } from '@/lib/adamant-api'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 function subscribe (store) {
   socketClient.subscribe('newMessage', transaction => {
-    const promise = (transaction.recipientId === store.state.address)
+    const promise = (isStringEqualCI(transaction.recipientId, store.state.address))
       ? Promise.resolve(transaction.senderPublicKey)
       : getPublicKey(transaction.recipientId)
 

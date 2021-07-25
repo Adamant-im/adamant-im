@@ -20,6 +20,7 @@ import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
 import { Cryptos } from '../../lib/constants'
 import partnerName from '@/mixins/partnerName'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   name: 'AdmTransaction',
@@ -60,7 +61,7 @@ export default {
   methods: {
     formatAddress (address) {
       let name = ''
-      if (address === this.$store.state.address) {
+      if (isStringEqualCI(address, this.$store.state.address)) {
         name = this.$t('transaction.me')
       } else {
         name = this.getPartnerName(address)

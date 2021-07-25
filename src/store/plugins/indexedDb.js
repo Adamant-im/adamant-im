@@ -6,6 +6,7 @@ import router from '@/router'
 import { Modules, Chats, Security, clearDb } from '@/lib/idb'
 import { restoreState, modules } from '@/lib/idb/state'
 import { Cryptos } from '@/lib/constants'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 const chatModuleMutations = ['setHeight', 'setFulfilled']
 const multipleChatMutations = ['markAllAsRead', 'createEmptyChat', 'createAdamantChats']
@@ -174,7 +175,7 @@ export default store => {
 
           switch (mutationName) {
             case 'pushMessage':
-              chatId = mutation.payload.message.senderId === mutation.payload.userId
+              chatId = isStringEqualCI(mutation.payload.message.senderId, mutation.payload.userId)
                 ? mutation.payload.message.recipientId
                 : mutation.payload.message.senderId
               break

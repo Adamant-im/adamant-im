@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 import { resetState } from '../../../lib/reset-state'
 import getInitialState from './adm-state'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   /** Resets module state */
@@ -37,8 +38,8 @@ export default {
       if (!tx) return
       Vue.set(state.transactions, tx.id, {
         ...tx,
-        direction: tx.recipientId === address ? 'to' : 'from',
-        partner: tx.recipientId === address ? tx.senderId : tx.recipientId
+        direction: isStringEqualCI(tx.recipientId, address) ? 'to' : 'from',
+        partner: isStringEqualCI(tx.recipientId, address) ? tx.senderId : tx.recipientId
       })
 
       if (tx.height && updateTimestamps) {

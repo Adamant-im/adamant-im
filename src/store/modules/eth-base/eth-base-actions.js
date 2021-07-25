@@ -4,6 +4,7 @@ import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as utils from '../../../lib/eth-utils'
 import { getTransactions } from '../../../lib/eth-index'
 import * as tf from '../../../lib/transactionsFetching'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 /** Interval between attempts to fetch the registered tx details */
 const RETRY_TIMEOUT = 20 * 1000
@@ -112,7 +113,7 @@ export default function createActions (config) {
             context.commit('transactions', [{ hash: sentTxInfo.txInfo.signedTx.transactionHash, status: 'ERROR' }])
             throw sentTxInfo.error
           } else {
-            if (sentTxInfo.hash.toLowerCase() !== sentTxInfo.txInfo.signedTx.transactionHash.toLowerCase()) {
+            if (!isStringEqualCI(sentTxInfo.hash, sentTxInfo.txInfo.signedTx.transactionHash)) {
               console.warn(`Something wrong with sent ETH tx, computed hash and sent tx differs: ${sentTxInfo.txInfo.signedTx.transactionHash} and ${sentTxInfo.hash}`)
             }
 

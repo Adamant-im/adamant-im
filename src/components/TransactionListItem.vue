@@ -13,7 +13,7 @@
           :class="`${className}__icon`"
           :size="20"
         >
-          {{ senderId === userId ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}
+          {{ isStringEqualCI(senderId, userId) ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}
         </v-icon>
       </v-list-tile-avatar>
 
@@ -78,6 +78,7 @@
 import dateFilter from '@/filters/date'
 import { EPOCH, Cryptos } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   filters: {
@@ -122,12 +123,12 @@ export default {
       }
     },
     partnerId () {
-      return this.senderId === this.userId
+      return isStringEqualCI(this.senderId, this.userId)
         ? this.recipientId
         : this.senderId
     },
     partnerAdmId () {
-      return this.getAdmTx.senderId === this.$store.state.address
+      return isStringEqualCI(this.getAdmTx.senderId, this.$store.state.address)
         ? this.getAdmTx.recipientId
         : this.getAdmTx.senderId
     },
@@ -159,9 +160,9 @@ export default {
       return this.admTx()
     },
     directionClass () {
-      if (this.senderId === this.userId && this.recipientId === this.userId) {
+      if (isStringEqualCI(this.senderId, this.userId) && isStringEqualCI(this.recipientId, this.userId)) {
         return `${this.className}__amount--is-itself`
-      } else if (this.senderId === this.userId) {
+      } else if (isStringEqualCI(this.senderId, this.userId)) {
         return `${this.className}__amount--is-outgoing`
       } else {
         return `${this.className}__amount--is-incoming`
@@ -172,6 +173,9 @@ export default {
     }
   },
   methods: {
+    isStringEqualCI (string1, string2) {
+      return isStringEqualCI(string1, string2)
+    },
     isCryptoADM () {
       return this.crypto === Cryptos.ADM
     },

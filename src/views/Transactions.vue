@@ -61,7 +61,7 @@
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import InlineSpinner from '@/components/InlineSpinner'
 import TransactionListItem from '@/components/TransactionListItem'
-// import scrollPosition from '@/mixins/scrollPosition'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   components: {
@@ -87,7 +87,7 @@ export default {
       return transactions.filter(tx => {
         // Filter invalid "fake" transactions (from chat rich message)
         return Object.prototype.hasOwnProperty.call(tx, 'amount') && (
-          tx.recipientId === address || tx.senderId === address
+          isStringEqualCI(tx.recipientId, address) || isStringEqualCI(tx.senderId, address)
         )
       })
     },

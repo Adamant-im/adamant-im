@@ -8,6 +8,7 @@ import { encryptPassword } from '@/lib/idb/crypto'
 import { restoreState } from '@/lib/idb/state'
 import i18n from '@/i18n'
 import store from '@/store'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 Queue.configure(Promise)
 
@@ -413,7 +414,7 @@ export function getChats (from = 0, offset = 0, orderBy = 'desc') {
     const { count, transactions } = response
 
     const promises = transactions.map(transaction => {
-      const promise = (transaction.recipientId === myAddress)
+      const promise = (isStringEqualCI(transaction.recipientId, myAddress))
         ? Promise.resolve(transaction.senderPublicKey)
         : queue.add(() => getPublicKey(transaction.recipientId))
 

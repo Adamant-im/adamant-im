@@ -1,3 +1,5 @@
+import { isStringEqualCI } from '@/lib/textHelpers'
+
 const AllowAmountErrorPercent = 0.3
 const AllowTimestampDeltaSec = 1800 // 30 min
 
@@ -71,7 +73,7 @@ export function verifyTransactionDetails (transaction, admSpecialMessage, { reci
       }
     }
 
-    if (transaction.senderId.toLowerCase() !== senderCryptoAddress.toLowerCase()) {
+    if (!isStringEqualCI(transaction.senderId, senderCryptoAddress)) {
       return {
         isTxConsistent: false,
         txCoin: coin,
@@ -79,7 +81,7 @@ export function verifyTransactionDetails (transaction, admSpecialMessage, { reci
       }
     }
 
-    if (transaction.recipientId.toLowerCase() !== recipientCryptoAddress.toLowerCase()) {
+    if (!isStringEqualCI(transaction.recipientId, recipientCryptoAddress)) {
       return {
         isTxConsistent: false,
         txCoin: coin,

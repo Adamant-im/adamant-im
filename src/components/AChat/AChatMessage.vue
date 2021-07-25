@@ -1,16 +1,16 @@
 <template>
   <div
     class="a-chat__message-container"
-    :class="{ 'a-chat__message-container--right': sender.id === userId }"
+    :class="{ 'a-chat__message-container--right': isStringEqualCI(sender.id, userId) }"
   >
     <div
       class="a-chat__message"
-      :class="{ 'a-chat__message--highlighted': sender.id === userId }"
+      :class="{ 'a-chat__message--highlighted': isStringEqualCI(sender.id, userId) }"
     >
       <div
         v-if="showAvatar"
         class="a-chat__message-avatar hidden-xs-only"
-        :class="{ 'a-chat__message-avatar--right': sender.id === userId }"
+        :class="{ 'a-chat__message-avatar--right': isStringEqualCI(sender.id, userId) }"
       >
         <slot name="avatar" />
       </div>
@@ -73,6 +73,8 @@
 </template>
 
 <script>
+import { isStringEqualCI } from '@/lib/textHelpers'
+
 export default {
   props: {
     id: {
@@ -138,7 +140,12 @@ export default {
       }
     },
     isOutgoingMessage () {
-      return this.sender.id === this.userId
+      return isStringEqualCI(this.sender.id, this.userId)
+    }
+  },
+  methods: {
+    isStringEqualCI (string1, string2) {
+      return isStringEqualCI(string1, string2)
     }
   }
 }

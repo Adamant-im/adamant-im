@@ -73,3 +73,14 @@ export function downloadFile (data, filename, type) {
 export function uniqueCaseInsensitiveArray (values) {
   return [...new Map(values.map(s => [s.toLowerCase(), s])).values()]
 }
+
+/**
+ * Compares two strings, case insensitive
+ * @param {string} string1
+ * @param {string} string2
+ * @return {boolean} true, if strings are equal, case insensitive
+ */
+export function isStringEqualCI (string1, string2) {
+  if (typeof string1 !== 'string' || typeof string2 !== 'string') return false
+  return string1.toUpperCase() === string2.toUpperCase()
+}

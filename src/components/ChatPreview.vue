@@ -93,6 +93,7 @@ import Icon from '@/components/icons/BaseIcon'
 import AdmFillIcon from '@/components/icons/AdmFill'
 import partnerName from '@/mixins/partnerName'
 import { tsIcon } from '@/lib/constants'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   filters: {
@@ -170,14 +171,14 @@ export default {
       return this.lastMessageTextLocalized
     },
     transactionDirection () {
-      const direction = this.userId === this.transaction.senderId
+      const direction = isStringEqualCI(this.userId, this.transaction.senderId)
         ? this.$t('chats.sent_label')
         : this.$t('chats.received_label')
 
       return direction
     },
     isIncomingTransaction () {
-      return this.userId !== this.transaction.senderId
+      return !isStringEqualCI(this.userId, this.transaction.senderId)
     },
     numOfNewMessages () {
       return this.$store.getters['chat/numOfNewMessages'](this.contactId)

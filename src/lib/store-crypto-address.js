@@ -2,7 +2,7 @@ import * as admApi from './adamant-api'
 import store from '@/store'
 import { Cryptos, isErc20 } from './constants'
 import { vueBus } from '@/main'
-import { uniqueCaseInsensitiveArray } from '@/lib/textHelpers'
+import { uniqueCaseInsensitiveArray, isStringEqualCI } from '@/lib/textHelpers'
 
 let queue = { }
 let stored = []
@@ -67,7 +67,7 @@ export function validateStoredCryptoAddresses () {
         admApi.getStored(key, store.state.address, 20).then(txs => {
           if (txs.length > 0) {
             const validateInfo = parseCryptoAddressesKVStxs(txs)
-            validateInfo.isMainAddressValid = validateInfo.mainAddress.toLowerCase() === address.toLowerCase()
+            validateInfo.isMainAddressValid = isStringEqualCI(validateInfo.mainAddress, address)
             store.state.adm.validatedCryptos[crypto] = validateInfo
           }
         })

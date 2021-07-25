@@ -22,6 +22,7 @@ import getExplorerUrl from '../../lib/getExplorerUrl'
 import { Cryptos, TransactionStatus as TS } from '../../lib/constants'
 import partnerName from '@/mixins/partnerName'
 import { verifyTransactionDetails } from '@/lib/txVerify'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   name: 'EthTransaction',
@@ -57,7 +58,7 @@ export default {
     partner () {
       if (this.transaction.partner) return this.transaction.partner
 
-      const id = this.transaction.senderId !== this.$store.state.eth.address
+      const id = !isStringEqualCI(this.transaction.senderId, this.$store.state.eth.address)
         ? this.transaction.senderId
         : this.transaction.recipientId
       return this.getAdmAddress(id)
@@ -107,7 +108,7 @@ export default {
       const partners = this.$store.state.partners.list
       Object.keys(partners).some(uid => {
         const partner = partners[uid]
-        if (partner[Cryptos.ETH] === address) {
+        if (isStringEqualCI(partner[Cryptos.ETH], address)) {
           admAddress = uid
         }
         return !!admAddress
@@ -118,7 +119,7 @@ export default {
         Object.values(this.$store.state.chat.chats).some(chat => {
           Object.values(chat.messages).some(msg => {
             if (msg.hash && msg.hash === this.id) {
-              admAddress = msg.senderId === this.$store.state.address ? msg.recipientId : msg.senderId
+              admAddress = isStringEqualCI(msg.senderId, this.$store.state.address) ? msg.recipientId : msg.senderId
             }
             return !!admAddress
           })
@@ -133,7 +134,7 @@ export default {
       const admAddress = this.getAdmAddress(address)
       let name = ''
 
-      if (address === this.$store.state.eth.address) {
+      if (isStringEqualCI(address, this.$store.state.eth.address)) {
         name = this.$t('transaction.me')
       } else {
         name = this.getPartnerName(admAddress)

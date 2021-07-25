@@ -1,7 +1,7 @@
 <template>
   <div
     class="a-chat__message-container"
-    :class="{ 'a-chat__message-container--right': sender.id === userId }"
+    :class="{ 'a-chat__message-container--right': isStringEqualCI(sender.id, userId) }"
   >
     <div
       class="a-chat__message"
@@ -29,7 +29,7 @@
 
         <div>
           <div class="a-chat__direction a-text-regular-bold">
-            {{ sender.id === userId ? i18n.sent : i18n.received }}
+            {{ isStringEqualCI(sender.id, userId) ? i18n.sent : i18n.received }}
           </div>
           <div
             class="a-chat__amount"
@@ -55,6 +55,7 @@
 
 <script>
 import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   props: {
@@ -134,6 +135,9 @@ export default {
     this.$emit('mount')
   },
   methods: {
+    isStringEqualCI (string1, string2) {
+      return isStringEqualCI(string1, string2)
+    },
     onClickAmount () {
       if (this.isClickable) {
         this.$emit('click:transaction', this.id)
