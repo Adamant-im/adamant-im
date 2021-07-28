@@ -106,7 +106,7 @@ function createActions (options) {
         ))
         .then(({ hash, error }) => {
           if (error) {
-            context.commit('transactions', [{ hash, status: 'ERROR' }])
+            context.commit('transactions', [{ hash, status: 'REJECTED' }])
             throw error
           } else {
             console.log(`${crypto} transaction has been sent: ${hash}`)
@@ -141,7 +141,6 @@ function createActions (options) {
       if (existing && !payload.force) return
 
       // Set a stub so far, if the transaction is not in the store yet
-      // if (!existing || existing.status === 'ERROR') {
       if (!existing || payload.dropStatus) {
         payload.updateOnly = false
         context.commit('transactions', [{
@@ -164,7 +163,7 @@ function createActions (options) {
       if (tx) {
         context.commit('transactions', [tx])
         // The transaction has been confirmed, we're done here
-        if (tx.status === 'SUCCESS') return
+        if (tx.status === 'CONFIRMED') return
 
         // If it's not confirmed but is already registered, keep on trying to fetch its details
         retryTimeout = fetchRetryTimeout
@@ -182,7 +181,7 @@ function createActions (options) {
 
       if (!retry) {
         // If we're here, we have abandoned any hope to get the transaction details.
-        context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
+        context.commit('transactions', [{ hash: payload.hash, status: 'REJECTED' }])
       } else if (!payload.updateOnly) {
         // Try to get the details one more time
         const newPayload = {

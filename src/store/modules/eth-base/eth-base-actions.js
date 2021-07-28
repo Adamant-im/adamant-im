@@ -110,7 +110,7 @@ export default function createActions (config) {
         .then((sentTxInfo) => {
           if (sentTxInfo.error) {
             console.error(`Failed to send ${crypto} transaction`, sentTxInfo.error)
-            context.commit('transactions', [{ hash: sentTxInfo.txInfo.signedTx.transactionHash, status: 'ERROR' }])
+            context.commit('transactions', [{ hash: sentTxInfo.txInfo.signedTx.transactionHash, status: 'REJECTED' }])
             throw sentTxInfo.error
           } else {
             if (!isStringEqualCI(sentTxInfo.hash, sentTxInfo.txInfo.signedTx.transactionHash)) {
@@ -201,7 +201,7 @@ export default function createActions (config) {
 
         if (!retry) {
           // Give up, if transaction could not be found after so many attempts
-          context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
+          context.commit('transactions', [{ hash: payload.hash, status: 'REJECTED' }])
         } else if (!payload.updateOnly) {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far
@@ -244,10 +244,10 @@ export default function createActions (config) {
 
           if (Number(tx.status) === 0) {
             // Status "0x0" means that the transaction has been rejected
-            update.status = 'ERROR'
+            update.status = 'REJECTED'
           } else if (tx.blockNumber) {
             // If blockNumber is not null, the transaction is confirmed
-            update.status = 'SUCCESS'
+            update.status = 'CONFIRMED'
             update.blockNumber = tx.blockNumber
           }
 

@@ -17,7 +17,7 @@
           <div class="a-chat__status">
             <v-icon
               size="13"
-              :title="i18n.statuses[status]"
+              :title="statusTitle"
               :color="statusColor"
               :style="statusUpdatable ? 'cursor: pointer;': 'cursor: default;'"
               @click="updateStatus"
@@ -29,7 +29,7 @@
 
         <div>
           <div class="a-chat__direction a-text-regular-bold">
-            {{ isStringEqualCI(sender.id, userId) ? i18n.sent : i18n.received }}
+            {{ isStringEqualCI(sender.id, userId) ? $t('chats.sent_label') : $t('chats.received_label') }}
           </div>
           <div
             class="a-chat__amount"
@@ -91,29 +91,13 @@ export default {
       type: [Number, String],
       default: 0
     },
-    i18n: {
-      type: Object,
-      default: () => ({
-        sent: 'Sent',
-        received: 'Received',
-        statuses: {
-          confirmed: '',
-          delivered: '',
-          pending: '',
-          rejected: '',
-          invalid: '',
-          unknown: ''
-        }
-      })
-    },
     locale: {
       type: String,
       default: 'en'
     },
     status: {
-      type: String,
-      default: 'confirmed',
-      validator: v => ['confirmed', 'delivered', 'pending', 'rejected', 'invalid', 'unknown'].includes(v)
+      type: Object,
+      required: true
     },
     isClickable: {
       type: Boolean,
@@ -121,14 +105,17 @@ export default {
     }
   },
   computed: {
+    statusTitle () {
+      return this.$t(`chats.transaction_statuses.${this.status.virtualStatus}`)
+    },
     statusIcon () {
-      return tsIcon(this.status)
+      return tsIcon(this.status.virtualStatus)
     },
     statusUpdatable () {
-      return tsUpdatable(this.status, this.currency)
+      return tsUpdatable(this.status.virtualStatus, this.currency)
     },
     statusColor () {
-      return tsColor(this.status)
+      return tsColor(this.status.virtualStatus)
     }
   },
   mounted () {

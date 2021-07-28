@@ -110,7 +110,7 @@ export default class LskBaseApi {
       id: tx.id,
       hash: tx.id,
       fee: tx.fee,
-      status: tx.confirmations > 0 ? 'SUCCESS' : 'REGISTERED',
+      status: tx.confirmations > 0 ? 'CONFIRMED' : 'REGISTERED',
       timestamp: tx.timestamp,
       direction,
       senderId: tx.senderId,

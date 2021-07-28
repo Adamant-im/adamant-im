@@ -108,7 +108,7 @@ function createActions (options) {
         ))
         .then(({ hash, error }) => {
           if (error) {
-            context.commit('transactions', [{ hash, status: 'ERROR' }])
+            context.commit('transactions', [{ hash, status: 'REJECTED' }])
             throw error
           } else {
             console.log(`${crypto} transaction has been sent: ${hash}`)
@@ -181,7 +181,7 @@ function createActions (options) {
 
       if (!retry) {
         // If we're here, we have abandoned any hope to get the transaction details.
-        context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
+        context.commit('transactions', [{ hash: payload.hash, status: 'REJECTED' }])
       } else if (!payload.updateOnly) {
         // Try to get the details one more time
         const newPayload = {

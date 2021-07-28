@@ -621,19 +621,19 @@ const actions = {
           throw new Error('Message rejected')
         }
 
-        // update `message.status` to 'confirmed'
+        // update `message.status` to 'REGISTERED'
         // and `message.id` with `realId` from server
         commit('updateMessage', {
           id: messageObject.id,
           realId: res.transactionId,
-          status: TS.DELIVERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
+          status: TS.REGISTERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
           partnerId: recipientId
         })
 
         return res
       })
       .catch(err => {
-        // update `message.status` to 'rejected'
+        // update `message.status` to 'REJECTED'
         commit('updateMessage', {
           id: messageObject.id,
           status: TS.REJECTED,
@@ -671,7 +671,7 @@ const actions = {
           commit('updateMessage', {
             id: messageId,
             realId: res.transactionId,
-            status: TS.DELIVERED,
+            status: TS.REGISTERED,
             partnerId: recipientId
           })
 
@@ -697,7 +697,7 @@ const actions = {
    * @param {number} transactionId
    * @param {string} recipientId
    * @param {string} type ADM, ETH...
-   * @param {string} status Can be: `sent`, `confirmed`, 'rejected'
+   * @param {string} status Can be: `sent`, `confirmed`, 'REJECTED'
    * @param {number} amount
    * @param {string} hash Transaction hash
    * @param {string} comment Transaction comment

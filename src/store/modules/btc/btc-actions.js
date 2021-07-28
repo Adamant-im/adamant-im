@@ -35,7 +35,7 @@ const customActions = getApi => ({
   updateTransaction ({ dispatch, getters }, payload) {
     const tx = getters.transaction(payload.hash)
 
-    if (tx && (tx.status === 'SUCCESS' || tx.status === 'ERROR')) {
+    if (tx && (tx.status === 'CONFIRMED' || tx.status === 'REJECTED')) {
       // If transaction is in one of the final statuses (either succeeded or failed),
       // just update the current height to recalculate its confirmations counter.
       return dispatch('updateHeight')

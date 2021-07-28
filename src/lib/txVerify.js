@@ -49,7 +49,7 @@ export function verifyTransactionDetails (transaction, admSpecialMessage, { reci
       }
     }
 
-    if (transaction.hash !== admSpecialMessage.hash) {
+    if (!isStringEqualCI(transaction.hash, admSpecialMessage.hash)) {
       return {
         isTxConsistent: false,
         txCoin: coin,
@@ -65,7 +65,8 @@ export function verifyTransactionDetails (transaction, admSpecialMessage, { reci
       }
     }
 
-    if (!verifyTimestamp(transaction.timestamp, admSpecialMessage.timestamp)) {
+    // Don't check timestamp if there is no timestamp yet. F. e. transaction.instantsend = true for Dash
+    if (transaction.timestamp && !verifyTimestamp(transaction.timestamp, admSpecialMessage.timestamp)) {
       return {
         isTxConsistent: false,
         txCoin: coin,

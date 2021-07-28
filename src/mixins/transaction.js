@@ -1,4 +1,4 @@
-import { Cryptos, TransactionStatus as TS } from '@/lib/constants'
+import { Cryptos, TransactionStatus as TS, TransactionAdditionalStatus as TAS } from '@/lib/constants'
 import { verifyTransactionDetails } from '@/lib/txVerify'
 
 export default {
@@ -53,53 +53,83 @@ export default {
       return Promise.all([recipientCryptoAddress, senderCryptoAddress])
     },
 
+    /**
+     * Get Tx status with additional info to show in Chat, ChatPreview and TransactionTemplate
+     * @param {{ id: string, type: string, hash: string }} admSpecialMessage
+     * @returns {object}
+     */
     getTransactionStatus (admSpecialMessage) {
-      if (!admSpecialMessage) return TS.PENDING
+      const status = {
+        status: TS.PENDING,
+        virtualStatus: TS.PENDING,
+        inconsistentReason: '',
+        addStatus: TAS.NONE,
+        addDescription: ''
+      }
 
+      if (!admSpecialMessage) return status
+      status.status = admSpecialMessage.status
+      status.virtualStatus = admSpecialMessage.status
       const { hash, type, senderId, recipientId } = admSpecialMessage
 
       // ADM transaction already has property `status`
-      // if (type === Cryptos.ADM) return admSpecialMessage.status
-      if (type === Cryptos.ADM) {
-        // Special case for socket ADM transfer
-        if (admSpecialMessage.amount > 0 && admSpecialMessage.height === undefined && !admSpecialMessage.message && admSpecialMessage.status === 'delivered') {
-          admSpecialMessage.status = 'confirmed'
+      if (type === Cryptos.ADM || type === 'message') {
+        // Registered ADM transactions must be shown as confirmed, as they are socket-enabled
+        // if (admSpecialMessage.amount > 0 && admSpecialMessage.height === undefined && !admSpecialMessage.message && admSpecialMessage.status === TS.REGISTERED) {
+        if (admSpecialMessage.height === undefined && admSpecialMessage.status === TS.REGISTERED) {
+          status.virtualStatus = TS.CONFIRMED
+          status.addStatus = TAS.ADM_REGISTERED
+          status.addDescription = this.$t('transaction.statuses_add.adm_registered')
         }
-        return admSpecialMessage.status
+        return status
+      } else if (!Cryptos[type]) {
+        // if crypto is not supported
+        status.status = TS.UNKNOWN
+        status.virtualStatus = TS.UNKNOWN
+        return status
       }
-      if (!Cryptos[type]) return admSpecialMessage.status // if crypto is not supported
 
       const getterName = type.toLowerCase() + '/transaction'
       const getter = this.$store.getters[getterName]
-
-      if (!getter) return admSpecialMessage.status
+      if (!getter) return status
 
       const transaction = getter(hash)
-      let status = (transaction && transaction.status) || 'PENDING'
+      status.status = (transaction && transaction.status) || TS.PENDING
+      status.virtualStatus = status.status
 
       const recipientCryptoAddress = this.$store.getters['partners/cryptoAddress'](recipientId, type)
       const senderCryptoAddress = this.$store.getters['partners/cryptoAddress'](senderId, type)
 
       // do not update status until cryptoAddresses and transaction are received
-      if (!recipientCryptoAddress || !senderCryptoAddress || !transaction) return TS.PENDING
-
-      if (status === 'SUCCESS') {
-        // sometimes timestamp is missing (ETHLike transactions)
-        if (!transaction.timestamp) return TS.PENDING
-
-        const txVerify = verifyTransactionDetails(transaction, admSpecialMessage, { recipientCryptoAddress, senderCryptoAddress })
-        if (txVerify.isTxConsistent) {
-          status = TS.CONFIRMED
-        } else {
-          status = TS.INVALID
-        }
-      } else {
-        status = (status === 'PENDING' || status === 'REGISTERED')
-          ? TS.PENDING
-          : TS.REJECTED
+      if (!recipientCryptoAddress || !senderCryptoAddress || !transaction) {
+        status.status = TS.PENDING
+        status.virtualStatus = TS.PENDING
+        return status
       }
 
+      // check if Tx is not a fake
+      if (status.status === TS.CONFIRMED || status.status === TS.REGISTERED) {
+        const txVerify = verifyTransactionDetails(transaction, admSpecialMessage, { recipientCryptoAddress, senderCryptoAddress })
+        if (!txVerify.isTxConsistent) {
+          status.status = TS.INVALID
+          status.virtualStatus = TS.INVALID
+          status.inconsistentReason = txVerify.txInconsistentReason
+          return status
+        }
+      }
+
+      if (status.status === TS.REGISTERED) {
+        // Dash InstantSend transactions must be shown as confirmed
+        if (transaction.instantsend) {
+          status.virtualStatus = TS.CONFIRMED
+          status.addStatus = TS.INSTANT_SEND
+          status.addDescription = this.$t('transaction.statuses_add.instant_send')
+        }
+      }
+
+      // console.log('status', status)
       return status
     }
+
   }
 }

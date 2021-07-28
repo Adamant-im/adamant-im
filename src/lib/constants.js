@@ -161,24 +161,29 @@ export const UserPasswordHashSettings = {
   DIGEST: 'sha512'
 }
 
+/** Status of ADM or coin transaction */
 export const TransactionStatus = {
-  CONFIRMED: 'confirmed',
-  PENDING: 'pending',
-  DELIVERED: 'delivered',
-  REGISTERED: 'registered', // ~DELIVERED
-  REJECTED: 'rejected',
-  ERROR: 'error', // ~REJECTED
-  INVALID: 'invalid',
-  UNKNOWN: 'unknown' // We don't recognize a cryptocurrency
+  CONFIRMED: 'CONFIRMED', // Tx has at least 1 network confirmation
+  PENDING: 'PENDING', // We don't know about this Tx anything yet, it may not exist in a blockchain
+  REGISTERED: 'REGISTERED', // This Ts is seen on a blockchain, but has 0 confirmations yet
+  REJECTED: 'REJECTED', // We unable to find this Tx in a blockchain, or it says it was rejected
+  INVALID: 'INVALID', // Wrong sender, recipient, time or amount
+  UNKNOWN: 'UNKNOWN' // We don't recognize a cryptocurrency
+}
+
+/** Additional status of ADM or coin transaction, which leads to new virtualStatus */
+export const TransactionAdditionalStatus = {
+  NONE: false,
+  INSTANT_SEND: 'instant_send', // Dash InstantSend enabled transaction
+  ADM_REGISTERED: 'adm_registered' // ADM tx, registered in a blockchain, but has 0 confirmations yet
 }
 
 export const tsIcon = function (status) {
-  status = status.toLowerCase()
   if (status === TransactionStatus.CONFIRMED) {
     return 'mdi-check'
-  } else if (status === TransactionStatus.PENDING || status === TransactionStatus.DELIVERED || status === TransactionStatus.REGISTERED) {
+  } else if (status === TransactionStatus.PENDING || status === TransactionStatus.REGISTERED) {
     return 'mdi-clock-outline'
-  } else if (status === TransactionStatus.REJECTED || status === TransactionStatus.ERROR) {
+  } else if (status === TransactionStatus.REJECTED) {
     return 'mdi-close-circle-outline'
   } else if (status === TransactionStatus.INVALID) {
     return 'mdi-alert-outline'
@@ -188,8 +193,7 @@ export const tsIcon = function (status) {
 }
 
 export const tsColor = function (status) {
-  status = status.toLowerCase()
-  if (status === TransactionStatus.REJECTED || status === TransactionStatus.ERROR) {
+  if (status === TransactionStatus.REJECTED) {
     return 'red'
   } else if (status === TransactionStatus.INVALID || status === TransactionStatus.UNKNOWN) {
     return 'yellow'
@@ -199,14 +203,13 @@ export const tsColor = function (status) {
 
 export const tsUpdatable = function (status, currency) {
   currency = currency.toUpperCase()
-  status = status.toLowerCase()
   if (currency === Cryptos.ADM) {
     return false
   } else if (status === TransactionStatus.CONFIRMED) {
     return true
-  } else if (status === TransactionStatus.PENDING || status === TransactionStatus.DELIVERED || status === TransactionStatus.REGISTERED) {
+  } else if (status === TransactionStatus.PENDING || status === TransactionStatus.REGISTERED) {
     return false
-  } else if (status === TransactionStatus.REJECTED || status === TransactionStatus.ERROR) {
+  } else if (status === TransactionStatus.REJECTED) {
     return true
   } else if (status === TransactionStatus.INVALID) {
     return true

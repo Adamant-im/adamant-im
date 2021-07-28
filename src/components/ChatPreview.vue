@@ -190,10 +190,7 @@ export default {
       return this.getTransactionStatus(this.transaction)
     },
     statusIcon () {
-      // There were a bit change
-      // if (this.status === 'confirmed' || this.status === 'delivered') {
-      //   return 'mdi-check'
-      return tsIcon(this.status)
+      return tsIcon(this.status.virtualStatus)
     }
   },
   watch: {

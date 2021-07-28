@@ -44,15 +44,15 @@
             </v-list-tile-title>
           </v-list-tile-content>
 
-          <div :class="`${className}__value ${className}__value-${lowerCaseStatus}`">
+          <div :class="`${className}__value ${className}__value-${status.virtualStatus}`">
             <v-icon
-              v-if="statusInconsistent"
+              v-if="status.status === 'INVALID'"
               size="20"
               style="color: #f8a061 !important;"
             >
               {{ 'mdi-alert-outline' }}
             </v-icon>
-            {{ $t(`transaction.statuses.${lowerCaseStatus}`) }}<span v-if="statusInconsistent">{{ ': ' + statusInconsistent }}</span>
+            {{ $t(`transaction.statuses.${status.virtualStatus}`) }}<span v-if="status.status === 'INVALID'">{{ ': ' + $t(`transaction.inconsistent_reasons.${status.inconsistentReason}`, { crypto } ) }}</span><span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>
           </div>
         </v-list-tile>
 
@@ -249,11 +249,7 @@ export default {
     },
     status: {
       required: true,
-      type: String
-    },
-    statusInconsistent: {
-      required: false,
-      type: String
+      type: Object
     },
     timestamp: {
       required: true,
@@ -271,20 +267,17 @@ export default {
       return chat && chat.messages && Object.keys(chat.messages).length > 0
     },
     placeholder () {
-      if (!this.status) return Symbols.CLOCK
-      return this.status === 'ERROR' ? Symbols.CROSS : Symbols.HOURGLASS
+      if (!this.status.status) return Symbols.CLOCK
+      return this.status.status === 'REJECTED' ? Symbols.CROSS : Symbols.HOURGLASS
     },
     ifComeFromChat () {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'fromChat')
-    },
-    lowerCaseStatus () {
-      return this.status ? this.status.toLowerCase() : 'pending'
     },
     comment () {
       return this.admTx && this.admTx.message ? this.admTx.message : false
     },
     statusUpdatable () {
-      return tsUpdatable(this.status, this.crypto)
+      return tsUpdatable(this.status.virtualStatus, this.crypto)
     }
   },
   methods: {
@@ -339,14 +332,16 @@ export default {
 
 .theme--light, .theme--dark
   .transaction-view
-    &__value-error
+    &__value-REJECTED
       color: $adm-colors.danger !important
-    &__value-pending
+    &__value-PENDING
       color: $adm-colors.attention !important
-    &__value-success
+    &__value-REGISTERED
+      color: $adm-colors.attention !important
+    &__value-CONFIRMED
       color: $adm-colors.good !important
-    &__value-confirmed
-      color: $adm-colors.good !important
-    &__value-invalid
+    &__value-INVALID
+      color: $adm-colors.attention !important
+    &__value-UNKNOWN
       color: $adm-colors.attention !important
 </style>

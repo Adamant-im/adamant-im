@@ -42,12 +42,12 @@
     "how_to_use_messenger": "How to start with a Blockchain Messenger",
     "how_to_use_messenger_link": "https://medium.com/adamant-im/how-to-start-with-a-blockchain-messenger-54d1eb9704e6",
     "transaction_statuses": {
-      "confirmed": "Confirmed in a blockchain",
-      "delivered": "Delivered to a node",
-      "invalid": "Incorrect information. Check the Tx in a blockchain explorer carefully",
-      "pending": "Not confirmed yet. Fetching…",
-      "rejected": "Unable to fetch Tx info. It may be cancelled or not accepted. Check the Tx in a blockchain explorer",
-      "unknown": "This cryptocurrency is not supported yet"
+      "CONFIRMED": "Confirmed in a blockchain",
+      "REGISTERED": "Delivered to a node",
+      "INVALID": "Incorrect information. Check the Tx in a blockchain explorer carefully",
+      "PENDING": "Not confirmed yet. Fetching…",
+      "REJECTED": "Unable to fetch Tx info. It may be cancelled or not accepted. Check the Tx in a blockchain explorer",
+      "UNKNOWN": "This cryptocurrency is not supported yet"
     },
     "virtual": {
       "bitcoin_bet": "Hi! I'm anonymous and Blockchain-proved bet bot 🤑. I accept bets on BTC rate and pay rewards to winners. Learn more on ADAMANT’s blog or type **/help** to start betting.",
@@ -205,7 +205,7 @@
     "connect_camera": "Switch on camera and try again",
     "hold_your_device": "Hold your device steady for 2-3 seconds to scan the QR code",
     "login": {
-      "modal_header": "Scan the QR code containg a passphrase"
+      "modal_header": "Scan the QR code containing a passphrase"
     },
     "new-chat": {
       "modal_header": "Scan the QR code contain an ADAMANT address"
@@ -232,12 +232,16 @@
     "status": "Status",
     "comment": "Comment",
     "statuses": {
-      "error": "Error",
-      "pending": "Pending",
-      "registered": "Pending",
-      "success": "Success",
-      "confirmed": "Success",
-      "invalid": "Inconsistent"
+      "REJECTED": "Error",
+      "PENDING": "Pending",
+      "REGISTERED": "Pending, waiting for confirmations",
+      "CONFIRMED": "Success",
+      "INVALID": "Inconsistent",
+      "UNKNOWN": "Unknown"      
+    },
+    "statuses_add": {
+      "instant_send": "Confirmed as InstantSend (yet 0 network confirmations)",
+      "adm_registered": "Confirmed as registered in ADAMANT blockchain (yet 0 network confirmations)"
     },
     "inconsistent_reasons": {
       "unknown": "Failed to check Tx. Somethings went wrong",

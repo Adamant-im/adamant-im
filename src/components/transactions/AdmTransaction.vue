@@ -9,7 +9,7 @@
     :recipient="recipient || '' "
     :explorer-link="explorerLink"
     :partner="transaction.partner || '' "
-    :status="status || '' "
+    :status="getTransactionStatus(admTx)"
     :adm-tx="admTx"
     :crypto="crypto"
   />
@@ -19,6 +19,8 @@
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
 import { Cryptos } from '../../lib/constants'
+
+import transaction from '@/mixins/transaction'
 import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
@@ -27,7 +29,7 @@ export default {
   components: {
     TransactionTemplate
   },
-  mixins: [partnerName],
+  mixins: [transaction, partnerName],
   props: {
     id: {
       required: true,

@@ -37,6 +37,7 @@
           :time="message.timestamp | date"
           :user-id="userId"
           :sender="sender"
+          :status="getTransactionStatus(message)"
           :show-avatar="!isChatReadOnly"
           :locale="locale"
           :html="true"
@@ -61,13 +62,8 @@
           :amount="message.amount | currency(message.type)"
           :time="message.timestamp | date"
           :currency="message.type"
-          :i18n="{
-            sent: $t('chats.sent_label'),
-            received: $t('chats.received_label'),
-            statuses: $t('chats.transaction_statuses')
-          }"
           :locale="locale"
-          :status="getTransactionStatus(message, partnerId)"
+          :status="getTransactionStatus(message)"
           :is-clickable="isCryptoSupported(message.type)"
           @click:transaction="openTransaction(message)"
           @click:transactionStatus="updateTransactionStatus(message)"

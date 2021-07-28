@@ -20,7 +20,7 @@
           class="a-chat__message-card-header mt-1"
         >
           <div
-            v-if="status === 'confirmed'"
+            v-if="status.status === 'CONFIRMED'"
             class="a-chat__blockchain-status"
           >
             &#x26AD;
@@ -36,7 +36,7 @@
             class="a-chat__status"
           >
             <v-icon
-              v-if="status === 'rejected'"
+              v-if="status.status === 'REJECTED'"
               :title="i18n.retry"
               size="15"
               color="red"
@@ -74,6 +74,7 @@
 
 <script>
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { tsIcon } from '@/lib/constants'
 
 export default {
   props: {
@@ -94,9 +95,8 @@ export default {
       default: ''
     },
     status: {
-      type: String,
-      default: 'confirmed',
-      validator: v => ['confirmed', 'delivered', 'pending', 'rejected'].includes(v)
+      type: Object,
+      required: true
     },
     userId: {
       type: String,
@@ -131,19 +131,21 @@ export default {
   },
   computed: {
     statusIcon () {
-      if (this.status === 'confirmed' || this.status === 'delivered') {
-        return 'mdi-check'
-      } else if (this.status === 'pending') {
-        return 'mdi-clock-outline'
-      } else {
-        return 'mdi-close-circle-outline'
-      }
+      return tsIcon(this.status.virtualStatus)
     },
     isOutgoingMessage () {
       return isStringEqualCI(this.sender.id, this.userId)
     }
   },
   methods: {
+    // /**
+    //  * Registered ADM transactions must be shown as confirmed, as they are socket-enabled
+    //  * @returns {string}
+    //  */
+    // virtualStatus () {
+    //   if (this.status === TS.REGISTERED) return TS.CONFIRMED
+    //   return this.status
+    // },
     isStringEqualCI (string1, string2) {
       return isStringEqualCI(string1, string2)
     }
