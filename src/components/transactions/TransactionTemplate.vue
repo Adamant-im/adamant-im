@@ -290,7 +290,7 @@ export default {
       this.$router.push('/chats/' + this.partner + '/')
     },
     updateStatus () {
-      if (this.statusUpdatable) {
+      if (this.crypto && this.statusUpdatable) {
         this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.id, force: true, updateOnly: false, dropStatus: true })
       }
     }

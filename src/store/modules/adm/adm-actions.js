@@ -109,7 +109,9 @@ export default {
    */
   getTransaction (context, { hash }) {
     return admApi.getTransaction(hash).then(
-      transaction => context.commit('transactions', [{ ...transaction, status: 'CONFIRMED' }])
+      transaction => {
+        context.commit('transactions', [transaction])
+      }
     )
   },
 

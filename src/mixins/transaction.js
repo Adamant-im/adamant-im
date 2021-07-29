@@ -72,14 +72,27 @@ export default {
       status.virtualStatus = admSpecialMessage.status
       const { hash, type, senderId, recipientId } = admSpecialMessage
 
-      // ADM transaction already has property `status`
-      if (type === Cryptos.ADM || type === 'message') {
-        // Registered ADM transactions must be shown as confirmed, as they are socket-enabled
-        // if (admSpecialMessage.amount > 0 && admSpecialMessage.height === undefined && !admSpecialMessage.message && admSpecialMessage.status === TS.REGISTERED) {
-        if (admSpecialMessage.height === undefined && admSpecialMessage.status === TS.REGISTERED) {
-          status.virtualStatus = TS.CONFIRMED
-          status.addStatus = TAS.ADM_REGISTERED
-          status.addDescription = this.$t('transaction.statuses_add.adm_registered')
+      // ADM is a special case when using sockets
+      if (type === Cryptos.ADM || type === 0 || type === 'message') {
+        if (admSpecialMessage.status === TS.REGISTERED) {
+          // If it's a message, getChats() in adamant-api.js will update height and confirmations later,
+          // But now we must show Tx as confirmed
+          if (type === 'message') {
+            status.virtualStatus = TS.CONFIRMED
+            status.addStatus = TAS.ADM_REGISTERED
+            status.addDescription = this.$t('transaction.statuses_add.adm_registered')
+          } else {
+            // All transactions we get via socket are shown in chats, including ADM direct transfers
+            // Currently, we don't update confirmations for direct transfers, see getChats() in adamant-api.js
+            // So we'll update confirmations here
+            const transfer = this.$store.state.adm.transactions[hash]
+            if (transfer && (transfer.height || transfer.confirmations > 0)) {
+              status.status = TS.CONFIRMED
+              status.virtualStatus = TS.CONFIRMED
+            } else {
+              this.fetchTransaction(type, hash)
+            }
+          }
         }
         return status
       } else if (!Cryptos[type]) {

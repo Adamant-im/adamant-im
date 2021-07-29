@@ -39,7 +39,12 @@ export default {
       Vue.set(state.transactions, tx.id, {
         ...tx,
         direction: isStringEqualCI(tx.recipientId, address) ? 'to' : 'from',
-        partner: isStringEqualCI(tx.recipientId, address) ? tx.senderId : tx.recipientId
+        partner: isStringEqualCI(tx.recipientId, address) ? tx.senderId : tx.recipientId,
+        status: tx.height || tx.confirmations > 0
+          ? 'CONFIRMED'
+          : tx.status
+            ? tx.status
+            : 'REGISTERED'
       })
 
       if (tx.height && updateTimestamps) {
