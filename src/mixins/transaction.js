@@ -90,7 +90,7 @@ export default {
               status.status = TS.CONFIRMED
               status.virtualStatus = TS.CONFIRMED
             } else {
-              this.fetchTransaction(type, hash)
+              this.fetchTransaction('ADM', hash)
             }
           }
         }
