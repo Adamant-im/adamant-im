@@ -120,7 +120,8 @@ export default {
       }
 
       // check if Tx is not a fake
-      if (status.status === TS.CONFIRMED || status.status === TS.REGISTERED) {
+      // we are unable to check status.status === TS.REGISTERED txs, as their timestamps are Date.now()
+      if (status.status === TS.CONFIRMED) {
         const txVerify = verifyTransactionDetails(transaction, admSpecialMessage, { recipientCryptoAddress, senderCryptoAddress })
         if (!txVerify.isTxConsistent) {
           status.status = TS.INVALID
@@ -132,14 +133,14 @@ export default {
 
       if (status.status === TS.REGISTERED) {
         // Dash InstantSend transactions must be shown as confirmed
+        // don't need to verify timestamp, as such txs are fresh
         if (transaction.instantsend) {
           status.virtualStatus = TS.CONFIRMED
-          status.addStatus = TS.INSTANT_SEND
+          status.addStatus = TAS.INSTANT_SEND
           status.addDescription = this.$t('transaction.statuses_add.instant_send')
         }
       }
 
-      // console.log('status', status)
       return status
     }
 

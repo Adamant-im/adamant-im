@@ -1,4 +1,4 @@
-import { Cryptos, isErc20 } from './constants'
+import { Cryptos, isErc20, isInstantSendPossible } from './constants'
 
 /** Pending transaction may be not known to blockchain yet */
 
@@ -8,6 +8,11 @@ export const NEW_PENDING_ATTEMPTS = 20
 
 /** Interval (ms) between attempts to fetch an old pending transaction */
 export const OLD_PENDING_INTERVAL = 5 * 1000
+
+/** Interval (ms) between attempts to fetch an registered transaction, when InstantSend is possible */
+export const INSTANT_SEND_INTERVAL = 4 * 1000
+/** Time (ms) to consider InstantSend is yet possible */
+export const INSTANT_SEND_TIME = 60 * 1000
 
 /**
  * Returns `true` if the transaction with the specified timestamp can be considered as new
@@ -29,6 +34,23 @@ export const getPendingTxRetryTimeout = function (timestamp, crypto) {
     return getTxUpdateInterval(crypto)
   } else {
     return OLD_PENDING_INTERVAL
+  }
+}
+
+/**
+ * Returns a retry interval (ms) for a registered transaction details re-fetching
+ * This function is important to get InstantSend txs faster
+ * @param {string} timestamp transaction timestamp. Expected Date.now() when it was checked first time
+ * @param {string} crypto crypto name
+ * @param {number} regularTimeout regular retry interval for a coin
+ * @param {boolean} gotInstantSendAlready if tx has InstantSend status already
+ * @returns {number}
+ */
+export const getRegisteredTxRetryTimeout = function (timestamp, crypto, regularTimeout, gotInstantSendAlready) {
+  if (!gotInstantSendAlready && isInstantSendPossible(crypto)) {
+    return (Date.now() - timestamp < INSTANT_SEND_TIME) ? INSTANT_SEND_INTERVAL : regularTimeout
+  } else {
+    return regularTimeout
   }
 }
 
