@@ -12,12 +12,11 @@ export default {
       if (!admSpecialMessage || !partnerId) return
 
       const { type, hash, senderId, recipientId } = admSpecialMessage
-
-      // ADM transaction already has property `status`
-      if (type === Cryptos.ADM) return
-
       if (type in Cryptos) {
-        this.fetchCryptoAddresses(type, recipientId, senderId)
+        // Don't need to fetch coin addresses for ADM txs
+        if (type !== Cryptos.ADM) this.fetchCryptoAddresses(type, recipientId, senderId)
+        // Update status, including ADM direct transfers and in-chat transfers
+        // Message txs are not processed here
         this.fetchTransaction(type, hash, admSpecialMessage.timestamp)
       }
     },
