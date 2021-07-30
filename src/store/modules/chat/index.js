@@ -476,6 +476,25 @@ const mutations = {
       isAdamantChat: true,
       numOfNewMessages: 0
     })
+
+    const bountyBotMessages = [
+      {
+        id: 'b2',
+        message: 'chats.virtual.bounty_bot',
+        timestamp: EPOCH,
+        senderId: 'U1644771796259136854',
+        type: 'message',
+        i18n: true,
+        status: TS.CONFIRMED,
+        readonly: true
+      }
+    ]
+
+    Vue.set(state.chats, 'U1644771796259136854', {
+      messages: bountyBotMessages,
+      isAdamantChat: true,
+      numOfNewMessages: 0
+    })
   },
 
   updateScrollPosition (state, { contactId, scrollPosition }) {
