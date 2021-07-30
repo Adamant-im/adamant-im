@@ -137,7 +137,7 @@ function createActions (options) {
       if (!api) return
       if (!payload.hash) return
 
-      const existing = context.state.transactions[payload.hash]
+      let existing = context.state.transactions[payload.hash]
       if (existing && !payload.force) return
 
       // Set a stub so far, if the transaction is not in the store yet
@@ -145,10 +145,11 @@ function createActions (options) {
         payload.updateOnly = false
         context.commit('transactions', [{
           hash: payload.hash,
-          timestamp: payload.timestamp,
+          timestamp: (existing && existing.timestamp) || payload.timestamp || Date.now(),
           amount: payload.amount,
           status: 'PENDING'
         }])
+        existing = context.state.transactions[payload.hash]
       }
 
       let tx = null

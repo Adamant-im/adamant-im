@@ -25,11 +25,11 @@ export default {
      * Fetch transaction and save to state.
      * @param {string} type Transaction type
      * @param {string} hash Transaction hash
-     * @param {number} timestamp ADAMANT special message timestamp
+     * @param {number} timestamp ADAMANT special message timestamp. If coin Tx is not known yet, set its timestamp to ADM rich message timestamp. Later it will be updated
      */
-    fetchTransaction (type, hash) {
+    fetchTransaction (type, hash, timestamp) {
       const cryptoModule = type.toLowerCase()
-      return this.$store.dispatch(`${cryptoModule}/getTransaction`, { hash })
+      return this.$store.dispatch(`${cryptoModule}/getTransaction`, { hash, timestamp })
     },
 
     /**
@@ -89,7 +89,7 @@ export default {
               status.status = TS.CONFIRMED
               status.virtualStatus = TS.CONFIRMED
             } else {
-              this.fetchTransaction('ADM', hash)
+              this.fetchTransaction('ADM', hash, admSpecialMessage.timestamp)
             }
           }
         }

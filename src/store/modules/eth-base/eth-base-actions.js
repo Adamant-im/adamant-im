@@ -168,7 +168,7 @@ export default function createActions (config) {
         payload.updateOnly = false
         context.commit('transactions', [{
           hash: payload.hash,
-          timestamp: payload.timestamp,
+          timestamp: (existing && existing.timestamp) || payload.timestamp || Date.now(),
           amount: payload.amount,
           status: 'PENDING',
           direction: payload.direction
