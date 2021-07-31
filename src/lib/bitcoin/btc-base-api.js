@@ -180,12 +180,17 @@ export default class BtcBaseApi {
     const recipients = getUnique(tx.vout.reduce((list, out) => {
       list.push(...out.scriptPubKey.addresses)
       return list
-    }, [])).filter(sender => sender !== undefined && sender !== 'undefined')
+    }, [])).filter(recipient => recipient !== undefined && recipient !== 'undefined')
 
     if (direction === 'from') {
-      // Disregard our address for the outgoing transaction unless it's the only address
-      // (i.e. we're sending to ourselves)
+      // Disregard our address for an outgoing transaction unless it's the only address (i.e. we're sending to ourselves)
       const idx = recipients.indexOf(this._address)
+      if (idx >= 0 && recipients.length > 1) recipients.splice(idx, 1)
+    }
+
+    if (direction === 'to' && senders.length === 1) {
+      // Disregard the only sender address for an incoming transaction unless it's the only address (i.e. we're sending to ourselves)
+      const idx = recipients.indexOf(senders[0])
       if (idx >= 0 && recipients.length > 1) recipients.splice(idx, 1)
     }
 
