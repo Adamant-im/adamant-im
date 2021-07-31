@@ -205,11 +205,14 @@
 import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 
+import transaction from '@/mixins/transaction'
+
 export default {
   name: 'TransactionTemplate',
   components: {
     AppToolbarCentered
   },
+  mixins: [transaction],
   props: {
     amount: {
       required: true,
@@ -278,6 +281,17 @@ export default {
     },
     statusUpdatable () {
       return tsUpdatable(this.status.virtualStatus, this.crypto)
+    }
+  },
+  watch: {
+    // fetch Tx status when we get admTx
+    admTx () {
+      this.fetchTransactionStatus(this.admTx, this.partner)
+    }
+  },
+  mounted () {
+    if (this.admTx) {
+      this.fetchTransactionStatus(this.admTx, this.partner)
     }
   },
   methods: {

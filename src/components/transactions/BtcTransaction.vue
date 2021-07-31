@@ -10,7 +10,7 @@
       :recipient="recipient || '' "
       :explorer-link="explorerLink"
       :partner="partner || '' "
-      :status="getTransactionStatus(admTx)"
+      :status="getTransactionStatus(admTx, transaction)"
       :adm-tx="admTx"
       :crypto="crypto"
     />
