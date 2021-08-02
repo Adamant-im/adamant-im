@@ -1,6 +1,9 @@
 <template>
   <v-form @submit.prevent="revealKeys">
-    <div v-if="keys.length" :class="`${className}__keys`">
+    <div
+      v-if="keys.length"
+      :class="`${className}__keys`"
+    >
       <div
         v-for="key in keys"
         :key="key.crypto"
@@ -17,8 +20,18 @@
             </span>
           </template>
           <template slot="append">
-            <v-btn icon ripple :class="`${className}__btn-copy`" @click="copyKey(key.key)">
-              <v-icon :class="`${className}__icon`" size="20">mdi-content-copy</v-icon>
+            <v-btn
+              icon
+              ripple
+              :class="`${className}__btn-copy`"
+              @click="copyKey(key.key)"
+            >
+              <v-icon
+                :class="`${className}__icon`"
+                size="20"
+              >
+                mdi-content-copy
+              </v-icon>
             </v-btn>
           </template>
         </v-text-field>
@@ -27,13 +40,14 @@
       <div class="text-xs-right">
         <v-btn
           :class="`${className}__copy_all_button`"
+          class="a-btn-link"
+          flat
+          small
           @click="copyAll"
-          class="a-btn-link" flat small
         >
           {{ $t('options.export_keys.copy_all') }}
         </v-btn>
       </div>
-
     </div>
 
     <div :class="`${className}__disclaimer a-text-regular-enlarged`">
@@ -51,15 +65,24 @@
         </span>
       </template>
       <template slot="append">
-        <v-menu :offset-overflow="true" :offset-y="false" left>
-          <v-icon slot="activator">mdi-dots-vertical</v-icon>
+        <v-menu
+          :offset-overflow="true"
+          :offset-y="false"
+          left
+        >
+          <v-icon slot="activator">
+            mdi-dots-vertical
+          </v-icon>
           <v-list>
             <v-list-tile @click="showQrcodeScanner = true">
               <v-list-tile-title>{{ $t('transfer.decode_from_camera') }}</v-list-tile-title>
             </v-list-tile>
             <v-list-tile class="v-list__tile--link">
               <v-list-tile-title>
-                <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
+                <qrcode-capture
+                  @detect="onDetectQrcode"
+                  @error="onDetectQrcodeError"
+                >
                   <span>{{ $t('transfer.decode_from_image') }}</span>
                 </qrcode-capture>
               </v-list-tile-title>
@@ -72,17 +95,17 @@
     <div class="text-xs-center">
       <v-btn
         :class="`${className}__export_keys_button`"
-        @click="revealKeys"
         class="a-btn-primary"
+        @click="revealKeys"
       >
         {{ $t('options.export_keys.button') }}
       </v-btn>
     </div>
 
     <qrcode-scanner-dialog
-      @scan="onScanQrcode"
       v-if="showQrcodeScanner"
       v-model="showQrcodeScanner"
+      @scan="onScanQrcode"
     />
   </v-form>
 </template>

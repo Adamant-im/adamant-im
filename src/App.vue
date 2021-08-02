@@ -1,5 +1,8 @@
 <template>
-  <v-app :dark="isDarkTheme" class="application--linear-gradient">
+  <v-app
+    :dark="isDarkTheme"
+    class="application--linear-gradient"
+  >
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
     <component :is="layout">
       <router-view />
@@ -13,23 +16,12 @@ import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog'
 import Notifications from '@/lib/notifications'
 
 export default {
-  created () {
-    this.setLocale()
-  },
-  mounted () {
-    this.notifications = new Notifications(this)
-    this.notifications.start()
-  },
-  beforeDestroy () {
-    this.notifications.stop()
-    this.$store.dispatch('stopInterval')
+  components: {
+    WarningOnAddressesDialog
   },
   data: () => ({
     showWarningOnAddressesDialog: false
   }),
-  components: {
-    WarningOnAddressesDialog
-  },
   computed: {
     layout () {
       return this.$route.meta.layout || 'default'
@@ -43,6 +35,17 @@ export default {
     isLoginViaPassword () {
       return this.$store.getters['options/isLoginViaPassword']
     }
+  },
+  created () {
+    this.setLocale()
+  },
+  mounted () {
+    this.notifications = new Notifications(this)
+    this.notifications.start()
+  },
+  beforeDestroy () {
+    this.notifications.stop()
+    this.$store.dispatch('stopInterval')
   },
   methods: {
     setLocale () {

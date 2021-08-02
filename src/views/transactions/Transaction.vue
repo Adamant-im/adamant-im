@@ -1,5 +1,9 @@
 <template>
-  <component :is="transactionComponent" :id="txId" :crypto="crypto" />
+  <component
+    :is="transactionComponent"
+    :id="txId"
+    :crypto="crypto"
+  />
 </template>
 
 <script>
@@ -13,7 +17,14 @@ import { Cryptos, isErc20, isBtcBased, isLskBased } from '../../lib/constants'
 import { getTxUpdateInterval } from '../../lib/transactionsFetching'
 
 export default {
-  name: 'transaction',
+  name: 'Transaction',
+  components: {
+    AdmTransaction,
+    EthTransaction,
+    Erc20Transaction,
+    BtcTransaction,
+    LskTransaction
+  },
   props: {
     crypto: {
       required: true,
@@ -24,12 +35,19 @@ export default {
       type: String
     }
   },
-  components: {
-    AdmTransaction,
-    EthTransaction,
-    Erc20Transaction,
-    BtcTransaction,
-    LskTransaction
+  data () {
+    return {
+      timer: null
+    }
+  },
+  computed: {
+    transactionComponent () {
+      if (this.crypto === Cryptos.ETH) return 'eth-transaction'
+      if (isErc20(this.crypto)) return 'erc20-transaction'
+      if (isBtcBased(this.crypto)) return 'btc-transaction'
+      if (isLskBased(this.crypto)) return 'lsk-transaction'
+      return 'adm-transaction'
+    }
   },
   mounted () {
     this.update()
@@ -43,20 +61,6 @@ export default {
     update () {
       // Regularly update Tx details with confirmations count, do force — fetch details for existing Tx also
       this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.txId, force: true, updateOnly: true })
-    }
-  },
-  computed: {
-    transactionComponent () {
-      if (this.crypto === Cryptos.ETH) return 'eth-transaction'
-      if (isErc20(this.crypto)) return 'erc20-transaction'
-      if (isBtcBased(this.crypto)) return 'btc-transaction'
-      if (isLskBased(this.crypto)) return 'lsk-transaction'
-      return 'adm-transaction'
-    }
-  },
-  data () {
-    return {
-      timer: null
     }
   }
 }

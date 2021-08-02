@@ -59,6 +59,10 @@ export const LSK_BASED = Object.freeze([
   Cryptos.LSK
 ])
 
+export const INSTANT_SEND = Object.freeze([
+  Cryptos.DASH
+])
+
 export const isErc20 = crypto => ERC20.includes(crypto)
 
 export const isEthBased = crypto => isErc20(crypto) || crypto === Cryptos.ETH
@@ -70,6 +74,8 @@ export const isBtcBased = crypto => BTC_BASED.includes(crypto)
 export const isLskBased = crypto => LSK_BASED.includes(crypto)
 
 export const isSelfTxAllowed = crypto => LSK_BASED.includes(crypto) || crypto === Cryptos.ADM
+
+export const isInstantSendPossible = crypto => INSTANT_SEND.includes(crypto)
 
 /** Number of decimal places for the different crypto amounts */
 export const CryptoAmountPrecision = {
@@ -140,14 +146,11 @@ export const WelcomeMessage = {
  */
 
 /** Gas limit value for the ETH transfers */
-export const ETH_TRANSFER_GAS = 22000 // Default gas limit; while to be calculated with estimateGas(transactionObject)
+export const ETH_TRANSFER_GAS = 24000
 /** Gas limit value for the ERC-20 transfers */
-export const ERC20_TRANSFER_GAS = ETH_TRANSFER_GAS * 2
+export const ERC20_TRANSFER_GAS = ETH_TRANSFER_GAS * 2.4
 
-/** Gas price multiplier. To be sure a transaction will be confirmed */
-export const ETH_GASPRICE_MULTIPLIER = 1.1
-
-/** Increase fee multiplier. Used in SendFundsForm */
+/** Increase fee multiplier. Used as a checkbox on SendFundsForm */
 export const INCREASE_FEE_MULTIPLIER = 2
 
 export default {
@@ -164,24 +167,29 @@ export const UserPasswordHashSettings = {
   DIGEST: 'sha512'
 }
 
+/** Status of ADM or coin transaction */
 export const TransactionStatus = {
-  CONFIRMED: 'confirmed',
-  PENDING: 'pending',
-  DELIVERED: 'delivered',
-  REGISTERED: 'registered', // ~DELIVERED
-  REJECTED: 'rejected',
-  ERROR: 'error', // ~REJECTED
-  INVALID: 'invalid',
-  UNKNOWN: 'unknown' // We don't recognize a cryptocurrency
+  CONFIRMED: 'CONFIRMED', // Tx has at least 1 network confirmation
+  PENDING: 'PENDING', // We don't know about this Tx anything yet, it may not exist in a blockchain
+  REGISTERED: 'REGISTERED', // This Ts is seen on a blockchain, but has 0 confirmations yet
+  REJECTED: 'REJECTED', // We unable to find this Tx in a blockchain, or it says it was rejected
+  INVALID: 'INVALID', // Wrong sender, recipient, time or amount
+  UNKNOWN: 'UNKNOWN' // We don't recognize a cryptocurrency
+}
+
+/** Additional status of ADM or coin transaction, which leads to new virtualStatus */
+export const TransactionAdditionalStatus = {
+  NONE: false,
+  INSTANT_SEND: 'instant_send', // Dash InstantSend enabled transaction
+  ADM_REGISTERED: 'adm_registered' // ADM tx, registered in a blockchain, but has 0 confirmations yet
 }
 
 export const tsIcon = function (status) {
-  status = status.toLowerCase()
   if (status === TransactionStatus.CONFIRMED) {
     return 'mdi-check'
-  } else if (status === TransactionStatus.PENDING || status === TransactionStatus.DELIVERED || status === TransactionStatus.REGISTERED) {
+  } else if (status === TransactionStatus.PENDING || status === TransactionStatus.REGISTERED) {
     return 'mdi-clock-outline'
-  } else if (status === TransactionStatus.REJECTED || status === TransactionStatus.ERROR) {
+  } else if (status === TransactionStatus.REJECTED) {
     return 'mdi-close-circle-outline'
   } else if (status === TransactionStatus.INVALID) {
     return 'mdi-alert-outline'
@@ -191,8 +199,7 @@ export const tsIcon = function (status) {
 }
 
 export const tsColor = function (status) {
-  status = status.toLowerCase()
-  if (status === TransactionStatus.REJECTED || status === TransactionStatus.ERROR) {
+  if (status === TransactionStatus.REJECTED) {
     return 'red'
   } else if (status === TransactionStatus.INVALID || status === TransactionStatus.UNKNOWN) {
     return 'yellow'
@@ -202,14 +209,13 @@ export const tsColor = function (status) {
 
 export const tsUpdatable = function (status, currency) {
   currency = currency.toUpperCase()
-  status = status.toLowerCase()
   if (currency === Cryptos.ADM) {
     return false
   } else if (status === TransactionStatus.CONFIRMED) {
     return true
-  } else if (status === TransactionStatus.PENDING || status === TransactionStatus.DELIVERED || status === TransactionStatus.REGISTERED) {
+  } else if (status === TransactionStatus.PENDING || status === TransactionStatus.REGISTERED) {
     return false
-  } else if (status === TransactionStatus.REJECTED || status === TransactionStatus.ERROR) {
+  } else if (status === TransactionStatus.REJECTED) {
     return true
   } else if (status === TransactionStatus.INVALID) {
     return true

@@ -1,6 +1,6 @@
 <template>
   <div v-if="value">
-    <div :class="`${className}__overlay`"></div>
+    <div :class="`${className}__overlay`" />
 
     <v-progress-circular
       v-if="value"
@@ -15,15 +15,15 @@
 
 <script>
 export default {
-  computed: {
-    className () {
-      return 'chat-spinner'
-    }
-  },
   props: {
     value: {
       type: Boolean,
       required: true
+    }
+  },
+  computed: {
+    className () {
+      return 'chat-spinner'
     }
   }
 }

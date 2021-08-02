@@ -28,7 +28,7 @@ const getOldTransactions = (api, context) => {
       context.commit('areOlderLoading', false)
       context.commit('transactions', result.items)
       if (!result.hasMore) {
-        context.commit('bottom')
+        context.commit('bottom', true)
       }
     },
     error => {

@@ -14,7 +14,7 @@ export default {
    * @param {{partner: string, displayName: string}} payload partner address and display name
    */
   displayName (state, { partner, displayName }) {
-    if (state.list.hasOwnProperty(partner)) {
+    if (Object.prototype.hasOwnProperty.call(state.list, partner)) {
       state.list[partner].displayName = displayName
     } else {
       // if partner is not in the list, add

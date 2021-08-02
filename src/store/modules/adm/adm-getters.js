@@ -1,4 +1,5 @@
 import { Fees } from '@/lib/constants'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 const sortFunc = (a, b) => ((b && b.timestamp) || 0) - ((a && a.timestamp) || 0)
 
@@ -27,7 +28,7 @@ export default {
    * This getter was added to support transactions display in chats and supposed to be removed
    * as soon as we add an endpoint to fetch transactions for chats.
    */
-  partnerTransactions: state => partner => Object.values(state.transactions).filter(tx => tx.partner === partner),
+  partnerTransactions: state => partner => Object.values(state.transactions).filter(tx => isStringEqualCI(tx.partner, partner)),
 
   fee: state => amount => Fees.ADM_TRANSFER
 }

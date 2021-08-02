@@ -185,7 +185,12 @@ export function transformMessage (abstract) {
   transaction.recipientId = abstract.recipientId
   transaction.admTimestamp = abstract.timestamp
   transaction.timestamp = getRealTimestamp(abstract.timestamp)
-  transaction.status = abstract.status || abstract.height ? TS.CONFIRMED : TS.DELIVERED
+  transaction.confirmations = abstract.confirmations
+  transaction.status = abstract.height || abstract.confirmations > 0
+    ? TS.CONFIRMED
+    : abstract.status
+      ? abstract.status
+      : TS.REGISTERED
   transaction.i18n = !!abstract.i18n
   transaction.amount = abstract.amount ? abstract.amount : 0
   transaction.message = ''

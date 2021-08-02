@@ -18,9 +18,9 @@ import BigNumber from 'bignumber.js'
 BigNumber.fromBuffer = function (buf, opts) {
   if (!opts) opts = {}
 
-  var endian = { 1: 'big', '-1': 'little' }[opts.endian] || opts.endian || 'big'
+  const endian = { 1: 'big', '-1': 'little' }[opts.endian] || opts.endian || 'big'
 
-  var size = opts.size === 'auto' ? Math.ceil(buf.length) : (opts.size || 1)
+  const size = opts.size === 'auto' ? Math.ceil(buf.length) : (opts.size || 1)
 
   if (buf.length % size !== 0) {
     throw new RangeError('Buffer length (' + buf.length + ')' +
@@ -28,10 +28,10 @@ BigNumber.fromBuffer = function (buf, opts) {
     )
   }
 
-  var hex = []
-  for (var i = 0; i < buf.length; i += size) {
-    var chunk = []
-    for (var j = 0; j < size; j++) {
+  const hex = []
+  for (let i = 0; i < buf.length; i += size) {
+    const chunk = []
+    for (let j = 0; j < size; j++) {
       chunk.push(buf[i + (endian === 'big' ? j : (size - j - 1))])
     }
 
@@ -52,15 +52,16 @@ BigNumber.fromBuffer = function (buf, opts) {
  * @return {ArrayBuffer} new buffer | error message invalid option
  */
 BigNumber.prototype.toBuffer = function (opts) {
+  let buf, len
   if (typeof opts === 'string') {
     if (opts !== 'mpint') return 'Unsupported Buffer representation'
 
-    var abs = this.abs()
-    var buf = abs.toBuffer({ size: 1, endian: 'big' })
-    var len = buf.length === 1 && buf[0] === 0 ? 0 : buf.length
+    const abs = this.abs()
+    buf = abs.toBuffer({ size: 1, endian: 'big' })
+    len = buf.length === 1 && buf[0] === 0 ? 0 : buf.length
     if (buf[0] & 0x80) len++
 
-    var ret = Buffer.alloc(4 + len)
+    const ret = Buffer.alloc(4 + len)
     if (len > 0) buf.copy(ret, 4 + (buf[0] & 0x80 ? 1 : 0))
     if (buf[0] & 0x80) ret[4] = 0
 
@@ -70,9 +71,9 @@ BigNumber.prototype.toBuffer = function (opts) {
     ret[3] = len & (0xff << 0)
 
     // Two's compliment for negative integers
-    var isNeg = this.lt(0)
+    const isNeg = this.lt(0)
     if (isNeg) {
-      for (var i = 4; i < ret.length; i++) {
+      for (let i = 4; i < ret.length; i++) {
         ret[i] = 0xff - ret[i]
       }
     }
@@ -84,16 +85,16 @@ BigNumber.prototype.toBuffer = function (opts) {
 
   if (!opts) opts = {}
 
-  var endian = { 1: 'big', '-1': 'little' }[opts.endian] || opts.endian || 'big'
+  const endian = { 1: 'big', '-1': 'little' }[opts.endian] || opts.endian || 'big'
 
-  var hex = this.toString(16)
+  let hex = this.toString(16)
   if (hex.charAt(0) === '-') {
     throw new Error(
       'Converting negative numbers to Buffers not supported yet'
     )
   }
 
-  var size = opts.size === 'auto' ? Math.ceil(hex.length / 2) : (opts.size || 1)
+  const size = opts.size === 'auto' ? Math.ceil(hex.length / 2) : (opts.size || 1)
 
   len = Math.ceil(hex.length / (2 * size)) * size
   buf = Buffer.alloc(len)
@@ -107,7 +108,7 @@ BigNumber.prototype.toBuffer = function (opts) {
 
   hx.forEach(function (chunk, i) {
     for (let j = 0; j < size; j++) {
-      let ix = i * size + (endian === 'big' ? j : size - j - 1)
+      const ix = i * size + (endian === 'big' ? j : size - j - 1)
       buf[ix] = parseInt(chunk.slice(j * 2, j * 2 + 2), 16)
     }
   })

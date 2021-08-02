@@ -1,3 +1,5 @@
+import { isStringEqualCI } from '@/lib/textHelpers'
+
 const AllowAmountErrorPercent = 0.3
 const AllowTimestampDeltaSec = 1800 // 30 min
 
@@ -47,7 +49,7 @@ export function verifyTransactionDetails (transaction, admSpecialMessage, { reci
       }
     }
 
-    if (transaction.hash !== admSpecialMessage.hash) {
+    if (!isStringEqualCI(transaction.hash, admSpecialMessage.hash)) {
       return {
         isTxConsistent: false,
         txCoin: coin,
@@ -63,7 +65,8 @@ export function verifyTransactionDetails (transaction, admSpecialMessage, { reci
       }
     }
 
-    if (!verifyTimestamp(transaction.timestamp, admSpecialMessage.timestamp)) {
+    // Don't check timestamp if there is no timestamp yet. F. e. transaction.instantsend = true for Dash
+    if (transaction.timestamp && !verifyTimestamp(transaction.timestamp, admSpecialMessage.timestamp)) {
       return {
         isTxConsistent: false,
         txCoin: coin,
@@ -71,7 +74,7 @@ export function verifyTransactionDetails (transaction, admSpecialMessage, { reci
       }
     }
 
-    if (transaction.senderId.toLowerCase() !== senderCryptoAddress.toLowerCase()) {
+    if (!isStringEqualCI(transaction.senderId, senderCryptoAddress)) {
       return {
         isTxConsistent: false,
         txCoin: coin,
@@ -79,7 +82,7 @@ export function verifyTransactionDetails (transaction, admSpecialMessage, { reci
       }
     }
 
-    if (transaction.recipientId.toLowerCase() !== recipientCryptoAddress.toLowerCase()) {
+    if (!isStringEqualCI(transaction.recipientId, recipientCryptoAddress)) {
       return {
         isTxConsistent: false,
         txCoin: coin,

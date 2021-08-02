@@ -4,27 +4,31 @@
     width="500"
   >
     <v-card>
-      <v-card-title class="a-text-header">{{ $t('login_via_password.popup_title') }}</v-card-title>
+      <v-card-title class="a-text-header">
+        {{ $t('login_via_password.popup_title') }}
+      </v-card-title>
 
-      <v-divider class="a-divider"></v-divider>
+      <v-divider class="a-divider" />
 
       <v-card-text>
         <v-text-field
-          autocomplete="new-password"
+          ref="passwordField"
           v-model="password"
+          autocomplete="new-password"
           class="a-input"
           type="password"
           :label="$t('login_via_password.enter_password')"
           :name="Date.now()"
-          v-on:keyup.enter="submit"
-          ref="passwordField"
+          @keyup.enter="submit"
         />
 
-        <div class="a-text-regular-enlarged">{{ $t('login_via_password.article_hint') }} <a @click="openLink(userPasswordAgreementLink)">{{$t('login_via_password.article')}}</a>.</div>
+        <div class="a-text-regular-enlarged">
+          {{ $t('login_via_password.article_hint') }} <a @click="openLink(userPasswordAgreementLink)">{{ $t('login_via_password.article') }}</a>.
+        </div>
       </v-card-text>
 
       <v-card-actions>
-        <v-spacer></v-spacer>
+        <v-spacer />
 
         <v-btn
           flat="flat"
@@ -37,8 +41,8 @@
         <v-btn
           flat="flat"
           class="a-btn-regular"
-          @click="submit"
           :disabled="!isValidForm || disabledButton"
+          @click="submit"
         >
           <v-progress-circular
             v-show="showSpinner"
@@ -59,15 +63,18 @@ import { UserPasswordArticleLink } from '@/lib/constants'
 import { saveState } from '@/lib/idb/state'
 
 export default {
+  props: {
+    value: {
+      type: Boolean,
+      required: true
+    }
+  },
   data: () => ({
     password: '',
     showSpinner: false,
     disabledButton: false,
     userPasswordAgreementLink: UserPasswordArticleLink
   }),
-  updated: function () {
-    this.$refs.passwordField.focus()
-  },
   computed: {
     show: {
       get () {
@@ -80,6 +87,9 @@ export default {
     isValidForm () {
       return this.password.length > 0
     }
+  },
+  updated: function () {
+    this.$refs.passwordField.focus()
   },
   methods: {
     openLink (link) {
@@ -111,12 +121,6 @@ export default {
           this.showSpinner = false
           this.show = false
         })
-    }
-  },
-  props: {
-    value: {
-      type: Boolean,
-      required: true
     }
   }
 }

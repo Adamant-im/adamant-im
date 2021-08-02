@@ -1,25 +1,35 @@
 <template>
-  <v-form v-model="validForm" @submit.prevent="submit" ref="form" class="login-form">
-
+  <v-form
+    ref="form"
+    v-model="validForm"
+    class="login-form"
+    @submit.prevent="submit"
+  >
     <v-layout>
       <v-text-field
-        autocomplete="new-password"
+        ref="passwordField"
         v-model="password"
+        autocomplete="new-password"
         :label="$t('login_via_password.user_password_title')"
         :name="Date.now()"
         type="password"
         class="text-xs-center"
-        ref="passwordField"
       />
     </v-layout>
 
-    <v-layout row wrap align-center justify-center class="mt-2">
+    <v-layout
+      row
+      wrap
+      align-center
+      justify-center
+      class="mt-2"
+    >
       <v-flex xs12>
         <slot name="button">
           <v-btn
             :disabled="!validForm || disabledButton"
-            @click="submit"
             class="login-form__button a-btn-primary"
+            @click="submit"
           >
             <v-progress-circular
               v-show="showSpinner"
@@ -32,16 +42,23 @@
           </v-btn>
         </slot>
       </v-flex>
-      <v-flex xs12 class="a-text-regular mt-5">
+      <v-flex
+        xs12
+        class="a-text-regular mt-5"
+      >
         {{ $t('login_via_password.remove_password_hint') }}
       </v-flex>
       <v-flex xs12>
-        <v-btn class="a-btn-link" flat small @click="removePassword">
+        <v-btn
+          class="a-btn-link"
+          flat
+          small
+          @click="removePassword"
+        >
           {{ $t('login_via_password.remove_password') }}
         </v-btn>
       </v-flex>
     </v-layout>
-
   </v-form>
 </template>
 
@@ -49,6 +66,17 @@
 import { clearDb } from '@/lib/idb'
 
 export default {
+  props: {
+    value: {
+      type: String,
+      default: ''
+    }
+  },
+  data: () => ({
+    validForm: true,
+    disabledButton: false,
+    showSpinner: false
+  }),
   computed: {
     password: {
       get () {
@@ -62,11 +90,6 @@ export default {
   updated () {
     this.$refs.passwordField.focus()
   },
-  data: () => ({
-    validForm: true,
-    disabledButton: false,
-    showSpinner: false
-  }),
   methods: {
     submit () {
       this.showSpinner = true
@@ -88,12 +111,6 @@ export default {
       clearDb().finally(() => {
         this.$store.dispatch('removePassword')
       })
-    }
-  },
-  props: {
-    value: {
-      type: String,
-      default: ''
     }
   }
 }

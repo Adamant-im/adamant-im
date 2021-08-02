@@ -1,5 +1,6 @@
 import axios from 'axios'
 import getEnpointUrl from '../getEndpointUrl'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 const createClient = url => {
   const client = axios.create({ baseURL: url })
@@ -103,13 +104,13 @@ export default class LskBaseApi {
   }
 
   _mapTransaction (tx) {
-    const direction = tx.senderId === this._address ? 'from' : 'to'
+    const direction = isStringEqualCI(tx.senderId, this._address) ? 'from' : 'to'
     // additional data: asset, receivedAt, blockId, height, type, recipientPublicKey, senderSecondPublicKey
     return {
       id: tx.id,
       hash: tx.id,
       fee: tx.fee,
-      status: tx.confirmations > 0 ? 'SUCCESS' : 'REGISTERED',
+      status: tx.confirmations > 0 ? 'CONFIRMED' : 'REGISTERED',
       timestamp: tx.timestamp,
       direction,
       senderId: tx.senderId,

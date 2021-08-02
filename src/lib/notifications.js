@@ -15,29 +15,37 @@ class Notification {
     this.store = ctx.$store
     this.interval = null
   }
+
   get lastUnread () {
     return this.store.getters['chat/lastUnreadMessage']
   }
+
   get partnerAddress () {
     return this.lastUnread && this.lastUnread.senderId
   }
+
   get partnerIdentity () {
     const isAdmChat = this.store.getters['chat/isAdamantChat'](this.partnerAddress)
     const name = this.store.getters['partners/displayName'](this.partnerAddress) || this.partnerAddress
     return isAdmChat ? this.i18n.t(name) : name
   }
+
   get pushAllowed () {
     return this.store.state.options.allowPushNotifications
   }
+
   get soundAllowed () {
     return this.store.state.options.allowSoundNotifications
   }
+
   get tabAllowed () {
     return this.store.state.options.allowTabNotifications
   }
+
   get tabHidden () {
     return Visibility.hidden()
   }
+
   get unreadAmount () {
     return this.store.getters['chat/totalNumOfNewMessages']
   }
@@ -48,6 +56,7 @@ class PushNotification extends Notification {
     super(ctx)
     this.tag = null
   }
+
   get messageBody () {
     let message
     if (this.lastUnread.type !== 'message') {
@@ -57,9 +66,11 @@ class PushNotification extends Notification {
     }
     return `${this.partnerIdentity}: ${removeFormats(message)}`
   }
+
   increaseCounter () {
     this.store.commit('notification/increaseDesktopActivateClickCount')
   }
+
   notify (messageArrived) {
     try {
       Notify.requestPermission(
@@ -122,6 +133,7 @@ class SoundNotification extends Notification {
     super(ctx)
     this.audio = new Audio('/sound/bbpro_link.mp3')
   }
+
   notify (messageArrived) {
     if (messageArrived) {
       this.audio.play()
@@ -134,6 +146,7 @@ class TabNotification extends Notification {
     super(ctx)
     this.showAmount = true
   }
+
   notify () {
     if (this.unreadAmount > 0 && this.lastUnread && this.tabHidden) {
       if (!this.interval) {
@@ -142,6 +155,7 @@ class TabNotification extends Notification {
       }
     }
   }
+
   start () {
     this.interval = window.setInterval(() => {
       if (this.unreadAmount && this.showAmount) {
@@ -154,6 +168,7 @@ class TabNotification extends Notification {
       this.showAmount = !this.showAmount
     }, 1e3)
   }
+
   stop () {
     if (this.interval) {
       window.clearInterval(this.interval)
@@ -171,10 +186,12 @@ export default class extends Notification {
     this.sound = new SoundNotification(ctx)
     this.tab = new TabNotification(ctx)
   }
+
   // Returns true once message arrived
   get messageArrived () {
     return this.unreadAmount > this.prevAmount
   }
+
   start () {
     this.interval = window.setInterval(() => {
       if (this.pushAllowed) {
@@ -189,6 +206,7 @@ export default class extends Notification {
       this.prevAmount = this.unreadAmount
     }, 3e3)
   }
+
   stop () {
     if (this.interval) {
       window.clearInterval(this.interval)

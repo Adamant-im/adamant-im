@@ -1,11 +1,10 @@
-import Web3 from 'web3'
-import { Transaction } from 'ethereumjs-tx'
-import { toBuffer } from 'ethereumjs-util'
+import Web3Eth from 'web3-eth'
 
 import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as utils from '../../../lib/eth-utils'
 import { getTransactions } from '../../../lib/eth-index'
 import * as tf from '../../../lib/transactionsFetching'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 /** Interval between attempts to fetch the registered tx details */
 const RETRY_TIMEOUT = 20 * 1000
@@ -13,11 +12,11 @@ const CHUNK_SIZE = 25
 
 export default function createActions (config) {
   const endpoint = getEndpointUrl('ETH')
-  const api = new Web3(new Web3.providers.HttpProvider(endpoint, 10000))
-  const queue = new utils.BatchQueue(() => api.createBatch())
+  const api = new Web3Eth(endpoint)
+  const queue = new utils.BatchQueue(() => new api.BatchRequest())
 
   const {
-    onInit = (() => { }),
+    onInit = () => { },
     initTransaction,
     parseTransaction,
     createSpecificActions
@@ -32,7 +31,7 @@ export default function createActions (config) {
     afterLogin: {
       root: true,
       handler (context, passphrase) {
-        const account = utils.getAccountFromPassphrase(passphrase)
+        const account = utils.getAccountFromPassphrase(passphrase, api)
         context.commit('account', account)
         context.dispatch('updateStatus')
         queue.start()
@@ -58,7 +57,7 @@ export default function createActions (config) {
         const address = context.state.address
 
         if (!address && passphrase) {
-          const account = utils.getAccountFromPassphrase(passphrase)
+          const account = utils.getAccountFromPassphrase(passphrase, api)
           context.commit('account', account)
           onInit(context)
         }
@@ -72,58 +71,65 @@ export default function createActions (config) {
     sendTokens (context, { amount, admAddress, address, comments, increaseFee }) {
       address = address.trim()
       const crypto = context.state.crypto
-      const ethTx = initTransaction(api, context, address, amount, increaseFee)
 
-      return utils.promisify(api.eth.getTransactionCount, context.state.address, 'pending')
-        .then(count => {
-          if (count) ethTx.nonce = count
-
-          const tx = new Transaction(ethTx)
-          tx.sign(toBuffer(context.state.privateKey))
-          const serialized = '0x' + tx.serialize().toString('hex')
-          const hash = api.sha3(serialized, { encoding: 'hex' })
-
-          if (!admAddress) {
-            return serialized
+      return initTransaction(api, context, address, amount, increaseFee).then(ethTx => {
+        return api.accounts.signTransaction(ethTx, context.state.privateKey).then(signedTx => {
+          const txInfo = {
+            signedTx,
+            ethTx
           }
 
+          if (!admAddress) {
+            return txInfo
+          }
           const msgPayload = {
             address: admAddress,
             amount,
             comments,
             crypto,
-            hash
+            hash: signedTx.transactionHash
           }
-
-          // Send a special message to indicate that we're performing an ETH transfer
+          // Send a rich ADM message to indicate that we're performing an ETH transfer
           return context.dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
-            .then(success => success ? serialized : Promise.reject(new Error('adm_message')))
+            .then(success => success ? txInfo : Promise.reject(new Error('adm_message')))
         })
-        .then(tx => {
-          return utils.promisify(api.eth.sendRawTransaction, tx).then(
-            hash => ({ hash }),
-            error => ({ error })
+      })
+        .then(txInfo => {
+          return api.sendSignedTransaction(txInfo.signedTx.rawTransaction).then(
+            hash => ({ txInfo, hash }),
+            error => {
+              // Known bug that after Tx sent successfully, this error occurred anyway https://github.com/ethereum/web3.js/issues/3145
+              if (!error.toString().includes('Failed to check for transaction receipt')) {
+                return { txInfo, error }
+              } else {
+                return { txInfo, hash: txInfo.signedTx.transactionHash }
+              }
+            }
           )
         })
-        .then(({ hash, error }) => {
-          if (error) {
-            console.error(`Failed to send ${crypto} transaction`, error)
-            context.commit('transactions', [{ hash, status: 'ERROR' }])
-            throw error
+        .then((sentTxInfo) => {
+          if (sentTxInfo.error) {
+            console.error(`Failed to send ${crypto} transaction`, sentTxInfo.error)
+            context.commit('transactions', [{ hash: sentTxInfo.txInfo.signedTx.transactionHash, status: 'REJECTED' }])
+            throw sentTxInfo.error
           } else {
+            if (!isStringEqualCI(sentTxInfo.hash, sentTxInfo.txInfo.signedTx.transactionHash)) {
+              console.warn(`Something wrong with sent ETH tx, computed hash and sent tx differs: ${sentTxInfo.txInfo.signedTx.transactionHash} and ${sentTxInfo.hash}`)
+            }
+
             context.commit('transactions', [{
-              hash,
-              senderId: ethTx.from,
+              hash: sentTxInfo.hash,
+              senderId: sentTxInfo.txInfo.ethTx.from,
               recipientId: address,
               amount,
-              fee: utils.calculateFee(ethTx.gas, ethTx.gasPrice),
+              fee: utils.calculateFee(sentTxInfo.txInfo.ethTx.gas, sentTxInfo.txInfo.ethTx.gasPrice),
               status: 'PENDING',
               timestamp: Date.now(),
-              gasPrice: ethTx.gasPrice
+              gasPrice: sentTxInfo.txInfo.ethTx.gasPrice
             }])
-            context.dispatch('getTransaction', { hash, isNew: true, direction: 'from', force: true })
+            context.dispatch('getTransaction', { hash: sentTxInfo.hash, isNew: true, direction: 'from', force: true })
 
-            return hash
+            return sentTxInfo.hash
           }
         })
     },
@@ -137,7 +143,7 @@ export default function createActions (config) {
       const transaction = context.state.transactions[payload.hash]
       if (!transaction) return
 
-      const supplier = () => api.eth.getBlock.request(payload.blockNumber, (err, block) => {
+      const supplier = () => api.getBlock.request(payload.blockNumber, (err, block) => {
         if (!err && block) {
           context.commit('transactions', [{
             hash: transaction.hash,
@@ -162,7 +168,7 @@ export default function createActions (config) {
         payload.updateOnly = false
         context.commit('transactions', [{
           hash: payload.hash,
-          timestamp: payload.timestamp,
+          timestamp: (existing && existing.timestamp) || payload.timestamp || Date.now(),
           amount: payload.amount,
           status: 'PENDING',
           direction: payload.direction
@@ -170,9 +176,9 @@ export default function createActions (config) {
       }
 
       const key = 'transaction:' + payload.hash
-      const supplier = () => api.eth.getTransaction.request(payload.hash, (err, tx) => {
+      const supplier = () => api.getTransaction.request(payload.hash, (err, tx) => {
         if (!err && tx && tx.input) {
-          let transaction = parseTransaction(context, tx)
+          const transaction = parseTransaction(context, tx)
           const status = existing ? existing.status : 'REGISTERED'
           if (transaction) {
             context.commit('transactions', [{
@@ -189,23 +195,25 @@ export default function createActions (config) {
         }
 
         const attempt = payload.attempt || 0
-        let retryCount = tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
-        let retry = attempt < retryCount
-        let retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+        const retryCount = tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+        const retry = attempt < retryCount
+        const retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
 
         if (!retry) {
           // Give up, if transaction could not be found after so many attempts
-          context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
+          context.commit('transactions', [{ hash: payload.hash, status: 'REJECTED' }])
         } else if (!payload.updateOnly) {
           // In case of an error or a pending transaction fetch its details once again later
           // Increment attempt counter, if no transaction was found so far
-          const newPayload = tx ? payload : {
-            ...payload,
-            attempt: attempt + 1,
-            force: true,
-            updateOnly: false,
-            dropStatus: false
-          }
+          const newPayload = tx
+            ? payload
+            : {
+                ...payload,
+                attempt: attempt + 1,
+                force: true,
+                updateOnly: false,
+                dropStatus: false
+              }
 
           setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
         }
@@ -225,7 +233,7 @@ export default function createActions (config) {
 
       const gasPrice = transaction.gasPrice
 
-      const supplier = () => api.eth.getTransactionReceipt.request(payload.hash, (err, tx) => {
+      const supplier = () => api.getTransactionReceipt.request(payload.hash, (err, tx) => {
         let replay = true
 
         if (!err && tx) {
@@ -236,10 +244,10 @@ export default function createActions (config) {
 
           if (Number(tx.status) === 0) {
             // Status "0x0" means that the transaction has been rejected
-            update.status = 'ERROR'
+            update.status = 'REJECTED'
           } else if (tx.blockNumber) {
             // If blockNumber is not null, the transaction is confirmed
-            update.status = 'SUCCESS'
+            update.status = 'CONFIRMED'
             update.blockNumber = tx.blockNumber
           }
 
@@ -282,6 +290,7 @@ export default function createActions (config) {
         context.state.transactionsCount = 0
         context.state.maxHeight = -1
         context.state.minHeight = Infinity
+        context.commit('bottom', false)
       }
       const { address, maxHeight, contractAddress, decimals } = context.state
       const from = maxHeight > 0 ? maxHeight + 1 : 0
@@ -333,7 +342,7 @@ export default function createActions (config) {
           context.commit('transactions', { transactions: result.items, updateTimestamps: true })
 
           if (!result.items.length) {
-            context.commit('bottom')
+            context.commit('bottom', true)
           }
         },
         error => {

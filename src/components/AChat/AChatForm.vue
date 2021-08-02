@@ -1,34 +1,67 @@
 <template>
   <div :class="classes">
-    <v-divider v-if="showDivider" class="a-chat__divider"/>
+    <v-divider
+      v-if="showDivider"
+      class="a-chat__divider"
+    />
     <v-textarea
+      ref="messageTextarea"
       v-model="message"
-      v-on="listeners"
       :label="label"
       hide-details
       single-line
       auto-grow
-      ref="messageTextarea"
       rows="1"
+      v-on="listeners"
     >
-      <template v-if="showSendButton" slot="append">
-        <v-icon medium>mdi-send</v-icon>
+      <template
+        v-if="showSendButton"
+        slot="append"
+      >
+        <v-icon medium>
+          mdi-send
+        </v-icon>
       </template>
       <template slot="prepend">
-        <slot name="prepend"></slot>
+        <slot name="prepend" />
       </template>
     </v-textarea>
 
     <div
       v-if="showSendButton"
-      @click="submitMessage"
       class="a-chat__form-send-area"
-    ></div>
+      @click="submitMessage"
+    />
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    messageText: {
+      default: '',
+      type: String
+    },
+    showSendButton: {
+      type: Boolean,
+      default: true
+    },
+    sendOnEnter: {
+      type: Boolean,
+      default: true
+    },
+    label: {
+      type: String,
+      default: 'Type a message'
+    },
+    showDivider: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: () => ({
+    message: ''
+  }),
   computed: {
     className: () => 'a-chat',
     classes () {
@@ -72,9 +105,12 @@ export default {
       }
     }
   },
-  data: () => ({
-    message: ''
-  }),
+  mounted () {
+    if (this.messageText) {
+      this.message = this.messageText
+      this.focus()
+    }
+  },
   methods: {
     submitMessage () {
       this.$emit('message', this.message)
@@ -91,34 +127,6 @@ export default {
     },
     focus () {
       this.$refs.messageTextarea.focus()
-    }
-  },
-  mounted () {
-    if (this.messageText) {
-      this.message = this.messageText
-      this.focus()
-    }
-  },
-  props: {
-    messageText: {
-      default: '',
-      type: String
-    },
-    showSendButton: {
-      type: Boolean,
-      default: true
-    },
-    sendOnEnter: {
-      type: Boolean,
-      default: true
-    },
-    label: {
-      type: String,
-      default: 'Type a message'
-    },
-    showDivider: {
-      type: Boolean,
-      default: false
     }
   }
 }

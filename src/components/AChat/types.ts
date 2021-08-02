@@ -26,7 +26,7 @@ export enum MessageType {
 }
 
 export enum MessageStatus {
-  DELIVERED,
+  REGISTERED,
   PENDING,
   REJECTED,
   INVALID

@@ -2,28 +2,33 @@
   <v-card class="chat">
     <free-tokens-dialog v-model="showFreeTokensDialog" />
     <a-chat
+      ref="chat"
       :messages="messages"
       :partners="partners"
       :user-id="userId"
       :loading="loading"
-      :locale="$i18n.locale"
 
+      :locale="$i18n.locale"
       @scroll:top="onScrollTop"
       @scroll:bottom="onScrollBottom"
-      @scroll="onScroll"
 
-      ref="chat"
+      @scroll="onScroll"
     >
-      <chat-toolbar :partner-id="partnerId" slot="header">
+      <chat-toolbar
+        slot="header"
+        :partner-id="partnerId"
+      >
         <ChatAvatar
-          @click="onClickAvatar(partnerId)"
+          slot="avatar-toolbar"
           :user-id="partnerId"
           use-public-key
-          slot="avatar-toolbar"
+          @click="onClickAvatar(partnerId)"
         />
       </chat-toolbar>
-      <template slot="message" slot-scope="{ message, userId, sender, locale }">
-
+      <template
+        slot="message"
+        slot-scope="{ message, userId, sender, locale }"
+      >
         <a-chat-message
           v-if="message.type === 'message'"
           v-bind="message"
@@ -32,6 +37,7 @@
           :time="message.timestamp | date"
           :user-id="userId"
           :sender="sender"
+          :status="getTransactionStatus(message)"
           :show-avatar="!isChatReadOnly"
           :locale="locale"
           :html="true"
@@ -40,10 +46,10 @@
           @resend="resendMessage(partnerId, message.id)"
         >
           <ChatAvatar
-            @click="onClickAvatar(sender.id)"
+            slot="avatar"
             :user-id="sender.id"
             use-public-key
-            slot="avatar"
+            @click="onClickAvatar(sender.id)"
           />
         </a-chat-message>
 
@@ -56,13 +62,8 @@
           :amount="message.amount | currency(message.type)"
           :time="message.timestamp | date"
           :currency="message.type"
-          :i18n="{
-            sent: $t('chats.sent_label'),
-            received: $t('chats.received_label'),
-            statuses: $t('chats.transaction_statuses')
-          }"
           :locale="locale"
-          :status="getTransactionStatus(message, partnerId)"
+          :status="getTransactionStatus(message)"
           :is-clickable="isCryptoSupported(message.type)"
           @click:transaction="openTransaction(message)"
           @click:transactionStatus="updateTransactionStatus(message)"
@@ -73,19 +74,18 @@
             :crypto="message.type"
           />
         </a-chat-transaction>
-
       </template>
 
       <a-chat-form
         v-if="!isChatReadOnly"
         ref="chatForm"
         slot="form"
-        @message="onMessage"
         :show-send-button="true"
         :send-on-enter="sendMessageOnEnter"
         :show-divider="true"
         :label="chatFormLabel"
-        :messageText="messageText"
+        :message-text="messageText"
+        @message="onMessage"
       >
         <chat-menu
           slot="prepend"
@@ -95,15 +95,17 @@
 
       <v-btn
         v-if="!isScrolledToBottom"
-        @click="$refs.chat.scrollToBottom()"
+        slot="fab"
         class="ma-0 grey--text"
         color="grey lighten-3"
         depressed
         fab
-        slot="fab"
         small
+        @click="$refs.chat.scrollToBottom()"
       >
-        <v-icon large>mdi-chevron-down</v-icon>
+        <v-icon large>
+          mdi-chevron-down
+        </v-icon>
       </v-btn>
     </a-chat>
   </v-card>
@@ -114,7 +116,7 @@ import { detect } from 'detect-browser'
 import Visibility from 'visibilityjs'
 
 import { Cryptos } from '@/lib/constants'
-import { renderMarkdown } from '@/lib/markdown'
+import { renderMarkdown, sanitizeHTML } from '@/lib/markdown'
 
 import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@/components/AChat'
 import ChatToolbar from '@/components/Chat/ChatToolbar'
@@ -126,6 +128,7 @@ import dateFilter from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import FreeTokensDialog from '@/components/FreeTokensDialog'
 import { websiteUriToOnion } from '@/lib/uri'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 /**
  * Returns user meta by userId.
@@ -133,12 +136,12 @@ import { websiteUriToOnion } from '@/lib/uri'
  * @returns {User} See `packages/chat/src/types.ts`
  */
 function getUserMeta (userId) {
-  let user = {
+  const user = {
     id: userId,
     name: ''
   }
 
-  if (userId === this.userId) {
+  if (isStringEqualCI(userId, this.userId)) {
     user.name = this.$t('chats.you')
   } else {
     user.name = this.getPartnerName(userId)
@@ -178,44 +181,38 @@ function validateMessage (message) {
 }
 
 export default {
-  created () {
-    window.addEventListener('keyup', this.onKeyPress)
+  filters: {
+    date: dateFilter
   },
-  beforeDestroy () {
-    window.removeEventListener('keyup', this.onKeyPress)
-    Visibility.unbind(this.visibilityId)
+  components: {
+    AChat,
+    AChatMessage,
+    AChatTransaction,
+    AChatForm,
+    ChatToolbar,
+    ChatAvatar,
+    ChatMenu,
+    CryptoIcon,
+    FreeTokensDialog
   },
-  mounted () {
-    this.scrollBehavior()
-    this.$nextTick(() => {
-      this.isScrolledToBottom = this.$refs.chat.isScrolledToBottom()
-    })
-    this.visibilityId = Visibility.change((event, state) => {
-      if (state === 'visible' && this.isScrolledToBottom) this.markAsRead()
-    })
-    this.chatFormLabel = {
-      'Mac OS': this.$t('chats.message_mac_os'),
-      'Windows 10': this.$t('chats.message_windows_10')
-    }[detect().os] || this.$t('chats.message')
-  },
-  watch: {
-    // Scroll to the bottom every time window focused by desktop notification
-    '$store.state.notification.desktopActivateClickCount' () {
-      this.$nextTick(() => {
-        this.$refs.chat.scrollToBottom()
-      })
+  mixins: [transaction, partnerName],
+  props: {
+    messageText: {
+      default: '',
+      type: String
     },
-    // scroll to bottom when received new message
-    messages () {
-      this.$nextTick(() => {
-        if (this.isScrolledToBottom) {
-          this.$refs.chat.scrollToBottom()
-        }
-
-        if (!Visibility.hidden()) this.markAsRead()
-      })
+    partnerId: {
+      type: String,
+      required: true
     }
   },
+  data: () => ({
+    chatFormLabel: '',
+    loading: false,
+    isScrolledToBottom: true,
+    visibilityId: null,
+    showFreeTokensDialog: false
+  }),
   computed: {
     /**
      * Returns array of transformed messages.
@@ -250,13 +247,44 @@ export default {
       return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
     }
   },
-  data: () => ({
-    chatFormLabel: '',
-    loading: false,
-    isScrolledToBottom: true,
-    visibilityId: null,
-    showFreeTokensDialog: false
-  }),
+  watch: {
+    // Scroll to the bottom every time window focused by desktop notification
+    '$store.state.notification.desktopActivateClickCount' () {
+      this.$nextTick(() => {
+        this.$refs.chat.scrollToBottom()
+      })
+    },
+    // scroll to bottom when received new message
+    messages () {
+      this.$nextTick(() => {
+        if (this.isScrolledToBottom) {
+          this.$refs.chat.scrollToBottom()
+        }
+
+        if (!Visibility.hidden()) this.markAsRead()
+      })
+    }
+  },
+  created () {
+    window.addEventListener('keyup', this.onKeyPress)
+  },
+  beforeDestroy () {
+    window.removeEventListener('keyup', this.onKeyPress)
+    Visibility.unbind(this.visibilityId)
+  },
+  mounted () {
+    this.scrollBehavior()
+    this.$nextTick(() => {
+      this.isScrolledToBottom = this.$refs.chat.isScrolledToBottom()
+    })
+    this.visibilityId = Visibility.change((event, state) => {
+      if (state === 'visible' && this.isScrolledToBottom) this.markAsRead()
+    })
+    this.chatFormLabel = {
+      'Mac OS': this.$t('chats.message_mac_os'),
+      'Windows 10': this.$t('chats.message_windows_10')
+    }[detect().os] || this.$t('chats.message')
+  },
   methods: {
     onMessage (message) {
       if (validateMessage.call(this, message)) {
@@ -340,7 +368,7 @@ export default {
         return renderMarkdown(transaction.message)
       }
 
-      return transaction.message
+      return sanitizeHTML(transaction.message)
     },
     scrollBehavior () {
       this.$nextTick(() => {
@@ -357,31 +385,6 @@ export default {
     },
     onKeyPress (e) {
       if (e.code === 'Enter' && !this.showFreeTokensDialog) this.$refs.chatForm.focus()
-    }
-  },
-  filters: {
-    date: dateFilter
-  },
-  mixins: [transaction, partnerName],
-  components: {
-    AChat,
-    AChatMessage,
-    AChatTransaction,
-    AChatForm,
-    ChatToolbar,
-    ChatAvatar,
-    ChatMenu,
-    CryptoIcon,
-    FreeTokensDialog
-  },
-  props: {
-    messageText: {
-      default: '',
-      type: String
-    },
-    partnerId: {
-      type: String,
-      required: true
     }
   }
 }

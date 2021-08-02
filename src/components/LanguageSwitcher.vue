@@ -1,16 +1,29 @@
 <template>
-  <v-menu offset-y class="language-switcher">
+  <v-menu
+    offset-y
+    class="language-switcher"
+  >
     <v-btn
-      class="ma-0"
       slot="activator"
+      class="ma-0"
       flat
     >
       <slot name="prepend">
-        <v-icon v-if="prependIcon" left>{{ prependIcon }}</v-icon>
+        <v-icon
+          v-if="prependIcon"
+          left
+        >
+          {{ prependIcon }}
+        </v-icon>
       </slot>
       {{ currentLanguageName }}
       <slot name="append">
-        <v-icon v-if="appendIcon" right>{{ appendIcon }}</v-icon>
+        <v-icon
+          v-if="appendIcon"
+          right
+        >
+          {{ appendIcon }}
+        </v-icon>
       </slot>
     </v-btn>
     <v-list>
@@ -27,6 +40,16 @@
 
 <script>
 export default {
+  props: {
+    prependIcon: {
+      type: String,
+      default: ''
+    },
+    appendIcon: {
+      type: String,
+      default: ''
+    }
+  },
   computed: {
     languages () {
       return this.$i18n.messages
@@ -49,16 +72,6 @@ export default {
   methods: {
     onSelect (locale) {
       this.currentLocale = locale
-    }
-  },
-  props: {
-    prependIcon: {
-      type: String,
-      default: ''
-    },
-    appendIcon: {
-      type: String,
-      default: ''
     }
   }
 }

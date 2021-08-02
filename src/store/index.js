@@ -34,6 +34,7 @@ import chat from './modules/chat'
 import options from './modules/options'
 import identicon from './modules/identicon'
 import notification from './modules/notification'
+import cache from '@/store/cache'
 
 Vue.use(Vuex)
 
@@ -93,6 +94,7 @@ const store = {
       state.password = ''
       state.IDBReady = false
       state.publicKeys = {}
+      cache.resetCachedSeed()
     },
     setPublicKey (state, { adamantAddress, publicKey }) {
       state.publicKeys[adamantAddress] = publicKey
@@ -109,7 +111,7 @@ const store = {
           commit('setBalance', account.balance)
           commit('setPassphrase', passphrase)
 
-          // retrieve eth & erc20 data
+          // retrieve wallet data
           dispatch('afterLogin', passphrase)
         })
     },
@@ -118,7 +120,7 @@ const store = {
         .then(account => {
           commit('setIDBReady', true)
 
-          // retrieve eth & erc20 data
+          // retrieve wallet data
           dispatch('afterLogin', account.passphrase)
         })
     },
@@ -126,12 +128,15 @@ const store = {
       dispatch('reset')
     },
     unlock ({ state, dispatch }) {
+      // user updated an app, F5 or something
       const passphrase = Base64.decode(state.passphrase)
 
       unlock(passphrase)
 
-      // retrieve eth & erc20 data
-      dispatch('afterLogin', passphrase)
+      // retrieve wallet data only if loginViaPassword, otherwise coin modules will be loaded twice
+      if (state.password) {
+        dispatch('afterLogin', passphrase)
+      }
     },
     sendCryptoTransferMessage (context, payload) {
       const msg = {

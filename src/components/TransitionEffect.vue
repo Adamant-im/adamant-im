@@ -1,12 +1,15 @@
 <template>
-  <transition name="fade" mode="out-in">
+  <transition
+    name="fade"
+    mode="out-in"
+  >
     <slot />
   </transition>
 </template>
 
 <script>
 export default {
-  name: `TransitionPage`
+  name: 'TransitionPage'
 }
 </script>
 

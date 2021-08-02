@@ -71,7 +71,7 @@ export default {
     return admApi.getStored(key, payload.partner, MAXIMUM_ADDRESSES).then(
       txs => {
         if (txs.length > 0) {
-          let addresses = parseCryptoAddressesKVStxs(txs)
+          const addresses = parseCryptoAddressesKVStxs(txs)
           context.commit('address', { ...payload, crypto, address: addresses.mainAddress })
           if (addresses.addressesCount > 1) {
             context.commit('addresses_inconsistency', { ...payload, crypto, addresses: addresses.storedAddresses })

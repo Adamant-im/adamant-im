@@ -13,8 +13,8 @@ module.exports = {
           '!**/{report.html,robots.txt,.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,__pycache__,thumbs.db,.gitignore,.gitattributes,.editorconfig,.flowconfig,.yarn-metadata.json,.idea,appveyor.yml,.travis.yml,circle.yml,npm-debug.log,.nyc_output,yarn.lock,.yarn-integrity}'
         ],
         protocols: {
-          'name': 'ADAMANT Messenger',
-          'schemes': ['adm']
+          name: 'ADAMANT Messenger',
+          schemes: ['adm']
         },
         win: {
           icon: './build/win/icon.ico'
@@ -33,6 +33,7 @@ module.exports = {
             Terminal: false,
             Type: 'Application'
           },
+          /* eslint-disable no-template-curly-in-string */
           artifactName: 'ADAMANT-Messenger-${version}.${ext}',
           icon: './build/linux/',
           target: ['AppImage']
@@ -53,7 +54,7 @@ module.exports = {
   configureWebpack: {
     plugins: [
       // remove non english bip39 wordlists
-      new webpack.IgnorePlugin(/^\.\/(?!english)/, /bip39\/src\/wordlists$/),
+      new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
       // replace `config.json` for different environments
       new webpack.NormalModuleReplacementPlugin(/(.*){ENV}(.*)/, (resource) => {
         const configName = process.env.ADM_CONFIG_FILE
