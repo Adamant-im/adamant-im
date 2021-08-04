@@ -1,4 +1,4 @@
-import bitcoin from 'bitcoinjs-lib'
+import * as bitcoin from 'bitcoinjs-lib'
 import axios from 'axios'
 
 import networks from './networks'
@@ -170,21 +170,27 @@ export default class BtcBaseApi {
 
   _mapTransaction (tx) {
     // Remove курьи txs like "possibleDoubleSpend" and txs without info
-    if (tx.possibleDoubleSpend || (!tx.hash && !tx.time && !tx.valueIn)) return
+    if (tx.possibleDoubleSpend || (!tx.txid && !tx.time && !tx.valueIn && !tx.vin)) return
 
-    const senders = getUnique(tx.vin.map(x => x.addr)).filter(sender => sender !== undefined && sender !== 'undefined')
+    const addressField = tx.vin[0].address ? 'address' : 'addr'
+    const senders = getUnique(tx.vin.map(input => input[addressField])).filter(sender => sender !== undefined && sender !== 'undefined')
 
     const direction = senders.includes(this._address) ? 'from' : 'to'
 
     const recipients = getUnique(tx.vout.reduce((list, out) => {
       list.push(...out.scriptPubKey.addresses)
       return list
-    }, [])).filter(sender => sender !== undefined && sender !== 'undefined')
+    }, [])).filter(recipient => recipient !== undefined && recipient !== 'undefined')
 
     if (direction === 'from') {
-      // Disregard our address for the outgoing transaction unless it's the only address
-      // (i.e. we're sending to ourselves)
+      // Disregard our address for an outgoing transaction unless it's the only address (i.e. we're sending to ourselves)
       const idx = recipients.indexOf(this._address)
+      if (idx >= 0 && recipients.length > 1) recipients.splice(idx, 1)
+    }
+
+    if (direction === 'to' && senders.length === 1) {
+      // Disregard the only sender address for an incoming transaction unless it's the only address (i.e. we're sending to ourselves)
+      const idx = recipients.indexOf(senders[0])
       if (idx >= 0 && recipients.length > 1) recipients.splice(idx, 1)
     }
 
@@ -200,7 +206,7 @@ export default class BtcBaseApi {
     // Calculate amount from outputs:
     // * for the outgoing transactions take outputs that DO NOT target us
     // * for the incoming transactions take outputs that DO target us
-    let amount = tx.vout.reduce((sum, t) =>
+    const amount = tx.vout.reduce((sum, t) =>
       ((direction === 'to') === (t.scriptPubKey.addresses.includes(this._address)) ? sum + Number(t.value) : sum), 0)
 
     const confirmations = tx.confirmations
@@ -213,13 +219,13 @@ export default class BtcBaseApi {
       fee = totalIn - totalOut
     }
 
-    let height = tx.height
+    const height = tx.height
 
     return {
       id: tx.txid,
       hash: tx.txid,
       fee,
-      status: confirmations > 0 ? 'SUCCESS' : 'REGISTERED',
+      status: confirmations > 0 ? 'CONFIRMED' : 'REGISTERED',
       timestamp,
       direction,
       senders,
@@ -228,7 +234,10 @@ export default class BtcBaseApi {
       recipientId,
       amount,
       confirmations,
-      height
+      height,
+      instantlock: tx.instantlock,
+      instantlock_internal: tx.instantlock_internal,
+      instantsend: tx.instantlock
     }
   }
 }

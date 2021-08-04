@@ -1,7 +1,16 @@
 <template>
-  <v-card flat :class="className">
-    <v-list two-line :class="`${className}__list`">
-      <v-list-tile @click="showShareURIDialog = true" :class="`${className}__tile`">
+  <v-card
+    flat
+    :class="className"
+  >
+    <v-list
+      two-line
+      :class="`${className}__list`"
+    >
+      <v-list-tile
+        :class="`${className}__tile`"
+        @click="showShareURIDialog = true"
+      >
         <v-list-tile-content>
           <v-list-tile-title :class="`${className}__title`">
             {{ cryptoName }} {{ $t('home.wallet') }}
@@ -12,8 +21,17 @@
         </v-list-tile-content>
 
         <v-list-tile-action>
-          <v-btn icon ripple :class="`${className}__action`">
-            <v-icon :class="`${className}__icon`" size="20">mdi-share-variant</v-icon>
+          <v-btn
+            icon
+            ripple
+            :class="`${className}__action`"
+          >
+            <v-icon
+              :class="`${className}__icon`"
+              size="20"
+            >
+              mdi-share-variant
+            </v-icon>
           </v-btn>
         </v-list-tile-action>
       </v-list-tile>
@@ -29,8 +47,17 @@
         </v-list-tile-content>
 
         <v-list-tile-action>
-          <v-btn icon ripple :class="`${className}__action`">
-            <v-icon :class="`${className}__icon`" size="20">mdi-chevron-right</v-icon>
+          <v-btn
+            icon
+            ripple
+            :class="`${className}__action`"
+          >
+            <v-icon
+              :class="`${className}__icon`"
+              size="20"
+            >
+              mdi-chevron-right
+            </v-icon>
           </v-btn>
         </v-list-tile-action>
       </v-list-tile>
@@ -39,14 +66,14 @@
     <WalletCardListActions
       :class="`${className}__list`"
       :crypto="crypto"
-      :isADM="isADM"
+      :is-a-d-m="isADM"
     />
 
     <ShareURIDialog
+      v-model="showShareURIDialog"
       :address="address"
       :crypto="crypto"
-      :isADM="isADM"
-      v-model="showShareURIDialog"
+      :is-a-d-m="isADM"
     />
   </v-card>
 </template>
@@ -57,15 +84,6 @@ import WalletCardListActions from '@/components/WalletCardListActions'
 import { Cryptos } from '@/lib/constants'
 
 export default {
-  computed: {
-    className () {
-      return 'wallet-card'
-    },
-    isADM () {
-      return this.crypto === Cryptos.ADM
-    }
-  },
-  data: () => ({ showShareURIDialog: false }),
   components: {
     ShareURIDialog,
     WalletCardListActions
@@ -86,6 +104,15 @@ export default {
     cryptoName: {
       type: String,
       default: 'ADAMANT'
+    }
+  },
+  data: () => ({ showShareURIDialog: false }),
+  computed: {
+    className () {
+      return 'wallet-card'
+    },
+    isADM () {
+      return this.crypto === Cryptos.ADM
     }
   }
 }

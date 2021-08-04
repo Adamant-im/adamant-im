@@ -1,17 +1,16 @@
 <template>
   <transaction-template
+    :id="transaction.hash || '' "
     :amount="transaction.amount | currency(crypto)"
     :timestamp="transaction.timestamp || NaN"
-    :id="transaction.hash || '' "
     :fee="transaction.fee | currency('LSK')"
     :confirmations="confirmations || NaN"
     :sender="sender || '' "
     :recipient="recipient || '' "
-    :explorerLink="explorerLink"
+    :explorer-link="explorerLink"
     :partner="partner || '' "
-    :status="status() || '' "
-    :status_inconsistent="inconsistent_reason"
-    :admTx="admTx"
+    :status="getTransactionStatus(admTx, transaction)"
+    :adm-tx="admTx"
     :crypto="crypto"
   />
 </template>
@@ -19,13 +18,18 @@
 <script>
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
-import { Cryptos, TransactionStatus as TS } from '../../lib/constants'
+import { Cryptos } from '../../lib/constants'
 import partnerName from '@/mixins/partnerName'
-import { verifyTransactionDetails } from '@/lib/txVerify'
+
+import { isStringEqualCI } from '@/lib/textHelpers'
+import transaction from '@/mixins/transaction'
 
 export default {
-  mixins: [partnerName],
-  name: 'lsk-transaction',
+  name: 'LskTransaction',
+  components: {
+    TransactionTemplate
+  },
+  mixins: [transaction, partnerName],
   props: {
     crypto: {
       required: true,
@@ -35,9 +39,6 @@ export default {
       required: true,
       type: String
     }
-  },
-  components: {
-    TransactionTemplate
   },
   data () {
     return {
@@ -60,8 +61,9 @@ export default {
     partner () {
       if (this.transaction.partner) return this.transaction.partner
 
-      const id = this.transaction.senderId !== this.$store.state.lsk.address
-        ? this.transaction.senderId : this.transaction.recipientId
+      const id = !isStringEqualCI(this.transaction.senderId, this.$store.state.lsk.address)
+        ? this.transaction.senderId
+        : this.transaction.recipientId
       return this.getAdmAddress(id)
     },
     explorerLink () {
@@ -82,7 +84,7 @@ export default {
       return result
     },
     admTx () {
-      let admTx = {}
+      const admTx = {}
       // Bad news, everyone: we'll have to scan the messages
       Object.values(this.$store.state.chat.chats).some(chat => {
         Object.values(chat.messages).some(msg => {
@@ -97,21 +99,6 @@ export default {
     }
   },
   methods: {
-    status () {
-      let status = this.transaction.status
-      let messageTx = this.admTx
-      if (status === 'SUCCESS' && messageTx && messageTx.id) {
-        const txVerify = verifyTransactionDetails(this.transaction, messageTx, { recipientCryptoAddress: this.recipient, senderCryptoAddress: this.sender })
-        if (txVerify.isTxConsistent) {
-          status = TS.CONFIRMED
-          this.inconsistent_reason = ''
-        } else {
-          this.inconsistent_reason = this.$t(`transaction.inconsistent_reasons.${txVerify.txInconsistentReason}`, { crypto: this.crypto })
-          status = TS.INVALID
-        }
-      }
-      return status
-    },
     getAdmAddress (address) {
       let admAddress = ''
 
@@ -119,7 +106,7 @@ export default {
       const partners = this.$store.state.partners.list
       Object.keys(partners).some(uid => {
         const partner = partners[uid]
-        if (partner[Cryptos.LSK] === address) {
+        if (isStringEqualCI(partner[Cryptos.LSK], address)) {
           admAddress = uid
         }
         return !!admAddress
@@ -130,7 +117,7 @@ export default {
         Object.values(this.$store.state.chat.chats).some(chat => {
           Object.values(chat.messages).some(msg => {
             if (msg.hash && msg.hash === this.id) {
-              admAddress = msg.senderId === this.$store.state.address ? msg.recipientId : msg.senderId
+              admAddress = isStringEqualCI(msg.senderId, this.$store.state.address) ? msg.recipientId : msg.senderId
             }
             return !!admAddress
           })
@@ -142,10 +129,10 @@ export default {
     },
 
     formatAddress (address) {
-      let admAddress = this.getAdmAddress(address)
+      const admAddress = this.getAdmAddress(address)
       let name = ''
 
-      if (address === this.$store.state.lsk.address) {
+      if (isStringEqualCI(address, this.$store.state.lsk.address)) {
         name = this.$t('transaction.me')
       } else {
         name = this.getPartnerName(admAddress)

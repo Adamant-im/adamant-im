@@ -1,9 +1,9 @@
 <template>
   <v-content>
-    <slot/>
+    <slot />
 
-    <app-snackbar/>
-    <app-navigation v-if="showNavigation"/>
+    <app-snackbar />
+    <app-navigation v-if="showNavigation" />
   </v-content>
 </template>
 
@@ -12,14 +12,14 @@ import AppSnackbar from '@/components/AppSnackbar'
 import AppNavigation from '@/components/AppNavigation'
 
 export default {
+  components: {
+    AppSnackbar,
+    AppNavigation
+  },
   computed: {
     showNavigation () {
       return this.$route.meta.showNavigation || false
     }
-  },
-  components: {
-    AppSnackbar,
-    AppNavigation
   }
 }
 </script>

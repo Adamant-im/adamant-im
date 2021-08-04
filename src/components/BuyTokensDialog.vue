@@ -11,10 +11,9 @@
         {{ $t('home.buy_tokens_btn') }}
       </v-card-title>
 
-      <v-divider class="a-divider"></v-divider>
+      <v-divider class="a-divider" />
 
       <v-card-text class="pa-0">
-
         <v-list>
           <v-list-tile
             v-for="action in actions"
@@ -23,35 +22,27 @@
             @click="openLink(action.link)"
           >
             <v-list-tile-avatar>
-              <crypto-icon :crypto="action.icon"/>
+              <crypto-icon :crypto="action.icon" />
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title v-text="action.title"></v-list-tile-title>
+              <v-list-tile-title v-text="action.title" />
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-list-tile avatar @click="openLink('https://coindeal.com/ref/9WZN')">
+          <v-list-tile
+            avatar
+            @click="openLink('https://coindeal.com/ref/9WZN')"
+          >
             <v-list-tile-avatar>
-              <icon><cdl-icon/></icon>
+              <icon><cdl-icon /></icon>
             </v-list-tile-avatar>
 
             <v-list-tile-content>
               <v-list-tile-title>CoinDeal</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-
-          <v-list-tile avatar @click="openLink('https://atomars.com/refcode/kaba')">
-            <v-list-tile-avatar>
-              <icon><atomars-icon/></icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>Atomars</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
         </v-list>
-
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -62,10 +53,25 @@ import validateAddress from '@/lib/validateAddress'
 import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import CdlIcon from '@/components/icons/common/Cdl'
-import AtomarsIcon from '@/components/icons/common/Atomars'
 import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
+  components: {
+    Icon,
+    CryptoIcon,
+    CdlIcon
+  },
+  props: {
+    value: {
+      type: Boolean,
+      required: true
+    },
+    adamantAddress: {
+      type: String,
+      default: undefined,
+      validator: v => validateAddress('ADM', v)
+    }
+  },
   computed: {
     className: () => 'buy-tokens-dialog',
     show: {
@@ -101,23 +107,6 @@ export default {
   methods: {
     openLink (link) {
       window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
-    }
-  },
-  components: {
-    Icon,
-    CryptoIcon,
-    CdlIcon,
-    AtomarsIcon
-  },
-  props: {
-    value: {
-      type: Boolean,
-      required: true
-    },
-    adamantAddress: {
-      type: String,
-      default: undefined,
-      validator: v => validateAddress('ADM', v)
     }
   }
 }

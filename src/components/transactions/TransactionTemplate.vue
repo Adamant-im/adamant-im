@@ -1,6 +1,10 @@
 <template>
-  <v-layout row wrap justify-center :class="className">
-
+  <v-layout
+    row
+    wrap
+    justify-center
+    :class="className"
+  >
     <app-toolbar-centered
       app
       :title="`${id}`"
@@ -9,11 +13,9 @@
     />
 
     <container>
-
       <v-list class="transparent">
-
         <v-list-tile>
-          <v-list-tile-content>
+          <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.amount') }}
             </v-list-tile-title>
@@ -26,27 +28,38 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile>
-          <v-list-tile-content>
-            <v-list-tile-title :class="`${className}__title`" style="width: fit-content;">
+          <v-list-tile-content :class="`${className}__titlecontent`">
+            <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.status') }}
-              <v-icon size="20" v-if="statusUpdatable" @click="updateStatus()">mdi-refresh</v-icon>
-              {{ '&nbsp;&nbsp;&nbsp;' }}
+              <v-icon
+                v-if="statusUpdatable"
+                size="20"
+                @click="updateStatus()"
+              >
+                mdi-refresh
+              </v-icon>
             </v-list-tile-title>
           </v-list-tile-content>
 
-          <div :class="`${className}__value ${className}__value-${lowerCaseStatus}`">
-              <v-icon v-if="status_inconsistent" size="20" style="color: #f8a061 !important;">{{ 'mdi-alert-outline' }}</v-icon>
-              {{ $t(`transaction.statuses.${lowerCaseStatus}`) }}<span v-if="status_inconsistent">{{': ' + status_inconsistent }}</span>
+          <div :class="`${className}__value ${className}__value-${status.virtualStatus}`">
+            <v-icon
+              v-if="status.status === 'INVALID'"
+              size="20"
+              style="color: #f8a061 !important;"
+            >
+              {{ 'mdi-alert-outline' }}
+            </v-icon>
+            {{ $t(`transaction.statuses.${status.virtualStatus}`) }}<span v-if="status.status === 'INVALID'">{{ ': ' + $t(`transaction.inconsistent_reasons.${status.inconsistentReason}`, { crypto } ) }}</span><span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile>
-          <v-list-tile-content>
+          <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.date') }}
             </v-list-tile-title>
@@ -59,10 +72,10 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile>
-          <v-list-tile-content>
+          <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.confirmations') }}
             </v-list-tile-title>
@@ -75,10 +88,10 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile>
-          <v-list-tile-content>
+          <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.commission') }}
             </v-list-tile-title>
@@ -91,7 +104,7 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile :title="id || placeholder">
           <v-list-tile-title :class="`${className}__title`">
@@ -103,7 +116,7 @@
           </v-list-tile-title>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile :title="sender || placeholder">
           <v-list-tile-title :class="`${className}__title`">
@@ -115,7 +128,7 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
         <v-list-tile :title="recipient || placeholder">
           <v-list-tile-title :class="`${className}__title`">
@@ -127,9 +140,12 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
-        <v-list-tile v-if="comment" :title="comment">
+        <v-list-tile
+          v-if="comment"
+          :title="comment"
+        >
           <v-list-tile-title :class="`${className}__title`">
             {{ $t('transaction.comment') }}
           </v-list-tile-title>
@@ -139,10 +155,13 @@
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
-        <v-list-tile v-if="explorerLink" @click="openInExplorer">
-          <v-list-tile-content>
+        <v-list-tile
+          v-if="explorerLink"
+          @click="openInExplorer"
+        >
+          <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.explorer') }}
             </v-list-tile-title>
@@ -150,15 +169,20 @@
 
           <div>
             <v-list-tile-title :class="`${className}__value`">
-              <v-icon size="20">mdi-chevron-right</v-icon>
+              <v-icon size="20">
+                mdi-chevron-right
+              </v-icon>
             </v-list-tile-title>
           </div>
         </v-list-tile>
 
-        <v-divider/>
+        <v-divider />
 
-        <v-list-tile v-if="partner && !ifComeFromChat" @click="openChat">
-          <v-list-tile-content>
+        <v-list-tile
+          v-if="partner && !ifComeFromChat"
+          @click="openChat"
+        >
+          <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
               {{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}
             </v-list-tile-title>
@@ -166,15 +190,14 @@
 
           <div>
             <v-list-tile-title :class="`${className}__value`">
-              <v-icon size="20">{{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}</v-icon>
+              <v-icon size="20">
+                {{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}
+              </v-icon>
             </v-list-tile-title>
           </div>
         </v-list-tile>
-
       </v-list>
-
     </container>
-
   </v-layout>
 </template>
 
@@ -182,8 +205,14 @@
 import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 
+import transaction from '@/mixins/transaction'
+
 export default {
-  name: 'transaction-template',
+  name: 'TransactionTemplate',
+  components: {
+    AppToolbarCentered
+  },
+  mixins: [transaction],
   props: {
     amount: {
       required: true,
@@ -223,11 +252,7 @@ export default {
     },
     status: {
       required: true,
-      type: String
-    },
-    status_inconsistent: {
-      required: false,
-      type: String
+      type: Object
     },
     timestamp: {
       required: true,
@@ -236,6 +261,37 @@ export default {
     admTx: {
       required: false,
       type: Object
+    }
+  },
+  computed: {
+    className: () => 'transaction-view',
+    hasMessages: function () {
+      const chat = this.$store.state.chat.chats[this.partner]
+      return chat && chat.messages && Object.keys(chat.messages).length > 0
+    },
+    placeholder () {
+      if (!this.status.status) return Symbols.CLOCK
+      return this.status.status === 'REJECTED' ? Symbols.CROSS : Symbols.HOURGLASS
+    },
+    ifComeFromChat () {
+      return Object.prototype.hasOwnProperty.call(this.$route.query, 'fromChat')
+    },
+    comment () {
+      return this.admTx && this.admTx.message ? this.admTx.message : false
+    },
+    statusUpdatable () {
+      return tsUpdatable(this.status.virtualStatus, this.crypto)
+    }
+  },
+  watch: {
+    // fetch Tx status when we get admTx
+    admTx () {
+      this.fetchTransactionStatus(this.admTx, this.partner)
+    }
+  },
+  mounted () {
+    if (this.admTx) {
+      this.fetchTransactionStatus(this.admTx, this.partner)
     }
   },
   methods: {
@@ -248,36 +304,10 @@ export default {
       this.$router.push('/chats/' + this.partner + '/')
     },
     updateStatus () {
-      if (this.statusUpdatable) {
+      if (this.crypto && this.statusUpdatable) {
         this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.id, force: true, updateOnly: false, dropStatus: true })
       }
     }
-  },
-  computed: {
-    className: () => 'transaction-view',
-    hasMessages: function () {
-      const chat = this.$store.state.chat.chats[this.partner]
-      return chat && chat.messages && Object.keys(chat.messages).length > 0
-    },
-    placeholder () {
-      if (!this.status) return Symbols.CLOCK
-      return this.status === 'ERROR' ? Symbols.CROSS : Symbols.HOURGLASS
-    },
-    ifComeFromChat () {
-      return this.$route.query.hasOwnProperty('fromChat')
-    },
-    lowerCaseStatus () {
-      return this.status ? this.status.toLowerCase() : 'pending'
-    },
-    comment () {
-      return this.admTx && this.admTx.message ? this.admTx.message : false
-    },
-    statusUpdatable () {
-      return tsUpdatable(this.status, this.crypto)
-    }
-  },
-  components: {
-    AppToolbarCentered
   }
 }
 </script>
@@ -288,6 +318,8 @@ export default {
 .transaction-view
   &__title
     font-weight: 300
+  &__titlecontent
+    flex: 1 0 auto
   &__value
     font-weight: 300
     font-size: 14px
@@ -314,14 +346,16 @@ export default {
 
 .theme--light, .theme--dark
   .transaction-view
-    &__value-error
+    &__value-REJECTED
       color: $adm-colors.danger !important
-    &__value-pending
+    &__value-PENDING
       color: $adm-colors.attention !important
-    &__value-success
+    &__value-REGISTERED
+      color: $adm-colors.attention !important
+    &__value-CONFIRMED
       color: $adm-colors.good !important
-    &__value-confirmed
-      color: $adm-colors.good !important
-    &__value-invalid
+    &__value-INVALID
+      color: $adm-colors.attention !important
+    &__value-UNKNOWN
       color: $adm-colors.attention !important
 </style>

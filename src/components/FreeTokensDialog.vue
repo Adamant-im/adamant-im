@@ -10,7 +10,7 @@
         {{ $t("chats.free_adm_title") }}
       </v-card-title>
 
-      <v-divider class="a-divider"></v-divider>
+      <v-divider class="a-divider" />
 
       <v-card-text>
         <div :class="`${className}__disclaimer a-text-regular-enlarged`">
@@ -18,21 +18,34 @@
         </div>
       </v-card-text>
 
-      <v-flex xs12 class="text-xs-center">
-        <v-btn :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
+      <v-flex
+        xs12
+        class="text-xs-center"
+      >
+        <v-btn
+          :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
           @click="getFreeTokens()"
         >
-          <v-icon :class="`${className}__btn-icon`">mdi-gift</v-icon>
-          <div :class="`${className}__btn-text`">{{ $t('home.free_adm_btn') }}</div>
+          <v-icon :class="`${className}__btn-icon`">
+            mdi-gift
+          </v-icon>
+          <div :class="`${className}__btn-text`">
+            {{ $t('home.free_adm_btn') }}
+          </div>
         </v-btn>
       </v-flex>
 
-      <v-flex xs12 :class="`${className}__btn-show-article`">
-        <a @click="showArticle()" class="a-text-active">
+      <v-flex
+        xs12
+        :class="`${className}__btn-show-article`"
+      >
+        <a
+          class="a-text-active"
+          @click="showArticle()"
+        >
           {{ $t('chats.how_to_use_messenger') }}
         </a>
       </v-flex>
-
     </v-card>
   </v-dialog>
 </template>
@@ -41,6 +54,12 @@
 import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
+  props: {
+    value: {
+      type: Boolean,
+      required: true
+    }
+  },
   computed: {
     className: () => 'free-tokens-dialog',
     show: {
@@ -66,12 +85,6 @@ export default {
       if (this.show) {
         this.getFreeTokens()
       }
-    }
-  },
-  props: {
-    value: {
-      type: Boolean,
-      required: true
     }
   }
 }

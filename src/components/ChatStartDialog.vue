@@ -12,28 +12,42 @@
         {{ $t('chats.new_chat') }}
       </v-card-title>
 
-      <v-divider class="a-divider"></v-divider>
+      <v-divider class="a-divider" />
 
-      <v-layout row wrap justify-center align-center class="pa-3">
-
+      <v-layout
+        row
+        wrap
+        justify-center
+        align-center
+        class="pa-3"
+      >
         <v-text-field
-          class="a-input"
           ref="partnerField"
           v-model="recipientAddress"
+          class="a-input"
           :label="$t('chats.recipient')"
           :title="$t('chats.recipient_tooltip')"
           @paste="onPasteURI"
         >
           <template slot="append">
-            <v-menu :offset-overflow="true" :offset-y="false" left>
-              <v-icon slot="activator">mdi-dots-vertical</v-icon>
+            <v-menu
+              :offset-overflow="true"
+              :offset-y="false"
+              left
+            >
+              <v-icon slot="activator">
+                mdi-dots-vertical
+              </v-icon>
               <v-list>
                 <v-list-tile @click="showQrcodeScanner = true">
                   <v-list-tile-title>{{ $t('transfer.decode_from_camera') }}</v-list-tile-title>
                 </v-list-tile>
                 <v-list-tile class="v-list__tile--link">
                   <v-list-tile-title>
-                    <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
+                    <qrcode-capture
+                      @detect="onDetectQrcode"
+                      @error="onDetectQrcodeError"
+                    >
                       <span>{{ $t('transfer.decode_from_image') }}</span>
                     </qrcode-capture>
                   </v-list-tile-title>
@@ -43,18 +57,29 @@
           </template>
         </v-text-field>
 
-        <v-flex xs12 class="text-xs-center">
-          <v-btn @click="startChat" :class="[`${className}__btn-start-chat`, 'a-btn-primary']">
+        <v-flex
+          xs12
+          class="text-xs-center"
+        >
+          <v-btn
+            :class="[`${className}__btn-start-chat`, 'a-btn-primary']"
+            @click="startChat"
+          >
             {{ $t('chats.start_chat') }}
           </v-btn>
         </v-flex>
 
-        <v-flex xs12 :class="`${className}__btn-show-qrcode`">
-          <a @click="showQrcodeRendererDialog = true" class="a-text-active">
+        <v-flex
+          xs12
+          :class="`${className}__btn-show-qrcode`"
+        >
+          <a
+            class="a-text-active"
+            @click="showQrcodeRendererDialog = true"
+          >
             {{ $t('chats.show_my_qr_code') }}
           </a>
         </v-flex>
-
       </v-layout>
     </v-card>
 
@@ -84,7 +109,30 @@ import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
 import partnerName from '@/mixins/partnerName'
 
 export default {
+  components: {
+    QrcodeCapture,
+    QrcodeScannerDialog,
+    QrcodeRendererDialog,
+    Icon,
+    QrCodeScanIcon
+  },
   mixins: [partnerName],
+  props: {
+    partnerId: {
+      type: String
+    },
+    value: {
+      type: Boolean,
+      required: true
+    }
+  },
+  data: () => ({
+    recipientAddress: '',
+    recipientName: '',
+    showQrcodeScanner: false,
+    showQrcodeRendererDialog: false,
+    uriMessage: ''
+  }),
   computed: {
     className: () => 'chat-start-dialog',
     show: {
@@ -99,13 +147,21 @@ export default {
       return generateURI(Cryptos.ADM, this.$store.state.address)
     }
   },
-  data: () => ({
-    recipientAddress: '',
-    recipientName: '',
-    showQrcodeScanner: false,
-    showQrcodeRendererDialog: false,
-    uriMessage: ''
-  }),
+  watch: {
+    // Retain focus from `v-dialog__content`
+    show (v) {
+      if (v) {
+        this.$nextTick(() => {
+          this.$refs.partnerField.focus()
+        })
+      }
+    }
+  },
+  mounted () {
+    if (this.partnerId) {
+      this.recipientAddress = this.partnerId
+    }
+  },
   methods: {
     startChat () {
       this.recipientAddress = this.recipientAddress
@@ -206,33 +262,6 @@ export default {
     },
     onEnter () {
       this.startChat()
-    }
-  },
-  mounted () {
-    if (this.partnerId) {
-      this.recipientAddress = this.partnerId
-    }
-  },
-  components: {
-    QrcodeCapture,
-    QrcodeScannerDialog,
-    QrcodeRendererDialog,
-    Icon,
-    QrCodeScanIcon
-  },
-  props: {
-    partnerId: {
-      type: String
-    },
-    value: {
-      type: Boolean,
-      required: true
-    }
-  },
-  watch: {
-    // Retain focus from `v-dialog__content`
-    show (v) {
-      if (v) this.$nextTick(() => void this.$refs.partnerField.focus())
     }
   }
 }

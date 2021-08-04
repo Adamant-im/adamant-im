@@ -6,6 +6,7 @@ import router from '@/router'
 import { Modules, Chats, Security, clearDb } from '@/lib/idb'
 import { restoreState, modules } from '@/lib/idb/state'
 import { Cryptos } from '@/lib/constants'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 const chatModuleMutations = ['setHeight', 'setFulfilled']
 const multipleChatMutations = ['markAllAsRead', 'createEmptyChat', 'createAdamantChats']
@@ -22,7 +23,7 @@ function isModuleMutation (mutation) {
     return false
   }
 
-  const [ moduleName, mutationName ] = split
+  const [moduleName, mutationName] = split
 
   // should module be synchronized with the IDB?
   const isModuleInIDB = modules.includes(moduleName)
@@ -46,8 +47,8 @@ function isChatMutation (mutation) {
  * @returns {Array<{[key]: Function}>}
  */
 function createThrottles () {
-  let interval = 30000
-  let throttles = {}
+  const interval = 30000
+  const throttles = {}
 
   // throttle modules
   modules.forEach(module => {
@@ -86,7 +87,7 @@ const throttles = createThrottles()
 const chatThrottles = {}
 
 function chatThrottle (chatId) {
-  let interval = 10000
+  const interval = 10000
 
   // create throttle wrapper if does not exists
   if (!chatThrottles[chatId]) {
@@ -147,18 +148,18 @@ export default store => {
     // start sync if state has been saved to IDB
     if (state.IDBReady && store.getters['options/isLoginViaPassword']) {
       if (isModuleMutation(mutation.type)) {
-        const [ moduleName ] = mutation.type.split('/')
+        const [moduleName] = mutation.type.split('/')
 
         throttles[moduleName]({
           name: moduleName,
           value: state[moduleName]
         })
       } else if (isChatMutation(mutation.type)) {
-        const [ , mutationName ] = mutation.type.split('/')
+        const [, mutationName] = mutation.type.split('/')
 
         // if mutation affected all chats
         if (multipleChatMutations.includes(mutationName)) {
-          let chats = []
+          const chats = []
           const keys = Object.keys(state.chat.chats)
 
           keys.forEach(key => {
@@ -174,7 +175,7 @@ export default store => {
 
           switch (mutationName) {
             case 'pushMessage':
-              chatId = mutation.payload.message.senderId === mutation.payload.userId
+              chatId = isStringEqualCI(mutation.payload.message.senderId, mutation.payload.userId)
                 ? mutation.payload.message.recipientId
                 : mutation.payload.message.senderId
               break

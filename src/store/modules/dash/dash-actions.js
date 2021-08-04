@@ -17,7 +17,7 @@ const getNewTransactions = (api, context) => {
     result => {
       context.commit('areRecentLoading', false)
       context.commit('transactions', result.items)
-      context.commit('bottom')
+      context.commit('bottom', true)
     },
     error => {
       context.commit('areRecentLoading', false)
@@ -37,7 +37,7 @@ const getOldTransactions = (api, context) => {
     result => {
       context.commit('areOlderLoading', false)
       context.commit('transactions', result.items)
-      context.commit('bottom')
+      context.commit('bottom', true)
     },
     error => {
       context.commit('areOlderLoading', false)

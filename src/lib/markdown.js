@@ -2,6 +2,7 @@ import marked from 'marked'
 import DOMPurify from 'dompurify'
 
 marked.setOptions({
+  // marked sanitize is deprecated, using DOMPurify
   // sanitize: true,
   gfm: true,
   breaks: true
@@ -31,16 +32,29 @@ renderer.heading = function (text) {
 }
 
 /**
- * Renders markdown-formatted input to HTML
+ * Sanitizes text to show HTML
+ * @param {string} text text to sanitize
+ * @returns {string} sanitized HTML
+ */
+export function sanitizeHTML (text = '') {
+  return DOMPurify.sanitize(text)
+}
+
+/**
+ * Renders markdown-formatted input to HTML, and sanitizes it
  * @param {string} text text to render
- * @returns {string} resulting HTML
+ * @returns {string} resulting sanitized HTML
  */
 export function renderMarkdown (text = '') {
-  // return marked(text, { renderer })
-  // return DOMPurify.sanitize(marked(text, { renderer }))
   return marked(DOMPurify.sanitize(text), { renderer })
 }
 
+/**
+ * Gets the first line of a message, sanitizes it, and returns back
+ * Used in ChatPreview and Notifications
+ * @param {string} text text to process
+ * @returns {string} resulting clear text of the first line
+ */
 export function removeFormats (text = '') {
   // get first line
   const line = /^([^\n]*)\n?/.exec(text)[1]

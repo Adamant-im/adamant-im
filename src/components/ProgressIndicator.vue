@@ -1,7 +1,15 @@
 <template>
-  <div class="progress-fog" v-if="show">
-    <v-progress-circular :size="150" :stroke="1" class="progress-circular" color="#4A4A4A"
-      indeterminate />
+  <div
+    v-if="show"
+    class="progress-fog"
+  >
+    <v-progress-circular
+      :size="150"
+      :stroke="1"
+      class="progress-circular"
+      color="#4A4A4A"
+      indeterminate
+    />
   </div>
 </template>
 

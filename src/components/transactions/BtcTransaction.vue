@@ -1,18 +1,17 @@
 <template>
   <div>
     <transaction-template
+      :id="transaction.hash || '' "
       :amount="transaction.amount | currency(crypto)"
       :timestamp="transaction.timestamp || NaN"
-      :id="transaction.hash || '' "
       :fee="fee"
       :confirmations="confirmations || NaN"
       :sender="sender || '' "
       :recipient="recipient || '' "
-      :explorerLink="explorerLink"
+      :explorer-link="explorerLink"
       :partner="partner || '' "
-      :status="status() || '' "
-      :status_inconsistent="inconsistent_reason"
-      :admTx="admTx"
+      :status="getTransactionStatus(admTx, transaction)"
+      :adm-tx="admTx"
       :crypto="crypto"
     />
   </div>
@@ -23,25 +22,17 @@ import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
 import partnerName from '@/mixins/partnerName'
 import { CryptoNaturalUnits } from '@/lib/constants'
-import { TransactionStatus as TS } from '../../lib/constants'
-import { verifyTransactionDetails } from '@/lib/txVerify'
+
+import transaction from '@/mixins/transaction'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
-  mixins: [partnerName],
-  name: 'btc-transaction',
-  props: ['id', 'crypto'],
+  name: 'BtcTransaction',
   components: {
     TransactionTemplate
   },
-  mounted () {
-    // Not needed, as called from Transaction.vue
-    // this.$store.dispatch(`${this.cryptoKey}/getTransaction`, { hash: this.id })
-  },
-  data () {
-    return {
-      inconsistent_reason: ''
-    }
-  },
+  mixins: [transaction, partnerName],
+  props: ['id', 'crypto'],
   computed: {
     fee () {
       const fee = this.transaction.fee
@@ -61,6 +52,8 @@ export default {
         return this.formatAddress(senderId)
       } else if (senders) {
         return this.formatAddresses(senders)
+      } else {
+        return undefined
       }
     },
     recipient () {
@@ -70,13 +63,16 @@ export default {
         return this.formatAddress(recipientId)
       } else if (recipients) {
         return this.formatAddresses(recipients)
+      } else {
+        return undefined
       }
     },
     partner () {
       if (this.transaction.partner) return this.transaction.partner
 
-      const id = this.transaction.senderId !== this.$store.state[this.cryptoKey].address
-        ? this.transaction.senderId : this.transaction.recipientId
+      const id = !isStringEqualCI(this.transaction.senderId, this.$store.state[this.cryptoKey].address)
+        ? this.transaction.senderId
+        : this.transaction.recipientId
       return this.getAdmAddress(id)
     },
     explorerLink () {
@@ -98,7 +94,7 @@ export default {
       return result
     },
     admTx () {
-      let admTx = {}
+      const admTx = {}
       // Bad news, everyone: we'll have to scan the messages
       Object.values(this.$store.state.chat.chats).some(chat => {
         Object.values(chat.messages).some(msg => {
@@ -112,22 +108,11 @@ export default {
       return admTx
     }
   },
+  mounted () {
+    // Not needed, as called from Transaction.vue
+    // this.$store.dispatch(`${this.cryptoKey}/getTransaction`, { hash: this.id })
+  },
   methods: {
-    status () {
-      let status = this.transaction.status
-      let messageTx = this.admTx
-      if (status === 'SUCCESS' && messageTx && messageTx.id) {
-        const txVerify = verifyTransactionDetails(this.transaction, messageTx, { recipientCryptoAddress: this.transaction.recipientId, senderCryptoAddress: this.transaction.senderId })
-        if (txVerify.isTxConsistent) {
-          status = TS.CONFIRMED
-          this.inconsistent_reason = ''
-        } else {
-          this.inconsistent_reason = this.$t(`transaction.inconsistent_reasons.${txVerify.txInconsistentReason}`, { crypto: this.crypto })
-          status = TS.INVALID
-        }
-      }
-      return status
-    },
     getAdmAddress (address) {
       let admAddress = ''
 
@@ -135,7 +120,7 @@ export default {
       const partners = this.$store.state.partners
       Object.keys(partners).some(uid => {
         const partner = partners[uid]
-        if (partner[this.crypto] === address) {
+        if (isStringEqualCI(partner[this.crypto], address)) {
           admAddress = uid
         }
         return !!admAddress
@@ -146,7 +131,7 @@ export default {
         Object.values(this.$store.state.chat.chats).some(chat => {
           Object.values(chat.messages).some(msg => {
             if (msg.hash && msg.hash === this.id) {
-              admAddress = msg.senderId === this.$store.state.address ? msg.recipientId : msg.senderId
+              admAddress = isStringEqualCI(msg.senderId, this.$store.state.address) ? msg.recipientId : msg.senderId
             }
             return !!admAddress
           })
@@ -158,10 +143,10 @@ export default {
     },
 
     formatAddress (address) {
-      let admAddress = this.getAdmAddress(address)
+      const admAddress = this.getAdmAddress(address)
       let name = ''
 
-      if (address === this.$store.state[this.cryptoKey].address) {
+      if (isStringEqualCI(address, this.$store.state[this.cryptoKey].address)) {
         name = this.$t('transaction.me')
       } else {
         name = this.getPartnerName(admAddress)

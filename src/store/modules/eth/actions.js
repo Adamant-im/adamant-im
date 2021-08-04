@@ -1,16 +1,16 @@
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { ETH_TRANSFER_GAS, ETH_GASPRICE_MULTIPLIER, INCREASE_FEE_MULTIPLIER } from '../../../lib/constants'
+import { ETH_TRANSFER_GAS, INCREASE_FEE_MULTIPLIER } from '../../../lib/constants'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
-/** Status update interval */
-const STATUS_INTERVAL = 8000
+/** Status update interval is 25 sec: ETH balance, gas price, last block height */
+const STATUS_INTERVAL = 25000
 
 /**
- * Stores ETH address to the Adamant KVS if it's not there yet
+ * Stores ETH address to the ADAMANT KVS if it's not there yet
  * @param {*} context
  */
 function storeEthAddress (context) {
@@ -21,16 +21,17 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
   const transaction = {
     from: context.state.address,
     to: ethAddress,
-    value: api.fromDecimal(utils.toWei(amount)),
+    value: utils.toWei(amount)
     // gas: api.fromDecimal(ETH_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
-    gasPrice: api.fromDecimal(context.getters.gasPrice)
+    // gasPrice: context.getters.gasPrice // Set gas price to auto calc
+    // nonce // Let sendTransaction choose it
   }
 
-  let gasLimit = api.eth.estimateGas(transaction)
-  gasLimit = increaseFee ? (gasLimit * INCREASE_FEE_MULTIPLIER).toString(16) : gasLimit.toString(16)
-  transaction.gas = '0x' + gasLimit
-
-  return transaction
+  return api.estimateGas(transaction).then(gasLimit => {
+    gasLimit = increaseFee ? gasLimit * INCREASE_FEE_MULTIPLIER : gasLimit
+    transaction.gas = gasLimit
+    return transaction
+  })
 }
 
 const parseTransaction = (context, tx) => {
@@ -40,15 +41,15 @@ const parseTransaction = (context, tx) => {
     recipientId: tx.to,
     amount: utils.toEther(tx.value.toString(10)),
     fee: utils.calculateFee(tx.gas, tx.gasPrice.toString(10)),
-    status: tx.blockNumber ? 'SUCCESS' : 'PENDING',
+    status: tx.blockNumber ? 'CONFIRMED' : 'PENDING',
     blockNumber: tx.blockNumber,
-    gasPrice: tx.gasPrice.toNumber(10)
+    gasPrice: +tx.gasPrice
   }
 }
 
 const createSpecificActions = (api, queue) => ({
   /**
-   * Requests ETH account status: balance, gas price, etc.
+   * Requests ETH account status: balance, gas price, last block height
    * @param {*} context Vuex action context
    */
   updateStatus (context) {
@@ -57,29 +58,22 @@ const createSpecificActions = (api, queue) => ({
     const supplier = () => {
       if (!context.state.address) return []
 
-      const block = context.state.blockNumber ? Math.max(0, context.state.blockNumber - 12) : 0
-
       return [
         // Balance
-        api.eth.getBalance.request(context.state.address, block || 'latest', (err, balance) => {
-          if (!err) {
-            context.commit('balance', Number(
-              utils.toEther(balance.toString())
-            ))
-          }
+        api.getBalance.request(context.state.address, 'latest', (err, balance) => {
+          if (!err) context.commit('balance', Number(utils.toEther(balance.toString())))
         }),
         // Current gas price
-        api.eth.getGasPrice.request((err, price) => {
+        api.getGasPrice.request((err, price) => {
           if (!err) {
-            const gasPrice = Math.round(ETH_GASPRICE_MULTIPLIER * price.toNumber())
             context.commit('gasPrice', {
-              gasPrice,
-              fee: +(+utils.calculateFee(ETH_TRANSFER_GAS, gasPrice)).toFixed(7)
+              gasPrice: price, // string type
+              fee: +(+utils.calculateFee(ETH_TRANSFER_GAS, price)).toFixed(8) // number type, in ETH
             })
           }
         }),
         // Current block number
-        api.eth.getBlockNumber.request((err, number) => {
+        api.getBlockNumber.request((err, number) => {
           if (!err) context.commit('blockNumber', number)
         })
       ]

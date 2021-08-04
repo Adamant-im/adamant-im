@@ -20,9 +20,9 @@ export const TX_CHUNK_SIZE = 25
 
 export function getAccount (crypto, passphrase) {
   const network = networks[crypto]
-  var liskSeed = pbkdf2.pbkdf2Sync(passphrase, LiskHashSettings.SALT, LiskHashSettings.ITERATIONS, LiskHashSettings.KEYLEN, LiskHashSettings.DIGEST)
-  var keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
-  var address = cryptography.getAddressFromPublicKey(keyPair.publicKey)
+  const liskSeed = pbkdf2.pbkdf2Sync(passphrase, LiskHashSettings.SALT, LiskHashSettings.ITERATIONS, LiskHashSettings.KEYLEN, LiskHashSettings.DIGEST)
+  const keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
+  const address = cryptography.getAddressFromPublicKey(keyPair.publicKey)
   return {
     network,
     keyPair,
@@ -41,7 +41,7 @@ export default class LiskApi extends LskBaseApi {
 
   /** @override */
   getBalance () {
-    return this._get(`/api/accounts`, { address: this.address }).then(
+    return this._get('/api/accounts', { address: this.address }).then(
       data => {
         if (data && data.data[0] && data.data[0].balance) {
           return (data.data[0].balance) / this.multiplier
@@ -65,7 +65,7 @@ export default class LiskApi extends LskBaseApi {
   /** @override */
   createTransaction (address = '', amount = 0, fee) {
     amount = transactions.utils.convertLSKToBeddows(amount.toString())
-    var liskTx = transactions.transfer({
+    const liskTx = transactions.transfer({
       amount,
       recipientId: address
       // data: 'Sent with ADAMANT Messenger'
@@ -78,7 +78,7 @@ export default class LiskApi extends LskBaseApi {
     const liskTxBytes = transactions.utils.getTransactionBytes(liskTx)
     const txSignature = cryptography.signDataWithPrivateKey(cryptography.hash(liskTxBytes), this._keyPair.secretKey)
     liskTx.signature = txSignature
-    var txid = transactions.utils.getTransactionId(liskTx)
+    const txid = transactions.utils.getTransactionId(liskTx)
     liskTx.id = txid
 
     return Promise.resolve({ hex: liskTx, txid })
@@ -93,7 +93,7 @@ export default class LiskApi extends LskBaseApi {
 
   /** @override */
   getTransaction (txid) {
-    return this._get(`/api/transactions`, { id: txid }).then(data => {
+    return this._get('/api/transactions', { id: txid }).then(data => {
       if (data && data.data[0]) {
         return this._mapTransaction(data.data[0])
       }
@@ -102,7 +102,7 @@ export default class LiskApi extends LskBaseApi {
 
   /** @override */
   getTransactions (options = { }) {
-    let url = `/api/transactions`
+    const url = '/api/transactions'
     options.limit = TX_CHUNK_SIZE
     options.type = 0
     options.senderIdOrRecipientId = this.address
@@ -115,7 +115,7 @@ export default class LiskApi extends LskBaseApi {
     // additional options: offset, height
     return this._get(url, options).then(transactions => {
       if (transactions && transactions.data) {
-        var mappedTxs = transactions.data.map(tx => this._mapTransaction(tx))
+        const mappedTxs = transactions.data.map(tx => this._mapTransaction(tx))
         return mappedTxs
       }
     })

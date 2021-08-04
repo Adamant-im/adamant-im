@@ -1,7 +1,7 @@
 import throttle from 'lodash/throttle'
 
 const updateRouteScrollPosition = throttle(function () {
-  if (this.$route.meta.hasOwnProperty('scrollPosition')) {
+  if (Object.prototype.hasOwnProperty.call(this.$route.meta, 'scrollPosition')) {
     this.$route.meta.scrollPosition = {
       x: window.scrollX,
       y: window.scrollY

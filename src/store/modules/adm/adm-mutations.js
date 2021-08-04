@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 import { resetState } from '../../../lib/reset-state'
 import getInitialState from './adm-state'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   /** Resets module state */
@@ -15,8 +16,8 @@ export default {
   },
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
-  bottom (state) {
-    state.bottomReached = true
+  bottom (state, value) {
+    state.bottomReached = value
   },
 
   /**
@@ -25,8 +26,8 @@ export default {
    * @param {Array<{id: string, height: number}>} transactions transactions list
    */
   transactions (state, transactions) {
-    if (transactions.updateTimestamps) {
-      var updateTimestamps = transactions.updateTimestamps
+    const updateTimestamps = transactions.updateTimestamps
+    if (updateTimestamps) {
       transactions = transactions.transactions
     }
     let minHeight = Infinity
@@ -37,8 +38,13 @@ export default {
       if (!tx) return
       Vue.set(state.transactions, tx.id, {
         ...tx,
-        direction: tx.recipientId === address ? 'to' : 'from',
-        partner: tx.recipientId === address ? tx.senderId : tx.recipientId
+        direction: isStringEqualCI(tx.recipientId, address) ? 'to' : 'from',
+        partner: isStringEqualCI(tx.recipientId, address) ? tx.senderId : tx.recipientId,
+        status: tx.height || tx.confirmations > 0
+          ? 'CONFIRMED'
+          : tx.status
+            ? tx.status
+            : 'REGISTERED'
       })
 
       if (tx.height && updateTimestamps) {
@@ -48,7 +54,7 @@ export default {
     })
 
     // Magic here helps to refresh Tx list when browser deletes it
-    let txCount = Object.keys(state.transactions).length
+    const txCount = Object.keys(state.transactions).length
     if (state.transactionsCount < txCount) { // We don't delete transactions, so they can't become in short
       state.transactionsCount = txCount
     }

@@ -35,8 +35,8 @@ window.ep = new Vue({
   version: packageJSON.version,
   router,
   store,
-  template: '<App/>',
   components: { App },
+  template: '<App/>',
   i18n,
   render: h => h(App)
 }).$mount('#app')

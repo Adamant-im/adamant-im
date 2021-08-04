@@ -1,4 +1,4 @@
-import { isValidAddress, isHexString } from 'ethereumjs-util'
+import { isAddress, isHexStrict } from 'web3-utils'
 import { isValidAddress as isValidBtcAddress } from './bitcoin/bitcoin-utils'
 import {
   Cryptos, isErc20,
@@ -16,7 +16,7 @@ export default function validateAddress (crypto, address) {
   if (crypto === Cryptos.ADM) {
     return RE_ADM_ADDRESS.test(address)
   } else if (crypto === Cryptos.ETH || isErc20(crypto)) {
-    return isHexString(address) && isValidAddress(address)
+    return isHexStrict(address) && isAddress(address)
   } else if (crypto === Cryptos.DOGE) {
     return RE_DOGE_ADDRESS.test(address)
   } else if (crypto === Cryptos.DASH) {

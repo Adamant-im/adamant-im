@@ -1,37 +1,43 @@
 <template>
   <div
     class="a-chat__message-container"
-    :class="{ 'a-chat__message-container--right': sender.id === userId }"
+    :class="{ 'a-chat__message-container--right': isStringEqualCI(sender.id, userId) }"
   >
     <div
       class="a-chat__message"
     >
       <div class="a-chat__message-card">
-
         <div class="a-chat__message-card-header">
-          <div :title="timeTitle" class="a-chat__timestamp">{{ time }}</div>
+          <div
+            :title="timeTitle"
+            class="a-chat__timestamp"
+          >
+            {{ time }}
+          </div>
           <div class="a-chat__status">
             <v-icon
-              @click="updateStatus"
               size="13"
-              :title="i18n.statuses[status]"
+              :title="statusTitle"
               :color="statusColor"
               :style="statusUpdatable ? 'cursor: pointer;': 'cursor: default;'"
-            >{{ statusIcon }}</v-icon>
+              @click="updateStatus"
+            >
+              {{ statusIcon }}
+            </v-icon>
           </div>
         </div>
 
         <div>
           <div class="a-chat__direction a-text-regular-bold">
-            {{ sender.id === userId ? i18n.sent : i18n.received }}
+            {{ isStringEqualCI(sender.id, userId) ? $t('chats.sent_label') : $t('chats.received_label') }}
           </div>
           <div
-            @click="onClickAmount"
             class="a-chat__amount"
             :class="isClickable ? 'a-chat__amount--clickable': ''"
+            @click="onClickAmount"
           >
             <v-layout align-center>
-              <slot name="crypto"></slot>
+              <slot name="crypto" />
               <span class="ml-2">{{ amount }}</span>
             </v-layout>
           </div>
@@ -42,7 +48,6 @@
             {{ message }}
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -50,34 +55,9 @@
 
 <script>
 import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
-  mounted () {
-    this.$emit('mount')
-  },
-  computed: {
-    statusIcon () {
-      return tsIcon(this.status)
-    },
-    statusUpdatable () {
-      return tsUpdatable(this.status, this.currency)
-    },
-    statusColor () {
-      return tsColor(this.status)
-    }
-  },
-  methods: {
-    onClickAmount () {
-      if (this.isClickable) {
-        this.$emit('click:transaction', this.id)
-      }
-    },
-    updateStatus () {
-      if (this.statusUpdatable) {
-        this.$emit('click:transactionStatus', this.id)
-      }
-    }
-  },
   props: {
     id: {
       type: null,
@@ -111,33 +91,49 @@ export default {
       type: [Number, String],
       default: 0
     },
-    i18n: {
-      type: Object,
-      default: () => ({
-        sent: 'Sent',
-        received: 'Received',
-        statuses: {
-          confirmed: '',
-          delivered: '',
-          pending: '',
-          rejected: '',
-          invalid: '',
-          unknown: ''
-        }
-      })
-    },
     locale: {
       type: String,
       default: 'en'
     },
     status: {
-      type: String,
-      default: 'confirmed',
-      validator: v => ['confirmed', 'delivered', 'pending', 'rejected', 'invalid', 'unknown'].includes(v)
+      type: Object,
+      required: true
     },
     isClickable: {
       type: Boolean,
       default: false
+    }
+  },
+  computed: {
+    statusTitle () {
+      return this.$t(`chats.transaction_statuses.${this.status.virtualStatus}`)
+    },
+    statusIcon () {
+      return tsIcon(this.status.virtualStatus)
+    },
+    statusUpdatable () {
+      return tsUpdatable(this.status.virtualStatus, this.currency)
+    },
+    statusColor () {
+      return tsColor(this.status.virtualStatus)
+    }
+  },
+  mounted () {
+    this.$emit('mount')
+  },
+  methods: {
+    isStringEqualCI (string1, string2) {
+      return isStringEqualCI(string1, string2)
+    },
+    onClickAmount () {
+      if (this.isClickable) {
+        this.$emit('click:transaction', this.id)
+      }
+    },
+    updateStatus () {
+      if (this.statusUpdatable) {
+        this.$emit('click:transactionStatus', this.id)
+      }
     }
   }
 }

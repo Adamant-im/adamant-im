@@ -32,13 +32,14 @@ function createWindow () {
   win.on('closed', () => {
     win = null
   })
-  var template = [{
+  const template = [{
     label: 'ADAMANT Messenger',
     submenu: [
       { label: 'About', selector: 'orderFrontStandardAboutPanel:' },
       { type: 'separator' },
       { label: 'Quit', accelerator: 'Command+Q', click: function () { app.quit() } }
-    ] }, {
+    ]
+  }, {
     label: 'Edit',
     submenu: [
       { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
@@ -48,11 +49,12 @@ function createWindow () {
       { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
       { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
       { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' }
-    ] }
+    ]
+  }
   ]
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template))
-    var darkMode = true
+    const darkMode = true
     // if (systemPreferences.isDarkMode()) {
     //   darkMode = true;
     // }

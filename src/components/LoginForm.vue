@@ -1,6 +1,10 @@
 <template>
-  <v-form v-model="validForm" @submit.prevent="submit" ref="form" class="login-form">
-
+  <v-form
+    ref="form"
+    v-model="validForm"
+    class="login-form"
+    @submit.prevent="submit"
+  >
     <v-layout>
       <slot>
         <v-text-field
@@ -13,10 +17,15 @@
         />
       </slot>
 
-      <slot name="append-outer"></slot>
+      <slot name="append-outer" />
     </v-layout>
 
-    <v-layout row wrap align-center justify-center>
+    <v-layout
+      row
+      wrap
+      align-center
+      justify-center
+    >
       <slot name="button">
         <v-btn
           :disabled="!validForm || disabledButton"
@@ -37,7 +46,7 @@
 
     <transition name="slide-fade">
       <v-layout justify-center>
-        <slot name="qrcode-renderer"/>
+        <slot name="qrcode-renderer" />
       </v-layout>
     </transition>
   </v-form>
@@ -47,6 +56,17 @@
 import { validateMnemonic } from 'bip39'
 
 export default {
+  props: {
+    value: {
+      type: String,
+      default: ''
+    }
+  },
+  data: () => ({
+    validForm: true,
+    disabledButton: false,
+    showSpinner: false
+  }),
   computed: {
     passphrase: {
       get () {
@@ -57,11 +77,6 @@ export default {
       }
     }
   },
-  data: () => ({
-    validForm: true,
-    disabledButton: false,
-    showSpinner: false
-  }),
   methods: {
     submit () {
       if (!validateMnemonic(this.passphrase)) {
@@ -94,12 +109,6 @@ export default {
     antiFreeze () {
       this.disabledButton = false
       this.showSpinner = false
-    }
-  },
-  props: {
-    value: {
-      type: String,
-      default: ''
     }
   }
 }

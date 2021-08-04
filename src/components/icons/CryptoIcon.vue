@@ -1,6 +1,10 @@
 <template>
-  <icon :width="sizePx" :height="sizePx" :color="fill">
-    <component :is="componentName"/>
+  <icon
+    :width="sizePx"
+    :height="sizePx"
+    :color="fill"
+  >
+    <component :is="componentName" />
   </icon>
 </template>
 

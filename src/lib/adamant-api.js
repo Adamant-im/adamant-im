@@ -8,6 +8,7 @@ import { encryptPassword } from '@/lib/idb/crypto'
 import { restoreState } from '@/lib/idb/state'
 import i18n from '@/i18n'
 import store from '@/store'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 Queue.configure(Promise)
 
@@ -307,6 +308,8 @@ export function getForgedByAccount (accountPublicKey) {
 
 /**
  * Stores user address for the specified crypto
+ * Before it checks if there are any address for this crypto is already stored.
+ * If stored already, the function does nothing
  * @param {string} crypto crypto
  * @param {*} address user address for `crypto`
  * @returns {Promise<boolean>}
@@ -361,7 +364,7 @@ export function getTransactions (options = { }) {
     query['and:type'] = options.type
   }
   if (options.orderBy) {
-    query['orderBy'] = options.orderBy
+    query.orderBy = options.orderBy
   }
 
   return client.get('/api/transactions', query)
@@ -406,12 +409,13 @@ export function getChats (from = 0, offset = 0, orderBy = 'desc') {
     params.offset = offset
   }
 
+  // Doesn't return ADM direct transfer transactions, only messages and in-chat transfers
+  // https://github.com/Adamant-im/adamant/wiki/API-Specification#get-chat-transactions
   return client.get('/api/chats/get/', params).then(response => {
-  // return client.get('/api/transactions/', params).then(response => {
     const { count, transactions } = response
 
     const promises = transactions.map(transaction => {
-      const promise = (transaction.recipientId === myAddress)
+      const promise = (isStringEqualCI(transaction.recipientId, myAddress))
         ? Promise.resolve(transaction.senderPublicKey)
         : queue.add(() => getPublicKey(transaction.recipientId))
 
