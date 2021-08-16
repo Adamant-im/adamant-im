@@ -97,7 +97,6 @@ export default class LiskApi extends LskBaseApi {
   getAccount () {
     return this._get(`/api/accounts/${this.addressHex}`, {}).then(
       data => {
-        console.log(data.data)
         const account = { }
         if (data && data.data && data.data.token && data.data.token.balance) {
           account.balance = (data.data.token.balance) / this.multiplier
@@ -123,11 +122,11 @@ export default class LiskApi extends LskBaseApi {
   }
 
   /** @override */
-  createTransaction (address = '', amount = 0, fee) {
+  createTransaction (address = '', amount = 0, fee, nonce) {
     const amountString = transactions.convertLSKToBeddows(amount.toString())
     // const feeString = transactions.convertLSKToBeddows(fee.toString())
     const feeString = '2000000'
-    const nonceString = '2'
+    const nonceString = nonce.toString()
     const liskTx = {
       moduleID: this.moduleId,
       assetID: this.assetId,

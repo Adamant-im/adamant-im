@@ -9,7 +9,6 @@ const customActions = getApi => ({
 
     if (!api) return
     api.getAccount().then(account => {
-      console.log(account)
       if (account) {
         context.commit('status', { balance: account.balance, nonce: account.nonce })
       }

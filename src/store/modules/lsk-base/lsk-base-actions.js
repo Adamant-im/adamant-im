@@ -84,7 +84,7 @@ function createActions (options) {
 
       const crypto = context.state.crypto
 
-      return api.createTransaction(address, amount, fee)
+      return api.createTransaction(address, amount, fee, context.state.nonce)
         .then(tx => {
           if (!admAddress) return tx.hex
 
