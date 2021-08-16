@@ -1,6 +1,6 @@
 import LskBaseApi from './lsk-base-api'
 import { Cryptos } from '../constants'
-import { getRealTimestamp, getLiskTimestamp } from './lisk-utils'
+import { getMillisTimestamp, getLiskTimestamp } from './lisk-utils'
 import { bytesToHex } from '@/lib/hex'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import * as transactions from '@liskhq/lisk-transactions'
@@ -198,7 +198,7 @@ export default class LiskApi extends LskBaseApi {
 
     mapped.amount /= this.multiplier
     mapped.fee /= this.multiplier
-    mapped.timestamp = getRealTimestamp(mapped.timestamp)
+    mapped.timestamp = getMillisTimestamp(mapped.timestamp)
 
     return mapped
   }
