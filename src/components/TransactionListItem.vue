@@ -38,6 +38,16 @@
             class="a-text-explanation"
             style="font-weight: 100;"
           >{{ comment }}</span>
+          <span
+            v-if="textData"
+            class="a-text-regular-enlarged-bold"
+            style="font-style: italic;"
+          > #</span>
+          <span
+            v-if="textData"
+            class="a-text-explanation"
+            style="font-weight: 100;"
+          >{{ textData }}</span>
         </v-list-tile-title>
 
         <v-list-tile-sub-title
@@ -97,6 +107,10 @@ export default {
     recipientId: {
       type: String,
       required: true
+    },
+    textData: {
+      type: String,
+      required: false
     },
     timestamp: {
       type: Number,
