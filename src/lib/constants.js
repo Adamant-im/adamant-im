@@ -69,6 +69,11 @@ export const INSTANT_SEND = Object.freeze([
   Cryptos.DASH
 ])
 
+// Some cryptos allows to save public data with a Tx
+export const ALLOW_TEXT_DATA = Object.freeze([
+  Cryptos.LSK
+])
+
 export const isErc20 = crypto => ERC20.includes(crypto)
 
 export const isEthBased = crypto => isErc20(crypto) || crypto === Cryptos.ETH
@@ -82,6 +87,8 @@ export const isLskBased = crypto => LSK_BASED.includes(crypto)
 export const isSelfTxAllowed = crypto => LSK_BASED.includes(crypto) || crypto === Cryptos.ADM
 
 export const isInstantSendPossible = crypto => INSTANT_SEND.includes(crypto)
+
+export const isTextDataAllowed = crypto => ALLOW_TEXT_DATA.includes(crypto)
 
 /** Number of decimal places for the different crypto amounts */
 export const CryptoAmountPrecision = {

@@ -12,6 +12,7 @@
     :status="getTransactionStatus(admTx, transaction)"
     :adm-tx="admTx"
     :crypto="crypto"
+    :text-data="transaction.data || '' "
   />
 </template>
 

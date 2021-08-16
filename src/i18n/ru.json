@@ -235,6 +235,7 @@
     "startChat": "Начать чат",
     "status": "Статус",
     "comment": "Комментарий",
+    "textData": "Данные транзакции",
     "statuses": {
       "REJECTED": "Ошибка",
       "PENDING": "Ожидание",
@@ -270,6 +271,7 @@
     "amount_percent_100": "Отправить все",
     "balance": "Баланс",
     "comments_label": "Комментарий",
+    "textdata_label": "Публичное сообщение в блокчейне {crypto}",
     "commission_label": "Комиссия за перевод",
     "commission_estimate_label": "Приблизительная комиссия за перевод",
     "confirm_approve": "Подтвердить",

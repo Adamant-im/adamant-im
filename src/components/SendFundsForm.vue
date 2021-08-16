@@ -129,6 +129,15 @@
         @paste="onPasteURIComment"
       />
 
+      <v-text-field
+        v-if="isTextDataAllowed"
+        v-model="textData"
+        class="a-input"
+        :label="textDataLabel"
+        counter
+        maxlength="64"
+      />
+
       <v-checkbox
         v-if="allowIncreaseFee"
         v-model="increaseFee"
@@ -211,7 +220,7 @@ import { BigNumber } from 'bignumber.js'
 import {
   INCREASE_FEE_MULTIPLIER, Cryptos, CryptoAmountPrecision, CryptoNaturalUnits,
   TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount, isSelfTxAllowed,
-  minBalances
+  minBalances, isTextDataAllowed, CryptosNames
 } from '../lib/constants'
 
 import { parseURI } from '@/lib/uri'
@@ -300,6 +309,7 @@ export default {
       }
     ],
     comment: '',
+    textData: '',
     validForm: true,
     disabledButton: false,
     showQrcodeScanner: false,
@@ -312,6 +322,22 @@ export default {
   }),
   computed: {
     className: () => 'send-funds-form',
+
+    /**
+     * Some cryptos allows to save public data with a Tx
+     * @returns {boolean}
+     */
+    isTextDataAllowed () {
+      return isTextDataAllowed(this.currency) && !this.addressReadonly
+    },
+
+    /**
+     * Label for a textData input
+     * @returns {string}
+     */
+    textDataLabel () {
+      return this.$t('transfer.textdata_label', { crypto: CryptosNames[this.currency] })
+    },
 
     /**
      * @returns {number}
@@ -641,7 +667,8 @@ export default {
           address: this.cryptoAddress,
           comments: this.comment,
           fee: this.transferFee,
-          increaseFee: this.increaseFee
+          increaseFee: this.increaseFee,
+          textData: this.textData
         })
       }
     },
@@ -712,7 +739,7 @@ export default {
     },
     calculateTransferFee (amount) {
       const coef = this.increaseFee ? INCREASE_FEE_MULTIPLIER : 1
-      return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount || this.balance)
+      return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount || this.balance, this.cryptoAddress, this.textData)
     }
   }
 }

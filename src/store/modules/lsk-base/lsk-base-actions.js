@@ -78,13 +78,13 @@ function createActions (options) {
       api.getBalance().then(balance => context.commit('status', { balance }))
     },
 
-    sendTokens (context, { amount, admAddress, address, comments, fee }) {
+    sendTokens (context, { amount, admAddress, address, comments, fee, increaseFee, textData }) {
       if (!api) return
       address = address.trim()
 
       const crypto = context.state.crypto
 
-      return api.createTransaction(address, amount, fee, context.state.nonce)
+      return api.createTransaction(address, amount, fee, context.state.nonce, textData)
         .then(tx => {
           if (!admAddress) return tx.hex
 
@@ -118,7 +118,8 @@ function createActions (options) {
               amount,
               fee,
               status: 'PENDING',
-              timestamp: Date.now()
+              timestamp: Date.now(),
+              data: textData
             }])
 
             context.dispatch('getTransaction', { hash, force: true })
