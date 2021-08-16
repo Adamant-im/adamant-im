@@ -708,7 +708,7 @@ export default {
     },
     calculateTransferFee (amount) {
       const coef = this.increaseFee ? INCREASE_FEE_MULTIPLIER : 1
-      return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount)
+      return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount || this.balance)
     }
   }
 }

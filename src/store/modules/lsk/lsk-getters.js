@@ -1,14 +1,12 @@
 import baseGetters from '../lsk-base/lsk-base-getters'
-import { TX_FEE } from '../../../lib/lisk/lisk-api'
+import lskActions from './lsk-actions'
 
 export default {
   ...baseGetters,
 
-  // fee (state) {
-  //   // return state.fee
-  //   return 0.1
-  // },
-  fee: state => amount => TX_FEE,
+  fee: state => amount => {
+    return lskActions.calculateFee(null, { address: state.address, amount, nonce: state.nonce, data: '' })
+  },
 
   height (state) {
     return state.height

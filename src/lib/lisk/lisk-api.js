@@ -15,7 +15,6 @@ export const LiskHashSettings = {
   DIGEST: 'sha256'
 }
 
-export const TX_FEE = 0.1
 export const TX_CHUNK_SIZE = 25
 
 export function getAccount (crypto, passphrase) {
@@ -109,11 +108,6 @@ export default class LiskApi extends LskBaseApi {
   }
 
   /** @override */
-  getFee () {
-    return TX_FEE
-  }
-
-  /** @override */
   getHeight () {
     return this._get('/api/node/info').then(
       data => {
@@ -121,26 +115,19 @@ export default class LiskApi extends LskBaseApi {
       })
   }
 
-  /** @override */
-  createTransaction (address = '', amount = 0, fee, nonce) {
-    const amountString = transactions.convertLSKToBeddows(amount.toString())
-    // const feeString = transactions.convertLSKToBeddows(fee.toString())
-    const feeString = '2000000'
-    const nonceString = nonce.toString()
-    const liskTx = {
-      moduleID: this.moduleId,
-      assetID: this.assetId,
-      nonce: BigInt(nonceString),
-      fee: BigInt(feeString),
-      asset: {
-        amount: BigInt(amountString),
-        recipientAddress: cryptography.getAddressFromBase32Address(address),
-        data: 'send token'
-        // data: 'Sent with ADAMANT Messenger'
-      },
-      signatures: []
-    }
-    liskTx.senderPublicKey = this._keyPair.publicKey
+  /**
+   * Creates a transfer transaction hex (signed JSON tx object) and ID
+   * Signed JSON tx object is ready for broadcasting to blockchain network
+   * @override
+   * @param {string} address receiver address in Base32 format
+   * @param {number} amount amount to transfer (coins, not satoshis)
+   * @param {number} fee transaction fee (coins, not satoshis)
+   * @param {number} nonce transaction nonce
+   * @param {string} data transaction data field
+   * @returns {Promise<{hex: string, txid: string}>}
+   */
+  createTransaction (address = '', amount = 0, fee, nonce, data = '') {
+    const liskTx = this._buildTransaction(address, amount, fee, nonce, data).liskTx
 
     // To use transactions.signTransaction, passPhrase is necessary
     // So we'll use cryptography.signDataWithPrivateKey
@@ -152,9 +139,9 @@ export default class LiskApi extends LskBaseApi {
 
     // To send Tx to node's core API, we should change data types
     liskTx.senderPublicKey = bytesToHex(liskTx.senderPublicKey)
-    liskTx.nonce = nonceString
-    liskTx.fee = feeString
-    liskTx.asset.amount = amountString
+    liskTx.nonce = nonce.toString()
+    liskTx.fee = transactions.convertLSKToBeddows(fee.toString())
+    liskTx.asset.amount = transactions.convertLSKToBeddows(amount.toString())
     liskTx.asset.recipientAddress = bytesToHex(liskTx.asset.recipientAddress)
     liskTx.signatures[0] = bytesToHex(txSignature)
 

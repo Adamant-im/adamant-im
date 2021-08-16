@@ -116,7 +116,7 @@ function createActions (options) {
               senderId: context.state.address,
               recipientId: address,
               amount,
-              fee: api.getFee(amount) || fee,
+              fee,
               status: 'PENDING',
               timestamp: Date.now()
             }])
@@ -126,6 +126,16 @@ function createActions (options) {
             return hash
           }
         })
+    },
+
+    /**
+     * Calculates fee for a Tx
+     * @param {object} context Vuex action context
+     * @
+     */
+    calculateFee (context, payload) {
+      if (!api) return
+      return api.getFee(payload.address, payload.amount, payload.nonce, payload.data)
     },
 
     /**

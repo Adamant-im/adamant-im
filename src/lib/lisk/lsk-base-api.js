@@ -1,6 +1,10 @@
 import axios from 'axios'
 import getEnpointUrl from '../getEndpointUrl'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import * as cryptography from '@liskhq/lisk-cryptography'
+import * as transactions from '@liskhq/lisk-transactions'
+
+export const TX_DEFAULT_FEE = 0.00160
 
 const createClient = url => {
   const client = axios.create({ baseURL: url })
@@ -100,15 +104,54 @@ export default class LskBaseApi {
   }
 
   /**
+   * Calculates fee for a Tx
+   * @abstract
+   * @returns {BigInt}
+   */
+  getFee (address = '', amount = 0, nonce, data = '') {
+    const tx = this._buildTransaction(address, amount, TX_DEFAULT_FEE, nonce, data)
+    return tx && tx.minFee ? tx.minFee : TX_DEFAULT_FEE
+  }
+
+  /**
+   * Creates an LSK-based transaction as an object with specific types
+   * @returns {object}
+   */
+  _buildTransaction (address, amount, fee, nonce, data = '') {
+    const amountString = transactions.convertLSKToBeddows((amount).toString())
+    const feeString = transactions.convertLSKToBeddows(fee.toString())
+    const nonceString = nonce.toString()
+    const liskTx = {
+      moduleID: this.moduleId,
+      assetID: this.assetId,
+      nonce: BigInt(nonceString),
+      fee: BigInt(feeString),
+      asset: {
+        amount: BigInt(amountString),
+        recipientAddress: cryptography.getAddressFromBase32Address(address),
+        data
+        // data: 'Sent with ADAMANT Messenger'
+      },
+      signatures: []
+    }
+    liskTx.senderPublicKey = this._keyPair.publicKey
+    const minFee = Number(transactions.computeMinFee(this.assetSchema, liskTx)) / this.multiplier
+
+    return { liskTx, minFee }
+  }
+
+  /**
    * Creates a transfer transaction hex (signed JSON tx object) and ID
    * Signed JSON tx object is ready for broadcasting to blockchain network
    * @abstract
-   * @param {string} address receiver address
+   * @param {string} address receiver address in Base32 format
    * @param {number} amount amount to transfer (coins, not satoshis)
    * @param {number} fee transaction fee (coins, not satoshis)
+   * @param {number} nonce transaction nonce
+   * @param {string} data transaction data field
    * @returns {Promise<{hex: string, txid: string}>}
    */
-  createTransaction (address = '', amount = 0, fee) {
+  createTransaction (address = '', amount = 0, fee, nonce, data) {
     return Promise.resolve({ hex: undefined, txid: undefined })
   }
 
