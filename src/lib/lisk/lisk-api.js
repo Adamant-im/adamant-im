@@ -62,6 +62,37 @@ export default class LiskApi extends LskBaseApi {
     return 0
   }
 
+  /**
+   * Get asset schema
+   * @override
+   */
+  get assetSchema () {
+    return {
+      $id: 'lisk/transfer-asset',
+      title: 'Transfer transaction asset',
+      type: 'object',
+      required: ['amount', 'recipientAddress', 'data'],
+      properties: {
+        amount: {
+          dataType: 'uint64',
+          fieldNumber: 1
+        },
+        recipientAddress: {
+          dataType: 'bytes',
+          fieldNumber: 2,
+          minLength: 20,
+          maxLength: 20
+        },
+        data: {
+          dataType: 'string',
+          fieldNumber: 3,
+          minLength: 0,
+          maxLength: 64
+        }
+      }
+    }
+  }
+
   /** @override */
   getBalance () {
     return this._get(`/api/accounts/${this.addressHex}`, {}).then(
@@ -91,30 +122,6 @@ export default class LiskApi extends LskBaseApi {
     // const feeString = transactions.convertLSKToBeddows(fee.toString())
     const feeString = '2000000'
     const nonceString = '1'
-    const transferTxSchema = {
-      $id: 'lisk/transfer-asset',
-      title: 'Transfer transaction asset',
-      type: 'object',
-      required: ['amount', 'recipientAddress', 'data'],
-      properties: {
-        amount: {
-          dataType: 'uint64',
-          fieldNumber: 1
-        },
-        recipientAddress: {
-          dataType: 'bytes',
-          fieldNumber: 2,
-          minLength: 20,
-          maxLength: 20
-        },
-        data: {
-          dataType: 'string',
-          fieldNumber: 3,
-          minLength: 0,
-          maxLength: 64
-        }
-      }
-    }
     const liskTx = {
       moduleID: 2,
       assetID: 0,
@@ -132,7 +139,7 @@ export default class LiskApi extends LskBaseApi {
 
     // To use transactions.signTransaction, passPhrase is necessary
     // So we'll use cryptography.signDataWithPrivateKey
-    const liskTxBytes = transactions.getSigningBytes(transferTxSchema, liskTx)
+    const liskTxBytes = transactions.getSigningBytes(this.assetSchema, liskTx)
     // const liskTxBytes = transactions.getBytes(transferTxSchema, liskTx)
     console.log('liskTxBytes', bytesToHex(liskTxBytes))
     const networkIdentifier = '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c'
@@ -140,7 +147,7 @@ export default class LiskApi extends LskBaseApi {
     const txSignature = cryptography.signDataWithPrivateKey(Buffer.concat([networkIdentifierBuffer, liskTxBytes]), this._keyPair.secretKey)
 
     liskTx.signatures[0] = txSignature
-    const txid = cryptography.hash(transactions.getBytes(transferTxSchema, liskTx))
+    const txid = cryptography.hash(transactions.getBytes(this.assetSchema, liskTx))
 
     liskTx.senderPublicKey = bytesToHex(liskTx.senderPublicKey)
     liskTx.nonce = nonceString

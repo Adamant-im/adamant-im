@@ -67,6 +67,15 @@ export default class LskBaseApi {
   }
 
   /**
+   * Get asset schema
+   * @abstract
+   * @returns {object} JSON schema
+   */
+  get assetSchema () {
+    return { }
+  }
+
+  /**
    * Retrieves current balance
    * @abstract
    * @returns {Promise<number>}
