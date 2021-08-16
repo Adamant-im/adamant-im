@@ -121,9 +121,9 @@ export default class LiskApi extends LskBaseApi {
     const amountString = transactions.convertLSKToBeddows(amount.toString())
     // const feeString = transactions.convertLSKToBeddows(fee.toString())
     const feeString = '2000000'
-    const nonceString = '1'
+    const nonceString = '2'
     const liskTx = {
-      moduleID: this.moduleID,
+      moduleID: this.moduleId,
       assetID: this.assetId,
       nonce: BigInt(nonceString),
       fee: BigInt(feeString),
@@ -140,11 +140,12 @@ export default class LiskApi extends LskBaseApi {
     // To use transactions.signTransaction, passPhrase is necessary
     // So we'll use cryptography.signDataWithPrivateKey
     const liskTxBytes = transactions.getSigningBytes(this.assetSchema, liskTx)
-    const txSignature = cryptography.signDataWithPrivateKey(Buffer.concat([this.networkIdentifierBuffer, liskTxBytes]), this._keyPair.secretKey)
+    const txSignature = cryptography.signDataWithPrivateKey(Buffer.concat([this.networkIdentifier, liskTxBytes]), this._keyPair.secretKey)
 
     liskTx.signatures[0] = txSignature
     const txid = cryptography.hash(transactions.getBytes(this.assetSchema, liskTx))
 
+    // To send Tx to node's core API, we should change data types
     liskTx.senderPublicKey = bytesToHex(liskTx.senderPublicKey)
     liskTx.nonce = nonceString
     liskTx.fee = feeString
@@ -157,20 +158,14 @@ export default class LiskApi extends LskBaseApi {
 
   /** @override */
   sendTransaction (signedTx) {
-    console.log('signedTx', signedTx)
     return this._getClient().post('/api/transactions', signedTx).then(response => {
-      console.log(response.data.data.transactionId)
       return response.data.data.transactionId
     })
-      .catch(e => {
-        console.log(e.toString())
-      })
   }
 
   /** @override */
   getTransaction (txid) {
     return this._getService('/api/v2/transactions/', { transactionId: txid }).then(data => {
-      console.log(data)
       if (data && data.data[0]) {
         return this._mapTransaction(data.data[0])
       }
