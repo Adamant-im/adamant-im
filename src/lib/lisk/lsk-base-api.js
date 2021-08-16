@@ -13,6 +13,17 @@ const createClient = url => {
   return client
 }
 
+const createServiceClient = url => {
+  const client = axios.create({ baseURL: url })
+  client.interceptors.response.use(null, error => {
+    if (error.response && Number(error.response.status) >= 500) {
+      console.error(`Request to ${url} failed.`, error)
+    }
+    return Promise.reject(error)
+  })
+  return client
+}
+
 export default class LskBaseApi {
   /**
    * Constructor
@@ -30,8 +41,29 @@ export default class LskBaseApi {
     return 1e8
   }
 
+  /**
+   * Get Token/Send module Id
+   * @returns {number}
+   */
+  get moduleId () {
+    return 2
+  }
+
+  /**
+   * Get asset Id
+   * @abstract
+   * @returns {number}
+   */
+  get assetId () {
+    return undefined
+  }
+
   get address () {
     return this._address
+  }
+
+  get addressHex () {
+    return this._addressHex
   }
 
   /**
@@ -94,7 +126,7 @@ export default class LskBaseApi {
     return Promise.resolve({ hasMore: false, items: [] })
   }
 
-  /** Picks a client for a random API endpoint */
+  /** Picks a LSK node's (core) client for a random API endpoint */
   _getClient () {
     const url = getEnpointUrl(this._crypto)
     if (!this._clients[url]) {
@@ -103,21 +135,37 @@ export default class LskBaseApi {
     return this._clients[url]
   }
 
+  /** Picks a Lisk Service client for a random API endpoint */
+  _getServiceClient () {
+    const url = getEnpointUrl(this._crypto + 'service')
+    if (!this._clients[url]) {
+      this._clients[url] = createServiceClient(url)
+    }
+    return this._clients[url]
+  }
+
   _mapTransaction (tx) {
-    const direction = isStringEqualCI(tx.senderId, this._address) ? 'from' : 'to'
+    const direction = isStringEqualCI(tx.sender.address, this._address) ? 'from' : 'to'
+    // no confirmations field
     // additional data: asset, receivedAt, blockId, height, type, recipientPublicKey, senderSecondPublicKey
     return {
       id: tx.id,
       hash: tx.id,
       fee: tx.fee,
-      status: tx.confirmations > 0 ? 'CONFIRMED' : 'REGISTERED',
-      timestamp: tx.timestamp,
+      status: tx.height ? 'CONFIRMED' : 'REGISTERED',
+      data: tx.asset.data,
+      timestamp: tx.block.timestamp,
       direction,
-      senderId: tx.senderId,
-      recipientId: tx.recipientId,
-      amount: tx.amount,
+      senderId: tx.sender.address,
+      recipientId: tx.asset.recipient.address,
+      amount: tx.asset.amount,
       confirmations: tx.confirmations,
-      height: tx.height
+      height: tx.height,
+      nonce: tx.nonce,
+      moduleId: tx.moduleAssetId.split(':')[0],
+      assetId: tx.moduleAssetId.split(':')[1],
+      moduleName: tx.moduleAssetName.split(':')[0],
+      assetName: tx.moduleAssetName.split(':')[1]
     }
   }
 }

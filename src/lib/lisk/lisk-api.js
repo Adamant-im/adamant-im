@@ -22,11 +22,23 @@ export function getAccount (crypto, passphrase) {
   const network = networks[crypto]
   const liskSeed = pbkdf2.pbkdf2Sync(passphrase, LiskHashSettings.SALT, LiskHashSettings.ITERATIONS, LiskHashSettings.KEYLEN, LiskHashSettings.DIGEST)
   const keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
-  const address = cryptography.getAddressFromPublicKey(keyPair.publicKey)
+  const addressHexBinary = cryptography.getAddressFromPublicKey(keyPair.publicKey)
+  const addressHex = bytesToHex(addressHexBinary)
+  const address = cryptography.getBase32AddressFromPublicKey(keyPair.publicKey)
+  // Don't work currently https://github.com/LiskHQ/lisk-sdk/issues/6651
+  // const addressLegacy = cryptography.getLegacyAddressFromPublicKey(keyPair.publicKey)
+  // const addressLegacy = cryptography.getLegacyAddressFromPrivateKey(keyPair.secretKey)
+  const addressLegacy = 'cryptography.getLegacyAddressFromPublicKey(bytesToHex(keyPair.publicKey))'
+  // console.log('lisk addressBase32', address)
+  // console.log('lisk addressHex', addressHex)
+  // console.log('lisk legacy address', addressLegacy)
   return {
     network,
     keyPair,
-    address
+    address,
+    addressHexBinary,
+    addressHex,
+    addressLegacy
   }
 }
 
@@ -37,14 +49,25 @@ export default class LiskApi extends LskBaseApi {
     this._network = account.network
     this._keyPair = account.keyPair
     this._address = account.address
+    this._addressHexBinary = account.addressHexBinary
+    this._addressHex = account.addressHex
+    this._addressLegacy = account.addressLegacy
+  }
+
+  /**
+   * Get asset Id
+   * @override
+   */
+  get assetId () {
+    return 0
   }
 
   /** @override */
   getBalance () {
-    return this._get('/api/accounts', { address: this.address }).then(
+    return this._get(`/api/accounts/${this.addressHex}`, {}).then(
       data => {
-        if (data && data.data[0] && data.data[0].balance) {
-          return (data.data[0].balance) / this.multiplier
+        if (data && data.data && data.data.token && data.data.token.balance) {
+          return (data.data.token.balance) / this.multiplier
         }
       })
   }
@@ -56,7 +79,7 @@ export default class LiskApi extends LskBaseApi {
 
   /** @override */
   getHeight () {
-    return this._get('/api/node/status').then(
+    return this._get('/api/node/info').then(
       data => {
         return Number(data.data.height) || 0
       })
@@ -64,36 +87,87 @@ export default class LiskApi extends LskBaseApi {
 
   /** @override */
   createTransaction (address = '', amount = 0, fee) {
-    amount = transactions.utils.convertLSKToBeddows(amount.toString())
-    const liskTx = transactions.transfer({
-      amount,
-      recipientId: address
-      // data: 'Sent with ADAMANT Messenger'
-    })
-    liskTx.senderPublicKey = bytesToHex(this._keyPair.publicKey)
-    liskTx.senderId = this._address
+    const amountString = transactions.convertLSKToBeddows(amount.toString())
+    // const feeString = transactions.convertLSKToBeddows(fee.toString())
+    const feeString = '2000000'
+    const nonceString = '1'
+    const transferTxSchema = {
+      $id: 'lisk/transfer-asset',
+      title: 'Transfer transaction asset',
+      type: 'object',
+      required: ['amount', 'recipientAddress', 'data'],
+      properties: {
+        amount: {
+          dataType: 'uint64',
+          fieldNumber: 1
+        },
+        recipientAddress: {
+          dataType: 'bytes',
+          fieldNumber: 2,
+          minLength: 20,
+          maxLength: 20
+        },
+        data: {
+          dataType: 'string',
+          fieldNumber: 3,
+          minLength: 0,
+          maxLength: 64
+        }
+      }
+    }
+    const liskTx = {
+      moduleID: 2,
+      assetID: 0,
+      nonce: BigInt(nonceString),
+      fee: BigInt(feeString),
+      asset: {
+        amount: BigInt(amountString),
+        recipientAddress: cryptography.getAddressFromBase32Address(address),
+        data: 'send token'
+        // data: 'Sent with ADAMANT Messenger'
+      },
+      signatures: []
+    }
+    liskTx.senderPublicKey = this._keyPair.publicKey
 
-    // To use transactions.utils.signTransaction, passPhrase is necessary
+    // To use transactions.signTransaction, passPhrase is necessary
     // So we'll use cryptography.signDataWithPrivateKey
-    const liskTxBytes = transactions.utils.getTransactionBytes(liskTx)
-    const txSignature = cryptography.signDataWithPrivateKey(cryptography.hash(liskTxBytes), this._keyPair.secretKey)
-    liskTx.signature = txSignature
-    const txid = transactions.utils.getTransactionId(liskTx)
-    liskTx.id = txid
+    const liskTxBytes = transactions.getSigningBytes(transferTxSchema, liskTx)
+    // const liskTxBytes = transactions.getBytes(transferTxSchema, liskTx)
+    console.log('liskTxBytes', bytesToHex(liskTxBytes))
+    const networkIdentifier = '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c'
+    const networkIdentifierBuffer = Buffer.from(networkIdentifier, 'hex')
+    const txSignature = cryptography.signDataWithPrivateKey(Buffer.concat([networkIdentifierBuffer, liskTxBytes]), this._keyPair.secretKey)
+
+    liskTx.signatures[0] = txSignature
+    const txid = cryptography.hash(transactions.getBytes(transferTxSchema, liskTx))
+
+    liskTx.senderPublicKey = bytesToHex(liskTx.senderPublicKey)
+    liskTx.nonce = nonceString
+    liskTx.fee = feeString
+    liskTx.asset.amount = amountString
+    liskTx.asset.recipientAddress = bytesToHex(liskTx.asset.recipientAddress)
+    liskTx.signatures[0] = bytesToHex(txSignature)
 
     return Promise.resolve({ hex: liskTx, txid })
   }
 
   /** @override */
   sendTransaction (signedTx) {
+    console.log('signedTx', signedTx)
     return this._getClient().post('/api/transactions', signedTx).then(response => {
-      return signedTx.id
+      console.log(response.data.data.transactionId)
+      return response.data.data.transactionId
     })
+      .catch(e => {
+        console.log(e.toString())
+      })
   }
 
   /** @override */
   getTransaction (txid) {
-    return this._get('/api/transactions', { id: txid }).then(data => {
+    return this._getService('/api/v2/transactions/', { transactionId: txid }).then(data => {
+      console.log(data)
       if (data && data.data[0]) {
         return this._mapTransaction(data.data[0])
       }
@@ -101,19 +175,19 @@ export default class LiskApi extends LskBaseApi {
   }
 
   /** @override */
-  getTransactions (options = { }) {
-    const url = '/api/transactions'
+  getTransactions (options = {}) {
+    const url = '/api/v2/transactions/'
+    options.moduleAssetId = `${this.moduleId}:${this.assetId}`
     options.limit = TX_CHUNK_SIZE
-    options.type = 0
-    options.senderIdOrRecipientId = this.address
-    if (options.toTimestamp) {
-      options.toTimestamp = getLiskTimestamp(options.toTimestamp) - 1
+    options.address = this.address
+    options.includePending = true
+    if (options.toTimestamp || options.fromTimestamp) {
+      options.toTimestamp = options.toTimestamp || Date.now()
+      options.fromTimestamp = options.fromTimestamp || 0
+      options.timestamp = `${getLiskTimestamp(options.fromTimestamp) + 1}:${getLiskTimestamp(options.toTimestamp) - 1}`
     }
-    if (options.fromTimestamp) {
-      options.fromTimestamp = getLiskTimestamp(options.fromTimestamp) + 1
-    }
-    // additional options: offset, height
-    return this._get(url, options).then(transactions => {
+    // additional options: offset, height, and others
+    return this._getService(url, options).then(transactions => {
       if (transactions && transactions.data) {
         const mappedTxs = transactions.data.map(tx => this._mapTransaction(tx))
         return mappedTxs
@@ -134,8 +208,13 @@ export default class LiskApi extends LskBaseApi {
     return mapped
   }
 
-  /** Executes a GET request to the API */
+  /** Executes a GET request to the node's core API */
   _get (url, params) {
     return this._getClient().get(url, { params }).then(response => response.data)
+  }
+
+  /** Executes a GET request to the Lisk Service API */
+  _getService (url, params) {
+    return this._getServiceClient().get(url, { params }).then(response => response.data)
   }
 }

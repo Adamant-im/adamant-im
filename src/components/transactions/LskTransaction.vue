@@ -76,7 +76,7 @@ export default {
       if (height) {
         // Calculate actual confirmations count based on the tx block height and the last block height.
         const c = this.$store.getters[`${this.cryptoKey}/height`] - height
-        if (isFinite(c) && c > result) {
+        if (isFinite(c) && (c > result || !result)) {
           result = c
         }
       }

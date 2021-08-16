@@ -122,7 +122,8 @@ export const RE_ADM_ADDRESS = /^U([0-9]{6,})$/i
 export const RE_BTC_ADDRESS = /^(bc1|[13])[a-km-zA-HJ-NP-Z02-9]{25,39}$/
 export const RE_DASH_ADDRESS = /^[7X][1-9A-HJ-NP-Za-km-z]{33,}$/
 export const RE_DOGE_ADDRESS = /^[A|D|9][A-Z0-9]([0-9a-zA-Z]{9,})$/
-export const RE_LSK_ADDRESS = /^[0-9]{2,21}L$/
+export const RE_LSK_ADDRESS = /^lsk[a-z2-9]{38}$/
+export const RE_LSK_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
 
 export const Symbols = {
   CLOCK: String.fromCharCode(0x23f0), // ⏰
