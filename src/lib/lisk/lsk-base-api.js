@@ -75,6 +75,12 @@ export default class LskBaseApi {
     return { }
   }
 
+  get networkIdentifier () {
+    // Testnet: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c'
+    const networkIdentifier = '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c'
+    return Buffer.from(networkIdentifier, 'hex')
+  }
+
   /**
    * Retrieves current balance
    * @abstract
