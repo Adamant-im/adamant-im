@@ -189,13 +189,18 @@ export default class LiskApi extends LskBaseApi {
       options.fromTimestamp = options.fromTimestamp || 0
       options.timestamp = `${getLiskTimestamp(options.fromTimestamp) + 1}:${getLiskTimestamp(options.toTimestamp) - 1}`
     }
+    delete options.toTimestamp
+    delete options.fromTimestamp
     // additional options: offset, height, and others
+
     return this._getService(url, options).then(transactions => {
       if (transactions && transactions.data) {
         const mappedTxs = transactions.data.map(tx => this._mapTransaction(tx))
         return mappedTxs
       }
     })
+      // Unfortunately, Lisk Service returns 404 for empty results
+      .catch(() => { return [] })
   }
 
   /** @override */
