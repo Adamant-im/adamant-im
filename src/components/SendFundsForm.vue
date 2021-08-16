@@ -208,7 +208,11 @@ import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
-import { INCREASE_FEE_MULTIPLIER, Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount, isSelfTxAllowed } from '../lib/constants'
+import {
+  INCREASE_FEE_MULTIPLIER, Cryptos, CryptoAmountPrecision, CryptoNaturalUnits,
+  TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount, isSelfTxAllowed,
+  minBalances
+} from '../lib/constants'
 
 import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
@@ -391,10 +395,10 @@ export default {
       if (this.balance < this.transferFee) return 0
 
       let amount = BigNumber(this.balance)
-      // For BTC we keep 1000 satoshis (0.00001 BTC) untouched as there are problems when we try to drain the wallet
-      if (this.currency === Cryptos.BTC) {
-        amount = amount.minus(0.00001)
-      }
+
+      // Some cryptos require minimum balance to maintain on a wallet
+      const minBalance = minBalances[this.currency] || 0
+      amount = amount.minus(minBalance)
 
       const amt = amount
         .minus(this.calculateTransferFee(this.balance))
@@ -453,7 +457,7 @@ export default {
         ],
         amount: [
           v => v > 0 || this.$t('transfer.error_incorrect_amount'),
-          v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
+          v => this.amount <= this.maxToTransfer || this.$t('transfer.error_not_enough'),
           v => this.validateMinAmount(v, this.currency) || this.$t('transfer.error_dust_amount'),
           v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_precision'),
           v => isErc20(this.currency)

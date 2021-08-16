@@ -41,6 +41,12 @@ export const CryptosNames = {
   [Cryptos.BTC]: 'Bitcoin'
 }
 
+// Some cryptos require minimum balance to maintain on a wallet
+export const minBalances = {
+  [Cryptos.LSK]: 0.05,
+  [Cryptos.BTC]: 0.00001
+}
+
 export const ERC20 = Object.freeze([
   Cryptos.BNB,
   Cryptos.BZ,
