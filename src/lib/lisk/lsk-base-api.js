@@ -82,11 +82,11 @@ export default class LskBaseApi {
   }
 
   /**
-   * Retrieves current balance
+   * Retrieves current balance and nonce
    * @abstract
    * @returns {Promise<number>}
    */
-  getBalance () {
+  getAccount () {
     return Promise.resolve(0)
   }
 

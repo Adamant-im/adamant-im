@@ -94,12 +94,18 @@ export default class LiskApi extends LskBaseApi {
   }
 
   /** @override */
-  getBalance () {
+  getAccount () {
     return this._get(`/api/accounts/${this.addressHex}`, {}).then(
       data => {
+        console.log(data.data)
+        const account = { }
         if (data && data.data && data.data.token && data.data.token.balance) {
-          return (data.data.token.balance) / this.multiplier
+          account.balance = (data.data.token.balance) / this.multiplier
         }
+        if (data && data.data && data.data.sequence && data.data.sequence.nonce) {
+          account.nonce = data.data.sequence.nonce
+        }
+        return account
       })
   }
 

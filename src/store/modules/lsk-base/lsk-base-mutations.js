@@ -11,9 +11,15 @@ export default (initialState) => ({
     state.address = address
   },
 
-  status (state, { balance }) {
-    state.balance = balance
-    state.lastStatusUpdate = Date.now()
+  status (state, { balance, nonce }) {
+    if (balance) {
+      state.balance = balance
+      state.lastStatusUpdate = Date.now()
+    }
+    if (nonce) {
+      state.nonce = nonce
+      state.lastStatusUpdate = Date.now()
+    }
   },
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
