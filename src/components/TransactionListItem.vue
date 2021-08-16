@@ -133,6 +133,9 @@ export default {
         : this.getAdmTx.senderId
     },
     partnerName () {
+      if (isStringEqualCI(this.partnerId, this.userId)) {
+        return this.$t('transaction.me')
+      }
       const name = this.getPartnerName(this.partnerAdmId) || ''
       if (this.isCryptoADM()) {
         return name
