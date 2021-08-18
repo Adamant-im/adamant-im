@@ -135,7 +135,7 @@ export default class LiskApi extends LskBaseApi {
     const txSignature = cryptography.signDataWithPrivateKey(Buffer.concat([this.networkIdentifier, liskTxBytes]), this._keyPair.secretKey)
 
     liskTx.signatures[0] = txSignature
-    const txid = cryptography.hash(transactions.getBytes(this.assetSchema, liskTx))
+    const txid = bytesToHex(cryptography.hash(transactions.getBytes(this.assetSchema, liskTx)))
 
     // To send Tx to node's core API, we should change data types
     liskTx.senderPublicKey = bytesToHex(liskTx.senderPublicKey)
