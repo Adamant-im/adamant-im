@@ -184,7 +184,6 @@ export function sendSpecialMessage (to, payload) {
  * @returns {Promise<{success: boolean}>}
  */
 export function storeValue (key, value, encode = false) {
-  console.log('storeValue:', key, value, encode)
   if (encode) {
     const encoded = utils.encodeValue(value, myKeypair.privateKey)
     value = JSON.stringify(encoded)
@@ -328,12 +327,10 @@ export function storeCryptoAddress (crypto, address) {
   // Don't store crypto address twice, check it first in KVS
   return getStored(key, myAddress, 20)
     .then(stored => {
-      // console.log('stored:', stored)
       // It may be empty array: no addresses stored yet for this crypto
       if (stored) {
         stored = parseCryptoAddressesKVStxs(stored, crypto)
       }
-      console.log('stored2:', stored)
       return (stored && stored.mainAddress)
         ? true
         : storeValue(key, address).then(response => response.success)
@@ -341,7 +338,6 @@ export function storeCryptoAddress (crypto, address) {
     )
     .then(
       success => {
-        // console.log('Value', key, address, crypto)
         delete pendingAddresses[crypto]
         return success
       },

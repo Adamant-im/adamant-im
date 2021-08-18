@@ -28,9 +28,6 @@ export function getAccount (crypto, passphrase) {
   // const addressLegacy = cryptography.getLegacyAddressFromPublicKey(keyPair.publicKey)
   // const addressLegacy = cryptography.getLegacyAddressFromPrivateKey(keyPair.secretKey)
   const addressLegacy = 'cryptography.getLegacyAddressFromPublicKey(bytesToHex(keyPair.publicKey))'
-  // console.log('lisk addressBase32', address)
-  // console.log('lisk addressHex', addressHex)
-  // console.log('lisk legacy address', addressLegacy)
   return {
     network,
     keyPair,

@@ -103,7 +103,6 @@ export default {
           })
         })
         .catch((e) => {
-          console.log(e)
           this.crypto = crypto
           if (e.toString().includes('Only legacy Lisk address')) {
             this.dialogTitle = this.$t('transfer.legacy_address_title', { crypto })
@@ -127,10 +126,8 @@ export default {
         moreInfo: true
       }).then(address => {
         if (!address) {
-          console.log('No crypto wallet address')
           throw new Error('No crypto wallet address')
         } else if (address.onlyLegacyLiskAddress) {
-          console.log('we are here')
           throw new Error('Only legacy Lisk address')
         }
 

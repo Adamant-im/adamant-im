@@ -61,7 +61,6 @@ export function parseCryptoAddressesKVStxs (txs, crypto) {
  */
 export function validateStoredCryptoAddresses () {
   if (!admApi.isReady() || store.state.adm.addressesValidated || store.getters.isAccountNew()) return
-  console.log('validateStoredCryptoAddresses..')
 
   function skip (crypto) {
     return isErc20(crypto) || crypto === 'ADM'
@@ -127,7 +126,6 @@ export function validateStoredCryptoAddresses () {
   }
 
   if (isAllValidated) {
-    console.log('finished address checking')
     store.state.adm.validatedCryptos.summary = validateSummary
     store.state.adm.addressesValidated = true
     if (!store.state.options.suppressWarningOnAddressesNotification) {
