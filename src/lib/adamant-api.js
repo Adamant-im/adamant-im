@@ -239,7 +239,9 @@ export function getStored (key, ownerAddress, records = 1) {
     let value = null
 
     if (response.success && Array.isArray(response.transactions)) {
-      if (records > 1) { // return all records
+      if (records > 1) {
+        // Return all records
+        // It may be an empty array; f. e., in case of no crypto addresses stored for a currency
         return response.transactions
       } else {
         const tx = response.transactions[0]

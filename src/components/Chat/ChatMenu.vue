@@ -40,8 +40,8 @@
 
     <ChatDialog
       v-model="dialog"
-      :title="$t('transfer.no_address_title', { crypto })"
-      :text="$t('transfer.no_address_text', { crypto })"
+      :title="dialogTitle"
+      :text="dialogText"
     />
   </div>
 </template>
@@ -81,6 +81,8 @@ export default {
       }
     ],
     dialog: false,
+    dialogTitle: '',
+    dialogText: '',
     crypto: ''
   }),
   methods: {
@@ -100,8 +102,17 @@ export default {
             }
           })
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e)
           this.crypto = crypto
+          if (e.toString().includes('Only legacy Lisk address')) {
+            this.dialogTitle = this.$t('transfer.legacy_address_title', { crypto })
+            this.dialogText = this.$t('transfer.legacy_address_text', { crypto })
+          }
+          if (e.toString().includes('No crypto wallet address')) {
+            this.dialogTitle = this.$t('transfer.no_address_title', { crypto })
+            this.dialogText = this.$t('transfer.no_address_text', { crypto })
+          }
           this.dialog = true
         })
     },
@@ -112,9 +123,16 @@ export default {
 
       return this.$store.dispatch('partners/fetchAddress', {
         crypto,
-        partner: this.partnerId
+        partner: this.partnerId,
+        moreInfo: true
       }).then(address => {
-        if (!address) throw new Error('No crypto wallet address')
+        if (!address) {
+          console.log('No crypto wallet address')
+          throw new Error('No crypto wallet address')
+        } else if (address.onlyLegacyLiskAddress) {
+          console.log('we are here')
+          throw new Error('Only legacy Lisk address')
+        }
 
         return address
       })

@@ -187,6 +187,7 @@ export default class LiskApi extends LskBaseApi {
       }
     })
       // Unfortunately, Lisk Service returns 404 for empty results
+      // https://github.com/LiskHQ/lisk-service/issues/698
       .catch(() => { return [] })
   }
 
