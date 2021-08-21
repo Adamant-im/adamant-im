@@ -46,10 +46,12 @@
       { "url": "https://btcnode2.adamant.im" }
     ],
     "lsk": [
-      { "url": "https://lisknode1-test.adamant.im" }
+      { "url": "https://lisknode3.adamant.im" },
+      { "url": "https://lisknode4.adamant.im" }
     ],
     "lskservice": [
-      { "url": "https://liskservice1-test.adamant.im" }
+      { "url": "https://liskservice3.adamant.im" },
+      { "url": "https://liskservice4.adamant.im" }
     ]
   },
   "env": "development"

@@ -81,7 +81,8 @@ export default class LskBaseApi {
 
   get networkIdentifier () {
     // Testnet: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c'
-    const networkIdentifier = '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c'
+    // Mainnet: '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99'
+    const networkIdentifier = '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99'
     return Buffer.from(networkIdentifier, 'hex')
   }
 
