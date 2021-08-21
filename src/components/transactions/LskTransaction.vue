@@ -12,6 +12,7 @@
     :status="getTransactionStatus(admTx, transaction)"
     :adm-tx="admTx"
     :crypto="crypto"
+    :text-data="transaction.data || '' "
   />
 </template>
 
@@ -75,8 +76,8 @@ export default {
       let result = confirmations
       if (height) {
         // Calculate actual confirmations count based on the tx block height and the last block height.
-        const c = this.$store.getters[`${this.cryptoKey}/height`] - height
-        if (isFinite(c) && c > result) {
+        const c = this.$store.getters[`${this.cryptoKey}/height`] - height + 1
+        if (c > 0 && (c > result || !result)) {
           result = c
         }
       }

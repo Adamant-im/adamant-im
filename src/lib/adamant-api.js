@@ -9,6 +9,7 @@ import { restoreState } from '@/lib/idb/state'
 import i18n from '@/i18n'
 import store from '@/store'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
 
 Queue.configure(Promise)
 
@@ -219,7 +220,7 @@ function tryDecodeStoredValue (value) {
 /**
  * Retrieves the stored value from the Adamant KVS or array of KVS transactions
  * @param {string} key key in the KVS
- * @param {string=} ownerAddress address of the value owner
+ * @param {string=} ownerAddress ADM address of the value owner
  * @param {number} records if > 1, returns array of KVS transactions
  * @returns {Promise<any>}
  */
@@ -239,7 +240,9 @@ export function getStored (key, ownerAddress, records = 1) {
     let value = null
 
     if (response.success && Array.isArray(response.transactions)) {
-      if (records > 1) { // return all records
+      if (records > 1) {
+        // Return all records
+        // It may be an empty array; f. e., in case of no crypto addresses stored for a currency
         return response.transactions
       } else {
         const tx = response.transactions[0]
@@ -322,10 +325,16 @@ export function storeCryptoAddress (crypto, address) {
   pendingAddresses[crypto] = true
 
   // Don't store crypto address twice, check it first in KVS
-  return getStored(key)
-    .then(stored => (stored)
-      ? true
-      : storeValue(key, address).then(response => response.success)
+  return getStored(key, myAddress, 20)
+    .then(stored => {
+      // It may be empty array: no addresses stored yet for this crypto
+      if (stored) {
+        stored = parseCryptoAddressesKVStxs(stored, crypto)
+      }
+      return (stored && stored.mainAddress)
+        ? true
+        : storeValue(key, address).then(response => response.success)
+    }
     )
     .then(
       success => {

@@ -1,10 +1,9 @@
 import baseState from '../lsk-base/lsk-base-state'
 import { Cryptos } from '../../../lib/constants'
-import { TX_FEE } from '../../../lib/lisk/lisk-api'
 
 export default () => ({
   crypto: Cryptos.LSK,
   ...baseState(),
-  feeRate: TX_FEE,
+  feeRate: 0, // not needed
   height: 0
 })

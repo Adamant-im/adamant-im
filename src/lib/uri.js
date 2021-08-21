@@ -1,4 +1,5 @@
-import { isAddress, isHexStrict } from 'web3-utils'
+import { isAddress as isEthAddress, isHexStrict } from 'web3-utils'
+import { validateBase32Address as isLskAddress } from '@liskhq/lisk-cryptography'
 import {
   Cryptos, isErc20,
   RE_ADM_ADDRESS, RE_BTC_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS, RE_LSK_ADDRESS
@@ -76,10 +77,15 @@ export function parseURI (uri = getURI()) {
       crypto = Cryptos.DASH
     } else if (RE_DOGE_ADDRESS.test(address)) {
       crypto = Cryptos.DOGE
-    } else if (isHexStrict(address) && isAddress(address)) {
+    } else if (isHexStrict(address) && isEthAddress(address)) {
       crypto = Cryptos.ETH
     } else if (RE_LSK_ADDRESS.test(address)) {
-      crypto = Cryptos.LSK
+      // We need to use try-catch https://github.com/LiskHQ/lisk-sdk/issues/6652
+      try {
+        if (isLskAddress(address)) {
+          crypto = Cryptos.LSK
+        }
+      } catch (e) { }
     }
   }
 

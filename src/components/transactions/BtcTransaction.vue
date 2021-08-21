@@ -85,8 +85,8 @@ export default {
       if (height) {
         // Calculate confirmations count based on the tx block height and the last block height.
         // That's for BTC only as it does not return the confirmations for the transaction.
-        const c = this.$store.getters[`${this.cryptoKey}/height`] - height
-        if (isFinite(c) && c > result) {
+        const c = this.$store.getters[`${this.cryptoKey}/height`] - height + 1
+        if (c > 0 && (c > result || !result)) {
           result = c
         }
       }

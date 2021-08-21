@@ -8,13 +8,13 @@ const customActions = getApi => ({
     const api = getApi()
 
     if (!api) return
-    api.getBalance().then(balance => {
-      if (balance) {
-        context.commit('status', { balance })
+    api.getAccount().then(account => {
+      if (account) {
+        context.commit('status', { balance: account.balance, nonce: account.nonce })
       }
     })
 
-    // // The estimated fee rate is also needed
+    // Not needed
     // api.getFeeRate().then(rate => context.commit('feeRate', rate))
 
     // Last block height

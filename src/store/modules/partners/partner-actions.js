@@ -55,6 +55,7 @@ export default {
     const existingAddress = existingPartner && existingPartner[crypto]
     const addressVerifyTimestamp = existingPartner && existingPartner[crypto + '_verifyTimestamp']
 
+    // If we have already an address for `crypto` for `partner`, and it is fresh
     if (existingAddress && addressVerifyTimestamp && Date.now() - addressVerifyTimestamp < ADDRESS_VALID_TIMEOUT) {
       if (payload.records > 1) {
         if (existingPartner[crypto + '_inconsistency']) {
@@ -71,15 +72,24 @@ export default {
     return admApi.getStored(key, payload.partner, MAXIMUM_ADDRESSES).then(
       txs => {
         if (txs.length > 0) {
-          const addresses = parseCryptoAddressesKVStxs(txs)
-          context.commit('address', { ...payload, crypto, address: addresses.mainAddress })
-          if (addresses.addressesCount > 1) {
-            context.commit('addresses_inconsistency', { ...payload, crypto, addresses: addresses.storedAddresses })
-          }
-          if (payload.records > 1) {
-            return addresses.storedAddresses
+          const addresses = parseCryptoAddressesKVStxs(txs, crypto)
+          if (addresses && !addresses.onlyLegacyLiskAddress) {
+            // Some address(es) is stored
+            context.commit('address', { ...payload, crypto, address: addresses.mainAddress })
+            if (addresses.addressesCount > 1) {
+              context.commit('addresses_inconsistency', { ...payload, crypto, addresses: addresses.storedAddresses })
+            }
+            if (payload.records > 1) {
+              return addresses.storedAddresses
+            } else {
+              return addresses.mainAddress
+            }
           } else {
-            return addresses.mainAddress
+            if (payload.moreInfo) {
+              return addresses
+            } else {
+              return false
+            }
           }
         } else {
           return false // user has no address stored in KVS yet
