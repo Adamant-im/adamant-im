@@ -3,19 +3,17 @@
  */
 
 /**
- * Returns real timestamp by LSK timestamp.
- * @param {number} lskTimestamp
+ * Returns Millis timestamp by LSK UNIX timestamp (sec)
+ * @param {number} liskTimestamp
  */
-export function getRealTimestamp (lskTimestamp) {
-  const foundationDate = Date.UTC(2016, 4, 24, 17, 0, 0, 0)
-  return parseInt(lskTimestamp) * 1000 + foundationDate
+export function getMillisTimestamp (liskTimestamp) {
+  return parseInt(liskTimestamp) * 1000
 }
 
 /**
- * Returns LSK timestamp by real timestamp.
- * @param {number} realTimestamp
+ * Returns LSK timestamp (UNIX in sec) by Millis timestamp
+ * @param {number} millisTimestamp
  */
-export function getLiskTimestamp (realTimestamp) {
-  const foundationDate = Date.UTC(2016, 4, 24, 17, 0, 0, 0)
-  return Math.round((parseInt(realTimestamp - foundationDate) / 1000))
+export function getLiskTimestamp (millisTimestamp) {
+  return Math.round(parseInt(millisTimestamp) / 1000)
 }

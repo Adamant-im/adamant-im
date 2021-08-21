@@ -28,8 +28,12 @@
       { "url": "http://mgplh7en3d6ywsec5h6q3tc6mirsleb5cmlyn6nmp25qrb6gy35nypad.onion" }
     ],
     "lsk": [
-      { "url": "http://4ktlltbfgr2ujaazdplhsuypcbjvd6dqkgoo6tujd2vrgizyfrymuaid.onion" },
-      { "url": "http://lekfdkoo54l2vhmwnttlktxfomyxr3ihparn46kzxmrvh3dekfgy3gyd.onion" }
+      { "url": "http://nl2c4vcsdrd6je3ebt4236yst55mbso72ojmksrmlyoikapgnu647tid.onion" },
+      { "url": "http://qpjxvkathebm7oso3dk5hb4cggbeecqvcpcthuxlpovtn66plr6f4wyd.onion" }
+    ],
+    "lskservice": [
+      { "url": "http://xqrymra5go2nb3cslb3c3iv4weeuicybcxpjee4ay2indk2hgo7rw4qd.onion" },
+      { "url": "http://s2q6phc22icy73zjccjq66555gwtvyuyrodmadwhjdhmvyehb3qrcsid.onion" }
     ]
   },
   "env": "production"

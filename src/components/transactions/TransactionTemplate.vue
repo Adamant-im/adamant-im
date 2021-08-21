@@ -158,6 +158,21 @@
         <v-divider />
 
         <v-list-tile
+          v-if="textData"
+          :title="textData"
+        >
+          <v-list-tile-title :class="`${className}__title`">
+            {{ $t('transaction.textData') }}
+          </v-list-tile-title>
+
+          <div :class="`${className}__value`">
+            {{ textData || placeholder }}
+          </div>
+        </v-list-tile>
+
+        <v-divider />
+
+        <v-list-tile
           v-if="explorerLink"
           @click="openInExplorer"
         >
@@ -261,6 +276,10 @@ export default {
     admTx: {
       required: false,
       type: Object
+    },
+    textData: {
+      required: false,
+      type: String
     }
   },
   computed: {

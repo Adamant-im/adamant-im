@@ -122,7 +122,7 @@ export default class BtcBaseApi {
   }
 
   /**
-   * Creates a raw DOGE transaction as a hex string.
+   * Creates a raw BTC-based transaction as a hex string.
    * @param {string} address target address
    * @param {number} amount amount to send
    * @param {Array<{txid: string, amount: number, vout: number}>} unspents unspent transaction to use as inputs

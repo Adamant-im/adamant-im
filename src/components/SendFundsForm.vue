@@ -129,6 +129,15 @@
         @paste="onPasteURIComment"
       />
 
+      <v-text-field
+        v-if="isTextDataAllowed"
+        v-model="textData"
+        class="a-input"
+        :label="textDataLabel"
+        counter
+        maxlength="64"
+      />
+
       <v-checkbox
         v-if="allowIncreaseFee"
         v-model="increaseFee"
@@ -208,7 +217,11 @@ import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
-import { INCREASE_FEE_MULTIPLIER, Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount, isSelfTxAllowed } from '../lib/constants'
+import {
+  INCREASE_FEE_MULTIPLIER, Cryptos, CryptoAmountPrecision, CryptoNaturalUnits,
+  TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount, isSelfTxAllowed,
+  minBalances, isTextDataAllowed, CryptosNames
+} from '../lib/constants'
 
 import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
@@ -296,6 +309,7 @@ export default {
       }
     ],
     comment: '',
+    textData: '',
     validForm: true,
     disabledButton: false,
     showQrcodeScanner: false,
@@ -308,6 +322,22 @@ export default {
   }),
   computed: {
     className: () => 'send-funds-form',
+
+    /**
+     * Some cryptos allows to save public data with a Tx
+     * @returns {boolean}
+     */
+    isTextDataAllowed () {
+      return isTextDataAllowed(this.currency) && !this.addressReadonly
+    },
+
+    /**
+     * Label for a textData input
+     * @returns {string}
+     */
+    textDataLabel () {
+      return this.$t('transfer.textdata_label', { crypto: CryptosNames[this.currency] })
+    },
 
     /**
      * @returns {number}
@@ -391,10 +421,10 @@ export default {
       if (this.balance < this.transferFee) return 0
 
       let amount = BigNumber(this.balance)
-      // For BTC we keep 1000 satoshis (0.00001 BTC) untouched as there are problems when we try to drain the wallet
-      if (this.currency === Cryptos.BTC) {
-        amount = amount.minus(0.00001)
-      }
+
+      // Some cryptos require minimum balance to maintain on a wallet
+      const minBalance = minBalances[this.currency] || 0
+      amount = amount.minus(minBalance)
 
       const amt = amount
         .minus(this.calculateTransferFee(this.balance))
@@ -453,7 +483,7 @@ export default {
         ],
         amount: [
           v => v > 0 || this.$t('transfer.error_incorrect_amount'),
-          v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
+          v => this.amount <= this.maxToTransfer || this.$t('transfer.error_not_enough'),
           v => this.validateMinAmount(v, this.currency) || this.$t('transfer.error_dust_amount'),
           v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_precision'),
           v => isErc20(this.currency)
@@ -637,7 +667,8 @@ export default {
           address: this.cryptoAddress,
           comments: this.comment,
           fee: this.transferFee,
-          increaseFee: this.increaseFee
+          increaseFee: this.increaseFee,
+          textData: this.textData
         })
       }
     },
@@ -708,7 +739,7 @@ export default {
     },
     calculateTransferFee (amount) {
       const coef = this.increaseFee ? INCREASE_FEE_MULTIPLIER : 1
-      return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount)
+      return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount || this.balance, this.cryptoAddress, this.textData)
     }
   }
 }

@@ -1,6 +1,6 @@
 import * as admApi from './adamant-api'
 import store from '@/store'
-import { Cryptos, isErc20 } from './constants'
+import { Cryptos, isErc20, RE_LSK_ADDRESS_LEGACY } from './constants'
 import { vueBus } from '@/main'
 import { uniqueCaseInsensitiveArray, isStringEqualCI } from '@/lib/textHelpers'
 
@@ -37,11 +37,19 @@ export function flushCryptoAddresses () {
  * Parses KVS transactions for crypto addresses
  * @returns object for stored addresses
  */
-export function parseCryptoAddressesKVStxs (txs) {
+export function parseCryptoAddressesKVStxs (txs, crypto) {
   if (!txs || !txs.length || !txs[0].asset || !txs[0].asset.state || !txs[0].asset) return null
   const addresses = { }
   // validateInfo.storedAddresses = [...new Set(txs.map(tx => tx.asset.state.value))]
   addresses.storedAddresses = uniqueCaseInsensitiveArray(txs.map(tx => tx.asset.state.value))
+  // Lisk has updated their address format, and both may be stored
+  // Remove legacy addresses
+  if (crypto === Cryptos.LSK) {
+    addresses.storedAddresses = addresses.storedAddresses.filter(address => !RE_LSK_ADDRESS_LEGACY.test(address))
+    if (addresses.storedAddresses.length === 0) {
+      addresses.onlyLegacyLiskAddress = true
+    }
+  }
   addresses.addressesCount = addresses.storedAddresses.length
   addresses.mainAddress = addresses.storedAddresses[0]
   return addresses
@@ -65,9 +73,19 @@ export function validateStoredCryptoAddresses () {
       if (!store.state.adm.validatedCryptos[crypto]) {
         const key = `${crypto.toLowerCase()}:address`
         admApi.getStored(key, store.state.address, 20).then(txs => {
-          if (txs.length > 0) {
-            const validateInfo = parseCryptoAddressesKVStxs(txs)
-            validateInfo.isMainAddressValid = isStringEqualCI(validateInfo.mainAddress, address)
+          // It may be empty array: no addresses stored yet for this crypto
+          if (txs) {
+            let validateInfo = parseCryptoAddressesKVStxs(txs, crypto)
+            if (validateInfo && !validateInfo.onlyLegacyLiskAddress) {
+              // Some address(es) is stored
+              validateInfo.isSomeAddressStored = true
+              validateInfo.isMainAddressValid = isStringEqualCI(validateInfo.mainAddress, address)
+            } else {
+              // No addresses stored yet for this crypto
+              validateInfo = {
+                isSomeAddressStored: false
+              }
+            }
             store.state.adm.validatedCryptos[crypto] = validateInfo
           }
         })
@@ -87,6 +105,7 @@ export function validateStoredCryptoAddresses () {
       isAllValidated = false
       break
     }
+    if (!validateSummary.isSomeAddressStored) continue
 
     if (!store.state.adm.validatedCryptos[crypto].isMainAddressValid) {
       validateSummary.isAllRight = false

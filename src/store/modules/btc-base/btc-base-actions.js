@@ -118,7 +118,7 @@ function createActions (options) {
               senderId: context.state.address,
               recipientId: address,
               amount,
-              fee: api.getFee(amount) || fee,
+              fee,
               status: 'PENDING',
               timestamp: Date.now()
             }])

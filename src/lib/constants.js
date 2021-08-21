@@ -41,6 +41,12 @@ export const CryptosNames = {
   [Cryptos.BTC]: 'Bitcoin'
 }
 
+// Some cryptos require minimum balance to maintain on a wallet
+export const minBalances = {
+  [Cryptos.LSK]: 0.05,
+  [Cryptos.BTC]: 0.00001
+}
+
 export const ERC20 = Object.freeze([
   Cryptos.BNB,
   Cryptos.BZ,
@@ -63,6 +69,11 @@ export const INSTANT_SEND = Object.freeze([
   Cryptos.DASH
 ])
 
+// Some cryptos allows to save public data with a Tx
+export const ALLOW_TEXT_DATA = Object.freeze([
+  Cryptos.LSK
+])
+
 export const isErc20 = crypto => ERC20.includes(crypto)
 
 export const isEthBased = crypto => isErc20(crypto) || crypto === Cryptos.ETH
@@ -76,6 +87,8 @@ export const isLskBased = crypto => LSK_BASED.includes(crypto)
 export const isSelfTxAllowed = crypto => LSK_BASED.includes(crypto) || crypto === Cryptos.ADM
 
 export const isInstantSendPossible = crypto => INSTANT_SEND.includes(crypto)
+
+export const isTextDataAllowed = crypto => ALLOW_TEXT_DATA.includes(crypto)
 
 /** Number of decimal places for the different crypto amounts */
 export const CryptoAmountPrecision = {
@@ -122,7 +135,8 @@ export const RE_ADM_ADDRESS = /^U([0-9]{6,})$/i
 export const RE_BTC_ADDRESS = /^(bc1|[13])[a-km-zA-HJ-NP-Z02-9]{25,39}$/
 export const RE_DASH_ADDRESS = /^[7X][1-9A-HJ-NP-Za-km-z]{33,}$/
 export const RE_DOGE_ADDRESS = /^[A|D|9][A-Z0-9]([0-9a-zA-Z]{9,})$/
-export const RE_LSK_ADDRESS = /^[0-9]{2,21}L$/
+export const RE_LSK_ADDRESS = /^lsk[a-z2-9]{38}$/
+export const RE_LSK_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
 
 export const Symbols = {
   CLOCK: String.fromCharCode(0x23f0), // ⏰

@@ -30,11 +30,12 @@ export function toWei (eth) {
 export function getAccountFromPassphrase (passphrase, api) {
   const seed = cache.mnemonicToSeedSync(passphrase)
   const privateKey = web3Utils.bytesToHex(hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey)
-  const web3Account = api.accounts.privateKeyToAccount(privateKey)
+  // web3Account is for user wallet; We don't need it, when exporting a private key
+  const web3Account = api ? api.accounts.privateKeyToAccount(privateKey) : undefined
 
   return {
     web3Account,
-    address: web3Account.address,
+    address: web3Account ? web3Account.address : undefined,
     privateKey
   }
 }

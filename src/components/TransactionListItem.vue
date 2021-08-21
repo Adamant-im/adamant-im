@@ -38,6 +38,16 @@
             class="a-text-explanation"
             style="font-weight: 100;"
           >{{ comment }}</span>
+          <span
+            v-if="textData"
+            class="a-text-regular-enlarged-bold"
+            style="font-style: italic;"
+          > #</span>
+          <span
+            v-if="textData"
+            class="a-text-explanation"
+            style="font-weight: 100;"
+          >{{ textData }}</span>
         </v-list-tile-title>
 
         <v-list-tile-sub-title
@@ -98,6 +108,10 @@ export default {
       type: String,
       required: true
     },
+    textData: {
+      type: String,
+      required: false
+    },
     timestamp: {
       type: Number,
       required: true
@@ -133,6 +147,9 @@ export default {
         : this.getAdmTx.senderId
     },
     partnerName () {
+      if (isStringEqualCI(this.partnerId, this.userId)) {
+        return this.$t('transaction.me')
+      }
       const name = this.getPartnerName(this.partnerAdmId) || ''
       if (this.isCryptoADM()) {
         return name
