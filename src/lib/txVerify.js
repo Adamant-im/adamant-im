@@ -110,14 +110,14 @@ export function formatSendTxError (error) {
   formattedError.details.error = error.toString()
   formattedError.details.response = error.response
 
-  formattedError.errorMessage = `${i18n.t('error')}:`
+  formattedError.errorMessage = `${i18n.t('error')}: `
   if (error.response && error.response.data) {
     const errorData = error.response.data
     if (errorData.error) {
       // Dash-like
       const codeString = errorData.error.code ? `[${errorData.error.code}]` : ''
       const messageString = errorData.error.message ? ` ${errorData.error.message}` : ''
-      formattedError.errorCode += errorData.error.code
+      formattedError.errorCode = errorData.error.code
       formattedError.errorMessage += ` ${codeString}${messageString}`
     } else if (errorData.errors && errorData.errors[0]) {
       // Lisk-like

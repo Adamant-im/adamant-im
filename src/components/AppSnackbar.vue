@@ -5,8 +5,20 @@
     :color="color"
     :class="className"
     bottom
+    :multi-line="message.length > 50"
   >
     {{ message }}
+    <v-btn
+      v-if="timeout === 0 || timeout > 2000"
+      @click="show = false"
+    >
+      <v-icon
+        :class="`${className}__icon`"
+        size="20"
+      >
+        mdi-close
+      </v-icon>
+    </v-btn>
   </v-snackbar>
 </template>
 
