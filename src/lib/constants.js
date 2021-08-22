@@ -44,7 +44,8 @@ export const CryptosNames = {
 // Some cryptos require minimum balance to maintain on a wallet
 export const minBalances = {
   [Cryptos.LSK]: 0.05,
-  [Cryptos.BTC]: 0.00001
+  [Cryptos.BTC]: 0.00001,
+  [Cryptos.DASH]: 0.0001
 }
 
 export const ERC20 = Object.freeze([
@@ -90,7 +91,7 @@ export const isInstantSendPossible = crypto => INSTANT_SEND.includes(crypto)
 
 export const isTextDataAllowed = crypto => ALLOW_TEXT_DATA.includes(crypto)
 
-/** Number of decimal places for the different crypto amounts */
+/** Number of decimal places to send transfers for the different crypto amounts */
 export const CryptoAmountPrecision = {
   ADM: 8,
   ETH: 6,
@@ -98,7 +99,7 @@ export const CryptoAmountPrecision = {
   DOGE: 8,
   BZ: 6,
   RES: 5,
-  DASH: 5,
+  DASH: 8,
   KCS: 6,
   USDS: 6,
   BTC: 8,
@@ -242,7 +243,8 @@ export const tsUpdatable = function (status, currency) {
  * Minimal transferrable amounts for the known cryptos
  */
 export const MinAmounts = Object.freeze({
-  BTC: 546e-8 // 546 satoshis
+  BTC: 546e-8, // 546 satoshis
+  DASH: 0.00002 // otherwise, "dust" error is possible
 })
 
 /**
