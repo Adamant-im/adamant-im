@@ -69,6 +69,7 @@
     "offline": "Offline—No connection",
     "online": "Online—Connection is set"
   },
+  "error": "Error",
   "home": {
     "balance": "Balance",
     "buy_tokens_anonymously": "Anonymously on website",

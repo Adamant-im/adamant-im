@@ -232,6 +232,7 @@ import partnerName from '@/mixins/partnerName'
 
 import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { formatSendTxError } from '@/lib/txVerify'
 
 /**
  * @returns {string | boolean}
@@ -627,9 +628,10 @@ export default {
 
           this.$emit('send', transactionId, this.currency)
         })
-        .catch(err => {
-          let message = err.message
-          if (/dust/i.test(message) || get(err, 'response.data.error.code') === -26) {
+        .catch(error => {
+          const formattedError = formatSendTxError(error)
+          let message = formattedError.errorMessage
+          if (/dust/i.test(message) || get(error, 'response.data.error.code') === -26) {
             message = this.$t('transfer.error_dust_amount')
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
