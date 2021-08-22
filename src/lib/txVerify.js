@@ -126,8 +126,10 @@ export function formatSendTxError (error) {
       // Unknown response format
       formattedError.errorMessage += typeof errorData === 'object' ? ` ${JSON.stringify(errorData, 0, 2)}` : errorData.toString()
     }
+  } else {
+    // Doge-like
+    formattedError.errorMessage += error.message
   }
-  console.log(formattedError)
   return formattedError
 }
 
