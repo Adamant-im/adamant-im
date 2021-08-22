@@ -127,8 +127,13 @@ export function formatSendTxError (error) {
       formattedError.errorMessage += typeof errorData === 'object' ? ` ${JSON.stringify(errorData, 0, 2)}` : errorData.toString()
     }
   } else {
-    // Doge-like
-    formattedError.errorMessage += error.message
+    if (error.message) {
+      // Doge-like
+      formattedError.errorMessage += error.message
+    } else {
+      // Unknown
+      formattedError.errorMessage += error.toString()
+    }
   }
   return formattedError
 }
