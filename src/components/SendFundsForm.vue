@@ -633,6 +633,8 @@ export default {
           let message = formattedError.errorMessage
           if (/dust/i.test(message) || get(error, 'response.data.error.code') === -26) {
             message = this.$t('transfer.error_dust_amount')
+          } else if (/minimum remaining balance requirement/i.test(message)) {
+            message = this.$t('transfer.recipient_minimum_balance')
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
           }
