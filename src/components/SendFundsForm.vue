@@ -728,7 +728,7 @@ export default {
     },
     validateMinAmount (amount, currency) {
       const min = getMinAmount(currency)
-      return amount > min
+      return amount >= min
     },
     validateNaturalUnits (amount, currency) {
       const units = CryptoNaturalUnits[currency]

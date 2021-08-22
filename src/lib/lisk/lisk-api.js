@@ -137,8 +137,8 @@ export default class LiskApi extends LskBaseApi {
     // To send Tx to node's core API, we should change data types
     liskTx.senderPublicKey = bytesToHex(liskTx.senderPublicKey)
     liskTx.nonce = nonce.toString()
-    liskTx.fee = transactions.convertLSKToBeddows(fee.toString())
-    liskTx.asset.amount = transactions.convertLSKToBeddows(amount.toString())
+    liskTx.fee = transactions.convertLSKToBeddows((+fee).toFixed(this.decimals))
+    liskTx.asset.amount = transactions.convertLSKToBeddows((+amount).toFixed(this.decimals))
     liskTx.asset.recipientAddress = bytesToHex(liskTx.asset.recipientAddress)
     liskTx.signatures[0] = bytesToHex(txSignature)
 
