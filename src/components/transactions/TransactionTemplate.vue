@@ -106,7 +106,10 @@
 
         <v-divider />
 
-        <v-list-tile :title="id || placeholder">
+        <v-list-tile
+          :title="id || placeholder"
+          @click="copyToClipboard(id)"
+        >
           <v-list-tile-title :class="`${className}__title`">
             {{ $t('transaction.txid') }}
           </v-list-tile-title>
@@ -118,25 +121,31 @@
 
         <v-divider />
 
-        <v-list-tile :title="sender || placeholder">
+        <v-list-tile
+          :title="sender || placeholder"
+          @click="copyToClipboard(sender)"
+        >
           <v-list-tile-title :class="`${className}__title`">
             {{ $t('transaction.sender') }}
           </v-list-tile-title>
 
           <div :class="`${className}__value`">
-            {{ sender || placeholder }}
+            {{ senderFormatted || placeholder }}
           </div>
         </v-list-tile>
 
         <v-divider />
 
-        <v-list-tile :title="recipient || placeholder">
+        <v-list-tile
+          :title="recipient || placeholder"
+          @click="copyToClipboard(recipient)"
+        >
           <v-list-tile-title :class="`${className}__title`">
             {{ $t('transaction.recipient') }}
           </v-list-tile-title>
 
           <div :class="`${className}__value`">
-            {{ recipient || placeholder }}
+            {{ recipientFormatted || placeholder }}
           </div>
         </v-list-tile>
 
@@ -221,6 +230,7 @@ import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 import transaction from '@/mixins/transaction'
+import { copyToClipboard } from '@/lib/textHelpers'
 
 export default {
   name: 'TransactionTemplate',
@@ -262,6 +272,14 @@ export default {
       type: String
     },
     sender: {
+      required: true,
+      type: String
+    },
+    recipientFormatted: {
+      required: true,
+      type: String
+    },
+    senderFormatted: {
       required: true,
       type: String
     },
@@ -314,6 +332,15 @@ export default {
     }
   },
   methods: {
+    copyToClipboard: function (key) {
+      if (key) {
+        copyToClipboard(key)
+        this.$store.dispatch('snackbar/show', {
+          message: this.$t('home.copied'),
+          timeout: 2000
+        })
+      }
+    },
     openInExplorer: function () {
       if (this.explorerLink) {
         window.open(this.explorerLink, '_blank', 'resizable,scrollbars,status,noopener')

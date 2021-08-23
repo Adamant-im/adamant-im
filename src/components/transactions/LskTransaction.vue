@@ -7,6 +7,8 @@
     :confirmations="confirmations || NaN"
     :sender="sender || '' "
     :recipient="recipient || '' "
+    :sender-formatted="senderFormatted || '' "
+    :recipient-formatted="recipientFormatted|| '' "
     :explorer-link="explorerLink"
     :partner="partner || '' "
     :status="getTransactionStatus(admTx, transaction)"
@@ -54,9 +56,15 @@ export default {
       return this.$store.getters[`${this.cryptoKey}/transaction`](this.id) || { }
     },
     sender () {
-      return this.transaction.senderId ? this.formatAddress(this.transaction.senderId) : ''
+      return this.transaction.senderId || ''
     },
     recipient () {
+      return this.transaction.recipientId || ''
+    },
+    senderFormatted () {
+      return this.transaction.senderId ? this.formatAddress(this.transaction.senderId) : ''
+    },
+    recipientFormatted () {
       return this.transaction.recipientId ? this.formatAddress(this.transaction.recipientId) : ''
     },
     partner () {

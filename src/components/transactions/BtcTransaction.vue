@@ -8,6 +8,8 @@
       :confirmations="confirmations || NaN"
       :sender="sender || '' "
       :recipient="recipient || '' "
+      :sender-formatted="senderFormatted || '' "
+      :recipient-formatted="recipientFormatted|| '' "
       :explorer-link="explorerLink"
       :partner="partner || '' "
       :status="getTransactionStatus(admTx, transaction)"
@@ -49,6 +51,28 @@ export default {
       const { senders, senderId } = this.transaction
       const onlySender = senderId && (!senders || senders.length === 1)
       if (onlySender) {
+        return senderId
+      } else if (senders) {
+        return senders.join(', ')
+      } else {
+        return undefined
+      }
+    },
+    recipient () {
+      const { recipientId, recipients } = this.transaction
+      const onlyRecipient = recipientId && (!recipients || recipients.length === 1)
+      if (onlyRecipient) {
+        return recipientId
+      } else if (recipients) {
+        return recipients.join(', ')
+      } else {
+        return undefined
+      }
+    },
+    senderFormatted () {
+      const { senders, senderId } = this.transaction
+      const onlySender = senderId && (!senders || senders.length === 1)
+      if (onlySender) {
         return this.formatAddress(senderId)
       } else if (senders) {
         return this.formatAddresses(senders)
@@ -56,7 +80,7 @@ export default {
         return undefined
       }
     },
-    recipient () {
+    recipientFormatted () {
       const { recipientId, recipients } = this.transaction
       const onlyRecipient = recipientId && (!recipients || recipients.length === 1)
       if (onlyRecipient) {
