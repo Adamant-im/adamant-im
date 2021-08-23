@@ -36,6 +36,7 @@
               {{ $t('transaction.status') }}
               <v-icon
                 v-if="statusUpdatable"
+                ref="updateButton"
                 size="20"
                 @click="updateStatus()"
               >
@@ -350,6 +351,11 @@ export default {
       this.$router.push('/chats/' + this.partner + '/')
     },
     updateStatus () {
+      const el = this.$refs.updateButton.$el
+      el.rotate = (el.rotate || 0) + 400
+      el.style.transform = `rotate(${el.rotate}grad)`
+      el.style['transition-duration'] = '1s'
+
       if (this.crypto && this.statusUpdatable) {
         this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.id, force: true, updateOnly: false, dropStatus: true })
       }
