@@ -1,6 +1,6 @@
 # ADAMANT Messenger Progressive Web Application (PWA)
 
-It is a messaging application client for ADAMANT Blockchain. See ADAMANT Project at [adamant.im](https://adamant.im).
+A messaging application client for ADAMANT Blockchain. See ADAMANT Project at [adamant.im](https://adamant.im).
 
 ADAMANT is a decentralized anonymous messenger based on the blockchain system. It’s independent of any governments or corporations, and even developers due to the distributed network infrastructure that contains an open-source code.
 
@@ -10,6 +10,8 @@ Privacy is the main concept of ADAMANT: neither phone numbers nor emails are req
 
 All the messages are encrypted with the Diffie-Hellman Curve25519, Salsa20, Poly1305 algorithms and signed by SHA-256 + Ed25519 EdDSA. Private keys are never transferred to the network. The sequence of messages and their authenticity is guaranteed by the blockchain.
 
+ADAMANT includes crypto wallets for ADAMANT (ADM), Bitcoin (BTC), Ethereum (ETH), Lisk (LSK), Dogecoin (DOGE) and Dash (DASH). Private keys for the wallets are derived from an ADAMANT passphrase. You can export the keys and use them in other wallets.
+
 This application deployed at [msg.adamant.im](https://msg.adamant.im). Feel free to run your own messenger using this code and Build Setup.
 
 ## Project setup
@@ -18,7 +20,7 @@ This application deployed at [msg.adamant.im](https://msg.adamant.im). Feel free
 yarn install
 ```
 
-Note: some dependencies may ask for specific Node.js version, you can ignore this with `yarn install --ignore-engines`.
+Note: Lisk libraries may ask for specific Node.js version, you can ignore this with `yarn install --ignore-engines`.
 
 ### Compiles and hot-reloads for development
 
