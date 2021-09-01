@@ -7,6 +7,8 @@
     :confirmations="transaction.confirmations || NaN"
     :sender="sender || '' "
     :recipient="recipient || '' "
+    :sender-formatted="senderFormatted || '' "
+    :recipient-formatted="recipientFormatted|| '' "
     :explorer-link="explorerLink"
     :partner="transaction.partner || '' "
     :status="getTransactionStatus(admTx)"
@@ -45,9 +47,15 @@ export default {
       return this.$store.state.adm.transactions[this.id] || { }
     },
     sender () {
-      return this.formatAddress(this.transaction.senderId) || ''
+      return this.transaction.senderId || ''
     },
     recipient () {
+      return this.transaction.recipientId || ''
+    },
+    senderFormatted () {
+      return this.formatAddress(this.transaction.senderId) || ''
+    },
+    recipientFormatted () {
       return this.formatAddress(this.transaction.recipientId) || ''
     },
     admTx () {

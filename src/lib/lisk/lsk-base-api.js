@@ -41,6 +41,10 @@ export default class LskBaseApi {
     this._address = undefined
   }
 
+  get decimals () {
+    return 8
+  }
+
   get multiplier () {
     return 1e8
   }
@@ -119,8 +123,8 @@ export default class LskBaseApi {
    * @returns {object}
    */
   _buildTransaction (address, amount, fee, nonce, data = '') {
-    const amountString = transactions.convertLSKToBeddows((amount).toString())
-    const feeString = transactions.convertLSKToBeddows(fee.toString())
+    const amountString = transactions.convertLSKToBeddows((+amount).toFixed(this.decimals))
+    const feeString = transactions.convertLSKToBeddows((+fee).toFixed(this.decimals))
     const nonceString = nonce.toString()
     const liskTx = {
       moduleID: this.moduleId,
