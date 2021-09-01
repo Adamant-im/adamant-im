@@ -23,7 +23,7 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
     to: ethAddress,
     value: utils.toWei(amount)
     // gas: api.fromDecimal(ETH_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
-    // gasPrice: context.getters.gasPrice // Set gas price to auto calc
+    // gasPrice: context.getters.gasPrice // Set gas price to auto calc. Deprecated after London hardfork
     // nonce // Let sendTransaction choose it
   }
 
@@ -40,10 +40,10 @@ const parseTransaction = (context, tx) => {
     senderId: tx.from,
     recipientId: tx.to,
     amount: utils.toEther(tx.value.toString(10)),
-    fee: utils.calculateFee(tx.gas, tx.gasPrice.toString(10)),
+    fee: utils.calculateFee(tx.gas, (tx.gasPrice || tx.effectiveGasPrice).toString(10)),
     status: tx.blockNumber ? 'CONFIRMED' : 'PENDING',
     blockNumber: tx.blockNumber,
-    gasPrice: +tx.gasPrice
+    gasPrice: +(tx.gasPrice || tx.effectiveGasPrice)
   }
 }
 
@@ -65,6 +65,7 @@ const createSpecificActions = (api, queue) => ({
         }),
         // Current gas price
         api.getGasPrice.request((err, price) => {
+          // It is OK with London hardfork
           if (!err) {
             context.commit('gasPrice', {
               gasPrice: price, // string type

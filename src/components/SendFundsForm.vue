@@ -232,6 +232,7 @@ import partnerName from '@/mixins/partnerName'
 
 import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { formatSendTxError } from '@/lib/txVerify'
 
 /**
  * @returns {string | boolean}
@@ -627,10 +628,14 @@ export default {
 
           this.$emit('send', transactionId, this.currency)
         })
-        .catch(err => {
-          let message = err.message
-          if (/dust/i.test(message) || get(err, 'response.data.error.code') === -26) {
+        .catch(error => {
+          const formattedError = formatSendTxError(error)
+          console.log('Error while sending transaction', formattedError)
+          let message = formattedError.errorMessage
+          if (/dust/i.test(message) || get(error, 'response.data.error.code') === -26) {
             message = this.$t('transfer.error_dust_amount')
+          } else if (/minimum remaining balance requirement/i.test(message)) {
+            message = this.$t('transfer.recipient_minimum_balance')
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
           }
@@ -728,7 +733,7 @@ export default {
     },
     validateMinAmount (amount, currency) {
       const min = getMinAmount(currency)
-      return amount > min
+      return amount >= min
     },
     validateNaturalUnits (amount, currency) {
       const units = CryptoNaturalUnits[currency]

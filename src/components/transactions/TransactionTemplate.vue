@@ -36,6 +36,7 @@
               {{ $t('transaction.status') }}
               <v-icon
                 v-if="statusUpdatable"
+                ref="updateButton"
                 size="20"
                 @click="updateStatus()"
               >
@@ -106,7 +107,10 @@
 
         <v-divider />
 
-        <v-list-tile :title="id || placeholder">
+        <v-list-tile
+          :title="id || placeholder"
+          @click="copyToClipboard(id)"
+        >
           <v-list-tile-title :class="`${className}__title`">
             {{ $t('transaction.txid') }}
           </v-list-tile-title>
@@ -118,25 +122,31 @@
 
         <v-divider />
 
-        <v-list-tile :title="sender || placeholder">
+        <v-list-tile
+          :title="sender || placeholder"
+          @click="copyToClipboard(sender)"
+        >
           <v-list-tile-title :class="`${className}__title`">
             {{ $t('transaction.sender') }}
           </v-list-tile-title>
 
           <div :class="`${className}__value`">
-            {{ sender || placeholder }}
+            {{ senderFormatted || placeholder }}
           </div>
         </v-list-tile>
 
         <v-divider />
 
-        <v-list-tile :title="recipient || placeholder">
+        <v-list-tile
+          :title="recipient || placeholder"
+          @click="copyToClipboard(recipient)"
+        >
           <v-list-tile-title :class="`${className}__title`">
             {{ $t('transaction.recipient') }}
           </v-list-tile-title>
 
           <div :class="`${className}__value`">
-            {{ recipient || placeholder }}
+            {{ recipientFormatted || placeholder }}
           </div>
         </v-list-tile>
 
@@ -221,6 +231,7 @@ import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 import transaction from '@/mixins/transaction'
+import { copyToClipboard } from '@/lib/textHelpers'
 
 export default {
   name: 'TransactionTemplate',
@@ -262,6 +273,14 @@ export default {
       type: String
     },
     sender: {
+      required: true,
+      type: String
+    },
+    recipientFormatted: {
+      required: true,
+      type: String
+    },
+    senderFormatted: {
       required: true,
       type: String
     },
@@ -314,6 +333,15 @@ export default {
     }
   },
   methods: {
+    copyToClipboard: function (key) {
+      if (key) {
+        copyToClipboard(key)
+        this.$store.dispatch('snackbar/show', {
+          message: this.$t('home.copied'),
+          timeout: 2000
+        })
+      }
+    },
     openInExplorer: function () {
       if (this.explorerLink) {
         window.open(this.explorerLink, '_blank', 'resizable,scrollbars,status,noopener')
@@ -323,6 +351,11 @@ export default {
       this.$router.push('/chats/' + this.partner + '/')
     },
     updateStatus () {
+      const el = this.$refs.updateButton.$el
+      el.rotate = (el.rotate || 0) + 400
+      el.style.transform = `rotate(${el.rotate}grad)`
+      el.style['transition-duration'] = '1s'
+
       if (this.crypto && this.statusUpdatable) {
         this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.id, force: true, updateOnly: false, dropStatus: true })
       }

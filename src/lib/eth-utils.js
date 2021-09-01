@@ -47,6 +47,8 @@ export function getAccountFromPassphrase (passphrase, api) {
  * @returns {string} fee in ETH
  */
 export function calculateFee (gasUsed, gasPrice) {
+  // After London hardfork we may not receive gasPrice. Still we change gasPrice to effectiveGasPrice where it's possible
+  if (!gasPrice) return '0'
   const gas = BigNumber(gasUsed, 10)
   const price = BigNumber(gasPrice, 10)
   const fee = gas.times(price).toString(10)

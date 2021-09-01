@@ -108,6 +108,21 @@ export default function createActions (config) {
           )
         })
         .then((sentTxInfo) => {
+          // Since London OpenEthereum (or web3?) update v3.3.0-rc.4, hash is an object, not a hex string
+          // Object is a Tx receipt with fields: blockHash, blockNumber, contractAddress, cumulativeGasUsed, effectiveGasPrice,
+          // ..from, gasUsed, logs, logsBloom, **status**: true or false, to, transactionHash, transactionIndex
+          // Though docs say "The callback will return the 32 bytes transaction hash"
+          // https://web3js.readthedocs.io/en/v3.0.0-rc.5/web3-eth.html?highlight=sendSignedTransaction#sendsignedtransaction
+          // We suppose result format may change in future, so expect both variants
+          if (typeof sentTxInfo.hash === 'object') {
+            // Before London hardfork, ethTx included gasPrice
+            // But after it, it include fields: from, gas (limit), to, value (hex),
+            // ..type: undefined, which interprets as 0 (Legacy)
+            // We should take gasPrice from Tx receipt object = effectiveGasPrice
+            sentTxInfo.txInfo.ethTx.gasPrice = sentTxInfo.hash.effectiveGasPrice
+            sentTxInfo.hash = sentTxInfo.hash.transactionHash
+          }
+
           if (sentTxInfo.error) {
             console.error(`Failed to send ${crypto} transaction`, sentTxInfo.error)
             context.commit('transactions', [{ hash: sentTxInfo.txInfo.signedTx.transactionHash, status: 'REJECTED' }])

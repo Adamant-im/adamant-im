@@ -87,7 +87,11 @@ export default {
       }
     },
     onError (message) {
-      this.$store.dispatch('snackbar/show', { message })
+      this.$store.dispatch('snackbar/show', {
+        message,
+        color: '#ED5270',
+        timeout: 0
+      })
     }
   }
 }

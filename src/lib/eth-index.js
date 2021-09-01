@@ -134,7 +134,7 @@ function parseTxFromIndex (tx, decimals) {
     senderId: tx.txfrom.toLowerCase(),
     recipientId,
     amount: utils.toFraction(value, decimals),
-    fee: utils.calculateFee(tx.gas, tx.gasprice),
+    fee: utils.calculateFee(tx.gas, tx.gasprice || tx.effectivegasprice),
     status: 'CONFIRMED',
     timestamp: tx.time * 1000,
     blockNumber: tx.block,

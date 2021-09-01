@@ -21,7 +21,7 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
     to: context.state.contractAddress,
     value: '0x0',
     // gasLimit: api.fromDecimal(ERC20_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
-    // gasPrice: context.getters.gasPrice, // Set gas price to auto calc
+    // gasPrice: context.getters.gasPrice, // Set gas price to auto calc. Deprecated after London hardfork
     // nonce // Let sendTransaction choose it
     data: contract.methods.transfer(ethAddress, ethUtils.toWhole(amount, context.state.decimals)).encodeABI()
   }
@@ -47,12 +47,13 @@ const parseTransaction = (context, tx) => {
 
   if (recipientId) {
     return {
+      // Why comparing to eth.actions, there is no fee and status?
       hash: tx.hash,
       senderId: tx.from,
       blockNumber: tx.blockNumber,
       amount,
       recipientId,
-      gasPrice: +tx.gasPrice
+      gasPrice: +(tx.gasPrice || tx.effectiveGasPrice)
     }
   }
 
