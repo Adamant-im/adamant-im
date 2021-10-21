@@ -92,6 +92,11 @@ export default {
             : `${this.$t('home.buy_tokens_btn_link')}`)
         },
         {
+          icon: 'ADM',
+          title: this.$t('home.buy_tokens_exchanger'),
+          link: 'U5149447931090026688'
+        },
+        {
           icon: 'RES',
           title: 'Resfinex',
           link: 'https://trade.resfinex.com?ref=7ccb34d867&pair=ADM_USDT'
@@ -106,7 +111,15 @@ export default {
   },
   methods: {
     openLink (link) {
-      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+      if (link.startsWith('U')) {
+        console.log('routing to ', link)
+        this.$router.push({
+          name: 'Chat',
+          params: { partnerId: link }
+        })
+      } else {
+        window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+      }
     }
   }
 }
