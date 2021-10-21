@@ -13,7 +13,7 @@ export default function getExplorerUrl (crypto, transactionId) {
     case Cryptos.ADM:
       return explorerUriToOnion('https://explorer.adamant.im/tx/' + transactionId)
     case Cryptos.LSK:
-      return 'https://testnet.lisk.observer/transaction/' + transactionId
+      return 'https://lisk.observer/transaction/' + transactionId
     case Cryptos.ETH:
       return 'https://etherscan.io/tx/' + transactionId
     case Cryptos.DOGE:
