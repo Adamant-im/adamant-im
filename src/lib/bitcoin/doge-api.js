@@ -56,7 +56,6 @@ export default class DogeApi extends BtcBaseApi {
   getUnspents () {
     return this._get(`/addr/${this.address}/utxo?noCache=1`)
       .then(unspents => {
-        unspents = unspents.filter(tx => tx.confirmations)
         return unspents.map(tx => ({
           ...tx,
           amount: new BigNumber(tx.amount).times(this.multiplier).toNumber()
