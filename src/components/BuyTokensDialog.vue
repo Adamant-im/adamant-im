@@ -100,11 +100,6 @@ export default {
           icon: 'RES',
           title: 'Resfinex',
           link: 'https://trade.resfinex.com?ref=7ccb34d867&pair=ADM_USDT'
-        },
-        {
-          icon: 'BZ',
-          title: 'Bit-Z',
-          link: 'https://u.bit-z.com/register?invite_code=2423317'
         }
       ]
     }
