@@ -88,7 +88,8 @@
     "send_crypto": "Отправить {crypto}",
     "share_uri": "Поделиться ссылкой {crypto}",
     "show_qr_code": "Показать QR-код",
-    "wallet": "кошелек"
+    "wallet": "кошелек",
+    "wallet_crypto": "Кошелек {crypto}"
   },
   "warning_on_addresses": {
     "warning": "Внимание",

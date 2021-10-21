@@ -87,7 +87,8 @@
     "send_crypto": "Send {crypto}",
     "share_uri": "Share {crypto} address",
     "show_qr_code": "Show QR code",
-    "wallet": "wallet"
+    "wallet": "wallet",
+    "wallet_crypto": "{crypto} wallet"
   },
   "warning_on_addresses": {
     "warning": "Warning",
