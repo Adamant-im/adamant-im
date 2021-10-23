@@ -73,7 +73,9 @@ export default {
 .theme--light
   .svg-icon
     fill: rgba(0, 0, 0, 0.54)
+    stroke: rgba(0, 0, 0, 0.54)
 .theme--dark
   .svg-icon
     fill: $shades.white
+    stroke: $shades.white
 </style>
