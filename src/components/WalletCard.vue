@@ -13,7 +13,7 @@
       >
         <v-list-tile-content>
           <v-list-tile-title :class="`${className}__title`">
-            {{ cryptoName }} {{ $t('home.wallet') }}
+            {{ $t('home.wallet_crypto', { crypto: cryptoName }) }}
           </v-list-tile-title>
           <v-list-tile-sub-title :class="`${className}__subtitle`">
             {{ address }}

@@ -16,6 +16,19 @@
       <v-card-text class="pa-0">
         <v-list>
           <v-list-tile
+            avatar
+            @click="openLink('U5149447931090026688')"
+          >
+            <v-list-tile-avatar>
+              <icon><exchanger-icon /></icon>
+            </v-list-tile-avatar>
+
+            <v-list-tile-content>
+              <v-list-tile-title>{{ $t('home.buy_tokens_exchanger') }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile
             v-for="action in actions"
             :key="action.title"
             avatar
@@ -53,13 +66,15 @@ import validateAddress from '@/lib/validateAddress'
 import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import CdlIcon from '@/components/icons/common/Cdl'
+import ExchangerIcon from '@/components/icons/common/Exchanger'
 import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
   components: {
     Icon,
     CryptoIcon,
-    CdlIcon
+    CdlIcon,
+    ExchangerIcon
   },
   props: {
     value: {
@@ -95,18 +110,21 @@ export default {
           icon: 'RES',
           title: 'Resfinex',
           link: 'https://trade.resfinex.com?ref=7ccb34d867&pair=ADM_USDT'
-        },
-        {
-          icon: 'BZ',
-          title: 'Bit-Z',
-          link: 'https://u.bit-z.com/register?invite_code=2423317'
         }
       ]
     }
   },
   methods: {
     openLink (link) {
-      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+      if (link.startsWith('U')) {
+        console.log('routing to ', link)
+        this.$router.push({
+          name: 'Chat',
+          params: { partnerId: link }
+        })
+      } else {
+        window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+      }
     }
   }
 }

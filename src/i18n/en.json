@@ -73,6 +73,7 @@
   "home": {
     "balance": "Balance",
     "buy_tokens_anonymously": "Anonymously on website",
+    "buy_tokens_exchanger": "In-chat Exchanger",
     "copied": "Copied",
     "copy": "Copy",
     "copy_address": "Copy address",
@@ -86,7 +87,8 @@
     "send_crypto": "Send {crypto}",
     "share_uri": "Share {crypto} address",
     "show_qr_code": "Show QR code",
-    "wallet": "wallet"
+    "wallet": "wallet",
+    "wallet_crypto": "{crypto} wallet"
   },
   "warning_on_addresses": {
     "warning": "Warning",
