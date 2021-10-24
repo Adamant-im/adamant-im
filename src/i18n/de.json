@@ -65,8 +65,7 @@
     "free_tokens_link": "https://adamant.im/de-free-adm-tokens/",
     "send_btn": "Send funds",
     "share_uri": "Share {crypto} address",
-    "show_qr_code": "Show QR code",
-    "wallet": "wallet"
+    "show_qr_code": "Show QR code"
   },
   "login": {
     "brand_title": "ADAMANT",

@@ -4,6 +4,7 @@ import axios from 'axios'
 import networks from './networks'
 import getEnpointUrl from '../getEndpointUrl'
 import BigNumber from '../bignumber'
+import { isPositiveNumber } from '@/lib/numericHelpers'
 
 const getUnique = values => {
   const map = values.reduce((m, v) => {
@@ -150,7 +151,12 @@ export default class BtcBaseApi {
     })
 
     txb.addOutput(bitcoin.address.toOutputScript(address, this._network), amount)
-    txb.addOutput(this._address, transferAmount - target)
+    // This is a necessary step
+    // If we'll not add a change to output, it will burn in hell
+    const change = transferAmount - target
+    if (isPositiveNumber(change)) {
+      txb.addOutput(this._address, change)
+    }
 
     for (let i = 0; i < inputs; ++i) {
       txb.sign(i, this._keyPair)

@@ -36,7 +36,15 @@
                   :class="`${className}__icon`"
                 />
                 <div>{{ wallet.balance | numberFormat(4) }}</div>
-                <div>{{ wallet.cryptoCurrency }}</div>
+                <div>
+                  {{ wallet.cryptoCurrency }}
+                  <span
+                    v-if="wallet.erc20"
+                    style="font-size:10px"
+                  >
+                    <sub>ERC20</sub>
+                  </span>
+                </div>
               </div>
             </v-tab>
 
@@ -70,7 +78,7 @@
 import WalletCard from '@/components/WalletCard'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 
-import { Cryptos, CryptosNames } from '@/lib/constants'
+import { Cryptos, CryptosNames, isErc20 } from '@/lib/constants'
 
 /**
  * Center VTab element on click.
@@ -108,12 +116,14 @@ export default {
         const key = crypto.toLowerCase()
         const address = crypto === Cryptos.ADM ? state.address : state[key].address
         const balance = crypto === Cryptos.ADM ? state.balance : state[key].balance
+        const erc20 = isErc20(crypto.toUpperCase())
 
         return {
           address,
           balance,
           cryptoCurrency: crypto,
-          cryptoName: CryptosNames[crypto]
+          cryptoName: CryptosNames[crypto],
+          erc20
         }
       })
     },
@@ -176,12 +186,14 @@ export default {
       margin-bottom: 10px
     >>> .v-tabs__item
       font-weight: 300
+      padding: 6px 4px
     >>> .v-tabs__item--active
       font-weight: 500
     >>> .v-tabs__item:not(.v-tabs__item--active) // [2]
       opacity: 1
     >>> .v-tabs__div
       font-size: 16px
+      min-width: 74px
   &__icon
     margin-bottom: 3px
 
