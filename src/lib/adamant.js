@@ -2,7 +2,6 @@
 'use strict'
 
 import sodium from 'sodium-browserify-tweetnacl'
-import * as bip39 from 'bip39'
 import crypto from 'crypto'
 import nacl from 'tweetnacl/nacl-fast'
 import ed2curve from 'ed2curve'
@@ -11,6 +10,7 @@ import bignum from './bignumber.js'
 import ByteBuffer from 'bytebuffer'
 import constants from './constants.js'
 import { hexToBytes, bytesToHex } from './hex'
+import cache from '@/store/cache'
 
 /**
  * Crypto functions that implements sodium.
@@ -18,7 +18,7 @@ import { hexToBytes, bytesToHex } from './hex'
  * @requires sodium
  * @namespace
  */
-var adamant = {}
+const adamant = {}
 
 /**
  * Converts provided `time` to Adamant's epoch timestamp
@@ -48,16 +48,16 @@ adamant.toTimestamp = function (epochTime) {
  * @returns {*}
  */
 adamant.parseURI = function (uri) {
-  var r = /^adm:(U[0-9]{17,22})(?:\?(.*))?$/
-  var match = r.exec(uri)
+  const r = /^adm:(U[0-9]{17,22})(?:\?(.*))?$/
+  const match = r.exec(uri)
   if (!match) {
     return false
   }
-  var parsed = { url: uri }
+  const parsed = { url: uri }
   if (match[2]) {
-    var queries = match[2].split('&')
-    for (var i = 0; i < queries.length; i++) {
-      var query = queries[i].split('=')
+    const queries = match[2].split('&')
+    for (let i = 0; i < queries.length; i++) {
+      const query = queries[i].split('=')
       if (query.length === 2) {
         parsed[query[0]] = decodeURIComponent(query[1].replace(/\+/g, '%20'))
       }
@@ -69,22 +69,23 @@ adamant.parseURI = function (uri) {
 
 /**
  * Creates a hash based on a passphrase.
- * @param {string} passPhrase
+ * bip39.mnemonicToSeedSync is time consuming, so we use cached value, if possible
+ * @param {string} passphrase
  * @return {string} hash
  */
 adamant.createPassphraseHash = function (passphrase) {
-  const seedHex = bip39.mnemonicToSeedSync(passphrase).toString('hex')
+  const seedHex = cache.mnemonicToSeedSync(passphrase).toString('hex')
   return crypto.createHash('sha256').update(seedHex, 'hex').digest()
 }
 
 /**
- * Creates a keypar based on a hash.
+ * Creates a keypair based on a hash.
  * @implements {sodium}
  * @param {hash} hash
  * @return {Object} publicKey, privateKey
  */
 adamant.makeKeypair = function (hash) {
-  var keypair = sodium.crypto_sign_seed_keypair(hash)
+  const keypair = sodium.crypto_sign_seed_keypair(hash)
 
   return {
     publicKey: keypair.publicKey,
@@ -101,7 +102,7 @@ adamant.getAddressFromPublicKey = function (publicKey) {
   const publicKeyHash = crypto.createHash('sha256').update(publicKey, 'hex').digest()
   const temp = Buffer.alloc(8)
 
-  for (var i = 0; i < 8; i++) {
+  for (let i = 0; i < 8; i++) {
     temp[i] = publicKeyHash[7 - i]
   }
 
@@ -131,10 +132,10 @@ adamant.getHash = function (trs) {
  */
 
 adamant.getBytes = function (transaction) {
-  var skipSignature = false
-  var skipSecondSignature = true
-  var assetSize = 0
-  var assetBytes = null
+  const skipSignature = false
+  const skipSecondSignature = true
+  let assetSize = 0
+  let assetBytes = null
 
   switch (transaction.type) {
     case constants.Transactions.SEND:
@@ -159,34 +160,34 @@ adamant.getBytes = function (transaction) {
       alert('Not supported yet')
   }
 
-  var bb = new ByteBuffer(1 + 4 + 32 + 8 + 8 + 64 + 64 + assetSize, true)
+  const bb = new ByteBuffer(1 + 4 + 32 + 8 + 8 + 64 + 64 + assetSize, true)
 
   bb.writeByte(transaction.type)
   bb.writeInt(transaction.timestamp)
 
-  var senderPublicKeyBuffer = Buffer.from(transaction.senderPublicKey, 'hex')
-  for (var i = 0; i < senderPublicKeyBuffer.length; i++) {
+  const senderPublicKeyBuffer = Buffer.from(transaction.senderPublicKey, 'hex')
+  for (let i = 0; i < senderPublicKeyBuffer.length; i++) {
     bb.writeByte(senderPublicKeyBuffer[i])
   }
 
   if (transaction.requesterPublicKey) {
-    var requesterPublicKey = Buffer.from(transaction.requesterPublicKey, 'hex')
+    const requesterPublicKey = Buffer.from(transaction.requesterPublicKey, 'hex')
 
-    for (var i = 0; i < requesterPublicKey.length; i++) {
+    for (let i = 0; i < requesterPublicKey.length; i++) {
       bb.writeByte(requesterPublicKey[i])
     }
   }
 
   if (transaction.recipientId) {
-    var recipient = transaction.recipientId.slice(1)
+    let recipient = transaction.recipientId.slice(1)
     // eslint-disable-next-line new-cap
     recipient = new bignum(recipient).toBuffer({ size: 8 })
 
-    for (i = 0; i < 8; i++) {
+    for (let i = 0; i < 8; i++) {
       bb.writeByte(recipient[i] || 0)
     }
   } else {
-    for (i = 0; i < 8; i++) {
+    for (let i = 0; i < 8; i++) {
       bb.writeByte(0)
     }
   }
@@ -194,30 +195,30 @@ adamant.getBytes = function (transaction) {
   bb.writeLong(transaction.amount)
 
   if (assetSize > 0) {
-    for (var i = 0; i < assetSize; i++) {
+    for (let i = 0; i < assetSize; i++) {
       bb.writeByte(assetBytes[i])
     }
   }
 
   if (!skipSignature && transaction.signature) {
-    var signatureBuffer = Buffer.from(transaction.signature, 'hex')
-    for (var i = 0; i < signatureBuffer.length; i++) {
+    const signatureBuffer = Buffer.from(transaction.signature, 'hex')
+    for (let i = 0; i < signatureBuffer.length; i++) {
       bb.writeByte(signatureBuffer[i])
     }
   }
 
   if (!skipSecondSignature && transaction.signSignature) {
-    var signSignatureBuffer = Buffer.from(transaction.signSignature, 'hex')
-    for (var i = 0; i < signSignatureBuffer.length; i++) {
+    const signSignatureBuffer = Buffer.from(transaction.signSignature, 'hex')
+    for (let i = 0; i < signSignatureBuffer.length; i++) {
       bb.writeByte(signSignatureBuffer[i])
     }
   }
 
   bb.flip()
-  var arrayBuffer = new Uint8Array(bb.toArrayBuffer())
-  var buffer = []
+  const arrayBuffer = new Uint8Array(bb.toArrayBuffer())
+  const buffer = []
 
-  for (var i = 0; i < arrayBuffer.length; i++) {
+  for (let i = 0; i < arrayBuffer.length; i++) {
     buffer[i] = arrayBuffer[i]
   }
 
@@ -225,22 +226,22 @@ adamant.getBytes = function (transaction) {
 }
 
 adamant.transactionSign = function (trs, keypair) {
-  var hash = this.getHash(trs)
+  const hash = this.getHash(trs)
   return this.sign(hash, keypair).toString('hex')
 }
 adamant.chatGetBytes = function (trs) {
-  var buf
+  let buf
 
   try {
     buf = Buffer.from([])
-    var messageBuf = Buffer.from(trs.asset.chat.message, 'hex')
+    const messageBuf = Buffer.from(trs.asset.chat.message, 'hex')
     buf = Buffer.concat([buf, messageBuf])
 
     if (trs.asset.chat.own_message) {
-      var ownMessageBuf = Buffer.from(trs.asset.chat.own_message, 'hex')
+      const ownMessageBuf = Buffer.from(trs.asset.chat.own_message, 'hex')
       buf = Buffer.concat([buf, ownMessageBuf])
     }
-    var bb = new ByteBuffer(4 + 4, true)
+    const bb = new ByteBuffer(4 + 4, true)
     bb.writeInt(trs.asset.chat.type)
     bb.flip()
     buf = Buffer.concat([buf, Buffer.from(bb.toBuffer())])
@@ -255,7 +256,7 @@ adamant.delegateGetBytes = function (trs) {
   if (!trs.asset.delegate.username) {
     return null
   }
-  var buf
+  let buf
 
   try {
     buf = Buffer.from(trs.asset.delegate.username, 'utf8')
@@ -269,10 +270,10 @@ adamant.voteGetBytes = function (trs) {
   if (!trs.asset.votes || trs.asset.votes.length === 0) {
     return null
   }
-  var buf
+  let buf
   try {
     buf = Buffer.from([])
-    for (let i in trs.asset.votes) {
+    for (const i in trs.asset.votes) {
       buf = Buffer.concat([buf, Buffer.from(trs.asset.votes[i], 'utf8')])
     }
   } catch (e) {
@@ -285,19 +286,19 @@ adamant.stateGetBytes = function (trs) {
   if (!trs.asset.state.value) {
     return null
   }
-  var buf
+  let buf
 
   try {
     buf = Buffer.from([])
-    var stateBuf = Buffer.from(trs.asset.state.value)
+    const stateBuf = Buffer.from(trs.asset.state.value)
     buf = Buffer.concat([buf, stateBuf])
 
     if (trs.asset.state.key) {
-      var keyBuf = Buffer.from(trs.asset.state.key)
+      const keyBuf = Buffer.from(trs.asset.state.key)
       buf = Buffer.concat([buf, keyBuf])
     }
 
-    var bb = new ByteBuffer(4 + 4, true)
+    const bb = new ByteBuffer(4 + 4, true)
     bb.writeInt(trs.asset.state.type)
     bb.flip()
 
@@ -403,7 +404,7 @@ adamant.encodeValue = function (value, privateKey) {
   sodium.randombytes(nonce)
 
   // for some reason calling `JSON.stringify` directly breaks the module compilation.
-  const padded = randomString() + JSON['stringify']({ payload: value }) + randomString()
+  const padded = randomString() + JSON.stringify({ payload: value }) + randomString()
 
   const plainText = Buffer.from(padded)
   const secretKey = ed2curve.convertSecretKey(sodium.crypto_hash_sha256(privateKey))

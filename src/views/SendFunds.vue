@@ -6,11 +6,16 @@
       flat
     />
 
-    <v-container fluid class="px-0">
-      <v-layout row wrap justify-center>
-
+    <v-container
+      fluid
+      class="px-0"
+    >
+      <v-layout
+        row
+        wrap
+        justify-center
+      >
         <container padding>
-
           <send-funds-form
             :crypto-currency="cryptoCurrency"
             :recipient-address="recipientAddress"
@@ -19,9 +24,7 @@
             @send="onSend"
             @error="onError"
           />
-
         </container>
-
       </v-layout>
     </v-container>
   </div>
@@ -36,21 +39,25 @@ import AppToolbarCentered from '@/components/AppToolbarCentered'
 import SendFundsForm from '@/components/SendFundsForm'
 
 export default {
-  created () {
-    this.validateCryptoCurrency()
-    this.validateRecipientAddress()
-    this.validateAmountToSend()
-  },
-  computed: {
-    comeFromChat () {
-      return this.recipientAddress.length > 0
-    }
+  components: {
+    AppToolbarCentered,
+    SendFundsForm
   },
   data: () => ({
     cryptoCurrency: Cryptos.ADM,
     recipientAddress: '',
     amountToSend: undefined
   }),
+  computed: {
+    comeFromChat () {
+      return this.recipientAddress.length > 0
+    }
+  },
+  created () {
+    this.validateCryptoCurrency()
+    this.validateRecipientAddress()
+    this.validateAmountToSend()
+  },
   methods: {
     validateCryptoCurrency () {
       if (
@@ -80,12 +87,12 @@ export default {
       }
     },
     onError (message) {
-      this.$store.dispatch('snackbar/show', { message })
+      this.$store.dispatch('snackbar/show', {
+        message,
+        color: '#ED5270',
+        timeout: 0
+      })
     }
-  },
-  components: {
-    AppToolbarCentered,
-    SendFundsForm
   }
 }
 </script>

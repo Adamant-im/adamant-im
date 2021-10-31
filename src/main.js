@@ -21,6 +21,8 @@ import 'dayjs/locale/fr'
 import 'dayjs/locale/it'
 import 'dayjs/locale/ru'
 
+export const vueBus = new Vue()
+
 Vue.use(VueFormatters)
 
 document.title = i18n.t('app_title')
@@ -33,8 +35,8 @@ window.ep = new Vue({
   version: packageJSON.version,
   router,
   store,
-  template: '<App/>',
   components: { App },
+  template: '<App/>',
   i18n,
   render: h => h(App)
 }).$mount('#app')

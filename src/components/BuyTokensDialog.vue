@@ -11,11 +11,23 @@
         {{ $t('home.buy_tokens_btn') }}
       </v-card-title>
 
-      <v-divider class="a-divider"></v-divider>
+      <v-divider class="a-divider" />
 
       <v-card-text class="pa-0">
-
         <v-list>
+          <v-list-tile
+            avatar
+            @click="openLink('U5149447931090026688')"
+          >
+            <v-list-tile-avatar>
+              <icon><exchanger-icon /></icon>
+            </v-list-tile-avatar>
+
+            <v-list-tile-content>
+              <v-list-tile-title>{{ $t('home.buy_tokens_exchanger') }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
           <v-list-tile
             v-for="action in actions"
             :key="action.title"
@@ -23,35 +35,27 @@
             @click="openLink(action.link)"
           >
             <v-list-tile-avatar>
-              <crypto-icon :crypto="action.icon"/>
+              <crypto-icon :crypto="action.icon" />
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title v-text="action.title"></v-list-tile-title>
+              <v-list-tile-title v-text="action.title" />
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-list-tile avatar @click="openLink('https://coindeal.com/ref/9WZN')">
+          <v-list-tile
+            avatar
+            @click="openLink('https://coindeal.com/ref/9WZN')"
+          >
             <v-list-tile-avatar>
-              <icon><cdl-icon/></icon>
+              <icon><cdl-icon /></icon>
             </v-list-tile-avatar>
 
             <v-list-tile-content>
               <v-list-tile-title>CoinDeal</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-
-          <v-list-tile avatar @click="openLink('https://atomars.com/refcode/kaba')">
-            <v-list-tile-avatar>
-              <icon><atomars-icon/></icon>
-            </v-list-tile-avatar>
-
-            <v-list-tile-content>
-              <v-list-tile-title>Atomars</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
         </v-list>
-
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -62,10 +66,27 @@ import validateAddress from '@/lib/validateAddress'
 import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import CdlIcon from '@/components/icons/common/Cdl'
-import AtomarsIcon from '@/components/icons/common/Atomars'
-import { uriToOnion } from '@/lib/uri'
+import ExchangerIcon from '@/components/icons/common/Exchanger'
+import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
+  components: {
+    Icon,
+    CryptoIcon,
+    CdlIcon,
+    ExchangerIcon
+  },
+  props: {
+    value: {
+      type: Boolean,
+      required: true
+    },
+    adamantAddress: {
+      type: String,
+      default: undefined,
+      validator: v => validateAddress('ADM', v)
+    }
+  },
   computed: {
     className: () => 'buy-tokens-dialog',
     show: {
@@ -81,7 +102,7 @@ export default {
         {
           icon: 'ADM',
           title: this.$t('home.buy_tokens_anonymously'),
-          link: uriToOnion(this.adamantAddress
+          link: websiteUriToOnion(this.adamantAddress
             ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
             : `${this.$t('home.buy_tokens_btn_link')}`)
         },
@@ -89,35 +110,21 @@ export default {
           icon: 'RES',
           title: 'Resfinex',
           link: 'https://trade.resfinex.com?ref=7ccb34d867&pair=ADM_USDT'
-        },
-        {
-          icon: 'BZ',
-          title: 'Bit-Z',
-          link: 'https://u.bit-z.com/register?invite_code=2423317'
         }
       ]
     }
   },
   methods: {
     openLink (link) {
-      window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
-    }
-  },
-  components: {
-    Icon,
-    CryptoIcon,
-    CdlIcon,
-    AtomarsIcon
-  },
-  props: {
-    value: {
-      type: Boolean,
-      required: true
-    },
-    adamantAddress: {
-      type: String,
-      default: undefined,
-      validator: v => validateAddress('ADM', v)
+      if (link.startsWith('U')) {
+        console.log('routing to ', link)
+        this.$router.push({
+          name: 'Chat',
+          params: { partnerId: link }
+        })
+      } else {
+        window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
+      }
     }
   }
 }

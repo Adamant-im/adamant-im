@@ -8,6 +8,8 @@ import { encryptPassword } from '@/lib/idb/crypto'
 import { restoreState } from '@/lib/idb/state'
 import i18n from '@/i18n'
 import store from '@/store'
+import { isStringEqualCI } from '@/lib/textHelpers'
+import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
 
 Queue.configure(Promise)
 
@@ -20,6 +22,7 @@ let myAddress = null
 
 /** Lists cryptos for which addresses are currently being stored to the KVS */
 const pendingAddresses = { }
+export const TX_CHUNK_SIZE = 25
 
 /**
  * Creates a new transaction with the common fields pre-filled
@@ -215,12 +218,13 @@ function tryDecodeStoredValue (value) {
 }
 
 /**
- * Retrieves the stored value from the Adamant KVS
+ * Retrieves the stored value from the Adamant KVS or array of KVS transactions
  * @param {string} key key in the KVS
- * @param {string=} ownerAddress address of the value owner
+ * @param {string=} ownerAddress ADM address of the value owner
+ * @param {number} records if > 1, returns array of KVS transactions
  * @returns {Promise<any>}
  */
-export function getStored (key, ownerAddress) {
+export function getStored (key, ownerAddress, records = 1) {
   if (!ownerAddress) {
     ownerAddress = myAddress
   }
@@ -229,18 +233,25 @@ export function getStored (key, ownerAddress) {
     senderId: ownerAddress,
     key,
     orderBy: 'timestamp:desc',
-    limit: 1
+    limit: records
   }
 
   return client.get('/api/states/get', params).then(response => {
     let value = null
 
     if (response.success && Array.isArray(response.transactions)) {
-      const tx = response.transactions[0]
-      value = tx && tx.asset && tx.asset.state && tx.asset.state.value
+      if (records > 1) {
+        // Return all records
+        // It may be an empty array; f. e., in case of no crypto addresses stored for a currency
+        return response.transactions
+      } else {
+        const tx = response.transactions[0]
+        value = tx && tx.asset && tx.asset.state && tx.asset.state.value
+        return tryDecodeStoredValue(value)
+      }
     }
 
-    return tryDecodeStoredValue(value)
+    return null
   })
 }
 
@@ -300,6 +311,8 @@ export function getForgedByAccount (accountPublicKey) {
 
 /**
  * Stores user address for the specified crypto
+ * Before it checks if there are any address for this crypto is already stored.
+ * If stored already, the function does nothing
  * @param {string} crypto crypto
  * @param {*} address user address for `crypto`
  * @returns {Promise<boolean>}
@@ -311,10 +324,17 @@ export function storeCryptoAddress (crypto, address) {
   const key = `${crypto.toLowerCase()}:address`
   pendingAddresses[crypto] = true
 
-  return getStored(key)
-    .then(stored => (stored)
-      ? true
-      : storeValue(key, address).then(response => response.success)
+  // Don't store crypto address twice, check it first in KVS
+  return getStored(key, myAddress, 20)
+    .then(stored => {
+      // It may be empty array: no addresses stored yet for this crypto
+      if (stored) {
+        stored = parseCryptoAddressesKVStxs(stored, crypto)
+      }
+      return (stored && stored.mainAddress)
+        ? true
+        : storeValue(key, address).then(response => response.success)
+    }
     )
     .then(
       success => {
@@ -322,7 +342,7 @@ export function storeCryptoAddress (crypto, address) {
         return success
       },
       error => {
-        console.warn(`Failed to store ${key}`, error)
+        console.warn(`Failed to store crypto address for ${key}`, error)
         delete pendingAddresses[crypto]
         return false
       }
@@ -337,20 +357,23 @@ export function storeCryptoAddress (crypto, address) {
 export function getTransactions (options = { }) {
   const query = {
     inId: myAddress,
-    'and:minAmount': 1,
-    orderBy: 'timestamp:desc'
+    limit: TX_CHUNK_SIZE
   }
 
-  if (options.to) {
-    query['and:toHeight'] = options.to
+  if (options.minAmount) {
+    query['and:minAmount'] = options.minAmount
   }
-
-  if (options.from) {
-    query['and:fromHeight'] = options.from
+  if (options.toHeight) {
+    query['and:toHeight'] = options.toHeight
   }
-
+  if (options.fromHeight) {
+    query['and:fromHeight'] = options.fromHeight
+  }
   if (options.type) {
     query['and:type'] = options.type
+  }
+  if (options.orderBy) {
+    query.orderBy = options.orderBy
   }
 
   return client.get('/api/transactions', query)
@@ -395,12 +418,13 @@ export function getChats (from = 0, offset = 0, orderBy = 'desc') {
     params.offset = offset
   }
 
+  // Doesn't return ADM direct transfer transactions, only messages and in-chat transfers
+  // https://github.com/Adamant-im/adamant/wiki/API-Specification#get-chat-transactions
   return client.get('/api/chats/get/', params).then(response => {
-  // return client.get('/api/transactions/', params).then(response => {
     const { count, transactions } = response
 
     const promises = transactions.map(transaction => {
-      const promise = (transaction.recipientId === myAddress)
+      const promise = (isStringEqualCI(transaction.recipientId, myAddress))
         ? Promise.resolve(transaction.senderPublicKey)
         : queue.add(() => getPublicKey(transaction.recipientId))
 

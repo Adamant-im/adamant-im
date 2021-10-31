@@ -1,30 +1,52 @@
 <template>
-  <v-layout justify-center row>
-    <v-dialog max-width="360" v-model="show">
+  <v-layout
+    justify-center
+    row
+  >
+    <v-dialog
+      v-model="show"
+      max-width="360"
+    >
       <v-card>
         <v-card-title class="a-text-header">
           {{ isMe ? $t('chats.my_qr_code') : $t('chats.partner_info') }}
-          <v-spacer></v-spacer>
-          <v-btn @click="show = false" flat icon class="close-icon">
+          <v-spacer />
+          <v-btn
+            flat
+            icon
+            class="close-icon"
+            @click="show = false"
+          >
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
-        <v-divider class="a-divider"></v-divider>
+        <v-divider class="a-divider" />
         <v-list two-line>
           <template>
             <v-list-tile>
               <v-list-tile-avatar>
-                <ChatAvatar :user-id="address" use-public-key />
+                <ChatAvatar
+                  :user-id="address"
+                  use-public-key
+                />
               </v-list-tile-avatar>
               <v-list-tile-content>
-                <v-list-tile-title v-text="address"></v-list-tile-title>
-                <v-list-tile-sub-title v-text="isMe ? $t('chats.me') : name"></v-list-tile-sub-title>
+                <v-list-tile-title v-text="address" />
+                <v-list-tile-sub-title v-text="isMe ? $t('chats.me') : name" />
               </v-list-tile-content>
             </v-list-tile>
           </template>
         </v-list>
-        <v-layout align-center justify-center class="pb-4">
-          <QrcodeRenderer :logo="logo" :opts="opts" :text="text" />
+        <v-layout
+          align-center
+          justify-center
+          class="pb-4"
+        >
+          <QrcodeRenderer
+            :logo="logo"
+            :opts="opts"
+            :text="text"
+          />
         </v-layout>
       </v-card>
     </v-dialog>
@@ -37,34 +59,9 @@ import QrcodeRenderer from '@/components/QrcodeRenderer'
 import { Cryptos } from '@/lib/constants'
 import { generateURI } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
-  computed: {
-    show: {
-      get () {
-        return this.value
-      },
-      set (value) {
-        this.$emit('input', value)
-      }
-    },
-    text () {
-      return this.isMe
-        ? generateURI(Cryptos.ADM, this.ownerAddress)
-        : generateURI(Cryptos.ADM, this.address, this.name)
-    },
-    isMe () {
-      return this.address === this.ownerAddress
-    }
-  },
-  data () {
-    return {
-      logo: '/img/adm-qr-invert.png',
-      opts: {
-        scale: 8.8
-      }
-    }
-  },
   components: {
     ChatAvatar, QrcodeRenderer
   },
@@ -86,6 +83,32 @@ export default {
       type: String,
       required: true,
       validator: v => validateAddress('ADM', v)
+    }
+  },
+  data () {
+    return {
+      logo: '/img/adm-qr-invert.png',
+      opts: {
+        scale: 8.8
+      }
+    }
+  },
+  computed: {
+    show: {
+      get () {
+        return this.value
+      },
+      set (value) {
+        this.$emit('input', value)
+      }
+    },
+    text () {
+      return this.isMe
+        ? generateURI(Cryptos.ADM, this.ownerAddress)
+        : generateURI(Cryptos.ADM, this.address, this.name)
+    },
+    isMe () {
+      return isStringEqualCI(this.address, this.ownerAddress)
     }
   }
 }

@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 import { resetState } from '../../../lib/reset-state'
 import getInitialState from './adm-state'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   /** Resets module state */
@@ -15,8 +16,8 @@ export default {
   },
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
-  bottom (state) {
-    state.bottomReached = true
+  bottom (state, value) {
+    state.bottomReached = value
   },
 
   /**
@@ -25,27 +26,43 @@ export default {
    * @param {Array<{id: string, height: number}>} transactions transactions list
    */
   transactions (state, transactions) {
+    const updateTimestamps = transactions.updateTimestamps
+    if (updateTimestamps) {
+      transactions = transactions.transactions
+    }
     let minHeight = Infinity
-    let maxHeight = 0
+    let maxHeight = -1
 
     const address = state.address
-
     transactions.forEach(tx => {
       if (!tx) return
       Vue.set(state.transactions, tx.id, {
         ...tx,
-        direction: tx.recipientId === address ? 'to' : 'from',
-        partner: tx.recipientId === address ? tx.senderId : tx.recipientId
+        direction: isStringEqualCI(tx.recipientId, address) ? 'to' : 'from',
+        partner: isStringEqualCI(tx.recipientId, address) ? tx.senderId : tx.recipientId,
+        status: tx.height || tx.confirmations > 0
+          ? 'CONFIRMED'
+          : tx.status
+            ? tx.status
+            : 'REGISTERED'
       })
-      minHeight = Math.min(minHeight, tx.height)
-      maxHeight = Math.max(maxHeight, tx.height)
+
+      if (tx.height && updateTimestamps) {
+        minHeight = Math.min(minHeight, tx.height)
+        maxHeight = Math.max(maxHeight, tx.height)
+      }
     })
 
-    if (minHeight < Infinity) {
-      state.minHeight = minHeight
+    // Magic here helps to refresh Tx list when browser deletes it
+    const txCount = Object.keys(state.transactions).length
+    if (state.transactionsCount < txCount) { // We don't delete transactions, so they can't become in short
+      state.transactionsCount = txCount
     }
 
-    if (maxHeight > 0) {
+    if (minHeight < state.minHeight) {
+      state.minHeight = minHeight
+    }
+    if (maxHeight > state.maxHeight) {
       state.maxHeight = maxHeight
     }
   },
@@ -55,7 +72,13 @@ export default {
    * @param {{areTransactionsLoading: boolean}} state module state
    * @param {boolean} value flag value
    */
-  areTransactionsLoading (state, value) {
-    state.areTransactionsLoading = value
+  areOlderLoading (state, areLoading) {
+    state.areOlderLoading = areLoading
+  },
+  areRecentLoading (state, areLoading) {
+    state.areRecentLoading = areLoading
+  },
+  areTransactionsLoading (state, areLoading) {
+    state.areTransactionsLoading = areLoading
   }
 }

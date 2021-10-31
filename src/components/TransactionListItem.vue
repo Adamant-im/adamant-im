@@ -1,13 +1,19 @@
 <template>
   <div :class="className">
     <v-list-tile
-      @click="onClickTransaction"
       avatar
       :class="`${className}__tile`"
+      @click="onClickTransaction"
     >
-      <v-list-tile-avatar :class="`${className}__icon-avatar`" :size="40">
-        <v-icon :class="`${className}__icon`" :size="20">
-          {{ senderId === userId ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}
+      <v-list-tile-avatar
+        :class="`${className}__icon-avatar`"
+        :size="40"
+      >
+        <v-icon
+          :class="`${className}__icon`"
+          :size="20"
+        >
+          {{ isStringEqualCI(senderId, userId) ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}
         </v-icon>
       </v-list-tile-avatar>
 
@@ -22,25 +28,59 @@
 
         <v-list-tile-title>
           <span :class="`${className}__amount ${directionClass}`">{{ amount | currency(crypto) }}</span>
-          <span v-if="comment" class="a-text-regular-enlarged-bold" style="font-style: italic;"> "</span>
-          <span v-if="comment" class="a-text-explanation" style="font-weight: 100;">{{ comment }}</span>
+          <span
+            v-if="comment"
+            class="a-text-regular-enlarged-bold"
+            style="font-style: italic;"
+          > "</span>
+          <span
+            v-if="comment"
+            class="a-text-explanation"
+            style="font-weight: 100;"
+          >{{ comment }}</span>
+          <span
+            v-if="textData"
+            class="a-text-regular-enlarged-bold"
+            style="font-style: italic;"
+          > #</span>
+          <span
+            v-if="textData"
+            class="a-text-explanation"
+            style="font-weight: 100;"
+          >{{ textData }}</span>
         </v-list-tile-title>
 
-        <v-list-tile-sub-title :class="`${className}__date`" class="a-text-explanation-small">
+        <v-list-tile-sub-title
+          :class="`${className}__date`"
+          class="a-text-explanation-small"
+        >
           {{ createdAt | date }}
         </v-list-tile-sub-title>
       </v-list-tile-content>
 
-      <v-list-tile-action :class="`${className}__action`" v-if="isClickIcon">
-        <v-btn icon ripple @click.stop="onClickIcon">
-          <v-icon :class="`${className}__icon`" :size="20">
+      <v-list-tile-action
+        v-if="isClickIcon"
+        :class="`${className}__action`"
+      >
+        <v-btn
+          icon
+          ripple
+          @click.stop="onClickIcon"
+        >
+          <v-icon
+            :class="`${className}__icon`"
+            :size="20"
+          >
             {{ isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline' }}
           </v-icon>
         </v-btn>
       </v-list-tile-action>
     </v-list-tile>
 
-    <v-divider :inset="true" class="a-divider"></v-divider>
+    <v-divider
+      :inset="true"
+      class="a-divider"
+    />
   </div>
 </template>
 
@@ -48,9 +88,44 @@
 import dateFilter from '@/filters/date'
 import { EPOCH, Cryptos } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
+  filters: {
+    date: dateFilter
+  },
   mixins: [partnerName],
+  props: {
+    id: {
+      type: String,
+      required: true
+    },
+    senderId: {
+      type: String,
+      required: true
+    },
+    recipientId: {
+      type: String,
+      required: true
+    },
+    textData: {
+      type: String,
+      required: false
+    },
+    timestamp: {
+      type: Number,
+      required: true
+    },
+    amount: {
+      type: [Number, String],
+      required: true
+    },
+    crypto: {
+      type: String,
+      default: 'ADM',
+      validator: v => v in Cryptos
+    }
+  },
   computed: {
     userId () {
       if (this.crypto === Cryptos.ADM) {
@@ -62,17 +137,20 @@ export default {
       }
     },
     partnerId () {
-      return this.senderId === this.userId
+      return isStringEqualCI(this.senderId, this.userId)
         ? this.recipientId
         : this.senderId
     },
     partnerAdmId () {
-      return this.getAdmTx.senderId === this.$store.state.address
+      return isStringEqualCI(this.getAdmTx.senderId, this.$store.state.address)
         ? this.getAdmTx.recipientId
         : this.getAdmTx.senderId
     },
     partnerName () {
-      let name = this.getPartnerName(this.partnerAdmId) || ''
+      if (isStringEqualCI(this.partnerId, this.userId)) {
+        return this.$t('transaction.me')
+      }
+      const name = this.getPartnerName(this.partnerAdmId) || ''
       if (this.isCryptoADM()) {
         return name
       } else {
@@ -92,16 +170,16 @@ export default {
       return 'transaction-item'
     },
     isClickIcon () {
-      let hasPartnerAddress = this.partnerAdmId && (this.partnerAdmId !== undefined)
+      const hasPartnerAddress = this.partnerAdmId && (this.partnerAdmId !== undefined)
       return this.isCryptoADM() || hasPartnerAddress
     },
     getAdmTx () {
       return this.admTx()
     },
     directionClass () {
-      if (this.senderId === this.userId && this.recipientId === this.userId) {
+      if (isStringEqualCI(this.senderId, this.userId) && isStringEqualCI(this.recipientId, this.userId)) {
         return `${this.className}__amount--is-itself`
-      } else if (this.senderId === this.userId) {
+      } else if (isStringEqualCI(this.senderId, this.userId)) {
         return `${this.className}__amount--is-outgoing`
       } else {
         return `${this.className}__amount--is-incoming`
@@ -112,6 +190,9 @@ export default {
     }
   },
   methods: {
+    isStringEqualCI (string1, string2) {
+      return isStringEqualCI(string1, string2)
+    },
     isCryptoADM () {
       return this.crypto === Cryptos.ADM
     },
@@ -126,7 +207,7 @@ export default {
         return this.$store.getters['chat/messageById'](this.id) || this.$store.state.adm.transactions[this.id] || { }
       }
 
-      let admTx = {}
+      const admTx = {}
       // Bad news, everyone: we'll have to scan the messages
       Object.values(this.$store.state.chat.chats).some(chat => {
         Object.values(chat.messages).some(msg => {
@@ -138,36 +219,6 @@ export default {
         return !!admTx.id
       })
       return admTx
-    }
-  },
-  filters: {
-    date: dateFilter
-  },
-  props: {
-    id: {
-      type: String,
-      required: true
-    },
-    senderId: {
-      type: String,
-      required: true
-    },
-    recipientId: {
-      type: String,
-      required: true
-    },
-    timestamp: {
-      type: Number,
-      required: true
-    },
-    amount: {
-      type: [Number, String],
-      required: true
-    },
-    crypto: {
-      type: String,
-      default: 'ADM',
-      validator: v => v in Cryptos
     }
   }
 }

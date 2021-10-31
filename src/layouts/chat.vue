@@ -1,10 +1,13 @@
 <template>
   <v-content>
-    <v-container fluid class="pa-0">
-      <slot/>
+    <v-container
+      fluid
+      class="pa-0"
+    >
+      <slot />
     </v-container>
 
-    <app-snackbar/>
+    <app-snackbar />
   </v-content>
 </template>
 

@@ -14,7 +14,7 @@ export default {
    * @param {{partner: string, displayName: string}} payload partner address and display name
    */
   displayName (state, { partner, displayName }) {
-    if (state.list.hasOwnProperty(partner)) {
+    if (Object.prototype.hasOwnProperty.call(state.list, partner)) {
       state.list[partner].displayName = displayName
     } else {
       // if partner is not in the list, add
@@ -31,6 +31,19 @@ export default {
   address (state, payload) {
     state.list[payload.partner] = Object.assign({ }, state.list[payload.partner],
       { [payload.crypto]: payload.address })
+    state.list[payload.partner] = Object.assign({ }, state.list[payload.partner],
+      { [payload.crypto + '_verifyTimestamp']: Date.now() })
+  },
+
+  /**
+   * Sets partner addresses for the specified crypto
+   * It's bad thing: user must have only one address in KVS for each crypto
+   * @param {object} state current state
+   * @param {{partner: string, crypto: string, addresses: array}} payload partner ADM address, crypto and array of crypto addresses
+   */
+  addresses_inconsistency (state, payload) {
+    state.list[payload.partner] = Object.assign({ }, state.list[payload.partner],
+      { [payload.crypto + '_inconsistency']: payload.addresses })
   },
 
   /**

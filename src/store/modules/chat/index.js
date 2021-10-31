@@ -11,6 +11,7 @@ import {
 } from '@/lib/chatHelpers'
 import { isNumeric } from '@/lib/numericHelpers'
 import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export let interval
 
@@ -338,7 +339,7 @@ const mutations = {
    * @param {string} userId Your address
    */
   pushMessage (state, { message, userId, unshift = false }) {
-    let partnerId = message.senderId === userId
+    const partnerId = isStringEqualCI(message.senderId, userId)
       ? message.recipientId
       : message.senderId
 
@@ -383,7 +384,7 @@ const mutations = {
         message.height === undefined || // unconfirmed transaction (socket)
         (message.height > state.lastMessageHeight && state.lastMessageHeight > 0)
       ) &&
-      userId !== message.senderId // do not notify yourself when send message from other device
+      !isStringEqualCI(userId, message.senderId) // do not notify yourself when send message from other device
     ) {
       chat.numOfNewMessages += 1
     }
@@ -521,6 +522,25 @@ const mutations = {
       numOfNewMessages: 0,
       offset: 0,
       page: 0
+    })
+
+    const bountyBotMessages = [
+      {
+        id: 'b2',
+        message: 'chats.virtual.bounty_bot',
+        timestamp: EPOCH,
+        senderId: 'U1644771796259136854',
+        type: 'message',
+        i18n: true,
+        status: TS.CONFIRMED,
+        readonly: true
+      }
+    ]
+
+    Vue.set(state.chats, 'U1644771796259136854', {
+      messages: bountyBotMessages,
+      isAdamantChat: true,
+      numOfNewMessages: 0
     })
   },
 
@@ -727,19 +747,19 @@ const actions = {
           throw new Error('Message rejected')
         }
 
-        // update `message.status` to 'confirmed'
+        // update `message.status` to 'REGISTERED'
         // and `message.id` with `realId` from server
         commit('updateMessage', {
           id: messageObject.id,
           realId: res.transactionId,
-          status: TS.DELIVERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
+          status: TS.REGISTERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
           partnerId: recipientId
         })
 
         return res
       })
       .catch(err => {
-        // update `message.status` to 'rejected'
+        // update `message.status` to 'REJECTED'
         commit('updateMessage', {
           id: messageObject.id,
           status: TS.REJECTED,
@@ -777,7 +797,7 @@ const actions = {
           commit('updateMessage', {
             id: messageId,
             realId: res.transactionId,
-            status: TS.DELIVERED,
+            status: TS.REGISTERED,
             partnerId: recipientId
           })
 
@@ -803,7 +823,7 @@ const actions = {
    * @param {number} transactionId
    * @param {string} recipientId
    * @param {string} type ADM, ETH...
-   * @param {string} status Can be: `sent`, `confirmed`, 'rejected'
+   * @param {string} status Can be: `sent`, `confirmed`, 'REJECTED'
    * @param {number} amount
    * @param {string} hash Transaction hash
    * @param {string} comment Transaction comment

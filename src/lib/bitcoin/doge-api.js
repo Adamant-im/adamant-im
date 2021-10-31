@@ -55,15 +55,17 @@ export default class DogeApi extends BtcBaseApi {
   /** @override */
   getUnspents () {
     return this._get(`/addr/${this.address}/utxo?noCache=1`)
-      .then(unspents => unspents.map(tx => ({
-        ...tx,
-        amount: new BigNumber(tx.amount).times(this.multiplier).toNumber()
-      })))
+      .then(unspents => {
+        return unspents.map(tx => ({
+          ...tx,
+          amount: new BigNumber(tx.amount).times(this.multiplier).toNumber()
+        }))
+      })
   }
 
   /** Executes a GET request to the DOGE API */
   _get (url, params) {
-    return this._getClient().get(url, params).then(response => response.data)
+    return this._getClient().get(url, { params }).then(response => response.data)
   }
 
   /** Executes a POST request to the DOGE API */

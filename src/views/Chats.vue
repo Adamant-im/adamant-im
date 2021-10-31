@@ -1,17 +1,33 @@
 <template>
-  <v-layout row wrap justify-center :class="className">
+  <v-layout
+    row
+    wrap
+    justify-center
+    :class="className"
+  >
     <container>
-      <v-layout row wrap>
+      <v-layout
+        row
+        wrap
+      >
         <v-flex xs12>
-
-          <v-list two-line subheader class="transparent">
+          <v-list
+            two-line
+            subheader
+            class="transparent"
+          >
             <v-list-tile
               v-if="isFulfilled"
-              @click="showChatStartDialog = true"
               :class="`${className}__tile`"
+              @click="showChatStartDialog = true"
             >
               <v-list-tile-avatar size="24">
-                <v-icon :class="`${className}__icon`" size="16">mdi-message-outline</v-icon>
+                <v-icon
+                  :class="`${className}__icon`"
+                  size="16"
+                >
+                  mdi-message-outline
+                </v-icon>
               </v-list-tile-avatar>
 
               <div>
@@ -21,7 +37,10 @@
               </div>
             </v-list-tile>
 
-            <transition-group name="messages" v-if="isFulfilled">
+            <transition-group
+              v-if="isFulfilled"
+              name="messages"
+            >
               <chat-preview
                 v-for="transaction in messages"
                 :key="transaction.contactId"
@@ -44,7 +63,6 @@
               size="24"
             />
           </div>
-
         </v-flex>
 
         <ChatSpinner :value="!isFulfilled" />
@@ -52,8 +70,8 @@
     </container>
 
     <chat-start-dialog
-      :partnerId="partnerId"
       v-model="showChatStartDialog"
+      :partner-id="partnerId"
       @error="onError"
       @start-chat="openChat"
     />
@@ -69,13 +87,21 @@ import scrollPosition from '@/mixins/scrollPosition'
 const scrollOffset = 64
 
 export default {
-  mounted () {
-    this.showChatStartDialog = this.showNewContact
-    this.attachScrollListener()
+  components: {
+    ChatPreview,
+    ChatStartDialog,
+    ChatSpinner
   },
-  beforeDestroy () {
-    this.destroyScrollListener()
+  mixins: [scrollPosition],
+  props: {
+    partnerId: { default: undefined, type: String },
+    showNewContact: { default: false, type: Boolean }
   },
+  data: () => ({
+    showChatStartDialog: false,
+    loading: false,
+    noMoreChats: false
+  }),
   computed: {
     className: () => 'chats-view',
     isFulfilled () {
@@ -91,11 +117,13 @@ export default {
       return this.$store.state.address
     }
   },
-  data: () => ({
-    showChatStartDialog: false,
-    loading: false,
-    noMoreChats: false
-  }),
+  mounted () {
+    this.showChatStartDialog = this.showNewContact
+    this.attachScrollListener()
+  },
+  beforeDestroy () {
+    this.destroyScrollListener()
+  },
   methods: {
     openChat (partnerId, messageText) {
       this.$router.push({
@@ -111,15 +139,12 @@ export default {
     onError (message) {
       this.$store.dispatch('snackbar/show', { message })
     },
-
     attachScrollListener () {
       window.addEventListener('scroll', this.onScroll)
     },
-
     destroyScrollListener () {
       window.removeEventListener('scroll', this.onScroll)
     },
-
     onScroll () {
       const scrollHeight = document.documentElement.scrollHeight
       const scrollTop = document.documentElement.scrollTop
@@ -130,7 +155,6 @@ export default {
         this.loadChatsPaged()
       }
     },
-
     loadChatsPaged () {
       if (this.loading) return
       if (this.noMoreChats) return
@@ -144,16 +168,6 @@ export default {
           this.loading = false
         })
     }
-  },
-  mixins: [scrollPosition],
-  props: {
-    partnerId: { type: String },
-    showNewContact: { default: false, type: Boolean }
-  },
-  components: {
-    ChatPreview,
-    ChatStartDialog,
-    ChatSpinner
   }
 }
 </script>

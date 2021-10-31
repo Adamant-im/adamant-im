@@ -1,15 +1,15 @@
 import { EPOCH } from './constants'
 
 function getTime (date) {
-  var hours = date.getHours()
-  var time = ''
+  const hours = date.getHours()
+  let time = ''
   if (hours < 10) {
     time = '0' + hours
   } else {
     time = '' + hours
   }
   time = time + ':'
-  var minutes = date.getMinutes()
+  const minutes = date.getMinutes()
   if (minutes < 10) {
     time = time + '0' + minutes
   } else {
@@ -39,9 +39,9 @@ function formatDate (timestamp) {
     return this.$t('chats.date_yesterday') + ', ' + getTime(date)
   }
 
-  let options = { 'weekday': 'short' }
+  let options = { weekday: 'short' }
   if ((Date.now() - timestamp) > (4 * 3600 * 24 * 1000)) {
-    options = { 'day': 'numeric', 'month': 'short' }
+    options = { day: 'numeric', month: 'short' }
   }
 
   if (startToday.getFullYear() !== date.getFullYear()) {

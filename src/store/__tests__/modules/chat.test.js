@@ -974,7 +974,7 @@ describe('Store: chat.js', () => {
           partnerId,
           id: 'localId1',
           realId: 'realId1',
-          status: TS.DELIVERED
+          status: TS.REGISTERED
         })
 
         // update message 2
@@ -982,17 +982,17 @@ describe('Store: chat.js', () => {
           partnerId,
           id: 'localId2',
           realId: 'realId2',
-          status: TS.DELIVERED
+          status: TS.REGISTERED
         })
 
         expect(messages).toEqual([
           {
             id: 'realId1',
-            status: TS.DELIVERED
+            status: TS.REGISTERED
           },
           {
             id: 'realId2',
-            status: TS.DELIVERED
+            status: TS.REGISTERED
           }
         ])
       })
@@ -1366,7 +1366,7 @@ describe('Store: chat.js', () => {
         ])
       })
 
-      it('should update message status to `delivered`', async () => {
+      it('should update message status to `REGISTERED`', async () => {
         const messageObject = {
           id: '1',
           message: 'hello world',
@@ -1391,7 +1391,7 @@ describe('Store: chat.js', () => {
           ['updateMessage', {
             id: messageObject.id,
             realId: transactionId,
-            status: TS.DELIVERED,
+            status: TS.REGISTERED,
             partnerId: recipientId
           }]
         ])
@@ -1442,7 +1442,7 @@ describe('Store: chat.js', () => {
           ['updateMessage', {
             id: messageId,
             realId: transactionId,
-            status: TS.DELIVERED,
+            status: TS.REGISTERED,
             partnerId: recipientId
           }]
         ])

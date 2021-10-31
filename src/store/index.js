@@ -11,7 +11,7 @@ import {
 } from '@/lib/adamant-api'
 import { Cryptos, Fees } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
-import { flushCryptoAddresses } from '@/lib/store-crypto-address'
+import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
@@ -22,6 +22,7 @@ import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
 import dogeModule from './modules/doge'
+import lskModule from './modules/lsk'
 import dashModule from './modules/dash'
 import bitcoinModule from './modules/btc'
 import nodesModule from './modules/nodes'
@@ -33,10 +34,13 @@ import chat from './modules/chat'
 import options from './modules/options'
 import identicon from './modules/identicon'
 import notification from './modules/notification'
+import cache from '@/store/cache'
 
 Vue.use(Vuex)
 
 export let interval
+
+const UPDATE_BALANCE_INTERVAL = 10000
 
 const store = {
   state: () => ({
@@ -50,7 +54,19 @@ const store = {
   getters: {
     isLogged: state => state.passphrase.length > 0,
     getPassPhrase: state => state.passphrase, // compatibility getter for ERC20 modules
-    publicKey: state => adamantAddress => state.publicKeys[adamantAddress]
+    publicKey: state => adamantAddress => state.publicKeys[adamantAddress],
+    isAccountNew: state => function () {
+      /*
+        It is hard to detect if account is new or not. Let's say:
+        ADM Balance = 0. But old accounts can also have 0 balance
+        ADM transactions count = 0. But any account has 0 transactions in store just after login, before user goes to Tx list screen
+        chat.lastMessageHeight = 0. App stores a height of last message
+        Checking chat.transactions is not effective. There are static chats in any new account.
+      */
+      return state.balance === 0 &&
+        state.chat.lastMessageHeight === 0 &&
+        Object.keys(state.adm.transactions).length === 0
+    }
   },
   mutations: {
     setAddress (state, address) {
@@ -78,6 +94,7 @@ const store = {
       state.password = ''
       state.IDBReady = false
       state.publicKeys = {}
+      cache.resetCachedSeed()
     },
     setPublicKey (state, { adamantAddress, publicKey }) {
       state.publicKeys[adamantAddress] = publicKey
@@ -85,13 +102,16 @@ const store = {
   },
   actions: {
     login ({ commit, dispatch }, passphrase) {
+      // First, clear previous account data, if it exists. Calls resetState(state, getInitialState()) also
+      dispatch('reset')
+
       return loginOrRegister(passphrase)
         .then(account => {
           commit('setAddress', account.address)
           commit('setBalance', account.balance)
           commit('setPassphrase', passphrase)
 
-          // retrieve eth & erc20 data
+          // retrieve wallet data
           dispatch('afterLogin', passphrase)
         })
     },
@@ -100,7 +120,7 @@ const store = {
         .then(account => {
           commit('setIDBReady', true)
 
-          // retrieve eth & erc20 data
+          // retrieve wallet data
           dispatch('afterLogin', account.passphrase)
         })
     },
@@ -108,12 +128,15 @@ const store = {
       dispatch('reset')
     },
     unlock ({ state, dispatch }) {
+      // user updated an app, F5 or something
       const passphrase = Base64.decode(state.passphrase)
 
       unlock(passphrase)
 
-      // retrieve eth & erc20 data
-      dispatch('afterLogin', passphrase)
+      // retrieve wallet data only if loginViaPassword, otherwise coin modules will be loaded twice
+      if (state.password) {
+        dispatch('afterLogin', passphrase)
+      }
     },
     sendCryptoTransferMessage (context, payload) {
       const msg = {
@@ -161,9 +184,10 @@ const store = {
       root: true,
       handler ({ dispatch }) {
         function repeat () {
+          validateStoredCryptoAddresses()
           dispatch('updateBalance')
             .catch(err => console.error(err))
-            .then(() => (interval = setTimeout(repeat, 20000)))
+            .then(() => (interval = setTimeout(repeat, UPDATE_BALANCE_INTERVAL)))
         }
 
         repeat()
@@ -181,12 +205,11 @@ const store = {
   modules: {
     eth: ethModule, // Ethereum-related data
     bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
-    bz: erc20Module(Cryptos.BZ, '0x4375e7ad8a01b8ec3ed041399f62d9cd120e0063', 18),
-    kcs: erc20Module(Cryptos.KCS, '0x039b5649a59967e3e936d7471f9c3700100ee1ab', 6),
     usds: erc20Module(Cryptos.USDS, '0xa4bdb11dc0a2bec88d24a3aa1e6bb17201112ebe', 6),
     res: erc20Module(Cryptos.RES, '0x0a9f693fce6f00a51a8e0db4351b5a8078b4242e', 5),
     adm: admModule, // ADM transfers
     doge: dogeModule,
+    lsk: lskModule,
     dash: dashModule,
     btc: bitcoinModule,
     partners: partnersModule, // Partners: display names, crypto addresses and so on

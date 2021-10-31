@@ -1,8 +1,10 @@
 <template>
-  <v-layout row wrap justify-center>
-
+  <v-layout
+    row
+    wrap
+    justify-center
+  >
     <container>
-
       <chat
         :message-text="messageText"
         :partner-id="partnerId"
@@ -18,9 +20,7 @@
       />
 
       <ProgressIndicator :show="!isFulfilled" />
-
     </container>
-
   </v-layout>
 </template>
 
@@ -31,35 +31,12 @@ import ProgressIndicator from '@/components/ProgressIndicator'
 import partnerName from '@/mixins/partnerName'
 
 export default {
-  mixins: [partnerName],
-  computed: {
-    address () {
-      return this.$store.state.address
-    },
-    isFulfilled () {
-      return this.$store.state.chat.isFulfilled
-    }
-  },
   components: {
     ProgressIndicator,
     Chat,
     PartnerInfo
   },
-  data: () => ({
-    show: false,
-    contactAddress: '',
-    contactName: ''
-  }),
-  methods: {
-    /**
-     * @param {string} address ADAMANT address
-     */
-    onClickChatAvatar (address) {
-      this.contactAddress = address
-      this.contactName = this.getPartnerName(address)
-      this.show = true
-    }
-  },
+  mixins: [partnerName],
   props: {
     messageText: {
       default: '',
@@ -68,6 +45,29 @@ export default {
     partnerId: {
       required: true,
       type: String
+    }
+  },
+  data: () => ({
+    show: false,
+    contactAddress: '',
+    contactName: ''
+  }),
+  computed: {
+    address () {
+      return this.$store.state.address
+    },
+    isFulfilled () {
+      return this.$store.state.chat.isFulfilled
+    }
+  },
+  methods: {
+    /**
+     * @param {string} address ADAMANT address
+     */
+    onClickChatAvatar (address) {
+      this.contactAddress = address
+      this.contactName = this.getPartnerName(address)
+      this.show = true
     }
   }
 }

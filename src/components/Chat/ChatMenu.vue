@@ -1,7 +1,13 @@
 <template>
   <div>
     <v-menu>
-      <v-icon medium class="chat-menu__icon" slot="activator">mdi-plus-circle-outline</v-icon>
+      <v-icon
+        slot="activator"
+        medium
+        class="chat-menu__icon"
+      >
+        mdi-plus-circle-outline
+      </v-icon>
 
       <v-list>
         <!-- Cryptos -->
@@ -29,14 +35,13 @@
 
           <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
         </v-list-tile>
-
       </v-list>
     </v-menu>
 
     <ChatDialog
       v-model="dialog"
-      :title="$t('transfer.no_address_title', { crypto })"
-      :text="$t('transfer.no_address_text', { crypto })"
+      :title="dialogTitle"
+      :text="dialogText"
     />
   </div>
 </template>
@@ -48,6 +53,17 @@ import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 
 export default {
+  components: {
+    ChatDialog,
+    Icon,
+    CryptoIcon
+  },
+  props: {
+    partnerId: {
+      type: String,
+      default: ''
+    }
+  },
   data: () => ({
     cryptos: Object.keys(Cryptos),
     menuItems: [
@@ -65,6 +81,8 @@ export default {
       }
     ],
     dialog: false,
+    dialogTitle: '',
+    dialogText: '',
     crypto: ''
   }),
   methods: {
@@ -84,8 +102,16 @@ export default {
             }
           })
         })
-        .catch(() => {
+        .catch((e) => {
           this.crypto = crypto
+          if (e.toString().includes('Only legacy Lisk address')) {
+            this.dialogTitle = this.$t('transfer.legacy_address_title', { crypto })
+            this.dialogText = this.$t('transfer.legacy_address_text', { crypto })
+          }
+          if (e.toString().includes('No crypto wallet address')) {
+            this.dialogTitle = this.$t('transfer.no_address_title', { crypto })
+            this.dialogText = this.$t('transfer.no_address_text', { crypto })
+          }
           this.dialog = true
         })
     },
@@ -96,23 +122,17 @@ export default {
 
       return this.$store.dispatch('partners/fetchAddress', {
         crypto,
-        partner: this.partnerId
+        partner: this.partnerId,
+        moreInfo: true
       }).then(address => {
-        if (!address) throw new Error('No crypto wallet address')
+        if (!address) {
+          throw new Error('No crypto wallet address')
+        } else if (address.onlyLegacyLiskAddress) {
+          throw new Error('Only legacy Lisk address')
+        }
 
         return address
       })
-    }
-  },
-  components: {
-    ChatDialog,
-    Icon,
-    CryptoIcon
-  },
-  props: {
-    partnerId: {
-      type: String,
-      default: ''
     }
   }
 }

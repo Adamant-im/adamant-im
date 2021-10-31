@@ -1,5 +1,8 @@
 <template>
-  <i class="v-icon" :class="{ 'v-icon--link': isClickable }">
+  <i
+    class="v-icon"
+    :class="{ 'v-icon--link': isClickable }"
+  >
     <svg
       class="svg-icon"
       xmlns="http://www.w3.org/2000/svg"
@@ -13,7 +16,7 @@
     >
       <title v-if="title">{{ title }}</title>
       <g :fill="color">
-        <slot/>
+        <slot />
       </g>
     </svg>
   </i>
@@ -21,20 +24,6 @@
 
 <script>
 export default {
-  created () {
-    // if component has @click attr, make cursor: pointer
-    const listeners = Object.keys(this.$listeners)
-    const hasClickAttr = listeners.some(
-      listener => /^click/.test(listener)
-    )
-
-    if (hasClickAttr) {
-      this.isClickable = true
-    }
-  },
-  data: () => ({
-    isClickable: false
-  }),
   props: {
     width: {
       type: [Number, String],
@@ -59,6 +48,20 @@ export default {
       type: String,
       default: 'auto'
     }
+  },
+  data: () => ({
+    isClickable: false
+  }),
+  created () {
+    // if component has @click attr, make cursor: pointer
+    const listeners = Object.keys(this.$listeners)
+    const hasClickAttr = listeners.some(
+      listener => /^click/.test(listener)
+    )
+
+    if (hasClickAttr) {
+      this.isClickable = true
+    }
   }
 }
 </script>
@@ -70,7 +73,9 @@ export default {
 .theme--light
   .svg-icon
     fill: rgba(0, 0, 0, 0.54)
+    stroke: rgba(0, 0, 0, 0.54)
 .theme--dark
   .svg-icon
     fill: $shades.white
+    stroke: $shades.white
 </style>

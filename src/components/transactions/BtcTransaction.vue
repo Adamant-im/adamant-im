@@ -1,17 +1,20 @@
 <template>
   <div>
     <transaction-template
+      :id="transaction.hash || '' "
       :amount="transaction.amount | currency(crypto)"
       :timestamp="transaction.timestamp || NaN"
-      :id="transaction.hash || '' "
       :fee="fee"
       :confirmations="confirmations || NaN"
       :sender="sender || '' "
       :recipient="recipient || '' "
-      :explorerLink="explorerLink"
+      :sender-formatted="senderFormatted || '' "
+      :recipient-formatted="recipientFormatted|| '' "
+      :explorer-link="explorerLink"
       :partner="partner || '' "
-      :status="transaction.status || '' "
-      :admTx="admTx"
+      :status="getTransactionStatus(admTx, transaction)"
+      :adm-tx="admTx"
+      :crypto="crypto"
     />
   </div>
 </template>
@@ -22,19 +25,16 @@ import getExplorerUrl from '../../lib/getExplorerUrl'
 import partnerName from '@/mixins/partnerName'
 import { CryptoNaturalUnits } from '@/lib/constants'
 
+import transaction from '@/mixins/transaction'
+import { isStringEqualCI } from '@/lib/textHelpers'
+
 export default {
-  mixins: [partnerName],
-  name: 'btc-transaction',
-  props: ['id', 'crypto'],
+  name: 'BtcTransaction',
   components: {
     TransactionTemplate
   },
-  mounted () {
-    this.$store.dispatch(`${this.cryptoKey}/getTransaction`, { hash: this.id })
-  },
-  data () {
-    return { }
-  },
+  mixins: [transaction, partnerName],
+  props: ['id', 'crypto'],
   computed: {
     fee () {
       const fee = this.transaction.fee
@@ -51,25 +51,52 @@ export default {
       const { senders, senderId } = this.transaction
       const onlySender = senderId && (!senders || senders.length === 1)
       if (onlySender) {
-        return this.formatAddress(senderId)
+        return senderId
       } else if (senders) {
-        return this.formatAddresses(senders)
+        return senders.join(', ')
+      } else {
+        return undefined
       }
     },
     recipient () {
       const { recipientId, recipients } = this.transaction
       const onlyRecipient = recipientId && (!recipients || recipients.length === 1)
       if (onlyRecipient) {
+        return recipientId
+      } else if (recipients) {
+        return recipients.join(', ')
+      } else {
+        return undefined
+      }
+    },
+    senderFormatted () {
+      const { senders, senderId } = this.transaction
+      const onlySender = senderId && (!senders || senders.length === 1)
+      if (onlySender) {
+        return this.formatAddress(senderId)
+      } else if (senders) {
+        return this.formatAddresses(senders)
+      } else {
+        return undefined
+      }
+    },
+    recipientFormatted () {
+      const { recipientId, recipients } = this.transaction
+      const onlyRecipient = recipientId && (!recipients || recipients.length === 1)
+      if (onlyRecipient) {
         return this.formatAddress(recipientId)
       } else if (recipients) {
         return this.formatAddresses(recipients)
+      } else {
+        return undefined
       }
     },
     partner () {
       if (this.transaction.partner) return this.transaction.partner
 
-      const id = this.transaction.senderId !== this.$store.state[this.cryptoKey].address
-        ? this.transaction.senderId : this.transaction.recipientId
+      const id = !isStringEqualCI(this.transaction.senderId, this.$store.state[this.cryptoKey].address)
+        ? this.transaction.senderId
+        : this.transaction.recipientId
       return this.getAdmAddress(id)
     },
     explorerLink () {
@@ -82,8 +109,8 @@ export default {
       if (height) {
         // Calculate confirmations count based on the tx block height and the last block height.
         // That's for BTC only as it does not return the confirmations for the transaction.
-        const c = this.$store.getters[`${this.cryptoKey}/height`] - height
-        if (isFinite(c) && c > result) {
+        const c = this.$store.getters[`${this.cryptoKey}/height`] - height + 1
+        if (c > 0 && (c > result || !result)) {
           result = c
         }
       }
@@ -91,7 +118,7 @@ export default {
       return result
     },
     admTx () {
-      let admTx = {}
+      const admTx = {}
       // Bad news, everyone: we'll have to scan the messages
       Object.values(this.$store.state.chat.chats).some(chat => {
         Object.values(chat.messages).some(msg => {
@@ -105,6 +132,10 @@ export default {
       return admTx
     }
   },
+  mounted () {
+    // Not needed, as called from Transaction.vue
+    // this.$store.dispatch(`${this.cryptoKey}/getTransaction`, { hash: this.id })
+  },
   methods: {
     getAdmAddress (address) {
       let admAddress = ''
@@ -113,7 +144,7 @@ export default {
       const partners = this.$store.state.partners
       Object.keys(partners).some(uid => {
         const partner = partners[uid]
-        if (partner[this.crypto] === address) {
+        if (isStringEqualCI(partner[this.crypto], address)) {
           admAddress = uid
         }
         return !!admAddress
@@ -124,7 +155,7 @@ export default {
         Object.values(this.$store.state.chat.chats).some(chat => {
           Object.values(chat.messages).some(msg => {
             if (msg.hash && msg.hash === this.id) {
-              admAddress = msg.senderId === this.$store.state.address ? msg.recipientId : msg.senderId
+              admAddress = isStringEqualCI(msg.senderId, this.$store.state.address) ? msg.recipientId : msg.senderId
             }
             return !!admAddress
           })
@@ -136,10 +167,10 @@ export default {
     },
 
     formatAddress (address) {
-      let admAddress = this.getAdmAddress(address)
+      const admAddress = this.getAdmAddress(address)
       let name = ''
 
-      if (address === this.$store.state[this.cryptoKey].address) {
+      if (isStringEqualCI(address, this.$store.state[this.cryptoKey].address)) {
         name = this.$t('transaction.me')
       } else {
         name = this.getPartnerName(admAddress)

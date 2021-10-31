@@ -4,7 +4,7 @@ import * as admApi from '../../../lib/adamant-api'
 function _getDelegates (context, limit = constants.Delegates.ACTIVE_DELEGATES, offset = 0, votes = []) {
   admApi.getDelegates(limit, offset).then(response => {
     if (response.success) {
-      for (let i in response.delegates) {
+      for (const i in response.delegates) {
         const delegate = response.delegates[i]
         const voted = votes.includes(delegate.address)
         delegate._voted = voted
@@ -33,7 +33,7 @@ function checkUnconfirmedTransactions (context) {
 }
 
 function getRoundDelegates (delegates, height) {
-  let currentRound = round(height)
+  const currentRound = round(height)
   return delegates.filter((delegate, index) => {
     return currentRound === round(height + index + 1)
   })
@@ -98,15 +98,16 @@ export default {
         })
         admApi.getBlocks().then(response => {
           if (response.success) {
-            let lastBlock = response.blocks[0]
-            let blocks = response.blocks.filter(x => x.generatorPublicKey === delegate.publicKey)
-            let time = Date.now()
-            let status = { updatedAt: time }
+            const lastBlock = response.blocks[0]
+            const blocks = response.blocks.filter(x => x.generatorPublicKey === delegate.publicKey)
+            const time = Date.now()
+            const status = { updatedAt: time }
+            let isRoundDelegate = false
             if (blocks.length > 0) {
               status.lastBlock = blocks[0]
               status.blockAt = new Date(((constants.EPOCH + status.lastBlock.timestamp) * 1000))
-              var roundDelegates = getRoundDelegates(nextForgers, lastBlock.height)
-              var isRoundDelegate = roundDelegates.indexOf(delegate.publicKey) !== -1
+              const roundDelegates = getRoundDelegates(nextForgers, lastBlock.height)
+              isRoundDelegate = roundDelegates.indexOf(delegate.publicKey) !== -1
               status.networkRound = round(lastBlock.height)
               status.delegateRound = round(status.lastBlock.height)
               status.awaitingSlot = status.networkRound - status.delegateRound
@@ -131,7 +132,7 @@ export default {
             } else if (!status.blockAt || !status.updatedAt || status.lastBlock === null) {
               // Awaiting status or unprocessed
               status.code = 5
-            // For delegates which not forged a signle block yet (statuses 0,3,5 not apply here)
+            // For delegates which not forged a single block yet (statuses 0,3,5 not apply here)
             } else if (!status.blockAt && status.updatedAt) {
               if (!isRoundDelegate && delegate.missedblocks === 1) {
                 // Missed block in current round

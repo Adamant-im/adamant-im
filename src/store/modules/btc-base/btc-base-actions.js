@@ -108,17 +108,17 @@ function createActions (options) {
         ))
         .then(({ hash, error }) => {
           if (error) {
-            context.commit('transactions', [{ hash, status: 'ERROR' }])
+            context.commit('transactions', [{ hash, status: 'REJECTED' }])
             throw error
           } else {
-            console.log(`${crypto} transaction has been sent`)
+            console.log(`${crypto} transaction has been sent: ${hash}`)
 
             context.commit('transactions', [{
               hash,
               senderId: context.state.address,
               recipientId: address,
               amount,
-              fee: api.getFee(amount) || fee,
+              fee,
               status: 'PENDING',
               timestamp: Date.now()
             }])
@@ -139,17 +139,18 @@ function createActions (options) {
       if (!api) return
       if (!payload.hash) return
 
-      const existing = context.state.transactions[payload.hash]
+      let existing = context.state.transactions[payload.hash]
       if (existing && !payload.force) return
 
-      // Set a stub so far, if the transaction is not in the store yet
-      if (!existing || existing.status === 'ERROR') {
+      if (!existing || payload.dropStatus) {
+        payload.updateOnly = false
         context.commit('transactions', [{
           hash: payload.hash,
-          timestamp: payload.timestamp,
+          timestamp: (existing && existing.timestamp) || payload.timestamp || Date.now(),
           amount: payload.amount,
           status: 'PENDING'
         }])
+        existing = context.state.transactions[payload.hash]
       }
 
       let tx = null
@@ -164,31 +165,32 @@ function createActions (options) {
       if (tx) {
         context.commit('transactions', [tx])
         // The transaction has been confirmed, we're done here
-        if (tx.status === 'SUCCESS') return
-
+        if (tx.status === 'CONFIRMED') return
         // If it's not confirmed but is already registered, keep on trying to fetch its details
-        retryTimeout = fetchRetryTimeout
+        retryTimeout = tf.getRegisteredTxRetryTimeout(tx.timestamp || existing.timestamp || payload.timestamp, context.state.crypto, fetchRetryTimeout, tx.instantsend)
         retry = true
       } else if (existing && existing.status === 'REGISTERED') {
         // We've failed to fetch the details for some reason, but the transaction is known to be
         // accepted by the network - keep on fetching
-        retryTimeout = fetchRetryTimeout
+        retryTimeout = tf.getRegisteredTxRetryTimeout(existing.timestamp || payload.timestamp, context.state.crypto, fetchRetryTimeout, existing.instantsend)
         retry = true
       } else {
         // The network does not yet know this transaction. We'll make several attempts to retrieve it.
-        retry = attempt < tf.PENDING_ATTEMPTS
-        retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp))
+        retry = attempt < tf.getPendingTxRetryCount(existing.timestamp || payload.timestamp, context.state.crypto)
+        retryTimeout = tf.getPendingTxRetryTimeout(existing.timestamp || payload.timestamp, context.state.crypto)
       }
 
       if (!retry) {
         // If we're here, we have abandoned any hope to get the transaction details.
-        context.commit('transactions', [{ hash: payload.hash, status: 'ERROR' }])
-      } else {
+        context.commit('transactions', [{ hash: payload.hash, status: 'REJECTED' }])
+      } else if (!payload.updateOnly) {
         // Try to get the details one more time
         const newPayload = {
           ...payload,
           attempt: attempt + 1,
-          force: true
+          force: true,
+          updateOnly: false,
+          dropStatus: false
         }
         setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
       }
@@ -200,10 +202,7 @@ function createActions (options) {
      * @param {{hash: string}} payload action payload
      */
     updateTransaction ({ dispatch }, payload) {
-      return dispatch('getTransaction', {
-        hash: payload.hash,
-        force: true
-      })
+      return dispatch('getTransaction', { ...payload, force: payload.force, updateOnly: payload.updateOnly })
     },
 
     getNewTransactions (context) {

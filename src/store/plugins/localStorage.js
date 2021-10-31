@@ -16,7 +16,8 @@ const vuexPersistence = new VuexPersistence({
         darkTheme: state.options.darkTheme,
         formatMessages: state.options.formatMessages,
         useFullDate: state.options.useFullDate,
-        useSocketConnection: state.options.useSocketConnection
+        useSocketConnection: state.options.useSocketConnection,
+        suppressWarningOnAddressesNotification: state.options.suppressWarningOnAddressesNotification
       }
     }
   }

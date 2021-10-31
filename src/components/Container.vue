@@ -1,23 +1,23 @@
 <template>
   <div :class="classes">
-    <slot></slot>
+    <slot />
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    padding: {
+      type: Boolean,
+      default: false
+    }
+  },
   computed: {
     classes () {
       return {
         'a-container': true,
         'a-container--padding': this.padding
       }
-    }
-  },
-  props: {
-    padding: {
-      type: Boolean,
-      default: false
     }
   }
 }

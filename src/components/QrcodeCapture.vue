@@ -1,43 +1,43 @@
 <template>
   <div :class="className">
     <div
-      @click="$refs.fileInput.click()"
       :class="`${className}__activator`"
+      @click="$refs.fileInput.click()"
     >
-      <slot></slot>
+      <slot />
     </div>
 
     <input
       id="fileInput"
+      ref="fileInput"
       type="file"
       accept="image/*"
       :class="`${className}__file-input`"
       @change="onFileSelect"
-      ref="fileInput"
     >
 
     <img
       :id="imageBase64"
+      ref="imageElement"
       :src="imageBase64"
       :class="`${className}__image`"
-      ref="imageElement"
-    />
+    >
   </div>
 </template>
 
 <script>
 export default {
-  computed: {
-    className () {
-      return 'qrcode-capture'
-    }
-  },
   data: () => ({
     selectedImage: undefined,
     imageBase64: '',
     qrCodeText: '',
     codeReader: undefined
   }),
+  computed: {
+    className () {
+      return 'qrcode-capture'
+    }
+  },
   methods: {
     async onFileSelect (event) {
       this.selectedImage = event.target.files[0]

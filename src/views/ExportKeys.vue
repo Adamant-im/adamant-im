@@ -6,8 +6,15 @@
       :show-back="true"
       flat
     />
-    <v-container fluid class="px-0">
-      <v-layout row wrap justify-center>
+    <v-container
+      fluid
+      class="px-0"
+    >
+      <v-layout
+        row
+        wrap
+        justify-center
+      >
         <container padding>
           <export-keys-form />
         </container>

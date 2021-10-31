@@ -18,7 +18,7 @@ protocol.registerStandardSchemes(['app'], { secure: true })
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 800, "max-width": 800, icon: path.join(__dirname, '/icon.png') })
+  win = new BrowserWindow({ width: 800, height: 800, 'max-width': 800, icon: path.join(__dirname, '/icon.png') })
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
@@ -32,35 +32,37 @@ function createWindow () {
   win.on('closed', () => {
     win = null
   })
-  var template = [{
-    label: "ADAMANT Messenger",
+  const template = [{
+    label: 'ADAMANT Messenger',
     submenu: [
-        { label: "About", selector: "orderFrontStandardAboutPanel:" },
-        { type: "separator" },
-        { label: "Quit", accelerator: "Command+Q", click: function() { app.quit(); }}
-    ]}, {
-    label: "Edit",
+      { label: 'About', selector: 'orderFrontStandardAboutPanel:' },
+      { type: 'separator' },
+      { label: 'Quit', accelerator: 'Command+Q', click: function () { app.quit() } }
+    ]
+  }, {
+    label: 'Edit',
     submenu: [
-        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-        { type: "separator" },
-        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
-        { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
-    ]}
-  ];
+      { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
+      { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', selector: 'redo:' },
+      { type: 'separator' },
+      { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
+      { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
+      { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
+      { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' }
+    ]
+  }
+  ]
   if (process.platform === 'darwin') {
-    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-    var darkMode = true;
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template))
+    const darkMode = true
     // if (systemPreferences.isDarkMode()) {
     //   darkMode = true;
     // }
-    win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: "+darkMode+" })");
+    win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: " + darkMode + ' })')
     systemPreferences.subscribeNotification(
       'AppleInterfaceThemeChangedNotification',
       function theThemeHasChanged () {
-  	  win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: "+systemPreferences.isDarkMode()+" })");
+        win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: " + systemPreferences.isDarkMode() + ' })')
       }
     )
   }
@@ -68,7 +70,7 @@ function createWindow () {
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-    app.quit()
+  app.quit()
 })
 
 app.on('activate', () => {

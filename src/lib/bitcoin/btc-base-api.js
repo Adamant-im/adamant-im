@@ -1,9 +1,10 @@
-import bitcoin from 'bitcoinjs-lib'
+import * as bitcoin from 'bitcoinjs-lib'
 import axios from 'axios'
 
 import networks from './networks'
 import getEnpointUrl from '../getEndpointUrl'
 import BigNumber from '../bignumber'
+import { isPositiveNumber } from '@/lib/numericHelpers'
 
 const getUnique = values => {
   const map = values.reduce((m, v) => {
@@ -122,7 +123,7 @@ export default class BtcBaseApi {
   }
 
   /**
-   * Creates a raw DOGE transaction as a hex string.
+   * Creates a raw BTC-based transaction as a hex string.
    * @param {string} address target address
    * @param {number} amount amount to send
    * @param {Array<{txid: string, amount: number, vout: number}>} unspents unspent transaction to use as inputs
@@ -150,7 +151,12 @@ export default class BtcBaseApi {
     })
 
     txb.addOutput(bitcoin.address.toOutputScript(address, this._network), amount)
-    txb.addOutput(this._address, transferAmount - target)
+    // This is a necessary step
+    // If we'll not add a change to output, it will burn in hell
+    const change = transferAmount - target
+    if (isPositiveNumber(change)) {
+      txb.addOutput(this._address, change)
+    }
 
     for (let i = 0; i < inputs; ++i) {
       txb.sign(i, this._keyPair)
@@ -170,21 +176,27 @@ export default class BtcBaseApi {
 
   _mapTransaction (tx) {
     // Remove курьи txs like "possibleDoubleSpend" and txs without info
-    if (tx.possibleDoubleSpend || (!tx.hash && !tx.time && !tx.valueIn)) return
+    if (tx.possibleDoubleSpend || (!tx.txid && !tx.time && !tx.valueIn && !tx.vin)) return
 
-    const senders = getUnique(tx.vin.map(x => x.addr)).filter(sender => sender !== undefined && sender !== 'undefined')
+    const addressField = tx.vin[0].address ? 'address' : 'addr'
+    const senders = getUnique(tx.vin.map(input => input[addressField])).filter(sender => sender !== undefined && sender !== 'undefined')
 
     const direction = senders.includes(this._address) ? 'from' : 'to'
 
     const recipients = getUnique(tx.vout.reduce((list, out) => {
       list.push(...out.scriptPubKey.addresses)
       return list
-    }, [])).filter(sender => sender !== undefined && sender !== 'undefined')
+    }, [])).filter(recipient => recipient !== undefined && recipient !== 'undefined')
 
     if (direction === 'from') {
-      // Disregard our address for the outgoing transaction unless it's the only address
-      // (i.e. we're sending to ourselves)
+      // Disregard our address for an outgoing transaction unless it's the only address (i.e. we're sending to ourselves)
       const idx = recipients.indexOf(this._address)
+      if (idx >= 0 && recipients.length > 1) recipients.splice(idx, 1)
+    }
+
+    if (direction === 'to' && senders.length === 1) {
+      // Disregard the only sender address for an incoming transaction unless it's the only address (i.e. we're sending to ourselves)
+      const idx = recipients.indexOf(senders[0])
       if (idx >= 0 && recipients.length > 1) recipients.splice(idx, 1)
     }
 
@@ -200,7 +212,7 @@ export default class BtcBaseApi {
     // Calculate amount from outputs:
     // * for the outgoing transactions take outputs that DO NOT target us
     // * for the incoming transactions take outputs that DO target us
-    let amount = tx.vout.reduce((sum, t) =>
+    const amount = tx.vout.reduce((sum, t) =>
       ((direction === 'to') === (t.scriptPubKey.addresses.includes(this._address)) ? sum + Number(t.value) : sum), 0)
 
     const confirmations = tx.confirmations
@@ -213,11 +225,13 @@ export default class BtcBaseApi {
       fee = totalIn - totalOut
     }
 
+    const height = tx.height
+
     return {
       id: tx.txid,
       hash: tx.txid,
       fee,
-      status: confirmations > 0 ? 'SUCCESS' : 'REGISTERED',
+      status: confirmations > 0 ? 'CONFIRMED' : 'REGISTERED',
       timestamp,
       direction,
       senders,
@@ -225,7 +239,11 @@ export default class BtcBaseApi {
       recipients,
       recipientId,
       amount,
-      confirmations
+      confirmations,
+      height,
+      instantlock: tx.instantlock,
+      instantlock_internal: tx.instantlock_internal,
+      instantsend: tx.instantlock
     }
   }
 }

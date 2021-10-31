@@ -18,9 +18,35 @@ export function formatNumber (precision = 8) {
 /**
  * Is number and not Infinity or NaN.
  *
- * @param {any} Number or string-number.
+ * @param {any} abstract Number or string-number.
  * @returns {boolean}
  */
 export function isNumeric (abstract) {
   return !isNaN(parseFloat(abstract)) && isFinite(abstract)
+}
+
+/**
+ * Checks if number is finite
+ * @param {number} value Number to validate
+ * @return {boolean}
+ */
+export function isNumber (value) {
+  if (typeof (value) !== 'number' || isNaN(value) || !Number.isFinite(value)) {
+    return false
+  } else {
+    return true
+  }
+}
+
+/**
+ * Checks if number is finite and greater, than 0
+ * @param {number} value Number to validate
+ * @return {boolean}
+ */
+export function isPositiveNumber (value) {
+  if (!isNumber(value) || value <= 0) {
+    return false
+  } else {
+    return true
+  }
 }

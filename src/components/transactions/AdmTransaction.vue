@@ -1,16 +1,19 @@
 <template>
   <transaction-template
+    :id="transaction.id || '' "
     :amount="transaction.amount | currency"
     :timestamp="transaction.timestamp || NaN"
-    :id="transaction.id || '' "
     :fee="transaction.fee | currency"
     :confirmations="transaction.confirmations || NaN"
     :sender="sender || '' "
     :recipient="recipient || '' "
-    :explorerLink="explorerLink"
+    :sender-formatted="senderFormatted || '' "
+    :recipient-formatted="recipientFormatted|| '' "
+    :explorer-link="explorerLink"
     :partner="transaction.partner || '' "
-    :status="status || '' "
-    :admTx="admTx"
+    :status="getTransactionStatus(admTx)"
+    :adm-tx="admTx"
+    :crypto="crypto"
   />
 </template>
 
@@ -18,28 +21,41 @@
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
 import { Cryptos } from '../../lib/constants'
+
+import transaction from '@/mixins/transaction'
 import partnerName from '@/mixins/partnerName'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
-  mixins: [partnerName],
-  name: 'adm-transaction',
+  name: 'AdmTransaction',
+  components: {
+    TransactionTemplate
+  },
+  mixins: [transaction, partnerName],
   props: {
     id: {
       required: true,
       type: String
+    },
+    crypto: {
+      required: true,
+      type: String
     }
-  },
-  components: {
-    TransactionTemplate
   },
   computed: {
     transaction () {
       return this.$store.state.adm.transactions[this.id] || { }
     },
     sender () {
-      return this.formatAddress(this.transaction.senderId) || ''
+      return this.transaction.senderId || ''
     },
     recipient () {
+      return this.transaction.recipientId || ''
+    },
+    senderFormatted () {
+      return this.formatAddress(this.transaction.senderId) || ''
+    },
+    recipientFormatted () {
       return this.formatAddress(this.transaction.recipientId) || ''
     },
     admTx () {
@@ -55,7 +71,7 @@ export default {
   methods: {
     formatAddress (address) {
       let name = ''
-      if (address === this.$store.state.address) {
+      if (isStringEqualCI(address, this.$store.state.address)) {
         name = this.$t('transaction.me')
       } else {
         name = this.getPartnerName(address)

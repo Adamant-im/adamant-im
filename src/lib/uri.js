@@ -1,6 +1,8 @@
-import { isValidAddress, isHexString } from 'ethereumjs-util'
-import { Cryptos, isErc20,
-  RE_ADM_ADDRESS, RE_BTC_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS, RE_LISK_ADDRESS
+import { isAddress as isEthAddress, isHexStrict } from 'web3-utils'
+import { validateBase32Address as isLskAddress } from '@liskhq/lisk-cryptography'
+import {
+  Cryptos, isErc20,
+  RE_ADM_ADDRESS, RE_BTC_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS, RE_LSK_ADDRESS
 } from './constants'
 
 /**
@@ -45,12 +47,14 @@ export function parseURI (uri = getURI()) {
     params = query.split('&').reduce((accum, param) => {
       const [key, value = ''] = param.split('=')
 
-      return key && value ? {
-        ...accum,
-        [key]: window.decodeURIComponent(
-          value.includes('+') ? value.replace(/\+/g, ' ') : value
-        )
-      } : accum
+      return key && value
+        ? {
+            ...accum,
+            [key]: window.decodeURIComponent(
+              value.includes('+') ? value.replace(/\+/g, ' ') : value
+            )
+          }
+        : accum
     }, Object.create(null))
   }
   if (origin.includes(':')) {
@@ -60,7 +64,7 @@ export function parseURI (uri = getURI()) {
     } else if (/^https?$/.test(protocol)) {
       crypto = Cryptos.ADM
       address = params.address; delete params.address
-    } else if (Cryptos.hasOwnProperty(protocol.toUpperCase())) {
+    } else if (Object.prototype.hasOwnProperty.call(Cryptos, protocol.toUpperCase())) {
       crypto = protocol.toUpperCase()
     }
   } else {
@@ -73,10 +77,15 @@ export function parseURI (uri = getURI()) {
       crypto = Cryptos.DASH
     } else if (RE_DOGE_ADDRESS.test(address)) {
       crypto = Cryptos.DOGE
-    } else if (isHexString(address) && isValidAddress(address)) {
+    } else if (isHexStrict(address) && isEthAddress(address)) {
       crypto = Cryptos.ETH
-    } else if (RE_LISK_ADDRESS.test(address)) {
-      crypto = Cryptos.LISK
+    } else if (RE_LSK_ADDRESS.test(address)) {
+      // We need to use try-catch https://github.com/LiskHQ/lisk-sdk/issues/6652
+      try {
+        if (isLskAddress(address)) {
+          crypto = Cryptos.LSK
+        }
+      } catch (e) { }
     }
   }
 
@@ -110,15 +119,28 @@ export function generateURI (crypto = Cryptos.ADM, address, name) {
 }
 
 /**
- * Replaces https://adamant.im URI to http://adamantim345sddv.onion
- * If host is .onion
+ * Replaces https://adamant.im URI to tor-website if host is .onion
  * @param {string} str String, that may contain https://adamant.im URI
  * @returns {string}
  */
-export function uriToOnion (str) {
-  let hostname = window.location.origin
+export function websiteUriToOnion (str) {
+  const hostname = window.location.origin
   if (hostname.includes('.onion')) {
-    str = str.replace('https://adamant.im', 'http://adamantim345sddv.onion')
+    str = str.replace('https://adamant.im', 'http://adamantim24okpwfr4wxjgsh6vtw4odoiabhsfaqaktnfqzrjrspjuid.onion')
+  }
+
+  return str
+}
+
+/**
+ * Replaces https://explorer.adamant.im URI to tor-explorer if host is .onion
+ * @param {string} str String, that may contain https://explorer.adamant.im URI
+ * @returns {string}
+ */
+export function explorerUriToOnion (str) {
+  const hostname = window.location.origin
+  if (hostname.includes('.onion')) {
+    str = str.replace('https://explorer.adamant.im', 'http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion')
   }
 
   return str

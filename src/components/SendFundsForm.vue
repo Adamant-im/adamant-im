@@ -1,11 +1,15 @@
 <template>
   <div :class="className">
+    <warning-on-partner-address-dialog
+      v-model="showWarningOnPartnerAddressDialog"
+      :info="warningOnPartnerInfo"
+    />
+
     <v-form
+      ref="form"
       v-model="validForm"
       @submit.prevent="confirm"
-      ref="form"
     >
-
       <v-select
         v-model="currency"
         class="a-input"
@@ -16,28 +20,46 @@
       <v-text-field
         v-model.trim="cryptoAddress"
         :disabled="addressReadonly"
-        @paste="onPasteURIAddress"
         class="a-input"
         type="text"
+        @paste="onPasteURIAddress"
       >
         <template slot="label">
-          <span v-if="recipientName && addressReadonly" class="font-weight-medium">
+          <span
+            v-if="recipientName && addressReadonly"
+            class="font-weight-medium"
+          >
             {{ $t('transfer.to_name_label', { name: recipientName }) }}
           </span>
-          <span v-else class="font-weight-medium">
+          <span
+            v-else
+            class="font-weight-medium"
+          >
             {{ $t('transfer.to_address_label') }}
           </span>
         </template>
-        <template slot="append" v-if="!addressReadonly">
-          <v-menu :offset-overflow="true" :offset-y="false" left>
-            <v-icon slot="activator">mdi-dots-vertical</v-icon>
+        <template
+          v-if="!addressReadonly"
+          slot="append"
+        >
+          <v-menu
+            :offset-overflow="true"
+            :offset-y="false"
+            left
+          >
+            <v-icon slot="activator">
+              mdi-dots-vertical
+            </v-icon>
             <v-list>
               <v-list-tile @click="showQrcodeScanner = true">
                 <v-list-tile-title>{{ $t('transfer.decode_from_camera') }}</v-list-tile-title>
               </v-list-tile>
               <v-list-tile class="v-list__tile--link">
                 <v-list-tile-title>
-                  <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
+                  <qrcode-capture
+                    @detect="onDetectQrcode"
+                    @error="onDetectQrcodeError"
+                  >
                     <span>{{ $t('transfer.decode_from_image') }}</span>
                   </qrcode-capture>
                 </v-list-tile-title>
@@ -62,13 +84,19 @@
           </span>
         </template>
         <template slot="append">
-          <v-menu :offset-overflow="true" :offset-y="false" left>
-            <v-icon slot="activator">mdi-dots-vertical</v-icon>
+          <v-menu
+            :offset-overflow="true"
+            :offset-y="false"
+            left
+          >
+            <v-icon slot="activator">
+              mdi-dots-vertical
+            </v-icon>
             <v-list>
               <v-list-tile
+                v-for="item in amountMenuItems"
                 :key="item.title"
                 @click="divideAmount(item.divider)"
-                v-for="item in amountMenuItems"
               >
                 <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
               </v-list-tile>
@@ -78,16 +106,16 @@
       </v-text-field>
 
       <v-text-field
-        :value="`${this.transferFeeFixed} ${this.transferFeeCurrency}`"
-        :label="`${this.transferFeeLabel}`"
+        :value="`${transferFeeFixed} ${transferFeeCurrency}`"
+        :label="`${transferFeeLabel}`"
         class="a-input"
         disabled
       />
       <v-text-field
-        :value="`${this.finalAmountFixed} ${this.currency}`"
+        v-if="!hideFinalAmount"
+        :value="`${finalAmountFixed} ${currency}`"
         :label="$t('transfer.final_amount_label')"
         class="a-input"
-        v-if="!this.hideFinalAmount"
         disabled
       />
 
@@ -95,29 +123,37 @@
         v-if="addressReadonly"
         v-model="comment"
         :label="$t('transfer.comments_label')"
-        @paste="onPasteURIComment"
         class="a-input"
         counter
         maxlength="100"
+        @paste="onPasteURIComment"
+      />
+
+      <v-text-field
+        v-if="isTextDataAllowed"
+        v-model="textData"
+        class="a-input"
+        :label="textDataLabel"
+        counter
+        maxlength="64"
       />
 
       <v-checkbox
+        v-if="allowIncreaseFee"
+        v-model="increaseFee"
         :label="$t('transfer.increase_fee')"
         color="grey darken-1"
-        v-model="increaseFee"
-        v-if="allowIncreaseFee"
       />
 
       <div class="text-xs-center">
         <v-btn
           :class="`${className}__button`"
-          @click="confirm"
           class="a-btn-primary"
+          @click="confirm"
         >
           {{ $t('transfer.send_button') }}
         </v-btn>
       </div>
-
     </v-form>
 
     <v-dialog
@@ -125,14 +161,21 @@
       width="500"
     >
       <v-card>
-        <v-card-title class="a-text-header">{{ $t('transfer.confirm_title') }}</v-card-title>
+        <v-card-title class="a-text-header">
+          {{ $t('transfer.confirm_title') }}
+        </v-card-title>
 
-        <v-divider class="a-divider"></v-divider>
+        <v-divider class="a-divider" />
 
-        <v-card-text class="a-text-regular-enlarged" v-html="confirmMessage"/>
+        <!-- eslint-disable vue/no-v-html -- Safe internal content -->
+        <v-card-text
+          class="a-text-regular-enlarged"
+          v-html="confirmMessage"
+        />
+        <!-- eslint-enable vue/no-v-html -->
 
         <v-card-actions>
-          <v-spacer></v-spacer>
+          <v-spacer />
 
           <v-btn
             class="a-btn-regular"
@@ -145,8 +188,8 @@
           <v-btn
             class="a-btn-regular"
             flat
-            @click="submit"
             :disabled="disabledButton"
+            @click="submit"
           >
             <v-progress-circular
               v-show="showSpinner"
@@ -162,9 +205,9 @@
     </v-dialog>
 
     <qrcode-scanner-dialog
-      @scan="onScanQrcode"
       v-if="showQrcodeScanner"
       v-model="showQrcodeScanner"
+      @scan="onScanQrcode"
     />
   </div>
 </template>
@@ -174,14 +217,22 @@ import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
-import { INCREASE_FEE_MULTIPLIER } from '../lib/constants'
+import {
+  INCREASE_FEE_MULTIPLIER, Cryptos, CryptoAmountPrecision, CryptoNaturalUnits,
+  TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount, isSelfTxAllowed,
+  minBalances, isTextDataAllowed, CryptosNames
+} from '../lib/constants'
 
 import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
-import { Cryptos, CryptoAmountPrecision, CryptoNaturalUnits, TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount } from '@/lib/constants'
+
 import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
+
+import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog'
+import { isStringEqualCI } from '@/lib/textHelpers'
+import { formatSendTxError } from '@/lib/txVerify'
 
 /**
  * @returns {string | boolean}
@@ -203,26 +254,91 @@ function validateForm () {
 }
 
 export default {
-  mixins: [partnerName],
   components: {
     QrcodeCapture,
-    QrcodeScannerDialog
+    QrcodeScannerDialog,
+    WarningOnPartnerAddressDialog
   },
-  created () {
-    this.currency = this.cryptoCurrency
-    this.address = this.recipientAddress
-    this.amount = this.amountToSend
-
-    // create watcher after setting default from props
-    this.$watch('currency', () => {
-      this.$refs.form.validate()
-    })
+  filters: {
+    /**
+     * @param {BigNumber} bigNumber
+     */
+    toFixed: bigNumber => bigNumber.toFixed()
   },
-  mounted () {
-    this.fetchUserCryptoAddress()
+  mixins: [partnerName],
+  props: {
+    cryptoCurrency: {
+      type: String,
+      default: 'ADM',
+      validator: value => value in Cryptos
+    },
+    recipientAddress: {
+      type: String,
+      default: ''
+    },
+    amountToSend: {
+      type: Number,
+      default: 0
+    },
+    addressReadonly: {
+      type: Boolean,
+      default: false
+    }
   },
+  data: () => ({
+    currency: '',
+    address: '',
+    cryptoAddress: '',
+    amountString: '',
+    amount: 0,
+    amountMenuItems: [
+      {
+        divider: 10,
+        title: 'transfer.amount_percent_10'
+      },
+      {
+        divider: 3,
+        title: 'transfer.amount_percent_33'
+      },
+      {
+        divider: 2,
+        title: 'transfer.amount_percent_50'
+      },
+      {
+        divider: 1,
+        title: 'transfer.amount_percent_100'
+      }
+    ],
+    comment: '',
+    textData: '',
+    validForm: true,
+    disabledButton: false,
+    showQrcodeScanner: false,
+    showSpinner: false,
+    dialog: false,
+    fetchAddress: null, // fn throttle
+    increaseFee: false,
+    showWarningOnPartnerAddressDialog: false,
+    warningOnPartnerInfo: { }
+  }),
   computed: {
     className: () => 'send-funds-form',
+
+    /**
+     * Some cryptos allows to save public data with a Tx
+     * @returns {boolean}
+     */
+    isTextDataAllowed () {
+      return isTextDataAllowed(this.currency) && !this.addressReadonly
+    },
+
+    /**
+     * Label for a textData input
+     * @returns {string}
+     */
+    textDataLabel () {
+      return this.$t('transfer.textdata_label', { crypto: CryptosNames[this.currency] })
+    },
 
     /**
      * @returns {number}
@@ -306,10 +422,10 @@ export default {
       if (this.balance < this.transferFee) return 0
 
       let amount = BigNumber(this.balance)
-      // For BTC we keep 1000 satoshis (0.00001 BTC) untouched as there are problems when we try to drain the wallet
-      if (this.currency === Cryptos.BTC) {
-        amount = amount.minus(0.00001)
-      }
+
+      // Some cryptos require minimum balance to maintain on a wallet
+      const minBalance = minBalances[this.currency] || 0
+      amount = amount.minus(minBalance)
 
       const amt = amount
         .minus(this.calculateTransferFee(this.balance))
@@ -364,13 +480,13 @@ export default {
       return {
         cryptoAddress: [
           v => validateAddress(this.currency, v) || this.$t('transfer.error_incorrect_address', { crypto: this.currency }),
-          v => v !== this.ownAddress || this.$t('transfer.error_same_recipient')
+          v => (!isStringEqualCI(v, this.ownAddress) || isSelfTxAllowed(this.currency)) || this.$t('transfer.error_same_recipient')
         ],
         amount: [
           v => v > 0 || this.$t('transfer.error_incorrect_amount'),
-          v => this.finalAmount <= this.balance || this.$t('transfer.error_not_enough'),
+          v => this.amount <= this.maxToTransfer || this.$t('transfer.error_not_enough'),
           v => this.validateMinAmount(v, this.currency) || this.$t('transfer.error_dust_amount'),
-          v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_dust_amount'),
+          v => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_precision'),
           v => isErc20(this.currency)
             ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
             : true
@@ -390,39 +506,19 @@ export default {
       }
     }
   },
-  data: () => ({
-    currency: '',
-    address: '',
-    cryptoAddress: '',
-    amountString: '',
-    amount: 0,
-    amountMenuItems: [
-      {
-        divider: 10,
-        title: 'transfer.amount_percent_10'
-      },
-      {
-        divider: 3,
-        title: 'transfer.amount_percent_33'
-      },
-      {
-        divider: 2,
-        title: 'transfer.amount_percent_50'
-      },
-      {
-        divider: 1,
-        title: 'transfer.amount_percent_100'
-      }
-    ],
-    comment: '',
-    validForm: true,
-    disabledButton: false,
-    showQrcodeScanner: false,
-    showSpinner: false,
-    dialog: false,
-    fetchAddress: null, // fn throttle
-    increaseFee: false
-  }),
+  created () {
+    this.currency = this.cryptoCurrency
+    this.address = this.recipientAddress
+    this.amount = this.amountToSend
+
+    // create watcher after setting default from props
+    this.$watch('currency', () => {
+      this.$refs.form.validate()
+    })
+  },
+  mounted () {
+    this.fetchUserCryptoAddress()
+  },
   methods: {
     confirm () {
       const abstract = validateForm.call(this)
@@ -432,7 +528,7 @@ export default {
       } else {
         this.$store.dispatch('snackbar/show', {
           message: abstract,
-          timeout: 7000
+          timeout: 3500
         })
       }
     },
@@ -532,11 +628,15 @@ export default {
 
           this.$emit('send', transactionId, this.currency)
         })
-        .catch(err => {
-          let message = err.message
-          if (this.currency === Cryptos.DASH && get(err, 'response.data.error.code') === -26) {
+        .catch(error => {
+          const formattedError = formatSendTxError(error)
+          console.log('Error while sending transaction', formattedError)
+          let message = formattedError.errorMessage
+          if (/dust/i.test(message) || get(error, 'response.data.error.code') === -26) {
             message = this.$t('transfer.error_dust_amount')
-          } else if (this.currency === Cryptos.ETH && /Invalid JSON RPC Response/i.test(message)) {
+          } else if (/minimum remaining balance requirement/i.test(message)) {
+            message = this.$t('transfer.recipient_minimum_balance')
+          } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
           }
           this.$emit('error', message)
@@ -572,7 +672,8 @@ export default {
           address: this.cryptoAddress,
           comments: this.comment,
           fee: this.transferFee,
-          increaseFee: this.increaseFee
+          increaseFee: this.increaseFee,
+          textData: this.textData
         })
       }
     },
@@ -612,51 +713,38 @@ export default {
       if (validateAddress('ADM', this.address)) {
         this.$store.dispatch('partners/fetchAddress', {
           crypto: this.currency,
-          partner: this.address
-        }).then(address => {
-          this.cryptoAddress = address
+          partner: this.address,
+          records: 20
+        }).then(addresses => {
+          this.cryptoAddress = addresses[0]
+          if (addresses.length > 1) {
+            const addressesList = addresses.join(', ')
+            this.warningOnPartnerInfo.coin = this.currency
+            this.warningOnPartnerInfo.ADMaddress = this.address
+            this.warningOnPartnerInfo.ADMname = ''
+            if (this.recipientName) {
+              this.warningOnPartnerInfo.ADMname = ' (' + this.recipientName + ')'
+            }
+            this.warningOnPartnerInfo.coinAddresses = addressesList
+            this.showWarningOnPartnerAddressDialog = true
+          }
         })
       }
     },
     validateMinAmount (amount, currency) {
       const min = getMinAmount(currency)
-      return amount > min
+      return amount >= min
     },
     validateNaturalUnits (amount, currency) {
       const units = CryptoNaturalUnits[currency]
 
-      const [ , right = '' ] = BigNumber(amount).toFixed().split('.')
+      const [, right = ''] = BigNumber(amount).toFixed().split('.')
 
       return right.length <= units
     },
     calculateTransferFee (amount) {
       const coef = this.increaseFee ? INCREASE_FEE_MULTIPLIER : 1
-      return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount)
-    }
-  },
-  filters: {
-    /**
-     * @param {BigNumber} bigNumber
-     */
-    toFixed: bigNumber => bigNumber.toFixed()
-  },
-  props: {
-    cryptoCurrency: {
-      type: String,
-      default: 'ADM',
-      validator: value => value in Cryptos
-    },
-    recipientAddress: {
-      type: String,
-      default: ''
-    },
-    amountToSend: {
-      type: Number,
-      default: 0
-    },
-    addressReadonly: {
-      type: Boolean,
-      default: false
+      return coef * this.$store.getters[`${this.currency.toLowerCase()}/fee`](amount || this.balance, this.cryptoAddress, this.textData)
     }
   }
 }

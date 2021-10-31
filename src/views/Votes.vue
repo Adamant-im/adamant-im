@@ -6,12 +6,20 @@
       flat
     />
 
-    <v-container fluid class="pa-0">
-      <v-layout row wrap justify-center>
-
+    <v-container
+      fluid
+      class="pa-0"
+    >
+      <v-layout
+        row
+        wrap
+        justify-center
+      >
         <container>
-
-          <v-card flat class="transparent">
+          <v-card
+            flat
+            class="transparent"
+          >
             <v-card-title class="pa-0">
               <v-text-field
                 v-model="search"
@@ -24,7 +32,7 @@
               />
             </v-card-title>
 
-            <div :class="`${className}__spacer`"></div>
+            <div :class="`${className}__spacer`" />
 
             <v-data-table
               :headers="headers"
@@ -36,8 +44,14 @@
               must-sort
               item-key="username"
             >
-              <div slot="no-data" class="text-xs-center">
-                <v-layout align-center justify-center>
+              <div
+                slot="no-data"
+                class="text-xs-center"
+              >
+                <v-layout
+                  align-center
+                  justify-center
+                >
                   <v-progress-circular
                     indeterminate
                     color="primary"
@@ -53,34 +67,66 @@
                 </v-layout>
               </div>
 
-              <template slot="headerCell" slot-scope="props">
-                <span :class="`${className}__header`" slot="activator">
+              <template
+                slot="headerCell"
+                slot-scope="props"
+              >
+                <span
+                  slot="activator"
+                  :class="`${className}__header`"
+                >
                   {{ $t(props.header.text) }}
                 </span>
               </template>
 
-              <template slot="items" slot-scope="props">
+              <template
+                slot="items"
+                slot-scope="props"
+              >
                 <td
-                  @click="toggleDetails(props.item, props)"
                   :class="`${className}__body`"
                   class="pr-0"
                   style="cursor:pointer"
-                >{{ props.item.username }}</td>
-                <td :class="`${className}__body`">{{ props.item.rank }}</td>
+                  @click="toggleDetails(props.item, props)"
+                >
+                  {{ props.item.username }}
+                </td>
+                <td :class="`${className}__body`">
+                  {{ props.item.rank }}
+                </td>
                 <td>
-                  <v-icon v-if="props.item._voted" @click="downVote(props.item.address)">mdi-thumb-up</v-icon>
-                  <v-icon v-else @click="upVote(props.item.address)">mdi-thumb-up-outline</v-icon>
+                  <v-icon
+                    v-if="props.item._voted"
+                    @click="downVote(props.item.address)"
+                  >
+                    mdi-thumb-up
+                  </v-icon>
+                  <v-icon
+                    v-else
+                    @click="upVote(props.item.address)"
+                  >
+                    mdi-thumb-up-outline
+                  </v-icon>
                 </td>
               </template>
 
-              <template slot="expand" slot-scope="props">
-                <v-card flat :class="`${className}__expand`">
-
+              <template
+                slot="expand"
+                slot-scope="props"
+              >
+                <v-card
+                  flat
+                  :class="`${className}__expand`"
+                >
                   <v-list :class="`${className}__expand-list`">
                     <v-list-tile :class="`${className}__expand-list-tile`">
                       <v-list-tile-content>
                         <v-list-tile-title class="a-text-active">
-                          <a :href="'https://explorer.adamant.im/delegate/' + props.item.address" target="_blank" rel="noopener">
+                          <a
+                            :href="getExplorerUrl() + props.item.address"
+                            target="_blank"
+                            rel="noopener"
+                          >
                             {{ props.item.address }}
                           </a>
                         </v-list-tile-title>
@@ -89,8 +135,8 @@
 
                     <v-list-tile
                       v-for="(item, i) in delegateDetails"
-                      :class="`${className}__expand-list-tile`"
                       :key="i"
+                      :class="`${className}__expand-list-tile`"
                     >
                       <v-list-tile-content>
                         <v-list-tile-title class="a-text-explanation">
@@ -104,36 +150,49 @@
                       </v-list-tile-content>
                     </v-list-tile>
                   </v-list>
-
                 </v-card>
               </template>
 
-              <v-alert :class="`${className}__alert`" slot="no-results" :value="true" icon="mdi-alert">
+              <v-alert
+                slot="no-results"
+                :class="`${className}__alert`"
+                :value="true"
+                icon="mdi-alert"
+              >
                 Your search for "{{ search }}" found no results.
               </v-alert>
 
               <template slot="footer">
-                <td :class="`${className}__review`" :colspan="headers.length" class="pa-0">
-
-                  <v-layout row wrap align-center justify-space-between>
-                    <pagination v-if="showPagination" v-model="pagination.page" :pages="pages"></pagination>
+                <td
+                  :class="`${className}__review`"
+                  :colspan="headers.length"
+                  class="pa-0"
+                >
+                  <v-layout
+                    row
+                    wrap
+                    align-center
+                    justify-space-between
+                  >
+                    <pagination
+                      v-if="showPagination"
+                      v-model="pagination.page"
+                      :pages="pages"
+                    />
 
                     <v-btn
-                      @click="showConfirmationDialog"
                       :disabled="reviewButtonDisabled"
                       class="a-btn-primary"
+                      @click="showConfirmationDialog"
                     >
                       {{ $t('votes.summary_title') }}
                     </v-btn>
                   </v-layout>
-
                 </td>
               </template>
             </v-data-table>
           </v-card>
-
         </container>
-
       </v-layout>
     </v-container>
 
@@ -148,20 +207,29 @@
           {{ $t('votes.summary_title') }}
         </v-card-title>
 
-        <v-divider :class="`${className}__divider`"></v-divider>
+        <v-divider :class="`${className}__divider`" />
 
-        <v-layout row wrap class="pa-3">
+        <v-layout
+          row
+          wrap
+          class="pa-3"
+        >
           <div :class="`${className}__dialog-summary`">
             {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
             {{ $t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
             {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
             {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
           </div>
-          <div :class="`${className}__dialog-info`" v-html="$t('votes.summary_info')"></div>
+          <!-- eslint-disable vue/no-v-html -- Safe internal content -->
+          <div
+            :class="`${className}__dialog-info`"
+            v-html="$t('votes.summary_info')"
+          />
+          <!-- eslint-enable vue/no-v-html -->
         </v-layout>
 
         <v-card-actions>
-          <v-spacer></v-spacer>
+          <v-spacer />
 
           <v-btn
             flat="flat"
@@ -188,13 +256,30 @@
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import Pagination from '@/components/Pagination'
 import numberFormat from '@/filters/numberFormat'
+import { explorerUriToOnion } from '@/lib/uri'
 
 export default {
-  mounted () {
-    this.$store.dispatch('delegates/getDelegates', {
-      address: this.$store.state.address
-    })
+  components: {
+    AppToolbarCentered,
+    Pagination
   },
+  data: () => ({
+    voteRequestLimit: 30,
+    search: '',
+    headers: [
+      { text: 'votes.table_head_name', value: 'username' },
+      { text: 'votes.table_head_rank', value: 'rank' },
+      { text: 'votes.table_head_vote', value: '_voted' }
+    ],
+    pagination: {
+      rowsPerPage: 50,
+      sortBy: 'rank',
+      descending: false,
+      page: 1
+    },
+    waitingForConfirmation: false,
+    dialog: false
+  }),
   computed: {
     className: () => 'delegates-view',
     delegates () {
@@ -259,24 +344,15 @@ export default {
       return (this.numOfUpvotes + this.numOfDownvotes) === 0
     }
   },
-  data: () => ({
-    voteRequestLimit: 30,
-    search: '',
-    headers: [
-      { text: 'votes.table_head_name', value: 'username' },
-      { text: 'votes.table_head_rank', value: 'rank' },
-      { text: 'votes.table_head_vote', value: '_voted' }
-    ],
-    pagination: {
-      rowsPerPage: 50,
-      sortBy: 'rank',
-      descending: false,
-      page: 1
-    },
-    waitingForConfirmation: false,
-    dialog: false
-  }),
+  mounted () {
+    this.$store.dispatch('delegates/getDelegates', {
+      address: this.$store.state.address
+    })
+  },
   methods: {
+    getExplorerUrl () {
+      return explorerUriToOnion('https://explorer.adamant.im/delegate/')
+    },
     upVote (id) {
       this.$store.commit('delegates/upVote', id)
     },
@@ -363,10 +439,6 @@ export default {
     showConfirmationDialog () {
       this.dialog = true
     }
-  },
-  components: {
-    AppToolbarCentered,
-    Pagination
   }
 }
 </script>

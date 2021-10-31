@@ -1,4 +1,4 @@
-import bitcoin from 'bitcoinjs-lib'
+import * as bitcoin from 'bitcoinjs-lib'
 
 /**
  * Checks if the supplied string is a valid BTC address

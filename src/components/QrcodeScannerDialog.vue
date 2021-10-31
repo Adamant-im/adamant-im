@@ -5,7 +5,6 @@
     width="500"
   >
     <v-card :class="className">
-
       <!-- Camera Waiting -->
       <v-layout
         v-if="cameraStatus === 'waiting'"
@@ -13,7 +12,9 @@
         align-center
         class="pa-5"
       >
-        <div class="a-text-header">{{ $t('scan.waiting_camera') }}</div>
+        <div class="a-text-header">
+          {{ $t('scan.waiting_camera') }}
+        </div>
         <v-progress-circular
           indeterminate
           color="primary"
@@ -30,14 +31,20 @@
       >
         <v-flex xs12>
           <div :class="`${className}__camera`">
-            <video ref="camera"></video>
+            <video ref="camera" />
             <v-menu
               v-if="cameras.length > 1"
               offset-y
               :class="`${className}__camera-select`"
             >
-              <v-btn slot="activator" flat color="white">
-                <v-icon large>mdi-camera</v-icon>
+              <v-btn
+                slot="activator"
+                flat
+                color="white"
+              >
+                <v-icon large>
+                  mdi-camera
+                </v-icon>
               </v-btn>
               <v-list>
                 <v-list-tile
@@ -51,7 +58,10 @@
             </v-menu>
           </div>
         </v-flex>
-        <v-flex xs12 class="pa-4">
+        <v-flex
+          xs12
+          class="pa-4"
+        >
           <h3
             class="a-text-regular text-xs-center"
           >
@@ -70,24 +80,27 @@
         class="text-xs-center pa-5"
       >
         <v-flex xs12>
-          <h3 class="a-text-header">{{ $t('scan.no_camera_found') }}</h3>
-          <p class="a-text-regular mt-1 mb-0">{{ $t('scan.connect_camera') }}</p>
+          <h3 class="a-text-header">
+            {{ $t('scan.no_camera_found') }}
+          </h3>
+          <p class="a-text-regular mt-1 mb-0">
+            {{ $t('scan.connect_camera') }}
+          </p>
         </v-flex>
       </v-layout>
 
-      <v-divider class="a-divider"></v-divider>
+      <v-divider class="a-divider" />
 
       <v-card-actions>
-        <v-spacer></v-spacer>
+        <v-spacer />
         <v-btn
           flat
-          @click="show = false"
           class="a-btn-regular"
+          @click="show = false"
         >
           {{ $t('scan.close_button') }}
         </v-btn>
       </v-card-actions>
-
     </v-card>
   </v-dialog>
 </template>
@@ -96,12 +109,18 @@
 import { Scanner } from '@/lib/zxing'
 
 export default {
-  mounted () {
-    this.init()
+  props: {
+    value: {
+      type: Boolean,
+      required: true
+    }
   },
-  beforeDestroy () {
-    this.destroyScanner()
-  },
+  data: () => ({
+    cameraStatus: 'waiting', // can be: waiting, active, nocamera
+    scanner: null,
+    currentCamera: null,
+    cameras: []
+  }),
   computed: {
     className: () => 'qrcode-scanner-dialog',
     show: {
@@ -129,12 +148,12 @@ export default {
         .then(content => this.onScan(content))
     }
   },
-  data: () => ({
-    cameraStatus: 'waiting', // can be: waiting, active, nocamera
-    scanner: null,
-    currentCamera: null,
-    cameras: []
-  }),
+  mounted () {
+    this.init()
+  },
+  beforeDestroy () {
+    this.destroyScanner()
+  },
   methods: {
     init () {
       return this.initScanner()
@@ -169,12 +188,6 @@ export default {
       this.$emit('scan', content)
       this.destroyScanner()
       this.show = false
-    }
-  },
-  props: {
-    value: {
-      type: Boolean,
-      required: true
     }
   }
 }

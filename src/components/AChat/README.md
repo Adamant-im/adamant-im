@@ -1,3 +1,5 @@
+# Not used file
+
 ## Adamant chat
 
 A chat built with Vuetify.
@@ -222,7 +224,7 @@ export type User = {
 |**[`id`](#)**|`{string\|number}`|`undefined`|Message ID|
 |**[`message`](#)**|`string`|`''`|Message text|
 |**[`timestamp`](#)**|`number`|`0`|Message timestamp|
-|**[`status`](#)**|`MessageStatus`|`'confirmed'`|Message status. Can be 'sent', 'confirmed', 'rejected'.|
+|**[`status`](#)**|`MessageStatus`|`'confirmed'`|Message status. Can be 'sent', 'CONFIRMED', 'REJECTED'.|
 |**[`user-id`](#)**|`string`|`''`|Chat owner|
 |**[`sender`](#)**|`User`|`undefined`|Can be accessed from `props.message.sender` of `AChat.vue`|
 |**[`show-avatar`](#)**|`boolean`|`true`|Display user avatars in chat|

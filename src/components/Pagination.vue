@@ -1,9 +1,17 @@
 <template>
   <div>
-    <v-btn icon @click="page--" :disabled="page <= 1">
+    <v-btn
+      icon
+      :disabled="page <= 1"
+      @click="page--"
+    >
       <v-icon>mdi-chevron-left</v-icon>
     </v-btn>
-    <v-btn icon @click="page++" :disabled="page >= pages">
+    <v-btn
+      icon
+      :disabled="page >= pages"
+      @click="page++"
+    >
       <v-icon>mdi-chevron-right</v-icon>
     </v-btn>
   </div>
@@ -11,6 +19,16 @@
 
 <script>
 export default {
+  props: {
+    value: {
+      type: Number,
+      required: true
+    },
+    pages: {
+      type: Number,
+      required: true
+    }
+  },
   computed: {
     page: {
       get () {
@@ -23,16 +41,6 @@ export default {
 
         this.$emit('input', value)
       }
-    }
-  },
-  props: {
-    value: {
-      type: Number,
-      required: true
-    },
-    pages: {
-      type: Number,
-      required: true
     }
   }
 }

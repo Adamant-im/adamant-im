@@ -6,7 +6,7 @@ import Security from './stores/Security'
 import { Cryptos } from '@/lib/constants'
 
 /** Modules that will be stored in IDB **/
-const modules = ['adm', 'eth', 'doge', 'bnb', 'bz', 'dash', 'kcs', 'usds', 'res', 'partners', 'delegates']
+const modules = ['adm', 'eth', 'doge', 'lsk', 'bnb', 'dash', 'usds', 'res', 'partners', 'delegates']
 
 /**
  * Clone modules from state.
@@ -14,7 +14,7 @@ const modules = ['adm', 'eth', 'doge', 'bnb', 'bz', 'dash', 'kcs', 'usds', 'res'
  * @returns {Array<{ name: string, value: string }>}
  */
 function cloneModules (state) {
-  let modulesToStore = []
+  const modulesToStore = []
 
   // clone all modules
   modules.forEach(moduleName => {
@@ -52,7 +52,7 @@ function cloneModules (state) {
  * @returns {Array<{ name: string, value: string }>}
  */
 function cloneChats (state) {
-  let chats = []
+  const chats = []
 
   if (state.chat) {
     const keys = Object.keys(state.chat.chats)
@@ -74,7 +74,7 @@ function cloneChats (state) {
  * @returns {Array<{ name: string, value: string }>}
  */
 function cloneSecurity (state) {
-  let security = []
+  const security = []
 
   security.push({
     name: 'passphrase',
@@ -125,7 +125,7 @@ function saveState (store) {
  * @returns {Promise}
  */
 function restoreState (store) {
-  let restoredState = {}
+  const restoredState = {}
 
   const promises = Promise.all([
     Modules.getAll(),

@@ -1,16 +1,19 @@
 <template>
   <transaction-template
+    :id="transaction.hash || '' "
     :amount="transaction.amount | currency(crypto)"
     :timestamp="transaction.timestamp || NaN"
-    :id="transaction.hash || '' "
     :fee="transaction.fee | currency('ETH')"
     :confirmations="confirmations || NaN"
     :sender="sender || '' "
     :recipient="recipient || '' "
-    :explorerLink="explorerLink"
+    :sender-formatted="senderFormatted || '' "
+    :recipient-formatted="recipientFormatted|| '' "
+    :explorer-link="explorerLink"
     :partner="partner || '' "
-    :status="transaction.status || '' "
-    :admTx="admTx"
+    :status="getTransactionStatus(admTx, transaction)"
+    :adm-tx="admTx"
+    :crypto="crypto"
   />
 </template>
 
@@ -20,9 +23,15 @@ import getExplorerUrl from '../../lib/getExplorerUrl'
 import { Cryptos } from '../../lib/constants'
 import partnerName from '@/mixins/partnerName'
 
+import transaction from '@/mixins/transaction'
+import { isStringEqualCI } from '@/lib/textHelpers'
+
 export default {
-  mixins: [partnerName],
-  name: 'erc20-transaction',
+  name: 'Erc20Transaction',
+  components: {
+    TransactionTemplate
+  },
+  mixins: [transaction, partnerName],
   props: {
     crypto: {
       required: true,
@@ -33,11 +42,10 @@ export default {
       type: String
     }
   },
-  components: {
-    TransactionTemplate
-  },
   data () {
-    return { }
+    return {
+      inconsistent_reason: ''
+    }
   },
   computed: {
     transaction () {
@@ -45,16 +53,23 @@ export default {
       return this.$store.getters[prefix + '/transaction'](this.id) || { }
     },
     sender () {
-      return this.transaction.senderId ? this.formatAddress(this.transaction.senderId) : ''
+      return this.transaction.senderId || ''
     },
     recipient () {
+      return this.transaction.recipientId || ''
+    },
+    senderFormatted () {
+      return this.transaction.senderId ? this.formatAddress(this.transaction.senderId) : ''
+    },
+    recipientFormatted () {
       return this.transaction.recipientId ? this.formatAddress(this.transaction.recipientId) : ''
     },
     partner () {
       if (this.transaction.partner) return this.transaction.partner
 
-      const id = this.transaction.senderId !== this.$store.state.eth.address
-        ? this.transaction.senderId : this.transaction.recipientId
+      const id = !isStringEqualCI(this.transaction.senderId, this.$store.state.eth.address)
+        ? this.transaction.senderId
+        : this.transaction.recipientId
       return this.getAdmAddress(id)
     },
     explorerLink () {
@@ -65,7 +80,7 @@ export default {
       return Math.max(0, this.$store.state.eth.blockNumber - this.transaction.blockNumber)
     },
     admTx () {
-      let admTx = {}
+      const admTx = {}
       // Bad news, everyone: we'll have to scan the messages
       Object.values(this.$store.state.chat.chats).some(chat => {
         Object.values(chat.messages).some(msg => {
@@ -87,7 +102,7 @@ export default {
       const partners = this.$store.state.partners.list
       Object.keys(partners).some(uid => {
         const partner = partners[uid]
-        if (partner[Cryptos.ETH] === address) {
+        if (isStringEqualCI(partner[Cryptos.ETH], address)) {
           admAddress = uid
         }
         return !!admAddress
@@ -98,7 +113,7 @@ export default {
         Object.values(this.$store.state.chat.chats).some(chat => {
           Object.values(chat.messages).some(msg => {
             if (msg.hash && msg.hash === this.id) {
-              admAddress = msg.senderId === this.$store.state.address ? msg.recipientId : msg.senderId
+              admAddress = isStringEqualCI(msg.senderId, this.$store.state.address) ? msg.recipientId : msg.senderId
             }
             return !!admAddress
           })
@@ -110,10 +125,10 @@ export default {
     },
 
     formatAddress (address) {
-      let admAddress = this.getAdmAddress(address)
+      const admAddress = this.getAdmAddress(address)
       let name = ''
 
-      if (address === this.$store.state.eth.address) {
+      if (isStringEqualCI(address, this.$store.state.eth.address)) {
         name = this.$t('transaction.me')
       } else {
         name = this.getPartnerName(admAddress)

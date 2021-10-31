@@ -7,7 +7,7 @@ export default store => {
   function handleEvent (event) {
     store.dispatch('snackbar/show', {
       message: i18n.t(`connection.${event.type}`),
-      timeout: 5000
+      timeout: 3000
     })
   }
 }

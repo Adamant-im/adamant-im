@@ -1,32 +1,55 @@
 <template>
   <v-list :class="className">
-    <v-list-tile @click="sendFunds" avatar>
+    <v-list-tile
+      avatar
+      @click="sendFunds"
+    >
       <v-list-tile-avatar :class="`${className}__avatar`">
-        <v-icon :class="`${className}__icon`">mdi-bank-transfer-out</v-icon>
+        <v-icon :class="`${className}__icon`">
+          mdi-bank-transfer-out
+        </v-icon>
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title`">{{ $t('home.send_crypto', { crypto }) }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title`">
+          {{ $t('home.send_crypto', { crypto }) }}
+        </v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
 
-    <v-list-tile v-if="isADM" @click="buyTokens" avatar>
+    <v-list-tile
+      v-if="isADM"
+      avatar
+      @click="buyTokens"
+    >
       <v-list-tile-avatar :class="`${className}__avatar`">
-        <v-icon :class="`${className}__icon`">mdi-finance</v-icon>
+        <v-icon :class="`${className}__icon`">
+          mdi-finance
+        </v-icon>
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title`">{{ $t('home.buy_tokens_btn') }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title`">
+          {{ $t('home.buy_tokens_btn') }}
+        </v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
 
-    <v-list-tile v-if="isADM && !hasAdmTokens" @click="getFreeTokens" avatar>
+    <v-list-tile
+      v-if="isADM && !hasAdmTokens"
+      avatar
+      @click="getFreeTokens"
+    >
       <v-list-tile-avatar :class="`${className}__avatar`">
-        <v-icon :class="`${className}__icon`">mdi-gift</v-icon>
+        <v-icon :class="`${className}__icon`">
+          mdi-gift
+        </v-icon>
       </v-list-tile-avatar>
 
       <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title`">{{ $t('home.free_adm_btn') }}</v-list-tile-title>
+        <v-list-tile-title :class="`${className}__title`">
+          {{ $t('home.free_adm_btn') }}
+        </v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
 
@@ -40,18 +63,32 @@
 <script>
 import { Cryptos } from '@/lib/constants'
 import BuyTokensDialog from '@/components/BuyTokensDialog'
-import { uriToOnion } from '@/lib/uri'
+import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
+  components: {
+    BuyTokensDialog
+  },
+  props: {
+    crypto: {
+      type: String,
+      default: Cryptos.ADM,
+      validator: v => v in Cryptos
+    },
+    isADM: {
+      required: true,
+      type: Boolean
+    }
+  },
+  data: () => ({
+    showBuyTokensDialog: false
+  }),
   computed: {
     className: () => 'wallet-actions',
     hasAdmTokens () {
       return this.$store.state.balance > 0
     }
   },
-  data: () => ({
-    showBuyTokensDialog: false
-  }),
   methods: {
     sendFunds () {
       this.$router.push({
@@ -65,22 +102,8 @@ export default {
       this.showBuyTokensDialog = true
     },
     getFreeTokens () {
-      const link = uriToOnion(this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address)
+      const link = websiteUriToOnion(this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address)
       window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
-    }
-  },
-  components: {
-    BuyTokensDialog
-  },
-  props: {
-    crypto: {
-      type: String,
-      default: Cryptos.ADM,
-      validator: v => v in Cryptos
-    },
-    isADM: {
-      required: true,
-      type: Boolean
     }
   }
 }

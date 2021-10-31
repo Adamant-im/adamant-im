@@ -1,6 +1,10 @@
 <template>
-  <icon :width="sizePx" :height="sizePx" :color="fill">
-    <component :is="componentName"/>
+  <icon
+    :width="sizePx"
+    :height="sizePx"
+    :color="fill"
+  >
+    <component :is="componentName" />
   </icon>
 </template>
 
@@ -9,10 +13,8 @@ import Icon from './BaseIcon'
 import AdmFillIcon from './AdmFill'
 import BnbFillIcon from './BnbFill'
 import EthFillIcon from './EthFill'
-import BzFillIcon from './BnzFill'
 import DogeFillIcon from './DogeFill'
 import DashFillIcon from './DashFill'
-import KcsFillIcon from './KcsFill'
 import LskFillIcon from './LskFill'
 import UsdsFillIcon from './UsdsFill'
 import ResFillIcon from './ResFill'
@@ -34,10 +36,8 @@ export default {
     AdmFillIcon,
     BnbFillIcon,
     EthFillIcon,
-    BzFillIcon,
     DogeFillIcon,
     DashFillIcon,
-    KcsFillIcon,
     LskFillIcon,
     UsdsFillIcon,
     ResFillIcon,

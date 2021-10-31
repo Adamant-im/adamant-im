@@ -7,11 +7,16 @@
       flat
     />
 
-    <v-container fluid class="pa-0">
-      <v-layout row wrap justify-center>
-
+    <v-container
+      fluid
+      class="pa-0"
+    >
+      <v-layout
+        row
+        wrap
+        justify-center
+      >
         <container padding>
-
           <v-data-table
             :headers="headers"
             :items="nodes"
@@ -20,9 +25,12 @@
             select-all
             hide-actions
           >
-            <template slot="headers" slot-scope="props">
+            <template
+              slot="headers"
+              slot-scope="props"
+            >
               <tr>
-                <th style="width:56px"></th>
+                <th style="width:56px" />
                 <th
                   v-for="header in props.headers"
                   :key="header.text"
@@ -37,7 +45,10 @@
               </tr>
             </template>
 
-            <template slot="items" slot-scope="props">
+            <template
+              slot="items"
+              slot-scope="props"
+            >
               <td class="pr-2">
                 <v-checkbox
                   :input-value="props.item.active"
@@ -45,19 +56,37 @@
                   hide-details
                   color="grey darken-1"
                   @click.native="toggle(props.item)"
-                ></v-checkbox>
+                />
               </td>
-              <td :class="`${className}__body`" class="pl-0 pr-2">{{ props.item.url }}</td>
-              <td :class="`${className}__body`" class="pl-0 pr-2">
+              <td
+                :class="`${className}__body`"
+                class="pl-0 pr-2"
+                style="line-height: 1;"
+              >
+                {{ props.item.url }}
+                <span
+                  v-if="props.item.version"
+                  :class="`${className}__node-version`"
+                ><br>{{ 'v' + props.item.version }}</span>
+              </td>
+              <td
+                :class="`${className}__body`"
+                class="pl-0 pr-2"
+              >
                 <span>
                   {{ getNodeStatus(props.item) }}
                 </span>
                 <v-icon
                   :color="getNodeColor(props.item)"
                   size="small"
-                >mdi-checkbox-blank-circle</v-icon>
+                >
+                  mdi-checkbox-blank-circle
+                </v-icon>
               </td>
-              <td :class="`${className}__body`" class="pl-0 pr-2">
+              <td
+                :class="`${className}__body`"
+                class="pl-0 pr-2"
+              >
                 <v-icon :color="props.item.socketSupport ? 'green' : 'red'">
                   {{ props.item.socketSupport ? 'mdi-check' : 'mdi-close' }}
                 </v-icon>
@@ -66,31 +95,35 @@
           </v-data-table>
 
           <v-checkbox
+            v-model="preferFastestNodeOption"
             :label="$t('nodes.fastest_title')"
             :class="`${className}__checkbox`"
             color="grey darken-1"
-            v-model="preferFastestNodeOption"
           />
-          <div class="a-text-explanation-enlarged">{{ $t('nodes.fastest_tooltip') }}</div>
+          <div class="a-text-explanation-enlarged">
+            {{ $t('nodes.fastest_tooltip') }}
+          </div>
 
           <v-checkbox
+            v-model="useSocketConnection"
             :label="$t('nodes.use_socket_connection')"
             :class="`${className}__checkbox`"
             color="grey darken-1"
-            v-model="useSocketConnection"
           />
-          <div class="a-text-explanation-enlarged">{{ $t('nodes.use_socket_connection_tooltip') }}</div>
+          <div class="a-text-explanation-enlarged">
+            {{ $t('nodes.use_socket_connection_tooltip') }}
+          </div>
 
+          <!-- eslint-disable vue/no-v-html -- Safe internal content -->
           <div
             :class="`${className}__info a-text-regular-enlarged`"
-            v-html="$t('nodes.nodeLabelDescription')"
             class="mt-4"
-          ></div>
+            v-html="$t('nodes.nodeLabelDescription')"
+          />
+          <!-- eslint-enable vue/no-v-html -->
 
           <div>&nbsp;<br>&nbsp;</div>
-
         </container>
-
       </v-layout>
     </v-container>
   </div>
@@ -100,16 +133,32 @@
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 
 export default {
-  mounted () {
-    this.$store.dispatch('nodes/restore')
-
-    this.timer = setInterval(() => {
-      this.$store.dispatch('nodes/updateStatus')
-    }, 10000)
+  components: {
+    AppToolbarCentered
   },
-  beforeDestroy () {
-    clearInterval(this.timer)
-  },
+  data: () => ({
+    pagination: {
+      sortBy: 'name'
+    },
+    headers: [
+      {
+        text: 'nodes.host',
+        value: 'url',
+        align: 'left'
+      },
+      {
+        text: 'nodes.ping',
+        value: 'ping',
+        align: 'left'
+      },
+      {
+        text: 'nodes.socket',
+        value: 'socket',
+        align: 'left'
+      }
+    ],
+    timer: null
+  }),
   computed: {
     className: () => 'nodes-view',
     useSocketConnection: {
@@ -135,29 +184,16 @@ export default {
       return this.$store.getters['nodes/list']
     }
   },
-  data: () => ({
-    pagination: {
-      sortBy: 'name'
-    },
-    headers: [
-      {
-        text: 'nodes.host',
-        value: 'url',
-        align: 'left'
-      },
-      {
-        text: 'nodes.ping',
-        value: 'ping',
-        align: 'left'
-      },
-      {
-        text: 'nodes.socket',
-        value: 'socket',
-        align: 'left'
-      }
-    ],
-    timer: null
-  }),
+  mounted () {
+    this.$store.dispatch('nodes/restore')
+
+    this.timer = setInterval(() => {
+      this.$store.dispatch('nodes/updateStatus')
+    }, 10000)
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
+  },
   methods: {
     toggle (node) {
       this.$store.dispatch('nodes/toggle', {
@@ -193,9 +229,6 @@ export default {
 
       return color + ' lighten-1'
     }
-  },
-  components: {
-    AppToolbarCentered
   }
 }
 </script>
@@ -224,6 +257,8 @@ export default {
       text-decoration-line: none
       &:hover
         text-decoration-line: underline
+  &__node-version
+    a-text-explanation-small()
   &__checkbox
     >>> .v-label
       a-text-regular-enlarged()
@@ -237,6 +272,8 @@ export default {
       color: $adm-colors.muted
     &__body
       color: $adm-colors.regular
+    &__node-version
+      color: $adm-colors.muted
     &__checkbox
       >>> .v-label
         color: $adm-colors.regular
@@ -247,6 +284,11 @@ export default {
 
     >>> .v-table tbody tr:not(:last-child)
       border-bottom: 1px solid $adm-colors.secondary2
+
+.theme--dark
+  .nodes-view
+    &__node-version
+      opacity: 0.7
 
 /**
  * 1. Style VTable to be full width.

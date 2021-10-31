@@ -1,5 +1,9 @@
 <template>
-  <v-app :dark="isDarkTheme" class="application--linear-gradient">
+  <v-app
+    :dark="isDarkTheme"
+    class="application--linear-gradient"
+  >
+    <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
     <component :is="layout">
       <router-view />
     </component>
@@ -8,21 +12,16 @@
 
 <script>
 import dayjs from 'dayjs'
-
+import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog'
 import Notifications from '@/lib/notifications'
 
 export default {
-  created () {
-    this.setLocale()
+  components: {
+    WarningOnAddressesDialog
   },
-  mounted () {
-    this.notifications = new Notifications(this)
-    this.notifications.start()
-  },
-  beforeDestroy () {
-    this.notifications.stop()
-    this.$store.dispatch('stopInterval')
-  },
+  data: () => ({
+    showWarningOnAddressesDialog: false
+  }),
   computed: {
     layout () {
       return this.$route.meta.layout || 'default'
@@ -36,6 +35,17 @@ export default {
     isLoginViaPassword () {
       return this.$store.getters['options/isLoginViaPassword']
     }
+  },
+  created () {
+    this.setLocale()
+  },
+  mounted () {
+    this.notifications = new Notifications(this)
+    this.notifications.start()
+  },
+  beforeDestroy () {
+    this.notifications.stop()
+    this.$store.dispatch('stopInterval')
   },
   methods: {
     setLocale () {

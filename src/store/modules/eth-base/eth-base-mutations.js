@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   /** Set ETH balance */
@@ -11,11 +12,12 @@ export default {
     state.address = account.address
     state.publicKey = account.publicKey
     state.privateKey = account.privateKey
+    state.web3Account = account.web3Account
   },
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
-  bottom (state) {
-    state.bottomReached = true
+  bottom (state, value) {
+    state.bottomReached = value
   },
 
   /**
@@ -24,8 +26,12 @@ export default {
    * @param {Array<{hash: string, time: number}>} transactions transactions list
    */
   transactions (state, transactions) {
+    const updateTimestamps = transactions.updateTimestamps
+    if (updateTimestamps) {
+      transactions = transactions.transactions
+    }
     let minHeight = Infinity
-    let maxHeight = 0
+    let maxHeight = -1
 
     const address = state.address
 
@@ -34,7 +40,7 @@ export default {
 
       Object.keys(tx).forEach(key => tx[key] === undefined && delete tx[key])
 
-      const direction = tx.recipientId === address ? 'to' : 'from'
+      const direction = isStringEqualCI(tx.recipientId, address) ? 'to' : 'from'
       const newTx = Object.assign(
         { direction, id: tx.hash },
         state.transactions[tx.hash],
@@ -43,17 +49,23 @@ export default {
 
       Vue.set(state.transactions, tx.hash, newTx)
 
-      if (tx.time) {
+      if (tx.time && updateTimestamps) {
         minHeight = Math.min(minHeight, tx.time)
         maxHeight = Math.max(maxHeight, tx.time)
       }
     })
 
-    if (minHeight < Infinity) {
+    // Magic here helps to refresh Tx list when browser deletes it
+    const txCount = Object.keys(state.transactions).length
+    if (state.transactionsCount < txCount) { // We don't delete transactions, so they can't become in short
+      state.transactionsCount = txCount
+    }
+
+    if (minHeight < state.minHeight) {
       state.minHeight = minHeight
     }
 
-    if (maxHeight > 0) {
+    if (maxHeight > state.maxHeight) {
       state.maxHeight = maxHeight
     }
   },

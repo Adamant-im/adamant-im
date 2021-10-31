@@ -48,7 +48,7 @@ export function getTransactions (options) {
     )
   } else {
     filters.push(
-      `contract_to.eq.`,
+      'contract_to.eq.',
       `or(txfrom.eq.${address},txto.eq.${address})`
     )
   }
@@ -134,8 +134,8 @@ function parseTxFromIndex (tx, decimals) {
     senderId: tx.txfrom.toLowerCase(),
     recipientId,
     amount: utils.toFraction(value, decimals),
-    fee: utils.calculateFee(tx.gas, tx.gasprice),
-    status: 'SUCCESS',
+    fee: utils.calculateFee(tx.gas, tx.gasprice || tx.effectivegasprice),
+    status: 'CONFIRMED',
     timestamp: tx.time * 1000,
     blockNumber: tx.block,
     time: tx.time

@@ -1,3 +1,7 @@
+/*
+  Not used file
+*/
+
 export type Message = {
   id: number,
   hash?: string, // transactionId for third-party cryptos
@@ -22,7 +26,7 @@ export enum MessageType {
 }
 
 export enum MessageStatus {
-  DELIVERED,
+  REGISTERED,
   PENDING,
   REJECTED,
   INVALID
