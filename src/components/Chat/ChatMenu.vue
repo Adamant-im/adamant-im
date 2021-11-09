@@ -10,19 +10,6 @@
       </v-icon>
 
       <v-list>
-        <!-- Cryptos -->
-        <v-list-tile
-          v-for="c in cryptos"
-          :key="c"
-          @click="sendFunds(c)"
-        >
-          <v-list-tile-avatar>
-            <crypto-icon :crypto="c" />
-          </v-list-tile-avatar>
-
-          <v-list-tile-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-tile-title>
-        </v-list-tile>
-
         <!-- Actions -->
         <v-list-tile
           v-for="item in menuItems"
@@ -34,6 +21,19 @@
           </v-list-tile-avatar>
 
           <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
+        </v-list-tile>
+
+        <!-- Cryptos -->
+        <v-list-tile
+          v-for="c in cryptos"
+          :key="c"
+          @click="sendFunds(c)"
+        >
+          <v-list-tile-avatar>
+            <crypto-icon :crypto="c" />
+          </v-list-tile-avatar>
+
+          <v-list-tile-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-tile-title>
         </v-list-tile>
       </v-list>
     </v-menu>
@@ -70,14 +70,12 @@ export default {
       {
         type: 'action',
         title: 'chats.attach_image',
-        icon: 'mdi-image',
-        disabled: true
+        icon: 'mdi-image'
       },
       {
         type: 'action',
         title: 'chats.attach_file',
-        icon: 'mdi-file',
-        disabled: true
+        icon: 'mdi-file'
       }
     ],
     dialog: false,

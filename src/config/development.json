@@ -52,6 +52,10 @@
     "lskservice": [
       { "url": "https://liskservice3.adamant.im" },
       { "url": "https://liskservice4.adamant.im" }
+    ],
+    "ipfs": [
+      {"url": "https://ipfs.io/ipfs/"},
+      {"url": "https://dweb.link/ipfs/"}
     ]
   },
   "env": "development"

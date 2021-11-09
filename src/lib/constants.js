@@ -252,3 +252,9 @@ export function getMinAmount (crypto) {
 
   return amount
 }
+
+export const MaxFileSizes = { IPFS: 10000000, Filecoin: 10000000 }
+export const ActiveFileStorages = ['IPFS']
+export const IMAGE_PREVIEW_PX = 300
+export const IMAGE_PREVIEW_FORMAT = 'jpg'
+export const IMAGE_PREVIEW_JPG_COMPRESSION = 70

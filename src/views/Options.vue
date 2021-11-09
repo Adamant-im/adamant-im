@@ -7,6 +7,7 @@
       flat
     />
 
+
     <v-container
       fluid
       class="pa-0"
@@ -126,8 +127,25 @@
                 color="grey darken-1"
               />
 
+
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.format_messages_tooltip') }}
+              </div>
+            </v-flex>
+
+            <v-flex
+              xs12
+              class="mt-4"
+            >
+              <v-checkbox
+                v-model="formatMessages"
+                :label="$t('options.show_img_preview')"
+                color="grey darken-1"
+              />
+
+
+              <div class="a-text-explanation-enlarged">
+                {{ $t('options.show_img_preview_tooltip') }}
               </div>
             </v-flex>
 
@@ -287,6 +305,13 @@
         </container>
       </v-layout>
     </v-container>
+
+    <app-toolbar-centered
+      app
+      :title="$t('options.storagenodes_list')"
+      :show-back="true"
+      flat
+    />
   </div>
 </template>
 
