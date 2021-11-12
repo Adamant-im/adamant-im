@@ -1,19 +1,19 @@
 language: node_js
 node_js:
-  - 10
+  - 14
 os:
   - linux
 cache:
   directories:
     - node_modules
 install:
-  - yarn install
+  - yarn install --ignore-engines
 before_deploy:
   - source ./deploy.sh
 deploy:
   provider: surge
   project: ./dist/
-  domain: $SUBDOMAIN-adamant-im.surge.sh
+  domain: $SUBDOMAIN-adamant-pwa.surge.sh
   skip_cleanup: true
   on:
     all_branches: true
