@@ -14,7 +14,7 @@
     "date_tomorrow": "Tomorrow",
     "date_yesterday": "Yesterday",
     "incorrect_address": "Incorrect ADM address",
-    "no_public_key": "This address is not active yet. Unable to start a chat",
+    "no_public_key": "`This address is not active yet. Unable to start a chat`",
     "me": "Me",
     "message": "Type a message",
     "message_mac_os": "Type a message. Cmd + Ctrl + Space for Emoji picker",

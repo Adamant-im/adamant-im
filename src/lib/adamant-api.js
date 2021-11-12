@@ -454,6 +454,16 @@ export function getChats (from = 0, offset = 0, orderBy = 'desc') {
  */
 export function decodeChat (transaction, key) {
   const chat = transaction.asset.chat
+
+  // The user may not have a public key, so the message cannot be decoded.
+  // Display a special message instead.
+  if (!key) {
+    transaction.message = 'chats.no_public_key'
+    transaction.i18n = true
+
+    return transaction
+  }
+
   const message = utils.decodeMessage(chat.message, key, myKeypair.privateKey, chat.own_message)
 
   if (!message) return transaction
