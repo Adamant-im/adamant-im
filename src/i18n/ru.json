@@ -10,6 +10,7 @@
   "chats": {
     "attach_file": "Отправить файл",
     "attach_image": "Отправить изображение",
+    "file_dialog_button": " Отправить",
     "date_today": "Сегодня",
     "date_tomorrow": "Завтра",
     "date_yesterday": "Вчера",
@@ -39,6 +40,8 @@
     "too_long": "Сообщение слишком длинное",
     "free_adm_disclaimer": "АДАМАНТ не такой, как другие мессенджеры — он по-настоящему децентрализованный. Каждое действие, включая отправку сообщения, имеет комиссию сети 0.001 ADM. Чтобы начать общение, получите бесплатные токены.",
     "free_adm_title": "Получите бесплатные ADM-токены",
+    "file_send_title": "Отправить файл",
+    "file_image_title": "Отправить изображение",
     "how_to_use_messenger": "Как пользоваться мессенджером на блокчейне",
     "how_to_use_messenger_link": "https://vk.com/@adamant_im-kak-polzovatsya-messendzherom-na-blokcheine",
     "transaction_statuses": {

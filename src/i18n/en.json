@@ -10,6 +10,7 @@
   "chats": {
     "attach_file": "Send file",
     "attach_image": "Send image",
+    "file_dialog_button": " Send",
     "date_today": "Today",
     "date_tomorrow": "Tomorrow",
     "date_yesterday": "Yesterday",
@@ -39,6 +40,8 @@
     "too_long": "The message is too long",
     "free_adm_disclaimer": "ADAMANT differs from other messengers—it is truly decentralized. Every action, including messaging, has a network fee of 0.001 ADM. To start messaging now, get your free welcoming tokens.",
     "free_adm_title": "Get free ADM tokens",
+    "file_send_title": "Send file",
+    "file_image_title": "Send image",
     "how_to_use_messenger": "How to start with a Blockchain Messenger",
     "how_to_use_messenger_link": "https://medium.com/adamant-im/how-to-start-with-a-blockchain-messenger-54d1eb9704e6",
     "transaction_statuses": {

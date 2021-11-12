@@ -33,3 +33,11 @@ export const getIconByType = (fileExt) => {
     }
     return FILE_ICON_FALLBACK
 }
+
+const EXTENSIONS_WITH_PREVIEW = ['JPG', 'PNG', 'GIF', 'WEBP'];
+
+export const isImageFile = (fileExt) => {
+    const upperCasedFileExt = fileExt.toUpperCase();
+    return EXTENSIONS_WITH_PREVIEW.contains(upperCasedFileExt)
+}
+

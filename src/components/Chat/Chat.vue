@@ -1,6 +1,8 @@
 <template>
   <v-card class="chat">
     <free-tokens-dialog v-model="showFreeTokensDialog" />
+    <file-send-dialog v-model="showFileSendDialog" assetType="selectedFile" imageBase64=""/>
+    
     <a-chat
       ref="chat"
       :messages="messages"
@@ -89,6 +91,7 @@
       >
         <chat-menu
           slot="prepend"
+          @sendfile="sendFileOpen"
           :partner-id="partnerId"
         />
       </a-chat-form>
@@ -107,6 +110,8 @@
           mdi-chevron-down
         </v-icon>
       </v-btn>
+      
+      <input type="file" style="display:none;" @change="sendFileProgress" class="file-selection" ref="fileSelect"/>
     </a-chat>
   </v-card>
 </template>
@@ -127,6 +132,7 @@ import partnerName from '@/mixins/partnerName'
 import dateFilter from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import FreeTokensDialog from '@/components/FreeTokensDialog'
+import FileSendDialog from '@/components/FileSendDialog'
 import { websiteUriToOnion } from '@/lib/uri'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
@@ -180,6 +186,24 @@ function validateMessage (message) {
   return true
 }
 
+function validateFileSending(file){
+
+  if (this.$store.state.balance < 0.001) {
+    if (this.$store.getters.isAccountNew()) {
+      this.showFreeTokensDialog = true
+    } else {
+      this.$store.dispatch('snackbar/show', { message: this.$t('chats.no_money') })
+    }
+    return false
+  }
+  
+  //todo
+  //File “File name.pdf” is unavailable. Check permissions.
+  //File size “File name.pdf” exceeds maximum of 10 MB
+
+
+}
+
 export default {
   filters: {
     date: dateFilter
@@ -193,7 +217,8 @@ export default {
     ChatAvatar,
     ChatMenu,
     CryptoIcon,
-    FreeTokensDialog
+    FreeTokensDialog,
+    FileSendDialog
   },
   mixins: [transaction, partnerName],
   props: {
@@ -211,7 +236,9 @@ export default {
     loading: false,
     isScrolledToBottom: true,
     visibilityId: null,
-    showFreeTokensDialog: false
+    showFreeTokensDialog: false,
+    showFileSendDialog: false,
+    selectedFile: ''
   }),
   computed: {
     /**
@@ -263,7 +290,7 @@ export default {
 
         if (!Visibility.hidden()) this.markAsRead()
       })
-    }
+    },
   },
   created () {
     window.addEventListener('keyup', this.onKeyPress)
@@ -291,6 +318,24 @@ export default {
         this.sendMessage(message)
         this.$nextTick(() => this.$refs.chat.scrollToBottom())
       }
+    },
+    sendFileOpen(){
+      this.$refs.fileSelect.click();
+    },
+    sendFileProgress(){
+      const selectedFile = this.$refs.fileSelect.files[0];
+
+      if (!validateFileSending.call(this, message)) {
+       return  
+      }
+
+      this.selectedFile = isImageFile(selectedFile.name)
+      
+      this.showFileSendDialog = true;
+      
+      //encrypt
+      //send
+      
     },
     sendMessage (message) {
       return this.$store.dispatch('chat/sendMessage', {

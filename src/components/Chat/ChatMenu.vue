@@ -15,6 +15,7 @@
           v-for="item in menuItems"
           :key="item.title"
           :disabled="item.disabled"
+          @click="sendFile(item.title)"
         >
           <v-list-tile-avatar>
             <v-icon>{{ item.icon }}</v-icon>
@@ -112,6 +113,10 @@ export default {
           }
           this.dialog = true
         })
+    },
+    sendFile(itemTitle){
+      const assetType = itemTitle.split('_')[1]
+      this.$emit('sendfile', assetType)
     },
     fetchCryptoAddress (crypto) {
       if (crypto === Cryptos.ADM) {
