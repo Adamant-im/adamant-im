@@ -13,7 +13,7 @@ before_deploy:
 deploy:
   provider: surge
   project: ./dist/
-  domain: $SUBDOMAIN-adamant-im.surge.sh
+  domain: $SUBDOMAIN-adamant-pwa.surge.sh
   skip_cleanup: true
   on:
     all_branches: true
