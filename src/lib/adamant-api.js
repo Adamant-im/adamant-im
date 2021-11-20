@@ -458,7 +458,7 @@ export function decodeChat (transaction, key) {
   // The user may not have a public key, so the message cannot be decoded.
   // Display a special message instead.
   if (!key) {
-    transaction.message = 'chats.no_public_key'
+    transaction.message = 'chats.unable_to_retrieve_no_public_key'
     transaction.i18n = true
 
     return transaction
