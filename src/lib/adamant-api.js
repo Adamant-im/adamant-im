@@ -460,6 +460,7 @@ export function decodeChat (transaction, key) {
   if (!key) {
     transaction.message = 'chats.unable_to_retrieve_no_public_key'
     transaction.i18n = true
+    console.log('Error while retrieving a message (no partner\'s public key) for Tx', transaction)
 
     return transaction
   }

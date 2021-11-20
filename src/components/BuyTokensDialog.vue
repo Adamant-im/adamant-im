@@ -117,7 +117,6 @@ export default {
   methods: {
     openLink (link) {
       if (link.startsWith('U')) {
-        console.log('routing to ', link)
         this.$router.push({
           name: 'Chat',
           params: { partnerId: link }
