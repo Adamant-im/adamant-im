@@ -60,19 +60,6 @@ export default {
       return this.$store.state.chat.isFulfilled
     }
   },
-  watch: {
-    // Fetch partner chat messages if the partner is not in the chatrooms list,
-    // e.g. when opening the chat page directly or reloading the chat page in the browser
-    isFulfilled (areChatsLoaded) {
-      if (areChatsLoaded) { // wait until the chatrooms are loaded, and then find the current chat
-        const isPartnerInChatList = this.$store.getters['chat/isPartnerInChatList'](this.partnerId)
-
-        if (!isPartnerInChatList) {
-          this.$store.dispatch('chat/getChatRoomMessages', { contactId: this.partnerId })
-        }
-      }
-    }
-  },
   methods: {
     /**
      * @param {string} address ADAMANT address

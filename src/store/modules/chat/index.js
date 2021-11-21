@@ -270,7 +270,7 @@ const getters = {
   chatOffset: state => contactId => {
     const chat = state.chats[contactId]
 
-    return chat && chat.offset
+    return (chat && chat.offset) || 0
   },
 
   /**
@@ -279,7 +279,7 @@ const getters = {
   chatPage: state => contactId => {
     const chat = state.chats[contactId]
 
-    return chat && chat.page
+    return (chat && chat.page) || 0
   }
 }
 

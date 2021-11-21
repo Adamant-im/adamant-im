@@ -276,7 +276,7 @@ export default {
     },
     // watch `isFulfilled` when opening chat directly from address bar
     isFulfilled (value) {
-      if (value && this.chatPage <= 0) this.fetchChatMessages()
+      if (value && (!this.chatPage || this.chatPage <= 0)) this.fetchChatMessages()
     }
   },
   created () {
