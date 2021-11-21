@@ -460,7 +460,9 @@ const mutations = {
       messages: bountyMessages,
       numOfNewMessages: 0,
       isAdamantChat: true,
-      readOnly: true
+      readOnly: true,
+      offset: 0,
+      page: 0
     })
 
     const exchangeMessages = [
@@ -500,7 +502,9 @@ const mutations = {
     Vue.set(state.chats, 'U380651761819723095', {
       messages: donateMessages,
       isAdamantChat: true,
-      numOfNewMessages: 0
+      numOfNewMessages: 0,
+      offset: 0,
+      page: 0
     })
 
     const bitcoinBetMessages = [
@@ -540,7 +544,9 @@ const mutations = {
     Vue.set(state.chats, 'U1644771796259136854', {
       messages: bountyBotMessages,
       isAdamantChat: true,
-      numOfNewMessages: 0
+      numOfNewMessages: 0,
+      offset: 0,
+      page: 0
     })
   },
 
