@@ -43,7 +43,10 @@
             >
               <chat-preview
                 v-for="transaction in messages"
+                :ref="transaction.contactId"
                 :key="transaction.contactId"
+                :is-loading-separator="transaction.loadingSeparator"
+                :is-loading-separator-active="loading"
                 :user-id="userId"
                 :contact-id="transaction.contactId"
                 :transaction="transaction"
@@ -54,15 +57,6 @@
               />
             </transition-group>
           </v-list>
-
-          <div class="text-xs-center">
-            <v-progress-circular
-              v-show="loading"
-              indeterminate
-              color="primary"
-              size="24"
-            />
-          </div>
         </v-flex>
 
         <ChatSpinner :value="!isFulfilled" />
@@ -111,11 +105,24 @@ export default {
       return this.$store.getters['chat/partners']
     },
     messages () {
-      return this.$store.getters['chat/lastMessages']
+      const lastMessages = this.$store.getters['chat/lastMessages']
+      // We should modify cloned message list to leave original one untouched
+      const clonedLastMessages = lastMessages.map(msg => { return { ...msg } })
+      if (!this.noMoreChats) {
+        const lastNotAdamantChat = lastMessages.map(msg => this.isAdamantChat(msg.contactId)).lastIndexOf(false)
+        if (lastNotAdamantChat) {
+          clonedLastMessages.splice(lastNotAdamantChat + 1, 0, { loadingSeparator: true, userId: 'loadingSeparator', contactId: 'loadingSeparator' })
+        }
+      }
+      return clonedLastMessages
     },
     userId () {
       return this.$store.state.address
     }
+  },
+  beforeMount () {
+    // When returning to chat list from a specific chat, restore noMoreChats property not to show loadingSeparator
+    this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
   },
   mounted () {
     this.showChatStartDialog = this.showNewContact
@@ -146,12 +153,23 @@ export default {
       window.removeEventListener('scroll', this.onScroll)
     },
     onScroll () {
-      const scrollHeight = document.documentElement.scrollHeight
-      const scrollTop = document.documentElement.scrollTop
+      const scrollHeight = document.documentElement.scrollHeight // all of viewport height
+      const scrollTop = document.documentElement.scrollTop // current vieport scroll position
       const clientHeight = document.documentElement.clientHeight
 
-      // if scrolled to bottom
-      if (scrollHeight - scrollTop - scrollOffset < clientHeight) {
+      let isLoadingSeparatorVisible = false
+      if (this.$refs.loadingSeparator && this.$refs.loadingSeparator[0] && this.$refs.loadingSeparator[0].$el) {
+        const el = this.$refs.loadingSeparator[0].$el
+        if (el.offsetTop > 0) { // loadingSeparator is visible
+          const loadingSeparatorTop = el.offsetTop
+          const loadingSeparatorHeight = el.clientHeight // it is nearly about bottom menu height
+          isLoadingSeparatorVisible = scrollTop + clientHeight > loadingSeparatorTop + loadingSeparatorHeight
+        }
+      }
+
+      const isScrolledToBottom = scrollHeight - scrollTop - scrollOffset < clientHeight
+
+      if (isLoadingSeparatorVisible || isScrolledToBottom) {
         this.loadChatsPaged()
       }
     },
@@ -166,6 +184,7 @@ export default {
         })
         .finally(() => {
           this.loading = false
+          this.onScroll() // update messages and remove loadingSeparator, if needed
         })
     }
   }

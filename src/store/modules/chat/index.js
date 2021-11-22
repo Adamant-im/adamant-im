@@ -41,7 +41,7 @@ const state = () => ({
   chats: {},
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
-  offset: 0 // for loading chat list with pagination
+  offset: 0 // for loading chat list with pagination. -1 if all of chats loaded
 })
 
 const getters = {
@@ -267,6 +267,9 @@ const getters = {
     return false
   },
 
+  /**
+   * Offset for chat with contactId
+   */
   chatOffset: state => contactId => {
     const chat = state.chats[contactId]
 
@@ -280,6 +283,13 @@ const getters = {
     const chat = state.chats[contactId]
 
     return (chat && chat.page) || 0
+  },
+
+  /**
+   * Offset for chat list
+   */
+  chatListOffset: state => {
+    return state.offset
   }
 }
 
