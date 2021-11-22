@@ -12,6 +12,19 @@ const createClient = url => {
     if (error.response && Number(error.response.status) >= 500) {
       console.error(`Request to ${url} failed.`, error)
     }
+    // Lisk is spamming with 404 in console, when there is no LSK account
+    // There is no way to disable 404 logging for Chrome
+    if (error.response && Number(error.response.status) === 404) {
+      if (
+        error.response.data &&
+        error.response.data.errors &&
+        error.response.data.errors[0] &&
+        error.response.data.errors[0].message &&
+        error.response.data.errors[0].message.includes('was not found')
+      ) {
+        return error.response
+      }
+    }
     return Promise.reject(error)
   })
   return client
