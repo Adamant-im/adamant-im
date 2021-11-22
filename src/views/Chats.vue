@@ -108,7 +108,7 @@ export default {
       const lastMessages = this.$store.getters['chat/lastMessages']
       // We should modify cloned message list to leave original one untouched
       const clonedLastMessages = lastMessages.map(msg => { return { ...msg } })
-      if (!this.noMoreChats) {
+      if (!this.noMoreChats && clonedLastMessages.length > 25) {
         const lastNotAdamantChat = lastMessages.map(msg => this.isAdamantChat(msg.contactId)).lastIndexOf(false)
         if (lastNotAdamantChat) {
           clonedLastMessages.splice(lastNotAdamantChat + 1, 0, { loadingSeparator: true, userId: 'loadingSeparator', contactId: 'loadingSeparator' })
