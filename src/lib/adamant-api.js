@@ -454,6 +454,17 @@ export function getChats (from = 0, offset = 0, orderBy = 'desc') {
  */
 export function decodeChat (transaction, key) {
   const chat = transaction.asset.chat
+
+  // The user may not have a public key, so the message cannot be decoded.
+  // Display a special message instead.
+  if (!key) {
+    transaction.message = 'chats.unable_to_retrieve_no_public_key'
+    transaction.i18n = true
+    console.warn('Error while retrieving a message (no partner\'s public key) for Tx', transaction)
+
+    return transaction
+  }
+
   const message = utils.decodeMessage(chat.message, key, myKeypair.privateKey, chat.own_message)
 
   if (!message) return transaction
@@ -545,4 +556,100 @@ export function loginViaPassword (password, store) {
           passphrase
         }))
     })
+}
+
+/**
+ * AIP16: Get chat rooms.
+ *
+ * @param {string} address Adamant address
+ * @param {any} params
+ * @returns {Promise}
+ */
+export async function getChatRooms (address, params) {
+  const defaultParams = {
+    orderBy: 'timestamp:desc',
+    limit: 25,
+    offset: 0
+  }
+
+  const { count, chats } = await client.get(`/api/chatrooms/${address}`, {
+    ...defaultParams,
+    ...params
+  })
+
+  const messages = chats.flatMap(chat => {
+    const partner = chat.lastTransaction.senderId === address
+      ? { publicKey: chat.lastTransaction.recipientPublicKey, address: chat.lastTransaction.recipientId }
+      : { publicKey: chat.lastTransaction.senderPublicKey, address: chat.lastTransaction.senderId }
+
+    if (partner.address && partner.publicKey) {
+      store.commit('setPublicKey', {
+        adamantAddress: partner.address,
+        publicKey: partner.publicKey
+      })
+    }
+
+    try {
+      if (chat.lastTransaction.type === 0) {
+        return [chat.lastTransaction]
+      }
+
+      return [decodeChat(chat.lastTransaction, partner.publicKey)]
+    } catch (err) {
+      console.warn('Failed to parse chat message', { chat, err })
+      return []
+    }
+  })
+
+  const lastMessageHeight = (messages[0] && messages[0].height) || 0
+
+  return {
+    messages,
+    count,
+    lastMessageHeight
+  }
+}
+
+/**
+ * AIP16: Get chat room messages.
+ *
+ * @param {string} address1 Adamant address
+ * @param {string} address2 Adamant address
+ * @param {any} params
+ * @returns {Promise}
+ */
+export async function getChatRoomMessages (address1, address2, params) {
+  const defaultParams = {
+    orderBy: 'timestamp:desc',
+    height: 0,
+    limit: 25
+  }
+
+  const { count, participants, messages } = await client.get(`/api/chatrooms/${address1}/${address2}`, {
+    ...defaultParams,
+    ...params
+  })
+
+  const decodedMessages = messages.flatMap(message => {
+    const publicKey = message.senderId === address1
+      ? message.recipientPublicKey
+      : message.senderPublicKey
+
+    try {
+      if (message.type === 0) {
+        return [message]
+      }
+
+      return [decodeChat(message, publicKey)]
+    } catch (err) {
+      console.warn('Failed to parse chat message', { message, err })
+      return []
+    }
+  })
+
+  return {
+    count,
+    participants,
+    messages: decodedMessages
+  }
 }
