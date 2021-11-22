@@ -578,16 +578,23 @@ export async function getChatRooms (address, params) {
   })
 
   const messages = chats.flatMap(chat => {
-    const publicKey = chat.lastTransaction.senderId === address
-      ? chat.lastTransaction.recipientPublicKey
-      : chat.lastTransaction.senderPublicKey
+    const partner = chat.lastTransaction.senderId === address
+      ? { publicKey: chat.lastTransaction.recipientPublicKey, address: chat.lastTransaction.recipientId }
+      : { publicKey: chat.lastTransaction.senderPublicKey, address: chat.lastTransaction.senderId }
+
+    if (partner.address && partner.publicKey) {
+      store.commit('setPublicKey', {
+        adamantAddress: partner.address,
+        publicKey: partner.publicKey
+      })
+    }
 
     try {
       if (chat.lastTransaction.type === 0) {
         return [chat.lastTransaction]
       }
 
-      return [decodeChat(chat.lastTransaction, publicKey)]
+      return [decodeChat(chat.lastTransaction, partner.publicKey)]
     } catch (err) {
       console.warn('Failed to parse chat message', { chat, err })
       return []
