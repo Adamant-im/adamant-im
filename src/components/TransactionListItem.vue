@@ -205,6 +205,9 @@ export default {
       this.$emit('click:icon', this.partnerAdmId)
     },
     admTx () {
+      // Note: because to Chatrooms API, we store only fetched messages, not all of them
+      // So, we'll search through only stored messages
+
       if (this.isCryptoADM()) {
         const chatWithPartner = this.$store.state.chat.chats[this.partnerId]
         const msg = chatWithPartner && chatWithPartner.messages ? chatWithPartner.messages.find(message => message.id === this.id) : undefined

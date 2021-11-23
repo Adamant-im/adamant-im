@@ -80,7 +80,7 @@ export default {
         const hash = admSpecialMessage.hash || admSpecialMessage.id
 
         // ADM is a special case when using sockets
-        if (type === Cryptos.ADM || type === 0 || type === 'message') {
+        if (type === Cryptos.ADM || type === 0 || type === 8 || type === 'message') {
           if (admSpecialMessage.status === TS.REGISTERED) {
             // If it's a message, getChats() in adamant-api.js will update height and confirmations later,
             // But now we must show Tx as confirmed
