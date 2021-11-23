@@ -100,6 +100,7 @@ export default {
       type: String,
       required: true
     },
+    // Crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     senderId: {
       type: String,
       required: true
@@ -127,25 +128,25 @@ export default {
     }
   },
   computed: {
+    // Own crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     userId () {
       if (this.crypto === Cryptos.ADM) {
         return this.$store.state.address
       } else {
         const cryptoModule = this.crypto.toLowerCase()
-
         return this.$store.state[cryptoModule].address
       }
     },
+    // Crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     partnerId () {
-      return isStringEqualCI(this.senderId, this.userId)
-        ? this.recipientId
-        : this.senderId
+      return isStringEqualCI(this.senderId, this.userId) ? this.recipientId : this.senderId
     },
+    // Partner's ADM address, if found. Else, returns 'undefined'
     partnerAdmId () {
-      return isStringEqualCI(this.getAdmTx.senderId, this.$store.state.address)
-        ? this.getAdmTx.recipientId
-        : this.getAdmTx.senderId
+      const admTx = this.getAdmTx
+      return isStringEqualCI(admTx.senderId, this.$store.state.address) ? admTx.recipientId : admTx.senderId
     },
+    // Partner's name from KVS, if partnerAdmId found
     partnerName () {
       if (isStringEqualCI(this.partnerId, this.userId)) {
         return this.$t('transaction.me')
@@ -186,7 +187,8 @@ export default {
       }
     },
     comment () {
-      return this.getAdmTx && this.getAdmTx.message ? this.getAdmTx.message : false
+      const admTx = this.getAdmTx
+      return admTx.message
     }
   },
   methods: {
@@ -204,11 +206,18 @@ export default {
     },
     admTx () {
       if (this.isCryptoADM()) {
-        return this.$store.getters['chat/messageById'](this.id) || this.$store.state.adm.transactions[this.id] || { }
+        const chatWithPartner = this.$store.state.chat.chats[this.partnerId]
+        const msg = chatWithPartner && chatWithPartner.messages ? chatWithPartner.messages.find(message => message.id === this.id) : undefined
+        return (
+          // this.$store.getters['chat/partnerMessageById'](this.partnerId, this.id) || // unable to use getter, as it causes "You may have an infinite update loop in a component render function"
+          msg || // first, try to get message with comment
+          this.$store.state.adm.transactions[this.id] || // next, try to get direct transaction
+          { } // finally, return empty object
+        )
       }
 
-      const admTx = {}
-      // Bad news, everyone: we'll have to scan the messages
+      // If crytpo is not ADM: we have to scan all the messages
+      const admTx = { }
       Object.values(this.$store.state.chat.chats).some(chat => {
         Object.values(chat.messages).some(msg => {
           if (msg.hash && msg.hash === this.id) {
