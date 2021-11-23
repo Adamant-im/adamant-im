@@ -1,5 +1,20 @@
 <template>
   <v-list-tile
+    v-if="isLoadingSeparator"
+  >
+    <v-list-tile-content
+      style="align-items: center"
+    >
+      <v-icon
+        ref="loadingDots"
+        :class="{ kmove: isLoadingSeparatorActive }"
+      >
+        mdi-dots-horizontal
+      </v-icon>
+    </v-list-tile-content>
+  </v-list-tile>
+  <v-list-tile
+    v-else
     :class="className"
     @click="$emit('click')"
   >
@@ -129,6 +144,14 @@ export default {
     isAdamantChat: {
       type: Boolean,
       default: false
+    },
+    isLoadingSeparator: {
+      type: Boolean,
+      default: false
+    },
+    isLoadingSeparatorActive: {
+      type: Boolean,
+      default: false
     }
   },
   data: () => ({
@@ -211,6 +234,19 @@ export default {
 <style lang="stylus" scoped>
 @import '../assets/stylus/settings/_colors.styl'
 @import '../assets/stylus/themes/adamant/_mixins.styl'
+
+@keyframes movement {
+  from { left: -50px }
+  to { left: 50px }
+}
+
+.kmove {
+  position: relative;
+  animation-name: movement;
+  animation-duration: 0.5s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
 
 /**
  * 1. Message/Transaction content.

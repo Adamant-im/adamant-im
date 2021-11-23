@@ -630,7 +630,7 @@ export default {
         })
         .catch(error => {
           const formattedError = formatSendTxError(error)
-          console.log('Error while sending transaction', formattedError)
+          console.warn('Error while sending transaction', formattedError)
           let message = formattedError.errorMessage
           if (/dust/i.test(message) || get(error, 'response.data.error.code') === -26) {
             message = this.$t('transfer.error_dust_amount')

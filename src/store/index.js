@@ -206,7 +206,6 @@ const store = {
     eth: ethModule, // Ethereum-related data
     bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
     usds: erc20Module(Cryptos.USDS, '0xa4bdb11dc0a2bec88d24a3aa1e6bb17201112ebe', 6),
-    res: erc20Module(Cryptos.RES, '0x0a9f693fce6f00a51a8e0db4351b5a8078b4242e', 5),
     adm: admModule, // ADM transfers
     doge: dogeModule,
     lsk: lskModule,
