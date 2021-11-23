@@ -72,7 +72,7 @@ export default {
     },
     content: function () {
       let contents = '<p>' + this.$t('transfer.warning_on_partner_address.about') + '</p>'
-      contents += '<p style="background-color: darkred;">' + this.$t('transfer.warning_on_partner_address.specifics_many_addresses', { crypto: this.info.coin, partner_account: this.info.ADMaddress, partner_name: this.info.ADMname, manyAddresses: this.info.coinAddresses })
+      contents += '<p class="a-text-attention">' + this.$t('transfer.warning_on_partner_address.specifics_many_addresses', { crypto: this.info.coin, partner_account: this.info.ADMaddress, partner_name: this.info.ADMname, manyAddresses: this.info.coinAddresses })
       contents += '</p>'
       contents += '<p>' + this.$t('transfer.warning_on_partner_address.reasons')
       contents += ' ' + this.$t('transfer.warning_on_partner_address.what_to_do') + '</p>'

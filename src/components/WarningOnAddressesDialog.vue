@@ -87,7 +87,7 @@ export default {
         let contents = '<p>' + dialog.$t('warning_on_addresses.about') + '</p>'
 
         if (validateSummary.isWrongAddress) {
-          contents += '<p style="background-color: darkred;">' + dialog.$t('warning_on_addresses.specifics_wrong_addresses', { crypto: validateSummary.wrongCoin, storedAddress: validateSummary.storedAddress, correctAddress: validateSummary.correctAddress })
+          contents += '<p class="a-text-attention">' + dialog.$t('warning_on_addresses.specifics_wrong_addresses', { crypto: validateSummary.wrongCoin, storedAddress: validateSummary.storedAddress, correctAddress: validateSummary.correctAddress })
           if (validateSummary.wrongCoins.length > 1) {
             const wrongCoins = validateSummary.wrongCoins.join(', ')
             contents += ' ' + dialog.$t('warning_on_addresses.full_list_wrong_addresses', { crypto_list: wrongCoins })
@@ -95,7 +95,7 @@ export default {
           contents += '</p>'
         } else if (validateSummary.isManyAddresses) {
           const manyAddresses = validateSummary.manyAddresses.join(', ')
-          contents += '<p style="background-color: darkred;">' + dialog.$t('warning_on_addresses.specifics_many_addresses', { crypto: validateSummary.manyAddressesCoin, manyAddresses: manyAddresses })
+          contents += '<p class="a-text-attention">' + dialog.$t('warning_on_addresses.specifics_many_addresses', { crypto: validateSummary.manyAddressesCoin, manyAddresses: manyAddresses })
           if (validateSummary.manyAddressesCoins.length > 1) {
             const wrongCoins = validateSummary.manyAddressesCoins.join(', ')
             contents += ' ' + dialog.$t('warning_on_addresses.full_list_many_addresses', { crypto_list: wrongCoins })
