@@ -105,11 +105,6 @@ export default {
           link: websiteUriToOnion(this.adamantAddress
             ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
             : `${this.$t('home.buy_tokens_btn_link')}`)
-        },
-        {
-          icon: 'RES',
-          title: 'Resfinex',
-          link: 'https://trade.resfinex.com?ref=7ccb34d867&pair=ADM_USDT'
         }
       ]
     }
@@ -117,7 +112,6 @@ export default {
   methods: {
     openLink (link) {
       if (link.startsWith('U')) {
-        console.log('routing to ', link)
         this.$router.push({
           name: 'Chat',
           params: { partnerId: link }

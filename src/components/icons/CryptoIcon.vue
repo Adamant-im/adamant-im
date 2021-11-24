@@ -17,7 +17,6 @@ import DogeFillIcon from './DogeFill'
 import DashFillIcon from './DashFill'
 import LskFillIcon from './LskFill'
 import UsdsFillIcon from './UsdsFill'
-import ResFillIcon from './ResFill'
 import BtcFillIcon from './BtcFill'
 import UnknownCryptoFillIcon from './UnknownCryptoFill'
 
@@ -40,7 +39,6 @@ export default {
     DashFillIcon,
     LskFillIcon,
     UsdsFillIcon,
-    ResFillIcon,
     BtcFillIcon,
     UnknownCryptoFillIcon
   },
@@ -50,10 +48,8 @@ export default {
       type: String,
       required: true,
       validator: value => {
-        // @todo remove LSK when will be supported
         return (
           value in Cryptos ||
-          value === 'LSK' ||
           value === 'UNKNOWN_CRYPTO'
         )
       }

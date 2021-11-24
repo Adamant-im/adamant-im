@@ -167,7 +167,7 @@ export default class LiskApi extends LskBaseApi {
     options.moduleAssetId = `${this.moduleId}:${this.assetId}`
     options.limit = TX_CHUNK_SIZE
     options.address = this.address
-    options.includePending = true
+    // options.includePending = true // workaround on Lisk Gateway bug v0.5.0 https://github.com/LiskHQ/lisk-service/issues/883
     if (options.toTimestamp || options.fromTimestamp) {
       options.toTimestamp = options.toTimestamp || Date.now()
       options.fromTimestamp = options.fromTimestamp || 0

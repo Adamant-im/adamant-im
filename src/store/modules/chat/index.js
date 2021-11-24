@@ -19,7 +19,7 @@ const SOCKET_ENABLED_TIMEOUT = 3000
 const SOCKET_DISABLED_TIMEOUT = 3000
 
 /**
- * type State {
+ * type State = {
  *   chats: {
  *     [senderId: string]: Chat
  *   },
@@ -27,10 +27,12 @@ const SOCKET_DISABLED_TIMEOUT = 3000
  *   isFulfilled: boolean
  * }
  *
- * type Chat {
+ * type Chat = {
  *   messages: Message[],
  *   numOfNewMessages: number,
- *   readOnly?: boolean // for Welcome to ADAMANT & ADAMANT Tokens chats,
+ *   readOnly?: boolean, // for Welcome to ADAMANT & ADAMANT Tokens chats
+ *   offset: number, // for loading chat history,
+ *   page: number, // for loading chat history,
  *   scrollPosition: number // current scroll position of AChat component
  * }
  *
@@ -38,7 +40,8 @@ const SOCKET_DISABLED_TIMEOUT = 3000
 const state = () => ({
   chats: {},
   lastMessageHeight: 0, // `height` value of the last message
-  isFulfilled: false // false - getChats did not start or in progress, true - getChats finished
+  isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
+  offset: 0 // for loading chat list with pagination. -1 if all of chats loaded
 })
 
 const getters = {
@@ -57,7 +60,7 @@ const getters = {
     const chat = state.chats[senderId]
 
     if (chat) {
-      return chat.messages
+      return chat.messages.sort((left, right) => left.timestamp - right.timestamp)
     }
 
     return []
@@ -262,6 +265,31 @@ const getters = {
     }
 
     return false
+  },
+
+  /**
+   * Offset for chat with contactId
+   */
+  chatOffset: state => contactId => {
+    const chat = state.chats[contactId]
+
+    return (chat && chat.offset) || 0
+  },
+
+  /**
+   * Current chat history page.
+   */
+  chatPage: state => contactId => {
+    const chat = state.chats[contactId]
+
+    return (chat && chat.page) || 0
+  },
+
+  /**
+   * Offset for chat list
+   */
+  chatListOffset: state => {
+    return state.offset
   }
 }
 
@@ -271,6 +299,26 @@ const mutations = {
    */
   setHeight (state, height) {
     state.lastMessageHeight = height
+  },
+
+  setChatOffset (state, { contactId, offset }) {
+    const chat = state.chats[contactId]
+
+    if (chat) {
+      chat.offset = offset
+    }
+  },
+
+  setChatPage (state, { contactId, page }) {
+    const chat = state.chats[contactId]
+
+    if (chat) {
+      chat.page = page
+    }
+  },
+
+  setOffset (state, offset) {
+    state.offset = offset
   },
 
   /**
@@ -300,7 +348,7 @@ const mutations = {
    * Push an message to a specific chat by senderId.
    * @param {string} userId Your address
    */
-  pushMessage (state, { message, userId }) {
+  pushMessage (state, { message, userId, unshift = false }) {
     const partnerId = isStringEqualCI(message.senderId, userId)
       ? message.recipientId
       : message.senderId
@@ -331,7 +379,12 @@ const mutations = {
       if (localTransaction) return
     }
 
-    chat.messages.push(message)
+    // use unshift when loading chat history
+    if (unshift) {
+      chat.messages.unshift(message)
+    } else {
+      chat.messages.push(message)
+    }
 
     // If this is a new message, increment `numOfNewMessages`.
     // Exception only when `height = 0`, this means that the
@@ -417,7 +470,9 @@ const mutations = {
       messages: bountyMessages,
       numOfNewMessages: 0,
       isAdamantChat: true,
-      readOnly: true
+      readOnly: true,
+      offset: 0,
+      page: 0
     })
 
     const exchangeMessages = [
@@ -436,7 +491,9 @@ const mutations = {
     Vue.set(state.chats, 'U5149447931090026688', {
       messages: exchangeMessages,
       isAdamantChat: true,
-      numOfNewMessages: 0
+      numOfNewMessages: 0,
+      offset: 0,
+      page: 0
     })
 
     const donateMessages = [
@@ -455,7 +512,9 @@ const mutations = {
     Vue.set(state.chats, 'U380651761819723095', {
       messages: donateMessages,
       isAdamantChat: true,
-      numOfNewMessages: 0
+      numOfNewMessages: 0,
+      offset: 0,
+      page: 0
     })
 
     const bitcoinBetMessages = [
@@ -474,7 +533,9 @@ const mutations = {
     Vue.set(state.chats, 'U17840858470710371662', {
       messages: bitcoinBetMessages,
       isAdamantChat: true,
-      numOfNewMessages: 0
+      numOfNewMessages: 0,
+      offset: 0,
+      page: 0
     })
 
     const bountyBotMessages = [
@@ -493,7 +554,9 @@ const mutations = {
     Vue.set(state.chats, 'U1644771796259136854', {
       messages: bountyBotMessages,
       isAdamantChat: true,
-      numOfNewMessages: 0
+      numOfNewMessages: 0,
+      offset: 0,
+      page: 0
     })
   },
 
@@ -514,18 +577,17 @@ const mutations = {
 
 const actions = {
   /**
-   * Get all messages from the server starting from the oldest.
-   * Must be called once during initialization.
+   * Get chat rooms.
    *
    * Important:
-   *  - `getChats` is a recursive function
+   *  - Must be called once during initialization.
    *
    * @returns {Promise}
    */
-  loadChats ({ state, commit, dispatch }) {
+  loadChats ({ commit, dispatch, rootState }, { perPage = 25 } = {}) {
     commit('setFulfilled', false)
 
-    return getChats(state.lastMessageHeight)
+    return admApi.getChatRooms(rootState.address)
       .then(result => {
         const { messages, lastMessageHeight } = result
 
@@ -533,9 +595,59 @@ const actions = {
 
         if (lastMessageHeight > 0) {
           commit('setHeight', lastMessageHeight)
+          commit('setOffset', perPage)
         }
 
         commit('setFulfilled', true)
+      })
+  },
+
+  loadChatsPaged ({ commit, dispatch, rootState, state }, { perPage = 25 } = {}) {
+    const offset = state.offset
+
+    if (offset === -1) {
+      return Promise.reject(new Error('No more chats'))
+    }
+
+    return admApi.getChatRooms(rootState.address, { offset, limit: perPage })
+      .then(({ messages }) => {
+        dispatch('pushMessages', messages)
+
+        if (messages.length <= 0) {
+          commit('setOffset', -1)
+        } else {
+          commit('setOffset', offset + perPage)
+        }
+      })
+  },
+
+  /**
+   * Get chat room messages.
+   *
+   * @param {string} contactId Adamant address
+   * @param {number} perPage Messages per page
+   * @returns {Promise}
+   */
+  getChatRoomMessages ({ rootState, dispatch, commit, getters }, { contactId, perPage = 25 } = {}) {
+    let offset = getters.chatOffset(contactId)
+    let page = getters.chatPage(contactId)
+
+    if (offset === -1) {
+      return Promise.reject(new Error('No more messages'))
+    }
+
+    return admApi.getChatRoomMessages(rootState.address, contactId, { offset, limit: perPage })
+      .then(({ messages }) => {
+        dispatch('unshiftMessages', messages)
+
+        if (messages.length <= 0) {
+          commit('setChatOffset', { contactId, offset: -1 }) // no more messages
+        } else {
+          offset = offset + perPage
+
+          commit('setChatOffset', { contactId, offset })
+          commit('setChatPage', { contactId, page: ++page })
+        }
       })
   },
 
@@ -548,6 +660,17 @@ const actions = {
       commit('pushMessage', {
         message: transformMessage(message),
         userId: rootState.address
+      })
+    })
+  },
+
+  unshiftMessages ({ commit, rootState }, messages) {
+    messages.forEach(message => {
+      commit('pushMessage', {
+        message: transformMessage(message),
+        userId: rootState.address,
+
+        unshift: true
       })
     })
   },

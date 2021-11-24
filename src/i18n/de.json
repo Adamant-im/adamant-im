@@ -16,7 +16,6 @@
     "date_yesterday": "Gestern",
     "estimate_fee": "Voraussichtliche Gebühr",
     "incorrect_address": "Fehlerhafte Empfängeradresse",
-    "no_public_key": "This address is not active yet. Unable to start a chat",
     "message": "Gib deine Nachricht ein",
     "message_mac_os": "Type a message. Cmd + Ctrl + Space for Emoji picker",
     "message_windows_10": "Type a message. Win + . for Emoji picker",

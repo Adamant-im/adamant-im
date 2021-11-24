@@ -21,7 +21,6 @@ export const Cryptos = {
   DOGE: 'DOGE',
   DASH: 'DASH',
   USDS: 'USDS',
-  RES: 'RES',
   BNB: 'BNB'
 }
 
@@ -30,7 +29,6 @@ export const CryptosNames = {
   [Cryptos.BNB]: 'Binance Coin',
   [Cryptos.ETH]: 'Ethereum',
   [Cryptos.LSK]: 'Lisk',
-  [Cryptos.RES]: 'Resfinex Token',
   [Cryptos.DOGE]: 'DOGE',
   [Cryptos.DASH]: 'DASH',
   [Cryptos.USDS]: 'Stably Dollar',
@@ -46,8 +44,7 @@ export const minBalances = {
 
 export const ERC20 = Object.freeze([
   Cryptos.BNB,
-  Cryptos.USDS,
-  Cryptos.RES
+  Cryptos.USDS
 ])
 
 export const BTC_BASED = Object.freeze([
@@ -91,7 +88,6 @@ export const CryptoAmountPrecision = {
   ETH: 6,
   BNB: 6,
   DOGE: 8,
-  RES: 5,
   DASH: 8,
   USDS: 6,
   BTC: 8,
@@ -104,7 +100,6 @@ export const CryptoNaturalUnits = {
   BNB: 18,
   DOGE: 8,
   DASH: 8,
-  RES: 5,
   USDS: 6,
   BTC: 8,
   LSK: 8
