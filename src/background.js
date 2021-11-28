@@ -63,14 +63,14 @@ function createWindow () {
 
   const darkMode = nativeTheme.shouldUseDarkColors
   appWindow.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme', value: " + darkMode + ' })')
+  nativeTheme.on('updated',
+    function theThemeHasChanged () {
+      appWindow.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme', value: " + nativeTheme.shouldUseDarkColors + ' })')
+    }
+  )
+
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template))
-    systemPreferences.subscribeNotification(
-      'AppleInterfaceThemeChangedNotification',
-      function theThemeHasChanged () {
-        appWindow.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme', value: " + !nativeTheme.shouldUseDarkColors + ' })')
-      }
-    )
   }
 }
 
