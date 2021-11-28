@@ -1,10 +1,6 @@
 /* eslint-disable no-console */
 import { register } from 'register-service-worker'
 
-// For Electron: TypeError: Failed to register a ServiceWorker: The URL protocol of the current origin ('app://.') is not supported.
-// Including with navigator.serviceWorker.register('./service-worker.js', {})
-
-// if (process.env.NODE_ENV === 'production') {
 if (process.env.NODE_ENV) {
   register(`${process.env.BASE_URL}service-worker.js`, {
     ready (registration) {

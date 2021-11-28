@@ -11,7 +11,16 @@ const path = require('path')
 let appWindow
 
 // Standard scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } }])
+protocol.registerSchemesAsPrivileged([{
+  scheme: 'app',
+  privileges: {
+    standard: true,
+    secure: true,
+    supportFetchAPI: true,
+    bypassCSP: true,
+    allowServiceWorkers: true
+  }
+}])
 
 function createWindow () {
   // Create the browser window
@@ -22,7 +31,7 @@ function createWindow () {
     appWindow.webContents.openDevTools()
   } else {
     // Load the index.html when not in development
-    // appWindow.webContents.openDevTools()
+    appWindow.webContents.openDevTools()
     createProtocol('app')
     appWindow.loadURL('app://./index.html')
   }
