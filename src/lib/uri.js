@@ -6,17 +6,15 @@ import {
 } from './constants'
 
 /**
- * Get an ADAMANT URI
+ * Get an ADAMANT URI from the address bar or argv[]
  * Complies with AIP-2, AIP-8, AIP-9
  * @returns {string}
  */
-export function getURI () {
+export function getAddressBarURI () {
   let aip2 = ''
 
   if (process.env.IS_ELECTRON) {
-    const { remote } = require('electron')
-    const args = remote.getGlobal('process').argv
-
+    const args = process.argv
     aip2 = args.find(v => /^adm:U[0-9]{6,}/.test(v)) || ''
   }
 
@@ -26,17 +24,18 @@ export function getURI () {
 /**
  * Parse info from an URI containing a cryptocurrency address
  * Complies with AIP-2, AIP-8, AIP-9
- * @param {string} uri URI
+ * Sample: https://msg.adamant.im?address=U9821606738809290000&label=John+Doe&amount=1.12&message=Buy+a+beer
+ * @param {string} uri URI. Default is address bar or argv[].
  * @returns {
  *   {
  *     address: string,
  *     crypto: string,
  *     params: Object<string, string>,
-       protocol: string
+ *     protocol: string
  *   }
  * }
  */
-export function parseURI (uri = getURI()) {
+export function parseURIasAIP (uri = getAddressBarURI()) {
   const [origin, query = ''] = uri.split('?')
   let address = ''
   let crypto = ''
@@ -46,7 +45,6 @@ export function parseURI (uri = getURI()) {
   if (query) {
     params = query.split('&').reduce((accum, param) => {
       const [key, value = ''] = param.split('=')
-
       return key && value
         ? {
             ...accum,
@@ -57,11 +55,12 @@ export function parseURI (uri = getURI()) {
         : accum
     }, Object.create(null))
   }
+
   if (origin.includes(':')) {
     [protocol, address] = origin.split(':')
     if (protocol === 'ethereum') {
       crypto = Cryptos.ETH
-    } else if (/^https?$/.test(protocol)) {
+    } else if (/^https?$/.test(protocol) || /^app$/.test(protocol)) {
       crypto = Cryptos.ADM
       address = params.address; delete params.address
     } else if (Object.prototype.hasOwnProperty.call(Cryptos, protocol.toUpperCase())) {

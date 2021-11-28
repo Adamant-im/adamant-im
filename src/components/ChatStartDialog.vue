@@ -99,7 +99,7 @@
 
 <script>
 import { Cryptos } from '@/lib/constants'
-import { generateURI, parseURI } from '@/lib/uri'
+import { generateURI, parseURIasAIP } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
 import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
@@ -218,7 +218,7 @@ export default {
     onPasteURI (e) {
       const data = e.clipboardData.getData('text')
       this.$nextTick(() => {
-        const address = parseURI(data).address
+        const address = parseURIasAIP(data).address
         if (validateAddress('ADM', address)) {
           e.preventDefault()
           this.getInfoFromURI(data)
@@ -241,7 +241,7 @@ export default {
      * @param {string} uri URI
      */
     getInfoFromURI (uri) {
-      const partner = parseURI(uri)
+      const partner = parseURIasAIP(uri)
 
       this.recipientAddress = ''
       if (validateAddress(Cryptos.ADM, partner.address)) {

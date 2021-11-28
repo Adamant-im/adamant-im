@@ -1,41 +1,41 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, Menu, systemPreferences } from 'electron'
-import {
-  createProtocol,
-  installVueDevtools
-} from 'vue-cli-plugin-electron-builder/lib'
+import { app, protocol, BrowserWindow, Menu, systemPreferences, nativeTheme } from 'electron'
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path')
 
 // Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let win
+// be closed automatically when the JavaScript object is garbage collected
+let appWindow
 
 // Standard scheme must be registered before the app is ready
-// before (<= v4.x):
-protocol.registerStandardSchemes(['app'], { secure: true })
+protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } }])
 
 function createWindow () {
-  // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 800, 'max-width': 800, icon: path.join(__dirname, '/icon.png') })
+  // Create the browser window
+  appWindow = new BrowserWindow({ width: 800, height: 800, 'max-width': 800, icon: path.join(__dirname, '/icon.png') })
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
+    appWindow.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    appWindow.webContents.openDevTools()
   } else {
-    createProtocol('app')
     // Load the index.html when not in development
-    win.loadURL('app://./index.html')
+    // appWindow.webContents.openDevTools()
+    createProtocol('app')
+    appWindow.loadURL('app://./index.html')
   }
 
-  win.on('closed', () => {
-    win = null
+  appWindow.on('closed', () => {
+    appWindow = null
   })
+
   const template = [{
     label: 'ADAMANT Messenger',
     submenu: [
-      { label: 'About', selector: 'orderFrontStandardAboutPanel:' },
+      { label: 'About ADAMANT Messenger', selector: 'orderFrontStandardAboutPanel:' },
+      { label: 'Hide', accelerator: 'Command+H', click: function () { app.hide() } },
       { type: 'separator' },
       { label: 'Quit', accelerator: 'Command+Q', click: function () { app.quit() } }
     ]
@@ -50,49 +50,46 @@ function createWindow () {
       { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
       { label: 'Select All', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:' }
     ]
-  }
-  ]
+  }]
+
+  const darkMode = nativeTheme.shouldUseDarkColors
+  appWindow.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme', value: " + darkMode + ' })')
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(Menu.buildFromTemplate(template))
-    const darkMode = true
-    // if (systemPreferences.isDarkMode()) {
-    //   darkMode = true;
-    // }
-    win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: " + darkMode + ' })')
     systemPreferences.subscribeNotification(
       'AppleInterfaceThemeChangedNotification',
       function theThemeHasChanged () {
-        win.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme',value: " + systemPreferences.isDarkMode() + ' })')
+        appWindow.webContents.executeJavaScript("window.ep.$store.commit('options/updateOption', { key: 'darkTheme', value: " + !nativeTheme.shouldUseDarkColors + ' })')
       }
     )
   }
 }
 
-// Quit when all windows are closed.
+// Quit when all windows are closed
 app.on('window-all-closed', () => {
   app.quit()
 })
 
 app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (win === null) {
+  // On macOS it's common to re-create a window in the app when the dock icon is clicked and there are no other windows open
+  if (appWindow === null) {
     createWindow()
   }
 })
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
+// This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-  if (isDevelopment && !process.env.IS_TEST) {
+  if (isDevelopment) {
     // Install Vue Devtools
-    await installVueDevtools()
+    installExtension(REDUX_DEVTOOLS, { loadExtensionOptions: { allowFileAccess: true } })
+      .then((name) => console.log(`Electron extensions: added ${name}`))
+      .catch((err) => console.log('Electron extensions: an error occurred: ', err))
   }
   createWindow()
 })
 
-// Exit cleanly on request from parent process in development mode.
+// Exit cleanly on request from parent process in development mode
 if (isDevelopment) {
   if (process.platform === 'win32') {
     process.on('message', data => {
