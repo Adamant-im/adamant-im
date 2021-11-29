@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, Menu, systemPreferences, nativeTheme } from 'electron'
+import { app, protocol, BrowserWindow, Menu, nativeTheme } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
