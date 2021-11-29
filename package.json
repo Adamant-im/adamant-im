@@ -12,6 +12,7 @@
     "lint": "vue-cli-service lint",
     "electron:build": "vue-cli-service electron:build --mode electron",
     "electron:serve": "vue-cli-service electron:serve",
+    "electron:build:all": "vue-cli-service electron:build --mode electron -mwl",
     "https": "vue-cli-service serve --https",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
