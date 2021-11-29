@@ -165,7 +165,6 @@
       "<rootDir>/tests/__mocks__/globals.js"
     ]
   },
-  "main": "background.js",
   "keywords": [
     "adm",
     "adamant",
