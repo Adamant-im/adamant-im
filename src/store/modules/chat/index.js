@@ -15,7 +15,7 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 
 export let interval
 
-const SOCKET_ENABLED_TIMEOUT = 3000
+const SOCKET_ENABLED_TIMEOUT = 10000
 const SOCKET_DISABLED_TIMEOUT = 3000
 
 /**
