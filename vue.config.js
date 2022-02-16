@@ -17,16 +17,35 @@ module.exports = {
           schemes: ['adm']
         },
         win: {
-          icon: './build/win/icon.ico'
+          icon: './build/win/icon.ico',
+          target: ['nsis']
+        },
+        nsis: {
+          deleteAppDataOnUninstall: true,
+          createDesktopShortcut: 'always'
         },
         mac: {
           category: 'public.app-category.social-networking',
           darkModeSupport: true,
           icon: './build/osx/icon.icns',
+          entitlements: './build/osx/entitlements.mac.plist',
+          hardenedRuntime: true,
           gatekeeperAssess: false
         },
+        dmg: {
+          background: './build/osx/background.jpeg',
+          contents: [{
+            x: 260,
+            y: 77
+          }, {
+            x: 163,
+            y: 186,
+            type: 'link',
+            path: '/Applications'
+          }]
+        },
         linux: {
-          category: 'Network',
+          category: 'InstantMessaging',
           desktop: {
             Icon: './build/linux/icon.png',
             Name: 'ADAMANT Messenger',
@@ -36,7 +55,7 @@ module.exports = {
           /* eslint-disable no-template-curly-in-string */
           artifactName: 'ADAMANT-Messenger-${version}.${ext}',
           icon: './build/linux/',
-          target: ['AppImage']
+          target: ['AppImage', 'snap']
         }
       }
     },
