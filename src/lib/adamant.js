@@ -43,11 +43,13 @@ adamant.toTimestamp = function (epochTime) {
 }
 
 /**
+ * Replaced by uri.js
  * Parses URI, return false on fails or object with fields if valid
  * @param uri
  * @returns {*}
  */
-adamant.parseURI = function (uri) {
+/*
+adamant.parseURIasAIP = function (uri) {
   const r = /^adm:(U[0-9]{17,22})(?:\?(.*))?$/
   const match = r.exec(uri)
   if (!match) {
@@ -66,6 +68,7 @@ adamant.parseURI = function (uri) {
   parsed.address = match[1]
   return parsed
 }
+*/
 
 /**
  * Creates a hash based on a passphrase.

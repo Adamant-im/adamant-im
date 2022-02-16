@@ -223,7 +223,7 @@ import {
   minBalances, isTextDataAllowed, CryptosNames
 } from '../lib/constants'
 
-import { parseURI } from '@/lib/uri'
+import { parseURIasAIP } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
 
 import validateAddress from '@/lib/validateAddress'
@@ -559,7 +559,7 @@ export default {
      */
     onPasteURIAddress (e) {
       const data = e.clipboardData.getData('text')
-      const address = parseURI(data).address
+      const address = parseURIasAIP(data).address
 
       if (validateAddress(this.currency, address)) {
         e.preventDefault()
@@ -575,7 +575,7 @@ export default {
      */
     onPasteURIComment (e) {
       this.$nextTick(() => {
-        const params = parseURI(e.target.value).params
+        const params = parseURIasAIP(e.target.value).params
 
         if (params.message) {
           this.comment = params.message
@@ -588,7 +588,7 @@ export default {
      * @param {string} uri URI
      */
     onScanQrcode (uri) {
-      const recipient = parseURI(uri)
+      const recipient = parseURIasAIP(uri)
 
       this.cryptoAddress = ''
       if (validateAddress(this.currency, recipient.address)) {

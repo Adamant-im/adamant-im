@@ -1,5 +1,5 @@
 import { Cryptos } from '@/lib/constants'
-import { parseURI } from '@/lib/uri'
+import { parseURIasAIP } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
 import i18n from '@/i18n'
 import router from '@/router'
@@ -11,7 +11,7 @@ import store from '@/store'
  * @param {function} next Resolves the hook (redirect to Chats)
  */
 export function navigateByURI (next) {
-  const contact = parseURI()
+  const contact = parseURIasAIP()
 
   if (contact.address) {
     _navigateByContact(
