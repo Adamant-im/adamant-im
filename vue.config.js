@@ -28,6 +28,7 @@ module.exports = {
           category: 'public.app-category.social-networking',
           darkModeSupport: true,
           icon: './build/osx/icon.icns',
+          entitlements: './build/osx/entitlements.mac.plist',
           hardenedRuntime: true,
           gatekeeperAssess: false
         },
