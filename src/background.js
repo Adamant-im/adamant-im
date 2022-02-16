@@ -31,7 +31,6 @@ function createWindow () {
     appWindow.webContents.openDevTools()
   } else {
     // Load the index.html when not in development
-    appWindow.webContents.openDevTools()
     createProtocol('app')
     appWindow.loadURL('app://./index.html')
   }

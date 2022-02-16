@@ -12,7 +12,7 @@ All the messages are encrypted with the Diffie-Hellman Curve25519, Salsa20, Poly
 
 ADAMANT includes crypto wallets for ADAMANT (ADM), Bitcoin (BTC), Ethereum (ETH), Lisk (LSK), Dogecoin (DOGE) and Dash (DASH). Private keys for the wallets are derived from an ADAMANT passphrase. You can export the keys and use them in other wallets.
 
-This application deployed at [msg.adamant.im](https://msg.adamant.im). Feel free to run your own messenger using this code and Build Setup.
+This application deployed at [msg.adamant.im](https://msg.adamant.im) and [available as standalone apps](https://adamant.im/#adm-apps) for macOS, Windows and Linux. Feel free to run your own messenger using this code and Build Setup.
 
 ## Project setup
 
@@ -57,6 +57,8 @@ yarn run electron:serve
 ```
 yarn run electron:build
 ```
+
+[Download pre-build apps](https://adamant.im/#adm-apps) for macOS, Windows and Linux.
 
 #### Note for Windows users
 
