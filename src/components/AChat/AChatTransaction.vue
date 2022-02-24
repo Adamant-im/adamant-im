@@ -40,6 +40,9 @@
               <slot name="crypto" />
               <span class="ml-2">{{ amount }}</span>
             </v-layout>
+            <div class="a-chat__rates">
+              ~{{ rates }}
+            </div>
           </div>
         </div>
 
@@ -88,6 +91,10 @@ export default {
       required: true
     },
     amount: {
+      type: [Number, String],
+      default: 0
+    },
+    rates: {
       type: [Number, String],
       default: 0
     },

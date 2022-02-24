@@ -45,6 +45,9 @@
                     <sub>ERC20</sub>
                   </span>
                 </div>
+                <div class="a-text-explanation account-view__rates">
+                  {{ round(wallet.balance) }} USD
+                </div>
               </div>
             </v-tab>
 
@@ -58,6 +61,7 @@
                 :balance="wallet.balance"
                 :crypto="wallet.cryptoCurrency"
                 :crypto-name="wallet.cryptoName"
+                :rates="round(wallet.balance)"
                 @click:balance="goToTransactions"
               >
                 <crypto-icon
@@ -159,6 +163,9 @@ export default {
       const nextWallet = this.wallets[nextWalletIndex]
 
       if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
+    },
+    round (e) {
+      return Number(e.toFixed(2))
     }
   }
 }
@@ -174,6 +181,9 @@ export default {
  * 2. Reset VTabItem opacity.
  */
 .account-view
+  &__rates
+    margin-top: 2px
+    color: hsla(0,0%,100%,.7)
   &__wallets
     &.v-card
       background-color: transparent
@@ -200,6 +210,9 @@ export default {
 /** Themes **/
 .theme--light
   .account-view
+    &__rates {
+      color: $adm-colors.muted
+    }
     &__wallets
       >>> .v-tabs__bar
         background-color: $adm-colors.secondary2-transparent
@@ -236,4 +249,8 @@ export default {
         color: $adm-colors.primary
         .svg-icon
           fill: $adm-colors.primary
+
+.v-tabs__item--active
+  .account-view__rates
+    color: inherit
 </style>
