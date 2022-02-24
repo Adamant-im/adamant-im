@@ -29,6 +29,9 @@
         <v-list-tile-title>
           <span :class="`${className}__amount ${directionClass}`">{{ amount | currency(crypto) }}</span>
           <span
+            :class="`${className}__rates`"
+          > ~{{ amount | currency(`USD`) }}</span>
+          <span
             v-if="comment"
             class="a-text-regular-enlarged-bold"
             style="font-style: italic;"
@@ -89,7 +92,6 @@ import dateFilter from '@/filters/date'
 import { EPOCH, Cryptos } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
-
 export default {
   filters: {
     date: dateFilter
@@ -241,6 +243,10 @@ export default {
 @import '../assets/stylus/themes/adamant/_mixins.styl'
 
 .transaction-item
+  &__rates
+   color: hsla(0,0%,100%,.7)
+   font-style: italic
+   a-text-regular()
   &__amount
     a-text-regular-enlarged-bold()
   &__date
@@ -266,7 +272,8 @@ export default {
   .transaction-item
     &__amount
       color: $adm-colors.regular
-
+    &__rates
+      color: $adm-colors.muted
       &--is-incoming
         color: $adm-colors.good
       &--is-outgoing

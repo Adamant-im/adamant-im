@@ -60,6 +60,7 @@
           :user-id="userId"
           :sender="sender"
           :amount="message.amount | currency(message.type)"
+          :rates="message.amount | currency(`USD`)"
           :time="message.timestamp | date"
           :currency="message.type"
           :locale="locale"
