@@ -2,6 +2,7 @@
 @import '../settings/_colors.styl'
 
 $chat-form-height := 52px
+$chat-form-height-reply-to := 99px
 
 $chat-sender := {
   font-size: 15px
@@ -23,6 +24,9 @@ $chat-avatar-size := 40px
   position: relative
   padding-bottom: $chat-form-height
 
+  &--reply-to
+    padding-bottom: $chat-form-height-reply-to
+
   &__content
     height: inherit
     display: flex
@@ -40,6 +44,7 @@ $chat-avatar-size := 40px
     top: 0
     left: 0
     overflow-y: scroll
+    overflow-x: hidden
     width: 100%
     height: 100%
     padding: 16px 16px 0 16px
@@ -63,21 +68,70 @@ $chat-avatar-size := 40px
     clear: both
     float: left
     max-width: 80%
+    position: relative
 
     &:last-child
       margin-bottom: 0
     &--right
       float: right
+    &--touch {
+      position: unset
+    }
+
+  &__message-wrapper
+    position: relative
+    padding-top: 8px
+    padding-bottom: 8px
+    padding-left: 8px
+    padding-right: 8px
+    margin-bottom: 16px
+    border-radius: 8px
+    z-index: 2
+
+    &--selected
+      border: 3px dashed $adm-colors.attention
+      z-index: 10
 
   &__message
     display: flex
     flex-direction: row
-    padding-top: 8px
-    padding-bottom: 8px
-    padding-left: 16px
-    padding-right: 16px
-    margin-bottom: 16px
+    padding-left: 8px
+    padding-right: 8px
     border-radius: 8px
+    transition: transform 0.1s
+    position: relative;
+
+    &--highlighted
+      justify-content: flex-end
+
+      .a-chat__message-card-header
+        justify-content: flex-end
+
+      .a-chat__message-card-body
+        text-align: right
+
+    &--reply-to
+      padding: 8px
+      background: rgba(245, 245, 245, .1)
+      border-radius: 8px
+      margin-bottom: 10px
+      position: relative
+      word-break: break-all;
+
+    &--reply-to-menu
+      max-width: 200px
+      position: absolute
+      left: 8px
+      top: 8px
+      border-radius: 2px
+      z-index: 10
+
+    &--reply-to-icon
+      font-size: 28px;
+      position: absolute;
+      left: 26px
+      top: calc(50% - 14px)
+      z-index: 1
 
   /**
    * 1. Аvatar must have width/height even if empty.
@@ -208,6 +262,22 @@ $chat-avatar-size := 40px
     bottom: 0
     width: 100%
 
+    &-reply-to
+      padding: 8px 44px 8px 8px
+      background: rgba(245, 245, 245, .1)
+      border-radius: 8px
+      border-left: 3px solid $adm-colors.attention
+      margin-bottom: 10px
+      position: relative
+      word-break: break-all;
+      
+      &--cancel-icon
+        color: $adm-colors.danger !important
+        position: absolute
+        right: 4px
+        top: 4px
+        cursor: pointer
+
     /**
      * Vuetify
      * 1. fix Firefox `textarea` height.
@@ -232,6 +302,7 @@ $chat-avatar-size := 40px
     right: 16px
     bottom: 16px
     opacity: 0.7
+    z-index: 10
 
     &:hover
       opacity: 1
@@ -241,10 +312,11 @@ $chat-avatar-size := 40px
   .a-chat
     &__content
       color: $shades.black
-    &__message
+    &__message-wrapper
       background-color: #FFF
       box-shadow: 0 1px 10px hsla(0,0%,39.2%,.06),0 1px 1px hsla(0,0%,39.2%,.04),0 2px 10px -1px hsla(0,0%,39.2%,.02)
 
+    &__message
       &--red
         background-color: $red.lighten-5
       &--green
@@ -299,10 +371,11 @@ $chat-avatar-size := 40px
   .a-chat
     &__content
       color: $shades.white
-    &__message
+    &__message-wrapper
       background-color: #000
       box-shadow: 0 1px 10px hsla(0,0%,39.2%,.06),0 1px 1px hsla(0,0%,39.2%,.04),0 2px 10px -1px hsla(0,0%,39.2%,.02)
 
+    &__message
       &--red
         background-color: $grey.darken-3
       &--green

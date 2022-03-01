@@ -4,6 +4,19 @@
       v-if="showDivider"
       class="a-chat__divider"
     />
+    <div
+      v-if="replyTo"
+      class="a-chat__form-reply-to a-text-regular"
+    >
+      {{ replyTo.message }}
+      <v-icon
+        medium
+        class="a-chat__form-reply-to--cancel-icon"
+        @click="$emit('removeReplyTo')"
+      >
+        mdi-close-circle-outline
+      </v-icon>
+    </div>
     <v-textarea
       ref="messageTextarea"
       v-model="message"
@@ -57,6 +70,10 @@ export default {
     showDivider: {
       type: Boolean,
       default: false
+    },
+    replyTo: {
+      type: Object,
+      default: () => {}
     }
   },
   data: () => ({

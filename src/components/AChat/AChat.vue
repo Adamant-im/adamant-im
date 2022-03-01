@@ -1,5 +1,8 @@
 <template>
-  <div class="a-chat">
+  <div
+    class="a-chat"
+    :class="{ 'a-chat--reply-to': replyTo }"
+  >
     <div class="a-chat__content">
       <slot name="header" />
 
@@ -81,6 +84,10 @@ export default {
     locale: {
       type: String,
       default: 'en'
+    },
+    replyTo: {
+      type: Boolean,
+      default: false
     }
   },
   data: () => ({

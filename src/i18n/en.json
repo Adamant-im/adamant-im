@@ -30,6 +30,7 @@
     "received_label": "Received",
     "recipient": "Partner's address",
     "recipient_tooltip": "Partner's ADM address like U1234567890987654321 or Share link",
+    "reply_to": "Reply To",
     "retry_message": "Could not send: weak connection. Click to retry",
     "send_button": "Send",
     "send_crypto": "Send {crypto}",

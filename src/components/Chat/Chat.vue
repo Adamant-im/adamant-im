@@ -9,7 +9,9 @@
       :loading="loading"
 
       :locale="$i18n.locale"
+      :reply-to="!!replyTo"
       @scroll:top="onScrollTop"
+
       @scroll:bottom="onScrollBottom"
 
       @scroll="onScroll"
@@ -44,6 +46,7 @@
           :i18n="{ retry: $t('chats.retry_message') }"
           :hide-time="message.readonly"
           @resend="resendMessage(partnerId, message.id)"
+          @replyTo="onReplyTo($event)"
         >
           <ChatAvatar
             slot="avatar"
@@ -85,7 +88,9 @@
         :show-divider="true"
         :label="chatFormLabel"
         :message-text="messageText"
+        :reply-to="replyTo"
         @message="onMessage"
+        @removeReplyTo="replyTo = null"
       >
         <chat-menu
           slot="prepend"
@@ -212,7 +217,8 @@ export default {
     noMoreMessages: false,
     isScrolledToBottom: true,
     visibilityId: null,
-    showFreeTokensDialog: false
+    showFreeTokensDialog: false,
+    replyTo: null
   }),
   computed: {
     /**
@@ -302,6 +308,9 @@ export default {
     }[detect().os] || this.$t('chats.message')
   },
   methods: {
+    onReplyTo (msg) {
+      this.replyTo = msg
+    },
     onMessage (message) {
       if (validateMessage.call(this, message)) {
         this.sendMessage(message)

@@ -247,3 +247,8 @@ export function getMinAmount (crypto) {
 
   return amount
 }
+
+export const Chat = {
+  MAX_REPLY_CHARS: 20,
+  MAX_REPLY_LINES: 2
+}

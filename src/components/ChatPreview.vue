@@ -44,7 +44,13 @@
         </span>
       </v-badge>
     </v-list-tile-avatar>
-
+    <v-icon
+      v-if="isReplyTo"
+      medium
+      class="chat-brief--reply-to-icon"
+    >
+      mdi-arrow-left-top
+    </v-icon>
     <v-list-tile-content>
       <v-list-tile-title
         class="a-text-regular-enlarged-bold"
@@ -152,6 +158,10 @@ export default {
     isLoadingSeparatorActive: {
       type: Boolean,
       default: false
+    },
+    isReplyTo: {
+      type: Boolean,
+      default: false
     }
   },
   data: () => ({
@@ -253,6 +263,8 @@ export default {
  */
 .chat-brief
   position: relative
+  &--reply-to-icon
+    margin-right: 16px
 
   &__date
     a-text-explanation-small()

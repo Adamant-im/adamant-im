@@ -84,3 +84,17 @@ export function isStringEqualCI (string1, string2) {
   if (typeof string1 !== 'string' || typeof string2 !== 'string') return false
   return string1.toUpperCase() === string2.toUpperCase()
 }
+
+/**
+ * trimString
+ * @param {string} string
+ * @param {max} integer, max chars
+ */
+export function trimMsgString (string, max) {
+  if (typeof string !== 'string') return false
+  if (string.length > max) {
+    return `${string.slice(0, max)}...`
+  } else {
+    return string
+  }
+}
