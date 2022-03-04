@@ -8,7 +8,13 @@
       v-if="replyTo"
       class="a-chat__form-reply-to a-text-regular"
     >
-      {{ replyTo.message }}
+      <ChatAvatar
+        :user-id="replyTo.senderId"
+        use-public-key
+      />
+      <div class="a-chat__form-reply-to--text">
+        {{ replyTo.message }}
+      </div>
       <v-icon
         medium
         class="a-chat__form-reply-to--cancel-icon"
@@ -49,7 +55,12 @@
 </template>
 
 <script>
+// import ChatAvatar from '@/components/Chat/ChatAvatar'
+
 export default {
+  components: {
+    ChatAvatar: () => import('@/components/Chat/ChatAvatar')
+  },
   props: {
     messageText: {
       default: '',

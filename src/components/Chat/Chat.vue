@@ -71,6 +71,7 @@
           @click:transaction="openTransaction(message)"
           @click:transactionStatus="updateTransactionStatus(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
+          @replyTo="onReplyTo($event)"
         >
           <crypto-icon
             slot="crypto"

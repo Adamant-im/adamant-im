@@ -10,6 +10,8 @@
   "chats": {
     "attach_file": "Отправить файл",
     "attach_image": "Отправить изображение",
+    "copy_selection": "Копировать выделенное",
+    "copy_text": "Копировать текст",
     "date_today": "Сегодня",
     "date_tomorrow": "Завтра",
     "date_yesterday": "Вчера",

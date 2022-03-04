@@ -1,51 +1,111 @@
 <template>
   <div
+    :id="`chat__message-container-${id}`"
     class="a-chat__message-container"
-    :class="{ 'a-chat__message-container--right': isStringEqualCI(sender.id, userId) }"
+    :class="{
+      'a-chat__message-container--right': isStringEqualCI(sender.id, userId)
+    }"
+    @contextmenu="onRightClick($event)"
   >
-    <div
-      class="a-chat__message"
+    <v-icon
+      v-if="!isStringEqualCI(sender.id, userId)"
+      medium
+      class="a-chat__message--reply-to-icon"
     >
-      <div class="a-chat__message-card">
-        <div class="a-chat__message-card-header">
-          <div
-            :title="timeTitle"
-            class="a-chat__timestamp"
-          >
-            {{ time }}
-          </div>
-          <div class="a-chat__status">
-            <v-icon
-              size="13"
-              :title="statusTitle"
-              :color="statusColor"
-              :style="statusUpdatable ? 'cursor: pointer;': 'cursor: default;'"
-              @click="updateStatus"
+      mdi-arrow-left-top
+    </v-icon>
+    <v-menu
+      v-model="isShowReplyToMenu"
+      :position-x="x"
+      :position-y="y"
+      absolute
+      offset-y
+      class="a-chat__message--menu"
+    >
+      <v-list
+        :id="`chat__message-${id}`"
+        class=""
+        dense
+      >
+        <v-list-tile @click="menuReplyTo">
+          <v-list-tile-avatar>
+            <v-icon>mdi-arrow-left-top</v-icon>
+          </v-list-tile-avatar>
+          <v-list-tile-title>{{ $t('chats.reply_to') }}</v-list-tile-title>
+        </v-list-tile>
+        <v-list-tile @click="copyMessage">
+          <v-list-tile-avatar>
+            <v-icon>mdi-content-copy</v-icon>
+          </v-list-tile-avatar>
+          <v-list-tile-title>{{ $t('chats.copy_text') }}</v-list-tile-title>
+        </v-list-tile>
+      </v-list>
+    </v-menu>
+    <div
+      ref="msg"
+      class="a-chat__message-wrapper"
+      :class="{ 'a-chat__message-wrapper--selected': isSelected }"
+      @touchstart="touchStart"
+      @touchmove="doMove($event)"
+      @touchend="touchStop($event)"
+    >
+      <div
+        v-if="isReplyToMessage"
+        class="a-chat__message--reply-to a-text-regular"
+      >
+        {{ replyToMessage.text }}
+      </div>
+      <div
+        class="a-chat__message"
+        :class="{
+          'a-chat__message--highlighted': isStringEqualCI(sender.id, userId),
+          'a-chat__message--selected': isSelected
+        }"
+      >
+        <div class="a-chat__message-card">
+          <div class="a-chat__message-card-header">
+            <div
+              :title="timeTitle"
+              class="a-chat__timestamp"
             >
-              {{ statusIcon }}
-            </v-icon>
+              {{ time }}
+            </div>
+            <div class="a-chat__status">
+              <v-icon
+                size="13"
+                :title="statusTitle"
+                :color="statusColor"
+                :style="statusUpdatable ? 'cursor: pointer;': 'cursor: default;'"
+                @click="updateStatus"
+              >
+                {{ statusIcon }}
+              </v-icon>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <div class="a-chat__direction a-text-regular-bold">
-            {{ isStringEqualCI(sender.id, userId) ? $t('chats.sent_label') : $t('chats.received_label') }}
+          <div>
+            <div class="a-chat__direction a-text-regular-bold">
+              {{ isStringEqualCI(sender.id, userId) ? $t('chats.sent_label') : $t('chats.received_label') }}
+            </div>
+            <div
+              class="a-chat__amount"
+              :class="isClickable ? 'a-chat__amount--clickable': ''"
+              @click="onClickAmount"
+            >
+              <v-layout align-center>
+                <slot name="crypto" />
+                <span class="ml-2">{{ amount }}</span>
+              </v-layout>
+            </div>
           </div>
-          <div
-            class="a-chat__amount"
-            :class="isClickable ? 'a-chat__amount--clickable': ''"
-            @click="onClickAmount"
-          >
-            <v-layout align-center>
-              <slot name="crypto" />
-              <span class="ml-2">{{ amount }}</span>
-            </v-layout>
-          </div>
-        </div>
 
-        <div class="a-chat__message-card-body">
-          <div class="a-chat__message-text mb-1 a-text-regular-enlarged">
-            {{ message }}
+          <div class="a-chat__message-card-body">
+            <div
+              :id="`message-text-${id}`"
+              class="a-chat__message-text mb-1 a-text-regular-enlarged"
+            >
+              {{ message }}
+            </div>
           </div>
         </div>
       </div>
@@ -54,8 +114,9 @@
 </template>
 
 <script>
-import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
-import { isStringEqualCI } from '@/lib/textHelpers'
+import { tsIcon, tsUpdatable, tsColor, Chat } from '@/lib/constants'
+import { isStringEqualCI, trimMsgString } from '@/lib/textHelpers'
+import throttle from 'lodash/throttle'
 
 export default {
   props: {
@@ -104,6 +165,20 @@ export default {
       default: false
     }
   },
+  data () {
+    return {
+      dragging: false,
+      isShowReplyToMenu: false,
+      startX: 0,
+      distance: 0,
+      x: 0,
+      y: 0,
+      replyToMessage: {
+        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mi eros, varius non lobortis sit amet, bibendum vel erat. Mauris.'
+      },
+      isReplyToMessage: false
+    }
+  },
   computed: {
     statusTitle () {
       return this.$t(`chats.transaction_statuses.${this.status.virtualStatus}`)
@@ -116,9 +191,46 @@ export default {
     },
     statusColor () {
       return tsColor(this.status.virtualStatus)
+    },
+    isOutgoingMessage () {
+      return isStringEqualCI(this.sender.id, this.userId)
+    },
+    replyMsg () {
+      const msg =
+        document.getElementById(`message-text-${this.id}`).innerText || ''
+      return {
+        message: `${this.isStringEqualCI(this.sender.id, this.userId) ? '-' : '+'}${this.amount} ${trimMsgString(msg, Chat.MAX_REPLY_CHARS)}`,
+        replyto_id: this.id,
+        senderId: this.sender.id
+      }
+    },
+    isTouchDevice () {
+      return (
+        'ontouchstart' in window ||
+        navigator.maxTouchPoints > 0 ||
+        navigator.msMaxTouchPoints > 0
+      )
+    },
+    isSelected () {
+      return this.isShowReplyToMenu
     }
   },
+  watch: {
+    isSelected (newVal) {
+      if (!newVal) {
+        if (window.getSelection) {
+          window.getSelection().removeAllRanges()
+        } else if (document.selection) {
+          document.selection.empty()
+        }
+      }
+    }
+  },
+  destroyed: function () {
+    window.removeEventListener('click', this.bindSelection)
+  },
   mounted () {
+    document.addEventListener('selectionchange', this.bindSelection)
     this.$emit('mount')
   },
   methods: {
@@ -133,6 +245,80 @@ export default {
     updateStatus () {
       if (this.statusUpdatable) {
         this.$emit('click:transactionStatus', this.id)
+      }
+    },
+    touchStart (event) {
+      this.dragging = true
+      this.startX = event.clientX
+        ? event.clientX
+        : event.changedTouches[0].clientX
+          ? event.changedTouches[0].clientX
+          : 0
+    },
+    doMove (event) {
+      const clientX = event.clientX
+        ? event.clientX
+        : event.changedTouches[0].clientX
+          ? event.changedTouches[0].clientX
+          : 0
+      if (this.dragging) {
+        this.distance = clientX - this.startX
+        this.$refs.msg.setAttribute(
+          'style',
+          `transform: translateX(${this.distance}px)`
+        )
+      }
+    },
+    touchStop () {
+      this.$refs.msg.setAttribute('style', 'transform: translateX(0px)')
+      this.dragging = false
+      if (this.distance > 50) {
+        this.$emit('replyTo', this.replyMsg)
+        this.distance = 0
+      }
+    },
+    onRightClick (event) {
+      event.preventDefault()
+      this.isTextSelected = !!this.selectedText
+      this.isShowReplyToMenu = false
+      this.x = event.clientX
+      this.y = event.clientY
+      this.$nextTick(() => {
+        this.isShowReplyToMenu = true
+      })
+    },
+    copySelection () {
+      if (navigator.clipboard) navigator.clipboard.writeText(this.selectedText)
+      if (window.getSelection) {
+        window.getSelection().removeAllRanges()
+      } else if (document.selection) {
+        document.selection.empty()
+      }
+    },
+    copyMessage () {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(
+          document.getElementById(`message-text-${this.id}`).innerText || ''
+        )
+      }
+    },
+    menuReplyTo () {
+      this.$emit('replyTo', this.replyMsg)
+      // this.closeReplyToDialog()
+      if (window.getSelection) {
+        window.getSelection().removeAllRanges()
+      } else if (document.selection) {
+        document.selection.empty()
+      }
+    },
+    bindSelection () {
+      return throttle(() => {
+        this.selectedText = document.getSelection().toString()
+      }, 100)
+    },
+    vibrate () {
+      if (window && window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(100)
       }
     }
   }

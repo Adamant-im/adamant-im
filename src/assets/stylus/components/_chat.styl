@@ -68,12 +68,15 @@ $chat-avatar-size := 40px
     clear: both
     float: left
     max-width: 80%
+    width: 100%
     position: relative
+    display: flex
 
     &:last-child
       margin-bottom: 0
     &--right
       float: right
+      justify-content: flex-end
     &--touch {
       position: unset
     }
@@ -118,13 +121,15 @@ $chat-avatar-size := 40px
       position: relative
       word-break: break-all;
 
-    &--reply-to-menu
-      max-width: 200px
+    &--menu
       position: absolute
-      left: 8px
-      top: 8px
       border-radius: 2px
-      z-index: 10
+      z-index: 100
+
+      & a.v-list__tile
+        padding: 0 8px
+      & .v-list__tile__avatar
+        min-width: unset
 
     &--reply-to-icon
       font-size: 28px;
@@ -163,7 +168,11 @@ $chat-avatar-size := 40px
     display: flex
     flex-direction: row
     align-items: center
-    min-height: 17px;
+    min-height: 17px
+    -webkit-user-select: none
+    -moz-user-select: none
+    -ms-user-select: none
+    user-select: none
 
   &__message-text
     font-size: $chat-message.font-size
@@ -261,6 +270,7 @@ $chat-avatar-size := 40px
     left: 0
     bottom: 0
     width: 100%
+    z-index: 2
 
     &-reply-to
       padding: 8px 44px 8px 8px
@@ -269,7 +279,12 @@ $chat-avatar-size := 40px
       border-left: 3px solid $adm-colors.attention
       margin-bottom: 10px
       position: relative
-      word-break: break-all;
+      word-break: break-all
+      display: flex
+      align-items: center
+
+      &--text
+        margin-left: 8px
       
       &--cancel-icon
         color: $adm-colors.danger !important

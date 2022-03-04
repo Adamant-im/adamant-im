@@ -10,6 +10,8 @@
   "chats": {
     "attach_file": "Send file",
     "attach_image": "Send image",
+    "copy_selection": "Copy selection",
+    "copy_text": "Copy text",
     "date_today": "Today",
     "date_tomorrow": "Tomorrow",
     "date_yesterday": "Yesterday",
