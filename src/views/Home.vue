@@ -45,6 +45,10 @@
                     <sub>ERC20</sub>
                   </span>
                 </div>
+                <div class="a-text-explanation account-view__rates">
+                  <!-- {{ round(wallet.balance) }} -->
+                  {{ wallet.rate }} {{ currentCurrency }}
+                </div>
               </div>
             </v-tab>
 
@@ -58,8 +62,11 @@
                 :balance="wallet.balance"
                 :crypto="wallet.cryptoCurrency"
                 :crypto-name="wallet.cryptoName"
+                :rate="wallet.rate"
+                :current-currency="currentCurrency"
                 @click:balance="goToTransactions"
               >
+                <!-- :rate="round(wallet.balance)" -->
                 <crypto-icon
                   slot="icon"
                   :crypto="wallet.cryptoCurrency"
@@ -117,13 +124,18 @@ export default {
         const address = crypto === Cryptos.ADM ? state.address : state[key].address
         const balance = crypto === Cryptos.ADM ? state.balance : state[key].balance
         const erc20 = isErc20(crypto.toUpperCase())
-
+        const currentRate = state.rate.rates[`${crypto}/${this.currentCurrency}`]
+        const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0
+        // const currentRate1 = String(currentRate)
+        // const reg = /.*(?=\.)/g
+        // console.log(currentRate1.match(reg)[0])
         return {
           address,
           balance,
           cryptoCurrency: crypto,
           cryptoName: CryptosNames[crypto],
-          erc20
+          erc20,
+          rate
         }
       })
     },
@@ -134,6 +146,17 @@ export default {
       set (value) {
         this.$store.commit('options/updateOption', {
           key: 'currentWallet',
+          value
+        })
+      }
+    },
+    currentCurrency: {
+      get () {
+        return this.$store.state.options.currentRate
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'currentRate',
           value
         })
       }
@@ -159,6 +182,9 @@ export default {
       const nextWallet = this.wallets[nextWalletIndex]
 
       if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
+    },
+    round (e) {
+      return Number(e.toFixed(2))
     }
   }
 }
@@ -174,6 +200,9 @@ export default {
  * 2. Reset VTabItem opacity.
  */
 .account-view
+  &__rates
+    margin-top: 2px
+    color: hsla(0,0%,100%,.7)
   &__wallets
     &.v-card
       background-color: transparent
@@ -200,6 +229,9 @@ export default {
 /** Themes **/
 .theme--light
   .account-view
+    &__rates {
+      color: $adm-colors.muted
+    }
     &__wallets
       >>> .v-tabs__bar
         background-color: $adm-colors.secondary2-transparent
@@ -236,4 +268,8 @@ export default {
         color: $adm-colors.primary
         .svg-icon
           fill: $adm-colors.primary
+
+.v-tabs__item--active
+  .account-view__rates
+    color: inherit
 </style>

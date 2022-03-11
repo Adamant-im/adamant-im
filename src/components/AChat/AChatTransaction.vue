@@ -38,8 +38,11 @@
           >
             <v-layout align-center>
               <slot name="crypto" />
-              <span class="ml-2">{{ amount }}</span>
+              <span class="ml-2">{{ amount | currency(crypto) }}</span>
             </v-layout>
+            <div class="a-chat__rates">
+              ~{{ rate }} {{ currentCurrency }}
+            </div>
           </div>
         </div>
 
@@ -56,6 +59,7 @@
 <script>
 import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import currencyFilter from '@/filters/currency'
 
 export default {
   props: {
@@ -102,6 +106,10 @@ export default {
     isClickable: {
       type: Boolean,
       default: false
+    },
+    crypto: {
+      type: String,
+      default: 'ADM'
     }
   },
   computed: {
@@ -116,6 +124,23 @@ export default {
     },
     statusColor () {
       return tsColor(this.status.virtualStatus)
+    },
+    currentCurrency: {
+      get () {
+        return this.$store.state.options.currentRate
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'currentRate',
+          value
+        })
+      }
+    },
+    rate () {
+      const currentRate = this.$store.state.rate.rates[`${this.crypto}/${this.currentCurrency}`]
+      const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
+      const rate = currentRate !== undefined ? Number((currentRate * amount).toFixed(2)) : 0
+      return rate
     }
   },
   mounted () {
