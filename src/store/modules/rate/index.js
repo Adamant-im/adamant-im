@@ -26,7 +26,7 @@ const actions = {
           const rates = res.data.result
           commit('setRates', rates)
           resolve(res)
-          console.log('rates updated')
+          console.log('All rates: updated')
         })
         .catch((err) => {
           reject(err)
