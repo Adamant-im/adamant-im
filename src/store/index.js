@@ -185,12 +185,10 @@ const store = {
       handler ({ dispatch }) {
         function repeat () {
           validateStoredCryptoAddresses()
-          dispatch('rate/getAllRates')
           dispatch('updateBalance')
             .catch(err => console.error(err))
             .then(() => (interval = setTimeout(repeat, UPDATE_BALANCE_INTERVAL)))
         }
-
         repeat()
       }
     },
