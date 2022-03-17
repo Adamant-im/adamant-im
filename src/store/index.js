@@ -42,7 +42,6 @@ Vue.use(Vuex)
 export let interval
 
 const UPDATE_BALANCE_INTERVAL = 10000
-const UPDATE_RATE_INTERVAL = 10000
 
 const store = {
   state: () => ({
@@ -186,8 +185,7 @@ const store = {
       handler ({ dispatch }) {
         function repeat () {
           validateStoredCryptoAddresses()
-          dispatch('rate/getAllRates').catch(err => console.error(err))
-            .then(() => (interval = setTimeout(repeat, UPDATE_RATE_INTERVAL)))
+          dispatch('rate/getAllRates')
           dispatch('updateBalance')
             .catch(err => console.error(err))
             .then(() => (interval = setTimeout(repeat, UPDATE_BALANCE_INTERVAL)))
