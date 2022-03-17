@@ -10,7 +10,7 @@ const state = () => ({
 // }
 
 const mutations = {
-  set_rates (state, rates) {
+  setRates (state, rates) {
     state.rates = rates
   }
 }
@@ -22,7 +22,7 @@ const actions = {
         .get(`${url}/get`)
         .then((res) => {
           const rates = res.data.result
-          commit('set_rates', rates)
+          commit('setRates', rates)
           resolve(res)
         })
         .catch((err) => {
