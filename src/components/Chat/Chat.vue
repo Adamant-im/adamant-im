@@ -52,14 +52,14 @@
             @click="onClickAvatar(sender.id)"
           />
         </a-chat-message>
-
         <a-chat-transaction
           v-else-if="isTransaction(message.type)"
           v-bind="message"
           :key="message.id"
           :user-id="userId"
           :sender="sender"
-          :amount="message.amount | currency(message.type)"
+          :amount="message.amount"
+          :crypto="message.type"
           :time="message.timestamp | date"
           :currency="message.type"
           :locale="locale"
@@ -288,7 +288,6 @@ export default {
   },
   mounted () {
     if (this.isFulfilled && this.chatPage <= 0) this.fetchChatMessages()
-
     this.scrollBehavior()
     this.$nextTick(() => {
       this.isScrolledToBottom = this.$refs.chat.isScrolledToBottom()

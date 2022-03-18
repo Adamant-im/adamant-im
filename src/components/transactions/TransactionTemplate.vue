@@ -33,6 +33,38 @@
         <v-list-tile>
           <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
+              {{ $t('transaction.currentVal') }}
+            </v-list-tile-title>
+          </v-list-tile-content>
+
+          <div>
+            <v-list-tile-title :class="`${className}__value`">
+              {{ amount || placeholder }}
+            </v-list-tile-title>
+          </div>
+        </v-list-tile>
+
+        <v-divider />
+
+        <v-list-tile>
+          <v-list-tile-content :class="`${className}__titlecontent`">
+            <v-list-tile-title :class="`${className}__title`">
+              {{ $t('transaction.valueTimeTxn') }}
+            </v-list-tile-title>
+          </v-list-tile-content>
+
+          <div>
+            <v-list-tile-title :class="`${className}__value`">
+              {{ amount || placeholder }}
+            </v-list-tile-title>
+          </div>
+        </v-list-tile>
+
+        <v-divider />
+
+        <v-list-tile>
+          <v-list-tile-content :class="`${className}__titlecontent`">
+            <v-list-tile-title :class="`${className}__title`">
               {{ $t('transaction.status') }}
               <v-icon
                 v-if="statusUpdatable"

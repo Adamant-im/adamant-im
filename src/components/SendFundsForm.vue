@@ -112,6 +112,12 @@
         disabled
       />
       <v-text-field
+        :value="`${amountString} ${currency}`"
+        :label="$t('transfer.final_amount_send_label')"
+        class="a-input"
+        disabled
+      />
+      <v-text-field
         v-if="!hideFinalAmount"
         :value="`${finalAmountFixed} ${currency}`"
         :label="$t('transfer.final_amount_label')"
@@ -137,7 +143,6 @@
         counter
         maxlength="64"
       />
-
       <v-checkbox
         v-if="allowIncreaseFee"
         v-model="increaseFee"
@@ -385,6 +390,7 @@ export default {
      * @returns {string}
      */
     finalAmountFixed () {
+      console.log(BigNumber(this.finalAmount).toFixed())
       return BigNumber(this.finalAmount).toFixed()
     },
 

@@ -42,7 +42,7 @@
             {{ $t('home.balance') }}
           </v-list-tile-title>
           <v-list-tile-sub-title :class="`${className}__subtitle`">
-            {{ balance | currency(crypto, true) }}
+            {{ balance | currency(crypto, true) }} <span class="a-text-regular">~{{ rate }} {{ currentCurrency }}</span>
           </v-list-tile-sub-title>
         </v-list-tile-content>
 
@@ -97,6 +97,10 @@ export default {
       type: Number,
       required: true
     },
+    rate: {
+      type: Number,
+      required: true
+    },
     crypto: {
       type: String,
       default: 'ADM'
@@ -104,6 +108,10 @@ export default {
     cryptoName: {
       type: String,
       default: 'ADAMANT'
+    },
+    currentCurrency: {
+      type: String,
+      default: 'USD'
     }
   },
   data: () => ({ showShareURIDialog: false }),
@@ -129,6 +137,9 @@ export default {
   &__subtitle
     a-text-regular-enlarged()
     word-break: break-word
+    span
+      font-style: italic
+      color: inherit
   &__list
     padding: 8px 0 0
   &__tile

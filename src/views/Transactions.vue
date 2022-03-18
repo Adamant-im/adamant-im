@@ -117,7 +117,6 @@ export default {
     if (!this.$store.getters['options/isLoginViaPassword'] || this.$store.state.IDBReady) {
       this.getNewTransactions()
     }
-
     window.addEventListener('scroll', this.onScroll)
   },
   // mixins: [scrollPosition],

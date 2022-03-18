@@ -29,6 +29,9 @@
         <v-list-tile-title>
           <span :class="`${className}__amount ${directionClass}`">{{ amount | currency(crypto) }}</span>
           <span
+            :class="`${className}__rates`"
+          > ~{{ rate }} {{ currentCurrency }}</span>
+          <span
             v-if="comment"
             class="a-text-regular-enlarged-bold"
             style="font-style: italic;"
@@ -89,6 +92,7 @@ import dateFilter from '@/filters/date'
 import { EPOCH, Cryptos } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import currencyFilter from '@/filters/currency'
 
 export default {
   filters: {
@@ -189,6 +193,26 @@ export default {
     comment () {
       const admTx = this.getAdmTx
       return admTx.message
+    },
+    currentCurrency: {
+      get () {
+        return this.$store.state.options.currentRate
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'currentRate',
+          value
+        })
+      }
+    },
+    rate () {
+      const state = this.$store.state.rate.rates
+      const currentRate = state[`${this.crypto}/${this.currentCurrency}`]
+      // const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '') * currentRate
+      // const rate = currentRate !== undefined ? Number(amount.toFixed(2)) : 0
+      const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
+      const rate = currentRate !== undefined ? Number((currentRate * amount).toFixed(2)) : 0
+      return rate
     }
   },
   methods: {
@@ -241,6 +265,10 @@ export default {
 @import '../assets/stylus/themes/adamant/_mixins.styl'
 
 .transaction-item
+  &__rates
+   color: hsla(0,0%,100%,.7)
+   font-style: italic
+   a-text-regular()
   &__amount
     a-text-regular-enlarged-bold()
   &__date
@@ -266,7 +294,8 @@ export default {
   .transaction-item
     &__amount
       color: $adm-colors.regular
-
+    &__rates
+      color: $adm-colors.muted
       &--is-incoming
         color: $adm-colors.good
       &--is-outgoing
