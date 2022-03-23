@@ -42,7 +42,10 @@
             {{ $t('home.balance') }}
           </v-list-tile-title>
           <v-list-tile-sub-title :class="`${className}__subtitle`">
-            {{ balance | currency(crypto, true) }} <span class="a-text-regular">~{{ rate }} {{ currentCurrency }}</span>
+            {{ balance | currency(crypto, true) }} <span
+              v-if="$store.state.rate.isLoaded"
+              class="a-text-regular"
+            >~{{ rate }} {{ currentCurrency }}</span>
           </v-list-tile-sub-title>
         </v-list-tile-content>
 

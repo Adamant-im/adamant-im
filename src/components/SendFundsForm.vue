@@ -106,25 +106,18 @@
       </v-text-field>
 
       <v-text-field
-        :value="`${transferFeeFixed} ${transferFeeCurrency}`"
+        :value="`${transferFeeFixed} ${transferFeeCurrency} ~ ${transferFeeRate}`"
         :label="`${transferFeeLabel}`"
         class="a-input"
         disabled
       />
       <v-text-field
-        :value="`${amountString} ${currency}`"
-        :label="$t('transfer.final_amount_send_label')"
-        class="a-input"
-        disabled
-      />
-      <v-text-field
         v-if="!hideFinalAmount"
-        :value="`${finalAmountFixed} ${currency}`"
+        :value="`${finalAmountFixed} ${currency} ~ ${finalAmountRate}`"
         :label="$t('transfer.final_amount_label')"
         class="a-input"
         disabled
       />
-
       <v-text-field
         v-if="addressReadonly"
         v-model="comment"
@@ -390,7 +383,6 @@ export default {
      * @returns {string}
      */
     finalAmountFixed () {
-      console.log(BigNumber(this.finalAmount).toFixed())
       return BigNumber(this.finalAmount).toFixed()
     },
 
@@ -501,6 +493,27 @@ export default {
     },
     allowIncreaseFee () {
       return (this.currency === Cryptos.BTC) || isEthBased(this.currency)
+    },
+    currentCurrency: {
+      get () {
+        return this.$store.state.options.currentRate
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'currentRate',
+          value
+        })
+      }
+    },
+    transferFeeRate () {
+      const currentRate = this.$store.state.rate.rates[`${this.transferFeeCurrency}/${this.currentCurrency}`]
+      const feeRate = (this.transferFeeFixed * currentRate).toFixed(2)
+      return currentRate !== undefined ? `${feeRate} ${this.currentCurrency}` : ''
+    },
+    finalAmountRate () {
+      const currentRate = this.$store.state.rate.rates[`${this.currency}/${this.currentCurrency}`]
+      const amountRate = (this.finalAmountFixed * currentRate).toFixed(2)
+      return currentRate !== undefined ? `${amountRate} ${this.currentCurrency}` : ''
     }
   },
   watch: {

@@ -38,11 +38,11 @@
           >
             <v-layout align-center>
               <slot name="crypto" />
-              <span class="ml-2">{{ amount | currency(crypto) }}</span>
+              <div class="a-chat__rates d-flex ml-2">
+                <span class="mb-1">{{ amount | currency(crypto) }}</span>
+                <span>~{{ rate }} {{ currentCurrency }}</span>
+              </div>
             </v-layout>
-            <div class="a-chat__rates">
-              ~{{ rate }} {{ currentCurrency }}
-            </div>
           </div>
         </div>
 

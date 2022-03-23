@@ -11,7 +11,6 @@
       flat
       :class="`${className}__toolbar`"
     />
-
     <container>
       <v-list class="transparent">
         <v-list-tile>
@@ -38,8 +37,11 @@
           </v-list-tile-content>
 
           <div>
-            <v-list-tile-title :class="`${className}__value`">
-              {{ amount || placeholder }}
+            <v-list-tile-title
+              v-if="rate !== false"
+              :class="`${className}__value`"
+            >
+              {{ rate }}
             </v-list-tile-title>
           </div>
         </v-list-tile>
@@ -54,8 +56,11 @@
           </v-list-tile-content>
 
           <div>
-            <v-list-tile-title :class="`${className}__value`">
-              {{ amount || placeholder }}
+            <v-list-tile-title
+              v-if="historyRate !== false"
+              :class="`${className}__value`"
+            >
+              {{ historyRate }}
             </v-list-tile-title>
           </div>
         </v-list-tile>
@@ -351,18 +356,48 @@ export default {
     },
     statusUpdatable () {
       return tsUpdatable(this.status.virtualStatus, this.crypto)
+    },
+    currentCurrency () {
+      return this.$store.state.options.currentRate
+    },
+    historyRate () {
+      const store = this.$store.state.rate.historyRates
+      let historyRate,
+        rate
+      if (store) {
+        historyRate = store[`${this.crypto}/${this.currentCurrency}`] * this.amount.replace(/[^\d.-]/g, '')
+        rate = isNaN(historyRate) ? false : `${historyRate.toFixed(2)} ${this.currentCurrency}`
+      } else {
+        rate = '�'
+      }
+      return rate
+    },
+    rate () {
+      const rate = this.$store.state.rate.rates[`${this.crypto}/${this.currentCurrency}`] * this.amount.replace(/[^\d.-]/g, '')
+      return isNaN(rate) ? false : `${rate.toFixed(2)} ${this.currentCurrency}`
     }
   },
   watch: {
     // fetch Tx status when we get admTx
     admTx () {
       this.fetchTransactionStatus(this.admTx, this.partner)
+    },
+    timestamp () {
+      this.$nextTick(() => {
+        this.getHistoryRates()
+      })
     }
   },
   mounted () {
     if (this.admTx) {
       this.fetchTransactionStatus(this.admTx, this.partner)
     }
+    if (!isNaN(this.timestamp)) {
+      this.getHistoryRates()
+    }
+  },
+  beforeDestroy () {
+    this.$store.commit('rate/clearHistoryRates')
   },
   methods: {
     copyToClipboard: function (key) {
@@ -391,6 +426,12 @@ export default {
       if (this.crypto && this.statusUpdatable) {
         this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.id, force: true, updateOnly: false, dropStatus: true })
       }
+    },
+    getHistoryRates () {
+      this.$store.dispatch('rate/getHistoryRates', {
+        date: this.timestamp,
+        coin: this.crypto
+      })
     }
   }
 }

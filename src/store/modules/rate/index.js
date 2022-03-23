@@ -2,18 +2,26 @@ import axios from 'axios'
 import getEnpointUrl from '@/lib//getEndpointUrl'
 
 const state = () => ({
-  rates: {}
+  rates: {},
+  isLoaded: false,
+  historyRates: {}
 })
 
-// const getters = {
-//   getRates: (state) => state.rates
-// }
 export let interval
 
 const UPDATE_RATES_INTERVAL = 90000
 const mutations = {
   setRates (state, rates) {
     state.rates = rates
+  },
+  setHistoryRates (state, historyRates) {
+    state.historyRates = historyRates
+  },
+  clearHistoryRates (state) {
+    state.historyRates = {}
+  },
+  loadRates (state) {
+    state.isLoaded = true
   }
 }
 const actions = {
@@ -25,8 +33,28 @@ const actions = {
         .then((res) => {
           const rates = res.data.result
           commit('setRates', rates)
+          commit('loadRates')
           resolve(res)
-          console.log('All rates: updated')
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  getHistoryRates ({ commit }, { date, coin }) {
+    const url = getEnpointUrl('infoservice')
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`${url}/getHistory?timestamp=${date}&coin=${coin}`)
+        .then((res) => {
+          let rates
+          if (res.data.result[0]) {
+            rates = res.data.result[0].tickers
+          } else {
+            rates = undefined
+          }
+          commit('setHistoryRates', rates)
+          resolve(res)
         })
         .catch((err) => {
           reject(err)
@@ -52,17 +80,10 @@ const actions = {
     handler () {
       clearTimeout(interval)
     }
-  },
-  reset: {
-    root: true,
-    handler ({ commit }) {
-      commit('reset')
-    }
   }
 }
 export default {
   state,
-  // getters,
   mutations,
   actions,
   namespaced: true

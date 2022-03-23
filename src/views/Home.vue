@@ -45,8 +45,10 @@
                     <sub>ERC20</sub>
                   </span>
                 </div>
-                <div class="a-text-explanation account-view__rates">
-                  <!-- {{ round(wallet.balance) }} -->
+                <div
+                  v-if="$store.state.rate.isLoaded"
+                  class="a-text-explanation account-view__rates"
+                >
                   {{ wallet.rate }} {{ currentCurrency }}
                 </div>
               </div>
@@ -66,7 +68,6 @@
                 :current-currency="currentCurrency"
                 @click:balance="goToTransactions"
               >
-                <!-- :rate="round(wallet.balance)" -->
                 <crypto-icon
                   slot="icon"
                   :crypto="wallet.cryptoCurrency"
@@ -126,9 +127,6 @@ export default {
         const erc20 = isErc20(crypto.toUpperCase())
         const currentRate = state.rate.rates[`${crypto}/${this.currentCurrency}`]
         const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0
-        // const currentRate1 = String(currentRate)
-        // const reg = /.*(?=\.)/g
-        // console.log(currentRate1.match(reg)[0])
         return {
           address,
           balance,
@@ -182,9 +180,6 @@ export default {
       const nextWallet = this.wallets[nextWalletIndex]
 
       if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
-    },
-    round (e) {
-      return Number(e.toFixed(2))
     }
   }
 }
