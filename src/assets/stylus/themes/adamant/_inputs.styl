@@ -17,6 +17,57 @@
     &:after // [2]
       transition: unset
 
+.fake-input
+  color: rgba(255,255,255,0.5)
+  font-weight: 400
+  padding-top: 12px
+  margin-top: 4px
+  pointer-events: none
+  flex: 1 1 auto
+  font-size: 16px
+  text-align: left
+  display: flex
+  align-items: flex-start
+  min-height: inherit;
+  position: relative
+.fake-input__label
+  left: 0px
+  right: auto
+  position: absolute
+  transform: translateY(-18px) scale(0.75)
+  overflow: hidden
+  text-overflow: ellipsis
+  top: 15px
+  transform-origin: top left
+  white-space: nowrap
+  max-width: 133%
+.fake-input__box
+  width: 100%
+  padding-bottom: 20px
+  position: relative
+  display: flex
+  overflow: hidden
+.fake-input__value
+  line-height: 32px
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+.fake-input__box:before
+  content: ''
+  border-image: repeating-linear-gradient(to right, rgba(255,255,255,0.5) 0px, rgba(255,255,255,0.5) 2px, transparent 2px, transparent 4px) 1 repeat
+  border-color: rgba(255,255,255,0.7)
+  border-style: solid
+  border-width: thin 0 0 0
+  border-top-width: 1px
+  left: 0
+  position: absolute
+  transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1)
+  width: 100%
+  top: 31px
+.fake-input__value--rate
+  font-style: italic
+  padding-left: 3px
+  
 .theme--light
   .a-input
     .v-label
@@ -42,3 +93,7 @@
     &.v-input--is-focused > .v-input__control > .v-input__slot:after // [3.c.]
       border-color: $adm-colors.primary2
       border-width: thin 0 0 0
+  .fake-input
+    color: rgba(0,0,0,0.54)
+  .fake-input__box:before
+    border-image: repeating-linear-gradient(to right, rgba(0,0,0,0.38) 0px, rgba(0,0,0,0.38) 2px, transparent 2px, transparent 4px) 1 repeat    

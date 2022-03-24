@@ -30,7 +30,7 @@
           <span :class="`${className}__amount ${directionClass}`">{{ amount | currency(crypto) }}</span>
           <span
             :class="`${className}__rates`"
-          > ~{{ rate }} {{ currentCurrency }}</span>
+          > {{ historyRate }}</span>
           <span
             v-if="comment"
             class="a-text-regular-enlarged-bold"
@@ -194,26 +194,22 @@ export default {
       const admTx = this.getAdmTx
       return admTx.message
     },
-    currentCurrency: {
-      get () {
-        return this.$store.state.options.currentRate
-      },
-      set (value) {
-        this.$store.commit('options/updateOption', {
-          key: 'currentRate',
-          value
-        })
-      }
+    currentCurrency () {
+      return this.$store.state.options.currentRate
     },
-    rate () {
-      const state = this.$store.state.rate.rates
+    historyRate () {
+      const state = this.$store.state.rate.historyRates
       const currentRate = state[`${this.crypto}/${this.currentCurrency}`]
-      // const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '') * currentRate
-      // const rate = currentRate !== undefined ? Number(amount.toFixed(2)) : 0
       const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
-      const rate = currentRate !== undefined ? Number((currentRate * amount).toFixed(2)) : 0
+      const rate = currentRate !== undefined ? ` ~${Number((currentRate * amount).toFixed(2))} ${this.currentCurrency}` : ''
       return rate
     }
+  },
+  mounted () {
+    this.$store.dispatch('rate/getHistoryRates', {
+      date: this.crypto === 'ADM' ? (this.timestamp * 1000 + EPOCH) : this.timestamp,
+      coin: this.crypto
+    })
   },
   methods: {
     isStringEqualCI (string1, string2) {

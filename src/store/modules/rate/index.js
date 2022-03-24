@@ -47,12 +47,7 @@ const actions = {
       axios
         .get(`${url}/getHistory?timestamp=${date}&coin=${coin}`)
         .then((res) => {
-          let rates
-          if (res.data.result[0]) {
-            rates = res.data.result[0].tickers
-          } else {
-            rates = undefined
-          }
+          const rates = res.data.result[0].tickers
           commit('setHistoryRates', rates)
           resolve(res)
         })

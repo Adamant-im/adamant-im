@@ -104,20 +104,29 @@
           </v-menu>
         </template>
       </v-text-field>
-
-      <v-text-field
-        :value="`${transferFeeFixed} ${transferFeeCurrency} ~ ${transferFeeRate}`"
-        :label="`${transferFeeLabel}`"
-        class="a-input"
-        disabled
-      />
-      <v-text-field
+      <div
+        class="fake-input"
+      >
+        <div class="fake-input__label">
+          {{ transferFeeLabel }}
+        </div>
+        <div class="fake-input__box">
+          <span class="fake-input__value"> {{ transferFeeFixed }} {{ transferFeeCurrency }} </span>
+          <span class="fake-input__value fake-input__value--rate a-text-regular"> ~ {{ transferFeeRate }} </span>
+        </div>
+      </div>
+      <div
         v-if="!hideFinalAmount"
-        :value="`${finalAmountFixed} ${currency} ~ ${finalAmountRate}`"
-        :label="$t('transfer.final_amount_label')"
-        class="a-input"
-        disabled
-      />
+        class="fake-input"
+      >
+        <div class="fake-input__label">
+          {{ $t('transfer.final_amount_label') }}
+        </div>
+        <div class="fake-input__box">
+          <span class="fake-input__value"> {{ finalAmountFixed }} {{ currency }} </span>
+          <span class="fake-input__value fake-input__value--rate a-text-regular"> ~ {{ finalAmountRate }} </span>
+        </div>
+      </div>
       <v-text-field
         v-if="addressReadonly"
         v-model="comment"

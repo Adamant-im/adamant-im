@@ -264,9 +264,8 @@
 </template>
 
 <script>
-import { Symbols, tsUpdatable } from '@/lib/constants'
+import { Symbols, tsUpdatable, EPOCH } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
-
 import transaction from '@/mixins/transaction'
 import { copyToClipboard } from '@/lib/textHelpers'
 
@@ -361,16 +360,8 @@ export default {
       return this.$store.state.options.currentRate
     },
     historyRate () {
-      const store = this.$store.state.rate.historyRates
-      let historyRate,
-        rate
-      if (store) {
-        historyRate = store[`${this.crypto}/${this.currentCurrency}`] * this.amount.replace(/[^\d.-]/g, '')
-        rate = isNaN(historyRate) ? false : `${historyRate.toFixed(2)} ${this.currentCurrency}`
-      } else {
-        rate = '�'
-      }
-      return rate
+      const rate = this.$store.state.rate.historyRates[`${this.crypto}/${this.currentCurrency}`] * this.amount.replace(/[^\d.-]/g, '')
+      return isNaN(rate) ? false : `${rate.toFixed(2)} ${this.currentCurrency}`
     },
     rate () {
       const rate = this.$store.state.rate.rates[`${this.crypto}/${this.currentCurrency}`] * this.amount.replace(/[^\d.-]/g, '')
@@ -395,9 +386,6 @@ export default {
     if (!isNaN(this.timestamp)) {
       this.getHistoryRates()
     }
-  },
-  beforeDestroy () {
-    this.$store.commit('rate/clearHistoryRates')
   },
   methods: {
     copyToClipboard: function (key) {
@@ -429,7 +417,7 @@ export default {
     },
     getHistoryRates () {
       this.$store.dispatch('rate/getHistoryRates', {
-        date: this.timestamp,
+        date: this.crypto === 'ADM' ? (this.timestamp * 1000 + EPOCH) : this.timestamp,
         coin: this.crypto
       })
     }
