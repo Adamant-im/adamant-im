@@ -194,22 +194,28 @@ export default {
       const admTx = this.getAdmTx
       return admTx.message
     },
+    isHistoryRatesCahced () {
+      return this.$store.state.rate.historyRatesCached[`${this.crypto}/${this.currentCurrency}/${this.timestamp}`]
+    },
     currentCurrency () {
       return this.$store.state.options.currentRate
     },
     historyRate () {
-      const state = this.$store.state.rate.historyRates
-      const currentRate = state[`${this.crypto}/${this.currentCurrency}`]
+      const currentRate = !this.isHistoryRatesCahced ? this.$store.state.rate.historyRates[`${this.crypto}/${this.currentCurrency}`] : this.$store.state.rate.historyRatesCached[`${this.crypto}/${this.currentCurrency}/${this.timestamp}`]
+      // const currentRate = state[`${this.crypto}/${this.currentCurrency}`]
       const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
       const rate = currentRate !== undefined ? ` ~${Number((currentRate * amount).toFixed(2))} ${this.currentCurrency}` : ''
       return rate
     }
   },
   mounted () {
-    this.$store.dispatch('rate/getHistoryRates', {
-      date: this.crypto === 'ADM' ? (this.timestamp * 1000 + EPOCH) : this.timestamp,
-      coin: this.crypto
-    })
+    if (!this.isHistoryRatesCahced) {
+      this.$store.dispatch('rate/getHistoryRates', {
+        date: this.timestamp,
+        coin: this.crypto,
+        currentRate: this.currentCurrency
+      })
+    }
   },
   methods: {
     isStringEqualCI (string1, string2) {

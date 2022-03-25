@@ -66,7 +66,6 @@
         </v-list-tile>
 
         <v-divider />
-
         <v-list-tile>
           <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
@@ -264,7 +263,7 @@
 </template>
 
 <script>
-import { Symbols, tsUpdatable, EPOCH } from '@/lib/constants'
+import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import transaction from '@/mixins/transaction'
 import { copyToClipboard } from '@/lib/textHelpers'
@@ -359,8 +358,12 @@ export default {
     currentCurrency () {
       return this.$store.state.options.currentRate
     },
+    isHistoryRatesCahced () {
+      return this.$store.state.rate.historyRatesCached[`${this.crypto}/${this.currentCurrency}/${this.timestamp}`]
+    },
     historyRate () {
-      const rate = this.$store.state.rate.historyRates[`${this.crypto}/${this.currentCurrency}`] * this.amount.replace(/[^\d.-]/g, '')
+      const currentRate = !this.isHistoryRatesCahced ? this.$store.state.rate.historyRates[`${this.crypto}/${this.currentCurrency}`] : this.$store.state.rate.historyRatesCached[`${this.crypto}/${this.currentCurrency}/${this.timestamp}`]
+      const rate = currentRate * this.amount.replace(/[^\d.-]/g, '')
       return isNaN(rate) ? false : `${rate.toFixed(2)} ${this.currentCurrency}`
     },
     rate () {
@@ -416,10 +419,13 @@ export default {
       }
     },
     getHistoryRates () {
-      this.$store.dispatch('rate/getHistoryRates', {
-        date: this.crypto === 'ADM' ? (this.timestamp * 1000 + EPOCH) : this.timestamp,
-        coin: this.crypto
-      })
+      if (!this.isHistoryRatesCahced) {
+        this.$store.dispatch('rate/getHistoryRates', {
+          date: this.timestamp,
+          coin: this.crypto,
+          currentRate: this.currentCurrency
+        })
+      }
     }
   }
 }
