@@ -51,7 +51,6 @@ const actions = {
         .then((res) => {
           const rates = res.data.result[0].tickers
           commit('setHistoryRates', { name: key, value: rates })
-          commit('loadRates')
           resolve(res)
         })
         .catch((err) => {
