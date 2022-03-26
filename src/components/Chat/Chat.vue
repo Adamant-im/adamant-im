@@ -61,6 +61,7 @@
           :amount="message.amount"
           :crypto="message.type"
           :time="message.timestamp | date"
+          :hash="message.hash"
           :currency="message.type"
           :locale="locale"
           :status="getTransactionStatus(message)"

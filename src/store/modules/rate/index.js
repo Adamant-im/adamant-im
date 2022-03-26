@@ -7,8 +7,7 @@ import Vue from 'vue'
 const state = () => ({
   rates: {},
   isLoaded: false,
-  historyRates: {},
-  historyRatesCached: {}
+  historyRates: {}
 })
 
 export let interval
@@ -19,10 +18,7 @@ const mutations = {
     state.rates = rates
   },
   setHistoryRates (state, historyRates) {
-    state.historyRates = historyRates
-  },
-  setHistoryRatesCached (state, historyRates) {
-    Vue.set(state.historyRatesCached, historyRates.name, historyRates.value)
+    Vue.set(state.historyRates, historyRates.name, historyRates.value)
   },
   loadRates (state) {
     state.isLoaded = true
@@ -45,18 +41,17 @@ const actions = {
         })
     })
   },
-  getHistoryRates ({ commit }, { date, coin, currentRate }) {
+  getHistoryRates ({ commit }, { date, coin }) {
     const url = getEnpointUrl('infoservice')
-    const key = `${coin}/${currentRate}/${date}`
+    const key = date
     date = coin === 'ADM' ? (Math.floor((date * 1000 + EPOCH) / 1000)) : Math.floor(date / 1000)
     return new Promise((resolve, reject) => {
       axios
-        .get(`${url}/getHistory?timestamp=${date}&coin=${coin}`)
+        .get(`${url}/getHistory?timestamp=${date}`)
         .then((res) => {
           const rates = res.data.result[0].tickers
-          const value = rates[`${coin}/${currentRate}`]
-          commit('setHistoryRates', rates)
-          commit('setHistoryRatesCached', { name: key, value: value })
+          commit('setHistoryRates', { name: key, value: rates })
+          commit('loadRates')
           resolve(res)
         })
         .catch((err) => {

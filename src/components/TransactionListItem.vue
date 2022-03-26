@@ -194,28 +194,26 @@ export default {
       const admTx = this.getAdmTx
       return admTx.message
     },
-    isHistoryRatesCahced () {
-      return this.$store.state.rate.historyRatesCached[`${this.crypto}/${this.currentCurrency}/${this.timestamp}`]
-    },
     currentCurrency () {
       return this.$store.state.options.currentRate
     },
+    currentHistoryRates () {
+      return this.$store.state.rate.historyRates[this.timestamp]
+    },
     historyRate () {
-      const currentRate = !this.isHistoryRatesCahced ? this.$store.state.rate.historyRates[`${this.crypto}/${this.currentCurrency}`] : this.$store.state.rate.historyRatesCached[`${this.crypto}/${this.currentCurrency}/${this.timestamp}`]
-      // const currentRate = state[`${this.crypto}/${this.currentCurrency}`]
-      const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
-      const rate = currentRate !== undefined ? ` ~${Number((currentRate * amount).toFixed(2))} ${this.currentCurrency}` : ''
+      let rate
+      if (this.currentHistoryRates) {
+        const currentHistoryRate = this.currentHistoryRates[`${this.crypto}/${this.currentCurrency}`]
+        const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
+        rate = ` ~${Number((currentHistoryRate * amount).toFixed(2))} ${this.currentCurrency}`
+      } else {
+        rate = ''
+      }
       return rate
     }
   },
-  mounted () {
-    if (!this.isHistoryRatesCahced) {
-      this.$store.dispatch('rate/getHistoryRates', {
-        date: this.timestamp,
-        coin: this.crypto,
-        currentRate: this.currentCurrency
-      })
-    }
+  async mounted () {
+    await this.getHistoryRates()
   },
   methods: {
     isStringEqualCI (string1, string2) {
@@ -257,6 +255,14 @@ export default {
         return !!admTx.id
       })
       return admTx
+    },
+    async getHistoryRates () {
+      if (!this.currentHistoryRates) {
+        await this.$store.dispatch('rate/getHistoryRates', {
+          date: this.timestamp,
+          coin: this.crypto
+        })
+      }
     }
   }
 }

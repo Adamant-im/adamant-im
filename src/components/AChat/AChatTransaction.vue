@@ -40,7 +40,7 @@
               <slot name="crypto" />
               <div class="a-chat__rates-column d-flex ml-2">
                 <span class="mb-1">{{ amount | currency(crypto) }}</span>
-                <span class="a-chat__rates">~{{ rate }} {{ currentCurrency }}</span>
+                <span class="a-chat__rates">{{ historyRate }}</span>
               </div>
             </v-layout>
           </div>
@@ -110,6 +110,10 @@ export default {
     crypto: {
       type: String,
       default: 'ADM'
+    },
+    hash: {
+      required: true,
+      type: String
     }
   },
   computed: {
@@ -125,26 +129,43 @@ export default {
     statusColor () {
       return tsColor(this.status.virtualStatus)
     },
-    currentCurrency: {
-      get () {
-        return this.$store.state.options.currentRate
-      },
-      set (value) {
-        this.$store.commit('options/updateOption', {
-          key: 'currentRate',
-          value
-        })
+    transaction () {
+      let transaction
+      if (this.crypto === 'ADM') {
+        transaction = this.$store.state.adm.transactions[this.hash] || { }
+      } else {
+        transaction = this.$store.getters[`${this.crypto.toLowerCase()}/transaction`](this.hash) || {}
       }
+      return transaction
     },
-    rate () {
-      const currentRate = this.$store.state.rate.rates[`${this.crypto}/${this.currentCurrency}`]
-      const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
-      const rate = currentRate !== undefined ? Number((currentRate * amount).toFixed(2)) : 0
+    currentCurrency () {
+      return this.$store.state.options.currentRate
+    },
+    currentHistoryRates () {
+      return this.$store.state.rate.historyRates[this.transaction.timestamp]
+    },
+    historyRate () {
+      let rate
+      if (this.currentHistoryRates) {
+        const currentHistoryRate = this.currentHistoryRates[`${this.crypto}/${this.currentCurrency}`]
+        const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
+        rate = ` ~${Number((currentHistoryRate * amount).toFixed(2))} ${this.currentCurrency}`
+      } else {
+        rate = ''
+      }
       return rate
     }
   },
-  mounted () {
+  watch: {
+    transaction () {
+      if (this.transaction.amount) {
+        this.getHistoryRates()
+      }
+    }
+  },
+  async mounted () {
     this.$emit('mount')
+    this.$store.dispatch(`${this.crypto.toLowerCase()}/getTransaction`, { hash: this.hash })
   },
   methods: {
     isStringEqualCI (string1, string2) {
@@ -158,6 +179,14 @@ export default {
     updateStatus () {
       if (this.statusUpdatable) {
         this.$emit('click:transactionStatus', this.id)
+      }
+    },
+    async getHistoryRates () {
+      if (!this.currentHistoryRates) {
+        await this.$store.dispatch('rate/getHistoryRates', {
+          date: this.transaction.timestamp,
+          coin: this.crypto
+        })
       }
     }
   }

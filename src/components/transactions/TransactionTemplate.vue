@@ -358,13 +358,18 @@ export default {
     currentCurrency () {
       return this.$store.state.options.currentRate
     },
-    isHistoryRatesCahced () {
-      return this.$store.state.rate.historyRatesCached[`${this.crypto}/${this.currentCurrency}/${this.timestamp}`]
+    currentHistoryRates () {
+      return this.$store.state.rate.historyRates[this.timestamp]
     },
     historyRate () {
-      const currentRate = !this.isHistoryRatesCahced ? this.$store.state.rate.historyRates[`${this.crypto}/${this.currentCurrency}`] : this.$store.state.rate.historyRatesCached[`${this.crypto}/${this.currentCurrency}/${this.timestamp}`]
-      const rate = currentRate * this.amount.replace(/[^\d.-]/g, '')
-      return isNaN(rate) ? false : `${rate.toFixed(2)} ${this.currentCurrency}`
+      let rate
+      if (this.currentHistoryRates) {
+        const currentHistoryRate = this.currentHistoryRates[`${this.crypto}/${this.currentCurrency}`]
+        rate = `${(currentHistoryRate * this.amount.replace(/[^\d.-]/g, '')).toFixed(2)} ${this.currentCurrency}`
+      } else {
+        rate = ''
+      }
+      return rate
     },
     rate () {
       const rate = this.$store.state.rate.rates[`${this.crypto}/${this.currentCurrency}`] * this.amount.replace(/[^\d.-]/g, '')
@@ -382,12 +387,12 @@ export default {
       })
     }
   },
-  mounted () {
+  async mounted () {
     if (this.admTx) {
       this.fetchTransactionStatus(this.admTx, this.partner)
     }
     if (!isNaN(this.timestamp)) {
-      this.getHistoryRates()
+      await this.getHistoryRates()
     }
   },
   methods: {
@@ -418,12 +423,11 @@ export default {
         this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.id, force: true, updateOnly: false, dropStatus: true })
       }
     },
-    getHistoryRates () {
-      if (!this.isHistoryRatesCahced) {
-        this.$store.dispatch('rate/getHistoryRates', {
+    async getHistoryRates () {
+      if (!this.currentHistoryRates) {
+        await this.$store.dispatch('rate/getHistoryRates', {
           date: this.timestamp,
-          coin: this.crypto,
-          currentRate: this.currentCurrency
+          coin: this.crypto
         })
       }
     }
