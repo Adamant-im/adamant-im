@@ -358,16 +358,14 @@ export default {
     currentCurrency () {
       return this.$store.state.options.currentRate
     },
-    currentHistoryRates () {
-      return this.$store.state.rate.historyRates[this.timestamp]
-    },
     historyRate () {
+      const store = this.$store.state.rate.historyRates[this.timestamp]
       let rate
-      if (this.currentHistoryRates) {
-        const currentHistoryRate = this.currentHistoryRates[`${this.crypto}/${this.currentCurrency}`]
+      if (store) {
+        const currentHistoryRate = store[`${this.crypto}/${this.currentCurrency}`]
         rate = `${(currentHistoryRate * this.amount.replace(/[^\d.-]/g, '')).toFixed(2)} ${this.currentCurrency}`
       } else {
-        rate = ''
+        rate = '�'
       }
       return rate
     },
@@ -387,12 +385,12 @@ export default {
       })
     }
   },
-  async mounted () {
+  mounted () {
     if (this.admTx) {
       this.fetchTransactionStatus(this.admTx, this.partner)
     }
     if (!isNaN(this.timestamp)) {
-      await this.getHistoryRates()
+      this.getHistoryRates()
     }
   },
   methods: {
@@ -423,13 +421,11 @@ export default {
         this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.id, force: true, updateOnly: false, dropStatus: true })
       }
     },
-    async getHistoryRates () {
-      if (!this.currentHistoryRates) {
-        await this.$store.dispatch('rate/getHistoryRates', {
-          date: this.timestamp,
-          coin: this.crypto
-        })
-      }
+    getHistoryRates () {
+      this.$store.dispatch('rate/getHistoryRates', {
+        date: this.timestamp,
+        coin: this.crypto
+      })
     }
   }
 }
