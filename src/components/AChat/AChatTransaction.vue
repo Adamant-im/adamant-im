@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
+import { EPOCH, tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyFilter from '@/filters/currency'
 
@@ -129,6 +129,9 @@ export default {
     statusColor () {
       return tsColor(this.status.virtualStatus)
     },
+    timestampInSec () {
+      return this.crypto === 'ADM' ? (Math.floor((this.transaction.timestamp * 1000 + EPOCH) / 1000)) : Math.floor(this.transaction.timestamp / 1000)
+    },
     transaction () {
       let transaction
       if (this.crypto === 'ADM') {
@@ -142,7 +145,7 @@ export default {
       return this.$store.state.options.currentRate
     },
     historyRate () {
-      const store = this.$store.state.rate.historyRates[this.transaction.timestamp]
+      const store = this.$store.state.rate.historyRates[this.timestampInSec]
       let rate
       if (store) {
         const currentHistoryRate = store[`${this.crypto}/${this.currentCurrency}`]
@@ -181,8 +184,7 @@ export default {
     },
     getHistoryRates () {
       this.$store.dispatch('rate/getHistoryRates', {
-        date: this.transaction.timestamp,
-        coin: this.crypto
+        timestamp: this.timestampInSec
       })
     }
   }

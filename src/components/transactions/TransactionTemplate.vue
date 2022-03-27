@@ -263,7 +263,7 @@
 </template>
 
 <script>
-import { Symbols, tsUpdatable } from '@/lib/constants'
+import { EPOCH, Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import transaction from '@/mixins/transaction'
 import { copyToClipboard } from '@/lib/textHelpers'
@@ -355,11 +355,14 @@ export default {
     statusUpdatable () {
       return tsUpdatable(this.status.virtualStatus, this.crypto)
     },
+    timestampInSec () {
+      return this.crypto === 'ADM' ? (Math.floor((this.timestamp * 1000 + EPOCH) / 1000)) : Math.floor(this.timestamp / 1000)
+    },
     currentCurrency () {
       return this.$store.state.options.currentRate
     },
     historyRate () {
-      const store = this.$store.state.rate.historyRates[this.timestamp]
+      const store = this.$store.state.rate.historyRates[this.timestampInSec]
       let rate
       if (store) {
         const currentHistoryRate = store[`${this.crypto}/${this.currentCurrency}`]
@@ -423,8 +426,7 @@ export default {
     },
     getHistoryRates () {
       this.$store.dispatch('rate/getHistoryRates', {
-        date: this.timestamp,
-        coin: this.crypto
+        timestamp: this.timestampInSec
       })
     }
   }

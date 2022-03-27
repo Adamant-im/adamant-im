@@ -194,11 +194,14 @@ export default {
       const admTx = this.getAdmTx
       return admTx.message
     },
+    timestampInSec () {
+      return this.crypto === 'ADM' ? (Math.floor((this.timestamp * 1000 + EPOCH) / 1000)) : Math.floor(this.timestamp / 1000)
+    },
     currentCurrency () {
       return this.$store.state.options.currentRate
     },
     historyRate () {
-      const store = this.$store.state.rate.historyRates[this.timestamp]
+      const store = this.$store.state.rate.historyRates[this.timestampInSec]
       let rate
       if (store) {
         const currentHistoryRate = store[`${this.crypto}/${this.currentCurrency}`]
@@ -256,8 +259,7 @@ export default {
     },
     getHistoryRates () {
       this.$store.dispatch('rate/getHistoryRates', {
-        date: this.timestamp,
-        coin: this.crypto
+        timestamp: this.timestampInSec
       })
     }
   }

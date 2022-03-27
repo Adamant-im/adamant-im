@@ -1,6 +1,5 @@
 import axios from 'axios'
 import getEnpointUrl from '@/lib/getEndpointUrl'
-import { EPOCH } from '@/lib/constants'
 import Vue from 'vue'
 
 const state = () => ({
@@ -18,7 +17,6 @@ const mutations = {
   },
   setHistoryRates (state, historyRates) {
     Vue.set(state.historyRates, historyRates.name, historyRates.value)
-    // state.historyRates[historyRates.name] = historyRates.value
   },
   loadRates (state) {
     state.isLoaded = true
@@ -41,19 +39,17 @@ const actions = {
         })
     })
   },
-  getHistoryRates ({ state, commit }, { date, coin }) {
+  getHistoryRates ({ state, commit }, { timestamp }) {
     const url = getEnpointUrl('infoservice')
-    const key = date
-    if (state.historyRates[key]) {
-      return state.historyRates[key]
+    if (state.historyRates[timestamp] !== undefined) {
+      return state.historyRates[timestamp]
     } else {
-      date = coin === 'ADM' ? (Math.floor((date * 1000 + EPOCH) / 1000)) : Math.floor(date / 1000)
       return new Promise((resolve, reject) => {
         axios
-          .get(`${url}/getHistory?timestamp=${date}`)
+          .get(`${url}/getHistory?timestamp=${timestamp}`)
           .then((res) => {
-            const rates = res.data.result.length ? res.data.result[0].tickers : null
-            commit('setHistoryRates', { name: key, value: rates })
+            const rates = res?.data?.result[0]?.tickers ?? null
+            commit('setHistoryRates', { name: timestamp, value: rates })
             resolve(res)
           })
           .catch((err) => {
