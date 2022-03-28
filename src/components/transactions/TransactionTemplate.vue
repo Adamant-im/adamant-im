@@ -263,10 +263,11 @@
 </template>
 
 <script>
-import { EPOCH, Symbols, tsUpdatable } from '@/lib/constants'
+import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import transaction from '@/mixins/transaction'
 import { copyToClipboard } from '@/lib/textHelpers'
+import adamant from '@/lib/adamant'
 
 export default {
   name: 'TransactionTemplate',
@@ -356,7 +357,8 @@ export default {
       return tsUpdatable(this.status.virtualStatus, this.crypto)
     },
     timestampInSec () {
-      return this.crypto === 'ADM' ? (Math.floor((this.timestamp * 1000 + EPOCH) / 1000)) : Math.floor(this.timestamp / 1000)
+      const timestampInMs = this.crypto === 'ADM' ? adamant.toTimestamp(this.timestamp) : this.timestamp
+      return Math.floor(timestampInMs / 1000)
     },
     currentCurrency () {
       return this.$store.state.options.currentRate

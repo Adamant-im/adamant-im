@@ -57,9 +57,10 @@
 </template>
 
 <script>
-import { EPOCH, tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
+import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyFilter from '@/filters/currency'
+import adamant from '@/lib/adamant'
 
 export default {
   props: {
@@ -130,7 +131,8 @@ export default {
       return tsColor(this.status.virtualStatus)
     },
     timestampInSec () {
-      return this.crypto === 'ADM' ? (Math.floor((this.transaction.timestamp * 1000 + EPOCH) / 1000)) : Math.floor(this.transaction.timestamp / 1000)
+      const timestampInMs = this.crypto === 'ADM' ? adamant.toTimestamp(this.timestamp) : this.timestamp
+      return Math.floor(timestampInMs / 1000)
     },
     transaction () {
       let transaction
