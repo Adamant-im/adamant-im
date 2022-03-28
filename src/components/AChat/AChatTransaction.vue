@@ -60,7 +60,7 @@
 import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyFilter from '@/filters/currency'
-import adamant from '@/lib/adamant'
+import { timestampInSec } from '@/filters/helpers'
 
 export default {
   props: {
@@ -131,8 +131,7 @@ export default {
       return tsColor(this.status.virtualStatus)
     },
     timestampInSec () {
-      const timestampInMs = this.crypto === 'ADM' ? adamant.toTimestamp(this.timestamp) : this.timestamp
-      return Math.floor(timestampInMs / 1000)
+      return timestampInSec(this.crypto, this.transaction.timestamp)
     },
     transaction () {
       let transaction
@@ -143,20 +142,9 @@ export default {
       }
       return transaction
     },
-    currentCurrency () {
-      return this.$store.state.options.currentRate
-    },
     historyRate () {
-      const store = this.$store.state.rate.historyRates[this.timestampInSec]
-      let rate
-      if (store) {
-        const currentHistoryRate = store[`${this.crypto}/${this.currentCurrency}`]
-        const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
-        rate = ` ~${Number((currentHistoryRate * amount).toFixed(2))} ${this.currentCurrency}`
-      } else {
-        rate = '�'
-      }
-      return rate
+      const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
+      return this.$store.getters['rate/historyRate'](this.timestampInSec, amount, this.crypto)
     }
   },
   watch: {

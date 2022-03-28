@@ -93,7 +93,7 @@ import { EPOCH, Cryptos } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyFilter from '@/filters/currency'
-import adamant from '@/lib/adamant'
+import { timestampInSec } from '@/filters/helpers'
 
 export default {
   filters: {
@@ -196,23 +196,11 @@ export default {
       return admTx.message
     },
     timestampInSec () {
-      const timestampInMs = this.crypto === 'ADM' ? adamant.toTimestamp(this.timestamp) : this.timestamp
-      return Math.floor(timestampInMs / 1000)
-    },
-    currentCurrency () {
-      return this.$store.state.options.currentRate
+      return timestampInSec(this.crypto, this.timestamp)
     },
     historyRate () {
-      const store = this.$store.state.rate.historyRates[this.timestampInSec]
-      let rate
-      if (store) {
-        const currentHistoryRate = store[`${this.crypto}/${this.currentCurrency}`]
-        const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
-        rate = ` ~${Number((currentHistoryRate * amount).toFixed(2))} ${this.currentCurrency}`
-      } else {
-        rate = '�'
-      }
-      return rate
+      const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
+      return this.$store.getters['rate/historyRate'](this.timestampInSec, amount, this.crypto)
     }
   },
   mounted () {

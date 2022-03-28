@@ -267,7 +267,7 @@ import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import transaction from '@/mixins/transaction'
 import { copyToClipboard } from '@/lib/textHelpers'
-import adamant from '@/lib/adamant'
+import { timestampInSec } from '@/filters/helpers'
 
 export default {
   name: 'TransactionTemplate',
@@ -357,26 +357,16 @@ export default {
       return tsUpdatable(this.status.virtualStatus, this.crypto)
     },
     timestampInSec () {
-      const timestampInMs = this.crypto === 'ADM' ? adamant.toTimestamp(this.timestamp) : this.timestamp
-      return Math.floor(timestampInMs / 1000)
+      return timestampInSec(this.crypto, this.timestamp)
     },
-    currentCurrency () {
-      return this.$store.state.options.currentRate
+    amountNumber () {
+      return this.amount.replace(/[^\d.-]/g, '')
     },
     historyRate () {
-      const store = this.$store.state.rate.historyRates[this.timestampInSec]
-      let rate
-      if (store) {
-        const currentHistoryRate = store[`${this.crypto}/${this.currentCurrency}`]
-        rate = `${(currentHistoryRate * this.amount.replace(/[^\d.-]/g, '')).toFixed(2)} ${this.currentCurrency}`
-      } else {
-        rate = '�'
-      }
-      return rate
+      return this.$store.getters['rate/historyRate'](this.timestampInSec, this.amountNumber, this.crypto)
     },
     rate () {
-      const rate = this.$store.state.rate.rates[`${this.crypto}/${this.currentCurrency}`] * this.amount.replace(/[^\d.-]/g, '')
-      return isNaN(rate) ? false : `${rate.toFixed(2)} ${this.currentCurrency}`
+      return this.$store.getters['rate/rate'](this.amountNumber, this.crypto)
     }
   },
   watch: {

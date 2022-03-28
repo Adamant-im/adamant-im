@@ -79,8 +79,28 @@ const actions = {
     }
   }
 }
+const getters = {
+  historyRate: (state, getters, rootState) => (timestamp, amount, crypto) => {
+    let historyRate
+    const currentCurrency = rootState.options.currentRate
+    const store = state.historyRates[timestamp]
+    if (store) {
+      historyRate = `~${(store[`${crypto}/${currentCurrency}`] * amount).toFixed(2)} ${currentCurrency}`
+    } else {
+      historyRate = '�'
+    }
+    return historyRate
+  },
+  rate: (state, getters, rootState) => (amount, crypto) => {
+    const currentCurrency = rootState.options.currentRate
+    const store = state.rates[`${crypto}/${currentCurrency}`]
+    const rate = store * amount
+    return isNaN(rate) ? '�' : `~${rate.toFixed(2)} ${currentCurrency}`
+  }
+}
 export default {
   state,
+  getters,
   mutations,
   actions,
   namespaced: true

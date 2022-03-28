@@ -41,19 +41,12 @@ export const CryptosNames = {
   [Cryptos.BTC]: 'Bitcoin'
 }
 
-// export const RatesNames = {
-//   [Rates.USD]: 'United States Dollar',
-//   [Rates.EUR]: 'Euro',
-//   [Rates.RUB]: 'Russian Ruble',
-//   [Rates.CNY]: 'Chinese Yuan',
-//   [Rates.JPY]: 'Japanese Yen'
-// }
 export const RatesNames = {
-  [Rates.USD]: 'USD ($)',
-  [Rates.EUR]: 'EUR (€)',
-  [Rates.RUB]: 'RUB (₽)',
-  [Rates.CNY]: 'CNY (¥)',
-  [Rates.JPY]: 'JPY (¥)'
+  [Rates.USD]: 'USD ($)', // United States Dollar
+  [Rates.EUR]: 'EUR (€)', // Euro
+  [Rates.RUB]: 'RUB (₽)', // Russian Ruble
+  [Rates.CNY]: 'CNY (¥)', // Chinese Yuan
+  [Rates.JPY]: 'JPY (¥)' // Japanese Yen
 }
 // Some cryptos require minimum balance to maintain on a wallet
 export const minBalances = {

@@ -52,12 +52,6 @@ export default {
       type: String,
       default: ''
     }
-    // currencies: {
-    //   type: Object,
-    //   default: () => {
-    //     return RatesNames
-    //   }
-    // }
   },
   computed: {
     currencies () {
