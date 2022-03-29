@@ -59,7 +59,7 @@
 <script>
 import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import currencyFilter from '@/filters/currency'
+import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
 
 export default {
@@ -130,9 +130,6 @@ export default {
     statusColor () {
       return tsColor(this.status.virtualStatus)
     },
-    timestampInSec () {
-      return timestampInSec(this.crypto, this.transaction.timestamp)
-    },
     transaction () {
       let transaction
       if (this.crypto === 'ADM') {
@@ -143,8 +140,8 @@ export default {
       return transaction
     },
     historyRate () {
-      const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
-      return this.$store.getters['rate/historyRate'](this.timestampInSec, amount, this.crypto)
+      const amount = currencyAmount(this.amount, this.crypto)
+      return this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.transaction.timestamp), amount, this.crypto)
     }
   },
   watch: {
@@ -174,7 +171,7 @@ export default {
     },
     getHistoryRates () {
       this.$store.dispatch('rate/getHistoryRates', {
-        timestamp: this.timestampInSec
+        timestamp: timestampInSec(this.crypto, this.transaction.timestamp)
       })
     }
   }

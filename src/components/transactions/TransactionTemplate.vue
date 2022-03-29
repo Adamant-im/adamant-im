@@ -356,14 +356,11 @@ export default {
     statusUpdatable () {
       return tsUpdatable(this.status.virtualStatus, this.crypto)
     },
-    timestampInSec () {
-      return timestampInSec(this.crypto, this.timestamp)
-    },
     amountNumber () {
       return this.amount.replace(/[^\d.-]/g, '')
     },
     historyRate () {
-      return this.$store.getters['rate/historyRate'](this.timestampInSec, this.amountNumber, this.crypto)
+      return this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.timestamp), this.amountNumber, this.crypto)
     },
     rate () {
       return this.$store.getters['rate/rate'](this.amountNumber, this.crypto)

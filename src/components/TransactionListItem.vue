@@ -92,7 +92,7 @@ import dateFilter from '@/filters/date'
 import { EPOCH, Cryptos } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import currencyFilter from '@/filters/currency'
+import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
 
 export default {
@@ -195,12 +195,9 @@ export default {
       const admTx = this.getAdmTx
       return admTx.message
     },
-    timestampInSec () {
-      return timestampInSec(this.crypto, this.timestamp)
-    },
     historyRate () {
-      const amount = currencyFilter(this.amount, this.crypto).replace(/[^\d.-]/g, '')
-      return this.$store.getters['rate/historyRate'](this.timestampInSec, amount, this.crypto)
+      const amount = currencyAmount(this.amount, this.crypto)
+      return this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.timestamp), amount, this.crypto)
     }
   },
   mounted () {
@@ -249,7 +246,7 @@ export default {
     },
     getHistoryRates () {
       this.$store.dispatch('rate/getHistoryRates', {
-        timestamp: this.timestampInSec
+        timestamp: timestampInSec(this.crypto, this.timestamp)
       })
     }
   }
