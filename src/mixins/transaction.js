@@ -151,7 +151,15 @@ export default {
       }
 
       return status
+    },
+    getTransaction (crypto, hash) {
+      let transaction
+      if (crypto === 'ADM') {
+        transaction = this.$store.state.adm.transactions[hash] || { }
+      } else {
+        transaction = this.$store.getters[`${crypto.toLowerCase()}/transaction`](hash) || {}
+      }
+      return transaction
     }
-
   }
 }

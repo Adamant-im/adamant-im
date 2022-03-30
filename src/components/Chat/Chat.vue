@@ -62,6 +62,7 @@
           :crypto="message.type"
           :time="message.timestamp | date"
           :hash="message.hash"
+          :tx-timestamp="getTransaction(message.type, message.hash).timestamp"
           :currency="message.type"
           :locale="locale"
           :status="getTransactionStatus(message)"

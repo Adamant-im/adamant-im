@@ -115,6 +115,9 @@ export default {
     hash: {
       required: true,
       type: String
+    },
+    txTimestamp: {
+      required: true
     }
   },
   computed: {
@@ -130,25 +133,17 @@ export default {
     statusColor () {
       return tsColor(this.status.virtualStatus)
     },
-    transaction () {
-      let transaction
-      if (this.crypto === 'ADM') {
-        transaction = this.$store.state.adm.transactions[this.hash] || { }
-      } else {
-        transaction = this.$store.getters[`${this.crypto.toLowerCase()}/transaction`](this.hash) || {}
-      }
-      return transaction
-    },
     historyRate () {
       const amount = currencyAmount(this.amount, this.crypto)
-      return '~' + this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.transaction.timestamp), amount, this.crypto)
+      return '~' + this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.txTimestamp), amount, this.crypto)
+    },
+    sasd () {
+      return this.txTimestamp
     }
   },
   watch: {
-    transaction () {
-      if (this.transaction.amount) {
-        this.getHistoryRates()
-      }
+    txTimestamp () {
+      this.getHistoryRates()
     }
   },
   mounted () {
@@ -171,7 +166,7 @@ export default {
     },
     getHistoryRates () {
       this.$store.dispatch('rate/getHistoryRates', {
-        timestamp: timestampInSec(this.crypto, this.transaction.timestamp)
+        timestamp: timestampInSec(this.crypto, this.txTimestamp)
       })
     }
   }
