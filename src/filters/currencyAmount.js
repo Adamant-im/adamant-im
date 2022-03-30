@@ -2,7 +2,7 @@ import BigNumber from '@/lib/bignumber'
 import { Cryptos } from '@/lib/constants'
 
 /**
- * Format currency amount to a fancy string with symbol
+ * Format currency amount to a fancy string without symbol
  * @param {number} amount - Amount to format
  * @param {string} symbol - Currency symbol (ticker)
  * @param {boolean} isAdmBalance - Amount is ADM balance
@@ -13,6 +13,6 @@ export default (amount, symbol = Cryptos.ADM, isAdmBalance) => {
     const formatted = BigNumber(
       !isAdmBalance && symbol === Cryptos.ADM ? amount / 1e8 : amount
     ).toFixed()
-    return `${formatted} ${symbol}`
+    return `${formatted}`
   } else return ''
 }

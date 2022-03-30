@@ -23,7 +23,13 @@ export const Cryptos = {
   USDS: 'USDS',
   BNB: 'BNB'
 }
-
+export const Rates = {
+  USD: 'USD',
+  EUR: 'EUR',
+  RUB: 'RUB',
+  CNY: 'CNY',
+  JPY: 'JPY'
+}
 export const CryptosNames = {
   [Cryptos.ADM]: 'ADAMANT',
   [Cryptos.BNB]: 'Binance Coin',
@@ -35,6 +41,13 @@ export const CryptosNames = {
   [Cryptos.BTC]: 'Bitcoin'
 }
 
+export const RatesNames = {
+  [Rates.USD]: 'USD ($)', // United States Dollar
+  [Rates.EUR]: 'EUR (€)', // Euro
+  [Rates.RUB]: 'RUB (₽)', // Russian Ruble
+  [Rates.CNY]: 'CNY (¥)', // Chinese Yuan
+  [Rates.JPY]: 'JPY (¥)' // Japanese Yen
+}
 // Some cryptos require minimum balance to maintain on a wallet
 export const minBalances = {
   [Cryptos.LSK]: 0.05,

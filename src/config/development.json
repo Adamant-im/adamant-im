@@ -52,6 +52,9 @@
     "lskservice": [
       { "url": "https://liskservice3.adamant.im" },
       { "url": "https://liskservice4.adamant.im" }
+    ],
+    "infoservice": [
+      { "url": "https://info.adamant.im" }
     ]
   },
   "env": "development"

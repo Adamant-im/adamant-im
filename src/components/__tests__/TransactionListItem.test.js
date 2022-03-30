@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 import VueI18n from 'vue-i18n'
 import Vuetify from 'vuetify'
 
-import currencyFilter from '@/filters/currency'
+import currencyFilter from '@/filters/currencyAmountWithSymbol'
 import { EPOCH } from '@/lib/constants'
 import formatters from '@/lib/formatters'
 import mockupI18n from './__mocks__/plugins/i18n'

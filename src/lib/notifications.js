@@ -2,7 +2,7 @@
 
 import Notify from 'notifyjs'
 import Visibility from 'visibilityjs'
-import currency from '@/filters/currency'
+import currency from '@/filters/currencyAmountWithSymbol'
 import { removeFormats } from '@/lib/markdown'
 
 let _this

@@ -11,7 +11,6 @@
       flat
       :class="`${className}__toolbar`"
     />
-
     <container>
       <v-list class="transparent">
         <v-list-tile>
@@ -30,6 +29,43 @@
 
         <v-divider />
 
+        <v-list-tile>
+          <v-list-tile-content :class="`${className}__titlecontent`">
+            <v-list-tile-title :class="`${className}__title`">
+              {{ $t('transaction.currentVal') }}
+            </v-list-tile-title>
+          </v-list-tile-content>
+
+          <div>
+            <v-list-tile-title
+              v-if="rate !== false"
+              :class="`${className}__value`"
+            >
+              {{ rate }}
+            </v-list-tile-title>
+          </div>
+        </v-list-tile>
+
+        <v-divider />
+
+        <v-list-tile>
+          <v-list-tile-content :class="`${className}__titlecontent`">
+            <v-list-tile-title :class="`${className}__title`">
+              {{ $t('transaction.valueTimeTxn') }}
+            </v-list-tile-title>
+          </v-list-tile-content>
+
+          <div>
+            <v-list-tile-title
+              v-if="historyRate !== false"
+              :class="`${className}__value`"
+            >
+              {{ historyRate }}
+            </v-list-tile-title>
+          </div>
+        </v-list-tile>
+
+        <v-divider />
         <v-list-tile>
           <v-list-tile-content :class="`${className}__titlecontent`">
             <v-list-tile-title :class="`${className}__title`">
@@ -229,9 +265,9 @@
 <script>
 import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
-
 import transaction from '@/mixins/transaction'
 import { copyToClipboard } from '@/lib/textHelpers'
+import { timestampInSec } from '@/filters/helpers'
 
 export default {
   name: 'TransactionTemplate',
@@ -319,17 +355,34 @@ export default {
     },
     statusUpdatable () {
       return tsUpdatable(this.status.virtualStatus, this.crypto)
+    },
+    amountNumber () {
+      return this.amount.replace(/[^\d.-]/g, '')
+    },
+    historyRate () {
+      return this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.timestamp), this.amountNumber, this.crypto)
+    },
+    rate () {
+      return this.$store.getters['rate/rate'](this.amountNumber, this.crypto)
     }
   },
   watch: {
     // fetch Tx status when we get admTx
     admTx () {
       this.fetchTransactionStatus(this.admTx, this.partner)
+    },
+    timestamp () {
+      this.$nextTick(() => {
+        this.getHistoryRates()
+      })
     }
   },
   mounted () {
     if (this.admTx) {
       this.fetchTransactionStatus(this.admTx, this.partner)
+    }
+    if (!isNaN(this.timestamp)) {
+      this.getHistoryRates()
     }
   },
   methods: {
@@ -359,6 +412,11 @@ export default {
       if (this.crypto && this.statusUpdatable) {
         this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.id, force: true, updateOnly: false, dropStatus: true })
       }
+    },
+    getHistoryRates () {
+      this.$store.dispatch('rate/getHistoryRates', {
+        timestamp: this.timestampInSec
+      })
     }
   }
 }
