@@ -141,7 +141,7 @@ export default {
     },
     historyRate () {
       const amount = currencyAmount(this.amount, this.crypto)
-      return this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.transaction.timestamp), amount, this.crypto)
+      return '~' + this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.transaction.timestamp), amount, this.crypto)
     }
   },
   watch: {
