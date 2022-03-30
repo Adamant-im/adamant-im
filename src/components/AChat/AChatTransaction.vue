@@ -145,6 +145,7 @@ export default {
   },
   mounted () {
     this.$emit('mount')
+    this.getHistoryRates()
   },
   methods: {
     isStringEqualCI (string1, string2) {

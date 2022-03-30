@@ -415,7 +415,7 @@ export default {
     },
     getHistoryRates () {
       this.$store.dispatch('rate/getHistoryRates', {
-        timestamp: this.timestampInSec
+        timestamp: timestampInSec(this.crypto, this.timestamp)
       })
     }
   }

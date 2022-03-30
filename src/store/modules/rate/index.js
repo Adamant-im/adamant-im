@@ -41,6 +41,7 @@ const actions = {
   },
   getHistoryRates ({ state, commit }, { timestamp }) {
     const url = getEnpointUrl('infoservice')
+    console.log(timestamp)
     if (state.historyRates[timestamp] !== undefined) {
       return state.historyRates[timestamp]
     } else {
@@ -49,7 +50,10 @@ const actions = {
           .get(`${url}/getHistory?timestamp=${timestamp}`)
           .then((res) => {
             const rates = res?.data?.result[0]?.tickers ?? null
-            commit('setHistoryRates', { name: timestamp, value: rates })
+            if (timestamp !== undefined) {
+              commit('setHistoryRates', { name: timestamp, value: rates })
+            }
+            console.log(state.historyRates)
             resolve(res)
           })
           .catch((err) => {
