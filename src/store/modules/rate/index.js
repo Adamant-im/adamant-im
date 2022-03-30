@@ -85,7 +85,7 @@ const getters = {
     const currentCurrency = rootState.options.currentRate
     const store = state.historyRates[timestamp]
     if (store) {
-      historyRate = `~${(store[`${crypto}/${currentCurrency}`] * amount).toFixed(2)} ${currentCurrency}`
+      historyRate = `${(store[`${crypto}/${currentCurrency}`] * amount).toFixed(2)} ${currentCurrency}`
     } else {
       historyRate = '�'
     }
@@ -95,7 +95,7 @@ const getters = {
     const currentCurrency = rootState.options.currentRate
     const store = state.rates[`${crypto}/${currentCurrency}`]
     const rate = store * amount
-    return isNaN(rate) ? '�' : `~${rate.toFixed(2)} ${currentCurrency}`
+    return isNaN(rate) ? '�' : `${rate.toFixed(2)} ${currentCurrency}`
   }
 }
 export default {
