@@ -136,9 +136,6 @@ export default {
     historyRate () {
       const amount = currencyAmount(this.amount, this.crypto)
       return '~' + this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.txTimestamp), amount, this.crypto)
-    },
-    sasd () {
-      return this.txTimestamp
     }
   },
   watch: {
@@ -148,7 +145,6 @@ export default {
   },
   mounted () {
     this.$emit('mount')
-    this.$store.dispatch(`${this.crypto.toLowerCase()}/getTransaction`, { hash: this.hash })
   },
   methods: {
     isStringEqualCI (string1, string2) {
