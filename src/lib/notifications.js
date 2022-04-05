@@ -164,7 +164,9 @@ class TabNotification extends Notification {
         } else {
           document.title = this.i18n.t('notifications.tabMessage.many')
         }
-      } else this.stop()
+      } else {
+        this.stop()
+      }
       this.showAmount = !this.showAmount
     }, 1e3)
   }

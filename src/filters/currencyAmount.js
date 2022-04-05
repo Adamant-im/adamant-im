@@ -14,5 +14,7 @@ export default (amount, symbol = Cryptos.ADM, isAdmBalance) => {
       !isAdmBalance && symbol === Cryptos.ADM ? amount / 1e8 : amount
     ).toFixed()
     return `${formatted}`
-  } else return ''
+  } else {
+    return ''
+  }
 }
