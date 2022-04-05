@@ -13,7 +13,7 @@ export default (amount, symbol = Cryptos.ADM, isAdmBalance) => {
     const formatted = BigNumber(
       !isAdmBalance && symbol === Cryptos.ADM ? amount / 1e8 : amount
     ).toFixed()
-    return `${formatted}`
+    return formatted
   } else {
     return ''
   }
