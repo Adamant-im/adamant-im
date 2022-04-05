@@ -516,13 +516,25 @@ export default {
     },
     transferFeeRate () {
       const currentRate = this.$store.state.rate.rates[`${this.transferFeeCurrency}/${this.currentCurrency}`]
+
+      if (currentRate === undefined) {
+        return ''
+      }
+
       const feeRate = (this.transferFeeFixed * currentRate).toFixed(2)
-      return currentRate !== undefined ? `${feeRate} ${this.currentCurrency}` : ''
+
+      return feeRate
     },
     finalAmountRate () {
       const currentRate = this.$store.state.rate.rates[`${this.currency}/${this.currentCurrency}`]
+
+      if (currentRate === undefined) {
+        return ''
+      }
+
       const amountRate = (this.finalAmountFixed * currentRate).toFixed(2)
-      return currentRate !== undefined ? `${amountRate} ${this.currentCurrency}` : ''
+
+      return `${amountRate} ${this.currentCurrency}`
     }
   },
   watch: {
