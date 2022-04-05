@@ -39,7 +39,6 @@
 </template>
 
 <script>
-// eslint-disable-next-line no-unused-vars
 import { RatesNames } from '@/lib/constants'
 
 export default {
