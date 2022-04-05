@@ -30,45 +30,48 @@
   align-items: flex-start
   min-height: inherit;
   position: relative
-.fake-input__label
-  left: 0px
-  right: auto
-  position: absolute
-  transform: translateY(-18px) scale(0.75)
-  overflow: hidden
-  text-overflow: ellipsis
-  top: 15px
-  transform-origin: top left
-  white-space: nowrap
-  max-width: 133%
-.fake-input__box
-  width: 100%
-  padding-bottom: 20px
-  position: relative
-  display: flex
-  align-items: baseline
-  overflow: hidden
-.fake-input__value
-  line-height: 32px
-  display: block;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-.fake-input__box:before
-  content: ''
-  border-image: repeating-linear-gradient(to right, rgba(255,255,255,0.5) 0px, rgba(255,255,255,0.5) 2px, transparent 2px, transparent 4px) 1 repeat
-  border-color: rgba(255,255,255,0.7)
-  border-style: solid
-  border-width: thin 0 0 0
-  border-top-width: 1px
-  left: 0
-  position: absolute
-  transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1)
-  width: 100%
-  top: 31px
-.fake-input__value--rate
-  font-style: italic
-  padding-left: 3px
-  color: inherit !important
+
+  &__label
+    left: 0px
+    right: auto
+    position: absolute
+    transform: translateY(-18px) scale(0.75)
+    overflow: hidden
+    text-overflow: ellipsis
+    top: 15px
+    transform-origin: top left
+    white-space: nowrap
+    max-width: 133%
+  &__box
+    width: 100%
+    padding-bottom: 20px
+    position: relative
+    display: flex
+    align-items: baseline
+    overflow: hidden
+
+    &:before
+      content: ''
+      border-image: repeating-linear-gradient(to right, rgba(255,255,255,0.5) 0px, rgba(255,255,255,0.5) 2px, transparent 2px, transparent 4px) 1 repeat
+      border-color: rgba(255,255,255,0.7)
+      border-style: solid
+      border-width: thin 0 0 0
+      border-top-width: 1px
+      left: 0
+      position: absolute
+      transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1)
+      width: 100%
+      top: 31px
+  &__value
+    line-height: 32px
+    display: block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &--rate
+      font-style: italic
+      padding-left: 3px
+      color: inherit !important
 
   
 .theme--light
