@@ -23,13 +23,7 @@ export const Cryptos = {
   USDS: 'USDS',
   BNB: 'BNB'
 }
-export const Rates = {
-  USD: 'USD',
-  EUR: 'EUR',
-  RUB: 'RUB',
-  CNY: 'CNY',
-  JPY: 'JPY'
-}
+
 export const CryptosNames = {
   [Cryptos.ADM]: 'ADAMANT',
   [Cryptos.BNB]: 'Binance Coin',
@@ -39,6 +33,26 @@ export const CryptosNames = {
   [Cryptos.DASH]: 'DASH',
   [Cryptos.USDS]: 'Stably Dollar',
   [Cryptos.BTC]: 'Bitcoin'
+}
+
+// Used to generate QR codes for wallets like lisk:lskk42c2ut4fmpcxf8swwcpy64fokqmfuzwupjnat
+export const CryptosQqPrefixes = {
+  [Cryptos.ADM]: 'adm',
+  [Cryptos.BNB]: 'ethereum',
+  [Cryptos.ETH]: 'ethereum',
+  [Cryptos.LSK]: 'lisk',
+  [Cryptos.DOGE]: 'doge',
+  [Cryptos.DASH]: 'dash',
+  [Cryptos.USDS]: 'ethereum',
+  [Cryptos.BTC]: 'bitcoin'
+}
+
+export const Rates = {
+  USD: 'USD',
+  EUR: 'EUR',
+  RUB: 'RUB',
+  CNY: 'CNY',
+  JPY: 'JPY'
 }
 
 export const RatesNames = {
