@@ -523,7 +523,7 @@ export default {
 
       const feeRate = (this.transferFeeFixed * currentRate).toFixed(2)
 
-      return feeRate
+      return `${feeRate} ${this.currentCurrency}`
     },
     finalAmountRate () {
       const currentRate = this.$store.state.rate.rates[`${this.currency}/${this.currentCurrency}`]
