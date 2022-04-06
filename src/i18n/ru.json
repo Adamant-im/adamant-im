@@ -184,6 +184,7 @@
     "general_title": "Общие",
     "idb_not_supported": "Браузер не поддерживает IndexedDB или открыт в режиме приватного просмотра",
     "language_label": "Язык",
+    "currency_label": "Основная валюта",
     "nodes_list": "Список узлов",
     "notification_title": "Уведомления",
     "page_title": "Настройки",
@@ -225,6 +226,8 @@
   "transaction": {
     "addresses": "| {n} адрес | {n} адреса | {n} адресов",
     "amount": "Количество",
+    "currentVal": "Текущая стоимость",
+    "valueTimeTxn": "Cтоимость во время Txn",
     "commission": "Комиссия за транзакцию",
     "confirmations": "Подтверждений",
     "continueChat": "Продолжить чат",

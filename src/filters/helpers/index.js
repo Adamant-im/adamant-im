@@ -1,3 +1,5 @@
+import adamant from '@/lib/adamant'
+
 /**
  * Determine if a date is today.
  *
@@ -54,4 +56,12 @@ export const isCurrentWeek = someDate => {
   }
 
   return false
+}
+/**
+ * Timestamp to timestamp seconds.
+ *
+ */
+export const timestampInSec = (crypto, timestamp) => {
+  const timestampInMs = crypto === 'ADM' ? adamant.toTimestamp(timestamp) : timestamp
+  return Math.floor(timestampInMs / 1000)
 }

@@ -33,6 +33,21 @@ export default {
     },
 
     /**
+     * Get crypto tx info from store
+     * @param {string} type Transaction type
+     * @param {string} hash Transaction hash
+     */
+    getTransaction (type, hash) {
+      let transaction
+      if (type === 'ADM') {
+        transaction = this.$store.state.adm.transactions[hash] || { }
+      } else {
+        transaction = this.$store.getters[`${type.toLowerCase()}/transaction`](hash) || {}
+      }
+      return transaction
+    },
+
+    /**
      * Fetch recipientId & senderId crypto addresses.
      * @param type Crypto name
      * @param recipientId
@@ -152,6 +167,5 @@ export default {
 
       return status
     }
-
   }
 }

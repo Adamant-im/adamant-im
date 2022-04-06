@@ -183,6 +183,7 @@
     "general_title": "General",
     "idb_not_supported": "Browser does not support IndexedDB and in Private Browsing mode too",
     "language_label": "Language",
+    "currency_label": "Main currency",
     "nodes_list": "Nodes list",
     "notification_title": "Notifications",
     "page_title": "Settings",
@@ -224,6 +225,8 @@
   "transaction": {
     "addresses": "no address | {n} address | {n} addresses",
     "amount": "Amount",
+    "currentVal": "Current value",
+    "valueTimeTxn": "Value at Time of Txn",
     "commission": "Transaction fee",
     "confirmations": "Confirmations",
     "continueChat": "Continue chat",
