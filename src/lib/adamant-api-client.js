@@ -352,8 +352,11 @@ class ApiClient {
      */
     this._statusPromise = new Promise((resolve, reject) => {
       this._onInit = error => {
-        if (error) reject(error)
-        else resolve()
+        if (error) {
+          reject(error)
+        } else {
+          resolve()
+        }
         this._onInit = null
       }
     })

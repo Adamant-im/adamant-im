@@ -35,6 +35,7 @@ import options from './modules/options'
 import identicon from './modules/identicon'
 import notification from './modules/notification'
 import cache from '@/store/cache'
+import rate from './modules/rate'
 
 Vue.use(Vuex)
 
@@ -173,7 +174,6 @@ const store = {
       return getCurrentAccount()
         .then(account => {
           commit('setBalance', account.balance)
-
           if (account.balance > Fees.KVS) {
             flushCryptoAddresses()
           }
@@ -189,7 +189,6 @@ const store = {
             .catch(err => console.error(err))
             .then(() => (interval = setTimeout(repeat, UPDATE_BALANCE_INTERVAL)))
         }
-
         repeat()
       }
     },
@@ -219,7 +218,8 @@ const store = {
     chat,
     options,
     identicon,
-    notification
+    notification,
+    rate
   }
 }
 

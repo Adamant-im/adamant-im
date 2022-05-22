@@ -1,7 +1,7 @@
 import { isAddress as isEthAddress, isHexStrict } from 'web3-utils'
 import { validateBase32Address as isLskAddress } from '@liskhq/lisk-cryptography'
 import {
-  Cryptos, isErc20,
+  Cryptos, CryptosQqPrefixes,
   RE_ADM_ADDRESS, RE_BTC_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS, RE_LSK_ADDRESS
 } from './constants'
 
@@ -107,14 +107,13 @@ export function generateURI (crypto = Cryptos.ADM, address, name) {
     }
     return `${hostname}?address=${address}${label}`
   }
-  if (crypto === Cryptos.BTC) {
-    return `bitcoin:${address}`
-  }
-  if (crypto === Cryptos.ETH || isErc20(crypto)) {
-    return `ethereum:${address}`
-  }
 
-  return `${crypto.toLowerCase()}:${address}`
+  const cryptoQrPrefix = CryptosQqPrefixes[crypto]
+  if (cryptoQrPrefix) {
+    return `${cryptoQrPrefix}:${address}`
+  } else {
+    return address
+  }
 }
 
 /**

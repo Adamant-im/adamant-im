@@ -35,6 +35,33 @@ export const CryptosNames = {
   [Cryptos.BTC]: 'Bitcoin'
 }
 
+// Used to generate QR codes for wallets like lisk:lskk42c2ut4fmpcxf8swwcpy64fokqmfuzwupjnat
+export const CryptosQqPrefixes = {
+  [Cryptos.ADM]: 'adm',
+  [Cryptos.BNB]: 'ethereum',
+  [Cryptos.ETH]: 'ethereum',
+  [Cryptos.LSK]: 'lisk',
+  [Cryptos.DOGE]: 'doge',
+  [Cryptos.DASH]: 'dash',
+  [Cryptos.USDS]: 'ethereum',
+  [Cryptos.BTC]: 'bitcoin'
+}
+
+export const Rates = {
+  USD: 'USD',
+  EUR: 'EUR',
+  RUB: 'RUB',
+  CNY: 'CNY',
+  JPY: 'JPY'
+}
+
+export const RatesNames = {
+  [Rates.USD]: 'USD ($)', // United States Dollar
+  [Rates.EUR]: 'EUR (€)', // Euro
+  [Rates.RUB]: 'RUB (₽)', // Russian Ruble
+  [Rates.CNY]: 'CNY (¥)', // Chinese Yuan
+  [Rates.JPY]: 'JPY (¥)' // Japanese Yen
+}
 // Some cryptos require minimum balance to maintain on a wallet
 export const minBalances = {
   [Cryptos.LSK]: 0.05,
