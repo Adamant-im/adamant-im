@@ -155,7 +155,7 @@
     "socket": "Сокеты",
     "unsupported": "Не поддерживается",
     "use_socket_connection": "Использовать сокет-подключения",
-    "use_socket_connection_tooltip": "Сокеты позволяют получать новые сообщения мгновенно, как классичесикие P2P-мессенджеры"
+    "use_socket_connection_tooltip": "Сокеты позволяют получать новые сообщения мгновенно, как классические P2P-мессенджеры"
   },
   "notifications": {
     "tabMessage": {

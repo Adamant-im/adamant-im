@@ -46,7 +46,7 @@
                   </span>
                 </div>
                 <div
-                  v-if="$store.state.rate.isLoaded"
+                  v-if="$store.state.rate.isLoaded && wallet.rate"
                   class="a-text-explanation account-view__rates"
                 >
                   {{ wallet.rate }} {{ currentCurrency }}
@@ -203,6 +203,7 @@ export default {
       background-color: transparent
     >>> .v-tabs__container
       height: auto // [1]
+      align-items: baseline
     >>> .v-tabs__slider
       height: 2px
     >>> .v-tabs__wrapper
