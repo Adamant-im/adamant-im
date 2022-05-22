@@ -34,6 +34,9 @@
     "lskservice": [
       { "url": "http://xqrymra5go2nb3cslb3c3iv4weeuicybcxpjee4ay2indk2hgo7rw4qd.onion" },
       { "url": "http://s2q6phc22icy73zjccjq66555gwtvyuyrodmadwhjdhmvyehb3qrcsid.onion" }
+    ],
+    "infoservice": [
+      { "url": "http://czjsawp2crjmnkliw2h2kpk7wwd3a36zvvnvqgvzmi4t4vc2yzm7j2qd.onion" }
     ]
   },
   "env": "production"

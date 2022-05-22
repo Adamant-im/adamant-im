@@ -38,7 +38,10 @@
           >
             <v-layout align-center>
               <slot name="crypto" />
-              <span class="ml-2">{{ amount }}</span>
+              <div class="a-chat__rates-column d-flex ml-2">
+                <span class="mb-1">{{ amount | currency(crypto) }}</span>
+                <span class="a-chat__rates">{{ historyRate }}</span>
+              </div>
             </v-layout>
           </div>
         </div>
@@ -56,6 +59,8 @@
 <script>
 import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import currencyAmount from '@/filters/currencyAmount'
+import { timestampInSec } from '@/filters/helpers'
 
 export default {
   props: {
@@ -102,6 +107,17 @@ export default {
     isClickable: {
       type: Boolean,
       default: false
+    },
+    crypto: {
+      type: String,
+      default: 'ADM'
+    },
+    hash: {
+      required: true,
+      type: String
+    },
+    txTimestamp: {
+      required: true
     }
   },
   computed: {
@@ -116,10 +132,20 @@ export default {
     },
     statusColor () {
       return tsColor(this.status.virtualStatus)
+    },
+    historyRate () {
+      const amount = currencyAmount(this.amount, this.crypto)
+      return '~' + this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.txTimestamp), amount, this.crypto)
+    }
+  },
+  watch: {
+    txTimestamp () {
+      this.getHistoryRates()
     }
   },
   mounted () {
     this.$emit('mount')
+    this.getHistoryRates()
   },
   methods: {
     isStringEqualCI (string1, string2) {
@@ -134,6 +160,11 @@ export default {
       if (this.statusUpdatable) {
         this.$emit('click:transactionStatus', this.id)
       }
+    },
+    getHistoryRates () {
+      this.$store.dispatch('rate/getHistoryRates', {
+        timestamp: timestampInSec(this.crypto, this.txTimestamp)
+      })
     }
   }
 }

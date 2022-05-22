@@ -45,6 +45,22 @@
                 append-icon="mdi-chevron-down"
               />
             </v-flex>
+            <v-flex xs6>
+              <v-subheader
+                :class="`${className}__label`"
+                class="pa-0"
+              >
+                {{ $t('options.currency_label') }}
+              </v-subheader>
+            </v-flex>
+            <v-flex
+              xs6
+              class="text-xs-right"
+            >
+              <currency-switcher
+                append-icon="mdi-chevron-down"
+              />
+            </v-flex>
             <v-flex
               xs12
               class="mt-2"
@@ -292,6 +308,7 @@
 
 <script>
 import LanguageSwitcher from '@/components/LanguageSwitcher'
+import CurrencySwitcher from '@/components/CurrencySwitcher'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import PasswordSetDialog from '@/components/PasswordSetDialog'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
@@ -300,6 +317,7 @@ import scrollPosition from '@/mixins/scrollPosition'
 export default {
   components: {
     LanguageSwitcher,
+    CurrencySwitcher,
     AppToolbarCentered,
     PasswordSetDialog
   },

@@ -29,6 +29,9 @@
         <v-list-tile-title>
           <span :class="`${className}__amount ${directionClass}`">{{ amount | currency(crypto) }}</span>
           <span
+            :class="`${className}__rates`"
+          > {{ historyRate }}</span>
+          <span
             v-if="comment"
             class="a-text-regular-enlarged-bold"
             style="font-style: italic;"
@@ -89,6 +92,8 @@ import dateFilter from '@/filters/date'
 import { EPOCH, Cryptos } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import currencyAmount from '@/filters/currencyAmount'
+import { timestampInSec } from '@/filters/helpers'
 
 export default {
   filters: {
@@ -189,7 +194,14 @@ export default {
     comment () {
       const admTx = this.getAdmTx
       return admTx.message
+    },
+    historyRate () {
+      const amount = currencyAmount(this.amount, this.crypto)
+      return '~' + this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.timestamp), amount, this.crypto)
     }
+  },
+  mounted () {
+    this.getHistoryRates()
   },
   methods: {
     isStringEqualCI (string1, string2) {
@@ -231,6 +243,11 @@ export default {
         return !!admTx.id
       })
       return admTx
+    },
+    getHistoryRates () {
+      this.$store.dispatch('rate/getHistoryRates', {
+        timestamp: timestampInSec(this.crypto, this.timestamp)
+      })
     }
   }
 }
@@ -241,6 +258,10 @@ export default {
 @import '../assets/stylus/themes/adamant/_mixins.styl'
 
 .transaction-item
+  &__rates
+   color: hsla(0,0%,100%,.7)
+   font-style: italic
+   a-text-regular()
   &__amount
     a-text-regular-enlarged-bold()
   &__date
@@ -266,7 +287,8 @@ export default {
   .transaction-item
     &__amount
       color: $adm-colors.regular
-
+    &__rates
+      color: $adm-colors.muted
       &--is-incoming
         color: $adm-colors.good
       &--is-outgoing

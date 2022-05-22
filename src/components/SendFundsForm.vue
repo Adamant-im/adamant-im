@@ -104,21 +104,29 @@
           </v-menu>
         </template>
       </v-text-field>
-
-      <v-text-field
-        :value="`${transferFeeFixed} ${transferFeeCurrency}`"
-        :label="`${transferFeeLabel}`"
-        class="a-input"
-        disabled
-      />
-      <v-text-field
+      <div
+        class="fake-input"
+      >
+        <div class="fake-input__label">
+          {{ transferFeeLabel }}
+        </div>
+        <div class="fake-input__box">
+          <span class="fake-input__value"> {{ transferFeeFixed }} {{ transferFeeCurrency }} </span>
+          <span class="fake-input__value fake-input__value--rate a-text-regular"> ~{{ transferFeeRate }} </span>
+        </div>
+      </div>
+      <div
         v-if="!hideFinalAmount"
-        :value="`${finalAmountFixed} ${currency}`"
-        :label="$t('transfer.final_amount_label')"
-        class="a-input"
-        disabled
-      />
-
+        class="fake-input"
+      >
+        <div class="fake-input__label">
+          {{ $t('transfer.final_amount_label') }}
+        </div>
+        <div class="fake-input__box">
+          <span class="fake-input__value"> {{ finalAmountFixed }} {{ currency }} </span>
+          <span class="fake-input__value fake-input__value--rate a-text-regular"> ~{{ finalAmountRate }} </span>
+        </div>
+      </div>
       <v-text-field
         v-if="addressReadonly"
         v-model="comment"
@@ -137,7 +145,6 @@
         counter
         maxlength="64"
       />
-
       <v-checkbox
         v-if="allowIncreaseFee"
         v-model="increaseFee"
@@ -495,6 +502,39 @@ export default {
     },
     allowIncreaseFee () {
       return (this.currency === Cryptos.BTC) || isEthBased(this.currency)
+    },
+    currentCurrency: {
+      get () {
+        return this.$store.state.options.currentRate
+      },
+      set (value) {
+        this.$store.commit('options/updateOption', {
+          key: 'currentRate',
+          value
+        })
+      }
+    },
+    transferFeeRate () {
+      const currentRate = this.$store.state.rate.rates[`${this.transferFeeCurrency}/${this.currentCurrency}`]
+
+      if (currentRate === undefined) {
+        return ''
+      }
+
+      const feeRate = (this.transferFeeFixed * currentRate).toFixed(2)
+
+      return `${feeRate} ${this.currentCurrency}`
+    },
+    finalAmountRate () {
+      const currentRate = this.$store.state.rate.rates[`${this.currency}/${this.currentCurrency}`]
+
+      if (currentRate === undefined) {
+        return ''
+      }
+
+      const amountRate = (this.finalAmountFixed * currentRate).toFixed(2)
+
+      return `${amountRate} ${this.currentCurrency}`
     }
   },
   watch: {
