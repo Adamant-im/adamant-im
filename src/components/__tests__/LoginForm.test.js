@@ -90,10 +90,11 @@ describe('LoginForm.vue', () => {
   it('should login with passphrase', async () => {
     const wrapper = shallowMount(LoginForm, {
       i18n,
-      store
+      store,
+      propsData: {
+        value: 'correct passphrase'
+      }
     })
-
-    wrapper.setProps({ value: 'correct passphrase' })
 
     const promise = wrapper.vm.login()
     await expect(promise).resolves.toEqual(true)
