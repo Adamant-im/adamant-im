@@ -90,13 +90,18 @@ describe('QrcodeScannerDialog.vue', () => {
       }
     })
 
-    // show dialog
     expect(wrapper.vm.show).toBe(true)
-
-    // hide dialog
-    wrapper.setProps({ value: false })
-    expect(wrapper.vm.show).toBe(false)
   })
 
-  // @todo mockup Instascan
+  it('should hide dialog when :value = false', () => {
+    const wrapper = shallowMount(QrcodeScannerDialog, {
+      store,
+      i18n,
+      propsData: {
+        value: false
+      }
+    })
+
+    expect(wrapper.vm.show).toBe(false)
+  })
 })
