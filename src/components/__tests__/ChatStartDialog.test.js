@@ -37,8 +37,18 @@ function mockupStore () {
   })
   const snackbar = mockupSnackbar()
   const chat = {
+    getters: {
+      isAdamantChat: () => () => false,
+    },
     actions: {
-      createChat: createChat
+      createChat: createChat,
+    },
+    namespaced: true
+  }
+
+  const partners = {
+    getters: {
+      displayName: () => () => 'John Doe'
     },
     namespaced: true
   }
@@ -47,14 +57,16 @@ function mockupStore () {
     state,
     modules: {
       snackbar,
-      chat
+      chat,
+      partners
     }
   })
 
   return {
     store,
     snackbar,
-    chat
+    chat,
+    partners
   }
 }
 
@@ -62,6 +74,7 @@ describe('ChatStartDialog.vue', () => {
   let store = null
   let snackbar = null
   let chat = null
+  let partners = null
   let i18n = null
 
   beforeEach(() => {
@@ -70,6 +83,7 @@ describe('ChatStartDialog.vue', () => {
     store = mockup.store
     snackbar = mockup.snackbar // used as reference
     chat = mockup.chat // used as reference
+    partners = mockup.partners
 
     // mockup i18n
     i18n = mockupI18n()
@@ -96,11 +110,18 @@ describe('ChatStartDialog.vue', () => {
       }
     })
 
-    // show dialog
     expect(wrapper.vm.show).toBe(true)
+  })
 
-    // hide dialog
-    wrapper.setProps({ value: false })
+  it('should hide dialog when :value = false', () => {
+    const wrapper = shallowMount(ChatStartDialog, {
+      store,
+      i18n,
+      propsData: {
+        value: false
+      }
+    })
+
     expect(wrapper.vm.show).toBe(false)
   })
 
