@@ -30,6 +30,11 @@ function createChat (context, { partnerId }) {
  * Mockup store helper.
  */
 function mockupStore () {
+  const state = () => ({
+    address: 'U123456',
+    balance: 0,
+    passphrase: ''
+  })
   const snackbar = mockupSnackbar()
   const chat = {
     actions: {
@@ -39,6 +44,7 @@ function mockupStore () {
   }
 
   const store = new Vuex.Store({
+    state,
     modules: {
       snackbar,
       chat
