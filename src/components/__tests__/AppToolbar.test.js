@@ -46,6 +46,8 @@ describe('AppToolbar.vue', () => {
     })
 
     expect(wrapper.html()).toContain('<div>Title</div>')
-    expect(wrapper.html()).toContain('<div class="body-1">Subtitle</div>')
+    expect(wrapper.html()).toContain(`<div class="body-1">
+      Subtitle
+    </div>`)
   })
 })
