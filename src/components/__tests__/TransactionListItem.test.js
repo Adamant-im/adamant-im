@@ -9,6 +9,15 @@ import { EPOCH } from '@/lib/constants'
 import formatters from '@/lib/formatters'
 import mockupI18n from './__mocks__/plugins/i18n'
 import TransactionListItem from '@/components/TransactionListItem'
+import admState from '@/store/modules/adm/adm-state'
+
+jest.mock('@/store', () => ({
+  state: {
+    options: {
+      useFullDate: false
+    }
+  }
+}))
 
 Vue.filter('currency', currencyFilter)
 Vue.use(Vuex)
@@ -32,8 +41,13 @@ function createFakeVars () {
  */
 function mockupStore () {
   const chat = {
+    state: {
+      chats: {},
+    },
     getters: {
-      isPartnerInChatList: () => () => fake.isPartnerInChatList
+      isPartnerInChatList: () => () => fake.isPartnerInChatList,
+      isAdamantChat: () => () => true,
+      historyRate: () => () => true,
     },
     namespaced: true
   }
@@ -45,17 +59,51 @@ function mockupStore () {
     namespaced: true
   }
 
+  const adm = {
+    state: admState
+  }
+
+  const rate = {
+    state: () => ({
+      rates: {
+        'ADM/BTC': 4.1e-7,
+        'ADM/CNY': 0.05501093,
+        'ADM/ETH': 0.00000484,
+        'ADM/EUR': 0.00795434,
+        'ADM/JPY': 1.07871806,
+        'ADM/RUB': 0.48095777,
+        'ADM/USD': 0.00789119
+      },
+      isLoaded: false,
+      historyRates: {}
+    }),
+    actions: {
+      getHistoryRates: () => Promise.resolve({})
+    },
+    getters: {
+      historyRate: () => () => '~13.25 USD'
+    },
+    namespaced: true
+  }
+
   const store = new Vuex.Store({
+    state: {
+      address: "U3716604363012166999"
+    },
     modules: {
       chat,
-      partners
+      partners,
+      adm,
+      rate
     }
   })
 
   return {
     store,
     chat,
-    partners
+    partners,
+    adm,
+    rate
   }
 }
 
@@ -79,6 +127,8 @@ describe('TransactionListItem', () => {
   let store = null
   let partners = null // vuex module
   let chat = null // vuex module
+  let adm = null
+  let rate = null
 
   beforeEach(() => {
     const vuex = mockupStore()
@@ -86,6 +136,8 @@ describe('TransactionListItem', () => {
     store = vuex.store
     partners = vuex.partners
     chat = vuex.chat
+    adm = vuex.adm
+    rate = vuex.rate
 
     i18n = mockupI18n()
     fake = createFakeVars()
@@ -115,25 +167,36 @@ describe('TransactionListItem', () => {
     expect(wrapper.vm.partnerName).toBe('Rick')
   })
 
-  it('should return correct date based on props.timestamp', () => {
-    const admTimestamp1 = 3600 * 24 // 1 day
-    const admTimestamp2 = 3600 * 24 * 2 // 2 days
+  it('should return correct date based on props.timestamp (1 day)', () => {
+    const admTimestamp = 3600 * 24 // 1 day
 
     const wrapper = shallowMount(TransactionListItem, {
       store,
       i18n,
       propsData: {
         ...validProps,
-        timestamp: admTimestamp1
+        timestamp: admTimestamp
       }
     })
 
     // Sep 3, 2017, 20:00
-    expect(wrapper.vm.createdAt).toBe(admTimestamp1 * 1000 + EPOCH)
+    expect(wrapper.vm.createdAt).toBe(admTimestamp * 1000 + EPOCH)
+  })
+
+  it('should return correct date based on props.timestamp (2 days)', () => {
+    const admTimestamp = 3600 * 24 * 2 // 2 days
+
+    const wrapper = shallowMount(TransactionListItem, {
+      store,
+      i18n,
+      propsData: {
+        ...validProps,
+        timestamp: admTimestamp
+      }
+    })
 
     // Sep 4, 2017, 20:00
-    wrapper.setProps({ timestamp: 3600 * 24 * 2 })
-    expect(wrapper.vm.createdAt).toBe(admTimestamp2 * 1000 + EPOCH)
+    expect(wrapper.vm.createdAt).toBe(admTimestamp * 1000 + EPOCH)
   })
 
   it('should not display icon when transaction contains a message', () => {
