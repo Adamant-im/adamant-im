@@ -5,7 +5,9 @@ describe('uri', () => {
     it('only address', () => {
       expect(parseURIasAIP('adm:U123456')).toEqual({
         address: 'U123456',
-        params: {}
+        params: {},
+        crypto: 'ADM',
+        protocol: "adm"
       })
     })
 
@@ -15,21 +17,27 @@ describe('uri', () => {
         params: {
           firstName: 'Rick',
           lastName: 'Sanchez'
-        }
+        },
+        crypto: 'ADM',
+        protocol: "adm"
       })
     })
 
     it('with ? symbol but without params', () => {
       expect(parseURIasAIP('adm:U123456?')).toEqual({
         address: 'U123456',
-        params: {}
+        params: {},
+        crypto: 'ADM',
+        protocol: "adm"
       })
     })
 
     it('address should be case insensitive', () => {
       expect(parseURIasAIP('adm:u123456')).toEqual({
         address: 'u123456',
-        params: {}
+        params: {},
+        crypto: 'ADM',
+        protocol: "adm"
       })
     })
 
@@ -44,7 +52,9 @@ describe('uri', () => {
         address: 'U123456',
         params: {
           label: 'Рик'
-        }
+        },
+        crypto: 'ADM',
+        protocol: "adm"
       })
     })
 
@@ -53,7 +63,9 @@ describe('uri', () => {
         address: 'U123456',
         params: {
           label: 'Rick Sanchez'
-        }
+        },
+        crypto: 'ADM',
+        protocol: "adm"
       })
     })
   })
