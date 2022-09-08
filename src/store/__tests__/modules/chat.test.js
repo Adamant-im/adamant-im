@@ -547,8 +547,8 @@ describe('Store: chat.js', () => {
         expect(chatOffset('U111111')).toBe(0)
       })
 
-      it('should return `undefined` for non-existing chat', () => {
-        expect(chatOffset('U222222')).toBe(undefined)
+      it('should return `0` for non-existing chat', () => {
+        expect(chatOffset('U222222')).toBe(0)
       })
     })
 
@@ -569,8 +569,8 @@ describe('Store: chat.js', () => {
         expect(chatPage('U111111')).toBe(0)
       })
 
-      it('should return `undefined` for non-existing chat', () => {
-        expect(chatPage('U222222')).toBe(undefined)
+      it('should return `0` for non-existing chat', () => {
+        expect(chatPage('U222222')).toBe(0)
       })
     })
 
