@@ -1,3 +1,4 @@
+import { Cryptos } from '@/lib/constants';
 import { parseURIasAIP, generateURI } from '@/lib/uri'
 
 describe('uri', () => {
@@ -41,8 +42,10 @@ describe('uri', () => {
       })
     })
 
-    it('should return undefined if is invalid adamant address', () => {
-      expect(parseURIasAIP('adm:U123')).toBe(undefined)
+    it('should return address "as is" if is not a valid address', () => {
+      expect(parseURIasAIP('not_a_valid_address')).toMatchObject({
+        address: "not_a_valid_address"
+      })
     })
 
     it('should decode URI', () => {
@@ -71,15 +74,24 @@ describe('uri', () => {
   })
 
   describe('generateURI', () => {
+    beforeAll(() => {
+      delete window.location
+      window.location = new URL('https://msg.adamant.im')
+    })
+
+    afterAll(() => {
+      delete window.location;
+    })
+
     it('without contactName', () => {
-      expect(generateURI('U123456')).toBe('adm:U123456')
-      expect(generateURI('U123456', '')).toBe('adm:U123456')
-      expect(generateURI('U123456', undefined)).toBe('adm:U123456')
+      expect(generateURI(Cryptos.ADM, 'U123456')).toBe('https://msg.adamant.im?address=U123456')
+      expect(generateURI(Cryptos.ADM, 'U123456', '')).toBe('https://msg.adamant.im?address=U123456')
+      expect(generateURI(Cryptos.ADM, 'U123456', undefined)).toBe('https://msg.adamant.im?address=U123456')
     })
 
     it('with contactName', () => {
-      expect(generateURI('U123456', 'Rick')).toBe('adm:U123456?label=Rick')
-      expect(generateURI('U123456', 'Rick Sanchez')).toBe('adm:U123456?label=Rick Sanchez')
+      expect(generateURI(Cryptos.ADM,'U123456', 'Rick')).toBe('https://msg.adamant.im?address=U123456&label=Rick')
+      expect(generateURI(Cryptos.ADM,'U123456', 'Rick Sanchez')).toBe('https://msg.adamant.im?address=U123456&label=Rick%20Sanchez')
     })
   })
 })
