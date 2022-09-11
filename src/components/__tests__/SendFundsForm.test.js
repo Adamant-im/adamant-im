@@ -385,7 +385,7 @@ describe('SendFundsForm', () => {
       )
     })
 
-    it('confirm message with `recipientName`', async () => {
+    it('should confirm message with `recipientName`', async () => {
       wrapper.setProps({
         addressReadonly: true
       })
