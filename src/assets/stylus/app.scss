@@ -1,0 +1,16 @@
+$body-font-family = 'Exo 2', sans-serif
+
+@import './settings/_colors.scss';
+
+//@import '~vuetify/src/styles/main'; // @todo do I have to import this?
+//@import '~vuetify/dist/vuetify.min.css'; // @todo or this?
+@import '~@mdi/font/css/materialdesignicons.css';
+
+@import './generic/_vuetify.scss';
+@import './generic/_layout.scss';
+@import './generic/_animations.scss';
+
+@import './components/_chat.scss';
+@import './components/_login-form.scss';
+
+@import './themes/adamant/_index.scss';

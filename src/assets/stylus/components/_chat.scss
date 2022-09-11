@@ -1,0 +1,393 @@
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../settings/_colors.scss';
+
+$chat-form-height: 52px;
+
+$chat-sender: (
+  'font-size': 15px,
+  'line-height': 1.2,
+);
+
+$chat-message: (
+  'font-size': 14px,
+  'font-weight': 300,
+  'line-height': 1,
+);
+
+$chat-avatar-size: 40px;
+
+.a-chat {
+  display: block;
+  text-decoration: none;
+  height: 100%;
+  position: relative;
+  padding-bottom: $chat-form-height;
+  &__content {
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+  }
+  &__body {
+    position: relative;
+    flex: 1;
+    background-color: inherit;
+    color: inherit;
+  }
+  &__body-messages {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow-y: scroll;
+    width: 100%;
+    height: 100%;
+    padding: 16px 16px 0 16px;
+
+    /* Scrollbar styles (Firefox) */
+    scrollbar-color: map-get($grey, 'lighten-2' transparent);
+    scrollbar-width: thin;
+
+    /* Scrollbar styles (WebKit) */
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: map-get($grey, 'lighten-2');
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: map-get($grey, 'lighten-1');
+    }
+  }
+  &__message-container {
+    display: inline-block;
+    clear: both;
+    float: left;
+    max-width: 80%;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    &--right {
+      float: right;
+    }
+  }
+  &__message {
+    display: flex;
+    flex-direction: row;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+  }
+
+  /**
+   * 1. Аvatar must have width/height even if empty.
+   */
+  &__message-avatar {
+    width: $chat-avatar-size;
+    height: $chat-avatar-size;
+    min-width: $chat-avatar-size;
+    min-height: $chat-avatar-size;
+    margin-right: 8px;
+    border-radius: 4px;
+
+    img {
+      border-radius: inherit;
+    }
+    &--right {
+      order: 2;
+      margin-right: 0px;
+      margin-left: 8px;
+    }
+  }
+
+  /**
+   * 1. Element `pre` must not overflow the parent flex element.
+   */
+  &__message-card {
+    text-align: left;
+    display: inline-block;
+    min-width: 0;
+  }
+  &__message-card-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-height: 17px;
+  }
+  &__message-text {
+    font-size: map-get($chat-message, 'font-size');
+    font-weight: map-get($chat-message, 'font-weight');
+    overflow-wrap: break-word;
+    word-break: break-word;
+    word-wrap: break-word;
+
+    code {
+      line-height: 1rem;
+      padding: 5px;
+      color: #2e7eed;
+      font-weight: inherit;
+      font-size: 12px;
+      padding: 8px;
+      margin-bottom: 8px;
+      tab-size: 4;
+      border-radius: 4px;
+      border-style: solid;
+      border-width: 1px;
+      border-color: rgb(224, 224, 224);
+      overflow-x: auto;
+      max-width: 100%;
+    }
+
+    code:before {
+      letter-spacing: inherit;
+    }
+    p {
+      margin-bottom: 0;
+    }
+    p:not(:last-child) {
+      margin-bottom: 8px;
+    }
+    a {
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+    pre {
+      font-size: 12px;
+      padding: 8px;
+      margin-bottom: 8px;
+      tab-size: 4;
+      border-radius: 4px;
+      border-style: solid;
+      border-width: 1px;
+      overflow-x: auto;
+      max-width: 100%;
+      border-color: rgb(224, 224, 224);
+
+      code:before {
+        content: '';
+      }
+    }
+  }
+
+  /**
+   * 1. align text to top
+   */
+  &__sender {
+    font-size: map-get($chat-sender, 'font-size');
+    line-height: map-get($chat-sender, 'line-height');
+    font-weight: 700;
+    margin-right: 8px;
+  }
+  &__timestamp {
+    font-size: 10px;
+    line-height: 1;
+  }
+  &__amount {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    &--clickable {
+      cursor: pointer;
+    }
+  }
+  &__rates-column {
+    flex-direction: column;
+  }
+  &__rates {
+    color: hsla(0, 0%, 100%, 0.7);
+    font-style: italic;
+    font-size: 14px;
+    font-weight: 300;
+  }
+  &__status {
+    line-height: 1;
+    margin-left: 8px;
+
+    i {
+      line-height: 1.2;
+    }
+  }
+  &__blockchain-status {
+    font-size: 12px;
+    line-height: 1;
+    margin-right: 5px;
+  }
+  &__direction {
+    font-size: 14px;
+    font-weight: 300;
+    border-bottom: 1px solid, map-get($adm-colors, 'secondary2');
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+  }
+  &__form {
+    padding: 8px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+
+    /**
+     * Vuetify
+     * 1. fix Firefox `textarea` height.
+     * 2. reset textarea extra margins.
+     */
+    textarea {
+      height: 32px;
+    }
+    .v-text-field {
+      padding-top: 0;
+      margin-top: 0;
+    }
+    .v-text-field__slot {
+      font-weight: 400;
+    }
+  }
+  &__form-append {
+    margin-right: 8px;
+  }
+  &__fab {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    opacity: 0.7;
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+/** Themes **/
+.theme--light {
+  .a-chat {
+    &__content {
+      color: map-get($shades, 'black');
+    }
+    &__message {
+      background-color: #fff;
+      box-shadow: 0 1px 10px hsla(0, 0%, 39.2%, 0.06),
+        0 1px 1px hsla(0, 0%, 39.2%, 0.04),
+        0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+      &--red {
+        background-color: map-get($red, 'lighten-5');
+      }
+      &--green {
+        background-color: map-get($green, 'lighten-5');
+      }
+    }
+    &__sender {
+      color: map-get($grey, 'darken-4');
+    }
+    &__timestamp {
+      color: map-get($adm-colors, 'muted');
+    }
+    &__blockchain-status {
+      color: map-get($adm-colors, 'muted');
+    }
+    &__amount {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__rates {
+      color: map-get($adm-colors, 'muted');
+    }
+    &__direction {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__message-text {
+      color: map-get($adm-colors, 'regular');
+
+      a {
+        color: map-get($blue, 'base');
+      }
+      pre {
+        background-color: map-get($grey, 'lighten-4');
+        color: map-get($grey, 'darken-3');
+        border-color: map-get($grey, 'lighten-2');
+      }
+    }
+    &__form {
+      background-color: map-get($adm-colors, 'secondary2');
+      .v-text-field__slot {
+        .v-label {
+          color: map-get($adm-colors, 'muted');
+        }
+        textarea {
+          color: map-get($adm-colors, 'regular');
+          caret-color: map-get($adm-colors, 'primary2');
+        }
+      }
+      .v-text-field > .v-input__control > .v-input__slot:before {
+        border-color: rgba(0, 0, 0, 0.12);
+      }
+      .v-text-field:not(.v-input--has-state)
+        > .v-input__control
+        > .v-input__slot:hover:before {
+        border-color: rgba(0, 0, 0, 0.12);
+      }
+      .v-text-field.v-input--is-focused
+        > .v-input__control
+        > .v-input__slot:after {
+        border-width: thin 0 0 0;
+        color: map-get($adm-colors, 'primary2');
+      }
+      .v-text-field > .v-input__control > .v-input__slot:after {
+        transition: unset;
+      }
+      .v-input--is-focused .v-input__slot .v-icon {
+        color: map-get($adm-colors, 'muted') !important;
+      }
+      &--is-active .v-input--is-focused .v-input__slot .v-icon {
+        color: map-get($adm-colors, 'primary') !important;
+      }
+    }
+  }
+}
+.theme--dark {
+  .a-chat {
+    &__content {
+      color: map-get($shades, 'white');
+    }
+    &__message {
+      background-color: #000;
+      box-shadow: 0 1px 10px hsla(0, 0%, 39.2%, 0.06),
+        0 1px 1px hsla(0, 0%, 39.2%, 0.04),
+        0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+      &--red {
+        background-color: map-get($grey, 'darken-3');
+      }
+      &--green {
+        background-color: map-get($grey, 'darken-3');
+      }
+    }
+    &__sender {
+      color: map-get($shades, 'white');
+    }
+    &__timestamp {
+      color: map-get($grey, 'base');
+    }
+    &__blockchain-status {
+      color: map-get($grey, 'base');
+    }
+    &__message-text {
+      a {
+        color: map-get($blue, 'lighten-2');
+      }
+      pre {
+        background-color: map-get($grey, 'darken-4');
+        color: inherit;
+        border-color: map-get($grey, 'darken-2');
+      }
+    }
+    &__form {
+      background-color: map-get($grey, 'darken-4');
+    }
+  }
+}

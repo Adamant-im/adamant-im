@@ -1,0 +1,79 @@
+@import '~vuetify/src/styles/settings/_colors.scss';
+
+@import '_mixins.scss';
+@import '../../settings/_colors.scss';
+
+.a-text-regular {
+  @include a-text-regular();
+}
+.a-text-regular-enlarged {
+  @include a-text-regular-enlarged();
+}
+.a-text-regular-bold {
+  @include a-text-regular-bold();
+}
+.a-text-regular-enlarged-bold {
+  @include a-text-regular-enlarged-bold();
+}
+.a-text-caption {
+  @include a-text-caption();
+}
+.a-text-explanation {
+  @include a-text-explanation();
+}
+.a-text-explanation-small {
+  @include a-text-explanation-small();
+}
+.a-text-explanation-bold {
+  @include a-text-explanation-bold();
+}
+.a-text-explanation-enlarged {
+  @include a-text-explanation-enlarged();
+}
+.a-text-explanation-enlarged-bold {
+  @include a-text-explanation-enlarged-bold();
+}
+.a-text-header {
+  @include a-text-header();
+}
+.a-text-headline {
+  @include a-text-headline();
+}
+.a-text-active {
+  @include a-text-active();
+}
+.a-text-attention {
+  @include a-text-attention();
+}
+.theme--light {
+  .a-text-regular,
+  .a-text-regular-bold,
+  .a-text-regular-enlarged,
+  .a-text-regular-enlarged-bold,
+  .a-text-header,
+  .a-text-headline,
+  .a-text-active {
+    color: map-get($adm-colors, 'regular');
+  }
+  .a-text-explanation,
+  .a-text-explanation-small,
+  .a-text-explanation-enlarged,
+  .a-text-explanation-enlarged-bold,
+  .a-text-explanation-bold {
+    color: map-get($adm-colors, 'muted');
+  }
+  .a-divider {
+    border-color: map-get($adm-colors, 'secondary');
+  }
+  .a-text-attention {
+    background-color: map-get($adm-colors, 'danger');
+  }
+}
+.theme--dark {
+  .a-text-regular {
+    color: map-get($shades, 'white');
+  }
+  .a-text-attention {
+    background-color: map-get($adm-colors, 'danger');
+  }
+}
