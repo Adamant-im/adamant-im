@@ -36,7 +36,9 @@
 
             <v-data-table
               :headers="headers"
-              :pagination.sync="pagination"
+              :page.sync="pagination.page"
+              :items-per-page.sync="pagination.rowsPerPage"
+              :sort-by.sync="pagination.sortBy"
               :items="delegates"
               :footer-props="{
                 'items-per-page-text': $t('rows_per_page')
@@ -276,7 +278,6 @@ export default {
     pagination: {
       rowsPerPage: 50,
       sortBy: 'rank',
-      descending: false,
       page: 1
     },
     waitingForConfirmation: false,
