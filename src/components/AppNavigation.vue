@@ -1,7 +1,6 @@
 <template>
-  <v-bottom-nav
-    :active.sync="currentPageIndex"
-    :value="showNav"
+  <v-bottom-navigation
+    v-model="currentPageIndex"
     app
     height="50"
     class="app-navigation"
@@ -55,7 +54,7 @@
         </v-layout>
       </container>
     </v-layout>
-  </v-bottom-nav>
+  </v-bottom-navigation>
 </template>
 
 <script>
@@ -78,8 +77,7 @@ export default {
         icon: 'mdi-cog'
       }
     ],
-    currentPageIndex: 0,
-    showNav: true
+    currentPageIndex: 0
   }),
   computed: {
     numOfNewMessages () {
