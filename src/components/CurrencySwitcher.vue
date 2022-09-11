@@ -3,29 +3,32 @@
     offset-y
     class="language-switcher"
   >
-    <v-btn
-      slot="activator"
-      class="ma-0"
-      text
-    >
-      <slot name="prepend">
-        <v-icon
-          v-if="prependIcon"
-          left
-        >
-          {{ prependIcon }}
-        </v-icon>
-      </slot>
-      {{ currentCurrency }}
-      <slot name="append">
-        <v-icon
-          v-if="appendIcon"
-          right
-        >
-          {{ appendIcon }}
-        </v-icon>
-      </slot>
-    </v-btn>
+    <template #activator="{ on, attrs }">
+      <v-btn
+        class="ma-0"
+        text
+        v-bind="attrs"
+        v-on="on"
+      >
+        <slot name="prepend">
+          <v-icon
+            v-if="prependIcon"
+            left
+          >
+            {{ prependIcon }}
+          </v-icon>
+        </slot>
+        {{ currentCurrency }}
+        <slot name="append">
+          <v-icon
+            v-if="appendIcon"
+            right
+          >
+            {{ appendIcon }}
+          </v-icon>
+        </slot>
+      </v-btn>
+    </template>
     <v-list>
       <v-list-item
         v-for="(currency, idx) in currencies"
