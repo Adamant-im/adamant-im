@@ -38,7 +38,9 @@
               :headers="headers"
               :pagination.sync="pagination"
               :items="delegates"
-              :rows-per-page-text="$t('rows_per_page')"
+              :footer-props="{
+                'items-per-page-text': $t('rows_per_page')
+              }"
               :search="search"
               hide-default-footer
               must-sort
