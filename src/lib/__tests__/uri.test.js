@@ -74,9 +74,11 @@ describe('uri', () => {
   })
 
   describe('generateURI', () => {
+    const HOSTNAME = 'msg.adamant.im';
+
     beforeAll(() => {
       delete window.location
-      window.location = new URL('https://msg.adamant.im')
+      window.location = new URL(`https://${HOSTNAME}`)
     })
 
     afterAll(() => {
@@ -84,14 +86,14 @@ describe('uri', () => {
     })
 
     it('without contactName', () => {
-      expect(generateURI(Cryptos.ADM, 'U123456')).toBe('https://msg.adamant.im?address=U123456')
-      expect(generateURI(Cryptos.ADM, 'U123456', '')).toBe('https://msg.adamant.im?address=U123456')
-      expect(generateURI(Cryptos.ADM, 'U123456', undefined)).toBe('https://msg.adamant.im?address=U123456')
+      expect(generateURI(Cryptos.ADM, 'U123456')).toBe(`https://${HOSTNAME}?address=U123456`)
+      expect(generateURI(Cryptos.ADM, 'U123456', '')).toBe(`https://${HOSTNAME}?address=U123456`)
+      expect(generateURI(Cryptos.ADM, 'U123456', undefined)).toBe(`https://${HOSTNAME}?address=U123456`)
     })
 
     it('with contactName', () => {
-      expect(generateURI(Cryptos.ADM,'U123456', 'Rick')).toBe('https://msg.adamant.im?address=U123456&label=Rick')
-      expect(generateURI(Cryptos.ADM,'U123456', 'Rick Sanchez')).toBe('https://msg.adamant.im?address=U123456&label=Rick%20Sanchez')
+      expect(generateURI(Cryptos.ADM,'U123456', 'Rick')).toBe(`https://${HOSTNAME}?address=U123456&label=Rick`)
+      expect(generateURI(Cryptos.ADM,'U123456', 'Rick Sanchez')).toBe(`https://${HOSTNAME}?address=U123456&label=Rick%20Sanchez`)
     })
   })
 })
