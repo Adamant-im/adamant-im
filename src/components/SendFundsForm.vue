@@ -791,11 +791,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.a-input /deep/ input[type=number] {
+.a-input :deep(input[type=number]) {
   -moz-appearance: textfield;
 }
-.a-input /deep/ input[type=number]::-webkit-inner-spin-button,
-.a-input /deep/ input[type=number]::-webkit-outer-spin-button {
+.a-input :deep(input[type=number]::-webkit-inner-spin-button),
+.a-input :deep(input[type=number]::-webkit-outer-spin-button) {
   -webkit-appearance: none;
 }
 .send-funds-form {

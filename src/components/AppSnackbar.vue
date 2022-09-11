@@ -56,7 +56,7 @@ export default {
 @import '../assets/stylus/themes/adamant/_mixins.scss';
 
 .app-snackbar {
-  /deep/ .v-snack__wrapper {
+  :deep(.v-snack__wrapper) {
     @include a-text-regular-enlarged();
   }
 }
@@ -65,7 +65,7 @@ export default {
   .app-snackbar {
     color: map-get($adm-colors, 'regular');
 
-    /deep/ .v-snack__wrapper {
+    :deep(.v-snack__wrapper) {
       background-color: map-get($adm-colors, 'secondary2');
     }
   }

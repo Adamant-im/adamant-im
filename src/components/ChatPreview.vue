@@ -261,7 +261,7 @@ export default {
     right: 16px;
   }
 
-  /deep/ .v-list__tile__sub-title  {
+  :deep(.v-list__tile__sub-title)  {
     @include a-text-explanation-enlarged-bold();
   }
 }
@@ -279,7 +279,7 @@ export default {
       fill: #BDBDBD;
     }
 
-    /deep/ .v-list__tile__sub-title  {
+    :deep(.v-list__tile__sub-title)  {
       color: map-get($adm-colors, 'muted');
     }
   }

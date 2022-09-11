@@ -213,7 +213,8 @@ export default {
   &__camera-select {
     position: absolute;
     right: 0;
-    bottom: 0;/deep/ .v-btn {
+    bottom: 0;
+    :deep(.v-btn) {
       min-width: auto;
       padding: 0 8px;
     }

@@ -158,10 +158,10 @@ export default {
 .passphrase-generator {
   &__box {
     margin-top: 30px;
-    /deep/ .v-textarea textarea {
+    :deep(.v-textarea) textarea {
       @include a-text-regular();
     }
-    /deep/ .v-textarea {
+    :deep(.v-textarea) {
       .v-input__slot:before, .v-input__slot:after {
         border-width: 0;
       }
@@ -175,7 +175,7 @@ export default {
     }
   }
 
-  /deep/ .v-input--is-focused {
+  :deep(.v-input--is-focused) {
     .v-icon .svg-icon {
       fill: map-get($adm-colors, 'regular');
     }
@@ -185,7 +185,7 @@ export default {
 /** Themes **/
 .theme--light {
   .passphrase-generator {
-    /deep/ .v-textarea textarea {
+    :deep(.v-textarea) textarea {
       color: map-get($adm-colors, 'regular');
     }
   }

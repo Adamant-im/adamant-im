@@ -108,7 +108,7 @@ export default {
 .app-toolbar-centered {
   padding: 0;
 
-  /deep/ .v-toolbar__title:not(:first-child) {
+  :deep(.v-toolbar__title:not(:first-child)) {
     margin-left: 0;
   }
 }

@@ -80,19 +80,19 @@ export default {
 @import '~vuetify/src/styles/settings/_colors.scss';
 @import '../assets/stylus/settings/_colors.scss';
 .language-switcher {
-  /deep/ .v-menu__activator {
+  :deep(.v-menu__activator) {
     .v-icon {
       margin-top: 2px;
     }.v-icon:before {
       transition: 0.2s linear;
     }
   }
-  /deep/ .v-menu__activator--active {
+  :deep(.v-menu__activator--active) {
     .v-icon:before {
       transform: rotate(90deg);
     }
   }
-  /deep/ .v-btn {
+  :deep(.v-btn) {
     text-transform: capitalize;
   }
 }
@@ -101,7 +101,7 @@ export default {
 .theme--light {
   .language-switcher {
     .v-btn {
-      color: $adm-colors.regular;
+      color: map-get($adm-colors, 'regular');
       font-weight: 300;
     }
   }

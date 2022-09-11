@@ -241,7 +241,7 @@ export default {
   &__table {
     margin-left: -24px;
     margin-right: -24px;
-    /deep/ table.v-table tbody td:first-child {
+    :deep(table.v-table) tbody td:first-child {
       padding-left: 24px;
     }
   }
@@ -254,7 +254,7 @@ export default {
     font-weight: 300;
   }
   &__info {
-    /deep/ a {
+    :deep(a) {
       text-decoration-line: none;
       &:hover {
         text-decoration-line: underline;
@@ -265,11 +265,11 @@ export default {
     @include a-text-explanation-small();
   }
   &__checkbox {
-    /deep/ .v-label {
+    :deep(.v-label) {
       @include a-text-regular-enlarged();
     }
   }
-  /deep/ .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot {
+  :deep(.v-input--selection-controls:not(.v-input--hide-details)) .v-input__slot {
     margin-bottom: 0;
   }
 }
@@ -287,16 +287,16 @@ export default {
       color: map-get($adm-colors, 'muted');
     }
     &__checkbox {
-      /deep/ .v-label {
+      :deep(.v-label) {
         color: map-get($adm-colors, 'regular');
       }
-      /deep/ .v-input--selection-controls__ripple,
-      /deep/ .v-input--selection-controls__input i {
+      :deep(.v-input--selection-controls__ripple),
+      :deep(.v-input--selection-controls__input) i {
         color: map-get($adm-colors, 'regular') !important;
         caret-color: map-get($adm-colors, 'regular') !important;
       }
     }
-    /deep/ .v-table tbody tr:not(:last-child) {
+    :deep(.v-table) tbody tr:not(:last-child) {
       border-bottom: 1px solid map-get($adm-colors, 'secondary2');
     }
   }
@@ -320,7 +320,7 @@ export default {
       margin-right: -16px;
     }
 
-    /deep/ table.v-table tbody td:first-child {
+    :deep(table.v-table) tbody td:first-child {
       padding-left: 16px;
     }
   }

@@ -491,20 +491,20 @@ export default {
     margin: 6px 8px;
     padding: 0 16px;
   }
-  /deep/ .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot {
+  :deep(.v-input--selection-controls):not(.v-input--hide-details) .v-input__slot {
     margin-bottom: 0;
   }
-  /deep/ .v-input--selection-controls {
+  :deep(.v-input--selection-controls) {
     margin-top: 0;
   }
-  /deep/ .v-label, &__label, &__list__title {
+  :deep(.v-label), &__label, &__list__title {
     @include a-text-regular-enlarged();
   }
-  /deep/ .v-list {
+  :deep(.v-list) {
     background: transparent;
     padding: 0;
   }
-  /deep/ .v-list__tile {
+  :deep(.v-list__tile) {
     padding: 0 24px;
     margin: 0 -24px;
   }
@@ -523,7 +523,7 @@ export default {
     &__action {
       color: map-get($adm-colors, 'regular');
     }
-    /deep/ .v-label, &__label {
+    :deep(.v-label), &__label {
       color: map-get($adm-colors, 'regular');
     }
     .v-divider {
@@ -549,7 +549,7 @@ export default {
       padding-right: 16px;
     }
 
-    /deep/ .v-list__tile {
+    :deep(.v-list__tile) {
       padding: 0 16px;
       margin: 0 -16px;
     }

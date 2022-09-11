@@ -203,28 +203,28 @@ export default {
     &.v-card {
       background-color: transparent;
     }
-    /deep/ .v-tabs__container {
+    :deep(.v-tabs__container) {
       height: auto;
       align-items: baseline;
     }
-    /deep/ .v-tabs__slider {
+    :deep(.v-tabs__slider) {
       height: 2px;
     }
-    /deep/ .v-tabs__wrapper {
+    :deep(.v-tabs__wrapper) {
       padding: 10px 0px 1px 0px;
       margin-bottom: 10px;
     }
-    /deep/ .v-tabs__item {
+    :deep(.v-tabs__item) {
       font-weight: 300;
       padding: 6px 4px;
     }
-    /deep/ .v-tabs__item--active {
+    :deep(.v-tabs__item--active) {
       font-weight: 500;
     }
-    /deep/ .v-tabs__item:not(.v-tabs__item--active)  {
+    :deep(.v-tabs__item):not(.v-tabs__item--active)  {
       opacity: 1;
     }
-    /deep/ .v-tabs__div {
+    :deep(.v-tabs__div) {
       font-size: 16px;
       min-width: 74px;
     }
@@ -241,24 +241,24 @@ export default {
       color: map-get($adm-colors, 'muted');
     }
     &__wallets {
-      /deep/ .v-tabs__bar {
+      :deep(.v-tabs__bar) {
         background-color: map-get($adm-colors, 'secondary2-transparent');
       }
-      /deep/ .v-tabs__slider {
+      :deep(.v-tabs__slider) {
         background-color: map-get($adm-colors, 'primary') !important;
       }
-      /deep/ .v-tabs__item {
+      :deep(.v-tabs__item) {
         color: map-get($adm-colors, 'regular');
       }
-      /deep/ .v-tabs__icon {
+      :deep(.v-tabs__icon) {
         color: map-get($adm-colors, 'primary2');
         pointer-events: none;
       }
-      /deep/ .v-tabs__wrapper--show-arrows {
+      :deep(.v-tabs__wrapper--show-arrows) {
         margin-left: 0;
         margin-right: 0;
       }
-      /deep/ .v-tabs__item--active {
+      :deep(.v-tabs__item--active) {
         color: map-get($adm-colors, 'primary');
         .svg-icon {
           fill: map-get($adm-colors, 'primary');
@@ -271,24 +271,24 @@ export default {
 .theme--dark {
   .account-view {
     &__wallets {
-      /deep/ .v-tabs__bar {
+      :deep(.v-tabs__bar) {
         background-color: transparent;
       }
-      /deep/ .v-tabs__slider {
+      :deep(.v-tabs__slider) {
         background-color: map-get($adm-colors, 'primary') !important;
       }
-      /deep/ .v-tabs__icon {
+      :deep(.v-tabs__icon) {
         color: map-get($adm-colors, 'primary2');
         pointer-events: none;
       }
-      /deep/ .v-tabs__wrapper--show-arrows {
+      :deep(.v-tabs__wrapper--show-arrows) {
         margin-left: 0;
         margin-right: 0;
       }
-      /deep/ .v-tabs__item {
+      :deep(.v-tabs__item) {
         color: map-get($shades, 'white');
       }
-      /deep/ .v-tabs__item--active {
+      :deep(.v-tabs__item--active) {
         color: map-get($adm-colors, 'primary');
         .svg-icon {
           fill: map-get($adm-colors, 'primary');

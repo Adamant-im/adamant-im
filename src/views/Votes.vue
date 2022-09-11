@@ -466,7 +466,8 @@ export default {
   }
   &__dialog-info {
     @include a-text-regular-enlarged();
-    margin-top: 16px;/deep/ a {
+    margin-top: 16px;
+    :deep(a) {
       text-decoration-line: none;&:hover {
         text-decoration-line: underline;
       }
@@ -476,7 +477,8 @@ export default {
     margin: 20px;
   }
   &__expand-list-tile {
-    height: 36px;/deep/ .v-list__tile {
+    height: 36px;
+    :deep(.v-list__tile) {
       padding-left: 20px;
       padding-right: 20px;
     }
@@ -486,7 +488,7 @@ export default {
     padding-bottom: 15px !important;
   }
   &__search {
-    /deep/ .v-input__slot {
+    :deep(.v-input__slot) {
       padding-left: 16px;
       padding-right: 16px;
     }
@@ -498,8 +500,8 @@ export default {
   &__alert {
     border: none;
   }
-  /deep/ table.v-table thead th:not(:nth-child(1)),
-  /deep/ table.v-table tbody td:not(:nth-child(1)) {
+  :deep(table.v-table) thead th:not(:nth-child(1)),
+  :deep(table.v-table) tbody td:not(:nth-child(1)) {
     padding: 0 16px;
   }
 }
@@ -524,7 +526,7 @@ export default {
     }
     &__expand {
       background-color: map-get($adm-colors, 'secondary2');
-      /deep/ .a-text-active a {
+      :deep(.a-text-active) a {
         color: map-get($adm-colors, 'regular');
       }
     }
@@ -536,14 +538,14 @@ export default {
     }
     &__alert {
       background-color: map-get($adm-colors, 'muted') !important;
-      /deep/ .v-icon {
+      :deep(.v-icon) {
         color: map-get($shades, 'white');
       }
     }
-    /deep/ .v-table tbody tr:not(:last-child) {
+    :deep(.v-table) tbody tr:not(:last-child) {
       border-bottom: 1px solid, map-get($adm-colors, 'secondary2');
     }
-    /deep/ tfoot {
+    :deep (tfoot) {
       @include linear-gradient-light();
     }
   }
@@ -552,11 +554,11 @@ export default {
   .delegates-view {
     &__alert {
       background-color: map-get($adm-colors, 'muted') !important;
-      /deep/ .v-icon {
+      :deep(.v-icon) {
         color: map-get($shades, 'white');
       }
     }
-    /deep/ tfoot {
+    :deep(tfoot) {
       @include linear-gradient-dark();
     }
   }

@@ -442,7 +442,7 @@ export default {
     width: 100%;
   }
   &__toolbar {
-    /deep/ .v-toolbar__title div {
+    :deep(.v-toolbar__title) div {
       text-overflow: ellipsis;
       max-width: 100%;
       overflow: hidden;
@@ -459,7 +459,7 @@ export default {
     &__value {
       color: map-get($adm-colors, 'muted') !important;
     }
-    /deep/ .v-divider {
+    :deep(.v-divider) {
       border-color: map-get($adm-colors, 'secondary2');
     }
   }

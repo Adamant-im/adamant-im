@@ -196,11 +196,11 @@ export default {
 @import '../assets/stylus/settings/_colors.scss';
 .chats-view {
   &__tile {
-    /deep/ .v-list__tile {
+    :deep(.v-list__tile) {
       justify-content: flex-end;
       height: 56px;
     }
-    /deep/ .v-list__tile__avatar {
+    :deep(.v-list__tile__avatar) {
       min-width: 28px;
     }
   }
@@ -214,7 +214,7 @@ export default {
 .theme--light {
   .chats-view {
     &__tile {
-      /deep/ .v-list__tile {
+      :deep(.v-list__tile) {
         background-color: map-get($adm-colors, 'secondary2-transparent');
       }
     }

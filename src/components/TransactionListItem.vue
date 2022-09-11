@@ -272,11 +272,11 @@ export default {
   &__icon-avatar {
     min-width: 40px;
   }
-  /deep/ .v-avatar {
+  :deep(.v-avatar) {
     position: relative;
     padding-right: 15px;
   }
-  /deep/ .v-divider--inset:not(.v-divider--vertical) {
+  :deep(.v-divider--inset:not(.v-divider--vertical)) {
     margin-left: 56px;
     max-width: calc(100% - 56px);
   }
@@ -286,7 +286,7 @@ export default {
   }
   // Do not break computed length of v-divider
   /*&__tile*/
-  /*/deep/ .v-list__tile*/
+  /*:deep(.v-list__tile)*/
   /*padding: 0 12px*/
 }
 

@@ -89,7 +89,7 @@ export default {
     width: 100%;
   }
 
-  /deep/ .v-text-field {
+  :deep(.v-text-field) {
     @include a-text-regular-enlarged-bold();
 
     .v-label {
@@ -118,7 +118,7 @@ export default {
   .chat-toolbar {
     background-color: map-get($adm-colors, 'secondary2-transparent');
 
-    /deep/ .v-text-field {
+    :deep(.v-text-field) {
       .primary--text {
         color: map-get($grey, 'darken-1') !important;
       }
@@ -135,7 +135,7 @@ export default {
   }
 }.theme--dark {
   .chat-toolbar {
-    /deep/ .v-text-field {
+    :deep(.v-text-field) {
       .primary--text {
         color: map-get($shades, 'white') !important;
       }

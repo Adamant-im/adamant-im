@@ -289,7 +289,7 @@ export default {
 
 .theme--light {
   .chat-start-dialog {
-    /deep/ &__btn-scan {
+    :deep(&__btn-scan) {
       color: map-get($adm-colors, 'regular');
     }
   }

@@ -138,14 +138,14 @@ export default {
  * 2. Align icons at the bottom.
  */
 .a-chat__form {
-  /deep/ .v-text-field__slot textarea  {
+  :deep(.v-text-field__slot) textarea  {
     max-height: 230px;
     overflow-y: auto;
   }
-  /deep/ .v-text-field  {
+  :deep(.v-text-field)  {
     align-items: flex-end;
   }
-  /deep/ .v-textarea  {
+  :deep(.v-textarea)  {
     .v-input__prepend-outer {
       margin-bottom: 2px;
     }.v-input__append-inner {

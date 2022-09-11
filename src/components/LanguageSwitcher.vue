@@ -82,7 +82,7 @@ export default {
 @import '../assets/stylus/settings/_colors.scss';
 
 .language-switcher {
-  /deep/ .v-menu__activator {
+  :deep(.v-menu__activator) {
     .v-icon {
       margin-top: 2px;
     }
@@ -90,12 +90,12 @@ export default {
       transition: 0.2s linear;
     }
   }
-  /deep/ .v-menu__activator--active {
+  :deep(.v-menu__activator--active) {
     .v-icon:before {
       transform: rotate(90deg);
     }
   }
-  /deep/ .v-btn {
+  :deep(.v-btn) {
     text-transform: capitalize;
   }
 }

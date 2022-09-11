@@ -125,10 +125,10 @@ export default {
     font-weight: 300;
     padding-bottom: 8px;
   }
-  /deep/ .v-btn.v-btn--active  {
+  :deep(.v-btn.v-btn--active)  {
     padding-top: 4px;
   }
-  /deep/ .v-btn:not(.v-btn--active)  {
+  :deep(.v-btn:not(.v-btn--active))  {
     filter: unset;
     padding-top: 6px;
     font-size: 12px;
@@ -143,10 +143,10 @@ export default {
     &.v-bottom-nav {
       background-color: map-get($shades, 'white');
     }
-    /deep/ .v-btn.v-btn--active  {
+    :deep(.v-btn.v-btn--active)  {
       color: map-get($adm-colors, 'regular');
     }
-    /deep/ .v-btn:not(.v-btn--active)  {
+    :deep(.v-btn:not(.v-btn--active))  {
       color: map-get($adm-colors, 'muted') !important;
     }
   }
