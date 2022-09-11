@@ -24,7 +24,7 @@
       <div v-else>
         <v-text-field
           v-model="partnerName"
-          box
+          filled
           full-width
           background-color="transparent"
           :label="partnerId"
