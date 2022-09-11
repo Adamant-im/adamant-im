@@ -35,9 +35,14 @@
               :offset-y="false"
               left
             >
-              <v-icon slot="activator">
-                mdi-dots-vertical
-              </v-icon>
+              <template #activator="{ on, attrs }">
+                <v-icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  mdi-dots-vertical
+                </v-icon>
+              </template>
               <v-list>
                 <v-list-item @click="showQrcodeScanner = true">
                   <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
