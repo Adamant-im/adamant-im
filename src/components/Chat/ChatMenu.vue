@@ -1,13 +1,16 @@
 <template>
   <div>
     <v-menu>
-      <v-icon
-        slot="activator"
-        medium
-        class="chat-menu__icon"
-      >
-        mdi-plus-circle-outline
-      </v-icon>
+      <template #activator="{ on, attrs }">
+        <v-icon
+          class="chat-menu__icon"
+          v-bind="attrs"
+          medium
+          v-on="on"
+        >
+          mdi-plus-circle-outline
+        </v-icon>
+      </template>
 
       <v-list>
         <!-- Cryptos -->
