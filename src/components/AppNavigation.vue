@@ -108,41 +108,55 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../assets/stylus/settings/_colors.scss';
 
 /**
  * 1. Navigation Button.
  *    a. Active
  *    b. Inactive
  */
-.app-navigation
-  &.v-bottom-nav
-    box-shadow: none
-  &.v-bottom-nav .v-btn // [1]
-    font-weight: 300
-    padding-bottom: 8px
-  >>> .v-btn.v-btn--active // [1.a]
-    padding-top: 4px
-  >>> .v-btn:not(.v-btn--active) // [1.b]
-    filter: unset
-    padding-top: 6px
-    font-size: 12px
+.app-navigation {
+  &.v-bottom-nav {
+    box-shadow: none;
+  }
+  &.v-bottom-nav .v-btn  {
+    font-weight: 300;
+    padding-bottom: 8px;
+  }
+  /deep/ .v-btn.v-btn--active  {
+    padding-top: 4px;
+  }
+  /deep/ .v-btn:not(.v-btn--active)  {
+    filter: unset;
+    padding-top: 6px;
+    font-size: 12px;
+  }
+}
 
-.theme--light
-  .app-navigation
-    &__container
-      border-top: 1px solid $grey.lighten-2
-    &.v-bottom-nav
-      background-color: $shades.white
-    >>> .v-btn.v-btn--active // [1.a]
-      color: $adm-colors.regular
-    >>> .v-btn:not(.v-btn--active) // [1.b]
-      color: $adm-colors.muted !important
+.theme--light {
+  .app-navigation {
+    &__container {
+      border-top: 1px solid, map-get($grey, 'lighten-2');
+    }
+    &.v-bottom-nav {
+      background-color: map-get($shades, 'white');
+    }
+    /deep/ .v-btn.v-btn--active  {
+      color: map-get($adm-colors, 'regular');
+    }
+    /deep/ .v-btn:not(.v-btn--active)  {
+      color: map-get($adm-colors, 'muted') !important;
+    }
+  }
+}
 
-.theme--dark
-  .app-navigation
-    &.v-bottom-nav
-      background-color: $shades.black
+.theme--dark {
+  .app-navigation {
+    &.v-bottom-nav {
+      background-color: map-get($shades, 'black');
+    }
+  }
+}
 </style>

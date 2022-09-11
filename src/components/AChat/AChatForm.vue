@@ -132,37 +132,44 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 /**
  * 1. Limit height of message form.
  * 2. Align icons at the bottom.
  */
-.a-chat__form
-  >>> .v-text-field__slot textarea // [1]
-    max-height: 230px // magic number
-    overflow-y: auto
-  >>> .v-text-field // [2]
-    align-items: flex-end
-  >>> .v-textarea // [2]
-    .v-input__prepend-outer
-      margin-bottom: 2px
-    .v-input__append-inner
-      margin-top: auto
-      margin-bottom: 4px
-    .v-input__control
-      margin-bottom: 2px
+.a-chat__form {
+  /deep/ .v-text-field__slot textarea  {
+    max-height: 230px;
+    overflow-y: auto;
+  }
+  /deep/ .v-text-field  {
+    align-items: flex-end;
+  }
+  /deep/ .v-textarea  {
+    .v-input__prepend-outer {
+      margin-bottom: 2px;
+    }.v-input__append-inner {
+      margin-top: auto;
+      margin-bottom: 4px;
+    }.v-input__control {
+      margin-bottom: 2px;
+    }
+  }
+}
 
-.a-chat__divider
-  position: absolute
-  top: 0
-  left: 0
-  width: 100%
+.a-chat__divider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
 
-.a-chat__form-send-area
-  position: absolute
-  bottom: 0
-  right: 0
-  width: 50px
-  height: 50px
-  cursor: pointer
+.a-chat__form-send-area {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
 </style>

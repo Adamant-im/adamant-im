@@ -109,22 +109,28 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '../assets/stylus/settings/_colors.scss';
+@import '../assets/stylus/themes/adamant/_mixins.scss';
 
-.wallet-actions
-  &__title
-    a-text-caption-light()
-  &__avatar
-    min-width: unset
-    .v-avatar
-      width: unset !important
-      padding-right: 15px
+.wallet-actions {
+  &__title {
+    @include a-text-caption-light();
+  }
+  &__avatar {
+    min-width: unset;.v-avatar {
+      width: unset !important;
+      padding-right: 15px;
+    }
+  }
+}
 
 /** Themes **/
-.theme--light
-  .wallet-actions
-    &__title, &__icon
-      color: $adm-colors.regular
+.theme--light {
+  .wallet-actions {
+    &__title, &__icon {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
 </style>

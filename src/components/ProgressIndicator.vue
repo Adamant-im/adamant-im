@@ -24,14 +24,14 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-.progress-circular {
+<style lang="scss" scoped>
+.progress-circular  {
   left: 50%;
   margin: 0px -75px;
-  position: fixed
+  position: fixed;
 }
-.progress-fog {
-  background: rgba(0,0,0,0.3);
+.progress-fog  {
+  background: rgba(0, 0, 0, 0.3);
   height: 100%;
   left: 0;
   min-height: 100vh;

@@ -76,26 +76,34 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
-
-.language-switcher
-  >>> .v-menu__activator
-    .v-icon
-      margin-top: 2px
-    .v-icon:before
-      transition: 0.2s linear
-  >>> .v-menu__activator--active
-    .v-icon:before
-      transform: rotate(90deg)
-  >>> .v-btn
-    text-transform: capitalize
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../assets/stylus/settings/_colors.scss';
+.language-switcher {
+  /deep/ .v-menu__activator {
+    .v-icon {
+      margin-top: 2px;
+    }.v-icon:before {
+      transition: 0.2s linear;
+    }
+  }
+  /deep/ .v-menu__activator--active {
+    .v-icon:before {
+      transform: rotate(90deg);
+    }
+  }
+  /deep/ .v-btn {
+    text-transform: capitalize;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .language-switcher
-    .v-btn
-      color: $adm-colors.regular
-      font-weight: 300
+.theme--light {
+  .language-switcher {
+    .v-btn {
+      color: $adm-colors.regular;
+      font-weight: 300;
+    }
+  }
+}
 </style>

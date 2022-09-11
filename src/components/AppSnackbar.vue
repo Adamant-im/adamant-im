@@ -51,17 +51,23 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
-.app-snackbar
-  >>> .v-snack__wrapper
-    a-text-regular-enlarged()
+<style lang="scss" scoped>
+@import '../assets/stylus/settings/_colors.scss';
+@import '../assets/stylus/themes/adamant/_mixins.scss';
 
-.theme--light
-  .app-snackbar
-    color: $adm-colors.regular
-    >>> .v-snack__wrapper
-      background-color: $adm-colors.secondary2
+.app-snackbar {
+  /deep/ .v-snack__wrapper {
+    @include a-text-regular-enlarged();
+  }
+}
 
+.theme--light {
+  .app-snackbar {
+    color: map-get($adm-colors, 'regular');
+
+    /deep/ .v-snack__wrapper {
+      background-color: map-get($adm-colors, 'secondary2');
+    }
+  }
+}
 </style>

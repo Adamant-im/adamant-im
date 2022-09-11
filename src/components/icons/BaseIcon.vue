@@ -66,16 +66,20 @@ export default {
 }
 </script>
 
-<style lang="stylus">
-@import '~vuetify/src/stylus/settings/_colors.styl'
+<style lang="scss">
+@import '~vuetify/src/styles/settings/_colors.scss';
 
 /* Themes */
-.theme--light
-  .svg-icon
-    fill: rgba(0, 0, 0, 0.54)
-    stroke: rgba(0, 0, 0, 0.54)
-.theme--dark
-  .svg-icon
-    fill: $shades.white
-    stroke: $shades.white
+.theme--light {
+  .svg-icon {
+    fill: rgba(0, 0, 0, 0.54);
+    stroke: rgba(0, 0, 0, 0.54);
+  }
+}
+.theme--dark {
+  .svg-icon {
+    fill: map-get($shades, 'white');
+    stroke: map-get($shades, 'white');
+  }
+}
 </style>

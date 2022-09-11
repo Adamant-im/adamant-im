@@ -193,27 +193,30 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-.qrcode-scanner-dialog
-  &__camera
-    width: 100%
-    height: 300px
-    background-color: #000
-    position: relative
+<style lang="scss" scoped>
+.qrcode-scanner-dialog {
+  &__camera {
+    width: 100%;
+    height: 300px;
+    background-color: #000;
+    position: relative;
 
-    video
-      width: inherit
-      height: inherit
-      position: absolute
-      left: 0
-      top: 0
+    video {
+      width: inherit;
+      height: inherit;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }
 
-  &__camera-select
-    position: absolute
-    right: 0
-    bottom: 0
-
-    >>> .v-btn
-      min-width: auto
-      padding: 0 8px
+  &__camera-select {
+    position: absolute;
+    right: 0;
+    bottom: 0;/deep/ .v-btn {
+      min-width: auto;
+      padding: 0 8px;
+    }
+  }
+}
 </style>
