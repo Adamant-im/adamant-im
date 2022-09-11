@@ -1,11 +1,11 @@
 <template>
   <div :class="className">
-    <v-list-tile
+    <v-list-item
       avatar
       :class="`${className}__tile`"
       @click="onClickTransaction"
     >
-      <v-list-tile-avatar
+      <v-list-item-avatar
         :class="`${className}__icon-avatar`"
         :size="40"
       >
@@ -15,18 +15,18 @@
         >
           {{ isStringEqualCI(senderId, userId) ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}
         </v-icon>
-      </v-list-tile-avatar>
+      </v-list-item-avatar>
 
-      <v-list-tile-content>
-        <v-list-tile-title v-if="partnerName">
+      <v-list-item-content>
+        <v-list-item-title v-if="partnerName">
           <span class="a-text-regular-enlarged">{{ partnerName }}</span>
           <span class="a-text-explanation-enlarged"> ({{ partnerId }})</span>
-        </v-list-tile-title>
-        <v-list-tile-title v-else>
+        </v-list-item-title>
+        <v-list-item-title v-else>
           <span class="a-text-regular-enlarged">{{ partnerId }}</span>
-        </v-list-tile-title>
+        </v-list-item-title>
 
-        <v-list-tile-title>
+        <v-list-item-title>
           <span :class="`${className}__amount ${directionClass}`">{{ amount | currency(crypto) }}</span>
           <span
             :class="`${className}__rates`"
@@ -51,17 +51,17 @@
             class="a-text-explanation"
             style="font-weight: 100;"
           >{{ textData }}</span>
-        </v-list-tile-title>
+        </v-list-item-title>
 
-        <v-list-tile-sub-title
+        <v-list-item-subtitle
           :class="`${className}__date`"
           class="a-text-explanation-small"
         >
           {{ createdAt | date }}
-        </v-list-tile-sub-title>
-      </v-list-tile-content>
+        </v-list-item-subtitle>
+      </v-list-item-content>
 
-      <v-list-tile-action
+      <v-list-item-action
         v-if="isClickIcon"
         :class="`${className}__action`"
       >
@@ -77,8 +77,8 @@
             {{ isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline' }}
           </v-icon>
         </v-btn>
-      </v-list-tile-action>
-    </v-list-tile>
+      </v-list-item-action>
+    </v-list-item>
 
     <v-divider
       :inset="true"

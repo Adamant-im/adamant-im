@@ -11,30 +11,30 @@
 
       <v-list>
         <!-- Cryptos -->
-        <v-list-tile
+        <v-list-item
           v-for="c in cryptos"
           :key="c"
           @click="sendFunds(c)"
         >
-          <v-list-tile-avatar>
+          <v-list-item-avatar>
             <crypto-icon :crypto="c" />
-          </v-list-tile-avatar>
+          </v-list-item-avatar>
 
-          <v-list-tile-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-tile-title>
-        </v-list-tile>
+          <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
+        </v-list-item>
 
         <!-- Actions -->
-        <v-list-tile
+        <v-list-item
           v-for="item in menuItems"
           :key="item.title"
           :disabled="item.disabled"
         >
-          <v-list-tile-avatar>
+          <v-list-item-avatar>
             <v-icon>{{ item.icon }}</v-icon>
-          </v-list-tile-avatar>
+          </v-list-item-avatar>
 
-          <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
-        </v-list-tile>
+          <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-menu>
 

@@ -23,18 +23,18 @@
         <v-divider class="a-divider" />
         <v-list two-line>
           <template>
-            <v-list-tile>
-              <v-list-tile-avatar>
+            <v-list-item>
+              <v-list-item-avatar>
                 <ChatAvatar
                   :user-id="address"
                   use-public-key
                 />
-              </v-list-tile-avatar>
-              <v-list-tile-content>
-                <v-list-tile-title v-text="address" />
-                <v-list-tile-sub-title v-text="isMe ? $t('chats.me') : name" />
-              </v-list-tile-content>
-            </v-list-tile>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title v-text="address" />
+                <v-list-item-subtitle v-text="isMe ? $t('chats.me') : name" />
+              </v-list-item-content>
+            </v-list-item>
           </template>
         </v-list>
         <v-layout

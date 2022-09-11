@@ -16,26 +16,26 @@
             subheader
             class="transparent"
           >
-            <v-list-tile
+            <v-list-item
               v-if="isFulfilled"
               :class="`${className}__tile`"
               @click="showChatStartDialog = true"
             >
-              <v-list-tile-avatar size="24">
+              <v-list-item-avatar size="24">
                 <v-icon
                   :class="`${className}__icon`"
                   size="16"
                 >
                   mdi-message-outline
                 </v-icon>
-              </v-list-tile-avatar>
+              </v-list-item-avatar>
 
               <div>
-                <v-list-tile-title :class="`${className}__title`">
+                <v-list-item-title :class="`${className}__title`">
                   {{ $t('chats.new_chat') }}
-                </v-list-tile-title>
+                </v-list-item-title>
               </div>
-            </v-list-tile>
+            </v-list-item>
 
             <transition-group
               v-if="isFulfilled"

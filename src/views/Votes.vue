@@ -119,9 +119,9 @@
                   :class="`${className}__expand`"
                 >
                   <v-list :class="`${className}__expand-list`">
-                    <v-list-tile :class="`${className}__expand-list-tile`">
-                      <v-list-tile-content>
-                        <v-list-tile-title class="a-text-active">
+                    <v-list-item :class="`${className}__expand-list-tile`">
+                      <v-list-item-content>
+                        <v-list-item-title class="a-text-active">
                           <a
                             :href="getExplorerUrl() + props.item.address"
                             target="_blank"
@@ -129,26 +129,26 @@
                           >
                             {{ props.item.address }}
                           </a>
-                        </v-list-tile-title>
-                      </v-list-tile-content>
-                    </v-list-tile>
+                        </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
 
-                    <v-list-tile
+                    <v-list-item
                       v-for="(item, i) in delegateDetails"
                       :key="i"
                       :class="`${className}__expand-list-tile`"
                     >
-                      <v-list-tile-content>
-                        <v-list-tile-title class="a-text-explanation">
+                      <v-list-item-content>
+                        <v-list-item-title class="a-text-explanation">
                           {{ item.title }}
-                        </v-list-tile-title>
-                      </v-list-tile-content>
-                      <v-list-tile-content>
-                        <v-list-tile-title class="a-text-explanation text-xs-right">
+                        </v-list-item-title>
+                      </v-list-item-content>
+                      <v-list-item-content>
+                        <v-list-item-title class="a-text-explanation text-xs-right">
                           {{ item.format ? item.format(item.value.call(props.item)) : item.value.call(props.item) }}
-                        </v-list-tile-title>
-                      </v-list-tile-content>
-                    </v-list-tile>
+                        </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
                   </v-list>
                 </v-card>
               </template>

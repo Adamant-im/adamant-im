@@ -10,24 +10,24 @@
       <v-divider class="a-divider" />
       <v-card-text class="pa-0">
         <v-list>
-          <v-list-tile @click="copyAddress">
-            <v-list-tile-content>
-              <v-list-tile-title v-t="'home.copy_address'" />
-            </v-list-tile-content>
-          </v-list-tile>
-          <v-list-tile
+          <v-list-item @click="copyAddress">
+            <v-list-item-content>
+              <v-list-item-title v-t="'home.copy_address'" />
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item
             v-if="isADM"
             @click="copyURI"
           >
-            <v-list-tile-content>
-              <v-list-tile-title v-t="'home.copy_uri'" />
-            </v-list-tile-content>
-          </v-list-tile>
-          <v-list-tile @click="openQRCodeRenderer">
-            <v-list-tile-content>
-              <v-list-tile-title v-t="'home.show_qr_code'" />
-            </v-list-tile-content>
-          </v-list-tile>
+            <v-list-item-content>
+              <v-list-item-title v-t="'home.copy_uri'" />
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item @click="openQRCodeRenderer">
+            <v-list-item-content>
+              <v-list-item-title v-t="'home.show_qr_code'" />
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
       </v-card-text>
     </v-card>

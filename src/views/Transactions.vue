@@ -15,12 +15,12 @@
         wrap
         justify-center
       >
-        <v-list-tile
+        <v-list-item
           v-if="isRecentLoading"
           style="position: absolute; top: 20px;"
         >
           <InlineSpinner />
-        </v-list-tile>
+        </v-list-item>
 
         <container v-if="isFulfilled">
           <v-list
@@ -41,9 +41,9 @@
               @click:transaction="goToTransaction"
               @click:icon="goToChat"
             />
-            <v-list-tile v-if="isOlderLoading">
+            <v-list-item v-if="isOlderLoading">
               <InlineSpinner />
-            </v-list-tile>
+            </v-list-item>
           </v-list>
 
           <h3

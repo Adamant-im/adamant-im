@@ -13,62 +13,62 @@
     />
     <container>
       <v-list class="transparent">
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <v-list-item-content :class="`${className}__titlecontent`">
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.amount') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </v-list-item-content>
 
           <div>
-            <v-list-tile-title :class="`${className}__value`">
+            <v-list-item-title :class="`${className}__value`">
               {{ amount || placeholder }}
-            </v-list-tile-title>
+            </v-list-item-title>
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <v-list-item-content :class="`${className}__titlecontent`">
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.currentVal') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </v-list-item-content>
 
           <div>
-            <v-list-tile-title
+            <v-list-item-title
               v-if="rate !== false"
               :class="`${className}__value`"
             >
               {{ rate }}
-            </v-list-tile-title>
+            </v-list-item-title>
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <v-list-item-content :class="`${className}__titlecontent`">
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.valueTimeTxn') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </v-list-item-content>
 
           <div>
-            <v-list-tile-title
+            <v-list-item-title
               v-if="historyRate !== false"
               :class="`${className}__value`"
             >
               {{ historyRate }}
-            </v-list-tile-title>
+            </v-list-item-title>
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <v-list-item-content :class="`${className}__titlecontent`">
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.status') }}
               <v-icon
                 v-if="statusUpdatable"
@@ -78,8 +78,8 @@
               >
                 mdi-refresh
               </v-icon>
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </v-list-item-content>
 
           <div :class="`${className}__value ${className}__value-${status.virtualStatus}`">
             <v-icon
@@ -91,172 +91,172 @@
             </v-icon>
             {{ $t(`transaction.statuses.${status.virtualStatus}`) }}<span v-if="status.status === 'INVALID'">{{ ': ' + $t(`transaction.inconsistent_reasons.${status.inconsistentReason}`, { crypto } ) }}</span><span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <v-list-item-content :class="`${className}__titlecontent`">
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.date') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </v-list-item-content>
 
           <div>
-            <v-list-tile-title :class="`${className}__value`">
+            <v-list-item-title :class="`${className}__value`">
               {{ timestamp ? $formatDate(timestamp) : placeholder }}
-            </v-list-tile-title>
+            </v-list-item-title>
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <v-list-item-content :class="`${className}__titlecontent`">
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.confirmations') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </v-list-item-content>
 
           <div>
-            <v-list-tile-title :class="`${className}__value`">
+            <v-list-item-title :class="`${className}__value`">
               {{ confirmations || placeholder }}
-            </v-list-tile-title>
+            </v-list-item-title>
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <v-list-item-content :class="`${className}__titlecontent`">
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.commission') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </v-list-item-content>
 
           <div>
-            <v-list-tile-title :class="`${className}__value`">
+            <v-list-item-title :class="`${className}__value`">
               {{ fee || placeholder }}
-            </v-list-tile-title>
+            </v-list-item-title>
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile
+        <v-list-item
           :title="id || placeholder"
           @click="copyToClipboard(id)"
         >
-          <v-list-tile-title :class="`${className}__title`">
+          <v-list-item-title :class="`${className}__title`">
             {{ $t('transaction.txid') }}
-          </v-list-tile-title>
+          </v-list-item-title>
 
-          <v-list-tile-title :class="`${className}__value`">
+          <v-list-item-title :class="`${className}__value`">
             {{ id || placeholder }}
-          </v-list-tile-title>
-        </v-list-tile>
+          </v-list-item-title>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile
+        <v-list-item
           :title="sender || placeholder"
           @click="copyToClipboard(sender)"
         >
-          <v-list-tile-title :class="`${className}__title`">
+          <v-list-item-title :class="`${className}__title`">
             {{ $t('transaction.sender') }}
-          </v-list-tile-title>
+          </v-list-item-title>
 
           <div :class="`${className}__value`">
             {{ senderFormatted || placeholder }}
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile
+        <v-list-item
           :title="recipient || placeholder"
           @click="copyToClipboard(recipient)"
         >
-          <v-list-tile-title :class="`${className}__title`">
+          <v-list-item-title :class="`${className}__title`">
             {{ $t('transaction.recipient') }}
-          </v-list-tile-title>
+          </v-list-item-title>
 
           <div :class="`${className}__value`">
             {{ recipientFormatted || placeholder }}
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile
+        <v-list-item
           v-if="comment"
           :title="comment"
         >
-          <v-list-tile-title :class="`${className}__title`">
+          <v-list-item-title :class="`${className}__title`">
             {{ $t('transaction.comment') }}
-          </v-list-tile-title>
+          </v-list-item-title>
 
           <div :class="`${className}__value`">
             {{ comment || placeholder }}
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile
+        <v-list-item
           v-if="textData"
           :title="textData"
         >
-          <v-list-tile-title :class="`${className}__title`">
+          <v-list-item-title :class="`${className}__title`">
             {{ $t('transaction.textData') }}
-          </v-list-tile-title>
+          </v-list-item-title>
 
           <div :class="`${className}__value`">
             {{ textData || placeholder }}
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile
+        <v-list-item
           v-if="explorerLink"
           @click="openInExplorer"
         >
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+          <v-list-item-content :class="`${className}__titlecontent`">
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.explorer') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </v-list-item-content>
 
           <div>
-            <v-list-tile-title :class="`${className}__value`">
+            <v-list-item-title :class="`${className}__value`">
               <v-icon size="20">
                 mdi-chevron-right
               </v-icon>
-            </v-list-tile-title>
+            </v-list-item-title>
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile
+        <v-list-item
           v-if="partner && !ifComeFromChat"
           @click="openChat"
         >
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+          <v-list-item-content :class="`${className}__titlecontent`">
+            <v-list-item-title :class="`${className}__title`">
               {{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </v-list-item-content>
 
           <div>
-            <v-list-tile-title :class="`${className}__value`">
+            <v-list-item-title :class="`${className}__value`">
               <v-icon size="20">
                 {{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}
               </v-icon>
-            </v-list-tile-title>
+            </v-list-item-title>
           </div>
-        </v-list-tile>
+        </v-list-item>
       </v-list>
     </container>
   </v-layout>

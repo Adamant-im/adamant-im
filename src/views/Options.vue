@@ -229,67 +229,67 @@
           >
             <v-flex xs12>
               <v-list>
-                <v-list-tile @click="$router.push('/options/nodes')">
-                  <v-list-tile-content>
-                    <v-list-tile-title :class="`${className}__list__title`">
+                <v-list-item @click="$router.push('/options/nodes')">
+                  <v-list-item-content>
+                    <v-list-item-title :class="`${className}__list__title`">
                       {{ $t('options.nodes_list') }}
-                    </v-list-tile-title>
-                  </v-list-tile-content>
+                    </v-list-item-title>
+                  </v-list-item-content>
                   <div>
-                    <v-list-tile-title :class="`${className}__list__value`">
+                    <v-list-item-title :class="`${className}__list__value`">
                       <v-icon size="20">
                         mdi-chevron-right
                       </v-icon>
-                    </v-list-tile-title>
+                    </v-list-item-title>
                   </div>
-                </v-list-tile>
+                </v-list-item>
 
-                <v-list-tile @click="$router.push('/options/export-keys')">
-                  <v-list-tile-content>
-                    <v-list-tile-title :class="`${className}__list__title`">
+                <v-list-item @click="$router.push('/options/export-keys')">
+                  <v-list-item-content>
+                    <v-list-item-title :class="`${className}__list__title`">
                       {{ $t('options.export_keys.title') }}
-                    </v-list-tile-title>
-                  </v-list-tile-content>
+                    </v-list-item-title>
+                  </v-list-item-content>
                   <div>
-                    <v-list-tile-title :class="`${className}__list__value`">
+                    <v-list-item-title :class="`${className}__list__value`">
                       <v-icon size="20">
                         mdi-chevron-right
                       </v-icon>
-                    </v-list-tile-title>
+                    </v-list-item-title>
                   </div>
-                </v-list-tile>
+                </v-list-item>
 
-                <v-list-tile @click="$router.push('/votes')">
-                  <v-list-tile-content>
-                    <v-list-tile-title :class="`${className}__list__title`">
+                <v-list-item @click="$router.push('/votes')">
+                  <v-list-item-content>
+                    <v-list-item-title :class="`${className}__list__title`">
                       {{ $t('options.vote_for_delegates_button') }}
-                    </v-list-tile-title>
-                  </v-list-tile-content>
+                    </v-list-item-title>
+                  </v-list-item-content>
                   <div>
-                    <v-list-tile-title :class="`${className}__value`">
+                    <v-list-item-title :class="`${className}__value`">
                       <v-icon size="20">
                         mdi-chevron-right
                       </v-icon>
-                    </v-list-tile-title>
+                    </v-list-item-title>
                   </div>
-                </v-list-tile>
+                </v-list-item>
 
                 <v-divider />
 
-                <v-list-tile @click="logout">
-                  <v-list-tile-content>
-                    <v-list-tile-title :class="`${className}__list__title`">
+                <v-list-item @click="logout">
+                  <v-list-item-content>
+                    <v-list-item-title :class="`${className}__list__title`">
                       {{ $t('bottom.exit_button') }}
-                    </v-list-tile-title>
-                  </v-list-tile-content>
+                    </v-list-item-title>
+                  </v-list-item-content>
                   <div>
-                    <v-list-tile-title :class="`${className}__value`">
+                    <v-list-item-title :class="`${className}__value`">
                       <v-icon size="20">
                         mdi-logout-variant
                       </v-icon>
-                    </v-list-tile-title>
+                    </v-list-item-title>
                   </div>
-                </v-list-tile>
+                </v-list-item>
               </v-list>
             </v-flex>
           </v-layout>

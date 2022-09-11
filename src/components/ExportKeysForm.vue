@@ -74,19 +74,19 @@
             mdi-dots-vertical
           </v-icon>
           <v-list>
-            <v-list-tile @click="showQrcodeScanner = true">
-              <v-list-tile-title>{{ $t('transfer.decode_from_camera') }}</v-list-tile-title>
-            </v-list-tile>
-            <v-list-tile class="v-list__tile--link">
-              <v-list-tile-title>
+            <v-list-item @click="showQrcodeScanner = true">
+              <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item class="v-list__tile--link">
+              <v-list-item-title>
                 <qrcode-capture
                   @detect="onDetectQrcode"
                   @error="onDetectQrcodeError"
                 >
                   <span>{{ $t('transfer.decode_from_image') }}</span>
                 </qrcode-capture>
-              </v-list-tile-title>
-            </v-list-tile>
+              </v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
       </template>

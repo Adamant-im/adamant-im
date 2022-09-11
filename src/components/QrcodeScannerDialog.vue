@@ -47,13 +47,13 @@
                 </v-icon>
               </v-btn>
               <v-list>
-                <v-list-tile
+                <v-list-item
                   v-for="camera in cameras"
                   :key="camera.deviceId"
                   @click="currentCamera = camera.deviceId"
                 >
-                  <v-list-tile-title>{{ camera.label }}</v-list-tile-title>
-                </v-list-tile>
+                  <v-list-item-title>{{ camera.label }}</v-list-item-title>
+                </v-list-item>
               </v-list>
             </v-menu>
           </div>

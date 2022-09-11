@@ -1,57 +1,57 @@
 <template>
   <v-list :class="className">
-    <v-list-tile
+    <v-list-item
       avatar
       @click="sendFunds"
     >
-      <v-list-tile-avatar :class="`${className}__avatar`">
+      <v-list-item-avatar :class="`${className}__avatar`">
         <v-icon :class="`${className}__icon`">
           mdi-bank-transfer-out
         </v-icon>
-      </v-list-tile-avatar>
+      </v-list-item-avatar>
 
-      <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title`">
+      <v-list-item-content>
+        <v-list-item-title :class="`${className}__title`">
           {{ $t('home.send_crypto', { crypto }) }}
-        </v-list-tile-title>
-      </v-list-tile-content>
-    </v-list-tile>
+        </v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
 
-    <v-list-tile
+    <v-list-item
       v-if="isADM"
       avatar
       @click="buyTokens"
     >
-      <v-list-tile-avatar :class="`${className}__avatar`">
+      <v-list-item-avatar :class="`${className}__avatar`">
         <v-icon :class="`${className}__icon`">
           mdi-finance
         </v-icon>
-      </v-list-tile-avatar>
+      </v-list-item-avatar>
 
-      <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title`">
+      <v-list-item-content>
+        <v-list-item-title :class="`${className}__title`">
           {{ $t('home.buy_tokens_btn') }}
-        </v-list-tile-title>
-      </v-list-tile-content>
-    </v-list-tile>
+        </v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
 
-    <v-list-tile
+    <v-list-item
       v-if="isADM && !hasAdmTokens"
       avatar
       @click="getFreeTokens"
     >
-      <v-list-tile-avatar :class="`${className}__avatar`">
+      <v-list-item-avatar :class="`${className}__avatar`">
         <v-icon :class="`${className}__icon`">
           mdi-gift
         </v-icon>
-      </v-list-tile-avatar>
+      </v-list-item-avatar>
 
-      <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title`">
+      <v-list-item-content>
+        <v-list-item-title :class="`${className}__title`">
           {{ $t('home.free_adm_btn') }}
-        </v-list-tile-title>
-      </v-list-tile-content>
-    </v-list-tile>
+        </v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
 
     <buy-tokens-dialog
       v-model="showBuyTokensDialog"

@@ -27,13 +27,13 @@
       </slot>
     </v-btn>
     <v-list>
-      <v-list-tile
+      <v-list-item
         v-for="(language, code) in languages"
         :key="code"
         @click="onSelect(code)"
       >
-        <v-list-tile-title>{{ language.title }}</v-list-tile-title>
-      </v-list-tile>
+        <v-list-item-title>{{ language.title }}</v-list-item-title>
+      </v-list-item>
     </v-list>
   </v-menu>
 </template>

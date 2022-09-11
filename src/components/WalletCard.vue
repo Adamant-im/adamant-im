@@ -7,20 +7,20 @@
       two-line
       :class="`${className}__list`"
     >
-      <v-list-tile
+      <v-list-item
         :class="`${className}__tile`"
         @click="showShareURIDialog = true"
       >
-        <v-list-tile-content>
-          <v-list-tile-title :class="`${className}__title`">
+        <v-list-item-content>
+          <v-list-item-title :class="`${className}__title`">
             {{ $t('home.wallet_crypto', { crypto: cryptoName }) }}
-          </v-list-tile-title>
-          <v-list-tile-sub-title :class="`${className}__subtitle`">
+          </v-list-item-title>
+          <v-list-item-subtitle :class="`${className}__subtitle`">
             {{ address }}
-          </v-list-tile-sub-title>
-        </v-list-tile-content>
+          </v-list-item-subtitle>
+        </v-list-item-content>
 
-        <v-list-tile-action>
+        <v-list-item-action>
           <v-btn
             icon
             ripple
@@ -33,23 +33,23 @@
               mdi-share-variant
             </v-icon>
           </v-btn>
-        </v-list-tile-action>
-      </v-list-tile>
+        </v-list-item-action>
+      </v-list-item>
 
-      <v-list-tile @click="$emit('click:balance', crypto)">
-        <v-list-tile-content>
-          <v-list-tile-title :class="`${className}__title`">
+      <v-list-item @click="$emit('click:balance', crypto)">
+        <v-list-item-content>
+          <v-list-item-title :class="`${className}__title`">
             {{ $t('home.balance') }}
-          </v-list-tile-title>
-          <v-list-tile-sub-title :class="`${className}__subtitle`">
+          </v-list-item-title>
+          <v-list-item-subtitle :class="`${className}__subtitle`">
             {{ balance | currency(crypto, true) }} <span
               v-if="$store.state.rate.isLoaded"
               class="a-text-regular"
             >~{{ rate }} {{ currentCurrency }}</span>
-          </v-list-tile-sub-title>
-        </v-list-tile-content>
+          </v-list-item-subtitle>
+        </v-list-item-content>
 
-        <v-list-tile-action>
+        <v-list-item-action>
           <v-btn
             icon
             ripple
@@ -62,8 +62,8 @@
               mdi-chevron-right
             </v-icon>
           </v-btn>
-        </v-list-tile-action>
-      </v-list-tile>
+        </v-list-item-action>
+      </v-list-item>
     </v-list>
 
     <WalletCardListActions

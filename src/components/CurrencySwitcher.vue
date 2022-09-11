@@ -27,13 +27,13 @@
       </slot>
     </v-btn>
     <v-list>
-      <v-list-tile
+      <v-list-item
         v-for="(currency, idx) in currencies"
         :key="idx"
         @click="onSelect(idx)"
       >
-        <v-list-tile-title>{{ currency }}</v-list-tile-title>
-      </v-list-tile>
+        <v-list-item-title>{{ currency }}</v-list-item-title>
+      </v-list-item>
     </v-list>
   </v-menu>
 </template>

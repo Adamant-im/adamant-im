@@ -1,8 +1,8 @@
 <template>
-  <v-list-tile
+  <v-list-item
     v-if="isLoadingSeparator"
   >
-    <v-list-tile-content
+    <v-list-item-content
       style="align-items: center"
     >
       <v-icon
@@ -11,14 +11,14 @@
       >
         mdi-dots-horizontal
       </v-icon>
-    </v-list-tile-content>
-  </v-list-tile>
-  <v-list-tile
+    </v-list-item-content>
+  </v-list-item>
+  <v-list-item
     v-else
     :class="className"
     @click="$emit('click')"
   >
-    <v-list-tile-avatar>
+    <v-list-item-avatar>
       <icon
         v-if="readOnly"
         :class="`${className}__icon`"
@@ -43,22 +43,22 @@
           {{ numOfNewMessages > 99 ? '99+' : numOfNewMessages }}
         </span>
       </v-badge>
-    </v-list-tile-avatar>
+    </v-list-item-avatar>
 
-    <v-list-tile-content>
-      <v-list-tile-title
+    <v-list-item-content>
+      <v-list-item-title
         class="a-text-regular-enlarged-bold"
         v-text="isAdamantChat ? $t(contactName) : contactName"
       />
 
       <!-- New chat (no messages yet) -->
       <template v-if="isNewChat">
-        <v-list-tile-sub-title>&nbsp;</v-list-tile-sub-title>
+        <v-list-item-subtitle>&nbsp;</v-list-item-subtitle>
       </template>
 
       <!-- Transaction -->
       <template v-else-if="isTransferType">
-        <v-list-tile-sub-title>
+        <v-list-item-subtitle>
           <v-icon
             v-if="!isIncomingTransaction"
             size="15"
@@ -72,12 +72,12 @@
           >
             {{ statusIcon }}
           </v-icon>
-        </v-list-tile-sub-title>
+        </v-list-item-subtitle>
       </template>
 
       <!-- Message -->
       <template v-else>
-        <v-list-tile-sub-title class="a-text-explanation-enlarged-bold">
+        <v-list-item-subtitle class="a-text-explanation-enlarged-bold">
           <v-icon
             v-if="!isIncomingTransaction"
             size="15"
@@ -85,9 +85,9 @@
             {{ statusIcon }}
           </v-icon>
           {{ lastMessageTextNoFormats }}
-        </v-list-tile-sub-title>
+        </v-list-item-subtitle>
       </template>
-    </v-list-tile-content>
+    </v-list-item-content>
 
     <div
       v-if="!isMessageReadonly"
@@ -95,7 +95,7 @@
     >
       {{ createdAt | date }}
     </div>
-  </v-list-tile>
+  </v-list-item>
 </template>
 
 <script>
