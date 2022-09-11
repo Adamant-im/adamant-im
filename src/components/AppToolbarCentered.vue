@@ -87,15 +87,6 @@ export default {
   methods: {
     goBack () {
       this.$router.back()
-    },
-    updateApplication () {
-      // Forward function call from `Applicationable` mixin to `VToolbar`
-      //
-      // 1. Do not `updateApplication` when created() because VToolbar is not mounted,
-      // it will be called again when mounted().
-      if (this.$refs.toolbar) { // [1]
-        return this.$refs.toolbar.updateApplication()
-      }
     }
   }
 }
