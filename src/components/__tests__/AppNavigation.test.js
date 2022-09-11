@@ -119,7 +119,7 @@ describe('AppNavigation.vue', () => {
     expect(wrapper.vm.getCurrentPageIndex()).toBe(2)
   })
 
-  it('badge should be hidden when there are no messages', () => {
+  it('should hide the badge when there are no messages', () => {
     const wrapper = shallowMount(AppNavigation, {
       store: new Vuex.Store({
         actions,
