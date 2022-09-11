@@ -545,7 +545,7 @@ export default {
     :deep(.v-table) tbody tr:not(:last-child) {
       border-bottom: 1px solid, map-get($adm-colors, 'secondary2');
     }
-    :deep (tfoot) {
+    :deep(tfoot) {
       @include linear-gradient-light();
     }
   }
