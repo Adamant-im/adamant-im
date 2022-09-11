@@ -42,9 +42,6 @@
 .a-text-active {
   @include a-text-active();
 }
-.a-text-attention {
-  @include a-text-attention();
-}
 
 .theme--light {
   .a-text-regular,

@@ -1,7 +1,7 @@
+@use '_mixins.scss';
 @import '~vuetify/src/styles/settings/_colors.scss';
-
-@import '_mixins.scss';
 @import '../../settings/_colors.scss';
+
 .a-btn-link {
   font-size: 16px;
   font-weight: 500;

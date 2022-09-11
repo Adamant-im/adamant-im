@@ -232,8 +232,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/stylus/settings/_colors.scss';
 @import '../assets/stylus/themes/adamant/_mixins.scss';
+@import '../assets/stylus/settings/_colors.scss';
 
 @keyframes movement {
   from { left: -50px }

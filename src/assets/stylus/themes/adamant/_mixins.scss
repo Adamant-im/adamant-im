@@ -1,79 +1,71 @@
 @import '~vuetify/src/styles/settings/_colors.scss';
 
-@import '_mixins.scss';
 @import '../../settings/_colors.scss';
 
-.a-text-regular {
-  @include a-text-regular();
+@mixin a-text-regular($size: 14px, $weight: 300) {
+  font-size: $size;
+  font-weight: $weight;
 }
-.a-text-regular-enlarged {
-  @include a-text-regular-enlarged();
+@mixin a-text-regular-enlarged {
+  @include a-text-regular(16px);
 }
-.a-text-regular-bold {
-  @include a-text-regular-bold();
+@mixin a-text-regular-bold {
+  @include a-text-regular(14px, 500);
 }
-.a-text-regular-enlarged-bold {
-  @include a-text-regular-enlarged-bold();
+@mixin a-text-regular-enlarged-bold {
+  @include a-text-regular(16px, 500);
 }
-.a-text-caption {
-  @include a-text-caption();
+@mixin a-text-caption {
+  @include a-text-regular(18px, 500);
 }
-.a-text-explanation {
-  @include a-text-explanation();
+@mixin a-text-caption-light {
+  @include a-text-regular(18px, 300);
 }
-.a-text-explanation-small {
-  @include a-text-explanation-small();
+@mixin a-text-explanation {
+  @include a-text-regular(12px);
 }
-.a-text-explanation-bold {
-  @include a-text-explanation-bold();
+@mixin a-text-explanation-small {
+  @include a-text-regular(10px);
 }
-.a-text-explanation-enlarged {
-  @include a-text-explanation-enlarged();
+@mixin a-text-explanation-bold {
+  @include a-text-regular(12px, 500);
 }
-.a-text-explanation-enlarged-bold {
-  @include a-text-explanation-enlarged-bold();
+@mixin a-text-explanation-enlarged {
+  @include a-text-regular(14px);
 }
-.a-text-header {
-  @include a-text-header();
+@mixin a-text-explanation-enlarged-bold {
+  @include a-text-regular(14px, 500);
 }
-.a-text-headline {
-  @include a-text-headline();
+@mixin a-text-active {
+  @include a-text-regular(16px, 500);
+  text-decoration: underline;
+  text-transform: unset;
 }
-.a-text-active {
-  @include a-text-active();
+@mixin a-text-header {
+  @include a-text-regular(20px, 500);
 }
-.a-text-attention {
-  @include a-text-attention();
+@mixin a-text-headline {
+  @include a-text-regular(40px, 100);
+  text-transform: uppercase;
 }
-.theme--light {
-  .a-text-regular,
-  .a-text-regular-bold,
-  .a-text-regular-enlarged,
-  .a-text-regular-enlarged-bold,
-  .a-text-header,
-  .a-text-headline,
-  .a-text-active {
-    color: map-get($adm-colors, 'regular');
-  }
-  .a-text-explanation,
-  .a-text-explanation-small,
-  .a-text-explanation-enlarged,
-  .a-text-explanation-enlarged-bold,
-  .a-text-explanation-bold {
-    color: map-get($adm-colors, 'muted');
-  }
-  .a-divider {
-    border-color: map-get($adm-colors, 'secondary');
-  }
-  .a-text-attention {
-    background-color: map-get($adm-colors, 'danger');
-  }
+
+/** Gradients **/
+@mixin linear-gradient-light {
+  background: repeating-linear-gradient(
+    140deg,
+    #f6f6f6,
+    #f6f6f6 0.7px,
+    #fefefe 0,
+    #fefefe 5px
+  )
 }
-.theme--dark {
-  .a-text-regular {
-    color: map-get($shades, 'white');
-  }
-  .a-text-attention {
-    background-color: map-get($adm-colors, 'danger');
-  }
+
+@mixin linear-gradient-dark {
+  background: repeating-linear-gradient(
+    140deg,
+    #191919,
+    #191919 0.7px,
+    #212121 0,
+    #212121 5px
+  )
 }

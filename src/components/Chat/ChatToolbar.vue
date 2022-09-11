@@ -80,8 +80,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/settings/_variables.scss';
 @import '../../assets/stylus/themes/adamant/_mixins.scss';
+@import '~vuetify/src/styles/settings/_variables.scss';
 @import '../../assets/stylus/settings/_colors.scss';
 
 .chat-toolbar {
@@ -133,7 +133,8 @@ export default {
       }
     }
   }
-}.theme--dark {
+}
+.theme--dark {
   .chat-toolbar {
     :deep(.v-text-field) {
       .primary--text {
