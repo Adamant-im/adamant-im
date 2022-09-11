@@ -1,6 +1,6 @@
 import 'core-js/features/array/flat-map'
 import Vue from 'vue'
-import Vuetify from 'vuetify/lib';
+import Vuetify from 'vuetify/lib'
 
 import App from './App.vue'
 import router from './router'
