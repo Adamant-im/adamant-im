@@ -231,9 +231,9 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '../assets/stylus/settings/_colors.scss';
+@import '../assets/stylus/themes/adamant/_mixins.scss';
 
 @keyframes movement {
   from { left: -50px }
@@ -251,26 +251,37 @@ export default {
 /**
  * 1. Message/Transaction content.
  */
-.chat-brief
-  position: relative
+.chat-brief {
+  position: relative;
 
-  &__date
-    a-text-explanation-small()
-    position: absolute
-    top: 16px
-    right: 16px
-  >>> .v-list__tile__sub-title // [1]
-    a-text-explanation-enlarged-bold()
+  &__date {
+    @include a-text-explanation-small();
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+
+  /deep/ .v-list__tile__sub-title  {
+    @include a-text-explanation-enlarged-bold();
+  }
+}
 
 /** Themes **/
-.theme--light
-  .chat-brief
-    border-bottom: 1px solid $adm-colors.secondary2
+.theme--light {
+  .chat-brief {
+    border-bottom: 1px solid, map-get($adm-colors, 'secondary2');
 
-    &__date
-      color: $adm-colors.muted
-    &__icon
-      fill: #BDBDBD
-    >>> .v-list__tile__sub-title // [1]
-      color: $adm-colors.muted
+    &__date {
+      color: map-get($adm-colors, 'muted');
+    }
+
+    &__icon {
+      fill: #BDBDBD;
+    }
+
+    /deep/ .v-list__tile__sub-title  {
+      color: map-get($adm-colors, 'muted');
+    }
+  }
+}
 </style>

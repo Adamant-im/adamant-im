@@ -101,24 +101,32 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../assets/stylus/settings/_colors.scss';
 
-.app-toolbar-centered
-  padding: 0
+.app-toolbar-centered {
+  padding: 0;
 
-  >>> .v-toolbar__title:not(:first-child)
-    margin-left: 0px
+  /deep/ .v-toolbar__title:not(:first-child) {
+    margin-left: 0;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .app-toolbar-centered
-    .v-toolbar
-      background-color: $adm-colors.secondary2-transparent
+.theme--light {
+  .app-toolbar-centered {
+    .v-toolbar {
+      background-color: map-get($adm-colors, 'secondary2-transparent')
+    }
+  }
+}
 
-.theme--dark
-  .app-toolbar-centered
-    .v-toolbar
-      background-color: $shades.black
+.theme--dark {
+  .app-toolbar-centered {
+    .v-toolbar {
+      background-color: map-get($shades, 'black');
+    }
+  }
+}
 </style>

@@ -116,8 +116,10 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-.chat-avatar
-  &--clickable
-    cursor: pointer
+<style lang="scss" scoped>
+.chat-avatar {
+  &--clickable {
+    cursor: pointer;
+  }
+}
 </style>

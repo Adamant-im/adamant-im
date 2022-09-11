@@ -422,50 +422,68 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '../../assets/stylus/settings/_colors.scss';
 
-.transaction-view
-  &__title
-    font-weight: 300
-  &__titlecontent
-    flex: 1 0 auto
-  &__value
-    font-weight: 300
-    font-size: 14px
-    text-align: right
-    text-overflow: ellipsis
-    overflow: hidden
-    max-width: 100%
-    width: 100%
-  &__toolbar
-    >>> .v-toolbar__title div
-      text-overflow: ellipsis
-      max-width: 100%
-      overflow: hidden
+.transaction-view {
+  &__title {
+    font-weight: 300;
+  }
+  &__titlecontent {
+    flex: 1 0 auto;
+  }
+  &__value {
+    font-weight: 300;
+    font-size: 14px;
+    text-align: right;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+    width: 100%;
+  }
+  &__toolbar {
+    /deep/ .v-toolbar__title div {
+      text-overflow: ellipsis;
+      max-width: 100%;
+      overflow: hidden;
+    }
+  }
+}
 
 /** Themes **/
-.theme--light
-  .transaction-view
-    &__title
-      color: $adm-colors.regular
-    &__value
-      color: $adm-colors.muted !important
-    >>> .v-divider
-      border-color: $adm-colors.secondary2
-
-.theme--light, .theme--dark
-  .transaction-view
-    &__value-REJECTED
-      color: $adm-colors.danger !important
-    &__value-PENDING
-      color: $adm-colors.attention !important
-    &__value-REGISTERED
-      color: $adm-colors.attention !important
-    &__value-CONFIRMED
-      color: $adm-colors.good !important
-    &__value-INVALID
-      color: $adm-colors.attention !important
-    &__value-UNKNOWN
-      color: $adm-colors.attention !important
+.theme--light {
+  .transaction-view {
+    &__title {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__value {
+      color: map-get($adm-colors, 'muted') !important;
+    }
+    /deep/ .v-divider {
+      border-color: map-get($adm-colors, 'secondary2');
+    }
+  }
+}
+.theme--light, .theme--dark {
+  .transaction-view {
+    &__value-REJECTED {
+      color: map-get($adm-colors, 'danger') !important;
+    }
+    &__value-PENDING {
+      color: map-get($adm-colors, 'attention') !important;
+    }
+    &__value-REGISTERED {
+      color: map-get($adm-colors, 'attention') !important;
+    }
+    &__value-CONFIRMED {
+      color: map-get($adm-colors, 'good') !important;
+    }
+    &__value-INVALID {
+      color: map-get($adm-colors, 'attention') !important;
+    }
+    &__value-UNKNOWN {
+      color: map-get($adm-colors, 'attention') !important;
+    }
+  }
+}
 </style>

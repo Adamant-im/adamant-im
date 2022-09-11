@@ -221,21 +221,27 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-  .export-keys-form
-    &__keys
-      margin-bottom: 24px
-    &__disclaimer
-      margin-top: 12px
-      margin-bottom: 24px
-    &__btn-copy
-      margin-right: 0
-      margin-bottom: 0
-    &__export_keys_button
-      margin-top: 15px
-      margin-bottom: 24px
-    &__copy_all_button
-      padding-right: 0
-      margin-right: 0
-      margin-bottom: 12px
+<style lang="scss" scoped>
+.export-keys-form {
+  &__keys {
+    margin-bottom: 24px;
+  }
+  &__disclaimer {
+    margin-top: 12px;
+    margin-bottom: 24px;
+  }
+  &__btn-copy {
+    margin-right: 0;
+    margin-bottom: 0;
+  }
+  &__export_keys_button {
+    margin-top: 15px;
+    margin-bottom: 24px;
+  }
+  &__copy_all_button {
+    padding-right: 0;
+    margin-right: 0;
+    margin-bottom: 12px;
+  }
+}
 </style>

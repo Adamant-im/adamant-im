@@ -90,13 +90,17 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-  .warning-on-partner-address-dialog
-    &__disclaimer
-      margin-top: 10px
-    &__btn-hide
-      margin-top: 15px
-      margin-bottom: 30px
-    &__btn-icon
-      margin-right: 8px
+<style lang="scss" scoped>
+.warning-on-partner-address-dialog {
+  &__disclaimer {
+    margin-top: 10px;
+  }
+  &__btn-hide {
+    margin-top: 15px;
+    margin-bottom: 30px;
+  }
+  &__btn-icon {
+    margin-right: 8px;
+  }
+}
 </style>

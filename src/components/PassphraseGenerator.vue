@@ -146,37 +146,48 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_variables.scss';
+@import '../assets/stylus/settings/_colors.scss';
+@import '../assets/stylus/themes/adamant/_mixins.scss';
 
 /**
  * 1. Change color icons when focus textarea.
  * 2. Remove textarea border bottom.
  */
-.passphrase-generator
-  &__box
-    margin-top: 30px
-    >>> .v-textarea textarea
-      a-text-regular()
-    >>> .v-textarea
-      .v-input__slot:before, .v-input__slot:after
-        border-width: 0 // [2]
+.passphrase-generator {
+  &__box {
+    margin-top: 30px;
+    /deep/ .v-textarea textarea {
+      @include a-text-regular();
+    }
+    /deep/ .v-textarea {
+      .v-input__slot:before, .v-input__slot:after {
+        border-width: 0;
+      }
+    }
+  }
+  &__icons {
+    margin-top: 10px;
 
-  &__icons
-    margin-top: 10px
+    > *:not(:first-child) {
+      margin-left: 8px;
+    }
+  }
 
-    > *:not(:first-child)
-      margin-left: 8px
-
-  >>> .v-input--is-focused
-    .v-icon .svg-icon
-      fill: $adm-colors.regular
+  /deep/ .v-input--is-focused {
+    .v-icon .svg-icon {
+      fill: map-get($adm-colors, 'regular');
+    }
+  }
+}
 
 /** Themes **/
-.theme--light
-  .passphrase-generator
-    >>> .v-textarea textarea
-      color: $adm-colors.regular
+.theme--light {
+  .passphrase-generator {
+    /deep/ .v-textarea textarea {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
 </style>

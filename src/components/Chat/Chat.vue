@@ -422,9 +422,10 @@ export default {
 }
 </script>
 
-<style scoped lang="stylus">
-.chat
-  height: 100vh
-  box-shadow: none
-  background-color: transparent !important
+<style scoped lang="scss">
+.chat {
+  height: 100vh;
+  box-shadow: none;
+  background-color: transparent !important;
+}
 </style>

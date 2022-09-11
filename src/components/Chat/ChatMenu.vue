@@ -138,20 +138,27 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_colors.scss';
 
-.v-menu__content
-  max-height: 70%
-  min-width: 200px!important
+.v-menu__content {
+  max-height: 70%;
+  min-width: 200px !important;
+}
 
 /** Themes **/
-.theme--light
-  .chat-menu
-    &__icon
-      color: $grey.darken-1
-.theme--dark
-  .chat-menu
-    &__icon
-      color: $shades.white
+.theme--light {
+  .chat-menu {
+    &__icon {
+      color: map-get($grey, 'darken-1');
+    }
+  }
+}
+.theme--dark {
+  .chat-menu {
+    &__icon {
+      color: map-get($shades, 'white');
+    }
+  }
+}
 </style>

@@ -113,7 +113,8 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-.close-icon
-  margin: 0
+<style lang="scss" scoped>
+.close-icon {
+  margin: 0;
+}
 </style>

@@ -790,13 +790,17 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-.a-input >>> input[type=number]
-  -moz-appearance: textfield
-.a-input >>> input[type=number]::-webkit-inner-spin-button,
-.a-input >>> input[type=number]::-webkit-outer-spin-button
-  -webkit-appearance: none
-.send-funds-form
-  &__button
-    margin-top: 15px
+<style lang="scss" scoped>
+.a-input /deep/ input[type=number] {
+  -moz-appearance: textfield;
+}
+.a-input /deep/ input[type=number]::-webkit-inner-spin-button,
+.a-input /deep/ input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+.send-funds-form {
+  &__button {
+    margin-top: 15px;
+  }
+}
 </style>

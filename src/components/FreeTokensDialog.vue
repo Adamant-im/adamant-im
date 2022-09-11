@@ -89,16 +89,21 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-  .free-tokens-dialog
-    &__disclaimer
-      margin-top: 10px
-    &__btn-free-tokens
-      margin-top: 15px
-      margin-bottom: 20px
-    &__btn-icon
-      margin-right: 8px
-    &__btn-show-article
-      padding-bottom: 30px
-      text-align: center
+<style lang="scss" scoped>
+.free-tokens-dialog {
+  &__disclaimer {
+    margin-top: 10px;
+  }
+  &__btn-free-tokens {
+    margin-top: 15px;
+    margin-bottom: 20px;
+  }
+  &__btn-icon {
+    margin-right: 8px;
+  }
+  &__btn-show-article {
+    padding-bottom: 30px;
+    text-align: center;
+  }
+}
 </style>

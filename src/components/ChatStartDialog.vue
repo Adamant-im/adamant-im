@@ -267,21 +267,31 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '../assets/stylus/settings/_colors.scss';
 
-.chat-start-dialog
-  &__btn-scan
-    margin-left: 5px!important;
-    margin-right: -5px!important;
-  &__btn-start-chat
-    margin-top: 15px
-  &__btn-show-qrcode
-    margin-top: 15px
-    margin-bottom: 15px
-    text-align: center
-.theme--light
-  .chat-start-dialog
-     >>> &__btn-scan
-      color: $adm-colors.regular
+.chat-start-dialog {
+  &__btn-scan {
+    margin-left: 5px !important;
+    margin-right: -5px !important;
+  }
+
+  &__btn-start-chat {
+    margin-top: 15px;
+  }
+
+  &__btn-show-qrcode {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+}
+
+.theme--light {
+  .chat-start-dialog {
+    /deep/ &__btn-scan {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
 </style>

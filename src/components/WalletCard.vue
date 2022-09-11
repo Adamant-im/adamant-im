@@ -129,46 +129,61 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../assets/stylus/settings/_colors.scss';
+@import '../assets/stylus/themes/adamant/_mixins.scss';
 
-.wallet-card
-  &__title
-    a-text-caption()
-  &__subtitle
-    a-text-regular-enlarged()
-    word-break: break-word
-    span
-      font-style: italic
-      color: inherit
-  &__list
-    padding: 8px 0 0
-  &__tile
+.wallet-card {
+  &__title {
+    @include a-text-caption();
+  }
+  &__subtitle {
+    @include a-text-regular-enlarged();
+    word-break: break-word;
+    span {
+      font-style: italic;
+      color: inherit;
+    }
+  }
+  &__list {
+    padding: 8px 0 0;
+  }
+  &__tile {
     // height: 60px // too small height
+  }
+}
 
 /** Themes **/
-.theme--light
-  .wallet-card
-    background-color: transparent
-
-    &__list
-      background: inherit
-    &__title
-      color: $adm-colors.regular
-    &__subtitle
-      color: $adm-colors.muted
-    &__action
-      color: $adm-colors.muted
-.theme--dark
-  .wallet-card
-    background-color: transparent
-
-    &__list
-      background: inherit
-    &__title
-      color: $shades.white
-    &__subtitle
-      color: $shades.white
+.theme--light {
+  .wallet-card {
+    background-color: transparent;
+    &__list {
+      background: inherit;
+    }
+    &__title {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__subtitle {
+      color: map-get($adm-colors, 'muted');
+    }
+    &__action {
+      color: map-get($adm-colors, 'muted');
+    }
+  }
+}
+.theme--dark {
+  .wallet-card {
+    background-color: transparent;
+    &__list {
+      background: inherit;
+    }
+    &__title {
+      color: map-get($shades, 'white');
+    }
+    &__subtitle {
+      color: map-get($shades, 'white');
+    }
+  }
+}
 </style>

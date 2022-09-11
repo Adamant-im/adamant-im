@@ -130,16 +130,22 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-  .warning-on-addresses-dialog
-    &__disclaimer
-      margin-top: 10px
-    &__btn-hide
-      margin-top: 15px
-      margin-bottom: 20px
-    &__btn-icon
-      margin-right: 8px
-    &__btn-forget
-      padding-bottom: 30px
-      text-align: center
+
+<style lang="scss" scoped>
+.warning-on-addresses-dialog {
+  &__disclaimer {
+    margin-top: 10px;
+  }
+  &__btn-hide {
+    margin-top: 15px;
+    margin-bottom: 20px;
+  }
+  &__btn-icon {
+    margin-right: 8px;
+  }
+  &__btn-forget {
+    padding-bottom: 30px;
+    text-align: center;
+  }
+}
 </style>
