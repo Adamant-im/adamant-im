@@ -10,7 +10,7 @@
         <v-text-field
           v-model="passphrase"
           :label="$t('login.password_label')"
-          browser-autocomplete="current-password"
+          autocomplete="current-password"
           class="text-xs-center"
           color="#BBDEFB"
           type="password"
