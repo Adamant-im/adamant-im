@@ -40,7 +40,7 @@
               :items="delegates"
               :rows-per-page-text="$t('rows_per_page')"
               :search="search"
-              hide-actions
+              hide-default-footer
               must-sort
               item-key="username"
             >

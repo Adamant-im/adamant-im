@@ -23,7 +23,7 @@
             :class="`${className}__table`"
             item-key="url"
             select-all
-            hide-actions
+            hide-default-footer
           >
             <template
               slot="headers"
