@@ -62,11 +62,13 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import './assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import './assets/stylus/themes/adamant/_mixins.scss';
 
-.theme--light.application--linear-gradient
-  linear-gradient-light()
-.theme--dark.application--linear-gradient
-  linear-gradient-dark()
+.theme--light.application--linear-gradient {
+  @include linear-gradient-light();
+}
+.theme--dark.application--linear-gradient {
+  @include linear-gradient-dark();
+}
 </style>

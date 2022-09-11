@@ -233,72 +233,96 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
-
-.nodes-view
-  &__table
-    margin-left: -24px
-    margin-right: -24px
-
-    >>> table.v-table tbody td:first-child
-      padding-left: 24px
-
-  &__header
-    font-size: 12px
-    font-weight: 300
-  &__body
-    font-size: 14px
-    font-weight: 300
-  &__info
-    >>> a
-      text-decoration-line: none
-      &:hover
-        text-decoration-line: underline
-  &__node-version
-    a-text-explanation-small()
-  &__checkbox
-    >>> .v-label
-      a-text-regular-enlarged()
-  >>> .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot
-    margin-bottom: 0
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_variables.scss';
+@import '../assets/stylus/settings/_colors.scss';
+@import '../assets/stylus/themes/adamant/_mixins.scss';
+.nodes-view {
+  &__table {
+    margin-left: -24px;
+    margin-right: -24px;
+    /deep/ table.v-table tbody td:first-child {
+      padding-left: 24px;
+    }
+  }
+  &__header {
+    font-size: 12px;
+    font-weight: 300;
+  }
+  &__body {
+    font-size: 14px;
+    font-weight: 300;
+  }
+  &__info {
+    /deep/ a {
+      text-decoration-line: none;
+      &:hover {
+        text-decoration-line: underline;
+      }
+    }
+  }
+  &__node-version {
+    @include a-text-explanation-small();
+  }
+  &__checkbox {
+    /deep/ .v-label {
+      @include a-text-regular-enlarged();
+    }
+  }
+  /deep/ .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot {
+    margin-bottom: 0;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .nodes-view
-    &__header
-      color: $adm-colors.muted
-    &__body
-      color: $adm-colors.regular
-    &__node-version
-      color: $adm-colors.muted
-    &__checkbox
-      >>> .v-label
-        color: $adm-colors.regular
-      >>> .v-input--selection-controls__ripple
-      >>> .v-input--selection-controls__input i
-        color: $adm-colors.regular !important
-        caret-color: $adm-colors.regular !important
+.theme--light {
+  .nodes-view {
+    &__header {
+      color: map-get($adm-colors, 'muted');
+    }
+    &__body {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__node-version {
+      color: map-get($adm-colors, 'muted');
+    }
+    &__checkbox {
+      /deep/ .v-label {
+        color: map-get($adm-colors, 'regular');
+      }
+      /deep/ .v-input--selection-controls__ripple,
+      /deep/ .v-input--selection-controls__input i {
+        color: map-get($adm-colors, 'regular') !important;
+        caret-color: map-get($adm-colors, 'regular') !important;
+      }
+    }
+    /deep/ .v-table tbody tr:not(:last-child) {
+      border-bottom: 1px solid map-get($adm-colors, 'secondary2');
+    }
+  }
+}
 
-    >>> .v-table tbody tr:not(:last-child)
-      border-bottom: 1px solid $adm-colors.secondary2
-
-.theme--dark
-  .nodes-view
-    &__node-version
-      opacity: 0.7
+.theme--dark {
+  .nodes-view {
+    &__node-version {
+      opacity: 0.7;
+    }
+  }
+}
 
 /**
- * 1. Style VTable to be full width.
- */
-@media $display-breakpoints.sm-and-down
-  .nodes-view
-    &__table // [1]
-      margin-left: -16px
-      margin-right: -16px
+* 1. Style VTable to be full width.
+*/
+@media #{map-get($display-breakpoints, 'sm-and-down')} {
+  .nodes-view {
+    &__table { // [1]
+      margin-left: -16px;
+      margin-right: -16px;
+    }
 
-    >>> table.v-table tbody td:first-child
-      padding-left: 16px
+    /deep/ table.v-table tbody td:first-child {
+      padding-left: 16px;
+    }
+  }
+}
 </style>

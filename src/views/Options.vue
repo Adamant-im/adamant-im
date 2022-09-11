@@ -464,72 +464,95 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_variables.scss';
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../assets/stylus/settings/_colors.scss';
+@import '../assets/stylus/themes/adamant/_mixins.scss';
 
-.settings-view
-  &__title
-    padding-top: 15px
-    padding-bottom: 5px
-    margin-left: -24px
-    margin-right: -24px
-    padding-left: 24px
-    padding-right: 24px
-  &__version_info
-    a-text-explanation()
-    margin-top: 24px
-  &__action
-    display: block
-    font-size: 16px
-    font-weight: 500
-    text-decoration-line: underline
-    margin: 6px 8px
-    padding: 0 16px
-  >>> .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot
-    margin-bottom: 0
-  >>> .v-input--selection-controls
-    margin-top: 0
-  >>> .v-label, &__label, &__list__title
-    a-text-regular-enlarged()
-  >>> .v-list
-    background: transparent
-    padding: 0
-  >>> .v-list__tile
-    padding: 0 24px
-    margin: 0 -24px
+.settings-view {
+  &__title {
+    padding-top: 15px;
+    padding-bottom: 5px;
+    margin-left: -24px;
+    margin-right: -24px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  &__version_info {
+    @include a-text-explanation();
+    margin-top: 24px;
+  }
+  &__action {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration-line: underline;
+    margin: 6px 8px;
+    padding: 0 16px;
+  }
+  /deep/ .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot {
+    margin-bottom: 0;
+  }
+  /deep/ .v-input--selection-controls {
+    margin-top: 0;
+  }
+  /deep/ .v-label, &__label, &__list__title {
+    @include a-text-regular-enlarged();
+  }
+  /deep/ .v-list {
+    background: transparent;
+    padding: 0;
+  }
+  /deep/ .v-list__tile {
+    padding: 0 24px;
+    margin: 0 -24px;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .settings-view
-    &__version_info
-      color: $adm-colors.muted
-    &__title
-      background-color: $adm-colors.secondary2-transparent
-      color: $adm-colors.regular
-    &__action
-      color: $adm-colors.regular
-    >>> .v-label, &__label
-      color: $adm-colors.regular
-    .v-divider
-      border-color: $adm-colors.secondary2
-.theme--dark
-  .settings-view
-    &__action
-      color: $shades.white
+.theme--light {
+  .settings-view {
+    &__version_info {
+      color: map-get($adm-colors, 'muted');
+    }
+    &__title {
+      background-color: map-get($adm-colors, 'secondary2-transparent');
+      color: map-get($adm-colors, 'regular');
+    }
+    &__action {
+      color: map-get($adm-colors, 'regular');
+    }
+    /deep/ .v-label, &__label {
+      color: map-get($adm-colors, 'regular');
+    }
+    .v-divider {
+      border-color: map-get($adm-colors, 'secondary2');
+    }
+  }
+}
+.theme--dark {
+  .settings-view {
+    &__action {
+      color: map-get($shades, 'white');
+    }
+  }
+}
 
 /** Breakpoints **/
-@media $display-breakpoints.sm-and-down
-  .settings-view
-    &__title
-      margin-left: -16px
-      margin-right: -16px
-      padding-left: 16px
-      padding-right: 16px
+@media #{map-get($display-breakpoints, 'sm-and-down')} {
+  .settings-view {
+    &__title {
+      margin-left: -16px;
+      margin-right: -16px;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
 
-    >>> .v-list__tile
-      padding: 0 16px
-      margin: 0 -16px
+    /deep/ .v-list__tile {
+      padding: 0 16px;
+      margin: 0 -16px;
+    }
+  }
+}
 </style>

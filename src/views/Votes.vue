@@ -443,88 +443,122 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../assets/stylus/settings/_colors.scss';
+@import '../assets/stylus/themes/adamant/_mixins.scss';
 
-.delegates-view
-  &__header
-    font-size: 12px
-    font-weight: 300
-  &__body
-    font-size: 14px
-    font-weight: 300
-    padding: 0 16px !important
-  &__dialog-title
-    a-text-header()
-  &__dialog-summary
-    a-text-regular-enlarged()
-  &__dialog-info
-    a-text-regular-enlarged()
-    margin-top: 16px
-    >>> a
-      text-decoration-line: none
-      &:hover
-        text-decoration-line: underline
-  &__expand
-    margin: 20px
-  &__expand-list-tile
-    height: 36px
-    >>> .v-list__tile
-      padding-left: 20px
-      padding-right: 20px
-  &__review
-    padding-top: 15px !important
-    padding-bottom: 15px !important
-  &__search
-    >>> .v-input__slot
-      padding-left: 16px
-      padding-right: 16px
-  &__spacer
-    height: 20px
-    margin-top: 5px
-  &__alert
-    border: none
-  >>> table.v-table thead th:not(:nth-child(1)),
-  >>> table.v-table tbody td:not(:nth-child(1))
-      padding: 0 16px
+.delegates-view {
+  &__header {
+    font-size: 12px;
+    font-weight: 300;
+  }
+  &__body {
+    font-size: 14px;
+    font-weight: 300;
+    padding: 0 16px !important;
+  }
+  &__dialog-title {
+    @include a-text-header();
+  }
+  &__dialog-summary {
+    @include a-text-regular-enlarged();
+  }
+  &__dialog-info {
+    @include a-text-regular-enlarged();
+    margin-top: 16px;/deep/ a {
+      text-decoration-line: none;&:hover {
+        text-decoration-line: underline;
+      }
+    }
+  }
+  &__expand {
+    margin: 20px;
+  }
+  &__expand-list-tile {
+    height: 36px;/deep/ .v-list__tile {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+  &__review {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+  }
+  &__search {
+    /deep/ .v-input__slot {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
+  &__spacer {
+    height: 20px;
+    margin-top: 5px;
+  }
+  &__alert {
+    border: none;
+  }
+  /deep/ table.v-table thead th:not(:nth-child(1)),
+  /deep/ table.v-table tbody td:not(:nth-child(1)) {
+    padding: 0 16px;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .delegates-view
-    &__header
-      color: $adm-colors.muted
-    &__body
-      color: $adm-colors.regular
-    &__dialog-title
-      color: $adm-colors.regular
-    &__dialog-summary
-      color: $adm-colors.regular
-    &__dialog-info
-      color: $adm-colors.regular
-    &__expand
-      background-color: $adm-colors.secondary2
-      >>> .a-text-active a
-        color: $adm-colors.regular
-    &__expand-list
-      background-color: transparent
-    &__divider
-      border-color: $adm-colors.secondary
-    &__alert
-      background-color: $adm-colors.muted !important
-      >>> .v-icon
-        color: $shades.white
-    >>> .v-table tbody tr:not(:last-child)
-      border-bottom: 1px solid $adm-colors.secondary2
-    >>> tfoot
-      linear-gradient-light()
-.theme--dark
-  .delegates-view
-    &__alert
-      background-color: $adm-colors.muted !important
-      >>> .v-icon
-        color: $shades.white
-    >>> tfoot
-      linear-gradient-dark()
+.theme--light {
+  .delegates-view {
+    &__header {
+      color: map-get($adm-colors, 'muted');
+    }
+    &__body {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__dialog-title {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__dialog-summary {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__dialog-info {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__expand {
+      background-color: map-get($adm-colors, 'secondary2');
+      /deep/ .a-text-active a {
+        color: map-get($adm-colors, 'regular');
+      }
+    }
+    &__expand-list {
+      background-color: transparent;
+    }
+    &__divider {
+      border-color: map-get($adm-colors, 'secondary');
+    }
+    &__alert {
+      background-color: map-get($adm-colors, 'muted') !important;
+      /deep/ .v-icon {
+        color: map-get($shades, 'white');
+      }
+    }
+    /deep/ .v-table tbody tr:not(:last-child) {
+      border-bottom: 1px solid, map-get($adm-colors, 'secondary2');
+    }
+    /deep/ tfoot {
+      @include linear-gradient-light();
+    }
+  }
+}
+.theme--dark {
+  .delegates-view {
+    &__alert {
+      background-color: map-get($adm-colors, 'muted') !important;
+      /deep/ .v-icon {
+        color: map-get($shades, 'white');
+      }
+    }
+    /deep/ tfoot {
+      @include linear-gradient-dark();
+    }
+  }
+}
 </style>

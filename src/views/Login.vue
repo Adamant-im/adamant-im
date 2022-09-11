@@ -216,32 +216,42 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
-@import '../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_variables.scss';
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../assets/stylus/settings/_colors.scss';
 
-.login-page
-  &__title
-    font-family: 'Exo 2'
-    font-weight: 100
-    font-size: 40px
-    line-height: 40px
-    text-transform: uppercase
-  &__subtitle
-    font-family: 'Exo 2'
-    font-weight: 100
-    font-size: 18px
-  &__icon
-    transition: 0.2s linear
+.login-page {
+  &__title {
+    font-family: 'Exo 2';
+    font-weight: 100;
+    font-size: 40px;
+    line-height: 40px;
+    text-transform: uppercase;
+  }
+  &__subtitle {
+    font-family: 'Exo 2';
+    font-weight: 100;
+    font-size: 18px;
+  }
+  &__icon {
+    transition: 0.2s linear;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .login-page
-    &__icon, &__title, &__subtitle
-      color: $adm-colors.regular
-
-.theme--dark
-  .login-page
-    &__icon
-      color: $shades.white
+.theme--light {
+  .login-page {
+    &__icon, &__title, &__subtitle {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
+.theme--dark {
+  .login-page {
+    &__icon {
+      color: map-get($shades, 'white');
+    }
+  }
+}
 </style>
