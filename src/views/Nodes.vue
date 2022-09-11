@@ -22,7 +22,7 @@
             :items="nodes"
             :class="`${className}__table`"
             item-key="url"
-            select-all
+            show-select
             hide-default-footer
           >
             <template
