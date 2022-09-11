@@ -148,7 +148,7 @@
                         </v-list-item-title>
                       </v-list-item-content>
                       <v-list-item-content>
-                        <v-list-item-title class="a-text-explanation text-xs-right">
+                        <v-list-item-title class="a-text-explanation text-right">
                           {{ item.format ? item.format(item.value.call(props.item)) : item.value.call(props.item) }}
                         </v-list-item-title>
                       </v-list-item-content>

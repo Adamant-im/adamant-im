@@ -6,7 +6,7 @@
     :class="className"
   >
     <container>
-      <div class="text-xs-right">
+      <div class="text-right">
         <language-switcher>
           <v-icon
             slot="prepend"

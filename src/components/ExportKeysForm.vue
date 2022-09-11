@@ -37,7 +37,7 @@
         </v-text-field>
       </div>
 
-      <div class="text-xs-right">
+      <div class="text-right">
         <v-btn
           :class="`${className}__copy_all_button`"
           class="a-btn-link"

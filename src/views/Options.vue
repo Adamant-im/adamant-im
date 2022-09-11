@@ -39,7 +39,7 @@
             </v-flex>
             <v-flex
               xs6
-              class="text-xs-right"
+              class="text-right"
             >
               <language-switcher
                 append-icon="mdi-chevron-down"
@@ -55,7 +55,7 @@
             </v-flex>
             <v-flex
               xs6
-              class="text-xs-right"
+              class="text-right"
             >
               <currency-switcher
                 append-icon="mdi-chevron-down"
