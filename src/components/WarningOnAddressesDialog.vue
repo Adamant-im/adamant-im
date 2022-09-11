@@ -23,7 +23,7 @@
 
       <v-flex
         xs12
-        class="text-xs-center"
+        class="text-center"
       >
         <v-btn
           :class="[`${className}__btn-hide`, 'a-btn-primary']"

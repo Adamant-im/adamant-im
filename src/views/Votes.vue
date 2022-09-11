@@ -50,7 +50,7 @@
             >
               <div
                 slot="no-data"
-                class="text-xs-center"
+                class="text-center"
               >
                 <v-layout
                   align-center

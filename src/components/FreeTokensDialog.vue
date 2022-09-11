@@ -20,7 +20,7 @@
 
       <v-flex
         xs12
-        class="text-xs-center"
+        class="text-center"
       >
         <v-btn
           :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"

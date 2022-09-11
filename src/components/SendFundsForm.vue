@@ -152,7 +152,7 @@
         color="grey darken-1"
       />
 
-      <div class="text-xs-center">
+      <div class="text-center">
         <v-btn
           :class="`${className}__button`"
           class="a-btn-primary"

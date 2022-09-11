@@ -20,7 +20,7 @@
       <v-card
         flat
         color="transparent"
-        class="text-xs-center mt-3"
+        class="text-center mt-3"
       >
         <logo style="width: 300px;" />
 
@@ -39,7 +39,7 @@
         v-if="!isLoginViaPassword"
         flat
         color="transparent"
-        class="text-xs-center mt-3"
+        class="text-center mt-3"
       >
         <v-layout justify-center>
           <v-flex
@@ -108,7 +108,7 @@
         v-if="isLoginViaPassword"
         flat
         color="transparent"
-        class="text-xs-center mt-3"
+        class="text-center mt-3"
       >
         <v-layout justify-center>
           <v-flex

@@ -63,7 +63,7 @@
           class="pa-4"
         >
           <h3
-            class="a-text-regular text-xs-center"
+            class="a-text-regular text-center"
           >
             {{ $t('scan.hold_your_device') }}
           </h3>
@@ -77,7 +77,7 @@
         wrap
         justify-center
         align-center
-        class="text-xs-center pa-5"
+        class="text-center pa-5"
       >
         <v-flex xs12>
           <h3 class="a-text-header">

@@ -92,7 +92,7 @@
       </template>
     </v-text-field>
 
-    <div class="text-xs-center">
+    <div class="text-center">
       <v-btn
         :class="`${className}__export_keys_button`"
         class="a-btn-primary"

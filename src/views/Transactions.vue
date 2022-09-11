@@ -48,7 +48,7 @@
 
           <h3
             v-else
-            class="a-text-caption text-xs-center mt-4"
+            class="a-text-caption text-center mt-4"
           >
             {{ $t('transaction.no_transactions') }}
           </h3>

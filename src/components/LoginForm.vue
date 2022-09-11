@@ -11,7 +11,7 @@
           v-model="passphrase"
           :label="$t('login.password_label')"
           autocomplete="current-password"
-          class="text-xs-center"
+          class="text-center"
           color="#BBDEFB"
           type="password"
         />

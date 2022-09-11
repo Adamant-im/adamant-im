@@ -1,6 +1,6 @@
 <template>
   <div :class="className">
-    <div class="text-xs-center">
+    <div class="text-center">
       <h3 class="a-text-regular">
         {{ $t('login.create_address_label') }}
       </h3>

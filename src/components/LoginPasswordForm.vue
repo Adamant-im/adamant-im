@@ -13,7 +13,7 @@
         :label="$t('login_via_password.user_password_title')"
         :name="Date.now()"
         type="password"
-        class="text-xs-center"
+        class="text-center"
       />
     </v-layout>
 
