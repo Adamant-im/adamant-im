@@ -11,44 +11,46 @@
  * 4.c. Textarea border on focus.
  * 5. Disable border bottom animation.
  */
-.login-form &__button {
-  min-width: 126px;
-}
+.login-form {
+  &__button {
+    min-width: 126px;
+  }
 
-.v-label {
-  /* [1] */
-  width: 100% !important;
-  max-width: 100% !important;
-  left: 0;
-  font-weight: 400;
-}
-
-.v-input {
-  input {
-    text-align: center; /* [2] */
+  .v-label {
+    /* [1] */
+    width: 100% !important;
+    max-width: 100% !important;
+    left: 0;
     font-weight: 400;
-    font-size: 14px;
   }
 
-  .v-label--active {
-    /* [3] */
-    transition: font 0.3s ease;
-    transform: translateY(-18px);
-    -webkit-transform: translateY(-18px);
-    font-size: 12px;
-  }
+  .v-input {
+    input {
+      text-align: center; /* [2] */
+      font-weight: 400;
+      font-size: 14px;
+    }
 
-  .v-input:not(.v-input--is-disabled) input {
-    color: map-get($adm-colors, 'regular');
-  }
-  .v-text-field > .v-input__control > .v-input__slot:before {
-    /* [4] */
-    border-top-width: 1px;
-  }
+    .v-label--active {
+      /* [3] */
+      transition: font 0.3s ease;
+      transform: translateY(-18px);
+      -webkit-transform: translateY(-18px);
+      font-size: 12px;
+    }
 
-  .v-text-field > .v-input__control > .v-input__slot:after {
-    /* [5] */
-    transition: unset;
+    .v-input:not(.v-input--is-disabled) input {
+      color: map-get($adm-colors, 'regular');
+    }
+    .v-text-field > .v-input__control > .v-input__slot:before {
+      /* [4] */
+      border-top-width: 1px;
+    }
+
+    .v-text-field > .v-input__control > .v-input__slot:after {
+      /* [5] */
+      transition: unset;
+    }
   }
 }
 
