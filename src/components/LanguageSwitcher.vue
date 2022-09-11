@@ -6,7 +6,7 @@
     <v-btn
       slot="activator"
       class="ma-0"
-      flat
+      text
     >
       <slot name="prepend">
         <v-icon

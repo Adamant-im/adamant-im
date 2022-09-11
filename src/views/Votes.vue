@@ -232,7 +232,7 @@
           <v-spacer />
 
           <v-btn
-            flat="flat"
+            text
             class="a-btn-regular"
             @click="dialog = false"
           >
@@ -240,7 +240,7 @@
           </v-btn>
 
           <v-btn
-            flat
+            text
             class="a-btn-regular"
             @click="sendVotes"
           >

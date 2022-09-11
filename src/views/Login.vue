@@ -64,7 +64,7 @@
           <v-btn
             :title="$t('login.scan_qr_code_button_tooltip')"
             icon
-            flat
+            text
             :class="`${className}__icon`"
             @click="showQrcodeScanner = true"
           >
@@ -78,7 +78,7 @@
             <v-btn
               :title="$t('login.login_by_qr_code_tooltip')"
               icon
-              flat
+              text
               :class="`${className}__icon`"
             >
               <icon><file-icon /></icon>

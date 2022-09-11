@@ -6,7 +6,7 @@
       </h3>
       <v-btn
         class="a-btn-link"
-        flat
+        text
         small
         @click="generatePassphrase"
       >

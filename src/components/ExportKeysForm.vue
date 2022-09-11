@@ -41,7 +41,7 @@
         <v-btn
           :class="`${className}__copy_all_button`"
           class="a-btn-link"
-          flat
+          text
           small
           @click="copyAll"
         >

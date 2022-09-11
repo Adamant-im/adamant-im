@@ -51,7 +51,7 @@
       <v-flex xs12>
         <v-btn
           class="a-btn-link"
-          flat
+          text
           small
           @click="removePassword"
         >

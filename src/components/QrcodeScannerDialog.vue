@@ -39,7 +39,7 @@
             >
               <v-btn
                 slot="activator"
-                flat
+                text
                 color="white"
               >
                 <v-icon large>
@@ -94,7 +94,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
-          flat
+          text
           class="a-btn-regular"
           @click="show = false"
         >
