@@ -22,7 +22,7 @@
       wrap
       align-center
       justify-center
-      class="mt-2"
+      class="mt-4"
     >
       <v-flex xs12>
         <slot name="button">
@@ -36,7 +36,7 @@
               indeterminate
               color="primary"
               size="24"
-              class="mr-3"
+              class="mr-6"
             />
             {{ $t('login_via_password.user_password_unlock') }}
           </v-btn>
@@ -44,7 +44,7 @@
       </v-flex>
       <v-flex
         xs12
-        class="a-text-regular mt-5"
+        class="a-text-regular mt-10"
       >
         {{ $t('login_via_password.remove_password_hint') }}
       </v-flex>

@@ -20,7 +20,7 @@
       <v-card
         flat
         color="transparent"
-        class="text-center mt-3"
+        class="text-center mt-6"
       >
         <logo style="width: 300px;" />
 
@@ -29,7 +29,7 @@
         </h1>
         <h2
           :class="`${className}__subtitle`"
-          class="hidden-sm-and-down mt-3"
+          class="hidden-sm-and-down mt-6"
         >
           {{ $t('login.subheader') }}
         </h2>
@@ -39,7 +39,7 @@
         v-if="!isLoginViaPassword"
         flat
         color="transparent"
-        class="text-center mt-3"
+        class="text-center mt-6"
       >
         <v-layout justify-center>
           <v-flex
@@ -59,7 +59,7 @@
 
         <v-layout
           justify-center
-          class="mt-2"
+          class="mt-4"
         >
           <v-btn
             :title="$t('login.scan_qr_code_button_tooltip')"
@@ -90,7 +90,7 @@
       <v-layout
         v-if="!isLoginViaPassword"
         justify-center
-        class="mt-5"
+        class="mt-10"
       >
         <v-flex
           xs12
@@ -108,7 +108,7 @@
         v-if="isLoginViaPassword"
         flat
         color="transparent"
-        class="text-center mt-3"
+        class="text-center mt-6"
       >
         <v-layout justify-center>
           <v-flex

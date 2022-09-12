@@ -23,7 +23,7 @@
         </div>
 
         <v-btn
-          class="a-btn-primary mt-3"
+          class="a-btn-primary mt-6"
           @click="saveQrcode"
         >
           {{ $t('login.save_qr_code_to_images') }}

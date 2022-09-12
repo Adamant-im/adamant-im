@@ -37,7 +37,7 @@
             indeterminate
             color="primary"
             size="24"
-            class="mr-3"
+            class="mr-6"
           />
           {{ $t('login.login_button') }}
         </v-btn>

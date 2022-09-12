@@ -40,7 +40,7 @@
         <v-layout
           align-center
           justify-center
-          class="pb-4"
+          class="pb-8"
         >
           <QrcodeRenderer
             :logo="logo"

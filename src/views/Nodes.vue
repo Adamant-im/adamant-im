@@ -49,7 +49,7 @@
               slot="items"
               slot-scope="props"
             >
-              <td class="pr-2">
+              <td class="pr-4">
                 <v-checkbox
                   :input-value="props.item.active"
                   :class="`${className}__checkbox`"
@@ -60,7 +60,7 @@
               </td>
               <td
                 :class="`${className}__body`"
-                class="pl-0 pr-2"
+                class="pl-0 pr-4"
                 style="line-height: 1;"
               >
                 {{ props.item.url }}
@@ -71,7 +71,7 @@
               </td>
               <td
                 :class="`${className}__body`"
-                class="pl-0 pr-2"
+                class="pl-0 pr-4"
               >
                 <span>
                   {{ getNodeStatus(props.item) }}
@@ -85,7 +85,7 @@
               </td>
               <td
                 :class="`${className}__body`"
-                class="pl-0 pr-2"
+                class="pl-0 pr-4"
               >
                 <v-icon :color="props.item.socketSupport ? 'green' : 'red'">
                   {{ props.item.socketSupport ? 'mdi-check' : 'mdi-close' }}
@@ -117,7 +117,7 @@
           <!-- eslint-disable vue/no-v-html -- Safe internal content -->
           <div
             :class="`${className}__info a-text-regular-enlarged`"
-            class="mt-4"
+            class="mt-8"
             v-html="$t('nodes.nodeLabelDescription')"
           />
           <!-- eslint-enable vue/no-v-html -->

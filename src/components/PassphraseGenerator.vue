@@ -22,7 +22,7 @@
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <div
           ref="el"
-          class="caption grey--text mt-2"
+          class="caption grey--text mt-4"
           v-html="$t('login.new_passphrase_label')"
         />
         <!-- eslint-enable vue/no-v-html -->

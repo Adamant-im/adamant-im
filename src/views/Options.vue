@@ -20,7 +20,7 @@
           <!-- General -->
           <h3
             :class="`${className}__title a-text-caption`"
-            class="mt-3 mb-3"
+            class="mt-6 mb-6"
           >
             {{ $t('options.general_title') }}
           </h3>
@@ -63,7 +63,7 @@
             </v-flex>
             <v-flex
               xs12
-              class="mt-2"
+              class="mt-4"
             >
               <v-checkbox
                 v-model="darkTheme"
@@ -76,7 +76,7 @@
           <!-- Security -->
           <h3
             :class="`${className}__title a-text-caption`"
-            class="mt-4 mb-4"
+            class="mt-8 mb-8"
           >
             {{ $t('options.security_title') }}
           </h3>
@@ -111,7 +111,7 @@
           <!-- Chats -->
           <h3
             :class="`${className}__title a-text-caption`"
-            class="mt-4 mb-4"
+            class="mt-8 mb-8"
           >
             {{ $t('options.chats_title') }}
           </h3>
@@ -134,7 +134,7 @@
 
             <v-flex
               xs12
-              class="mt-4"
+              class="mt-8"
             >
               <v-checkbox
                 v-model="formatMessages"
@@ -149,7 +149,7 @@
 
             <v-flex
               xs12
-              class="mt-4"
+              class="mt-8"
             >
               <v-checkbox
                 v-model="useFullDate"
@@ -166,7 +166,7 @@
           <!-- Notifications -->
           <h3
             :class="`${className}__title a-text-caption`"
-            class="mt-4 mb-4"
+            class="mt-8 mb-8"
           >
             {{ $t('options.notification_title') }}
           </h3>
@@ -188,7 +188,7 @@
             </v-flex>
             <v-flex
               xs12
-              class="mt-4"
+              class="mt-8"
             >
               <v-checkbox
                 v-model="allowTabNotifications"
@@ -202,7 +202,7 @@
             </v-flex>
             <v-flex
               xs12
-              class="mt-4"
+              class="mt-8"
             >
               <v-checkbox
                 v-model="allowPushNotifications"
@@ -219,7 +219,7 @@
           <!-- Actions -->
           <h3
             :class="`${className}__title a-text-caption`"
-            class="mt-4 mb-4"
+            class="mt-8 mb-8"
           >
             {{ $t('options.actions') }}
           </h3>

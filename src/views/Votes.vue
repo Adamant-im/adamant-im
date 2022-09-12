@@ -60,7 +60,7 @@
                     indeterminate
                     color="primary"
                     size="24"
-                    class="mr-3"
+                    class="mr-6"
                   />
                   <div
                     class="a-text-regular"
@@ -216,7 +216,7 @@
         <v-layout
           row
           wrap
-          class="pa-3"
+          class="pa-6"
         >
           <div :class="`${className}__dialog-summary`">
             {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
