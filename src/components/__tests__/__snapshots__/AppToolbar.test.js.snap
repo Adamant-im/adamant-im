@@ -2,7 +2,7 @@
 
 exports[`AppToolbar.vue renders the correct markup 1`] = `
 <v-toolbar-stub
-  app=""
+  app="true"
   height="64"
   scrollthreshold="300"
 >

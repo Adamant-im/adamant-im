@@ -1,3 +1,4 @@
+import { SNACKBAR_TIMEOUT } from '@/store/modules/snackbar/constants';
 import { shallowMount } from '@vue/test-utils'
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -35,7 +36,7 @@ describe('AppSnackbar.vue', () => {
 
     expect(wrapper.vm.show).toBe(false)
     expect(wrapper.vm.message).toBe('')
-    expect(wrapper.vm.timeout).toBe(1500)
+    expect(wrapper.vm.timeout).toBe(SNACKBAR_TIMEOUT)
     expect(wrapper.vm.color).toBe('')
   })
 

@@ -4,17 +4,23 @@ exports[`SendFundsForm renders the correct markup 1`] = `
 <div
   class="send-funds-form"
 >
+  <warning-on-partner-address-dialog-stub
+    info="[object Object]"
+  />
+   
   <v-form-stub
     value="true"
   >
     <v-select-stub
       class="a-input"
-      items="ADM,ETH,BZ,KCS,DOGE,DASH,BNB,USDS"
+      items="ADM,BTC,ETH,LSK,DOGE,DASH,USDS,BNB"
+      value="ADM"
     />
      
     <v-text-field-stub
       class="a-input"
       type="text"
+      value=""
     >
       <template>
         <span
@@ -25,14 +31,66 @@ exports[`SendFundsForm renders the correct markup 1`] = `
         
         </span>
       </template>
+       
+      <template>
+        <v-menu-stub
+          closedelay="0"
+          closeonclick="true"
+          closeoncontentclick="true"
+          contentclass=""
+          left="true"
+          maxheight="auto"
+          maxwidth="auto"
+          nudgebottom="0"
+          nudgeleft="0"
+          nudgeright="0"
+          nudgetop="0"
+          nudgewidth="0"
+          offsetoverflow="true"
+          opendelay="0"
+          openonclick="true"
+          origin="top left"
+          transition="v-menu-transition"
+        >
+          <v-icon-stub>
+            
+            mdi-dots-vertical
+          
+          </v-icon-stub>
+           
+          <v-list-stub>
+            <v-list-tile-stub
+              activeclass="primary--text"
+            >
+              <v-list-tile-title-stub>
+                Scan QR with camera
+              </v-list-tile-title-stub>
+            </v-list-tile-stub>
+             
+            <v-list-tile-stub
+              activeclass="primary--text"
+              class="v-list__tile--link"
+            >
+              <v-list-tile-title-stub>
+                <qrcode-capture-stub>
+                  <span>
+                    Read QR from image
+                  </span>
+                </qrcode-capture-stub>
+              </v-list-tile-title-stub>
+            </v-list-tile-stub>
+          </v-list-stub>
+        </v-menu-stub>
+      </template>
     </v-text-field-stub>
      
     <v-text-field-stub
       class="a-input"
       max="9999.5"
-      min="0.01"
-      step="0.01"
+      min="1e-8"
+      step="1e-8"
       type="number"
+      value=""
     >
       <template>
         <span
@@ -49,21 +107,126 @@ exports[`SendFundsForm renders the correct markup 1`] = `
         
         </span>
       </template>
+       
+      <template>
+        <v-menu-stub
+          closedelay="0"
+          closeonclick="true"
+          closeoncontentclick="true"
+          contentclass=""
+          left="true"
+          maxheight="auto"
+          maxwidth="auto"
+          nudgebottom="0"
+          nudgeleft="0"
+          nudgeright="0"
+          nudgetop="0"
+          nudgewidth="0"
+          offsetoverflow="true"
+          opendelay="0"
+          openonclick="true"
+          origin="top left"
+          transition="v-menu-transition"
+        >
+          <v-icon-stub>
+            
+            mdi-dots-vertical
+          
+          </v-icon-stub>
+           
+          <v-list-stub>
+            <v-list-tile-stub
+              activeclass="primary--text"
+            >
+              <v-list-tile-title-stub>
+                Send 10%
+              </v-list-tile-title-stub>
+            </v-list-tile-stub>
+            <v-list-tile-stub
+              activeclass="primary--text"
+            >
+              <v-list-tile-title-stub>
+                Send third
+              </v-list-tile-title-stub>
+            </v-list-tile-stub>
+            <v-list-tile-stub
+              activeclass="primary--text"
+            >
+              <v-list-tile-title-stub>
+                Send half
+              </v-list-tile-title-stub>
+            </v-list-tile-stub>
+            <v-list-tile-stub
+              activeclass="primary--text"
+            >
+              <v-list-tile-title-stub>
+                Send all
+              </v-list-tile-title-stub>
+            </v-list-tile-stub>
+          </v-list-stub>
+        </v-menu-stub>
+      </template>
     </v-text-field-stub>
      
-    <v-text-field-stub
-      class="a-input"
-      disabled=""
-      label="Transfer fee"
-      value="0.5 ADM"
-    />
+    <div
+      class="fake-input"
+    >
+      <div
+        class="fake-input__label"
+      >
+        
+        Transfer fee
+      
+      </div>
+       
+      <div
+        class="fake-input__box"
+      >
+        <span
+          class="fake-input__value"
+        >
+           0.5 ADM 
+        </span>
+         
+        <span
+          class="fake-input__value fake-input__value--rate a-text-regular"
+        >
+           ~0.00 USD 
+        </span>
+      </div>
+    </div>
      
-    <v-text-field-stub
-      class="a-input"
-      disabled=""
-      label="Amount including a transfer fee"
-      value="0.5 ADM"
-    />
+    <div
+      class="fake-input"
+    >
+      <div
+        class="fake-input__label"
+      >
+        
+        Amount including a transfer fee
+      
+      </div>
+       
+      <div
+        class="fake-input__box"
+      >
+        <span
+          class="fake-input__value"
+        >
+           0.5 ADM 
+        </span>
+         
+        <span
+          class="fake-input__value fake-input__value--rate a-text-regular"
+        >
+           ~0.00 USD 
+        </span>
+      </div>
+    </div>
+     
+    <!---->
+     
+    <!---->
      
     <!---->
      
@@ -84,16 +247,21 @@ exports[`SendFundsForm renders the correct markup 1`] = `
   </v-form-stub>
    
   <v-dialog-stub
+    contentclass=""
     maxwidth="none"
     origin="center center"
     transition="dialog-transition"
     width="500"
   >
-    <v-card-stub>
+    <v-card-stub
+      tag="div"
+    >
       <v-card-title-stub
         class="a-text-header"
       >
+        
         Transfer confirmation
+      
       </v-card-title-stub>
        
       <v-divider-stub
@@ -102,7 +270,17 @@ exports[`SendFundsForm renders the correct markup 1`] = `
        
       <v-card-text-stub
         class="a-text-regular-enlarged"
-      />
+      >
+        Confirm transfer of 
+        <b>
+          0 ADM
+        </b>
+         to address 
+        <span
+          class="address-in-confirm"
+        />
+        .
+      </v-card-text-stub>
        
       <v-card-actions-stub>
         <v-spacer-stub />
@@ -143,5 +321,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
       </v-card-actions-stub>
     </v-card-stub>
   </v-dialog-stub>
+   
+  <!---->
 </div>
 `;
