@@ -3,12 +3,16 @@
 exports[`ChatStartDialog.vue renders the correct markup 1`] = `
 <v-dialog-stub
   class="chat-start-dialog"
+  contentclass=""
   maxwidth="none"
   origin="center center"
   transition="dialog-transition"
+  value="true"
   width="500"
 >
-  <v-card-stub>
+  <v-card-stub
+    tag="div"
+  >
     <v-card-title-stub
       class="a-text-header"
     >
@@ -32,26 +36,60 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
       <v-text-field-stub
         class="a-input"
         label="Partner's address"
-        title="Partner's ADM address like U1234567890987654321"
-      />
-       
-      <v-btn-stub
-        activeclass="v-btn--active"
-        class="chat-start-dialog__btn-scan ml-3 mr-0"
-        flat="true"
-        icon="true"
-        tag="button"
-        type="button"
+        title="Partner's ADM address like U1234567890987654321 or Share link"
+        value=""
       >
-        <icon-stub
-          height="24"
-          shaperendering="auto"
-          viewbox="0 0 512 512"
-          width="24"
-        >
-          <qr-code-scan-icon-stub />
-        </icon-stub>
-      </v-btn-stub>
+        <template>
+          <v-menu-stub
+            closedelay="0"
+            closeonclick="true"
+            closeoncontentclick="true"
+            contentclass=""
+            left="true"
+            maxheight="auto"
+            maxwidth="auto"
+            nudgebottom="0"
+            nudgeleft="0"
+            nudgeright="0"
+            nudgetop="0"
+            nudgewidth="0"
+            offsetoverflow="true"
+            opendelay="0"
+            openonclick="true"
+            origin="top left"
+            transition="v-menu-transition"
+          >
+            <v-icon-stub>
+              
+              mdi-dots-vertical
+            
+            </v-icon-stub>
+             
+            <v-list-stub>
+              <v-list-tile-stub
+                activeclass="primary--text"
+              >
+                <v-list-tile-title-stub>
+                  Scan QR with camera
+                </v-list-tile-title-stub>
+              </v-list-tile-stub>
+               
+              <v-list-tile-stub
+                activeclass="primary--text"
+                class="v-list__tile--link"
+              >
+                <v-list-tile-title-stub>
+                  <qrcode-capture-stub>
+                    <span>
+                      Read QR from image
+                    </span>
+                  </qrcode-capture-stub>
+                </v-list-tile-title-stub>
+              </v-list-tile-stub>
+            </v-list-stub>
+          </v-menu-stub>
+        </template>
+      </v-text-field-stub>
        
       <v-flex-stub
         class="text-xs-center"
@@ -90,7 +128,7 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
    
   <qrcode-renderer-dialog-stub
     logo="true"
-    text=""
+    text="http://localhost?address=U123456"
   />
 </v-dialog-stub>
 `;

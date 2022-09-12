@@ -1,3 +1,4 @@
+import { Cryptos } from '@/lib/constants';
 import { parseURIasAIP, generateURI } from '@/lib/uri'
 
 describe('uri', () => {
@@ -5,7 +6,9 @@ describe('uri', () => {
     it('only address', () => {
       expect(parseURIasAIP('adm:U123456')).toEqual({
         address: 'U123456',
-        params: {}
+        params: {},
+        crypto: 'ADM',
+        protocol: "adm"
       })
     })
 
@@ -15,26 +18,34 @@ describe('uri', () => {
         params: {
           firstName: 'Rick',
           lastName: 'Sanchez'
-        }
+        },
+        crypto: 'ADM',
+        protocol: "adm"
       })
     })
 
     it('with ? symbol but without params', () => {
       expect(parseURIasAIP('adm:U123456?')).toEqual({
         address: 'U123456',
-        params: {}
+        params: {},
+        crypto: 'ADM',
+        protocol: "adm"
       })
     })
 
     it('address should be case insensitive', () => {
       expect(parseURIasAIP('adm:u123456')).toEqual({
         address: 'u123456',
-        params: {}
+        params: {},
+        crypto: 'ADM',
+        protocol: "adm"
       })
     })
 
-    it('should return undefined if is invalid adamant address', () => {
-      expect(parseURIasAIP('adm:U123')).toBe(undefined)
+    it('should return address "as is" if is not a valid address', () => {
+      expect(parseURIasAIP('not_a_valid_address')).toMatchObject({
+        address: "not_a_valid_address"
+      })
     })
 
     it('should decode URI', () => {
@@ -44,7 +55,9 @@ describe('uri', () => {
         address: 'U123456',
         params: {
           label: 'Рик'
-        }
+        },
+        crypto: 'ADM',
+        protocol: "adm"
       })
     })
 
@@ -53,21 +66,34 @@ describe('uri', () => {
         address: 'U123456',
         params: {
           label: 'Rick Sanchez'
-        }
+        },
+        crypto: 'ADM',
+        protocol: "adm"
       })
     })
   })
 
   describe('generateURI', () => {
+    const HOSTNAME = 'msg.adamant.im';
+
+    beforeAll(() => {
+      delete window.location
+      window.location = new URL(`https://${HOSTNAME}`)
+    })
+
+    afterAll(() => {
+      delete window.location;
+    })
+
     it('without contactName', () => {
-      expect(generateURI('U123456')).toBe('adm:U123456')
-      expect(generateURI('U123456', '')).toBe('adm:U123456')
-      expect(generateURI('U123456', undefined)).toBe('adm:U123456')
+      expect(generateURI(Cryptos.ADM, 'U123456')).toBe(`https://${HOSTNAME}?address=U123456`)
+      expect(generateURI(Cryptos.ADM, 'U123456', '')).toBe(`https://${HOSTNAME}?address=U123456`)
+      expect(generateURI(Cryptos.ADM, 'U123456', undefined)).toBe(`https://${HOSTNAME}?address=U123456`)
     })
 
     it('with contactName', () => {
-      expect(generateURI('U123456', 'Rick')).toBe('adm:U123456?label=Rick')
-      expect(generateURI('U123456', 'Rick Sanchez')).toBe('adm:U123456?label=Rick Sanchez')
+      expect(generateURI(Cryptos.ADM,'U123456', 'Rick')).toBe(`https://${HOSTNAME}?address=U123456&label=Rick`)
+      expect(generateURI(Cryptos.ADM,'U123456', 'Rick Sanchez')).toBe(`https://${HOSTNAME}?address=U123456&label=Rick%20Sanchez`)
     })
   })
 })

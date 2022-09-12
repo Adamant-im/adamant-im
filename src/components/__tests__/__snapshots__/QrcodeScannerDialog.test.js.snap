@@ -3,13 +3,16 @@
 exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
 <v-dialog-stub
   class="qrcode-scanner-dialog"
+  contentclass=""
   maxwidth="none"
   origin="center center"
   transition="dialog-transition"
+  value="true"
   width="500"
 >
   <v-card-stub
     class="qrcode-scanner-dialog"
+    tag="div"
   >
     <v-layout-stub
       align-center=""
@@ -20,7 +23,9 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
       <div
         class="a-text-header"
       >
+        
         Waiting for camera…
+      
       </div>
        
       <v-progress-circular-stub
@@ -36,6 +41,7 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
      
     <v-layout-stub
       row=""
+      style="display: none;"
       tag="div"
       wrap=""
     >

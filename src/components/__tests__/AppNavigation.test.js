@@ -119,24 +119,54 @@ describe('AppNavigation.vue', () => {
     expect(wrapper.vm.getCurrentPageIndex()).toBe(2)
   })
 
-  it('should display number of new messages', () => {
+  it('should hide the badge when there are no messages', () => {
     const wrapper = shallowMount(AppNavigation, {
-      store,
+      store: new Vuex.Store({
+        actions,
+        modules: {
+          chat: {
+            getters: {
+              totalNumOfNewMessages: () => 0
+            },
+            namespaced: true
+          }
+        }
+      }),
+      i18n,
+      mocks: {
+        $route: {
+          path: ''
+        },
+        $computed: {
+          numOfNewMessages: () => 10
+        }
+      }
+    })
+
+    expect(wrapper.find('v-badge-stub > span').exists()).toBe(false) // hidden badge
+  })
+
+  it('should display the badge with number of new messages', () => {
+    const wrapper = shallowMount(AppNavigation, {
+      store: new Vuex.Store({
+        actions,
+        modules: {
+          chat: {
+            getters: {
+              totalNumOfNewMessages: () => 10
+            },
+            namespaced: true
+          }
+        }
+      }),
       i18n,
       mocks: {
         $route: {
           path: ''
         }
-      }
+      },
     })
 
-    // no messages
-    expect(wrapper.vm.numOfNewMessages).toBe(0)
-    expect(wrapper.find('v-badge-stub > span').exists()).toBe(false) // hidden badge
-
-    // new messages
-    chat.state.numOfNewMessages = 10
-    expect(wrapper.vm.numOfNewMessages).toBe(10)
     expect(wrapper.find('v-badge-stub > span').text()).toBe('10') // visible badge
   })
 })

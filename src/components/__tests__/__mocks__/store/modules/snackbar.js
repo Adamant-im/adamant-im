@@ -1,8 +1,10 @@
+import { SNACKBAR_TIMEOUT } from '@/store/modules/snackbar/constants';
+
 export default () => ({
   state: {
     show: false,
     message: '',
-    timeout: 3000,
+    timeout: SNACKBAR_TIMEOUT,
     color: ''
   },
   mutations: {

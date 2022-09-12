@@ -10,7 +10,9 @@ exports[`PassphraseGenerator.vue renders the correct markup 1`] = `
     <h3
       class="a-text-regular"
     >
+      
       Or create a new anonymous address:
+    
     </h3>
      
     <v-btn-stub
@@ -27,7 +29,11 @@ exports[`PassphraseGenerator.vue renders the correct markup 1`] = `
     </v-btn-stub>
   </div>
    
-  <!---->
+  <transition-stub
+    name="slide-fade"
+  >
+    <!---->
+  </transition-stub>
    
   <qrcoderendererdialog-stub
     text=""
