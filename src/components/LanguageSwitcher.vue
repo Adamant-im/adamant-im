@@ -1,11 +1,8 @@
 <template>
-  <v-menu
-    offset-y
-    class="language-switcher"
-  >
+  <v-menu offset-y>
     <template #activator="{ on, attrs }">
       <v-btn
-        class="ma-0"
+        class="ma-0 btn"
         text
         v-bind="attrs"
         v-on="on"
@@ -29,6 +26,7 @@
         </slot>
       </v-btn>
     </template>
+
     <v-list>
       <v-list-item
         v-for="(language, code) in languages"
@@ -84,32 +82,29 @@ export default {
 @import '~vuetify/src/styles/settings/_colors.scss';
 @import '../assets/stylus/settings/_colors.scss';
 
-.language-switcher {
-  :deep(.v-menu__activator) {
-    .v-icon {
-      margin-top: 2px;
-    }
-    .v-icon:before {
+.btn {
+  text-transform: capitalize;
+  font-weight: 300;
+
+  :deep(.v-icon) {
+    margin-top: 2px;
+
+    &:before {
       transition: 0.2s linear;
     }
   }
-  :deep(.v-menu__activator--active) {
-    .v-icon:before {
+
+  &[aria-expanded="true"] {
+    :deep(.v-icon) {
       transform: rotate(90deg);
     }
-  }
-  :deep(.v-btn) {
-    text-transform: capitalize;
   }
 }
 
 /** Themes **/
 .theme--light {
-  .language-switcher {
-    .v-btn {
-      color: map-get($adm-colors, 'regular');
-      font-weight: 300;
-    }
+  .btn {
+    color: map-get($adm-colors, 'regular');
   }
 }
 </style>
