@@ -1,6 +1,8 @@
 @import '~vuetify/src/styles/settings/_variables.scss';
 @import '../settings/_colors.scss';
 
+$font-family: 'Exo 2', sans-serif;
+
 /** Vuetify context styles **/
 
 /**
@@ -41,6 +43,7 @@
  */
 .v-application {
   font-weight: 300;
+  font-family: $font-family;
 }
 
 .theme--light.v-application {
