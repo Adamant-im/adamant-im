@@ -39,10 +39,10 @@
 /**
  * Application styles.
  */
-.application {
+.v-application {
   font-weight: 300;
 }
 
-.theme--light.application {
+.theme--light.v-application {
   color: map-get($adm-colors, 'regular');
 }
