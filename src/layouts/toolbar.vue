@@ -2,7 +2,10 @@
   <v-main>
     <v-container
       fluid
-      :class="{ 'pa-0': containerNoPadding }"
+      :class="{
+        'pa-6': true,
+        'pa-0': containerNoPadding
+      }"
     >
       <slot />
     </v-container>
