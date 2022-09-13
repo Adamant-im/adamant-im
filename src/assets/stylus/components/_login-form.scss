@@ -13,7 +13,9 @@
  */
 .login-form {
   &__button {
-    min-width: 126px;
+    &.v-btn.v-size--default {
+      min-width: 126px;
+    }
   }
 
   .v-label {
