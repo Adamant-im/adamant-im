@@ -17,7 +17,7 @@
       <div class="a-chat__message-card">
         <div
           v-if="!hideTime"
-          class="a-chat__message-card-header mt-2"
+          class="a-chat__message-card-header mt-1"
         >
           <div
             v-if="status.status === 'CONFIRMED'"

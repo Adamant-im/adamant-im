@@ -49,7 +49,7 @@
             indeterminate
             color="primary"
             size="24"
-            class="mr-6"
+            class="mr-4"
           />
           {{ $t('login_via_password.popup_confirm_text') }}
         </v-btn>

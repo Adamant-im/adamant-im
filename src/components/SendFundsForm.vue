@@ -203,7 +203,7 @@
               indeterminate
               color="primary"
               size="24"
-              class="mr-6"
+              class="mr-4"
             />
             {{ $t('transfer.confirm_approve') }}
           </v-btn>

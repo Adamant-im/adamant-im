@@ -1,7 +1,7 @@
 <template>
   <v-main>
     <v-container
-      class="pa-6"
+      class="pa-4"
       fluid
       fill-height
     >

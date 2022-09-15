@@ -10,7 +10,7 @@
         v-if="cameraStatus === 'waiting'"
         justify-center
         align-center
-        class="pa-10"
+        class="pa-8"
       >
         <div class="a-text-header">
           {{ $t('scan.waiting_camera') }}
@@ -19,7 +19,7 @@
           indeterminate
           color="primary"
           size="32"
-          class="ml-6"
+          class="ml-4"
         />
       </v-layout>
 
@@ -60,7 +60,7 @@
         </v-flex>
         <v-flex
           xs12
-          class="pa-8"
+          class="pa-6"
         >
           <h3
             class="a-text-regular text-center"
@@ -77,13 +77,13 @@
         wrap
         justify-center
         align-center
-        class="text-center pa-10"
+        class="text-center pa-8"
       >
         <v-flex xs12>
           <h3 class="a-text-header">
             {{ $t('scan.no_camera_found') }}
           </h3>
-          <p class="a-text-regular mt-2 mb-0">
+          <p class="a-text-regular mt-1 mb-0">
             {{ $t('scan.connect_camera') }}
           </p>
         </v-flex>

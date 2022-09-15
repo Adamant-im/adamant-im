@@ -19,7 +19,7 @@
         wrap
         justify-center
         align-center
-        class="pa-6"
+        class="pa-4"
       >
         <v-text-field
           ref="partnerField"
