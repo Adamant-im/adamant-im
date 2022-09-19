@@ -5,7 +5,7 @@
     class="login-form"
     @submit.prevent="submit"
   >
-    <v-layout>
+    <v-row>
       <slot>
         <v-text-field
           v-model="passphrase"
@@ -18,13 +18,11 @@
       </slot>
 
       <slot name="append-outer" />
-    </v-layout>
+    </v-row>
 
-    <v-layout
-      row
-      wrap
-      align-center
-      justify-center
+    <v-row
+      align="center"
+      justify="center"
     >
       <slot name="button">
         <v-btn
@@ -42,7 +40,7 @@
           {{ $t('login.login_button') }}
         </v-btn>
       </slot>
-    </v-layout>
+    </v-row>
 
     <transition name="slide-fade">
       <v-layout justify-center>

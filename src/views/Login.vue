@@ -39,14 +39,16 @@
         v-if="!isLoginViaPassword"
         flat
         color="transparent"
-        class="text-center mt-4"
+        class="text-center mt-8"
       >
-        <v-layout justify-center>
-          <v-flex
-            xs12
-            sm8
-            md8
-            lg8
+        <v-row
+          justify="center"
+          no-gutters
+        >
+          <v-col
+            sm="8"
+            md="8"
+            lg="8"
           >
             <login-form
               ref="loginForm"
@@ -54,76 +56,84 @@
               @login="onLogin"
               @error="onLoginError"
             />
-          </v-flex>
-        </v-layout>
+          </v-col>
+        </v-row>
 
-        <v-layout
-          justify-center
-          class="mt-2"
+        <v-row
+          justify="center"
+          class="mt-6"
+          no-gutters
         >
-          <v-btn
-            :title="$t('login.scan_qr_code_button_tooltip')"
-            icon
-            text
-            :class="`${className}__icon`"
-            @click="showQrcodeScanner = true"
-          >
-            <icon><qr-code-scan-icon /></icon>
-          </v-btn>
-
-          <qrcode-capture
-            @detect="onDetectQrcode"
-            @error="onDetectQrcodeError"
-          >
+          <v-col cols="auto">
             <v-btn
-              :title="$t('login.login_by_qr_code_tooltip')"
+              class="ma-2"
+              :title="$t('login.scan_qr_code_button_tooltip')"
               icon
               text
               :class="`${className}__icon`"
+              @click="showQrcodeScanner = true"
             >
-              <icon><file-icon /></icon>
+              <icon><qr-code-scan-icon /></icon>
             </v-btn>
-          </qrcode-capture>
-        </v-layout>
+          </v-col>
+
+          <v-col cols="auto">
+            <qrcode-capture
+              @detect="onDetectQrcode"
+              @error="onDetectQrcodeError"
+            >
+              <v-btn
+                class="ma-2"
+                :title="$t('login.login_by_qr_code_tooltip')"
+                icon
+                text
+                :class="`${className}__icon`"
+              >
+                <icon><file-icon /></icon>
+              </v-btn>
+            </qrcode-capture>
+          </v-col>
+        </v-row>
       </v-card>
 
-      <v-layout
+      <v-row
         v-if="!isLoginViaPassword"
-        justify-center
+        justify="center"
         class="mt-8"
       >
-        <v-flex
-          xs12
-          sm8
-          md8
-          lg8
+        <v-col
+          sm="8"
+          md="8"
+          lg="8"
         >
           <passphrase-generator
             @copy="onCopyPassphrase"
           />
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
 
       <v-card
         v-if="isLoginViaPassword"
         flat
         color="transparent"
-        class="text-center mt-2"
+        class="text-center mt-6"
       >
-        <v-layout justify-center>
-          <v-flex
-            xs12
-            sm8
-            md8
-            lg8
+        <v-row
+          no-gutters
+          justify="center"
+        >
+          <v-col
+            sm="8"
+            md="8"
+            lg="8"
           >
             <login-password-form
               v-model="password"
               @login="onLogin"
               @error="onLoginError"
             />
-          </v-flex>
-        </v-layout>
+          </v-col>
+        </v-row>
       </v-card>
 
       <qrcode-scanner-dialog
