@@ -1,6 +1,6 @@
 <template>
   <i
-    class="v-icon"
+    class="icon"
     :class="{ 'v-icon--link': isClickable }"
   >
     <svg
@@ -68,6 +68,22 @@ export default {
 
 <style lang="scss">
 @import '~vuetify/src/styles/settings/_colors.scss';
+
+.icon {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  display: inline-flex;
+  font-size: 24px;
+  justify-content: center;
+  letter-spacing: normal;
+  line-height: 1;
+  position: relative;
+  text-indent: 0;
+  transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1), visibility 0s;
+  vertical-align: middle;
+  user-select: none;
+}
 
 /* Themes */
 .theme--light {
