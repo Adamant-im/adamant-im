@@ -1,8 +1,7 @@
 <template>
-  <v-layout
-    row
-    fill-height
-    justify-center
+  <v-row
+    justify="center"
+    no-gutters
     :class="className"
   >
     <container>
@@ -39,7 +38,7 @@
         v-if="!isLoginViaPassword"
         flat
         color="transparent"
-        class="text-center mt-8"
+        class="text-center mt-4"
       >
         <v-row
           justify="center"
@@ -142,7 +141,7 @@
         @scan="onScanQrcode"
       />
     </container>
-  </v-layout>
+  </v-row>
 </template>
 
 <script>
@@ -232,6 +231,8 @@ export default {
 @import '../assets/stylus/settings/_colors.scss';
 
 .login-page {
+  height: 100%;
+
   &__title {
     font-family: 'Exo 2';
     font-weight: 100;

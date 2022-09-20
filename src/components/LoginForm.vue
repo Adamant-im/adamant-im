@@ -5,7 +5,7 @@
     class="login-form"
     @submit.prevent="submit"
   >
-    <v-row>
+    <v-row no-gutters>
       <slot>
         <v-text-field
           v-model="passphrase"
@@ -23,6 +23,7 @@
     <v-row
       align="center"
       justify="center"
+      no-gutters
     >
       <slot name="button">
         <v-btn
