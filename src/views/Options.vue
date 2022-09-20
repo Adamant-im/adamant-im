@@ -405,6 +405,8 @@ export default {
           key: 'darkTheme',
           value
         })
+
+        this.$vuetify.theme.dark = value
       }
     },
     isLoginViaPassword () {

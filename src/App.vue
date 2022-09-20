@@ -47,6 +47,9 @@ export default {
     this.notifications.stop()
     this.$store.dispatch('stopInterval')
   },
+  beforeMount () {
+    this.$vuetify.theme.dark = this.$store.state.options.darkTheme // sync Vuetify theme with the store
+  },
   methods: {
     setLocale () {
       // Set language from `localStorage`.
