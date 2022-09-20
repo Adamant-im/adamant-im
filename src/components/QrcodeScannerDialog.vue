@@ -6,11 +6,12 @@
   >
     <v-card :class="className">
       <!-- Camera Waiting -->
-      <v-layout
+      <v-row
         v-if="cameraStatus === 'waiting'"
-        justify-center
-        align-center
+        justify="center"
+        align="center"
         class="pa-8"
+        no-gutters
       >
         <div class="a-text-header">
           {{ $t('scan.waiting_camera') }}
@@ -21,15 +22,14 @@
           size="32"
           class="ml-4"
         />
-      </v-layout>
+      </v-row>
 
       <!-- Camera Active -->
-      <v-layout
+      <v-row
         v-show="cameraStatus === 'active'"
-        row
-        wrap
+        no-gutters
       >
-        <v-flex xs12>
+        <v-col cols="12">
           <div :class="`${className}__camera`">
             <video ref="camera" />
             <v-menu
@@ -57,9 +57,9 @@
               </v-list>
             </v-menu>
           </div>
-        </v-flex>
-        <v-flex
-          xs12
+        </v-col>
+        <v-col
+          cols="12"
           class="pa-6"
         >
           <h3
@@ -67,27 +67,26 @@
           >
             {{ $t('scan.hold_your_device') }}
           </h3>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
 
       <!-- No Camera -->
-      <v-layout
+      <v-row
         v-if="cameraStatus === 'nocamera'"
-        row
-        wrap
-        justify-center
-        align-center
+        justify="center"
+        align="center"
         class="text-center pa-8"
+        no-gutters
       >
-        <v-flex xs12>
+        <v-col cols="12">
           <h3 class="a-text-header">
             {{ $t('scan.no_camera_found') }}
           </h3>
           <p class="a-text-regular mt-1 mb-0">
             {{ $t('scan.connect_camera') }}
           </p>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
 
       <v-divider class="a-divider" />
 
