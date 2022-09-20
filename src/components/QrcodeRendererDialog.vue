@@ -4,11 +4,10 @@
     width="250"
   >
     <v-card>
-      <v-layout
-        justify-center
-        row
-        wrap
+      <v-row
+        justify="center"
         class="py-3"
+        no-gutters
       >
         <div
           :style="{ cursor: 'pointer' }"
@@ -23,12 +22,12 @@
         </div>
 
         <v-btn
-          class="a-btn-primary mt-4"
+          class="a-btn-primary mt-4 mb-2"
           @click="saveQrcode"
         >
           {{ $t('login.save_qr_code_to_images') }}
         </v-btn>
-      </v-layout>
+      </v-row>
     </v-card>
   </v-dialog>
 </template>
