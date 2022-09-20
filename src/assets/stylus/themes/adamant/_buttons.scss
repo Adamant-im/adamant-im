@@ -3,7 +3,7 @@
 @import '../../settings/_colors.scss';
 
 .a-btn-link {
-  font-size: 16px;
+  font-size: 16px !important;
   font-weight: 500;
   text-decoration: underline;
   text-transform: unset;

@@ -5,7 +5,7 @@
         {{ $t('login.create_address_label') }}
       </h3>
       <v-btn
-        class="a-btn-link"
+        class="a-btn-link mt-2"
         text
         small
         @click="generatePassphrase"
