@@ -60,14 +60,4 @@ export default {
     @include a-text-regular-enlarged();
   }
 }
-
-.theme--light {
-  .app-snackbar {
-    color: map-get($adm-colors, 'regular');
-
-    :deep(.v-snack__wrapper) {
-      background-color: map-get($adm-colors, 'secondary2');
-    }
-  }
-}
 </style>
