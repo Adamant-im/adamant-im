@@ -14,7 +14,7 @@
           >
             <v-list-item
               v-if="isFulfilled"
-              :class="`${className}__tile`"
+              :class="`${className}__item`"
               @click="showChatStartDialog = true"
             >
               <v-list-item-avatar size="24">
@@ -191,13 +191,13 @@ export default {
 @import '~vuetify/src/styles/settings/_colors.scss';
 @import '../assets/stylus/settings/_colors.scss';
 .chats-view {
-  &__tile {
-    :deep(.v-list__tile) {
-      justify-content: flex-end;
-      height: 56px;
-    }
-    :deep(.v-list__tile__avatar) {
-      min-width: 28px;
+  &__item {
+    justify-content: flex-end;
+    height: 56px;
+    min-height: 56px;
+
+    & :deep(.v-list-item__avatar) {
+      margin-right: 4px;
     }
   }
   &__title {
@@ -209,10 +209,8 @@ export default {
 /** Themes **/
 .theme--light {
   .chats-view {
-    &__tile {
-      :deep(.v-list__tile) {
-        background-color: map-get($adm-colors, 'secondary2-transparent');
-      }
+    &__item {
+      background-color: map-get($adm-colors, 'secondary2-transparent');
     }
     &__title {
       color: map-get($adm-colors, 'muted');
@@ -221,7 +219,9 @@ export default {
       color: map-get($adm-colors, 'regular');
     }
   }
-}.theme--dark {
+}
+
+.theme--dark {
   .chats-view {
     &__icon {
       color: map-get($shades, 'white');
