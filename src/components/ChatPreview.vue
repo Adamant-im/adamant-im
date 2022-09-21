@@ -47,7 +47,10 @@
 
     <v-list-item-content>
       <v-list-item-title
-        class="a-text-regular-enlarged-bold"
+        :class="{
+          'a-text-regular-enlarged-bold': true,
+          [`${className}__title`]: true
+        }"
         v-text="isAdamantChat ? $t(contactName) : contactName"
       />
 
@@ -58,7 +61,11 @@
 
       <!-- Transaction -->
       <template v-else-if="isTransferType">
-        <v-list-item-subtitle>
+        <v-list-item-subtitle
+          :class="{
+            [`${className}__subtitle`]: true
+          }"
+        >
           <v-icon
             v-if="!isIncomingTransaction"
             size="15"
@@ -77,7 +84,12 @@
 
       <!-- Message -->
       <template v-else>
-        <v-list-item-subtitle class="a-text-explanation-enlarged-bold">
+        <v-list-item-subtitle
+          :class="{
+            'a-text-explanation-enlarged-bold': true,
+            [`${className}__subtitle`]: true
+          }"
+        >
           <v-icon
             v-if="!isIncomingTransaction"
             size="15"
@@ -253,6 +265,15 @@ export default {
  */
 .chat-brief {
   position: relative;
+
+  &__title {
+    line-height: 24px;
+    margin-bottom: 0;
+  }
+
+  &__subtitle {
+    line-height: 1.5;
+  }
 
   &__date {
     @include a-text-explanation-small();
