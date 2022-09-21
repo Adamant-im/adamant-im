@@ -3,7 +3,7 @@
     <v-container
       fluid
       :class="{
-        'pa-6': true,
+        'pa-6': !containerNoPadding,
         'pa-0': containerNoPadding
       }"
     >
