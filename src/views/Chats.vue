@@ -1,16 +1,12 @@
 <template>
-  <v-layout
-    row
-    wrap
-    justify-center
+  <v-row
+    justify="center"
     :class="className"
+    no-gutters
   >
     <container>
-      <v-layout
-        row
-        wrap
-      >
-        <v-flex xs12>
+      <v-row no-gutters>
+        <v-col cols="12">
           <v-list
             two-line
             subheader
@@ -57,10 +53,10 @@
               />
             </transition-group>
           </v-list>
-        </v-flex>
+        </v-col>
 
         <ChatSpinner :value="!isFulfilled" />
-      </v-layout>
+      </v-row>
     </container>
 
     <chat-start-dialog
@@ -69,7 +65,7 @@
       @error="onError"
       @start-chat="openChat"
     />
-  </v-layout>
+  </v-row>
 </template>
 
 <script>
