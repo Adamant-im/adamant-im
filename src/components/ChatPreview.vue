@@ -269,7 +269,7 @@ export default {
 /** Themes **/
 .theme--light {
   .chat-brief {
-    border-bottom: 1px solid, map-get($adm-colors, 'secondary2');
+    border-bottom: 1px solid map-get($adm-colors, 'secondary2');
 
     &__date {
       color: map-get($adm-colors, 'muted');
