@@ -1,7 +1,7 @@
 <template>
   <i
     class="icon"
-    :class="{ 'v-icon--link': isClickable }"
+    :class="{ 'icon--link': isClickable }"
   >
     <svg
       class="svg-icon"
@@ -83,6 +83,10 @@ export default {
   transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1), visibility 0s;
   vertical-align: middle;
   user-select: none;
+}
+
+.icon--link {
+  cursor: pointer;
 }
 
 /* Themes */
