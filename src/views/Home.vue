@@ -1,8 +1,7 @@
 <template>
-  <v-layout
-    row
-    wrap
-    justify-center
+  <v-row
+    justify="center"
+    no-gutters
     :class="className"
   >
     <container>
@@ -79,7 +78,7 @@
         </v-card>
       </v-card>
     </container>
-  </v-layout>
+  </v-row>
 </template>
 
 <script>
