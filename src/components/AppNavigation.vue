@@ -116,10 +116,10 @@ export default {
  *    b. Inactive
  */
 .app-navigation {
-  &.v-bottom-nav {
+  &.v-bottom-navigation {
     box-shadow: none;
   }
-  &.v-bottom-nav .v-btn  {
+  &.v-bottom-navigation .v-btn  {
     font-weight: 300;
     padding-bottom: 8px;
   }
@@ -138,7 +138,7 @@ export default {
     &__container {
       border-top: 1px solid map-get($grey, 'lighten-2');
     }
-    &.v-bottom-nav {
+    &.v-bottom-navigation {
       background-color: map-get($shades, 'white');
     }
     :deep(.v-btn.v-btn--active)  {
@@ -152,7 +152,7 @@ export default {
 
 .theme--dark {
   .app-navigation {
-    &.v-bottom-nav {
+    &.v-bottom-navigation {
       background-color: map-get($shades, 'black');
     }
   }
