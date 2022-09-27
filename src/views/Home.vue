@@ -19,7 +19,7 @@
             ref="vtabs"
             v-model="currentWallet"
             grow
-            show-arrows
+            height="auto"
           >
             <v-tab
               v-for="wallet in wallets"
@@ -202,30 +202,29 @@ export default {
     &.v-card {
       background-color: transparent;
     }
-    :deep(.v-tabs__container) {
-      height: auto;
-      align-items: baseline;
-    }
-    :deep(.v-tabs__slider) {
+    :deep(.v-tabs-slider) {
       height: 2px;
     }
-    :deep(.v-tabs__wrapper) {
-      padding: 10px 0px 1px 0px;
+    :deep(.v-slide-group__wrapper) {
+      padding: 10px 0 1px 0;
       margin-bottom: 10px;
     }
-    :deep(.v-tabs__item) {
+    :deep(.v-tab) {
       font-weight: 300;
+      font-size: 16px;
       padding: 6px 4px;
     }
-    :deep(.v-tabs__item--active) {
+    :deep(.v-tab--active) {
       font-weight: 500;
     }
-    :deep(.v-tabs__item):not(.v-tabs__item--active)  {
+    :deep(.v-tab):not(.v-tab--active)  {
       opacity: 1;
     }
-    :deep(.v-tabs__div) {
-      font-size: 16px;
-      min-width: 74px;
+    :deep(.v-tabs.v-tabs.v-tabs .v-slide-group__prev.v-slide-group__prev--disabled) {
+      display: none; // workaround: hide left/right arrows
+    }
+    :deep(.v-tab.v-tab--active::before) {
+      background-color: unset;
     }
   }
   &__icon {
@@ -240,24 +239,20 @@ export default {
       color: map-get($adm-colors, 'muted');
     }
     &__wallets {
-      :deep(.v-tabs__bar) {
+      :deep(.v-tabs-bar) {
         background-color: map-get($adm-colors, 'secondary2-transparent');
       }
-      :deep(.v-tabs__slider) {
+      :deep(.v-tabs-slider) {
         background-color: map-get($adm-colors, 'primary') !important;
       }
-      :deep(.v-tabs__item) {
+      :deep(.v-tab) {
         color: map-get($adm-colors, 'regular');
       }
-      :deep(.v-tabs__icon) {
+      :deep(.v-tabs .v-slide-group__prev .v-icon), :deep(.v-tabs .v-slide-group__next .v-icon) {
         color: map-get($adm-colors, 'primary2');
         pointer-events: none;
       }
-      :deep(.v-tabs__wrapper--show-arrows) {
-        margin-left: 0;
-        margin-right: 0;
-      }
-      :deep(.v-tabs__item--active) {
+      :deep(.v-tab--active) {
         color: map-get($adm-colors, 'primary');
         .svg-icon {
           fill: map-get($adm-colors, 'primary');
@@ -270,24 +265,20 @@ export default {
 .theme--dark {
   .account-view {
     &__wallets {
-      :deep(.v-tabs__bar) {
+      :deep(.v-tabs-bar) {
         background-color: transparent;
       }
-      :deep(.v-tabs__slider) {
+      :deep(.v-tabs-slider) {
         background-color: map-get($adm-colors, 'primary') !important;
       }
-      :deep(.v-tabs__icon) {
+      :deep(.v-tabs .v-slide-group__prev .v-icon), :deep(.v-tabs .v-slide-group__next .v-icon) {
         color: map-get($adm-colors, 'primary2');
         pointer-events: none;
       }
-      :deep(.v-tabs__wrapper--show-arrows) {
-        margin-left: 0;
-        margin-right: 0;
-      }
-      :deep(.v-tabs__item) {
+      :deep(.v-tab) {
         color: map-get($shades, 'white');
       }
-      :deep(.v-tabs__item--active) {
+      :deep(.v-tab--active) {
         color: map-get($adm-colors, 'primary');
         .svg-icon {
           fill: map-get($adm-colors, 'primary');
