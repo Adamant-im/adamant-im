@@ -11,10 +11,9 @@
       fluid
       class="pa-0"
     >
-      <v-layout
-        row
-        wrap
-        justify-center
+      <v-row
+        justify="center"
+        no-gutters
       >
         <container padding>
           <v-data-table
@@ -124,7 +123,7 @@
 
           <div>&nbsp;<br>&nbsp;</div>
         </container>
-      </v-layout>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -242,6 +241,7 @@ export default {
   &__table {
     margin-left: -24px;
     margin-right: -24px;
+    max-width: unset;
     :deep(table.v-table) tbody td:first-child {
       padding-left: 24px;
     }
@@ -272,6 +272,13 @@ export default {
   }
   :deep(.v-input--selection-controls:not(.v-input--hide-details)) .v-input__slot {
     margin-bottom: 0;
+  }
+
+  @media #{map-get($display-breakpoints, 'md-and-up')} {
+    :deep(.v-data-table .v-data-table__wrapper table tbody tr td),
+    :deep(.v-data-table .v-data-table__wrapper table thead tr th) {
+      padding: 0 24px;
+    }
   }
 }
 
