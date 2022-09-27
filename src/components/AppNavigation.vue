@@ -122,6 +122,7 @@ export default {
   &.v-bottom-navigation .v-btn  {
     font-weight: 300;
     padding-bottom: 8px;
+    min-width: 168px;
   }
   :deep(.v-btn.v-btn--active)  {
     padding-top: 4px;
