@@ -33,16 +33,11 @@
       />
 
       <v-badge
+        v-if="numOfNewMessages > 0"
         overlap
         color="primary"
-      >
-        <span
-          v-if="numOfNewMessages > 0"
-          slot="badge"
-        >
-          {{ numOfNewMessages > 99 ? '99+' : numOfNewMessages }}
-        </span>
-      </v-badge>
+        :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
+      />
     </v-list-item-avatar>
 
     <v-list-item-content>
@@ -284,6 +279,10 @@ export default {
 
   :deep(.v-list__tile__sub-title)  {
     @include a-text-explanation-enlarged-bold();
+  }
+
+  :deep(.v-avatar.v-list-item__avatar) {
+    overflow: visible;
   }
 }
 
