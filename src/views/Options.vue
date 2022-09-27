@@ -11,10 +11,9 @@
       fluid
       class="pa-0"
     >
-      <v-layout
-        row
-        wrap
-        justify-center
+      <v-row
+        justify="center"
+        no-gutters
       >
         <container padding>
           <!-- General -->
@@ -24,45 +23,44 @@
           >
             {{ $t('options.general_title') }}
           </h3>
-          <v-layout
-            row
-            wrap
-            align-center
+          <v-row
+            align="center"
+            no-gutters
           >
-            <v-flex xs6>
+            <v-col cols="6">
               <v-subheader
                 :class="`${className}__label`"
                 class="pa-0"
               >
                 {{ $t('options.language_label') }}
               </v-subheader>
-            </v-flex>
-            <v-flex
-              xs6
+            </v-col>
+            <v-col
+              cols="6"
               class="text-right"
             >
               <language-switcher
                 append-icon="mdi-chevron-down"
               />
-            </v-flex>
-            <v-flex xs6>
+            </v-col>
+            <v-col cols="6">
               <v-subheader
                 :class="`${className}__label`"
                 class="pa-0"
               >
                 {{ $t('options.currency_label') }}
               </v-subheader>
-            </v-flex>
-            <v-flex
-              xs6
+            </v-col>
+            <v-col
+              cols="6"
               class="text-right"
             >
               <currency-switcher
                 append-icon="mdi-chevron-down"
               />
-            </v-flex>
-            <v-flex
-              xs12
+            </v-col>
+            <v-col
+              cols="12"
               class="mt-2"
             >
               <v-checkbox
@@ -70,8 +68,8 @@
                 :label="$t('options.dark_theme')"
                 color="grey darken-1"
               />
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
 
           <!-- Security -->
           <h3
@@ -80,13 +78,12 @@
           >
             {{ $t('options.security_title') }}
           </h3>
-          <v-layout
-            row
-            wrap
-            align-center
+          <v-row
+            align="center"
+            no-gutters
           >
-            <v-flex
-              xs12
+            <v-col
+              cols="12"
               a-text-regular-enlarged
             >
               <v-checkbox
@@ -105,8 +102,8 @@
                 v-model="passwordDialog"
                 @password="onSetPassword"
               />
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
 
           <!-- Chats -->
           <h3
@@ -115,12 +112,11 @@
           >
             {{ $t('options.chats_title') }}
           </h3>
-          <v-layout
-            row
-            wrap
-            align-center
+          <v-row
+            align="center"
+            no-gutters
           >
-            <v-flex xs12>
+            <v-col cols="12">
               <v-checkbox
                 v-model="sendMessageOnEnter"
                 :label="$t('options.send_on_enter')"
@@ -130,10 +126,10 @@
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.send_on_enter_tooltip') }}
               </div>
-            </v-flex>
+            </v-col>
 
-            <v-flex
-              xs12
+            <v-col
+              cols="12"
               class="mt-6"
             >
               <v-checkbox
@@ -145,10 +141,10 @@
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.format_messages_tooltip') }}
               </div>
-            </v-flex>
+            </v-col>
 
-            <v-flex
-              xs12
+            <v-col
+              cols="12"
               class="mt-6"
             >
               <v-checkbox
@@ -160,8 +156,8 @@
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.use_full_date_tooltip') }}
               </div>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
 
           <!-- Notifications -->
           <h3
@@ -170,12 +166,11 @@
           >
             {{ $t('options.notification_title') }}
           </h3>
-          <v-layout
-            row
-            wrap
-            align-center
+          <v-row
+            align="center"
+            no-gutters
           >
-            <v-flex xs12>
+            <v-col cols="12">
               <v-checkbox
                 v-model="allowSoundNotifications"
                 :label="$t('options.enable_sound')"
@@ -185,9 +180,9 @@
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.enable_sound_tooltip') }}
               </div>
-            </v-flex>
-            <v-flex
-              xs12
+            </v-col>
+            <v-col
+              cols="12"
               class="mt-6"
             >
               <v-checkbox
@@ -199,9 +194,9 @@
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.enable_bar_tooltip') }}
               </div>
-            </v-flex>
-            <v-flex
-              xs12
+            </v-col>
+            <v-col
+              cols="12"
               class="mt-6"
             >
               <v-checkbox
@@ -213,8 +208,8 @@
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.enable_push_tooltip') }}
               </div>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
 
           <!-- Actions -->
           <h3
@@ -223,11 +218,8 @@
           >
             {{ $t('options.actions') }}
           </h3>
-          <v-layout
-            row
-            wrap
-          >
-            <v-flex xs12>
+          <v-row no-gutters>
+            <v-col cols="12">
               <v-list>
                 <v-list-item @click="$router.push('/options/nodes')">
                   <v-list-item-content>
@@ -291,17 +283,17 @@
                   </div>
                 </v-list-item>
               </v-list>
-            </v-flex>
-          </v-layout>
-          <v-layout>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
             <div
               :class="`${className}__version_info ml-auto`"
             >
               {{ $t('options.version') }} {{ $root.$options.version }}
             </div>
-          </v-layout>
+          </v-row>
         </container>
-      </v-layout>
+      </v-row>
     </v-container>
   </div>
 </template>

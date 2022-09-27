@@ -3,10 +3,9 @@
     :class="[classes, className]"
     fluid
   >
-    <v-layout
-      row
-      wrap
-      justify-center
+    <v-row
+      justify="center"
+      no-gutters
     >
       <container>
         <v-toolbar
@@ -37,7 +36,7 @@
           </v-toolbar-title>
         </v-toolbar>
       </container>
-    </v-layout>
+    </v-row>
   </v-container>
 </template>
 
@@ -99,8 +98,8 @@ export default {
 .app-toolbar-centered {
   padding: 0;
 
-  :deep(.v-toolbar__title:not(:first-child)) {
-    margin-left: 0;
+  :deep(..v-toolbar__title:not(:first-child)) {
+    padding-left: 0;
   }
 }
 
