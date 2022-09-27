@@ -128,7 +128,7 @@ export default {
   &.v-bottom-navigation .v-btn  {
     font-weight: 300;
     padding-bottom: 8px;
-    min-width: 168px;
+    flex-grow: 1;
   }
   :deep(.v-btn.v-btn--active)  {
     font-size: 14px;
