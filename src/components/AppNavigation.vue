@@ -5,9 +5,15 @@
     height="50"
     class="app-navigation"
   >
-    <v-layout justify-center>
+    <v-row
+      justify="center"
+      no-gutters
+    >
       <container class="app-navigation__container">
-        <v-layout justify-center>
+        <v-row
+          justify="center"
+          no-gutters
+        >
           <!-- Wallet -->
           <v-btn
             to="/home"
@@ -51,9 +57,9 @@
               mdi-cog
             </v-icon>
           </v-btn>
-        </v-layout>
+        </v-row>
       </container>
-    </v-layout>
+    </v-row>
   </v-bottom-navigation>
 </template>
 
@@ -125,12 +131,16 @@ export default {
     min-width: 168px;
   }
   :deep(.v-btn.v-btn--active)  {
+    font-size: 14px;
     padding-top: 4px;
   }
   :deep(.v-btn:not(.v-btn--active))  {
     filter: unset;
     padding-top: 6px;
     font-size: 12px;
+  }
+  :deep(.v-btn .v-icon) {
+    margin-bottom: 4px;
   }
 }
 
