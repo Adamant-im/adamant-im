@@ -10,10 +10,9 @@
       fluid
       class="px-0"
     >
-      <v-layout
-        row
-        wrap
-        justify-center
+      <v-row
+        justify="center"
+        no-gutters
       >
         <container padding>
           <send-funds-form
@@ -25,7 +24,7 @@
             @error="onError"
           />
         </container>
-      </v-layout>
+      </v-row>
     </v-container>
   </div>
 </template>
