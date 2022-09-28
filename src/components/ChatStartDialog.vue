@@ -28,7 +28,7 @@
           :title="$t('chats.recipient_tooltip')"
           @paste="onPasteURI"
         >
-          <template slot="append">
+          <template #append>
             <v-menu
               :offset-overflow="true"
               :offset-y="false"
