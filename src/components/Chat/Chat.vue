@@ -14,20 +14,22 @@
 
       @scroll="onScroll"
     >
-      <chat-toolbar
-        slot="header"
-        :partner-id="partnerId"
-      >
-        <ChatAvatar
-          slot="avatar-toolbar"
-          :user-id="partnerId"
-          use-public-key
-          @click="onClickAvatar(partnerId)"
-        />
-      </chat-toolbar>
+      <template #header>
+        <chat-toolbar
+          :partner-id="partnerId"
+        >
+          <template #avatar-toolbar>
+            <ChatAvatar
+              :user-id="partnerId"
+              use-public-key
+              @click="onClickAvatar(partnerId)"
+            />
+          </template>
+        </chat-toolbar>
+      </template>
+
       <template
-        slot="message"
-        slot-scope="{ message, userId, sender, locale }"
+        #message="{ message, userId, sender, locale }"
       >
         <a-chat-message
           v-if="message.type === 'message'"
