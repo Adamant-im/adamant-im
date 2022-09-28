@@ -97,8 +97,6 @@
     "sass": "^1.54.9",
     "sass-loader": "10.1.1",
     "sinon": "^14.0.0",
-    "stylus": "^0.57.0",
-    "stylus-loader": "^3.0.2",
     "uuid": "^8.3.2",
     "vue-cli-plugin-electron-builder": "^2.1.1",
     "vue-cli-plugin-i18n": "^2.3.1",

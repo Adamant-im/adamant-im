@@ -24,10 +24,11 @@
       <div v-else>
         <v-text-field
           v-model="partnerName"
+          :class="`${className}__textfield`"
           filled
-          full-width
           background-color="transparent"
           :label="partnerId"
+          hide-details
         />
       </div>
     </div>
@@ -80,13 +81,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../assets/stylus/themes/adamant/_mixins.scss';
+@import '../../assets/styles/themes/adamant/_mixins.scss';
 @import '~vuetify/src/styles/settings/_variables.scss';
-@import '../../assets/stylus/settings/_colors.scss';
+@import '../../assets/styles/settings/_colors.scss';
 
 .chat-toolbar {
+  flex-grow: 0;
+  flex-shrink: 0;
+
   &__textfield-container {
     width: 100%;
+  }
+
+  &__textfield {
+    // hides TextField border bottom
+    :deep(.v-input__control) {
+      & > .v-input__slot:before {
+        border-width: 0;
+        border-color: unset;
+      }
+
+      & > .v-input__slot:after {
+        border-width: 0;
+        background-color: unset;
+        border-color: unset;
+      }
+    }
   }
 
   :deep(.v-text-field) {

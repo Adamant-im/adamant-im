@@ -254,8 +254,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/stylus/themes/adamant/_mixins.scss';
-@import '../assets/stylus/settings/_colors.scss';
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '../assets/styles/settings/_colors.scss';
 
 .transaction-item {
   &__rates {

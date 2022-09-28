@@ -187,7 +187,7 @@ export default {
 <style lang="scss" scoped>
 @import '~vuetify/src/styles/settings/_variables.scss';
 @import '~vuetify/src/styles/settings/_colors.scss';
-@import '../assets/stylus/settings/_colors.scss';
+@import '../assets/styles/settings/_colors.scss';
 
 /**
  * 1. Reset VTabs container fixed height.

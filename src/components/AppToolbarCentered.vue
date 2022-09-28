@@ -93,7 +93,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~vuetify/src/styles/settings/_colors.scss';
-@import '../assets/stylus/settings/_colors.scss';
+@import '../assets/styles/settings/_colors.scss';
 
 .app-toolbar-centered {
   padding: 0;

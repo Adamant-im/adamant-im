@@ -422,7 +422,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../assets/stylus/settings/_colors.scss';
+@import '../../assets/styles/settings/_colors.scss';
 
 .transaction-view {
   &__title {

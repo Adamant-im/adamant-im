@@ -14,7 +14,7 @@ import { vuetify } from '@/plugins/vuetify'
 import './plugins/layout'
 import './plugins/scrollTo'
 import './registerServiceWorker'
-import '@/assets/stylus/app.scss'
+import '@/assets/styles/app.scss'
 
 import 'dayjs/locale/de'
 import 'dayjs/locale/en'
