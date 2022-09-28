@@ -10,10 +10,9 @@
       fluid
       class="pa-0"
     >
-      <v-layout
-        row
-        wrap
-        justify-center
+      <v-row
+        justify="center"
+        no-gutters
       >
         <v-list-item
           v-if="isRecentLoading"
@@ -53,7 +52,7 @@
             {{ $t('transaction.no_transactions') }}
           </h3>
         </container>
-      </v-layout>
+      </v-row>
     </v-container>
   </div>
 </template>
