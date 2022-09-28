@@ -14,11 +14,10 @@
 
       <v-divider class="a-divider" />
 
-      <v-layout
-        row
-        wrap
-        justify-center
-        align-center
+      <v-row
+        justify="center"
+        align="center"
+        no-gutters
         class="pa-4"
       >
         <v-text-field
@@ -62,8 +61,8 @@
           </template>
         </v-text-field>
 
-        <v-flex
-          xs12
+        <v-col
+          cols="12"
           class="text-center"
         >
           <v-btn
@@ -72,10 +71,10 @@
           >
             {{ $t('chats.start_chat') }}
           </v-btn>
-        </v-flex>
+        </v-col>
 
-        <v-flex
-          xs12
+        <v-col
+          cols="12"
           :class="`${className}__btn-show-qrcode`"
         >
           <a
@@ -84,8 +83,8 @@
           >
             {{ $t('chats.show_my_qr_code') }}
           </a>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
     </v-card>
 
     <qrcode-scanner-dialog
