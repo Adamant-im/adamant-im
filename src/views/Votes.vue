@@ -10,10 +10,9 @@
       fluid
       class="pa-0"
     >
-      <v-layout
-        row
-        wrap
-        justify-center
+      <v-row
+        justify="center"
+        no-gutters
       >
         <container>
           <v-card
@@ -197,7 +196,7 @@
             </v-data-table>
           </v-card>
         </container>
-      </v-layout>
+      </v-row>
     </v-container>
 
     <v-dialog
@@ -213,9 +212,8 @@
 
         <v-divider :class="`${className}__divider`" />
 
-        <v-layout
-          row
-          wrap
+        <v-row
+          no-gutters
           class="pa-4"
         >
           <div :class="`${className}__dialog-summary`">
@@ -230,7 +228,7 @@
             v-html="$t('votes.summary_info')"
           />
           <!-- eslint-enable vue/no-v-html -->
-        </v-layout>
+        </v-row>
 
         <v-card-actions>
           <v-spacer />
