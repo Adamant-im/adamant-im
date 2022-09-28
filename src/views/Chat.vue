@@ -1,8 +1,7 @@
 <template>
-  <v-layout
-    row
-    wrap
-    justify-center
+  <v-row
+    justify="center"
+    no-gutters
   >
     <container>
       <chat
@@ -21,7 +20,7 @@
 
       <ProgressIndicator :show="!isFulfilled" />
     </container>
-  </v-layout>
+  </v-row>
 </template>
 
 <script>
