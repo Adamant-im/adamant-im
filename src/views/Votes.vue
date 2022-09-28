@@ -44,16 +44,18 @@
               }"
               :search="search"
               hide-default-footer
+              disable-sort
               must-sort
               item-key="username"
+              :expanded.sync="expanded"
+              single-expand
+              mobile-breakpoint="0"
             >
-              <div
-                slot="no-data"
-                class="text-center"
-              >
-                <v-layout
-                  align-center
-                  justify-center
+              <template #no-data>
+                <v-row
+                  align="center"
+                  justify="center"
+                  no-gutters
                 >
                   <v-progress-circular
                     indeterminate
@@ -67,13 +69,10 @@
                   >
                     {{ waitingForConfirmation ? $t('votes.waiting_confirmations') : $t('votes.loading_delegates') }}
                   </div>
-                </v-layout>
-              </div>
+                </v-row>
+              </template>
 
-              <template
-                slot="items"
-                slot-scope="props"
-              >
+              <template #[`item.username`]="props">
                 <td
                   :class="`${className}__body`"
                   class="pr-0"
@@ -82,9 +81,15 @@
                 >
                   {{ props.item.username }}
                 </td>
+              </template>
+
+              <template #[`item.rank`]="props">
                 <td :class="`${className}__body`">
                   {{ props.item.rank }}
                 </td>
+              </template>
+
+              <template #[`item._voted`]="props">
                 <td>
                   <v-icon
                     v-if="props.item._voted"
@@ -101,87 +106,79 @@
                 </td>
               </template>
 
-              <template
-                slot="expand"
-                slot-scope="props"
-              >
-                <v-card
-                  flat
-                  :class="`${className}__expand`"
-                >
-                  <v-list :class="`${className}__expand-list`">
-                    <v-list-item :class="`${className}__expand-list-tile`">
-                      <v-list-item-content>
-                        <v-list-item-title class="a-text-active">
-                          <a
-                            :href="getExplorerUrl() + props.item.address"
-                            target="_blank"
-                            rel="noopener"
-                          >
-                            {{ props.item.address }}
-                          </a>
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-
-                    <v-list-item
-                      v-for="(item, i) in delegateDetails"
-                      :key="i"
-                      :class="`${className}__expand-list-tile`"
-                    >
-                      <v-list-item-content>
-                        <v-list-item-title class="a-text-explanation">
-                          {{ item.title }}
-                        </v-list-item-title>
-                      </v-list-item-content>
-                      <v-list-item-content>
-                        <v-list-item-title class="a-text-explanation text-right">
-                          {{ item.format ? item.format(item.value.call(props.item)) : item.value.call(props.item) }}
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-card>
-              </template>
-
-              <v-alert
-                slot="no-results"
-                :class="`${className}__alert`"
-                :value="true"
-                icon="mdi-alert"
-              >
-                Your search for "{{ search }}" found no results.
-              </v-alert>
-
-              <template slot="footer">
-                <td
-                  :class="`${className}__review`"
-                  :colspan="headers.length"
-                  class="pa-0"
-                >
-                  <v-layout
-                    row
-                    wrap
-                    align-center
-                    justify-space-between
+              <template #expanded-item="props">
+                <td colspan="3">
+                  <v-card
+                    flat
+                    :class="`${className}__expand`"
                   >
-                    <pagination
-                      v-if="showPagination"
-                      v-model="pagination.page"
-                      :pages="pages"
-                    />
+                    <v-list :class="`${className}__expand-list`">
+                      <v-list-item :class="`${className}__expand-list-tile`">
+                        <v-list-item-content>
+                          <v-list-item-title class="a-text-active">
+                            <a
+                              :href="getExplorerUrl() + props.item.address"
+                              target="_blank"
+                              rel="noopener"
+                            >
+                              {{ props.item.address }}
+                            </a>
+                          </v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
 
-                    <v-btn
-                      :disabled="reviewButtonDisabled"
-                      class="a-btn-primary"
-                      @click="showConfirmationDialog"
-                    >
-                      {{ $t('votes.summary_title') }}
-                    </v-btn>
-                  </v-layout>
+                      <v-list-item
+                        v-for="(item, i) in delegateDetails"
+                        :key="i"
+                        :class="`${className}__expand-list-tile`"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title class="a-text-explanation">
+                            {{ item.title }}
+                          </v-list-item-title>
+                        </v-list-item-content>
+                        <v-list-item-content>
+                          <v-list-item-title class="a-text-explanation text-right">
+                            {{ item.format ? item.format(item.value.call(props.item)) : item.value.call(props.item) }}
+                          </v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-list>
+                  </v-card>
                 </td>
               </template>
+
+              <template #no-results>
+                <v-alert
+                  :class="`${className}__alert mt-4`"
+                  :value="true"
+                  icon="mdi-alert"
+                >
+                  Your search for "{{ search }}" found no results.
+                </v-alert>
+              </template>
             </v-data-table>
+
+            <v-row
+              :class="`${className}__review`"
+              align="center"
+              justify="space-between"
+              no-gutters
+            >
+              <pagination
+                v-if="showPagination"
+                v-model="pagination.page"
+                :pages="pages"
+              />
+
+              <v-btn
+                :disabled="reviewButtonDisabled"
+                class="a-btn-primary ma-2"
+                @click="showConfirmationDialog"
+              >
+                {{ $t('votes.summary_title') }}
+              </v-btn>
+            </v-row>
           </v-card>
         </container>
       </v-row>
@@ -261,6 +258,7 @@ export default {
       sortBy: 'rank',
       page: 1
     },
+    expanded: [],
     waitingForConfirmation: false,
     dialog: false
   }),
@@ -403,9 +401,15 @@ export default {
       return true
     },
     toggleDetails (delegate, props) {
-      props.expanded = !props.expanded
+      const isExpanded = this.expanded.find(item => item === delegate)
 
-      if (!props.expaned) {
+      if (isExpanded) {
+        this.expanded = []
+      } else {
+        this.expanded = [delegate]
+      }
+
+      if (!isExpanded) {
         this.$store.dispatch('delegates/getForgedByAccount', delegate)
         this.$store.dispatch('delegates/getForgingTimeForDelegate', delegate)
       }
