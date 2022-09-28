@@ -71,18 +71,6 @@
               </div>
 
               <template
-                slot="headerCell"
-                slot-scope="props"
-              >
-                <span
-                  slot="activator"
-                  :class="`${className}__header`"
-                >
-                  {{ $t(props.header.text) }}
-                </span>
-              </template>
-
-              <template
                 slot="items"
                 slot-scope="props"
               >
@@ -268,11 +256,6 @@ export default {
   data: () => ({
     voteRequestLimit: 30,
     search: '',
-    headers: [
-      { text: 'votes.table_head_name', value: 'username' },
-      { text: 'votes.table_head_rank', value: 'rank' },
-      { text: 'votes.table_head_vote', value: '_voted' }
-    ],
     pagination: {
       rowsPerPage: 50,
       sortBy: 'rank',
@@ -283,6 +266,13 @@ export default {
   }),
   computed: {
     className: () => 'delegates-view',
+    headers () {
+      return [
+        { text: this.$t('votes.table_head_name'), value: 'username' },
+        { text: this.$t('votes.table_head_rank'), value: 'rank' },
+        { text: this.$t('votes.table_head_vote'), value: '_voted' }
+      ]
+    },
     delegates () {
       const delegates = this.$store.state.delegates.delegates || {}
 
@@ -450,10 +440,6 @@ export default {
 @import '../assets/stylus/settings/_colors.scss';
 
 .delegates-view {
-  &__header {
-    font-size: 12px;
-    font-weight: 300;
-  }
   &__body {
     font-size: 14px;
     font-weight: 300;
@@ -510,9 +496,6 @@ export default {
 /** Themes **/
 .theme--light {
   .delegates-view {
-    &__header {
-      color: map-get($adm-colors, 'muted');
-    }
     &__body {
       color: map-get($adm-colors, 'regular');
     }
