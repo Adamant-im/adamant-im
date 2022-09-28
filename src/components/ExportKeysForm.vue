@@ -14,12 +14,12 @@
           class="a-input"
           type="text"
         >
-          <template slot="label">
+          <template #label>
             <span class="font-weight-medium">
               {{ key.cryptoName }}
             </span>
           </template>
-          <template slot="append">
+          <template #append>
             <v-btn
               icon
               ripple
@@ -59,20 +59,25 @@
       class="a-input"
       type="text"
     >
-      <template slot="label">
+      <template #label>
         <span class="font-weight-medium">
           {{ $t('options.export_keys.passphrase') }}
         </span>
       </template>
-      <template slot="append">
+      <template #append>
         <v-menu
           :offset-overflow="true"
           :offset-y="false"
           left
         >
-          <v-icon slot="activator">
-            mdi-dots-vertical
-          </v-icon>
+          <template #activator="{ on, attrs }">
+            <v-icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              mdi-dots-vertical
+            </v-icon>
+          </template>
           <v-list>
             <v-list-item @click="showQrcodeScanner = true">
               <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
