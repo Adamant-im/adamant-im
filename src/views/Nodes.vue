@@ -23,73 +23,43 @@
             item-key="url"
             show-select
             hide-default-footer
+            disable-sort
           >
-            <template
-              slot="headers"
-              slot-scope="props"
-            >
-              <tr>
-                <th style="width:56px" />
-                <th
-                  v-for="header in props.headers"
-                  :key="header.text"
-                  :class="[
-                    `${className}__header`,
-                    'pa-0',
-                    { 'text-xs-left': header.align === 'left' }
-                  ]"
-                >
-                  {{ $t(header.text) }}
-                </th>
-              </tr>
+            <template #[`header.data-table-select`]><!-- hide checkbox --></template>
+
+            <template #[`item.data-table-select`]="props">
+              <v-simple-checkbox
+                :value="props.item.active"
+                :class="`${className}__checkbox`"
+                color="grey darken-1"
+                @input="toggle(props.item)"
+              />
             </template>
 
-            <template
-              slot="items"
-              slot-scope="props"
-            >
-              <td class="pr-2">
-                <v-checkbox
-                  :input-value="props.item.active"
-                  :class="`${className}__checkbox`"
-                  hide-details
-                  color="grey darken-1"
-                  @click.native="toggle(props.item)"
-                />
-              </td>
-              <td
-                :class="`${className}__body`"
-                class="pl-0 pr-2"
-                style="line-height: 1;"
+            <template #[`item.url`]="props">
+              {{ props.item.url }}
+              <span
+                v-if="props.item.version"
+                :class="`${className}__node-version`"
+              ><br>{{ 'v' + props.item.version }}</span>
+            </template>
+
+            <template #[`item.ping`]="props">
+              <span>
+                {{ getNodeStatus(props.item) }}
+              </span>
+              <v-icon
+                :color="getNodeColor(props.item)"
+                size="small"
               >
-                {{ props.item.url }}
-                <span
-                  v-if="props.item.version"
-                  :class="`${className}__node-version`"
-                ><br>{{ 'v' + props.item.version }}</span>
-              </td>
-              <td
-                :class="`${className}__body`"
-                class="pl-0 pr-2"
-              >
-                <span>
-                  {{ getNodeStatus(props.item) }}
-                </span>
-                <v-icon
-                  :color="getNodeColor(props.item)"
-                  size="small"
-                >
-                  mdi-checkbox-blank-circle
-                </v-icon>
-              </td>
-              <td
-                :class="`${className}__body`"
-                class="pl-0 pr-2"
-              >
-                <v-icon :color="props.item.socketSupport ? 'green' : 'red'">
-                  {{ props.item.socketSupport ? 'mdi-check' : 'mdi-close' }}
-                </v-icon>
-              </td>
+                mdi-checkbox-blank-circle
+              </v-icon>
+            </template>
+
+            <template #[`item.socket`]="props">
+              <v-icon :color="props.item.socketSupport ? 'green' : 'red'">
+                {{ props.item.socketSupport ? 'mdi-check' : 'mdi-close' }}
+              </v-icon>
             </template>
           </v-data-table>
 
@@ -139,23 +109,6 @@ export default {
     pagination: {
       sortBy: 'name'
     },
-    headers: [
-      {
-        text: 'nodes.host',
-        value: 'url',
-        align: 'left'
-      },
-      {
-        text: 'nodes.ping',
-        value: 'ping',
-        align: 'left'
-      },
-      {
-        text: 'nodes.socket',
-        value: 'socket',
-        align: 'left'
-      }
-    ],
     timer: null
   }),
   computed: {
@@ -181,6 +134,25 @@ export default {
     },
     nodes () {
       return this.$store.getters['nodes/list']
+    },
+    headers () {
+      return [
+        {
+          text: this.$t('nodes.host'),
+          value: 'url',
+          align: 'left'
+        },
+        {
+          text: this.$t('nodes.ping'),
+          value: 'ping',
+          align: 'left'
+        },
+        {
+          text: this.$t('nodes.socket'),
+          value: 'socket',
+          align: 'left'
+        }
+      ]
     }
   },
   mounted () {
@@ -246,10 +218,6 @@ export default {
       padding-left: 24px;
     }
   }
-  &__header {
-    font-size: 12px;
-    font-weight: 300;
-  }
   &__body {
     font-size: 14px;
     font-weight: 300;
@@ -285,9 +253,6 @@ export default {
 /** Themes **/
 .theme--light {
   .nodes-view {
-    &__header {
-      color: map-get($adm-colors, 'muted');
-    }
     &__body {
       color: map-get($adm-colors, 'regular');
     }
