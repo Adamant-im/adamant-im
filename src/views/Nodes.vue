@@ -96,7 +96,7 @@
           <v-checkbox
             v-model="preferFastestNodeOption"
             :label="$t('nodes.fastest_title')"
-            :class="`${className}__checkbox`"
+            :class="`${className}__checkbox mt-4`"
             color="grey darken-1"
           />
           <div class="a-text-explanation-enlarged">
@@ -106,7 +106,7 @@
           <v-checkbox
             v-model="useSocketConnection"
             :label="$t('nodes.use_socket_connection')"
-            :class="`${className}__checkbox`"
+            :class="`${className}__checkbox mt-4`"
             color="grey darken-1"
           />
           <div class="a-text-explanation-enlarged">
