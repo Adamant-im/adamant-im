@@ -25,7 +25,9 @@
             hide-default-footer
             disable-sort
           >
-            <template #[`header.data-table-select`]><!-- hide checkbox --></template>
+            <template #[`header.data-table-select`]>
+              <!-- hide checkbox -->
+            </template>
 
             <template #[`item.data-table-select`]="props">
               <v-simple-checkbox
