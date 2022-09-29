@@ -5,35 +5,43 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
   class="login-form"
   value="true"
 >
-  <v-layout-stub
+  <v-row-stub
+    nogutters="true"
     tag="div"
   >
     <v-text-field-stub
-      browser-autocomplete="current-password"
-      class="text-xs-center"
+      autocomplete="current-password"
+      backgroundcolor=""
+      class="text-center"
+      clearicon="$clear"
       color="#BBDEFB"
+      errorcount="1"
+      errormessages=""
       label="Enter your passphrase to login"
+      loaderheight="2"
+      messages=""
+      rules=""
+      successmessages=""
       type="password"
       value=""
     />
      
-  </v-layout-stub>
+  </v-row-stub>
    
-  <v-layout-stub
-    align-center=""
-    justify-center=""
-    row=""
+  <v-row-stub
+    align="center"
+    justify="center"
+    nogutters="true"
     tag="div"
-    wrap=""
   >
     <v-btn-stub
-      activeclass="v-btn--active"
+      activeclass=""
       class="login-form__button a-btn-primary"
       tag="button"
       type="button"
     >
       <v-progress-circular-stub
-        class="mr-3"
+        class="mr-4"
         color="primary"
         indeterminate="true"
         rotate="0"
@@ -46,13 +54,14 @@ exports[`LoginForm.vue renders the correct markup 1`] = `
         Login
       
     </v-btn-stub>
-  </v-layout-stub>
+  </v-row-stub>
    
   <transition-stub
     name="slide-fade"
   >
-    <v-layout-stub
-      justify-center=""
+    <v-row-stub
+      justify="center"
+      nogutters="true"
       tag="div"
     />
   </transition-stub>

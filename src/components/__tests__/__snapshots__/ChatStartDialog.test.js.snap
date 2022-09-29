@@ -3,18 +3,23 @@
 exports[`ChatStartDialog.vue renders the correct markup 1`] = `
 <v-dialog-stub
   class="chat-start-dialog"
+  closedelay="0"
   contentclass=""
-  maxwidth="none"
+  opendelay="0"
+  openonclick="true"
   origin="center center"
+  retainfocus="true"
   transition="dialog-transition"
   value="true"
   width="500"
 >
   <v-card-stub
+    loaderheight="4"
     tag="div"
   >
     <v-card-title-stub
       class="a-text-header"
+      tag="div"
     >
       
       Start a new chat
@@ -25,79 +30,36 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
       class="a-divider"
     />
      
-    <v-layout-stub
-      align-center=""
-      class="pa-3"
-      justify-center=""
-      row=""
+    <v-row-stub
+      align="center"
+      class="pa-4"
+      justify="center"
+      nogutters="true"
       tag="div"
-      wrap=""
     >
       <v-text-field-stub
+        backgroundcolor=""
         class="a-input"
+        clearicon="$clear"
+        errorcount="1"
+        errormessages=""
         label="Partner's address"
+        loaderheight="2"
+        messages=""
+        rules=""
+        successmessages=""
         title="Partner's ADM address like U1234567890987654321 or Share link"
+        type="text"
         value=""
-      >
-        <template>
-          <v-menu-stub
-            closedelay="0"
-            closeonclick="true"
-            closeoncontentclick="true"
-            contentclass=""
-            left="true"
-            maxheight="auto"
-            maxwidth="auto"
-            nudgebottom="0"
-            nudgeleft="0"
-            nudgeright="0"
-            nudgetop="0"
-            nudgewidth="0"
-            offsetoverflow="true"
-            opendelay="0"
-            openonclick="true"
-            origin="top left"
-            transition="v-menu-transition"
-          >
-            <v-icon-stub>
-              
-              mdi-dots-vertical
-            
-            </v-icon-stub>
-             
-            <v-list-stub>
-              <v-list-tile-stub
-                activeclass="primary--text"
-              >
-                <v-list-tile-title-stub>
-                  Scan QR with camera
-                </v-list-tile-title-stub>
-              </v-list-tile-stub>
-               
-              <v-list-tile-stub
-                activeclass="primary--text"
-                class="v-list__tile--link"
-              >
-                <v-list-tile-title-stub>
-                  <qrcode-capture-stub>
-                    <span>
-                      Read QR from image
-                    </span>
-                  </qrcode-capture-stub>
-                </v-list-tile-title-stub>
-              </v-list-tile-stub>
-            </v-list-stub>
-          </v-menu-stub>
-        </template>
-      </v-text-field-stub>
+      />
        
-      <v-flex-stub
-        class="text-xs-center"
+      <v-col-stub
+        class="text-center"
+        cols="12"
         tag="div"
-        xs12=""
       >
         <v-btn-stub
-          activeclass="v-btn--active"
+          activeclass=""
           class="chat-start-dialog__btn-start-chat a-btn-primary"
           tag="button"
           type="button"
@@ -106,12 +68,12 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
           Start a chat
         
         </v-btn-stub>
-      </v-flex-stub>
+      </v-col-stub>
        
-      <v-flex-stub
+      <v-col-stub
         class="chat-start-dialog__btn-show-qrcode"
+        cols="12"
         tag="div"
-        xs12=""
       >
         <a
           class="a-text-active"
@@ -120,8 +82,8 @@ exports[`ChatStartDialog.vue renders the correct markup 1`] = `
           Show my QR code
         
         </a>
-      </v-flex-stub>
-    </v-layout-stub>
+      </v-col-stub>
+    </v-row-stub>
   </v-card-stub>
    
   <!---->

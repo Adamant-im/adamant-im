@@ -12,161 +12,58 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     value="true"
   >
     <v-select-stub
+      appendicon="$dropdown"
+      backgroundcolor=""
       class="a-input"
+      clearicon="$clear"
+      errorcount="1"
+      errormessages=""
+      itemcolor="primary"
+      itemdisabled="disabled"
       items="ADM,BTC,ETH,LSK,DOGE,DASH,USDS,BNB"
+      itemtext="text"
+      itemvalue="value"
+      loaderheight="2"
+      menuprops="[object Object]"
+      messages=""
+      nodatatext="$vuetify.noDataText"
+      rules=""
+      successmessages=""
+      type="text"
       value="ADM"
+      valuecomparator="[Function]"
     />
      
     <v-text-field-stub
+      backgroundcolor=""
       class="a-input"
+      clearicon="$clear"
+      errorcount="1"
+      errormessages=""
+      loaderheight="2"
+      messages=""
+      rules=""
+      successmessages=""
       type="text"
       value=""
-    >
-      <template>
-        <span
-          class="font-weight-medium"
-        >
-          
-          To Address
-        
-        </span>
-      </template>
-       
-      <template>
-        <v-menu-stub
-          closedelay="0"
-          closeonclick="true"
-          closeoncontentclick="true"
-          contentclass=""
-          left="true"
-          maxheight="auto"
-          maxwidth="auto"
-          nudgebottom="0"
-          nudgeleft="0"
-          nudgeright="0"
-          nudgetop="0"
-          nudgewidth="0"
-          offsetoverflow="true"
-          opendelay="0"
-          openonclick="true"
-          origin="top left"
-          transition="v-menu-transition"
-        >
-          <v-icon-stub>
-            
-            mdi-dots-vertical
-          
-          </v-icon-stub>
-           
-          <v-list-stub>
-            <v-list-tile-stub
-              activeclass="primary--text"
-            >
-              <v-list-tile-title-stub>
-                Scan QR with camera
-              </v-list-tile-title-stub>
-            </v-list-tile-stub>
-             
-            <v-list-tile-stub
-              activeclass="primary--text"
-              class="v-list__tile--link"
-            >
-              <v-list-tile-title-stub>
-                <qrcode-capture-stub>
-                  <span>
-                    Read QR from image
-                  </span>
-                </qrcode-capture-stub>
-              </v-list-tile-title-stub>
-            </v-list-tile-stub>
-          </v-list-stub>
-        </v-menu-stub>
-      </template>
-    </v-text-field-stub>
+    />
      
     <v-text-field-stub
+      backgroundcolor=""
       class="a-input"
+      clearicon="$clear"
+      errorcount="1"
+      errormessages=""
+      loaderheight="2"
       max="9999.5"
+      messages=""
       min="1e-8"
+      rules=""
       step="1e-8"
+      successmessages=""
       type="number"
       value=""
-    >
-      <template>
-        <span
-          class="font-weight-medium"
-        >
-          Amount to send
-        </span>
-         
-        <span
-          class="body-1"
-        >
-          
-          (max: 9999.5 ADM)
-        
-        </span>
-      </template>
-       
-      <template>
-        <v-menu-stub
-          closedelay="0"
-          closeonclick="true"
-          closeoncontentclick="true"
-          contentclass=""
-          left="true"
-          maxheight="auto"
-          maxwidth="auto"
-          nudgebottom="0"
-          nudgeleft="0"
-          nudgeright="0"
-          nudgetop="0"
-          nudgewidth="0"
-          offsetoverflow="true"
-          opendelay="0"
-          openonclick="true"
-          origin="top left"
-          transition="v-menu-transition"
-        >
-          <v-icon-stub>
-            
-            mdi-dots-vertical
-          
-          </v-icon-stub>
-           
-          <v-list-stub>
-            <v-list-tile-stub
-              activeclass="primary--text"
-            >
-              <v-list-tile-title-stub>
-                Send 10%
-              </v-list-tile-title-stub>
-            </v-list-tile-stub>
-            <v-list-tile-stub
-              activeclass="primary--text"
-            >
-              <v-list-tile-title-stub>
-                Send third
-              </v-list-tile-title-stub>
-            </v-list-tile-stub>
-            <v-list-tile-stub
-              activeclass="primary--text"
-            >
-              <v-list-tile-title-stub>
-                Send half
-              </v-list-tile-title-stub>
-            </v-list-tile-stub>
-            <v-list-tile-stub
-              activeclass="primary--text"
-            >
-              <v-list-tile-title-stub>
-                Send all
-              </v-list-tile-title-stub>
-            </v-list-tile-stub>
-          </v-list-stub>
-        </v-menu-stub>
-      </template>
-    </v-text-field-stub>
+    />
      
     <div
       class="fake-input"
@@ -231,10 +128,10 @@ exports[`SendFundsForm renders the correct markup 1`] = `
     <!---->
      
     <div
-      class="text-xs-center"
+      class="text-center"
     >
       <v-btn-stub
-        activeclass="v-btn--active"
+        activeclass=""
         class="a-btn-primary send-funds-form__button"
         tag="button"
         type="button"
@@ -247,17 +144,22 @@ exports[`SendFundsForm renders the correct markup 1`] = `
   </v-form-stub>
    
   <v-dialog-stub
+    closedelay="0"
     contentclass=""
-    maxwidth="none"
+    opendelay="0"
+    openonclick="true"
     origin="center center"
+    retainfocus="true"
     transition="dialog-transition"
     width="500"
   >
     <v-card-stub
+      loaderheight="4"
       tag="div"
     >
       <v-card-title-stub
         class="a-text-header"
+        tag="div"
       >
         
         Transfer confirmation
@@ -270,6 +172,7 @@ exports[`SendFundsForm renders the correct markup 1`] = `
        
       <v-card-text-stub
         class="a-text-regular-enlarged"
+        tag="div"
       >
         Confirm transfer of 
         <b>
@@ -282,14 +185,18 @@ exports[`SendFundsForm renders the correct markup 1`] = `
         .
       </v-card-text-stub>
        
-      <v-card-actions-stub>
-        <v-spacer-stub />
+      <v-card-actions-stub
+        tag="div"
+      >
+        <v-spacer-stub
+          tag="div"
+        />
          
         <v-btn-stub
-          activeclass="v-btn--active"
+          activeclass=""
           class="a-btn-regular"
-          flat="true"
           tag="button"
+          text="true"
           type="button"
         >
           
@@ -298,14 +205,14 @@ exports[`SendFundsForm renders the correct markup 1`] = `
         </v-btn-stub>
          
         <v-btn-stub
-          activeclass="v-btn--active"
+          activeclass=""
           class="a-btn-regular"
-          flat="true"
           tag="button"
+          text="true"
           type="button"
         >
           <v-progress-circular-stub
-            class="mr-3"
+            class="mr-4"
             color="primary"
             indeterminate="true"
             rotate="0"

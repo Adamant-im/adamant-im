@@ -1,28 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AppNavigation.vue renders the correct markup 1`] = `
-<v-bottom-nav-stub
-  active="0"
+<v-bottom-navigation-stub
+  activeclass="v-btn--active"
   app="true"
   class="app-navigation"
   height="50"
-  value="true"
+  inputvalue="true"
+  tag="div"
+  value="0"
 >
-  <v-layout-stub
-    justify-center=""
+  <v-row-stub
+    justify="center"
+    nogutters="true"
     tag="div"
   >
     <container-stub
       class="app-navigation__container"
     >
-      <v-layout-stub
-        justify-center=""
+      <v-row-stub
+        justify="center"
+        nogutters="true"
         tag="div"
       >
         <v-btn-stub
-          activeclass="v-btn--active"
-          flat="true"
+          activeclass=""
           tag="button"
+          text="true"
           to="/home"
           type="button"
         >
@@ -40,9 +44,9 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
         </v-btn-stub>
          
         <v-btn-stub
-          activeclass="v-btn--active"
-          flat="true"
+          activeclass=""
           tag="button"
+          text="true"
           to="/chats"
           type="button"
         >
@@ -52,12 +56,11 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
            
           <v-badge-stub
             color="primary"
+            content="0"
+            label="$vuetify.badge"
             overlap="true"
-            transition="fab-transition"
-            value="true"
+            transition="scale-rotate-transition"
           >
-            <!---->
-             
             <v-icon-stub
               size="20"
             >
@@ -69,9 +72,9 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
         </v-btn-stub>
          
         <v-btn-stub
-          activeclass="v-btn--active"
-          flat="true"
+          activeclass=""
           tag="button"
+          text="true"
           to="/options"
           type="button"
         >
@@ -87,8 +90,8 @@ exports[`AppNavigation.vue renders the correct markup 1`] = `
           
           </v-icon-stub>
         </v-btn-stub>
-      </v-layout-stub>
+      </v-row-stub>
     </container-stub>
-  </v-layout-stub>
-</v-bottom-nav-stub>
+  </v-row-stub>
+</v-bottom-navigation-stub>
 `;
