@@ -44,9 +44,12 @@
     </v-row>
 
     <transition name="slide-fade">
-      <v-layout justify-center>
+      <v-row
+        justify="center"
+        no-gutters
+      >
         <slot name="qrcode-renderer" />
-      </v-layout>
+      </v-row>
     </transition>
   </v-form>
 </template>

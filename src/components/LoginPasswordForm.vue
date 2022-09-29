@@ -5,7 +5,7 @@
     class="login-form"
     @submit.prevent="submit"
   >
-    <v-layout>
+    <v-row no-gutters>
       <v-text-field
         ref="passwordField"
         v-model="password"
@@ -15,16 +15,15 @@
         type="password"
         class="text-center"
       />
-    </v-layout>
+    </v-row>
 
-    <v-layout
-      row
-      wrap
-      align-center
-      justify-center
+    <v-row
+      align="center"
+      justify="center"
       class="mt-2"
+      no-gutters
     >
-      <v-flex xs12>
+      <v-col cols="12">
         <slot name="button">
           <v-btn
             :disabled="!validForm || disabledButton"
@@ -41,14 +40,14 @@
             {{ $t('login_via_password.user_password_unlock') }}
           </v-btn>
         </slot>
-      </v-flex>
-      <v-flex
-        xs12
+      </v-col>
+      <v-col
+        cols="12"
         class="a-text-regular mt-8"
       >
         {{ $t('login_via_password.remove_password_hint') }}
-      </v-flex>
-      <v-flex xs12>
+      </v-col>
+      <v-col cols="12">
         <v-btn
           class="a-btn-link"
           text
@@ -57,8 +56,8 @@
         >
           {{ $t('login_via_password.remove_password') }}
         </v-btn>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-form>
 </template>
 

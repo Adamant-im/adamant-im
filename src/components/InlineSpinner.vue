@@ -1,5 +1,8 @@
 <template>
-  <v-layout justify-center>
+  <v-row
+    justify="center"
+    no-gutters
+  >
     <v-progress-circular
       :size="spinnerSize"
       :stroke="1"
@@ -7,7 +10,7 @@
       color="#4A4A4A"
       indeterminate
     />
-  </v-layout>
+  </v-row>
 </template>
 
 <script>

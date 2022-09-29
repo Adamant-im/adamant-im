@@ -36,13 +36,16 @@
             :class="isClickable ? 'a-chat__amount--clickable': ''"
             @click="onClickAmount"
           >
-            <v-layout align-center>
+            <v-row
+              align="center"
+              no-gutters
+            >
               <slot name="crypto" />
               <div class="a-chat__rates-column d-flex ml-4">
                 <span class="mb-1">{{ amount | currency(crypto) }}</span>
                 <span class="a-chat__rates">{{ historyRate }}</span>
               </div>
-            </v-layout>
+            </v-row>
           </div>
         </div>
 
