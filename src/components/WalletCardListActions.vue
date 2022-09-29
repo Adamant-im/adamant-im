@@ -1,7 +1,6 @@
 <template>
   <v-list :class="className">
     <v-list-item
-      avatar
       @click="sendFunds"
     >
       <v-list-item-avatar :class="`${className}__avatar`">
@@ -19,7 +18,6 @@
 
     <v-list-item
       v-if="isADM"
-      avatar
       @click="buyTokens"
     >
       <v-list-item-avatar :class="`${className}__avatar`">
@@ -37,7 +35,6 @@
 
     <v-list-item
       v-if="isADM && !hasAdmTokens"
-      avatar
       @click="getFreeTokens"
     >
       <v-list-item-avatar :class="`${className}__avatar`">
