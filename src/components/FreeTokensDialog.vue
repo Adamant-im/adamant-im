@@ -18,8 +18,8 @@
         </div>
       </v-card-text>
 
-      <v-flex
-        xs12
+      <v-col
+        cols="12"
         class="text-center"
       >
         <v-btn
@@ -33,10 +33,10 @@
             {{ $t('home.free_adm_btn') }}
           </div>
         </v-btn>
-      </v-flex>
+      </v-col>
 
-      <v-flex
-        xs12
+      <v-col
+        cols="12"
         :class="`${className}__btn-show-article`"
       >
         <a
@@ -45,7 +45,7 @@
         >
           {{ $t('chats.how_to_use_messenger') }}
         </a>
-      </v-flex>
+      </v-col>
     </v-card>
   </v-dialog>
 </template>

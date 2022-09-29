@@ -21,8 +21,8 @@
       </v-card-text>
       <!-- eslint-enable vue/no-v-html -->
 
-      <v-flex
-        xs12
+      <v-col
+        cols="12"
         class="text-center"
       >
         <v-btn
@@ -36,10 +36,10 @@
             {{ $t('warning_on_addresses.hide_button') }}
           </div>
         </v-btn>
-      </v-flex>
+      </v-col>
 
-      <v-flex
-        xs12
+      <v-col
+        cols="12"
         :class="`${className}__btn-forget`"
       >
         <a
@@ -48,7 +48,7 @@
         >
           {{ $t('warning_on_addresses.forget_button') }}
         </a>
-      </v-flex>
+      </v-col>
     </v-card>
   </v-dialog>
 </template>

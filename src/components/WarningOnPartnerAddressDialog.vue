@@ -21,8 +21,8 @@
       </v-card-text>
       <!-- eslint-enable vue/no-v-html -->
 
-      <v-flex
-        xs12
+      <v-col
+        cols="12"
         class="text-center"
       >
         <v-btn
@@ -36,7 +36,7 @@
             {{ $t('transfer.warning_on_partner_address.hide_button') }}
           </div>
         </v-btn>
-      </v-flex>
+      </v-col>
     </v-card>
   </v-dialog>
 </template>
