@@ -60,7 +60,7 @@
 
         <v-row
           justify="center"
-          class="mt-6"
+          class="mt-4"
           no-gutters
         >
           <v-col cols="auto">
