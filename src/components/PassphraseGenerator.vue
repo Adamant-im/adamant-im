@@ -157,7 +157,7 @@ export default {
  */
 .passphrase-generator {
   &__box {
-    margin-top: 30px;
+    margin-top: 36px;
     :deep(.v-textarea) textarea {
       @include a-text-regular();
       line-height: 18px;
