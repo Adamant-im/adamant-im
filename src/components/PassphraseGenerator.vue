@@ -160,6 +160,7 @@ export default {
     margin-top: 30px;
     :deep(.v-textarea) textarea {
       @include a-text-regular();
+      line-height: 18px;
     }
     :deep(.v-textarea) {
       .v-input__slot:before, .v-input__slot:after {
