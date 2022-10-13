@@ -115,10 +115,10 @@ export default {
     @include a-text-caption-light();
   }
   &__avatar {
-    min-width: unset;.v-avatar {
-      width: unset !important;
-      padding-right: 15px;
-    }
+    min-width: unset;
+  }
+  :deep(.v-avatar) {
+    margin-right: 8px;
   }
   :deep(.v-list-item) {
     padding: 0 8px;
