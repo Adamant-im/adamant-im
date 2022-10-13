@@ -33,6 +33,22 @@ $font-family: 'Exo 2', sans-serif;
   letter-spacing: normal;
 }
 
+// Change default dialog background color
+.v-dialog {
+  .v-card {
+    &.theme--dark {
+      background-color: #424242; // secondary
+      border-color: #424242; // secondary
+    }
+  }
+
+  .v-list {
+    &.theme--dark {
+      background-color: #424242; // secondary
+    }
+  }
+}
+
 /**
  * Vuetify container padding.
  */
