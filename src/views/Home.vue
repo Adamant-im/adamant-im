@@ -275,6 +275,9 @@ export default {
         color: map-get($adm-colors, 'primary2');
         pointer-events: none;
       }
+      :deep(.v-tabs-items) {
+        background-color: unset;
+      }
       :deep(.v-tab) {
         color: map-get($shades, 'white');
       }
