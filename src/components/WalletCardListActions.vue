@@ -120,6 +120,9 @@ export default {
       padding-right: 15px;
     }
   }
+  :deep(.v-list-item) {
+    padding: 0 8px;
+  }
 }
 
 /** Themes **/
