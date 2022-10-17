@@ -20,6 +20,7 @@
             v-model="currentWallet"
             grow
             height="auto"
+            show-arrows
           >
             <v-tab
               v-for="wallet in wallets"
@@ -228,6 +229,18 @@ export default {
     }
     :deep(.v-tab.v-tab--active::before) {
       background-color: unset;
+    }
+    :deep(.v-slide-group__prev) {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+    }
+    :deep(.v-slide-group__next) {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
     }
   }
   &__icon {
