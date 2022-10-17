@@ -60,6 +60,16 @@ $font-family: 'Exo 2', sans-serif;
   padding: 16px;
 }
 
+.theme--dark.v-card {
+  > .v-card__text {
+    color: #FFF;
+  }
+
+  > .v-card__subtitle {
+    color: #FFF;
+  }
+}
+
 /**
  * Vuetify container padding.
  */
