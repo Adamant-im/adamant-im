@@ -246,7 +246,7 @@ export default {
         background-color: map-get($adm-colors, 'primary') !important;
       }
       :deep(.v-tab) {
-        color: map-get($adm-colors, 'regular');
+        color: map-get($adm-colors, 'regular') !important;
       }
       :deep(.v-tabs .v-slide-group__prev .v-icon), :deep(.v-tabs .v-slide-group__next .v-icon) {
         color: map-get($adm-colors, 'primary2');
@@ -279,7 +279,7 @@ export default {
         background-color: unset;
       }
       :deep(.v-tab) {
-        color: map-get($shades, 'white');
+        color: map-get($shades, 'white') !important;
       }
       :deep(.v-tab--active) {
         color: map-get($adm-colors, 'primary');
