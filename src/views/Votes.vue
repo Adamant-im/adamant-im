@@ -44,7 +44,6 @@
               }"
               :search="search"
               hide-default-footer
-              disable-sort
               must-sort
               item-key="username"
               :expanded.sync="expanded"
