@@ -60,6 +60,10 @@ $font-family: 'Exo 2', sans-serif;
   padding: 16px;
 }
 
+.v-card__subtitle, .v-card__text {
+  line-height: 1.5;
+}
+
 .theme--dark.v-card {
   > .v-card__text {
     color: #FFF;
