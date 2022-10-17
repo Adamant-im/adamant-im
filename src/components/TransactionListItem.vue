@@ -271,6 +271,7 @@ export default {
   }
   &__icon-avatar {
     min-width: 40px;
+    margin-right: 0 !important;
   }
   :deep(.v-avatar) {
     position: relative;
