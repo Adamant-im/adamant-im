@@ -20,7 +20,7 @@
 
       <v-col
         cols="12"
-        class="text-center"
+        class="text-center pa-0"
       >
         <v-btn
           :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
@@ -102,7 +102,7 @@ export default {
     margin-right: 8px;
   }
   &__btn-show-article {
-    padding-bottom: 30px;
+    padding: 0 0 30px 0;
     text-align: center;
   }
 }
