@@ -215,6 +215,7 @@ export default {
       padding: 6px 4px;
       letter-spacing: normal;
       min-width: 74px;
+      align-items: flex-start;
     }
     :deep(.v-tab--active) {
       font-weight: 500;
