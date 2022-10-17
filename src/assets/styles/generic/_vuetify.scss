@@ -35,22 +35,20 @@ $font-family: 'Exo 2', sans-serif;
 }
 
 // Change default dialog background color
-.v-dialog {
-  .v-card {
-    &.theme--dark {
-      background-color: #424242; // secondary
-      border-color: #424242; // secondary
-    }
+.v-card {
+  &.theme--dark {
+    background-color: #424242; // secondary
+    border-color: #424242; // secondary
   }
+}
 
-  .v-card > .v-card__title {
-    padding: 16px;
-  }
+.v-dialog > .v-card > .v-card__title {
+  padding: 16px;
+}
 
-  .v-list {
-    &.theme--dark {
-      background-color: #424242; // secondary
-    }
+.v-list {
+  &.theme--dark {
+    background-color: #424242; // secondary
   }
 }
 
