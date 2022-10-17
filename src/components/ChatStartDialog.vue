@@ -27,6 +27,7 @@
           :label="$t('chats.recipient')"
           :title="$t('chats.recipient_tooltip')"
           @paste="onPasteURI"
+          autofocus
         >
           <template #append>
             <v-menu
@@ -149,16 +150,6 @@ export default {
     },
     uri () {
       return generateURI(Cryptos.ADM, this.$store.state.address)
-    }
-  },
-  watch: {
-    // Retain focus from `v-dialog__content`
-    show (v) {
-      if (v) {
-        this.$nextTick(() => {
-          this.$refs.partnerField.focus()
-        })
-      }
     }
   },
   mounted () {
