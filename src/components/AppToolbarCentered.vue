@@ -14,6 +14,7 @@
           :height="height"
         >
           <v-btn
+            :class="`${className}__back-button`"
             v-if="showBack"
             icon
             small
@@ -98,8 +99,12 @@ export default {
 .app-toolbar-centered {
   padding: 0;
 
-  :deep(..v-toolbar__title:not(:first-child)) {
-    padding-left: 0;
+  :deep(.v-toolbar__title:not(:first-child)) {
+    padding-left: 0 !important;
+  }
+
+  &__back-button {
+    margin: 6px 6px 6px -6px !important;
   }
 }
 
