@@ -498,7 +498,7 @@ export default {
     background: transparent;
     padding: 0;
   }
-  :deep(.v-list__tile) {
+  :deep(.v-list-item) {
     padding: 0 24px;
     margin: 0 -24px;
   }
@@ -543,7 +543,7 @@ export default {
       padding-right: 16px;
     }
 
-    :deep(.v-list__tile) {
+    :deep(.v-list-item) {
       padding: 0 16px;
       margin: 0 -16px;
     }
