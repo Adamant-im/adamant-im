@@ -12,8 +12,8 @@
 
       <v-card-text>
         <v-text-field
-          ref="passwordField"
           v-model="password"
+          autofocus
           autocomplete="new-password"
           class="a-input"
           type="password"
@@ -87,9 +87,6 @@ export default {
     isValidForm () {
       return this.password.length > 0
     }
-  },
-  updated: function () {
-    this.$refs.passwordField.focus()
   },
   methods: {
     openLink (link) {
