@@ -224,7 +224,7 @@ $chat-avatar-size: 40px;
   &__direction {
     font-size: 14px;
     font-weight: 300;
-    border-bottom: 1px solid, map-get($adm-colors, 'secondary2');
+    border-bottom: 1px solid map-get($adm-colors, 'secondary2');
     padding-bottom: 5px;
     margin-bottom: 15px;
   }
