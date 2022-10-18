@@ -18,7 +18,7 @@
         v-if="showSendButton"
         slot="append"
       >
-        <v-icon medium>
+        <v-icon size="28">
           mdi-send
         </v-icon>
       </template>

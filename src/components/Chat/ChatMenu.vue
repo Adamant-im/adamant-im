@@ -5,7 +5,7 @@
         <v-icon
           class="chat-menu__icon"
           v-bind="attrs"
-          medium
+          size="28"
           v-on="on"
         >
           mdi-plus-circle-outline
