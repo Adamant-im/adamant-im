@@ -298,9 +298,6 @@ export default {
       :deep(.v-tabs-items) {
         background-color: unset;
       }
-      :deep(.v-tab) {
-        color: map-get($shades, 'white') !important;
-      }
       :deep(.v-tab--active) {
         color: map-get($adm-colors, 'primary');
         .svg-icon {
@@ -310,7 +307,8 @@ export default {
     }
   }
 }
-.v-tabs__item--active {
+
+.v-tab--active {
   .account-view__rates {
     color: inherit;
   }
