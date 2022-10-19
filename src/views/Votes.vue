@@ -106,15 +106,18 @@
               </template>
 
               <template #expanded-item="props">
-                <td colspan="3">
+                <td
+                  colspan="3"
+                  class="pa-0"
+                >
                   <v-card
                     flat
                     :class="`${className}__expand`"
                   >
-                    <v-list :class="`${className}__expand-list`">
+                    <v-list :class="`${className}__expand-list`" dense>
                       <v-list-item :class="`${className}__expand-list-tile`">
                         <v-list-item-content>
-                          <v-list-item-title class="a-text-active">
+                          <v-list-item-title :class="`${className}__expand-list-address`">
                             <a
                               :href="getExplorerUrl() + props.item.address"
                               target="_blank"
@@ -132,7 +135,7 @@
                         :class="`${className}__expand-list-tile`"
                       >
                         <v-list-item-content>
-                          <v-list-item-title class="a-text-explanation">
+                          <v-list-item-title>
                             {{ item.title }}
                           </v-list-item-title>
                         </v-list-item-content>
@@ -472,6 +475,9 @@ export default {
       padding-left: 20px;
       padding-right: 20px;
     }
+  }
+  &__expand-list-address {
+    font-size: 16px !important;
   }
   &__review {
     padding-top: 15px !important;
