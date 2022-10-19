@@ -23,6 +23,7 @@
             item-key="url"
             show-select
             hide-default-footer
+            mobile-breakpoint="0"
             disable-sort
           >
             <template #[`header.data-table-select`]>
@@ -39,29 +40,34 @@
             </template>
 
             <template #[`item.url`]="props">
-              {{ props.item.url }}
-              <span
-                v-if="props.item.version"
-                :class="`${className}__node-version`"
-              ><br>{{ 'v' + props.item.version }}</span>
+              <td class="pa-0 pr-2">
+                {{ props.item.url }}
+                <span v-if="props.item.version" :class="`${className}__node-version`">
+                  <br>{{ 'v' + props.item.version }}
+                </span>
+              </td>
             </template>
 
             <template #[`item.ping`]="props">
-              <span>
-                {{ getNodeStatus(props.item) }}
-              </span>
-              <v-icon
-                :color="getNodeColor(props.item)"
-                size="small"
-              >
-                mdi-checkbox-blank-circle
-              </v-icon>
+              <td class="pa-0 pr-2">
+                <span>
+                  {{ getNodeStatus(props.item) }}
+                </span>
+                <v-icon
+                  :color="getNodeColor(props.item)"
+                  size="small"
+                >
+                  mdi-checkbox-blank-circle
+                </v-icon>
+              </td>
             </template>
 
             <template #[`item.socket`]="props">
-              <v-icon :color="props.item.socketSupport ? 'green' : 'red'">
-                {{ props.item.socketSupport ? 'mdi-check' : 'mdi-close' }}
-              </v-icon>
+              <td class="pa-0 pr-2">
+                <v-icon :color="props.item.socketSupport ? 'green' : 'red'">
+                  {{ props.item.socketSupport ? 'mdi-check' : 'mdi-close' }}
+                </v-icon>
+              </td>
             </template>
           </v-data-table>
 
@@ -219,6 +225,11 @@ export default {
     :deep(table.v-table) tbody td:first-child {
       padding-left: 24px;
     }
+    :deep(.v-data-table-header)  {
+      th {
+        padding: 0 !important;
+      }
+    }
   }
   &__body {
     font-size: 14px;
@@ -242,6 +253,9 @@ export default {
   }
   :deep(.v-input--selection-controls:not(.v-input--hide-details)) .v-input__slot {
     margin-bottom: 0;
+  }
+  :deep(.v-input--selection-controls__input)  {
+    margin-right: 0;
   }
 
   @media #{map-get($display-breakpoints, 'md-and-up')} {
