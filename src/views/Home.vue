@@ -298,6 +298,11 @@ export default {
       :deep(.v-tabs-items) {
         background-color: unset;
       }
+      :deep(.v-tab) {
+        &:not(.v-tab--active) {
+          color: map-get($shades, 'white')
+        }
+      }
       :deep(.v-tab--active) {
         color: map-get($adm-colors, 'primary');
         .svg-icon {
