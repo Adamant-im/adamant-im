@@ -24,7 +24,7 @@
             show-select
             hide-default-footer
             mobile-breakpoint="0"
-            disable-sort
+            sort-by="url"
           >
             <template #[`header.data-table-select`]>
               <!-- hide checkbox -->
