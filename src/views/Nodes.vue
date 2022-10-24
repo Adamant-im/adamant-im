@@ -42,7 +42,10 @@
             <template #[`item.url`]="props">
               <td class="pa-0 pr-2">
                 {{ props.item.url }}
-                <span v-if="props.item.version" :class="`${className}__node-version`">
+                <span
+                  v-if="props.item.version"
+                  :class="`${className}__node-version`"
+                >
                   <br>{{ 'v' + props.item.version }}
                 </span>
               </td>

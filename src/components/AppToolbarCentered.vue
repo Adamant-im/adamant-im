@@ -14,8 +14,8 @@
           :height="height"
         >
           <v-btn
-            :class="`${className}__back-button`"
             v-if="showBack"
+            :class="`${className}__back-button`"
             icon
             small
             @click="goBack"

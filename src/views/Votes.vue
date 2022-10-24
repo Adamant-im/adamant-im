@@ -114,7 +114,10 @@
                     flat
                     :class="`${className}__expand`"
                   >
-                    <v-list :class="`${className}__expand-list`" dense>
+                    <v-list
+                      :class="`${className}__expand-list`"
+                      dense
+                    >
                       <v-list-item :class="`${className}__expand-list-tile`">
                         <v-list-item-content>
                           <v-list-item-title :class="`${className}__expand-list-address`">

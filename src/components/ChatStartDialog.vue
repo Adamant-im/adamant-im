@@ -26,8 +26,8 @@
           class="a-input"
           :label="$t('chats.recipient')"
           :title="$t('chats.recipient_tooltip')"
-          @paste="onPasteURI"
           autofocus
+          @paste="onPasteURI"
         >
           <template #append>
             <v-menu
