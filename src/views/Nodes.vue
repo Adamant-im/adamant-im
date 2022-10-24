@@ -230,6 +230,9 @@ export default {
         padding: 0 !important;
       }
     }
+    :deep(.v-input--selection-controls__input)  {
+      margin-right: 0;
+    }
   }
   &__body {
     font-size: 14px;
@@ -253,9 +256,6 @@ export default {
   }
   :deep(.v-input--selection-controls:not(.v-input--hide-details)) .v-input__slot {
     margin-bottom: 0;
-  }
-  :deep(.v-input--selection-controls__input)  {
-    margin-right: 0;
   }
 
   @media #{map-get($display-breakpoints, 'md-and-up')} {
