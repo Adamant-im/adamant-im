@@ -7,7 +7,7 @@
     <v-textarea
       ref="messageTextarea"
       v-model="message"
-      :label="label"
+      :placeholder="label"
       hide-details
       single-line
       auto-grow
@@ -133,6 +133,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../../assets/styles/settings/_colors.scss';
+
 /**
  * 1. Limit height of message form.
  * 2. Align icons at the bottom.
@@ -148,10 +151,12 @@ export default {
   :deep(.v-textarea)  {
     .v-input__prepend-outer {
       margin-bottom: 2px;
-    }.v-input__append-inner {
+    }
+    .v-input__append-inner {
       margin-top: auto;
       margin-bottom: 4px;
-    }.v-input__control {
+    }
+    .v-input__control {
       margin-bottom: 2px;
     }
   }
@@ -171,5 +176,25 @@ export default {
   width: 50px;
   height: 50px;
   cursor: pointer;
+}
+
+.theme--light {
+  :deep(.v-text-field__slot) {
+    textarea {
+      &::placeholder {
+        color: map-get($adm-colors, 'muted');
+      }
+    }
+  }
+}
+
+.theme--dark {
+  :deep(.v-text-field__slot) {
+    textarea {
+      &::placeholder {
+        color: rgba(map-get($shades, 'white'), 70%);
+      }
+    }
+  }
 }
 </style>
