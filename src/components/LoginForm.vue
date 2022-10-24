@@ -5,26 +5,25 @@
     class="login-form"
     @submit.prevent="submit"
   >
-    <v-layout>
+    <v-row no-gutters>
       <slot>
         <v-text-field
           v-model="passphrase"
           :label="$t('login.password_label')"
-          browser-autocomplete="current-password"
-          class="text-xs-center"
+          autocomplete="current-password"
+          class="text-center"
           color="#BBDEFB"
           type="password"
         />
       </slot>
 
       <slot name="append-outer" />
-    </v-layout>
+    </v-row>
 
-    <v-layout
-      row
-      wrap
-      align-center
-      justify-center
+    <v-row
+      align="center"
+      justify="center"
+      no-gutters
     >
       <slot name="button">
         <v-btn
@@ -37,17 +36,20 @@
             indeterminate
             color="primary"
             size="24"
-            class="mr-3"
+            class="mr-4"
           />
           {{ $t('login.login_button') }}
         </v-btn>
       </slot>
-    </v-layout>
+    </v-row>
 
     <transition name="slide-fade">
-      <v-layout justify-center>
+      <v-row
+        justify="center"
+        no-gutters
+      >
         <slot name="qrcode-renderer" />
-      </v-layout>
+      </v-row>
     </transition>
   </v-form>
 </template>

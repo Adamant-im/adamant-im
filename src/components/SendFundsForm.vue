@@ -24,7 +24,7 @@
         type="text"
         @paste="onPasteURIAddress"
       >
-        <template slot="label">
+        <template #label>
           <span
             v-if="recipientName && addressReadonly"
             class="font-weight-medium"
@@ -40,30 +40,35 @@
         </template>
         <template
           v-if="!addressReadonly"
-          slot="append"
+          #append
         >
           <v-menu
             :offset-overflow="true"
             :offset-y="false"
             left
           >
-            <v-icon slot="activator">
-              mdi-dots-vertical
-            </v-icon>
+            <template #activator="{ on, attrs }">
+              <v-icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                mdi-dots-vertical
+              </v-icon>
+            </template>
             <v-list>
-              <v-list-tile @click="showQrcodeScanner = true">
-                <v-list-tile-title>{{ $t('transfer.decode_from_camera') }}</v-list-tile-title>
-              </v-list-tile>
-              <v-list-tile class="v-list__tile--link">
-                <v-list-tile-title>
+              <v-list-item @click="showQrcodeScanner = true">
+                <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
+              </v-list-item>
+              <v-list-item class="v-list__tile--link">
+                <v-list-item-title>
                   <qrcode-capture
                     @detect="onDetectQrcode"
                     @error="onDetectQrcodeError"
                   >
                     <span>{{ $t('transfer.decode_from_image') }}</span>
                   </qrcode-capture>
-                </v-list-tile-title>
-              </v-list-tile>
+                </v-list-item-title>
+              </v-list-item>
             </v-list>
           </v-menu>
         </template>
@@ -77,29 +82,34 @@
         :step="minToTransfer"
         type="number"
       >
-        <template slot="label">
+        <template #label>
           <span class="font-weight-medium">{{ $t('transfer.amount_label') }}</span>
-          <span class="body-1">
+          <span class="body-2">
             {{ `(max: ${maxToTransferFixed} ${currency})` }}
           </span>
         </template>
-        <template slot="append">
+        <template #append>
           <v-menu
             :offset-overflow="true"
             :offset-y="false"
             left
           >
-            <v-icon slot="activator">
-              mdi-dots-vertical
-            </v-icon>
+            <template #activator="{ on, attrs }">
+              <v-icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                mdi-dots-vertical
+              </v-icon>
+            </template>
             <v-list>
-              <v-list-tile
+              <v-list-item
                 v-for="item in amountMenuItems"
                 :key="item.title"
                 @click="divideAmount(item.divider)"
               >
-                <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
-              </v-list-tile>
+                <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+              </v-list-item>
             </v-list>
           </v-menu>
         </template>
@@ -152,7 +162,7 @@
         color="grey darken-1"
       />
 
-      <div class="text-xs-center">
+      <div class="text-center">
         <v-btn
           :class="`${className}__button`"
           class="a-btn-primary"
@@ -186,7 +196,7 @@
 
           <v-btn
             class="a-btn-regular"
-            flat
+            text
             @click="dialog = false"
           >
             {{ $t('transfer.confirm_cancel') }}
@@ -194,7 +204,7 @@
 
           <v-btn
             class="a-btn-regular"
-            flat
+            text
             :disabled="disabledButton"
             @click="submit"
           >
@@ -203,7 +213,7 @@
               indeterminate
               color="primary"
               size="24"
-              class="mr-3"
+              class="mr-4"
             />
             {{ $t('transfer.confirm_approve') }}
           </v-btn>
@@ -790,13 +800,17 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-.a-input >>> input[type=number]
-  -moz-appearance: textfield
-.a-input >>> input[type=number]::-webkit-inner-spin-button,
-.a-input >>> input[type=number]::-webkit-outer-spin-button
-  -webkit-appearance: none
-.send-funds-form
-  &__button
-    margin-top: 15px
+<style lang="scss" scoped>
+.a-input :deep(input[type=number]) {
+  -moz-appearance: textfield;
+}
+.a-input :deep(input[type=number]::-webkit-inner-spin-button),
+.a-input :deep(input[type=number]::-webkit-outer-spin-button) {
+  -webkit-appearance: none;
+}
+.send-funds-form {
+  &__button {
+    margin-top: 15px;
+  }
+}
 </style>

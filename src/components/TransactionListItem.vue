@@ -1,11 +1,11 @@
 <template>
   <div :class="className">
-    <v-list-tile
+    <v-list-item
       avatar
       :class="`${className}__tile`"
       @click="onClickTransaction"
     >
-      <v-list-tile-avatar
+      <v-list-item-avatar
         :class="`${className}__icon-avatar`"
         :size="40"
       >
@@ -15,18 +15,18 @@
         >
           {{ isStringEqualCI(senderId, userId) ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}
         </v-icon>
-      </v-list-tile-avatar>
+      </v-list-item-avatar>
 
-      <v-list-tile-content>
-        <v-list-tile-title v-if="partnerName">
+      <v-list-item-content>
+        <v-list-item-title v-if="partnerName">
           <span class="a-text-regular-enlarged">{{ partnerName }}</span>
           <span class="a-text-explanation-enlarged"> ({{ partnerId }})</span>
-        </v-list-tile-title>
-        <v-list-tile-title v-else>
+        </v-list-item-title>
+        <v-list-item-title v-else>
           <span class="a-text-regular-enlarged">{{ partnerId }}</span>
-        </v-list-tile-title>
+        </v-list-item-title>
 
-        <v-list-tile-title>
+        <v-list-item-title>
           <span :class="`${className}__amount ${directionClass}`">{{ amount | currency(crypto) }}</span>
           <span
             :class="`${className}__rates`"
@@ -51,17 +51,17 @@
             class="a-text-explanation"
             style="font-weight: 100;"
           >{{ textData }}</span>
-        </v-list-tile-title>
+        </v-list-item-title>
 
-        <v-list-tile-sub-title
+        <v-list-item-subtitle
           :class="`${className}__date`"
           class="a-text-explanation-small"
         >
           {{ createdAt | date }}
-        </v-list-tile-sub-title>
-      </v-list-tile-content>
+        </v-list-item-subtitle>
+      </v-list-item-content>
 
-      <v-list-tile-action
+      <v-list-item-action
         v-if="isClickIcon"
         :class="`${className}__action`"
       >
@@ -77,8 +77,8 @@
             {{ isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline' }}
           </v-icon>
         </v-btn>
-      </v-list-tile-action>
-    </v-list-tile>
+      </v-list-item-action>
+    </v-list-item>
 
     <v-divider
       :inset="true"
@@ -253,58 +253,75 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '../assets/styles/settings/_colors.scss';
 
-.transaction-item
-  &__rates
-   color: hsla(0,0%,100%,.7)
-   font-style: italic
-   a-text-regular()
-  &__amount
-    a-text-regular-enlarged-bold()
-  &__date
-    margin-top: 4px
-  &__icon-avatar
-      min-width: 40px;
-    >>> .v-avatar
-      position: relative
-      padding-right: 15px;
-  >>> .v-divider--inset:not(.v-divider--vertical)
-      margin-left: 56px;
-      max-width: calc(100% - 56px);
-  &__action
+.transaction-item {
+  &__rates {
+    color: hsla(0, 0%, 100%, 0.7);
+    font-style: italic;
+    @include a-text-regular();
+  }
+  &__amount {
+    @include a-text-regular-enlarged-bold();
+  }
+  &__date {
+    margin-top: 4px;
+  }
+  &__icon-avatar {
+    min-width: 40px;
+    margin-right: 0 !important;
+  }
+  :deep(.v-avatar) {
+    position: relative;
+    padding-right: 15px;
+  }
+  :deep(.v-divider--inset:not(.v-divider--vertical)) {
+    margin-left: 56px;
+    max-width: calc(100% - 56px);
+  }
+  &__action {
     margin-top: -14px;
     min-width: 36px;
+  }
   // Do not break computed length of v-divider
   /*&__tile*/
-    /*>>> .v-list__tile*/
-    /*padding: 0 12px*/
+  /*:deep(.v-list__tile)*/
+  /*padding: 0 12px*/
+}
 
 /** Themes **/
-.theme--light.v-list
-  .transaction-item
-    &__amount
-      color: $adm-colors.regular
-    &__rates
-      color: $adm-colors.muted
-      &--is-incoming
-        color: $adm-colors.good
-      &--is-outgoing
-        color: $adm-colors.danger
-
-    &__icon
-      color: $adm-colors.muted
-
-.theme--dark.v-list
-  .transaction-item
-    &__amount
-      color: $adm-colors.regular
-
-      &--is-incoming
-        color: $adm-colors.good
-      &--is-outgoing
-        color: $adm-colors.danger
-
+.theme--light.v-list {
+  .transaction-item {
+    &__amount {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__rates {
+      color: map-get($adm-colors, 'muted');
+      &--is-incoming {
+        color: map-get($adm-colors, 'good');
+      }
+      &--is-outgoing {
+        color: map-get($adm-colors, 'danger');
+      }
+    }
+    &__icon {
+      color: map-get($adm-colors, 'muted');
+    }
+  }
+}
+.theme--dark.v-list {
+  .transaction-item {
+    &__amount {
+      color: map-get($adm-colors, 'regular');
+      &--is-incoming {
+        color: map-get($adm-colors, 'good');
+      }
+      &--is-outgoing {
+        color: map-get($adm-colors, 'danger');
+      }
+    }
+  }
+}
 </style>

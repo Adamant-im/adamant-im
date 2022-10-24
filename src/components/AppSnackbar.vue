@@ -7,18 +7,23 @@
     bottom
     :multi-line="message.length > 50"
   >
-    {{ message }}
-    <v-btn
-      v-if="timeout === 0 || timeout > 2000"
-      @click="show = false"
-    >
-      <v-icon
-        :class="`${className}__icon`"
-        size="20"
+    <div :class="`${className}__container`">
+      {{ message }}
+      <v-btn
+        v-if="timeout === 0 || timeout > 2000"
+        x-small
+        text
+        fab
+        @click="show = false"
       >
-        mdi-close
-      </v-icon>
-    </v-btn>
+        <v-icon
+          :class="`${className}__icon`"
+          size="20"
+        >
+          mdi-close
+        </v-icon>
+      </v-btn>
+    </div>
   </v-snackbar>
 </template>
 
@@ -51,17 +56,25 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
-.app-snackbar
-  >>> .v-snack__wrapper
-    a-text-regular-enlarged()
+<style lang="scss" scoped>
+@import "../assets/styles/themes/adamant/_mixins.scss";
+@import "../assets/styles/settings/_colors.scss";
 
-.theme--light
-  .app-snackbar
-    color: $adm-colors.regular
-    >>> .v-snack__wrapper
-      background-color: $adm-colors.secondary2
+.app-snackbar {
+  :deep(.v-snack__wrapper) {
+    @include a-text-regular-enlarged();
+  }
 
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__close-button {
+    min-width: unset;
+    padding: 0;
+    width: 36px;
+  }
+}
 </style>

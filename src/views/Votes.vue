@@ -10,10 +10,9 @@
       fluid
       class="pa-0"
     >
-      <v-layout
-        row
-        wrap
-        justify-center
+      <v-row
+        justify="center"
+        no-gutters
       >
         <container>
           <v-card
@@ -36,27 +35,32 @@
 
             <v-data-table
               :headers="headers"
-              :pagination.sync="pagination"
+              :page.sync="pagination.page"
+              :items-per-page.sync="pagination.rowsPerPage"
+              :sort-by.sync="pagination.sortBy"
               :items="delegates"
-              :rows-per-page-text="$t('rows_per_page')"
+              :footer-props="{
+                'items-per-page-text': $t('rows_per_page')
+              }"
               :search="search"
-              hide-actions
+              hide-default-footer
               must-sort
               item-key="username"
+              :expanded.sync="expanded"
+              single-expand
+              mobile-breakpoint="0"
             >
-              <div
-                slot="no-data"
-                class="text-xs-center"
-              >
-                <v-layout
-                  align-center
-                  justify-center
+              <template #no-data>
+                <v-row
+                  align="center"
+                  justify="center"
+                  no-gutters
                 >
                   <v-progress-circular
                     indeterminate
                     color="primary"
                     size="24"
-                    class="mr-3"
+                    class="mr-4"
                   />
                   <div
                     class="a-text-regular"
@@ -64,25 +68,10 @@
                   >
                     {{ waitingForConfirmation ? $t('votes.waiting_confirmations') : $t('votes.loading_delegates') }}
                   </div>
-                </v-layout>
-              </div>
-
-              <template
-                slot="headerCell"
-                slot-scope="props"
-              >
-                <span
-                  slot="activator"
-                  :class="`${className}__header`"
-                >
-                  {{ $t(props.header.text) }}
-                </span>
+                </v-row>
               </template>
 
-              <template
-                slot="items"
-                slot-scope="props"
-              >
+              <template #[`item.username`]="props">
                 <td
                   :class="`${className}__body`"
                   class="pr-0"
@@ -91,9 +80,15 @@
                 >
                   {{ props.item.username }}
                 </td>
+              </template>
+
+              <template #[`item.rank`]="props">
                 <td :class="`${className}__body`">
                   {{ props.item.rank }}
                 </td>
+              </template>
+
+              <template #[`item._voted`]="props">
                 <td>
                   <v-icon
                     v-if="props.item._voted"
@@ -110,90 +105,88 @@
                 </td>
               </template>
 
-              <template
-                slot="expand"
-                slot-scope="props"
-              >
-                <v-card
-                  flat
-                  :class="`${className}__expand`"
-                >
-                  <v-list :class="`${className}__expand-list`">
-                    <v-list-tile :class="`${className}__expand-list-tile`">
-                      <v-list-tile-content>
-                        <v-list-tile-title class="a-text-active">
-                          <a
-                            :href="getExplorerUrl() + props.item.address"
-                            target="_blank"
-                            rel="noopener"
-                          >
-                            {{ props.item.address }}
-                          </a>
-                        </v-list-tile-title>
-                      </v-list-tile-content>
-                    </v-list-tile>
-
-                    <v-list-tile
-                      v-for="(item, i) in delegateDetails"
-                      :key="i"
-                      :class="`${className}__expand-list-tile`"
-                    >
-                      <v-list-tile-content>
-                        <v-list-tile-title class="a-text-explanation">
-                          {{ item.title }}
-                        </v-list-tile-title>
-                      </v-list-tile-content>
-                      <v-list-tile-content>
-                        <v-list-tile-title class="a-text-explanation text-xs-right">
-                          {{ item.format ? item.format(item.value.call(props.item)) : item.value.call(props.item) }}
-                        </v-list-tile-title>
-                      </v-list-tile-content>
-                    </v-list-tile>
-                  </v-list>
-                </v-card>
-              </template>
-
-              <v-alert
-                slot="no-results"
-                :class="`${className}__alert`"
-                :value="true"
-                icon="mdi-alert"
-              >
-                Your search for "{{ search }}" found no results.
-              </v-alert>
-
-              <template slot="footer">
+              <template #expanded-item="props">
                 <td
-                  :class="`${className}__review`"
-                  :colspan="headers.length"
+                  colspan="3"
                   class="pa-0"
                 >
-                  <v-layout
-                    row
-                    wrap
-                    align-center
-                    justify-space-between
+                  <v-card
+                    flat
+                    :class="`${className}__expand`"
                   >
-                    <pagination
-                      v-if="showPagination"
-                      v-model="pagination.page"
-                      :pages="pages"
-                    />
-
-                    <v-btn
-                      :disabled="reviewButtonDisabled"
-                      class="a-btn-primary"
-                      @click="showConfirmationDialog"
+                    <v-list
+                      :class="`${className}__expand-list`"
+                      dense
                     >
-                      {{ $t('votes.summary_title') }}
-                    </v-btn>
-                  </v-layout>
+                      <v-list-item :class="`${className}__expand-list-tile`">
+                        <v-list-item-content>
+                          <v-list-item-title :class="`${className}__expand-list-address`">
+                            <a
+                              :href="getExplorerUrl() + props.item.address"
+                              target="_blank"
+                              rel="noopener"
+                            >
+                              {{ props.item.address }}
+                            </a>
+                          </v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+
+                      <v-list-item
+                        v-for="(item, i) in delegateDetails"
+                        :key="i"
+                        :class="`${className}__expand-list-tile`"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>
+                            {{ item.title }}
+                          </v-list-item-title>
+                        </v-list-item-content>
+                        <v-list-item-content>
+                          <v-list-item-title class="a-text-explanation text-right">
+                            {{ item.format ? item.format(item.value.call(props.item)) : item.value.call(props.item) }}
+                          </v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-list>
+                  </v-card>
                 </td>
               </template>
+
+              <template #no-results>
+                <v-alert
+                  :class="`${className}__alert mt-4`"
+                  :value="true"
+                  icon="mdi-alert"
+                >
+                  Your search for "{{ search }}" found no results.
+                </v-alert>
+              </template>
             </v-data-table>
+
+            <v-row
+              :class="`${className}__review`"
+              align="center"
+              justify="space-between"
+              no-gutters
+            >
+              <pagination
+                v-if="showPagination"
+                v-model="pagination.page"
+                :pages="pages"
+              />
+
+              <v-btn
+                :disabled="reviewButtonDisabled"
+                class="a-btn-primary ma-2"
+                @click="showConfirmationDialog"
+              >
+                {{ $t('votes.summary_title') }}
+              </v-btn>
+            </v-row>
           </v-card>
         </container>
-      </v-layout>
+      </v-row>
     </v-container>
 
     <v-dialog
@@ -209,10 +202,9 @@
 
         <v-divider :class="`${className}__divider`" />
 
-        <v-layout
-          row
-          wrap
-          class="pa-3"
+        <v-row
+          no-gutters
+          class="pa-4"
         >
           <div :class="`${className}__dialog-summary`">
             {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
@@ -226,13 +218,13 @@
             v-html="$t('votes.summary_info')"
           />
           <!-- eslint-enable vue/no-v-html -->
-        </v-layout>
+        </v-row>
 
         <v-card-actions>
           <v-spacer />
 
           <v-btn
-            flat="flat"
+            text
             class="a-btn-regular"
             @click="dialog = false"
           >
@@ -240,7 +232,7 @@
           </v-btn>
 
           <v-btn
-            flat
+            text
             class="a-btn-regular"
             @click="sendVotes"
           >
@@ -266,22 +258,24 @@ export default {
   data: () => ({
     voteRequestLimit: 30,
     search: '',
-    headers: [
-      { text: 'votes.table_head_name', value: 'username' },
-      { text: 'votes.table_head_rank', value: 'rank' },
-      { text: 'votes.table_head_vote', value: '_voted' }
-    ],
     pagination: {
       rowsPerPage: 50,
       sortBy: 'rank',
-      descending: false,
       page: 1
     },
+    expanded: [],
     waitingForConfirmation: false,
     dialog: false
   }),
   computed: {
     className: () => 'delegates-view',
+    headers () {
+      return [
+        { text: this.$t('votes.table_head_name'), value: 'username' },
+        { text: this.$t('votes.table_head_rank'), value: 'rank' },
+        { text: this.$t('votes.table_head_vote'), value: '_voted' }
+      ]
+    },
     delegates () {
       const delegates = this.$store.state.delegates.delegates || {}
 
@@ -412,9 +406,15 @@ export default {
       return true
     },
     toggleDetails (delegate, props) {
-      props.expanded = !props.expanded
+      const isExpanded = this.expanded.find(item => item === delegate)
 
-      if (!props.expaned) {
+      if (isExpanded) {
+        this.expanded = []
+      } else {
+        this.expanded = [delegate]
+      }
+
+      if (!isExpanded) {
         this.$store.dispatch('delegates/getForgedByAccount', delegate)
         this.$store.dispatch('delegates/getForgingTimeForDelegate', delegate)
       }
@@ -443,88 +443,120 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../assets/styles/settings/_colors.scss';
 
-.delegates-view
-  &__header
-    font-size: 12px
-    font-weight: 300
-  &__body
-    font-size: 14px
-    font-weight: 300
-    padding: 0 16px !important
-  &__dialog-title
-    a-text-header()
-  &__dialog-summary
-    a-text-regular-enlarged()
-  &__dialog-info
-    a-text-regular-enlarged()
-    margin-top: 16px
-    >>> a
-      text-decoration-line: none
-      &:hover
-        text-decoration-line: underline
-  &__expand
-    margin: 20px
-  &__expand-list-tile
-    height: 36px
-    >>> .v-list__tile
-      padding-left: 20px
-      padding-right: 20px
-  &__review
-    padding-top: 15px !important
-    padding-bottom: 15px !important
-  &__search
-    >>> .v-input__slot
-      padding-left: 16px
-      padding-right: 16px
-  &__spacer
-    height: 20px
-    margin-top: 5px
-  &__alert
-    border: none
-  >>> table.v-table thead th:not(:nth-child(1)),
-  >>> table.v-table tbody td:not(:nth-child(1))
-      padding: 0 16px
+.delegates-view {
+  &__body {
+    font-size: 14px;
+    font-weight: 300;
+    padding: 0 16px !important;
+  }
+  &__dialog-title {
+    @include a-text-header();
+  }
+  &__dialog-summary {
+    @include a-text-regular-enlarged();
+  }
+  &__dialog-info {
+    @include a-text-regular-enlarged();
+    margin-top: 16px;
+    :deep(a) {
+      text-decoration-line: none;&:hover {
+        text-decoration-line: underline;
+      }
+    }
+  }
+  &__expand {
+    margin: 20px;
+  }
+  &__expand-list-tile {
+    height: 36px;
+    :deep(.v-list__tile) {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+  &__expand-list-address {
+    font-size: 16px !important;
+  }
+  &__review {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+  }
+  &__search {
+    :deep(.v-input__slot) {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
+  &__spacer {
+    height: 20px;
+    margin-top: 5px;
+  }
+  &__alert {
+    border: none;
+  }
+  :deep(table.v-table) thead th:not(:nth-child(1)),
+  :deep(table.v-table) tbody td:not(:nth-child(1)) {
+    padding: 0 16px;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .delegates-view
-    &__header
-      color: $adm-colors.muted
-    &__body
-      color: $adm-colors.regular
-    &__dialog-title
-      color: $adm-colors.regular
-    &__dialog-summary
-      color: $adm-colors.regular
-    &__dialog-info
-      color: $adm-colors.regular
-    &__expand
-      background-color: $adm-colors.secondary2
-      >>> .a-text-active a
-        color: $adm-colors.regular
-    &__expand-list
-      background-color: transparent
-    &__divider
-      border-color: $adm-colors.secondary
-    &__alert
-      background-color: $adm-colors.muted !important
-      >>> .v-icon
-        color: $shades.white
-    >>> .v-table tbody tr:not(:last-child)
-      border-bottom: 1px solid $adm-colors.secondary2
-    >>> tfoot
-      linear-gradient-light()
-.theme--dark
-  .delegates-view
-    &__alert
-      background-color: $adm-colors.muted !important
-      >>> .v-icon
-        color: $shades.white
-    >>> tfoot
-      linear-gradient-dark()
+.theme--light {
+  .delegates-view {
+    &__body {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__dialog-title {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__dialog-summary {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__dialog-info {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__expand {
+      background-color: map-get($adm-colors, 'secondary2');
+      :deep(.a-text-active) a {
+        color: map-get($adm-colors, 'regular');
+      }
+    }
+    &__expand-list {
+      background-color: transparent;
+    }
+    &__divider {
+      border-color: map-get($adm-colors, 'secondary');
+    }
+    &__alert {
+      background-color: map-get($adm-colors, 'muted') !important;
+      :deep(.v-icon) {
+        color: map-get($shades, 'white');
+      }
+    }
+    :deep(.v-table) tbody tr:not(:last-child) {
+      border-bottom: 1px solid, map-get($adm-colors, 'secondary2');
+    }
+    :deep(tfoot) {
+      @include linear-gradient-light();
+    }
+  }
+}
+.theme--dark {
+  .delegates-view {
+    &__alert {
+      background-color: map-get($adm-colors, 'muted') !important;
+      :deep(.v-icon) {
+        color: map-get($shades, 'white');
+      }
+    }
+    :deep(tfoot) {
+      @include linear-gradient-dark();
+    }
+  }
+}
 </style>

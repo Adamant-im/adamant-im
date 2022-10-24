@@ -1,39 +1,40 @@
 <template>
-  <v-menu
-    offset-y
-    class="language-switcher"
-  >
-    <v-btn
-      slot="activator"
-      class="ma-0"
-      flat
-    >
-      <slot name="prepend">
-        <v-icon
-          v-if="prependIcon"
-          left
-        >
-          {{ prependIcon }}
-        </v-icon>
-      </slot>
-      {{ currentCurrency }}
-      <slot name="append">
-        <v-icon
-          v-if="appendIcon"
-          right
-        >
-          {{ appendIcon }}
-        </v-icon>
-      </slot>
-    </v-btn>
+  <v-menu offset-y>
+    <template #activator="{ on, attrs }">
+      <v-btn
+        class="ma-0 btn"
+        text
+        v-bind="attrs"
+        v-on="on"
+      >
+        <slot name="prepend">
+          <v-icon
+            v-if="prependIcon"
+            left
+          >
+            {{ prependIcon }}
+          </v-icon>
+        </slot>
+        {{ currentCurrency }}
+        <slot name="append">
+          <v-icon
+            v-if="appendIcon"
+            right
+          >
+            {{ appendIcon }}
+          </v-icon>
+        </slot>
+      </v-btn>
+    </template>
+
     <v-list>
-      <v-list-tile
+      <v-list-item
         v-for="(currency, idx) in currencies"
         :key="idx"
         @click="onSelect(idx)"
       >
-        <v-list-tile-title>{{ currency }}</v-list-tile-title>
-      </v-list-tile>
+        <v-list-item-title>{{ currency }}</v-list-item-title>
+      </v-list-item>
     </v-list>
   </v-menu>
 </template>
@@ -76,26 +77,33 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../assets/styles/settings/_colors.scss';
 
-.language-switcher
-  >>> .v-menu__activator
-    .v-icon
-      margin-top: 2px
-    .v-icon:before
-      transition: 0.2s linear
-  >>> .v-menu__activator--active
-    .v-icon:before
-      transform: rotate(90deg)
-  >>> .v-btn
-    text-transform: capitalize
+.btn {
+  text-transform: capitalize;
+  font-weight: 300;
+
+  :deep(.v-icon) {
+    margin-top: 2px;
+
+    &:before {
+      transition: 0.2s linear;
+    }
+  }
+
+  &[aria-expanded="true"] {
+    :deep(.v-icon) {
+      transform: rotate(90deg);
+    }
+  }
+}
 
 /** Themes **/
-.theme--light
-  .language-switcher
-    .v-btn
-      color: $adm-colors.regular
-      font-weight: 300
+.theme--light {
+  .btn {
+    color: map-get($adm-colors, 'regular');
+  }
+}
 </style>

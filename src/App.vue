@@ -47,6 +47,9 @@ export default {
     this.notifications.stop()
     this.$store.dispatch('stopInterval')
   },
+  beforeMount () {
+    this.$vuetify.theme.dark = this.$store.state.options.darkTheme // sync Vuetify theme with the store
+  },
   methods: {
     setLocale () {
       // Set language from `localStorage`.
@@ -62,11 +65,13 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import './assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import './assets/styles/themes/adamant/_mixins.scss';
 
-.theme--light.application--linear-gradient
-  linear-gradient-light()
-.theme--dark.application--linear-gradient
-  linear-gradient-dark()
+.theme--light.application--linear-gradient {
+  @include linear-gradient-light();
+}
+.theme--dark.application--linear-gradient {
+  @include linear-gradient-dark();
+}
 </style>

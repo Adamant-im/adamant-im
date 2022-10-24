@@ -99,8 +99,10 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-.qrcode-capture
-  &__file-input, &__image
-    display: none
+<style lang="scss" scoped>
+.qrcode-capture {
+  &__file-input, &__image {
+    display: none;
+  }
+}
 </style>

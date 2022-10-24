@@ -12,8 +12,8 @@
 
       <v-card-text>
         <v-text-field
-          ref="passwordField"
           v-model="password"
+          autofocus
           autocomplete="new-password"
           class="a-input"
           type="password"
@@ -31,7 +31,7 @@
         <v-spacer />
 
         <v-btn
-          flat="flat"
+          text
           class="a-btn-regular"
           @click="show = false"
         >
@@ -39,7 +39,7 @@
         </v-btn>
 
         <v-btn
-          flat="flat"
+          text
           class="a-btn-regular"
           :disabled="!isValidForm || disabledButton"
           @click="submit"
@@ -49,7 +49,7 @@
             indeterminate
             color="primary"
             size="24"
-            class="mr-3"
+            class="mr-4"
           />
           {{ $t('login_via_password.popup_confirm_text') }}
         </v-btn>
@@ -87,9 +87,6 @@ export default {
     isValidForm () {
       return this.password.length > 0
     }
-  },
-  updated: function () {
-    this.$refs.passwordField.focus()
   },
   methods: {
     openLink (link) {

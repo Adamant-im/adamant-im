@@ -1,0 +1,108 @@
+@import '~vuetify/src/styles/settings/_variables.scss';
+@import '../settings/_colors.scss';
+
+$font-family: 'Exo 2', sans-serif;
+
+/** Vuetify context styles **/
+
+/**
+ * BaseIcon.vue: Context styles
+ *
+ * 1. Inherit button color when icon inside VButton.
+ * 2. Vuetify should not steal pieces of SVG icon.
+ */
+.v-btn .v-btn__content .svg-icon {
+  // [1]
+  fill: currentColor;
+}
+.v-btn--floating .v-btn__content .svg-icon :not(:only-child) {
+  // [2]
+  &:last-child,
+  &:first-child {
+    -webkit-backface-visibility: visible;
+    position: static;
+    left: auto;
+    top: auto;
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+.v-btn {
+  letter-spacing: normal;
+  border-radius: 2px;
+}
+
+// Change default dialog background color
+.v-card {
+  &.theme--dark {
+    background-color: #424242; // secondary
+    border-color: #424242; // secondary
+  }
+}
+
+.v-dialog > .v-card > .v-card__title {
+  padding: 16px;
+}
+
+.v-list {
+  &.theme--dark {
+    background-color: #424242; // secondary
+  }
+}
+
+.v-application .caption {
+  line-height: 1.5;
+}
+
+.v-dialog > .v-card > .v-card__text {
+  padding: 16px;
+}
+
+.v-card__subtitle, .v-card__text {
+  line-height: 1.5;
+}
+
+.theme--dark.v-card {
+  > .v-card__text {
+    color: #FFF;
+  }
+
+  > .v-card__subtitle {
+    color: #FFF;
+  }
+}
+
+.v-data-table {
+  border-radius: 2px;
+}
+
+.theme--dark.v-data-table {
+  background-color: #424242;
+}
+
+.v-snack__content {
+  font-size: 16px;
+}
+
+/**
+ * Vuetify container padding.
+ */
+@media #{map-get($display-breakpoints, 'md-and-down')} {
+  .container {
+    padding: 20px;
+  }
+}
+
+/**
+ * Application styles.
+ */
+.v-application {
+  font-weight: 300;
+  font-family: $font-family;
+}
+
+.theme--light.v-application {
+  color: map-get($adm-colors, 'regular');
+}

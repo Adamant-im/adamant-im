@@ -3,21 +3,26 @@
 exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
 <v-dialog-stub
   class="qrcode-scanner-dialog"
+  closedelay="0"
   contentclass=""
-  maxwidth="none"
+  opendelay="0"
+  openonclick="true"
   origin="center center"
+  retainfocus="true"
   transition="dialog-transition"
   value="true"
   width="500"
 >
   <v-card-stub
     class="qrcode-scanner-dialog"
+    loaderheight="4"
     tag="div"
   >
-    <v-layout-stub
-      align-center=""
-      class="pa-5"
-      justify-center=""
+    <v-row-stub
+      align="center"
+      class="pa-8"
+      justify="center"
+      nogutters="true"
       tag="div"
     >
       <div
@@ -29,7 +34,7 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
       </div>
        
       <v-progress-circular-stub
-        class="ml-3"
+        class="ml-4"
         color="primary"
         indeterminate="true"
         rotate="0"
@@ -37,17 +42,16 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
         value="0"
         width="4"
       />
-    </v-layout-stub>
+    </v-row-stub>
      
-    <v-layout-stub
-      row=""
+    <v-row-stub
+      nogutters="true"
       style="display: none;"
       tag="div"
-      wrap=""
     >
-      <v-flex-stub
+      <v-col-stub
+        cols="12"
         tag="div"
-        xs12=""
       >
         <div
           class="qrcode-scanner-dialog__camera"
@@ -56,22 +60,22 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
            
           <!---->
         </div>
-      </v-flex-stub>
+      </v-col-stub>
        
-      <v-flex-stub
-        class="pa-4"
+      <v-col-stub
+        class="pa-6"
+        cols="12"
         tag="div"
-        xs12=""
       >
         <h3
-          class="a-text-regular text-xs-center"
+          class="a-text-regular text-center"
         >
           
           Hold your device steady for 2-3 seconds to scan the QR code
         
         </h3>
-      </v-flex-stub>
-    </v-layout-stub>
+      </v-col-stub>
+    </v-row-stub>
      
     <!---->
      
@@ -79,14 +83,18 @@ exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
       class="a-divider"
     />
      
-    <v-card-actions-stub>
-      <v-spacer-stub />
+    <v-card-actions-stub
+      tag="div"
+    >
+      <v-spacer-stub
+        tag="div"
+      />
        
       <v-btn-stub
-        activeclass="v-btn--active"
+        activeclass=""
         class="a-btn-regular"
-        flat="true"
         tag="button"
+        text="true"
         type="button"
       >
         

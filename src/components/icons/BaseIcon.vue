@@ -1,7 +1,7 @@
 <template>
   <i
-    class="v-icon"
-    :class="{ 'v-icon--link': isClickable }"
+    class="icon"
+    :class="{ 'icon--link': isClickable }"
   >
     <svg
       class="svg-icon"
@@ -66,16 +66,40 @@ export default {
 }
 </script>
 
-<style lang="stylus">
-@import '~vuetify/src/stylus/settings/_colors.styl'
+<style lang="scss">
+@import '~vuetify/src/styles/settings/_colors.scss';
+
+.icon {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  display: inline-flex;
+  font-size: 24px;
+  justify-content: center;
+  letter-spacing: normal;
+  line-height: 1;
+  position: relative;
+  text-indent: 0;
+  transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1), visibility 0s;
+  vertical-align: middle;
+  user-select: none;
+}
+
+.icon--link {
+  cursor: pointer;
+}
 
 /* Themes */
-.theme--light
-  .svg-icon
-    fill: rgba(0, 0, 0, 0.54)
-    stroke: rgba(0, 0, 0, 0.54)
-.theme--dark
-  .svg-icon
-    fill: $shades.white
-    stroke: $shades.white
+.theme--light {
+  .svg-icon {
+    fill: rgba(0, 0, 0, 0.54);
+    stroke: rgba(0, 0, 0, 0.54);
+  }
+}
+.theme--dark {
+  .svg-icon {
+    fill: map-get($shades, 'white');
+    stroke: map-get($shades, 'white');
+  }
+}
 </style>

@@ -21,9 +21,9 @@
       </v-card-text>
       <!-- eslint-enable vue/no-v-html -->
 
-      <v-flex
-        xs12
-        class="text-xs-center"
+      <v-col
+        cols="12"
+        class="text-center"
       >
         <v-btn
           :class="[`${className}__btn-hide`, 'a-btn-primary']"
@@ -36,7 +36,7 @@
             {{ $t('transfer.warning_on_partner_address.hide_button') }}
           </div>
         </v-btn>
-      </v-flex>
+      </v-col>
     </v-card>
   </v-dialog>
 </template>
@@ -90,13 +90,17 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-  .warning-on-partner-address-dialog
-    &__disclaimer
-      margin-top: 10px
-    &__btn-hide
-      margin-top: 15px
-      margin-bottom: 30px
-    &__btn-icon
-      margin-right: 8px
+<style lang="scss" scoped>
+.warning-on-partner-address-dialog {
+  &__disclaimer {
+    margin-top: 10px;
+  }
+  &__btn-hide {
+    margin-top: 15px;
+    margin-bottom: 30px;
+  }
+  &__btn-icon {
+    margin-right: 8px;
+  }
+}
 </style>

@@ -6,7 +6,7 @@
       <v-divider />
 
       <div class="a-chat__body">
-        <div class="text-xs-center py-2">
+        <div class="text-center py-2">
           <v-progress-circular
             v-show="loading"
             indeterminate

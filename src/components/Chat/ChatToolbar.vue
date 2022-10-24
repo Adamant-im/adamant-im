@@ -24,10 +24,11 @@
       <div v-else>
         <v-text-field
           v-model="partnerName"
-          box
-          full-width
+          :class="`${className}__textfield`"
+          filled
           background-color="transparent"
           :label="partnerId"
+          hide-details
         />
       </div>
     </div>
@@ -79,51 +80,93 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
-@import '../../assets/stylus/themes/adamant/_mixins.styl'
-@import '../../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '../../assets/styles/themes/adamant/_mixins.scss';
+@import '~vuetify/src/styles/settings/_variables.scss';
+@import '../../assets/styles/settings/_colors.scss';
 
-.chat-toolbar
-  &__textfield-container
-    width: 100%
+.chat-toolbar {
+  flex-grow: 0;
+  flex-shrink: 0;
 
-  >>> .v-text-field
-    a-text-regular-enlarged-bold()
+  &__textfield-container {
+    width: 100%;
+  }
 
-    .v-label
-      max-width: unset
-      a-text-regular-enlarged-bold()
-    .v-input__control
-      padding: 0
-    .v-input__control > .v-input__slot
-      margin-bottom: 0
-    .v-label--active
-      transform: translateY(-6px) scale(0.6875)
-      font-size: 20px
+  &__textfield {
+    // hides TextField border bottom
+    :deep(.v-input__control) {
+      & > .v-input__slot:before {
+        border-width: 0;
+        border-color: unset;
+      }
+
+      & > .v-input__slot:after {
+        border-width: 0;
+        background-color: unset;
+        border-color: unset;
+      }
+    }
+  }
+
+  :deep(.v-text-field) {
+    @include a-text-regular-enlarged-bold();
+
+    .v-label {
+      max-width: unset;
+
+      @include a-text-regular-enlarged-bold();
+    }
+
+    .v-input__control {
+      padding: 0;
+    }
+
+    .v-input__control > .v-input__slot {
+      margin-bottom: 0;
+    }
+
+    .v-label--active {
+      transform: translateY(-6px) scale(0.6875);
+      font-size: 20px;
+    }
+  }
+}
 
 /** Themes **/
-.theme--light
-  .chat-toolbar
-    background-color: $adm-colors.secondary2-transparent
+.theme--light {
+  .chat-toolbar {
+    background-color: map-get($adm-colors, 'secondary2-transparent');
 
-    >>> .v-text-field
-      .primary--text
-        color: $grey.darken-1 !important
-      .v-label
-        color: $grey.darken-4
-      .v-label--active
-        color: $grey.darken-1
-      input
-        caret-color: $adm-colors.primary2
-
-.theme--dark
-  .chat-toolbar
-    >>> .v-text-field
-      .primary--text
-        color: $shades.white !important
-      .v-label
-        color: $shades.white
-      .v-label--active
-        color: $shades.white
+    :deep(.v-text-field) {
+      .primary--text {
+        color: map-get($grey, 'darken-1') !important;
+      }
+      .v-label {
+        color: map-get($grey, 'darken-4');
+      }
+      .v-label--active {
+        color: map-get($grey, 'darken-1');
+      }
+      input {
+        caret-color: map-get($adm-colors, 'primary2');
+      }
+    }
+  }
+}
+.theme--dark {
+  .chat-toolbar {
+    :deep(.v-text-field) {
+      .primary--text {
+        color: map-get($shades, 'white') !important;
+      }
+      .v-label {
+        color: map-get($shades, 'white');
+      }
+      .v-label--active {
+        color: map-get($shades, 'white');
+      }
+    }
+  }
+}
 </style>

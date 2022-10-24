@@ -1,40 +1,43 @@
 <template>
   <div>
     <v-menu>
-      <v-icon
-        slot="activator"
-        medium
-        class="chat-menu__icon"
-      >
-        mdi-plus-circle-outline
-      </v-icon>
+      <template #activator="{ on, attrs }">
+        <v-icon
+          class="chat-menu__icon"
+          v-bind="attrs"
+          size="28"
+          v-on="on"
+        >
+          mdi-plus-circle-outline
+        </v-icon>
+      </template>
 
       <v-list>
         <!-- Cryptos -->
-        <v-list-tile
+        <v-list-item
           v-for="c in cryptos"
           :key="c"
           @click="sendFunds(c)"
         >
-          <v-list-tile-avatar>
+          <v-list-item-avatar>
             <crypto-icon :crypto="c" />
-          </v-list-tile-avatar>
+          </v-list-item-avatar>
 
-          <v-list-tile-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-tile-title>
-        </v-list-tile>
+          <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
+        </v-list-item>
 
         <!-- Actions -->
-        <v-list-tile
+        <v-list-item
           v-for="item in menuItems"
           :key="item.title"
           :disabled="item.disabled"
         >
-          <v-list-tile-avatar>
+          <v-list-item-avatar>
             <v-icon>{{ item.icon }}</v-icon>
-          </v-list-tile-avatar>
+          </v-list-item-avatar>
 
-          <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
-        </v-list-tile>
+          <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-menu>
 
@@ -138,20 +141,27 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_colors.scss';
 
-.v-menu__content
-  max-height: 70%
-  min-width: 200px!important
+.v-menu__content {
+  max-height: 70%;
+  min-width: 200px !important;
+}
 
 /** Themes **/
-.theme--light
-  .chat-menu
-    &__icon
-      color: $grey.darken-1
-.theme--dark
-  .chat-menu
-    &__icon
-      color: $shades.white
+.theme--light {
+  .chat-menu {
+    &__icon {
+      color: map-get($grey, 'darken-1');
+    }
+  }
+}
+.theme--dark {
+  .chat-menu {
+    &__icon {
+      color: map-get($shades, 'white');
+    }
+  }
+}
 </style>

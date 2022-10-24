@@ -23,18 +23,22 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_variables.scss';
 
-.a-container
-  width: 100%
-  max-width: 800px
-  position: relative
+.a-container {
+  width: 100%;
+  max-width: 800px;
+  position: relative;
 
-  &--padding
-    padding: 0 24px
+  &--padding {
+    padding: 0 24px;
+  }
 
-  @media $display-breakpoints.sm-and-down
-    &--padding
-      padding: 0 16px
+  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+    &--padding {
+      padding: 0 16px;
+    }
+  }
+}
 </style>

@@ -1,10 +1,10 @@
 <template>
-  <v-content>
+  <v-main>
     <slot />
 
     <app-snackbar />
     <app-navigation v-if="showNavigation" />
-  </v-content>
+  </v-main>
 </template>
 
 <script>

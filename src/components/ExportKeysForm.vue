@@ -14,12 +14,12 @@
           class="a-input"
           type="text"
         >
-          <template slot="label">
+          <template #label>
             <span class="font-weight-medium">
               {{ key.cryptoName }}
             </span>
           </template>
-          <template slot="append">
+          <template #append>
             <v-btn
               icon
               ripple
@@ -37,11 +37,11 @@
         </v-text-field>
       </div>
 
-      <div class="text-xs-right">
+      <div class="text-right">
         <v-btn
           :class="`${className}__copy_all_button`"
           class="a-btn-link"
-          flat
+          text
           small
           @click="copyAll"
         >
@@ -59,40 +59,45 @@
       class="a-input"
       type="text"
     >
-      <template slot="label">
+      <template #label>
         <span class="font-weight-medium">
           {{ $t('options.export_keys.passphrase') }}
         </span>
       </template>
-      <template slot="append">
+      <template #append>
         <v-menu
           :offset-overflow="true"
           :offset-y="false"
           left
         >
-          <v-icon slot="activator">
-            mdi-dots-vertical
-          </v-icon>
+          <template #activator="{ on, attrs }">
+            <v-icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              mdi-dots-vertical
+            </v-icon>
+          </template>
           <v-list>
-            <v-list-tile @click="showQrcodeScanner = true">
-              <v-list-tile-title>{{ $t('transfer.decode_from_camera') }}</v-list-tile-title>
-            </v-list-tile>
-            <v-list-tile class="v-list__tile--link">
-              <v-list-tile-title>
+            <v-list-item @click="showQrcodeScanner = true">
+              <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item class="v-list__tile--link">
+              <v-list-item-title>
                 <qrcode-capture
                   @detect="onDetectQrcode"
                   @error="onDetectQrcodeError"
                 >
                   <span>{{ $t('transfer.decode_from_image') }}</span>
                 </qrcode-capture>
-              </v-list-tile-title>
-            </v-list-tile>
+              </v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
       </template>
     </v-text-field>
 
-    <div class="text-xs-center">
+    <div class="text-center">
       <v-btn
         :class="`${className}__export_keys_button`"
         class="a-btn-primary"
@@ -221,21 +226,27 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-  .export-keys-form
-    &__keys
-      margin-bottom: 24px
-    &__disclaimer
-      margin-top: 12px
-      margin-bottom: 24px
-    &__btn-copy
-      margin-right: 0
-      margin-bottom: 0
-    &__export_keys_button
-      margin-top: 15px
-      margin-bottom: 24px
-    &__copy_all_button
-      padding-right: 0
-      margin-right: 0
-      margin-bottom: 12px
+<style lang="scss" scoped>
+.export-keys-form {
+  &__keys {
+    margin-bottom: 24px;
+  }
+  &__disclaimer {
+    margin-top: 12px;
+    margin-bottom: 24px;
+  }
+  &__btn-copy {
+    margin-right: 0;
+    margin-bottom: 0;
+  }
+  &__export_keys_button {
+    margin-top: 15px;
+    margin-bottom: 24px;
+  }
+  &__copy_all_button {
+    padding-right: 0;
+    margin-right: 0;
+    margin-bottom: 12px;
+  }
+}
 </style>

@@ -18,9 +18,9 @@
         </div>
       </v-card-text>
 
-      <v-flex
-        xs12
-        class="text-xs-center"
+      <v-col
+        cols="12"
+        class="text-center pa-0"
       >
         <v-btn
           :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
@@ -33,10 +33,10 @@
             {{ $t('home.free_adm_btn') }}
           </div>
         </v-btn>
-      </v-flex>
+      </v-col>
 
-      <v-flex
-        xs12
+      <v-col
+        cols="12"
         :class="`${className}__btn-show-article`"
       >
         <a
@@ -45,7 +45,7 @@
         >
           {{ $t('chats.how_to_use_messenger') }}
         </a>
-      </v-flex>
+      </v-col>
     </v-card>
   </v-dialog>
 </template>
@@ -89,16 +89,21 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-  .free-tokens-dialog
-    &__disclaimer
-      margin-top: 10px
-    &__btn-free-tokens
-      margin-top: 15px
-      margin-bottom: 20px
-    &__btn-icon
-      margin-right: 8px
-    &__btn-show-article
-      padding-bottom: 30px
-      text-align: center
+<style lang="scss" scoped>
+.free-tokens-dialog {
+  &__disclaimer {
+    margin-top: 10px;
+  }
+  &__btn-free-tokens {
+    margin-top: 15px;
+    margin-bottom: 20px;
+  }
+  &__btn-icon {
+    margin-right: 8px;
+  }
+  &__btn-show-article {
+    padding: 0 0 30px 0;
+    text-align: center;
+  }
+}
 </style>

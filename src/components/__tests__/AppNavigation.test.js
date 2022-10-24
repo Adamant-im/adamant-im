@@ -95,7 +95,6 @@ describe('AppNavigation.vue', () => {
 
     expect(Array.isArray(vm.pages)).toBe(true)
     expect(vm.currentPageIndex).toBe(0)
-    expect(vm.showNav).toBe(true)
   })
 
   it('should return indexOf current page depending on the $route.path', () => {
@@ -167,6 +166,6 @@ describe('AppNavigation.vue', () => {
       },
     })
 
-    expect(wrapper.find('v-badge-stub > span').text()).toBe('10') // visible badge
+    expect(wrapper.find('v-badge-stub').attributes().content).toBe('10') // visible badge
   })
 })

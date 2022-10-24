@@ -348,8 +348,9 @@
   </svg>
 </template>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_variables.scss';
+@import '~vuetify/src/styles/settings/_colors.scss';
 
 .st0{fill:url(#SVGID_1_);}
 .st1{fill:url(#SVGID_2_);}
@@ -365,20 +366,24 @@
 .st11{fill:#CBCACA;stroke:#CDCCCC;stroke-width:0.5;stroke-miterlimit:10;}
 .st12{fill:none;stroke:#CDCCCC;stroke-width:0.5;stroke-miterlimit:10;}
 
-.logo
-  width: 213px
-  height: 213px
-  border: 1px solid #f1f1f1
-  border-radius: 50% !important
-  background-color: $shades.white
+.logo {
+  width: 213px;
+  height: 213px;
+  border: 1px solid #f1f1f1;
+  border-radius: 50% !important;
+  background-color: map-get($shades, 'white');
+  .st9 {
+    stroke: rgba(103, 148, 206, .2);
+  }
 
-  .st9
-    stroke: rgba(103, 148, 206, .2)
-  #sidestroke
-    stroke: rgba(103, 148, 206, .8)
-
-@media $display-breakpoints.sm-and-up
-  .logo
-    width: 300px
-    height: 300px
+  #sidestroke {
+    stroke: rgba(103, 148, 206, .8);
+  }
+}
+@media #{map-get($display-breakpoints, 'sm-and-up')} {
+  .logo {
+    width: 300px;
+    height: 300px;
+  }
+}
 </style>

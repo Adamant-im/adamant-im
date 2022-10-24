@@ -1,8 +1,8 @@
 <template>
-  <v-list-tile
+  <v-list-item
     v-if="isLoadingSeparator"
   >
-    <v-list-tile-content
+    <v-list-item-content
       style="align-items: center"
     >
       <v-icon
@@ -11,14 +11,14 @@
       >
         mdi-dots-horizontal
       </v-icon>
-    </v-list-tile-content>
-  </v-list-tile>
-  <v-list-tile
+    </v-list-item-content>
+  </v-list-item>
+  <v-list-item
     v-else
     :class="className"
     @click="$emit('click')"
   >
-    <v-list-tile-avatar>
+    <v-list-item-avatar>
       <icon
         v-if="readOnly"
         :class="`${className}__icon`"
@@ -33,32 +33,34 @@
       />
 
       <v-badge
+        v-if="numOfNewMessages > 0"
         overlap
         color="primary"
-      >
-        <span
-          v-if="numOfNewMessages > 0"
-          slot="badge"
-        >
-          {{ numOfNewMessages > 99 ? '99+' : numOfNewMessages }}
-        </span>
-      </v-badge>
-    </v-list-tile-avatar>
+        :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
+      />
+    </v-list-item-avatar>
 
-    <v-list-tile-content>
-      <v-list-tile-title
-        class="a-text-regular-enlarged-bold"
+    <v-list-item-content>
+      <v-list-item-title
+        :class="{
+          'a-text-regular-enlarged-bold': true,
+          [`${className}__title`]: true
+        }"
         v-text="isAdamantChat ? $t(contactName) : contactName"
       />
 
       <!-- New chat (no messages yet) -->
       <template v-if="isNewChat">
-        <v-list-tile-sub-title>&nbsp;</v-list-tile-sub-title>
+        <v-list-item-subtitle>&nbsp;</v-list-item-subtitle>
       </template>
 
       <!-- Transaction -->
       <template v-else-if="isTransferType">
-        <v-list-tile-sub-title>
+        <v-list-item-subtitle
+          :class="{
+            [`${className}__subtitle`]: true
+          }"
+        >
           <v-icon
             v-if="!isIncomingTransaction"
             size="15"
@@ -72,12 +74,17 @@
           >
             {{ statusIcon }}
           </v-icon>
-        </v-list-tile-sub-title>
+        </v-list-item-subtitle>
       </template>
 
       <!-- Message -->
       <template v-else>
-        <v-list-tile-sub-title class="a-text-explanation-enlarged-bold">
+        <v-list-item-subtitle
+          :class="{
+            'a-text-explanation-enlarged-bold': true,
+            [`${className}__subtitle`]: true
+          }"
+        >
           <v-icon
             v-if="!isIncomingTransaction"
             size="15"
@@ -85,9 +92,9 @@
             {{ statusIcon }}
           </v-icon>
           {{ lastMessageTextNoFormats }}
-        </v-list-tile-sub-title>
+        </v-list-item-subtitle>
       </template>
-    </v-list-tile-content>
+    </v-list-item-content>
 
     <div
       v-if="!isMessageReadonly"
@@ -95,7 +102,7 @@
     >
       {{ createdAt | date }}
     </div>
-  </v-list-tile>
+  </v-list-item>
 </template>
 
 <script>
@@ -231,9 +238,9 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '../assets/styles/settings/_colors.scss';
 
 @keyframes movement {
   from { left: -50px }
@@ -251,26 +258,50 @@ export default {
 /**
  * 1. Message/Transaction content.
  */
-.chat-brief
-  position: relative
+.chat-brief {
+  position: relative;
 
-  &__date
-    a-text-explanation-small()
-    position: absolute
-    top: 16px
-    right: 16px
-  >>> .v-list__tile__sub-title // [1]
-    a-text-explanation-enlarged-bold()
+  &__title {
+    line-height: 24px;
+    margin-bottom: 0;
+  }
+
+  &__subtitle {
+    line-height: 1.5;
+  }
+
+  &__date {
+    @include a-text-explanation-small();
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+
+  :deep(.v-list__tile__sub-title)  {
+    @include a-text-explanation-enlarged-bold();
+  }
+
+  :deep(.v-avatar.v-list-item__avatar) {
+    overflow: visible;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .chat-brief
-    border-bottom: 1px solid $adm-colors.secondary2
+.theme--light {
+  .chat-brief {
+    border-bottom: 1px solid map-get($adm-colors, 'secondary2');
 
-    &__date
-      color: $adm-colors.muted
-    &__icon
-      fill: #BDBDBD
-    >>> .v-list__tile__sub-title // [1]
-      color: $adm-colors.muted
+    &__date {
+      color: map-get($adm-colors, 'muted');
+    }
+
+    &__icon {
+      fill: #BDBDBD;
+    }
+
+    :deep(.v-list__tile__sub-title)  {
+      color: map-get($adm-colors, 'muted');
+    }
+  }
+}
 </style>

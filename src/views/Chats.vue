@@ -1,41 +1,37 @@
 <template>
-  <v-layout
-    row
-    wrap
-    justify-center
+  <v-row
+    justify="center"
     :class="className"
+    no-gutters
   >
     <container>
-      <v-layout
-        row
-        wrap
-      >
-        <v-flex xs12>
+      <v-row no-gutters>
+        <v-col cols="12">
           <v-list
             two-line
             subheader
             class="transparent"
           >
-            <v-list-tile
+            <v-list-item
               v-if="isFulfilled"
-              :class="`${className}__tile`"
+              :class="`${className}__item`"
               @click="showChatStartDialog = true"
             >
-              <v-list-tile-avatar size="24">
+              <v-list-item-avatar size="24">
                 <v-icon
                   :class="`${className}__icon`"
                   size="16"
                 >
                   mdi-message-outline
                 </v-icon>
-              </v-list-tile-avatar>
+              </v-list-item-avatar>
 
               <div>
-                <v-list-tile-title :class="`${className}__title`">
+                <v-list-item-title :class="`${className}__title`">
                   {{ $t('chats.new_chat') }}
-                </v-list-tile-title>
+                </v-list-item-title>
               </div>
-            </v-list-tile>
+            </v-list-item>
 
             <transition-group
               v-if="isFulfilled"
@@ -57,10 +53,10 @@
               />
             </transition-group>
           </v-list>
-        </v-flex>
+        </v-col>
 
         <ChatSpinner :value="!isFulfilled" />
-      </v-layout>
+      </v-row>
     </container>
 
     <chat-start-dialog
@@ -69,7 +65,7 @@
       @error="onError"
       @start-chat="openChat"
     />
-  </v-layout>
+  </v-row>
 </template>
 
 <script>
@@ -191,38 +187,50 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../assets/styles/settings/_colors.scss';
+.chats-view {
+  &__item {
+    justify-content: flex-end;
+    height: 56px;
+    min-height: 56px;
 
-.chats-view
-  &__tile
-    >>> .v-list__tile
-      justify-content: flex-end
-      height: 56px
-    >>> .v-list__tile__avatar
-      min-width: 28px
-  &__title
-    font-weight: 300
-    font-size: 14px
+    & :deep(.v-list-item__avatar) {
+      margin-right: 4px;
+    }
+  }
+  &__title {
+    font-weight: 300;
+    font-size: 14px;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .chats-view
-    &__tile
-      >>> .v-list__tile
-        background-color: $adm-colors.secondary2-transparent
-    &__title
-      color: $adm-colors.muted
-    &__icon
-      color: $adm-colors.regular
+.theme--light {
+  .chats-view {
+    &__item {
+      background-color: map-get($adm-colors, 'secondary2-transparent');
+    }
+    &__title {
+      color: map-get($adm-colors, 'muted');
+    }
+    &__icon {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
 
-.theme--dark
-  .chats-view
-    &__icon
-      color: $shades.white
+.theme--dark {
+  .chats-view {
+    &__icon {
+      color: map-get($shades, 'white');
+    }
+  }
+}
 
 /** Animations **/
-.messages-move
-  transition: transform 0.5s
+.messages-move {
+  transition: transform 0.5s;
+}
 </style>

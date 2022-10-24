@@ -1,18 +1,23 @@
 <template>
-  <v-bottom-nav
-    :active.sync="currentPageIndex"
-    :value="showNav"
+  <v-bottom-navigation
+    v-model="currentPageIndex"
     app
     height="50"
     class="app-navigation"
   >
-    <v-layout justify-center>
+    <v-row
+      justify="center"
+      no-gutters
+    >
       <container class="app-navigation__container">
-        <v-layout justify-center>
+        <v-row
+          justify="center"
+          no-gutters
+        >
           <!-- Wallet -->
           <v-btn
             to="/home"
-            flat
+            text
           >
             <span>{{ $t('bottom.wallet_button') }}</span>
             <v-icon size="20">
@@ -23,19 +28,15 @@
           <!-- Chat -->
           <v-btn
             to="/chats"
-            flat
+            text
           >
             <span>{{ $t('bottom.chats_button') }}</span>
             <v-badge
+              :value="numOfNewMessages > 0"
               overlap
               color="primary"
+              :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
             >
-              <span
-                v-if="numOfNewMessages > 0"
-                slot="badge"
-              >
-                {{ numOfNewMessages > 99 ? '99+' : numOfNewMessages }}
-              </span>
               <v-icon size="20">
                 mdi-forum
               </v-icon>
@@ -45,17 +46,17 @@
           <!-- Settings -->
           <v-btn
             to="/options"
-            flat
+            text
           >
             <span>{{ $t('bottom.settings_button') }}</span>
             <v-icon size="20">
               mdi-cog
             </v-icon>
           </v-btn>
-        </v-layout>
+        </v-row>
       </container>
-    </v-layout>
-  </v-bottom-nav>
+    </v-row>
+  </v-bottom-navigation>
 </template>
 
 <script>
@@ -78,8 +79,7 @@ export default {
         icon: 'mdi-cog'
       }
     ],
-    currentPageIndex: 0,
-    showNav: true
+    currentPageIndex: 0
   }),
   computed: {
     numOfNewMessages () {
@@ -108,41 +108,60 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/settings/_colors.scss';
+@import '../assets/styles/settings/_colors.scss';
 
 /**
  * 1. Navigation Button.
  *    a. Active
  *    b. Inactive
  */
-.app-navigation
-  &.v-bottom-nav
-    box-shadow: none
-  &.v-bottom-nav .v-btn // [1]
-    font-weight: 300
-    padding-bottom: 8px
-  >>> .v-btn.v-btn--active // [1.a]
-    padding-top: 4px
-  >>> .v-btn:not(.v-btn--active) // [1.b]
-    filter: unset
-    padding-top: 6px
-    font-size: 12px
+.app-navigation {
+  &.v-bottom-navigation {
+    box-shadow: none;
+  }
+  &.v-bottom-navigation .v-btn  {
+    font-weight: 300;
+    padding-bottom: 8px;
+    flex-grow: 1;
+  }
+  :deep(.v-btn.v-btn--active)  {
+    font-size: 14px;
+    padding-top: 4px;
+  }
+  :deep(.v-btn:not(.v-btn--active))  {
+    filter: unset;
+    padding-top: 6px;
+    font-size: 12px;
+  }
+  :deep(.v-btn .v-icon) {
+    margin-bottom: 4px;
+  }
+}
 
-.theme--light
-  .app-navigation
-    &__container
-      border-top: 1px solid $grey.lighten-2
-    &.v-bottom-nav
-      background-color: $shades.white
-    >>> .v-btn.v-btn--active // [1.a]
-      color: $adm-colors.regular
-    >>> .v-btn:not(.v-btn--active) // [1.b]
-      color: $adm-colors.muted !important
+.theme--light {
+  .app-navigation {
+    &__container {
+      border-top: 1px solid map-get($grey, 'lighten-2');
+    }
+    &.v-bottom-navigation {
+      background-color: map-get($shades, 'white');
+    }
+    :deep(.v-btn.v-btn--active)  {
+      color: map-get($adm-colors, 'regular');
+    }
+    :deep(.v-btn:not(.v-btn--active))  {
+      color: map-get($adm-colors, 'muted') !important;
+    }
+  }
+}
 
-.theme--dark
-  .app-navigation
-    &.v-bottom-nav
-      background-color: $shades.black
+.theme--dark {
+  .app-navigation {
+    &.v-bottom-navigation {
+      background-color: map-get($shades, 'black');
+    }
+  }
+}
 </style>

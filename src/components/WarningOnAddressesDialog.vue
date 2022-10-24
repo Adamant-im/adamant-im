@@ -21,9 +21,9 @@
       </v-card-text>
       <!-- eslint-enable vue/no-v-html -->
 
-      <v-flex
-        xs12
-        class="text-xs-center"
+      <v-col
+        cols="12"
+        class="text-center"
       >
         <v-btn
           :class="[`${className}__btn-hide`, 'a-btn-primary']"
@@ -36,10 +36,10 @@
             {{ $t('warning_on_addresses.hide_button') }}
           </div>
         </v-btn>
-      </v-flex>
+      </v-col>
 
-      <v-flex
-        xs12
+      <v-col
+        cols="12"
         :class="`${className}__btn-forget`"
       >
         <a
@@ -48,7 +48,7 @@
         >
           {{ $t('warning_on_addresses.forget_button') }}
         </a>
-      </v-flex>
+      </v-col>
     </v-card>
   </v-dialog>
 </template>
@@ -130,16 +130,22 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-  .warning-on-addresses-dialog
-    &__disclaimer
-      margin-top: 10px
-    &__btn-hide
-      margin-top: 15px
-      margin-bottom: 20px
-    &__btn-icon
-      margin-right: 8px
-    &__btn-forget
-      padding-bottom: 30px
-      text-align: center
+
+<style lang="scss" scoped>
+.warning-on-addresses-dialog {
+  &__disclaimer {
+    margin-top: 10px;
+  }
+  &__btn-hide {
+    margin-top: 15px;
+    margin-bottom: 20px;
+  }
+  &__btn-icon {
+    margin-right: 8px;
+  }
+  &__btn-forget {
+    padding-bottom: 30px;
+    text-align: center;
+  }
+}
 </style>

@@ -1,56 +1,52 @@
 <template>
-  <v-layout
-    justify-center
-    row
+  <v-dialog
+    v-model="show"
+    max-width="360"
   >
-    <v-dialog
-      v-model="show"
-      max-width="360"
-    >
-      <v-card>
-        <v-card-title class="a-text-header">
-          {{ isMe ? $t('chats.my_qr_code') : $t('chats.partner_info') }}
-          <v-spacer />
-          <v-btn
-            flat
-            icon
-            class="close-icon"
-            @click="show = false"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-card-title>
-        <v-divider class="a-divider" />
-        <v-list two-line>
-          <template>
-            <v-list-tile>
-              <v-list-tile-avatar>
-                <ChatAvatar
-                  :user-id="address"
-                  use-public-key
-                />
-              </v-list-tile-avatar>
-              <v-list-tile-content>
-                <v-list-tile-title v-text="address" />
-                <v-list-tile-sub-title v-text="isMe ? $t('chats.me') : name" />
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
-        </v-list>
-        <v-layout
-          align-center
-          justify-center
-          class="pb-4"
+    <v-card>
+      <v-card-title class="a-text-header">
+        {{ isMe ? $t('chats.my_qr_code') : $t('chats.partner_info') }}
+        <v-spacer />
+        <v-btn
+          text
+          icon
+          class="close-icon"
+          @click="show = false"
         >
-          <QrcodeRenderer
-            :logo="logo"
-            :opts="opts"
-            :text="text"
-          />
-        </v-layout>
-      </v-card>
-    </v-dialog>
-  </v-layout>
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-card-title>
+      <v-divider class="a-divider" />
+      <v-list two-line>
+        <template>
+          <v-list-item>
+            <v-list-item-avatar>
+              <ChatAvatar
+                :user-id="address"
+                use-public-key
+              />
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title v-text="address" />
+              <v-list-item-subtitle v-text="isMe ? $t('chats.me') : name" />
+            </v-list-item-content>
+          </v-list-item>
+        </template>
+      </v-list>
+      <v-row
+        align="center"
+        justify="center"
+        class="pb-6"
+        no-gutters
+      >
+        <QrcodeRenderer
+          :logo="logo"
+          :opts="opts"
+          :text="text"
+        />
+      </v-row>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -113,7 +109,8 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-.close-icon
-  margin: 0
+<style lang="scss" scoped>
+.close-icon {
+  margin: 0;
+}
 </style>

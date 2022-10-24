@@ -14,7 +14,7 @@ exports[`AChat.vue renders the correct markup 1`] = `
       class="a-chat__body"
     >
       <div
-        class="text-xs-center py-2"
+        class="text-center py-2"
       >
         <v-progress-circular-stub
           color="primary"

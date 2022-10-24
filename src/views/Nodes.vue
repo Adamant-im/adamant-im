@@ -11,10 +11,9 @@
       fluid
       class="pa-0"
     >
-      <v-layout
-        row
-        wrap
-        justify-center
+      <v-row
+        justify="center"
+        no-gutters
       >
         <container padding>
           <v-data-table
@@ -22,57 +21,38 @@
             :items="nodes"
             :class="`${className}__table`"
             item-key="url"
-            select-all
-            hide-actions
+            show-select
+            hide-default-footer
+            mobile-breakpoint="0"
+            sort-by="url"
           >
-            <template
-              slot="headers"
-              slot-scope="props"
-            >
-              <tr>
-                <th style="width:56px" />
-                <th
-                  v-for="header in props.headers"
-                  :key="header.text"
-                  :class="[
-                    `${className}__header`,
-                    'pa-0',
-                    { 'text-xs-left': header.align === 'left' }
-                  ]"
-                >
-                  {{ $t(header.text) }}
-                </th>
-              </tr>
+            <template #[`header.data-table-select`]>
+              <!-- hide checkbox -->
             </template>
 
-            <template
-              slot="items"
-              slot-scope="props"
-            >
-              <td class="pr-2">
-                <v-checkbox
-                  :input-value="props.item.active"
-                  :class="`${className}__checkbox`"
-                  hide-details
-                  color="grey darken-1"
-                  @click.native="toggle(props.item)"
-                />
-              </td>
-              <td
-                :class="`${className}__body`"
-                class="pl-0 pr-2"
-                style="line-height: 1;"
-              >
+            <template #[`item.data-table-select`]="props">
+              <v-simple-checkbox
+                :value="props.item.active"
+                :class="`${className}__checkbox`"
+                color="grey darken-1"
+                @input="toggle(props.item)"
+              />
+            </template>
+
+            <template #[`item.url`]="props">
+              <td class="pa-0 pr-2">
                 {{ props.item.url }}
                 <span
                   v-if="props.item.version"
                   :class="`${className}__node-version`"
-                ><br>{{ 'v' + props.item.version }}</span>
+                >
+                  <br>{{ 'v' + props.item.version }}
+                </span>
               </td>
-              <td
-                :class="`${className}__body`"
-                class="pl-0 pr-2"
-              >
+            </template>
+
+            <template #[`item.ping`]="props">
+              <td class="pa-0 pr-2">
                 <span>
                   {{ getNodeStatus(props.item) }}
                 </span>
@@ -83,10 +63,10 @@
                   mdi-checkbox-blank-circle
                 </v-icon>
               </td>
-              <td
-                :class="`${className}__body`"
-                class="pl-0 pr-2"
-              >
+            </template>
+
+            <template #[`item.socket`]="props">
+              <td class="pa-0 pr-2">
                 <v-icon :color="props.item.socketSupport ? 'green' : 'red'">
                   {{ props.item.socketSupport ? 'mdi-check' : 'mdi-close' }}
                 </v-icon>
@@ -97,7 +77,7 @@
           <v-checkbox
             v-model="preferFastestNodeOption"
             :label="$t('nodes.fastest_title')"
-            :class="`${className}__checkbox`"
+            :class="`${className}__checkbox mt-4`"
             color="grey darken-1"
           />
           <div class="a-text-explanation-enlarged">
@@ -107,7 +87,7 @@
           <v-checkbox
             v-model="useSocketConnection"
             :label="$t('nodes.use_socket_connection')"
-            :class="`${className}__checkbox`"
+            :class="`${className}__checkbox mt-4`"
             color="grey darken-1"
           />
           <div class="a-text-explanation-enlarged">
@@ -117,14 +97,14 @@
           <!-- eslint-disable vue/no-v-html -- Safe internal content -->
           <div
             :class="`${className}__info a-text-regular-enlarged`"
-            class="mt-4"
+            class="mt-6"
             v-html="$t('nodes.nodeLabelDescription')"
           />
           <!-- eslint-enable vue/no-v-html -->
 
           <div>&nbsp;<br>&nbsp;</div>
         </container>
-      </v-layout>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -140,23 +120,6 @@ export default {
     pagination: {
       sortBy: 'name'
     },
-    headers: [
-      {
-        text: 'nodes.host',
-        value: 'url',
-        align: 'left'
-      },
-      {
-        text: 'nodes.ping',
-        value: 'ping',
-        align: 'left'
-      },
-      {
-        text: 'nodes.socket',
-        value: 'socket',
-        align: 'left'
-      }
-    ],
     timer: null
   }),
   computed: {
@@ -182,6 +145,25 @@ export default {
     },
     nodes () {
       return this.$store.getters['nodes/list']
+    },
+    headers () {
+      return [
+        {
+          text: this.$t('nodes.host'),
+          value: 'url',
+          align: 'left'
+        },
+        {
+          text: this.$t('nodes.ping'),
+          value: 'ping',
+          align: 'left'
+        },
+        {
+          text: this.$t('nodes.socket'),
+          value: 'socket',
+          align: 'left'
+        }
+      ]
     }
   },
   mounted () {
@@ -233,72 +215,106 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '~vuetify/src/styles/settings/_variables.scss';
+@import '../assets/styles/settings/_colors.scss';
 
-.nodes-view
-  &__table
-    margin-left: -24px
-    margin-right: -24px
+.nodes-view {
+  &__table {
+    margin-left: -24px;
+    margin-right: -24px;
+    max-width: unset;
+    :deep(table.v-table) tbody td:first-child {
+      padding-left: 24px;
+    }
+    :deep(.v-data-table-header)  {
+      th {
+        padding: 0 !important;
+      }
+    }
+    :deep(.v-input--selection-controls__input)  {
+      margin-right: 0;
+    }
+  }
+  &__body {
+    font-size: 14px;
+    font-weight: 300;
+  }
+  &__info {
+    :deep(a) {
+      text-decoration-line: none;
+      &:hover {
+        text-decoration-line: underline;
+      }
+    }
+  }
+  &__node-version {
+    @include a-text-explanation-small();
+  }
+  &__checkbox {
+    :deep(.v-label) {
+      @include a-text-regular-enlarged();
+    }
+  }
+  :deep(.v-input--selection-controls:not(.v-input--hide-details)) .v-input__slot {
+    margin-bottom: 0;
+  }
 
-    >>> table.v-table tbody td:first-child
-      padding-left: 24px
-
-  &__header
-    font-size: 12px
-    font-weight: 300
-  &__body
-    font-size: 14px
-    font-weight: 300
-  &__info
-    >>> a
-      text-decoration-line: none
-      &:hover
-        text-decoration-line: underline
-  &__node-version
-    a-text-explanation-small()
-  &__checkbox
-    >>> .v-label
-      a-text-regular-enlarged()
-  >>> .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot
-    margin-bottom: 0
+  @media #{map-get($display-breakpoints, 'md-and-up')} {
+    :deep(.v-data-table .v-data-table__wrapper table tbody tr td),
+    :deep(.v-data-table .v-data-table__wrapper table thead tr th) {
+      padding: 0 24px;
+    }
+  }
+}
 
 /** Themes **/
-.theme--light
-  .nodes-view
-    &__header
-      color: $adm-colors.muted
-    &__body
-      color: $adm-colors.regular
-    &__node-version
-      color: $adm-colors.muted
-    &__checkbox
-      >>> .v-label
-        color: $adm-colors.regular
-      >>> .v-input--selection-controls__ripple
-      >>> .v-input--selection-controls__input i
-        color: $adm-colors.regular !important
-        caret-color: $adm-colors.regular !important
+.theme--light {
+  .nodes-view {
+    &__body {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__node-version {
+      color: map-get($adm-colors, 'muted');
+    }
+    &__checkbox {
+      :deep(.v-label) {
+        color: map-get($adm-colors, 'regular');
+      }
+      :deep(.v-input--selection-controls__ripple),
+      :deep(.v-input--selection-controls__input) i {
+        color: map-get($adm-colors, 'regular') !important;
+        caret-color: map-get($adm-colors, 'regular') !important;
+      }
+    }
+    :deep(.v-table) tbody tr:not(:last-child) {
+      border-bottom: 1px solid map-get($adm-colors, 'secondary2');
+    }
+  }
+}
 
-    >>> .v-table tbody tr:not(:last-child)
-      border-bottom: 1px solid $adm-colors.secondary2
-
-.theme--dark
-  .nodes-view
-    &__node-version
-      opacity: 0.7
+.theme--dark {
+  .nodes-view {
+    &__node-version {
+      opacity: 0.7;
+    }
+  }
+}
 
 /**
- * 1. Style VTable to be full width.
- */
-@media $display-breakpoints.sm-and-down
-  .nodes-view
-    &__table // [1]
-      margin-left: -16px
-      margin-right: -16px
+* 1. Style VTable to be full width.
+*/
+@media #{map-get($display-breakpoints, 'sm-and-down')} {
+  .nodes-view {
+    &__table { // [1]
+      margin-left: -16px;
+      margin-right: -16px;
+    }
 
-    >>> table.v-table tbody td:first-child
-      padding-left: 16px
+    :deep(table.v-table) tbody td:first-child {
+      padding-left: 16px;
+    }
+  }
+}
 </style>

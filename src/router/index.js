@@ -28,7 +28,11 @@ const router = new Router({
       component: Nodes,
       meta: {
         requiresAuth: true,
-        layout: 'no-container'
+        layout: 'no-container',
+        scrollPosition: {
+          x: 0,
+          y: 0
+        }
       }
     },
     {
