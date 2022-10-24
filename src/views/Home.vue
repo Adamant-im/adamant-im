@@ -246,6 +246,9 @@ export default {
       flex-basis: 32px;
       min-width: 32px;
     }
+    :deep(.v-slide-group__next.v-slide-group__next--disabled) {
+      display: none;
+    }
   }
   &__icon {
     margin-bottom: 3px;
