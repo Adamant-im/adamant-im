@@ -16,6 +16,10 @@
         </language-switcher>
       </div>
 
+      <v-btn @click="handleFetchClick">Fetch todo</v-btn>
+      <div>status: {{ todoStore.status }}</div>
+      <div>data: {{ todoStore.todo }}</div>
+
       <v-card
         flat
         color="transparent"
@@ -156,6 +160,9 @@ import FileIcon from '@/components/icons/common/File'
 import LoginPasswordForm from '@/components/LoginPasswordForm'
 import Logo from '@/components/icons/common/Logo'
 import { navigateByURI } from '@/router/navigationGuard'
+import { mapStores } from 'pinia'
+import { useSnackbarStore } from '@/pinia/stores/snackbar/snackbar'
+import { useTodoStore } from '@/pinia/stores/todo'
 
 export default {
   components: {
@@ -177,6 +184,8 @@ export default {
     logo: '/img/adamant-logo-transparent-512x512.png'
   }),
   computed: {
+    ...mapStores(useSnackbarStore),
+    ...mapStores(useTodoStore),
     className () {
       return 'login-page'
     },
@@ -207,8 +216,14 @@ export default {
       navigateByURI()
     },
     onLoginError (key) {
-      this.$store.dispatch('snackbar/show', {
+      console.log('this.snackbarStore', this.snackbarStore)
+      this.snackbarStore.show({
         message: this.$t(key)
+      })
+    },
+    handleFetchClick () {
+      this.todoStore.fetchTodo({
+        id: 1
       })
     },
     onCopyPassphrase () {

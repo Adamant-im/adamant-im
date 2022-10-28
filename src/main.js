@@ -1,6 +1,9 @@
 import 'core-js/features/array/flat-map'
+import { PiniaSagaPlugin } from '@/pinia/saga'
+// import { PiniaTestPlugin } from '@/pinia/saga/plugin'
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
+import { createPinia, PiniaVuePlugin } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
@@ -26,6 +29,10 @@ export const vueBus = new Vue()
 
 Vue.use(Vuetify)
 Vue.use(VueFormatters)
+Vue.use(PiniaVuePlugin)
+const pinia = createPinia()
+// pinia.use(PiniaTestPlugin)
+pinia.use(PiniaSagaPlugin())
 
 document.title = i18n.t('app_title')
 
@@ -38,6 +45,7 @@ window.ep = new Vue({
   vuetify,
   router,
   store,
+  pinia,
   components: { App },
   template: '<App/>',
   i18n,
