@@ -1,6 +1,5 @@
 import 'core-js/features/array/flat-map'
 import { createApp } from 'vue'
-import Vuetify from 'vuetify/lib'
 
 import App from './App.vue'
 import router from './router'
@@ -26,7 +25,6 @@ export const vueBus = createApp(() => {})
 
 const app = createApp(App, {
   version: packageJSON.version,
-  vuetify,
   router,
   store,
   components: { App },
@@ -34,7 +32,7 @@ const app = createApp(App, {
   i18n
 }).mount('#app')
 
-app.use(Vuetify)
+app.use(vuetify)
 app.use(VueFormatters)
 app.filter('currency', currencyFilter)
 app.filter('numberFormat', numberFormatFilter)

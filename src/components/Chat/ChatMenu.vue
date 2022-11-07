@@ -142,7 +142,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import '~vuetify/settings';
 
 .v-menu__content {
   max-height: 70%;

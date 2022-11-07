@@ -3635,7 +3635,7 @@ acorn-walk@^7.1.1:
   resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-7.2.0.tgz#0de889a601203909b0fbe07b8938dc21d2e967bc"
   integrity sha512-OPdCF6GsMIP+Az+aWfAAOEt2/+iVDKE7oy6lJ098aoe59oAmK76qV6Gw60SbZ8jHuG2wH058GF4pLFbYamYrVA==
 
-acorn-walk@^8.0.0, acorn-walk@^8.0.2, acorn-walk@^8.2.0:
+acorn-walk@^8.0.0, acorn-walk@^8.0.2:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-8.2.0.tgz#741210f2e2426454508853a2f44d0ab83b7f69c1"
   integrity sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA==
@@ -3650,7 +3650,7 @@ acorn@^7.1.1, acorn@^7.4.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-7.4.1.tgz#feaed255973d2e77555b83dbc08851a6c63520fa"
   integrity sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==
 
-acorn@^8.0.4, acorn@^8.4.1, acorn@^8.8.0:
+acorn@^8.0.4, acorn@^8.8.0:
   version "8.8.0"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.8.0.tgz#88c0187620435c7f6015803f5539dae05a9dbea8"
   integrity sha512-QOxyigPVrpZ2GXT+PFyZTl6TtOFc5egxHIP9IlQ+RbupQuX4RkT/Bee4/kQuC02Xkzg84JcT7oLYtDIQxp+v7w==
@@ -5037,11 +5037,6 @@ call-bind@^1.0.0, call-bind@^1.0.2:
     function-bind "^1.1.1"
     get-intrinsic "^1.0.2"
 
-callsite@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/callsite/-/callsite-1.0.0.tgz#280398e5d664bd74038b6f0905153e6e8af1bc20"
-  integrity sha512-0vdNRFXn5q+dtOqjfFtmtlI9N2eVZ7LMyEV2iKC5mEEFvSg/69Ml6b/WU2qF8W1nLRa0wiSrDT3Y5jOHZCwKPQ==
-
 callsites@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/callsites/-/callsites-3.1.0.tgz#b3630abd8943432f54b3f0519238e33cd7df2f73"
@@ -6133,13 +6128,6 @@ debug@~3.1.0:
   integrity sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==
   dependencies:
     ms "2.0.0"
-
-decache@^4.6.0:
-  version "4.6.1"
-  resolved "https://registry.yarnpkg.com/decache/-/decache-4.6.1.tgz#5928bfab97a6fcf22a65047a3d07999af36efaf0"
-  integrity sha512-ohApBM8u9ygepJCjgBrEZSSxPjc0T/PJkD+uNyxXPkqudyUpdXpwJYp0VISm2WrPVzASU6DZyIi6BWdyw7uJ2Q==
-  dependencies:
-    callsite "^1.0.0"
 
 decamelize@^1.2.0:
   version "1.2.0"
@@ -7665,14 +7653,6 @@ file-entry-cache@^6.0.1:
   integrity sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==
   dependencies:
     flat-cache "^3.0.4"
-
-file-loader@^6.2.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/file-loader/-/file-loader-6.2.0.tgz#baef7cf8e1840df325e4390b4484879480eebe4d"
-  integrity sha512-qo3glqyTa61Ytg4u73GultjHGjdRyig3tG6lPtyX/jOEJvHif9uB0/OCI2Kif6ctF3caQTW2G5gym21oAsI4pw==
-  dependencies:
-    loader-utils "^2.0.0"
-    schema-utils "^3.0.0"
 
 file-saver@^2.0.5:
   version "2.0.5"
@@ -14591,21 +14571,10 @@ vue@^3.2.41:
     "@vue/server-renderer" "3.2.41"
     "@vue/shared" "3.2.41"
 
-vuetify-loader@^1.7.3:
-  version "1.9.2"
-  resolved "https://registry.yarnpkg.com/vuetify-loader/-/vuetify-loader-1.9.2.tgz#adcadac71c6d9b24bde42a5b81dfda1871f73f81"
-  integrity sha512-8PP2w7aAs/rjA+Izec6qY7sHVb75MNrGQrDOTZJ5IEnvl+NiFhVpU2iWdRDZ3eMS842cWxSWStvkr+KJJKy+Iw==
-  dependencies:
-    acorn "^8.4.1"
-    acorn-walk "^8.2.0"
-    decache "^4.6.0"
-    file-loader "^6.2.0"
-    loader-utils "^2.0.0"
-
-vuetify@2.6.9:
-  version "2.6.9"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.6.9.tgz#abd3884bee9947c4a5b1dd560ad832bc4d8fccbf"
-  integrity sha512-f4jy/DWCwyrkgbbArg0ugSX70aHfv7oO3zz2nuXqoD3W0X8AgunrakzKkt0H+BnuZgesoit9NzLoJNj1GY5DWw==
+vuetify@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.0.0.tgz#372eed0663f0ffba53439cd99aa46031e560b0f4"
+  integrity sha512-0olLmKWb+oTaebGTM02+1fWaAgnGDuIt86K3jDv2LnALQ2atSzhDS1SSASJsJCZ2PgFBdDAeJVLcNWWavRYAlQ==
 
 vuex-persist@^3.1.3:
   version "3.1.3"

@@ -188,7 +188,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import '~vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
 .chats-view {
   &__item {

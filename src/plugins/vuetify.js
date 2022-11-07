@@ -1,4 +1,7 @@
-import Vuetify from 'vuetify/lib'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import 'vuetify/styles'
 
 const lightTheme = {
   primary: '#2E7EED',
@@ -10,7 +13,9 @@ const lightTheme = {
   warning: '#FFC107'
 }
 
-export const vuetify = new Vuetify({
+export const vuetify = createVuetify({
+  components,
+  directives,
   theme: {
     themes: {
       light: lightTheme

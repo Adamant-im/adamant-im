@@ -67,7 +67,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import '~vuetify/settings';
 
 .icon {
   -webkit-box-align: center;

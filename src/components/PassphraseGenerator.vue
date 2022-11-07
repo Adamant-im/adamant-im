@@ -148,7 +148,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '../assets/styles/themes/adamant/_mixins.scss';
-@import '~vuetify/src/styles/settings/_variables.scss';
+@import '~vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
 
 /**
