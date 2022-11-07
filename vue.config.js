@@ -85,6 +85,11 @@ module.exports = {
 
         resource.request = resource.request.replace('{ENV}', configName)
       })
-    ]
+    ],
+    resolve: {
+      alias: {
+        vue: '@vue/compat'
+      }
+    }
   }
 }
