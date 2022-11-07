@@ -1,5 +1,5 @@
 import 'core-js/features/array/flat-map'
-import Vue from 'vue'
+import { createApp } from 'vue'
 import Vuetify from 'vuetify/lib'
 
 import App from './App.vue'
@@ -22,24 +22,23 @@ import 'dayjs/locale/fr'
 import 'dayjs/locale/it'
 import 'dayjs/locale/ru'
 
-export const vueBus = new Vue()
+export const vueBus = createApp(() => {})
 
-Vue.use(Vuetify)
-Vue.use(VueFormatters)
-
-document.title = i18n.t('app_title')
-
-Vue.config.productionTip = false
-Vue.filter('currency', currencyFilter)
-Vue.filter('numberFormat', numberFormatFilter)
-
-window.ep = new Vue({
+const app = createApp(App, {
   version: packageJSON.version,
   vuetify,
   router,
   store,
   components: { App },
   template: '<App/>',
-  i18n,
-  render: h => h(App)
-}).$mount('#app')
+  i18n
+}).mount('#app')
+
+app.use(Vuetify)
+app.use(VueFormatters)
+app.filter('currency', currencyFilter)
+app.filter('numberFormat', numberFormatFilter)
+
+window.ep = app
+
+document.title = i18n.t('app_title')
