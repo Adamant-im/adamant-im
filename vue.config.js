@@ -73,7 +73,10 @@ module.exports = {
   configureWebpack: {
     plugins: [
       // remove non english bip39 wordlists
-      new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^\.\/wordlists\/(?!english)/,
+        contextRegExp: /bip39\/src$/
+      }),
       // replace `config.json` for different environments
       new webpack.NormalModuleReplacementPlugin(/(.*){ENV}(.*)/, (resource) => {
         const configName = process.env.ADM_CONFIG_FILE
