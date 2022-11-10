@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createStore } from 'vuex'
 import { Base64 } from 'js-base64'
 
 import {
@@ -36,8 +35,6 @@ import identicon from './modules/identicon'
 import notification from './modules/notification'
 import cache from '@/store/cache'
 import rate from './modules/rate'
-
-Vue.use(Vuex)
 
 export let interval
 
@@ -225,4 +222,4 @@ const store = {
 
 export { store } // for tests
 
-export default new Vuex.Store(store)
+export default createStore(store)

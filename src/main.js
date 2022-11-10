@@ -25,13 +25,13 @@ export const vueBus = createApp(() => {})
 
 const app = createApp(App, {
   version: packageJSON.version,
-  store,
   components: { App },
   template: '<App/>',
   i18n
 }).mount('#app')
 
 app.use(router)
+app.use(store)
 app.use(vuetify)
 app.use(VueFormatters)
 app.filter('currency', currencyFilter)
