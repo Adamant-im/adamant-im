@@ -42,18 +42,7 @@
 </template>
 
 <script>
-import Applicationable from 'vuetify/es5/mixins/applicationable'
-
 export default {
-  mixins: [
-    Applicationable('top', [
-      'clippedLeft',
-      'clippedRight',
-      'computedHeight',
-      'invertedScroll',
-      'manualScroll'
-    ])
-  ],
   props: {
     title: {
       type: String,
