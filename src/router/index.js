@@ -1,4 +1,4 @@
-import { createRouter } from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import navigationGuard from '@/router/navigationGuard'
 
 import IsLogged from '@/middlewares/isLogged'
@@ -17,7 +17,7 @@ import Login from '@/views/Login'
 import ExportKeys from '@/views/ExportKeys'
 
 const router = createRouter({
-  mode: process.env.VUE_APP_ELECTRON_MODE === 'production' ? 'hash' : 'history',
+  history: process.env.VUE_APP_ELECTRON_MODE === 'production' ? createWebHashHistory() : createWebHistory(),
   routes: [
     {
       path: '/options/nodes',
