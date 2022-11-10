@@ -2,7 +2,7 @@ import { Cryptos } from '@/lib/constants'
 import { parseURIasAIP } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
 import i18n from '@/i18n'
-import router from '@/router'
+import { router } from '@/router'
 import store from '@/store'
 
 /**

@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import { createRouter } from 'vue-router'
 import navigationGuard from '@/router/navigationGuard'
 
 import IsLogged from '@/middlewares/isLogged'
@@ -17,9 +16,7 @@ import Nodes from '@/views/Nodes'
 import Login from '@/views/Login'
 import ExportKeys from '@/views/ExportKeys'
 
-Vue.use(Router)
-
-const router = new Router({
+const router = createRouter({
   mode: process.env.VUE_APP_ELECTRON_MODE === 'production' ? 'hash' : 'history',
   routes: [
     {
@@ -168,4 +165,4 @@ router.beforeEach(IsLogged)
 router.beforeEach(AuthMiddleware)
 router.beforeEach(DocumentTitle)
 
-export default router
+export { router }

@@ -2,7 +2,7 @@ import 'core-js/features/array/flat-map'
 import { createApp } from 'vue'
 
 import App from './App.vue'
-import router from './router'
+import { router } from './router'
 import store from './store'
 import i18n from './i18n'
 import currencyFilter from './filters/currencyAmountWithSymbol'
@@ -25,13 +25,13 @@ export const vueBus = createApp(() => {})
 
 const app = createApp(App, {
   version: packageJSON.version,
-  router,
   store,
   components: { App },
   template: '<App/>',
   i18n
 }).mount('#app')
 
+app.use(router)
 app.use(vuetify)
 app.use(VueFormatters)
 app.filter('currency', currencyFilter)
