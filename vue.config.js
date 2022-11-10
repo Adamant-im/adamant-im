@@ -72,6 +72,11 @@ module.exports = {
   },
   configureWebpack: {
     plugins: [
+      // fix "process is not defined" error:
+      // (do "npm install process" before running the build)
+      new webpack.ProvidePlugin({
+        process: 'process/browser'
+      }),
       // remove non english bip39 wordlists
       new webpack.IgnorePlugin({
         resourceRegExp: /^\.\/wordlists\/(?!english)/,
@@ -97,7 +102,9 @@ module.exports = {
         crypto: require.resolve('crypto-browserify'),
         http: require.resolve('stream-http'),
         https: require.resolve('https-browserify'),
-        os: require.resolve('os-browserify/browser')
+        os: require.resolve('os-browserify/browser'),
+        // url: require.resolve('url'),
+        // assert: require.resolve('assert')
       }
     }
   }
