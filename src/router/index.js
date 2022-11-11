@@ -16,139 +16,144 @@ import Nodes from '@/views/Nodes'
 import Login from '@/views/Login'
 import ExportKeys from '@/views/ExportKeys'
 
+/**
+ * @type {Readonly<import("vue-router").RouteRecordRaw[]>}
+ */
+const routes = [
+  {
+    path: '/options/nodes',
+    name: 'Nodes',
+    component: Nodes,
+    meta: {
+      requiresAuth: true,
+      layout: 'no-container',
+      scrollPosition: {
+        x: 0,
+        y: 0
+      }
+    }
+  },
+  {
+    path: '/options/export-keys',
+    name: 'ExportKeys',
+    component: ExportKeys,
+    meta: {
+      requiresAuth: true,
+      layout: 'no-container'
+    }
+  },
+  {
+    path: '/votes',
+    name: 'Votes',
+    component: Votes,
+    meta: {
+      requiresAuth: true,
+      layout: 'no-container'
+    }
+  },
+  {
+    path: '/transactions/:crypto/:txId',
+    component: Transaction,
+    name: 'Transaction',
+    props: true,
+    meta: {
+      requiresAuth: true,
+      layout: 'no-container',
+      containerNoPadding: true,
+      previousRoute: {}
+    },
+    beforeEnter: navigationGuard.transactions
+  },
+  {
+    path: '/transactions/:crypto?',
+    component: Transactions,
+    name: 'Transactions',
+    props: true,
+    meta: {
+      requiresAuth: true,
+      layout: 'no-container',
+      containerNoPadding: true,
+      previousRoute: {},
+      previousPreviousRoute: {}
+    },
+    beforeEnter: navigationGuard.transactions
+  },
+  {
+    path: '/options',
+    name: 'Options',
+    component: Options,
+    meta: {
+      requiresAuth: true,
+      layout: 'no-container',
+      showNavigation: true,
+      scrollPosition: {
+        x: 0,
+        y: 0
+      }
+    }
+  },
+  {
+    path: '/chats/:partnerId/',
+    component: Chat,
+    name: 'Chat',
+    props: true,
+    meta: {
+      requiresAuth: true,
+      layout: 'chat'
+    },
+    beforeEnter: navigationGuard.chats
+  },
+  {
+    path: '/chats',
+    props: true,
+    name: 'Chats',
+    component: Chats,
+    meta: {
+      requiresAuth: true,
+      layout: 'toolbar',
+      containerNoPadding: true,
+      showNavigation: true,
+      scrollPosition: {
+        x: 0,
+        y: 0
+      }
+    }
+  },
+  {
+    path: '/transfer/:cryptoCurrency?/:recipientAddress?/:amountToSend?',
+    name: 'SendFunds',
+    component: SendFunds,
+    props: true,
+    meta: {
+      requiresAuth: true,
+      layout: 'no-container'
+    }
+  },
+  {
+    path: '/home',
+    name: 'Home',
+    component: Home,
+    meta: {
+      requiresAuth: true,
+      layout: 'toolbar',
+      showNavigation: true,
+      containerNoPadding: true
+    }
+  },
+  {
+    path: '/',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/'
+  }
+]
+
 const router = createRouter({
   history: process.env.VUE_APP_ELECTRON_MODE === 'production' ? createWebHashHistory() : createWebHistory(),
-  routes: [
-    {
-      path: '/options/nodes',
-      name: 'Nodes',
-      component: Nodes,
-      meta: {
-        requiresAuth: true,
-        layout: 'no-container',
-        scrollPosition: {
-          x: 0,
-          y: 0
-        }
-      }
-    },
-    {
-      path: '/options/export-keys',
-      name: 'ExportKeys',
-      component: ExportKeys,
-      meta: {
-        requiresAuth: true,
-        layout: 'no-container'
-      }
-    },
-    {
-      path: '/votes',
-      name: 'Votes',
-      component: Votes,
-      meta: {
-        requiresAuth: true,
-        layout: 'no-container'
-      }
-    },
-    {
-      path: '/transactions/:crypto/:txId',
-      component: Transaction,
-      name: 'Transaction',
-      props: true,
-      meta: {
-        requiresAuth: true,
-        layout: 'no-container',
-        containerNoPadding: true,
-        previousRoute: {}
-      },
-      beforeEnter: navigationGuard.transactions
-    },
-    {
-      path: '/transactions/:crypto?',
-      component: Transactions,
-      name: 'Transactions',
-      props: true,
-      meta: {
-        requiresAuth: true,
-        layout: 'no-container',
-        containerNoPadding: true,
-        previousRoute: {},
-        previousPreviousRoute: {}
-      },
-      beforeEnter: navigationGuard.transactions
-    },
-    {
-      path: '/options',
-      name: 'Options',
-      component: Options,
-      meta: {
-        requiresAuth: true,
-        layout: 'no-container',
-        showNavigation: true,
-        scrollPosition: {
-          x: 0,
-          y: 0
-        }
-      }
-    },
-    {
-      path: '/chats/:partnerId/',
-      component: Chat,
-      name: 'Chat',
-      props: true,
-      meta: {
-        requiresAuth: true,
-        layout: 'chat'
-      },
-      beforeEnter: navigationGuard.chats
-    },
-    {
-      path: '/chats',
-      props: true,
-      name: 'Chats',
-      component: Chats,
-      meta: {
-        requiresAuth: true,
-        layout: 'toolbar',
-        containerNoPadding: true,
-        showNavigation: true,
-        scrollPosition: {
-          x: 0,
-          y: 0
-        }
-      }
-    },
-    {
-      path: '/transfer/:cryptoCurrency?/:recipientAddress?/:amountToSend?',
-      name: 'SendFunds',
-      component: SendFunds,
-      props: true,
-      meta: {
-        requiresAuth: true,
-        layout: 'no-container'
-      }
-    },
-    {
-      path: '/home',
-      name: 'Home',
-      component: Home,
-      meta: {
-        requiresAuth: true,
-        layout: 'toolbar',
-        showNavigation: true,
-        containerNoPadding: true
-      }
-    },
-    {
-      path: '/',
-      name: 'Login',
-      component: Login
-    },
-    {
-      path: '/:pathMatch(.*)*',
-      redirect: '/'
-    }
-  ],
+  routes,
   scrollBehavior (to, from, savedPosition) {
     if (to.params.txId) {
       // Don't restore scroll for Transaction details screen
