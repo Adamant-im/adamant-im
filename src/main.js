@@ -41,4 +41,4 @@ app.mount('#app')
 
 window.ep = app
 
-document.title = i18n.t('app_title')
+document.title = i18n.global.t('app_title')
