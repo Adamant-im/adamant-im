@@ -27,7 +27,7 @@ const app = createApp(App, {
   version: packageJSON.version,
   components: { App },
   template: '<App/>'
-}).mount('#app')
+})
 
 app.use(router)
 app.use(store)
@@ -36,6 +36,8 @@ app.use(vuetify)
 app.use(VueFormatters)
 app.filter('currency', currencyFilter)
 app.filter('numberFormat', numberFormatFilter)
+
+app.mount('#app')
 
 window.ep = app
 
