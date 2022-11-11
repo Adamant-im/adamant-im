@@ -16,9 +16,7 @@
         </language-switcher>
       </div>
 
-      <v-card
-        flat
-        color="transparent"
+      <v-sheet
         class="text-center mt-4"
       >
         <logo style="width: 300px;" />
@@ -32,12 +30,10 @@
         >
           {{ $t('login.subheader') }}
         </h2>
-      </v-card>
+      </v-sheet>
 
-      <v-card
+      <v-sheet
         v-if="!isLoginViaPassword"
-        flat
-        color="transparent"
         class="text-center mt-4"
       >
         <v-row
@@ -93,7 +89,7 @@
             </qrcode-capture>
           </v-col>
         </v-row>
-      </v-card>
+      </v-sheet>
 
       <v-row
         v-if="!isLoginViaPassword"
@@ -111,10 +107,8 @@
         </v-col>
       </v-row>
 
-      <v-card
+      <v-sheet
         v-if="isLoginViaPassword"
-        flat
-        color="transparent"
         class="text-center mt-6"
       >
         <v-row
@@ -133,7 +127,7 @@
             />
           </v-col>
         </v-row>
-      </v-card>
+      </v-sheet>
 
       <qrcode-scanner-dialog
         v-if="showQrcodeScanner"
