@@ -40,6 +40,9 @@ export let interval
 
 const UPDATE_BALANCE_INTERVAL = 10000
 
+/**
+ * @type { import("vuex").StoreOptions } store
+ */
 const store = {
   state: () => ({
     address: '',
