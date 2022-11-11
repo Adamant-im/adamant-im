@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import i18n from '@/i18n'
+import { i18n } from '@/i18n'
 import { isCurrentWeek, isToday, isYesterday } from './helpers'
 import store from '@/store'
 

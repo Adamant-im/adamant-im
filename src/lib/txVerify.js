@@ -1,5 +1,5 @@
 import { isStringEqualCI } from '@/lib/textHelpers'
-import i18n from '@/i18n'
+import { i18n } from '@/i18n'
 
 const AllowAmountErrorPercent = 0.3
 const AllowTimestampDeltaSec = 1800 // 30 min

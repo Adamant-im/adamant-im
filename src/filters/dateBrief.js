@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import i18n from '@/i18n'
+import { i18n } from '@/i18n'
 import { isToday, isYesterday, isCurrentWeek } from './helpers'
 
 export default (timestamp) => {
