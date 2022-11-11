@@ -1,4 +1,4 @@
-import VueI18n from 'vue-i18n'
+import { createI18n } from 'vue-i18n'
 
 import en from '@/i18n/en'
 
@@ -6,7 +6,7 @@ import en from '@/i18n/en'
  * Mockup i18n helper.
  */
 export default function mockupI18n () {
-  return new VueI18n({
+  return createI18n({
     locale: 'en',
     fallbackLocale: 'en',
     // fallbackRoot: true,
