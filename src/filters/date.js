@@ -9,9 +9,9 @@ export default (timestamp) => {
   if (store.state.options.useFullDate) {
     return date.format('YYYY-MM-DD, HH:mm')
   } else if (isToday(new Date(timestamp))) {
-    return date.format(`[${i18n.t('chats.date_today')}], HH:mm`)
+    return date.format(`[${i18n.global.t('chats.date_today')}], HH:mm`)
   } else if (isYesterday(new Date(timestamp))) {
-    return date.format(`[${i18n.t('chats.date_yesterday')}], HH:mm`)
+    return date.format(`[${i18n.global.t('chats.date_yesterday')}], HH:mm`)
   } else if (isCurrentWeek(new Date(timestamp))) {
     return date.format('ddd, HH:mm')
   } else {

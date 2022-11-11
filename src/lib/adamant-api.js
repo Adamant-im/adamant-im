@@ -125,7 +125,7 @@ export function getPublicKey (address = '') {
         return publicKey
       }
 
-      throw new Error(i18n.t('chats.no_public_key'))
+      throw new Error(i18n.global.t('chats.no_public_key'))
     })
 }
 
