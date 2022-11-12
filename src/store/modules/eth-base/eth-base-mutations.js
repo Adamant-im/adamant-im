@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
@@ -47,7 +46,7 @@ export default {
         tx
       )
 
-      Vue.set(state.transactions, tx.hash, newTx)
+      state.transactions[tx.hash] = newTx
 
       if (tx.time && updateTimestamps) {
         minHeight = Math.min(minHeight, tx.time)

@@ -1,5 +1,3 @@
-import Vue from 'vue'
-
 import { resetState } from '../../../lib/reset-state'
 import getInitialState from './adm-state'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -36,7 +34,8 @@ export default {
     const address = state.address
     transactions.forEach(tx => {
       if (!tx) return
-      Vue.set(state.transactions, tx.id, {
+
+      state.transactions[tx.id] = {
         ...tx,
         direction: isStringEqualCI(tx.recipientId, address) ? 'to' : 'from',
         partner: isStringEqualCI(tx.recipientId, address) ? tx.senderId : tx.recipientId,
@@ -45,7 +44,7 @@ export default {
           : tx.status
             ? tx.status
             : 'REGISTERED'
-      })
+      }
 
       if (tx.height && updateTimestamps) {
         minHeight = Math.min(minHeight, tx.height)
