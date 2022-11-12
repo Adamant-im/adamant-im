@@ -24,9 +24,7 @@ import 'dayjs/locale/ru'
 export const vueBus = createApp(() => {})
 
 const app = createApp(App, {
-  version: packageJSON.version,
-  components: { App },
-  template: '<App/>'
+  version: packageJSON.version
 })
 
 app.use(router)
