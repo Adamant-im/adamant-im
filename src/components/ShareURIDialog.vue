@@ -59,7 +59,7 @@ export default {
       required: true,
       type: Boolean
     },
-    value: {
+    modelValue: {
       required: true,
       type: Boolean
     }
@@ -68,7 +68,7 @@ export default {
   computed: {
     show: {
       get () { return this.value },
-      set (value) { this.$emit('input', value) }
+      set (value) { this.$emit('update:modelValue', value) }
     },
     uri () {
       return generateURI(this.crypto, this.address)

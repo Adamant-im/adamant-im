@@ -27,7 +27,7 @@
 <script>
 export default {
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     },
@@ -46,7 +46,7 @@ export default {
         return this.value
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     }
   }

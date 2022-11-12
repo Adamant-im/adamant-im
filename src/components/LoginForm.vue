@@ -59,7 +59,7 @@ import { validateMnemonic } from 'bip39'
 
 export default {
   props: {
-    value: {
+    modelValue: {
       type: String,
       default: ''
     }
@@ -76,7 +76,7 @@ export default {
         return this.value
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     }
   },
