@@ -100,7 +100,7 @@
       v-if="!isMessageReadonly"
       :class="`${className}__date`"
     >
-      {{ createdAt | date }}
+      {{ formatDate(createdAt) }}
     </div>
   </v-list-item>
 </template>
@@ -109,7 +109,7 @@
 import { removeFormats } from '@/lib/markdown'
 
 import transaction from '@/mixins/transaction'
-import dateFilter from '@/filters/dateBrief'
+import formatDate from '@/filters/dateBrief'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import Icon from '@/components/icons/BaseIcon'
 import AdmFillIcon from '@/components/icons/AdmFill'
@@ -120,9 +120,6 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import currency from '@/filters/currencyAmountWithSymbol'
 
 export default {
-  filters: {
-    date: dateFilter
-  },
   components: {
     ChatAvatar,
     Icon,
@@ -237,6 +234,9 @@ export default {
     if (this.isTransferType) {
       this.fetchTransactionStatus(this.transaction, this.contactId)
     }
+  },
+  methods: {
+    formatDate
   },
   emits: ['click']
 }

@@ -278,12 +278,6 @@ export default {
     QrcodeScannerDialog,
     WarningOnPartnerAddressDialog
   },
-  filters: {
-    /**
-     * @param {BigNumber} bigNumber
-     */
-    toFixed: bigNumber => bigNumber.toFixed()
-  },
   mixins: [partnerName],
   props: {
     cryptoCurrency: {

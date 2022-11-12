@@ -36,7 +36,7 @@
           v-bind="message"
           :key="message.id"
           :message="formatMessage(message)"
-          :time="message.timestamp | date"
+          :time="formatDate(message.timestamp)"
           :user-id="userId"
           :sender="sender"
           :status="getTransactionStatus(message)"
@@ -62,7 +62,7 @@
           :sender="sender"
           :amount="message.amount"
           :crypto="message.type"
-          :time="message.timestamp | date"
+          :time="formatDate(message.timestamp)"
           :hash="message.hash"
           :tx-timestamp="getTransaction(message.type, message.hash).timestamp"
           :currency="message.type"
@@ -129,7 +129,7 @@ import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'
 import transaction from '@/mixins/transaction'
 import partnerName from '@/mixins/partnerName'
-import dateFilter from '@/filters/date'
+import formatDate from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import FreeTokensDialog from '@/components/FreeTokensDialog'
 import { websiteUriToOnion } from '@/lib/uri'
@@ -186,9 +186,6 @@ function validateMessage (message) {
 }
 
 export default {
-  filters: {
-    date: dateFilter
-  },
   components: {
     AChat,
     AChatMessage,
@@ -421,7 +418,8 @@ export default {
     },
     onKeyPress (e) {
       if (e.code === 'Enter' && !this.showFreeTokensDialog) this.$refs.chatForm.focus()
-    }
+    },
+    formatDate
   }
 }
 </script>

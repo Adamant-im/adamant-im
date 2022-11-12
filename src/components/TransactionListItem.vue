@@ -57,7 +57,7 @@
           :class="`${className}__date`"
           class="a-text-explanation-small"
         >
-          {{ createdAt | date }}
+          {{ formatDate(createdAt) }}
         </v-list-item-subtitle>
       </v-list-item-content>
 
@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import dateFilter from '@/filters/date'
+import formatDate from '@/filters/date'
 import { EPOCH, Cryptos } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -97,9 +97,6 @@ import { timestampInSec } from '@/filters/helpers'
 import currency from '@/filters/currencyAmountWithSymbol'
 
 export default {
-  filters: {
-    date: dateFilter
-  },
   mixins: [partnerName],
   props: {
     id: {
@@ -251,7 +248,8 @@ export default {
         timestamp: timestampInSec(this.crypto, this.timestamp)
       })
     },
-    currency
+    currency,
+    formatDate
   }
 }
 </script>
