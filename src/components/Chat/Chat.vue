@@ -116,6 +116,7 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
 import { detect } from 'detect-browser'
 import Visibility from 'visibilityjs'
 
@@ -264,13 +265,13 @@ export default {
   watch: {
     // Scroll to the bottom every time window focused by desktop notification
     '$store.state.notification.desktopActivateClickCount' () {
-      this.$nextTick(() => {
+      nextTick(() => {
         this.$refs.chat.scrollToBottom()
       })
     },
     // scroll to bottom when received new message
     messages () {
-      this.$nextTick(() => {
+      nextTick(() => {
         if (this.isScrolledToBottom) {
           this.$refs.chat.scrollToBottom()
         }
@@ -293,7 +294,7 @@ export default {
   mounted () {
     if (this.isFulfilled && this.chatPage <= 0) this.fetchChatMessages()
     this.scrollBehavior()
-    this.$nextTick(() => {
+    nextTick(() => {
       this.isScrolledToBottom = this.$refs.chat.isScrolledToBottom()
     })
     this.visibilityId = Visibility.change((event, state) => {
@@ -308,7 +309,7 @@ export default {
     onMessage (message) {
       if (validateMessage.call(this, message)) {
         this.sendMessage(message)
-        this.$nextTick(() => this.$refs.chat.scrollToBottom())
+        nextTick(() => this.$refs.chat.scrollToBottom())
       }
     },
     sendMessage (message) {
@@ -405,7 +406,7 @@ export default {
         })
     },
     scrollBehavior () {
-      this.$nextTick(() => {
+      nextTick(() => {
         if (this.numOfNewMessages > 0) {
           this.$refs.chat.scrollToMessage(this.numOfNewMessages - 1)
         } else if (this.scrollPosition !== false) {

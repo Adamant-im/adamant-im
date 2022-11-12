@@ -103,6 +103,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 import { Cryptos } from '@/lib/constants'
 import { generateURI, parseURIasAIP } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
@@ -212,7 +214,7 @@ export default {
      */
     onPasteURI (e) {
       const data = e.clipboardData.getData('text')
-      this.$nextTick(() => {
+      nextTick(() => {
         const address = parseURIasAIP(data).address
         if (validateAddress('ADM', address)) {
           e.preventDefault()

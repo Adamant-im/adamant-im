@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 export default {
   props: {
     messageText: {
@@ -120,7 +122,7 @@ export default {
       this.focus()
     },
     calculateInputHeight () {
-      this.$nextTick(this.$refs.messageTextarea.calculateInputHeight)
+      nextTick(this.$refs.messageTextarea.calculateInputHeight)
     },
     addLineFeed () {
       this.message += '\n'

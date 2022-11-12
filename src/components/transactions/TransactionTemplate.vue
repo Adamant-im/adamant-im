@@ -262,6 +262,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import transaction from '@/mixins/transaction'
@@ -371,7 +373,7 @@ export default {
       this.fetchTransactionStatus(this.admTx, this.partner)
     },
     timestamp () {
-      this.$nextTick(() => {
+      nextTick(() => {
         this.getHistoryRates()
       })
     }

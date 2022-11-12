@@ -230,6 +230,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
@@ -624,7 +626,7 @@ export default {
      * @param {string} e Event
      */
     onPasteURIComment (e) {
-      this.$nextTick(() => {
+      nextTick(() => {
         const params = parseURIasAIP(e.target.value).params
 
         if (params.message) {

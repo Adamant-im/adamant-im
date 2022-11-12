@@ -139,6 +139,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 import QrcodeCapture from '@/components/QrcodeCapture'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
@@ -213,7 +215,7 @@ export default {
     },
     onScanQrcode (passphrase) {
       this.passphrase = passphrase
-      this.$nextTick(() => this.$refs.loginForm.submit())
+      nextTick(() => this.$refs.loginForm.submit())
     }
   }
 }
