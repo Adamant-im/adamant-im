@@ -23,7 +23,6 @@
     "@liskhq/lisk-transactions": "5.2.2",
     "@mdi/font": "^6.7.96",
     "@stablelib/utf8": "^1.0.1",
-    "@vue/compat": "^3.2.41",
     "@zxing/library": "0.19.1",
     "abi-decoder": "^2.4.0",
     "axios": "^0.27.2",

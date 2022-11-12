@@ -97,9 +97,6 @@ module.exports = {
       })
     ],
     resolve: {
-      alias: {
-        vue: '@vue/compat'
-      },
       fallback: {
         fs: false,
         stream: require.resolve('stream-browserify'),
