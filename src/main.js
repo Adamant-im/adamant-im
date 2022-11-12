@@ -10,7 +10,7 @@ import numberFormatFilter from './filters/numberFormat'
 import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
 import { vuetify } from '@/plugins/vuetify'
-import './plugins/layout'
+import { registerGlobalComponents } from './plugins/layout'
 import './plugins/scrollTo'
 import './registerServiceWorker'
 import '@/assets/styles/app.scss'
@@ -34,6 +34,8 @@ app.use(vuetify)
 app.use(VueFormatters)
 app.filter('currency', currencyFilter)
 app.filter('numberFormat', numberFormatFilter)
+
+registerGlobalComponents(app)
 
 app.mount('#app')
 
