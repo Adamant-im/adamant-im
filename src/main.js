@@ -1,5 +1,6 @@
 import 'core-js/features/array/flat-map'
 import { createApp } from 'vue'
+import VueScrollTo from 'vue-scrollto'
 
 import App from './App.vue'
 import { router } from './router'
@@ -11,7 +12,6 @@ import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
 import { vuetify } from '@/plugins/vuetify'
 import { registerGlobalComponents } from './plugins/layout'
-import './plugins/scrollTo'
 import './registerServiceWorker'
 import '@/assets/styles/app.scss'
 
@@ -32,6 +32,7 @@ app.use(store)
 app.use(i18n)
 app.use(vuetify)
 app.use(VueFormatters)
+app.use(VueScrollTo) // @todo deprecated (works only with Vue@2)
 app.filter('currency', currencyFilter)
 app.filter('numberFormat', numberFormatFilter)
 
