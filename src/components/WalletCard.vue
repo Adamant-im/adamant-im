@@ -42,7 +42,7 @@
             {{ $t('home.balance') }}
           </v-list-item-title>
           <v-list-item-subtitle :class="`${className}__subtitle`">
-            {{ balance | currency(crypto, true) }} <span
+            {{ currency(balance, crypto, true) }} <span
               v-if="$store.state.rate.isLoaded"
               class="a-text-regular"
             >~{{ rate }} {{ currentCurrency }}</span>
@@ -85,6 +85,7 @@
 import ShareURIDialog from '@/components/ShareURIDialog'
 import WalletCardListActions from '@/components/WalletCardListActions'
 import { Cryptos } from '@/lib/constants'
+import currency from '@/filters/currencyAmountWithSymbol'
 
 export default {
   components: {
@@ -126,6 +127,9 @@ export default {
     isADM () {
       return this.crypto === Cryptos.ADM
     }
+  },
+  methods: {
+    currency
   }
 }
 </script>

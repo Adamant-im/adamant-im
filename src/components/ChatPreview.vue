@@ -67,7 +67,7 @@
           >
             {{ statusIcon }}
           </v-icon>
-          {{ transactionDirection }} {{ transaction.amount | currency(transaction.type) }}
+          {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
           <v-icon
             v-if="isIncomingTransaction"
             size="15"
@@ -116,6 +116,8 @@ import AdmFillIcon from '@/components/icons/AdmFill'
 import partnerName from '@/mixins/partnerName'
 import { tsIcon } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
+
+import currency from '@/filters/currencyAmountWithSymbol'
 
 export default {
   filters: {
@@ -221,7 +223,8 @@ export default {
     },
     statusIcon () {
       return tsIcon(this.status.virtualStatus)
-    }
+    },
+    currency
   },
   watch: {
     // fetch status when new message received

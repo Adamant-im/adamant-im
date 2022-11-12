@@ -42,7 +42,7 @@
             >
               <slot name="crypto" />
               <div class="a-chat__rates-column d-flex ml-4">
-                <span class="mb-1">{{ amount | currency(crypto) }}</span>
+                <span class="mb-1">{{ currencyFormatter(amount, crypto) }}</span>
                 <span class="a-chat__rates">{{ historyRate }}</span>
               </div>
             </v-row>
@@ -64,6 +64,7 @@ import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
+import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 
 export default {
   props: {
@@ -169,7 +170,8 @@ export default {
       this.$store.dispatch('rate/getHistoryRates', {
         timestamp: timestampInSec(this.crypto, this.txTimestamp)
       })
-    }
+    },
+    currencyFormatter
   }
 }
 </script>

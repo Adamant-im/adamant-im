@@ -6,8 +6,6 @@ import App from './App.vue'
 import { router } from './router'
 import store from './store'
 import { i18n } from './i18n'
-import currencyFilter from './filters/currencyAmountWithSymbol'
-import numberFormatFilter from './filters/numberFormat'
 import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
 import { vuetify } from '@/plugins/vuetify'
@@ -33,8 +31,6 @@ app.use(i18n)
 app.use(vuetify)
 app.use(VueFormatters)
 app.use(VueScrollTo) // @todo deprecated (works only with Vue@2)
-app.filter('currency', currencyFilter)
-app.filter('numberFormat', numberFormatFilter)
 
 registerGlobalComponents(app)
 

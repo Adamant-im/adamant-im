@@ -27,7 +27,7 @@
         </v-list-item-title>
 
         <v-list-item-title>
-          <span :class="`${className}__amount ${directionClass}`">{{ amount | currency(crypto) }}</span>
+          <span :class="`${className}__amount ${directionClass}`">{{ currency(amount, crypto) }}</span>
           <span
             :class="`${className}__rates`"
           > {{ historyRate }}</span>
@@ -94,6 +94,7 @@ import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
+import currency from '@/filters/currencyAmountWithSymbol'
 
 export default {
   filters: {
@@ -249,7 +250,8 @@ export default {
       this.$store.dispatch('rate/getHistoryRates', {
         timestamp: timestampInSec(this.crypto, this.timestamp)
       })
-    }
+    },
+    currency
   }
 }
 </script>
