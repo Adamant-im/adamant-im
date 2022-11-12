@@ -129,6 +129,7 @@ export default {
       default: false
     }
   },
+  emits: ['resend'],
   computed: {
     statusIcon () {
       return tsIcon(this.status.virtualStatus)

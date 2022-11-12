@@ -71,6 +71,7 @@ export default {
       default: ''
     }
   },
+  emits: ['login', 'error'],
   data: () => ({
     validForm: true,
     disabledButton: false,

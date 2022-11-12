@@ -114,6 +114,7 @@ export default {
       required: true
     }
   },
+  emits: ['scan'],
   data: () => ({
     cameraStatus: 'waiting', // can be: waiting, active, nocamera
     scanner: null,

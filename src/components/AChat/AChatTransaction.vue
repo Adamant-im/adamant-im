@@ -123,6 +123,7 @@ export default {
       required: true
     }
   },
+  emits: ['mount', 'click:transaction', 'click:transactionStatus'],
   computed: {
     statusTitle () {
       return this.$t(`chats.transaction_statuses.${this.status.virtualStatus}`)

@@ -133,6 +133,7 @@ export default {
       required: true
     }
   },
+  emits: ['start-chat', 'error'],
   data: () => ({
     recipientAddress: '',
     recipientName: '',

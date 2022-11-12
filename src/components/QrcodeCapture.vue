@@ -27,6 +27,7 @@
 
 <script>
 export default {
+  emits: ['detect', 'error'],
   data: () => ({
     selectedImage: undefined,
     imageBase64: '',

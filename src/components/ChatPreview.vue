@@ -234,7 +234,8 @@ export default {
     if (this.isTransferType) {
       this.fetchTransactionStatus(this.transaction, this.contactId)
     }
-  }
+  },
+  emits: ['click']
 }
 </script>
 

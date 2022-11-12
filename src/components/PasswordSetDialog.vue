@@ -69,6 +69,7 @@ export default {
       required: true
     }
   },
+  emits: ['password'],
   data: () => ({
     password: '',
     showSpinner: false,

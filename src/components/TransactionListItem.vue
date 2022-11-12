@@ -132,6 +132,7 @@ export default {
       validator: v => v in Cryptos
     }
   },
+  emits: ['click:transaction', 'click:icon'],
   computed: {
     // Own crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     userId () {

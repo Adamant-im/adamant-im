@@ -83,6 +83,7 @@ export default {
       default: 'en'
     }
   },
+  emits: ['scroll', 'scroll:bottom', 'scroll:top'],
   data: () => ({
     currentScrollHeight: 0,
     currentScrollTop: 0

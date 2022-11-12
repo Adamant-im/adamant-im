@@ -304,6 +304,7 @@ export default {
       default: false
     }
   },
+  emits: ['send', 'error'],
   data: () => ({
     currency: '',
     address: '',

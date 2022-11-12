@@ -211,6 +211,7 @@ export default {
       required: true
     }
   },
+  emits: ['click:chat-avatar'],
   data: () => ({
     chatFormLabel: '',
     loading: false,

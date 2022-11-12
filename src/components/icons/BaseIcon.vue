@@ -49,6 +49,7 @@ export default {
       default: 'auto'
     }
   },
+  emits: ['click'],
   data: () => ({
     isClickable: false
   }),

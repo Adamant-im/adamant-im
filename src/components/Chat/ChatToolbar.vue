@@ -52,6 +52,7 @@ export default {
       required: true
     }
   },
+  emits: ['partner-info'],
   computed: {
     className: () => 'chat-toolbar',
     partnerName: {

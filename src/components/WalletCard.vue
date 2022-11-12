@@ -117,6 +117,7 @@ export default {
       default: 'USD'
     }
   },
+  emits: ['click:balance'],
   data: () => ({ showShareURIDialog: false }),
   computed: {
     className () {

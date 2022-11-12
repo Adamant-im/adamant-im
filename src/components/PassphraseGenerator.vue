@@ -99,6 +99,7 @@ export default {
     QrCodeIcon,
     QrcodeRendererDialog
   },
+  emits: ['copy', 'save'],
   data: () => ({
     passphrase: '',
     showPassphrase: false,

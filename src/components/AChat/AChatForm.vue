@@ -61,6 +61,7 @@ export default {
       default: false
     }
   },
+  emits: ['message'],
   data: () => ({
     message: ''
   }),
