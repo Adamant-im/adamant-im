@@ -12,7 +12,7 @@
       :shape-rendering="shapeRendering"
       :aria-labelledby="title"
       role="presentation"
-      @click="$emit('click')"
+      @click="$attrs.onClick"
     >
       <title v-if="title">{{ title }}</title>
       <g :fill="color">
@@ -24,6 +24,7 @@
 
 <script>
 export default {
+  inheritAttrs: false,
   props: {
     width: {
       type: [Number, String],
@@ -49,19 +50,10 @@ export default {
       default: 'auto'
     }
   },
-  emits: ['click'],
-  data: () => ({
-    isClickable: false
-  }),
-  created () {
-    // if component has @click attr, make cursor: pointer
-    const listeners = Object.keys(this.$listeners)
-    const hasClickAttr = listeners.some(
-      listener => /^click/.test(listener)
-    )
-
-    if (hasClickAttr) {
-      this.isClickable = true
+  data: () => ({}),
+  computed: {
+    isClickable () {
+      return !!this.$attrs.onClick
     }
   }
 }
