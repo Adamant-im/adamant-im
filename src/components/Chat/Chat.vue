@@ -285,7 +285,7 @@ export default {
   created () {
     window.addEventListener('keyup', this.onKeyPress)
   },
-  beforeDestroy () {
+  beforeUnmount () {
     window.removeEventListener('keyup', this.onKeyPress)
     Visibility.unbind(this.visibilityId)
   },

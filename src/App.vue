@@ -43,7 +43,7 @@ export default {
     this.notifications = new Notifications(this)
     this.notifications.start()
   },
-  beforeDestroy () {
+  beforeUnmount () {
     this.notifications.stop()
     this.$store.dispatch('stopInterval')
   },

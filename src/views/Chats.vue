@@ -124,7 +124,7 @@ export default {
     this.showChatStartDialog = this.showNewContact
     this.attachScrollListener()
   },
-  beforeDestroy () {
+  beforeUnmount () {
     this.destroyScrollListener()
   },
   methods: {

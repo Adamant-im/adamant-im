@@ -54,7 +54,7 @@ export default {
     window.clearInterval(this.timer)
     this.timer = window.setInterval(() => this.update(), getTxUpdateInterval(this.crypto))
   },
-  beforeDestroy () {
+  beforeUnmount () {
     window.clearInterval(this.timer)
   },
   methods: {

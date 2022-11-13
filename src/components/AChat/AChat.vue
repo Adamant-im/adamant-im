@@ -91,7 +91,7 @@ export default {
   mounted () {
     this.attachScrollListener()
   },
-  beforeDestroy () {
+  beforeUnmount () {
     this.destroyScrollListener()
   },
   methods: {

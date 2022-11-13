@@ -173,7 +173,7 @@ export default {
       this.$store.dispatch('nodes/updateStatus')
     }, 10000)
   },
-  beforeDestroy () {
+  beforeUnmount () {
     clearInterval(this.timer)
   },
   methods: {

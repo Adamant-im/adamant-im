@@ -109,7 +109,7 @@ export default {
       if (this.$store.state.IDBReady) this.getNewTransactions()
     }
   },
-  beforeDestroy () {
+  beforeUnmount () {
     window.removeEventListener('scroll', this.onScroll)
   },
   mounted () {
