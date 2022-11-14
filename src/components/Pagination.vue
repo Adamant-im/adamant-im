@@ -32,7 +32,7 @@ export default {
   computed: {
     page: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
         if (value > this.pages || value < 1) {

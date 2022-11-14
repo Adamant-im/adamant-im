@@ -79,7 +79,7 @@ export default {
   computed: {
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
         this.$emit('update:modelValue', value)

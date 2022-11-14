@@ -67,7 +67,7 @@ export default {
   data: () => ({ showQrcodeRendererDialog: false }),
   computed: {
     show: {
-      get () { return this.value },
+      get () { return this.modelValue },
       set (value) { this.$emit('update:modelValue', value) }
     },
     uri () {
