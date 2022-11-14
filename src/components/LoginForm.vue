@@ -14,6 +14,7 @@
           class="text-center"
           color="#BBDEFB"
           type="password"
+          variant="underlined"
         />
       </slot>
 
