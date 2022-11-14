@@ -56,6 +56,7 @@ export default {
       default: undefined
     }
   },
+  emits: ['update:modelValue'],
   data: () => ({
     opts: {
       scale: 8.8

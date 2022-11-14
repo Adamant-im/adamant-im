@@ -133,7 +133,7 @@ export default {
       required: true
     }
   },
-  emits: ['start-chat', 'error'],
+  emits: ['start-chat', 'error', 'update:modelValue'],
   data: () => ({
     recipientAddress: '',
     recipientName: '',

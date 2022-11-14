@@ -64,6 +64,7 @@ export default {
       required: true
     }
   },
+  emits: ['update:modelValue'],
   data: () => ({
     header: '',
     content: ''

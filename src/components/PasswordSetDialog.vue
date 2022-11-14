@@ -69,7 +69,7 @@ export default {
       required: true
     }
   },
-  emits: ['password'],
+  emits: ['password', 'update:modelValue'],
   data: () => ({
     password: '',
     showSpinner: false,

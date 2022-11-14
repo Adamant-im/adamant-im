@@ -64,6 +64,7 @@ export default {
       type: Boolean
     }
   },
+  emits: ['update:modelValue'],
   data: () => ({ showQrcodeRendererDialog: false }),
   computed: {
     show: {

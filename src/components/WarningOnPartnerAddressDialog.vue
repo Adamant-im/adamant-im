@@ -55,6 +55,7 @@ export default {
       required: true
     }
   },
+  emits: ['update:modelValue'],
   computed: {
     className: () => 'warning-on-partner-address-dialog',
     show: {

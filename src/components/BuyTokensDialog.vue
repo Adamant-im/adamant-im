@@ -87,6 +87,7 @@ export default {
       validator: v => validateAddress('ADM', v)
     }
   },
+  emits: ['update:modelValue'],
   computed: {
     className: () => 'buy-tokens-dialog',
     show: {

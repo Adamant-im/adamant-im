@@ -65,7 +65,7 @@ export default {
       default: ''
     }
   },
-  emits: ['login', 'error'],
+  emits: ['login', 'error', 'update:modelValue'],
   data: () => ({
     validForm: true,
     disabledButton: false,

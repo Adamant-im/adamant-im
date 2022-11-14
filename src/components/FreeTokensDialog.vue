@@ -60,6 +60,7 @@ export default {
       required: true
     }
   },
+  emits: ['update:modelValue'],
   computed: {
     className: () => 'free-tokens-dialog',
     show: {

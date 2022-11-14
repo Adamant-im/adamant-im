@@ -40,6 +40,7 @@ export default {
       default: ''
     }
   },
+  emits: ['update:modelValue'],
   computed: {
     show: {
       get () {

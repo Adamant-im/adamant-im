@@ -81,6 +81,7 @@ export default {
       validator: v => validateAddress('ADM', v)
     }
   },
+  emits: ['update:modelValue'],
   data () {
     return {
       logo: '/img/adm-qr-invert.png',
