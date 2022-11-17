@@ -1,8 +1,8 @@
 import { createI18n } from 'vue-i18n'
 
-import de from './i18n/de'
-import en from './i18n/en'
-import ru from './i18n/ru'
+import de from './locales/de'
+import en from './locales/en'
+import ru from './locales/ru'
 
 function loadLocaleMessages () {
   return {

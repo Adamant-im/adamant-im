@@ -1,6 +1,6 @@
 import { createI18n } from 'vue-i18n'
 
-import en from '@/i18n/en'
+import en from '@/locales/en'
 
 /**
  * Mockup i18n helper.
