@@ -160,6 +160,7 @@ export default {
       default: false
     }
   },
+  emits: ['click'],
   data: () => ({
   }),
   computed: {
@@ -237,8 +238,7 @@ export default {
   methods: {
     formatDate,
     currency
-  },
-  emits: ['click']
+  }
 }
 </script>
 
