@@ -220,8 +220,7 @@ export default {
     },
     statusIcon () {
       return tsIcon(this.status.virtualStatus)
-    },
-    currency
+    }
   },
   watch: {
     // fetch status when new message received
@@ -236,7 +235,8 @@ export default {
     }
   },
   methods: {
-    formatDate
+    formatDate,
+    currency
   },
   emits: ['click']
 }
