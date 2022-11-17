@@ -392,13 +392,13 @@ export default {
       get () {
         return this.$store.state.options.darkTheme
       },
-      set (value) {
+      set (isDarkTheme) {
         this.$store.commit('options/updateOption', {
           key: 'darkTheme',
-          value
+          value: isDarkTheme
         })
 
-        this.$vuetify.theme.dark = value
+        this.$vuetify.theme.global.name = isDarkTheme ? 'dark' : 'light'
       }
     },
     isLoginViaPassword () {
