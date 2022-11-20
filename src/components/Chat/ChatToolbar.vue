@@ -135,7 +135,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .chat-toolbar {
     background-color: map-get($adm-colors, 'secondary2-transparent');
 
@@ -155,7 +155,7 @@ export default {
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .chat-toolbar {
     :deep(.v-text-field) {
       .primary--text {

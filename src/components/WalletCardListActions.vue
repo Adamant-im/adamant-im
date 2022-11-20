@@ -126,7 +126,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .wallet-actions {
     &__title, &__icon {
       color: map-get($adm-colors, 'regular');

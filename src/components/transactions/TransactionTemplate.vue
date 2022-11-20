@@ -452,7 +452,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .transaction-view {
     &__title {
       color: map-get($adm-colors, 'regular');
@@ -465,7 +465,7 @@ export default {
     }
   }
 }
-.theme--light, .theme--dark {
+.v-theme--light, .v-theme--dark {
   .transaction-view {
     &__value-REJECTED {
       color: map-get($adm-colors, 'danger') !important;

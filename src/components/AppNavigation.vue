@@ -140,7 +140,7 @@ export default {
   }
 }
 
-.theme--light {
+.v-theme--light {
   .app-navigation {
     &__container {
       border-top: 1px solid map-get($grey, 'lighten-2');
@@ -157,7 +157,7 @@ export default {
   }
 }
 
-.theme--dark {
+.v-theme--dark {
   .app-navigation {
     &.v-bottom-navigation {
       background-color: map-get($shades, 'black');

@@ -101,7 +101,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .btn {
     color: map-get($adm-colors, 'regular');
   }

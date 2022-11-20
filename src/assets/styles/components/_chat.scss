@@ -265,7 +265,7 @@ $chat-avatar-size: 40px;
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .a-chat {
     &__content {
       color: map-get($shades, 'black');
@@ -349,7 +349,7 @@ $chat-avatar-size: 40px;
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .a-chat {
     &__content {
       color: map-get($shades, 'white');

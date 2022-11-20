@@ -249,14 +249,14 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .login-page {
     &__icon, &__title, &__subtitle {
       color: map-get($adm-colors, 'regular');
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .login-page {
     &__icon {
       color: map-get($shades, 'white');

@@ -270,7 +270,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .nodes-view {
     &__body {
       color: map-get($adm-colors, 'regular');
@@ -294,7 +294,7 @@ export default {
   }
 }
 
-.theme--dark {
+.v-theme--dark {
   .nodes-view {
     &__node-version {
       opacity: 0.7;

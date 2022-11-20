@@ -255,7 +255,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .account-view {
     &__rates  {
       color: map-get($adm-colors, 'muted');
@@ -286,7 +286,7 @@ export default {
   }
 }
 
-.theme--dark {
+.v-theme--dark {
   .account-view {
     &__wallets {
       :deep(.v-tabs-bar) {

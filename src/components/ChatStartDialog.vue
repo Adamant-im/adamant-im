@@ -285,7 +285,7 @@ export default {
   }
 }
 
-.theme--light {
+.v-theme--light {
   .chat-start-dialog {
     :deep(&__btn-scan) {
       color: map-get($adm-colors, 'regular');

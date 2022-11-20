@@ -83,13 +83,13 @@ export default {
 }
 
 /* Themes */
-.theme--light {
+.v-theme--light {
   .svg-icon {
     fill: rgba(0, 0, 0, 0.54);
     stroke: rgba(0, 0, 0, 0.54);
   }
 }
-.theme--dark {
+.v-theme--dark {
   .svg-icon {
     fill: map-get($shades, 'white');
     stroke: map-get($shades, 'white');

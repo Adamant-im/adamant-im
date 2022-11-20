@@ -150,14 +150,14 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .chat-menu {
     &__icon {
       color: map-get($grey, 'darken-1');
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .chat-menu {
     &__icon {
       color: map-get($shades, 'white');

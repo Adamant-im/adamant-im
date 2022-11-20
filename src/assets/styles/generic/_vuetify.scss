@@ -36,7 +36,7 @@ $font-family: 'Exo 2', sans-serif;
 
 // Change default dialog background color
 .v-card {
-  &.theme--dark {
+  &.v-theme--dark {
     background-color: #424242; // secondary
     border-color: #424242; // secondary
   }
@@ -47,7 +47,7 @@ $font-family: 'Exo 2', sans-serif;
 }
 
 .v-list {
-  &.theme--dark {
+  &.v-theme--dark {
     background-color: #424242; // secondary
   }
 }
@@ -64,7 +64,7 @@ $font-family: 'Exo 2', sans-serif;
   line-height: 1.5;
 }
 
-.theme--dark.v-card {
+.v-theme--dark.v-card {
   > .v-card__text {
     color: #FFF;
   }
@@ -78,7 +78,7 @@ $font-family: 'Exo 2', sans-serif;
   border-radius: 2px;
 }
 
-.theme--dark.v-data-table {
+.v-theme--dark.v-data-table {
   background-color: #424242;
 }
 
@@ -103,6 +103,6 @@ $font-family: 'Exo 2', sans-serif;
   font-family: $font-family;
 }
 
-.theme--light.v-application {
+.v-theme--light.v-application {
   color: map-get($adm-colors, 'regular');
 }

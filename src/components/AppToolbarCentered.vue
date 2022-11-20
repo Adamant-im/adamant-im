@@ -98,7 +98,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .app-toolbar-centered {
     .v-toolbar {
       background-color: map-get($adm-colors, 'secondary2-transparent')
@@ -106,7 +106,7 @@ export default {
   }
 }
 
-.theme--dark {
+.v-theme--dark {
   .app-toolbar-centered {
     .v-toolbar {
       background-color: map-get($shades, 'black');

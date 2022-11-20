@@ -504,7 +504,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .settings-view {
     &__version_info {
       color: map-get($adm-colors, 'muted');
@@ -524,7 +524,7 @@ export default {
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .settings-view {
     &__action {
       color: map-get($shades, 'white');

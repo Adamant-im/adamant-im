@@ -188,7 +188,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .passphrase-generator {
     :deep(.v-textarea) textarea {
       color: map-get($adm-colors, 'regular');

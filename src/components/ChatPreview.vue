@@ -291,7 +291,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .chat-brief {
     border-bottom: 1px solid map-get($adm-colors, 'secondary2');
 

@@ -207,7 +207,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .chats-view {
     &__item {
       background-color: map-get($adm-colors, 'secondary2-transparent');
@@ -221,7 +221,7 @@ export default {
   }
 }
 
-.theme--dark {
+.v-theme--dark {
   .chats-view {
     &__icon {
       color: map-get($shades, 'white');

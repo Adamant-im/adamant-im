@@ -181,7 +181,7 @@ export default {
   cursor: pointer;
 }
 
-.theme--light {
+.v-theme--light {
   :deep(.v-text-field__slot) {
     textarea {
       &::placeholder {
@@ -191,7 +191,7 @@ export default {
   }
 }
 
-.theme--dark {
+.v-theme--dark {
   :deep(.v-text-field__slot) {
     textarea {
       &::placeholder {

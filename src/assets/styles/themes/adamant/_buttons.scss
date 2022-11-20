@@ -11,7 +11,7 @@
 .v-dialog--active .v-card__actions {
   padding-bottom: 15px;
 }
-.theme--light {
+.v-theme--light {
   .a-btn-primary {
     &:not(.v-btn--icon):not(.v-btn--flat) {
       background-color: map-get($shades, 'white');
@@ -38,7 +38,7 @@
     color: inherit;
   }
 }
-.theme--dark {
+.v-theme--dark {
   .a-btn-primary {
     &:not(.v-btn--icon):not(.v-btn--flat) {
       background-color: map-get($adm-colors, 'primary');

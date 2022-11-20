@@ -506,7 +506,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .delegates-view {
     &__body {
       color: map-get($adm-colors, 'regular');
@@ -546,7 +546,7 @@ export default {
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .delegates-view {
     &__alert {
       background-color: map-get($adm-colors, 'muted') !important;

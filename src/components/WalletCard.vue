@@ -160,7 +160,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .wallet-card {
     background-color: transparent;
     &__list {
@@ -177,7 +177,7 @@ export default {
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .wallet-card {
     background-color: transparent;
     &__list {

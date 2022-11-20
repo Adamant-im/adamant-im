@@ -68,10 +68,10 @@ export default {
 <style lang="scss" scoped>
 @import './assets/styles/themes/adamant/_mixins.scss';
 
-.theme--light.application--linear-gradient {
+.v-theme--light.application--linear-gradient {
   @include linear-gradient-light();
 }
-.theme--dark.application--linear-gradient {
+.v-theme--dark.application--linear-gradient {
   @include linear-gradient-dark();
 }
 </style>

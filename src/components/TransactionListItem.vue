@@ -293,7 +293,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light.v-list {
+.v-theme--light.v-list {
   .transaction-item {
     &__amount {
       color: map-get($adm-colors, 'regular');
@@ -312,7 +312,7 @@ export default {
     }
   }
 }
-.theme--dark.v-list {
+.v-theme--dark.v-list {
   .transaction-item {
     &__amount {
       color: map-get($adm-colors, 'regular');
