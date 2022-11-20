@@ -18,6 +18,7 @@
 
       <v-sheet
         class="text-center mt-4"
+        color="transparent"
       >
         <logo style="width: 300px;" />
 
@@ -35,6 +36,7 @@
       <v-sheet
         v-if="!isLoginViaPassword"
         class="text-center mt-4"
+        color="transparent"
       >
         <v-row
           justify="center"
@@ -110,6 +112,7 @@
       <v-sheet
         v-if="isLoginViaPassword"
         class="text-center mt-6"
+        color="transparent"
       >
         <v-row
           no-gutters
