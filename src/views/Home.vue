@@ -87,6 +87,7 @@
 <script>
 import WalletCard from '@/components/WalletCard'
 import CryptoIcon from '@/components/icons/CryptoIcon'
+import numberFormat from '@/filters/numberFormat'
 
 import { Cryptos, CryptosNames, isErc20 } from '@/lib/constants'
 
@@ -182,7 +183,8 @@ export default {
       const nextWallet = this.wallets[nextWalletIndex]
 
       if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
-    }
+    },
+    numberFormat
   }
 }
 </script>
