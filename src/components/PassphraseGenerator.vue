@@ -31,6 +31,7 @@
           ref="textarea"
           :value="passphrase"
           type="text"
+          variant="plain"
           multi-line
           readonly
           rows="3"
@@ -160,7 +161,7 @@ export default {
   &__box {
     margin-top: 36px;
     :deep(.v-input) {
-      margin-top: 12px;
+      margin-top: 0;
     }
     :deep(.v-textarea) textarea {
       @include a-text-regular();
