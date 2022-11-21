@@ -47,12 +47,13 @@
           :hide-time="message.readonly"
           @resend="resendMessage(partnerId, message.id)"
         >
-          <ChatAvatar
-            slot="avatar"
-            :user-id="sender.id"
-            use-public-key
-            @click="onClickAvatar(sender.id)"
-          />
+          <template #avatar>
+            <ChatAvatar
+              :user-id="sender.id"
+              use-public-key
+              @click="onClickAvatar(sender.id)"
+            />
+          </template>
         </a-chat-message>
         <a-chat-transaction
           v-else-if="isTransaction(message.type)"
@@ -73,44 +74,48 @@
           @click:transactionStatus="updateTransactionStatus(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
         >
-          <crypto-icon
-            slot="crypto"
-            :crypto="message.type"
-          />
+          <template #crypto>
+            <crypto-icon
+              :crypto="message.type"
+            />
+          </template>
         </a-chat-transaction>
       </template>
 
-      <a-chat-form
-        v-if="!isChatReadOnly"
-        ref="chatForm"
-        slot="form"
-        :show-send-button="true"
-        :send-on-enter="sendMessageOnEnter"
-        :show-divider="true"
-        :label="chatFormLabel"
-        :message-text="messageText"
-        @message="onMessage"
-      >
-        <chat-menu
-          slot="prepend"
-          :partner-id="partnerId"
-        />
-      </a-chat-form>
+      <template #form>
+        <a-chat-form
+          v-if="!isChatReadOnly"
+          ref="chatForm"
+          :show-send-button="true"
+          :send-on-enter="sendMessageOnEnter"
+          :show-divider="true"
+          :label="chatFormLabel"
+          :message-text="messageText"
+          @message="onMessage"
+        >
+          <template #prepend>
+            <chat-menu
+              :partner-id="partnerId"
+            />
+          </template>
+        </a-chat-form>
+      </template>
 
-      <v-btn
-        v-if="!isScrolledToBottom"
-        slot="fab"
-        class="ma-0 grey--text"
-        color="grey lighten-3"
-        depressed
-        fab
-        size="small"
-        @click="$refs.chat.scrollToBottom()"
-      >
-        <v-icon large>
-          mdi-chevron-down
-        </v-icon>
-      </v-btn>
+      <template #fab>
+        <v-btn
+          v-if="!isScrolledToBottom"
+          class="ma-0 grey--text"
+          color="grey lighten-3"
+          depressed
+          fab
+          size="small"
+          @click="$refs.chat.scrollToBottom()"
+        >
+          <v-icon large>
+            mdi-chevron-down
+          </v-icon>
+        </v-btn>
+      </template>
     </a-chat>
   </v-card>
 </template>

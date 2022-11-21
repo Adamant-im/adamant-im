@@ -37,15 +37,16 @@
               offset-y
               :class="`${className}__camera-select`"
             >
-              <v-btn
-                slot="activator"
-                variant="text"
-                color="white"
-              >
-                <v-icon large>
-                  mdi-camera
-                </v-icon>
-              </v-btn>
+              <template #activator>
+                <v-btn
+                  variant="text"
+                  color="white"
+                >
+                  <v-icon large>
+                    mdi-camera
+                  </v-icon>
+                </v-btn>
+              </template>
               <v-list>
                 <v-list-item
                   v-for="camera in cameras"

@@ -7,12 +7,13 @@
     <container>
       <div class="text-right">
         <language-switcher>
-          <v-icon
-            slot="prepend"
-            size="18"
-          >
-            mdi-chevron-right
-          </v-icon>
+          <template #prepend>
+            <v-icon
+              size="18"
+            >
+              mdi-chevron-right
+            </v-icon>
+          </template>
         </language-switcher>
       </div>
 

@@ -16,13 +16,13 @@
     >
       <template
         v-if="showSendButton"
-        slot="append"
+        #append
       >
         <v-icon size="28">
           mdi-send
         </v-icon>
       </template>
-      <template slot="prepend">
+      <template #prepend>
         <slot name="prepend" />
       </template>
     </v-textarea>

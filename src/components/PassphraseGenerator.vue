@@ -39,7 +39,7 @@
           no-resize
           @click.prevent="selectText"
         >
-          <template slot="append">
+          <template #append>
             <div :class="`${className}__icons`">
               <icon
                 :width="24"

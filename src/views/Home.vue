@@ -28,13 +28,14 @@
               :href="`#${wallet.cryptoCurrency}`"
               @wheel="onWheel"
             >
-              <div>
+              <template #icon>
                 <crypto-icon
-                  slot="icon"
                   :crypto="wallet.cryptoCurrency"
                   size="medium"
                   :class="`${className}__icon`"
                 />
+              </template>
+              <div>
                 <div>{{ wallet.balance | numberFormat(4) }}</div>
                 <div>
                   {{ wallet.cryptoCurrency }}
@@ -68,11 +69,12 @@
                 :current-currency="currentCurrency"
                 @click:balance="goToTransactions"
               >
-                <crypto-icon
-                  slot="icon"
-                  :crypto="wallet.cryptoCurrency"
-                  size="large"
-                />
+                <template #icon>
+                  <crypto-icon
+                    :crypto="wallet.cryptoCurrency"
+                    size="large"
+                  />
+                </template>
               </wallet-card>
             </v-tab-item>
           </v-tabs>
