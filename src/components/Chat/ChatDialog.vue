@@ -14,7 +14,7 @@
         <v-spacer />
 
         <v-btn
-          text
+          variant="text"
           @click="show = false"
         >
           {{ $t('chats.ok') }}

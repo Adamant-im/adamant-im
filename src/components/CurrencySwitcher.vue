@@ -3,7 +3,7 @@
     <template #activator="{ on, attrs }">
       <v-btn
         class="ma-0 btn"
-        text
+        variant="text"
         v-bind="attrs"
         v-on="on"
       >

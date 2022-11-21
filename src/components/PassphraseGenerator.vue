@@ -6,8 +6,8 @@
       </h3>
       <v-btn
         class="a-btn-link mt-2"
-        text
-        small
+        variant="text"
+        size="small"
         @click="generatePassphrase"
       >
         {{ $t('login.new_button') }}

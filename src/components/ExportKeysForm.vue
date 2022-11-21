@@ -41,8 +41,8 @@
         <v-btn
           :class="`${className}__copy_all_button`"
           class="a-btn-link"
-          text
-          small
+          variant="text"
+          size="small"
           @click="copyAll"
         >
           {{ $t('options.export_keys.copy_all') }}

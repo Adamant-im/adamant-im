@@ -17,7 +17,7 @@
             v-if="showBack"
             :class="`${className}__back-button`"
             icon
-            small
+            size="small"
             @click="goBack"
           >
             <v-icon>mdi-arrow-left</v-icon>

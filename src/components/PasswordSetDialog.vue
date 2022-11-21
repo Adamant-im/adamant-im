@@ -31,7 +31,7 @@
         <v-spacer />
 
         <v-btn
-          text
+          variant="text"
           class="a-btn-regular"
           @click="show = false"
         >
@@ -39,7 +39,7 @@
         </v-btn>
 
         <v-btn
-          text
+          variant="text"
           class="a-btn-regular"
           :disabled="!isValidForm || disabledButton"
           @click="submit"

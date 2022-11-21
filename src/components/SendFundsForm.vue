@@ -196,7 +196,7 @@
 
           <v-btn
             class="a-btn-regular"
-            text
+            variant="text"
             @click="dialog = false"
           >
             {{ $t('transfer.confirm_cancel') }}
@@ -204,7 +204,7 @@
 
           <v-btn
             class="a-btn-regular"
-            text
+            variant="text"
             :disabled="disabledButton"
             @click="submit"
           >

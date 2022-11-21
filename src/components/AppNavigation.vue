@@ -17,7 +17,7 @@
           <!-- Wallet -->
           <v-btn
             to="/home"
-            text
+            variant="text"
           >
             <span>{{ $t('bottom.wallet_button') }}</span>
             <v-icon size="20">
@@ -28,7 +28,7 @@
           <!-- Chat -->
           <v-btn
             to="/chats"
-            text
+            variant="text"
           >
             <span>{{ $t('bottom.chats_button') }}</span>
             <v-badge
@@ -46,7 +46,7 @@
           <!-- Settings -->
           <v-btn
             to="/options"
-            text
+            variant="text"
           >
             <span>{{ $t('bottom.settings_button') }}</span>
             <v-icon size="20">

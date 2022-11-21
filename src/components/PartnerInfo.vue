@@ -8,7 +8,7 @@
         {{ isMe ? $t('chats.my_qr_code') : $t('chats.partner_info') }}
         <v-spacer />
         <v-btn
-          text
+          variant="text"
           icon
           class="close-icon"
           @click="show = false"

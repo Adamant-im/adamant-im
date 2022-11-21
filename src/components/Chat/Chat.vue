@@ -104,7 +104,7 @@
         color="grey lighten-3"
         depressed
         fab
-        small
+        size="small"
         @click="$refs.chat.scrollToBottom()"
       >
         <v-icon large>

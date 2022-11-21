@@ -50,8 +50,8 @@
       <v-col cols="12">
         <v-btn
           class="a-btn-link"
-          text
-          small
+          variant="text"
+          size="small"
           @click="removePassword"
         >
           {{ $t('login_via_password.remove_password') }}

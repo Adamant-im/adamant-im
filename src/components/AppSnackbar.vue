@@ -11,8 +11,8 @@
       {{ message }}
       <v-btn
         v-if="timeout === 0 || timeout > 2000"
-        x-small
-        text
+        size="x-small"
+        variant="text"
         fab
         @click="show = false"
       >

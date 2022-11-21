@@ -224,7 +224,7 @@
           <v-spacer />
 
           <v-btn
-            text
+            variant="text"
             class="a-btn-regular"
             @click="dialog = false"
           >
@@ -232,7 +232,7 @@
           </v-btn>
 
           <v-btn
-            text
+            variant="text"
             class="a-btn-regular"
             @click="sendVotes"
           >
