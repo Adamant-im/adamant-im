@@ -5,36 +5,34 @@
     :class="className"
   >
     <container>
-      <v-card
-        flat
+      <v-sheet
         class="transparent white--text"
         :class="`${className}__card`"
       >
         <!-- Wallets -->
-        <v-card
+        <v-sheet
           :class="`${className}__wallets`"
-          flat
         >
           <v-tabs
             ref="vtabs"
             v-model="currentWallet"
+            :class="`${className}__tabs`"
             grow
+            stacked
             height="auto"
             show-arrows
           >
             <v-tab
               v-for="wallet in wallets"
               :key="wallet.cryptoCurrency"
-              :href="`#${wallet.cryptoCurrency}`"
+              :value="wallet.cryptoCurrency"
               @wheel="onWheel"
             >
-              <template #icon>
-                <crypto-icon
-                  :crypto="wallet.cryptoCurrency"
-                  size="medium"
-                  :class="`${className}__icon`"
-                />
-              </template>
+              <crypto-icon
+                :crypto="wallet.cryptoCurrency"
+                size="medium"
+                :class="`${className}__icon`"
+              />
               <div>
                 <div>{{ wallet.balance | numberFormat(4) }}</div>
                 <div>
@@ -54,8 +52,10 @@
                 </div>
               </div>
             </v-tab>
+          </v-tabs>
 
-            <v-tab-item
+          <v-window v-model="currentWallet">
+            <v-window-item
               v-for="wallet in wallets"
               :key="wallet.cryptoCurrency"
               :value="wallet.cryptoCurrency"
@@ -76,10 +76,10 @@
                   />
                 </template>
               </wallet-card>
-            </v-tab-item>
-          </v-tabs>
-        </v-card>
-      </v-card>
+            </v-window-item>
+          </v-window>
+        </v-sheet>
+      </v-sheet>
     </container>
   </v-row>
 </template>
@@ -253,6 +253,9 @@ export default {
       display: none;
     }
   }
+  &__tabs {
+    position: relative;
+  }
   &__icon {
     margin-bottom: 3px;
   }
@@ -307,11 +310,11 @@ export default {
         background-color: unset;
       }
       :deep(.v-tab) {
-        &:not(.v-tab--active) {
+        &:not(.v-tab--selected) {
           color: map-get($shades, 'white')
         }
       }
-      :deep(.v-tab--active) {
+      :deep(.v-tab--selected) {
         color: map-get($adm-colors, 'primary');
         .svg-icon {
           fill: map-get($adm-colors, 'primary');
@@ -321,7 +324,7 @@ export default {
   }
 }
 
-.v-tab--active {
+.v-tab--selected {
   .account-view__rates {
     color: inherit;
   }
