@@ -4,23 +4,21 @@
     :class="className"
   >
     <v-list
-      two-line
+      lines="two"
       :class="`${className}__list`"
     >
       <v-list-item
         :class="`${className}__tile`"
         @click="showShareURIDialog = true"
       >
-        <v-list-item-content>
-          <v-list-item-title :class="`${className}__title`">
-            {{ $t('home.wallet_crypto', { crypto: cryptoName }) }}
-          </v-list-item-title>
-          <v-list-item-subtitle :class="`${className}__subtitle`">
-            {{ address }}
-          </v-list-item-subtitle>
-        </v-list-item-content>
+        <v-list-item-title :class="`${className}__title`">
+          {{ $t('home.wallet_crypto', { crypto: cryptoName }) }}
+        </v-list-item-title>
+        <v-list-item-subtitle :class="`${className}__subtitle`">
+          {{ address }}
+        </v-list-item-subtitle>
 
-        <v-list-item-action>
+        <template #append>
           <v-btn
             icon
             ripple
@@ -33,23 +31,21 @@
               mdi-share-variant
             </v-icon>
           </v-btn>
-        </v-list-item-action>
+        </template>
       </v-list-item>
 
       <v-list-item @click="$emit('click:balance', crypto)">
-        <v-list-item-content>
-          <v-list-item-title :class="`${className}__title`">
-            {{ $t('home.balance') }}
-          </v-list-item-title>
-          <v-list-item-subtitle :class="`${className}__subtitle`">
-            {{ currency(balance, crypto, true) }} <span
-              v-if="$store.state.rate.isLoaded"
-              class="a-text-regular"
-            >~{{ rate }} {{ currentCurrency }}</span>
-          </v-list-item-subtitle>
-        </v-list-item-content>
+        <v-list-item-title :class="`${className}__title`">
+          {{ $t('home.balance') }}
+        </v-list-item-title>
+        <v-list-item-subtitle :class="`${className}__subtitle`">
+          {{ currency(balance, crypto, true) }} <span
+            v-if="$store.state.rate.isLoaded"
+            class="a-text-regular"
+          >~{{ rate }} {{ currentCurrency }}</span>
+        </v-list-item-subtitle>
 
-        <v-list-item-action>
+        <template #append>
           <v-btn
             icon
             ripple
@@ -62,7 +58,7 @@
               mdi-chevron-right
             </v-icon>
           </v-btn>
-        </v-list-item-action>
+        </template>
       </v-list-item>
     </v-list>
 
