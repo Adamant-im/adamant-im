@@ -1,11 +1,10 @@
 <template>
   <v-menu offset-y>
-    <template #activator="{ on, attrs }">
+    <template #activator="{ props }">
       <v-btn
         class="ma-0 btn"
         variant="text"
-        v-bind="attrs"
-        v-on="on"
+        v-bind="props"
       >
         <slot name="prepend">
           <v-icon

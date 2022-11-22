@@ -70,10 +70,9 @@
           :offset-y="false"
           left
         >
-          <template #activator="{ on, attrs }">
+          <template #activator="{ props }">
             <v-icon
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
             >
               mdi-dots-vertical
             </v-icon>

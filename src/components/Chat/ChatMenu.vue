@@ -1,12 +1,11 @@
 <template>
   <div>
     <v-menu>
-      <template #activator="{ on, attrs }">
+      <template #activator="{ props }">
         <v-icon
           class="chat-menu__icon"
-          v-bind="attrs"
+          v-bind="props"
           size="28"
-          v-on="on"
         >
           mdi-plus-circle-outline
         </v-icon>
