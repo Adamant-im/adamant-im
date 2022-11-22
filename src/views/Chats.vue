@@ -8,23 +8,22 @@
       <v-row no-gutters>
         <v-col cols="12">
           <v-list
-            lines="two"
             subheader
-            class="transparent"
+            class="transparent pa-0"
           >
             <v-list-item
               v-if="isFulfilled"
               :class="`${className}__item`"
               @click="showChatStartDialog = true"
             >
-              <v-list-item-avatar size="24">
+              <template #prepend>
                 <v-icon
                   :class="`${className}__icon`"
                   size="16"
                 >
                   mdi-message-outline
                 </v-icon>
-              </v-list-item-avatar>
+              </template>
 
               <div>
                 <v-list-item-title :class="`${className}__title`">
@@ -198,6 +197,12 @@ export default {
 
     & :deep(.v-list-item__avatar) {
       margin-right: 4px;
+    }
+
+    :deep(.v-list-item__prepend) {
+      > .v-icon {
+        margin-inline-end: 8px;
+      }
     }
   }
   &__title {
