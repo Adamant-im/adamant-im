@@ -13,6 +13,7 @@
       <v-select
         v-model="currency"
         class="a-input"
+        variant="underlined"
         :items="cryptoList"
         :disabled="addressReadonly"
       />
@@ -22,6 +23,7 @@
         :disabled="addressReadonly"
         class="a-input"
         type="text"
+        variant="underlined"
         @paste="onPasteURIAddress"
       >
         <template #label>
@@ -40,17 +42,16 @@
         </template>
         <template
           v-if="!addressReadonly"
-          #append
+          #append-inner
         >
           <v-menu
             :offset-overflow="true"
             :offset-y="false"
             left
           >
-            <template #activator="{ on, attrs }">
+            <template #activator="{ props }">
               <v-icon
-                v-bind="attrs"
-                v-on="on"
+                v-bind="props"
               >
                 mdi-dots-vertical
               </v-icon>
@@ -77,6 +78,7 @@
       <v-text-field
         v-model="amountString"
         class="a-input"
+        variant="underlined"
         :max="maxToTransfer"
         :min="minToTransfer"
         :step="minToTransfer"
@@ -88,16 +90,15 @@
             {{ `(max: ${maxToTransferFixed} ${currency})` }}
           </span>
         </template>
-        <template #append>
+        <template #append-inner>
           <v-menu
             :offset-overflow="true"
             :offset-y="false"
             left
           >
-            <template #activator="{ on, attrs }">
+            <template #activator="{ props }">
               <v-icon
-                v-bind="attrs"
-                v-on="on"
+                v-bind="props"
               >
                 mdi-dots-vertical
               </v-icon>
@@ -143,6 +144,7 @@
         :label="$t('transfer.comments_label')"
         class="a-input"
         counter
+        variant="underlined"
         maxlength="100"
         @paste="onPasteURIComment"
       />
@@ -152,6 +154,7 @@
         v-model="textData"
         class="a-input"
         :label="textDataLabel"
+        variant="underlined"
         counter
         maxlength="64"
       />
