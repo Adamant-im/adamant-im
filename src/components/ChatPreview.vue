@@ -2,7 +2,7 @@
   <v-list-item
     v-if="isLoadingSeparator"
   >
-    <v-list-item-content
+    <div
       style="align-items: center"
     >
       <v-icon
@@ -11,26 +11,31 @@
       >
         mdi-dots-horizontal
       </v-icon>
-    </v-list-item-content>
+    </div>
   </v-list-item>
   <v-list-item
     v-else
+    lines="two"
     :class="className"
     @click="$emit('click')"
   >
-    <v-list-item-avatar>
+    <template #prepend>
       <icon
         v-if="readOnly"
         :class="`${className}__icon`"
       >
         <adm-fill-icon />
       </icon>
-      <chat-avatar
+      <div
         v-else
-        :size="40"
-        :user-id="contactId"
-        use-public-key
-      />
+        :class="`${className}__chat-avatar`"
+      >
+        <chat-avatar
+          :size="40"
+          :user-id="contactId"
+          use-public-key
+        />
+      </div>
 
       <v-badge
         v-if="numOfNewMessages > 0"
@@ -38,9 +43,9 @@
         color="primary"
         :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
       />
-    </v-list-item-avatar>
+    </template>
 
-    <v-list-item-content>
+    <div>
       <v-list-item-title
         :class="{
           'a-text-regular-enlarged-bold': true,
@@ -94,7 +99,7 @@
           {{ lastMessageTextNoFormats }}
         </v-list-item-subtitle>
       </template>
-    </v-list-item-content>
+    </div>
 
     <div
       v-if="!isMessageReadonly"
@@ -265,6 +270,10 @@ export default {
 .chat-brief {
   position: relative;
 
+  &__chat-avatar {
+    margin-right: 16px;
+  }
+
   &__title {
     line-height: 24px;
     margin-bottom: 0;
@@ -283,10 +292,6 @@ export default {
 
   :deep(.v-list__tile__sub-title)  {
     @include a-text-explanation-enlarged-bold();
-  }
-
-  :deep(.v-avatar.v-list-item__avatar) {
-    overflow: visible;
   }
 }
 
