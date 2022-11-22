@@ -11,7 +11,7 @@
       :class="`${className}__toolbar`"
     />
     <container>
-      <v-list class="transparent">
+      <v-list bg-color="transparent">
         <v-list-item>
           <v-list-item-content :class="`${className}__titlecontent`">
             <v-list-item-title :class="`${className}__title`">

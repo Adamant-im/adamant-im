@@ -9,7 +9,8 @@
         <v-col cols="12">
           <v-list
             subheader
-            class="transparent pa-0"
+            class="pa-0"
+            bg-color="transparent"
           >
             <v-list-item
               v-if="isFulfilled"

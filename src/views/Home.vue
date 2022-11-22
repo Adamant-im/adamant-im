@@ -6,7 +6,8 @@
   >
     <container>
       <v-sheet
-        class="transparent white--text"
+        class="white--text"
+        color="transparent"
         :class="`${className}__card`"
       >
         <!-- Wallets -->

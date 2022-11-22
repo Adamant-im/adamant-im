@@ -25,7 +25,7 @@
           <v-list
             v-if="hasTransactions"
             three-line
-            class="transparent"
+            bg-color="transparent"
           >
             <transaction-list-item
               v-for="(transaction, i) in transactions"

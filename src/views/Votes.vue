@@ -17,7 +17,7 @@
         <container>
           <v-card
             flat
-            class="transparent"
+            color="transparent"
           >
             <v-card-title class="pa-0">
               <v-text-field
