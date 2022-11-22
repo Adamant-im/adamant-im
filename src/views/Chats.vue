@@ -8,7 +8,7 @@
       <v-row no-gutters>
         <v-col cols="12">
           <v-list
-            two-line
+            lines="two"
             subheader
             class="transparent"
           >

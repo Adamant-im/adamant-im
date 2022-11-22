@@ -17,7 +17,7 @@
         </v-btn>
       </v-card-title>
       <v-divider class="a-divider" />
-      <v-list two-line>
+      <v-list lines="two">
         <template>
           <v-list-item>
             <v-list-item-avatar>
