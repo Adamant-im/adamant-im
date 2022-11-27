@@ -222,16 +222,16 @@ export default {
       min-width: 74px;
       align-items: flex-start;
     }
-    :deep(.v-tab--active) {
+    :deep(.v-tab--selected) {
       font-weight: 500;
     }
-    :deep(.v-tab):not(.v-tab--active)  {
+    :deep(.v-tab):not(.v-tab--selected)  {
       opacity: 1;
     }
     :deep(.v-tabs.v-tabs.v-tabs .v-slide-group__prev.v-slide-group__prev--disabled) {
       display: none; // workaround: hide left/right arrows
     }
-    :deep(.v-tab.v-tab--active::before) {
+    :deep(.v-tab.v-tab--selected::before) {
       background-color: unset;
     }
     :deep(.v-slide-group__prev) {
@@ -276,7 +276,7 @@ export default {
         background-color: map-get($adm-colors, 'primary') !important;
       }
       :deep(.v-tab) {
-        &:not(.v-tab--active) {
+        &:not(.v-tab--selected) {
           color: map-get($adm-colors, 'regular');
         }
       }
@@ -284,7 +284,7 @@ export default {
         color: map-get($adm-colors, 'primary2');
         pointer-events: none;
       }
-      :deep(.v-tab--active) {
+      :deep(.v-tab--selected) {
         color: map-get($adm-colors, 'primary');
         .svg-icon {
           fill: map-get($adm-colors, 'primary');
