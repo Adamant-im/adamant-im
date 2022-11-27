@@ -13,6 +13,7 @@
           :readonly="true"
           class="a-input"
           type="text"
+          variant="underlined"
         >
           <template #label>
             <span class="font-weight-medium">
@@ -57,6 +58,7 @@
     <v-text-field
       v-model.trim="passphrase"
       class="a-input"
+      variant="underlined"
       type="text"
     >
       <template #label>

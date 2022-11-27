@@ -25,7 +25,7 @@
         <v-text-field
           v-model="partnerName"
           :class="`${className}__textfield`"
-          filled
+          variant="plain"
           background-color="transparent"
           :label="partnerId"
           hide-details

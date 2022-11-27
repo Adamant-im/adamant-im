@@ -27,6 +27,7 @@
                 :class="`${className}__search`"
                 single-line
                 hide-details
+                variant="underlined"
                 class="a-input"
               />
             </v-card-title>

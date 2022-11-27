@@ -12,6 +12,7 @@
       single-line
       auto-grow
       rows="1"
+      variant="underlined"
       v-on="listeners"
     >
       <template

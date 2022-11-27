@@ -14,6 +14,7 @@
         :name="Date.now()"
         type="password"
         class="text-center"
+        variant="underlined"
       />
     </v-row>
 

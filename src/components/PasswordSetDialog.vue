@@ -17,6 +17,7 @@
           autocomplete="new-password"
           class="a-input"
           type="password"
+          variant="underlined"
           :label="$t('login_via_password.enter_password')"
           :name="Date.now()"
           @keyup.enter="submit"
