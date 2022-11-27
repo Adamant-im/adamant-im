@@ -1,7 +1,10 @@
 <template>
   <i
     class="icon"
-    :class="{ 'icon--link': isClickable }"
+    :class="{
+      'icon--link': isClickable,
+      [$attrs.class]: !!$attrs.class
+    }"
   >
     <svg
       class="svg-icon"
