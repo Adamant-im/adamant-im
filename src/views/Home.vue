@@ -284,6 +284,11 @@ export default {
         color: map-get($adm-colors, 'primary2');
         pointer-events: none;
       }
+      :deep(:not(.v-tab--selected)) {
+        .svg-icon {
+          fill: map-get($adm-colors, 'muted');
+        }
+      }
       :deep(.v-tab--selected) {
         color: map-get($adm-colors, 'primary');
         .svg-icon {
