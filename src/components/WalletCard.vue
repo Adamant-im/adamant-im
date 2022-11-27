@@ -22,6 +22,7 @@
           <v-btn
             icon
             ripple
+            variant="text"
             :class="`${className}__action`"
           >
             <v-icon
@@ -49,6 +50,7 @@
           <v-btn
             icon
             ripple
+            variant="text"
             :class="`${className}__action`"
           >
             <v-icon
