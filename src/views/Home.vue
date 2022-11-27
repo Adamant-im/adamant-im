@@ -35,7 +35,7 @@
                 :class="`${className}__icon`"
               />
               <div>
-                <div>{{ wallet.balance | numberFormat(4) }}</div>
+                <div>{{ numberFormat(wallet.balance, 4) }}</div>
                 <div>
                   {{ wallet.cryptoCurrency }}
                   <span
