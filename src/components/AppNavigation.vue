@@ -12,7 +12,6 @@
     >
       <v-icon
         icon="mdi-wallet"
-        size="dense"
       />
       <span>{{ $t('bottom.wallet_button') }}</span>
     </v-btn>
@@ -29,7 +28,6 @@
       >
         <v-icon
           icon="mdi-forum"
-          size="dense"
         />
       </v-badge>
       <span>{{ $t('bottom.chats_button') }}</span>
@@ -41,7 +39,6 @@
     >
       <v-icon
         icon="mdi-cog"
-        size="dense"
       />
       <span>{{ $t('bottom.settings_button') }}</span>
     </v-btn>
