@@ -15,12 +15,14 @@
         >
           <v-btn
             v-if="showBack"
-            :class="`${className}__back-button`"
             icon
             size="small"
             @click="goBack"
           >
-            <v-icon>mdi-arrow-left</v-icon>
+            <v-icon
+              icon="mdi-arrow-left"
+              size="x-large"
+            />
           </v-btn>
 
           <v-toolbar-title
@@ -88,12 +90,8 @@ export default {
 .app-toolbar-centered {
   padding: 0;
 
-  :deep(.v-toolbar__title:not(:first-child)) {
-    padding-left: 0 !important;
-  }
-
-  &__back-button {
-    margin: 6px 6px 6px -6px !important;
+  :deep(.v-toolbar-title:not(:first-child)) {
+    margin-inline-start: 0;
   }
 }
 
