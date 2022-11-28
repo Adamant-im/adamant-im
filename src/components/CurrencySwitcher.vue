@@ -5,22 +5,10 @@
         class="ma-0 btn"
         variant="text"
         v-bind="props"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
       >
-        <slot name="prepend">
-          <v-icon
-            v-if="prependIcon"
-            :icon="prependIcon"
-            left
-          />
-        </slot>
         {{ currentCurrency }}
-        <slot name="append">
-          <v-icon
-            v-if="appendIcon"
-            :icon="appendIcon"
-            right
-          />
-        </slot>
       </v-btn>
     </template>
 
