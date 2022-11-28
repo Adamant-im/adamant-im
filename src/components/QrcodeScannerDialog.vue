@@ -42,9 +42,10 @@
                   variant="text"
                   color="white"
                 >
-                  <v-icon large>
-                    mdi-camera
-                  </v-icon>
+                  <v-icon
+                    size="x-large"
+                    icon="mdi-camera"
+                  />
                 </v-btn>
               </template>
               <v-list>

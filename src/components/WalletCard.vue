@@ -27,10 +27,9 @@
           >
             <v-icon
               :class="`${className}__icon`"
-              size="20"
-            >
-              mdi-share-variant
-            </v-icon>
+              icon="mdi-share-variant"
+              size="dense"
+            />
           </v-btn>
         </template>
       </v-list-item>
@@ -55,10 +54,9 @@
           >
             <v-icon
               :class="`${className}__icon`"
-              size="20"
-            >
-              mdi-chevron-right
-            </v-icon>
+              icon="mdi-chevron-right"
+              size="dense"
+            />
           </v-btn>
         </template>
       </v-list-item>

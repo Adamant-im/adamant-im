@@ -9,19 +9,17 @@
         <slot name="prepend">
           <v-icon
             v-if="prependIcon"
+            :icon="prependIcon"
             left
-          >
-            {{ prependIcon }}
-          </v-icon>
+          />
         </slot>
         {{ currentCurrency }}
         <slot name="append">
           <v-icon
             v-if="appendIcon"
+            :icon="appendIcon"
             right
-          >
-            {{ appendIcon }}
-          </v-icon>
+          />
         </slot>
       </v-btn>
     </template>

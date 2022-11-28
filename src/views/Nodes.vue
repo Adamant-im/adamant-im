@@ -58,18 +58,18 @@
                 </span>
                 <v-icon
                   :color="getNodeColor(props.item)"
+                  icon="mdi-checkbox-blank-circle"
                   size="small"
-                >
-                  mdi-checkbox-blank-circle
-                </v-icon>
+                />
               </td>
             </template>
 
             <template #[`item.socket`]="props">
               <td class="pa-0 pr-2">
-                <v-icon :color="props.item.socketSupport ? 'green' : 'red'">
-                  {{ props.item.socketSupport ? 'mdi-check' : 'mdi-close' }}
-                </v-icon>
+                <v-icon
+                  :icon="props.item.socketSupport ? 'mdi-check' : 'mdi-close'"
+                  :color="props.item.socketSupport ? 'green' : 'red'"
+                />
               </td>
             </template>
           </v-data-table>

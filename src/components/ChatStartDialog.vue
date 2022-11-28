@@ -39,9 +39,8 @@
               <template #activator="{ props }">
                 <v-icon
                   v-bind="props"
-                >
-                  mdi-dots-vertical
-                </v-icon>
+                  icon="mdi-dots-vertical"
+                />
               </template>
               <v-list>
                 <v-list-item @click="showQrcodeScanner = true">

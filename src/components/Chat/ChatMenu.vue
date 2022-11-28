@@ -5,10 +5,9 @@
         <v-icon
           class="chat-menu__icon"
           v-bind="props"
+          icon="mdi-plus-circle-outline"
           size="28"
-        >
-          mdi-plus-circle-outline
-        </v-icon>
+        />
       </template>
 
       <v-list>
@@ -32,7 +31,7 @@
           :disabled="item.disabled"
         >
           <v-list-item-avatar>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon :icon="item.icon" />
           </v-list-item-avatar>
 
           <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>

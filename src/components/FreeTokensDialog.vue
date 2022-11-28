@@ -26,9 +26,10 @@
           :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
           @click="getFreeTokens()"
         >
-          <v-icon :class="`${className}__btn-icon`">
-            mdi-gift
-          </v-icon>
+          <v-icon
+            :class="`${className}__btn-icon`"
+            icon="mdi-gift"
+          />
           <div :class="`${className}__btn-text`">
             {{ $t('home.free_adm_btn') }}
           </div>

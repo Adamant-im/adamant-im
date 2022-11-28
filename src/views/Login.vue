@@ -6,15 +6,7 @@
   >
     <container>
       <div class="text-right">
-        <language-switcher>
-          <template #prepend>
-            <v-icon
-              size="18"
-            >
-              mdi-chevron-right
-            </v-icon>
-          </template>
-        </language-switcher>
+        <language-switcher prepend-icon="mdi-chevron-right" />
       </div>
 
       <v-sheet

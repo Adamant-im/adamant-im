@@ -5,14 +5,14 @@
       :disabled="page <= 1"
       @click="page--"
     >
-      <v-icon>mdi-chevron-left</v-icon>
+      <v-icon icon="mdi-chevron-left" />
     </v-btn>
     <v-btn
       icon
       :disabled="page >= pages"
       @click="page++"
     >
-      <v-icon>mdi-chevron-right</v-icon>
+      <v-icon icon="mdi-chevron-right" />
     </v-btn>
   </div>
 </template>

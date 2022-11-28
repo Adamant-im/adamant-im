@@ -229,9 +229,10 @@
                   </v-list-item-content>
                   <div>
                     <v-list-item-title :class="`${className}__list__value`">
-                      <v-icon size="20">
-                        mdi-chevron-right
-                      </v-icon>
+                      <v-icon
+                        icon="mdi-chevron-right"
+                        size="dense"
+                      />
                     </v-list-item-title>
                   </div>
                 </v-list-item>
@@ -244,9 +245,10 @@
                   </v-list-item-content>
                   <div>
                     <v-list-item-title :class="`${className}__list__value`">
-                      <v-icon size="20">
-                        mdi-chevron-right
-                      </v-icon>
+                      <v-icon
+                        icon="mdi-chevron-right"
+                        size="dense"
+                      />
                     </v-list-item-title>
                   </div>
                 </v-list-item>
@@ -259,9 +261,10 @@
                   </v-list-item-content>
                   <div>
                     <v-list-item-title :class="`${className}__value`">
-                      <v-icon size="20">
-                        mdi-chevron-right
-                      </v-icon>
+                      <v-icon
+                        icon="mdi-chevron-right"
+                        size="dense"
+                      />
                     </v-list-item-title>
                   </div>
                 </v-list-item>
@@ -276,9 +279,10 @@
                   </v-list-item-content>
                   <div>
                     <v-list-item-title :class="`${className}__value`">
-                      <v-icon size="20">
-                        mdi-logout-variant
-                      </v-icon>
+                      <v-icon
+                        icon="mdi-chevron-right"
+                        size="dense"
+                      />
                     </v-list-item-title>
                   </div>
                 </v-list-item>

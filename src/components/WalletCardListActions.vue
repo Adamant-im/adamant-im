@@ -4,9 +4,10 @@
       @click="sendFunds"
     >
       <template #prepend>
-        <v-icon :class="`${className}__icon`">
-          mdi-bank-transfer-out
-        </v-icon>
+        <v-icon
+          :class="`${className}__icon`"
+          icon="mdi-bank-transfer-out"
+        />
       </template>
 
       <v-list-item-title :class="`${className}__title`">
@@ -19,9 +20,10 @@
       @click="buyTokens"
     >
       <template #prepend>
-        <v-icon :class="`${className}__icon`">
-          mdi-finance
-        </v-icon>
+        <v-icon
+          :class="`${className}__icon`"
+          icon="mdi-finance"
+        />
       </template>
 
       <v-list-item-title :class="`${className}__title`">
@@ -34,9 +36,10 @@
       @click="getFreeTokens"
     >
       <template #prepend>
-        <v-icon :class="`${className}__icon`">
-          mdi-gift
-        </v-icon>
+        <v-icon
+          :class="`${className}__icon`"
+          icon="mdi-gift"
+        />
       </template>
 
       <v-list-item-title :class="`${className}__title`">

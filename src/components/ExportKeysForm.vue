@@ -29,10 +29,9 @@
             >
               <v-icon
                 :class="`${className}__icon`"
+                icon="mdi-content-copy"
                 size="20"
-              >
-                mdi-content-copy
-              </v-icon>
+              />
             </v-btn>
           </template>
         </v-text-field>
@@ -75,9 +74,8 @@
           <template #activator="{ props }">
             <v-icon
               v-bind="props"
-            >
-              mdi-dots-vertical
-            </v-icon>
+              icon="mdi-dots-vertical"
+            />
           </template>
           <v-list>
             <v-list-item @click="showQrcodeScanner = true">

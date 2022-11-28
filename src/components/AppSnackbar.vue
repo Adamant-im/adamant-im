@@ -18,10 +18,9 @@
       >
         <v-icon
           :class="`${className}__icon`"
-          size="20"
-        >
-          mdi-close
-        </v-icon>
+          icon="mdi-close"
+          size="dense"
+        />
       </v-btn>
     </div>
   </v-snackbar>

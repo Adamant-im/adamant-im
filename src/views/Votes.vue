@@ -93,16 +93,14 @@
                 <td>
                   <v-icon
                     v-if="props.item._voted"
+                    icon="mdi-thumb-up"
                     @click="downVote(props.item.address)"
-                  >
-                    mdi-thumb-up
-                  </v-icon>
+                  />
                   <v-icon
                     v-else
+                    icon="mdi-thumb-up-outline"
                     @click="upVote(props.item.address)"
-                  >
-                    mdi-thumb-up-outline
-                  </v-icon>
+                  />
                 </td>
               </template>
 

@@ -10,9 +10,10 @@
     <v-btn
       to="/home"
     >
-      <v-icon size="20">
-        mdi-wallet
-      </v-icon>
+      <v-icon
+        icon="mdi-wallet"
+        size="dense"
+      />
       <span>{{ $t('bottom.wallet_button') }}</span>
     </v-btn>
 
@@ -26,9 +27,10 @@
         color="primary"
         :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
       >
-        <v-icon size="20">
-          mdi-forum
-        </v-icon>
+        <v-icon
+          icon="mdi-forum"
+          size="dense"
+        />
       </v-badge>
       <span>{{ $t('bottom.chats_button') }}</span>
     </v-btn>
@@ -37,9 +39,10 @@
     <v-btn
       to="/options"
     >
-      <v-icon size="20">
-        mdi-cog
-      </v-icon>
+      <v-icon
+        icon="mdi-cog"
+        size="dense"
+      />
       <span>{{ $t('bottom.settings_button') }}</span>
     </v-btn>
   </v-bottom-navigation>

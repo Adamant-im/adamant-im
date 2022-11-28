@@ -8,9 +8,8 @@
       <v-icon
         ref="loadingDots"
         :class="{ kmove: isLoadingSeparatorActive }"
-      >
-        mdi-dots-horizontal
-      </v-icon>
+        icon="mdi-dots-horizontal"
+      />
     </div>
   </v-list-item>
   <v-list-item
@@ -69,16 +68,14 @@
           <v-icon
             v-if="!isIncomingTransaction"
             size="15"
-          >
-            {{ statusIcon }}
-          </v-icon>
+            :icon="statusIcon"
+          />
           {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
           <v-icon
             v-if="isIncomingTransaction"
+            :icon="statusIcon"
             size="15"
-          >
-            {{ statusIcon }}
-          </v-icon>
+          />
         </v-list-item-subtitle>
       </template>
 
@@ -92,10 +89,9 @@
         >
           <v-icon
             v-if="!isIncomingTransaction"
+            :icon="statusIcon"
             size="15"
-          >
-            {{ statusIcon }}
-          </v-icon>
+          />
           {{ lastMessageTextNoFormats }}
         </v-list-item-subtitle>
       </template>

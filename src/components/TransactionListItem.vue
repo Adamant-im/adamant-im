@@ -11,10 +11,9 @@
       >
         <v-icon
           :class="`${className}__icon`"
-          :size="20"
-        >
-          {{ isStringEqualCI(senderId, userId) ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}
-        </v-icon>
+          :icon="isStringEqualCI(senderId, userId) ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing'"
+          size="dense"
+        />
       </v-list-item-avatar>
 
       <v-list-item-content>
@@ -72,10 +71,9 @@
         >
           <v-icon
             :class="`${className}__icon`"
-            :size="20"
-          >
-            {{ isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline' }}
-          </v-icon>
+            :icon="isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline'"
+            size="dense"
+          />
         </v-btn>
       </v-list-item-action>
     </v-list-item>

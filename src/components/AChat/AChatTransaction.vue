@@ -17,13 +17,12 @@
           <div class="a-chat__status">
             <v-icon
               size="13"
+              :icon="statusIcon"
               :title="statusTitle"
               :color="statusColor"
               :style="statusUpdatable ? 'cursor: pointer;': 'cursor: default;'"
               @click="updateStatus"
-            >
-              {{ statusIcon }}
-            </v-icon>
+            />
           </div>
         </div>
 

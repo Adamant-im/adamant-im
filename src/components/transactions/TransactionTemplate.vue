@@ -72,22 +72,20 @@
               <v-icon
                 v-if="statusUpdatable"
                 ref="updateButton"
-                size="20"
+                icon="mdi-refresh"
+                size="dense"
                 @click="updateStatus()"
-              >
-                mdi-refresh
-              </v-icon>
+              />
             </v-list-item-title>
           </v-list-item-content>
 
           <div :class="`${className}__value ${className}__value-${status.virtualStatus}`">
             <v-icon
               v-if="status.status === 'INVALID'"
-              size="20"
+              icon="mdi-alert-outline"
+              size="dense"
               style="color: #f8a061 !important;"
-            >
-              {{ 'mdi-alert-outline' }}
-            </v-icon>
+            />
             {{ $t(`transaction.statuses.${status.virtualStatus}`) }}<span v-if="status.status === 'INVALID'">{{ ': ' + $t(`transaction.inconsistent_reasons.${status.inconsistentReason}`, { crypto } ) }}</span><span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>
           </div>
         </v-list-item>
@@ -229,9 +227,10 @@
 
           <div>
             <v-list-item-title :class="`${className}__value`">
-              <v-icon size="20">
-                mdi-chevron-right
-              </v-icon>
+              <v-icon
+                icon="mdi-chevron-right"
+                size="dense"
+              />
             </v-list-item-title>
           </div>
         </v-list-item>
@@ -250,9 +249,10 @@
 
           <div>
             <v-list-item-title :class="`${className}__value`">
-              <v-icon size="20">
-                {{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}
-              </v-icon>
+              <v-icon
+                :icon="hasMessages ? 'mdi-comment' : 'mdi-comment-outline'"
+                size="20"
+              />
             </v-list-item-title>
           </div>
         </v-list-item>

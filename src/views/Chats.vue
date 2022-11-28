@@ -20,10 +20,9 @@
               <template #prepend>
                 <v-icon
                   :class="`${className}__icon`"
+                  icon="mdi-message-outline"
                   size="16"
-                >
-                  mdi-message-outline
-                </v-icon>
+                />
               </template>
 
               <div>

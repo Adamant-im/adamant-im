@@ -111,9 +111,10 @@
           size="small"
           @click="$refs.chat.scrollToBottom()"
         >
-          <v-icon large>
-            mdi-chevron-down
-          </v-icon>
+          <v-icon
+            icon="mdi-chevron-down"
+            size="x-large"
+          />
         </v-btn>
       </template>
     </a-chat>

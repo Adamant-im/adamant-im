@@ -8,7 +8,7 @@
       icon
       @click="goBack"
     >
-      <v-icon>mdi-arrow-left</v-icon>
+      <v-icon icon="mdi-arrow-left" />
     </v-btn>
     <div v-if="!isChatReadOnly">
       <slot name="avatar-toolbar" />

@@ -13,7 +13,7 @@
           class="close-icon"
           @click="show = false"
         >
-          <v-icon>mdi-close</v-icon>
+          <v-icon icon="mdi-close" />
         </v-btn>
       </v-card-title>
       <v-divider class="a-divider" />
