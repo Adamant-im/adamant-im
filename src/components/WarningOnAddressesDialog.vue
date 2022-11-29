@@ -29,9 +29,10 @@
           :class="[`${className}__btn-hide`, 'a-btn-primary']"
           @click="hide()"
         >
-          <v-icon :class="`${className}__btn-icon`">
-            mdi-alert
-          </v-icon>
+          <v-icon
+            :class="`${className}__btn-icon`"
+            icon="mdi-alert"
+          />
           <div :class="`${className}__btn-text`">
             {{ $t('warning_on_addresses.hide_button') }}
           </div>
