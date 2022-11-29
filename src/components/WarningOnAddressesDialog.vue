@@ -55,9 +55,6 @@
 </template>
 
 <script>
-import { vueBus } from '@/main'
-import DOMPurify from 'dompurify'
-
 export default {
   props: {
     modelValue: {
@@ -81,38 +78,7 @@ export default {
       }
     }
   },
-  created () {
-    const dialog = this
-    vueBus.$on('warningOnAddressDialog', function (validateSummary) {
-      if (!validateSummary.isAllRight) {
-        dialog.header = dialog.$t('warning_on_addresses.warning') + ': ' + dialog.$t('warning_on_addresses.headline')
-        let contents = '<p>' + dialog.$t('warning_on_addresses.about') + '</p>'
-
-        if (validateSummary.isWrongAddress) {
-          contents += '<p class="a-text-attention">' + dialog.$t('warning_on_addresses.specifics_wrong_addresses', { crypto: validateSummary.wrongCoin, storedAddress: validateSummary.storedAddress, correctAddress: validateSummary.correctAddress })
-          if (validateSummary.wrongCoins.length > 1) {
-            const wrongCoins = validateSummary.wrongCoins.join(', ')
-            contents += ' ' + dialog.$t('warning_on_addresses.full_list_wrong_addresses', { crypto_list: wrongCoins })
-          }
-          contents += '</p>'
-        } else if (validateSummary.isManyAddresses) {
-          const manyAddresses = validateSummary.manyAddresses.join(', ')
-          contents += '<p class="a-text-attention">' + dialog.$t('warning_on_addresses.specifics_many_addresses', { crypto: validateSummary.manyAddressesCoin, manyAddresses: manyAddresses })
-          if (validateSummary.manyAddressesCoins.length > 1) {
-            const wrongCoins = validateSummary.manyAddressesCoins.join(', ')
-            contents += ' ' + dialog.$t('warning_on_addresses.full_list_many_addresses', { crypto_list: wrongCoins })
-          }
-          contents += '</p>'
-        }
-
-        contents += '<p>' + dialog.$t('warning_on_addresses.reasons') + '</p>'
-        contents += '<p>' + dialog.$t('warning_on_addresses.what_to_do') + '</p>'
-
-        dialog.content = DOMPurify.sanitize(contents)
-        dialog.show = true
-      }
-    })
-  },
+  created () {},
   methods: {
     hide () {
       this.show = false
