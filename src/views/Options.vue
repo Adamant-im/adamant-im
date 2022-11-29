@@ -266,7 +266,7 @@
             <div
               :class="`${className}__version_info ml-auto`"
             >
-              {{ $t('options.version') }} {{ $root.$options.version }}
+              {{ $t('options.version') }} {{ $root.appVersion }}
             </div>
           </v-row>
         </container>
