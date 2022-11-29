@@ -21,7 +21,8 @@
       to="/chats"
     >
       <v-badge
-        :value="numOfNewMessages > 0"
+        v-if="numOfNewMessages > 0"
+        :value="numOfNewMessages"
         overlap
         color="primary"
         :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
@@ -30,6 +31,11 @@
           icon="mdi-forum"
         />
       </v-badge>
+      <v-icon
+        v-else
+        icon="mdi-forum"
+      />
+
       <span>{{ $t('bottom.chats_button') }}</span>
     </v-btn>
 
