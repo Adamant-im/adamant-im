@@ -452,6 +452,7 @@ export default {
   &__version_info {
     @include a-text-explanation();
     margin-top: 24px;
+    margin-bottom: 16px;
   }
   &__action {
     display: block;
