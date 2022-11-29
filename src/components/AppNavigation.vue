@@ -114,7 +114,12 @@ export default {
     flex-basis: 0;
   }
   :deep(.v-btn.v-btn--active)  {
-    font-size: 14px;
+    font-size: unset;
+  }
+  :deep(.v-btn.v-btn--active) {
+    .v-btn__content > span {
+      font-size: 14px;
+    }
   }
   :deep(.v-btn:not(.v-btn--active))  {
     filter: unset;
