@@ -270,6 +270,12 @@ export default {
     margin-right: 16px;
   }
 
+  &__icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 16px;
+  }
+
   &__title {
     line-height: 24px;
     margin-bottom: 0;
