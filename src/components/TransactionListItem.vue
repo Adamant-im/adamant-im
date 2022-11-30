@@ -5,77 +5,77 @@
       :class="`${className}__tile`"
       @click="onClickTransaction"
     >
-      <v-list-item-avatar
-        :class="`${className}__icon-avatar`"
-        :size="40"
-      >
+      <template #prepend>
         <v-icon
-          :class="`${className}__icon`"
+          :class="`${className}__prepend-icon`"
           :icon="isStringEqualCI(senderId, userId) ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing'"
-          size="dense"
+          size="small"
         />
-      </v-list-item-avatar>
+      </template>
 
-      <v-list-item-content>
-        <v-list-item-title v-if="partnerName">
-          <span class="a-text-regular-enlarged">{{ partnerName }}</span>
-          <span class="a-text-explanation-enlarged"> ({{ partnerId }})</span>
-        </v-list-item-title>
-        <v-list-item-title v-else>
-          <span class="a-text-regular-enlarged">{{ partnerId }}</span>
-        </v-list-item-title>
+      <v-list-item-title v-if="partnerName">
+        <span class="a-text-regular-enlarged">{{ partnerName }}</span>
+        <span class="a-text-explanation-enlarged"> ({{ partnerId }})</span>
+      </v-list-item-title>
+      <v-list-item-title v-else>
+        <span class="a-text-regular-enlarged">{{ partnerId }}</span>
+      </v-list-item-title>
 
-        <v-list-item-title>
-          <span :class="`${className}__amount ${directionClass}`">{{ currency(amount, crypto) }}</span>
-          <span
-            :class="`${className}__rates`"
-          > {{ historyRate }}</span>
-          <span
-            v-if="comment"
-            class="a-text-regular-enlarged-bold"
-            style="font-style: italic;"
-          > "</span>
-          <span
-            v-if="comment"
-            class="a-text-explanation"
-            style="font-weight: 100;"
-          >{{ comment }}</span>
-          <span
-            v-if="textData"
-            class="a-text-regular-enlarged-bold"
-            style="font-style: italic;"
-          > #</span>
-          <span
-            v-if="textData"
-            class="a-text-explanation"
-            style="font-weight: 100;"
-          >{{ textData }}</span>
-        </v-list-item-title>
+      <v-list-item-title>
+        <span :class="`${className}__amount ${directionClass}`">{{ currency(amount, crypto) }}</span>
+        <span
+          :class="`${className}__rates`"
+        > {{ historyRate }}</span>
+        <span
+          v-if="comment"
+          class="a-text-regular-enlarged-bold"
+          style="font-style: italic;"
+        > "</span>
+        <span
+          v-if="comment"
+          class="a-text-explanation"
+          style="font-weight: 100;"
+        >{{ comment }}</span>
+        <span
+          v-if="textData"
+          class="a-text-regular-enlarged-bold"
+          style="font-style: italic;"
+        > #</span>
+        <span
+          v-if="textData"
+          class="a-text-explanation"
+          style="font-weight: 100;"
+        >{{ textData }}</span>
+      </v-list-item-title>
 
-        <v-list-item-subtitle
-          :class="`${className}__date`"
-          class="a-text-explanation-small"
-        >
-          {{ formatDate(createdAt) }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-
-      <v-list-item-action
-        v-if="isClickIcon"
-        :class="`${className}__action`"
+      <v-list-item-subtitle
+        :class="`${className}__date`"
+        class="a-text-explanation-small"
       >
-        <v-btn
-          icon
-          ripple
-          @click.stop="onClickIcon"
+        {{ formatDate(createdAt) }}
+      </v-list-item-subtitle>
+
+      <template #append>
+        <v-list-item-action
+          v-if="isClickIcon"
+          :class="`${className}__action`"
+          end
         >
-          <v-icon
-            :class="`${className}__icon`"
-            :icon="isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline'"
-            size="dense"
-          />
-        </v-btn>
-      </v-list-item-action>
+          <v-btn
+            icon
+            ripple
+            variant="plain"
+            @click.stop="onClickIcon"
+          >
+            <v-icon
+              :class="`${className}__icon`"
+              :icon="isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline'"
+              size="small"
+            />
+          </v-btn>
+        </v-list-item-action>
+      </template>
+
     </v-list-item>
 
     <v-divider
@@ -268,9 +268,9 @@ export default {
   &__date {
     margin-top: 4px;
   }
-  &__icon-avatar {
-    min-width: 40px;
-    margin-right: 0 !important;
+  &__prepend-icon {
+    margin-inline-end: 16px;
+    margin-top: 8px;
   }
   :deep(.v-avatar) {
     position: relative;
@@ -281,7 +281,6 @@ export default {
     max-width: calc(100% - 56px);
   }
   &__action {
-    margin-top: -14px;
     min-width: 36px;
   }
   // Do not break computed length of v-divider

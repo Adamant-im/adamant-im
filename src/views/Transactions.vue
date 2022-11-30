@@ -24,7 +24,7 @@
         <container v-if="isFulfilled">
           <v-list
             v-if="hasTransactions"
-            three-line
+            lines="three"
             bg-color="transparent"
           >
             <transaction-list-item
