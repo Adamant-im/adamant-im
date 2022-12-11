@@ -3,6 +3,7 @@
     class="icon"
     :class="{
       'icon--link': isClickable,
+      'icon--box-centered': boxCentered,
       [$attrs.class]: !!$attrs.class
     }"
   >
@@ -51,6 +52,11 @@ export default {
     shapeRendering: {
       type: String,
       default: 'auto'
+    },
+    /** Center icon inside a box 40x40px **/
+    boxCentered: {
+      type: Boolean,
+      default: undefined
     }
   },
   data: () => ({}),
@@ -83,6 +89,14 @@ export default {
 
 .icon--link {
   cursor: pointer;
+}
+
+.icon--box-centered {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Themes */

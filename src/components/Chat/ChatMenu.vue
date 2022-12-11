@@ -18,7 +18,7 @@
           @click="sendFunds(c)"
         >
           <template #prepend>
-            <crypto-icon :crypto="c" />
+            <crypto-icon :crypto="c" box-centered />
           </template>
 
           <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
@@ -31,7 +31,9 @@
           :disabled="item.disabled"
         >
           <template #prepend>
-            <v-icon :icon="item.icon" />
+            <icon-box>
+              <v-icon :icon="item.icon" />
+            </icon-box>
           </template>
 
           <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
@@ -52,9 +54,11 @@ import { Cryptos } from '@/lib/constants'
 import ChatDialog from '@/components/Chat/ChatDialog'
 import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
+import IconBox from '@/components/icons/IconBox'
 
 export default {
   components: {
+    IconBox,
     ChatDialog,
     Icon,
     CryptoIcon
