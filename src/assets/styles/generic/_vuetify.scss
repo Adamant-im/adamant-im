@@ -101,6 +101,13 @@ $font-family: 'Exo 2', sans-serif;
 }
 
 /**
+ * Decrease `v-icon` padding in lists
+ */
+.v-list-item__prepend > .v-icon {
+  margin-inline-end: 16px;
+}
+
+/**
  * Vuetify container padding.
  */
 @media #{map-get($display-breakpoints, 'md-and-down')} {
