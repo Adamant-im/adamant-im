@@ -48,7 +48,7 @@ export default {
     this.$store.dispatch('stopInterval')
   },
   beforeMount () {
-    this.$vuetify.theme.dark = this.$store.state.options.darkTheme // sync Vuetify theme with the store
+    this.$vuetify.theme.global.name = this.$store.state.options.darkTheme ? 'dark' : 'light' // sync Vuetify theme with the store
   },
   methods: {
     setLocale () {
