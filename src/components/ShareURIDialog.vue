@@ -1,6 +1,7 @@
 <template>
   <v-dialog
     v-model="show"
+    eager
     width="320"
   >
     <v-card>
