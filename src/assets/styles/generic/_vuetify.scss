@@ -87,6 +87,13 @@ $font-family: 'Exo 2', sans-serif;
 }
 
 /**
+ * Resets dialog overlay background.
+ */
+.v-overlay__scrim {
+  background: unset;
+}
+
+/**
  * Vuetify container padding.
  */
 @media #{map-get($display-breakpoints, 'md-and-down')} {
