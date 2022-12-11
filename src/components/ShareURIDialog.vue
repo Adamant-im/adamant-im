@@ -11,22 +11,16 @@
       <v-card-text class="pa-0">
         <v-list>
           <v-list-item @click="copyAddress">
-            <v-list-item-content>
-              <v-list-item-title v-t="'home.copy_address'" />
-            </v-list-item-content>
+            <v-list-item-title v-text="$t('home.copy_address')" />
           </v-list-item>
           <v-list-item
             v-if="isADM"
             @click="copyURI"
           >
-            <v-list-item-content>
-              <v-list-item-title v-t="'home.copy_uri'" />
-            </v-list-item-content>
+            <v-list-item-title v-text="$t('home.copy_uri')" />
           </v-list-item>
           <v-list-item @click="openQRCodeRenderer">
-            <v-list-item-content>
-              <v-list-item-title v-t="'home.show_qr_code'" />
-            </v-list-item-content>
+            <v-list-item-title v-text="$t('home.show_qr_code')" />
           </v-list-item>
         </v-list>
       </v-card-text>
