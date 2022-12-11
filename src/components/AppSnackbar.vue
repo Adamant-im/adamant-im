@@ -1,10 +1,12 @@
 <template>
   <v-snackbar
     v-model="show"
-    :timeout="timeout"
+    :timeout="50000"
     :color="color"
     :class="className"
-    bottom
+    variant="elevated"
+    location="bottom"
+    width="100%"
     :multi-line="message.length > 50"
   >
     <div :class="`${className}__container`">
@@ -56,12 +58,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~vuetify/settings';
 @import "../assets/styles/themes/adamant/_mixins.scss";
 @import "../assets/styles/settings/_colors.scss";
 
 .app-snackbar {
-  :deep(.v-snack__wrapper) {
+  :deep(.v-snackbar__wrapper) {
     @include a-text-regular-enlarged();
+
+    margin: 0;
+    border-radius: 0;
   }
 
   &__container {
@@ -74,6 +80,20 @@ export default {
     min-width: unset;
     padding: 0;
     width: 36px;
+  }
+}
+
+.v-theme--light.app-snackbar {
+  :deep(.v-snackbar__wrapper) {
+    background: map-get($shades, 'white');
+    color: map-get($adm-colors, 'regular')
+  }
+}
+
+.v-theme--dark.app-snackbar {
+  :deep(.v-snackbar__wrapper) {
+    background: map-get($adm-colors, 'regular');
+    color: map-get($shades, 'white');
   }
 }
 </style>
