@@ -19,13 +19,11 @@
             avatar
             @click="openLink('U5149447931090026688')"
           >
-            <v-list-item-avatar>
+            <template #prepend>
               <icon><exchanger-icon /></icon>
-            </v-list-item-avatar>
+            </template>
 
-            <v-list-item-content>
-              <v-list-item-title>{{ $t('home.buy_tokens_exchanger') }}</v-list-item-title>
-            </v-list-item-content>
+            <v-list-item-title>{{ $t('home.buy_tokens_exchanger') }}</v-list-item-title>
           </v-list-item>
 
           <v-list-item
@@ -34,26 +32,22 @@
             avatar
             @click="openLink(action.link)"
           >
-            <v-list-item-avatar>
+            <template #prepend>
               <crypto-icon :crypto="action.icon" />
-            </v-list-item-avatar>
+            </template>
 
-            <v-list-item-content>
-              <v-list-item-title v-text="action.title" />
-            </v-list-item-content>
+            <v-list-item-title v-text="action.title" />
           </v-list-item>
 
           <v-list-item
             avatar
             @click="openLink('https://coindeal.com/ref/9WZN')"
           >
-            <v-list-item-avatar>
+            <template #prepend>
               <icon><cdl-icon /></icon>
-            </v-list-item-avatar>
+            </template>
 
-            <v-list-item-content>
-              <v-list-item-title>CoinDeal</v-list-item-title>
-            </v-list-item-content>
+            <v-list-item-title>CoinDeal</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-card-text>
