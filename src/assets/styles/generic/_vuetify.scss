@@ -94,6 +94,13 @@ $font-family: 'Exo 2', sans-serif;
 }
 
 /**
+ * Custom icon inside v-list doesn't contain margin-right
+ */
+.v-list-item__prepend > .icon {
+  margin-inline-end: 16px;
+}
+
+/**
  * Vuetify container padding.
  */
 @media #{map-get($display-breakpoints, 'md-and-down')} {
