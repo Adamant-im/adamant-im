@@ -17,9 +17,9 @@
           :key="c"
           @click="sendFunds(c)"
         >
-          <v-list-item-avatar>
+          <template #prepend>
             <crypto-icon :crypto="c" />
-          </v-list-item-avatar>
+          </template>
 
           <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
         </v-list-item>
@@ -30,9 +30,9 @@
           :key="item.title"
           :disabled="item.disabled"
         >
-          <v-list-item-avatar>
+          <template #prepend>
             <v-icon :icon="item.icon" />
-          </v-list-item-avatar>
+          </template>
 
           <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
         </v-list-item>
