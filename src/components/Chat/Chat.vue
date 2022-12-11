@@ -20,6 +20,7 @@
         >
           <template #avatar-toolbar>
             <ChatAvatar
+              class="chat-avatar"
               :user-id="partnerId"
               use-public-key
               @click="onClickAvatar(partnerId)"
@@ -435,5 +436,9 @@ export default {
   height: 100vh;
   box-shadow: none;
   background-color: transparent !important;
+}
+
+.chat-avatar {
+  margin-right: 12px;
 }
 </style>
