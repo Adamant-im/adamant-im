@@ -18,7 +18,10 @@
           @click="sendFunds(c)"
         >
           <template #prepend>
-            <crypto-icon :crypto="c" box-centered />
+            <crypto-icon
+              :crypto="c"
+              box-centered
+            />
           </template>
 
           <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
