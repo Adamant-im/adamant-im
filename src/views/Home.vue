@@ -12,6 +12,7 @@
       >
         <!-- Wallets -->
         <v-sheet
+          color="transparent"
           :class="`${className}__wallets`"
         >
           <v-tabs
