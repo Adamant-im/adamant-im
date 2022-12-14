@@ -46,6 +46,7 @@ export default {
       },
       set (value) {
         this.$store.dispatch('language/changeLocale', value)
+        this.$i18n.locale = value
       }
     },
     currentLanguageName () {
