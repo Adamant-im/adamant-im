@@ -75,7 +75,6 @@
           </v-btn>
         </v-list-item-action>
       </template>
-
     </v-list-item>
 
     <v-divider
