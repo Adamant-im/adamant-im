@@ -8,9 +8,10 @@
       app
       :title="`${id}`"
       flat
+      fixed
       :class="`${className}__toolbar`"
     />
-    <container>
+    <container class="container--with-app-toolbar">
       <v-list bg-color="transparent">
         <v-list-item>
           <v-list-item-content :class="`${className}__titlecontent`">

@@ -4,11 +4,12 @@
       app
       :title="$t('home.send_btn')"
       flat
+      fixed
     />
 
     <v-container
       fluid
-      class="px-0"
+      class="px-0 container--with-app-toolbar"
     >
       <v-row
         justify="center"

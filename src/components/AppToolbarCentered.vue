@@ -58,6 +58,10 @@ export default {
       type: Boolean,
       default: false
     },
+    fixed: {
+      type: Boolean,
+      default: false
+    },
     height: {
       type: Number,
       default: 56
@@ -70,7 +74,8 @@ export default {
   computed: {
     classes () {
       return {
-        'v-toolbar--fixed': this.app
+        'v-toolbar--fixed': this.app,
+        'app-toolbar--fixed': this.fixed
       }
     },
     className: () => 'app-toolbar-centered'
@@ -93,6 +98,11 @@ export default {
   :deep(.v-toolbar-title:not(:first-child)) {
     margin-inline-start: 0;
   }
+}
+
+.app-toolbar--fixed {
+  position: fixed;
+  z-index: 2;
 }
 
 /** Themes **/

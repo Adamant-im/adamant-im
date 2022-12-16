@@ -4,11 +4,12 @@
       app
       :title="$t('transaction.transactions')"
       flat
+      fixed
     />
 
     <v-container
       fluid
-      class="pa-0"
+      class="px-0 container--with-app-toolbar"
     >
       <v-row
         justify="center"
