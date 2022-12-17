@@ -28,7 +28,7 @@
             <v-icon
               :class="`${className}__icon`"
               icon="mdi-share-variant"
-              size="dense"
+              size="small"
             />
           </v-btn>
         </template>
@@ -55,7 +55,7 @@
             <v-icon
               :class="`${className}__icon`"
               icon="mdi-chevron-right"
-              size="dense"
+              size="small"
             />
           </v-btn>
         </template>
