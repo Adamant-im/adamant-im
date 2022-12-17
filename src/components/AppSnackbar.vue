@@ -1,7 +1,7 @@
 <template>
   <v-snackbar
     v-model="show"
-    :timeout="50000"
+    :timeout="timeout"
     :color="color"
     :class="className"
     variant="elevated"
