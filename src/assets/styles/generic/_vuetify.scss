@@ -120,11 +120,15 @@ $font-family: 'Exo 2', sans-serif;
 }
 
 /**
- * Item subtitle opacity is not required.
+ * List styles
  */
+.v-list-item-title {
+  font-weight: 300;
+}
 .v-list-item-subtitle {
   opacity: unset;
 }
+
 .v-label {
   opacity: unset;
 }
