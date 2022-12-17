@@ -98,6 +98,12 @@ export default {
   :deep(.v-toolbar-title:not(:first-child)) {
     margin-inline-start: 0;
   }
+
+  :deep(.v-btn:hover) {
+    > .v-btn__overlay {
+      opacity: 0;
+    }
+  }
 }
 
 .app-toolbar--fixed {
