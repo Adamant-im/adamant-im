@@ -262,6 +262,10 @@ export default {
     margin-bottom: 0;
   }
 
+  :deep(.v-checkbox) {
+    margin-left: -8px;
+  }
+
   @media #{map-get($display-breakpoints, 'md-and-up')} {
     :deep(.v-data-table .v-data-table__wrapper table tbody tr td),
     :deep(.v-data-table .v-data-table__wrapper table thead tr th) {
