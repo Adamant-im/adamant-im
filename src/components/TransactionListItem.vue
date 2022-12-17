@@ -271,10 +271,6 @@ export default {
     margin-inline-end: 16px;
     margin-top: 8px;
   }
-  :deep(.v-avatar) {
-    position: relative;
-    padding-right: 15px;
-  }
   :deep(.v-divider--inset:not(.v-divider--vertical)) {
     margin-left: 56px;
     max-width: calc(100% - 56px);
