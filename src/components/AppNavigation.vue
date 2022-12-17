@@ -146,6 +146,9 @@ export default {
     :deep(.v-btn:not(.v-btn--active))  {
       color: map-get($adm-colors, 'muted') !important;
     }
+    :deep(.v-bottom-navigation__content) {
+      border-top: 1px solid map-get($grey, 'lighten-2');
+    }
   }
 }
 
