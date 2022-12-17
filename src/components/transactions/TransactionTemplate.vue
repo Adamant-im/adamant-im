@@ -68,7 +68,7 @@
                 v-if="statusUpdatable"
                 ref="updateButton"
                 icon="mdi-refresh"
-                size="dense"
+                size="20"
                 @click="updateStatus()"
               />
             </v-list-item-title>
@@ -78,7 +78,7 @@
             <v-icon
               v-if="status.status === 'INVALID'"
               icon="mdi-alert-outline"
-              size="dense"
+              size="20"
               style="color: #f8a061 !important;"
             />
             {{ $t(`transaction.statuses.${status.virtualStatus}`) }}<span v-if="status.status === 'INVALID'">{{ ': ' + $t(`transaction.inconsistent_reasons.${status.inconsistentReason}`, { crypto } ) }}</span><span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>
@@ -221,7 +221,7 @@
           <v-list-item-title :class="`${className}__value`">
             <v-icon
               icon="mdi-chevron-right"
-              size="dense"
+              size="20"
             />
           </v-list-item-title>
         </v-list-item>
