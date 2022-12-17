@@ -175,7 +175,7 @@
           </div>
         </v-list-item>
 
-        <v-divider />
+        <v-divider v-if="comment" />
 
         <v-list-item v-if="comment">
           <template #prepend>
@@ -189,7 +189,7 @@
           </div>
         </v-list-item>
 
-        <v-divider />
+        <v-divider v-if="textData" />
 
         <v-list-item
           v-if="textData"
@@ -206,7 +206,7 @@
           </div>
         </v-list-item>
 
-        <v-divider />
+        <v-divider v-if="explorerLink" />
 
         <v-list-item
           v-if="explorerLink"
@@ -226,7 +226,7 @@
           </v-list-item-title>
         </v-list-item>
 
-        <v-divider />
+        <v-divider v-if="partner && !ifComeFromChat" />
 
         <v-list-item
           v-if="partner && !ifComeFromChat"
