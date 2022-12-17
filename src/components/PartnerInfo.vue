@@ -18,20 +18,18 @@
       </v-card-title>
       <v-divider class="a-divider" />
       <v-list lines="two">
-        <template>
-          <v-list-item>
-            <v-list-item-avatar>
+        <v-list-item>
+          <template #prepend>
+            <icon-box>
               <ChatAvatar
                 :user-id="address"
                 use-public-key
               />
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="address" />
-              <v-list-item-subtitle v-text="isMe ? $t('chats.me') : name" />
-            </v-list-item-content>
-          </v-list-item>
-        </template>
+            </icon-box>
+          </template>
+          <v-list-item-title v-text="address" />
+          <v-list-item-subtitle v-text="isMe ? $t('chats.me') : name" />
+        </v-list-item>
       </v-list>
       <v-row
         align="center"
@@ -56,10 +54,13 @@ import { Cryptos } from '@/lib/constants'
 import { generateURI } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import IconBox from '@/components/icons/IconBox'
 
 export default {
   components: {
-    ChatAvatar, QrcodeRenderer
+    IconBox,
+    ChatAvatar,
+    QrcodeRenderer
   },
   props: {
     address: {
