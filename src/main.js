@@ -1,6 +1,5 @@
 import 'core-js/features/array/flat-map'
 import { createApp } from 'vue'
-import VueScrollTo from 'vue-scrollto'
 
 import App from './App.vue'
 import { router } from './router'
@@ -28,7 +27,6 @@ app.use(store)
 app.use(i18n)
 app.use(vuetify)
 app.use(VueFormatters)
-app.use(VueScrollTo) // @todo deprecated (works only with Vue@2)
 
 registerGlobalComponents(app)
 
