@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { vueBus } from '@/main'
+import { vueBus } from '@/lib/vueBus'
 import DOMPurify from 'dompurify'
 
 export default {
@@ -83,7 +83,7 @@ export default {
   },
   created () {
     const dialog = this
-    vueBus.$on('warningOnAddressDialog', function (validateSummary) {
+    vueBus.on('warningOnAddressDialog', function (validateSummary) {
       if (!validateSummary.isAllRight) {
         dialog.header = dialog.$t('warning_on_addresses.warning') + ': ' + dialog.$t('warning_on_addresses.headline')
         let contents = '<p>' + dialog.$t('warning_on_addresses.about') + '</p>'

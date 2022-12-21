@@ -19,8 +19,6 @@ import 'dayjs/locale/fr'
 import 'dayjs/locale/it'
 import 'dayjs/locale/ru'
 
-export const vueBus = createApp(() => {})
-
 const app = createApp(App)
 
 app.config.globalProperties.appVersion = packageJSON.version
