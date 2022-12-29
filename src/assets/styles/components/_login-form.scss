@@ -44,12 +44,12 @@
       font-size: 12px;
     }
 
-    .v-text-field > .v-input__control > .v-input__slot:before {
+    .v-input__control > .v-field > .v-field__outline:before {
       /* [4] */
-      border-top-width: 1px;
+      border-bottom-width: 1px;
     }
 
-    .v-text-field > .v-input__control > .v-input__slot:after {
+    .v-input__control > .v-field > .v-field__outline:after {
       /* [5] */
       transition: unset;
     }
@@ -59,21 +59,23 @@
 /** Themes **/
 .v-theme--light {
   .login-form {
-    .v-text-field > .v-input__control > .v-input__slot:before {
+    .v-text-field > .v-input__control > .v-field > .v-field__outline:before {
       /* [4.a.] */
       border-color: rgba(0, 0, 0, 0.12);
     }
-    .v-text-field:not(.v-input--has-state)
+    .v-text-field
       > .v-input__control
-      > .v-input__slot:hover:before {
+      > .v-field.v-field--focused
+      > .v-field__outline:hover:before {
       /* [4.b.] */
       border-color: rgba(0, 0, 0, 0.12);
     }
-    .v-text-field.v-input--is-focused
+    .v-text-field
       > .v-input__control
-      > .v-input__slot:after {
+      > .v-field.v-field--focused
+      > .v-field__outline:after {
       /* [4.c.] */
-      border-width: thin 0 0 0;
+      border-width: 0 0 thin 0;
     }
   }
 }
