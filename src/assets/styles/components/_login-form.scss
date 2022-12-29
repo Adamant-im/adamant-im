@@ -59,6 +59,9 @@
 /** Themes **/
 .v-theme--light {
   .login-form {
+    .v-input input {
+      color: map-get($adm-colors, 'regular');
+    }
     .v-text-field > .v-input__control > .v-field > .v-field__outline:before {
       /* [4.a.] */
       border-color: rgba(0, 0, 0, 0.12);
