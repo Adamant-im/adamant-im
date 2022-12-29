@@ -60,6 +60,7 @@
               :title="$t('login.scan_qr_code_button_tooltip')"
               icon
               variant="text"
+              size="x-small"
               :class="`${className}__icon`"
               @click="showQrcodeScanner = true"
             >
@@ -77,6 +78,7 @@
                 :title="$t('login.login_by_qr_code_tooltip')"
                 icon
                 variant="text"
+                size="x-small"
                 :class="`${className}__icon`"
               >
                 <icon><file-icon /></icon>
