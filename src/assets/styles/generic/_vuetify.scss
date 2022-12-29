@@ -132,6 +132,9 @@ $font-family: 'Exo 2', sans-serif;
 .v-label {
   opacity: unset;
 }
+.v-theme--light .v-label {
+  color: map-get($adm-colors, 'muted');
+}
 
 /**
  * Application styles.
