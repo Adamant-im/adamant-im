@@ -170,6 +170,8 @@ export default {
     :deep(.v-textarea) textarea {
       @include a-text-regular();
       line-height: 18px;
+      padding-top: 12px;
+      mask-image: unset;
     }
     :deep(.v-textarea) {
       .v-input__slot:before, .v-input__slot:after {
@@ -178,8 +180,6 @@ export default {
     }
   }
   &__icons {
-    margin-top: 10px;
-
     > *:not(:first-child) {
       margin-left: 8px;
     }
