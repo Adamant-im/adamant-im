@@ -22,7 +22,11 @@
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <div
           ref="el"
-          class="caption grey--text mt-2"
+          :class="{
+            'text-caption': true,
+            'mt-2': true,
+            [`${className}__passphrase-label`]: true
+          }"
           v-html="$t('login.new_passphrase_label')"
         />
         <!-- eslint-enable vue/no-v-html -->
@@ -179,6 +183,9 @@ export default {
     > *:not(:first-child) {
       margin-left: 8px;
     }
+  }
+  &__passphrase-label {
+    color: map-get($adm-colors, 'grey');
   }
 
   :deep(.v-input--is-focused) {
