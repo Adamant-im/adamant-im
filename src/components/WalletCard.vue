@@ -143,6 +143,10 @@ export default {
     @include a-text-regular-enlarged();
     line-height: 24px;
     word-break: break-word;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     span {
       font-style: italic;
       color: inherit;
