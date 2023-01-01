@@ -283,6 +283,10 @@ export default {
 
   &__subtitle {
     line-height: 1.5;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__date {
