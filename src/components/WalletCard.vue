@@ -141,6 +141,7 @@ export default {
   }
   &__subtitle {
     @include a-text-regular-enlarged();
+    line-height: 24px;
     word-break: break-word;
     span {
       font-style: italic;
