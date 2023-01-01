@@ -121,6 +121,10 @@ export default {
   }
   :deep(.v-btn.v-btn--active)  {
     font-size: unset;
+
+    > .v-btn__overlay {
+      background-color: unset;
+    }
   }
   :deep(.v-btn.v-btn--active) {
     .v-btn__content > span {
