@@ -3,6 +3,7 @@
     flat
     height="56"
     :class="`${className}`"
+    color="transparent"
   >
     <v-btn
       icon
