@@ -133,6 +133,12 @@ export default {
       font-size: 20px;
     }
   }
+
+  :deep(.v-btn) {
+    &:hover > .v-btn__overlay {
+      opacity: 0;
+    }
+  }
 }
 
 /** Themes **/
