@@ -82,7 +82,6 @@ export default defineComponent({
 
     const expandedDelegateIndex = ref(0)
     const updateExpandedDelegateIndex = (delegateId) => (state) => {
-      console.log('is working', delegateId, state)
       expandedDelegateIndex.value = state ? delegateId : -1
     }
 
