@@ -4,7 +4,10 @@
     @click="handleClick"
   >
     <td
-      :class="classes.td"
+      :class="{
+        [classes.td]: true,
+        [classes.tdUsername]: true
+      }"
       class="pl-4 pr-2"
     >
       {{ username }}
@@ -79,7 +82,8 @@ export default {
     const classes = {
       item: className,
       details: `${className}__details`,
-      td: `${className}__td`
+      td: `${className}__td`,
+      tdUsername: `${className}__td-username`
     }
 
     const delegateObj = reactive(() => delegate)
@@ -116,7 +120,9 @@ export default {
 @import '../../assets/styles/themes/adamant/_mixins.scss';
 
 .delegates-table-item {
-
+  &__td-username {
+    cursor: pointer;
+  }
 }
 
 @media #{map-get($display-breakpoints, 'sm-and-down')} {
