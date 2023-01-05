@@ -114,7 +114,9 @@ export default defineComponent({
     }
   }
   &__address {
-    font-size: 16px;
+    a {
+      @include a-text-active();
+    }
   }
 }
 
@@ -124,7 +126,6 @@ export default defineComponent({
 
     &__address {
        a {
-         @include a-text-active();
          color: map-get($adm-colors, 'regular');
        }
     }
@@ -136,6 +137,14 @@ export default defineComponent({
 }
 
 .v-theme--dark {
+  .delegate-details-expander {
+    background-color: map-get($adm-colors, 'secondary2');
 
+    &__address {
+      a {
+        color: map-get($adm-colors, 'primary');
+      }
+    }
+  }
 }
 </style>
