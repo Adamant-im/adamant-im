@@ -32,6 +32,7 @@
     "bitcoinjs-lib": "^5.2.0",
     "bytebuffer": "^5.0.1",
     "coininfo": "^5.2.1",
+    "copy-to-clipboard": "^3.3.3",
     "core-js": "^3.22.5",
     "dayjs": "^1.11.2",
     "deepmerge": "^4.2.2",

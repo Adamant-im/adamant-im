@@ -252,11 +252,11 @@
 
 <script>
 import { nextTick } from 'vue'
+import copyToClipboard from 'copy-to-clipboard'
 
 import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import transaction from '@/mixins/transaction'
-import { copyToClipboard } from '@/lib/textHelpers'
 import { timestampInSec } from '@/filters/helpers'
 
 export default {

@@ -88,8 +88,9 @@
 
 <script>
 import * as bip39 from 'bip39'
+import copyToClipboard from 'copy-to-clipboard'
 
-import { copyToClipboard, downloadFile } from '@/lib/textHelpers'
+import { downloadFile } from '@/lib/textHelpers'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
 import Icon from '@/components/icons/BaseIcon'
 import CopyIcon from '@/components/icons/common/Copy'

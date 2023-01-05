@@ -36,7 +36,7 @@
 
 <script>
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
-import { copyToClipboard } from '@/lib/textHelpers'
+import copyToClipboard from 'copy-to-clipboard'
 import { generateURI } from '@/lib/uri'
 
 export default {
@@ -72,6 +72,8 @@ export default {
   },
   methods: {
     copyAddress () {
+      console.log('copyToClipboard', this.address)
+
       copyToClipboard(this.address)
       this.$store.dispatch('snackbar/show', { message: this.$t('home.copied') })
       this.show = false

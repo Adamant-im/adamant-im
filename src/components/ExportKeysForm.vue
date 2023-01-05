@@ -115,12 +115,12 @@
 </template>
 <script>
 import { validateMnemonic } from 'bip39'
+import copyToClipboard from 'copy-to-clipboard'
+
 import { getAccountFromPassphrase as getEthAccount } from '@/lib/eth-utils'
 import { getAccount as getBtcAccount } from '@/lib/bitcoin/btc-base-api'
 import { getAccount as getLskAccount } from '@/lib/lisk/lisk-api'
 import { Cryptos, CryptosNames } from '@/lib/constants'
-import { copyToClipboard } from '@/lib/textHelpers'
-
 import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 
