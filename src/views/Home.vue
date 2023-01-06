@@ -217,6 +217,17 @@ export default {
       letter-spacing: normal;
       min-width: 74px;
       align-items: flex-start;
+
+      .icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 100%;
+      }
+
+      .svg-icon {
+        width: 40px;
+        height: 40px;
+      }
     }
     :deep(.v-tab--active) {
       font-weight: 500;
@@ -279,8 +290,12 @@ export default {
       }
       :deep(.v-tab--active) {
         color: map-get($adm-colors, 'primary');
+
+        .icon {
+          background: linear-gradient(180deg, #4C8FEB 0%, #2F80ED 100%);
+        }
         .svg-icon {
-          fill: map-get($adm-colors, 'primary');
+          fill: #fff;
         }
       }
     }
@@ -310,8 +325,8 @@ export default {
       }
       :deep(.v-tab--active) {
         color: map-get($adm-colors, 'primary');
-        .svg-icon {
-          fill: map-get($adm-colors, 'primary');
+        .icon {
+          background: linear-gradient(180deg, #4C8FEB 0%, #2F80ED 100%);
         }
       }
     }
