@@ -211,7 +211,7 @@ export default {
     :deep(.v-tabs-slider) {
       height: 2px;
     }
-    :deep(.v-slide-group__wrapper) {
+    :deep(.v-tabs) {
       padding: 10px 0 1px 0;
       margin-bottom: 10px;
     }
@@ -254,6 +254,9 @@ export default {
     }
     :deep(.v-slide-group__next.v-slide-group__next--disabled) {
       display: none;
+    }
+    :deep(.v-tabs .v-btn--stacked .v-btn__content) {
+      line-height: normal;
     }
   }
   &__tabs {
