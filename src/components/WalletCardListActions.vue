@@ -104,6 +104,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~vuetify/settings';
 @import '../assets/styles/themes/adamant/_mixins.scss';
 @import '../assets/styles/settings/_colors.scss';
 
@@ -136,6 +137,14 @@ export default {
   .wallet-actions {
     &__title, &__icon {
       color: map-get($adm-colors, 'regular');
+    }
+  }
+}
+
+.v-theme--dark {
+  .wallet-actions {
+    &__title, &__icon {
+      color: map-get($shades, 'white');
     }
   }
 }
