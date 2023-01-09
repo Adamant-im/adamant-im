@@ -188,7 +188,7 @@ export default {
       color: map-get($shades, 'white');
     }
     &__subtitle {
-      color: map-get($shades, 'white');
+      color: rgba(map-get($shades, 'white'), 70%)
     }
   }
 }
