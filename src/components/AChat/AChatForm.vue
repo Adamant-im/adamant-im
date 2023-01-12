@@ -13,11 +13,13 @@
       auto-grow
       rows="1"
       variant="underlined"
+      density="compact"
+      color="primary"
       v-on="listeners"
     >
       <template
         v-if="showSendButton"
-        #append
+        #append-inner
       >
         <v-icon
           icon="mdi-send"
@@ -154,11 +156,14 @@ export default {
     align-items: flex-end;
   }
   :deep(.v-textarea)  {
-    .v-input__prepend-outer {
+    .v-input__prepend {
       margin-bottom: 2px;
+      margin-inline-end: 9px;
+      padding-top: 0;
     }
-    .v-input__append-inner {
+    .v-field__append-inner {
       margin-top: auto;
+      padding-top: 0;
       margin-bottom: 4px;
     }
     .v-input__control {
@@ -184,20 +189,24 @@ export default {
 }
 
 .v-theme--light {
-  :deep(.v-text-field__slot) {
-    textarea {
-      &::placeholder {
-        color: map-get($adm-colors, 'muted');
+  .a-chat__form {
+    :deep(.v-textarea) {
+      .v-field__input {
+        &::placeholder {
+          color: map-get($adm-colors, 'muted');
+        }
       }
     }
   }
 }
 
 .v-theme--dark {
-  :deep(.v-text-field__slot) {
-    textarea {
-      &::placeholder {
-        color: rgba(map-get($shades, 'white'), 70%);
+  .a-chat__form {
+    :deep(.v-textarea) {
+      .v-field__input {
+        &::placeholder {
+          color: rgba(map-get($shades, 'white'), 70%);
+        }
       }
     }
   }
