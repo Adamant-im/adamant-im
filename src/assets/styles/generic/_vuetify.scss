@@ -3,6 +3,10 @@
 
 $font-family: 'Exo 2', sans-serif;
 
+html {
+  font-family: $font-family; 
+}
+
 /** Vuetify context styles **/
 
 /**
