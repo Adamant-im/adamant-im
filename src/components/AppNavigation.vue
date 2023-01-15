@@ -161,6 +161,9 @@ export default {
     &.v-bottom-navigation {
       background-color: map-get($shades, 'black');
     }
+    :deep(.v-btn.v-btn--active)  {
+      color: map-get($shades, 'white');
+    }
   }
 }
 </style>
