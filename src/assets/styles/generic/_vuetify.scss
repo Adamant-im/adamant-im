@@ -146,6 +146,9 @@ html {
 .v-theme--light .v-label {
   color: map-get($adm-colors, 'muted');
 }
+.v-theme--dark .v-label {
+  color: map-get($adm-colors, 'grey-transparent');
+}
 
 /**
  * Application styles.
@@ -157,4 +160,8 @@ html {
 
 .v-theme--light.v-application {
   color: map-get($adm-colors, 'regular');
+}
+
+.v-theme--dark.v-application {
+  color: map-get($shades, 'white');
 }
