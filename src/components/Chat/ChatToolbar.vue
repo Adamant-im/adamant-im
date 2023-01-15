@@ -17,7 +17,7 @@
     <div :class="`${className}__textfield-container`">
       <div
         v-if="isChatReadOnly"
-        class="title"
+        :class="`${className}__adm-chat-name`"
         :style="{ paddingLeft: '12px' }"
       >
         {{ $t(partnerId) }}
@@ -93,6 +93,12 @@ export default {
 
   &__textfield-container {
     width: 100%;
+  }
+
+  &__adm-chat-name {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: .02em;
   }
 
   &__textfield {
