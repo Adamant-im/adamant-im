@@ -55,6 +55,13 @@ html {
     background-color: #424242; // secondary
   }
 }
+.v-menu .v-overlay__content > .v-card,
+.v-menu .v-overlay__content > .v-sheet,
+.v-menu .v-overlay__content > .v-list {
+  &.v-theme--dark {
+    background-color: #424242; // secondary
+  }
+}
 
 .v-application .caption {
   line-height: 1.5;
@@ -127,7 +134,7 @@ html {
  * List styles
  */
 .v-list-item-title {
-  font-weight: 300;
+  font-weight: 400;
 }
 .v-list-item-subtitle {
   opacity: unset;
