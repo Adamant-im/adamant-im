@@ -124,6 +124,7 @@ export default {
   .app-toolbar-centered {
     .v-toolbar {
       background-color: map-get($shades, 'black');
+      color: map-get($shades, 'white');
     }
   }
 }
