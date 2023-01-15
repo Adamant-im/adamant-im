@@ -148,14 +148,10 @@ export default {
 
 <style lang="scss" scoped>
 @import '~vuetify/settings';
-
-.v-menu__content {
-  max-height: 70%;
-  min-width: 200px !important;
-}
-
 .chat-menu {
   &__list {
+    min-width: 200px;
+
     :deep(.v-list-item-title) {
       font-weight: 400;
     }
