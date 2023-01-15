@@ -444,7 +444,6 @@ export default {
 .settings-view {
   &__title {
     padding-top: 15px;
-    padding-bottom: 5px;
     margin-left: -24px;
     margin-right: -24px;
     padding-left: 24px;
