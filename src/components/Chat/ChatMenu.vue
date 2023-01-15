@@ -10,7 +10,7 @@
         />
       </template>
 
-      <v-list>
+      <v-list class="chat-menu__list">
         <!-- Cryptos -->
         <v-list-item
           v-for="c in cryptos"
@@ -154,6 +154,14 @@ export default {
   min-width: 200px !important;
 }
 
+.chat-menu {
+  &__list {
+    :deep(.v-list-item-title) {
+      font-weight: 400;
+    }
+  }
+}
+
 /** Themes **/
 .v-theme--light {
   .chat-menu {
@@ -166,6 +174,11 @@ export default {
   .chat-menu {
     &__icon {
       color: map-get($shades, 'white');
+    }
+    &__list {
+      :deep(.v-list-item-title) {
+        color: map-get($shades, 'white');
+      }
     }
   }
 }
