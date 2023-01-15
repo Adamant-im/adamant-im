@@ -296,7 +296,7 @@ export default {
     right: 16px;
   }
 
-  :deep(.v-list__tile__sub-title)  {
+  :deep(.v-list-item-subtitle)  {
     @include a-text-explanation-enlarged-bold();
   }
 }
@@ -314,8 +314,15 @@ export default {
       fill: #BDBDBD;
     }
 
-    :deep(.v-list__tile__sub-title)  {
+    :deep(.v-list-item-subtitle)  {
       color: map-get($adm-colors, 'muted');
+    }
+  }
+}
+.v-theme--dark {
+  .chat-brief {
+    :deep(.v-list-item-subtitle)  {
+      color: map-get($adm-colors, 'grey-transparent');
     }
   }
 }
