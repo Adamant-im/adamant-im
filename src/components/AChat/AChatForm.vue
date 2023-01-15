@@ -166,6 +166,11 @@ export default {
       padding-top: 0;
       margin-bottom: 4px;
     }
+    .v-field__prepend-inner > .v-icon,
+    .v-field__append-inner > .v-icon,
+    .v-field__clearable > .v-icon {
+      --v-medium-emphasis-opacity: 1;
+    }
     .v-input__control {
       margin-bottom: 2px;
     }
