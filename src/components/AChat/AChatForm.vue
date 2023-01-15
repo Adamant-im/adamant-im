@@ -174,6 +174,11 @@ export default {
     .v-input__control {
       margin-bottom: 2px;
     }
+    .v-field__input {
+      &::placeholder {
+        --v-disabled-opacity: 1;
+      }
+    }
   }
 }
 
