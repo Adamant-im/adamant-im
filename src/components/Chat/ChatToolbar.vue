@@ -30,6 +30,7 @@
           background-color="transparent"
           :label="partnerId"
           hide-details
+          density="compact"
         />
       </div>
     </div>
@@ -120,10 +121,27 @@ export default {
   :deep(.v-text-field) {
     @include a-text-regular-enlarged-bold();
 
-    .v-label {
-      max-width: unset;
+    .v-field__field {
+      .v-label.v-field-label {
+        max-width: unset;
+        @include a-text-regular-enlarged-bold();
+        font-size: 16px;
+      }
+    }
 
-      @include a-text-regular-enlarged-bold();
+    .v-field__input {
+      line-height: 20px;
+      padding-top: 20px;
+      font-weight: 500;
+    }
+
+    .v-field__outline {
+      .v-label.v-field-label.v-field-label--floating {
+        line-height: 20px;
+        font-size: 20px;
+        transform: translateY(-6px) scale(.6875);
+        font-weight: 500;
+      }
     }
 
     .v-input__control {
@@ -132,11 +150,6 @@ export default {
 
     .v-input__control > .v-input__slot {
       margin-bottom: 0;
-    }
-
-    .v-label--active {
-      transform: translateY(-6px) scale(0.6875);
-      font-size: 20px;
     }
   }
 
