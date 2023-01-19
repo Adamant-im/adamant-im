@@ -164,6 +164,9 @@ export default {
     :deep(.v-btn.v-btn--active) {
       color: map-get($shades, 'white');
     }
+    :deep(.v-btn:not(.v-btn--active)) {
+      color: map-get($adm-colors, 'grey-transparent');
+    }
   }
 }
 </style>
