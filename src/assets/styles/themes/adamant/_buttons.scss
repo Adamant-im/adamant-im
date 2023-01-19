@@ -42,6 +42,7 @@
   .a-btn-primary {
     &:not(.v-btn--icon):not(.v-btn--flat) {
       background-color: map-get($adm-colors, 'primary');
+      color: map-get($shades, 'white');
     }
   }
   .a-btn-link {
