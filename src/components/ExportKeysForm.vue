@@ -231,7 +231,7 @@ export default {
     margin-bottom: 24px;
   }
   &__disclaimer {
-    margin-top: 12px;
+    margin-top: 32px;
     margin-bottom: 24px;
   }
   &__btn-copy {
