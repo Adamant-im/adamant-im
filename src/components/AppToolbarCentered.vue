@@ -99,6 +99,10 @@ export default {
     margin-inline-start: 0;
   }
 
+  :deep(.v-toolbar__content > .v-btn:first-child) {
+    margin-inline-start: 4px;
+  }
+
   :deep(.v-btn:hover) {
     > .v-btn__overlay {
       opacity: 0;
