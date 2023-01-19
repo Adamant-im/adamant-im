@@ -187,6 +187,8 @@ export default {
   }
   &__passphrase-label {
     color: map-get($adm-colors, 'grey');
+    line-height: 18px;
+    letter-spacing: normal !important;
   }
 
   :deep(.v-input--is-focused) {
