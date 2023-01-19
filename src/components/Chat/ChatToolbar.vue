@@ -118,6 +118,10 @@ export default {
     }
   }
 
+  :deep(.v-toolbar__content > .v-btn:first-child) {
+    margin-inline-start: 4px;
+  }
+
   :deep(.v-text-field) {
     @include a-text-regular-enlarged-bold();
 
