@@ -30,7 +30,7 @@
           autofocus
           @paste="onPasteURI"
         >
-          <template #append>
+          <template #append-inner>
             <v-menu
               :offset-overflow="true"
               :offset-y="false"
