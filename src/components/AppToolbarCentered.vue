@@ -95,6 +95,10 @@ export default {
 .app-toolbar-centered {
   padding: 0;
 
+  :deep(.v-toolbar-title) {
+    letter-spacing: .02em;
+  }
+
   :deep(.v-toolbar-title:not(:first-child)) {
     margin-inline-start: 0;
   }
