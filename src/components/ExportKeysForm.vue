@@ -58,6 +58,7 @@
       v-model.trim="passphrase"
       class="a-input"
       variant="underlined"
+      color="primary"
       type="text"
     >
       <template #label>
@@ -65,7 +66,7 @@
           {{ $t('options.export_keys.passphrase') }}
         </span>
       </template>
-      <template #append>
+      <template #append-inner>
         <v-menu
           :offset-overflow="true"
           :offset-y="false"
