@@ -4,7 +4,7 @@
 $font-family: 'Exo 2', sans-serif;
 
 html {
-  font-family: $font-family; 
+  font-family: $font-family;
 }
 
 /** Vuetify context styles **/
@@ -95,6 +95,10 @@ html {
 
 .v-snack__content {
   font-size: 16px;
+}
+
+.v-snackbar__wrapper {
+  max-width: 400px;
 }
 
 /**
