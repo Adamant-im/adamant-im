@@ -1,7 +1,7 @@
 <template>
   <v-snackbar
     v-model="show"
-    :timeout="timeout"
+    :timeout="50000"
     :color="color"
     :class="className"
     variant="elevated"
@@ -66,7 +66,7 @@ export default {
   :deep(.v-snackbar__wrapper) {
     @include a-text-regular-enlarged();
 
-    margin: 0;
+    margin: 0 auto;
     border-radius: 0;
   }
 
