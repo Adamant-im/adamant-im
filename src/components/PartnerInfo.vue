@@ -4,16 +4,23 @@
     max-width="360"
   >
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title
+        :class="`${className}__title`"
+        class="a-text-header"
+      >
         {{ isMe ? $t('chats.my_qr_code') : $t('chats.partner_info') }}
         <v-spacer />
         <v-btn
           variant="text"
           icon
           class="close-icon"
+          :size="36"
           @click="show = false"
         >
-          <v-icon icon="mdi-close" />
+          <v-icon
+            icon="mdi-close"
+            :size="24"
+          />
         </v-btn>
       </v-card-title>
       <v-divider class="a-divider" />
@@ -85,6 +92,7 @@ export default {
   emits: ['update:modelValue'],
   data () {
     return {
+      className: 'partner-info-dialog',
       logo: '/img/adm-qr-invert.png',
       opts: {
         scale: 8.8
@@ -112,6 +120,13 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.partner-info-dialog {
+  &__title {
+    display: flex;
+    align-items: center;
+  }
+}
+
 .close-icon {
   margin: 0;
 }
