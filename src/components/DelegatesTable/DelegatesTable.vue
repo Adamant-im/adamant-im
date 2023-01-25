@@ -80,7 +80,7 @@ export default defineComponent({
     const store = useStore()
     const delegates = computed(() => Object.values(store.state.delegates.delegates || {}))
 
-    const expandedDelegateIndex = ref(0)
+    const expandedDelegateIndex = ref(-1)
     const updateExpandedDelegateIndex = (delegateId) => (state) => {
       expandedDelegateIndex.value = state ? delegateId : -1
     }
