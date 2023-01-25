@@ -145,7 +145,13 @@ export default {
 
       // callback after Vue rerender
       setTimeout(() => {
-        this.$scrollTo(this.$refs.textarea.$el, { easing: 'ease-in' })
+        const element = this.$refs.textarea.$el
+
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+        } else {
+          console.warn('[PassphraseGenerator] `element` is undefined')
+        }
       }, 0)
     }
   }
