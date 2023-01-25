@@ -23,7 +23,6 @@
         <div
           ref="el"
           :class="{
-            'text-caption': true,
             'mt-2': true,
             [`${className}__passphrase-label`]: true
           }"
@@ -187,6 +186,8 @@ export default {
   }
   &__passphrase-label {
     color: map-get($adm-colors, 'grey');
+    font-size: 12px;
+    font-weight: 400;
     line-height: 18px;
     letter-spacing: normal !important;
   }
