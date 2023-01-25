@@ -5,7 +5,7 @@
   >
     <v-card>
       <v-card-title
-        :class="`${className}__title`"
+        :class="`${className}__dialog-title`"
         class="a-text-header"
       >
         {{ isMe ? $t('chats.my_qr_code') : $t('chats.partner_info') }}
@@ -34,8 +34,14 @@
               />
             </icon-box>
           </template>
-          <v-list-item-title v-text="address" />
-          <v-list-item-subtitle v-text="isMe ? $t('chats.me') : name" />
+          <v-list-item-title
+            :class="`${className}__address`"
+            v-text="address"
+          />
+          <v-list-item-subtitle
+            :class="`${className}__username`"
+            v-text="isMe ? $t('chats.me') : name"
+          />
         </v-list-item>
       </v-list>
       <v-row
@@ -120,8 +126,11 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import '../assets/styles/settings/_colors.scss';
+@import '~vuetify/_settings.scss';
+
 .partner-info-dialog {
-  &__title {
+  &__dialog-title {
     display: flex;
     align-items: center;
   }
@@ -129,5 +138,21 @@ export default {
 
 .close-icon {
   margin: 0;
+}
+
+.v-theme--dark {
+  .partner-info-dialog {
+    &__dialog-title {
+      color: map-get($shades, 'white');
+    }
+
+    &__address {
+      color: map-get($shades, 'white');
+    }
+
+    &__username {
+      color: map-get($adm-colors, 'grey-transparent');
+    }
+  }
 }
 </style>
