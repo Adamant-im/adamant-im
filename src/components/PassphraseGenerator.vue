@@ -119,6 +119,8 @@ export default {
     copyToClipboard () {
       copyToClipboard(this.passphrase)
 
+      this.selectText()
+
       this.$emit('copy')
     },
     saveFile () {
