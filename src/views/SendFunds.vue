@@ -17,6 +17,7 @@
       >
         <container padding>
           <send-funds-form
+            class="pt-5"
             :crypto-currency="cryptoCurrency"
             :recipient-address="recipientAddress"
             :amount-to-send="amountToSend"
