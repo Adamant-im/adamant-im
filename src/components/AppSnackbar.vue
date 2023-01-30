@@ -68,6 +68,12 @@ export default {
 
     margin: 0 auto;
     border-radius: 0;
+    max-width: 300px;
+  }
+
+  :deep(.v-snackbar__content) {
+    font-size: 16px;
+    font-weight: 300;
   }
 
   &__container {
@@ -85,14 +91,14 @@ export default {
 
 .v-theme--light.app-snackbar {
   :deep(.v-snackbar__wrapper) {
-    background: map-get($shades, 'white');
+    background-color: map-get($shades, 'white');
     color: map-get($adm-colors, 'regular')
   }
 }
 
 .v-theme--dark.app-snackbar {
   :deep(.v-snackbar__wrapper) {
-    background: map-get($adm-colors, 'regular');
+    background-color: map-get($adm-colors, 'regular');
     color: map-get($shades, 'white');
   }
 }
