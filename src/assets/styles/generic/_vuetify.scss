@@ -183,6 +183,12 @@ html {
   opacity: 0.5;
 }
 
+.v-theme--dark {
+  .v-field__prepend-inner > .v-icon, .v-field__append-inner > .v-icon, .v-field__clearable > .v-icon {
+    opacity: 1;
+  }
+}
+
 /**
  * Application styles.
  */
