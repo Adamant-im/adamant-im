@@ -1,7 +1,10 @@
 <template>
   <tr :class="classes.root">
     <td
-      :class="classes.tdCheckbox"
+      :class="{
+        [classes.td]: true,
+        [classes.tdCheckbox]: true
+      }"
       class="pl-0 pr-0"
     >
       <v-checkbox-btn
@@ -12,7 +15,10 @@
       />
     </td>
 
-    <td class="pl-0 pr-2">
+    <td
+      :class="classes.td"
+      class="pl-0 pr-2"
+    >
       {{ url }}
       <div
         v-if="version"
@@ -22,7 +28,10 @@
       </div>
     </td>
 
-    <td class="pl-0 pr-2">
+    <td
+      :class="classes.td"
+      class="pl-0 pr-2"
+    >
       <span>
         {{ nodeStatus }}
       </span>
@@ -34,7 +43,10 @@
       />
     </td>
 
-    <td class="pl-0 pr-2">
+    <td
+      :class="classes.td"
+      class="pl-0 pr-2"
+    >
       <v-icon
         :icon="socketSupport ? 'mdi-check' : 'mdi-close'"
         :color="socketSupport ? 'green' : 'red'"
@@ -93,6 +105,7 @@ export default {
     const className = 'nodes-table-item'
     const classes = {
       root: className,
+      td: `${className}__td`,
       checkbox: `${className}__checkbox`,
       version: `${className}__version`,
       statusIcon: `${className}__status-icon`,
@@ -134,6 +147,9 @@ export default {
 @import '../../assets/styles/themes/adamant/_mixins.scss';
 
 .nodes-table-item {
+  &__td {
+    font-size: 14px;
+  }
   &__version {
     @include a-text-explanation-small();
   }
