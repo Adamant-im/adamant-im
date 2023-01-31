@@ -20,7 +20,7 @@
               {{ key.cryptoName }}
             </span>
           </template>
-          <template #append>
+          <template #append-inner>
             <v-btn
               icon
               ripple
