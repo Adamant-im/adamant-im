@@ -5,11 +5,11 @@
     <tbody>
       <template v-if="searchDelegates.length > 0">
         <delegates-table-item
-          v-for="(delegate, i) in searchDelegates"
+          v-for="(delegate) in searchDelegates"
           :key="delegate.username"
           :delegate="delegate"
-          :details-expanded="expandedDelegateIndex === i"
-          @update:details-expanded="state => { updateExpandedDelegateIndex(i)(state) }"
+          :details-expanded="expandedDelegateUsername === delegate.username"
+          @update:details-expanded="state => { updateExpandedDelegateUsername(delegate.username)(state) }"
         />
       </template>
 
@@ -80,9 +80,9 @@ export default defineComponent({
     const store = useStore()
     const delegates = computed(() => Object.values(store.state.delegates.delegates || {}))
 
-    const expandedDelegateIndex = ref(-1)
-    const updateExpandedDelegateIndex = (delegateId) => (state) => {
-      expandedDelegateIndex.value = state ? delegateId : -1
+    const expandedDelegateUsername = ref(0)
+    const updateExpandedDelegateUsername = (delegateUsername) => (state) => {
+      expandedDelegateUsername.value = state ? delegateUsername : -1
     }
 
     const searchDelegates = computed(
@@ -108,8 +108,8 @@ export default defineComponent({
       delegates,
       searchDelegates,
       classes,
-      expandedDelegateIndex,
-      updateExpandedDelegateIndex
+      expandedDelegateUsername,
+      updateExpandedDelegateUsername
     }
   }
 })
