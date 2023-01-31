@@ -176,3 +176,19 @@ html {
 .v-theme--dark.v-application {
   color: map-get($shades, 'white');
 }
+
+a {
+  cursor: pointer;;
+}
+
+.v-theme--light {
+  a {
+    color: map-get($adm-colors, 'primary');
+  }
+}
+
+.v-theme--dark {
+  a {
+    color: map-get($adm-colors, 'primary')
+  }
+}
