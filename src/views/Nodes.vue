@@ -24,6 +24,7 @@
             :label="$t('nodes.fastest_title')"
             :class="`${className}__checkbox mt-4`"
             color="grey darken-1"
+            hide-details
           />
           <div class="a-text-explanation-enlarged">
             {{ $t('nodes.fastest_tooltip') }}
@@ -34,6 +35,7 @@
             :label="$t('nodes.use_socket_connection')"
             :class="`${className}__checkbox mt-4`"
             color="grey darken-1"
+            hide-details
           />
           <div class="a-text-explanation-enlarged">
             {{ $t('nodes.use_socket_connection_tooltip') }}
