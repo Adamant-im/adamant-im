@@ -19,6 +19,12 @@
       transition: unset;
     }
   }
+
+  .v-label.v-field-label--floating {
+    .a-label-secondary {
+      font-size: 10.5px !important;
+    }
+  }
 }
 .fake-input {
   color: rgba(255, 255, 255, 0.5);
