@@ -52,6 +52,7 @@ export default {
 .delegates-table-head {
   &__td {
     font-weight: 300;
+    font-size: 12px;
   }
 }
 

@@ -120,6 +120,10 @@ export default {
 @import '../../assets/styles/themes/adamant/_mixins.scss';
 
 .delegates-table-item {
+  &__td {
+    font-size: 14px;
+  }
+
   &__td-username {
     cursor: pointer;
   }
