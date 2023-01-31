@@ -190,6 +190,13 @@ html {
 }
 
 /**
+ * VTable
+ */
+.v-table {
+  color: map-get($shades, 'white');
+}
+
+/**
  * Application styles.
  */
 .v-application {
