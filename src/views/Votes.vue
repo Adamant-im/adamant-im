@@ -23,7 +23,7 @@
             <v-card-title class="py-0 pl-4 pr-4">
               <v-text-field
                 v-model="search"
-                append-icon="mdi-magnify"
+                append-inner-icon="mdi-magnify"
                 :label="$t('votes.search')"
                 :class="`${className}__search`"
                 single-line
