@@ -200,17 +200,17 @@ html {
 }
 
 a {
-  cursor: pointer;;
+  cursor: pointer;
 }
 
 .v-theme--light {
-  a {
+  a, a:visited {
     color: map-get($adm-colors, 'primary');
   }
 }
 
 .v-theme--dark {
-  a {
+  a, a:visited {
     color: map-get($adm-colors, 'primary')
   }
 }
