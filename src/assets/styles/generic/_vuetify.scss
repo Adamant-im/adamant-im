@@ -155,6 +155,13 @@ html {
 }
 
 /**
+ * VField
+ */
+.v-field--disabled {
+  opacity: 0.5;
+}
+
+/**
  * Application styles.
  */
 .v-application {
