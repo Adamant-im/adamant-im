@@ -80,6 +80,10 @@ html {
     color: #FFF;
   }
 
+  > .v-card-title {
+    color: map-get($shades, 'white');
+  }
+
   > .v-card__subtitle {
     color: #FFF;
   }
