@@ -12,7 +12,7 @@
 
       <v-divider class="a-divider" />
 
-      <v-card-text>
+      <v-card-text :class="`${className}__card-text`">
         <div :class="`${className}__disclaimer a-text-regular-enlarged`">
           {{ $t("chats.free_adm_disclaimer") }}
         </div>
@@ -92,7 +92,13 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import '~vuetify/_settings.scss';
+@import '../assets/styles/settings/_colors.scss';
+
 .free-tokens-dialog {
+  &__card-text {
+    padding: 16px !important;
+  }
   &__disclaimer {
     margin-top: 10px;
   }
@@ -106,6 +112,14 @@ export default {
   &__btn-show-article {
     padding: 0 0 30px 0;
     text-align: center;
+  }
+}
+
+.v-theme--dark {
+  .free-tokens-dialog {
+    &__disclaimer {
+      color: map-get($shades, 'white');
+    }
   }
 }
 </style>
