@@ -157,10 +157,10 @@ html {
 .v-label {
   opacity: unset;
 }
-.v-theme--light .v-label {
+.v-theme--light .v-field__field .v-label {
   color: map-get($adm-colors, 'muted');
 }
-.v-theme--dark .v-label {
+.v-theme--dark .v-field__field .v-label {
   color: map-get($adm-colors, 'grey-transparent');
 }
 

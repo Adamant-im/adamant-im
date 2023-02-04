@@ -25,6 +25,7 @@
           v-model="recipientAddress"
           class="a-input"
           variant="underlined"
+          color="primary"
           :label="$t('chats.recipient')"
           :title="$t('chats.recipient_tooltip')"
           autofocus
