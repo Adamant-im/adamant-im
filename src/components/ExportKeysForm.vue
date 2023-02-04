@@ -14,6 +14,7 @@
           class="a-input"
           type="text"
           variant="underlined"
+          color="primary"
         >
           <template #label>
             <span class="font-weight-medium">
