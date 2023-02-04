@@ -1,7 +1,7 @@
 <template>
   <thead :class="classes.root">
     <tr>
-      <th :class="classes.checkbox"></th>
+      <th :class="classes.checkbox" />
       <th
         :class="classes.th"
         class="pl-0 pr-2"
