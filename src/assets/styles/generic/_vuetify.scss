@@ -163,6 +163,12 @@ html {
 .v-theme--dark .v-field__outline {
   color: map-get($adm-colors, 'grey-transparent');
 }
+.v-theme--light .v-field__field .v-label {
+  color: map-get($adm-colors, 'muted');
+}
+.v-theme--dark .v-field__field .v-label {
+  color: map-get($adm-colors, 'grey-transparent');
+}
 
 .v-list-item--density-default.v-list-item--one-line {
   min-height: 56px;
