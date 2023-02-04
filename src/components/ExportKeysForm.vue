@@ -60,6 +60,7 @@
       variant="underlined"
       color="primary"
       type="text"
+      density="default"
     >
       <template #label>
         <span class="font-weight-medium">
@@ -232,7 +233,7 @@ export default {
     margin-bottom: 24px;
   }
   &__disclaimer {
-    margin-top: 32px;
+    margin-top: 12px;
     margin-bottom: 24px;
   }
   &__btn-copy {
