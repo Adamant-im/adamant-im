@@ -190,6 +190,15 @@ html {
 }
 
 /**
+ * Change VField label padding
+ */
+.v-field--variant-plain.v-field .v-field__input,
+.v-field--variant-underlined.v-field .v-field__input {
+  --v-field-padding-top: 2px;
+  --v-field-padding-bottom: 5px;
+}
+
+/**
  * VTable
  */
 .v-table {
