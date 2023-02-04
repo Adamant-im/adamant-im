@@ -46,7 +46,7 @@ export default defineComponent({
 .nodes-table {
   margin-left: -24px;
   margin-right: -24px;
-  max-width: unset;
+  max-width: unset !important;
 }
 
 @media #{map-get($display-breakpoints, 'sm-and-down')} {
