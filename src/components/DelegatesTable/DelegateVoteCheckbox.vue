@@ -65,6 +65,8 @@ export default {
 
 .delegate-vote-checkbox {
   &__icon {
+    font-size: 24px !important;
+    height: 24px !important;
   }
 }
 
