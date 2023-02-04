@@ -20,18 +20,17 @@
             flat
             color="transparent"
           >
-            <v-card-title class="py-0 pl-4 pr-4">
-              <v-text-field
-                v-model="search"
-                append-inner-icon="mdi-magnify"
-                :label="$t('votes.search')"
-                :class="`${className}__search`"
-                single-line
-                hide-details
-                variant="underlined"
-                class="a-input"
-              />
-            </v-card-title>
+            <v-text-field
+              v-model="search"
+              append-inner-icon="mdi-magnify"
+              :label="$t('votes.search')"
+              :class="`${className}__search`"
+              single-line
+              hide-details
+              variant="underlined"
+              class="a-input"
+              color="primary"
+            />
 
             <div :class="`${className}__spacer`" />
 
@@ -284,7 +283,7 @@ export default {
     padding-bottom: 15px !important;
   }
   &__search {
-    :deep(.v-input__slot) {
+    :deep(.v-field) {
       padding-left: 16px;
       padding-right: 16px;
     }
