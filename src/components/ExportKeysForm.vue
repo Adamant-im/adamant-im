@@ -24,6 +24,7 @@
             <v-btn
               icon
               ripple
+              size="28"
               :class="`${className}__btn-copy`"
               @click="copyKey(key.key)"
             >
@@ -60,7 +61,6 @@
       variant="underlined"
       color="primary"
       type="text"
-      density="default"
     >
       <template #label>
         <span class="font-weight-medium">
