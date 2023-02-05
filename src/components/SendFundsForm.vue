@@ -24,6 +24,7 @@
         class="a-input"
         type="text"
         variant="underlined"
+        color="primary"
         @paste="onPasteURIAddress"
       >
         <template #label>
@@ -82,6 +83,7 @@
         :min="minToTransfer"
         :step="minToTransfer"
         type="number"
+        color="primary"
       >
         <template #label>
           <span class="font-weight-medium">{{ $t('transfer.amount_label') }}</span>
@@ -145,6 +147,7 @@
         variant="underlined"
         maxlength="100"
         @paste="onPasteURIComment"
+        color="primary"
       />
 
       <v-text-field
@@ -155,6 +158,7 @@
         variant="underlined"
         counter
         maxlength="64"
+        color="primary"
       />
       <v-checkbox
         v-if="allowIncreaseFee"
