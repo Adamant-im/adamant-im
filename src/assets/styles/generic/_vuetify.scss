@@ -189,6 +189,12 @@ html {
   opacity: 0.5;
 }
 
+.a-input .v-field--disabled .v-field__outline::before,
+.a-input .v-field--disabled .v-field__outline::before {
+  border-image: repeating-linear-gradient(90deg,hsla(0,0%,100%,.5) 0,hsla(0,0%,100%,.5) 2px,transparent 0,transparent 4px) 1 repeat;
+  opacity: 1;
+}
+
 .v-theme--dark {
   .v-field__prepend-inner > .v-icon, .v-field__append-inner > .v-icon, .v-field__clearable > .v-icon {
     opacity: 1;
