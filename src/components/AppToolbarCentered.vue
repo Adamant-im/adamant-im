@@ -58,6 +58,10 @@ export default {
       type: Boolean,
       default: false
     },
+    app: {
+      type: Boolean,
+      default: false
+    },
     fixed: {
       type: Boolean,
       default: false
