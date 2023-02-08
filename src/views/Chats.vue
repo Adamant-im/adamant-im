@@ -129,7 +129,9 @@ export default {
   methods: {
     openChat (partnerId, messageText) {
       this.$router.push({
-        name: 'Chat', params: { messageText, partnerId }
+        name: 'Chat',
+        params: { partnerId },
+        query: { messageText }
       })
     },
     isChatReadOnly (partnerId) {

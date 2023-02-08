@@ -91,7 +91,7 @@
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="chatFormLabel"
-          :message-text="messageText"
+          :message-text="$route.query.messageText"
           @message="onMessage"
         >
           <template #prepend>
@@ -206,10 +206,6 @@ export default {
   },
   mixins: [transaction, partnerName],
   props: {
-    messageText: {
-      default: '',
-      type: String
-    },
     partnerId: {
       type: String,
       required: true
