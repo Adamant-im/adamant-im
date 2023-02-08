@@ -78,6 +78,7 @@
       <v-text-field
         v-model="amountString"
         class="a-input"
+        :class="`${className}__amount-input`"
         variant="underlined"
         :max="maxToTransfer"
         :min="minToTransfer"
@@ -813,6 +814,13 @@ export default {
 .send-funds-form {
   &__button {
     margin-top: 15px;
+  }
+  &__amount-input {
+    :deep(.v-field__field) {
+      .v-label.v-field-label {
+        align-items: baseline;
+      }
+    }
   }
 }
 </style>
