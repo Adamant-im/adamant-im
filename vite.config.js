@@ -14,7 +14,7 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    extensions: ['.vue']
+    extensions: ['.js', '.json', '.vue']
   },
   server: {
     port: 8080
