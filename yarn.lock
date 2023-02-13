@@ -2597,7 +2597,6 @@ __metadata:
     bytebuffer: ^5.0.1
     coininfo: ^5.2.1
     copy-to-clipboard: ^3.3.3
-    core-js: ^3.22.5
     cross-env: ^7.0.3
     cypress: ^9.7.0
     dayjs: ^1.11.2
@@ -4862,13 +4861,6 @@ __metadata:
   version: 2.6.12
   resolution: "core-js@npm:2.6.12"
   checksum: 44fa9934a85f8c78d61e0c8b7b22436330471ffe59ec5076fe7f324d6e8cf7f824b14b1c81ca73608b13bdb0fef035bd820989bf059767ad6fa13123bb8bd016
-  languageName: node
-  linkType: hard
-
-"core-js@npm:^3.22.5":
-  version: 3.25.0
-  resolution: "core-js@npm:3.25.0"
-  checksum: 5a72740bf5babaf2e6203da4c0e831a0b97c3fe6f21b4c1aa8601d3a927660a22128dd8f0e86ce84778c4e5372ab0fc03c7944afa7e215c7fb13b2c79d5d5504
   languageName: node
   linkType: hard
 
