@@ -116,7 +116,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '~vuetify/settings';
+@import 'vuetify/settings';
 
 .delegates-table {
 

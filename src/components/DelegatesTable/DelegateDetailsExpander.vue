@@ -99,7 +99,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '~vuetify/settings';
+@import 'vuetify/settings';
 @import '../../assets/styles/themes/adamant/_mixins.scss';
 @import '../../assets/styles/settings/_colors.scss';
 

@@ -47,7 +47,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~vuetify/settings';
+@import 'vuetify/settings';
 
 .nodes-table-head {
   &__th {

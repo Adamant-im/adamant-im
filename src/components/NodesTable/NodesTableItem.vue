@@ -142,7 +142,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~vuetify/settings';
+@import 'vuetify/settings';
 @import '../../assets/styles/settings/_colors.scss';
 @import '../../assets/styles/themes/adamant/_mixins.scss';
 
