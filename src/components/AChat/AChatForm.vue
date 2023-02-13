@@ -202,6 +202,8 @@ export default {
   .a-chat__form {
     :deep(.v-textarea) {
       .v-field__input {
+        caret-color: map-get($adm-colors, 'primary');
+
         &::placeholder {
           color: map-get($adm-colors, 'muted');
         }
@@ -214,6 +216,8 @@ export default {
   .a-chat__form {
     :deep(.v-textarea) {
       .v-field__input {
+        caret-color: map-get($adm-colors, 'primary');
+
         &::placeholder {
           color: rgba(map-get($shades, 'white'), 70%);
         }

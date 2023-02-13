@@ -197,6 +197,9 @@ export default {
       .v-label--active {
         color: map-get($shades, 'white');
       }
+      input {
+        caret-color: map-get($adm-colors, 'primary');
+      }
     }
   }
 }

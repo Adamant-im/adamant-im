@@ -145,3 +145,13 @@
       1 repeat;
   }
 }
+.v-theme--dark {
+  .a-input {
+    &:not(.v-input--is-disabled) {
+      input,
+      textarea {
+        caret-color: map-get($adm-colors, 'primary');
+      }
+    }
+  }
+}
