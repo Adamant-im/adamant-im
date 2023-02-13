@@ -17,7 +17,13 @@ export default defineConfig({
       
       // Node.js polyfills
       buffer: 'buffer',
-      events: 'rollup-plugin-node-polyfills/polyfills/events'
+      events: 'rollup-plugin-node-polyfills/polyfills/events',
+      stream: 'stream-browserify',
+      path: 'path-browserify',
+      crypto: 'crypto-browserify',
+      http: 'stream-http',
+      https: 'https-browserify',
+      os: 'os-browserify/browser'
     },
     extensions: ['.js', '.json', '.vue']
   },
