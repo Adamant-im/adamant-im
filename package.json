@@ -59,6 +59,7 @@
     "socket.io-client": "^2.4.0",
     "sodium-browserify-tweetnacl": "^0.2.6",
     "throttle-promise": "^1.0.4",
+    "tweetnacl": "^1.0.3",
     "visibilityjs": "^2.0.2",
     "vue": "^3.2.45",
     "vue-i18n": "^9.2.2",
