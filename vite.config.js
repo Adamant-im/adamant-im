@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import vue from '@vitejs/plugin-vue'
 import path from "path";
 import autoprefixer from 'autoprefixer'
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 
 export default defineConfig({
   plugins: [vue()],
@@ -13,10 +14,28 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      
+      // Node.js polyfills
+      buffer: 'buffer',
     },
     extensions: ['.js', '.json', '.vue']
   },
   server: {
     port: 8080
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+        // Node.js global to browser globalThis
+        define: {
+            global: 'globalThis'
+        },
+        // Enable esbuild polyfill plugins
+        plugins: [
+            NodeGlobalsPolyfillPlugin({
+                process: false,
+                buffer: true
+            }),
+        ]
+    }
   }
 });
