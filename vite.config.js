@@ -23,6 +23,9 @@ export default defineConfig({
   server: {
     port: 8080
   },
+  define: {
+    "process.env": {} // some old libs like `promise-queue` still uses Webpack
+  },
   optimizeDeps: {
     esbuildOptions: {
         // Node.js global to browser globalThis
