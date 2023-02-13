@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { register } from 'register-service-worker'
 
-if (process.env.NODE_ENV) {
-  register(`${process.env.BASE_URL}service-worker.js`, {
+if (import.meta.env.MODE) {
+  register(`${import.meta.env.BASE_URL}service-worker.js`, {
     ready (registration) {
       console.log('Service worker: active')
     },
