@@ -17,6 +17,7 @@ export default defineConfig({
       
       // Node.js polyfills
       buffer: 'buffer',
+      events: 'rollup-plugin-node-polyfills/polyfills/events'
     },
     extensions: ['.js', '.json', '.vue']
   },

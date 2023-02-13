@@ -16,8 +16,7 @@
     "electron:build:all": "vue-cli-service electron:build --mode electron -mwl --x64 --arm64",
     "https": "vue-cli-service serve --https",
     "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e",
-    "postinstall": "electron-builder install-app-deps"
+    "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
     "@liskhq/lisk-cryptography": "3.2.1",
@@ -58,6 +57,7 @@
     "qrcode": "^1.5.0",
     "qs": "^6.10.3",
     "register-service-worker": "^1.7.2",
+    "rollup-plugin-node-polyfills": "^0.2.1",
     "semver": "^7.3.7",
     "simple-audio": "^1.0.1",
     "socket.io-client": "^2.4.0",
