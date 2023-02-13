@@ -1,9 +1,9 @@
 <template>
   <transaction-template
     :id="transaction.hash || '' "
-    :amount="transaction.amount | currency(crypto)"
+    :amount="currency(transaction.amount, crypto)"
     :timestamp="transaction.timestamp || NaN"
-    :fee="transaction.fee | currency('LSK')"
+    :fee="currency(transaction.fee, 'LSK')"
     :confirmations="confirmations || NaN"
     :sender="sender || '' "
     :recipient="recipient || '' "
@@ -26,6 +26,7 @@ import partnerName from '@/mixins/partnerName'
 
 import { isStringEqualCI } from '@/lib/textHelpers'
 import transaction from '@/mixins/transaction'
+import currency from '@/filters/currencyAmountWithSymbol'
 
 export default {
   name: 'LskTransaction',
@@ -158,7 +159,8 @@ export default {
       }
 
       return result
-    }
+    },
+    currency
   }
 }
 </script>

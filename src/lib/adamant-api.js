@@ -6,7 +6,7 @@ import utils from './adamant'
 import client from './adamant-api-client'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { restoreState } from '@/lib/idb/state'
-import i18n from '@/i18n'
+import { i18n } from '@/i18n'
 import store from '@/store'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { parseCryptoAddressesKVStxs } from '@/lib/store-crypto-address'
@@ -125,7 +125,7 @@ export function getPublicKey (address = '') {
         return publicKey
       }
 
-      throw new Error(i18n.t('chats.no_public_key'))
+      throw new Error(i18n.global.t('chats.no_public_key'))
     })
 }
 

@@ -30,3 +30,7 @@ yarn-error.log*
 /dist_electron
 
 package-lock.json
+
+# Yarn
+.yarn
+.yarnrc.yml

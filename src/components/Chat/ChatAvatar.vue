@@ -2,7 +2,7 @@
   <div
     :class="classes"
     :style="styles"
-    @click="$emit('click')"
+    @click="$attrs.onClick"
   >
     <img
       v-if="avatar"
@@ -22,10 +22,9 @@
 <script>
 import { getPublicKey } from '@/lib/adamant-api'
 import Identicon from '@/lib/identicon'
-import clickable from '@/mixins/clickable'
 
 export default {
-  mixins: [clickable],
+  inheritAttrs: false,
   props: {
     size: {
       type: Number,
@@ -42,6 +41,9 @@ export default {
   },
   computed: {
     className: () => 'chat-avatar',
+    isClickable () {
+      return !!this.$attrs.onClick
+    },
     classes () {
       return [
         this.className,

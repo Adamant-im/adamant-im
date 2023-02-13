@@ -1,5 +1,5 @@
 import { isStringEqualCI } from '@/lib/textHelpers'
-import i18n from '@/i18n'
+import { i18n } from '@/i18n'
 
 const AllowAmountErrorPercent = 0.3
 const AllowTimestampDeltaSec = 1800 // 30 min
@@ -110,7 +110,7 @@ export function formatSendTxError (error) {
   formattedError.details.error = error.toString()
   formattedError.details.response = error.response
 
-  formattedError.errorMessage = `${i18n.t('error')}: `
+  formattedError.errorMessage = `${i18n.global.t('error')}: `
   if (error.response && error.response.data) {
     const errorData = error.response.data
     if (errorData.error) {

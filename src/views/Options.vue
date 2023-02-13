@@ -5,11 +5,12 @@
       :title="$t('options.page_title')"
       :show-back="true"
       flat
+      fixed
     />
 
     <v-container
       fluid
-      class="pa-0"
+      class="px-0 container--with-app-toolbar"
     >
       <v-row
         justify="center"
@@ -28,12 +29,11 @@
             no-gutters
           >
             <v-col cols="6">
-              <v-subheader
+              <v-list-subheader
                 :class="`${className}__label`"
-                class="pa-0"
               >
                 {{ $t('options.language_label') }}
-              </v-subheader>
+              </v-list-subheader>
             </v-col>
             <v-col
               cols="6"
@@ -44,12 +44,11 @@
               />
             </v-col>
             <v-col cols="6">
-              <v-subheader
+              <v-list-subheader
                 :class="`${className}__label`"
-                class="pa-0"
               >
                 {{ $t('options.currency_label') }}
-              </v-subheader>
+              </v-list-subheader>
             </v-col>
             <v-col
               cols="6"
@@ -61,12 +60,13 @@
             </v-col>
             <v-col
               cols="12"
-              class="mt-2"
             >
               <v-checkbox
                 v-model="darkTheme"
                 :label="$t('options.dark_theme')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
             </v-col>
           </v-row>
@@ -91,6 +91,8 @@
                 color="grey darken-1"
                 :input-value="stayLoggedIn"
                 readonly
+                density="comfortable"
+                hide-details
                 @click="onCheckStayLoggedIn"
               />
 
@@ -121,6 +123,8 @@
                 v-model="sendMessageOnEnter"
                 :label="$t('options.send_on_enter')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
 
               <div class="a-text-explanation-enlarged">
@@ -136,6 +140,8 @@
                 v-model="formatMessages"
                 :label="$t('options.format_messages')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
 
               <div class="a-text-explanation-enlarged">
@@ -151,6 +157,8 @@
                 v-model="useFullDate"
                 :label="$t('options.use_full_date')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
 
               <div class="a-text-explanation-enlarged">
@@ -175,6 +183,8 @@
                 v-model="allowSoundNotifications"
                 :label="$t('options.enable_sound')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
 
               <div class="a-text-explanation-enlarged">
@@ -189,6 +199,8 @@
                 v-model="allowTabNotifications"
                 :label="$t('options.enable_bar')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
 
               <div class="a-text-explanation-enlarged">
@@ -203,6 +215,8 @@
                 v-model="allowPushNotifications"
                 :label="$t('options.enable_push')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
 
               <div class="a-text-explanation-enlarged">
@@ -220,68 +234,32 @@
           </h3>
           <v-row no-gutters>
             <v-col cols="12">
-              <v-list>
-                <v-list-item @click="$router.push('/options/nodes')">
-                  <v-list-item-content>
-                    <v-list-item-title :class="`${className}__list__title`">
-                      {{ $t('options.nodes_list') }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                  <div>
-                    <v-list-item-title :class="`${className}__list__value`">
-                      <v-icon size="20">
-                        mdi-chevron-right
-                      </v-icon>
-                    </v-list-item-title>
-                  </div>
-                </v-list-item>
+              <v-list class="actions-list">
+                <v-list-item
+                  :title="$t('options.nodes_list')"
+                  append-icon="mdi-chevron-right"
+                  @click="$router.push('/options/nodes')"
+                />
 
-                <v-list-item @click="$router.push('/options/export-keys')">
-                  <v-list-item-content>
-                    <v-list-item-title :class="`${className}__list__title`">
-                      {{ $t('options.export_keys.title') }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                  <div>
-                    <v-list-item-title :class="`${className}__list__value`">
-                      <v-icon size="20">
-                        mdi-chevron-right
-                      </v-icon>
-                    </v-list-item-title>
-                  </div>
-                </v-list-item>
+                <v-list-item
+                  :title="$t('options.export_keys.title')"
+                  append-icon="mdi-chevron-right"
+                  @click="$router.push('/options/export-keys')"
+                />
 
-                <v-list-item @click="$router.push('/votes')">
-                  <v-list-item-content>
-                    <v-list-item-title :class="`${className}__list__title`">
-                      {{ $t('options.vote_for_delegates_button') }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                  <div>
-                    <v-list-item-title :class="`${className}__value`">
-                      <v-icon size="20">
-                        mdi-chevron-right
-                      </v-icon>
-                    </v-list-item-title>
-                  </div>
-                </v-list-item>
+                <v-list-item
+                  :title="$t('options.vote_for_delegates_button')"
+                  append-icon="mdi-chevron-right"
+                  @click="$router.push('/votes')"
+                />
 
                 <v-divider />
 
-                <v-list-item @click="logout">
-                  <v-list-item-content>
-                    <v-list-item-title :class="`${className}__list__title`">
-                      {{ $t('bottom.exit_button') }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                  <div>
-                    <v-list-item-title :class="`${className}__value`">
-                      <v-icon size="20">
-                        mdi-logout-variant
-                      </v-icon>
-                    </v-list-item-title>
-                  </div>
-                </v-list-item>
+                <v-list-item
+                  :title="$t('bottom.exit_button')"
+                  append-icon="mdi-logout-variant"
+                  @click="logout"
+                />
               </v-list>
             </v-col>
           </v-row>
@@ -289,7 +267,7 @@
             <div
               :class="`${className}__version_info ml-auto`"
             >
-              {{ $t('options.version') }} {{ $root.$options.version }}
+              {{ $t('options.version') }} {{ $root.appVersion }}
             </div>
           </v-row>
         </container>
@@ -392,13 +370,13 @@ export default {
       get () {
         return this.$store.state.options.darkTheme
       },
-      set (value) {
+      set (isDarkTheme) {
         this.$store.commit('options/updateOption', {
           key: 'darkTheme',
-          value
+          value: isDarkTheme
         })
 
-        this.$vuetify.theme.dark = value
+        this.$vuetify.theme.global.name = isDarkTheme ? 'dark' : 'light'
       }
     },
     isLoginViaPassword () {
@@ -460,14 +438,12 @@ export default {
 
 <style lang="scss" scoped>
 @import '../assets/styles/themes/adamant/_mixins.scss';
-@import '~vuetify/src/styles/settings/_variables.scss';
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import '~vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
 
 .settings-view {
   &__title {
     padding-top: 15px;
-    padding-bottom: 5px;
     margin-left: -24px;
     margin-right: -24px;
     padding-left: 24px;
@@ -476,6 +452,7 @@ export default {
   &__version_info {
     @include a-text-explanation();
     margin-top: 24px;
+    margin-bottom: 16px;
   }
   &__action {
     display: block;
@@ -498,14 +475,25 @@ export default {
     background: transparent;
     padding: 0;
   }
-  :deep(.v-list-item) {
-    padding: 0 24px;
-    margin: 0 -24px;
+  .actions-list {
+    margin-left: -24px;
+    margin-right: -24px;
+
+    :deep(.v-list-item) {
+      padding-inline-start: 24px;
+      padding-inline-end: 24px;
+    }
+  }
+  :deep(.v-list-subheader) {
+    height: 48px;
+  }
+  :deep(.v-checkbox) {
+    margin-left: -8px;
   }
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .settings-view {
     &__version_info {
       color: map-get($adm-colors, 'muted');
@@ -525,7 +513,7 @@ export default {
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .settings-view {
     &__action {
       color: map-get($shades, 'white');
@@ -543,9 +531,14 @@ export default {
       padding-right: 16px;
     }
 
-    :deep(.v-list-item) {
-      padding: 0 16px;
-      margin: 0 -16px;
+    .actions-list {
+      margin-left: -16px;
+      margin-right: -16px;
+
+      :deep(.v-list-item) {
+        padding-inline-start: 16px;
+        padding-inline-end: 16px;
+      }
     }
   }
 }

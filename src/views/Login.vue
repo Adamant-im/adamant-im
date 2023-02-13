@@ -6,20 +6,12 @@
   >
     <container>
       <div class="text-right">
-        <language-switcher>
-          <v-icon
-            slot="prepend"
-            size="18"
-          >
-            mdi-chevron-right
-          </v-icon>
-        </language-switcher>
+        <language-switcher prepend-icon="mdi-chevron-right" />
       </div>
 
-      <v-card
-        flat
-        color="transparent"
+      <v-sheet
         class="text-center mt-4"
+        color="transparent"
       >
         <logo style="width: 300px;" />
 
@@ -32,13 +24,12 @@
         >
           {{ $t('login.subheader') }}
         </h2>
-      </v-card>
+      </v-sheet>
 
-      <v-card
+      <v-sheet
         v-if="!isLoginViaPassword"
-        flat
-        color="transparent"
         class="text-center mt-4"
+        color="transparent"
       >
         <v-row
           justify="center"
@@ -68,7 +59,8 @@
               class="ma-2"
               :title="$t('login.scan_qr_code_button_tooltip')"
               icon
-              text
+              variant="text"
+              size="x-small"
               :class="`${className}__icon`"
               @click="showQrcodeScanner = true"
             >
@@ -85,7 +77,8 @@
                 class="ma-2"
                 :title="$t('login.login_by_qr_code_tooltip')"
                 icon
-                text
+                variant="text"
+                size="x-small"
                 :class="`${className}__icon`"
               >
                 <icon><file-icon /></icon>
@@ -93,7 +86,7 @@
             </qrcode-capture>
           </v-col>
         </v-row>
-      </v-card>
+      </v-sheet>
 
       <v-row
         v-if="!isLoginViaPassword"
@@ -111,11 +104,10 @@
         </v-col>
       </v-row>
 
-      <v-card
+      <v-sheet
         v-if="isLoginViaPassword"
-        flat
-        color="transparent"
         class="text-center mt-6"
+        color="transparent"
       >
         <v-row
           no-gutters
@@ -133,7 +125,7 @@
             />
           </v-col>
         </v-row>
-      </v-card>
+      </v-sheet>
 
       <qrcode-scanner-dialog
         v-if="showQrcodeScanner"
@@ -145,6 +137,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 import QrcodeCapture from '@/components/QrcodeCapture'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
@@ -219,15 +213,14 @@ export default {
     },
     onScanQrcode (passphrase) {
       this.passphrase = passphrase
-      this.$nextTick(() => this.$refs.loginForm.submit())
+      nextTick(() => this.$refs.loginForm.submit())
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/settings/_variables.scss';
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import '~vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
 
 .login-page {
@@ -251,14 +244,14 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .login-page {
     &__icon, &__title, &__subtitle {
       color: map-get($adm-colors, 'regular');
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .login-page {
     &__icon {
       color: map-get($shades, 'white');

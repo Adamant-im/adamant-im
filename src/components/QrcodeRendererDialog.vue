@@ -43,7 +43,7 @@ export default {
     QrcodeRenderer
   },
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     },
@@ -56,6 +56,7 @@ export default {
       default: undefined
     }
   },
+  emits: ['update:modelValue'],
   data: () => ({
     opts: {
       scale: 8.8
@@ -64,10 +65,10 @@ export default {
   computed: {
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     },
     logoURL () {

@@ -15,12 +15,14 @@
         >
           <v-btn
             v-if="showBack"
-            :class="`${className}__back-button`"
             icon
-            small
+            size="small"
             @click="goBack"
           >
-            <v-icon>mdi-arrow-left</v-icon>
+            <v-icon
+              icon="mdi-arrow-left"
+              size="x-large"
+            />
           </v-btn>
 
           <v-toolbar-title
@@ -42,18 +44,7 @@
 </template>
 
 <script>
-import Applicationable from 'vuetify/es5/mixins/applicationable'
-
 export default {
-  mixins: [
-    Applicationable('top', [
-      'clippedLeft',
-      'clippedRight',
-      'computedHeight',
-      'invertedScroll',
-      'manualScroll'
-    ])
-  ],
   props: {
     title: {
       type: String,
@@ -64,6 +55,14 @@ export default {
       default: undefined
     },
     flat: {
+      type: Boolean,
+      default: false
+    },
+    app: {
+      type: Boolean,
+      default: false
+    },
+    fixed: {
       type: Boolean,
       default: false
     },
@@ -79,7 +78,8 @@ export default {
   computed: {
     classes () {
       return {
-        'v-toolbar--fixed': this.app
+        'v-toolbar--fixed': this.app,
+        'app-toolbar--fixed': this.fixed
       }
     },
     className: () => 'app-toolbar-centered'
@@ -93,23 +93,38 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import '~vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
 
 .app-toolbar-centered {
   padding: 0;
 
-  :deep(.v-toolbar__title:not(:first-child)) {
-    padding-left: 0 !important;
+  :deep(.v-toolbar-title) {
+    letter-spacing: .02em;
   }
 
-  &__back-button {
-    margin: 6px 6px 6px -6px !important;
+  :deep(.v-toolbar-title:not(:first-child)) {
+    margin-inline-start: 0;
+  }
+
+  :deep(.v-toolbar__content > .v-btn:first-child) {
+    margin-inline-start: 4px;
+  }
+
+  :deep(.v-btn:hover) {
+    > .v-btn__overlay {
+      opacity: 0;
+    }
   }
 }
 
+.app-toolbar--fixed {
+  position: fixed;
+  z-index: 2;
+}
+
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .app-toolbar-centered {
     .v-toolbar {
       background-color: map-get($adm-colors, 'secondary2-transparent')
@@ -117,10 +132,11 @@ export default {
   }
 }
 
-.theme--dark {
+.v-theme--dark {
   .app-toolbar-centered {
     .v-toolbar {
       background-color: map-get($shades, 'black');
+      color: map-get($shades, 'white');
     }
   }
 }

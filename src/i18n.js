@@ -1,11 +1,8 @@
-import Vue from 'vue'
-import VueI18n from 'vue-i18n'
+import { createI18n } from 'vue-i18n'
 
-import de from './i18n/de'
-import en from './i18n/en'
-import ru from './i18n/ru'
-
-Vue.use(VueI18n)
+import de from './locales/de'
+import en from './locales/en'
+import ru from './locales/ru'
 
 function loadLocaleMessages () {
   return {
@@ -13,7 +10,7 @@ function loadLocaleMessages () {
   }
 }
 
-export default new VueI18n({
+export const i18n = createI18n({
   locale: process.env.VUE_APP_I18N_LOCALE || 'en',
   fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || 'en',
   messages: loadLocaleMessages(),
@@ -44,5 +41,7 @@ export default new VueI18n({
       return (choicesLength < 4) ? 2 : 3
     }
   },
-  silentTranslationWarn: true
+  silentTranslationWarn: true,
+  globalInjection: true,
+  allowComposition: true
 })

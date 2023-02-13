@@ -1,4 +1,4 @@
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import '~vuetify/settings';
 @import '../settings/_colors.scss';
 
 $chat-form-height: 52px;
@@ -240,7 +240,12 @@ $chat-avatar-size: 40px;
      * 2. reset textarea extra margins.
      */
     textarea {
-      height: 32px;
+      line-height: 18px;
+    }
+    .v-field__input {
+      mask-image: none;
+      padding-top: 7px;
+      padding-bottom: 7px;
     }
     .v-text-field {
       padding-top: 0;
@@ -265,7 +270,7 @@ $chat-avatar-size: 40px;
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .a-chat {
     &__content {
       color: map-get($shades, 'black');
@@ -349,7 +354,7 @@ $chat-avatar-size: 40px;
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .a-chat {
     &__content {
       color: map-get($shades, 'white');

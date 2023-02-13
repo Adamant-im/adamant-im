@@ -1,32 +1,40 @@
 <template>
   <v-dialog
     v-model="show"
+    eager
     width="320"
+    :class="className"
   >
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title
+        :class="`${className}__dialog-title`"
+        class="a-text-header"
+      >
         {{ $t('home.share_uri', { crypto }) }}
       </v-card-title>
       <v-divider class="a-divider" />
       <v-card-text class="pa-0">
         <v-list>
           <v-list-item @click="copyAddress">
-            <v-list-item-content>
-              <v-list-item-title v-t="'home.copy_address'" />
-            </v-list-item-content>
+            <v-list-item-title
+              :class="`${className}__list-item-title`"
+              v-text="$t('home.copy_address')"
+            />
           </v-list-item>
           <v-list-item
             v-if="isADM"
             @click="copyURI"
           >
-            <v-list-item-content>
-              <v-list-item-title v-t="'home.copy_uri'" />
-            </v-list-item-content>
+            <v-list-item-title
+              :class="`${className}__list-item-title`"
+              v-text="$t('home.copy_uri')"
+            />
           </v-list-item>
           <v-list-item @click="openQRCodeRenderer">
-            <v-list-item-content>
-              <v-list-item-title v-t="'home.show_qr_code'" />
-            </v-list-item-content>
+            <v-list-item-title
+              :class="`${className}__list-item-title`"
+              v-text="$t('home.show_qr_code')"
+            />
           </v-list-item>
         </v-list>
       </v-card-text>
@@ -41,7 +49,7 @@
 
 <script>
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
-import { copyToClipboard } from '@/lib/textHelpers'
+import copyToClipboard from 'copy-to-clipboard'
 import { generateURI } from '@/lib/uri'
 
 export default {
@@ -59,16 +67,20 @@ export default {
       required: true,
       type: Boolean
     },
-    value: {
+    modelValue: {
       required: true,
       type: Boolean
     }
   },
-  data: () => ({ showQrcodeRendererDialog: false }),
+  emits: ['update:modelValue'],
+  data: () => ({
+    className: 'share-uri-dialog',
+    showQrcodeRendererDialog: false
+  }),
   computed: {
     show: {
-      get () { return this.value },
-      set (value) { this.$emit('input', value) }
+      get () { return this.modelValue },
+      set (value) { this.$emit('update:modelValue', value) }
     },
     uri () {
       return generateURI(this.crypto, this.address)
@@ -76,6 +88,8 @@ export default {
   },
   methods: {
     copyAddress () {
+      console.log('copyToClipboard', this.address)
+
       copyToClipboard(this.address)
       this.$store.dispatch('snackbar/show', { message: this.$t('home.copied') })
       this.show = false
@@ -92,3 +106,22 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+@import '~vuetify/_settings.scss';
+
+.share-uri-dialog {
+}
+
+.v-theme--dark {
+  .share-uri-dialog {
+    &__dialog-title {
+      color: map-get($shades, 'white');
+    }
+
+    &__list-item-title {
+      color: map-get($shades, 'white');
+    }
+  }
+}
+</style>

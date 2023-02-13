@@ -13,25 +13,27 @@
           :readonly="true"
           class="a-input"
           type="text"
+          variant="underlined"
+          color="primary"
         >
           <template #label>
             <span class="font-weight-medium">
               {{ key.cryptoName }}
             </span>
           </template>
-          <template #append>
+          <template #append-inner>
             <v-btn
               icon
               ripple
+              size="28"
               :class="`${className}__btn-copy`"
               @click="copyKey(key.key)"
             >
               <v-icon
                 :class="`${className}__icon`"
+                icon="mdi-content-copy"
                 size="20"
-              >
-                mdi-content-copy
-              </v-icon>
+              />
             </v-btn>
           </template>
         </v-text-field>
@@ -41,8 +43,8 @@
         <v-btn
           :class="`${className}__copy_all_button`"
           class="a-btn-link"
-          text
-          small
+          variant="text"
+          size="small"
           @click="copyAll"
         >
           {{ $t('options.export_keys.copy_all') }}
@@ -57,6 +59,8 @@
     <v-text-field
       v-model.trim="passphrase"
       class="a-input"
+      variant="underlined"
+      color="primary"
       type="text"
     >
       <template #label>
@@ -64,19 +68,17 @@
           {{ $t('options.export_keys.passphrase') }}
         </span>
       </template>
-      <template #append>
+      <template #append-inner>
         <v-menu
           :offset-overflow="true"
           :offset-y="false"
           left
         >
-          <template #activator="{ on, attrs }">
+          <template #activator="{ props }">
             <v-icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              mdi-dots-vertical
-            </v-icon>
+              v-bind="props"
+              icon="mdi-dots-vertical"
+            />
           </template>
           <v-list>
             <v-list-item @click="showQrcodeScanner = true">
@@ -116,12 +118,12 @@
 </template>
 <script>
 import { validateMnemonic } from 'bip39'
+import copyToClipboard from 'copy-to-clipboard'
+
 import { getAccountFromPassphrase as getEthAccount } from '@/lib/eth-utils'
 import { getAccount as getBtcAccount } from '@/lib/bitcoin/btc-base-api'
 import { getAccount as getLskAccount } from '@/lib/lisk/lisk-api'
 import { Cryptos, CryptosNames } from '@/lib/constants'
-import { copyToClipboard } from '@/lib/textHelpers'
-
 import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 

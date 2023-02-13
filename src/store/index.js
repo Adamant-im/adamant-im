@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createStore } from 'vuex'
 import { Base64 } from 'js-base64'
 
 import {
@@ -37,12 +36,13 @@ import notification from './modules/notification'
 import cache from '@/store/cache'
 import rate from './modules/rate'
 
-Vue.use(Vuex)
-
 export let interval
 
 const UPDATE_BALANCE_INTERVAL = 10000
 
+/**
+ * @type { import("vuex").StoreOptions } store
+ */
 const store = {
   state: () => ({
     address: '',
@@ -225,4 +225,4 @@ const store = {
 
 export { store } // for tests
 
-export default new Vuex.Store(store)
+export default createStore(store)

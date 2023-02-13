@@ -5,14 +5,16 @@
       :title="$t('options.export_keys.title')"
       :show-back="true"
       flat
+      fixed
     />
     <v-container
       fluid
-      class="px-0"
+      class="px-0 container--with-app-toolbar"
     >
       <v-row
         justify="center"
         no-gutters
+        class="mt-6"
       >
         <container padding>
           <export-keys-form />

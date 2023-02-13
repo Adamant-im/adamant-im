@@ -1,7 +1,11 @@
 <template>
   <i
     class="icon"
-    :class="{ 'icon--link': isClickable }"
+    :class="{
+      'icon--link': isClickable,
+      'icon--box-centered': boxCentered,
+      [$attrs.class]: !!$attrs.class
+    }"
   >
     <svg
       class="svg-icon"
@@ -12,7 +16,7 @@
       :shape-rendering="shapeRendering"
       :aria-labelledby="title"
       role="presentation"
-      @click="$emit('click')"
+      @click="$attrs.onClick"
     >
       <title v-if="title">{{ title }}</title>
       <g :fill="color">
@@ -24,6 +28,7 @@
 
 <script>
 export default {
+  inheritAttrs: false,
   props: {
     width: {
       type: [Number, String],
@@ -47,27 +52,24 @@ export default {
     shapeRendering: {
       type: String,
       default: 'auto'
+    },
+    /** Center icon inside a box 40x40px **/
+    boxCentered: {
+      type: Boolean,
+      default: undefined
     }
   },
-  data: () => ({
-    isClickable: false
-  }),
-  created () {
-    // if component has @click attr, make cursor: pointer
-    const listeners = Object.keys(this.$listeners)
-    const hasClickAttr = listeners.some(
-      listener => /^click/.test(listener)
-    )
-
-    if (hasClickAttr) {
-      this.isClickable = true
+  data: () => ({}),
+  computed: {
+    isClickable () {
+      return !!this.$attrs.onClick
     }
   }
 }
 </script>
 
 <style lang="scss">
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import '~vuetify/settings';
 
 .icon {
   -webkit-box-align: center;
@@ -89,14 +91,22 @@ export default {
   cursor: pointer;
 }
 
+.icon--box-centered {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Themes */
-.theme--light {
+.v-theme--light {
   .svg-icon {
     fill: rgba(0, 0, 0, 0.54);
     stroke: rgba(0, 0, 0, 0.54);
   }
 }
-.theme--dark {
+.v-theme--dark {
   .svg-icon {
     fill: map-get($shades, 'white');
     stroke: map-get($shades, 'white');

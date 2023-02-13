@@ -1,27 +1,28 @@
 <template>
   <div>
     <v-menu>
-      <template #activator="{ on, attrs }">
+      <template #activator="{ props }">
         <v-icon
           class="chat-menu__icon"
-          v-bind="attrs"
+          v-bind="props"
+          icon="mdi-plus-circle-outline"
           size="28"
-          v-on="on"
-        >
-          mdi-plus-circle-outline
-        </v-icon>
+        />
       </template>
 
-      <v-list>
+      <v-list class="chat-menu__list">
         <!-- Cryptos -->
         <v-list-item
           v-for="c in cryptos"
           :key="c"
           @click="sendFunds(c)"
         >
-          <v-list-item-avatar>
-            <crypto-icon :crypto="c" />
-          </v-list-item-avatar>
+          <template #prepend>
+            <crypto-icon
+              :crypto="c"
+              box-centered
+            />
+          </template>
 
           <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
         </v-list-item>
@@ -32,9 +33,11 @@
           :key="item.title"
           :disabled="item.disabled"
         >
-          <v-list-item-avatar>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-avatar>
+          <template #prepend>
+            <icon-box>
+              <v-icon :icon="item.icon" />
+            </icon-box>
+          </template>
 
           <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
         </v-list-item>
@@ -54,9 +57,11 @@ import { Cryptos } from '@/lib/constants'
 import ChatDialog from '@/components/Chat/ChatDialog'
 import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
+import IconBox from '@/components/icons/IconBox'
 
 export default {
   components: {
+    IconBox,
     ChatDialog,
     Icon,
     CryptoIcon
@@ -142,25 +147,34 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import '~vuetify/settings';
+.chat-menu {
+  &__list {
+    min-width: 200px;
 
-.v-menu__content {
-  max-height: 70%;
-  min-width: 200px !important;
+    :deep(.v-list-item-title) {
+      font-weight: 400;
+    }
+  }
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .chat-menu {
     &__icon {
       color: map-get($grey, 'darken-1');
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .chat-menu {
     &__icon {
       color: map-get($shades, 'white');
+    }
+    &__list {
+      :deep(.v-list-item-title) {
+        color: map-get($shades, 'white');
+      }
     }
   }
 }

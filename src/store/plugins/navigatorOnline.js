@@ -1,4 +1,4 @@
-import i18n from '@/i18n'
+import { i18n } from '@/i18n'
 
 export default store => {
   window.addEventListener('online', handleEvent)
@@ -6,7 +6,7 @@ export default store => {
 
   function handleEvent (event) {
     store.dispatch('snackbar/show', {
-      message: i18n.t(`connection.${event.type}`),
+      message: i18n.global.t(`connection.${event.type}`),
       timeout: 3000
     })
   }

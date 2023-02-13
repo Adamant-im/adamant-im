@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import validateAddress from '@/lib/validateAddress'
 import * as admApi from '@/lib/adamant-api'
 import {
@@ -341,7 +340,7 @@ const mutations = {
       return
     }
 
-    Vue.set(state.chats, partnerId, createChat())
+    state.chats[partnerId] = createChat()
   },
 
   /**
@@ -355,7 +354,7 @@ const mutations = {
 
     // Create chat if not exists
     if (!state.chats[partnerId]) {
-      Vue.set(state.chats, partnerId, createChat())
+      state.chats[partnerId] = createChat()
     }
 
     const chat = state.chats[partnerId]
@@ -466,14 +465,14 @@ const mutations = {
       }
     ]
 
-    Vue.set(state.chats, 'chats.virtual.welcome_message_title', {
+    state.chats['chats.virtual.welcome_message_title'] = {
       messages: bountyMessages,
       numOfNewMessages: 0,
       isAdamantChat: true,
       readOnly: true,
       offset: 0,
       page: 0
-    })
+    }
 
     const exchangeMessages = [
       {
@@ -488,13 +487,13 @@ const mutations = {
       }
     ]
 
-    Vue.set(state.chats, 'U5149447931090026688', {
+    state.chats.U5149447931090026688 = {
       messages: exchangeMessages,
       isAdamantChat: true,
       numOfNewMessages: 0,
       offset: 0,
       page: 0
-    })
+    }
 
     const donateMessages = [
       {
@@ -509,13 +508,13 @@ const mutations = {
       }
     ]
 
-    Vue.set(state.chats, 'U380651761819723095', {
+    state.chats.U380651761819723095 = {
       messages: donateMessages,
       isAdamantChat: true,
       numOfNewMessages: 0,
       offset: 0,
       page: 0
-    })
+    }
 
     const bitcoinBetMessages = [
       {
@@ -530,13 +529,13 @@ const mutations = {
       }
     ]
 
-    Vue.set(state.chats, 'U17840858470710371662', {
+    state.chats.U17840858470710371662 = {
       messages: bitcoinBetMessages,
       isAdamantChat: true,
       numOfNewMessages: 0,
       offset: 0,
       page: 0
-    })
+    }
 
     const bountyBotMessages = [
       {
@@ -551,13 +550,13 @@ const mutations = {
       }
     ]
 
-    Vue.set(state.chats, 'U1644771796259136854', {
+    state.chats.U1644771796259136854 = {
       messages: bountyBotMessages,
       isAdamantChat: true,
       numOfNewMessages: 0,
       offset: 0,
       page: 0
-    })
+    }
   },
 
   updateScrollPosition (state, { contactId, scrollPosition }) {

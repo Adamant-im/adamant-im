@@ -72,8 +72,21 @@ module.exports = {
   },
   configureWebpack: {
     plugins: [
+      // Work around for Buffer is undefined:
+      // https://github.com/webpack/changelog-v5/issues/10
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer']
+      }),
+      // fix "process is not defined" error:
+      // (do "npm install process" before running the build)
+      new webpack.ProvidePlugin({
+        process: 'process/browser'
+      }),
       // remove non english bip39 wordlists
-      new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^\.\/wordlists\/(?!english)/,
+        contextRegExp: /bip39\/src$/
+      }),
       // replace `config.json` for different environments
       new webpack.NormalModuleReplacementPlugin(/(.*){ENV}(.*)/, (resource) => {
         const configName = process.env.ADM_CONFIG_FILE
@@ -82,6 +95,19 @@ module.exports = {
 
         resource.request = resource.request.replace('{ENV}', configName)
       })
-    ]
+    ],
+    resolve: {
+      fallback: {
+        fs: false,
+        stream: require.resolve('stream-browserify'),
+        path: require.resolve('path-browserify'),
+        crypto: require.resolve('crypto-browserify'),
+        http: require.resolve('stream-http'),
+        https: require.resolve('https-browserify'),
+        os: require.resolve('os-browserify/browser')
+        // url: require.resolve('url'),
+        // assert: require.resolve('assert')
+      }
+    }
   }
 }

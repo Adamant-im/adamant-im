@@ -1,5 +1,5 @@
 @use '_mixins.scss';
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import '~vuetify/settings';
 @import '../../settings/_colors.scss';
 
 .a-btn-link {
@@ -11,7 +11,7 @@
 .v-dialog--active .v-card__actions {
   padding-bottom: 15px;
 }
-.theme--light {
+.v-theme--light {
   .a-btn-primary {
     &:not(.v-btn--icon):not(.v-btn--flat) {
       background-color: map-get($shades, 'white');
@@ -38,10 +38,11 @@
     color: inherit;
   }
 }
-.theme--dark {
+.v-theme--dark {
   .a-btn-primary {
     &:not(.v-btn--icon):not(.v-btn--flat) {
       background-color: map-get($adm-colors, 'primary');
+      color: map-get($shades, 'white');
     }
   }
   .a-btn-link {

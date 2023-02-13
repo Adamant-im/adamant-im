@@ -14,6 +14,7 @@
           class="text-center"
           color="#BBDEFB"
           type="password"
+          variant="underlined"
         />
       </slot>
 
@@ -59,11 +60,12 @@ import { validateMnemonic } from 'bip39'
 
 export default {
   props: {
-    value: {
+    modelValue: {
       type: String,
       default: ''
     }
   },
+  emits: ['login', 'error', 'update:modelValue'],
   data: () => ({
     validForm: true,
     disabledButton: false,
@@ -72,10 +74,10 @@ export default {
   computed: {
     passphrase: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     }
   },

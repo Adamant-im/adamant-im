@@ -43,12 +43,12 @@ export default {
     this.notifications = new Notifications(this)
     this.notifications.start()
   },
-  beforeDestroy () {
+  beforeUnmount () {
     this.notifications.stop()
     this.$store.dispatch('stopInterval')
   },
   beforeMount () {
-    this.$vuetify.theme.dark = this.$store.state.options.darkTheme // sync Vuetify theme with the store
+    this.$vuetify.theme.global.name = this.$store.state.options.darkTheme ? 'dark' : 'light' // sync Vuetify theme with the store
   },
   methods: {
     setLocale () {
@@ -68,10 +68,10 @@ export default {
 <style lang="scss" scoped>
 @import './assets/styles/themes/adamant/_mixins.scss';
 
-.theme--light.application--linear-gradient {
+.v-theme--light.application--linear-gradient {
   @include linear-gradient-light();
 }
-.theme--dark.application--linear-gradient {
+.v-theme--dark.application--linear-gradient {
   @include linear-gradient-dark();
 }
 </style>

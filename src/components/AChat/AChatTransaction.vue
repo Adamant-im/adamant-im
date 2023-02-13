@@ -17,13 +17,12 @@
           <div class="a-chat__status">
             <v-icon
               size="13"
+              :icon="statusIcon"
               :title="statusTitle"
               :color="statusColor"
               :style="statusUpdatable ? 'cursor: pointer;': 'cursor: default;'"
               @click="updateStatus"
-            >
-              {{ statusIcon }}
-            </v-icon>
+            />
           </div>
         </div>
 
@@ -42,7 +41,7 @@
             >
               <slot name="crypto" />
               <div class="a-chat__rates-column d-flex ml-4">
-                <span class="mb-1">{{ amount | currency(crypto) }}</span>
+                <span class="mb-1">{{ currencyFormatter(amount, crypto) }}</span>
                 <span class="a-chat__rates">{{ historyRate }}</span>
               </div>
             </v-row>
@@ -64,6 +63,7 @@ import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
+import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 
 export default {
   props: {
@@ -123,6 +123,7 @@ export default {
       required: true
     }
   },
+  emits: ['mount', 'click:transaction', 'click:transactionStatus'],
   computed: {
     statusTitle () {
       return this.$t(`chats.transaction_statuses.${this.status.virtualStatus}`)
@@ -168,7 +169,8 @@ export default {
       this.$store.dispatch('rate/getHistoryRates', {
         timestamp: timestampInSec(this.crypto, this.txTimestamp)
       })
-    }
+    },
+    currencyFormatter
   }
 }
 </script>

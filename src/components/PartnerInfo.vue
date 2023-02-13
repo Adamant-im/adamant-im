@@ -4,34 +4,45 @@
     max-width="360"
   >
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title
+        :class="`${className}__dialog-title`"
+        class="a-text-header"
+      >
         {{ isMe ? $t('chats.my_qr_code') : $t('chats.partner_info') }}
         <v-spacer />
         <v-btn
-          text
+          variant="text"
           icon
           class="close-icon"
+          :size="36"
           @click="show = false"
         >
-          <v-icon>mdi-close</v-icon>
+          <v-icon
+            icon="mdi-close"
+            :size="24"
+          />
         </v-btn>
       </v-card-title>
       <v-divider class="a-divider" />
-      <v-list two-line>
-        <template>
-          <v-list-item>
-            <v-list-item-avatar>
+      <v-list lines="two">
+        <v-list-item>
+          <template #prepend>
+            <icon-box>
               <ChatAvatar
                 :user-id="address"
                 use-public-key
               />
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title v-text="address" />
-              <v-list-item-subtitle v-text="isMe ? $t('chats.me') : name" />
-            </v-list-item-content>
-          </v-list-item>
-        </template>
+            </icon-box>
+          </template>
+          <v-list-item-title
+            :class="`${className}__address`"
+            v-text="address"
+          />
+          <v-list-item-subtitle
+            :class="`${className}__username`"
+            v-text="isMe ? $t('chats.me') : name"
+          />
+        </v-list-item>
       </v-list>
       <v-row
         align="center"
@@ -56,10 +67,13 @@ import { Cryptos } from '@/lib/constants'
 import { generateURI } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import IconBox from '@/components/icons/IconBox'
 
 export default {
   components: {
-    ChatAvatar, QrcodeRenderer
+    IconBox,
+    ChatAvatar,
+    QrcodeRenderer
   },
   props: {
     address: {
@@ -71,7 +85,7 @@ export default {
       type: String,
       default: ''
     },
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     },
@@ -81,8 +95,10 @@ export default {
       validator: v => validateAddress('ADM', v)
     }
   },
+  emits: ['update:modelValue'],
   data () {
     return {
+      className: 'partner-info-dialog',
       logo: '/img/adm-qr-invert.png',
       opts: {
         scale: 8.8
@@ -92,10 +108,10 @@ export default {
   computed: {
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     },
     text () {
@@ -110,7 +126,33 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import '../assets/styles/settings/_colors.scss';
+@import '~vuetify/_settings.scss';
+
+.partner-info-dialog {
+  &__dialog-title {
+    display: flex;
+    align-items: center;
+  }
+}
+
 .close-icon {
   margin: 0;
+}
+
+.v-theme--dark {
+  .partner-info-dialog {
+    &__dialog-title {
+      color: map-get($shades, 'white');
+    }
+
+    &__address {
+      color: map-get($shades, 'white');
+    }
+
+    &__username {
+      color: map-get($adm-colors, 'grey-transparent');
+    }
+  }
 }
 </style>

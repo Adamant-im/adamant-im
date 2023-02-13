@@ -5,8 +5,8 @@ import VueI18n from 'vue-i18n'
 import Vuetify from 'vuetify'
 
 import LanguageSwitcher from '@/components/LanguageSwitcher'
-import en from '@/i18n/en'
-import ru from '@/i18n/ru'
+import en from '@/locales/en'
+import ru from '@/locales/ru'
 
 Vue.use(VueI18n)
 Vue.use(Vuex)

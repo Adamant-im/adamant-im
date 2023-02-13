@@ -1,18 +1,14 @@
 import 'core-js/features/array/flat-map'
-import Vue from 'vue'
-import Vuetify from 'vuetify/lib'
+import { createApp } from 'vue'
 
 import App from './App.vue'
-import router from './router'
+import { router } from './router'
 import store from './store'
-import i18n from './i18n'
-import currencyFilter from './filters/currencyAmountWithSymbol'
-import numberFormatFilter from './filters/numberFormat'
+import { i18n } from './i18n'
 import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
 import { vuetify } from '@/plugins/vuetify'
-import './plugins/layout'
-import './plugins/scrollTo'
+import { registerGlobalComponents } from './plugins/layout'
 import './registerServiceWorker'
 import '@/assets/styles/app.scss'
 
@@ -22,24 +18,20 @@ import 'dayjs/locale/fr'
 import 'dayjs/locale/it'
 import 'dayjs/locale/ru'
 
-export const vueBus = new Vue()
+const app = createApp(App)
 
-Vue.use(Vuetify)
-Vue.use(VueFormatters)
+app.config.globalProperties.appVersion = packageJSON.version
 
-document.title = i18n.t('app_title')
+app.use(router)
+app.use(store)
+app.use(i18n)
+app.use(vuetify)
+app.use(VueFormatters)
 
-Vue.config.productionTip = false
-Vue.filter('currency', currencyFilter)
-Vue.filter('numberFormat', numberFormatFilter)
+registerGlobalComponents(app)
 
-window.ep = new Vue({
-  version: packageJSON.version,
-  vuetify,
-  router,
-  store,
-  components: { App },
-  template: '<App/>',
-  i18n,
-  render: h => h(App)
-}).$mount('#app')
+app.mount('#app')
+
+window.ep = app
+
+document.title = i18n.global.t('app_title')
