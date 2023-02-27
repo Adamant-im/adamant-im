@@ -3,9 +3,20 @@ import vue from '@vitejs/plugin-vue'
 import path from "path";
 import autoprefixer from 'autoprefixer'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
+import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      srcDir: 'src',
+      filename: 'service-worker.js',
+      devOptions: {
+        enabled: true
+      }
+    })
+  ],
   css: {
     postcss: {
         plugins: [autoprefixer()]
