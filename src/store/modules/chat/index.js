@@ -475,6 +475,27 @@ const mutations = {
       page: 0
     })
 
+    const adelinaAI = [
+      {
+        id: 't1',
+        message: 'chats.virtual.adelina',
+        timestamp: EPOCH,
+        senderId: 'U11138426591213238985',
+        type: 'message',
+        i18n: true,
+        status: TS.CONFIRMED,
+        readonly: true
+      }
+    ]
+
+    Vue.set(state.chats, 'U11138426591213238985', {
+      messages: adelinaAI,
+      isAdamantChat: true,
+      numOfNewMessages: 0,
+      offset: 0,
+      page: 0
+    })
+
     const exchangeMessages = [
       {
         id: 'e1',
@@ -511,27 +532,6 @@ const mutations = {
 
     Vue.set(state.chats, 'U380651761819723095', {
       messages: donateMessages,
-      isAdamantChat: true,
-      numOfNewMessages: 0,
-      offset: 0,
-      page: 0
-    })
-
-    const bitcoinBetMessages = [
-      {
-        id: 't1',
-        message: 'chats.virtual.bitcoin_bet',
-        timestamp: EPOCH,
-        senderId: 'U17840858470710371662',
-        type: 'message',
-        i18n: true,
-        status: TS.CONFIRMED,
-        readonly: true
-      }
-    ]
-
-    Vue.set(state.chats, 'U17840858470710371662', {
-      messages: bitcoinBetMessages,
       isAdamantChat: true,
       numOfNewMessages: 0,
       offset: 0,
