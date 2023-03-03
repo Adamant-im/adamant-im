@@ -8,7 +8,8 @@ export default () => {
       U5149447931090026688: { displayName: 'chats.virtual.exchange_bot_title' },
       U1644771796259136854: { displayName: 'chats.virtual.bounty_bot_title' },
       U380651761819723095: { displayName: 'chats.virtual.donate_bot_title' },
-      U17840858470710371662: { displayName: 'chats.virtual.bitcoin_bet_title' }
+      U17840858470710371662: { displayName: 'chats.virtual.bitcoin_bet_title' },
+      U11138426591213238985: { displayName: 'chats.virtual.adelina_title' }
     }
   }
 }

@@ -53,6 +53,8 @@
     "virtual": {
       "bitcoin_bet": "Hi! I'm anonymous and Blockchain-proved bet bot 🤑. I accept bets on BTC rate and pay rewards to winners. Learn more on ADAMANT’s blog or type **/help** to start betting.",
       "bitcoin_bet_title": "Bet on Bitcoin price",
+      "adelina": "Hello, I’m Adelina. Let's have a pleasure talk! I can do many things like:\n- Draft an email or other piece of writing\n- Write Python code\n- Answer questions about a set of documents\n- Support conversations\n- Tutor in a range of subjects\n- Translate languages\n- Compose a poem\n- Simulate characters for video games and much more",
+      "adelina_title": "Adelina AI",
       "bounty_wallet_title": "ADAMANT Bounty Wallet",
       "bounty_foundation_wallet_title": "Adoption hot Wallet",
       "exchange_bot": "Hi! I'm your exchange bot ₿. I operate instantly and anonymously. Type **/help** to see what I can do. **ℹ**️ Learn more on ADAMANT blog.",
