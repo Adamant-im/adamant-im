@@ -40,6 +40,12 @@ npm run https
 npm run build
 ```
 
+### Preview production build locally
+
+```
+npm run serve
+```
+
 ### Lints and fixes files
 
 ```
