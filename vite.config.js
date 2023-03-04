@@ -2,18 +2,24 @@ import { defineConfig } from "vite";
 import vue from '@vitejs/plugin-vue'
 import path from "path";
 import autoprefixer from 'autoprefixer'
-import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { VitePWA } from 'vite-plugin-pwa'
+
+import inject from '@rollup/plugin-inject'
+import commonjs from '@rollup/plugin-commonjs';
 
 export default defineConfig({
   plugins: [
     vue(),
+    commonjs(),
+    inject({
+      Buffer: ['buffer', 'Buffer']
+    }),
     VitePWA({
       registerType: 'autoUpdate',
       srcDir: 'src',
       filename: 'service-worker.js',
       devOptions: {
-        enabled: true
+        enabled: false
       }
     })
   ],
@@ -27,7 +33,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       
       // Node.js polyfills
-      buffer: 'buffer',
+      buffer: 'buffer/',
       events: 'rollup-plugin-node-polyfills/polyfills/events',
       stream: 'stream-browserify',
       path: 'path-browserify',
@@ -50,13 +56,6 @@ export default defineConfig({
         define: {
             global: 'globalThis'
         },
-        // Enable esbuild polyfill plugins
-        plugins: [
-            NodeGlobalsPolyfillPlugin({
-                process: false,
-                buffer: true
-            }),
-        ]
     }
   }
 });
