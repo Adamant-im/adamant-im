@@ -56,6 +56,11 @@ export default defineConfig({
         define: {
             global: 'globalThis'
         },
+    },
+  },
+  build: {
+    commonjsOptions: {
+      include: []
     }
   }
 });
