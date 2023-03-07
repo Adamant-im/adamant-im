@@ -86,7 +86,7 @@
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/eslint-config-prettier": "^7.1.0",
     "@vue/test-utils": "^2.3.0",
-    "autoprefixer": "latest",
+    "autoprefixer": "^10.4.13",
     "cross-env": "^7.0.3",
     "cypress": "^9.7.0",
     "electron": "^18.2.4",
@@ -110,11 +110,6 @@
     "vue-cli-plugin-i18n": "^2.3.1",
     "vue-cli-plugin-vuetify": "~2.5.8",
     "vue-template-compiler": "^2.6.14"
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
   },
   "browserslist": [
     "> 1%",
