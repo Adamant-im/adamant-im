@@ -15,7 +15,7 @@
     "electron:build": "vue-cli-service electron:build --mode electron",
     "electron:serve": "vue-cli-service electron:serve",
     "electron:build:all": "vue-cli-service electron:build --mode electron -mwl --x64 --arm64",
-    "https": "vue-cli-service serve --https",
+    "https": "vite preview --https",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "postinstall": "electron-builder install-app-deps"
