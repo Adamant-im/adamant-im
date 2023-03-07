@@ -1,97 +1,58 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AppNavigation.vue renders the correct markup 1`] = `
-<v-bottom-navigation-stub
-  activeclass="v-btn--active"
-  app="true"
+exports[`AppNavigation.vue > renders the correct markup 1`] = `
+<v-bottom-navigation
+  app=""
   class="app-navigation"
+  data-v-5e3203dd=""
+  elevation="0"
   height="50"
-  inputvalue="true"
-  tag="div"
-  value="0"
+  modelvalue="0"
 >
-  <v-row-stub
-    justify="center"
-    nogutters="true"
-    tag="div"
+  <!-- Wallet -->
+  <v-btn
+    data-v-5e3203dd=""
+    to="/home"
   >
-    <container-stub
-      class="app-navigation__container"
+    <v-icon
+      data-v-5e3203dd=""
+      icon="mdi-wallet"
+    />
+    <span
+      data-v-5e3203dd=""
     >
-      <v-row-stub
-        justify="center"
-        nogutters="true"
-        tag="div"
-      >
-        <v-btn-stub
-          activeclass=""
-          tag="button"
-          text="true"
-          to="/home"
-          type="button"
-        >
-          <span>
-            Account
-          </span>
-           
-          <v-icon-stub
-            size="20"
-          >
-            
-            mdi-wallet
-          
-          </v-icon-stub>
-        </v-btn-stub>
-         
-        <v-btn-stub
-          activeclass=""
-          tag="button"
-          text="true"
-          to="/chats"
-          type="button"
-        >
-          <span>
-            Chats
-          </span>
-           
-          <v-badge-stub
-            color="primary"
-            content="0"
-            label="$vuetify.badge"
-            overlap="true"
-            transition="scale-rotate-transition"
-          >
-            <v-icon-stub
-              size="20"
-            >
-              
-              mdi-forum
-            
-            </v-icon-stub>
-          </v-badge-stub>
-        </v-btn-stub>
-         
-        <v-btn-stub
-          activeclass=""
-          tag="button"
-          text="true"
-          to="/options"
-          type="button"
-        >
-          <span>
-            Settings
-          </span>
-           
-          <v-icon-stub
-            size="20"
-          >
-            
-            mdi-cog
-          
-          </v-icon-stub>
-        </v-btn-stub>
-      </v-row-stub>
-    </container-stub>
-  </v-row-stub>
-</v-bottom-navigation-stub>
+      Account
+    </span>
+  </v-btn>
+  <!-- Chat -->
+  <v-btn
+    data-v-5e3203dd=""
+    to="/chats"
+  >
+    <v-icon
+      data-v-5e3203dd=""
+      icon="mdi-forum"
+    />
+    <span
+      data-v-5e3203dd=""
+    >
+      Chats
+    </span>
+  </v-btn>
+  <!-- Settings -->
+  <v-btn
+    data-v-5e3203dd=""
+    to="/options"
+  >
+    <v-icon
+      data-v-5e3203dd=""
+      icon="mdi-cog"
+    />
+    <span
+      data-v-5e3203dd=""
+    >
+      Settings
+    </span>
+  </v-btn>
+</v-bottom-navigation>
 `;

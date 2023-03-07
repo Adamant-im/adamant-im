@@ -16,8 +16,8 @@
     "electron:serve": "vue-cli-service electron:serve",
     "electron:build:all": "vue-cli-service electron:build --mode electron -mwl --x64 --arm64",
     "https": "vue-cli-service serve --https",
-    "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
@@ -94,7 +94,8 @@
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^8.35.0",
     "eslint-plugin-vue": "^9.9.0",
-    "jest": "^28.1.3",
+    "jest-serializer-vue": "^3.1.0",
+    "jsdom": "^21.1.0",
     "lorem-ipsum": "^2.0.4",
     "postcss": "latest",
     "prettier": "^2.8.4",
@@ -104,6 +105,7 @@
     "uuid": "^8.3.2",
     "vite": "^4.1.1",
     "vite-plugin-pwa": "^0.14.4",
+    "vitest": "^0.29.2",
     "vue-cli-plugin-electron-builder": "^2.1.1",
     "vue-cli-plugin-i18n": "^2.3.1",
     "vue-cli-plugin-vuetify": "~2.5.8",
@@ -119,36 +121,6 @@
     "last 2 versions",
     "not ie > 0"
   ],
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "jsx",
-      "json",
-      "vue"
-    ],
-    "transform": {
-      "^.+\\.vue$": "@vue/vue3-jest",
-      ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
-      "^.+\\.jsx?$": "babel-jest"
-    },
-    "transformIgnorePatterns": [
-      "node_modules/(?!vue-qrcode-component)"
-    ],
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1",
-      "(.*){ENV}(.*)": "$1development$2"
-    },
-    "snapshotSerializers": [
-      "jest-serializer-vue"
-    ],
-    "testMatch": [
-      "**/__tests__/**/*.(test|spec).(js|jsx|ts|tsx)"
-    ],
-    "testURL": "http://localhost/",
-    "setupFiles": [
-      "<rootDir>/tests/__mocks__/globals.js"
-    ]
-  },
   "main": "background.js",
   "keywords": [
     "adm",
