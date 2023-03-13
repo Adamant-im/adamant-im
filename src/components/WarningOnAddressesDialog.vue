@@ -29,9 +29,10 @@
           :class="[`${className}__btn-hide`, 'a-btn-primary']"
           @click="hide()"
         >
-          <v-icon :class="`${className}__btn-icon`">
-            mdi-alert
-          </v-icon>
+          <v-icon
+            :class="`${className}__btn-icon`"
+            icon="mdi-alert"
+          />
           <div :class="`${className}__btn-text`">
             {{ $t('warning_on_addresses.hide_button') }}
           </div>
@@ -54,16 +55,17 @@
 </template>
 
 <script>
-import { vueBus } from '@/main'
+import { vueBus } from '@/lib/vueBus'
 import DOMPurify from 'dompurify'
 
 export default {
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     }
   },
+  emits: ['update:modelValue'],
   data: () => ({
     header: '',
     content: ''
@@ -72,16 +74,16 @@ export default {
     className: () => 'warning-on-addresses-dialog',
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     }
   },
   created () {
     const dialog = this
-    vueBus.$on('warningOnAddressDialog', function (validateSummary) {
+    vueBus.on('warningOnAddressDialog', function (validateSummary) {
       if (!validateSummary.isAllRight) {
         dialog.header = dialog.$t('warning_on_addresses.warning') + ': ' + dialog.$t('warning_on_addresses.headline')
         let contents = '<p>' + dialog.$t('warning_on_addresses.about') + '</p>'

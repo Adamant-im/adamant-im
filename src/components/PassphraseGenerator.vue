@@ -6,8 +6,8 @@
       </h3>
       <v-btn
         class="a-btn-link mt-2"
-        text
-        small
+        variant="text"
+        size="small"
         @click="generatePassphrase"
       >
         {{ $t('login.new_button') }}
@@ -22,7 +22,10 @@
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <div
           ref="el"
-          class="caption grey--text mt-2"
+          :class="{
+            'mt-2': true,
+            [`${className}__passphrase-label`]: true
+          }"
           v-html="$t('login.new_passphrase_label')"
         />
         <!-- eslint-enable vue/no-v-html -->
@@ -31,6 +34,7 @@
           ref="textarea"
           :value="passphrase"
           type="text"
+          variant="plain"
           multi-line
           readonly
           rows="3"
@@ -39,7 +43,7 @@
           no-resize
           @click.prevent="selectText"
         >
-          <template slot="append">
+          <template #append>
             <div :class="`${className}__icons`">
               <icon
                 :width="24"
@@ -83,8 +87,9 @@
 
 <script>
 import * as bip39 from 'bip39'
+import copyToClipboard from 'copy-to-clipboard'
 
-import { copyToClipboard, downloadFile } from '@/lib/textHelpers'
+import { downloadFile } from '@/lib/textHelpers'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
 import Icon from '@/components/icons/BaseIcon'
 import CopyIcon from '@/components/icons/common/Copy'
@@ -99,6 +104,7 @@ export default {
     QrCodeIcon,
     QrcodeRendererDialog
   },
+  emits: ['copy', 'save'],
   data: () => ({
     passphrase: '',
     showPassphrase: false,
@@ -112,6 +118,8 @@ export default {
   methods: {
     copyToClipboard () {
       copyToClipboard(this.passphrase)
+
+      this.selectText()
 
       this.$emit('copy')
     },
@@ -139,7 +147,13 @@ export default {
 
       // callback after Vue rerender
       setTimeout(() => {
-        this.$scrollTo(this.$refs.textarea.$el, { easing: 'ease-in' })
+        const element = this.$refs.textarea.$el
+
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+        } else {
+          console.warn('[PassphraseGenerator] `element` is undefined')
+        }
       }, 0)
     }
   }
@@ -148,7 +162,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '../assets/styles/themes/adamant/_mixins.scss';
-@import '~vuetify/src/styles/settings/_variables.scss';
+@import 'vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
 
 /**
@@ -159,11 +173,13 @@ export default {
   &__box {
     margin-top: 36px;
     :deep(.v-input) {
-      margin-top: 12px;
+      margin-top: 0;
     }
     :deep(.v-textarea) textarea {
       @include a-text-regular();
       line-height: 18px;
+      padding-top: 12px;
+      mask-image: unset;
     }
     :deep(.v-textarea) {
       .v-input__slot:before, .v-input__slot:after {
@@ -172,11 +188,16 @@ export default {
     }
   }
   &__icons {
-    margin-top: 10px;
-
     > *:not(:first-child) {
       margin-left: 8px;
     }
+  }
+  &__passphrase-label {
+    color: map-get($adm-colors, 'grey');
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    letter-spacing: normal !important;
   }
 
   :deep(.v-input--is-focused) {
@@ -187,7 +208,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .passphrase-generator {
     :deep(.v-textarea) textarea {
       color: map-get($adm-colors, 'regular');

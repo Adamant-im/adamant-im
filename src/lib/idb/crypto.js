@@ -6,6 +6,7 @@ import { decode } from '@stablelib/utf8'
 import { bytesToHex } from '@/lib/hex'
 import { UserPasswordHashSettings } from '@/lib/constants'
 import store from '@/store'
+import { Buffer } from 'buffer'
 
 const NONCE = Buffer.allocUnsafe(24)
 

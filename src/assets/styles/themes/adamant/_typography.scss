@@ -1,4 +1,4 @@
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import 'vuetify/settings';
 
 @import '_mixins.scss';
 @import '../../settings/_colors.scss';
@@ -43,7 +43,7 @@
   @include a-text-active();
 }
 
-.theme--light {
+.v-theme--light {
   .a-text-regular,
   .a-text-regular-bold,
   .a-text-regular-enlarged,
@@ -68,7 +68,7 @@
   }
 }
 
-.theme--dark {
+.v-theme--dark {
   .a-text-regular {
     color: map-get($shades, 'white');
   }

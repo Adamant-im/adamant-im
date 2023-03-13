@@ -1,96 +1,96 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ChatStartDialog.vue renders the correct markup 1`] = `
-<v-dialog-stub
+exports[`ChatStartDialog.vue > renders the correct markup 1`] = `
+<v-dialog
   class="chat-start-dialog"
-  closedelay="0"
-  contentclass=""
-  opendelay="0"
-  openonclick="true"
-  origin="center center"
-  retainfocus="true"
-  transition="dialog-transition"
-  value="true"
+  data-v-50a3fb39=""
+  modelvalue="true"
   width="500"
 >
-  <v-card-stub
-    loaderheight="4"
-    tag="div"
+  <v-card
+    data-v-50a3fb39=""
   >
-    <v-card-title-stub
+    <v-card-title
       class="a-text-header"
-      tag="div"
+      data-v-50a3fb39=""
     >
-      
       Start a new chat
-    
-    </v-card-title-stub>
-     
-    <v-divider-stub
+    </v-card-title>
+    <v-divider
       class="a-divider"
+      data-v-50a3fb39=""
     />
-     
-    <v-row-stub
+    <v-row
       align="center"
       class="pa-4"
+      data-v-50a3fb39=""
       justify="center"
-      nogutters="true"
-      tag="div"
+      no-gutters=""
     >
-      <v-text-field-stub
-        backgroundcolor=""
+      <v-text-field
+        autofocus=""
         class="a-input"
-        clearicon="$clear"
-        errorcount="1"
-        errormessages=""
+        color="primary"
+        data-v-50a3fb39=""
         label="Partner's address"
-        loaderheight="2"
-        messages=""
-        rules=""
-        successmessages=""
+        modelvalue=""
         title="Partner's ADM address like U1234567890987654321 or Share link"
-        type="text"
-        value=""
+        variant="underlined"
       />
-       
-      <v-col-stub
+      <v-col
         class="text-center"
         cols="12"
-        tag="div"
+        data-v-50a3fb39=""
       >
-        <v-btn-stub
-          activeclass=""
+        <v-btn
           class="chat-start-dialog__btn-start-chat a-btn-primary"
-          tag="button"
-          type="button"
+          data-v-50a3fb39=""
         >
-          
           Start a chat
-        
-        </v-btn-stub>
-      </v-col-stub>
-       
-      <v-col-stub
+        </v-btn>
+      </v-col>
+      <v-col
         class="chat-start-dialog__btn-show-qrcode"
         cols="12"
-        tag="div"
+        data-v-50a3fb39=""
       >
         <a
           class="a-text-active"
+          data-v-50a3fb39=""
         >
-          
           Show my QR code
-        
         </a>
-      </v-col-stub>
-    </v-row-stub>
-  </v-card-stub>
-   
-  <!---->
-   
-  <qrcode-renderer-dialog-stub
-    logo="true"
-    text="http://localhost?address=U123456"
-  />
-</v-dialog-stub>
+      </v-col>
+    </v-row>
+  </v-card>
+  <!--v-if-->
+  <v-dialog
+    data-v-50a3fb39=""
+    modelvalue="false"
+    width="250"
+  >
+    <v-card>
+      <v-row
+        class="py-3"
+        justify="center"
+        no-gutters=""
+      >
+        <div
+          style="cursor: pointer;"
+        >
+          <img
+            alt=""
+            data-v-537400c4=""
+            src=""
+          />
+        </div>
+        <v-btn
+          class="a-btn-primary mt-4 mb-2"
+        >
+          Save to images
+        </v-btn>
+      </v-row>
+    </v-card>
+  </v-dialog>
+</v-dialog>
 `;

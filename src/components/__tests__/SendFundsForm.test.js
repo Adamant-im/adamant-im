@@ -180,7 +180,7 @@ describe('SendFundsForm', () => {
     rate = rateModule()
     options = optionsModule()
 
-    store = new Vuex.Store({
+    store = createStore({
       ...main,
       modules: {
         adm,
@@ -317,7 +317,7 @@ describe('SendFundsForm', () => {
   describe('computed.validationRules', () => {
     it('cryptoAddress: validateAddress', () => {
       const validateAddress = wrapper.vm.validationRules.cryptoAddress[0].bind(wrapper.vm)
-      const errorMessage = i18n.t('transfer.error_incorrect_address', { crypto: 'ADM' })
+      const errorMessage = i18n.global.t('transfer.error_incorrect_address', { crypto: 'ADM' })
 
       wrapper.setData({ currency: 'ADM' })
 
@@ -336,7 +336,7 @@ describe('SendFundsForm', () => {
 
     it('cryptoAddress: same recipient should be forbidden when is ETH address', async () => {
       const validateSameRecipient = wrapper.vm.validationRules.cryptoAddress[1].bind(wrapper.vm)
-      const errorMessage = i18n.t('transfer.error_same_recipient')
+      const errorMessage = i18n.global.t('transfer.error_same_recipient')
 
       wrapper.setData({ currency: 'ETH' })
 
@@ -345,7 +345,7 @@ describe('SendFundsForm', () => {
 
     it('amount: incorrectAmount', () => {
       const correctAmount = wrapper.vm.validationRules.amount[0].bind(wrapper.vm)
-      const errorMessage = i18n.t('transfer.error_incorrect_amount')
+      const errorMessage = i18n.global.t('transfer.error_incorrect_amount')
 
       expect(correctAmount('100')).toBe(true)
       expect(correctAmount('0')).toBe(errorMessage)
@@ -355,7 +355,7 @@ describe('SendFundsForm', () => {
 
     it('amount: notEnoughTokens', () => {
       const hasEnoughTokens = wrapper.vm.validationRules.amount[1].bind(wrapper.vm)
-      const errorMessage = i18n.t('transfer.error_not_enough')
+      const errorMessage = i18n.global.t('transfer.error_not_enough')
 
       main.state.balance = 100
 
@@ -381,7 +381,7 @@ describe('SendFundsForm', () => {
       })
 
       expect(wrapper.vm.confirmMessage).toBe(
-        i18n.t('transfer.confirm_message', { amount: 1, address: 'U333333', crypto: 'ADM' })
+        i18n.global.t('transfer.confirm_message', { amount: 1, address: 'U333333', crypto: 'ADM' })
       )
     })
 
@@ -398,7 +398,7 @@ describe('SendFundsForm', () => {
       await nextTick()
 
       expect(wrapper.vm.confirmMessage).toBe(
-        i18n.t('transfer.confirm_message_with_name', { amount: 1, name: 'Rick', address: 'U111111', crypto: 'ADM' })
+        i18n.global.t('transfer.confirm_message_with_name', { amount: 1, name: 'Rick', address: 'U111111', crypto: 'ADM' })
       )
     })
   })

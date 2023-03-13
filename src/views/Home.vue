@@ -5,37 +5,38 @@
     :class="className"
   >
     <container>
-      <v-card
-        flat
-        class="transparent white--text"
+      <v-sheet
+        class="white--text"
+        color="transparent"
         :class="`${className}__card`"
       >
         <!-- Wallets -->
-        <v-card
+        <v-sheet
+          color="transparent"
           :class="`${className}__wallets`"
-          flat
         >
           <v-tabs
             ref="vtabs"
             v-model="currentWallet"
+            :class="`${className}__tabs`"
             grow
+            stacked
             height="auto"
             show-arrows
           >
             <v-tab
               v-for="wallet in wallets"
               :key="wallet.cryptoCurrency"
-              :href="`#${wallet.cryptoCurrency}`"
+              :value="wallet.cryptoCurrency"
               @wheel="onWheel"
             >
+              <crypto-icon
+                :crypto="wallet.cryptoCurrency"
+                size="medium"
+                :class="`${className}__icon`"
+              />
               <div>
-                <crypto-icon
-                  slot="icon"
-                  :crypto="wallet.cryptoCurrency"
-                  size="medium"
-                  :class="`${className}__icon`"
-                />
-                <div>{{ wallet.balance | numberFormat(4) }}</div>
+                <div>{{ numberFormat(wallet.balance, 4) }}</div>
                 <div>
                   {{ wallet.cryptoCurrency }}
                   <span
@@ -53,8 +54,10 @@
                 </div>
               </div>
             </v-tab>
+          </v-tabs>
 
-            <v-tab-item
+          <v-window v-model="currentWallet">
+            <v-window-item
               v-for="wallet in wallets"
               :key="wallet.cryptoCurrency"
               :value="wallet.cryptoCurrency"
@@ -68,16 +71,17 @@
                 :current-currency="currentCurrency"
                 @click:balance="goToTransactions"
               >
-                <crypto-icon
-                  slot="icon"
-                  :crypto="wallet.cryptoCurrency"
-                  size="large"
-                />
+                <template #icon>
+                  <crypto-icon
+                    :crypto="wallet.cryptoCurrency"
+                    size="large"
+                  />
+                </template>
               </wallet-card>
-            </v-tab-item>
-          </v-tabs>
-        </v-card>
-      </v-card>
+            </v-window-item>
+          </v-window>
+        </v-sheet>
+      </v-sheet>
     </container>
   </v-row>
 </template>
@@ -85,6 +89,7 @@
 <script>
 import WalletCard from '@/components/WalletCard'
 import CryptoIcon from '@/components/icons/CryptoIcon'
+import numberFormat from '@/filters/numberFormat'
 
 import { Cryptos, CryptosNames, isErc20 } from '@/lib/constants'
 
@@ -180,14 +185,14 @@ export default {
       const nextWallet = this.wallets[nextWalletIndex]
 
       if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
-    }
+    },
+    numberFormat
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/settings/_variables.scss';
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import 'vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
 
 /**
@@ -206,7 +211,7 @@ export default {
     :deep(.v-tabs-slider) {
       height: 2px;
     }
-    :deep(.v-slide-group__wrapper) {
+    :deep(.v-tabs) {
       padding: 10px 0 1px 0;
       margin-bottom: 10px;
     }
@@ -216,18 +221,19 @@ export default {
       padding: 6px 4px;
       letter-spacing: normal;
       min-width: 74px;
+      display: flex;
       align-items: flex-start;
     }
-    :deep(.v-tab--active) {
+    :deep(.v-tab--selected) {
       font-weight: 500;
     }
-    :deep(.v-tab):not(.v-tab--active)  {
+    :deep(.v-tab):not(.v-tab--selected)  {
       opacity: 1;
     }
     :deep(.v-tabs.v-tabs.v-tabs .v-slide-group__prev.v-slide-group__prev--disabled) {
       display: none; // workaround: hide left/right arrows
     }
-    :deep(.v-tab.v-tab--active::before) {
+    :deep(.v-tab.v-tab--selected::before) {
       background-color: unset;
     }
     :deep(.v-slide-group__prev) {
@@ -249,6 +255,12 @@ export default {
     :deep(.v-slide-group__next.v-slide-group__next--disabled) {
       display: none;
     }
+    :deep(.v-tabs .v-btn--stacked .v-btn__content) {
+      line-height: normal;
+    }
+  }
+  &__tabs {
+    position: relative;
   }
   &__icon {
     margin-bottom: 3px;
@@ -256,7 +268,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .account-view {
     &__rates  {
       color: map-get($adm-colors, 'muted');
@@ -269,7 +281,7 @@ export default {
         background-color: map-get($adm-colors, 'primary') !important;
       }
       :deep(.v-tab) {
-        &:not(.v-tab--active) {
+        &:not(.v-tab--selected) {
           color: map-get($adm-colors, 'regular');
         }
       }
@@ -277,7 +289,12 @@ export default {
         color: map-get($adm-colors, 'primary2');
         pointer-events: none;
       }
-      :deep(.v-tab--active) {
+      :deep(:not(.v-tab--selected)) {
+        .svg-icon {
+          fill: map-get($adm-colors, 'muted');
+        }
+      }
+      :deep(.v-tab--selected) {
         color: map-get($adm-colors, 'primary');
         .svg-icon {
           fill: map-get($adm-colors, 'primary');
@@ -287,7 +304,7 @@ export default {
   }
 }
 
-.theme--dark {
+.v-theme--dark {
   .account-view {
     &__wallets {
       :deep(.v-tabs-bar) {
@@ -304,11 +321,11 @@ export default {
         background-color: unset;
       }
       :deep(.v-tab) {
-        &:not(.v-tab--active) {
+        &:not(.v-tab--selected) {
           color: map-get($shades, 'white')
         }
       }
-      :deep(.v-tab--active) {
+      :deep(.v-tab--selected) {
         color: map-get($adm-colors, 'primary');
         .svg-icon {
           fill: map-get($adm-colors, 'primary');
@@ -318,7 +335,7 @@ export default {
   }
 }
 
-.v-tab--active {
+.v-tab--selected {
   .account-view__rates {
     color: inherit;
   }

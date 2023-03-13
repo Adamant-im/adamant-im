@@ -3,12 +3,13 @@
     flat
     height="56"
     :class="`${className}`"
+    color="transparent"
   >
     <v-btn
       icon
       @click="goBack"
     >
-      <v-icon>mdi-arrow-left</v-icon>
+      <v-icon icon="mdi-arrow-left" />
     </v-btn>
     <div v-if="!isChatReadOnly">
       <slot name="avatar-toolbar" />
@@ -16,7 +17,7 @@
     <div :class="`${className}__textfield-container`">
       <div
         v-if="isChatReadOnly"
-        class="title"
+        :class="`${className}__adm-chat-name`"
         :style="{ paddingLeft: '12px' }"
       >
         {{ $t(partnerId) }}
@@ -25,10 +26,11 @@
         <v-text-field
           v-model="partnerName"
           :class="`${className}__textfield`"
-          filled
+          variant="plain"
           background-color="transparent"
           :label="partnerId"
           hide-details
+          density="compact"
         />
       </div>
     </div>
@@ -52,6 +54,7 @@ export default {
       required: true
     }
   },
+  emits: ['partner-info'],
   computed: {
     className: () => 'chat-toolbar',
     partnerName: {
@@ -82,7 +85,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '../../assets/styles/themes/adamant/_mixins.scss';
-@import '~vuetify/src/styles/settings/_variables.scss';
+@import 'vuetify/settings';
 @import '../../assets/styles/settings/_colors.scss';
 
 .chat-toolbar {
@@ -91,6 +94,12 @@ export default {
 
   &__textfield-container {
     width: 100%;
+  }
+
+  &__adm-chat-name {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: .02em;
   }
 
   &__textfield {
@@ -109,13 +118,34 @@ export default {
     }
   }
 
+  :deep(.v-toolbar__content > .v-btn:first-child) {
+    margin-inline-start: 4px;
+  }
+
   :deep(.v-text-field) {
     @include a-text-regular-enlarged-bold();
 
-    .v-label {
-      max-width: unset;
+    .v-field__field {
+      .v-label.v-field-label {
+        max-width: unset;
+        @include a-text-regular-enlarged-bold();
+        font-size: 16px;
+      }
+    }
 
-      @include a-text-regular-enlarged-bold();
+    .v-field__input {
+      line-height: 20px;
+      padding-top: 20px;
+      font-weight: 500;
+    }
+
+    .v-field__outline {
+      .v-label.v-field-label.v-field-label--floating {
+        line-height: 20px;
+        font-size: 20px;
+        transform: translateY(-6px) scale(.6875);
+        font-weight: 500;
+      }
     }
 
     .v-input__control {
@@ -125,16 +155,17 @@ export default {
     .v-input__control > .v-input__slot {
       margin-bottom: 0;
     }
+  }
 
-    .v-label--active {
-      transform: translateY(-6px) scale(0.6875);
-      font-size: 20px;
+  :deep(.v-btn) {
+    &:hover > .v-btn__overlay {
+      opacity: 0;
     }
   }
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .chat-toolbar {
     background-color: map-get($adm-colors, 'secondary2-transparent');
 
@@ -154,7 +185,7 @@ export default {
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .chat-toolbar {
     :deep(.v-text-field) {
       .primary--text {
@@ -165,6 +196,9 @@ export default {
       }
       .v-label--active {
         color: map-get($shades, 'white');
+      }
+      input {
+        caret-color: map-get($adm-colors, 'primary');
       }
     }
   }

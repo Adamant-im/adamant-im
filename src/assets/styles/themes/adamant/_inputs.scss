@@ -19,6 +19,12 @@
       transition: unset;
     }
   }
+
+  .v-label.v-field-label--floating {
+    .a-label-secondary {
+      font-size: 10.5px !important;
+    }
+  }
 }
 .fake-input {
   color: rgba(255, 255, 255, 0.5);
@@ -85,7 +91,7 @@
     }
   }
 }
-.theme--light {
+.v-theme--light {
   .a-input {
     .v-label {
       color: map-get($adm-colors, 'muted');
@@ -137,5 +143,15 @@
         transparent 4px
       )
       1 repeat;
+  }
+}
+.v-theme--dark {
+  .a-input {
+    &:not(.v-input--is-disabled) {
+      input,
+      textarea {
+        caret-color: map-get($adm-colors, 'primary');
+      }
+    }
   }
 }

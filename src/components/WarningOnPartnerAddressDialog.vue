@@ -29,9 +29,10 @@
           :class="[`${className}__btn-hide`, 'a-btn-primary']"
           @click="hide()"
         >
-          <v-icon :class="`${className}__btn-icon`">
-            mdi-alert
-          </v-icon>
+          <v-icon
+            :class="`${className}__btn-icon`"
+            icon="mdi-alert"
+          />
           <div :class="`${className}__btn-text`">
             {{ $t('transfer.warning_on_partner_address.hide_button') }}
           </div>
@@ -46,7 +47,7 @@ import DOMPurify from 'dompurify'
 
 export default {
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     },
@@ -55,14 +56,15 @@ export default {
       required: true
     }
   },
+  emits: ['update:modelValue'],
   computed: {
     className: () => 'warning-on-partner-address-dialog',
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     }
   },

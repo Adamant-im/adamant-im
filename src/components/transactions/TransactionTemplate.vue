@@ -8,86 +8,79 @@
       app
       :title="`${id}`"
       flat
+      fixed
       :class="`${className}__toolbar`"
     />
-    <container>
-      <v-list class="transparent">
+    <container class="container--with-app-toolbar">
+      <v-list bg-color="transparent">
         <v-list-item>
-          <v-list-item-content :class="`${className}__titlecontent`">
+          <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.amount') }}
             </v-list-item-title>
-          </v-list-item-content>
+          </template>
 
-          <div>
-            <v-list-item-title :class="`${className}__value`">
-              {{ amount || placeholder }}
-            </v-list-item-title>
-          </div>
+          <v-list-item-title :class="`${className}__value`">
+            {{ amount || placeholder }}
+          </v-list-item-title>
         </v-list-item>
 
         <v-divider />
 
         <v-list-item>
-          <v-list-item-content :class="`${className}__titlecontent`">
+          <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.currentVal') }}
             </v-list-item-title>
-          </v-list-item-content>
+          </template>
 
-          <div>
-            <v-list-item-title
-              v-if="rate !== false"
-              :class="`${className}__value`"
-            >
-              {{ rate }}
-            </v-list-item-title>
-          </div>
+          <v-list-item-title
+            v-if="rate !== false"
+            :class="`${className}__value`"
+          >
+            {{ rate }}
+          </v-list-item-title>
         </v-list-item>
 
         <v-divider />
 
         <v-list-item>
-          <v-list-item-content :class="`${className}__titlecontent`">
+          <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.valueTimeTxn') }}
             </v-list-item-title>
-          </v-list-item-content>
+          </template>
 
-          <div>
-            <v-list-item-title
-              v-if="historyRate !== false"
-              :class="`${className}__value`"
-            >
-              {{ historyRate }}
-            </v-list-item-title>
-          </div>
+          <v-list-item-title
+            v-if="historyRate !== false"
+            :class="`${className}__value`"
+          >
+            {{ historyRate }}
+          </v-list-item-title>
         </v-list-item>
 
         <v-divider />
         <v-list-item>
-          <v-list-item-content :class="`${className}__titlecontent`">
+          <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.status') }}
               <v-icon
                 v-if="statusUpdatable"
                 ref="updateButton"
+                icon="mdi-refresh"
                 size="20"
                 @click="updateStatus()"
-              >
-                mdi-refresh
-              </v-icon>
+              />
             </v-list-item-title>
-          </v-list-item-content>
+          </template>
 
           <div :class="`${className}__value ${className}__value-${status.virtualStatus}`">
             <v-icon
               v-if="status.status === 'INVALID'"
+              icon="mdi-alert-outline"
               size="20"
               style="color: #f8a061 !important;"
-            >
-              {{ 'mdi-alert-outline' }}
-            </v-icon>
+            />
             {{ $t(`transaction.statuses.${status.virtualStatus}`) }}<span v-if="status.status === 'INVALID'">{{ ': ' + $t(`transaction.inconsistent_reasons.${status.inconsistentReason}`, { crypto } ) }}</span><span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>
           </div>
         </v-list-item>
@@ -95,60 +88,55 @@
         <v-divider />
 
         <v-list-item>
-          <v-list-item-content :class="`${className}__titlecontent`">
+          <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.date') }}
             </v-list-item-title>
-          </v-list-item-content>
+          </template>
 
-          <div>
-            <v-list-item-title :class="`${className}__value`">
-              {{ timestamp ? $formatDate(timestamp) : placeholder }}
-            </v-list-item-title>
-          </div>
+          <v-list-item-title :class="`${className}__value`">
+            {{ timestamp ? $formatDate(timestamp) : placeholder }}
+          </v-list-item-title>
         </v-list-item>
 
         <v-divider />
 
         <v-list-item>
-          <v-list-item-content :class="`${className}__titlecontent`">
+          <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.confirmations') }}
             </v-list-item-title>
-          </v-list-item-content>
+          </template>
 
-          <div>
-            <v-list-item-title :class="`${className}__value`">
-              {{ confirmations || placeholder }}
-            </v-list-item-title>
-          </div>
+          <v-list-item-title :class="`${className}__value`">
+            {{ confirmations || placeholder }}
+          </v-list-item-title>
         </v-list-item>
 
         <v-divider />
 
         <v-list-item>
-          <v-list-item-content :class="`${className}__titlecontent`">
+          <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.commission') }}
             </v-list-item-title>
-          </v-list-item-content>
+          </template>
 
-          <div>
-            <v-list-item-title :class="`${className}__value`">
-              {{ fee || placeholder }}
-            </v-list-item-title>
-          </div>
+          <v-list-item-title :class="`${className}__value`">
+            {{ fee || placeholder }}
+          </v-list-item-title>
         </v-list-item>
 
         <v-divider />
 
         <v-list-item
-          :title="id || placeholder"
           @click="copyToClipboard(id)"
         >
-          <v-list-item-title :class="`${className}__title`">
-            {{ $t('transaction.txid') }}
-          </v-list-item-title>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('transaction.txid') }}
+            </v-list-item-title>
+          </template>
 
           <v-list-item-title :class="`${className}__value`">
             {{ id || placeholder }}
@@ -158,12 +146,13 @@
         <v-divider />
 
         <v-list-item
-          :title="sender || placeholder"
           @click="copyToClipboard(sender)"
         >
-          <v-list-item-title :class="`${className}__title`">
-            {{ $t('transaction.sender') }}
-          </v-list-item-title>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('transaction.sender') }}
+            </v-list-item-title>
+          </template>
 
           <div :class="`${className}__value`">
             {{ senderFormatted || placeholder }}
@@ -173,88 +162,88 @@
         <v-divider />
 
         <v-list-item
-          :title="recipient || placeholder"
           @click="copyToClipboard(recipient)"
         >
-          <v-list-item-title :class="`${className}__title`">
-            {{ $t('transaction.recipient') }}
-          </v-list-item-title>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('transaction.recipient') }}
+            </v-list-item-title>
+          </template>
 
           <div :class="`${className}__value`">
             {{ recipientFormatted || placeholder }}
           </div>
         </v-list-item>
 
-        <v-divider />
+        <v-divider v-if="comment" />
 
-        <v-list-item
-          v-if="comment"
-          :title="comment"
-        >
-          <v-list-item-title :class="`${className}__title`">
-            {{ $t('transaction.comment') }}
-          </v-list-item-title>
+        <v-list-item v-if="comment">
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('transaction.comment') }}
+            </v-list-item-title>
+          </template>
 
           <div :class="`${className}__value`">
             {{ comment || placeholder }}
           </div>
         </v-list-item>
 
-        <v-divider />
+        <v-divider v-if="textData" />
 
         <v-list-item
           v-if="textData"
           :title="textData"
         >
-          <v-list-item-title :class="`${className}__title`">
-            {{ $t('transaction.textData') }}
-          </v-list-item-title>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('transaction.textData') }}
+            </v-list-item-title>
+          </template>
 
           <div :class="`${className}__value`">
             {{ textData || placeholder }}
           </div>
         </v-list-item>
 
-        <v-divider />
+        <v-divider v-if="explorerLink" />
 
         <v-list-item
           v-if="explorerLink"
           @click="openInExplorer"
         >
-          <v-list-item-content :class="`${className}__titlecontent`">
+          <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.explorer') }}
             </v-list-item-title>
-          </v-list-item-content>
+          </template>
 
-          <div>
-            <v-list-item-title :class="`${className}__value`">
-              <v-icon size="20">
-                mdi-chevron-right
-              </v-icon>
-            </v-list-item-title>
-          </div>
+          <v-list-item-title :class="`${className}__value`">
+            <v-icon
+              icon="mdi-chevron-right"
+              size="20"
+            />
+          </v-list-item-title>
         </v-list-item>
 
-        <v-divider />
+        <v-divider v-if="partner && !ifComeFromChat" />
 
         <v-list-item
           v-if="partner && !ifComeFromChat"
           @click="openChat"
         >
-          <v-list-item-content :class="`${className}__titlecontent`">
+          <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}
             </v-list-item-title>
-          </v-list-item-content>
+          </template>
 
-          <div>
-            <v-list-item-title :class="`${className}__value`">
-              <v-icon size="20">
-                {{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}
-              </v-icon>
-            </v-list-item-title>
-          </div>
+          <v-list-item-title :class="`${className}__value`">
+            <v-icon
+              :icon="hasMessages ? 'mdi-comment' : 'mdi-comment-outline'"
+              size="20"
+            />
+          </v-list-item-title>
         </v-list-item>
       </v-list>
     </container>
@@ -262,10 +251,12 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+import copyToClipboard from 'copy-to-clipboard'
+
 import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import transaction from '@/mixins/transaction'
-import { copyToClipboard } from '@/lib/textHelpers'
 import { timestampInSec } from '@/filters/helpers'
 
 export default {
@@ -371,7 +362,7 @@ export default {
       this.fetchTransactionStatus(this.admTx, this.partner)
     },
     timestamp () {
-      this.$nextTick(() => {
+      nextTick(() => {
         this.getHistoryRates()
       })
     }
@@ -450,7 +441,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .transaction-view {
     &__title {
       color: map-get($adm-colors, 'regular');
@@ -463,7 +454,7 @@ export default {
     }
   }
 }
-.theme--light, .theme--dark {
+.v-theme--light, .v-theme--dark {
   .transaction-view {
     &__value-REJECTED {
       color: map-get($adm-colors, 'danger') !important;

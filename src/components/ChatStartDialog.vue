@@ -24,24 +24,24 @@
           ref="partnerField"
           v-model="recipientAddress"
           class="a-input"
+          variant="underlined"
+          color="primary"
           :label="$t('chats.recipient')"
           :title="$t('chats.recipient_tooltip')"
           autofocus
           @paste="onPasteURI"
         >
-          <template #append>
+          <template #append-inner>
             <v-menu
               :offset-overflow="true"
               :offset-y="false"
               left
             >
-              <template #activator="{ on, attrs }">
+              <template #activator="{ props }">
                 <v-icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  mdi-dots-vertical
-                </v-icon>
+                  v-bind="props"
+                  icon="mdi-dots-vertical"
+                />
               </template>
               <v-list>
                 <v-list-item @click="showQrcodeScanner = true">
@@ -103,6 +103,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 import { Cryptos } from '@/lib/constants'
 import { generateURI, parseURIasAIP } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
@@ -126,11 +128,12 @@ export default {
     partnerId: {
       type: String
     },
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     }
   },
+  emits: ['start-chat', 'error', 'update:modelValue'],
   data: () => ({
     recipientAddress: '',
     recipientName: '',
@@ -142,10 +145,10 @@ export default {
     className: () => 'chat-start-dialog',
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     },
     uri () {
@@ -212,7 +215,7 @@ export default {
      */
     onPasteURI (e) {
       const data = e.clipboardData.getData('text')
-      this.$nextTick(() => {
+      nextTick(() => {
         const address = parseURIasAIP(data).address
         if (validateAddress('ADM', address)) {
           e.preventDefault()
@@ -282,7 +285,7 @@ export default {
   }
 }
 
-.theme--light {
+.v-theme--light {
   .chat-start-dialog {
     :deep(&__btn-scan) {
       color: map-get($adm-colors, 'regular');

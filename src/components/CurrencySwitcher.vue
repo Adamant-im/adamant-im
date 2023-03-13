@@ -1,29 +1,14 @@
 <template>
   <v-menu offset-y>
-    <template #activator="{ on, attrs }">
+    <template #activator="{ props }">
       <v-btn
         class="ma-0 btn"
-        text
-        v-bind="attrs"
-        v-on="on"
+        variant="text"
+        v-bind="props"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
       >
-        <slot name="prepend">
-          <v-icon
-            v-if="prependIcon"
-            left
-          >
-            {{ prependIcon }}
-          </v-icon>
-        </slot>
         {{ currentCurrency }}
-        <slot name="append">
-          <v-icon
-            v-if="appendIcon"
-            right
-          >
-            {{ appendIcon }}
-          </v-icon>
-        </slot>
       </v-btn>
     </template>
 
@@ -78,7 +63,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import 'vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
 
 .btn {
@@ -101,7 +86,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .btn {
     color: map-get($adm-colors, 'regular');
   }

@@ -13,6 +13,7 @@
       <v-select
         v-model="currency"
         class="a-input"
+        variant="underlined"
         :items="cryptoList"
         :disabled="addressReadonly"
       />
@@ -22,6 +23,8 @@
         :disabled="addressReadonly"
         class="a-input"
         type="text"
+        variant="underlined"
+        color="primary"
         @paste="onPasteURIAddress"
       >
         <template #label>
@@ -40,20 +43,18 @@
         </template>
         <template
           v-if="!addressReadonly"
-          #append
+          #append-inner
         >
           <v-menu
             :offset-overflow="true"
             :offset-y="false"
             left
           >
-            <template #activator="{ on, attrs }">
+            <template #activator="{ props }">
               <v-icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                mdi-dots-vertical
-              </v-icon>
+                v-bind="props"
+                icon="mdi-dots-vertical"
+              />
             </template>
             <v-list>
               <v-list-item @click="showQrcodeScanner = true">
@@ -77,30 +78,31 @@
       <v-text-field
         v-model="amountString"
         class="a-input"
+        :class="`${className}__amount-input`"
+        variant="underlined"
         :max="maxToTransfer"
         :min="minToTransfer"
         :step="minToTransfer"
         type="number"
+        color="primary"
       >
         <template #label>
           <span class="font-weight-medium">{{ $t('transfer.amount_label') }}</span>
-          <span class="body-2">
-            {{ `(max: ${maxToTransferFixed} ${currency})` }}
+          <span class="text-body-2 a-label-secondary">
+            &nbsp;{{ `(max: ${maxToTransferFixed} ${currency})` }}
           </span>
         </template>
-        <template #append>
+        <template #append-inner>
           <v-menu
             :offset-overflow="true"
             :offset-y="false"
             left
           >
-            <template #activator="{ on, attrs }">
+            <template #activator="{ props }">
               <v-icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                mdi-dots-vertical
-              </v-icon>
+                v-bind="props"
+                icon="mdi-dots-vertical"
+              />
             </template>
             <v-list>
               <v-list-item
@@ -143,8 +145,10 @@
         :label="$t('transfer.comments_label')"
         class="a-input"
         counter
+        variant="underlined"
         maxlength="100"
         @paste="onPasteURIComment"
+        color="primary"
       />
 
       <v-text-field
@@ -152,8 +156,10 @@
         v-model="textData"
         class="a-input"
         :label="textDataLabel"
+        variant="underlined"
         counter
         maxlength="64"
+        color="primary"
       />
       <v-checkbox
         v-if="allowIncreaseFee"
@@ -196,7 +202,7 @@
 
           <v-btn
             class="a-btn-regular"
-            text
+            variant="text"
             @click="dialog = false"
           >
             {{ $t('transfer.confirm_cancel') }}
@@ -204,7 +210,7 @@
 
           <v-btn
             class="a-btn-regular"
-            text
+            variant="text"
             :disabled="disabledButton"
             @click="submit"
           >
@@ -230,6 +236,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
@@ -276,12 +284,6 @@ export default {
     QrcodeScannerDialog,
     WarningOnPartnerAddressDialog
   },
-  filters: {
-    /**
-     * @param {BigNumber} bigNumber
-     */
-    toFixed: bigNumber => bigNumber.toFixed()
-  },
   mixins: [partnerName],
   props: {
     cryptoCurrency: {
@@ -302,6 +304,7 @@ export default {
       default: false
     }
   },
+  emits: ['send', 'error'],
   data: () => ({
     currency: '',
     address: '',
@@ -624,7 +627,7 @@ export default {
      * @param {string} e Event
      */
     onPasteURIComment (e) {
-      this.$nextTick(() => {
+      nextTick(() => {
         const params = parseURIasAIP(e.target.value).params
 
         if (params.message) {
@@ -811,6 +814,13 @@ export default {
 .send-funds-form {
   &__button {
     margin-top: 15px;
+  }
+  &__amount-input {
+    :deep(.v-field__field) {
+      .v-label.v-field-label {
+        align-items: baseline;
+      }
+    }
   }
 }
 </style>

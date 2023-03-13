@@ -8,23 +8,22 @@
       <v-row no-gutters>
         <v-col cols="12">
           <v-list
-            two-line
             subheader
-            class="transparent"
+            class="pa-0"
+            bg-color="transparent"
           >
             <v-list-item
               v-if="isFulfilled"
               :class="`${className}__item`"
               @click="showChatStartDialog = true"
             >
-              <v-list-item-avatar size="24">
+              <template #prepend>
                 <v-icon
                   :class="`${className}__icon`"
+                  icon="mdi-message-outline"
                   size="16"
-                >
-                  mdi-message-outline
-                </v-icon>
-              </v-list-item-avatar>
+                />
+              </template>
 
               <div>
                 <v-list-item-title :class="`${className}__title`">
@@ -124,13 +123,15 @@ export default {
     this.showChatStartDialog = this.showNewContact
     this.attachScrollListener()
   },
-  beforeDestroy () {
+  beforeUnmount () {
     this.destroyScrollListener()
   },
   methods: {
     openChat (partnerId, messageText) {
       this.$router.push({
-        name: 'Chat', params: { messageText, partnerId }
+        name: 'Chat',
+        params: { partnerId },
+        query: { messageText }
       })
     },
     isChatReadOnly (partnerId) {
@@ -188,7 +189,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import 'vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
 .chats-view {
   &__item {
@@ -199,6 +200,12 @@ export default {
     & :deep(.v-list-item__avatar) {
       margin-right: 4px;
     }
+
+    :deep(.v-list-item__prepend) {
+      > .v-icon {
+        margin-inline-end: 8px;
+      }
+    }
   }
   &__title {
     font-weight: 300;
@@ -207,7 +214,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .chats-view {
     &__item {
       background-color: map-get($adm-colors, 'secondary2-transparent');
@@ -221,7 +228,7 @@ export default {
   }
 }
 
-.theme--dark {
+.v-theme--dark {
   .chats-view {
     &__icon {
       color: map-get($shades, 'white');

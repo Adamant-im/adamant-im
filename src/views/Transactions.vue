@@ -4,11 +4,12 @@
       app
       :title="$t('transaction.transactions')"
       flat
+      fixed
     />
 
     <v-container
       fluid
-      class="pa-0"
+      class="px-0 container--with-app-toolbar"
     >
       <v-row
         justify="center"
@@ -24,8 +25,8 @@
         <container v-if="isFulfilled">
           <v-list
             v-if="hasTransactions"
-            three-line
-            class="transparent"
+            lines="three"
+            bg-color="transparent"
           >
             <transaction-list-item
               v-for="(transaction, i) in transactions"
@@ -109,7 +110,7 @@ export default {
       if (this.$store.state.IDBReady) this.getNewTransactions()
     }
   },
-  beforeDestroy () {
+  beforeUnmount () {
     window.removeEventListener('scroll', this.onScroll)
   },
   mounted () {

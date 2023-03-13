@@ -4,65 +4,61 @@
     :class="className"
   >
     <v-list
-      two-line
+      lines="two"
       :class="`${className}__list`"
     >
       <v-list-item
         :class="`${className}__tile`"
         @click="showShareURIDialog = true"
       >
-        <v-list-item-content>
-          <v-list-item-title :class="`${className}__title`">
-            {{ $t('home.wallet_crypto', { crypto: cryptoName }) }}
-          </v-list-item-title>
-          <v-list-item-subtitle :class="`${className}__subtitle`">
-            {{ address }}
-          </v-list-item-subtitle>
-        </v-list-item-content>
+        <v-list-item-title :class="`${className}__title`">
+          {{ $t('home.wallet_crypto', { crypto: cryptoName }) }}
+        </v-list-item-title>
+        <v-list-item-subtitle :class="`${className}__subtitle`">
+          {{ address }}
+        </v-list-item-subtitle>
 
-        <v-list-item-action>
+        <template #append>
           <v-btn
             icon
             ripple
+            variant="text"
             :class="`${className}__action`"
           >
             <v-icon
               :class="`${className}__icon`"
-              size="20"
-            >
-              mdi-share-variant
-            </v-icon>
+              icon="mdi-share-variant"
+              size="small"
+            />
           </v-btn>
-        </v-list-item-action>
+        </template>
       </v-list-item>
 
       <v-list-item @click="$emit('click:balance', crypto)">
-        <v-list-item-content>
-          <v-list-item-title :class="`${className}__title`">
-            {{ $t('home.balance') }}
-          </v-list-item-title>
-          <v-list-item-subtitle :class="`${className}__subtitle`">
-            {{ balance | currency(crypto, true) }} <span
-              v-if="$store.state.rate.isLoaded"
-              class="a-text-regular"
-            >~{{ rate }} {{ currentCurrency }}</span>
-          </v-list-item-subtitle>
-        </v-list-item-content>
+        <v-list-item-title :class="`${className}__title`">
+          {{ $t('home.balance') }}
+        </v-list-item-title>
+        <v-list-item-subtitle :class="`${className}__subtitle`">
+          {{ currency(balance, crypto, true) }} <span
+            v-if="$store.state.rate.isLoaded"
+            class="a-text-regular"
+          >~{{ rate }} {{ currentCurrency }}</span>
+        </v-list-item-subtitle>
 
-        <v-list-item-action>
+        <template #append>
           <v-btn
             icon
             ripple
+            variant="text"
             :class="`${className}__action`"
           >
             <v-icon
               :class="`${className}__icon`"
-              size="20"
-            >
-              mdi-chevron-right
-            </v-icon>
+              icon="mdi-chevron-right"
+              size="small"
+            />
           </v-btn>
-        </v-list-item-action>
+        </template>
       </v-list-item>
     </v-list>
 
@@ -85,6 +81,7 @@
 import ShareURIDialog from '@/components/ShareURIDialog'
 import WalletCardListActions from '@/components/WalletCardListActions'
 import { Cryptos } from '@/lib/constants'
+import currency from '@/filters/currencyAmountWithSymbol'
 
 export default {
   components: {
@@ -117,6 +114,7 @@ export default {
       default: 'USD'
     }
   },
+  emits: ['click:balance'],
   data: () => ({ showShareURIDialog: false }),
   computed: {
     className () {
@@ -125,13 +123,16 @@ export default {
     isADM () {
       return this.crypto === Cryptos.ADM
     }
+  },
+  methods: {
+    currency
   }
 }
 </script>
 
 <style lang="scss" scoped>
 @import '../assets/styles/themes/adamant/_mixins.scss';
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import 'vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
 
 .wallet-card {
@@ -140,7 +141,12 @@ export default {
   }
   &__subtitle {
     @include a-text-regular-enlarged();
+    line-height: 24px;
     word-break: break-word;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     span {
       font-style: italic;
       color: inherit;
@@ -155,7 +161,7 @@ export default {
 }
 
 /** Themes **/
-.theme--light {
+.v-theme--light {
   .wallet-card {
     background-color: transparent;
     &__list {
@@ -172,7 +178,7 @@ export default {
     }
   }
 }
-.theme--dark {
+.v-theme--dark {
   .wallet-card {
     background-color: transparent;
     &__list {
@@ -182,7 +188,7 @@ export default {
       color: map-get($shades, 'white');
     }
     &__subtitle {
-      color: map-get($shades, 'white');
+      color: rgba(map-get($shades, 'white'), 70%)
     }
   }
 }

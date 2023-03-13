@@ -1,4 +1,5 @@
-import { Cryptos } from '@/lib/constants';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { Cryptos } from '@/lib/constants'
 import { parseURIasAIP, generateURI } from '@/lib/uri'
 
 describe('uri', () => {
@@ -8,7 +9,7 @@ describe('uri', () => {
         address: 'U123456',
         params: {},
         crypto: 'ADM',
-        protocol: "adm"
+        protocol: 'adm'
       })
     })
 
@@ -20,7 +21,7 @@ describe('uri', () => {
           lastName: 'Sanchez'
         },
         crypto: 'ADM',
-        protocol: "adm"
+        protocol: 'adm'
       })
     })
 
@@ -29,7 +30,7 @@ describe('uri', () => {
         address: 'U123456',
         params: {},
         crypto: 'ADM',
-        protocol: "adm"
+        protocol: 'adm'
       })
     })
 
@@ -38,13 +39,13 @@ describe('uri', () => {
         address: 'u123456',
         params: {},
         crypto: 'ADM',
-        protocol: "adm"
+        protocol: 'adm'
       })
     })
 
     it('should return address "as is" if is not a valid address', () => {
       expect(parseURIasAIP('not_a_valid_address')).toMatchObject({
-        address: "not_a_valid_address"
+        address: 'not_a_valid_address'
       })
     })
 
@@ -57,7 +58,7 @@ describe('uri', () => {
           label: 'Рик'
         },
         crypto: 'ADM',
-        protocol: "adm"
+        protocol: 'adm'
       })
     })
 
@@ -68,13 +69,13 @@ describe('uri', () => {
           label: 'Rick Sanchez'
         },
         crypto: 'ADM',
-        protocol: "adm"
+        protocol: 'adm'
       })
     })
   })
 
   describe('generateURI', () => {
-    const HOSTNAME = 'msg.adamant.im';
+    const HOSTNAME = 'msg.adamant.im'
 
     beforeAll(() => {
       delete window.location
@@ -82,18 +83,24 @@ describe('uri', () => {
     })
 
     afterAll(() => {
-      delete window.location;
+      delete window.location
     })
 
     it('without contactName', () => {
       expect(generateURI(Cryptos.ADM, 'U123456')).toBe(`https://${HOSTNAME}?address=U123456`)
       expect(generateURI(Cryptos.ADM, 'U123456', '')).toBe(`https://${HOSTNAME}?address=U123456`)
-      expect(generateURI(Cryptos.ADM, 'U123456', undefined)).toBe(`https://${HOSTNAME}?address=U123456`)
+      expect(generateURI(Cryptos.ADM, 'U123456', undefined)).toBe(
+        `https://${HOSTNAME}?address=U123456`
+      )
     })
 
     it('with contactName', () => {
-      expect(generateURI(Cryptos.ADM,'U123456', 'Rick')).toBe(`https://${HOSTNAME}?address=U123456&label=Rick`)
-      expect(generateURI(Cryptos.ADM,'U123456', 'Rick Sanchez')).toBe(`https://${HOSTNAME}?address=U123456&label=Rick%20Sanchez`)
+      expect(generateURI(Cryptos.ADM, 'U123456', 'Rick')).toBe(
+        `https://${HOSTNAME}?address=U123456&label=Rick`
+      )
+      expect(generateURI(Cryptos.ADM, 'U123456', 'Rick Sanchez')).toBe(
+        `https://${HOSTNAME}?address=U123456&label=Rick%20Sanchez`
+      )
     })
   })
 })

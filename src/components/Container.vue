@@ -24,7 +24,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/settings/_variables.scss';
+@import 'vuetify/settings';
 
 .a-container {
   width: 100%;

@@ -14,6 +14,7 @@
         :name="Date.now()"
         type="password"
         class="text-center"
+        variant="underlined"
       />
     </v-row>
 
@@ -50,8 +51,8 @@
       <v-col cols="12">
         <v-btn
           class="a-btn-link"
-          text
-          small
+          variant="text"
+          size="small"
           @click="removePassword"
         >
           {{ $t('login_via_password.remove_password') }}
@@ -66,11 +67,12 @@ import { clearDb } from '@/lib/idb'
 
 export default {
   props: {
-    value: {
+    modelValue: {
       type: String,
       default: ''
     }
   },
+  emits: ['login', 'error', 'update:modelValue'],
   data: () => ({
     validForm: true,
     disabledButton: false,
@@ -79,10 +81,10 @@ export default {
   computed: {
     password: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     }
   },

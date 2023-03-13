@@ -17,6 +17,7 @@
           autocomplete="new-password"
           class="a-input"
           type="password"
+          variant="underlined"
           :label="$t('login_via_password.enter_password')"
           :name="Date.now()"
           @keyup.enter="submit"
@@ -31,7 +32,7 @@
         <v-spacer />
 
         <v-btn
-          text
+          variant="text"
           class="a-btn-regular"
           @click="show = false"
         >
@@ -39,7 +40,7 @@
         </v-btn>
 
         <v-btn
-          text
+          variant="text"
           class="a-btn-regular"
           :disabled="!isValidForm || disabledButton"
           @click="submit"
@@ -64,11 +65,12 @@ import { saveState } from '@/lib/idb/state'
 
 export default {
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     }
   },
+  emits: ['password', 'update:modelValue'],
   data: () => ({
     password: '',
     showSpinner: false,
@@ -78,10 +80,10 @@ export default {
   computed: {
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     },
     isValidForm () {

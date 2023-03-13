@@ -1,8 +1,5 @@
 <template>
-  <v-app
-    :dark="isDarkTheme"
-    class="application--linear-gradient"
-  >
+  <v-app :theme="themeName" class="application--linear-gradient">
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
     <component :is="layout">
       <router-view />
@@ -10,40 +7,43 @@
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { getPiniaStoresList, registerSaga } from '@/pinia/saga'
 import { rootSaga } from '@/pinia/sagas/rootSaga'
 import { getStores } from '@/pinia/stores'
 import { useSnackbarStore } from '@/pinia/stores/snackbar/snackbar'
 import dayjs from 'dayjs'
-import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog'
+import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import Notifications from '@/lib/notifications'
+import { ThemeName } from './plugins/vuetify'
 
-export default {
+export default defineComponent({
   components: {
     WarningOnAddressesDialog
   },
   data: () => ({
-    showWarningOnAddressesDialog: false
+    showWarningOnAddressesDialog: false,
+    notifications: null as Notifications | null
   }),
   computed: {
-    layout () {
+    layout() {
       return this.$route.meta.layout || 'default'
     },
-    isLogged () {
+    isLogged() {
       return this.$store.getters.isLogged
     },
-    isDarkTheme () {
-      return this.$store.state.options.darkTheme
-    },
-    isLoginViaPassword () {
+    isLoginViaPassword() {
       return this.$store.getters['options/isLoginViaPassword']
+    },
+    themeName() {
+      return this.$store.state.options.darkTheme ? ThemeName.Dark : ThemeName.Light
     }
   },
-  created () {
+  created() {
     this.setLocale()
   },
-  mounted () {
+  mounted() {
     this.notifications = new Notifications(this)
     this.notifications.start()
 
@@ -53,15 +53,12 @@ export default {
     console.log('getPiniasStoresList', getPiniaStoresList(this.$pinia))
     console.log('this.$pinia', this.$pinia)
   },
-  beforeDestroy () {
-    this.notifications.stop()
+  beforeUnmount() {
+    this.notifications?.stop()
     this.$store.dispatch('stopInterval')
   },
-  beforeMount () {
-    this.$vuetify.theme.dark = this.$store.state.options.darkTheme // sync Vuetify theme with the store
-  },
   methods: {
-    setLocale () {
+    setLocale() {
       // Set language from `localStorage`.
       //
       // This is required only when initializing the application.
@@ -72,16 +69,16 @@ export default {
       dayjs.locale(localeFromStorage)
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
 @import './assets/styles/themes/adamant/_mixins.scss';
 
-.theme--light.application--linear-gradient {
+.v-theme--light.application--linear-gradient {
   @include linear-gradient-light();
 }
-.theme--dark.application--linear-gradient {
+.v-theme--dark.application--linear-gradient {
   @include linear-gradient-dark();
 }
 </style>

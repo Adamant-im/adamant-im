@@ -14,7 +14,7 @@
         <v-spacer />
 
         <v-btn
-          text
+          variant="text"
           @click="show = false"
         >
           {{ $t('chats.ok') }}
@@ -27,7 +27,7 @@
 <script>
 export default {
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     },
@@ -40,13 +40,14 @@ export default {
       default: ''
     }
   },
+  emits: ['update:modelValue'],
   computed: {
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     }
   }

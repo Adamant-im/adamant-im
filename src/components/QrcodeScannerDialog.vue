@@ -37,15 +37,17 @@
               offset-y
               :class="`${className}__camera-select`"
             >
-              <v-btn
-                slot="activator"
-                text
-                color="white"
-              >
-                <v-icon large>
-                  mdi-camera
-                </v-icon>
-              </v-btn>
+              <template #activator>
+                <v-btn
+                  variant="text"
+                  color="white"
+                >
+                  <v-icon
+                    size="x-large"
+                    icon="mdi-camera"
+                  />
+                </v-btn>
+              </template>
               <v-list>
                 <v-list-item
                   v-for="camera in cameras"
@@ -93,7 +95,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
-          text
+          variant="text"
           class="a-btn-regular"
           @click="show = false"
         >
@@ -109,11 +111,12 @@ import { Scanner } from '@/lib/zxing'
 
 export default {
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     }
   },
+  emits: ['scan', 'update:modelValue'],
   data: () => ({
     cameraStatus: 'waiting', // can be: waiting, active, nocamera
     scanner: null,
@@ -124,10 +127,10 @@ export default {
     className: () => 'qrcode-scanner-dialog',
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     }
   },
@@ -150,7 +153,7 @@ export default {
   mounted () {
     this.init()
   },
-  beforeDestroy () {
+  beforeUnmount () {
     this.destroyScanner()
   },
   methods: {

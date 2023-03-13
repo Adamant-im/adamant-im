@@ -4,58 +4,50 @@
     app
     height="50"
     class="app-navigation"
+    :elevation="0"
   >
-    <v-row
-      justify="center"
-      no-gutters
+    <!-- Wallet -->
+    <v-btn
+      to="/home"
     >
-      <container class="app-navigation__container">
-        <v-row
-          justify="center"
-          no-gutters
-        >
-          <!-- Wallet -->
-          <v-btn
-            to="/home"
-            text
-          >
-            <span>{{ $t('bottom.wallet_button') }}</span>
-            <v-icon size="20">
-              mdi-wallet
-            </v-icon>
-          </v-btn>
+      <v-icon
+        icon="mdi-wallet"
+      />
+      <span>{{ $t('bottom.wallet_button') }}</span>
+    </v-btn>
 
-          <!-- Chat -->
-          <v-btn
-            to="/chats"
-            text
-          >
-            <span>{{ $t('bottom.chats_button') }}</span>
-            <v-badge
-              :value="numOfNewMessages > 0"
-              overlap
-              color="primary"
-              :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
-            >
-              <v-icon size="20">
-                mdi-forum
-              </v-icon>
-            </v-badge>
-          </v-btn>
+    <!-- Chat -->
+    <v-btn
+      to="/chats"
+    >
+      <v-badge
+        v-if="numOfNewMessages > 0"
+        :value="numOfNewMessages"
+        overlap
+        color="primary"
+        :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
+      >
+        <v-icon
+          icon="mdi-forum"
+        />
+      </v-badge>
+      <v-icon
+        v-else
+        icon="mdi-forum"
+      />
 
-          <!-- Settings -->
-          <v-btn
-            to="/options"
-            text
-          >
-            <span>{{ $t('bottom.settings_button') }}</span>
-            <v-icon size="20">
-              mdi-cog
-            </v-icon>
-          </v-btn>
-        </v-row>
-      </container>
-    </v-row>
+      <span>{{ $t('bottom.chats_button') }}</span>
+    </v-btn>
+
+    <!-- Settings -->
+    <v-btn
+      to="/options"
+    >
+      <v-icon
+        icon="mdi-cog"
+      />
+      <span>{{ $t('bottom.settings_button') }}</span>
+    </v-btn>
   </v-bottom-navigation>
 </template>
 
@@ -109,7 +101,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/settings/_colors.scss';
+@import 'vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
 
 /**
@@ -119,28 +111,32 @@ export default {
  */
 .app-navigation {
   &.v-bottom-navigation {
-    box-shadow: none;
+    transform: unset !important;
   }
   &.v-bottom-navigation .v-btn  {
     font-weight: 300;
-    padding-bottom: 8px;
     flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
   }
   :deep(.v-btn.v-btn--active)  {
-    font-size: 14px;
-    padding-top: 4px;
+    font-size: unset;
+
+    > .v-btn__overlay {
+      background-color: unset;
+    }
+  }
+  :deep(.v-btn.v-btn--active) {
+    .v-btn__content > span {
+      font-size: 14px;
+    }
   }
   :deep(.v-btn:not(.v-btn--active))  {
     filter: unset;
-    padding-top: 6px;
-    font-size: 12px;
-  }
-  :deep(.v-btn .v-icon) {
-    margin-bottom: 4px;
   }
 }
 
-.theme--light {
+.v-theme--light {
   .app-navigation {
     &__container {
       border-top: 1px solid map-get($grey, 'lighten-2');
@@ -154,13 +150,22 @@ export default {
     :deep(.v-btn:not(.v-btn--active))  {
       color: map-get($adm-colors, 'muted') !important;
     }
+    :deep(.v-bottom-navigation__content) {
+      border-top: 1px solid map-get($grey, 'lighten-2');
+    }
   }
 }
 
-.theme--dark {
+.v-theme--dark {
   .app-navigation {
     &.v-bottom-navigation {
       background-color: map-get($shades, 'black');
+    }
+    :deep(.v-btn.v-btn--active) {
+      color: map-get($shades, 'white');
+    }
+    :deep(.v-btn:not(.v-btn--active)) {
+      color: map-get($adm-colors, 'grey-transparent');
     }
   }
 }

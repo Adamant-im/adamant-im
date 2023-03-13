@@ -20,6 +20,7 @@
         >
           <template #avatar-toolbar>
             <ChatAvatar
+              class="chat-avatar"
               :user-id="partnerId"
               use-public-key
               @click="onClickAvatar(partnerId)"
@@ -36,7 +37,7 @@
           v-bind="message"
           :key="message.id"
           :message="formatMessage(message)"
-          :time="message.timestamp | date"
+          :time="formatDate(message.timestamp)"
           :user-id="userId"
           :sender="sender"
           :status="getTransactionStatus(message)"
@@ -47,12 +48,13 @@
           :hide-time="message.readonly"
           @resend="resendMessage(partnerId, message.id)"
         >
-          <ChatAvatar
-            slot="avatar"
-            :user-id="sender.id"
-            use-public-key
-            @click="onClickAvatar(sender.id)"
-          />
+          <template #avatar>
+            <ChatAvatar
+              :user-id="sender.id"
+              use-public-key
+              @click="onClickAvatar(sender.id)"
+            />
+          </template>
         </a-chat-message>
         <a-chat-transaction
           v-else-if="isTransaction(message.type)"
@@ -62,7 +64,7 @@
           :sender="sender"
           :amount="message.amount"
           :crypto="message.type"
-          :time="message.timestamp | date"
+          :time="formatDate(message.timestamp)"
           :hash="message.hash"
           :tx-timestamp="getTransaction(message.type, message.hash).timestamp"
           :currency="message.type"
@@ -73,49 +75,55 @@
           @click:transactionStatus="updateTransactionStatus(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
         >
-          <crypto-icon
-            slot="crypto"
-            :crypto="message.type"
-          />
+          <template #crypto>
+            <crypto-icon
+              :crypto="message.type"
+            />
+          </template>
         </a-chat-transaction>
       </template>
 
-      <a-chat-form
-        v-if="!isChatReadOnly"
-        ref="chatForm"
-        slot="form"
-        :show-send-button="true"
-        :send-on-enter="sendMessageOnEnter"
-        :show-divider="true"
-        :label="chatFormLabel"
-        :message-text="messageText"
-        @message="onMessage"
-      >
-        <chat-menu
-          slot="prepend"
-          :partner-id="partnerId"
-        />
-      </a-chat-form>
+      <template #form>
+        <a-chat-form
+          v-if="!isChatReadOnly"
+          ref="chatForm"
+          :show-send-button="true"
+          :send-on-enter="sendMessageOnEnter"
+          :show-divider="true"
+          :label="chatFormLabel"
+          :message-text="$route.query.messageText"
+          @message="onMessage"
+        >
+          <template #prepend>
+            <chat-menu
+              :partner-id="partnerId"
+            />
+          </template>
+        </a-chat-form>
+      </template>
 
-      <v-btn
-        v-if="!isScrolledToBottom"
-        slot="fab"
-        class="ma-0 grey--text"
-        color="grey lighten-3"
-        depressed
-        fab
-        small
-        @click="$refs.chat.scrollToBottom()"
-      >
-        <v-icon large>
-          mdi-chevron-down
-        </v-icon>
-      </v-btn>
+      <template #fab>
+        <v-btn
+          v-if="!isScrolledToBottom"
+          class="ma-0 grey--text"
+          color="grey lighten-3"
+          depressed
+          fab
+          size="small"
+          @click="$refs.chat.scrollToBottom()"
+        >
+          <v-icon
+            icon="mdi-chevron-down"
+            size="x-large"
+          />
+        </v-btn>
+      </template>
     </a-chat>
   </v-card>
 </template>
 
 <script>
+import { nextTick } from 'vue'
 import { detect } from 'detect-browser'
 import Visibility from 'visibilityjs'
 
@@ -128,7 +136,7 @@ import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'
 import transaction from '@/mixins/transaction'
 import partnerName from '@/mixins/partnerName'
-import dateFilter from '@/filters/date'
+import formatDate from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import FreeTokensDialog from '@/components/FreeTokensDialog'
 import { websiteUriToOnion } from '@/lib/uri'
@@ -185,9 +193,6 @@ function validateMessage (message) {
 }
 
 export default {
-  filters: {
-    date: dateFilter
-  },
   components: {
     AChat,
     AChatMessage,
@@ -201,15 +206,12 @@ export default {
   },
   mixins: [transaction, partnerName],
   props: {
-    messageText: {
-      default: '',
-      type: String
-    },
     partnerId: {
       type: String,
       required: true
     }
   },
+  emits: ['click:chat-avatar'],
   data: () => ({
     chatFormLabel: '',
     loading: false,
@@ -264,13 +266,13 @@ export default {
   watch: {
     // Scroll to the bottom every time window focused by desktop notification
     '$store.state.notification.desktopActivateClickCount' () {
-      this.$nextTick(() => {
+      nextTick(() => {
         this.$refs.chat.scrollToBottom()
       })
     },
     // scroll to bottom when received new message
     messages () {
-      this.$nextTick(() => {
+      nextTick(() => {
         if (this.isScrolledToBottom) {
           this.$refs.chat.scrollToBottom()
         }
@@ -286,14 +288,14 @@ export default {
   created () {
     window.addEventListener('keyup', this.onKeyPress)
   },
-  beforeDestroy () {
+  beforeUnmount () {
     window.removeEventListener('keyup', this.onKeyPress)
     Visibility.unbind(this.visibilityId)
   },
   mounted () {
     if (this.isFulfilled && this.chatPage <= 0) this.fetchChatMessages()
     this.scrollBehavior()
-    this.$nextTick(() => {
+    nextTick(() => {
       this.isScrolledToBottom = this.$refs.chat.isScrolledToBottom()
     })
     this.visibilityId = Visibility.change((event, state) => {
@@ -308,7 +310,7 @@ export default {
     onMessage (message) {
       if (validateMessage.call(this, message)) {
         this.sendMessage(message)
-        this.$nextTick(() => this.$refs.chat.scrollToBottom())
+        nextTick(() => this.$refs.chat.scrollToBottom())
       }
     },
     sendMessage (message) {
@@ -405,7 +407,7 @@ export default {
         })
     },
     scrollBehavior () {
-      this.$nextTick(() => {
+      nextTick(() => {
         if (this.numOfNewMessages > 0) {
           this.$refs.chat.scrollToMessage(this.numOfNewMessages - 1)
         } else if (this.scrollPosition !== false) {
@@ -419,7 +421,8 @@ export default {
     },
     onKeyPress (e) {
       if (e.code === 'Enter' && !this.showFreeTokensDialog) this.$refs.chatForm.focus()
-    }
+    },
+    formatDate
   }
 }
 </script>
@@ -429,5 +432,9 @@ export default {
   height: 100vh;
   box-shadow: none;
   background-color: transparent !important;
+}
+
+.chat-avatar {
+  margin-right: 12px;
 }
 </style>

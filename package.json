@@ -6,16 +6,18 @@
   "description": "Decentralized Messenger",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vite preview",
+    "dev": "vite",
     "serve:test": "cross-env ADM_CONFIG_FILE=test vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "electron:build": "vue-cli-service electron:build --mode electron",
-    "electron:serve": "vue-cli-service electron:serve",
-    "electron:build:all": "vue-cli-service electron:build --mode electron -mwl --x64 --arm64",
-    "https": "vue-cli-service serve --https",
-    "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e",
+    "build": "vue-tsc && vite build",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
+    "prettify": "prettier --write src/",
+    "electron:build": "vue-tsc && vite build --config electron-vite.config.js && electron-builder",
+    "electron:dev": "vite dev --config electron-vite.config.js",
+    "electron:serve": "vite preview --config electron-vite.config.js",
+    "https": "vite preview --https",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
@@ -30,9 +32,11 @@
     "bignumber.js": "^9.0.2",
     "bip39": "^3.0.4",
     "bitcoinjs-lib": "^5.2.0",
+    "buffer": "^6.0.3",
     "bytebuffer": "^5.0.1",
     "coininfo": "^5.2.1",
-    "core-js": "^3.22.5",
+    "copy-to-clipboard": "^3.3.3",
+    "crypto-browserify": "^3.12.0",
     "dayjs": "^1.11.2",
     "deepmerge": "^4.2.2",
     "detect-browser": "^5.3.0",
@@ -40,137 +44,78 @@
     "ed2curve": "^0.3.0",
     "file-saver": "^2.0.5",
     "hdkey": "^2.0.1",
+    "https-browserify": "^1.0.0",
     "idb": "^7.0.1",
     "js-base64": "^3.7.2",
     "js-md5": "^0.7.3",
     "lodash": "^4.17.21",
     "marked": "^4.0.16",
+    "mitt": "^3.0.0",
     "notifyjs": "^3.0.0",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
     "pbkdf2": "^3.1.2",
     "pinia": "^2.0.23",
     "promise-queue": "^2.2.5",
     "qrcode": "^1.5.0",
     "qs": "^6.10.3",
+    "rollup-plugin-node-polyfills": "^0.2.1",
     "redux-saga": "^1.2.1",
-    "register-service-worker": "^1.7.2",
     "semver": "^7.3.7",
     "simple-audio": "^1.0.1",
     "socket.io-client": "^2.4.0",
     "sodium-browserify-tweetnacl": "^0.2.6",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
     "throttle-promise": "^1.0.4",
+    "tweetnacl": "^1.0.3",
     "visibilityjs": "^2.0.2",
-    "vue": "^2.7",
-    "vue-i18n": "^8.26.7",
-    "vue-router": "^3.5.3",
-    "vue-scrollto": "^2.20.0",
-    "vuetify": "2.6.9",
-    "vuex": "^3.6.2",
+    "vue": "^3.2.45",
+    "vue-i18n": "^9.2.2",
+    "vue-router": "^4.1.6",
+    "vuetify": "^3.1.2",
+    "vuex": "^4.1.0",
     "vuex-persist": "^3.1.3",
     "web3-eth": "^1.7.3",
     "web3-utils": "^1.7.3"
   },
   "devDependencies": {
-    "@babel/core": "7.18.0",
-    "@babel/eslint-parser": "^7.17.0",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@intlify/vue-i18n-loader": "^1.1.0",
-    "@vue/babel-preset-app": "^4.5.15",
-    "@vue/cli-plugin-babel": "^4.5.15",
-    "@vue/cli-plugin-e2e-cypress": "^4.5.15",
-    "@vue/cli-plugin-eslint": "^4.5.15",
-    "@vue/cli-plugin-pwa": "^4.5.15",
-    "@vue/cli-plugin-unit-jest": "^4.5.15",
-    "@vue/cli-service": "^4.5.15",
-    "@vue/eslint-config-standard": "^6.1.0",
-    "@vue/test-utils": "^1.3.0",
-    "babel-core": "7.0.0-bridge.0",
-    "babel-jest": "^28.1.0",
-    "babel-plugin-rewire": "^1.2.0",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-inject": "^5.0.3",
+    "@rushstack/eslint-patch": "^1.2.0",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "@vue/eslint-config-prettier": "^7.1.0",
+    "@vue/test-utils": "^2.3.0",
+    "autoprefixer": "^10.4.13",
     "cross-env": "^7.0.3",
-    "electron": "^18.2.4",
-    "electron-builder": "^23.0.3",
+    "cypress": "^12.7.0",
+    "electron": "^23.1.2",
+    "electron-builder": "^23.6.0",
     "electron-devtools-installer": "^3.2.0",
-    "eslint": "^7.31.0",
-    "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-vue": "^8.6.0",
+    "eslint": "^8.35.0",
+    "eslint-plugin-vue": "^9.9.0",
+    "jest-serializer-vue": "^3.1.0",
+    "jsdom": "^21.1.0",
     "lorem-ipsum": "^2.0.4",
+    "postcss": "latest",
+    "prettier": "^2.8.4",
     "sass": "^1.54.9",
     "sass-loader": "10.1.1",
     "sinon": "^14.0.0",
+    "typescript": "^4.9.5",
     "uuid": "^8.3.2",
-    "vue-cli-plugin-electron-builder": "^2.1.1",
+    "vite": "^4.1.1",
+    "vite-plugin-electron": "^0.11.1",
+    "vite-plugin-pwa": "^0.14.4",
+    "vitest": "^0.29.2",
     "vue-cli-plugin-i18n": "^2.3.1",
-    "vue-cli-plugin-vuetify": "^2.4.8",
-    "vue-cli-plugin-webpack-bundle-analyzer": "^4.0.0",
-    "vue-jest": "^3.0.7",
+    "vue-cli-plugin-vuetify": "~2.5.8",
     "vue-template-compiler": "^2.6.14",
-    "vuetify-loader": "^1.7.3"
+    "vue-tsc": "^1.2.0"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/recommended",
-      "@vue/standard"
-    ],
-    "rules": {
-      "no-useless-catch": "off",
-      "vue/require-default-prop": "off",
-      "vue/require-prop-types": "off",
-      "vue/no-unused-components": "off",
-      "vue/no-template-shadow": "off",
-      "vue/no-lone-template": "off",
-      "vue/multi-word-component-names": "off"
-    },
-    "parserOptions": {
-      "parser": "@babel/eslint-parser"
-    }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie > 0"
-  ],
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "jsx",
-      "json",
-      "vue"
-    ],
-    "transform": {
-      "^.+\\.vue$": "vue-jest",
-      ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
-      "^.+\\.jsx?$": "babel-jest"
-    },
-    "transformIgnorePatterns": [
-      "node_modules/(?!vue-qrcode-component)"
-    ],
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1",
-      "(.*){ENV}(.*)": "$1development$2"
-    },
-    "snapshotSerializers": [
-      "jest-serializer-vue"
-    ],
-    "testMatch": [
-      "**/__tests__/**/*.(test|spec).(js|jsx|ts|tsx)"
-    ],
-    "testURL": "http://localhost/",
-    "setupFiles": [
-      "<rootDir>/tests/__mocks__/globals.js"
-    ]
-  },
-  "main": "background.js",
+  "main": "dist-electron/main.js",
   "keywords": [
     "adm",
     "adamant",

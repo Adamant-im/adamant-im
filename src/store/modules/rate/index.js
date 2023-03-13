@@ -1,6 +1,5 @@
 import axios from 'axios'
 import getEnpointUrl from '@/lib/getEndpointUrl'
-import Vue from 'vue'
 
 const state = () => ({
   rates: {},
@@ -16,7 +15,7 @@ const mutations = {
     state.rates = rates
   },
   setHistoryRates (state, historyRates) {
-    Vue.set(state.historyRates, historyRates.name, historyRates.value)
+    state.historyRates[historyRates.name] = historyRates.value
   },
   loadRates (state) {
     state.isLoaded = true

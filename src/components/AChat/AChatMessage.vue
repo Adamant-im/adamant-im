@@ -37,19 +37,17 @@
           >
             <v-icon
               v-if="status.status === 'REJECTED'"
+              :icon="statusIcon"
               :title="i18n.retry"
               size="15"
               color="red"
               @click="$emit('resend')"
-            >
-              {{ statusIcon }}
-            </v-icon>
+            />
             <v-icon
               v-else
+              :icon="statusIcon"
               size="13"
-            >
-              {{ statusIcon }}
-            </v-icon>
+            />
           </div>
         </div>
         <div class="a-chat__message-card-body">
@@ -129,6 +127,7 @@ export default {
       default: false
     }
   },
+  emits: ['resend'],
   computed: {
     statusIcon () {
       return tsIcon(this.status.virtualStatus)

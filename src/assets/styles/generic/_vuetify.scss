@@ -1,7 +1,11 @@
-@import '~vuetify/src/styles/settings/_variables.scss';
+@import 'vuetify/settings';
 @import '../settings/_colors.scss';
 
 $font-family: 'Exo 2', sans-serif;
+
+html {
+  font-family: $font-family;
+}
 
 /** Vuetify context styles **/
 
@@ -36,18 +40,25 @@ $font-family: 'Exo 2', sans-serif;
 
 // Change default dialog background color
 .v-card {
-  &.theme--dark {
+  &.v-theme--dark {
     background-color: #424242; // secondary
     border-color: #424242; // secondary
   }
 }
 
-.v-dialog > .v-card > .v-card__title {
+.v-dialog .v-card > .v-card-title {
   padding: 16px;
 }
 
 .v-list {
-  &.theme--dark {
+  &.v-theme--dark {
+    background-color: #424242; // secondary
+  }
+}
+.v-menu .v-overlay__content > .v-card,
+.v-menu .v-overlay__content > .v-sheet,
+.v-menu .v-overlay__content > .v-list {
+  &.v-theme--dark {
     background-color: #424242; // secondary
   }
 }
@@ -64,9 +75,13 @@ $font-family: 'Exo 2', sans-serif;
   line-height: 1.5;
 }
 
-.theme--dark.v-card {
+.v-theme--dark.v-card {
   > .v-card__text {
     color: #FFF;
+  }
+
+  > .v-card-title {
+    color: map-get($shades, 'white');
   }
 
   > .v-card__subtitle {
@@ -78,12 +93,40 @@ $font-family: 'Exo 2', sans-serif;
   border-radius: 2px;
 }
 
-.theme--dark.v-data-table {
+.v-theme--dark.v-data-table {
   background-color: #424242;
 }
 
 .v-snack__content {
   font-size: 16px;
+}
+
+.v-snackbar__wrapper {
+  max-width: 400px;
+}
+
+/**
+ * Resets dialog overlay background.
+ */
+.v-overlay__scrim {
+  background: unset;
+}
+
+/**
+ * Custom icon inside v-list doesn't contain margin-right
+ */
+.v-list-item__prepend > .icon {
+  margin-inline-end: 16px;
+}
+.v-list-item__prepend > .icon-box {
+  margin-inline-end: 16px;
+}
+
+/**
+ * Decrease `v-icon` padding in lists
+ */
+.v-list-item__prepend > .v-icon {
+  margin-inline-end: 16px;
 }
 
 /**
@@ -96,6 +139,85 @@ $font-family: 'Exo 2', sans-serif;
 }
 
 /**
+ * List styles
+ */
+.v-theme--dark {
+  .v-list {
+    color: map-get($shades, 'white');
+  }
+}
+
+.v-list-item-title {
+  font-weight: 300;
+}
+.v-list-item-subtitle {
+  opacity: unset;
+}
+
+.v-label {
+  opacity: unset;
+}
+.v-theme--light .v-field__outline {
+  color: map-get($adm-colors, 'muted');
+}
+.v-theme--dark .v-field__outline {
+  color: map-get($adm-colors, 'grey-transparent');
+}
+.v-theme--light .v-field__field .v-label {
+  color: map-get($adm-colors, 'muted');
+}
+.v-theme--dark .v-field__field .v-label {
+  color: map-get($adm-colors, 'grey-transparent');
+}
+
+.v-list-item--density-default.v-list-item--one-line {
+  min-height: 56px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.v-theme--dark {
+  .v-list-item__prepend > .v-icon, .v-list-item__append > .v-icon {
+    opacity: 1;
+  }
+}
+
+/**
+ * VField
+ */
+.v-field--disabled {
+  opacity: 0.5;
+}
+
+.a-input .v-field--disabled .v-field__outline::before,
+.a-input .v-field--disabled .v-field__outline::before {
+  border-image: repeating-linear-gradient(90deg,hsla(0,0%,100%,.5) 0,hsla(0,0%,100%,.5) 2px,transparent 0,transparent 4px) 1 repeat;
+  opacity: 1;
+}
+
+.v-theme--dark {
+  .v-field__prepend-inner > .v-icon, .v-field__append-inner > .v-icon, .v-field__clearable > .v-icon {
+    opacity: 1;
+  }
+}
+
+/**
+ * Change VField label padding
+ */
+.v-field--variant-plain.v-field .v-field__input,
+.v-field--variant-underlined.v-field .v-field__input {
+  --v-field-padding-top: 2px;
+  --v-field-padding-bottom: 5px;
+}
+
+/**
+ * VTable
+ */
+.v-table {
+  color: map-get($shades, 'white');
+}
+
+/**
  * Application styles.
  */
 .v-application {
@@ -103,6 +225,26 @@ $font-family: 'Exo 2', sans-serif;
   font-family: $font-family;
 }
 
-.theme--light.v-application {
+.v-theme--light.v-application {
   color: map-get($adm-colors, 'regular');
+}
+
+.v-theme--dark.v-application {
+  color: map-get($shades, 'white');
+}
+
+a {
+  cursor: pointer;
+}
+
+.v-theme--light {
+  a, a:visited {
+    color: map-get($adm-colors, 'primary');
+  }
+}
+
+.v-theme--dark {
+  a, a:visited {
+    color: map-get($adm-colors, 'primary')
+  }
 }

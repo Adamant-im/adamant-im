@@ -1,107 +1,91 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`QrcodeScannerDialog.vue renders the correct markup 1`] = `
-<v-dialog-stub
+exports[`QrcodeScannerDialog.vue > renders the correct markup 1`] = `
+<v-dialog
   class="qrcode-scanner-dialog"
-  closedelay="0"
-  contentclass=""
-  opendelay="0"
-  openonclick="true"
-  origin="center center"
-  retainfocus="true"
-  transition="dialog-transition"
-  value="true"
+  data-v-c5e2af2c=""
+  modelvalue="true"
   width="500"
 >
-  <v-card-stub
+  <v-card
     class="qrcode-scanner-dialog"
-    loaderheight="4"
-    tag="div"
+    data-v-c5e2af2c=""
   >
-    <v-row-stub
+    <!-- Camera Waiting -->
+    <v-row
       align="center"
       class="pa-8"
+      data-v-c5e2af2c=""
       justify="center"
-      nogutters="true"
-      tag="div"
+      no-gutters=""
     >
       <div
         class="a-text-header"
+        data-v-c5e2af2c=""
       >
-        
         Waiting for camera…
-      
       </div>
-       
-      <v-progress-circular-stub
+      <v-progress-circular
         class="ml-4"
         color="primary"
-        indeterminate="true"
-        rotate="0"
+        data-v-c5e2af2c=""
+        indeterminate=""
         size="32"
-        value="0"
-        width="4"
       />
-    </v-row-stub>
-     
-    <v-row-stub
-      nogutters="true"
+    </v-row>
+    <!-- Camera Active -->
+    <v-row
+      data-v-c5e2af2c=""
+      no-gutters=""
       style="display: none;"
-      tag="div"
     >
-      <v-col-stub
+      <v-col
         cols="12"
-        tag="div"
+        data-v-c5e2af2c=""
       >
         <div
           class="qrcode-scanner-dialog__camera"
+          data-v-c5e2af2c=""
         >
-          <video />
-           
-          <!---->
+          <video
+            data-v-c5e2af2c=""
+          />
+          <!--v-if-->
         </div>
-      </v-col-stub>
-       
-      <v-col-stub
+      </v-col>
+      <v-col
         class="pa-6"
         cols="12"
-        tag="div"
+        data-v-c5e2af2c=""
       >
         <h3
           class="a-text-regular text-center"
+          data-v-c5e2af2c=""
         >
-          
           Hold your device steady for 2-3 seconds to scan the QR code
-        
         </h3>
-      </v-col-stub>
-    </v-row-stub>
-     
-    <!---->
-     
-    <v-divider-stub
+      </v-col>
+    </v-row>
+    <!-- No Camera -->
+    <!--v-if-->
+    <v-divider
       class="a-divider"
+      data-v-c5e2af2c=""
     />
-     
-    <v-card-actions-stub
-      tag="div"
+    <v-card-actions
+      data-v-c5e2af2c=""
     >
-      <v-spacer-stub
-        tag="div"
+      <v-spacer
+        data-v-c5e2af2c=""
       />
-       
-      <v-btn-stub
-        activeclass=""
+      <v-btn
         class="a-btn-regular"
-        tag="button"
-        text="true"
-        type="button"
+        data-v-c5e2af2c=""
+        variant="text"
       >
-        
         Close
-      
-      </v-btn-stub>
-    </v-card-actions-stub>
-  </v-card-stub>
-</v-dialog-stub>
+      </v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 `;
