@@ -1,8 +1,5 @@
 <template>
-  <v-app
-    :dark="isDarkTheme"
-    class="application--linear-gradient"
-  >
+  <v-app :dark="isDarkTheme" class="application--linear-gradient">
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
     <component :is="layout">
       <router-view />
@@ -10,48 +7,50 @@
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import dayjs from 'dayjs'
-import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog'
+import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import Notifications from '@/lib/notifications'
 
-export default {
+export default defineComponent({
   components: {
     WarningOnAddressesDialog
   },
   data: () => ({
-    showWarningOnAddressesDialog: false
+    showWarningOnAddressesDialog: false,
+    notifications: null as Notifications | null
   }),
   computed: {
-    layout () {
+    layout() {
       return this.$route.meta.layout || 'default'
     },
-    isLogged () {
+    isLogged() {
       return this.$store.getters.isLogged
     },
-    isDarkTheme () {
+    isDarkTheme() {
       return this.$store.state.options.darkTheme
     },
-    isLoginViaPassword () {
+    isLoginViaPassword() {
       return this.$store.getters['options/isLoginViaPassword']
     }
   },
-  created () {
+  created() {
     this.setLocale()
   },
-  mounted () {
+  mounted() {
     this.notifications = new Notifications(this)
     this.notifications.start()
   },
-  beforeUnmount () {
-    this.notifications.stop()
+  beforeUnmount() {
+    this.notifications?.stop()
     this.$store.dispatch('stopInterval')
   },
-  beforeMount () {
+  beforeMount() {
     this.$vuetify.theme.global.name = this.$store.state.options.darkTheme ? 'dark' : 'light' // sync Vuetify theme with the store
   },
   methods: {
-    setLocale () {
+    setLocale() {
       // Set language from `localStorage`.
       //
       // This is required only when initializing the application.
@@ -62,7 +61,7 @@ export default {
       dayjs.locale(localeFromStorage)
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

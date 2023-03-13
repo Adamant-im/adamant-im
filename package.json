@@ -9,10 +9,10 @@
     "serve": "vite preview",
     "dev": "vite",
     "serve:test": "cross-env ADM_CONFIG_FILE=test vue-cli-service serve",
-    "build": "vite build",
+    "build": "vue-tsc && vite build",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
     "prettify": "prettier --write src/",
-    "electron:build": "vite build --config electron-vite.config.js && electron-builder",
+    "electron:build": "vue-tsc && vite build --config electron-vite.config.js && electron-builder",
     "electron:dev": "vite dev --config electron-vite.config.js",
     "electron:serve": "vite preview --config electron-vite.config.js",
     "https": "vite preview --https",
@@ -102,6 +102,7 @@
     "sass": "^1.54.9",
     "sass-loader": "10.1.1",
     "sinon": "^14.0.0",
+    "typescript": "^4.9.5",
     "uuid": "^8.3.2",
     "vite": "^4.1.1",
     "vite-plugin-electron": "^0.11.1",
@@ -109,7 +110,8 @@
     "vitest": "^0.29.2",
     "vue-cli-plugin-i18n": "^2.3.1",
     "vue-cli-plugin-vuetify": "~2.5.8",
-    "vue-template-compiler": "^2.6.14"
+    "vue-template-compiler": "^2.6.14",
+    "vue-tsc": "^1.2.0"
   },
   "main": "dist-electron/main.js",
   "keywords": [
