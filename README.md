@@ -52,16 +52,22 @@ npm run serve
 npm run lint
 ```
 
-### Run electron version
+### Start dev server and electron app
 
 ```
-npm run electron:serve
+npm run electron:dev
 ```
 
 ### Build electron version
 
 ```
 npm run electron:build
+```
+
+### Preview electron production build
+
+```
+npm run electron:serve
 ```
 
 [Download pre-build apps](https://adamant.im/#adm-apps) for macOS, Windows and Linux.
