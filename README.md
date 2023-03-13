@@ -17,10 +17,10 @@ This application deployed at [msg.adamant.im](https://msg.adamant.im) and [avail
 ## Project setup
 
 ```
-yarn install
+npm install
 ```
 
-Note: Lisk libraries may ask for specific Node.js version, you can ignore this with `yarn install --ignore-engines`.
+Note: Lisk libraries may ask for specific Node.js version, you can ignore this with `npm install --ignore-engines`.
 
 ### Compiles and hot-reloads for development
 
