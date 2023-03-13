@@ -1,5 +1,5 @@
 <template>
-  <v-app :dark="isDarkTheme" class="application--linear-gradient">
+  <v-app :theme="themeName" class="application--linear-gradient">
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
     <component :is="layout">
       <router-view />
@@ -12,6 +12,7 @@ import { defineComponent } from 'vue'
 import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import Notifications from '@/lib/notifications'
+import { ThemeName } from './plugins/vuetify'
 
 export default defineComponent({
   components: {
@@ -28,11 +29,11 @@ export default defineComponent({
     isLogged() {
       return this.$store.getters.isLogged
     },
-    isDarkTheme() {
-      return this.$store.state.options.darkTheme
-    },
     isLoginViaPassword() {
       return this.$store.getters['options/isLoginViaPassword']
+    },
+    themeName() {
+      return this.$store.state.options.darkTheme ? ThemeName.Dark : ThemeName.Light
     }
   },
   created() {
@@ -45,9 +46,6 @@ export default defineComponent({
   beforeUnmount() {
     this.notifications?.stop()
     this.$store.dispatch('stopInterval')
-  },
-  beforeMount() {
-    this.$vuetify.theme.global.name = this.$store.state.options.darkTheme ? 'dark' : 'light' // sync Vuetify theme with the store
   },
   methods: {
     setLocale() {
