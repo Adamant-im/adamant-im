@@ -125,9 +125,32 @@ import { getAccount as getLskAccount } from '@/lib/lisk/lisk-api'
 import { Cryptos, CryptosNames } from '@/lib/constants'
 import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
-import { ref, reactive, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+
+function getBtcKey (crypto, passphrase, asWif) {
+  const keyPair = getBtcAccount(crypto, passphrase).keyPair
+  const key = asWif
+      ? keyPair.toWIF()
+      : keyPair.privateKey.toString('hex')
+
+  return {
+    crypto: crypto,
+    cryptoName: CryptosNames[crypto],
+    key
+  }
+}
+function getLskKey (crypto, passphrase) {
+  const keyPair = getLskAccount(crypto, passphrase).keyPair
+  const key = keyPair.secretKey.toString('hex')
+
+  return {
+    crypto: crypto,
+    cryptoName: CryptosNames[crypto],
+    key
+  }
+}
 
 export default {
   components: {
@@ -140,34 +163,11 @@ export default {
     const showQrcodeScanner = ref(false)
     const store = useStore()
     const { t } = useI18n()
-    let keys = reactive([])
+    const keys = ref([])
 
     const className = computed(() => {
       return 'export-keys-form'
     })
-
-    function getBtcKey (crypto, passphrase, asWif) {
-      const keyPair = getBtcAccount(crypto, passphrase).keyPair
-      const key = asWif
-        ? keyPair.toWIF()
-        : keyPair.privateKey.toString('hex')
-
-      return {
-        crypto: crypto,
-        cryptoName: CryptosNames[crypto],
-        key
-      }
-    }
-    function getLskKey (crypto, passphrase) {
-      const keyPair = getLskAccount(crypto, passphrase).keyPair
-      const key = keyPair.secretKey.toString('hex')
-
-      return {
-        crypto: crypto,
-        cryptoName: CryptosNames[crypto],
-        key
-      }
-    }
 
     function onDetectQrcode (passphrase) {
       onScanQrcode(passphrase)
@@ -184,7 +184,7 @@ export default {
       revealKeys()
     }
     function revealKeys () {
-      keys = []
+      keys.value = []
 
       if (!validateMnemonic(passphrase.value)) {
         store.dispatch('snackbar/show', {
@@ -208,7 +208,7 @@ export default {
 
         const lsk = getLskKey(Cryptos.LSK, passphrase.value)
 
-        keys = [bitcoin, eth, doge, dash, lsk]
+        keys.value = [bitcoin, eth, doge, dash, lsk]
       }, 0)
     }
     function copyKey (key) {
@@ -219,7 +219,7 @@ export default {
       })
     }
     function copyAll () {
-      const allKeys = keys.map(k => `${k.cryptoName}\r\n${k.key}`).join('\r\n\r\n')
+      const allKeys = keys.value.map(k => `${k.cryptoName}\r\n${k.key}`).join('\r\n\r\n')
       copyKey(allKeys)
     }
 
