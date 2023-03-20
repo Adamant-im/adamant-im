@@ -132,8 +132,8 @@ import { useI18n } from 'vue-i18n'
 function getBtcKey (crypto, passphrase, asWif) {
   const keyPair = getBtcAccount(crypto, passphrase).keyPair
   const key = asWif
-      ? keyPair.toWIF()
-      : keyPair.privateKey.toString('hex')
+    ? keyPair.toWIF()
+    : keyPair.privateKey.toString('hex')
 
   return {
     crypto: crypto,
