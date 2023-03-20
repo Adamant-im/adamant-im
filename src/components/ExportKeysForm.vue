@@ -125,7 +125,7 @@ import { getAccount as getLskAccount } from '@/lib/lisk/lisk-api'
 import { Cryptos, CryptosNames } from '@/lib/constants'
 import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
-import { ref, computed } from 'vue'
+import { ref, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
@@ -152,7 +152,7 @@ function getLskKey (crypto, passphrase) {
   }
 }
 
-export default {
+export default defineComponent({
   components: {
     QrcodeCapture,
     QrcodeScannerDialog
@@ -164,10 +164,7 @@ export default {
     const store = useStore()
     const { t } = useI18n()
     const keys = ref([])
-
-    const className = computed(() => {
-      return 'export-keys-form'
-    })
+    const className = 'export-keys-form'
 
     function onDetectQrcode (passphrase) {
       onScanQrcode(passphrase)
@@ -237,7 +234,7 @@ export default {
       t
     }
   }
-}
+})
 </script>
 <style lang="scss" scoped>
 .export-keys-form {
