@@ -166,21 +166,21 @@ export default defineComponent({
     const keys = ref([])
     const className = 'export-keys-form'
 
-    function onDetectQrcode (passphrase) {
+    const onDetectQrcode = (passphrase) => {
       onScanQrcode(passphrase)
     }
-    function onDetectQrcodeError (error) {
+    const onDetectQrcodeError = (error) => {
       this.cryptoAddress = ''
       store.dispatch('snackbar/show', {
         message: t('transfer.invalid_qr_code')
       })
       console.warn(error)
     }
-    function onScanQrcode (pass) {
+    const onScanQrcode = (pass) => {
       passphrase.value = pass
       revealKeys()
     }
-    function revealKeys () {
+    const revealKeys = () => {
       keys.value = []
 
       if (!validateMnemonic(passphrase.value)) {
@@ -208,14 +208,14 @@ export default defineComponent({
         keys.value = [bitcoin, eth, doge, dash, lsk]
       }, 0)
     }
-    function copyKey (key) {
+    const copyKey = (key) => {
       copyToClipboard(key)
       store.dispatch('snackbar/show', {
         message: t('home.copied'),
         timeout: 2000
       })
     }
-    function copyAll () {
+    const copyAll = () => {
       const allKeys = keys.value.map(k => `${k.cryptoName}\r\n${k.key}`).join('\r\n\r\n')
       copyKey(allKeys)
     }
@@ -225,13 +225,13 @@ export default defineComponent({
       showQrcodeScanner,
       keys,
       className,
+      t,
       onDetectQrcode,
       onDetectQrcodeError,
       onScanQrcode,
       revealKeys,
       copyKey,
-      copyAll,
-      t
+      copyAll
     }
   }
 })
