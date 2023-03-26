@@ -14,19 +14,27 @@
 </template>
 
 <script>
-export default {
-  props: {
-    value: {
-      type: Boolean,
-      required: true
-    }
-  },
-  computed: {
-    className () {
+import { defineComponent, computed, defineProps } from 'vue'
+
+export default defineComponent({
+  setup () {
+    const className = computed(() => {
       return 'chat-spinner'
+    })
+
+    const props = defineProps({
+      value: {
+        type: Boolean,
+        required: true
+      }
+    })
+
+    return {
+      className,
+      props
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

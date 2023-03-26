@@ -5,22 +5,30 @@
 </template>
 
 <script>
-export default {
+import { defineComponent, computed } from 'vue'
+
+export default defineComponent({
   props: {
     padding: {
       type: Boolean,
       default: false
     }
   },
-  computed: {
-    classes () {
+
+  setup (props) {
+    const classes = computed(() => {
       return {
         'a-container': true,
-        'a-container--padding': this.padding
+        'a-container--padding': props.padding
       }
+    })
+
+    return {
+      classes,
+      props
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
