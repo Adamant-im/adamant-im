@@ -53,7 +53,7 @@
 <script>
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import { watch, onMounted, defineComponent } from 'vue'
+import { watch, onMounted, defineComponent, ref } from 'vue'
 
 export default defineComponent({
   setup () {
@@ -74,7 +74,7 @@ export default defineComponent({
         icon: 'mdi-cog'
       }
     ]
-    let currentPageIndex = 0
+    const currentPageIndex = ref(0)
     const store = useStore()
     const route = useRoute()
 
@@ -82,7 +82,7 @@ export default defineComponent({
       return store.getters['chat/totalNumOfNewMessages']
     }
     watch(route.name, () => {
-      currentPageIndex = getCurrentPageIndex()
+      currentPageIndex.value = getCurrentPageIndex()
     })
     const getCurrentPageIndex = () => {
       const currentPage = pages.find(page => {
@@ -94,7 +94,7 @@ export default defineComponent({
       return pages.indexOf(currentPage)
     }
     onMounted(() => {
-      currentPageIndex = getCurrentPageIndex()
+      currentPageIndex.value = getCurrentPageIndex()
     })
 
     return {

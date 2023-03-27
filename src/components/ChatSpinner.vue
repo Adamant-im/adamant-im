@@ -14,20 +14,17 @@
 </template>
 
 <script>
-import { defineComponent, computed, defineProps } from 'vue'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
-  setup () {
-    const className = computed(() => {
-      return 'chat-spinner'
-    })
-
-    const props = defineProps({
-      value: {
-        type: Boolean,
-        required: true
-      }
-    })
+  props: {
+    value: {
+      type: Boolean,
+      required: true
+    }
+  },
+  setup (props) {
+    const className = 'chat-spinner'
 
     return {
       className,

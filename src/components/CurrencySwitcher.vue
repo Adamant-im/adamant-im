@@ -26,27 +26,24 @@
 
 <script>
 import { RatesNames } from '@/lib/constants'
-import { defineComponent, computed, defineProps } from 'vue'
+import { defineComponent, computed } from 'vue'
 import { useStore } from 'vuex'
 
 export default defineComponent({
-  setup () {
+  props: {
+    prependIcon: {
+      type: String,
+      default: ''
+    },
+    appendIcon: {
+      type: String,
+      default: ''
+    }
+  },
+  setup (props) {
     const store = useStore()
+    const currencies = RatesNames
 
-    const props = defineProps({
-      prependIcon: {
-        type: String,
-        default: ''
-      },
-      appendIcon: {
-        type: String,
-        default: ''
-      }
-    })
-
-    const currencies = computed(() => {
-      return RatesNames
-    })
     let currentCurrency = computed({
       get () {
         return store.state.options.currentRate
@@ -60,7 +57,7 @@ export default defineComponent({
     })
 
     const onSelect = (currency) => {
-      currentCurrency = currency
+      currentCurrency = currency.value
     }
 
     return {

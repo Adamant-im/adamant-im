@@ -14,17 +14,16 @@
 </template>
 
 <script>
-import { defineComponent, defineProps } from 'vue'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
-  setup () {
-    const props = defineProps({
-      size: {
-        default: 32,
-        type: Number
-      }
-    })
-
+  props: {
+    size: {
+      default: 32,
+      type: Number
+    }
+  },
+  setup (props) {
     const spinnerSize = props.size
 
     return {

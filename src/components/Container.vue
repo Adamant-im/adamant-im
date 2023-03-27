@@ -14,7 +14,6 @@ export default defineComponent({
       default: false
     }
   },
-
   setup (props) {
     const classes = computed(() => {
       return {
