@@ -77,9 +77,6 @@ export default defineComponent({
     const currentPageIndex = ref(0)
     const store = useStore()
     const route = useRoute()
-    watch(route, () => {
-      currentPageIndex.value = getCurrentPageIndex()
-    })
     const getCurrentPageIndex = () => {
       const currentPage = pages.find(page => {
         const pattern = new RegExp(`^${page.link}`)
@@ -89,6 +86,10 @@ export default defineComponent({
 
       return pages.indexOf(currentPage)
     }
+    const numOfNewMessages = computed(() => store.getters['chat/totalNumOfNewMessages'])
+    watch(route, () => {
+      currentPageIndex.value = getCurrentPageIndex()
+    })
     onMounted(() => {
       currentPageIndex.value = getCurrentPageIndex()
     })
@@ -97,7 +98,7 @@ export default defineComponent({
       pages,
       currentPageIndex,
       getCurrentPageIndex,
-      numOfNewMessages: computed(() => store.getters['chat/totalNumOfNewMessages'])
+      numOfNewMessages
     }
   }
 })

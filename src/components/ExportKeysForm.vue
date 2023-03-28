@@ -141,6 +141,7 @@ function getBtcKey (crypto, passphrase, asWif) {
     key
   }
 }
+
 function getLskKey (crypto, passphrase) {
   const keyPair = getLskAccount(crypto, passphrase).keyPair
   const key = keyPair.secretKey.toString('hex')
@@ -151,6 +152,7 @@ function getLskKey (crypto, passphrase) {
     key
   }
 }
+
 export default defineComponent({
   components: {
     QrcodeCapture,
