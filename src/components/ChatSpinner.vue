@@ -27,8 +27,7 @@ export default defineComponent({
     const className = 'chat-spinner'
 
     return {
-      className,
-      props
+      className
     }
   }
 })

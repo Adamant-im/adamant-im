@@ -40,11 +40,11 @@ export default defineComponent({
       default: ''
     }
   },
-  setup (props) {
+  setup () {
     const store = useStore()
     const currencies = RatesNames
 
-    let currentCurrency = computed({
+    const currentCurrency = computed({
       get () {
         return store.state.options.currentRate
       },
@@ -57,13 +57,12 @@ export default defineComponent({
     })
 
     const onSelect = (currency) => {
-      currentCurrency = currency.value
+      currentCurrency.value = currency
     }
 
     return {
       currencies,
       currentCurrency,
-      props,
       onSelect
     }
   }

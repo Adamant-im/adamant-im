@@ -53,7 +53,7 @@
 <script>
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import { watch, onMounted, defineComponent, ref } from 'vue'
+import { watch, onMounted, defineComponent, ref, computed } from 'vue'
 
 export default defineComponent({
   setup () {
@@ -77,11 +77,7 @@ export default defineComponent({
     const currentPageIndex = ref(0)
     const store = useStore()
     const route = useRoute()
-
-    const numOfNewMessages = () => {
-      return store.getters['chat/totalNumOfNewMessages']
-    }
-    watch(route.name, () => {
+    watch(route, () => {
       currentPageIndex.value = getCurrentPageIndex()
     })
     const getCurrentPageIndex = () => {
@@ -100,8 +96,8 @@ export default defineComponent({
     return {
       pages,
       currentPageIndex,
-      numOfNewMessages,
-      getCurrentPageIndex
+      getCurrentPageIndex,
+      numOfNewMessages: computed(() => store.getters['chat/totalNumOfNewMessages'])
     }
   }
 })

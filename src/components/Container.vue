@@ -23,8 +23,7 @@ export default defineComponent({
     })
 
     return {
-      classes,
-      props
+      classes
     }
   }
 })

@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, toRefs } from 'vue'
 
 export default defineComponent({
   props: {
@@ -24,11 +24,10 @@ export default defineComponent({
     }
   },
   setup (props) {
-    const spinnerSize = props.size
+    const { size: spinnerSize } = toRefs(props)
 
     return {
-      spinnerSize,
-      props
+      spinnerSize
     }
   }
 })

@@ -151,7 +151,6 @@ function getLskKey (crypto, passphrase) {
     key
   }
 }
-
 export default defineComponent({
   components: {
     QrcodeCapture,
