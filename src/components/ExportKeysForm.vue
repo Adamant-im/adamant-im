@@ -47,13 +47,13 @@
           size="small"
           @click="copyAll"
         >
-          {{ $t('options.export_keys.copy_all') }}
+          {{ t('options.export_keys.copy_all') }}
         </v-btn>
       </div>
     </div>
 
     <div :class="`${className}__disclaimer a-text-regular-enlarged`">
-      {{ $t("options.export_keys.disclaimer") }}
+      {{ t("options.export_keys.disclaimer") }}
     </div>
 
     <v-text-field
@@ -65,7 +65,7 @@
     >
       <template #label>
         <span class="font-weight-medium">
-          {{ $t('options.export_keys.passphrase') }}
+          {{ t('options.export_keys.passphrase') }}
         </span>
       </template>
       <template #append-inner>
@@ -82,7 +82,7 @@
           </template>
           <v-list>
             <v-list-item @click="showQrcodeScanner = true">
-              <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
+              <v-list-item-title>{{ t('transfer.decode_from_camera') }}</v-list-item-title>
             </v-list-item>
             <v-list-item class="v-list__tile--link">
               <v-list-item-title>
@@ -90,7 +90,7 @@
                   @detect="onDetectQrcode"
                   @error="onDetectQrcodeError"
                 >
-                  <span>{{ $t('transfer.decode_from_image') }}</span>
+                  <span>{{ t('transfer.decode_from_image') }}</span>
                 </qrcode-capture>
               </v-list-item-title>
             </v-list-item>
@@ -105,7 +105,7 @@
         class="a-btn-primary"
         @click="revealKeys"
       >
-        {{ $t('options.export_keys.button') }}
+        {{ t('options.export_keys.button') }}
       </v-btn>
     </div>
 
@@ -119,13 +119,15 @@
 <script>
 import { validateMnemonic } from 'bip39'
 import copyToClipboard from 'copy-to-clipboard'
-
 import { getAccountFromPassphrase as getEthAccount } from '@/lib/eth-utils'
 import { getAccount as getBtcAccount } from '@/lib/bitcoin/btc-base-api'
 import { getAccount as getLskAccount } from '@/lib/lisk/lisk-api'
 import { Cryptos, CryptosNames } from '@/lib/constants'
 import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
+import { ref, defineComponent } from 'vue'
+import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
 function getBtcKey (crypto, passphrase, asWif) {
   const keyPair = getBtcAccount(crypto, passphrase).keyPair
@@ -151,45 +153,40 @@ function getLskKey (crypto, passphrase) {
   }
 }
 
-export default {
+export default defineComponent({
   components: {
     QrcodeCapture,
     QrcodeScannerDialog
   },
-  data () {
-    return {
-      passphrase: '',
-      showQrcodeScanner: false,
-      keys: []
-    }
-  },
-  computed: {
-    className: () => 'export-keys-form'
-  },
-  methods: {
-    onDetectQrcode (passphrase) {
-      this.onScanQrcode(passphrase)
-    },
 
-    onDetectQrcodeError (error) {
+  setup () {
+    const passphrase = ref('')
+    const showQrcodeScanner = ref(false)
+    const store = useStore()
+    const { t } = useI18n()
+    const keys = ref([])
+    const className = 'export-keys-form'
+
+    const onDetectQrcode = (passphrase) => {
+      onScanQrcode(passphrase)
+    }
+    const onDetectQrcodeError = (error) => {
       this.cryptoAddress = ''
-      this.$store.dispatch('snackbar/show', {
-        message: this.$t('transfer.invalid_qr_code')
+      store.dispatch('snackbar/show', {
+        message: t('transfer.invalid_qr_code')
       })
       console.warn(error)
-    },
+    }
+    const onScanQrcode = (pass) => {
+      passphrase.value = pass
+      revealKeys()
+    }
+    const revealKeys = () => {
+      keys.value = []
 
-    onScanQrcode (pass) {
-      this.passphrase = pass
-      this.revealKeys()
-    },
-
-    revealKeys () {
-      this.keys = []
-
-      if (!validateMnemonic(this.passphrase)) {
-        this.$store.dispatch('snackbar/show', {
-          message: this.$t('login.invalid_passphrase')
+      if (!validateMnemonic(passphrase.value)) {
+        store.dispatch('snackbar/show', {
+          message: t('login.invalid_passphrase')
         })
         return
       }
@@ -199,34 +196,46 @@ export default {
       setTimeout(() => {
         const eth = {
           crypto: Cryptos.ETH,
-          cryptoName: this.$t('options.export_keys.eth'),
-          key: (getEthAccount(this.passphrase).privateKey || '').substr(2)
+          cryptoName: t('options.export_keys.eth'),
+          key: (getEthAccount(passphrase.value).privateKey || '').substr(2)
         }
 
-        const bitcoin = getBtcKey(Cryptos.BTC, this.passphrase, true)
-        const dash = getBtcKey(Cryptos.DASH, this.passphrase, false)
-        const doge = getBtcKey(Cryptos.DOGE, this.passphrase, true)
+        const bitcoin = getBtcKey(Cryptos.BTC, passphrase.value, true)
+        const dash = getBtcKey(Cryptos.DASH, passphrase.value, false)
+        const doge = getBtcKey(Cryptos.DOGE, passphrase.value, true)
 
-        const lsk = getLskKey(Cryptos.LSK, this.passphrase)
+        const lsk = getLskKey(Cryptos.LSK, passphrase.value)
 
-        this.keys = [bitcoin, eth, doge, dash, lsk]
+        keys.value = [bitcoin, eth, doge, dash, lsk]
       }, 0)
-    },
-
-    copyKey (key) {
+    }
+    const copyKey = (key) => {
       copyToClipboard(key)
-      this.$store.dispatch('snackbar/show', {
-        message: this.$t('home.copied'),
+      store.dispatch('snackbar/show', {
+        message: t('home.copied'),
         timeout: 2000
       })
-    },
+    }
+    const copyAll = () => {
+      const allKeys = keys.value.map(k => `${k.cryptoName}\r\n${k.key}`).join('\r\n\r\n')
+      copyKey(allKeys)
+    }
 
-    copyAll () {
-      const allKeys = this.keys.map(k => `${k.cryptoName}\r\n${k.key}`).join('\r\n\r\n')
-      this.copyKey(allKeys)
+    return {
+      passphrase,
+      showQrcodeScanner,
+      keys,
+      className,
+      t,
+      onDetectQrcode,
+      onDetectQrcodeError,
+      onScanQrcode,
+      revealKeys,
+      copyKey,
+      copyAll
     }
   }
-}
+})
 </script>
 <style lang="scss" scoped>
 .export-keys-form {

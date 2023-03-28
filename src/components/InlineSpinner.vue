@@ -14,18 +14,21 @@
 </template>
 
 <script>
-export default {
-  name: 'InlineSpinner',
+import { defineComponent, toRefs } from 'vue'
+
+export default defineComponent({
   props: {
     size: {
       default: 32,
       type: Number
     }
   },
-  data () {
+  setup (props) {
+    const { size: spinnerSize } = toRefs(props)
+
     return {
-      spinnerSize: this.size
+      spinnerSize
     }
   }
-}
+})
 </script>
