@@ -92,7 +92,7 @@
     "cross-env": "^7.0.3",
     "cypress": "^12.7.0",
     "electron": "^23.1.2",
-    "electron-builder": "^24.1.1",
+    "electron-builder": "^23.6.0",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^8.35.0",
     "eslint-plugin-vue": "^9.9.0",
