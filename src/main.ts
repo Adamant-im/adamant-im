@@ -1,15 +1,13 @@
-import 'core-js/features/array/flat-map'
 import { createApp } from 'vue'
 
 import App from './App.vue'
 import { router } from './router'
-import store from './store'
+import store from './store/index.js'
 import { i18n } from './i18n'
 import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
 import { vuetify } from '@/plugins/vuetify'
 import { registerGlobalComponents } from './plugins/layout'
-import './registerServiceWorker'
 import '@/assets/styles/app.scss'
 
 import 'dayjs/locale/de'

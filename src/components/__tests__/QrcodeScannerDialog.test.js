@@ -1,22 +1,16 @@
-import { shallowMount } from '@vue/test-utils'
-import Vue from 'vue'
-import Vuex from 'vuex'
-import VueI18n from 'vue-i18n'
-import Vuetify from 'vuetify'
+import { vi, describe, it, expect, beforeEach } from 'vitest'
+import { mount } from '@vue/test-utils'
+import { createStore } from 'vuex'
 
 import mockupI18n from './__mocks__/plugins/i18n'
 import mockupSnackbar from './__mocks__/store/modules/snackbar'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 
-Vue.use(Vuex)
-Vue.use(VueI18n)
-Vue.use(Vuetify)
-
-jest.mock('@zxing/library', () => ({
+vi.mock('@zxing/library', () => ({
   BrowserQRCodeReader: class BrowserQRCodeReader {
-    constructor () {}
+    constructor() {}
 
-    getVideoInputDevices () {
+    getVideoInputDevices() {
       return Promise.resolve([
         {
           deviceId: 1
@@ -24,13 +18,13 @@ jest.mock('@zxing/library', () => ({
       ])
     }
 
-    decodeFromInputVideoDevice () {
+    decodeFromInputVideoDevice() {
       return Promise.resolve({
         text: 'decoded text'
       })
     }
 
-    reset () {
+    reset() {
       return Promise.resolve()
     }
   }
@@ -39,10 +33,10 @@ jest.mock('@zxing/library', () => ({
 /**
  * Mockup store helper.
  */
-function mockupStore () {
+function mockupStore() {
   const snackbar = mockupSnackbar()
 
-  const store = new Vuex.Store({
+  const store = createStore({
     modules: {
       snackbar
     }
@@ -70,11 +64,13 @@ describe('QrcodeScannerDialog.vue', () => {
   })
 
   it('renders the correct markup', () => {
-    const wrapper = shallowMount(QrcodeScannerDialog, {
-      store,
-      i18n,
+    const wrapper = mount(QrcodeScannerDialog, {
+      shallow: true,
       propsData: {
-        value: true
+        modelValue: true
+      },
+      global: {
+        plugins: [store, i18n]
       }
     })
 
@@ -82,11 +78,13 @@ describe('QrcodeScannerDialog.vue', () => {
   })
 
   it('should display dialog when :value = true', () => {
-    const wrapper = shallowMount(QrcodeScannerDialog, {
-      store,
-      i18n,
+    const wrapper = mount(QrcodeScannerDialog, {
+      shallow: true,
       propsData: {
-        value: true
+        modelValue: true
+      },
+      global: {
+        plugins: [store, i18n]
       }
     })
 
@@ -94,11 +92,13 @@ describe('QrcodeScannerDialog.vue', () => {
   })
 
   it('should hide dialog when :value = false', () => {
-    const wrapper = shallowMount(QrcodeScannerDialog, {
-      store,
-      i18n,
+    const wrapper = mount(QrcodeScannerDialog, {
+      shallow: true,
       propsData: {
-        value: false
+        modelValue: false
+      },
+      global: {
+        plugins: [store, i18n]
       }
     })
 

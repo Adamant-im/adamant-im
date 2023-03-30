@@ -147,7 +147,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/settings';
+@import 'vuetify/settings';
 .chat-menu {
   &__list {
     min-width: 200px;

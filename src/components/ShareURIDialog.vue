@@ -108,7 +108,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~vuetify/_settings.scss';
+@import 'vuetify/_settings.scss';
 
 .share-uri-dialog {
 }

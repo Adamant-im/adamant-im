@@ -1,41 +1,41 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`PassphraseGenerator.vue renders the correct markup 1`] = `
+exports[`PassphraseGenerator.vue > renders the correct markup 1`] = `
 <div
   class="passphrase-generator"
+  data-v-f3fe94d6=""
 >
   <div
     class="text-center"
+    data-v-f3fe94d6=""
   >
     <h3
       class="a-text-regular"
+      data-v-f3fe94d6=""
     >
-      
       Or create a new anonymous address:
-    
     </h3>
-     
-    <v-btn-stub
-      activeclass=""
+    <v-btn
       class="a-btn-link mt-2"
-      small="true"
-      tag="button"
-      text="true"
-      type="button"
+      data-v-f3fe94d6=""
+      size="small"
+      variant="text"
     >
-      
       Create new
-    
-    </v-btn-stub>
+    </v-btn>
   </div>
-   
   <transition-stub
+    appear="false"
+    css="true"
+    data-v-f3fe94d6=""
     name="slide-fade"
+    persisted="false"
   >
-    <!---->
+    <!--v-if-->
   </transition-stub>
-   
-  <qrcoderendererdialog-stub
+  <qrcode-renderer-dialog-stub
+    data-v-f3fe94d6=""
+    modelvalue="false"
     text=""
   />
 </div>

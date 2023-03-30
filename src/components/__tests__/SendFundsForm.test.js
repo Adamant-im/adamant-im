@@ -180,7 +180,7 @@ describe('SendFundsForm', () => {
     rate = rateModule()
     options = optionsModule()
 
-    store = new Vuex.Store({
+    store = createStore({
       ...main,
       modules: {
         adm,

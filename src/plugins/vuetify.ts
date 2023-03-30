@@ -1,12 +1,14 @@
-import { createVuetify } from 'vuetify'
+import { createVuetify, ThemeDefinition } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import 'vuetify/styles'
 
-/**
- * @type { import('vuetify').ThemeDefinition }
- */
-const lightTheme = {
+export enum ThemeName {
+  Light = 'light',
+  Dark = 'dark'
+}
+
+const lightTheme: ThemeDefinition = {
   dark: false,
   colors: {
     primary: '#2E7EED',
@@ -19,10 +21,7 @@ const lightTheme = {
   }
 }
 
-/**
- * @type { import('vuetify').ThemeDefinition }
- */
-const darkTheme = {
+const darkTheme: ThemeDefinition = {
   dark: true,
   colors: {
     primary: '#2196F3',
@@ -42,14 +41,8 @@ export const vuetify = createVuetify({
     defaultTheme: 'dark',
 
     themes: {
-      light: lightTheme,
-      dark: darkTheme
-    },
-
-    options: {
-      customProperties: true
+      [ThemeName.Light]: lightTheme,
+      [ThemeName.Dark]: darkTheme
     }
   }
 })
-
-console.log(vuetify.theme.themes)

@@ -85,7 +85,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '../../assets/styles/themes/adamant/_mixins.scss';
-@import '~vuetify/settings';
+@import 'vuetify/settings';
 @import '../../assets/styles/settings/_colors.scss';
 
 .chat-toolbar {

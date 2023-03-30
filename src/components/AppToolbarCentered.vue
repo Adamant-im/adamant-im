@@ -93,7 +93,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/settings';
+@import 'vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
 
 .app-toolbar-centered {

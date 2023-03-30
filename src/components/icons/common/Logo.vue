@@ -349,7 +349,7 @@
 </template>
 
 <style lang="scss" scoped>
-@import '~vuetify/settings';
+@import 'vuetify/settings';
 
 .st0{fill:url(#SVGID_1_);}
 .st1{fill:url(#SVGID_2_);}
