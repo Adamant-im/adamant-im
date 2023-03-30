@@ -27,6 +27,7 @@
     "@stablelib/utf8": "^1.0.1",
     "@zxing/library": "0.19.1",
     "abi-decoder": "^2.4.0",
+    "assert": "^2.0.0",
     "axios": "^0.27.2",
     "b64-to-blob": "^1.2.19",
     "bignumber.js": "^9.0.2",
