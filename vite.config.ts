@@ -40,7 +40,8 @@ export default defineConfig({
       crypto: 'crypto-browserify',
       http: 'stream-http',
       https: 'https-browserify',
-      os: 'os-browserify/browser'
+      os: 'os-browserify/browser',
+      assert: 'assert'
     },
     extensions: ['.js', '.json', '.vue']
   },
