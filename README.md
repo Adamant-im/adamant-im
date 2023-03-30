@@ -17,10 +17,10 @@ This application deployed at [msg.adamant.im](https://msg.adamant.im) and [avail
 ## Project setup
 
 ```
-yarn install
+npm install
 ```
 
-Note: Lisk libraries may ask for specific Node.js version, you can ignore this with `yarn install --ignore-engines`.
+Note: Lisk libraries may ask for specific Node.js version, you can ignore this with `npm install --ignore-engines`.
 
 ### Compiles and hot-reloads for development
 
@@ -52,16 +52,22 @@ npm run serve
 npm run lint
 ```
 
-### Run electron version
+### Start dev server and electron app
 
 ```
-npm run electron:serve
+npm run electron:dev
 ```
 
 ### Build electron version
 
 ```
 npm run electron:build
+```
+
+### Preview electron production build
+
+```
+npm run electron:serve
 ```
 
 [Download pre-build apps](https://adamant.im/#adm-apps) for macOS, Windows and Linux.

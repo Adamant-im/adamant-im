@@ -1,11 +1,11 @@
-import { defineConfig } from "vite";
+import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import path from "path";
+import path from 'path'
 import autoprefixer from 'autoprefixer'
 import { VitePWA } from 'vite-plugin-pwa'
 
 import inject from '@rollup/plugin-inject'
-import commonjs from '@rollup/plugin-commonjs';
+import commonjs from '@rollup/plugin-commonjs'
 
 export default defineConfig({
   plugins: [
@@ -25,13 +25,13 @@ export default defineConfig({
   ],
   css: {
     postcss: {
-        plugins: [autoprefixer()]
+      plugins: [autoprefixer()]
     }
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
-      
+      '@': path.resolve(__dirname, './src'),
+
       // Node.js polyfills
       buffer: 'buffer/',
       events: 'rollup-plugin-node-polyfills/polyfills/events',
@@ -48,19 +48,19 @@ export default defineConfig({
     port: 8080
   },
   define: {
-    "process.env": {} // some old libs like `promise-queue` still uses Webpack
+    'process.env': {} // some old libs like `promise-queue` still uses Webpack
   },
   optimizeDeps: {
     esbuildOptions: {
-        // Node.js global to browser globalThis
-        define: {
-            global: 'globalThis'
-        },
-    },
+      // Node.js global to browser globalThis
+      define: {
+        global: 'globalThis'
+      }
+    }
   },
   build: {
     commonjsOptions: {
       include: []
     }
   }
-});
+})

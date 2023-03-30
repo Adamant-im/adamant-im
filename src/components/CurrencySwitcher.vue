@@ -26,8 +26,10 @@
 
 <script>
 import { RatesNames } from '@/lib/constants'
+import { defineComponent, computed } from 'vue'
+import { useStore } from 'vuex'
 
-export default {
+export default defineComponent({
   props: {
     prependIcon: {
       type: String,
@@ -38,28 +40,33 @@ export default {
       default: ''
     }
   },
-  computed: {
-    currencies () {
-      return RatesNames
-    },
-    currentCurrency: {
+  setup () {
+    const store = useStore()
+    const currencies = RatesNames
+
+    const currentCurrency = computed({
       get () {
-        return this.$store.state.options.currentRate
+        return store.state.options.currentRate
       },
       set (value) {
-        this.$store.commit('options/updateOption', {
+        store.commit('options/updateOption', {
           key: 'currentRate',
           value
         })
       }
+    })
+
+    const onSelect = (currency) => {
+      currentCurrency.value = currency
     }
-  },
-  methods: {
-    onSelect (currency) {
-      this.currentCurrency = currency
+
+    return {
+      currencies,
+      currentCurrency,
+      onSelect
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

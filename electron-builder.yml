@@ -1,0 +1,58 @@
+productName: ADAMANT Messenger
+appId: im.adamant.msg
+
+files: 
+  - '!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme,test,__tests__,tests,powered-test,example,examples,*.d.ts}'
+  - '!**/._*'
+  - '!**/node_modules/.bin'
+  - '!**/{report.html,robots.txt,.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,__pycache__,thumbs.db,.gitignore,.gitattributes,.editorconfig,.flowconfig,.yarn-metadata.json,.idea,appveyor.yml,.travis.yml,circle.yml,npm-debug.log,.nyc_output,yarn.lock,.yarn-integrity}'
+
+protocols:
+  - name: ADAMANT Messenger
+    schemes:
+      - adm
+
+# Windows configuration
+win:
+  icon: './build/win/icon.ico'
+  target:
+    - 'nsis'
+
+# Config for the windows installer
+nsis:
+  deleteAppDataOnUninstall: true
+  createDesktopShortcut: 'always'
+
+# Mac OS configuration
+mac:
+  category: 'public.app-category.social-networking'
+  darkModeSupport: true
+  icon: './build/osx/icon.icns'
+  entitlements: './build/osx/entitlements.mac.plist'
+  hardenedRuntime: true
+  gatekeeperAssess: false
+
+# Config for OSX dmg
+dmg:
+  background: './build/osx/background.jpeg'
+  contents:
+    - x: 260
+      y: 77
+    - x: 163
+      y: 186
+      type: 'link'
+      path: '/Applications'
+
+# Linux configuration
+linux: 
+  category: 'InstantMessaging'
+  desktop:
+    Icon: './build/linux/icon.png'
+    Name: 'ADAMANT Messenger'
+    Terminal: false
+    Type: 'Application'
+  artifactName: 'ADAMANT-Messenger-${version}.${ext}'
+  icon: './build/linux/'
+  target:
+    - AppImage
+    - snap
