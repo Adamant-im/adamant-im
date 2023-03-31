@@ -85,7 +85,7 @@
           <div :class="`${className}__dialog-summary`">
             {{ t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
             {{ t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
-            {{ t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
+            {{ t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ VOTE_REQUEST_LIMIT }}</strong>,&nbsp;
             {{ t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
           </div>
           <!-- eslint-disable vue/no-v-html -- Safe internal content -->
@@ -125,11 +125,12 @@ import AppToolbarCentered from '@/components/AppToolbarCentered'
 import Pagination from '@/components/Pagination'
 import { explorerUriToOnion } from '@/lib/uri'
 import DelegatesTable from '@/components/DelegatesTable/DelegatesTable'
-import { computed, onMounted, ref, reactive } from "vue"
+import { computed, onMounted, ref, reactive, defineComponent } from "vue"
 import { useStore } from "vuex"
 import { useI18n } from 'vue-i18n'
+const VOTE_REQUEST_LIMIT = 30
 
-export default {
+export default defineComponent({
   components: {
     DelegatesTable,
     AppToolbarCentered,
@@ -138,7 +139,6 @@ export default {
   setup () {
     const store = useStore()
     const { t } = useI18n()
-    const voteRequestLimit = 30
     const search = ref('')
     const pagination = reactive({
       rowsPerPage: 50,
@@ -146,8 +146,8 @@ export default {
       page: 1
     })
     const expanded = ref([])
-    let waitingForConfirmation = ref(false)
-    let dialog = ref(false)
+    const waitingForConfirmation = ref(false)
+    const dialog = ref(false)
     const className = 'delegates-view'
 
     const delegates = computed(() => {
@@ -175,9 +175,7 @@ export default {
 
       return Math.ceil(delegates.value.length / pagination.rowsPerPage)
     })
-    const showPagination = computed(() => {
-      return search.value.length === 0
-    })
+    const showPagination = computed(() => search.value.length === 0)
     const reviewButtonDisabled = computed(() => {
       return (numOfUpvotes.value + numOfDownvotes.value) === 0
     })
@@ -188,14 +186,30 @@ export default {
       })
     })
 
-    const getExplorerUrl = () => {
-      return explorerUriToOnion('https://explorer.adamant.im/delegate/')
-    }
+    const getExplorerUrl = () => explorerUriToOnion('https://explorer.adamant.im/delegate/')
     const upVote = (id) => {
       store.commit('delegates/upVote', id)
     }
     const downVote = (id) => {
       store.commit('delegates/downVote', id)
+    }
+    const validateVotes = () => {
+      if (numOfUpvotes.value + numOfDownvotes.value > VOTE_REQUEST_LIMIT) {
+        store.dispatch('snackbar/show', {
+          message: t('votes.vote_request_limit', { limit: VOTE_REQUEST_LIMIT })
+        })
+
+        return false
+      }
+      if (store.state.balance < 50) {
+        store.dispatch('snackbar/show', {
+          message: t('votes.no_money')
+        })
+
+        return false
+      }
+
+      return true
     }
     const sendVotes = () => {
       if (!validateVotes()) {
@@ -230,30 +244,11 @@ export default {
         message: t('votes.sent')
       })
     }
-    const validateVotes = () => {
-      if (numOfUpvotes.value + numOfDownvotes.value > voteRequestLimit) {
-        store.dispatch('snackbar/show', {
-          message: t('votes.vote_request_limit', { limit: voteRequestLimit })
-        })
-
-        return false
-      }
-      if (store.state.balance < 50) {
-        store.dispatch('snackbar/show', {
-          message: t('votes.no_money')
-        })
-
-        return false
-      }
-
-      return true
-    }
     const showConfirmationDialog = () => {
       dialog.value = true
     }
 
     return {
-      voteRequestLimit,
       search,
       pagination,
       expanded,
@@ -276,7 +271,7 @@ export default {
       showConfirmationDialog
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
