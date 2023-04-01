@@ -50,11 +50,14 @@
     </v-btn>
   </v-bottom-navigation>
 </template>
-
 <script>
-export default {
-  data: () => ({
-    pages: [
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
+import { watch, onMounted, defineComponent, ref, computed } from 'vue'
+
+export default defineComponent({
+  setup () {
+    const pages = [
       {
         title: 'wallet',
         link: '/home',
@@ -70,36 +73,36 @@ export default {
         link: '/options',
         icon: 'mdi-cog'
       }
-    ],
-    currentPageIndex: 0
-  }),
-  computed: {
-    numOfNewMessages () {
-      return this.$store.getters['chat/totalNumOfNewMessages']
-    }
-  },
-  watch: {
-    '$route.path' () {
-      this.currentPageIndex = this.getCurrentPageIndex()
-    }
-  },
-  mounted () {
-    this.currentPageIndex = this.getCurrentPageIndex()
-  },
-  methods: {
-    getCurrentPageIndex () {
-      const currentPage = this.pages.find(page => {
+    ]
+    const currentPageIndex = ref(0)
+    const store = useStore()
+    const route = useRoute()
+    const getCurrentPageIndex = () => {
+      const currentPage = pages.find(page => {
         const pattern = new RegExp(`^${page.link}`)
 
-        return this.$route.path.match(pattern)
+        return route.path.match(pattern)
       })
 
-      return this.pages.indexOf(currentPage)
+      return pages.indexOf(currentPage)
+    }
+    const numOfNewMessages = computed(() => store.getters['chat/totalNumOfNewMessages'])
+    watch(route, () => {
+      currentPageIndex.value = getCurrentPageIndex()
+    })
+    onMounted(() => {
+      currentPageIndex.value = getCurrentPageIndex()
+    })
+
+    return {
+      pages,
+      currentPageIndex,
+      getCurrentPageIndex,
+      numOfNewMessages
     }
   }
-}
+})
 </script>
-
 <style lang="scss" scoped>
 @import 'vuetify/settings';
 @import '../assets/styles/settings/_colors.scss';
