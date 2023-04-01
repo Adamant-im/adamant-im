@@ -1,5 +1,4 @@
 import { createApp } from 'vue'
-
 import App from './App.vue'
 import { router } from './router'
 import store from './store/index.js'
@@ -7,6 +6,7 @@ import { i18n } from './i18n'
 import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
 import { vuetify } from '@/plugins/vuetify'
+import { pinia } from "@/plugins/pinia";
 import { registerGlobalComponents } from './plugins/layout'
 import '@/assets/styles/app.scss'
 
@@ -25,6 +25,7 @@ app.use(store)
 app.use(i18n)
 app.use(vuetify)
 app.use(VueFormatters)
+app.use(pinia)
 
 registerGlobalComponents(app)
 

@@ -1,27 +1,17 @@
 <template>
-  <v-row
-    justify="center"
-    no-gutters
-    :class="className"
-  >
+  <v-row justify="center" no-gutters :class="className">
     <container>
       <div class="text-right">
         <language-switcher prepend-icon="mdi-chevron-right" />
       </div>
 
-      <v-sheet
-        class="text-center mt-4"
-        color="transparent"
-      >
-        <logo style="width: 300px;" />
+      <v-sheet class="text-center mt-4" color="transparent">
+        <logo style="width: 300px" />
 
         <h1 :class="`${className}__title`">
           {{ $t('login.brand_title') }}
         </h1>
-        <h2
-          :class="`${className}__subtitle`"
-          class="hidden-sm-and-down mt-4"
-        >
+        <h2 :class="`${className}__subtitle`" class="hidden-sm-and-down mt-4">
           {{ $t('login.subheader') }}
         </h2>
       </v-sheet>
@@ -31,15 +21,8 @@
         class="text-center mt-4"
         color="transparent"
       >
-        <v-row
-          justify="center"
-          no-gutters
-        >
-          <v-col
-            sm="8"
-            md="8"
-            lg="8"
-          >
+        <v-row justify="center" no-gutters>
+          <v-col sm="8" md="8" lg="8">
             <login-form
               ref="loginForm"
               v-model="passphrase"
@@ -49,11 +32,7 @@
           </v-col>
         </v-row>
 
-        <v-row
-          justify="center"
-          class="mt-4"
-          no-gutters
-        >
+        <v-row justify="center" class="mt-4" no-gutters>
           <v-col cols="auto">
             <v-btn
               class="ma-2"
@@ -88,19 +67,9 @@
         </v-row>
       </v-sheet>
 
-      <v-row
-        v-if="!isLoginViaPassword"
-        justify="center"
-        class="mt-8"
-      >
-        <v-col
-          sm="8"
-          md="8"
-          lg="8"
-        >
-          <passphrase-generator
-            @copy="onCopyPassphrase"
-          />
+      <v-row v-if="!isLoginViaPassword" justify="center" class="mt-8">
+        <v-col sm="8" md="8" lg="8">
+          <passphrase-generator @copy="onCopyPassphrase" />
         </v-col>
       </v-row>
 
@@ -109,15 +78,8 @@
         class="text-center mt-6"
         color="transparent"
       >
-        <v-row
-          no-gutters
-          justify="center"
-        >
-          <v-col
-            sm="8"
-            md="8"
-            lg="8"
-          >
+        <v-row no-gutters justify="center">
+          <v-col sm="8" md="8" lg="8">
             <login-password-form
               v-model="password"
               @login="onLogin"
@@ -136,8 +98,8 @@
   </v-row>
 </template>
 
-<script>
-import { nextTick } from 'vue'
+<script lang="ts">
+import { nextTick, defineComponent } from 'vue'
 
 import QrcodeCapture from '@/components/QrcodeCapture'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
@@ -153,8 +115,21 @@ import { navigateByURI } from '@/router/navigationGuard'
 import { mapStores } from 'pinia'
 import { useSnackbarStore } from '@/pinia/stores/snackbar/snackbar'
 import { useTodoStore } from '@/pinia/stores/todo'
+import { useDispatch } from '@/pinia/utils/useDispatch'
+import { showSnackbar } from '@/pinia/stores/snackbar/actions'
 
-export default {
+export default defineComponent({
+  setup() {
+    const snackbarStore = useSnackbarStore()
+    const todoStore = useTodoStore()
+    const dispatch = useDispatch()
+
+    return {
+      snackbarStore,
+      todoStore,
+      dispatch
+    }
+  },
   components: {
     LanguageSwitcher,
     PassphraseGenerator,
@@ -174,30 +149,29 @@ export default {
     logo: '/img/adamant-logo-transparent-512x512.png'
   }),
   computed: {
-    ...mapStores(useSnackbarStore),
-    ...mapStores(useTodoStore),
-    className () {
+    className() {
       return 'login-page'
     },
-    isLoginViaPassword () {
+    isLoginViaPassword() {
       return this.$store.getters['options/isLoginViaPassword']
     }
   },
   methods: {
-    onDetectQrcode (passphrase) {
+    onDetectQrcode(passphrase) {
       this.onScanQrcode(passphrase)
     },
-    onDetectQrcodeError (err) {
+    onDetectQrcodeError(err) {
       this.passphrase = ''
       this.$store.dispatch('snackbar/show', {
         message: this.$t('login.invalid_qr_code')
       })
       console.warn(err)
     },
-    onLogin () {
+    onLogin() {
       if (!this.$store.state.chat.isFulfilled) {
         this.$store.commit('chat/createAdamantChats')
-        this.$store.dispatch('chat/loadChats')
+        this.$store
+          .dispatch('chat/loadChats')
           .then(() => this.$store.dispatch('startInterval'))
       } else {
         this.$store.dispatch('startInterval')
@@ -205,29 +179,36 @@ export default {
 
       navigateByURI()
     },
-    onLoginError (key) {
+    onLoginError(key) {
       console.log('this.snackbarStore', this.snackbarStore)
-      this.snackbarStore.show({
-        message: this.$t(key)
-      })
+
+      this.dispatch(
+        showSnackbar({
+          message: this.$t(key)
+        })
+      )
+
+      // this.snackbarStore.show({
+      //   message: this.$t(key)
+      // })
     },
-    handleFetchClick () {
+    handleFetchClick() {
       this.todoStore.fetchTodo({
         id: 1
       })
     },
-    onCopyPassphrase () {
+    onCopyPassphrase() {
       this.$store.dispatch('snackbar/show', {
         message: this.$t('home.copied'),
         timeout: 2000
       })
     },
-    onScanQrcode (passphrase) {
+    onScanQrcode(passphrase) {
       this.passphrase = passphrase
       nextTick(() => this.$refs.loginForm.submit())
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -257,7 +238,9 @@ export default {
 /** Themes **/
 .v-theme--light {
   .login-page {
-    &__icon, &__title, &__subtitle {
+    &__icon,
+    &__title,
+    &__subtitle {
       color: map-get($adm-colors, 'regular');
     }
   }

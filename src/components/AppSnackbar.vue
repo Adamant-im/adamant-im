@@ -10,7 +10,6 @@
     :multi-line="message.length > 50"
   >
     <div :class="`${className}__container`">
-      {{ hello }}
       {{ message }}
       <v-btn
         v-if="timeout === 0 || timeout > 2000"
@@ -19,33 +18,27 @@
         fab
         @click="open = false"
       >
-        <v-icon
-          :class="`${className}__icon`"
-          icon="mdi-close"
-          size="dense"
-        />
+        <v-icon :class="`${className}__icon`" icon="mdi-close" size="dense" />
       </v-btn>
     </div>
   </v-snackbar>
 </template>
 
-<script>
+<script lang="ts">
 import { useSnackbarStore } from '@/pinia/stores/snackbar/snackbar'
 import { useTodoStore } from '@/pinia/stores/todo'
 import { computed } from 'vue'
 
 export default {
-  setup () {
+  setup() {
     const snackbar = useSnackbarStore()
-    const todo = useTodoStore()
-    console.log('useTodoStore', todo)
     const { resetOptions, changeState } = snackbar
 
     const open = computed({
-      get () {
+      get() {
         return snackbar.open
       },
-      set (newValue) {
+      set(newValue) {
         if (!newValue) {
           resetOptions()
         }
@@ -59,7 +52,6 @@ export default {
       message: computed(() => snackbar.message),
       color: computed(() => snackbar.color),
       timeout: computed(() => snackbar.timeout),
-      hello: computed(() => snackbar.hello),
       open
     }
   }
@@ -68,8 +60,8 @@ export default {
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import "../assets/styles/themes/adamant/_mixins.scss";
-@import "../assets/styles/settings/_colors.scss";
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '../assets/styles/settings/_colors.scss';
 
 .app-snackbar {
   :deep(.v-snackbar__wrapper) {
@@ -101,7 +93,7 @@ export default {
 .v-theme--light.app-snackbar {
   :deep(.v-snackbar__wrapper) {
     background-color: map-get($shades, 'white');
-    color: map-get($adm-colors, 'regular')
+    color: map-get($adm-colors, 'regular');
   }
 }
 

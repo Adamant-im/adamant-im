@@ -3,7 +3,7 @@ import { runSaga, stdChannel } from 'redux-saga'
 
 const channel = stdChannel()
 
-export function PiniaSagaPlugin () {
+export function PiniaSagaPlugin() {
   return (context) => {
     console.log(
       'Register PiniaSagaPlugin for store:',
@@ -13,18 +13,20 @@ export function PiniaSagaPlugin () {
     const { store } = context
 
     store.$onAction((action) => {
-      console.log('$onAction', action)
-      channel.put(mapPiniaActionToRedux(action))
+      const reduxAction = transformPiniaActionToReduxAction(action)
+      console.log('$onAction tranform -> redux action', action, reduxAction)
+      channel.put(reduxAction)
     })
   }
 }
 
-export function registerSaga (saga, stores) {
+export function registerSaga(saga, stores) {
   console.log('registerSaga', saga.name, stores)
   runSaga(
     {
       channel,
       dispatch: (action) => {
+        // @todo should be a common function used here and by useDispatch also
         console.log('dispatch(action)', action)
 
         const stores = getStores()
@@ -32,7 +34,8 @@ export function registerSaga (saga, stores) {
         const store = stores[action.store]
 
         if (!store) {
-          throw new Error(`Store with name "${action.store}" doesn't exists`)
+          console.warn(`Store with name "${action.store}" doesn't exists`)
+          return
         }
 
         const actionFn = store[action.type]
@@ -40,7 +43,10 @@ export function registerSaga (saga, stores) {
         if (actionFn) {
           actionFn(action.payload)
         } else {
-          console.warn(`[PiniaSaga] Saga dispatched non existing action with type "${action.type}"`, action)
+          console.warn(
+            `[PiniaSaga] Saga dispatched non existing action with type "${action.type}"`,
+            action
+          )
         }
       },
       getState: () =>
@@ -53,7 +59,7 @@ export function registerSaga (saga, stores) {
 }
 
 // helpers
-export function mapPiniaActionToRedux (piniaAction) {
+export function transformPiniaActionToReduxAction(piniaAction) {
   return {
     store: piniaAction.store.$id,
     type: piniaAction.name,
@@ -61,11 +67,11 @@ export function mapPiniaActionToRedux (piniaAction) {
   }
 }
 
-export function getPiniaStoresList ($pinia) {
+export function getPiniaStoresList($pinia) {
   return Object.keys($pinia.state.value)
 }
 
-export function mapRootState (stores) {
+export function mapRootState(stores) {
   return Object.entries(stores)
     .map(([storeName, store]) => ({
       [storeName]: store.$state
