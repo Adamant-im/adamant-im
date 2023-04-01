@@ -1,6 +1,6 @@
 <template>
   <v-snackbar
-    v-model="show"
+    v-model="open"
     :timeout="timeout"
     :color="color"
     :class="className"
@@ -16,42 +16,43 @@
         size="x-small"
         variant="text"
         fab
-        @click="show = false"
+        @click="open = false"
       >
-        <v-icon
-          :class="`${className}__icon`"
-          icon="mdi-close"
-          size="dense"
-        />
+        <v-icon :class="`${className}__icon`" icon="mdi-close" size="dense" />
       </v-btn>
     </div>
   </v-snackbar>
 </template>
 
-<script>
+<script lang="ts">
+import { useSnackbarStore } from '@/pinia/stores/snackbar/snackbar'
+import { useTodoStore } from '@/pinia/stores/todo'
+import { computed } from 'vue'
+
 export default {
-  computed: {
-    className: () => 'app-snackbar',
-    show: {
-      get () {
-        return this.$store.state.snackbar.show
+  setup() {
+    const snackbar = useSnackbarStore()
+    const { resetOptions, changeState } = snackbar
+
+    const open = computed({
+      get() {
+        return snackbar.open
       },
-      set (value) {
-        if (!value) {
-          this.$store.commit('snackbar/resetOptions', value)
+      set(newValue) {
+        if (!newValue) {
+          resetOptions()
         }
 
-        this.$store.commit('snackbar/changeState', value)
+        changeState(newValue)
       }
-    },
-    message () {
-      return this.$store.state.snackbar.message
-    },
-    color () {
-      return this.$store.state.snackbar.color
-    },
-    timeout () {
-      return this.$store.state.snackbar.timeout
+    })
+
+    return {
+      className: 'app-snackbar',
+      message: computed(() => snackbar.message),
+      color: computed(() => snackbar.color),
+      timeout: computed(() => snackbar.timeout),
+      open
     }
   }
 }
@@ -59,8 +60,8 @@ export default {
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import "../assets/styles/themes/adamant/_mixins.scss";
-@import "../assets/styles/settings/_colors.scss";
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '../assets/styles/settings/_colors.scss';
 
 .app-snackbar {
   :deep(.v-snackbar__wrapper) {
@@ -92,7 +93,7 @@ export default {
 .v-theme--light.app-snackbar {
   :deep(.v-snackbar__wrapper) {
     background-color: map-get($shades, 'white');
-    color: map-get($adm-colors, 'regular')
+    color: map-get($adm-colors, 'regular');
   }
 }
 

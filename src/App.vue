@@ -9,6 +9,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { getPiniaStoresList, registerSaga } from '@/pinia/saga'
+import { rootSaga } from '@/pinia/sagas/rootSaga'
+import { getStores } from '@/pinia/stores'
+import { useSnackbarStore } from '@/pinia/stores/snackbar/snackbar'
 import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import Notifications from '@/lib/notifications'
@@ -42,6 +46,12 @@ export default defineComponent({
   mounted() {
     this.notifications = new Notifications(this)
     this.notifications.start()
+
+    registerSaga(rootSaga, getStores())
+
+    console.log('useSnackbarStore', useSnackbarStore())
+    console.log('getPiniasStoresList', getPiniaStoresList(this.$pinia))
+    console.log('this.$pinia', this.$pinia)
   },
   beforeUnmount() {
     this.notifications?.stop()
