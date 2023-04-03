@@ -128,6 +128,7 @@ import DelegatesTable from '@/components/DelegatesTable/DelegatesTable'
 import { computed, onMounted, ref, reactive, defineComponent } from "vue"
 import { useStore } from "vuex"
 import { useI18n } from 'vue-i18n'
+
 const VOTE_REQUEST_LIMIT = 30
 
 export default defineComponent({
@@ -268,7 +269,8 @@ export default defineComponent({
       downVote,
       sendVotes,
       validateVotes,
-      showConfirmationDialog
+      showConfirmationDialog,
+      VOTE_REQUEST_LIMIT
     }
   }
 })
