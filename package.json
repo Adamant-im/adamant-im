@@ -62,7 +62,7 @@
     "rollup-plugin-node-polyfills": "^0.2.1",
     "semver": "^7.3.7",
     "simple-audio": "^1.0.1",
-    "socket.io-client": "^2.4.0",
+    "socket.io-client": "^4.6.1",
     "sodium-browserify-tweetnacl": "^0.2.6",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
