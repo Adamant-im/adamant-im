@@ -1,5 +1,5 @@
 import loremIpsum from 'lorem-ipsum'
-import uuid from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 const user = {
   id: 'U9203183357885757380',
@@ -44,7 +44,7 @@ function randomAmountADM (min, max) {
 
 function createOneMessage () {
   return {
-    id: uuid(),
+    id: uuidv4(),
     type: 'message',
     message: randomMessage(),
     timestamp: randomTimestamp(new Date(2018, 11, 1)),
@@ -54,7 +54,7 @@ function createOneMessage () {
 
 function createOneTransaction () {
   return {
-    id: uuid(),
+    id: uuidv4(),
     type: 'transaction',
     message: randomMessage(),
     timestamp: randomTimestamp(new Date(2018, 11, 1)),
