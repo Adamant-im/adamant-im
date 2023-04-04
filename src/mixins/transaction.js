@@ -44,7 +44,7 @@ export default {
       } else if (!Cryptos[type]) {
         transaction = {}
       } else {
-        transaction = this.$store.getters[`${type.toLowerCase()}/transaction`](hash)
+        transaction = this.$store.getters[`${type.toLowerCase()}/transaction`](hash) || {}
       }
       return transaction
     },
