@@ -41,8 +41,10 @@ export default {
       let transaction
       if (type === 'ADM') {
         transaction = this.$store.state.adm.transactions[hash] || { }
+      } else if (type === 'UNKNOWN_CRYPTO') {
+        transaction = {}
       } else {
-        transaction = this.$store.getters[`${type.toLowerCase()}/transaction`](hash) || {}
+        transaction = this.$store.getters[`${type.toLowerCase()}/transaction`](hash)
       }
       return transaction
     },
