@@ -115,6 +115,7 @@ export default defineComponent({
 .app-navigation {
   &.v-bottom-navigation {
     transform: unset !important;
+    overflow: visible;
   }
   &.v-bottom-navigation .v-btn  {
     font-weight: 300;
