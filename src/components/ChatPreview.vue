@@ -300,6 +300,9 @@ export default {
   &__badge {
     :deep(.v-badge__badge) {
       left: calc(100% - 12px - 16px) !important;
+      font-size: 14px;
+      width: 22px;
+      height: 22px;
     }
   }
 

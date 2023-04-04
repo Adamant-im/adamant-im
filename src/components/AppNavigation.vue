@@ -138,6 +138,11 @@ export default defineComponent({
   :deep(.v-btn:not(.v-btn--active))  {
     filter: unset;
   }
+  :deep(.v-badge__badge) {
+    font-size: 14px;
+    width: 22px;
+    height: 22px;
+  }
 }
 
 .v-theme--light {
