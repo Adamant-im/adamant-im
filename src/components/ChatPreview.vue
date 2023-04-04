@@ -37,6 +37,7 @@
       </div>
 
       <v-badge
+        :class="`${className}__badge`"
         v-if="numOfNewMessages > 0"
         overlap
         color="primary"
@@ -294,6 +295,12 @@ export default {
     position: absolute;
     top: 16px;
     right: 16px;
+  }
+
+  &__badge {
+    :deep(.v-badge__badge) {
+      left: calc(100% - 12px - 16px) !important;
+    }
   }
 
   :deep(.v-list-item-subtitle)  {
