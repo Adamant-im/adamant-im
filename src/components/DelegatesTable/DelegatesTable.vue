@@ -1,18 +1,17 @@
 <template>
   <v-table :class="classes.root">
     <delegates-table-head />
-
     <tbody>
       <template v-if="searchDelegates.length > 0">
         <delegates-table-item
-          v-for="(delegate) in searchDelegates"
-          :key="delegate.username"
-          :delegate="delegate"
-          :details-expanded="expandedDelegateUsername === delegate.username"
-          @update:details-expanded="state => { updateExpandedDelegateUsername(delegate.username)(state) }"
-        />
+            v-for="(delegate) in searchDelegates"
+            :key="delegate.username"
+            :delegate="delegate"
+            :details-expanded="expandedDelegateUsername === delegate.username"
+            @update:details-expanded="state => { updateExpandedDelegateUsername(delegate.username)(state) }"
+          />
       </template>
-
+      <DelegatesLoader v-else-if="delegates.length === 0" :waitingForConfirmation="waitingForConfirmation" />
       <delegates-not-found
         v-else
         :search-query="searchQuery"
@@ -27,6 +26,7 @@ import { useStore } from 'vuex'
 import DelegatesTableItem from '@/components/DelegatesTable/DelegatesTableItem'
 import DelegatesTableHead from '@/components/DelegatesTable/DelegatesTableHead'
 import DelegatesNotFound from '@/components/DelegatesTable/DelegatesNotFound'
+import DelegatesLoader from '@/components/DelegatesTable/DelegatesLoader'
 
 /**
  * Generate sorting function passed to `Array.prototype.sort`
@@ -52,9 +52,11 @@ export default defineComponent({
   components: {
     DelegatesNotFound,
     DelegatesTableHead,
-    DelegatesTableItem
+    DelegatesTableItem,
+    DelegatesLoader
   },
   props: {
+    waitingForConfirmation: Boolean,
     searchQuery: {
       type: String,
       required: true
