@@ -271,7 +271,7 @@ export default {
       })
     },
     // scroll to bottom when received new message
-    messages () {
+    lastMessage () {
       nextTick(() => {
         if (this.isScrolledToBottom) {
           this.$refs.chat.scrollToBottom()

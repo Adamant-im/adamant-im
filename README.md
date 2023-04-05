@@ -14,6 +14,8 @@ ADAMANT includes crypto wallets for ADAMANT (ADM), Bitcoin (BTC), Ethereum (ETH)
 
 This application deployed at [msg.adamant.im](https://msg.adamant.im) and [available as standalone apps](https://adamant.im/#adm-apps) for macOS, Windows and Linux. Feel free to run your own messenger using this code and Build Setup.
 
+ADAMANT Messenger has built-in crypto Exchanger and Adelina, an AI chat assistant based on ChatGPT.
+
 ## Project setup
 
 ```

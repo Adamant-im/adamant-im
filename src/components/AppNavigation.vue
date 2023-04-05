@@ -115,6 +115,7 @@ export default defineComponent({
 .app-navigation {
   &.v-bottom-navigation {
     transform: unset !important;
+    overflow: visible;
   }
   &.v-bottom-navigation .v-btn  {
     font-weight: 300;
@@ -136,6 +137,11 @@ export default defineComponent({
   }
   :deep(.v-btn:not(.v-btn--active))  {
     filter: unset;
+  }
+  :deep(.v-badge__badge) {
+    font-size: 14px;
+    width: 22px;
+    height: 22px;
   }
 }
 

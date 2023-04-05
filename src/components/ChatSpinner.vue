@@ -55,7 +55,7 @@ $chat-spinner-size: 150px !default;
   &__progress {
     position: fixed;
     left: 50%;
-    margin-left: -($chat-spinner-size / 2);
+    margin-left: calc(0px - $chat-spinner-size / 2);
     margin-top: 120px;
   }
 }

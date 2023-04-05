@@ -2,7 +2,7 @@
   <div :class="className">
     <app-toolbar-centered
       app
-      :title="$t('votes.page_title')"
+      :title="t('votes.page_title')"
       flat
       fixed
     />
@@ -23,7 +23,7 @@
             <v-text-field
               v-model="search"
               append-inner-icon="mdi-magnify"
-              :label="$t('votes.search')"
+              :label="t('votes.search')"
               :class="`${className}__search`"
               single-line
               hide-details
@@ -55,7 +55,7 @@
                 class="a-btn-primary ma-2"
                 @click="showConfirmationDialog"
               >
-                {{ $t('votes.summary_title') }}
+                {{ t('votes.summary_title') }}
               </v-btn>
             </v-row>
           </v-card>
@@ -71,7 +71,7 @@
         <v-card-title
           :class="`${className}__dialog-title`"
         >
-          {{ $t('votes.summary_title') }}
+          {{ t('votes.summary_title') }}
         </v-card-title>
 
         <v-divider :class="`${className}__divider`" />
@@ -81,15 +81,15 @@
           class="pa-4"
         >
           <div :class="`${className}__dialog-summary`">
-            {{ $t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
-            {{ $t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
-            {{ $t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ voteRequestLimit }}</strong>,&nbsp;
-            {{ $t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
+            {{ t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
+            {{ t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
+            {{ t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ VOTE_REQUEST_LIMIT }}</strong>,&nbsp;
+            {{ t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
           </div>
           <!-- eslint-disable vue/no-v-html -- Safe internal content -->
           <div
             :class="`${className}__dialog-info`"
-            v-html="$t('votes.summary_info')"
+            v-html="t('votes.summary_info')"
           />
           <!-- eslint-enable vue/no-v-html -->
         </v-row>
@@ -102,7 +102,7 @@
             class="a-btn-regular"
             @click="dialog = false"
           >
-            {{ $t('transfer.confirm_cancel') }}
+            {{ t('transfer.confirm_cancel') }}
           </v-btn>
 
           <v-btn
@@ -110,7 +110,7 @@
             class="a-btn-regular"
             @click="sendVotes"
           >
-            {{ $t('votes.vote_button_text') }}
+            {{ t('votes.vote_button_text') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -123,131 +123,155 @@ import AppToolbarCentered from '@/components/AppToolbarCentered'
 import Pagination from '@/components/Pagination'
 import { explorerUriToOnion } from '@/lib/uri'
 import DelegatesTable from '@/components/DelegatesTable/DelegatesTable'
+import { computed, onMounted, ref, reactive, defineComponent } from "vue"
+import { useStore } from "vuex"
+import { useI18n } from 'vue-i18n'
 
-export default {
+const VOTE_REQUEST_LIMIT = 30
+
+export default defineComponent({
   components: {
     DelegatesTable,
     AppToolbarCentered,
     Pagination
   },
-  data: () => ({
-    voteRequestLimit: 30,
-    search: '',
-    pagination: {
+  setup () {
+    const store = useStore()
+    const { t } = useI18n()
+    const search = ref('')
+    const pagination = reactive({
       rowsPerPage: 50,
       sortBy: 'rank',
       page: 1
-    },
-    expanded: [],
-    waitingForConfirmation: false,
-    dialog: false
-  }),
-  computed: {
-    className: () => 'delegates-view',
-    delegates () {
-      const delegates = this.$store.state.delegates.delegates || {}
+    })
+    const expanded = ref([])
+    const waitingForConfirmation = ref(false)
+    const dialog = ref(false)
+    const className = 'delegates-view'
+
+    const delegates = computed(() => {
+      const delegates = store.state.delegates.delegates || {}
 
       return Object.values(delegates)
-    },
-    numOfUpvotes () {
-      return this.delegates
-        .filter(delegate => delegate.upvoted && !delegate.voted)
-        .length
-    },
-    numOfDownvotes () {
-      return this.delegates
-        .filter(delegate => delegate.downvoted && delegate.voted)
-        .length
-    },
-    totalVotes () {
-      return this.delegates.filter(delegate => delegate._voted).length
-    },
-    pages () {
-      if (this.delegates.length <= 0) {
+    })
+    const numOfUpvotes = computed(() => {
+      return delegates.value
+          .filter(delegate => delegate.upvoted && !delegate.voted)
+          .length
+    })
+    const numOfDownvotes = computed(() => {
+      return delegates.value
+          .filter(delegate => delegate.downvoted && delegate.voted)
+          .length
+    })
+    const totalVotes = computed (() => {
+      return delegates.value.filter(delegate => delegate._voted).length
+    })
+    const pages = computed(() => {
+      if (delegates.value.length <= 0) {
         return 0
       }
 
-      return Math.ceil(this.delegates.length / this.pagination.rowsPerPage)
-    },
-    showPagination () {
-      return this.search.length === 0
-    },
-    reviewButtonDisabled () {
-      return (this.numOfUpvotes + this.numOfDownvotes) === 0
-    }
-  },
-  mounted () {
-    this.$store.dispatch('delegates/getDelegates', {
-      address: this.$store.state.address
+      return Math.ceil(delegates.value.length / pagination.rowsPerPage)
     })
-  },
-  methods: {
-    getExplorerUrl () {
-      return explorerUriToOnion('https://explorer.adamant.im/delegate/')
-    },
-    upVote (id) {
-      this.$store.commit('delegates/upVote', id)
-    },
-    downVote (id) {
-      this.$store.commit('delegates/downVote', id)
-    },
-    sendVotes () {
-      if (!this.validateVotes()) {
-        return
-      }
+    const showPagination = computed(() => search.value.length === 0)
+    const reviewButtonDisabled = computed(() => {
+      return (numOfUpvotes.value + numOfDownvotes.value) === 0
+    })
 
-      const upVotes = this.delegates
-        .filter(delegate => delegate.upvoted && !delegate.voted)
-        .map(delegate => `+${delegate.publicKey}`)
-      const downVotes = this.delegates
-        .filter(delegate => delegate.downvoted && delegate.voted)
-        .map(delegate => `-${delegate.publicKey}`)
-      const allVotes = [...upVotes, ...downVotes]
-
-      if (allVotes.length <= 0) {
-        this.$store.dispatch('snackbar/show', {
-          message: this.$t('votes.select_delegates')
-        })
-
-        return
-      }
-
-      this.waitingForConfirmation = true
-      this.dialog = false
-
-      this.$store.dispatch('delegates/voteForDelegates', {
-        votes: [...upVotes, ...downVotes],
-        address: this.$store.state.address
+    onMounted(() => {
+      store.dispatch('delegates/getDelegates', {
+        address: store.state.address
       })
+    })
 
-      this.$store.dispatch('snackbar/show', {
-        message: this.$t('votes.sent')
-      })
-    },
-    validateVotes () {
-      if (this.upvotedCount + this.downvotedCount > this.voteRequestLimit) {
-        this.$store.dispatch('snackbar/show', {
-          message: this.$t('votes.vote_request_limit', { limit: this.voteRequestLimit })
+    const getExplorerUrl = () => explorerUriToOnion('https://explorer.adamant.im/delegate/')
+    const upVote = (id) => {
+      store.commit('delegates/upVote', id)
+    }
+    const downVote = (id) => {
+      store.commit('delegates/downVote', id)
+    }
+    const validateVotes = () => {
+      if (numOfUpvotes.value + numOfDownvotes.value > VOTE_REQUEST_LIMIT) {
+        store.dispatch('snackbar/show', {
+          message: t('votes.vote_request_limit', { limit: VOTE_REQUEST_LIMIT })
         })
 
         return false
       }
-
-      if (this.$store.state.balance < 50) {
-        this.$store.dispatch('snackbar/show', {
-          message: this.$t('votes.no_money')
+      if (store.state.balance < 50) {
+        store.dispatch('snackbar/show', {
+          message: t('votes.no_money')
         })
 
         return false
       }
 
       return true
-    },
-    showConfirmationDialog () {
-      this.dialog = true
+    }
+    const sendVotes = () => {
+      if (!validateVotes()) {
+        return
+      }
+
+      const upVotes = delegates.value
+          .filter(delegate => delegate.upvoted && !delegate.voted)
+          .map(delegate => `+${delegate.publicKey}`)
+      const downVotes = delegates.value
+          .filter(delegate => delegate.downvoted && delegate.voted)
+          .map(delegate => `-${delegate.publicKey}`)
+      const allVotes = [...upVotes, ...downVotes]
+
+      if (allVotes.length <= 0) {
+        store.dispatch('snackbar/show', {
+          message: t('votes.select_delegates')
+        })
+
+        return
+      }
+
+      waitingForConfirmation.value = true
+      dialog.value = false
+
+      store.dispatch('delegates/voteForDelegates', {
+        votes: [...upVotes, ...downVotes],
+        address: store.state.address
+      })
+
+      store.dispatch('snackbar/show', {
+        message: t('votes.sent')
+      })
+    }
+    const showConfirmationDialog = () => {
+      dialog.value = true
+    }
+
+    return {
+      search,
+      pagination,
+      expanded,
+      waitingForConfirmation,
+      dialog,
+      t,
+      className,
+      delegates,
+      numOfUpvotes,
+      numOfDownvotes,
+      totalVotes,
+      pages,
+      showPagination,
+      reviewButtonDisabled,
+      getExplorerUrl,
+      upVote,
+      downVote,
+      sendVotes,
+      validateVotes,
+      showConfirmationDialog,
+      VOTE_REQUEST_LIMIT
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
