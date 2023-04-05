@@ -1,56 +1,61 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`LoginForm.vue renders the correct markup 1`] = `
-<v-form-stub
+exports[`LoginForm.vue > renders the correct markup 1`] = `
+<v-form
   class="login-form"
-  value="true"
+  modelvalue="true"
 >
-  <v-layout-stub
-    tag="div"
+  <v-row
+    no-gutters=""
   >
-    <v-text-field-stub
-      browser-autocomplete="current-password"
-      class="text-xs-center"
+    
+    <v-text-field
+      autocomplete="current-password"
+      class="text-center"
       color="#BBDEFB"
       label="Enter your passphrase to login"
+      modelvalue=""
       type="password"
+      variant="underlined"
     />
-     
-  </v-layout-stub>
-   
-  <v-layout-stub
-    align-center=""
-    justify-center=""
-    row=""
-    tag="div"
-    wrap=""
+    
+    
+    
+  </v-row>
+  <v-row
+    align="center"
+    justify="center"
+    no-gutters=""
   >
-    <v-btn-stub
-      activeclass="v-btn--active"
+    
+    <v-btn
       class="login-form__button a-btn-primary"
-      tag="button"
-      type="button"
+      disabled="false"
     >
-      <v-progress-circular-stub
-        class="mr-3"
+      <v-progress-circular
+        class="mr-4"
         color="primary"
-        indeterminate="true"
-        rotate="0"
+        indeterminate=""
         size="24"
         style="display: none;"
-        value="0"
-        width="4"
       />
-      
-        Login
-      
-    </v-btn-stub>
-  </v-layout-stub>
-   
-  <v-layout-stub
-    justify-center=""
+       Login
+    </v-btn>
+    
+  </v-row>
+  <transition-stub
+    appear="false"
+    css="true"
     name="slide-fade"
-    tag="div"
-  />
-</v-form-stub>
+    persisted="false"
+  >
+    <v-row
+      justify="center"
+      no-gutters=""
+    >
+      
+      
+    </v-row>
+  </transition-stub>
+</v-form>
 `;

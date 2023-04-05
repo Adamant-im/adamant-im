@@ -1,7 +1,9 @@
+import { SNACKBAR_TIMEOUT } from './constants'
+
 const initialState = {
   show: false,
   message: '',
-  timeout: 2000,
+  timeout: SNACKBAR_TIMEOUT,
   color: ''
 }
 
@@ -10,7 +12,7 @@ const state = () => ({
 })
 
 const mutations = {
-  show (state, { message = '', timeout = 2000, color = '' }) {
+  show (state, { message = '', timeout = SNACKBAR_TIMEOUT, color = '' }) {
     if (message) {
       state.message = message
       state.color = color

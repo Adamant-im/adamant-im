@@ -1,108 +1,117 @@
 <template>
-  <v-list-tile
+  <v-list-item
     v-if="isLoadingSeparator"
   >
-    <v-list-tile-content
+    <div
       style="align-items: center"
     >
       <v-icon
         ref="loadingDots"
         :class="{ kmove: isLoadingSeparatorActive }"
-      >
-        mdi-dots-horizontal
-      </v-icon>
-    </v-list-tile-content>
-  </v-list-tile>
-  <v-list-tile
+        icon="mdi-dots-horizontal"
+      />
+    </div>
+  </v-list-item>
+  <v-list-item
     v-else
+    lines="two"
     :class="className"
     @click="$emit('click')"
   >
-    <v-list-tile-avatar>
+    <template #prepend>
       <icon
         v-if="readOnly"
         :class="`${className}__icon`"
       >
         <adm-fill-icon />
       </icon>
-      <chat-avatar
+      <div
         v-else
-        :size="40"
-        :user-id="contactId"
-        use-public-key
-      />
+        :class="`${className}__chat-avatar`"
+      >
+        <chat-avatar
+          :size="40"
+          :user-id="contactId"
+          use-public-key
+        />
+      </div>
 
       <v-badge
+        :class="`${className}__badge`"
+        v-if="numOfNewMessages > 0"
         overlap
         color="primary"
-      >
-        <span
-          v-if="numOfNewMessages > 0"
-          slot="badge"
-        >
-          {{ numOfNewMessages > 99 ? '99+' : numOfNewMessages }}
-        </span>
-      </v-badge>
-    </v-list-tile-avatar>
+        :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
+      />
+    </template>
 
-    <v-list-tile-content>
-      <v-list-tile-title
-        class="a-text-regular-enlarged-bold"
+    <div>
+      <v-list-item-title
+        :class="{
+          'a-text-regular-enlarged-bold': true,
+          [`${className}__title`]: true
+        }"
         v-text="isAdamantChat ? $t(contactName) : contactName"
       />
 
       <!-- New chat (no messages yet) -->
       <template v-if="isNewChat">
-        <v-list-tile-sub-title>&nbsp;</v-list-tile-sub-title>
+        <v-list-item-subtitle>&nbsp;</v-list-item-subtitle>
       </template>
 
       <!-- Transaction -->
       <template v-else-if="isTransferType">
-        <v-list-tile-sub-title>
+        <v-list-item-subtitle
+          :class="{
+            [`${className}__subtitle`]: true
+          }"
+        >
           <v-icon
             v-if="!isIncomingTransaction"
             size="15"
-          >
-            {{ statusIcon }}
-          </v-icon>
-          {{ transactionDirection }} {{ transaction.amount | currency(transaction.type) }}
+            :icon="statusIcon"
+          />
+          {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
           <v-icon
             v-if="isIncomingTransaction"
+            :icon="statusIcon"
             size="15"
-          >
-            {{ statusIcon }}
-          </v-icon>
-        </v-list-tile-sub-title>
+          />
+        </v-list-item-subtitle>
       </template>
 
       <!-- Message -->
       <template v-else>
-        <v-list-tile-sub-title class="a-text-explanation-enlarged-bold">
+        <v-list-item-subtitle
+          :class="{
+            'a-text-explanation-enlarged-bold': true,
+            [`${className}__subtitle`]: true
+          }"
+        >
           <v-icon
             v-if="!isIncomingTransaction"
+            :icon="statusIcon"
             size="15"
-          >
-            {{ statusIcon }}
-          </v-icon>
+          />
           {{ lastMessageTextNoFormats }}
-        </v-list-tile-sub-title>
+        </v-list-item-subtitle>
       </template>
-    </v-list-tile-content>
+    </div>
 
     <div
       v-if="!isMessageReadonly"
       :class="`${className}__date`"
     >
-      {{ createdAt | date }}
+      {{ formatDate(createdAt) }}
     </div>
-  </v-list-tile>
+  </v-list-item>
 </template>
 
 <script>
 import { removeFormats } from '@/lib/markdown'
 
 import transaction from '@/mixins/transaction'
-import dateFilter from '@/filters/dateBrief'
+import formatDate from '@/filters/dateBrief'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import Icon from '@/components/icons/BaseIcon'
 import AdmFillIcon from '@/components/icons/AdmFill'
@@ -110,10 +119,9 @@ import partnerName from '@/mixins/partnerName'
 import { tsIcon } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
+import currency from '@/filters/currencyAmountWithSymbol'
+
 export default {
-  filters: {
-    date: dateFilter
-  },
   components: {
     ChatAvatar,
     Icon,
@@ -154,6 +162,7 @@ export default {
       default: false
     }
   },
+  emits: ['click'],
   data: () => ({
   }),
   computed: {
@@ -227,13 +236,17 @@ export default {
     if (this.isTransferType) {
       this.fetchTransactionStatus(this.transaction, this.contactId)
     }
+  },
+  methods: {
+    formatDate,
+    currency
   }
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '../assets/styles/settings/_colors.scss';
 
 @keyframes movement {
   from { left: -50px }
@@ -251,26 +264,76 @@ export default {
 /**
  * 1. Message/Transaction content.
  */
-.chat-brief
-  position: relative
+.chat-brief {
+  position: relative;
 
-  &__date
-    a-text-explanation-small()
-    position: absolute
-    top: 16px
-    right: 16px
-  >>> .v-list__tile__sub-title // [1]
-    a-text-explanation-enlarged-bold()
+  &__chat-avatar {
+    margin-right: 16px;
+  }
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 16px;
+  }
+
+  &__title {
+    line-height: 24px;
+    margin-bottom: 0;
+  }
+
+  &__subtitle {
+    line-height: 1.5;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__date {
+    @include a-text-explanation-small();
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+
+  &__badge {
+    :deep(.v-badge__badge) {
+      left: calc(100% - 12px - 16px) !important;
+      font-size: 14px;
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  :deep(.v-list-item-subtitle)  {
+    @include a-text-explanation-enlarged-bold();
+  }
+}
 
 /** Themes **/
-.theme--light
-  .chat-brief
-    border-bottom: 1px solid $adm-colors.secondary2
+.v-theme--light {
+  .chat-brief {
+    border-bottom: 1px solid map-get($adm-colors, 'secondary2');
 
-    &__date
-      color: $adm-colors.muted
-    &__icon
-      fill: #BDBDBD
-    >>> .v-list__tile__sub-title // [1]
-      color: $adm-colors.muted
+    &__date {
+      color: map-get($adm-colors, 'muted');
+    }
+
+    &__icon {
+      fill: #BDBDBD;
+    }
+
+    :deep(.v-list-item-subtitle)  {
+      color: map-get($adm-colors, 'muted');
+    }
+  }
+}
+.v-theme--dark {
+  .chat-brief {
+    :deep(.v-list-item-subtitle)  {
+      color: map-get($adm-colors, 'grey-transparent');
+    }
+  }
+}
 </style>

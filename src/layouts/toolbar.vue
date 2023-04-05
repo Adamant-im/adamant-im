@@ -1,14 +1,17 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container
       fluid
-      :class="{ 'pa-0': containerNoPadding }"
+      :class="{
+        'pa-6': !containerNoPadding,
+        'pa-0': containerNoPadding
+      }"
     >
       <slot />
     </v-container>
     <app-snackbar />
     <app-navigation v-if="showNavigation" />
-  </v-content>
+  </v-main>
 </template>
 
 <script>

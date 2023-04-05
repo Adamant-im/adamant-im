@@ -1,0 +1,8 @@
+/** Reset vuetify `overflow-y: scroll` **/
+html {
+  overflow-y: auto;
+}
+
+.container--with-app-toolbar {
+  padding-top: var(--toolbar-height);
+}

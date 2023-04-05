@@ -5,7 +5,7 @@
     class="login-form"
     @submit.prevent="submit"
   >
-    <v-layout>
+    <v-row no-gutters>
       <v-text-field
         ref="passwordField"
         v-model="password"
@@ -13,18 +13,18 @@
         :label="$t('login_via_password.user_password_title')"
         :name="Date.now()"
         type="password"
-        class="text-xs-center"
+        class="text-center"
+        variant="underlined"
       />
-    </v-layout>
+    </v-row>
 
-    <v-layout
-      row
-      wrap
-      align-center
-      justify-center
+    <v-row
+      align="center"
+      justify="center"
       class="mt-2"
+      no-gutters
     >
-      <v-flex xs12>
+      <v-col cols="12">
         <slot name="button">
           <v-btn
             :disabled="!validForm || disabledButton"
@@ -36,29 +36,29 @@
               indeterminate
               color="primary"
               size="24"
-              class="mr-3"
+              class="mr-4"
             />
             {{ $t('login_via_password.user_password_unlock') }}
           </v-btn>
         </slot>
-      </v-flex>
-      <v-flex
-        xs12
-        class="a-text-regular mt-5"
+      </v-col>
+      <v-col
+        cols="12"
+        class="a-text-regular mt-8"
       >
         {{ $t('login_via_password.remove_password_hint') }}
-      </v-flex>
-      <v-flex xs12>
+      </v-col>
+      <v-col cols="12">
         <v-btn
           class="a-btn-link"
-          flat
-          small
+          variant="text"
+          size="small"
           @click="removePassword"
         >
           {{ $t('login_via_password.remove_password') }}
         </v-btn>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-form>
 </template>
 
@@ -67,11 +67,12 @@ import { clearDb } from '@/lib/idb'
 
 export default {
   props: {
-    value: {
+    modelValue: {
       type: String,
       default: ''
     }
   },
+  emits: ['login', 'error', 'update:modelValue'],
   data: () => ({
     validForm: true,
     disabledButton: false,
@@ -80,10 +81,10 @@ export default {
   computed: {
     password: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     }
   },

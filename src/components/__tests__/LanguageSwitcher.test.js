@@ -1,33 +1,28 @@
-import { shallowMount } from '@vue/test-utils'
-import Vue from 'vue'
-import Vuex from 'vuex'
-import VueI18n from 'vue-i18n'
-import Vuetify from 'vuetify'
+import { vi, describe, expect, beforeEach, it } from 'vitest'
+import { mount } from '@vue/test-utils'
+import { createStore } from 'vuex'
 
 import LanguageSwitcher from '@/components/LanguageSwitcher'
-import en from '@/i18n/en'
-import ru from '@/i18n/ru'
-
-Vue.use(VueI18n)
-Vue.use(Vuex)
-Vue.use(Vuetify)
+import en from '@/locales/en'
+import ru from '@/locales/ru'
+import mockupI18n from "@/components/__tests__/__mocks__/plugins/i18n";
 
 /**
  * Mockup store helper.
  */
-function mockupStore () {
+function mockupStore() {
   const language = {
     state: {
       currentLocale: 'en',
       locales: ['ar', 'de', 'en', 'fr', 'ru']
     },
     actions: {
-      changeLocale: jest.fn()
+      changeLocale: vi.fn()
     },
     namespaced: true
   }
 
-  const store = new Vuex.Store({
+  const store = createStore({
     modules: {
       language
     }
@@ -37,20 +32,6 @@ function mockupStore () {
     store,
     language
   }
-}
-
-/**
- * Mockup i18n helper.
- */
-function mockupI18n () {
-  return new VueI18n({
-    locale: 'en',
-    fallbackLocale: 'en',
-    messages: {
-      en,
-      ru
-    }
-  })
 }
 
 describe('LanguageSwitcher.vue', () => {
@@ -70,27 +51,33 @@ describe('LanguageSwitcher.vue', () => {
   })
 
   it('"currentLocale" should be equals with store state', () => {
-    const wrapper = shallowMount(LanguageSwitcher, {
-      store,
-      i18n
+    const wrapper = mount(LanguageSwitcher, {
+      shallow: true,
+      global: {
+        plugins: [store, i18n]
+      }
     })
 
     expect(wrapper.vm.currentLocale).toBe(store.state.language.currentLocale)
   })
 
   it('"currentLanguageName" should be "English"', () => {
-    const wrapper = shallowMount(LanguageSwitcher, {
-      store,
-      i18n
+    const wrapper = mount(LanguageSwitcher, {
+      shallow: true,
+      global: {
+        plugins: [store, i18n]
+      }
     })
 
     expect(wrapper.vm.currentLanguageName).toBe('English')
   })
 
   it('should update "currentLocale" when change state', () => {
-    const wrapper = shallowMount(LanguageSwitcher, {
-      store,
-      i18n
+    const wrapper = mount(LanguageSwitcher, {
+      shallow: true,
+      global: {
+        plugins: [store, i18n]
+      }
     })
 
     language.state.currentLocale = 'ru'
@@ -100,9 +87,11 @@ describe('LanguageSwitcher.vue', () => {
   })
 
   it('should dispatch action when modify "currentLocale" computed', () => {
-    const wrapper = shallowMount(LanguageSwitcher, {
-      store,
-      i18n
+    const wrapper = mount(LanguageSwitcher, {
+      shallow: true,
+      global: {
+        plugins: [store, i18n]
+      }
     })
 
     wrapper.vm.currentLocale = 'ru'

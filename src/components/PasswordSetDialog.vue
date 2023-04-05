@@ -12,11 +12,12 @@
 
       <v-card-text>
         <v-text-field
-          ref="passwordField"
           v-model="password"
+          autofocus
           autocomplete="new-password"
           class="a-input"
           type="password"
+          variant="underlined"
           :label="$t('login_via_password.enter_password')"
           :name="Date.now()"
           @keyup.enter="submit"
@@ -31,7 +32,7 @@
         <v-spacer />
 
         <v-btn
-          flat="flat"
+          variant="text"
           class="a-btn-regular"
           @click="show = false"
         >
@@ -39,7 +40,7 @@
         </v-btn>
 
         <v-btn
-          flat="flat"
+          variant="text"
           class="a-btn-regular"
           :disabled="!isValidForm || disabledButton"
           @click="submit"
@@ -49,7 +50,7 @@
             indeterminate
             color="primary"
             size="24"
-            class="mr-3"
+            class="mr-4"
           />
           {{ $t('login_via_password.popup_confirm_text') }}
         </v-btn>
@@ -64,11 +65,12 @@ import { saveState } from '@/lib/idb/state'
 
 export default {
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     }
   },
+  emits: ['password', 'update:modelValue'],
   data: () => ({
     password: '',
     showSpinner: false,
@@ -78,18 +80,15 @@ export default {
   computed: {
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     },
     isValidForm () {
       return this.password.length > 0
     }
-  },
-  updated: function () {
-    this.$refs.passwordField.focus()
   },
   methods: {
     openLink (link) {

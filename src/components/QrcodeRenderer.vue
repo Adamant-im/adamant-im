@@ -60,11 +60,12 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 /**
  * 1. Should not be inline to avoid empty element with line-height.
  */
-img
-  display: block // [1]
-  max-width: 100%
+img {
+  display: block; // [1]
+  max-width: 100%;
+}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container
       fluid
       class="pa-0"
@@ -8,7 +8,7 @@
     </v-container>
 
     <app-snackbar />
-  </v-content>
+  </v-main>
 </template>
 
 <script>

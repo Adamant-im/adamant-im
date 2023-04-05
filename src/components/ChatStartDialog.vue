@@ -14,52 +14,57 @@
 
       <v-divider class="a-divider" />
 
-      <v-layout
-        row
-        wrap
-        justify-center
-        align-center
-        class="pa-3"
+      <v-row
+        justify="center"
+        align="center"
+        no-gutters
+        class="pa-4"
       >
         <v-text-field
           ref="partnerField"
           v-model="recipientAddress"
           class="a-input"
+          variant="underlined"
+          color="primary"
           :label="$t('chats.recipient')"
           :title="$t('chats.recipient_tooltip')"
+          autofocus
           @paste="onPasteURI"
         >
-          <template slot="append">
+          <template #append-inner>
             <v-menu
               :offset-overflow="true"
               :offset-y="false"
               left
             >
-              <v-icon slot="activator">
-                mdi-dots-vertical
-              </v-icon>
+              <template #activator="{ props }">
+                <v-icon
+                  v-bind="props"
+                  icon="mdi-dots-vertical"
+                />
+              </template>
               <v-list>
-                <v-list-tile @click="showQrcodeScanner = true">
-                  <v-list-tile-title>{{ $t('transfer.decode_from_camera') }}</v-list-tile-title>
-                </v-list-tile>
-                <v-list-tile class="v-list__tile--link">
-                  <v-list-tile-title>
+                <v-list-item @click="showQrcodeScanner = true">
+                  <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
+                </v-list-item>
+                <v-list-item class="v-list__tile--link">
+                  <v-list-item-title>
                     <qrcode-capture
                       @detect="onDetectQrcode"
                       @error="onDetectQrcodeError"
                     >
                       <span>{{ $t('transfer.decode_from_image') }}</span>
                     </qrcode-capture>
-                  </v-list-tile-title>
-                </v-list-tile>
+                  </v-list-item-title>
+                </v-list-item>
               </v-list>
             </v-menu>
           </template>
         </v-text-field>
 
-        <v-flex
-          xs12
-          class="text-xs-center"
+        <v-col
+          cols="12"
+          class="text-center"
         >
           <v-btn
             :class="[`${className}__btn-start-chat`, 'a-btn-primary']"
@@ -67,10 +72,10 @@
           >
             {{ $t('chats.start_chat') }}
           </v-btn>
-        </v-flex>
+        </v-col>
 
-        <v-flex
-          xs12
+        <v-col
+          cols="12"
           :class="`${className}__btn-show-qrcode`"
         >
           <a
@@ -79,8 +84,8 @@
           >
             {{ $t('chats.show_my_qr_code') }}
           </a>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
     </v-card>
 
     <qrcode-scanner-dialog
@@ -98,6 +103,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 import { Cryptos } from '@/lib/constants'
 import { generateURI, parseURIasAIP } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
@@ -121,11 +128,12 @@ export default {
     partnerId: {
       type: String
     },
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     }
   },
+  emits: ['start-chat', 'error', 'update:modelValue'],
   data: () => ({
     recipientAddress: '',
     recipientName: '',
@@ -137,24 +145,14 @@ export default {
     className: () => 'chat-start-dialog',
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     },
     uri () {
       return generateURI(Cryptos.ADM, this.$store.state.address)
-    }
-  },
-  watch: {
-    // Retain focus from `v-dialog__content`
-    show (v) {
-      if (v) {
-        this.$nextTick(() => {
-          this.$refs.partnerField.focus()
-        })
-      }
     }
   },
   mounted () {
@@ -217,7 +215,7 @@ export default {
      */
     onPasteURI (e) {
       const data = e.clipboardData.getData('text')
-      this.$nextTick(() => {
+      nextTick(() => {
         const address = parseURIasAIP(data).address
         if (validateAddress('ADM', address)) {
           e.preventDefault()
@@ -267,21 +265,31 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '../assets/styles/settings/_colors.scss';
 
-.chat-start-dialog
-  &__btn-scan
-    margin-left: 5px!important;
-    margin-right: -5px!important;
-  &__btn-start-chat
-    margin-top: 15px
-  &__btn-show-qrcode
-    margin-top: 15px
-    margin-bottom: 15px
-    text-align: center
-.theme--light
-  .chat-start-dialog
-     >>> &__btn-scan
-      color: $adm-colors.regular
+.chat-start-dialog {
+  &__btn-scan {
+    margin-left: 5px !important;
+    margin-right: -5px !important;
+  }
+
+  &__btn-start-chat {
+    margin-top: 15px;
+  }
+
+  &__btn-show-qrcode {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+}
+
+.v-theme--light {
+  .chat-start-dialog {
+    :deep(&__btn-scan) {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
 </style>

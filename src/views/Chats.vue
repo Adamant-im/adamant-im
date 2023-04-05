@@ -1,41 +1,36 @@
 <template>
-  <v-layout
-    row
-    wrap
-    justify-center
+  <v-row
+    justify="center"
     :class="className"
+    no-gutters
   >
     <container>
-      <v-layout
-        row
-        wrap
-      >
-        <v-flex xs12>
+      <v-row no-gutters>
+        <v-col cols="12">
           <v-list
-            two-line
             subheader
-            class="transparent"
+            class="pa-0"
+            bg-color="transparent"
           >
-            <v-list-tile
+            <v-list-item
               v-if="isFulfilled"
-              :class="`${className}__tile`"
+              :class="`${className}__item`"
               @click="showChatStartDialog = true"
             >
-              <v-list-tile-avatar size="24">
+              <template #prepend>
                 <v-icon
                   :class="`${className}__icon`"
+                  icon="mdi-message-outline"
                   size="16"
-                >
-                  mdi-message-outline
-                </v-icon>
-              </v-list-tile-avatar>
+                />
+              </template>
 
               <div>
-                <v-list-tile-title :class="`${className}__title`">
+                <v-list-item-title :class="`${className}__title`">
                   {{ $t('chats.new_chat') }}
-                </v-list-tile-title>
+                </v-list-item-title>
               </div>
-            </v-list-tile>
+            </v-list-item>
 
             <transition-group
               v-if="isFulfilled"
@@ -57,10 +52,10 @@
               />
             </transition-group>
           </v-list>
-        </v-flex>
+        </v-col>
 
         <ChatSpinner :value="!isFulfilled" />
-      </v-layout>
+      </v-row>
     </container>
 
     <chat-start-dialog
@@ -69,7 +64,7 @@
       @error="onError"
       @start-chat="openChat"
     />
-  </v-layout>
+  </v-row>
 </template>
 
 <script>
@@ -128,13 +123,15 @@ export default {
     this.showChatStartDialog = this.showNewContact
     this.attachScrollListener()
   },
-  beforeDestroy () {
+  beforeUnmount () {
     this.destroyScrollListener()
   },
   methods: {
     openChat (partnerId, messageText) {
       this.$router.push({
-        name: 'Chat', params: { messageText, partnerId }
+        name: 'Chat',
+        params: { partnerId },
+        query: { messageText }
       })
     },
     isChatReadOnly (partnerId) {
@@ -191,38 +188,56 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import 'vuetify/settings';
+@import '../assets/styles/settings/_colors.scss';
+.chats-view {
+  &__item {
+    justify-content: flex-end;
+    height: 56px;
+    min-height: 56px;
 
-.chats-view
-  &__tile
-    >>> .v-list__tile
-      justify-content: flex-end
-      height: 56px
-    >>> .v-list__tile__avatar
-      min-width: 28px
-  &__title
-    font-weight: 300
-    font-size: 14px
+    & :deep(.v-list-item__avatar) {
+      margin-right: 4px;
+    }
+
+    :deep(.v-list-item__prepend) {
+      > .v-icon {
+        margin-inline-end: 8px;
+      }
+    }
+  }
+  &__title {
+    font-weight: 300;
+    font-size: 14px;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .chats-view
-    &__tile
-      >>> .v-list__tile
-        background-color: $adm-colors.secondary2-transparent
-    &__title
-      color: $adm-colors.muted
-    &__icon
-      color: $adm-colors.regular
+.v-theme--light {
+  .chats-view {
+    &__item {
+      background-color: map-get($adm-colors, 'secondary2-transparent');
+    }
+    &__title {
+      color: map-get($adm-colors, 'muted');
+    }
+    &__icon {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
 
-.theme--dark
-  .chats-view
-    &__icon
-      color: $shades.white
+.v-theme--dark {
+  .chats-view {
+    &__icon {
+      color: map-get($shades, 'white');
+    }
+  }
+}
 
 /** Animations **/
-.messages-move
-  transition: transform 0.5s
+.messages-move {
+  transition: transform 0.5s;
+}
 </style>

@@ -1,14 +1,14 @@
 import dayjs from 'dayjs'
-import i18n from '@/i18n'
+import { i18n } from '@/i18n'
 import { isToday, isYesterday, isCurrentWeek } from './helpers'
 
 export default (timestamp) => {
   const date = dayjs(timestamp)
 
   if (isToday(new Date(timestamp))) {
-    return date.format(`[${i18n.t('chats.date_today')}], HH:mm`)
+    return date.format(`[${i18n.global.t('chats.date_today')}], HH:mm`)
   } else if (isYesterday(new Date(timestamp))) {
-    return date.format(`[${i18n.t('chats.date_yesterday')}], HH:mm`)
+    return date.format(`[${i18n.global.t('chats.date_yesterday')}], HH:mm`)
   } else if (isCurrentWeek(new Date(timestamp))) {
     return date.format('ddd')
   } else {

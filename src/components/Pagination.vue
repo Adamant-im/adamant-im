@@ -3,16 +3,18 @@
     <v-btn
       icon
       :disabled="page <= 1"
+      variant="text"
       @click="page--"
     >
-      <v-icon>mdi-chevron-left</v-icon>
+      <v-icon icon="mdi-chevron-left" />
     </v-btn>
     <v-btn
       icon
       :disabled="page >= pages"
+      variant="text"
       @click="page++"
     >
-      <v-icon>mdi-chevron-right</v-icon>
+      <v-icon icon="mdi-chevron-right" />
     </v-btn>
   </div>
 </template>
@@ -20,7 +22,7 @@
 <script>
 export default {
   props: {
-    value: {
+    modelValue: {
       type: Number,
       required: true
     },
@@ -29,17 +31,18 @@ export default {
       required: true
     }
   },
+  emits: ['update:modelValue'],
   computed: {
     page: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
         if (value > this.pages || value < 1) {
           return
         }
 
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     }
   }

@@ -1,6 +1,7 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container
+      class="pa-4"
       fluid
       fill-height
     >
@@ -8,7 +9,7 @@
     </v-container>
 
     <app-snackbar />
-  </v-content>
+  </v-main>
 </template>
 
 <script>

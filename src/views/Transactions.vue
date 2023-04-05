@@ -4,29 +4,29 @@
       app
       :title="$t('transaction.transactions')"
       flat
+      fixed
     />
 
     <v-container
       fluid
-      class="pa-0"
+      class="px-0 container--with-app-toolbar"
     >
-      <v-layout
-        row
-        wrap
-        justify-center
+      <v-row
+        justify="center"
+        no-gutters
       >
-        <v-list-tile
+        <v-list-item
           v-if="isRecentLoading"
           style="position: absolute; top: 20px;"
         >
           <InlineSpinner />
-        </v-list-tile>
+        </v-list-item>
 
         <container v-if="isFulfilled">
           <v-list
             v-if="hasTransactions"
-            three-line
-            class="transparent"
+            lines="three"
+            bg-color="transparent"
           >
             <transaction-list-item
               v-for="(transaction, i) in transactions"
@@ -41,19 +41,19 @@
               @click:transaction="goToTransaction"
               @click:icon="goToChat"
             />
-            <v-list-tile v-if="isOlderLoading">
+            <v-list-item v-if="isOlderLoading">
               <InlineSpinner />
-            </v-list-tile>
+            </v-list-item>
           </v-list>
 
           <h3
             v-else
-            class="a-text-caption text-xs-center mt-4"
+            class="a-text-caption text-center mt-6"
           >
             {{ $t('transaction.no_transactions') }}
           </h3>
         </container>
-      </v-layout>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -110,7 +110,7 @@ export default {
       if (this.$store.state.IDBReady) this.getNewTransactions()
     }
   },
-  beforeDestroy () {
+  beforeUnmount () {
     window.removeEventListener('scroll', this.onScroll)
   },
   mounted () {

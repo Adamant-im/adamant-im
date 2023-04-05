@@ -1,5 +1,8 @@
 <template>
-  <v-layout justify-center>
+  <v-row
+    justify="center"
+    no-gutters
+  >
     <v-progress-circular
       :size="spinnerSize"
       :stroke="1"
@@ -7,22 +10,25 @@
       color="#4A4A4A"
       indeterminate
     />
-  </v-layout>
+  </v-row>
 </template>
 
 <script>
-export default {
-  name: 'InlineSpinner',
+import { defineComponent, toRefs } from 'vue'
+
+export default defineComponent({
   props: {
     size: {
       default: 32,
       type: Number
     }
   },
-  data () {
+  setup (props) {
+    const { size: spinnerSize } = toRefs(props)
+
     return {
-      spinnerSize: this.size
+      spinnerSize
     }
   }
-}
+})
 </script>

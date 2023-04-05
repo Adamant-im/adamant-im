@@ -1,26 +1,17 @@
 <template>
-  <v-layout
-    row
-    fill-height
-    justify-center
+  <v-row
+    justify="center"
+    no-gutters
     :class="className"
   >
     <container>
-      <div class="text-xs-right">
-        <language-switcher>
-          <v-icon
-            slot="prepend"
-            size="18"
-          >
-            mdi-chevron-right
-          </v-icon>
-        </language-switcher>
+      <div class="text-right">
+        <language-switcher prepend-icon="mdi-chevron-right" />
       </div>
 
-      <v-card
-        flat
+      <v-sheet
+        class="text-center mt-4"
         color="transparent"
-        class="text-xs-center mt-3"
       >
         <logo style="width: 300px;" />
 
@@ -29,24 +20,25 @@
         </h1>
         <h2
           :class="`${className}__subtitle`"
-          class="hidden-sm-and-down mt-3"
+          class="hidden-sm-and-down mt-4"
         >
           {{ $t('login.subheader') }}
         </h2>
-      </v-card>
+      </v-sheet>
 
-      <v-card
+      <v-sheet
         v-if="!isLoginViaPassword"
-        flat
+        class="text-center mt-4"
         color="transparent"
-        class="text-xs-center mt-3"
       >
-        <v-layout justify-center>
-          <v-flex
-            xs12
-            sm8
-            md8
-            lg8
+        <v-row
+          justify="center"
+          no-gutters
+        >
+          <v-col
+            sm="8"
+            md="8"
+            lg="8"
           >
             <login-form
               ref="loginForm"
@@ -54,77 +46,86 @@
               @login="onLogin"
               @error="onLoginError"
             />
-          </v-flex>
-        </v-layout>
+          </v-col>
+        </v-row>
 
-        <v-layout
-          justify-center
-          class="mt-2"
+        <v-row
+          justify="center"
+          class="mt-4"
+          no-gutters
         >
-          <v-btn
-            :title="$t('login.scan_qr_code_button_tooltip')"
-            icon
-            flat
-            :class="`${className}__icon`"
-            @click="showQrcodeScanner = true"
-          >
-            <icon><qr-code-scan-icon /></icon>
-          </v-btn>
-
-          <qrcode-capture
-            @detect="onDetectQrcode"
-            @error="onDetectQrcodeError"
-          >
+          <v-col cols="auto">
             <v-btn
-              :title="$t('login.login_by_qr_code_tooltip')"
+              class="ma-2"
+              :title="$t('login.scan_qr_code_button_tooltip')"
               icon
-              flat
+              variant="text"
+              size="x-small"
               :class="`${className}__icon`"
+              @click="showQrcodeScanner = true"
             >
-              <icon><file-icon /></icon>
+              <icon><qr-code-scan-icon /></icon>
             </v-btn>
-          </qrcode-capture>
-        </v-layout>
-      </v-card>
+          </v-col>
 
-      <v-layout
+          <v-col cols="auto">
+            <qrcode-capture
+              @detect="onDetectQrcode"
+              @error="onDetectQrcodeError"
+            >
+              <v-btn
+                class="ma-2"
+                :title="$t('login.login_by_qr_code_tooltip')"
+                icon
+                variant="text"
+                size="x-small"
+                :class="`${className}__icon`"
+              >
+                <icon><file-icon /></icon>
+              </v-btn>
+            </qrcode-capture>
+          </v-col>
+        </v-row>
+      </v-sheet>
+
+      <v-row
         v-if="!isLoginViaPassword"
-        justify-center
-        class="mt-5"
+        justify="center"
+        class="mt-8"
       >
-        <v-flex
-          xs12
-          sm8
-          md8
-          lg8
+        <v-col
+          sm="8"
+          md="8"
+          lg="8"
         >
           <passphrase-generator
             @copy="onCopyPassphrase"
           />
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
 
-      <v-card
+      <v-sheet
         v-if="isLoginViaPassword"
-        flat
+        class="text-center mt-6"
         color="transparent"
-        class="text-xs-center mt-3"
       >
-        <v-layout justify-center>
-          <v-flex
-            xs12
-            sm8
-            md8
-            lg8
+        <v-row
+          no-gutters
+          justify="center"
+        >
+          <v-col
+            sm="8"
+            md="8"
+            lg="8"
           >
             <login-password-form
               v-model="password"
               @login="onLogin"
               @error="onLoginError"
             />
-          </v-flex>
-        </v-layout>
-      </v-card>
+          </v-col>
+        </v-row>
+      </v-sheet>
 
       <qrcode-scanner-dialog
         v-if="showQrcodeScanner"
@@ -132,10 +133,12 @@
         @scan="onScanQrcode"
       />
     </container>
-  </v-layout>
+  </v-row>
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 import QrcodeCapture from '@/components/QrcodeCapture'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import PassphraseGenerator from '@/components/PassphraseGenerator'
@@ -210,38 +213,49 @@ export default {
     },
     onScanQrcode (passphrase) {
       this.passphrase = passphrase
-      this.$nextTick(() => this.$refs.loginForm.submit())
+      nextTick(() => this.$refs.loginForm.submit())
     }
   }
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
-@import '../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import 'vuetify/settings';
+@import '../assets/styles/settings/_colors.scss';
 
-.login-page
-  &__title
-    font-family: 'Exo 2'
-    font-weight: 100
-    font-size: 40px
-    line-height: 40px
-    text-transform: uppercase
-  &__subtitle
-    font-family: 'Exo 2'
-    font-weight: 100
-    font-size: 18px
-  &__icon
-    transition: 0.2s linear
+.login-page {
+  height: 100%;
+
+  &__title {
+    font-family: 'Exo 2';
+    font-weight: 100;
+    font-size: 40px;
+    line-height: 40px;
+    text-transform: uppercase;
+  }
+  &__subtitle {
+    font-family: 'Exo 2';
+    font-weight: 100;
+    font-size: 18px;
+  }
+  &__icon {
+    transition: 0.2s linear;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .login-page
-    &__icon, &__title, &__subtitle
-      color: $adm-colors.regular
-
-.theme--dark
-  .login-page
-    &__icon
-      color: $shades.white
+.v-theme--light {
+  .login-page {
+    &__icon, &__title, &__subtitle {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
+.v-theme--dark {
+  .login-page {
+    &__icon {
+      color: map-get($shades, 'white');
+    }
+  }
+}
 </style>

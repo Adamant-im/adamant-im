@@ -2,7 +2,7 @@
   <div>
     <transaction-template
       :id="transaction.hash || '' "
-      :amount="transaction.amount | currency(crypto)"
+      :amount="currency(transaction.amount, crypto)"
       :timestamp="transaction.timestamp || NaN"
       :fee="fee"
       :confirmations="confirmations || NaN"
@@ -27,6 +27,7 @@ import { CryptoNaturalUnits } from '@/lib/constants'
 
 import transaction from '@/mixins/transaction'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import currency from '@/filters/currencyAmountWithSymbol'
 
 export default {
   name: 'BtcTransaction',
@@ -194,7 +195,9 @@ export default {
       return addresses.includes(this.$store.state[this.cryptoKey].address)
         ? `${this.$tc('transaction.me_and_addresses', count - 1)}`
         : this.$tc('transaction.addresses', count)
-    }
+    },
+
+    currency
   }
 }
 </script>

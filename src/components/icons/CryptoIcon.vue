@@ -3,6 +3,7 @@
     :width="sizePx"
     :height="sizePx"
     :color="fill"
+    :box-centered="boxCentered"
   >
     <component :is="componentName" />
   </icon>
@@ -62,6 +63,11 @@ export default {
     /** Fill color, e.g. '#BDBDBD' */
     fill: {
       type: String,
+      default: undefined
+    },
+    /** Center icon inside a box 40x40px **/
+    boxCentered: {
+      type: Boolean,
       default: undefined
     }
   },

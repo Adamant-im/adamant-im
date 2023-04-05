@@ -15,46 +15,40 @@
 
       <v-card-text class="pa-0">
         <v-list>
-          <v-list-tile
+          <v-list-item
             avatar
             @click="openLink('U5149447931090026688')"
           >
-            <v-list-tile-avatar>
+            <template #prepend>
               <icon><exchanger-icon /></icon>
-            </v-list-tile-avatar>
+            </template>
 
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t('home.buy_tokens_exchanger') }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            <v-list-item-title>{{ $t('home.buy_tokens_exchanger') }}</v-list-item-title>
+          </v-list-item>
 
-          <v-list-tile
+          <v-list-item
             v-for="action in actions"
             :key="action.title"
             avatar
             @click="openLink(action.link)"
           >
-            <v-list-tile-avatar>
+            <template #prepend>
               <crypto-icon :crypto="action.icon" />
-            </v-list-tile-avatar>
+            </template>
 
-            <v-list-tile-content>
-              <v-list-tile-title v-text="action.title" />
-            </v-list-tile-content>
-          </v-list-tile>
+            <v-list-item-title v-text="action.title" />
+          </v-list-item>
 
-          <v-list-tile
+          <v-list-item
             avatar
             @click="openLink('https://coindeal.com/ref/9WZN')"
           >
-            <v-list-tile-avatar>
+            <template #prepend>
               <icon><cdl-icon /></icon>
-            </v-list-tile-avatar>
+            </template>
 
-            <v-list-tile-content>
-              <v-list-tile-title>CoinDeal</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            <v-list-item-title>CoinDeal</v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-card-text>
     </v-card>
@@ -77,7 +71,7 @@ export default {
     ExchangerIcon
   },
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     },
@@ -87,14 +81,15 @@ export default {
       validator: v => validateAddress('ADM', v)
     }
   },
+  emits: ['update:modelValue'],
   computed: {
     className: () => 'buy-tokens-dialog',
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     },
     actions () {

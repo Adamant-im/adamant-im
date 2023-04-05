@@ -1,3 +1,4 @@
+import { describe, it, beforeEach, expect } from 'vitest'
 import module from '@/store/modules/options'
 
 describe('Store: options.js', () => {
