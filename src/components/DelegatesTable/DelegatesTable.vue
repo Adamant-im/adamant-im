@@ -4,14 +4,14 @@
     <tbody>
       <template v-if="searchDelegates.length > 0">
         <delegates-table-item
-            v-for="(delegate) in searchDelegates"
-            :key="delegate.username"
-            :delegate="delegate"
-            :details-expanded="expandedDelegateUsername === delegate.username"
-            @update:details-expanded="state => { updateExpandedDelegateUsername(delegate.username)(state) }"
-          />
+          v-for="(delegate) in searchDelegates"
+          :key="delegate.username"
+          :delegate="delegate"
+          :details-expanded="expandedDelegateUsername === delegate.username"
+          @update:details-expanded="state => { updateExpandedDelegateUsername(delegate.username)(state) }"
+        />
       </template>
-      <DelegatesLoader v-else-if="delegates.length === 0" :waitingForConfirmation="waitingForConfirmation" />
+      <DelegatesLoader v-else-if="delegates.length === 0" :waiting-for-confirmation="waitingForConfirmation" />
       <delegates-not-found
         v-else
         :search-query="searchQuery"
@@ -56,7 +56,10 @@ export default defineComponent({
     DelegatesLoader
   },
   props: {
-    waitingForConfirmation: Boolean,
+    waitingForConfirmation: {
+      type: Boolean,
+      required: true
+    },
     searchQuery: {
       type: String,
       required: true

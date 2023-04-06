@@ -1,9 +1,10 @@
 <template>
-  <div
+  <tr
     class="text-xs-center mt-3 mb-3"
   >
-    <v-layout
-      class="align-center justify-center"
+    <td
+      class="align-center justify-center d-flex"
+      colspan="3"
     >
       <v-progress-circular
         indeterminate
@@ -17,8 +18,10 @@
       >
         {{ waitingForConfirmation ? $t('votes.waiting_confirmations') : $t('votes.loading_delegates') }}
       </div>
-    </v-layout>
-  </div>
+    </td>
+    <td class="w-0"></td>
+    <td class="w-0" ></td>
+  </tr>
 </template>
 
 <script>
@@ -26,7 +29,10 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
   props: {
-    waitingForConfirmation: Boolean,
+    waitingForConfirmation: {
+      type: Boolean,
+      required: true
+    },
   }
 })
 </script>

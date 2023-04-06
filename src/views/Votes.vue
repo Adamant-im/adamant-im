@@ -36,7 +36,7 @@
               :page="pagination.page"
               :per-page="pagination.rowsPerPage"
               :search-query="search"
-              :waitingForConfirmation="waitingForConfirmation"
+              :waiting-for-confirmation="waitingForConfirmation"
             />
             <v-row
               :class="`${className}__review`"
