@@ -31,15 +31,13 @@
               class="a-input"
               color="primary"
             />
-
             <div :class="`${className}__spacer`" />
-
             <delegates-table
               :page="pagination.page"
               :per-page="pagination.rowsPerPage"
               :search-query="search"
+              :waiting-for-confirmation="waitingForConfirmation"
             />
-
             <v-row
               :class="`${className}__review`"
               align="center"
