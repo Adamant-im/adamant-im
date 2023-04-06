@@ -11,7 +11,7 @@
           @update:details-expanded="state => { updateExpandedDelegateUsername(delegate.username)(state) }"
         />
       </template>
-      <DelegatesLoader v-else-if="delegates.length === 0" :waiting-for-confirmation="waitingForConfirmation" />
+      <delegates-loader v-else-if="delegates.length === 0" :waiting-for-confirmation="waitingForConfirmation" />
       <delegates-not-found
         v-else
         :search-query="searchQuery"
