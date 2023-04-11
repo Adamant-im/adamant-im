@@ -27,7 +27,7 @@
       <v-col cols="12">
         <slot name="button">
           <v-btn
-            :disabled="!validForm || disabledButton"
+            :disabled="validForm || disabledButton"
             class="login-form__button a-btn-primary"
             @click="submit"
           >
@@ -74,7 +74,7 @@ export default {
   },
   emits: ['login', 'error', 'update:modelValue'],
   data: () => ({
-    validForm: true,
+    validForm: false,
     disabledButton: false,
     showSpinner: false
   }),
