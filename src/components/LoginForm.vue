@@ -57,8 +57,10 @@
 
 <script>
 import { validateMnemonic } from 'bip39'
+import { computed, ref, defineComponent } from 'vue';
+import { useStore } from 'vuex';
 
-export default {
+export default defineComponent({
   props: {
     modelValue: {
       type: String,
@@ -66,54 +68,64 @@ export default {
     }
   },
   emits: ['login', 'error', 'update:modelValue'],
-  data: () => ({
-    validForm: true,
-    disabledButton: false,
-    showSpinner: false
-  }),
-  computed: {
-    passphrase: {
+  setup(props, { emit }) {
+    const store = useStore()
+    const validForm = ref(false)
+    let disabledButton = ref(false)
+    let showSpinner = ref(false)
+
+    const passphrase = computed({
       get () {
-        return this.modelValue
+        return props.modelValue
       },
       set (value) {
-        this.$emit('update:modelValue', value)
+        emit('update:modelValue', value)
       }
-    }
-  },
-  methods: {
-    submit () {
-      if (!validateMnemonic(this.passphrase)) {
-        return this.$emit('error', 'login.invalid_passphrase')
+    })
+
+    const submit = () => {
+      if (!validateMnemonic(passphrase.value)) {
+        return emit('error', 'login.invalid_passphrase')
       }
 
-      this.freeze()
-      this.login()
-    },
-    login () {
-      const promise = this.$store.dispatch('login', this.passphrase)
+      freeze()
+      login()
+    }
+    const login = () => {
+      const promise = store.dispatch('login', passphrase.value)
 
       promise
         .then(() => {
-          this.$emit('login')
+          emit('login')
         })
         .catch(() => {
-          this.$emit('error', 'login.invalid_passphrase')
+          emit('error', 'login.invalid_passphrase')
         })
         .finally(() => {
-          this.antiFreeze()
+          antiFreeze()
         })
 
       return promise
-    },
-    freeze () {
-      this.disabledButton = true
-      this.showSpinner = true
-    },
-    antiFreeze () {
-      this.disabledButton = false
-      this.showSpinner = false
+    }
+    const freeze = () => {
+      disabledButton = true
+      showSpinner = true
+    }
+    const antiFreeze = () => {
+      disabledButton = false
+      showSpinner = false
+    }
+
+    return {
+      validForm,
+      disabledButton,
+      showSpinner,
+      passphrase,
+      submit,
+      freeze,
+      antiFreeze,
+      login
     }
   }
-}
+})
 </script>
