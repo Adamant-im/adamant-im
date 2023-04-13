@@ -16,13 +16,13 @@
         <logo style="width: 300px;" />
 
         <h1 :class="`${className}__title`">
-          {{ $t('login.brand_title') }}
+          {{ t('login.brand_title') }}
         </h1>
         <h2
           :class="`${className}__subtitle`"
           class="hidden-sm-and-down mt-4"
         >
-          {{ $t('login.subheader') }}
+          {{ t('login.subheader') }}
         </h2>
       </v-sheet>
 
@@ -57,7 +57,7 @@
           <v-col cols="auto">
             <v-btn
               class="ma-2"
-              :title="$t('login.scan_qr_code_button_tooltip')"
+              :title="t('login.scan_qr_code_button_tooltip')"
               icon
               variant="text"
               size="x-small"
@@ -75,7 +75,7 @@
             >
               <v-btn
                 class="ma-2"
-                :title="$t('login.login_by_qr_code_tooltip')"
+                :title="t('login.login_by_qr_code_tooltip')"
                 icon
                 variant="text"
                 size="x-small"
@@ -137,7 +137,8 @@
 </template>
 
 <script>
-import { nextTick } from 'vue'
+import { nextTick, defineComponent, computed, ref } from 'vue'
+import { useStore } from 'vuex'
 
 import QrcodeCapture from '@/components/QrcodeCapture'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
@@ -150,8 +151,9 @@ import FileIcon from '@/components/icons/common/File'
 import LoginPasswordForm from '@/components/LoginPasswordForm'
 import Logo from '@/components/icons/common/Logo'
 import { navigateByURI } from '@/router/navigationGuard'
+import { useI18n } from 'vue-i18n'
 
-export default {
+export default defineComponent({
   components: {
     LanguageSwitcher,
     PassphraseGenerator,
@@ -164,59 +166,72 @@ export default {
     LoginPasswordForm,
     Logo
   },
-  data: () => ({
-    passphrase: '',
-    password: '',
-    showQrcodeScanner: false,
-    logo: '/img/adamant-logo-transparent-512x512.png'
-  }),
-  computed: {
-    className () {
-      return 'login-page'
-    },
-    isLoginViaPassword () {
-      return this.$store.getters['options/isLoginViaPassword']
+  setup () {
+    let passphrase = ref('')
+    const password = ref('')
+    const showQrcodeScanner = ref(false)
+    const loginForm = ref(null)
+    const logo = '/img/adamant-logo-transparent-512x512.png'
+    const store = useStore()
+    const { t } = useI18n()
+
+    const className = computed(() => { return 'login-page' })
+    const isLoginViaPassword = computed(() => { return store.getters['options/isLoginViaPassword'] })
+
+    const onDetectQrcode = (passcode) => {
+      onScanQrcode(passcode)
     }
-  },
-  methods: {
-    onDetectQrcode (passphrase) {
-      this.onScanQrcode(passphrase)
-    },
-    onDetectQrcodeError (err) {
-      this.passphrase = ''
-      this.$store.dispatch('snackbar/show', {
-        message: this.$t('login.invalid_qr_code')
+    const onDetectQrcodeError = (err) => {
+      passphrase = ''
+      store.dispatch('snackbar/show', {
+        message: t('login.invalid_qr_code')
       })
       console.warn(err)
-    },
-    onLogin () {
-      if (!this.$store.state.chat.isFulfilled) {
-        this.$store.commit('chat/createAdamantChats')
-        this.$store.dispatch('chat/loadChats')
-          .then(() => this.$store.dispatch('startInterval'))
+    }
+    const onLogin = () => {
+      if (!store.state.chat.isFulfilled) {
+        store.commit('chat/createAdamantChats')
+        store.dispatch('chat/loadChats')
+          .then(() => store.dispatch('startInterval'))
       } else {
-        this.$store.dispatch('startInterval')
+        store.dispatch('startInterval')
       }
 
       navigateByURI()
-    },
-    onLoginError (key) {
-      this.$store.dispatch('snackbar/show', {
-        message: this.$t(key)
+    }
+    const onLoginError = (key) => {
+      store.dispatch('snackbar/show', {
+        message: t(key)
       })
-    },
-    onCopyPassphrase () {
-      this.$store.dispatch('snackbar/show', {
-        message: this.$t('home.copied'),
+    }
+    const onCopyPassphrase = () => {
+      store.dispatch('snackbar/show', {
+        message: t('home.copied'),
         timeout: 2000
       })
-    },
-    onScanQrcode (passphrase) {
-      this.passphrase = passphrase
-      nextTick(() => this.$refs.loginForm.submit())
+    }
+    const onScanQrcode = (passcode) => {
+      passphrase = passcode
+      nextTick(() => loginForm.submit())
+    }
+
+    return {
+      passphrase,
+      password,
+      showQrcodeScanner,
+      logo,
+      className,
+      isLoginViaPassword,
+      t,
+      onDetectQrcode,
+      onDetectQrcodeError,
+      onLogin,
+      onLoginError,
+      onCopyPassphrase,
+      onScanQrcode
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
