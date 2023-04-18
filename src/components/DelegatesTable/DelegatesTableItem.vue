@@ -1,8 +1,5 @@
 <template>
-  <tr
-    :class="classes.item"
-    @click="handleClick"
-  >
+  <tr :class="classes.item" @click="handleClick">
     <td
       :class="{
         [classes.td]: true,
@@ -13,33 +10,19 @@
       {{ username }}
     </td>
 
-    <td
-      :class="classes.td"
-      class="pl-0 pr-2"
-    >
+    <td :class="classes.td" class="pl-0 pr-2">
       {{ rank }}
     </td>
 
-    <td
-      :class="classes.td"
-      class="pl-0 pr-2"
-    >
+    <td :class="classes.td" class="pl-0 pr-2">
       <delegate-vote-checkbox :delegate="delegate" />
     </td>
   </tr>
 
   <!-- eslint-disable vue/no-multiple-template-root -->
-  <tr
-    v-if="detailsExpanded"
-    :class="classes.details"
-  >
-    <td
-      colspan="3"
-      class="pa-0"
-    >
-      <delegate-details-expander
-        :delegate="delegate"
-      />
+  <tr v-if="detailsExpanded" :class="classes.details">
+    <td colspan="3" class="pa-0">
+      <delegate-details-expander :delegate="delegate" />
     </td>
   </tr>
   <!-- eslint-enable vue/no-multiple-template-root -->
@@ -72,7 +55,7 @@ export default {
     }
   },
   emits: Object.values(emits),
-  setup (props, { emit }) {
+  setup(props, { emit }) {
     const { delegate } = props
     const detailsExpanded = computed(() => props.detailsExpanded)
 

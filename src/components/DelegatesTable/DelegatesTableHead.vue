@@ -1,22 +1,13 @@
 <template>
   <thead :class="classes.root">
     <tr>
-      <th
-        :class="classes.td"
-        class="pl-4 pr-2"
-      >
+      <th :class="classes.td" class="pl-4 pr-2">
         {{ t('votes.table_head_name') }}
       </th>
-      <th
-        :class="classes.td"
-        class="pl-0 pr-2"
-      >
+      <th :class="classes.td" class="pl-0 pr-2">
         {{ t('votes.table_head_rank') }}
       </th>
-      <th
-        :class="classes.td"
-        class="pl-0 pr-2"
-      >
+      <th :class="classes.td" class="pl-0 pr-2">
         {{ t('votes.table_head_vote') }}
       </th>
     </tr>
@@ -27,7 +18,7 @@
 import { useI18n } from 'vue-i18n'
 
 export default {
-  setup () {
+  setup() {
     const { t } = useI18n()
 
     const className = 'delegates-table-head'

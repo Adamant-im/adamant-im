@@ -1,29 +1,15 @@
 <template>
-  <v-card
-    flat
-    :class="classes.root"
-  >
-    <v-list
-      :class="classes.list"
-      density="compact"
-    >
+  <v-card flat :class="classes.root">
+    <v-list :class="classes.list" density="compact">
       <v-list-item :class="classes.listItem">
         <v-list-item-title :class="classes.address">
-          <a
-            :href="getExplorerUrl() + delegate.address"
-            target="_blank"
-            rel="noopener"
-          >
+          <a :href="getExplorerUrl() + delegate.address" target="_blank" rel="noopener">
             {{ delegate.address }}
           </a>
         </v-list-item-title>
       </v-list-item>
 
-      <v-list-item
-        v-for="(item, i) in delegateDetails"
-        :key="i"
-        :class="classes.listItem"
-      >
+      <v-list-item v-for="(item, i) in delegateDetails" :key="i" :class="classes.listItem">
         <template #prepend>
           <v-list-item-title class="a-text-explanation">
             {{ item.title }}
@@ -47,7 +33,7 @@ import { useI18n } from 'vue-i18n'
 import { explorerUriToOnion } from '@/lib/uri'
 import numberFormat from '@/filters/numberFormat'
 
-function getExplorerUrl () {
+function getExplorerUrl() {
   return explorerUriToOnion('https://explorer.adamant.im/delegate/')
 }
 
@@ -58,7 +44,7 @@ export default defineComponent({
       required: true
     }
   },
-  setup (props) {
+  setup(props) {
     const { delegate } = toRefs(props)
     const className = 'delegate-details-expander'
     const classes = {
@@ -125,9 +111,9 @@ export default defineComponent({
     background-color: map-get($adm-colors, 'secondary2');
 
     &__address {
-       a {
-         color: map-get($adm-colors, 'regular');
-       }
+      a {
+        color: map-get($adm-colors, 'regular');
+      }
     }
 
     &__list {
