@@ -19,6 +19,7 @@ html {
   // [1]
   fill: currentColor;
 }
+
 .v-btn--floating .v-btn__content .svg-icon :not(:only-child) {
   // [2]
   &:last-child,
@@ -55,6 +56,7 @@ html {
     background-color: #424242; // secondary
   }
 }
+
 .v-menu .v-overlay__content > .v-card,
 .v-menu .v-overlay__content > .v-sheet,
 .v-menu .v-overlay__content > .v-list {
@@ -71,13 +73,14 @@ html {
   padding: 16px;
 }
 
-.v-card__subtitle, .v-card__text {
+.v-card__subtitle,
+.v-card__text {
   line-height: 1.5;
 }
 
 .v-theme--dark.v-card {
   > .v-card__text {
-    color: #FFF;
+    color: #fff;
   }
 
   > .v-card-title {
@@ -85,7 +88,7 @@ html {
   }
 
   > .v-card__subtitle {
-    color: #FFF;
+    color: #fff;
   }
 }
 
@@ -150,6 +153,7 @@ html {
 .v-list-item-title {
   font-weight: 300;
 }
+
 .v-list-item-subtitle {
   opacity: unset;
 }
@@ -177,7 +181,8 @@ html {
 }
 
 .v-theme--dark {
-  .v-list-item__prepend > .v-icon, .v-list-item__append > .v-icon {
+  .v-list-item__prepend > .v-icon,
+  .v-list-item__append > .v-icon {
     opacity: 1;
   }
 }
@@ -191,12 +196,21 @@ html {
 
 .a-input .v-field--disabled .v-field__outline::before,
 .a-input .v-field--disabled .v-field__outline::before {
-  border-image: repeating-linear-gradient(90deg,hsla(0,0%,100%,.5) 0,hsla(0,0%,100%,.5) 2px,transparent 0,transparent 4px) 1 repeat;
+  border-image: repeating-linear-gradient(
+      90deg,
+      hsla(0, 0%, 100%, 0.5) 0,
+      hsla(0, 0%, 100%, 0.5) 2px,
+      transparent 0,
+      transparent 4px
+    )
+    1 repeat;
   opacity: 1;
 }
 
 .v-theme--dark {
-  .v-field__prepend-inner > .v-icon, .v-field__append-inner > .v-icon, .v-field__clearable > .v-icon {
+  .v-field__prepend-inner > .v-icon,
+  .v-field__append-inner > .v-icon,
+  .v-field__clearable > .v-icon {
     opacity: 1;
   }
 }
@@ -238,13 +252,15 @@ a {
 }
 
 .v-theme--light {
-  a, a:visited {
+  a,
+  a:visited {
     color: map-get($adm-colors, 'primary');
   }
 }
 
 .v-theme--dark {
-  a, a:visited {
-    color: map-get($adm-colors, 'primary')
+  a,
+  a:visited {
+    color: map-get($adm-colors, 'primary');
   }
 }

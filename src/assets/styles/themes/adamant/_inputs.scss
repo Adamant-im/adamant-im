@@ -15,6 +15,7 @@
     &:before {
       border-top-width: 1px;
     }
+
     &:after {
       transition: unset;
     }
@@ -39,6 +40,7 @@
   align-items: flex-start;
   min-height: inherit;
   position: relative;
+
   &__label {
     left: 0px;
     right: auto;
@@ -51,6 +53,7 @@
     white-space: nowrap;
     max-width: 133%;
   }
+
   &__box {
     width: 100%;
     padding-bottom: 20px;
@@ -58,6 +61,7 @@
     display: flex;
     align-items: baseline;
     overflow: hidden;
+
     &:before {
       content: '';
       border-image: repeating-linear-gradient(
@@ -79,11 +83,13 @@
       top: 31px;
     }
   }
+
   &__value {
     line-height: 32px;
     display: block;
     text-overflow: ellipsis;
     white-space: nowrap;
+
     &--rate {
       font-style: italic;
       padding-left: 3px;
@@ -96,18 +102,22 @@
     .v-label {
       color: map-get($adm-colors, 'muted');
     }
+
     .v-label.v-label--active {
       color: map-get($adm-colors, 'muted') !important;
     }
+
     .v-label--is-disabled {
       color: map-get($adm-colors, 'muted');
     }
+
     &.v-input--is-disabled {
       input,
       textarea {
         color: map-get($adm-colors, 'muted');
       }
     }
+
     &:not(.v-input--is-disabled) {
       input,
       textarea {
@@ -115,25 +125,29 @@
         caret-color: map-get($adm-colors, 'primary2');
       }
     }
+
     &.v-select .v-select__selections {
       color: map-get($adm-colors, 'regular');
     }
+
     .v-input__control > .v-input__slot:before {
       border-color: rgba(0, 0, 0, 0.12);
     }
-    &:not(.v-input--has-state)
-      > .v-input__control
-      > .v-input__slot:hover:before {
+
+    &:not(.v-input--has-state) > .v-input__control > .v-input__slot:hover:before {
       border-color: map-get($adm-colors, 'primary2');
     }
+
     &.v-input--is-focused > .v-input__control > .v-input__slot:after {
       border-color: map-get($adm-colors, 'primary2');
       border-width: thin 0 0 0;
     }
   }
+
   .fake-input {
     color: rgba(0, 0, 0, 0.54);
   }
+
   .fake-input__box:before {
     border-image: repeating-linear-gradient(
         to right,
