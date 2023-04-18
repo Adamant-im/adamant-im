@@ -62,9 +62,7 @@
       <!-- Transaction -->
       <template v-else-if="isTransferType">
         <v-list-item-subtitle
-          :class="{
-            [`${className}__subtitle`]: true
-          }"
+          :class="`${className}__subtitle`"
         >
           <v-icon
             v-if="!isIncomingTransaction"
@@ -83,10 +81,10 @@
       <!-- Message -->
       <template v-else>
         <v-list-item-subtitle
-          :class="{
-            'a-text-explanation-enlarged-bold': true,
-            [`${className}__subtitle`]: true
-          }"
+          :class="[
+            'a-text-explanation-enlarged-bold',
+            `${className}__subtitle`
+          ]"
         >
           <v-icon
             v-if="!isIncomingTransaction"
