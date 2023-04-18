@@ -3,11 +3,7 @@
     <nodes-table-head />
 
     <tbody>
-      <nodes-table-item
-        v-for="node in nodes"
-        :key="node.name"
-        :node="node"
-      />
+      <nodes-table-item v-for="node in nodes" :key="node.name" :node="node" />
     </tbody>
   </v-table>
 </template>
@@ -23,7 +19,7 @@ export default defineComponent({
     NodesTableHead,
     NodesTableItem
   },
-  setup () {
+  setup() {
     const store = useStore()
     const nodes = computed(() => store.getters['nodes/list'])
 

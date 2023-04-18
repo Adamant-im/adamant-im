@@ -15,23 +15,14 @@
       />
     </td>
 
-    <td
-      :class="classes.td"
-      class="pl-0 pr-2"
-    >
+    <td :class="classes.td" class="pl-0 pr-2">
       {{ url }}
-      <div
-        v-if="version"
-        :class="classes.version"
-      >
+      <div v-if="version" :class="classes.version">
         {{ 'v' + version }}
       </div>
     </td>
 
-    <td
-      :class="classes.td"
-      class="pl-0 pr-2"
-    >
+    <td :class="classes.td" class="pl-0 pr-2">
       <span>
         {{ nodeStatus }}
       </span>
@@ -43,10 +34,7 @@
       />
     </td>
 
-    <td
-      :class="classes.td"
-      class="pl-0 pr-2"
-    >
+    <td :class="classes.td" class="pl-0 pr-2">
       <v-icon
         :icon="socketSupport ? 'mdi-check' : 'mdi-close'"
         :color="socketSupport ? 'green' : 'red'"
@@ -60,7 +48,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
-function getNodeStatus (node, t) {
+function getNodeStatus(node, t) {
   if (!node.hasMinApiVersion || !node.hasSupportedProtocol) {
     return t('nodes.unsupported')
   } else if (!node.active) {
@@ -74,7 +62,7 @@ function getNodeStatus (node, t) {
   return node.ping + ' ' + t('nodes.ms')
 }
 
-function getNodeStatusColor (node) {
+function getNodeStatusColor(node) {
   let color = 'green'
 
   if (!node.hasMinApiVersion || !node.hasSupportedProtocol) {
@@ -97,7 +85,7 @@ export default {
       required: true
     }
   },
-  setup (props) {
+  setup(props) {
     const { node } = props
     const { t } = useI18n()
     const store = useStore()
@@ -154,7 +142,7 @@ export default {
     @include a-text-explanation-small();
   }
   &__status-icon {
-    margin-inline-start: 4px
+    margin-inline-start: 4px;
   }
   &__td-checkbox {
     width: 64px;
@@ -181,7 +169,7 @@ export default {
 .v-theme--light {
   .nodes-table-item {
     &__version {
-      color: map-get($adm-colors, 'muted')
+      color: map-get($adm-colors, 'muted');
     }
   }
 }
