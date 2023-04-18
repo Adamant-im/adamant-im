@@ -8,7 +8,7 @@
           :key="delegate.username"
           :delegate="delegate"
           :details-expanded="expandedDelegateUsername === delegate.username"
-          @update:details-expanded="state => { updateExpandedDelegateUsername(delegate.username)(state) }"
+          @update:details-expanded="state => updateExpandedDelegateUsername(delegate.username)(state)"
         />
       </template>
       <delegates-loader v-else-if="delegates.length === 0" :waiting-for-confirmation="waitingForConfirmation" />
