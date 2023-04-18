@@ -88,8 +88,6 @@ export default {
   },
   methods: {
     copyAddress () {
-      console.log('copyToClipboard', this.address)
-
       copyToClipboard(this.address)
       this.$store.dispatch('snackbar/show', { message: this.$t('home.copied') })
       this.show = false
