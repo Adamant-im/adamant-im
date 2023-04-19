@@ -1,7 +1,7 @@
 <template>
   <v-form
     ref="form"
-    v-model="validForm"
+    v-model="isValidForm"
     class="login-form"
     @submit.prevent="submit"
   >
@@ -28,7 +28,7 @@
     >
       <slot name="button">
         <v-btn
-          :disabled="!validForm || disabledButton"
+          :disabled="!isValidForm || disabledButton"
           class="login-form__button a-btn-primary"
           @click="submit"
         >
@@ -70,9 +70,8 @@ export default defineComponent({
   emits: ['login', 'error', 'update:modelValue'],
   setup(props, { emit }) {
     const store = useStore()
-    const validForm = ref(false)
-    let disabledButton = ref(false)
-    let showSpinner = ref(false)
+    const disabledButton = ref(false)
+    const showSpinner = ref(false)
 
     const passphrase = computed({
       get () {
@@ -82,6 +81,7 @@ export default defineComponent({
         emit('update:modelValue', value)
       }
     })
+    const isValidForm = computed(() => passphrase.value.length > 0)
 
     const submit = () => {
       if (!validateMnemonic(passphrase.value)) {
@@ -108,16 +108,16 @@ export default defineComponent({
       return promise
     }
     const freeze = () => {
-      disabledButton = true
-      showSpinner = true
+      disabledButton.value = true
+      showSpinner.value = true
     }
     const antiFreeze = () => {
-      disabledButton = false
-      showSpinner = false
+      disabledButton.value = false
+      showSpinner.value = false
     }
 
     return {
-      validForm,
+      isValidForm,
       disabledButton,
       showSpinner,
       passphrase,

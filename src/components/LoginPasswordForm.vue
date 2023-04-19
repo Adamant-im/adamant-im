@@ -1,7 +1,7 @@
 <template>
   <v-form
     ref="form"
-    v-model="validForm"
+    v-model="isValidForm"
     class="login-form"
     @submit.prevent="submit"
   >
@@ -9,6 +9,7 @@
       <v-text-field
         ref="passwordField"
         v-model="password"
+        autofocus
         autocomplete="new-password"
         :label="$t('login_via_password.user_password_title')"
         :name="Date.now()"
@@ -27,7 +28,7 @@
       <v-col cols="12">
         <slot name="button">
           <v-btn
-            :disabled="validForm || disabledButton"
+            :disabled="!isValidForm || disabledButton"
             class="login-form__button a-btn-primary"
             @click="submit"
           >
@@ -64,7 +65,7 @@
 
 <script>
 import { clearDb } from '@/lib/idb'
-import { computed, defineComponent, onUpdated, ref } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 
 export default defineComponent({
@@ -77,10 +78,9 @@ export default defineComponent({
   emits: ['login', 'error', 'update:modelValue'],
   setup (props, { emit } ) {
     const store = useStore()
-    const validForm = ref(false)
     const passwordField = ref(null)
-    let disabledButton = ref(false)
-    let showSpinner = ref(false)
+    const disabledButton = ref(false)
+    const showSpinner = ref(false)
 
     const password = computed({
       get () {
@@ -90,14 +90,11 @@ export default defineComponent({
         emit('update:modelValue', value)
       }
     })
-
-    onUpdated(() => {
-      passwordField.value.focus()
-    })
+    const isValidForm = computed(() => password.value.length > 0)
 
     const submit = () => {
-      showSpinner = true
-      disabledButton = true
+      showSpinner.value = true
+      disabledButton.value = true
 
       return store.dispatch('loginViaPassword', password.value)
         .then(() => {
@@ -107,8 +104,8 @@ export default defineComponent({
           emit('error', 'login_via_password.incorrect_password')
         })
         .finally(() => {
-          showSpinner = false
-          disabledButton = false
+          showSpinner.value = false
+          disabledButton.value = false
         })
     }
 
@@ -119,7 +116,7 @@ export default defineComponent({
     }
 
     return {
-      validForm,
+      isValidForm,
       passwordField,
       disabledButton,
       showSpinner,

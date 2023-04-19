@@ -41,7 +41,7 @@
             lg="8"
           >
             <login-form
-              ref="loginForm"
+              :ref="loginForm"
               v-model="passphrase"
               @login="onLogin"
               @error="onLoginError"
@@ -137,7 +137,7 @@
 </template>
 
 <script>
-import { nextTick, defineComponent, computed, ref } from 'vue'
+import { nextTick, defineComponent, computed, ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 
 import QrcodeCapture from '@/components/QrcodeCapture'
@@ -167,7 +167,7 @@ export default defineComponent({
     Logo
   },
   setup () {
-    let passphrase = ref('')
+    const passphrase = ref('')
     const password = ref('')
     const showQrcodeScanner = ref(false)
     const loginForm = ref(null)
@@ -175,14 +175,14 @@ export default defineComponent({
     const store = useStore()
     const { t } = useI18n()
 
-    const className = computed(() => { return 'login-page' })
-    const isLoginViaPassword = computed(() => { return store.getters['options/isLoginViaPassword'] })
+    const className = 'login-page'
+    const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
 
-    const onDetectQrcode = (passcode) => {
-      onScanQrcode(passcode)
+    const onDetectQrcode = (passphrase) => {
+      onScanQrcode(passphrase)
     }
     const onDetectQrcodeError = (err) => {
-      passphrase = ''
+      passphrase.value = ''
       store.dispatch('snackbar/show', {
         message: t('login.invalid_qr_code')
       })
@@ -210,8 +210,8 @@ export default defineComponent({
         timeout: 2000
       })
     }
-    const onScanQrcode = (passcode) => {
-      passphrase = passcode
+    const onScanQrcode = (passphrase) => {
+      passphrase.value = passphrase
       nextTick(() => loginForm.submit())
     }
 
@@ -223,6 +223,7 @@ export default defineComponent({
       className,
       isLoginViaPassword,
       t,
+      loginForm,
       onDetectQrcode,
       onDetectQrcodeError,
       onLogin,
