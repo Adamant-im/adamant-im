@@ -26,7 +26,7 @@ export default {
       required: true
     }
   },
-  setup (props) {
+  setup(props) {
     const { delegate } = props
     const store = useStore()
 

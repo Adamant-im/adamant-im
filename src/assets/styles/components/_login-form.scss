@@ -62,21 +62,18 @@
     .v-input input {
       color: map-get($adm-colors, 'regular');
     }
+
     .v-text-field > .v-input__control > .v-field > .v-field__outline:before {
       /* [4.a.] */
       border-color: rgba(0, 0, 0, 0.12);
     }
-    .v-text-field
-      > .v-input__control
-      > .v-field.v-field--focused
-      > .v-field__outline:hover:before {
+
+    .v-text-field > .v-input__control > .v-field.v-field--focused > .v-field__outline:hover:before {
       /* [4.b.] */
       border-color: rgba(0, 0, 0, 0.12);
     }
-    .v-text-field
-      > .v-input__control
-      > .v-field.v-field--focused
-      > .v-field__outline:after {
+
+    .v-text-field > .v-input__control > .v-field.v-field--focused > .v-field__outline:after {
       /* [4.c.] */
       border-width: 0 0 thin 0;
     }

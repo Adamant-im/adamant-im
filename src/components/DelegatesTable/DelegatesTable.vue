@@ -4,18 +4,20 @@
     <tbody>
       <template v-if="searchDelegates.length > 0">
         <delegates-table-item
-          v-for="(delegate) in searchDelegates"
+          v-for="delegate in searchDelegates"
           :key="delegate.username"
           :delegate="delegate"
           :details-expanded="expandedDelegateUsername === delegate.username"
-          @update:details-expanded="state => { updateExpandedDelegateUsername(delegate.username)(state) }"
+          @update:details-expanded="
+            (state) => updateExpandedDelegateUsername(delegate.username)(state)
+          "
         />
       </template>
-      <delegates-loader v-else-if="delegates.length === 0" :waiting-for-confirmation="waitingForConfirmation" />
-      <delegates-not-found
-        v-else
-        :search-query="searchQuery"
+      <delegates-loader
+        v-else-if="delegates.length === 0"
+        :waiting-for-confirmation="waitingForConfirmation"
       />
+      <delegates-not-found v-else :search-query="searchQuery" />
     </tbody>
   </v-table>
 </template>
@@ -34,7 +36,7 @@ import DelegatesLoader from '@/components/DelegatesTable/DelegatesLoader'
  * @param {("username" | "rank" | "_voted")} sortBy Sort array by column
  * @returns {(left: unknown, right: unknown) => number}
  */
-function sortDelegatesByColumnCompareFn (sortBy) {
+function sortDelegatesByColumnCompareFn(sortBy) {
   return (left, right) => left[sortBy] - right[sortBy]
 }
 
@@ -44,8 +46,8 @@ function sortDelegatesByColumnCompareFn (sortBy) {
  * @param {unknown} searchQuery
  * @returns {(delegate: unknown) => boolean}
  */
-function filterDelegatesFn (searchQuery) {
-  return delegate => delegate.username.includes(searchQuery)
+function filterDelegatesFn(searchQuery) {
+  return (delegate) => delegate.username.includes(searchQuery)
 }
 
 export default defineComponent({
@@ -80,7 +82,7 @@ export default defineComponent({
       default: 'rank'
     }
   },
-  setup (props) {
+  setup(props) {
     const { searchQuery, page, perPage, sortBy } = toRefs(props)
     const store = useStore()
     const delegates = computed(() => Object.values(store.state.delegates.delegates || {}))
@@ -90,19 +92,17 @@ export default defineComponent({
       expandedDelegateUsername.value = state ? delegateUsername : -1
     }
 
-    const searchDelegates = computed(
-      () => {
-        const startIndex = (page.value - 1) * perPage.value
-        const endIndex = startIndex + perPage.value
+    const searchDelegates = computed(() => {
+      const startIndex = (page.value - 1) * perPage.value
+      const endIndex = startIndex + perPage.value
 
-        const filteredDelegates = [...delegates.value]
-          .sort(sortDelegatesByColumnCompareFn(sortBy.value))
-          .filter(filterDelegatesFn(searchQuery.value))
-          .slice(startIndex, endIndex)
+      const filteredDelegates = [...delegates.value]
+        .sort(sortDelegatesByColumnCompareFn(sortBy.value))
+        .filter(filterDelegatesFn(searchQuery.value))
+        .slice(startIndex, endIndex)
 
-        return reactive(filteredDelegates)
-      }
-    )
+      return reactive(filteredDelegates)
+    })
 
     const className = 'delegates-table'
     const classes = {
@@ -124,12 +124,10 @@ export default defineComponent({
 @import 'vuetify/settings';
 
 .delegates-table {
-
 }
 
 @media #{map-get($display-breakpoints, 'sm-and-down')} {
   .delegates-table {
-
   }
 }
 

@@ -1,11 +1,7 @@
 <template>
   <tr :class="classes.root">
     <td colspan="3">
-      <v-alert
-        :class="classes.alert"
-        color="rgba(0, 0, 0, 0.54)"
-        icon="mdi-alert"
-      >
+      <v-alert :class="classes.alert" color="rgba(0, 0, 0, 0.54)" icon="mdi-alert">
         Your search for "{{ searchQuery }}" found no results.
       </v-alert>
     </td>
@@ -22,7 +18,7 @@ export default defineComponent({
       required: true
     }
   },
-  setup () {
+  setup() {
     const className = 'delegates-not-found'
     const classes = {
       root: className,

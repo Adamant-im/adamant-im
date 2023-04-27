@@ -2,22 +2,13 @@
   <thead :class="classes.root">
     <tr>
       <th :class="classes.checkbox" />
-      <th
-        :class="classes.th"
-        class="pl-0 pr-2"
-      >
+      <th :class="classes.th" class="pl-0 pr-2">
         {{ t('nodes.host') }}
       </th>
-      <th
-        :class="classes.th"
-        class="pl-0 pr-2"
-      >
+      <th :class="classes.th" class="pl-0 pr-2">
         {{ t('nodes.ping') }}
       </th>
-      <th
-        :class="classes.th"
-        class="pl-0 pr-2"
-      >
+      <th :class="classes.th" class="pl-0 pr-2">
         {{ t('nodes.socket') }}
       </th>
     </tr>
@@ -28,7 +19,7 @@
 import { useI18n } from 'vue-i18n'
 
 export default {
-  setup () {
+  setup() {
     const { t } = useI18n()
 
     const className = 'nodes-table-head'
