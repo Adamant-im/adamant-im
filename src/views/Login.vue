@@ -41,7 +41,7 @@
             lg="8"
           >
             <login-form
-              :ref="loginForm"
+              ref="loginForm"
               v-model="passphrase"
               @login="onLogin"
               @error="onLoginError"
@@ -137,7 +137,7 @@
 </template>
 
 <script>
-import { nextTick, defineComponent, computed, ref, onMounted } from 'vue'
+import { nextTick, defineComponent, computed, ref } from 'vue'
 import { useStore } from 'vuex'
 
 import QrcodeCapture from '@/components/QrcodeCapture'
@@ -170,12 +170,12 @@ export default defineComponent({
     const passphrase = ref('')
     const password = ref('')
     const showQrcodeScanner = ref(false)
-    const loginForm = ref(null)
     const logo = '/img/adamant-logo-transparent-512x512.png'
     const store = useStore()
     const { t } = useI18n()
-
     const className = 'login-page'
+    const loginForm = ref(null)
+
     const isLoginViaPassword = computed(() => store.getters['options/isLoginViaPassword'])
 
     const onDetectQrcode = (passphrase) => {
@@ -211,8 +211,8 @@ export default defineComponent({
       })
     }
     const onScanQrcode = (passphrase) => {
-      passphrase.value = passphrase
-      nextTick(() => loginForm.submit())
+      passphrase = passphrase.value
+      nextTick(() => loginForm.value.submit())
     }
 
     return {
