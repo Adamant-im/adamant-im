@@ -1,7 +1,7 @@
 <template>
   <v-form
     ref="form"
-    v-model="validForm"
+    v-model="isValidForm"
     class="login-form"
     @submit.prevent="submit"
   >
@@ -28,7 +28,7 @@
     >
       <slot name="button">
         <v-btn
-          :disabled="!validForm || disabledButton"
+          :disabled="!isValidForm || disabledButton"
           class="login-form__button a-btn-primary"
           @click="submit"
         >
@@ -57,8 +57,10 @@
 
 <script>
 import { validateMnemonic } from 'bip39'
+import { computed, ref, defineComponent } from 'vue';
+import { useStore } from 'vuex';
 
-export default {
+export default defineComponent({
   props: {
     modelValue: {
       type: String,
@@ -66,54 +68,64 @@ export default {
     }
   },
   emits: ['login', 'error', 'update:modelValue'],
-  data: () => ({
-    validForm: true,
-    disabledButton: false,
-    showSpinner: false
-  }),
-  computed: {
-    passphrase: {
+  setup(props, { emit }) {
+    const store = useStore()
+    const disabledButton = ref(false)
+    const showSpinner = ref(false)
+
+    const passphrase = computed({
       get () {
-        return this.modelValue
+        return props.modelValue
       },
       set (value) {
-        this.$emit('update:modelValue', value)
+        emit('update:modelValue', value)
       }
-    }
-  },
-  methods: {
-    submit () {
-      if (!validateMnemonic(this.passphrase)) {
-        return this.$emit('error', 'login.invalid_passphrase')
+    })
+    const isValidForm = computed(() => passphrase.value.length > 0)
+
+    const submit = () => {
+      if (!validateMnemonic(passphrase.value)) {
+        return emit('error', 'login.invalid_passphrase')
       }
 
-      this.freeze()
-      this.login()
-    },
-    login () {
-      const promise = this.$store.dispatch('login', this.passphrase)
+      freeze()
+      login()
+    }
+    const login = () => {
+      const promise = store.dispatch('login', passphrase.value)
 
       promise
         .then(() => {
-          this.$emit('login')
+          emit('login')
         })
         .catch(() => {
-          this.$emit('error', 'login.invalid_passphrase')
+          emit('error', 'login.invalid_passphrase')
         })
         .finally(() => {
-          this.antiFreeze()
+          antiFreeze()
         })
 
       return promise
-    },
-    freeze () {
-      this.disabledButton = true
-      this.showSpinner = true
-    },
-    antiFreeze () {
-      this.disabledButton = false
-      this.showSpinner = false
+    }
+    const freeze = () => {
+      disabledButton.value = true
+      showSpinner.value = true
+    }
+    const antiFreeze = () => {
+      disabledButton.value = false
+      showSpinner.value = false
+    }
+
+    return {
+      isValidForm,
+      disabledButton,
+      showSpinner,
+      passphrase,
+      submit,
+      freeze,
+      antiFreeze,
+      login
     }
   }
-}
+})
 </script>
