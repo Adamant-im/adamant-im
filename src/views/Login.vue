@@ -210,8 +210,8 @@ export default defineComponent({
         timeout: 2000
       })
     }
-    const onScanQrcode = (passphrase) => {
-      passphrase = passphrase.value
+    const onScanQrcode = (value) => {
+      passphrase.value = value
       nextTick(() => loginForm.value.submit())
     }
 
