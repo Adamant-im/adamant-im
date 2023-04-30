@@ -1,10 +1,58 @@
-import { app, BrowserWindow, Menu, nativeTheme } from 'electron'
+import { app, BrowserWindow, Menu, nativeTheme, protocol } from 'electron'
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'path'
+import { readFile } from 'fs'
+import { URL } from 'url'
+
+const SCHEME = 'app'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected
 let appWindow
+
+// Standard scheme must be registered before the app is ready
+protocol.registerSchemesAsPrivileged([{
+  scheme: SCHEME,
+  privileges: {
+    standard: true,
+    secure: true,
+    supportFetchAPI: true,
+    bypassCSP: true,
+    allowServiceWorkers: true
+  }
+}])
+
+// @source: https://github.com/nklayman/vue-cli-plugin-electron-builder/blob/master/lib/createProtocol.js
+function createProtocol(scheme, customProtocol) {
+  ;(customProtocol || protocol).registerBufferProtocol(scheme, (request, respond) => {
+    let pathName = new URL(request.url).pathname
+    pathName = decodeURI(pathName) // Needed in case URL contains spaces
+
+    readFile(path.join(__dirname, pathName), (error, data) => {
+      if (error) {
+        console.error(`Failed to read ${pathName} on ${scheme} protocol`, error)
+      }
+      const extension = path.extname(pathName).toLowerCase()
+      let mimeType = ''
+
+      if (extension === '.js') {
+        mimeType = 'text/javascript'
+      } else if (extension === '.html') {
+        mimeType = 'text/html'
+      } else if (extension === '.css') {
+        mimeType = 'text/css'
+      } else if (extension === '.svg' || extension === '.svgz') {
+        mimeType = 'image/svg+xml'
+      } else if (extension === '.json') {
+        mimeType = 'application/json'
+      } else if (extension === '.wasm') {
+        mimeType = 'application/wasm'
+      }
+
+      respond({ mimeType, data })
+    })
+  })
+}
 
 function createWindow() {
   // Create the browser window
@@ -23,7 +71,8 @@ function createWindow() {
     appWindow.webContents.openDevTools()
   } else {
     // Load the index.html when not in development
-    appWindow.loadFile('dist/index.html')
+    createProtocol(SCHEME)
+    appWindow.loadURL(`${SCHEME}://./index.html`)
   }
 
   appWindow.on('closed', () => {

@@ -6,9 +6,12 @@ import viteConfig from './vite.config'
 export default mergeConfig(
   viteConfig,
   defineConfig({
+    build: {
+      outDir: './dist-electron'
+    },
     plugins: [
       electron({
-        entry: 'electron/main.js'
+        entry: 'src/electron/main.js'
       })
     ]
   })

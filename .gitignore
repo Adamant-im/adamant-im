@@ -28,8 +28,10 @@ yarn-error.log*
 *.sln
 *.sw*
 
-#Electron-builder output
+# Electron-builder output
 /dist-electron
+# Electron app will be placed here after packaging
+/release-electron
 
 # Yarn
 .yarn
