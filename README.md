@@ -66,6 +66,12 @@ npm run electron:dev
 npm run electron:build
 ```
 
+### Build electron for macOS, Windows and Linux
+
+```
+npm run electron:build:mwl
+```
+
 ### Preview electron production build
 
 ```
