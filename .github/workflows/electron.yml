@@ -5,6 +5,9 @@ on:
     branches:
       - feat/github-actions-electron-workflow
 
+env:
+  GH_TOKEN: ${{ secrets.github_token }}
+
 jobs:
   release:
     runs-on: ${{ matrix.os }}
