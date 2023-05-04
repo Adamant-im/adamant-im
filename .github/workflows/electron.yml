@@ -35,4 +35,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: electron-release-app
-          path: ./release-electron
+          path: |
+            release-electron/**
+            !release-electron/mac-arm64
+            !release-electron/mac
