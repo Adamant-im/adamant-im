@@ -28,10 +28,10 @@ jobs:
       - name: Install dependencies ⚙️
         run: npm ci
 
-      - name: Build PWA 🛠️
+      - name: Build Electron App 🛠️
         run: npm run electron:build
 
-      - name: Build/release Electron app
+      - name: Save artifacts
         uses: actions/upload-artifact@v3
         with:
           name: electron-release-app
