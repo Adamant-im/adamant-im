@@ -1,9 +1,6 @@
 <template>
   <div :class="className">
-    <div
-      :class="`${className}__activator`"
-      @click="$refs.fileInput.click()"
-    >
+    <div :class="`${className}__activator`" @click="$refs.fileInput.click()">
       <slot />
     </div>
 
@@ -14,14 +11,9 @@
       accept="image/*"
       :class="`${className}__file-input`"
       @change="onFileSelect"
-    >
+    />
 
-    <img
-      :id="imageBase64"
-      ref="imageElement"
-      :src="imageBase64"
-      :class="`${className}__image`"
-    >
+    <img ref="imageElement" :src="imageBase64" :class="`${className}__image`" />
   </div>
 </template>
 
@@ -35,12 +27,12 @@ export default {
     codeReader: undefined
   }),
   computed: {
-    className () {
+    className() {
       return 'qrcode-capture'
     }
   },
   methods: {
-    async onFileSelect (event) {
+    async onFileSelect(event) {
       this.selectedImage = event.target.files[0]
 
       try {
@@ -64,12 +56,12 @@ export default {
      * Converts image into Base64.
      * @returns {Promise<string>}
      */
-    getImageBase64 () {
+    getImageBase64() {
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
 
-        reader.onload = e => resolve(e.target.result)
-        reader.onerror = err => reject(err)
+        reader.onload = (e) => resolve(e.target.result)
+        reader.onerror = (err) => reject(err)
 
         reader.readAsDataURL(this.selectedImage)
       })
@@ -79,20 +71,25 @@ export default {
      * Decode QRCode from Base64 image.
      * @returns {Promise<string>}
      */
-    async getQrcode () {
-      const result = await this.codeReader.decodeFromImage(this.$refs.imageElement.src)
+    async getQrcode() {
+      // For some reason `decodeFromImage()` and `decodeFromImageUrl()` methods throw an error on first call.
+      // The second call works as expected. Most likely it's a bug inside the lib.
+      //
+      // As a workaround I replaced it with `decodeOnce()` method.
+      // @source https://github.com/zxing-js/library/blob/99a8e0c65de7bf97565a5dd46299d858c10dd69a/src/browser/BrowserCodeReader.ts#L834
+      const result = await this.codeReader.decodeOnce(this.$refs.imageElement, true) // the second argument (retryIfNotFound = true) did the trick
 
       return result.text
     },
 
-    tryToDecode () {
+    tryToDecode() {
       return new Promise((resolve, reject) => {
         // Vue should rerender <img> element,
         // so add a callback to the macrotasks queue
         setTimeout(() => {
           this.getQrcode()
-            .then(qrCodeText => resolve(qrCodeText))
-            .catch(err => reject(err))
+            .then((qrCodeText) => resolve(qrCodeText))
+            .catch((err) => reject(err))
         }, 0)
       })
     }
@@ -102,7 +99,8 @@ export default {
 
 <style lang="scss" scoped>
 .qrcode-capture {
-  &__file-input, &__image {
+  &__file-input,
+  &__image {
     display: none;
   }
 }
