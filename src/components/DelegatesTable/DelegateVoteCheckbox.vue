@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
@@ -26,21 +26,21 @@ export default {
       required: true
     }
   },
-  setup: function (props) {
-    const {delegate} = props
+  setup (props) {
+    const { delegate } = props
     const store = useStore()
 
     const className = 'delegate-vote-checkbox'
     const voteName = 'mdi-thumb'
-    const classes = {
+    const classes = reactive({
       root: className,
       icon: `${className}__icon`
-    }
-    const votes = {
+    })
+    const votes = reactive({
       root: voteName,
       upVote: `${voteName}-up`,
       downVote: `${voteName}-up-outline`
-    }
+    })
 
     const voted = computed(() => delegate._voted)
     const originalVoted = voted.value;
