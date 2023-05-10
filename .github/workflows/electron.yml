@@ -26,11 +26,11 @@ jobs:
 
       - name: Build and Signing Electron App 🛠️
         run: |
-          - CSC_LINK=cert.p12
-          - CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}
-          - "echo ${{ secrets.MACOS_CERT_P12 }} | base64 --decode > $CSC_LINK"
-          - npm run electron:build
-          - rm $CSC_LINK
+          CSC_LINK=cert.p12
+          CSC_KEY_PASSWORD=${{ secrets.CSC_KEY_PASSWORD }}
+          echo ${{ secrets.MACOS_CERT_P12 }} | base64 --decode > $CSC_LINK
+          npm run electron:build
+          rm $CSC_LINK
 
       - name: Save artifacts
         uses: actions/upload-artifact@v3
