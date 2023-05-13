@@ -13,6 +13,7 @@
       <v-card-text class="pa-4">
         <v-text-field
           v-model="password"
+          color="primary"
           autofocus
           autocomplete="new-password"
           class="a-input"
