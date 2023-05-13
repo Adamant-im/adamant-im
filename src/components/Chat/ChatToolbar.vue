@@ -119,7 +119,10 @@ export default {
   }
 
   :deep(.v-toolbar__content > .v-btn:first-child) {
-    margin-inline-start: 4px;
+    width: 36px;
+    height: 36px;
+    margin: 0 12px;
+    border-radius: 50%;
   }
 
   :deep(.v-text-field) {
@@ -159,7 +162,8 @@ export default {
 
   :deep(.v-btn) {
     &:hover > .v-btn__overlay {
-      opacity: 0;
+      opacity: 0.2;
+      transition: all .4s ease;
     }
   }
 }
