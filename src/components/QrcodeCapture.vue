@@ -36,10 +36,7 @@ export default {
       this.selectedImage = event.target.files[0]
 
       try {
-        const { BrowserQRCodeReader } = await import(
-          /* webpackChunkName: "zxing" */
-          '@zxing/library'
-        )
+        const { BrowserQRCodeReader } = await import('@zxing/browser')
         this.codeReader = new BrowserQRCodeReader()
         this.imageBase64 = await this.getImageBase64()
         this.qrCodeText = await this.tryToDecode()
@@ -72,12 +69,7 @@ export default {
      * @returns {Promise<string>}
      */
     async getQrcode() {
-      // For some reason `decodeFromImage()` and `decodeFromImageUrl()` methods throw an error on first call.
-      // The second call works as expected. Most likely it's a bug inside the lib.
-      //
-      // As a workaround I replaced it with `decodeOnce()` method.
-      // @source https://github.com/zxing-js/library/blob/99a8e0c65de7bf97565a5dd46299d858c10dd69a/src/browser/BrowserCodeReader.ts#L834
-      const result = await this.codeReader.decodeOnce(this.$refs.imageElement, true) // the second argument (retryIfNotFound = true) did the trick
+      const result = await this.codeReader.decodeFromImageElement(this.$refs.imageElement)
 
       return result.text
     },
