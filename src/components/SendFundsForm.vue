@@ -192,12 +192,12 @@
 
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <v-card-text
-          class="a-text-regular-enlarged"
+          class="a-text-regular-enlarged pa-4"
           v-html="confirmMessage"
         />
         <!-- eslint-enable vue/no-v-html -->
 
-        <v-card-actions>
+        <v-card-actions class="pa-4">
           <v-spacer />
 
           <v-btn
