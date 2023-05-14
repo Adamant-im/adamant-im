@@ -89,7 +89,6 @@
               <v-checkbox
                 :label="$t('options.stay_logged_in')"
                 color="grey darken-1"
-                :input-value="stayLoggedIn"
                 v-model="stayLoggedIn"
                 readonly
                 density="comfortable"
