@@ -118,7 +118,7 @@ export default {
     }
   }
   :deep(.v-list-item) {
-    padding: 0 8px;
+    padding: 0 16px;
   }
   :deep(.v-list-item__prepend) {
     > .v-icon {
