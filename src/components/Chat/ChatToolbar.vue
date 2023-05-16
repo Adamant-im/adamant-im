@@ -64,9 +64,19 @@ export default {
       return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
     }
   },
+  data: () => ({
+    lastPath: null
+  }),
+  created() {
+    this.lastPath = this.$router.options.history.state.back
+  },
   methods: {
     goBack() {
-      this.$router.push({ name: 'Chats' })
+      if (this.lastPath === '/chats') {
+        this.$router.back()
+      } else {
+        this.$router.push({ name: 'Chats' })
+      }
     },
     showPartnerInfo() {
       this.$emit('partner-info', true)
