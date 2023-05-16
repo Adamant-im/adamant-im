@@ -1,9 +1,6 @@
 <template>
   <div :class="className">
-    <div
-      :class="`${className}__activator`"
-      @click="$refs.fileInput.click()"
-    >
+    <div :class="`${className}__activator`" @click="$refs.fileInput.click()">
       <slot />
     </div>
 
@@ -14,14 +11,9 @@
       accept="image/*"
       :class="`${className}__file-input`"
       @change="onFileSelect"
-    >
+    />
 
-    <img
-      :id="imageBase64"
-      ref="imageElement"
-      :src="imageBase64"
-      :class="`${className}__image`"
-    >
+    <img ref="imageElement" :src="imageBase64" :class="`${className}__image`" />
   </div>
 </template>
 
@@ -35,19 +27,16 @@ export default {
     codeReader: undefined
   }),
   computed: {
-    className () {
+    className() {
       return 'qrcode-capture'
     }
   },
   methods: {
-    async onFileSelect (event) {
+    async onFileSelect(event) {
       this.selectedImage = event.target.files[0]
 
       try {
-        const { BrowserQRCodeReader } = await import(
-          /* webpackChunkName: "zxing" */
-          '@zxing/library'
-        )
+        const { BrowserQRCodeReader } = await import('@zxing/browser')
         this.codeReader = new BrowserQRCodeReader()
         this.imageBase64 = await this.getImageBase64()
         this.qrCodeText = await this.tryToDecode()
@@ -64,12 +53,12 @@ export default {
      * Converts image into Base64.
      * @returns {Promise<string>}
      */
-    getImageBase64 () {
+    getImageBase64() {
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
 
-        reader.onload = e => resolve(e.target.result)
-        reader.onerror = err => reject(err)
+        reader.onload = (e) => resolve(e.target.result)
+        reader.onerror = (err) => reject(err)
 
         reader.readAsDataURL(this.selectedImage)
       })
@@ -79,20 +68,20 @@ export default {
      * Decode QRCode from Base64 image.
      * @returns {Promise<string>}
      */
-    async getQrcode () {
-      const result = await this.codeReader.decodeFromImage(this.$refs.imageElement.src)
+    async getQrcode() {
+      const result = await this.codeReader.decodeFromImageElement(this.$refs.imageElement)
 
       return result.text
     },
 
-    tryToDecode () {
+    tryToDecode() {
       return new Promise((resolve, reject) => {
         // Vue should rerender <img> element,
         // so add a callback to the macrotasks queue
         setTimeout(() => {
           this.getQrcode()
-            .then(qrCodeText => resolve(qrCodeText))
-            .catch(err => reject(err))
+            .then((qrCodeText) => resolve(qrCodeText))
+            .catch((err) => reject(err))
         }, 0)
       })
     }
@@ -102,7 +91,8 @@ export default {
 
 <style lang="scss" scoped>
 .qrcode-capture {
-  &__file-input, &__image {
+  &__file-input,
+  &__image {
     display: none;
   }
 }

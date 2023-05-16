@@ -10,9 +10,10 @@
 
       <v-divider class="a-divider" />
 
-      <v-card-text>
+      <v-card-text class="pa-4">
         <v-text-field
           v-model="password"
+          color="primary"
           autofocus
           autocomplete="new-password"
           class="a-input"
@@ -28,7 +29,7 @@
         </div>
       </v-card-text>
 
-      <v-card-actions>
+      <v-card-actions class="pa-3">
         <v-spacer />
 
         <v-btn
