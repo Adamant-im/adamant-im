@@ -9,6 +9,8 @@ env:
   GH_TOKEN: ${{ secrets.github_token }}
   CSC_LINK: cert.p12
   CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+  APPLE_ID: ${{ secrets.APPLE_ID }}
+  APPLE_ID_PASS: ${{ secrets.APPLE_ID_PASS }}
 
 jobs:
   release:
