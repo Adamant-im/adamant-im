@@ -36,6 +36,8 @@ mac:
   hardenedRuntime: true
   gatekeeperAssess: false
 
+afterSign: 'notarize.js'
+
 # Config for OSX dmg
 dmg:
   background: './build/osx/background.jpeg'

@@ -120,9 +120,6 @@
     "vue-tsc": "^1.2.0"
   },
   "main": "dist-electron/main.js",
-  "build": {
-    "afterSign": "notarize.js"
-  },
   "keywords": [
     "adm",
     "adamant",
