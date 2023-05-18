@@ -11,6 +11,7 @@ env:
   CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
   APPLE_ID: ${{ secrets.APPLE_ID }}
   APPLE_ID_PASS: ${{ secrets.APPLE_ID_PASS }}
+  APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
 jobs:
   release:

@@ -14,6 +14,7 @@ exports.default = async function notarizing(context) {
     appBundleId: 'im.adamant.msg',
     appPath: `${appOutDir}/${appName}.app`,
     appleId: process.env.APPLE_ID,
-    appleIdPassword: process.env.APPLE_ID_PASS
+    appleIdPassword: process.env.APPLE_ID_PASS,
+    teamId: process.env.APPLE_TEAM_ID
   })
 }
