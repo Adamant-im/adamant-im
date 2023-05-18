@@ -32,6 +32,7 @@ mac:
   darkModeSupport: true
   icon: './build/osx/icon.icns'
   entitlements: './build/osx/entitlements.mac.plist'
+  entitlementsInherit: './build/osx/entitlements.mac.plist'
   hardenedRuntime: true
   gatekeeperAssess: false
 
