@@ -88,7 +88,7 @@
       >
         <template #label>
           <span class="font-weight-medium">{{ $t('transfer.amount_label') }}</span>
-          <span class="text-body-2 a-label-secondary">
+          <span class="body-1 a-label-secondary">
             &nbsp;{{ `(max: ${maxToTransferFixed} ${currency})` }}
           </span>
         </template>
