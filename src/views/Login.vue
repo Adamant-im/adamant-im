@@ -265,22 +265,12 @@ export default defineComponent({
     &__icon, &__title, &__subtitle {
       color: map-get($adm-colors, 'regular');
     }
-    :deep(.v-btn--disabled) {
-      background-color: #DDDDDD !important;
-      color: #AAAAAA !important;
-      box-shadow: none !important;
-    }
   }
 }
 .v-theme--dark {
   .login-page {
     &__icon {
       color: map-get($shades, 'white');
-    }
-    :deep(.v-btn--disabled) {
-      background-color: #444444 !important;
-      color: #757575 !important;
-      box-shadow: none !important;
     }
   }
 }

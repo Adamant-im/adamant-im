@@ -39,6 +39,21 @@ html {
   border-radius: 2px;
 }
 
+.v-theme--light {
+  .v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat),  {
+    background-color: #eee; // secondary
+    color: #bbdefb !important; // primary2
+    box-shadow: none !important;
+  }
+}
+.v-theme--dark {
+  .v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat),  {
+    background-color: #4a4a4a !important; // regular
+    color: #9e9e9e !important; // grey
+    box-shadow: none !important;
+  }
+}
+
 // Change default dialog background color
 .v-card {
   &.v-theme--dark {
@@ -264,3 +279,4 @@ a {
     color: map-get($adm-colors, 'primary');
   }
 }
+
