@@ -7,7 +7,7 @@ on:
 
 env:
   GH_TOKEN: ${{ secrets.github_token }}
-  CSC_LINK: cert.p12
+  CSC_LINK: ${{ secrets.CSC_LINK }}
   CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
   APPLE_ID: ${{ secrets.APPLE_ID }}
   APPLE_ID_PASS: ${{ secrets.APPLE_ID_PASS }}
@@ -31,9 +31,7 @@ jobs:
 
       - name: Build and Signing Electron App 🛠️
         run: |
-          echo "${{ secrets.MACOS_CERT_P12 }}" | base64 --decode > $CSC_LINK
           npm run electron:build
-          rm $CSC_LINK
 
       - name: Save artifacts
         uses: actions/upload-artifact@v3
