@@ -28,7 +28,6 @@
       <v-col cols="12">
         <slot name="button">
           <v-btn
-            :disabled="!isValidForm || disabledButton"
             class="login-form__button a-btn-primary"
             @click="submit"
           >
@@ -79,7 +78,6 @@ export default defineComponent({
   setup (props, { emit } ) {
     const store = useStore()
     const passwordField = ref(null)
-    const disabledButton = ref(false)
     const showSpinner = ref(false)
 
     const password = computed({
@@ -94,7 +92,6 @@ export default defineComponent({
 
     const submit = () => {
       showSpinner.value = true
-      disabledButton.value = true
 
       return store.dispatch('loginViaPassword', password.value)
         .then(() => {
@@ -105,7 +102,6 @@ export default defineComponent({
         })
         .finally(() => {
           showSpinner.value = false
-          disabledButton.value = false
         })
     }
 
@@ -118,7 +114,6 @@ export default defineComponent({
     return {
       isValidForm,
       passwordField,
-      disabledButton,
       showSpinner,
       password,
       submit,
