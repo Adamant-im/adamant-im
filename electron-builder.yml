@@ -61,4 +61,3 @@ linux:
   icon: './build/linux/'
   target:
     - AppImage
-    - snap
