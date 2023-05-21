@@ -1,4 +1,4 @@
-name: Build/release Electron
+name: Build Electron [Mac]
 
 on:
   push:
