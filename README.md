@@ -66,10 +66,10 @@ npm run electron:dev
 npm run electron:build
 ```
 
-### Build electron for macOS, Windows and Linux
+### Build electron version without notarization
 
 ```
-npm run electron:build:mwl
+SKIP_NOTARIZATION=true npm run electron:build
 ```
 
 ### Preview electron production build

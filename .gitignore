@@ -13,7 +13,7 @@ package3.json
 # local env files
 .env.local
 .env.*.local
-.env.electron
+electron-builder.env
 
 # Log files
 npm-debug.log*

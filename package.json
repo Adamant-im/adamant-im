@@ -13,7 +13,6 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
     "prettify": "prettier --write src/",
     "electron:build": "vue-tsc && vite build --config electron-vite.config.ts && electron-builder",
-    "electron:build:mwl": "vue-tsc && vite build --config electron-vite.config.ts && electron-builder -mwl",
     "electron:dev": "vite dev --config electron-vite.config.ts",
     "electron:serve": "vite preview --config electron-vite.config.ts",
     "https": "vite preview --https",
