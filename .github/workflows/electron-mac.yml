@@ -38,7 +38,7 @@ jobs:
         with:
           name: electron-release-app
           path: |
-            release-electron/**
-            !release-electron/*.zip
-            !release-electron/mac-arm64
-            !release-electron/mac
+            release-electron/*.dmg
+            release-electron/*.blockmap
+            release-electron/*.yaml
+            release-electron/*.yml
