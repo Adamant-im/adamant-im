@@ -3,7 +3,8 @@ name: Build Electron [Linux]
 on:
   push:
     branches:
-      - feat/github-actions-electron-workflow
+      - master
+      - dev
 
 env:
   GH_TOKEN: ${{ secrets.github_token }}

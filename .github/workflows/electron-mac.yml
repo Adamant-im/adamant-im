@@ -3,6 +3,7 @@ name: Build Electron [Mac]
 on:
   push:
     branches:
+      - master
       - dev
 
 env:
