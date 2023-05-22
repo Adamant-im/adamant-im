@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies ⚙️
         run: npm ci
 
-      - name: Build and Signing Electron App 🛠️
+      - name: Build and Sign Electron App 🛠️
         run: |
           npm run electron:build
 
