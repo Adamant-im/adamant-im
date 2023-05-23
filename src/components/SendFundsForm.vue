@@ -88,7 +88,7 @@
       >
         <template #label>
           <span class="font-weight-medium">{{ $t('transfer.amount_label') }}</span>
-          <span class="body-1 a-label-secondary">
+          <span class="max-amount-label">
             &nbsp;{{ `(max: ${maxToTransferFixed} ${currency})` }}
           </span>
         </template>
@@ -819,6 +819,17 @@ export default {
     :deep(.v-field__field) {
       .v-label.v-field-label {
         align-items: baseline;
+
+        .max-amount-label {
+          font-size: 14px;
+        }
+      }
+    }
+
+    :deep(.v-field__outline) {
+      .v-label.v-field-label.v-field-label--floating .max-amount-label {
+        font-size: 10.5px; // -25% from original size
+        line-height: 1;
       }
     }
   }

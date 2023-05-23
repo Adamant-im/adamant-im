@@ -9,6 +9,10 @@
   @include a-text-regular(16px);
 }
 
+@mixin a-text-regular-normal {
+  @include a-text-regular(14px, 400);
+}
+
 @mixin a-text-regular-bold {
   @include a-text-regular(14px, 500);
 }
