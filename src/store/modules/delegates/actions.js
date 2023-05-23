@@ -54,19 +54,32 @@ export default {
       context.commit('reset')
     }
   },
-  getDelegates (context, payload) {
-    admApi.getDelegatesWithVotes(payload.address).then(response => {
-      if (response.success) {
-        const votes = response.delegates.map(vote => vote.address)
-        admApi.getDelegatesCount().then(response => {
-          if (response.success) {
-            for (let i = 0; i < response.count / constants.Delegates.ACTIVE_DELEGATES; i++) {
-              _getDelegates(context, constants.Delegates.ACTIVE_DELEGATES, i * constants.Delegates.ACTIVE_DELEGATES, votes)
-            }
-          }
-        })
+  async getDelegates(context, payload) {
+    let votes = []
+
+    try {
+      const votesResponse = await admApi.getDelegatesWithVotes(payload.address)
+      if (votesResponse.success) {
+        votes = votesResponse.delegates.map((vote) => vote.address)
       }
-    })
+
+      const delegatesCountResponse = await admApi.getDelegatesCount()
+      if (!delegatesCountResponse.success) {
+        console.warn(delegatesCountResponse)
+        return;
+      }
+
+      for (let i = 0; i < delegatesCountResponse.count / constants.Delegates.ACTIVE_DELEGATES; i++) {
+        _getDelegates(
+          context,
+          constants.Delegates.ACTIVE_DELEGATES,
+          i * constants.Delegates.ACTIVE_DELEGATES,
+          votes
+        )
+      }
+    } catch (err) {
+      console.warn(err)
+    }
   },
   voteForDelegates (context, payload) {
     context.commit('reset')
