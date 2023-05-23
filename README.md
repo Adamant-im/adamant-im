@@ -66,10 +66,10 @@ npm run electron:dev
 npm run electron:build
 ```
 
-### Build electron version without notarization
+### Build electron version and notarize the app
 
 ```
-SKIP_NOTARIZATION=true npm run electron:build
+APPLE_NOTARIZE=true npm run electron:build
 ```
 
 ### Preview electron production build

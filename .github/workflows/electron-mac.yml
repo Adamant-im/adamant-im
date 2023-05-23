@@ -13,6 +13,7 @@ env:
   APPLE_ID: ${{ secrets.APPLE_ID }}
   APPLE_ID_PASS: ${{ secrets.APPLE_ID_PASS }}
   APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+  APPLE_NOTARIZE: true # notarize the app after build
 
 jobs:
   release:

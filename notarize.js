@@ -8,12 +8,14 @@ exports.default = async function notarizing(context) {
     return
   }
 
-  if (process.env.SKIP_NOTARIZATION === 'true') {
-    console.log('SKIP_NOTARIZATION=true | Skipping the notarization"')
+  if (process.env.APPLE_NOTARIZE !== 'true') {
+    console.log('APPLE_NOTARIZE=false | Skipping the notarization"')
     return
   }
 
   const appName = context.packager.appInfo.productFilename
+
+  console.log(`Preparing the app ${appName} for notarization`)
 
   return notarize({
     appBundleId: 'im.adamant.msg',
