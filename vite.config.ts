@@ -6,6 +6,16 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 import inject from '@rollup/plugin-inject'
 import commonjs from '@rollup/plugin-commonjs'
+import { dependencies } from './package.json'
+
+function renderChunks(deps: Record<string, string>) {
+  let chunks = {}
+  Object.keys(deps).forEach((key) => {
+    if (['vue', '@mdi/font'].includes(key)) return
+    chunks[key] = [key]
+  })
+  return chunks
+}
 
 export default defineConfig({
   plugins: [
@@ -62,6 +72,14 @@ export default defineConfig({
   build: {
     commonjsOptions: {
       include: []
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['vue'],
+          ...renderChunks(dependencies)
+        }
+      }
     }
   }
 })
