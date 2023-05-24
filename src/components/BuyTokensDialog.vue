@@ -33,7 +33,7 @@
             @click="openLink(action.link)"
           >
             <template #prepend>
-              <crypto-icon :crypto="action.icon" />
+              <icon><adamant-icon /></icon>
             </template>
 
             <v-list-item-title v-text="action.title" />
@@ -58,7 +58,7 @@
 <script>
 import validateAddress from '@/lib/validateAddress'
 import Icon from '@/components/icons/BaseIcon'
-import CryptoIcon from '@/components/icons/CryptoIcon'
+import AdamantIcon from '@/components/icons/common/Adamant'
 import AzbitIcon from '@/components/icons/common/Azbit'
 import ExchangerIcon from '@/components/icons/common/Exchanger'
 import { websiteUriToOnion } from '@/lib/uri'
@@ -66,7 +66,7 @@ import { websiteUriToOnion } from '@/lib/uri'
 export default {
   components: {
     Icon,
-    CryptoIcon,
+    AdamantIcon,
     AzbitIcon,
     ExchangerIcon
   },
