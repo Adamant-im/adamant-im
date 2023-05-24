@@ -60,13 +60,9 @@ export default {
     }
   },
   async getDelegates(context, payload) {
-    let votes = []
-
     try {
       const votesResponse = await admApi.getDelegatesWithVotes(payload.address)
-      if (votesResponse.success) {
-        votes = votesResponse.delegates.map((vote) => vote.address)
-      }
+      const votes = votesResponse.success ? votesResponse.delegates.map((vote) => vote.address) : []
 
       const delegatesCountResponse = await admApi.getDelegatesCount()
       if (!delegatesCountResponse.success) {
