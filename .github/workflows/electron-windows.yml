@@ -1,0 +1,40 @@
+name: Build Electron [Windows]
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+
+env:
+  GH_TOKEN: ${{ secrets.github_token }}
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node version 🍀
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies ⚙️
+        run: npm ci
+
+      - name: Build and Sign Electron App 🛠️
+        run: |
+          npm run electron:build
+
+      - name: Save artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: electron-release-app
+          path: |
+            release-electron/*.exe
+            release-electron/*.blockmap
+            release-electron/*.yaml
+            release-electron/*.yml
