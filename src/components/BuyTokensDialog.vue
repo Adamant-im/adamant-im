@@ -34,7 +34,7 @@
               <icon><adamant-icon /></icon>
             </template>
 
-            <v-list-item-title>Anonymously on website</v-list-item-title>
+            <v-list-item-title>{{ $t('home.buy_tokens_anonymously') }}</v-list-item-title>
           </v-list-item>
 
           <v-list-item
@@ -82,10 +82,10 @@ export default {
   emits: ['update:modelValue'],
   computed: {
     className: () => 'buy-tokens-dialog',
-    admLink: function () {
+    admLink() {
       return websiteUriToOnion(this.adamantAddress
-      ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
-      : `${this.$t('home.buy_tokens_btn_link')}`)
+        ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
+        : `${this.$t('home.buy_tokens_btn_link')}`)
     },
     show: {
       get () {
