@@ -1,7 +1,6 @@
 <template>
   <v-form
     ref="form"
-    v-model="isValidForm"
     class="login-form"
     @submit.prevent="submit"
   >
@@ -79,7 +78,6 @@ export default defineComponent({
         emit('update:modelValue', value)
       }
     })
-    const isValidForm = computed(() => passphrase.value.length > 0)
 
     const submit = () => {
       if (!validateMnemonic(passphrase.value)) {
@@ -113,7 +111,6 @@ export default defineComponent({
     }
 
     return {
-      isValidForm,
       showSpinner,
       passphrase,
       submit,

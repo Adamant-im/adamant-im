@@ -1,7 +1,6 @@
 <template>
   <v-form
     ref="form"
-    v-model="isValidForm"
     class="login-form"
     @submit.prevent="submit"
   >
@@ -88,7 +87,6 @@ export default defineComponent({
         emit('update:modelValue', value)
       }
     })
-    const isValidForm = computed(() => password.value.length > 0)
 
     const submit = () => {
       showSpinner.value = true
@@ -112,7 +110,6 @@ export default defineComponent({
     }
 
     return {
-      isValidForm,
       passwordField,
       showSpinner,
       password,

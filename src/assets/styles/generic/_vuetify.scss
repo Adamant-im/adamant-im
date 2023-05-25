@@ -50,7 +50,7 @@ html {
   }
 }
 .v-theme--dark {
-  .v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat),  {
+  .v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat).v-btn--variant-elevated  {
     background-color: hsla(0, 0%, 100%, 0.35) !important;
     color: hsla(0, 0%, 100%, 0.95) !important;
     box-shadow: none !important;
