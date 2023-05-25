@@ -27,16 +27,14 @@
           </v-list-item>
 
           <v-list-item
-            v-for="action in actions"
-            :key="action.title"
             avatar
-            @click="openLink(action.link)"
+            @click="openLink(admLink)"
           >
             <template #prepend>
-              <crypto-icon :crypto="action.icon" />
+              <icon><adamant-icon /></icon>
             </template>
 
-            <v-list-item-title v-text="action.title" />
+            <v-list-item-title>{{ $t('home.buy_tokens_anonymously') }}</v-list-item-title>
           </v-list-item>
 
           <v-list-item
@@ -58,7 +56,7 @@
 <script>
 import validateAddress from '@/lib/validateAddress'
 import Icon from '@/components/icons/BaseIcon'
-import CryptoIcon from '@/components/icons/CryptoIcon'
+import AdamantIcon from '@/components/icons/common/Adamant'
 import AzbitIcon from '@/components/icons/common/Azbit'
 import ExchangerIcon from '@/components/icons/common/Exchanger'
 import { websiteUriToOnion } from '@/lib/uri'
@@ -66,7 +64,7 @@ import { websiteUriToOnion } from '@/lib/uri'
 export default {
   components: {
     Icon,
-    CryptoIcon,
+    AdamantIcon,
     AzbitIcon,
     ExchangerIcon
   },
@@ -84,6 +82,11 @@ export default {
   emits: ['update:modelValue'],
   computed: {
     className: () => 'buy-tokens-dialog',
+    admLink() {
+      return websiteUriToOnion(this.adamantAddress
+        ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
+        : `${this.$t('home.buy_tokens_btn_link')}`)
+    },
     show: {
       get () {
         return this.modelValue
@@ -92,17 +95,6 @@ export default {
         this.$emit('update:modelValue', value)
       }
     },
-    actions () {
-      return [
-        {
-          icon: 'ADM',
-          title: this.$t('home.buy_tokens_anonymously'),
-          link: websiteUriToOnion(this.adamantAddress
-            ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
-            : `${this.$t('home.buy_tokens_btn_link')}`)
-        }
-      ]
-    }
   },
   methods: {
     openLink (link) {
