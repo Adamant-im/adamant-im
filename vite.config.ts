@@ -3,15 +3,22 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import autoprefixer from 'autoprefixer'
 import { VitePWA } from 'vite-plugin-pwa'
-
 import inject from '@rollup/plugin-inject'
 import commonjs from '@rollup/plugin-commonjs'
+import { ManualChunksOption } from 'rollup'
+
 import { dependencies } from './package.json'
 
-function renderChunks(deps: Record<string, string>) {
-  let chunks = {}
+function renderChunks(deps: Record<string, string>): ManualChunksOption {
+  const vueChunks = ['vue', 'vuex', 'vue-router', 'vue-i18n', 'vuetify', 'vuex-persist']
+  const excludedChunks = ['@mdi/font']
+
+  const chunks = {
+    ['vue-chunks']: vueChunks
+  }
   Object.keys(deps).forEach((key) => {
-    if (['vue', '@mdi/font'].includes(key)) return
+    if (vueChunks.includes(key)) return
+    if (excludedChunks.includes(key)) return
     chunks[key] = [key]
   })
   return chunks
@@ -76,7 +83,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['vue'],
           ...renderChunks(dependencies)
         }
       }
