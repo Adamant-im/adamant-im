@@ -163,8 +163,11 @@ export default {
     onScroll () {
       const height = document.getElementById('txListElement').offsetHeight
       const windowHeight = window.innerHeight
-      const scrollPosition = window.scrollY || window.pageYOffset || document.body.scrollTop +
-        (document.documentElement.scrollTop || 0)
+      const scrollPosition = Math.ceil(
+        window.scrollY ||
+        window.pageYOffset ||
+        document.body.scrollTop + (document.documentElement.scrollTop || 0)
+      )
       // If we've scrolled to the very bottom, fetch the older transactions from server
       if (!this.isOlderLoading && windowHeight + scrollPosition >= height) {
         this.$store.dispatch(`${this.cryptoModule}/getOldTransactions`)
