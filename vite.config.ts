@@ -6,6 +6,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 import inject from '@rollup/plugin-inject'
 import commonjs from '@rollup/plugin-commonjs'
 import { ManualChunksOption } from 'rollup'
+import { fileURLToPath } from 'node:url'
+import fs from 'node:fs'
 
 import { dependencies } from './package.json'
 
@@ -22,6 +24,21 @@ function renderChunks(deps: Record<string, string>): ManualChunksOption {
     chunks[key] = [key]
   })
   return chunks
+}
+
+/**
+ * Exclude wordlists from `bip39` except for the english.json
+ */
+function excludeBip39Wordlists() {
+  const wordlistsPath = 'node_modules/bip39/src/wordlists'
+
+  const filesToExclude = fs
+    .readdirSync(path.resolve(__dirname, wordlistsPath))
+    .filter((fileName) => fileName !== 'english.json')
+
+  return filesToExclude.map((fileName) =>
+    fileURLToPath(new URL(`${wordlistsPath}/${fileName}`, import.meta.url))
+  )
 }
 
 export default defineConfig({
@@ -85,7 +102,8 @@ export default defineConfig({
         manualChunks: {
           ...renderChunks(dependencies)
         }
-      }
+      },
+      external: [...excludeBip39Wordlists()]
     }
   }
 })
