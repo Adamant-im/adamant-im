@@ -40,12 +40,12 @@ html {
 }
 
 .v-theme--light {
-  .v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat),  {
+  .v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat).v-btn--variant-elevated  {
     background-color: map-get($adm-colors, 'secondary')  !important;
     color: map-get($adm-colors, 'primary2') !important;
     box-shadow: none !important;
   }
-  .v-btn__overlay {
+  .v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat).v-btn--variant-elevated > .v-btn__overlay {
     opacity: 0 !important;
   }
 }
