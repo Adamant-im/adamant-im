@@ -106,7 +106,6 @@ export default {
   &__td {
     font-size: 14px;
   }
-
   &__td-username {
     cursor: pointer;
   }
@@ -127,6 +126,10 @@ export default {
 
 .v-theme--dark {
   .delegates-table-item {
+    &__td {
+      border-bottom: none !important;
+      border-top: thin solid map-get($adm-colors, 'regular');
+    }
   }
 }
 </style>
