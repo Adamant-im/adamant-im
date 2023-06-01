@@ -41,6 +41,25 @@ function excludeBip39Wordlists() {
   )
 }
 
+export function deferNonCriticalJS(html: string): string {
+  const jsRegex = /\n.*<script type="module" /
+  const nonCriticalJs = html.match(jsRegex)
+  if (nonCriticalJs === null) {
+    return html
+  }
+
+  const deferredJs = nonCriticalJs[0] + 'defer '
+
+  return html.replace(jsRegex, deferredJs)
+}
+
+function addDeferAttributeToAppJs() {
+  return {
+    name: 'html-transform',
+    transformIndexHtml: (html: string) => deferNonCriticalJS(html)
+  }
+}
+
 export default defineConfig({
   plugins: [
     vue(),
@@ -55,7 +74,8 @@ export default defineConfig({
       devOptions: {
         enabled: false
       }
-    })
+    }),
+    addDeferAttributeToAppJs()
   ],
   css: {
     postcss: {
