@@ -118,11 +118,11 @@ export default defineConfig({
       include: []
     },
     rollupOptions: {
-      output: {
-        manualChunks: {
-          ...renderChunks(dependencies)
-        }
-      },
+      // output: {
+      //   manualChunks: {
+      //     ...renderChunks(dependencies)
+      //   }
+      // },
       external: [...excludeBip39Wordlists()]
     }
   }
