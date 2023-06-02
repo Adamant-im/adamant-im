@@ -14,6 +14,7 @@
       <v-row
         justify="center"
         no-gutters
+        style="position: relative;"
       >
         <v-list-item
           v-if="isRecentLoading"
