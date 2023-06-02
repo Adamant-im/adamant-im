@@ -60,6 +60,28 @@ function addDeferAttributeToAppJs() {
   }
 }
 
+function preloadCSS(html: string): string {
+  const styleRegx = /\n.*<link rel="stylesheet" href=".*">/
+  const linkTag = html.match(styleRegx)
+  if (linkTag === null) {
+    return html
+  }
+
+  const linkTagPreloaded = linkTag[0].replace(
+    'rel="stylesheet"',
+    'rel="preload" as="style" onload="this.onload=null;this.rel=\'stylesheet\'"'
+  )
+
+  return html.replace(styleRegx, linkTagPreloaded + `<noscript>${linkTag}</noscript>`)
+}
+
+function preloadCSSPlugin() {
+  return {
+    name: 'defer-and-inline-critical',
+    transformIndexHtml: (html: string) => preloadCSS(html)
+  }
+}
+
 export default defineConfig({
   plugins: [
     vue(),
@@ -75,7 +97,8 @@ export default defineConfig({
         enabled: false
       }
     }),
-    addDeferAttributeToAppJs()
+    addDeferAttributeToAppJs(),
+    preloadCSSPlugin()
   ],
   css: {
     postcss: {
