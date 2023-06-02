@@ -1,16 +1,11 @@
 function preloadCSS(html: string): string {
-  const styleRegx = /\n.*<link rel="stylesheet" href=".*">/
-  const linkTag = html.match(styleRegx)
-  if (linkTag === null) {
-    return html
-  }
-
-  const linkTagPreloaded = linkTag[0].replace(
-    'rel="stylesheet"',
-    'rel="preload" as="style" onload="this.onload=null;this.rel=\'stylesheet\'"'
+  return html.replace(
+    /<link rel="stylesheet" href="(.*)">/g,
+    `
+    <link rel="preload" as="style" href="$1" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="$1"></noscript>
+  `
   )
-
-  return html.replace(styleRegx, linkTagPreloaded + `<noscript>${linkTag}</noscript>`)
 }
 
 /**

@@ -1,4 +1,4 @@
-export function deferNonCriticalJS(html: string): string {
+function deferNonCriticalJS(html: string): string {
   const jsRegex = /\n.*<script type="module" /
   const nonCriticalJs = html.match(jsRegex)
   if (nonCriticalJs === null) {
