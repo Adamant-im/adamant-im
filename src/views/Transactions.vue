@@ -20,7 +20,7 @@
           v-if="isRecentLoading"
           style="position: absolute; top: 20px;"
         >
-          <InlineSpinner/>
+          <InlineSpinner />
         </v-list-item>
 
         <container v-if="isFulfilled">
