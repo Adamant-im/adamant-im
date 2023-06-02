@@ -66,15 +66,27 @@
   ],
   "related_applications": [
     {
-      "platform": "telegram",
-      "url": "https://telegram.org/"
+      "platform": "iOS",
+      "url": "https://apps.apple.com/app/adamant-messenger/id1341473829"
+    },
+    {
+      "platform": "Android",
+      "url": "https://play.google.com/store/apps/details?id=im.adamant.adamantmessengerpwa&pli=1"
     }
   ],
-  "prefer_related_applications": false,
+  "prefer_related_applications": true,
   "shortcuts": [
     {
-      "name": "Buy ADM Tokens",
-      "url": "https://adamant.im/buy-tokens"
+      "name": "Wallet",
+      "url": "/home"
+    },
+    {
+      "name": "Chats",
+      "url": "/chats"
+    },
+    {
+      "name": "Settings",
+      "url": "/options"
     }
   ],
   "screenshots" : [
