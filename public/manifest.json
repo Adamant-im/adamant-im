@@ -1,6 +1,7 @@
 {
   "name": "ADAMANT Messenger",
   "short_name": "ADAMANT",
+  "description": "ADAMANT is a unique product—it's the only Private Messenger operating entirely on a Blockchain.",
   "icons": [
     {
       "src": "/img/icons/android-chrome-36x36.png",
@@ -45,7 +46,8 @@
     {
       "src": "/img/icons/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/img/icons/android-chrome-1024x1024.png",
@@ -53,8 +55,44 @@
       "type": "image/png"
     }
   ],
+  "dir": "ltr",
+  "lang": "en",
+  "orientation": "natural",
   "start_url": "/index.html",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "browser"
+  ],
+  "related_applications": [
+    {
+      "platform": "telegram",
+      "url": "https://telegram.org/"
+    }
+  ],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Buy ADM Tokens",
+      "url": "https://adamant.im/buy-tokens"
+    }
+  ],
+  "screenshots" : [
+    {
+      "src": "./img/screenshot-desktop.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "platform": "wide"
+    },
+    {
+      "src": "./img/screenshot-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "platform": "narrow"
+    }
+  ],
+  "scope": "https://msg.adamant.im",
+  "categories": ["business", "finance", "social", "crypto", "security"],
   "background_color": "#000000",
   "theme_color": "#4DBA87"
 }
