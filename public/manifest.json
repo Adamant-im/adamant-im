@@ -91,8 +91,15 @@
       "platform": "narrow"
     }
   ],
+  "share_target": {
+    "action": "/home",
+    "params": {
+      "title": "ADAMANT",
+      "text": "ADAMANT is a unique product—it's the only Private Messenger operating entirely on a Blockchain."
+    }
+  },
   "scope": "https://msg.adamant.im",
-  "categories": ["business", "finance", "social", "crypto", "security"],
+  "categories": ["finance", "social", "crypto", "security", "blockchain"],
   "background_color": "#000000",
   "theme_color": "#4DBA87"
 }
