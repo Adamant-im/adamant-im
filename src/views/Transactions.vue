@@ -14,10 +14,11 @@
       <v-row
         justify="center"
         no-gutters
+        style="position: relative;"
       >
         <v-list-item
           v-if="isRecentLoading"
-          style="position: relative; top: 20px;"
+          style="position: absolute; top: 20px;"
         >
           <InlineSpinner/>
         </v-list-item>
@@ -28,6 +29,32 @@
             lines="three"
             bg-color="transparent"
           >
+            <transaction-list-item
+              v-for="(transaction, i) in transactions"
+              :id="transaction.id"
+              :key="i"
+              :sender-id="sender(transaction)"
+              :recipient-id="recipient(transaction)"
+              :timestamp="transaction.timestamp || NaN"
+              :amount="transaction.amount"
+              :crypto="crypto"
+              :text-data="transaction.data"
+              @click:transaction="goToTransaction"
+              @click:icon="goToChat"
+            />
+            <transaction-list-item
+              v-for="(transaction, i) in transactions"
+              :id="transaction.id"
+              :key="i"
+              :sender-id="sender(transaction)"
+              :recipient-id="recipient(transaction)"
+              :timestamp="transaction.timestamp || NaN"
+              :amount="transaction.amount"
+              :crypto="crypto"
+              :text-data="transaction.data"
+              @click:transaction="goToTransaction"
+              @click:icon="goToChat"
+            />
             <transaction-list-item
               v-for="(transaction, i) in transactions"
               :id="transaction.id"
