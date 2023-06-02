@@ -42,32 +42,6 @@
               @click:transaction="goToTransaction"
               @click:icon="goToChat"
             />
-            <transaction-list-item
-              v-for="(transaction, i) in transactions"
-              :id="transaction.id"
-              :key="i"
-              :sender-id="sender(transaction)"
-              :recipient-id="recipient(transaction)"
-              :timestamp="transaction.timestamp || NaN"
-              :amount="transaction.amount"
-              :crypto="crypto"
-              :text-data="transaction.data"
-              @click:transaction="goToTransaction"
-              @click:icon="goToChat"
-            />
-            <transaction-list-item
-              v-for="(transaction, i) in transactions"
-              :id="transaction.id"
-              :key="i"
-              :sender-id="sender(transaction)"
-              :recipient-id="recipient(transaction)"
-              :timestamp="transaction.timestamp || NaN"
-              :amount="transaction.amount"
-              :crypto="crypto"
-              :text-data="transaction.data"
-              @click:transaction="goToTransaction"
-              @click:icon="goToChat"
-            />
             <v-list-item v-if="isOlderLoading">
               <InlineSpinner />
             </v-list-item>
