@@ -58,6 +58,7 @@ export default {
 .v-theme--dark {
   .delegates-table-head {
     &__td {
+      border-bottom: none !important;
     }
   }
 }

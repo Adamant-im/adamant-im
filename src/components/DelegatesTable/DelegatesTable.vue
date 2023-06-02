@@ -123,10 +123,6 @@ export default defineComponent({
 <style lang="scss">
 @import 'vuetify/settings';
 
-.delegate-details-expander {
-  margin: 10px 26px;
-}
-
 .delegates-table {
 }
 
@@ -138,9 +134,6 @@ export default defineComponent({
 .v-theme--dark {
   .delegates-table {
     background-color: rgb(var(--v-theme-on-surface-variant));
-  }
-  th.delegates-table-head__td {
-    border-bottom: none !important;
   }
 }
 </style>
