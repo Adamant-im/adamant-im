@@ -41,6 +41,7 @@
                 :key="transaction.contactId"
               >
                 <chat-preview
+                  v-if="displayChat(transaction.contactId)"
                   :ref="transaction.contactId"
                   :is-loading-separator="transaction.loadingSeparator"
                   :is-loading-separator-active="loading"
@@ -74,7 +75,7 @@ import ChatPreview from '@/components/ChatPreview'
 import ChatStartDialog from '@/components/ChatStartDialog'
 import ChatSpinner from '@/components/ChatSpinner'
 import scrollPosition from '@/mixins/scrollPosition'
-import { getAdamantChatMeta, isAdamantChat } from '@/lib/chat/meta/utils'
+import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 
 const scrollOffset = 64
 
@@ -182,6 +183,17 @@ export default {
           this.loading = false
           this.onScroll() // update messages and remove loadingSeparator, if needed
         })
+    },
+    messagesCount(partnerId) {
+      const messages = this.$store.getters['chat/messages'](partnerId)
+
+      return messages.length
+    },
+    displayChat(partnerId) {
+      const isUserChat = !isAdamantChat(partnerId)
+      const ifChattedBefore = isAdamantChat(partnerId) && this.messagesCount(partnerId) > 1
+
+      return isUserChat || isStaticChat(partnerId) || ifChattedBefore
     }
   }
 }
