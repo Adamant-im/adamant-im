@@ -90,7 +90,7 @@ export default defineComponent({
 @import '../../assets/styles/settings/_colors.scss';
 
 .delegate-details-expander {
-  //margin: 20px;
+  margin: 10px 26px;
 
   &__list-item {
     height: 36px;
