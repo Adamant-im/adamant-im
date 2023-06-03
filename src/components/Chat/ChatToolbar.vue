@@ -3,16 +3,16 @@
     <v-btn icon @click="goBack">
       <v-icon icon="mdi-arrow-left" />
     </v-btn>
-    <div v-if="!isChatReadOnly">
+    <div v-if="!isWelcomeChat(partnerId)">
       <slot name="avatar-toolbar" />
     </div>
     <div :class="`${className}__textfield-container`">
       <div
-        v-if="isChatReadOnly"
+        v-if="isWelcomeChat(partnerId)"
         :class="`${className}__adm-chat-name`"
         :style="{ paddingLeft: '12px' }"
       >
-        {{ $t(partnerId) }}
+        {{ $t('chats.virtual.welcome_message_title') }}
       </div>
       <div v-else>
         <v-text-field
@@ -23,6 +23,7 @@
           :label="partnerId"
           hide-details
           density="compact"
+          :readonly="isAdamantChat(partnerId)"
         />
       </div>
     </div>
@@ -34,6 +35,7 @@
 <script>
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import partnerName from '@/mixins/partnerName'
+import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 
 export default {
   components: {
@@ -59,9 +61,6 @@ export default {
           displayName: value
         })
       }
-    },
-    isChatReadOnly() {
-      return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
     }
   },
   data: () => ({
@@ -80,7 +79,9 @@ export default {
     },
     showPartnerInfo() {
       this.$emit('partner-info', true)
-    }
+    },
+    isAdamantChat,
+    isWelcomeChat
   }
 }
 </script>

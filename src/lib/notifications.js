@@ -4,6 +4,7 @@ import Notify from 'notifyjs'
 import Visibility from 'visibilityjs'
 import currency from '@/filters/currencyAmountWithSymbol'
 import { removeFormats } from '@/lib/markdown'
+import { isAdamantChat } from "@/lib/chat/meta/utils";
 
 let _this
 
@@ -25,7 +26,7 @@ class Notification {
   }
 
   get partnerIdentity () {
-    const isAdmChat = this.store.getters['chat/isAdamantChat'](this.partnerAddress)
+    const isAdmChat = isAdamantChat(this.partnerAddress)
     const name = this.store.getters['partners/displayName'](this.partnerAddress) || this.partnerAddress
     return isAdmChat ? this.i18n.t(name) : name
   }

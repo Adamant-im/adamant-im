@@ -388,56 +388,6 @@ describe('Store: chat.js', () => {
     })
 
     /**
-     * getters.isAdamantChat
-     */
-    describe('getters.isAdamantChat', () => {
-      it('should return boolean', () => {
-        const state = {
-          chats: {
-            adamantBounty: {
-              isAdamantChat: true
-            },
-            adamantTokens: {
-              isAdamantChat: false
-            },
-            U111111: {}
-          }
-        }
-
-        const isAdamantChat = getters.isAdamantChat(state)
-
-        expect(isAdamantChat('adamantBounty')).toBe(true)
-        expect(isAdamantChat('adamantTokens')).toBe(false)
-        expect(isAdamantChat('U111111')).toBe(false)
-      })
-    })
-
-    /**
-     * getters.isChatReadOnly
-     */
-    describe('getters.isChatReadOnly', () => {
-      it('should return boolean', () => {
-        const state = {
-          chats: {
-            adamantBounty: {
-              readOnly: true
-            },
-            adamantTokens: {
-              readOnly: false
-            },
-            U111111: {}
-          }
-        }
-
-        const isChatReadOnly = getters.isChatReadOnly(state)
-
-        expect(isChatReadOnly('adamantBounty')).toBe(true)
-        expect(isChatReadOnly('adamantTokens')).toBe(false)
-        expect(isChatReadOnly('U111111')).toBe(false)
-      })
-    })
-
-    /**
      * getters.unreadMessages
      */
     describe('getters.unreadMessages', () => {
