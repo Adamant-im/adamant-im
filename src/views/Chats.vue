@@ -36,20 +36,23 @@
               v-if="isFulfilled"
               name="messages"
             >
-              <chat-preview
+              <template
                 v-for="transaction in messages"
-                :ref="transaction.contactId"
                 :key="transaction.contactId"
-                :is-loading-separator="transaction.loadingSeparator"
-                :is-loading-separator-active="loading"
-                :user-id="userId"
-                :contact-id="transaction.contactId"
-                :transaction="transaction"
-                :read-only="isChatReadOnly(transaction.contactId)"
-                :is-message-readonly="transaction.readonly"
-                :is-adamant-chat="isAdamantChat(transaction.contactId)"
-                @click="openChat(transaction.contactId)"
-              />
+              >
+                <chat-preview
+                  v-if="displayChat(transaction.contactId)"
+                  :ref="transaction.contactId"
+                  :is-loading-separator="transaction.loadingSeparator"
+                  :is-loading-separator-active="loading"
+                  :user-id="userId"
+                  :contact-id="transaction.contactId"
+                  :transaction="transaction"
+                  :is-message-readonly="transaction.readonly"
+                  :adamant-chat-meta="getAdamantChatMeta(transaction.contactId)"
+                  @click="openChat(transaction.contactId)"
+                />
+              </template>
             </transition-group>
           </v-list>
         </v-col>
@@ -72,6 +75,7 @@ import ChatPreview from '@/components/ChatPreview'
 import ChatStartDialog from '@/components/ChatStartDialog'
 import ChatSpinner from '@/components/ChatSpinner'
 import scrollPosition from '@/mixins/scrollPosition'
+import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 
 const scrollOffset = 64
 
@@ -134,12 +138,8 @@ export default {
         query: { messageText }
       })
     },
-    isChatReadOnly (partnerId) {
-      return this.$store.getters['chat/isChatReadOnly'](partnerId)
-    },
-    isAdamantChat (partnerId) {
-      return this.$store.getters['chat/isAdamantChat'](partnerId)
-    },
+    isAdamantChat,
+    getAdamantChatMeta,
     onError (message) {
       this.$store.dispatch('snackbar/show', { message })
     },
@@ -183,6 +183,17 @@ export default {
           this.loading = false
           this.onScroll() // update messages and remove loadingSeparator, if needed
         })
+    },
+    messagesCount(partnerId) {
+      const messages = this.$store.getters['chat/messages'](partnerId)
+
+      return messages.length
+    },
+    displayChat(partnerId) {
+      const isUserChat = !isAdamantChat(partnerId)
+      const ifChattedBefore = isAdamantChat(partnerId) && this.messagesCount(partnerId) > 1
+
+      return isUserChat || isStaticChat(partnerId) || ifChattedBefore
     }
   }
 }
