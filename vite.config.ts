@@ -20,6 +20,9 @@ export default defineConfig({
       filename: 'service-worker.js',
       devOptions: {
         enabled: false
+      },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5000000 // 5 MiB
       }
     })
   ],
