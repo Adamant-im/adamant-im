@@ -126,11 +126,10 @@ export default defineConfig({
             "url": "/options",
             icons: [
               {
-                "src": "/img/icons/android-chrome-512x512.png",
-                "sizes": "512x512",
-                "type": "image/png",
-                "purpose": "any"
-              }
+                "src": "/img/icons/android-chrome-96x96.png",
+                "sizes": "96x96",
+                "type": "image/png"
+              },
             ]
           }
         ],
