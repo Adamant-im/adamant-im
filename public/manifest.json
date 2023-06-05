@@ -1,7 +1,7 @@
 {
-  "name": "ADAMANT Messenger",
+  "name": "ADAMANT Messenger or ADAMANT",
   "short_name": "ADAMANT",
-  "description": "ADAMANT is a unique product—it's the only Private Messenger operating entirely on a Blockchain.",
+  "description": "ADAMANT is a decentralized anonymous messenger based on the blockchain system. It’s independent of any governments or corporations, and even developers due to the distributed network infrastructure that contains an open-source code. Apps are available on Web, Tor, App Store for iOS, Google Play for Android, Windows, Mac OS, GNU/Linux. ADAMANT Business is a private blockchain for companies. ADAMANT 2FA is a secure and reliable blockchain OTP solution for companies. ADAMANT TradeBot offers self-hosted market-making tool for crypto projects.",
   "icons": [
     {
       "src": "/img/icons/android-chrome-36x36.png",
@@ -66,11 +66,11 @@
   ],
   "related_applications": [
     {
-      "platform": "iOS",
+      "platform": "itunes",
       "url": "https://apps.apple.com/app/adamant-messenger/id1341473829"
     },
     {
-      "platform": "Android",
+      "platform": "play",
       "url": "https://play.google.com/store/apps/details?id=im.adamant.adamantmessengerpwa&pli=1"
     }
   ],
