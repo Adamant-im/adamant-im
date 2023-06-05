@@ -1,0 +1,271 @@
+import { ManifestOptions } from 'vite-plugin-pwa'
+
+export const manifest: Partial<ManifestOptions> = {
+    "name": "ADAMANT Messenger or ADAMANT",
+    "short_name": "ADAMANT",
+    "description": "ADAMANT is a decentralized anonymous messenger based on the blockchain system. It’s independent of any governments or corporations, and even developers due to the distributed network infrastructure that contains an open-source code. Apps are available on Web, Tor, App Store for iOS, Google Play for Android, Windows, Mac OS, GNU/Linux. ADAMANT Business is a private blockchain for companies. ADAMANT 2FA is a secure and reliable blockchain OTP solution for companies. ADAMANT TradeBot offers self-hosted market-making tool for crypto projects.",
+    "icons": [
+      {
+        "src": "/img/icons/android-chrome-36x36.png",
+        "sizes": "36x36",
+        "type": "image/png"
+      },
+      {
+        "src": "/img/icons/android-chrome-48x48.png",
+        "sizes": "48x48",
+        "type": "image/png"
+      },
+      {
+        "src": "/img/icons/android-chrome-72x72.png",
+        "sizes": "72x72",
+        "type": "image/png"
+      },
+      {
+        "src": "/img/icons/android-chrome-96x96.png",
+        "sizes": "96x96",
+        "type": "image/png"
+      },
+      {
+        "src": "/img/icons/android-chrome-144x144.png",
+        "sizes": "144x144",
+        "type": "image/png"
+      },
+      {
+        "src": "/img/icons/android-chrome-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/img/icons/android-chrome-256x256.png",
+        "sizes": "256x256",
+        "type": "image/png"
+      },
+      {
+        "src": "/img/icons/android-chrome-384x384.png",
+        "sizes": "384x384",
+        "type": "image/png"
+      },
+      {
+        "src": "/img/icons/android-chrome-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "/img/icons/android-chrome-1024x1024.png",
+        "sizes": "1024x1024",
+        "type": "image/png"
+      }
+    ],
+    "dir": "ltr",
+    "lang": "en",
+    "orientation": "natural",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "display_override": [
+      "standalone",
+      "browser"
+    ],
+    "related_applications": [
+      {
+        "platform": "itunes",
+        "url": "https://apps.apple.com/app/adamant-messenger/id1341473829"
+      },
+      {
+        "platform": "play",
+        "url": "https://play.google.com/store/apps/details?id=im.adamant.adamantmessengerpwa&pli=1"
+      }
+    ],
+    "prefer_related_applications": true,
+    "shortcuts": [
+      {
+        "name": "Wallet",
+        "url": "/home",
+        icons: [
+          {
+            "src": "/img/icons/android-chrome-96x96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+          },
+        ]
+      },
+      {
+        "name": "Chats",
+        "url": "/chats",
+        icons: [
+          {
+            "src": "/img/icons/android-chrome-96x96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+          },
+        ]
+      },
+      {
+        "name": "Settings",
+        "url": "/options",
+        icons: [
+          {
+            "src": "/img/icons/android-chrome-96x96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+          },
+        ]
+      }
+    ],
+    "screenshots" : [
+      {
+        "src": "./img/screenshots/pwa/1-adamant.im_chats(iPhone-6_7_8).png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "platform": "ios"
+      },
+      {
+        "src": "./img/screenshots/pwa/2-msg.adamant.im_home(iPhone-6_7_8).png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "platform": "ios"
+      },
+      {
+        "src": "./img/screenshots/pwa/3-msg.adamant.im_home(iPhone-6_7_8).png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "platform": "ios"
+      },
+      {
+        "src": "./img/screenshots/pwa/4-msg.adamant.im_home(iPhone-6_7_8).png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "platform": "ios"
+      },
+      {
+        "src": "./img/screenshots/pwa/four-images-adamant.png",
+        "sizes": "3030x1334",
+        "type": "image/png",
+        "platform": "ios"
+      },
+      {
+        "src": "./img/screenshots/ios/ios1.png",
+        "sizes": "1125x2436",
+        "type": "image/png",
+        "platform": "itunes"
+      },
+      {
+        "src": "./img/screenshots/ios/ios2.png",
+        "sizes": "1125x2436",
+        "type": "image/png",
+        "platform": "itunes"
+      },
+      {
+        "src": "./img/screenshots/ios/ios3.png",
+        "sizes": "1125x2436",
+        "type": "image/png",
+        "platform": "itunes"
+      },
+      {
+        "src": "./img/screenshots/ios/ios4.png",
+        "sizes": "1125x2436",
+        "type": "image/png",
+        "platform": "itunes"
+      },
+      {
+        "src": "./img/ios/ios5.png",
+        "sizes": "1125x2436",
+        "type": "image/png",
+        "platform": "itunes"
+      },
+      {
+        "src": "./img/screenshots/ios/ios6.png",
+        "sizes": "1125x2436",
+        "type": "image/png",
+        "platform": "itunes"
+      },
+      {
+        "src": "./img/screenshots/ios/ios7.png",
+        "sizes": "1125x2436",
+        "type": "image/png",
+        "platform": "itunes"
+      },
+      {
+        "src": "./img/screenshots/ios/ios8.png",
+        "sizes": "1125x2436",
+        "type": "image/png",
+        "platform": "ios"
+      },
+      {
+        "src": "./img/screenshots/ios/ios9.png",
+        "sizes": "1125x2436",
+        "type": "image/png",
+        "platform": "itunes"
+      },
+      {
+        "src": "./img/screenshots/ios/ios10.png",
+        "sizes": "1125x2436",
+        "type": "image/png",
+        "platform": "itunes"
+      },
+      {
+        "src": "./img/screenshots/ios/ios11.png",
+        "sizes": "1125x2436",
+        "type": "image/png",
+        "platform": "itunes"
+      },
+      {
+        "src": "./img/screenshots/ios/ios12.png",
+        "sizes": "1125x2436",
+        "type": "image/png",
+        "platform": "itunes"
+      },
+      {
+        "src": "./img/screenshots/android/0-login.png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "platform": "play"
+      },
+      {
+        "src": "./img/screenshots/android/1-balances.png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "platform": "play"
+      },
+      {
+        "src": "./img/screenshots/android/2-exchanges.png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "platform": "play"
+      },
+      {
+        "src": "./img/screenshots/android/3-send_funds.png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "platform": "play"
+      },
+      {
+        "src": "./img/screenshots/android/4-partners.png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "platform": "play"
+      },
+      {
+        "src": "./img/screenshots/android/5-start_new_chat.png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "platform": "play"
+      },
+      {
+        "src": "./img/screenshots/android/6-nodes.png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "platform": "play"
+      },
+      {
+        "src": "./img/screenshots/android/7-votes.png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "platform": "play"
+      },
+    ],
+    "scope": "https://msg.adamant.im",
+    "categories": ["finance", "social", "crypto", "security", "blockchain"],
+    "background_color": "#000000",
+    "theme_color": "#4DBA87"
+}
