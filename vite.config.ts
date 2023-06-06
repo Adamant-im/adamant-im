@@ -3,7 +3,6 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import autoprefixer from 'autoprefixer'
 import { VitePWA } from 'vite-plugin-pwa'
-
 import inject from '@rollup/plugin-inject'
 import commonjs from '@rollup/plugin-commonjs'
 
@@ -27,7 +26,10 @@ export default defineConfig({
         enabled: false
       },
       manifest: manifest,
-      manifestFilename: 'manifest.json'
+      manifestFilename: 'manifest.json',
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5000000 // 5 MiB
+      }
     }),
     deferScripsPlugin(),
     preloadCSSPlugin()
