@@ -1,7 +1,7 @@
 import * as admApi from './adamant-api'
 import store from '@/store'
 import { Cryptos, isErc20, RE_LSK_ADDRESS_LEGACY } from './constants'
-import { vueBus } from '@/main'
+import { vueBus } from '@/lib/vueBus'
 import { uniqueCaseInsensitiveArray, isStringEqualCI } from '@/lib/textHelpers'
 
 let queue = { }
@@ -129,7 +129,7 @@ export function validateStoredCryptoAddresses () {
     store.state.adm.validatedCryptos.summary = validateSummary
     store.state.adm.addressesValidated = true
     if (!store.state.options.suppressWarningOnAddressesNotification) {
-      vueBus.$emit('warningOnAddressDialog', validateSummary)
+      vueBus.emit('warningOnAddressDialog', validateSummary)
     }
   }
 }

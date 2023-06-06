@@ -1,5 +1,3 @@
-import Vue from 'vue'
-
 import { resetState } from '../../../lib/reset-state'
 
 export default (initialState) => ({
@@ -34,7 +32,7 @@ export default (initialState) => ({
         tx
       )
 
-      Vue.set(state.transactions, tx.hash, newTx)
+      state.transactions[tx.hash] = newTx
     })
   },
 

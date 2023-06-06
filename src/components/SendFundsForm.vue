@@ -13,6 +13,7 @@
       <v-select
         v-model="currency"
         class="a-input"
+        variant="underlined"
         :items="cryptoList"
         :disabled="addressReadonly"
       />
@@ -22,9 +23,11 @@
         :disabled="addressReadonly"
         class="a-input"
         type="text"
+        variant="underlined"
+        color="primary"
         @paste="onPasteURIAddress"
       >
-        <template slot="label">
+        <template #label>
           <span
             v-if="recipientName && addressReadonly"
             class="font-weight-medium"
@@ -40,30 +43,34 @@
         </template>
         <template
           v-if="!addressReadonly"
-          slot="append"
+          #append-inner
         >
           <v-menu
             :offset-overflow="true"
             :offset-y="false"
             left
+            eager
           >
-            <v-icon slot="activator">
-              mdi-dots-vertical
-            </v-icon>
+            <template #activator="{ props }">
+              <v-icon
+                v-bind="props"
+                icon="mdi-dots-vertical"
+              />
+            </template>
             <v-list>
-              <v-list-tile @click="showQrcodeScanner = true">
-                <v-list-tile-title>{{ $t('transfer.decode_from_camera') }}</v-list-tile-title>
-              </v-list-tile>
-              <v-list-tile class="v-list__tile--link">
-                <v-list-tile-title>
+              <v-list-item @click="showQrcodeScanner = true">
+                <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
+              </v-list-item>
+              <v-list-item link>
+                <v-list-item-title>
                   <qrcode-capture
                     @detect="onDetectQrcode"
                     @error="onDetectQrcodeError"
                   >
                     <span>{{ $t('transfer.decode_from_image') }}</span>
                   </qrcode-capture>
-                </v-list-tile-title>
-              </v-list-tile>
+                </v-list-item-title>
+              </v-list-item>
             </v-list>
           </v-menu>
         </template>
@@ -72,34 +79,40 @@
       <v-text-field
         v-model="amountString"
         class="a-input"
+        :class="`${className}__amount-input`"
+        variant="underlined"
         :max="maxToTransfer"
         :min="minToTransfer"
         :step="minToTransfer"
         type="number"
+        color="primary"
       >
-        <template slot="label">
+        <template #label>
           <span class="font-weight-medium">{{ $t('transfer.amount_label') }}</span>
-          <span class="body-1">
-            {{ `(max: ${maxToTransferFixed} ${currency})` }}
+          <span class="max-amount-label">
+            &nbsp;{{ `(max: ${maxToTransferFixed} ${currency})` }}
           </span>
         </template>
-        <template slot="append">
+        <template #append-inner>
           <v-menu
             :offset-overflow="true"
             :offset-y="false"
             left
           >
-            <v-icon slot="activator">
-              mdi-dots-vertical
-            </v-icon>
+            <template #activator="{ props }">
+              <v-icon
+                v-bind="props"
+                icon="mdi-dots-vertical"
+              />
+            </template>
             <v-list>
-              <v-list-tile
+              <v-list-item
                 v-for="item in amountMenuItems"
                 :key="item.title"
                 @click="divideAmount(item.divider)"
               >
-                <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
-              </v-list-tile>
+                <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+              </v-list-item>
             </v-list>
           </v-menu>
         </template>
@@ -133,8 +146,10 @@
         :label="$t('transfer.comments_label')"
         class="a-input"
         counter
+        variant="underlined"
         maxlength="100"
         @paste="onPasteURIComment"
+        color="primary"
       />
 
       <v-text-field
@@ -142,8 +157,10 @@
         v-model="textData"
         class="a-input"
         :label="textDataLabel"
+        variant="underlined"
         counter
         maxlength="64"
+        color="primary"
       />
       <v-checkbox
         v-if="allowIncreaseFee"
@@ -152,7 +169,7 @@
         color="grey darken-1"
       />
 
-      <div class="text-xs-center">
+      <div class="text-center">
         <v-btn
           :class="`${className}__button`"
           class="a-btn-primary"
@@ -176,17 +193,17 @@
 
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <v-card-text
-          class="a-text-regular-enlarged"
+          class="a-text-regular-enlarged pa-4"
           v-html="confirmMessage"
         />
         <!-- eslint-enable vue/no-v-html -->
 
-        <v-card-actions>
+        <v-card-actions class="pa-4">
           <v-spacer />
 
           <v-btn
             class="a-btn-regular"
-            flat
+            variant="text"
             @click="dialog = false"
           >
             {{ $t('transfer.confirm_cancel') }}
@@ -194,7 +211,7 @@
 
           <v-btn
             class="a-btn-regular"
-            flat
+            variant="text"
             :disabled="disabledButton"
             @click="submit"
           >
@@ -203,7 +220,7 @@
               indeterminate
               color="primary"
               size="24"
-              class="mr-3"
+              class="mr-4"
             />
             {{ $t('transfer.confirm_approve') }}
           </v-btn>
@@ -220,6 +237,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
@@ -266,12 +285,6 @@ export default {
     QrcodeScannerDialog,
     WarningOnPartnerAddressDialog
   },
-  filters: {
-    /**
-     * @param {BigNumber} bigNumber
-     */
-    toFixed: bigNumber => bigNumber.toFixed()
-  },
   mixins: [partnerName],
   props: {
     cryptoCurrency: {
@@ -292,6 +305,7 @@ export default {
       default: false
     }
   },
+  emits: ['send', 'error'],
   data: () => ({
     currency: '',
     address: '',
@@ -614,7 +628,7 @@ export default {
      * @param {string} e Event
      */
     onPasteURIComment (e) {
-      this.$nextTick(() => {
+      nextTick(() => {
         const params = parseURIasAIP(e.target.value).params
 
         if (params.message) {
@@ -790,13 +804,35 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-.a-input >>> input[type=number]
-  -moz-appearance: textfield
-.a-input >>> input[type=number]::-webkit-inner-spin-button,
-.a-input >>> input[type=number]::-webkit-outer-spin-button
-  -webkit-appearance: none
-.send-funds-form
-  &__button
-    margin-top: 15px
+<style lang="scss" scoped>
+.a-input :deep(input[type=number]) {
+  -moz-appearance: textfield;
+}
+.a-input :deep(input[type=number]::-webkit-inner-spin-button),
+.a-input :deep(input[type=number]::-webkit-outer-spin-button) {
+  -webkit-appearance: none;
+}
+.send-funds-form {
+  &__button {
+    margin-top: 15px;
+  }
+  &__amount-input {
+    :deep(.v-field__field) {
+      .v-label.v-field-label {
+        align-items: baseline;
+
+        .max-amount-label {
+          font-size: 14px;
+        }
+      }
+    }
+
+    :deep(.v-field__outline) {
+      .v-label.v-field-label.v-field-label--floating .max-amount-label {
+        font-size: 10.5px; // -25% from original size
+        line-height: 1;
+      }
+    }
+  }
+}
 </style>

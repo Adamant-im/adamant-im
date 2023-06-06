@@ -1,33 +1,29 @@
 <template>
-  <v-toolbar
-    flat
-    height="56"
-    :class="`${className}`"
-  >
-    <v-btn
-      icon
-      @click="goBack"
-    >
-      <v-icon>mdi-arrow-left</v-icon>
+  <v-toolbar flat height="56" :class="`${className}`" color="transparent">
+    <v-btn icon @click="goBack">
+      <v-icon icon="mdi-arrow-left" />
     </v-btn>
-    <div v-if="!isChatReadOnly">
+    <div v-if="!isWelcomeChat(partnerId)">
       <slot name="avatar-toolbar" />
     </div>
     <div :class="`${className}__textfield-container`">
       <div
-        v-if="isChatReadOnly"
-        class="title"
+        v-if="isWelcomeChat(partnerId)"
+        :class="`${className}__adm-chat-name`"
         :style="{ paddingLeft: '12px' }"
       >
-        {{ $t(partnerId) }}
+        {{ $t('chats.virtual.welcome_message_title') }}
       </div>
       <div v-else>
         <v-text-field
           v-model="partnerName"
-          box
-          full-width
+          :class="`${className}__textfield`"
+          variant="plain"
           background-color="transparent"
           :label="partnerId"
+          hide-details
+          density="compact"
+          :readonly="isAdamantChat(partnerId)"
         />
       </div>
     </div>
@@ -39,6 +35,7 @@
 <script>
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import partnerName from '@/mixins/partnerName'
+import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 
 export default {
   components: {
@@ -51,79 +48,166 @@ export default {
       required: true
     }
   },
+  emits: ['partner-info'],
   computed: {
     className: () => 'chat-toolbar',
     partnerName: {
-      get () {
+      get() {
         return this.getPartnerName(this.partnerId)
       },
-      set (value) {
+      set(value) {
         this.$store.commit('partners/displayName', {
           partner: this.partnerId,
           displayName: value
         })
       }
-    },
-    isChatReadOnly () {
-      return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
     }
   },
+  data: () => ({
+    lastPath: null
+  }),
+  created() {
+    this.lastPath = this.$router.options.history.state.back
+  },
   methods: {
-    goBack () {
-      this.$router.push({ name: 'Chats' })
+    goBack() {
+      if (this.lastPath === '/chats') {
+        this.$router.back()
+      } else {
+        this.$router.push({ name: 'Chats' })
+      }
     },
-    showPartnerInfo () {
+    showPartnerInfo() {
       this.$emit('partner-info', true)
-    }
+    },
+    isAdamantChat,
+    isWelcomeChat
   }
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
-@import '../../assets/stylus/themes/adamant/_mixins.styl'
-@import '../../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '../../assets/styles/themes/adamant/_mixins.scss';
+@import 'vuetify/settings';
+@import '../../assets/styles/settings/_colors.scss';
 
-.chat-toolbar
-  &__textfield-container
-    width: 100%
+.chat-toolbar {
+  flex-grow: 0;
+  flex-shrink: 0;
 
-  >>> .v-text-field
-    a-text-regular-enlarged-bold()
+  &__textfield-container {
+    width: 100%;
+  }
 
-    .v-label
-      max-width: unset
-      a-text-regular-enlarged-bold()
-    .v-input__control
-      padding: 0
-    .v-input__control > .v-input__slot
-      margin-bottom: 0
-    .v-label--active
-      transform: translateY(-6px) scale(0.6875)
-      font-size: 20px
+  &__adm-chat-name {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  &__textfield {
+    // hides TextField border bottom
+    :deep(.v-input__control) {
+      & > .v-input__slot:before {
+        border-width: 0;
+        border-color: unset;
+      }
+
+      & > .v-input__slot:after {
+        border-width: 0;
+        background-color: unset;
+        border-color: unset;
+      }
+    }
+  }
+
+  :deep(.v-toolbar__content > .v-btn:first-child) {
+    width: 36px;
+    height: 36px;
+    margin: 0 12px;
+    border-radius: 50%;
+  }
+
+  :deep(.v-text-field) {
+    @include a-text-regular-enlarged-bold();
+
+    .v-field__field {
+      .v-label.v-field-label {
+        max-width: unset;
+        @include a-text-regular-enlarged-bold();
+        font-size: 16px;
+      }
+    }
+
+    .v-field__input {
+      line-height: 20px;
+      padding-top: 20px;
+      font-weight: 500;
+    }
+
+    .v-field__outline {
+      .v-label.v-field-label.v-field-label--floating {
+        line-height: 20px;
+        font-size: 20px;
+        transform: translateY(-6px) scale(0.6875);
+        font-weight: 500;
+      }
+    }
+
+    .v-input__control {
+      padding: 0;
+    }
+
+    .v-input__control > .v-input__slot {
+      margin-bottom: 0;
+    }
+  }
+
+  :deep(.v-btn) {
+    &:hover > .v-btn__overlay {
+      opacity: 0.2;
+      transition: all 0.4s ease;
+    }
+  }
+}
 
 /** Themes **/
-.theme--light
-  .chat-toolbar
-    background-color: $adm-colors.secondary2-transparent
+.v-theme--light {
+  .chat-toolbar {
+    background-color: map-get($adm-colors, 'secondary2-transparent');
 
-    >>> .v-text-field
-      .primary--text
-        color: $grey.darken-1 !important
-      .v-label
-        color: $grey.darken-4
-      .v-label--active
-        color: $grey.darken-1
-      input
-        caret-color: $adm-colors.primary2
-
-.theme--dark
-  .chat-toolbar
-    >>> .v-text-field
-      .primary--text
-        color: $shades.white !important
-      .v-label
-        color: $shades.white
-      .v-label--active
-        color: $shades.white
+    :deep(.v-text-field) {
+      .primary--text {
+        color: map-get($grey, 'darken-1') !important;
+      }
+      .v-label {
+        color: map-get($grey, 'darken-4');
+      }
+      .v-label--active {
+        color: map-get($grey, 'darken-1');
+      }
+      input {
+        caret-color: map-get($adm-colors, 'primary2');
+      }
+    }
+  }
+}
+.v-theme--dark {
+  .chat-toolbar {
+    :deep(.v-text-field) {
+      .primary--text {
+        color: map-get($shades, 'white') !important;
+      }
+      .v-label {
+        color: map-get($shades, 'white');
+      }
+      .v-label--active {
+        color: map-get($shades, 'white');
+      }
+      input {
+        caret-color: map-get($adm-colors, 'primary');
+      }
+    }
+  }
+}
 </style>

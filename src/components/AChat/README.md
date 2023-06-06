@@ -69,6 +69,8 @@ npm i --save file:packages/chat
 </template>
 
 <script>
+import { nextTick } from 'vue'
+
 import { createRandomMessages, createOneMessage } from '~/components/__tests__/__mocks__/chatMessages'
 import { AChat, AChatMessage, AChatForm } from '@adamant/chat'
 
@@ -107,7 +109,7 @@ export default {
       
       this.messages.push(oneMessage)
       
-      this.$nextTick(() => this.$refs.chat.scrollToBottom())
+      nextTick(() => this.$refs.chat.scrollToBottom())
     },
     onScrollTop () {
       this.loading = true
@@ -134,7 +136,7 @@ export default {
       const messages = createRandomMessages(1)
       this.messages.push(...messages)
       
-      this.$nextTick(() => this.$refs.chat.scrollToBottom())
+      nextTick(() => this.$refs.chat.scrollToBottom())
     }
   },
   components: {

@@ -4,19 +4,20 @@
       app
       :title="$t('home.send_btn')"
       flat
+      fixed
     />
 
     <v-container
       fluid
-      class="px-0"
+      class="px-0 container--with-app-toolbar"
     >
-      <v-layout
-        row
-        wrap
-        justify-center
+      <v-row
+        justify="center"
+        no-gutters
       >
         <container padding>
           <send-funds-form
+            class="pt-5"
             :crypto-currency="cryptoCurrency"
             :recipient-address="recipientAddress"
             :amount-to-send="amountToSend"
@@ -25,7 +26,7 @@
             @error="onError"
           />
         </container>
-      </v-layout>
+      </v-row>
     </v-container>
   </div>
 </template>

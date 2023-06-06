@@ -1,13 +1,13 @@
 <template>
   <div :class="className">
-    <div class="text-xs-center">
+    <div class="text-center">
       <h3 class="a-text-regular">
         {{ $t('login.create_address_label') }}
       </h3>
       <v-btn
-        class="a-btn-link"
-        flat
-        small
+        class="a-btn-link mt-2"
+        variant="text"
+        size="small"
         @click="generatePassphrase"
       >
         {{ $t('login.new_button') }}
@@ -22,7 +22,10 @@
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <div
           ref="el"
-          class="caption grey--text mt-2"
+          :class="{
+            'mt-2': true,
+            [`${className}__passphrase-label`]: true
+          }"
           v-html="$t('login.new_passphrase_label')"
         />
         <!-- eslint-enable vue/no-v-html -->
@@ -31,6 +34,7 @@
           ref="textarea"
           :value="passphrase"
           type="text"
+          variant="plain"
           multi-line
           readonly
           rows="3"
@@ -39,7 +43,7 @@
           no-resize
           @click.prevent="selectText"
         >
-          <template slot="append">
+          <template #append>
             <div :class="`${className}__icons`">
               <icon
                 :width="24"
@@ -83,8 +87,9 @@
 
 <script>
 import * as bip39 from 'bip39'
+import copyToClipboard from 'copy-to-clipboard'
 
-import { copyToClipboard, downloadFile } from '@/lib/textHelpers'
+import { downloadFile } from '@/lib/textHelpers'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
 import Icon from '@/components/icons/BaseIcon'
 import CopyIcon from '@/components/icons/common/Copy'
@@ -99,6 +104,7 @@ export default {
     QrCodeIcon,
     QrcodeRendererDialog
   },
+  emits: ['copy', 'save'],
   data: () => ({
     passphrase: '',
     showPassphrase: false,
@@ -112,6 +118,8 @@ export default {
   methods: {
     copyToClipboard () {
       copyToClipboard(this.passphrase)
+
+      this.selectText()
 
       this.$emit('copy')
     },
@@ -139,44 +147,72 @@ export default {
 
       // callback after Vue rerender
       setTimeout(() => {
-        this.$scrollTo(this.$refs.textarea.$el, { easing: 'ease-in' })
+        const element = this.$refs.textarea.$el
+
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+        } else {
+          console.warn('[PassphraseGenerator] `element` is undefined')
+        }
       }, 0)
     }
   }
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import 'vuetify/settings';
+@import '../assets/styles/settings/_colors.scss';
 
 /**
  * 1. Change color icons when focus textarea.
  * 2. Remove textarea border bottom.
  */
-.passphrase-generator
-  &__box
-    margin-top: 30px
-    >>> .v-textarea textarea
-      a-text-regular()
-    >>> .v-textarea
-      .v-input__slot:before, .v-input__slot:after
-        border-width: 0 // [2]
+.passphrase-generator {
+  &__box {
+    margin-top: 36px;
+    :deep(.v-input) {
+      margin-top: 0;
+    }
+    :deep(.v-textarea) textarea {
+      @include a-text-regular();
+      line-height: 18px;
+      padding-top: 12px;
+      mask-image: unset;
+    }
+    :deep(.v-textarea) {
+      .v-input__slot:before, .v-input__slot:after {
+        border-width: 0;
+      }
+    }
+  }
+  &__icons {
+    > *:not(:first-child) {
+      margin-left: 8px;
+    }
+  }
+  &__passphrase-label {
+    color: map-get($adm-colors, 'grey');
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    letter-spacing: normal !important;
+  }
 
-  &__icons
-    margin-top: 10px
-
-    > *:not(:first-child)
-      margin-left: 8px
-
-  >>> .v-input--is-focused
-    .v-icon .svg-icon
-      fill: $adm-colors.regular
+  :deep(.v-input--is-focused) {
+    .v-icon .svg-icon {
+      fill: map-get($adm-colors, 'regular');
+    }
+  }
+}
 
 /** Themes **/
-.theme--light
-  .passphrase-generator
-    >>> .v-textarea textarea
-      color: $adm-colors.regular
+.v-theme--light {
+  .passphrase-generator {
+    :deep(.v-textarea) textarea {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
 </style>

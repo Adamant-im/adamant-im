@@ -12,31 +12,32 @@
 
       <v-divider class="a-divider" />
 
-      <v-card-text>
+      <v-card-text :class="`${className}__card-text`">
         <div :class="`${className}__disclaimer a-text-regular-enlarged`">
           {{ $t("chats.free_adm_disclaimer") }}
         </div>
       </v-card-text>
 
-      <v-flex
-        xs12
-        class="text-xs-center"
+      <v-col
+        cols="12"
+        class="text-center pa-0"
       >
         <v-btn
           :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
           @click="getFreeTokens()"
         >
-          <v-icon :class="`${className}__btn-icon`">
-            mdi-gift
-          </v-icon>
+          <v-icon
+            :class="`${className}__btn-icon`"
+            icon="mdi-gift"
+          />
           <div :class="`${className}__btn-text`">
             {{ $t('home.free_adm_btn') }}
           </div>
         </v-btn>
-      </v-flex>
+      </v-col>
 
-      <v-flex
-        xs12
+      <v-col
+        cols="12"
         :class="`${className}__btn-show-article`"
       >
         <a
@@ -45,7 +46,7 @@
         >
           {{ $t('chats.how_to_use_messenger') }}
         </a>
-      </v-flex>
+      </v-col>
     </v-card>
   </v-dialog>
 </template>
@@ -55,19 +56,20 @@ import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     }
   },
+  emits: ['update:modelValue'],
   computed: {
     className: () => 'free-tokens-dialog',
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     }
   },
@@ -89,16 +91,35 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-  .free-tokens-dialog
-    &__disclaimer
-      margin-top: 10px
-    &__btn-free-tokens
-      margin-top: 15px
-      margin-bottom: 20px
-    &__btn-icon
-      margin-right: 8px
-    &__btn-show-article
-      padding-bottom: 30px
-      text-align: center
+<style lang="scss" scoped>
+@import 'vuetify/_settings.scss';
+@import '../assets/styles/settings/_colors.scss';
+
+.free-tokens-dialog {
+  &__card-text {
+    padding: 16px !important;
+  }
+  &__disclaimer {
+    margin-top: 10px;
+  }
+  &__btn-free-tokens {
+    margin-top: 15px;
+    margin-bottom: 20px;
+  }
+  &__btn-icon {
+    margin-right: 8px;
+  }
+  &__btn-show-article {
+    padding: 0 0 30px 0;
+    text-align: center;
+  }
+}
+
+.v-theme--dark {
+  .free-tokens-dialog {
+    &__disclaimer {
+      color: map-get($shades, 'white');
+    }
+  }
+}
 </style>

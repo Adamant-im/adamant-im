@@ -1,7 +1,11 @@
 <template>
   <i
-    class="v-icon"
-    :class="{ 'v-icon--link': isClickable }"
+    class="icon"
+    :class="{
+      'icon--link': isClickable,
+      'icon--box-centered': boxCentered,
+      [$attrs.class]: !!$attrs.class
+    }"
   >
     <svg
       class="svg-icon"
@@ -12,7 +16,7 @@
       :shape-rendering="shapeRendering"
       :aria-labelledby="title"
       role="presentation"
-      @click="$emit('click')"
+      @click="$attrs.onClick"
     >
       <title v-if="title">{{ title }}</title>
       <g :fill="color">
@@ -24,6 +28,7 @@
 
 <script>
 export default {
+  inheritAttrs: false,
   props: {
     width: {
       type: [Number, String],
@@ -47,35 +52,64 @@ export default {
     shapeRendering: {
       type: String,
       default: 'auto'
+    },
+    /** Center icon inside a box 40x40px **/
+    boxCentered: {
+      type: Boolean,
+      default: undefined
     }
   },
-  data: () => ({
-    isClickable: false
-  }),
-  created () {
-    // if component has @click attr, make cursor: pointer
-    const listeners = Object.keys(this.$listeners)
-    const hasClickAttr = listeners.some(
-      listener => /^click/.test(listener)
-    )
-
-    if (hasClickAttr) {
-      this.isClickable = true
+  data: () => ({}),
+  computed: {
+    isClickable () {
+      return !!this.$attrs.onClick
     }
   }
 }
 </script>
 
-<style lang="stylus">
-@import '~vuetify/src/stylus/settings/_colors.styl'
+<style lang="scss">
+@import 'vuetify/settings';
+
+.icon {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  display: inline-flex;
+  font-size: 24px;
+  justify-content: center;
+  letter-spacing: normal;
+  line-height: 1;
+  position: relative;
+  text-indent: 0;
+  transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1), visibility 0s;
+  vertical-align: middle;
+  user-select: none;
+}
+
+.icon--link {
+  cursor: pointer;
+}
+
+.icon--box-centered {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 /* Themes */
-.theme--light
-  .svg-icon
-    fill: rgba(0, 0, 0, 0.54)
-    stroke: rgba(0, 0, 0, 0.54)
-.theme--dark
-  .svg-icon
-    fill: $shades.white
-    stroke: $shades.white
+.v-theme--light {
+  .svg-icon {
+    fill: rgba(0, 0, 0, 0.54);
+    stroke: rgba(0, 0, 0, 0.54);
+  }
+}
+.v-theme--dark {
+  .svg-icon {
+    fill: map-get($shades, 'white');
+    stroke: map-get($shades, 'white');
+  }
+}
 </style>

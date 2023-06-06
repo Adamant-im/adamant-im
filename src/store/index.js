@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createStore } from 'vuex'
 import { Base64 } from 'js-base64'
 
 import {
@@ -17,8 +16,6 @@ import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
 import navigatorOnline from './plugins/navigatorOnline'
 import socketsPlugin from './plugins/socketsPlugin'
-import ethModule from './modules/eth'
-import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
 import dogeModule from './modules/doge'
@@ -37,12 +34,13 @@ import notification from './modules/notification'
 import cache from '@/store/cache'
 import rate from './modules/rate'
 
-Vue.use(Vuex)
-
 export let interval
 
 const UPDATE_BALANCE_INTERVAL = 10000
 
+/**
+ * @type { import("vuex").StoreOptions } store
+ */
 const store = {
   state: () => ({
     address: '',
@@ -53,42 +51,45 @@ const store = {
     publicKeys: {}
   }),
   getters: {
-    isLogged: state => state.passphrase.length > 0,
-    getPassPhrase: state => state.passphrase, // compatibility getter for ERC20 modules
-    publicKey: state => adamantAddress => state.publicKeys[adamantAddress],
-    isAccountNew: state => function () {
-      /*
+    isLogged: (state) => state.passphrase.length > 0,
+    getPassPhrase: (state) => state.passphrase, // compatibility getter for ERC20 modules
+    publicKey: (state) => (adamantAddress) => state.publicKeys[adamantAddress],
+    isAccountNew: (state) =>
+      function () {
+        /*
         It is hard to detect if account is new or not. Let's say:
         ADM Balance = 0. But old accounts can also have 0 balance
         ADM transactions count = 0. But any account has 0 transactions in store just after login, before user goes to Tx list screen
         chat.lastMessageHeight = 0. App stores a height of last message
         Checking chat.transactions is not effective. There are static chats in any new account.
       */
-      return state.balance === 0 &&
-        state.chat.lastMessageHeight === 0 &&
-        Object.keys(state.adm.transactions).length === 0
-    }
+        return (
+          state.balance === 0 &&
+          state.chat.lastMessageHeight === 0 &&
+          Object.keys(state.adm.transactions).length === 0
+        )
+      }
   },
   mutations: {
-    setAddress (state, address) {
+    setAddress(state, address) {
       state.address = address
     },
-    setBalance (state, balance) {
+    setBalance(state, balance) {
       state.balance = balance
     },
-    setPassphrase (state, passphrase) {
+    setPassphrase(state, passphrase) {
       state.passphrase = Base64.encode(passphrase)
     },
-    setPassword (state, password) {
+    setPassword(state, password) {
       state.password = password
     },
-    resetPassword (state) {
+    resetPassword(state) {
       state.password = ''
     },
-    setIDBReady (state, value) {
+    setIDBReady(state, value) {
       state.IDBReady = value
     },
-    reset (state) {
+    reset(state) {
       state.address = ''
       state.balance = 0
       state.passphrase = ''
@@ -97,38 +98,36 @@ const store = {
       state.publicKeys = {}
       cache.resetCachedSeed()
     },
-    setPublicKey (state, { adamantAddress, publicKey }) {
+    setPublicKey(state, { adamantAddress, publicKey }) {
       state.publicKeys[adamantAddress] = publicKey
     }
   },
   actions: {
-    login ({ commit, dispatch }, passphrase) {
+    login({ commit, dispatch }, passphrase) {
       // First, clear previous account data, if it exists. Calls resetState(state, getInitialState()) also
       dispatch('reset')
 
-      return loginOrRegister(passphrase)
-        .then(account => {
-          commit('setAddress', account.address)
-          commit('setBalance', account.balance)
-          commit('setPassphrase', passphrase)
+      return loginOrRegister(passphrase).then((account) => {
+        commit('setAddress', account.address)
+        commit('setBalance', account.balance)
+        commit('setPassphrase', passphrase)
 
-          // retrieve wallet data
-          dispatch('afterLogin', passphrase)
-        })
+        // retrieve wallet data
+        dispatch('afterLogin', passphrase)
+      })
     },
-    loginViaPassword ({ commit, dispatch, state }, password) {
-      return loginViaPassword(password, this)
-        .then(account => {
-          commit('setIDBReady', true)
+    loginViaPassword({ commit, dispatch, state }, password) {
+      return loginViaPassword(password, this).then((account) => {
+        commit('setIDBReady', true)
 
-          // retrieve wallet data
-          dispatch('afterLogin', account.passphrase)
-        })
+        // retrieve wallet data
+        dispatch('afterLogin', account.passphrase)
+      })
     },
-    logout ({ dispatch }) {
+    logout({ dispatch }) {
       dispatch('reset')
     },
-    unlock ({ state, dispatch }) {
+    unlock({ state, dispatch }) {
       // user updated an app, F5 or something
       const passphrase = Base64.decode(state.passphrase)
 
@@ -139,7 +138,7 @@ const store = {
         dispatch('afterLogin', passphrase)
       }
     },
-    sendCryptoTransferMessage (context, payload) {
+    sendCryptoTransferMessage(context, payload) {
       const msg = {
         type: `${payload.crypto}_transaction`,
         amount: payload.amount,
@@ -147,46 +146,44 @@ const store = {
         comments: payload.comments
       }
 
-      return sendSpecialMessage(payload.address, msg).then(result => {
+      return sendSpecialMessage(payload.address, msg).then((result) => {
         if (!result.success) {
           throw new Error(`Failed to send "${msg.type}"`)
         }
         return result.success
       })
     },
-    reset ({ commit }) {
+    reset({ commit }) {
       commit('reset', null, { root: true })
     },
-    setPassword ({ commit }, password) {
-      return encryptPassword(password)
-        .then(encryptedPassword => {
-          commit('setPassword', encryptedPassword)
+    setPassword({ commit }, password) {
+      return encryptPassword(password).then((encryptedPassword) => {
+        commit('setPassword', encryptedPassword)
 
-          return encryptedPassword
-        })
+        return encryptedPassword
+      })
     },
-    removePassword ({ commit }) {
+    removePassword({ commit }) {
       commit('resetPassword')
       commit('setIDBReady', false)
       commit('options/updateOption', { key: 'stayLoggedIn', value: false })
     },
-    updateBalance ({ commit }) {
-      return getCurrentAccount()
-        .then(account => {
-          commit('setBalance', account.balance)
-          if (account.balance > Fees.KVS) {
-            flushCryptoAddresses()
-          }
-        })
+    updateBalance({ commit }) {
+      return getCurrentAccount().then((account) => {
+        commit('setBalance', account.balance)
+        if (account.balance > Fees.KVS) {
+          flushCryptoAddresses()
+        }
+      })
     },
 
     startInterval: {
       root: true,
-      handler ({ dispatch }) {
-        function repeat () {
+      handler({ dispatch }) {
+        function repeat() {
           validateStoredCryptoAddresses()
           dispatch('updateBalance')
-            .catch(err => console.error(err))
+            .catch((err) => console.error(err))
             .then(() => (interval = setTimeout(repeat, UPDATE_BALANCE_INTERVAL)))
         }
         repeat()
@@ -195,16 +192,20 @@ const store = {
 
     stopInterval: {
       root: true,
-      handler () {
+      handler() {
         clearTimeout(interval)
       }
     }
   },
-  plugins: [nodesPlugin, sessionStoragePlugin, localStoragePlugin, indexedDbPlugin, navigatorOnline, socketsPlugin],
+  plugins: [
+    nodesPlugin,
+    sessionStoragePlugin,
+    localStoragePlugin,
+    indexedDbPlugin,
+    navigatorOnline,
+    socketsPlugin
+  ],
   modules: {
-    eth: ethModule, // Ethereum-related data
-    bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
-    usds: erc20Module(Cryptos.USDS, '0xa4bdb11dc0a2bec88d24a3aa1e6bb17201112ebe', 6),
     adm: admModule, // ADM transfers
     doge: dogeModule,
     lsk: lskModule,
@@ -223,6 +224,9 @@ const store = {
   }
 }
 
+const storeInstance = createStore(store)
+window.store = storeInstance
+
 export { store } // for tests
 
-export default new Vuex.Store(store)
+export default storeInstance

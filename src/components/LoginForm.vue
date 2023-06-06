@@ -1,34 +1,32 @@
 <template>
   <v-form
     ref="form"
-    v-model="validForm"
     class="login-form"
     @submit.prevent="submit"
   >
-    <v-layout>
+    <v-row no-gutters>
       <slot>
         <v-text-field
           v-model="passphrase"
           :label="$t('login.password_label')"
-          browser-autocomplete="current-password"
-          class="text-xs-center"
+          autocomplete="current-password"
+          class="text-center"
           color="#BBDEFB"
           type="password"
+          variant="underlined"
         />
       </slot>
 
       <slot name="append-outer" />
-    </v-layout>
+    </v-row>
 
-    <v-layout
-      row
-      wrap
-      align-center
-      justify-center
+    <v-row
+      align="center"
+      justify="center"
+      no-gutters
     >
       <slot name="button">
         <v-btn
-          :disabled="!validForm || disabledButton"
           class="login-form__button a-btn-primary"
           @click="submit"
         >
@@ -37,79 +35,89 @@
             indeterminate
             color="primary"
             size="24"
-            class="mr-3"
+            class="mr-4"
           />
           {{ $t('login.login_button') }}
         </v-btn>
       </slot>
-    </v-layout>
+    </v-row>
 
     <transition name="slide-fade">
-      <v-layout justify-center>
+      <v-row
+        justify="center"
+        no-gutters
+      >
         <slot name="qrcode-renderer" />
-      </v-layout>
+      </v-row>
     </transition>
   </v-form>
 </template>
 
 <script>
 import { validateMnemonic } from 'bip39'
+import { computed, ref, defineComponent } from 'vue';
+import { useStore } from 'vuex';
 
-export default {
+export default defineComponent({
   props: {
-    value: {
+    modelValue: {
       type: String,
       default: ''
     }
   },
-  data: () => ({
-    validForm: true,
-    disabledButton: false,
-    showSpinner: false
-  }),
-  computed: {
-    passphrase: {
+  emits: ['login', 'error', 'update:modelValue'],
+  setup(props, { emit }) {
+    const store = useStore()
+    const showSpinner = ref(false)
+
+    const passphrase = computed({
       get () {
-        return this.value
+        return props.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        emit('update:modelValue', value)
       }
-    }
-  },
-  methods: {
-    submit () {
-      if (!validateMnemonic(this.passphrase)) {
-        return this.$emit('error', 'login.invalid_passphrase')
+    })
+
+    const submit = () => {
+      if (!validateMnemonic(passphrase.value)) {
+        return emit('error', 'login.invalid_passphrase')
       }
 
-      this.freeze()
-      this.login()
-    },
-    login () {
-      const promise = this.$store.dispatch('login', this.passphrase)
+      freeze()
+      login()
+    }
+    const login = () => {
+      const promise = store.dispatch('login', passphrase.value)
 
       promise
         .then(() => {
-          this.$emit('login')
+          emit('login')
         })
         .catch(() => {
-          this.$emit('error', 'login.invalid_passphrase')
+          emit('error', 'login.invalid_passphrase')
         })
         .finally(() => {
-          this.antiFreeze()
+          antiFreeze()
         })
 
       return promise
-    },
-    freeze () {
-      this.disabledButton = true
-      this.showSpinner = true
-    },
-    antiFreeze () {
-      this.disabledButton = false
-      this.showSpinner = false
+    }
+    const freeze = () => {
+      showSpinner.value = true
+    }
+    const antiFreeze = () => {
+      showSpinner.value = false
+    }
+
+    return {
+      showSpinner,
+      passphrase,
+      submit,
+      freeze,
+      antiFreeze,
+      login
     }
   }
-}
+})
 </script>

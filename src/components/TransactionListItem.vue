@@ -1,84 +1,81 @@
 <template>
   <div :class="className">
-    <v-list-tile
+    <v-list-item
       avatar
       :class="`${className}__tile`"
       @click="onClickTransaction"
     >
-      <v-list-tile-avatar
-        :class="`${className}__icon-avatar`"
-        :size="40"
-      >
+      <template #prepend>
         <v-icon
-          :class="`${className}__icon`"
-          :size="20"
-        >
-          {{ isStringEqualCI(senderId, userId) ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing' }}
-        </v-icon>
-      </v-list-tile-avatar>
+          :class="`${className}__prepend-icon`"
+          :icon="isStringEqualCI(senderId, userId) ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing'"
+          size="small"
+        />
+      </template>
 
-      <v-list-tile-content>
-        <v-list-tile-title v-if="partnerName">
-          <span class="a-text-regular-enlarged">{{ partnerName }}</span>
-          <span class="a-text-explanation-enlarged"> ({{ partnerId }})</span>
-        </v-list-tile-title>
-        <v-list-tile-title v-else>
-          <span class="a-text-regular-enlarged">{{ partnerId }}</span>
-        </v-list-tile-title>
+      <v-list-item-title v-if="partnerName">
+        <span class="a-text-regular-enlarged">{{ partnerName }}</span>
+        <span class="a-text-explanation-enlarged"> ({{ partnerId }})</span>
+      </v-list-item-title>
+      <v-list-item-title v-else>
+        <span class="a-text-regular-enlarged">{{ partnerId }}</span>
+      </v-list-item-title>
 
-        <v-list-tile-title>
-          <span :class="`${className}__amount ${directionClass}`">{{ amount | currency(crypto) }}</span>
-          <span
-            :class="`${className}__rates`"
-          > {{ historyRate }}</span>
-          <span
-            v-if="comment"
-            class="a-text-regular-enlarged-bold"
-            style="font-style: italic;"
-          > "</span>
-          <span
-            v-if="comment"
-            class="a-text-explanation"
-            style="font-weight: 100;"
-          >{{ comment }}</span>
-          <span
-            v-if="textData"
-            class="a-text-regular-enlarged-bold"
-            style="font-style: italic;"
-          > #</span>
-          <span
-            v-if="textData"
-            class="a-text-explanation"
-            style="font-weight: 100;"
-          >{{ textData }}</span>
-        </v-list-tile-title>
+      <v-list-item-title>
+        <span :class="`${className}__amount ${directionClass}`">{{ currency(amount, crypto) }}</span>
+        <span
+          :class="`${className}__rates`"
+        > {{ historyRate }}</span>
+        <span
+          v-if="comment"
+          class="a-text-regular-enlarged-bold"
+          style="font-style: italic;"
+        > "</span>
+        <span
+          v-if="comment"
+          class="a-text-explanation"
+          style="font-weight: 100;"
+        >{{ comment }}</span>
+        <span
+          v-if="textData"
+          class="a-text-regular-enlarged-bold"
+          style="font-style: italic;"
+        > #</span>
+        <span
+          v-if="textData"
+          class="a-text-explanation"
+          style="font-weight: 100;"
+        >{{ textData }}</span>
+      </v-list-item-title>
 
-        <v-list-tile-sub-title
-          :class="`${className}__date`"
-          class="a-text-explanation-small"
-        >
-          {{ createdAt | date }}
-        </v-list-tile-sub-title>
-      </v-list-tile-content>
-
-      <v-list-tile-action
-        v-if="isClickIcon"
-        :class="`${className}__action`"
+      <v-list-item-subtitle
+        :class="`${className}__date`"
+        class="a-text-explanation-small"
       >
-        <v-btn
-          icon
-          ripple
-          @click.stop="onClickIcon"
+        {{ formatDate(createdAt) }}
+      </v-list-item-subtitle>
+
+      <template #append>
+        <v-list-item-action
+          v-if="isClickIcon"
+          :class="`${className}__action`"
+          end
         >
-          <v-icon
-            :class="`${className}__icon`"
-            :size="20"
+          <v-btn
+            icon
+            ripple
+            variant="plain"
+            @click.stop="onClickIcon"
           >
-            {{ isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline' }}
-          </v-icon>
-        </v-btn>
-      </v-list-tile-action>
-    </v-list-tile>
+            <v-icon
+              :class="`${className}__icon`"
+              :icon="isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline'"
+              size="small"
+            />
+          </v-btn>
+        </v-list-item-action>
+      </template>
+    </v-list-item>
 
     <v-divider
       :inset="true"
@@ -88,17 +85,15 @@
 </template>
 
 <script>
-import dateFilter from '@/filters/date'
+import formatDate from '@/filters/date'
 import { EPOCH, Cryptos } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
+import currency from '@/filters/currencyAmountWithSymbol'
 
 export default {
-  filters: {
-    date: dateFilter
-  },
   mixins: [partnerName],
   props: {
     id: {
@@ -132,6 +127,7 @@ export default {
       validator: v => v in Cryptos
     }
   },
+  emits: ['click:transaction', 'click:icon'],
   computed: {
     // Own crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     userId () {
@@ -248,63 +244,77 @@ export default {
       this.$store.dispatch('rate/getHistoryRates', {
         timestamp: timestampInSec(this.crypto, this.timestamp)
       })
-    }
+    },
+    currency,
+    formatDate
   }
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '../assets/styles/settings/_colors.scss';
 
-.transaction-item
-  &__rates
-   color: hsla(0,0%,100%,.7)
-   font-style: italic
-   a-text-regular()
-  &__amount
-    a-text-regular-enlarged-bold()
-  &__date
-    margin-top: 4px
-  &__icon-avatar
-      min-width: 40px;
-    >>> .v-avatar
-      position: relative
-      padding-right: 15px;
-  >>> .v-divider--inset:not(.v-divider--vertical)
-      margin-left: 56px;
-      max-width: calc(100% - 56px);
-  &__action
-    margin-top: -14px;
+.transaction-item {
+  &__rates {
+    color: hsla(0, 0%, 100%, 0.7);
+    font-style: italic;
+    @include a-text-regular();
+  }
+  &__amount {
+    @include a-text-regular-enlarged-bold();
+  }
+  &__date {
+    margin-top: 4px;
+  }
+  &__prepend-icon {
+    margin-inline-end: 16px;
+    margin-top: 8px;
+  }
+  :deep(.v-divider--inset:not(.v-divider--vertical)) {
+    margin-left: 56px;
+    max-width: calc(100% - 56px);
+  }
+  &__action {
     min-width: 36px;
+  }
   // Do not break computed length of v-divider
   /*&__tile*/
-    /*>>> .v-list__tile*/
-    /*padding: 0 12px*/
+  /*:deep(.v-list__tile)*/
+  /*padding: 0 12px*/
+}
 
 /** Themes **/
-.theme--light.v-list
-  .transaction-item
-    &__amount
-      color: $adm-colors.regular
-    &__rates
-      color: $adm-colors.muted
-      &--is-incoming
-        color: $adm-colors.good
-      &--is-outgoing
-        color: $adm-colors.danger
-
-    &__icon
-      color: $adm-colors.muted
-
-.theme--dark.v-list
-  .transaction-item
-    &__amount
-      color: $adm-colors.regular
-
-      &--is-incoming
-        color: $adm-colors.good
-      &--is-outgoing
-        color: $adm-colors.danger
-
+.v-theme--light.v-list {
+  .transaction-item {
+    &__amount {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__rates {
+      color: map-get($adm-colors, 'muted');
+      &--is-incoming {
+        color: map-get($adm-colors, 'good');
+      }
+      &--is-outgoing {
+        color: map-get($adm-colors, 'danger');
+      }
+    }
+    &__icon {
+      color: map-get($adm-colors, 'muted');
+    }
+  }
+}
+.v-theme--dark.v-list {
+  .transaction-item {
+    &__amount {
+      color: map-get($adm-colors, 'regular');
+      &--is-incoming {
+        color: map-get($adm-colors, 'good');
+      }
+      &--is-outgoing {
+        color: map-get($adm-colors, 'danger');
+      }
+    }
+  }
+}
 </style>

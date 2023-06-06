@@ -19,45 +19,63 @@ ADAMANT Messenger has built-in crypto Exchanger and Adelina, an AI chat assistan
 ## Project setup
 
 ```
-yarn install
+npm install
 ```
 
-Note: Lisk libraries may ask for specific Node.js version, you can ignore this with `yarn install --ignore-engines`.
+Note: Lisk libraries may ask for specific Node.js version, you can ignore this with `npm install --ignore-engines`.
 
 ### Compiles and hot-reloads for development
 
 ```
-yarn run serve
+npm run dev
 ```
 
 ### Compiles and hot-reloads self-signed https-server for development
 
 ```
-yarn run https
+npm run https
 ```
 
 ### Compiles and minifies for production
 
 ```
-yarn run build
+npm run build
+```
+
+### Preview production build locally
+
+```
+npm run serve
 ```
 
 ### Lints and fixes files
 
 ```
-yarn run lint
+npm run lint
 ```
 
-### Run electron version
+### Start dev server and electron app
 
 ```
-yarn run electron:serve
+npm run electron:dev
 ```
 
 ### Build electron version
 
 ```
-yarn run electron:build
+npm run electron:build
+```
+
+### Build electron version and notarize the app
+
+```
+APPLE_NOTARIZE=true npm run electron:build
+```
+
+### Preview electron production build
+
+```
+npm run electron:serve
 ```
 
 [Download pre-build apps](https://adamant.im/#adm-apps) for macOS, Windows and Linux.

@@ -1,272 +1,262 @@
 <template>
-  <v-layout
-    row
-    wrap
-    justify-center
+  <v-row
+    justify="center"
+    no-gutters
     :class="className"
   >
     <app-toolbar-centered
       app
       :title="`${id}`"
       flat
+      fixed
       :class="`${className}__toolbar`"
     />
-    <container>
-      <v-list class="transparent">
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+    <container class="container--with-app-toolbar">
+      <v-list bg-color="transparent">
+        <v-list-item>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.amount') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </template>
 
-          <div>
-            <v-list-tile-title :class="`${className}__value`">
-              {{ amount || placeholder }}
-            </v-list-tile-title>
-          </div>
-        </v-list-tile>
+          <v-list-item-title :class="`${className}__value`">
+            {{ amount || placeholder }}
+          </v-list-item-title>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.currentVal') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </template>
 
-          <div>
-            <v-list-tile-title
-              v-if="rate !== false"
-              :class="`${className}__value`"
-            >
-              {{ rate }}
-            </v-list-tile-title>
-          </div>
-        </v-list-tile>
+          <v-list-item-title
+            v-if="rate !== false"
+            :class="`${className}__value`"
+          >
+            {{ rate }}
+          </v-list-item-title>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.valueTimeTxn') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </template>
 
-          <div>
-            <v-list-tile-title
-              v-if="historyRate !== false"
-              :class="`${className}__value`"
-            >
-              {{ historyRate }}
-            </v-list-tile-title>
-          </div>
-        </v-list-tile>
+          <v-list-item-title
+            v-if="historyRate !== false"
+            :class="`${className}__value`"
+          >
+            {{ historyRate }}
+          </v-list-item-title>
+        </v-list-item>
 
         <v-divider />
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.status') }}
               <v-icon
                 v-if="statusUpdatable"
                 ref="updateButton"
+                icon="mdi-refresh"
                 size="20"
                 @click="updateStatus()"
-              >
-                mdi-refresh
-              </v-icon>
-            </v-list-tile-title>
-          </v-list-tile-content>
+              />
+            </v-list-item-title>
+          </template>
 
           <div :class="`${className}__value ${className}__value-${status.virtualStatus}`">
             <v-icon
               v-if="status.status === 'INVALID'"
+              icon="mdi-alert-outline"
               size="20"
               style="color: #f8a061 !important;"
-            >
-              {{ 'mdi-alert-outline' }}
-            </v-icon>
+            />
             {{ $t(`transaction.statuses.${status.virtualStatus}`) }}<span v-if="status.status === 'INVALID'">{{ ': ' + $t(`transaction.inconsistent_reasons.${status.inconsistentReason}`, { crypto } ) }}</span><span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.date') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </template>
 
-          <div>
-            <v-list-tile-title :class="`${className}__value`">
-              {{ timestamp ? $formatDate(timestamp) : placeholder }}
-            </v-list-tile-title>
-          </div>
-        </v-list-tile>
+          <v-list-item-title :class="`${className}__value`">
+            {{ timestamp ? $formatDate(timestamp) : placeholder }}
+          </v-list-item-title>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.confirmations') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </template>
 
-          <div>
-            <v-list-tile-title :class="`${className}__value`">
-              {{ confirmations || placeholder }}
-            </v-list-tile-title>
-          </div>
-        </v-list-tile>
+          <v-list-item-title :class="`${className}__value`">
+            {{ confirmations || placeholder }}
+          </v-list-item-title>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile>
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+        <v-list-item>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.commission') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </template>
 
-          <div>
-            <v-list-tile-title :class="`${className}__value`">
-              {{ fee || placeholder }}
-            </v-list-tile-title>
-          </div>
-        </v-list-tile>
+          <v-list-item-title :class="`${className}__value`">
+            {{ fee || placeholder }}
+          </v-list-item-title>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile
-          :title="id || placeholder"
+        <v-list-item
           @click="copyToClipboard(id)"
         >
-          <v-list-tile-title :class="`${className}__title`">
-            {{ $t('transaction.txid') }}
-          </v-list-tile-title>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('transaction.txid') }}
+            </v-list-item-title>
+          </template>
 
-          <v-list-tile-title :class="`${className}__value`">
+          <v-list-item-title :class="`${className}__value`">
             {{ id || placeholder }}
-          </v-list-tile-title>
-        </v-list-tile>
+          </v-list-item-title>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile
-          :title="sender || placeholder"
+        <v-list-item
           @click="copyToClipboard(sender)"
         >
-          <v-list-tile-title :class="`${className}__title`">
-            {{ $t('transaction.sender') }}
-          </v-list-tile-title>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('transaction.sender') }}
+            </v-list-item-title>
+          </template>
 
           <div :class="`${className}__value`">
             {{ senderFormatted || placeholder }}
           </div>
-        </v-list-tile>
+        </v-list-item>
 
         <v-divider />
 
-        <v-list-tile
-          :title="recipient || placeholder"
+        <v-list-item
           @click="copyToClipboard(recipient)"
         >
-          <v-list-tile-title :class="`${className}__title`">
-            {{ $t('transaction.recipient') }}
-          </v-list-tile-title>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('transaction.recipient') }}
+            </v-list-item-title>
+          </template>
 
           <div :class="`${className}__value`">
             {{ recipientFormatted || placeholder }}
           </div>
-        </v-list-tile>
+        </v-list-item>
 
-        <v-divider />
+        <v-divider v-if="comment" />
 
-        <v-list-tile
-          v-if="comment"
-          :title="comment"
-        >
-          <v-list-tile-title :class="`${className}__title`">
-            {{ $t('transaction.comment') }}
-          </v-list-tile-title>
+        <v-list-item v-if="comment">
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('transaction.comment') }}
+            </v-list-item-title>
+          </template>
 
           <div :class="`${className}__value`">
             {{ comment || placeholder }}
           </div>
-        </v-list-tile>
+        </v-list-item>
 
-        <v-divider />
+        <v-divider v-if="textData" />
 
-        <v-list-tile
+        <v-list-item
           v-if="textData"
           :title="textData"
         >
-          <v-list-tile-title :class="`${className}__title`">
-            {{ $t('transaction.textData') }}
-          </v-list-tile-title>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
+              {{ $t('transaction.textData') }}
+            </v-list-item-title>
+          </template>
 
           <div :class="`${className}__value`">
             {{ textData || placeholder }}
           </div>
-        </v-list-tile>
+        </v-list-item>
 
-        <v-divider />
+        <v-divider v-if="explorerLink" />
 
-        <v-list-tile
+        <v-list-item
           v-if="explorerLink"
           @click="openInExplorer"
         >
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.explorer') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </template>
 
-          <div>
-            <v-list-tile-title :class="`${className}__value`">
-              <v-icon size="20">
-                mdi-chevron-right
-              </v-icon>
-            </v-list-tile-title>
-          </div>
-        </v-list-tile>
+          <v-list-item-title :class="`${className}__value`">
+            <v-icon
+              icon="mdi-chevron-right"
+              size="20"
+            />
+          </v-list-item-title>
+        </v-list-item>
 
-        <v-divider />
+        <v-divider v-if="partner && !ifComeFromChat" />
 
-        <v-list-tile
+        <v-list-item
           v-if="partner && !ifComeFromChat"
           @click="openChat"
         >
-          <v-list-tile-content :class="`${className}__titlecontent`">
-            <v-list-tile-title :class="`${className}__title`">
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
               {{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}
-            </v-list-tile-title>
-          </v-list-tile-content>
+            </v-list-item-title>
+          </template>
 
-          <div>
-            <v-list-tile-title :class="`${className}__value`">
-              <v-icon size="20">
-                {{ hasMessages ? 'mdi-comment' : 'mdi-comment-outline' }}
-              </v-icon>
-            </v-list-tile-title>
-          </div>
-        </v-list-tile>
+          <v-list-item-title :class="`${className}__value`">
+            <v-icon
+              :icon="hasMessages ? 'mdi-comment' : 'mdi-comment-outline'"
+              size="20"
+            />
+          </v-list-item-title>
+        </v-list-item>
       </v-list>
     </container>
-  </v-layout>
+  </v-row>
 </template>
 
 <script>
+import { nextTick } from 'vue'
+import copyToClipboard from 'copy-to-clipboard'
+
 import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import transaction from '@/mixins/transaction'
-import { copyToClipboard } from '@/lib/textHelpers'
 import { timestampInSec } from '@/filters/helpers'
 
 export default {
@@ -372,7 +362,7 @@ export default {
       this.fetchTransactionStatus(this.admTx, this.partner)
     },
     timestamp () {
-      this.$nextTick(() => {
+      nextTick(() => {
         this.getHistoryRates()
       })
     }
@@ -422,50 +412,68 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import '../../assets/styles/settings/_colors.scss';
 
-.transaction-view
-  &__title
-    font-weight: 300
-  &__titlecontent
-    flex: 1 0 auto
-  &__value
-    font-weight: 300
-    font-size: 14px
-    text-align: right
-    text-overflow: ellipsis
-    overflow: hidden
-    max-width: 100%
-    width: 100%
-  &__toolbar
-    >>> .v-toolbar__title div
-      text-overflow: ellipsis
-      max-width: 100%
-      overflow: hidden
+.transaction-view {
+  &__title {
+    font-weight: 300;
+  }
+  &__titlecontent {
+    flex: 1 0 auto;
+  }
+  &__value {
+    font-weight: 300;
+    font-size: 14px;
+    text-align: right;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+    width: 100%;
+  }
+  &__toolbar {
+    :deep(.v-toolbar__title) div {
+      text-overflow: ellipsis;
+      max-width: 100%;
+      overflow: hidden;
+    }
+  }
+}
 
 /** Themes **/
-.theme--light
-  .transaction-view
-    &__title
-      color: $adm-colors.regular
-    &__value
-      color: $adm-colors.muted !important
-    >>> .v-divider
-      border-color: $adm-colors.secondary2
-
-.theme--light, .theme--dark
-  .transaction-view
-    &__value-REJECTED
-      color: $adm-colors.danger !important
-    &__value-PENDING
-      color: $adm-colors.attention !important
-    &__value-REGISTERED
-      color: $adm-colors.attention !important
-    &__value-CONFIRMED
-      color: $adm-colors.good !important
-    &__value-INVALID
-      color: $adm-colors.attention !important
-    &__value-UNKNOWN
-      color: $adm-colors.attention !important
+.v-theme--light {
+  .transaction-view {
+    &__title {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__value {
+      color: map-get($adm-colors, 'muted') !important;
+    }
+    :deep(.v-divider) {
+      border-color: map-get($adm-colors, 'secondary2');
+    }
+  }
+}
+.v-theme--light, .v-theme--dark {
+  .transaction-view {
+    &__value-REJECTED {
+      color: map-get($adm-colors, 'danger') !important;
+    }
+    &__value-PENDING {
+      color: map-get($adm-colors, 'attention') !important;
+    }
+    &__value-REGISTERED {
+      color: map-get($adm-colors, 'attention') !important;
+    }
+    &__value-CONFIRMED {
+      color: map-get($adm-colors, 'good') !important;
+    }
+    &__value-INVALID {
+      color: map-get($adm-colors, 'attention') !important;
+    }
+    &__value-UNKNOWN {
+      color: map-get($adm-colors, 'attention') !important;
+    }
+  }
+}
 </style>

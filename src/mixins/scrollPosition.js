@@ -13,7 +13,7 @@ export default {
   created () {
     window.addEventListener('scroll', this.$_handleScroll)
   },
-  beforeDestroy () {
+  beforeUnmount () {
     window.removeEventListener('scroll', this.$_handleScroll)
   },
   methods: {

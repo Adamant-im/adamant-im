@@ -1,0 +1,14 @@
+@import './settings/_colors.scss';
+
+@import '@mdi/font/css/materialdesignicons.css';
+
+@import './generic/_variables.scss';
+@import './generic/_vuetify.scss';
+@import './generic/_layout.scss';
+@import './generic/_animations.scss';
+@import './generic/_list.scss';
+
+@import './components/_chat.scss';
+@import './components/_login-form.scss';
+
+@import './themes/adamant/_index.scss';

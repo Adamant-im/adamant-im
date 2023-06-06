@@ -1,40 +1,46 @@
 <template>
   <div>
     <v-menu>
-      <v-icon
-        slot="activator"
-        medium
-        class="chat-menu__icon"
-      >
-        mdi-plus-circle-outline
-      </v-icon>
+      <template #activator="{ props }">
+        <v-icon
+          class="chat-menu__icon"
+          v-bind="props"
+          icon="mdi-plus-circle-outline"
+          size="28"
+        />
+      </template>
 
-      <v-list>
+      <v-list class="chat-menu__list">
         <!-- Cryptos -->
-        <v-list-tile
+        <v-list-item
           v-for="c in cryptos"
           :key="c"
           @click="sendFunds(c)"
         >
-          <v-list-tile-avatar>
-            <crypto-icon :crypto="c" />
-          </v-list-tile-avatar>
+          <template #prepend>
+            <crypto-icon
+              :crypto="c"
+              box-centered
+            />
+          </template>
 
-          <v-list-tile-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-tile-title>
-        </v-list-tile>
+          <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
+        </v-list-item>
 
         <!-- Actions -->
-        <v-list-tile
+        <v-list-item
           v-for="item in menuItems"
           :key="item.title"
           :disabled="item.disabled"
         >
-          <v-list-tile-avatar>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-tile-avatar>
+          <template #prepend>
+            <icon-box>
+              <v-icon :icon="item.icon" />
+            </icon-box>
+          </template>
 
-          <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
-        </v-list-tile>
+          <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-menu>
 
@@ -51,9 +57,11 @@ import { Cryptos } from '@/lib/constants'
 import ChatDialog from '@/components/Chat/ChatDialog'
 import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
+import IconBox from '@/components/icons/IconBox'
 
 export default {
   components: {
+    IconBox,
     ChatDialog,
     Icon,
     CryptoIcon
@@ -138,20 +146,36 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import 'vuetify/settings';
+.chat-menu {
+  &__list {
+    min-width: 200px;
 
-.v-menu__content
-  max-height: 70%
-  min-width: 200px!important
+    :deep(.v-list-item-title) {
+      font-weight: 400;
+    }
+  }
+}
 
 /** Themes **/
-.theme--light
-  .chat-menu
-    &__icon
-      color: $grey.darken-1
-.theme--dark
-  .chat-menu
-    &__icon
-      color: $shades.white
+.v-theme--light {
+  .chat-menu {
+    &__icon {
+      color: map-get($grey, 'darken-1');
+    }
+  }
+}
+.v-theme--dark {
+  .chat-menu {
+    &__icon {
+      color: map-get($shades, 'white');
+    }
+    &__list {
+      :deep(.v-list-item-title) {
+        color: map-get($shades, 'white');
+      }
+    }
+  }
+}
 </style>

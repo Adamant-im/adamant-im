@@ -1,0 +1,289 @@
+@import 'vuetify/settings';
+@import '../settings/_colors.scss';
+
+$font-family: 'Exo 2', sans-serif;
+
+html {
+  font-family: $font-family;
+}
+
+/** Vuetify context styles **/
+
+/**
+ * BaseIcon.vue: Context styles
+ *
+ * 1. Inherit button color when icon inside VButton.
+ * 2. Vuetify should not steal pieces of SVG icon.
+ */
+.v-btn .v-btn__content .svg-icon {
+  // [1]
+  fill: currentColor;
+}
+
+.v-btn--floating .v-btn__content .svg-icon :not(:only-child) {
+  // [2]
+  &:last-child,
+  &:first-child {
+    -webkit-backface-visibility: visible;
+    position: static;
+    left: auto;
+    top: auto;
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+.v-btn {
+  letter-spacing: normal;
+  border-radius: 2px;
+}
+
+.v-theme--light {
+  .v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated  {
+    background-color: map-get($adm-colors, 'secondary')  !important;
+    color: map-get($adm-colors, 'primary2') !important;
+    box-shadow: none !important;
+  }
+  .v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated > .v-btn__overlay {
+    opacity: 0 !important;
+  }
+}
+.v-theme--dark {
+  .v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated  {
+    background-color: hsla(0, 0%, 100%, 0.35) !important;
+    color: hsla(0, 0%, 100%, 0.95) !important;
+    box-shadow: none !important;
+    opacity: 0.36;
+  }
+  .v-btn--disabled:not(.v-btn--icon).v-btn--variant-elevated > .v-btn__overlay {
+    opacity: 0 !important;
+  }
+}
+
+// Change default dialog background color
+.v-card {
+  &.v-theme--dark {
+    background-color: #424242; // secondary
+    border-color: #424242; // secondary
+  }
+}
+
+.v-dialog .v-card > .v-card-title {
+  padding: 16px;
+}
+
+.v-list {
+  &.v-theme--dark {
+    background-color: #424242; // secondary
+  }
+}
+
+.v-menu .v-overlay__content > .v-card,
+.v-menu .v-overlay__content > .v-sheet,
+.v-menu .v-overlay__content > .v-list {
+  &.v-theme--dark {
+    background-color: #424242; // secondary
+  }
+}
+
+.v-application .caption {
+  line-height: 1.5;
+}
+
+.v-dialog > .v-card > .v-card__text {
+  padding: 16px;
+}
+
+.v-card__subtitle,
+.v-card__text {
+  line-height: 1.5;
+}
+
+.v-theme--dark.v-card {
+  > .v-card__text {
+    color: #fff;
+  }
+
+  > .v-card-title {
+    color: map-get($shades, 'white');
+  }
+
+  > .v-card__subtitle {
+    color: #fff;
+  }
+}
+
+.v-data-table {
+  border-radius: 2px;
+}
+
+.v-theme--dark.v-data-table {
+  background-color: #424242;
+}
+
+.v-snack__content {
+  font-size: 16px;
+}
+
+.v-snackbar__wrapper {
+  max-width: 400px;
+}
+
+/**
+ * Resets dialog overlay background.
+ */
+.v-overlay__scrim {
+  background: unset;
+}
+
+/**
+ * Custom icon inside v-list doesn't contain margin-right
+ */
+.v-list-item__prepend > .icon {
+  margin-inline-end: 16px;
+}
+.v-list-item__prepend > .icon-box {
+  margin-inline-end: 16px;
+}
+
+/**
+ * Decrease `v-icon` padding in lists
+ */
+.v-list-item__prepend > .v-icon {
+  margin-inline-end: 16px;
+}
+
+/**
+ * Vuetify container padding.
+ */
+@media #{map-get($display-breakpoints, 'md-and-down')} {
+  .container {
+    padding: 20px;
+  }
+}
+
+/**
+ * List styles
+ */
+.v-theme--dark {
+  .v-list {
+    color: map-get($shades, 'white');
+  }
+}
+
+.v-list-item-title {
+  font-weight: 300;
+}
+
+.v-list-item-subtitle {
+  opacity: unset;
+}
+
+.v-label {
+  opacity: unset;
+}
+.v-theme--light .v-field__outline {
+  color: map-get($adm-colors, 'muted');
+}
+.v-theme--dark .v-field__outline {
+  color: map-get($adm-colors, 'grey-transparent');
+}
+.v-theme--light .v-field__field .v-label {
+  color: map-get($adm-colors, 'muted');
+}
+.v-theme--dark .v-field__field .v-label {
+  color: map-get($adm-colors, 'grey-transparent');
+}
+
+.v-list-item--density-default.v-list-item--one-line {
+  min-height: 56px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.v-theme--dark {
+  .v-list-item__prepend > .v-icon,
+  .v-list-item__append > .v-icon {
+    opacity: 1;
+  }
+}
+
+/**
+ * VField
+ */
+.v-field--disabled {
+  opacity: 0.5;
+}
+
+.a-input .v-field--disabled .v-field__outline::before,
+.a-input .v-field--disabled .v-field__outline::before {
+  border-image: repeating-linear-gradient(
+      90deg,
+      hsla(0, 0%, 100%, 0.5) 0,
+      hsla(0, 0%, 100%, 0.5) 2px,
+      transparent 0,
+      transparent 4px
+    )
+    1 repeat;
+  opacity: 1;
+}
+
+.v-theme--dark {
+  .v-field__prepend-inner > .v-icon,
+  .v-field__append-inner > .v-icon,
+  .v-field__clearable > .v-icon {
+    opacity: 1;
+  }
+}
+
+/**
+ * Change VField label padding
+ */
+.v-field--variant-plain.v-field .v-field__input,
+.v-field--variant-underlined.v-field .v-field__input {
+  --v-field-padding-top: 2px;
+  --v-field-padding-bottom: 5px;
+}
+
+/**
+ * VTable
+ */
+.v-table {
+  color: map-get($shades, 'white');
+}
+
+/**
+ * Application styles.
+ */
+.v-application {
+  font-weight: 300;
+  font-family: $font-family;
+}
+
+.v-theme--light.v-application {
+  color: map-get($adm-colors, 'regular');
+}
+
+.v-theme--dark.v-application {
+  color: map-get($shades, 'white');
+}
+
+a {
+  cursor: pointer;
+}
+
+.v-theme--light {
+  a,
+  a:visited {
+    color: map-get($adm-colors, 'primary');
+  }
+}
+
+.v-theme--dark {
+  a,
+  a:visited {
+    color: map-get($adm-colors, 'primary');
+  }
+}
+

@@ -1,41 +1,42 @@
 <template>
-  <v-layout
-    row
-    wrap
-    justify-center
+  <v-row
+    justify="center"
+    no-gutters
     :class="className"
   >
     <container>
-      <v-card
-        flat
-        class="transparent white--text"
+      <v-sheet
+        class="white--text"
+        color="transparent"
         :class="`${className}__card`"
       >
         <!-- Wallets -->
-        <v-card
+        <v-sheet
+          color="transparent"
           :class="`${className}__wallets`"
-          flat
         >
           <v-tabs
             ref="vtabs"
             v-model="currentWallet"
+            :class="`${className}__tabs`"
             grow
+            stacked
+            height="auto"
             show-arrows
           >
             <v-tab
               v-for="wallet in wallets"
               :key="wallet.cryptoCurrency"
-              :href="`#${wallet.cryptoCurrency}`"
+              :value="wallet.cryptoCurrency"
               @wheel="onWheel"
             >
+              <crypto-icon
+                :crypto="wallet.cryptoCurrency"
+                size="medium"
+                :class="`${className}__icon`"
+              />
               <div>
-                <crypto-icon
-                  slot="icon"
-                  :crypto="wallet.cryptoCurrency"
-                  size="medium"
-                  :class="`${className}__icon`"
-                />
-                <div>{{ wallet.balance | numberFormat(4) }}</div>
+                <div>{{ numberFormat(wallet.balance, 4) }}</div>
                 <div>
                   {{ wallet.cryptoCurrency }}
                   <span
@@ -53,8 +54,10 @@
                 </div>
               </div>
             </v-tab>
+          </v-tabs>
 
-            <v-tab-item
+          <v-window v-model="currentWallet">
+            <v-window-item
               v-for="wallet in wallets"
               :key="wallet.cryptoCurrency"
               :value="wallet.cryptoCurrency"
@@ -68,23 +71,25 @@
                 :current-currency="currentCurrency"
                 @click:balance="goToTransactions"
               >
-                <crypto-icon
-                  slot="icon"
-                  :crypto="wallet.cryptoCurrency"
-                  size="large"
-                />
+                <template #icon>
+                  <crypto-icon
+                    :crypto="wallet.cryptoCurrency"
+                    size="large"
+                  />
+                </template>
               </wallet-card>
-            </v-tab-item>
-          </v-tabs>
-        </v-card>
-      </v-card>
+            </v-window-item>
+          </v-window>
+        </v-sheet>
+      </v-sheet>
     </container>
-  </v-layout>
+  </v-row>
 </template>
 
 <script>
 import WalletCard from '@/components/WalletCard'
 import CryptoIcon from '@/components/icons/CryptoIcon'
+import numberFormat from '@/filters/numberFormat'
 
 import { Cryptos, CryptosNames, isErc20 } from '@/lib/constants'
 
@@ -180,92 +185,159 @@ export default {
       const nextWallet = this.wallets[nextWalletIndex]
 
       if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
-    }
+    },
+    numberFormat
   }
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import 'vuetify/settings';
+@import '../assets/styles/settings/_colors.scss';
 
 /**
  * 1. Reset VTabs container fixed height.
  * 2. Reset VTabItem opacity.
  */
-.account-view
-  &__rates
-    margin-top: 2px
-    color: hsla(0,0%,100%,.7)
-  &__wallets
-    &.v-card
-      background-color: transparent
-    >>> .v-tabs__container
-      height: auto // [1]
-      align-items: baseline
-    >>> .v-tabs__slider
-      height: 2px
-    >>> .v-tabs__wrapper
-      padding: 10px 0px 1px 0px
-      margin-bottom: 10px
-    >>> .v-tabs__item
-      font-weight: 300
-      padding: 6px 4px
-    >>> .v-tabs__item--active
-      font-weight: 500
-    >>> .v-tabs__item:not(.v-tabs__item--active) // [2]
-      opacity: 1
-    >>> .v-tabs__div
-      font-size: 16px
-      min-width: 74px
-  &__icon
-    margin-bottom: 3px
+.account-view {
+  &__rates {
+    margin-top: 2px;
+    color: hsla(0, 0%, 100%, 0.7);
+  }
+  &__wallets {
+    &.v-card {
+      background-color: transparent;
+    }
+    :deep(.v-tabs-slider) {
+      height: 2px;
+    }
+    :deep(.v-tabs) {
+      padding: 10px 0 1px 0;
+      margin-bottom: 10px;
+    }
+    :deep(.v-tab) {
+      font-weight: 300;
+      font-size: 16px;
+      padding: 6px 4px;
+      letter-spacing: normal;
+      min-width: 74px;
+      display: flex;
+      align-items: flex-start;
+    }
+    :deep(.v-tab--selected) {
+      font-weight: 500;
+    }
+    :deep(.v-tab):not(.v-tab--selected)  {
+      opacity: 1;
+    }
+    :deep(.v-tabs.v-tabs.v-tabs .v-slide-group__prev.v-slide-group__prev--disabled) {
+      display: none; // workaround: hide left/right arrows
+    }
+    :deep(.v-tab.v-tab--selected::before) {
+      background-color: unset;
+    }
+    :deep(.v-slide-group__prev) {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      flex-basis: 32px;
+      min-width: 32px;
+    }
+    :deep(.v-slide-group__next) {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      flex-basis: 32px;
+      min-width: 32px;
+    }
+    :deep(.v-slide-group__next.v-slide-group__next--disabled) {
+      display: none;
+    }
+    :deep(.v-tabs .v-btn--stacked .v-btn__content) {
+      line-height: normal;
+    }
+  }
+  &__tabs {
+    position: relative;
+  }
+  &__icon {
+    margin-bottom: 3px;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .account-view
-    &__rates {
-      color: $adm-colors.muted
+.v-theme--light {
+  .account-view {
+    &__rates  {
+      color: map-get($adm-colors, 'muted');
     }
-    &__wallets
-      >>> .v-tabs__bar
-        background-color: $adm-colors.secondary2-transparent
-      >>> .v-tabs__slider
-        background-color: $adm-colors.primary !important
-      >>> .v-tabs__item
-        color: $adm-colors.regular
-      >>> .v-tabs__icon
-        color: $adm-colors.primary2
-        pointer-events: none
-      >>> .v-tabs__wrapper--show-arrows
-        margin-left: 0
-        margin-right: 0
-      >>> .v-tabs__item--active
-        color: $adm-colors.primary
-        .svg-icon
-          fill: $adm-colors.primary
-.theme--dark
-  .account-view
-    &__wallets
-      >>> .v-tabs__bar
-        background-color: transparent
-      >>> .v-tabs__slider
-        background-color: $adm-colors.primary !important
-      >>> .v-tabs__icon
-        color: $adm-colors.primary2
-        pointer-events: none
-      >>> .v-tabs__wrapper--show-arrows
-        margin-left: 0
-        margin-right: 0
-      >>> .v-tabs__item
-        color: $shades.white
-      >>> .v-tabs__item--active
-        color: $adm-colors.primary
-        .svg-icon
-          fill: $adm-colors.primary
+    &__wallets {
+      :deep(.v-tabs-bar) {
+        background-color: map-get($adm-colors, 'secondary2-transparent');
+      }
+      :deep(.v-tabs-slider) {
+        background-color: map-get($adm-colors, 'primary') !important;
+      }
+      :deep(.v-tab) {
+        &:not(.v-tab--selected) {
+          color: map-get($adm-colors, 'regular');
+        }
+      }
+      :deep(.v-tabs .v-slide-group__prev .v-icon), :deep(.v-tabs .v-slide-group__next .v-icon) {
+        color: map-get($adm-colors, 'primary2');
+        pointer-events: none;
+      }
+      :deep(:not(.v-tab--selected)) {
+        .svg-icon {
+          fill: map-get($adm-colors, 'muted');
+        }
+      }
+      :deep(.v-tab--selected) {
+        color: map-get($adm-colors, 'primary');
+        .svg-icon {
+          fill: map-get($adm-colors, 'primary');
+        }
+      }
+    }
+  }
+}
 
-.v-tabs__item--active
-  .account-view__rates
-    color: inherit
+.v-theme--dark {
+  .account-view {
+    &__wallets {
+      :deep(.v-tabs-bar) {
+        background-color: transparent;
+      }
+      :deep(.v-tabs-slider) {
+        background-color: map-get($adm-colors, 'primary') !important;
+      }
+      :deep(.v-tabs .v-slide-group__prev .v-icon), :deep(.v-tabs .v-slide-group__next .v-icon) {
+        color: map-get($adm-colors, 'primary2');
+        pointer-events: none;
+      }
+      :deep(.v-tabs-items) {
+        background-color: unset;
+      }
+      :deep(.v-tab) {
+        &:not(.v-tab--selected) {
+          color: map-get($shades, 'white')
+        }
+      }
+      :deep(.v-tab--selected) {
+        color: map-get($adm-colors, 'primary');
+        .svg-icon {
+          fill: map-get($adm-colors, 'primary');
+        }
+      }
+    }
+  }
+}
+
+.v-tab--selected {
+  .account-view__rates {
+    color: inherit;
+  }
+}
 </style>

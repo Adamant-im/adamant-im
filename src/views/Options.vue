@@ -5,95 +5,94 @@
       :title="$t('options.page_title')"
       :show-back="true"
       flat
+      fixed
     />
 
     <v-container
       fluid
-      class="pa-0"
+      class="px-0 container--with-app-toolbar"
     >
-      <v-layout
-        row
-        wrap
-        justify-center
+      <v-row
+        justify="center"
+        no-gutters
       >
         <container padding>
           <!-- General -->
           <h3
             :class="`${className}__title a-text-caption`"
-            class="mt-3 mb-3"
+            class="mt-4 mb-4"
           >
             {{ $t('options.general_title') }}
           </h3>
-          <v-layout
-            row
-            wrap
-            align-center
+          <v-row
+            align="center"
+            no-gutters
           >
-            <v-flex xs6>
-              <v-subheader
+            <v-col cols="6">
+              <v-list-subheader
                 :class="`${className}__label`"
-                class="pa-0"
               >
                 {{ $t('options.language_label') }}
-              </v-subheader>
-            </v-flex>
-            <v-flex
-              xs6
-              class="text-xs-right"
+              </v-list-subheader>
+            </v-col>
+            <v-col
+              cols="6"
+              class="text-right"
             >
               <language-switcher
                 append-icon="mdi-chevron-down"
               />
-            </v-flex>
-            <v-flex xs6>
-              <v-subheader
+            </v-col>
+            <v-col cols="6">
+              <v-list-subheader
                 :class="`${className}__label`"
-                class="pa-0"
               >
                 {{ $t('options.currency_label') }}
-              </v-subheader>
-            </v-flex>
-            <v-flex
-              xs6
-              class="text-xs-right"
+              </v-list-subheader>
+            </v-col>
+            <v-col
+              cols="6"
+              class="text-right"
             >
               <currency-switcher
                 append-icon="mdi-chevron-down"
               />
-            </v-flex>
-            <v-flex
-              xs12
-              class="mt-2"
+            </v-col>
+            <v-col
+              cols="12"
             >
               <v-checkbox
                 v-model="darkTheme"
                 :label="$t('options.dark_theme')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
 
           <!-- Security -->
           <h3
             :class="`${className}__title a-text-caption`"
-            class="mt-4 mb-4"
+            class="mt-6 mb-6"
           >
             {{ $t('options.security_title') }}
           </h3>
-          <v-layout
-            row
-            wrap
-            align-center
+          <v-row
+            align="center"
+            no-gutters
           >
-            <v-flex
-              xs12
+            <v-col
+              cols="12"
               a-text-regular-enlarged
             >
               <v-checkbox
                 :label="$t('options.stay_logged_in')"
                 color="grey darken-1"
-                :input-value="stayLoggedIn"
+                v-model="stayLoggedIn"
                 readonly
+                density="comfortable"
+                hide-details
                 @click="onCheckStayLoggedIn"
               />
 
@@ -105,203 +104,174 @@
                 v-model="passwordDialog"
                 @password="onSetPassword"
               />
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
 
           <!-- Chats -->
           <h3
             :class="`${className}__title a-text-caption`"
-            class="mt-4 mb-4"
+            class="mt-6 mb-6"
           >
             {{ $t('options.chats_title') }}
           </h3>
-          <v-layout
-            row
-            wrap
-            align-center
+          <v-row
+            align="center"
+            no-gutters
           >
-            <v-flex xs12>
+            <v-col cols="12">
               <v-checkbox
                 v-model="sendMessageOnEnter"
                 :label="$t('options.send_on_enter')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
 
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.send_on_enter_tooltip') }}
               </div>
-            </v-flex>
+            </v-col>
 
-            <v-flex
-              xs12
-              class="mt-4"
+            <v-col
+              cols="12"
+              class="mt-6"
             >
               <v-checkbox
                 v-model="formatMessages"
                 :label="$t('options.format_messages')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
 
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.format_messages_tooltip') }}
               </div>
-            </v-flex>
+            </v-col>
 
-            <v-flex
-              xs12
-              class="mt-4"
+            <v-col
+              cols="12"
+              class="mt-6"
             >
               <v-checkbox
                 v-model="useFullDate"
                 :label="$t('options.use_full_date')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
 
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.use_full_date_tooltip') }}
               </div>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
 
           <!-- Notifications -->
           <h3
             :class="`${className}__title a-text-caption`"
-            class="mt-4 mb-4"
+            class="mt-6 mb-6"
           >
             {{ $t('options.notification_title') }}
           </h3>
-          <v-layout
-            row
-            wrap
-            align-center
+          <v-row
+            align="center"
+            no-gutters
           >
-            <v-flex xs12>
+            <v-col cols="12">
               <v-checkbox
                 v-model="allowSoundNotifications"
                 :label="$t('options.enable_sound')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
 
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.enable_sound_tooltip') }}
               </div>
-            </v-flex>
-            <v-flex
-              xs12
-              class="mt-4"
+            </v-col>
+            <v-col
+              cols="12"
+              class="mt-6"
             >
               <v-checkbox
                 v-model="allowTabNotifications"
                 :label="$t('options.enable_bar')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
 
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.enable_bar_tooltip') }}
               </div>
-            </v-flex>
-            <v-flex
-              xs12
-              class="mt-4"
+            </v-col>
+            <v-col
+              cols="12"
+              class="mt-6"
             >
               <v-checkbox
                 v-model="allowPushNotifications"
                 :label="$t('options.enable_push')"
                 color="grey darken-1"
+                density="comfortable"
+                hide-details
               />
 
               <div class="a-text-explanation-enlarged">
                 {{ $t('options.enable_push_tooltip') }}
               </div>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
 
           <!-- Actions -->
           <h3
             :class="`${className}__title a-text-caption`"
-            class="mt-4 mb-4"
+            class="mt-6 mb-6"
           >
             {{ $t('options.actions') }}
           </h3>
-          <v-layout
-            row
-            wrap
-          >
-            <v-flex xs12>
-              <v-list>
-                <v-list-tile @click="$router.push('/options/nodes')">
-                  <v-list-tile-content>
-                    <v-list-tile-title :class="`${className}__list__title`">
-                      {{ $t('options.nodes_list') }}
-                    </v-list-tile-title>
-                  </v-list-tile-content>
-                  <div>
-                    <v-list-tile-title :class="`${className}__list__value`">
-                      <v-icon size="20">
-                        mdi-chevron-right
-                      </v-icon>
-                    </v-list-tile-title>
-                  </div>
-                </v-list-tile>
+          <v-row no-gutters>
+            <v-col cols="12">
+              <v-list class="actions-list">
+                <v-list-item
+                  :title="$t('options.nodes_list')"
+                  append-icon="mdi-chevron-right"
+                  @click="$router.push('/options/nodes')"
+                />
 
-                <v-list-tile @click="$router.push('/options/export-keys')">
-                  <v-list-tile-content>
-                    <v-list-tile-title :class="`${className}__list__title`">
-                      {{ $t('options.export_keys.title') }}
-                    </v-list-tile-title>
-                  </v-list-tile-content>
-                  <div>
-                    <v-list-tile-title :class="`${className}__list__value`">
-                      <v-icon size="20">
-                        mdi-chevron-right
-                      </v-icon>
-                    </v-list-tile-title>
-                  </div>
-                </v-list-tile>
+                <v-list-item
+                  :title="$t('options.export_keys.title')"
+                  append-icon="mdi-chevron-right"
+                  @click="$router.push('/options/export-keys')"
+                />
 
-                <v-list-tile @click="$router.push('/votes')">
-                  <v-list-tile-content>
-                    <v-list-tile-title :class="`${className}__list__title`">
-                      {{ $t('options.vote_for_delegates_button') }}
-                    </v-list-tile-title>
-                  </v-list-tile-content>
-                  <div>
-                    <v-list-tile-title :class="`${className}__value`">
-                      <v-icon size="20">
-                        mdi-chevron-right
-                      </v-icon>
-                    </v-list-tile-title>
-                  </div>
-                </v-list-tile>
+                <v-list-item
+                  :title="$t('options.vote_for_delegates_button')"
+                  append-icon="mdi-chevron-right"
+                  @click="$router.push('/votes')"
+                />
 
                 <v-divider />
 
-                <v-list-tile @click="logout">
-                  <v-list-tile-content>
-                    <v-list-tile-title :class="`${className}__list__title`">
-                      {{ $t('bottom.exit_button') }}
-                    </v-list-tile-title>
-                  </v-list-tile-content>
-                  <div>
-                    <v-list-tile-title :class="`${className}__value`">
-                      <v-icon size="20">
-                        mdi-logout-variant
-                      </v-icon>
-                    </v-list-tile-title>
-                  </div>
-                </v-list-tile>
+                <v-list-item
+                  :title="$t('bottom.exit_button')"
+                  append-icon="mdi-logout-variant"
+                  @click="logout"
+                />
               </v-list>
-            </v-flex>
-          </v-layout>
-          <v-layout>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
             <div
               :class="`${className}__version_info ml-auto`"
             >
-              {{ $t('options.version') }} {{ $root.$options.version }}
+              {{ $t('options.version') }} {{ $root.appVersion }}
             </div>
-          </v-layout>
+          </v-row>
         </container>
-      </v-layout>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -400,11 +370,13 @@ export default {
       get () {
         return this.$store.state.options.darkTheme
       },
-      set (value) {
+      set (isDarkTheme) {
         this.$store.commit('options/updateOption', {
           key: 'darkTheme',
-          value
+          value: isDarkTheme
         })
+
+        this.$vuetify.theme.global.name = isDarkTheme ? 'dark' : 'light'
       }
     },
     isLoginViaPassword () {
@@ -464,72 +436,110 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import 'vuetify/settings';
+@import '../assets/styles/settings/_colors.scss';
 
-.settings-view
-  &__title
-    padding-top: 15px
-    padding-bottom: 5px
-    margin-left: -24px
-    margin-right: -24px
-    padding-left: 24px
-    padding-right: 24px
-  &__version_info
-    a-text-explanation()
-    margin-top: 24px
-  &__action
-    display: block
-    font-size: 16px
-    font-weight: 500
-    text-decoration-line: underline
-    margin: 6px 8px
-    padding: 0 16px
-  >>> .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot
-    margin-bottom: 0
-  >>> .v-input--selection-controls
-    margin-top: 0
-  >>> .v-label, &__label, &__list__title
-    a-text-regular-enlarged()
-  >>> .v-list
-    background: transparent
-    padding: 0
-  >>> .v-list__tile
-    padding: 0 24px
-    margin: 0 -24px
+.settings-view {
+  &__title {
+    padding-top: 15px;
+    margin-left: -24px;
+    margin-right: -24px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  &__version_info {
+    @include a-text-explanation();
+    margin-top: 24px;
+    margin-bottom: 16px;
+  }
+  &__action {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration-line: underline;
+    margin: 6px 8px;
+    padding: 0 16px;
+  }
+  :deep(.v-input--selection-controls):not(.v-input--hide-details) .v-input__slot {
+    margin-bottom: 0;
+  }
+  :deep(.v-input--selection-controls) {
+    margin-top: 0;
+  }
+  :deep(.v-label), &__label, &__list__title {
+    @include a-text-regular-enlarged();
+  }
+  :deep(.v-list) {
+    background: transparent;
+    padding: 0;
+  }
+  .actions-list {
+    margin-left: -24px;
+    margin-right: -24px;
+
+    :deep(.v-list-item) {
+      padding-inline-start: 24px;
+      padding-inline-end: 24px;
+    }
+  }
+  :deep(.v-list-subheader) {
+    height: 48px;
+  }
+  :deep(.v-checkbox) {
+    margin-left: -8px;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .settings-view
-    &__version_info
-      color: $adm-colors.muted
-    &__title
-      background-color: $adm-colors.secondary2-transparent
-      color: $adm-colors.regular
-    &__action
-      color: $adm-colors.regular
-    >>> .v-label, &__label
-      color: $adm-colors.regular
-    .v-divider
-      border-color: $adm-colors.secondary2
-.theme--dark
-  .settings-view
-    &__action
-      color: $shades.white
+.v-theme--light {
+  .settings-view {
+    &__version_info {
+      color: map-get($adm-colors, 'muted');
+    }
+    &__title {
+      background-color: map-get($adm-colors, 'secondary2-transparent');
+      color: map-get($adm-colors, 'regular');
+    }
+    &__action {
+      color: map-get($adm-colors, 'regular');
+    }
+    :deep(.v-label), &__label {
+      color: map-get($adm-colors, 'regular');
+    }
+    .v-divider {
+      border-color: map-get($adm-colors, 'secondary2');
+    }
+  }
+}
+.v-theme--dark {
+  .settings-view {
+    &__action {
+      color: map-get($shades, 'white');
+    }
+  }
+}
 
 /** Breakpoints **/
-@media $display-breakpoints.sm-and-down
-  .settings-view
-    &__title
-      margin-left: -16px
-      margin-right: -16px
-      padding-left: 16px
-      padding-right: 16px
+@media #{map-get($display-breakpoints, 'sm-and-down')} {
+  .settings-view {
+    &__title {
+      margin-left: -16px;
+      margin-right: -16px;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
 
-    >>> .v-list__tile
-      padding: 0 16px
-      margin: 0 -16px
+    .actions-list {
+      margin-left: -16px;
+      margin-right: -16px;
+
+      :deep(.v-list-item) {
+        padding-inline-start: 16px;
+        padding-inline-end: 16px;
+      }
+    }
+  }
+}
 </style>

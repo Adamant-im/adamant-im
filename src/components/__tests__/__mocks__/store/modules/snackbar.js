@@ -1,16 +1,19 @@
+import { vi } from 'vitest'
+import { SNACKBAR_TIMEOUT } from '@/store/modules/snackbar/constants'
+
 export default () => ({
   state: {
     show: false,
     message: '',
-    timeout: 3000,
+    timeout: SNACKBAR_TIMEOUT,
     color: ''
   },
   mutations: {
-    changeState: jest.fn(),
-    resetOptions: jest.fn()
+    changeState: vi.fn(),
+    resetOptions: vi.fn()
   },
   actions: {
-    show: jest.fn()
+    show: vi.fn()
   },
   namespaced: true
 })

@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import { resetState } from '../../../lib/reset-state'
 import initialState from './partners-state'
 
@@ -18,7 +17,7 @@ export default {
       state.list[partner].displayName = displayName
     } else {
       // if partner is not in the list, add
-      Vue.set(state.list, partner, { displayName })
+      state.list[partner] = { displayName }
     }
     state.lastChange = Date.now()
   },
@@ -54,7 +53,7 @@ export default {
   contactList (state, contacts) {
     if (contacts) {
       Object.keys(contacts).forEach(uid => {
-        Vue.set(state.list, uid, Object.assign({}, state.list[uid], contacts[uid]))
+        state.list[uid] = Object.assign({}, state.list[uid], contacts[uid])
       })
     }
     state.lastUpdate = Date.now()
