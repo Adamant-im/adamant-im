@@ -73,6 +73,7 @@
           :offset-overflow="true"
           :offset-y="false"
           left
+          eager
         >
           <template #activator="{ props }">
             <v-icon
@@ -84,7 +85,7 @@
             <v-list-item @click="showQrcodeScanner = true">
               <v-list-item-title>{{ t('transfer.decode_from_camera') }}</v-list-item-title>
             </v-list-item>
-            <v-list-item class="v-list__tile--link">
+            <v-list-item link>
               <v-list-item-title>
                 <qrcode-capture
                   @detect="onDetectQrcode"
