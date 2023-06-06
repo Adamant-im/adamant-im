@@ -150,8 +150,12 @@ export default {
       window.removeEventListener('scroll', this.onScroll)
     },
     onScroll () {
-      const scrollHeight = document.documentElement.scrollHeight // all of viewport height
-      const scrollTop = document.documentElement.scrollTop // current vieport scroll position
+      const scrollHeight = Math.max(
+        document.body.scrollHeight, document.documentElement.scrollHeight,
+        document.body.offsetHeight, document.documentElement.offsetHeight,
+        document.body.clientHeight, document.documentElement.clientHeight
+      );  // all viewport height
+      const scrollTop = document.documentElement.scrollTop // current viewport scroll position
       const clientHeight = document.documentElement.clientHeight
 
       let isLoadingSeparatorVisible = false
