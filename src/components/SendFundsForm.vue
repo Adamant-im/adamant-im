@@ -49,6 +49,7 @@
             :offset-overflow="true"
             :offset-y="false"
             left
+            eager
           >
             <template #activator="{ props }">
               <v-icon
