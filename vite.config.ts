@@ -3,7 +3,6 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import autoprefixer from 'autoprefixer'
 import { VitePWA } from 'vite-plugin-pwa'
-import { manifest } from './vite-config/manifest'
 
 import inject from '@rollup/plugin-inject'
 import commonjs from '@rollup/plugin-commonjs'
@@ -11,6 +10,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
 import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
+import { manifest } from './vite-config/manifest'
 
 export default defineConfig({
   plugins: [

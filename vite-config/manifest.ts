@@ -1,10 +1,10 @@
 import { ManifestOptions } from 'vite-plugin-pwa'
 
 export const manifest: Partial<ManifestOptions> = {
-  name: 'ADAMANT Messenger or ADAMANT',
+  name: 'ADAMANT Messenger',
   short_name: 'ADAMANT',
   description:
-    'ADAMANT is a decentralized anonymous messenger based on the blockchain system. It’s independent of any governments or corporations, and even developers due to the distributed network infrastructure that contains an open-source code. Apps are available on Web, Tor, App Store for iOS, Google Play for Android, Windows, Mac OS, GNU/Linux. ADAMANT Business is a private blockchain for companies. ADAMANT 2FA is a secure and reliable blockchain OTP solution for companies. ADAMANT TradeBot offers self-hosted market-making tool for crypto projects.',
+    'ADAMANT is a decentralized anonymous messenger based on the blockchain system. It’s independent of any governments or corporations, and even developers due to the distributed network infrastructure that contains an open-source code.',
   icons: [
     {
       src: '/img/icons/android-chrome-36x36.png',
