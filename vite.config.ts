@@ -8,6 +8,10 @@ import { manifest } from './vite-config/manifest'
 import inject from '@rollup/plugin-inject'
 import commonjs from '@rollup/plugin-commonjs'
 
+import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
+import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
+import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
+
 export default defineConfig({
   plugins: [
     vue(),
@@ -24,7 +28,9 @@ export default defineConfig({
       },
       manifest: manifest,
       manifestFilename: 'manifest.json'
-    })
+    }),
+    deferScripsPlugin(),
+    preloadCSSPlugin()
   ],
   css: {
     postcss: {
@@ -65,6 +71,9 @@ export default defineConfig({
   build: {
     commonjsOptions: {
       include: []
+    },
+    rollupOptions: {
+      external: [...excludeBip39Wordlists()]
     }
   }
 })

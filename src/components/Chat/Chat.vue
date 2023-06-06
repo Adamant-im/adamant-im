@@ -41,7 +41,7 @@
           :user-id="userId"
           :sender="sender"
           :status="getTransactionStatus(message)"
-          :show-avatar="!isChatReadOnly"
+          :show-avatar="!isWelcomeChat(partnerId)"
           :locale="locale"
           :html="true"
           :i18n="{ retry: $t('chats.retry_message') }"
@@ -85,7 +85,7 @@
 
       <template #form>
         <a-chat-form
-          v-if="!isChatReadOnly"
+          v-if="!isWelcomeChat(partnerId)"
           ref="chatForm"
           :show-send-button="true"
           :send-on-enter="sendMessageOnEnter"
@@ -141,6 +141,7 @@ import CryptoIcon from '@/components/icons/CryptoIcon'
 import FreeTokensDialog from '@/components/FreeTokensDialog'
 import { websiteUriToOnion } from '@/lib/uri'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { isWelcomeChat } from '@/lib/chat/meta/utils'
 
 /**
  * Returns user meta by userId.
@@ -240,9 +241,6 @@ export default {
     },
     userId () {
       return this.$store.state.address
-    },
-    isChatReadOnly () {
-      return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
     },
     sendMessageOnEnter () {
       return this.$store.state.options.sendMessageOnEnter
@@ -381,7 +379,7 @@ export default {
       return type in Cryptos
     },
     formatMessage (transaction) {
-      if (this.isChatReadOnly || transaction.i18n) {
+      if (this.isWelcomeChat(this.partnerId) || transaction.i18n) {
         return renderMarkdown(websiteUriToOnion(this.$t(transaction.message)))
       }
 
@@ -422,7 +420,8 @@ export default {
     onKeyPress (e) {
       if (e.code === 'Enter' && !this.showFreeTokensDialog) this.$refs.chatForm.focus()
     },
-    formatDate
+    formatDate,
+    isWelcomeChat
   }
 }
 </script>

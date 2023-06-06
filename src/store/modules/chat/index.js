@@ -11,6 +11,7 @@ import {
 import { isNumeric } from '@/lib/numericHelpers'
 import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { generateAdamantChats } from "./utils/generateAdamantChats";
 
 export let interval
 
@@ -176,37 +177,6 @@ const getters = {
       (acc, senderId) => state.chats[senderId].numOfNewMessages + acc,
       0
     )
-  },
-
-  /**
-   * @param {string} partnerId
-   */
-  isAdamantChat: state => partnerId => {
-    // That's an ancient curse: a special accounts which send bounty tokens
-    if (partnerId === 'U15423595369615486571' || partnerId === 'U1835325601873095435') {
-      return true
-    }
-
-    const chat = state.chats[partnerId]
-
-    if (chat && chat.isAdamantChat) {
-      return true
-    }
-
-    return false
-  },
-
-  /**
-   * @param {string} partnerId
-   */
-  isChatReadOnly: state => partnerId => {
-    const chat = state.chats[partnerId]
-
-    if (chat && chat.readOnly) {
-      return true
-    }
-
-    return false
   },
 
   /**
@@ -452,111 +422,11 @@ const mutations = {
    * Add `Welcome to ADAMANT` & `ADAMANT Tokens` to state.chats.
    */
   createAdamantChats (state) {
-    const bountyMessages = [
-      {
-        id: 'b1',
-        message: 'chats.virtual.welcome_message',
-        timestamp: EPOCH,
-        senderId: 'chats.virtual.welcome_message_title',
-        type: 'message',
-        i18n: true,
-        status: TS.CONFIRMED,
-        readonly: true
-      }
-    ]
+    const chats = generateAdamantChats()
 
-    state.chats['chats.virtual.welcome_message_title'] = {
-      messages: bountyMessages,
-      numOfNewMessages: 0,
-      isAdamantChat: true,
-      readOnly: true,
-      offset: 0,
-      page: 0
-    }
-
-    const adelinaAIMessages = [
-      {
-        id: 't1',
-        message: 'chats.virtual.adelina',
-        timestamp: EPOCH,
-        senderId: 'U11138426591213238985',
-        type: 'message',
-        i18n: true,
-        status: TS.CONFIRMED,
-        readonly: true
-      }
-    ]
-
-    state.chats.U11138426591213238985 = {
-      messages: adelinaAIMessages,
-      isAdamantChat: true,
-      numOfNewMessages: 0,
-      offset: 0,
-      page: 0
-    }
-
-    const exchangeMessages = [
-      {
-        id: 'e1',
-        message: 'chats.virtual.exchange_bot',
-        timestamp: EPOCH,
-        senderId: 'U5149447931090026688',
-        type: 'message',
-        i18n: true,
-        status: TS.CONFIRMED,
-        readonly: true
-      }
-    ]
-
-    state.chats.U5149447931090026688 = {
-      messages: exchangeMessages,
-      isAdamantChat: true,
-      numOfNewMessages: 0,
-      offset: 0,
-      page: 0
-    }
-
-    const donateMessages = [
-      {
-        id: 'd1',
-        message: 'chats.virtual.donate_bot',
-        timestamp: EPOCH,
-        senderId: 'U380651761819723095',
-        type: 'message',
-        i18n: true,
-        status: TS.CONFIRMED,
-        readonly: true
-      }
-    ]
-
-    state.chats.U380651761819723095 = {
-      messages: donateMessages,
-      isAdamantChat: true,
-      numOfNewMessages: 0,
-      offset: 0,
-      page: 0
-    }
-
-    const bountyBotMessages = [
-      {
-        id: 'b2',
-        message: 'chats.virtual.bounty_bot',
-        timestamp: EPOCH,
-        senderId: 'U1644771796259136854',
-        type: 'message',
-        i18n: true,
-        status: TS.CONFIRMED,
-        readonly: true
-      }
-    ]
-
-    state.chats.U1644771796259136854 = {
-      messages: bountyBotMessages,
-      isAdamantChat: true,
-      numOfNewMessages: 0,
-      offset: 0,
-      page: 0
-    }
+    Object.entries(chats).forEach(([senderId, chat]) => {
+      state.chats[senderId] = chat
+    })
   },
 
   updateScrollPosition (state, { contactId, scrollPosition }) {

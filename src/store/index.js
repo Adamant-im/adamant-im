@@ -16,8 +16,6 @@ import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
 import navigatorOnline from './plugins/navigatorOnline'
 import socketsPlugin from './plugins/socketsPlugin'
-import ethModule from './modules/eth'
-import erc20Module from './modules/erc20'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
 import dogeModule from './modules/doge'
@@ -208,9 +206,6 @@ const store = {
     socketsPlugin
   ],
   modules: {
-    eth: ethModule, // Ethereum-related data
-    bnb: erc20Module(Cryptos.BNB, '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', 18),
-    usds: erc20Module(Cryptos.USDS, '0xa4bdb11dc0a2bec88d24a3aa1e6bb17201112ebe', 6),
     adm: admModule, // ADM transfers
     doge: dogeModule,
     lsk: lskModule,
