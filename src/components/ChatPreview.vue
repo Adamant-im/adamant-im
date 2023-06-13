@@ -192,7 +192,7 @@ export default {
     },
     lastMessageTextNoFormats () {
       if (
-        this.isAdamantChat ||
+        this.isAdamantChat() ||
         this.$store.state.options.formatMessages
       ) {
         return removeFormats(this.lastMessageTextLocalized)
