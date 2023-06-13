@@ -15,46 +15,38 @@
 
       <v-card-text class="pa-0">
         <v-list>
-          <v-list-tile
+          <v-list-item
             avatar
             @click="openLink('U5149447931090026688')"
           >
-            <v-list-tile-avatar>
+            <template #prepend>
               <icon><exchanger-icon /></icon>
-            </v-list-tile-avatar>
+            </template>
 
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t('home.buy_tokens_exchanger') }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            <v-list-item-title>{{ $t('home.buy_tokens_exchanger') }}</v-list-item-title>
+          </v-list-item>
 
-          <v-list-tile
-            v-for="action in actions"
-            :key="action.title"
+          <v-list-item
             avatar
-            @click="openLink(action.link)"
+            @click="openLink(admLink)"
           >
-            <v-list-tile-avatar>
-              <crypto-icon :crypto="action.icon" />
-            </v-list-tile-avatar>
+            <template #prepend>
+              <icon><adamant-icon /></icon>
+            </template>
 
-            <v-list-tile-content>
-              <v-list-tile-title v-text="action.title" />
-            </v-list-tile-content>
-          </v-list-tile>
+            <v-list-item-title>{{ $t('home.buy_tokens_anonymously') }}</v-list-item-title>
+          </v-list-item>
 
-          <v-list-tile
+          <v-list-item
             avatar
-            @click="openLink('https://coindeal.com/ref/9WZN')"
+            @click="openLink('https://azbit.com/?referralCode=9YVWYAF')"
           >
-            <v-list-tile-avatar>
-              <icon><cdl-icon /></icon>
-            </v-list-tile-avatar>
+            <template #prepend>
+              <icon><azbit-icon /></icon>
+            </template>
 
-            <v-list-tile-content>
-              <v-list-tile-title>CoinDeal</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            <v-list-item-title>Azbit</v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-card-text>
     </v-card>
@@ -64,20 +56,20 @@
 <script>
 import validateAddress from '@/lib/validateAddress'
 import Icon from '@/components/icons/BaseIcon'
-import CryptoIcon from '@/components/icons/CryptoIcon'
-import CdlIcon from '@/components/icons/common/Cdl'
+import AdamantIcon from '@/components/icons/common/Adamant'
+import AzbitIcon from '@/components/icons/common/Azbit'
 import ExchangerIcon from '@/components/icons/common/Exchanger'
 import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
   components: {
     Icon,
-    CryptoIcon,
-    CdlIcon,
+    AdamantIcon,
+    AzbitIcon,
     ExchangerIcon
   },
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     },
@@ -87,27 +79,22 @@ export default {
       validator: v => validateAddress('ADM', v)
     }
   },
+  emits: ['update:modelValue'],
   computed: {
     className: () => 'buy-tokens-dialog',
+    admLink() {
+      return websiteUriToOnion(this.adamantAddress
+        ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
+        : `${this.$t('home.buy_tokens_btn_link')}`)
+    },
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     },
-    actions () {
-      return [
-        {
-          icon: 'ADM',
-          title: this.$t('home.buy_tokens_anonymously'),
-          link: websiteUriToOnion(this.adamantAddress
-            ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
-            : `${this.$t('home.buy_tokens_btn_link')}`)
-        }
-      ]
-    }
   },
   methods: {
     openLink (link) {

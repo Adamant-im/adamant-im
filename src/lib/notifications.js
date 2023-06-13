@@ -2,8 +2,9 @@
 
 import Notify from 'notifyjs'
 import Visibility from 'visibilityjs'
-import currency from '@/filters/currency'
+import currency from '@/filters/currencyAmountWithSymbol'
 import { removeFormats } from '@/lib/markdown'
+import { isAdamantChat } from "@/lib/chat/meta/utils";
 
 let _this
 
@@ -25,7 +26,7 @@ class Notification {
   }
 
   get partnerIdentity () {
-    const isAdmChat = this.store.getters['chat/isAdamantChat'](this.partnerAddress)
+    const isAdmChat = isAdamantChat(this.partnerAddress)
     const name = this.store.getters['partners/displayName'](this.partnerAddress) || this.partnerAddress
     return isAdmChat ? this.i18n.t(name) : name
   }
@@ -164,7 +165,9 @@ class TabNotification extends Notification {
         } else {
           document.title = this.i18n.t('notifications.tabMessage.many')
         }
-      } else this.stop()
+      } else {
+        this.stop()
+      }
       this.showAmount = !this.showAmount
     }, 1e3)
   }

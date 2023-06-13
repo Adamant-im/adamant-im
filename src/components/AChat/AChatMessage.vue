@@ -111,15 +111,13 @@
                 size="15"
                 color="red"
                 @click="$emit('resend')"
-              >
-                {{ statusIcon }}
-              </v-icon>
+                :icon="statusIcon"
+              />
               <v-icon
                 v-else
                 size="13"
-              >
-                {{ statusIcon }}
-              </v-icon>
+                :icon="statusIcon"
+              />
             </div>
           </div>
           <div class="a-chat__message-card-body">
@@ -203,6 +201,7 @@ export default {
       default: false
     }
   },
+  emits: ['resend'],
   data () {
     return {
       dragging: false,

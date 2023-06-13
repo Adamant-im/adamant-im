@@ -9,7 +9,7 @@
       <v-divider />
 
       <div class="a-chat__body">
-        <div class="text-xs-center py-2">
+        <div class="text-center py-2">
           <v-progress-circular
             v-show="loading"
             indeterminate
@@ -90,6 +90,7 @@ export default {
       default: false
     }
   },
+  emits: ['scroll', 'scroll:bottom', 'scroll:top'],
   data: () => ({
     currentScrollHeight: 0,
     currentScrollTop: 0
@@ -97,7 +98,7 @@ export default {
   mounted () {
     this.attachScrollListener()
   },
-  beforeDestroy () {
+  beforeUnmount () {
     this.destroyScrollListener()
   },
   methods: {

@@ -1,0 +1,59 @@
+@use '_mixins.scss';
+@import 'vuetify/settings';
+@import '../../settings/_colors.scss';
+
+.a-btn-link {
+  font-size: 16px !important;
+  font-weight: 500;
+  text-decoration: underline;
+  text-transform: unset;
+}
+
+.v-dialog--active .v-card__actions {
+  padding-bottom: 15px;
+}
+
+.v-theme--light {
+  .a-btn-primary {
+    &:not(.v-btn--icon):not(.v-btn--flat) {
+      background-color: map-get($shades, 'white');
+      color: map-get($adm-colors, 'primary');
+    }
+
+    &.v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat):not(.v-btn--outline) {
+      background-color: map-get($shades, 'white') !important;
+      color: map-get($adm-colors, 'muted') !important;
+    }
+  }
+
+  .a-btn-regular {
+    color: map-get($adm-colors, 'regular');
+
+    &.v-btn--active:before,
+    &.v-btn:hover:before,
+    &.v-btn:focus:before {
+      background-color: map-get($adm-colors, 'secondary2');
+      opacity: 1;
+    }
+
+    &.v-btn.v-btn--disabled {
+      color: map-get($adm-colors, 'muted') !important;
+    }
+  }
+
+  .a-btn-link {
+    color: inherit;
+  }
+}
+.v-theme--dark {
+  .a-btn-primary {
+    &:not(.v-btn--icon):not(.v-btn--flat) {
+      background-color: map-get($adm-colors, 'primary');
+      color: map-get($shades, 'white');
+    }
+  }
+
+  .a-btn-link {
+    color: map-get($shades, 'white');
+  }
+}

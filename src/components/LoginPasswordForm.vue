@@ -1,33 +1,32 @@
 <template>
   <v-form
     ref="form"
-    v-model="validForm"
     class="login-form"
     @submit.prevent="submit"
   >
-    <v-layout>
+    <v-row no-gutters>
       <v-text-field
         ref="passwordField"
         v-model="password"
+        autofocus
         autocomplete="new-password"
         :label="$t('login_via_password.user_password_title')"
         :name="Date.now()"
         type="password"
-        class="text-xs-center"
+        class="text-center"
+        variant="underlined"
       />
-    </v-layout>
+    </v-row>
 
-    <v-layout
-      row
-      wrap
-      align-center
-      justify-center
+    <v-row
+      align="center"
+      justify="center"
       class="mt-2"
+      no-gutters
     >
-      <v-flex xs12>
+      <v-col cols="12">
         <slot name="button">
           <v-btn
-            :disabled="!validForm || disabledButton"
             class="login-form__button a-btn-primary"
             @click="submit"
           >
@@ -36,82 +35,87 @@
               indeterminate
               color="primary"
               size="24"
-              class="mr-3"
+              class="mr-4"
             />
             {{ $t('login_via_password.user_password_unlock') }}
           </v-btn>
         </slot>
-      </v-flex>
-      <v-flex
-        xs12
-        class="a-text-regular mt-5"
+      </v-col>
+      <v-col
+        cols="12"
+        class="a-text-regular mt-8"
       >
         {{ $t('login_via_password.remove_password_hint') }}
-      </v-flex>
-      <v-flex xs12>
+      </v-col>
+      <v-col cols="12">
         <v-btn
           class="a-btn-link"
-          flat
-          small
+          variant="text"
+          size="small"
           @click="removePassword"
         >
           {{ $t('login_via_password.remove_password') }}
         </v-btn>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-form>
 </template>
 
 <script>
 import { clearDb } from '@/lib/idb'
+import { computed, defineComponent, ref } from 'vue'
+import { useStore } from 'vuex'
 
-export default {
+export default defineComponent({
   props: {
-    value: {
+    modelValue: {
       type: String,
       default: ''
     }
   },
-  data: () => ({
-    validForm: true,
-    disabledButton: false,
-    showSpinner: false
-  }),
-  computed: {
-    password: {
+  emits: ['login', 'error', 'update:modelValue'],
+  setup (props, { emit } ) {
+    const store = useStore()
+    const passwordField = ref(null)
+    const showSpinner = ref(false)
+
+    const password = computed({
       get () {
-        return this.value
+        return props.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        emit('update:modelValue', value)
       }
-    }
-  },
-  updated () {
-    this.$refs.passwordField.focus()
-  },
-  methods: {
-    submit () {
-      this.showSpinner = true
-      this.disabledButton = true
+    })
 
-      return this.$store.dispatch('loginViaPassword', this.password)
+    const submit = () => {
+      showSpinner.value = true
+
+      return store.dispatch('loginViaPassword', password.value)
         .then(() => {
-          this.$emit('login')
+          emit('login')
         })
         .catch(() => {
-          this.$emit('error', 'login_via_password.incorrect_password')
+          emit('error', 'login_via_password.incorrect_password')
         })
         .finally(() => {
-          this.showSpinner = false
-          this.disabledButton = false
+          showSpinner.value = false
         })
-    },
-    removePassword () {
+    }
+
+    const removePassword = () => {
       clearDb().finally(() => {
-        this.$store.dispatch('removePassword')
+        store.dispatch('removePassword')
       })
     }
+
+    return {
+      passwordField,
+      showSpinner,
+      password,
+      submit,
+      removePassword
+    }
   }
-}
+})
 </script>

@@ -1,3 +1,4 @@
+import { vi, describe, it, beforeEach, expect } from 'vitest'
 import chatModule from '@/store/modules/chat'
 import sinon from 'sinon'
 
@@ -5,7 +6,20 @@ import { TransactionStatus as TS } from '@/lib/constants'
 
 const { getters, mutations, actions } = chatModule
 
-jest.mock('@/store', () => {})
+vi.mock('@/store', () => {
+  return {
+    default: {},
+    store: {}
+  }
+})
+
+vi.mock('@/lib/idb/crypto', () => ({
+  encryptPassword: () => {}
+}))
+
+vi.mock('@/lib/idb/state', () => ({
+  restoreState: () => {}
+}))
 
 describe('Store: chat.js', () => {
   let state = null
@@ -90,11 +104,7 @@ describe('Store: chat.js', () => {
       const state = {
         chats: {
           U111111: {
-            messages: [
-              { id: 1 },
-              { id: 2 },
-              { id: 3 }
-            ]
+            messages: [{ id: 1 }, { id: 2 }, { id: 3 }]
           }
         }
       }
@@ -125,11 +135,7 @@ describe('Store: chat.js', () => {
       const state = {
         chats: {
           U111111: {
-            messages: [
-              { id: 1 },
-              { id: 2 },
-              { id: 3 }
-            ]
+            messages: [{ id: 1 }, { id: 2 }, { id: 3 }]
           }
         }
       }
@@ -162,52 +168,68 @@ describe('Store: chat.js', () => {
     describe('getters.lastMessage', () => {
       it('should return last message', () => {
         // two messages
-        expect(getters.lastMessage({
-          chats: {
-            U123456: {
-              messages: ['msg1', 'msg2']
+        expect(
+          getters.lastMessage(
+            {
+              chats: {
+                U123456: {
+                  messages: ['msg1', 'msg2']
+                }
+              }
+            },
+            {
+              partners: ['U123456']
             }
-          }
-        }, {
-          partners: ['U123456']
-        })('U123456')).toBe('msg2')
+          )('U123456')
+        ).toBe('msg2')
 
         // one message
-        expect(getters.lastMessage({
-          chats: {
-            U123456: {
-              messages: ['msg1']
+        expect(
+          getters.lastMessage(
+            {
+              chats: {
+                U123456: {
+                  messages: ['msg1']
+                }
+              }
+            },
+            {
+              partners: ['U123456']
             }
-          }
-        }, {
-          partners: ['U123456']
-        })('U123456')).toBe('msg1')
+          )('U123456')
+        ).toBe('msg1')
       })
 
       it('should return `null` when no messages', () => {
-        const lastMessage = getters.lastMessage({
-          chats: {
-            U123456: {
-              messages: []
+        const lastMessage = getters.lastMessage(
+          {
+            chats: {
+              U123456: {
+                messages: []
+              }
             }
+          },
+          {
+            partners: ['U123456']
           }
-        }, {
-          partners: ['U123456']
-        })('U123456')
+        )('U123456')
 
         expect(lastMessage).toBe(null)
       })
 
       it('should return `null` when no partner in chat list', () => {
-        const lastMessage = getters.lastMessage({
-          chats: {
-            U123456: {
-              messages: []
+        const lastMessage = getters.lastMessage(
+          {
+            chats: {
+              U123456: {
+                messages: []
+              }
             }
+          },
+          {
+            partners: ['U654321']
           }
-        }, {
-          partners: ['U654321']
-        })('U123456')
+        )('U123456')
 
         expect(lastMessage).toBe(null)
       })
@@ -221,11 +243,14 @@ describe('Store: chat.js', () => {
         let lastMessageText = null
 
         // type `message` or `adm transaction`
-        lastMessageText = getters.lastMessageText({}, {
-          lastMessage: () => ({
-            message: 'hello world'
-          })
-        })()
+        lastMessageText = getters.lastMessageText(
+          {},
+          {
+            lastMessage: () => ({
+              message: 'hello world'
+            })
+          }
+        )()
         expect(lastMessageText).toBe('hello world')
       })
 
@@ -233,9 +258,12 @@ describe('Store: chat.js', () => {
         let lastMessageText = null
 
         // when `lastMessage = null`
-        lastMessageText = getters.lastMessageText({}, {
-          lastMessage: () => null
-        })()
+        lastMessageText = getters.lastMessageText(
+          {},
+          {
+            lastMessage: () => null
+          }
+        )()
         expect(lastMessageText).toBe('')
       })
     })
@@ -247,11 +275,14 @@ describe('Store: chat.js', () => {
       it('should return timestamp', () => {
         let timestamp = null
 
-        timestamp = getters.lastMessageTimestamp({}, {
-          lastMessage: () => ({
-            timestamp: 3600
-          })
-        })()
+        timestamp = getters.lastMessageTimestamp(
+          {},
+          {
+            lastMessage: () => ({
+              timestamp: 3600
+            })
+          }
+        )()
 
         expect(timestamp).toBe(3600)
       })
@@ -259,9 +290,12 @@ describe('Store: chat.js', () => {
       it('should return empty string when `lastMessage = null`', () => {
         let timestamp = null
 
-        timestamp = getters.lastMessageTimestamp({}, {
-          lastMessage: () => null
-        })()
+        timestamp = getters.lastMessageTimestamp(
+          {},
+          {
+            lastMessage: () => null
+          }
+        )()
 
         expect(timestamp).toBe('')
       })
@@ -269,11 +303,14 @@ describe('Store: chat.js', () => {
       it('should return timestamp when `message.timestamp = 0`', () => {
         let timestamp = null
 
-        timestamp = getters.lastMessageTimestamp({}, {
-          lastMessage: () => ({
-            timestamp: 0
-          })
-        })()
+        timestamp = getters.lastMessageTimestamp(
+          {},
+          {
+            lastMessage: () => ({
+              timestamp: 0
+            })
+          }
+        )()
 
         expect(timestamp).toBe(0)
       })
@@ -286,9 +323,12 @@ describe('Store: chat.js', () => {
       it('should return true or false', () => {
         let isPartnerInChatList = null
 
-        isPartnerInChatList = getters.isPartnerInChatList({}, {
-          partners: ['U123456', 'U654321']
-        })
+        isPartnerInChatList = getters.isPartnerInChatList(
+          {},
+          {
+            partners: ['U123456', 'U654321']
+          }
+        )
 
         expect(isPartnerInChatList('U123456')).toBe(true)
         expect(isPartnerInChatList('notInList')).toBe(false) // user not listed
@@ -348,56 +388,6 @@ describe('Store: chat.js', () => {
     })
 
     /**
-     * getters.isAdamantChat
-     */
-    describe('getters.isAdamantChat', () => {
-      it('should return boolean', () => {
-        const state = {
-          chats: {
-            adamantBounty: {
-              isAdamantChat: true
-            },
-            adamantTokens: {
-              isAdamantChat: false
-            },
-            U111111: {}
-          }
-        }
-
-        const isAdamantChat = getters.isAdamantChat(state)
-
-        expect(isAdamantChat('adamantBounty')).toBe(true)
-        expect(isAdamantChat('adamantTokens')).toBe(false)
-        expect(isAdamantChat('U111111')).toBe(false)
-      })
-    })
-
-    /**
-     * getters.isChatReadOnly
-     */
-    describe('getters.isChatReadOnly', () => {
-      it('should return boolean', () => {
-        const state = {
-          chats: {
-            adamantBounty: {
-              readOnly: true
-            },
-            adamantTokens: {
-              readOnly: false
-            },
-            U111111: {}
-          }
-        }
-
-        const isChatReadOnly = getters.isChatReadOnly(state)
-
-        expect(isChatReadOnly('adamantBounty')).toBe(true)
-        expect(isChatReadOnly('adamantTokens')).toBe(false)
-        expect(isChatReadOnly('U111111')).toBe(false)
-      })
-    })
-
-    /**
      * getters.unreadMessages
      */
     describe('getters.unreadMessages', () => {
@@ -437,11 +427,7 @@ describe('Store: chat.js', () => {
         const state = {
           chats: {
             U111111: {
-              messages: [
-                { id: 1 },
-                { id: 2 },
-                { id: 3 }
-              ],
+              messages: [{ id: 1 }, { id: 2 }, { id: 3 }],
               numOfNewMessages: 0
             }
           }
@@ -457,14 +443,7 @@ describe('Store: chat.js', () => {
       })
 
       it('should return array of messages', () => {
-        const messages = [
-          { id: 1 },
-          { id: 2 },
-          { id: 3 },
-          { id: 4 },
-          { id: 5 },
-          { id: 6 }
-        ]
+        const messages = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }]
 
         const state = {
           chats: {
@@ -473,19 +452,11 @@ describe('Store: chat.js', () => {
               numOfNewMessages: 0
             },
             U222222: {
-              messages: [
-                messages[0],
-                messages[1],
-                messages[2]
-              ],
+              messages: [messages[0], messages[1], messages[2]],
               numOfNewMessages: 1
             },
             U333333: {
-              messages: [
-                messages[3],
-                messages[4],
-                messages[5]
-              ],
+              messages: [messages[3], messages[4], messages[5]],
               numOfNewMessages: 2
             }
           }
@@ -497,13 +468,11 @@ describe('Store: chat.js', () => {
           messages: getters.messages(state)
         }
 
-        expect(getters.unreadMessages(state, listGetters)).toEqual(
-          [
-            messages[2],
-            messages[4],
-            messages[5]
-          ]
-        )
+        expect(getters.unreadMessages(state, listGetters)).toEqual([
+          messages[2],
+          messages[4],
+          messages[5]
+        ])
       })
     })
 
@@ -518,11 +487,7 @@ describe('Store: chat.js', () => {
       })
 
       it('should return message', () => {
-        const unreadMessages = [
-          { id: 1 },
-          { id: 2 },
-          { id: 3 }
-        ]
+        const unreadMessages = [{ id: 1 }, { id: 2 }, { id: 3 }]
 
         const lastUnreadMessage = getters.lastUnreadMessage({}, { unreadMessages })
 
@@ -547,8 +512,8 @@ describe('Store: chat.js', () => {
         expect(chatOffset('U111111')).toBe(0)
       })
 
-      it('should return `undefined` for non-existing chat', () => {
-        expect(chatOffset('U222222')).toBe(undefined)
+      it('should return `0` for non-existing chat', () => {
+        expect(chatOffset('U222222')).toBe(0)
       })
     })
 
@@ -569,8 +534,8 @@ describe('Store: chat.js', () => {
         expect(chatPage('U111111')).toBe(0)
       })
 
-      it('should return `undefined` for non-existing chat', () => {
-        expect(chatPage('U222222')).toBe(undefined)
+      it('should return `0` for non-existing chat', () => {
+        expect(chatPage('U222222')).toBe(0)
       })
     })
 
@@ -1070,10 +1035,11 @@ describe('Store: chat.js', () => {
       it('should commit and dispatch after success response', async () => {
         // mock `admApi.getChatRooms` method
         chatModule.__Rewire__('admApi', {
-          getChatRooms: () => Promise.resolve({
-            messages: [],
-            lastMessageHeight: 100
-          })
+          getChatRooms: () =>
+            Promise.resolve({
+              messages: [],
+              lastMessageHeight: 100
+            })
         })
 
         const state = {
@@ -1083,8 +1049,8 @@ describe('Store: chat.js', () => {
           address: 'U123456'
         }
 
-        const commit = sinon.spy()
-        const dispatch = sinon.spy()
+        const commit = vi.spy()
+        const dispatch = vi.spy()
 
         await actions.loadChats({ state, commit, dispatch, rootState }, { perPage: 50 })
 
@@ -1095,9 +1061,7 @@ describe('Store: chat.js', () => {
           ['setFulfilled', true]
         ])
 
-        expect(dispatch.args).toEqual([
-          ['pushMessages', []]
-        ])
+        expect(dispatch.args).toEqual([['pushMessages', []]])
       })
     })
 
@@ -1108,9 +1072,10 @@ describe('Store: chat.js', () => {
       it('should resolve', async () => {
         // mock `admApi.getChatRooms` method
         chatModule.__Rewire__('admApi', {
-          getChatRooms: () => Promise.resolve({
-            messages: [1, 2, 3]
-          })
+          getChatRooms: () =>
+            Promise.resolve({
+              messages: [1, 2, 3]
+            })
         })
 
         const state = {
@@ -1125,9 +1090,7 @@ describe('Store: chat.js', () => {
 
         await actions.loadChatsPaged({ commit, dispatch, rootState, state }, { perPage: 50 })
 
-        expect(dispatch.args).toEqual([
-          ['pushMessages', [1, 2, 3]]
-        ])
+        expect(dispatch.args).toEqual([['pushMessages', [1, 2, 3]]])
 
         expect(commit.args).toEqual([
           ['setOffset', 60] // offset: 10 + perPage: 50
@@ -1155,9 +1118,10 @@ describe('Store: chat.js', () => {
       it('should unshift messages and set chat `height`', async () => {
         // mock `admApi.getChatRoomMessages` method
         chatModule.__Rewire__('admApi', {
-          getChatRoomMessages: () => Promise.resolve({
-            messages: [1, 2, 3]
-          })
+          getChatRoomMessages: () =>
+            Promise.resolve({
+              messages: [1, 2, 3]
+            })
         })
 
         const commit = sinon.spy()
@@ -1168,24 +1132,26 @@ describe('Store: chat.js', () => {
           chatPage: () => 0
         }
 
-        await actions.getChatRoomMessages({ rootState, dispatch, commit, getters }, { contactId, perPage })
+        await actions.getChatRoomMessages(
+          { rootState, dispatch, commit, getters },
+          { contactId, perPage }
+        )
 
-        expect(dispatch.args).toEqual([
-          ['unshiftMessages', [1, 2, 3]]
-        ])
+        expect(dispatch.args).toEqual([['unshiftMessages', [1, 2, 3]]])
 
         expect(commit.args).toEqual([
-          ['setChatOffset', { contactId, offset: perPage  }],
-          ['setChatPage', { contactId, page: 1  }]
+          ['setChatOffset', { contactId, offset: perPage }],
+          ['setChatPage', { contactId, page: 1 }]
         ])
       })
 
       it('should reject when no more messages', async () => {
         // mock `admApi.getChatRoomMessages` method
         chatModule.__Rewire__('admApi', {
-          getChatRoomMessages: () => Promise.resolve({
-            messages: [1, 2, 3]
-          })
+          getChatRoomMessages: () =>
+            Promise.resolve({
+              messages: [1, 2, 3]
+            })
         })
 
         const getters = {
@@ -1193,8 +1159,9 @@ describe('Store: chat.js', () => {
           chatPage: () => 0
         }
 
-        await expect(actions.getChatRoomMessages({ rootState, getters }, { contactId }))
-          .rejects.toEqual(new Error('No more messages'))
+        await expect(
+          actions.getChatRoomMessages({ rootState, getters }, { contactId })
+        ).rejects.toEqual(new Error('No more messages'))
       })
     })
 
@@ -1236,14 +1203,18 @@ describe('Store: chat.js', () => {
           isFulfilled: false
         }
 
-        await expect(actions.getNewMessages({ state })).rejects.toEqual(new Error('Chat is not fulfilled'))
+        await expect(actions.getNewMessages({ state })).rejects.toEqual(
+          new Error('Chat is not fulfilled')
+        )
       })
 
       it('should only dispatch `pushMessages` when `lastMessageHeight = 0`', async () => {
-        chatModule.__Rewire__('getChats', () => Promise.resolve({
-          messages: [],
-          lastMessageHeight: 0
-        }))
+        chatModule.__Rewire__('getChats', () =>
+          Promise.resolve({
+            messages: [],
+            lastMessageHeight: 0
+          })
+        )
 
         const state = {
           isFulfilled: true
@@ -1251,18 +1222,20 @@ describe('Store: chat.js', () => {
         const commit = sinon.spy()
         const dispatch = sinon.spy()
 
-        await expect(actions.getNewMessages({ state, commit, dispatch })).resolves.toEqual(undefined)
+        await expect(actions.getNewMessages({ state, commit, dispatch })).resolves.toEqual(
+          undefined
+        )
         expect(commit.args).toEqual([])
-        expect(dispatch.args).toEqual([
-          ['pushMessages', []]
-        ])
+        expect(dispatch.args).toEqual([['pushMessages', []]])
       })
 
       it('should dispatch `pushMessages` & commit `setHeight`', async () => {
-        chatModule.__Rewire__('getChats', () => Promise.resolve({
-          messages: [],
-          lastMessageHeight: 100
-        }))
+        chatModule.__Rewire__('getChats', () =>
+          Promise.resolve({
+            messages: [],
+            lastMessageHeight: 100
+          })
+        )
 
         const state = {
           isFulfilled: true
@@ -1270,13 +1243,11 @@ describe('Store: chat.js', () => {
         const commit = sinon.spy()
         const dispatch = sinon.spy()
 
-        await expect(actions.getNewMessages({ state, commit, dispatch })).resolves.toEqual(undefined)
-        expect(commit.args).toEqual([
-          ['setHeight', 100]
-        ])
-        expect(dispatch.args).toEqual([
-          ['pushMessages', []]
-        ])
+        await expect(actions.getNewMessages({ state, commit, dispatch })).resolves.toEqual(
+          undefined
+        )
+        expect(commit.args).toEqual([['setHeight', 100]])
+        expect(dispatch.args).toEqual([['pushMessages', []]])
       })
     })
 
@@ -1285,9 +1256,12 @@ describe('Store: chat.js', () => {
      */
     describe('actions.createChat', () => {
       it('should throw error when invalid user address', async () => {
-        const promise = actions.createChat({ commit: null }, {
-          partnerId: 'invalid user id'
-        })
+        const promise = actions.createChat(
+          { commit: null },
+          {
+            partnerId: 'invalid user id'
+          }
+        )
 
         await expect(promise).rejects.toEqual(new Error('Invalid user address'))
       })
@@ -1304,9 +1278,7 @@ describe('Store: chat.js', () => {
 
         await expect(actions.createChat({ commit }, { partnerId })).resolves.toEqual('public key')
 
-        expect(commit.args).toEqual([
-          ['createEmptyChat', partnerId]
-        ])
+        expect(commit.args).toEqual([['createEmptyChat', partnerId]])
       })
 
       it('should resolve and create chat with `partnerName`', async () => {
@@ -1320,10 +1292,16 @@ describe('Store: chat.js', () => {
 
         const commit = sinon.spy()
 
-        await expect(actions.createChat({ commit }, { partnerId, partnerName })).resolves.toEqual('public key')
+        await expect(actions.createChat({ commit }, { partnerId, partnerName })).resolves.toEqual(
+          'public key'
+        )
 
         expect(commit.args).toEqual([
-          ['partners/displayName', { partner: partnerId, displayName: partnerName }, { root: true }],
+          [
+            'partners/displayName',
+            { partner: partnerId, displayName: partnerName },
+            { root: true }
+          ],
           ['createEmptyChat', partnerId]
         ])
       })
@@ -1358,11 +1336,14 @@ describe('Store: chat.js', () => {
 
         expect(commit.args).toEqual([
           ['pushMessage', { message: messageObject, userId }],
-          ['updateMessage', {
-            id: messageObject.id,
-            status: TS.REJECTED,
-            partnerId: recipientId
-          }]
+          [
+            'updateMessage',
+            {
+              id: messageObject.id,
+              status: TS.REJECTED,
+              partnerId: recipientId
+            }
+          ]
         ])
       })
 
@@ -1376,7 +1357,9 @@ describe('Store: chat.js', () => {
 
         // mock & replace `createMessage` & `queueMessage` dependency
         chatModule.__Rewire__('createMessage', () => messageObject)
-        chatModule.__Rewire__('queueMessage', () => Promise.resolve({ success: true, transactionId }))
+        chatModule.__Rewire__('queueMessage', () =>
+          Promise.resolve({ success: true, transactionId })
+        )
 
         const commit = sinon.spy()
         const rootState = {
@@ -1388,12 +1371,15 @@ describe('Store: chat.js', () => {
 
         expect(commit.args).toEqual([
           ['pushMessage', { message: messageObject, userId }],
-          ['updateMessage', {
-            id: messageObject.id,
-            realId: transactionId,
-            status: TS.REGISTERED,
-            partnerId: recipientId
-          }]
+          [
+            'updateMessage',
+            {
+              id: messageObject.id,
+              realId: transactionId,
+              status: TS.REGISTERED,
+              partnerId: recipientId
+            }
+          ]
         ])
       })
     })
@@ -1430,21 +1416,30 @@ describe('Store: chat.js', () => {
           })
         }
 
-        const promise = actions.resendMessage({ commit, getters: mockGetters }, { recipientId, messageId })
+        const promise = actions.resendMessage(
+          { commit, getters: mockGetters },
+          { recipientId, messageId }
+        )
         await expect(promise).resolves.toEqual({ success: true, transactionId })
 
         expect(commit.args).toEqual([
-          ['updateMessage', {
-            id: messageId,
-            status: TS.PENDING,
-            partnerId: recipientId
-          }],
-          ['updateMessage', {
-            id: messageId,
-            realId: transactionId,
-            status: TS.REGISTERED,
-            partnerId: recipientId
-          }]
+          [
+            'updateMessage',
+            {
+              id: messageId,
+              status: TS.PENDING,
+              partnerId: recipientId
+            }
+          ],
+          [
+            'updateMessage',
+            {
+              id: messageId,
+              realId: transactionId,
+              status: TS.REGISTERED,
+              partnerId: recipientId
+            }
+          ]
         ])
       })
 
@@ -1464,20 +1459,29 @@ describe('Store: chat.js', () => {
           })
         }
 
-        const promise = actions.resendMessage({ commit, getters: mockGetters }, { recipientId, messageId })
+        const promise = actions.resendMessage(
+          { commit, getters: mockGetters },
+          { recipientId, messageId }
+        )
         await expect(promise).rejects.toEqual(new Error('No connection'))
 
         expect(commit.args).toEqual([
-          ['updateMessage', {
-            id: messageId,
-            status: TS.PENDING,
-            partnerId: recipientId
-          }],
-          ['updateMessage', {
-            id: messageId,
-            status: TS.REJECTED,
-            partnerId: recipientId
-          }]
+          [
+            'updateMessage',
+            {
+              id: messageId,
+              status: TS.PENDING,
+              partnerId: recipientId
+            }
+          ],
+          [
+            'updateMessage',
+            {
+              id: messageId,
+              status: TS.REJECTED,
+              partnerId: recipientId
+            }
+          ]
         ])
       })
     })
@@ -1514,14 +1518,20 @@ describe('Store: chat.js', () => {
 
         delete commit.args[0][1].message.timestamp // impossible to check since it generated
         expect(commit.args).toEqual([
-          ['pushMessage', {
-            message: transactionObject,
-            userId: 'U123456'
-          }],
-          ['updateScrollPosition', {
-            contactId: 'U654321',
-            scrollPosition: undefined
-          }]
+          [
+            'pushMessage',
+            {
+              message: transactionObject,
+              userId: 'U123456'
+            }
+          ],
+          [
+            'updateScrollPosition',
+            {
+              contactId: 'U654321',
+              scrollPosition: undefined
+            }
+          ]
         ])
       })
     })
@@ -1535,9 +1545,7 @@ describe('Store: chat.js', () => {
 
         actions.reset.handler({ commit })
 
-        expect(commit.args).toEqual([
-          ['reset']
-        ])
+        expect(commit.args).toEqual([['reset']])
       })
     })
   })

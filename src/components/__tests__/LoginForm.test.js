@@ -1,34 +1,33 @@
-import { shallowMount } from '@vue/test-utils'
-import Vue from 'vue'
-import Vuex from 'vuex'
-import VueI18n from 'vue-i18n'
-import Vuetify from 'vuetify'
+import { vi, describe, it, expect, beforeEach } from 'vitest'
+import { mount } from '@vue/test-utils'
+import { createStore } from 'vuex'
 import LoginForm from '@/components/LoginForm'
 
 import mockupI18n from './__mocks__/plugins/i18n'
 import loginMock from './__mocks__/login'
 
-Vue.use(Vuex)
-Vue.use(VueI18n)
-Vue.use(Vuetify)
-
 // Because Node.js is not supporting Promise.finally.
 // In the future, polyfill can be added.
 // eslint-disable-next-line
-Promise.prototype.finally = Promise.prototype.finally || {
-  finally (fn) {
-    const onFinally = cb => Promise.resolve(fn()).then(cb)
-    return this.then(
-      result => onFinally(() => result),
-      reason => onFinally(() => { throw reason })
-    )
-  }
-}.finally
+Promise.prototype.finally =
+  Promise.prototype.finally ||
+  {
+    finally(fn) {
+      const onFinally = (cb) => Promise.resolve(fn()).then(cb)
+      return this.then(
+        (result) => onFinally(() => result),
+        (reason) =>
+          onFinally(() => {
+            throw reason
+          })
+      )
+    }
+  }.finally
 
 /**
  * Mockup store helper
  */
-function mockupStore () {
+function mockupStore() {
   const state = () => ({
     address: '',
     balance: 0,
@@ -36,21 +35,21 @@ function mockupStore () {
   })
 
   const getters = {
-    isLogged: jest.fn()
+    isLogged: vi.fn()
   }
 
   const mutations = {
-    setAddress: jest.fn(),
-    setBalance: jest.fn(),
-    setPassphrase: jest.fn()
+    setAddress: vi.fn(),
+    setBalance: vi.fn(),
+    setPassphrase: vi.fn()
   }
 
   const actions = {
     login: loginMock,
-    logout: jest.fn()
+    logout: vi.fn()
   }
 
-  const store = new Vuex.Store({
+  const store = createStore({
     state,
     getters,
     mutations,
@@ -79,21 +78,26 @@ describe('LoginForm.vue', () => {
   })
 
   it('renders the correct markup', () => {
-    const wrapper = shallowMount(LoginForm, {
-      i18n,
-      store
+    const wrapper = mount(LoginForm, {
+      shallow: true,
+      global: {
+        plugins: [i18n, store]
+      }
     })
 
     expect(wrapper.element).toMatchSnapshot()
   })
 
   it('should login with passphrase', async () => {
-    const wrapper = shallowMount(LoginForm, {
-      i18n,
-      store
+    const wrapper = mount(LoginForm, {
+      shallow: true,
+      propsData: {
+        modelValue: 'correct passphrase'
+      },
+      global: {
+        plugins: [i18n, store]
+      }
     })
-
-    wrapper.setProps({ value: 'correct passphrase' })
 
     const promise = wrapper.vm.login()
     await expect(promise).resolves.toEqual(true)
@@ -102,9 +106,11 @@ describe('LoginForm.vue', () => {
   })
 
   it('should throw error when login with incorrect passphrase', async () => {
-    const wrapper = shallowMount(LoginForm, {
-      i18n,
-      store
+    const wrapper = mount(LoginForm, {
+      shallow: true,
+      global: {
+        plugins: [i18n, store]
+      }
     })
 
     wrapper.vm.passphrase = 'incorrect passphrase'
@@ -119,9 +125,11 @@ describe('LoginForm.vue', () => {
   })
 
   it('should freeze form when calling freeze()', () => {
-    const wrapper = shallowMount(LoginForm, {
-      i18n,
-      store
+    const wrapper = mount(LoginForm, {
+      shallow: true,
+      global: {
+        plugins: [i18n, store]
+      }
     })
 
     // default values

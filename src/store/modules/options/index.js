@@ -1,4 +1,4 @@
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, Rates } from '@/lib/constants'
 
 const state = () => ({
   stayLoggedIn: false, // if true, messages and passphrase will be stored encrypted. If false, localStorage will be cleared after logout
@@ -11,7 +11,8 @@ const state = () => ({
   useFullDate: false,
   currentWallet: Cryptos.ADM, // current Wallet Tab on Account view (this is not an option)
   useSocketConnection: true,
-  suppressWarningOnAddressesNotification: false
+  suppressWarningOnAddressesNotification: false,
+  currentRate: Rates.USD
 })
 
 const getters = {

@@ -51,8 +51,10 @@ function formatDate (timestamp) {
   return date.toLocaleDateString(this.$t('region'), options) + ', ' + getTime(date)
 }
 
-function install (Vue) {
-  Vue.prototype.$formatDate = formatDate
+const plugin = {
+  install (app) {
+    app.config.globalProperties.$formatDate = formatDate
+  }
 }
 
-export default install
+export default plugin

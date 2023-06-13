@@ -1,56 +1,63 @@
 <template>
-  <v-layout
-    justify-center
-    row
+  <v-dialog
+    v-model="show"
+    max-width="360"
   >
-    <v-dialog
-      v-model="show"
-      max-width="360"
-    >
-      <v-card>
-        <v-card-title class="a-text-header">
-          {{ isMe ? $t('chats.my_qr_code') : $t('chats.partner_info') }}
-          <v-spacer />
-          <v-btn
-            flat
-            icon
-            class="close-icon"
-            @click="show = false"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-card-title>
-        <v-divider class="a-divider" />
-        <v-list two-line>
-          <template>
-            <v-list-tile>
-              <v-list-tile-avatar>
-                <ChatAvatar
-                  :user-id="address"
-                  use-public-key
-                />
-              </v-list-tile-avatar>
-              <v-list-tile-content>
-                <v-list-tile-title v-text="address" />
-                <v-list-tile-sub-title v-text="isMe ? $t('chats.me') : name" />
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
-        </v-list>
-        <v-layout
-          align-center
-          justify-center
-          class="pb-4"
+    <v-card>
+      <v-card-title
+        :class="`${className}__dialog-title`"
+        class="a-text-header"
+      >
+        {{ isMe ? $t('chats.my_qr_code') : $t('chats.partner_info') }}
+        <v-spacer />
+        <v-btn
+          variant="text"
+          icon
+          class="close-icon"
+          :size="36"
+          @click="show = false"
         >
-          <QrcodeRenderer
-            :logo="logo"
-            :opts="opts"
-            :text="text"
+          <v-icon
+            icon="mdi-close"
+            :size="24"
           />
-        </v-layout>
-      </v-card>
-    </v-dialog>
-  </v-layout>
+        </v-btn>
+      </v-card-title>
+      <v-divider class="a-divider" />
+      <v-list lines="two">
+        <v-list-item>
+          <template #prepend>
+            <icon-box>
+              <ChatAvatar
+                :user-id="address"
+                use-public-key
+              />
+            </icon-box>
+          </template>
+          <v-list-item-title
+            :class="`${className}__address`"
+            v-text="address"
+          />
+          <v-list-item-subtitle
+            :class="`${className}__username`"
+            v-text="isMe ? $t('chats.me') : name"
+          />
+        </v-list-item>
+      </v-list>
+      <v-row
+        align="center"
+        justify="center"
+        class="pb-6"
+        no-gutters
+      >
+        <QrcodeRenderer
+          :logo="logo"
+          :opts="opts"
+          :text="text"
+        />
+      </v-row>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -60,10 +67,13 @@ import { Cryptos } from '@/lib/constants'
 import { generateURI } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import IconBox from '@/components/icons/IconBox'
 
 export default {
   components: {
-    ChatAvatar, QrcodeRenderer
+    IconBox,
+    ChatAvatar,
+    QrcodeRenderer
   },
   props: {
     address: {
@@ -75,7 +85,7 @@ export default {
       type: String,
       default: ''
     },
-    value: {
+    modelValue: {
       type: Boolean,
       required: true
     },
@@ -85,8 +95,10 @@ export default {
       validator: v => validateAddress('ADM', v)
     }
   },
+  emits: ['update:modelValue'],
   data () {
     return {
+      className: 'partner-info-dialog',
       logo: '/img/adm-qr-invert.png',
       opts: {
         scale: 8.8
@@ -96,10 +108,10 @@ export default {
   computed: {
     show: {
       get () {
-        return this.value
+        return this.modelValue
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:modelValue', value)
       }
     },
     text () {
@@ -113,7 +125,34 @@ export default {
   }
 }
 </script>
-<style lang="stylus" scoped>
-.close-icon
-  margin: 0
+<style lang="scss" scoped>
+@import '../assets/styles/settings/_colors.scss';
+@import 'vuetify/_settings.scss';
+
+.partner-info-dialog {
+  &__dialog-title {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.close-icon {
+  margin: 0;
+}
+
+.v-theme--dark {
+  .partner-info-dialog {
+    &__dialog-title {
+      color: map-get($shades, 'white');
+    }
+
+    &__address {
+      color: map-get($shades, 'white');
+    }
+
+    &__username {
+      color: map-get($adm-colors, 'grey-transparent');
+    }
+  }
+}
 </style>

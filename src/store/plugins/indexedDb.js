@@ -2,7 +2,7 @@ import throttle from 'throttle-promise'
 import cloneDeep from 'lodash/cloneDeep'
 import { Base64 } from 'js-base64'
 
-import router from '@/router'
+import { router } from '@/router'
 import { Modules, Chats, Security, clearDb } from '@/lib/idb'
 import { restoreState, modules } from '@/lib/idb/state'
 import { Cryptos } from '@/lib/constants'

@@ -1,11 +1,12 @@
 import { shallowMount } from '@vue/test-utils'
-import Vue from 'vue'
+import Vue, { nextTick } from 'vue'
 import Vuex from 'vuex'
 import VueI18n from 'vue-i18n'
 import Vuetify from 'vuetify'
 import sinon from 'sinon'
 
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, Rates } from '@/lib/constants'
+import { rateStateMock } from '@/components/__tests__/__mocks__/store/modules/rate';
 import SendFundsForm from '@/components/SendFundsForm'
 import mockupI18n from './__mocks__/plugins/i18n'
 
@@ -56,7 +57,7 @@ function mockupStore () {
       address: 'U123456'
     },
     getters: {
-      fee: () => 0.5
+      fee: () => () => 0.5
     },
     actions: {
       sendTokens
@@ -66,10 +67,11 @@ function mockupStore () {
 
   const ethModule = () => ({
     state: {
-      balance: 100
+      balance: 100,
+      address: '0x0000000000000000000000000000000000000000',
     },
     getters: {
-      fee: () => 1
+      fee: () => () => 1
     },
     actions: {
       sendTokens
@@ -82,7 +84,7 @@ function mockupStore () {
       balance: 1000
     },
     getters: {
-      fee: () => 2
+      fee: () => () => 2
     },
     actions: {
       sendTokens
@@ -125,9 +127,21 @@ function mockupStore () {
         }
 
         return false
-      }
+      },
+      isAdamantChat: () => () => true
     },
     namespaced: true
+  })
+
+  const rateModule = () => ({
+    state: rateStateMock,
+    namespaced: true
+  })
+
+  const optionsModule = () => ({
+    state: () => ({
+      currentRate: Rates.USD
+    })
   })
 
   return {
@@ -136,15 +150,26 @@ function mockupStore () {
     ethModule,
     bnbModule,
     partnersModule,
-    chatModule
+    chatModule,
+    rateModule,
+    optionsModule
   }
 }
 
 describe('SendFundsForm', () => {
-  let i18n, store, main, adm, eth, bnb, partners, chat, wrapper
+  let i18n, store, main, adm, eth, bnb, partners, chat, rate, options, wrapper
 
   beforeEach(() => {
-    const { mainModule, admModule, ethModule, bnbModule, partnersModule, chatModule } = mockupStore()
+    const {
+      mainModule,
+      admModule,
+      ethModule,
+      bnbModule,
+      partnersModule,
+      chatModule,
+      rateModule,
+      optionsModule
+    } = mockupStore()
 
     main = mainModule()
     adm = admModule()
@@ -152,15 +177,19 @@ describe('SendFundsForm', () => {
     bnb = bnbModule()
     partners = partnersModule()
     chat = chatModule()
+    rate = rateModule()
+    options = optionsModule()
 
-    store = new Vuex.Store({
+    store = createStore({
       ...main,
       modules: {
         adm,
         eth,
         bnb,
         partners,
-        chat
+        chat,
+        rate,
+        options
       }
     })
 
@@ -288,7 +317,7 @@ describe('SendFundsForm', () => {
   describe('computed.validationRules', () => {
     it('cryptoAddress: validateAddress', () => {
       const validateAddress = wrapper.vm.validationRules.cryptoAddress[0].bind(wrapper.vm)
-      const errorMessage = i18n.t('transfer.error_incorrect_address', { crypto: 'ADM' })
+      const errorMessage = i18n.global.t('transfer.error_incorrect_address', { crypto: 'ADM' })
 
       wrapper.setData({ currency: 'ADM' })
 
@@ -297,17 +326,26 @@ describe('SendFundsForm', () => {
       expect(validateAddress('U654321')).toBe(true)
     })
 
-    it('cryptoAddress: validateSameRecipient', () => {
+    it('cryptoAddress: same recipient should be allowed when is an ADM address', async () => {
       const validateSameRecipient = wrapper.vm.validationRules.cryptoAddress[1].bind(wrapper.vm)
-      const errorMessage = i18n.t('transfer.error_same_recipient')
 
-      expect(validateSameRecipient('U123456')).toBe(errorMessage)
-      expect(validateSameRecipient('U654321')).toBe(true)
+      wrapper.setData({ currency: 'ADM' })
+
+      expect(validateSameRecipient('U123456')).toBe(true)
+    })
+
+    it('cryptoAddress: same recipient should be forbidden when is ETH address', async () => {
+      const validateSameRecipient = wrapper.vm.validationRules.cryptoAddress[1].bind(wrapper.vm)
+      const errorMessage = i18n.global.t('transfer.error_same_recipient')
+
+      wrapper.setData({ currency: 'ETH' })
+
+      expect(validateSameRecipient('0x0000000000000000000000000000000000000000')).toBe(errorMessage)
     })
 
     it('amount: incorrectAmount', () => {
       const correctAmount = wrapper.vm.validationRules.amount[0].bind(wrapper.vm)
-      const errorMessage = i18n.t('transfer.error_incorrect_amount')
+      const errorMessage = i18n.global.t('transfer.error_incorrect_amount')
 
       expect(correctAmount('100')).toBe(true)
       expect(correctAmount('0')).toBe(errorMessage)
@@ -317,7 +355,7 @@ describe('SendFundsForm', () => {
 
     it('amount: notEnoughTokens', () => {
       const hasEnoughTokens = wrapper.vm.validationRules.amount[1].bind(wrapper.vm)
-      const errorMessage = i18n.t('transfer.error_not_enough')
+      const errorMessage = i18n.global.t('transfer.error_not_enough')
 
       main.state.balance = 100
 
@@ -343,19 +381,24 @@ describe('SendFundsForm', () => {
       })
 
       expect(wrapper.vm.confirmMessage).toBe(
-        i18n.t('transfer.confirm_message', { amount: 1, address: 'U333333', crypto: 'ADM' })
+        i18n.global.t('transfer.confirm_message', { amount: 1, address: 'U333333', crypto: 'ADM' })
       )
     })
 
-    it('confirm message with `recipientName`', () => {
+    it('should confirm message with `recipientName`', async () => {
+      wrapper.setProps({
+        addressReadonly: true
+      })
       wrapper.setData({
         amount: 1,
         cryptoAddress: 'U111111',
         address: 'U111111'
       })
 
+      await nextTick()
+
       expect(wrapper.vm.confirmMessage).toBe(
-        i18n.t('transfer.confirm_message_with_name', { amount: 1, name: 'Rick', address: 'U111111', crypto: 'ADM' })
+        i18n.global.t('transfer.confirm_message_with_name', { amount: 1, name: 'Rick', address: 'U111111', crypto: 'ADM' })
       )
     })
   })
@@ -431,7 +474,7 @@ describe('SendFundsForm', () => {
 
       await wrapper.vm.submit()
 
-      expect(wrapper.emitted('error')).toEqual([['No hash']])
+      expect(wrapper.emitted('error')).toEqual([['Error: No hash']])
     })
   })
 

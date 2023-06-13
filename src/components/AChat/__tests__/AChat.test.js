@@ -1,28 +1,20 @@
-import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
-import Vuetify from 'vuetify'
+import { describe, it, expect } from 'vitest'
+import { mount } from '@vue/test-utils'
 
 import AChat from '../AChat.vue'
 
-const localVue = createLocalVue()
-localVue.use(Vuetify)
-
 describe('AChat.vue', () => {
   it('renders the correct markup', () => {
-    const wrapper = shallowMount(AChat, {
-      localVue
+    const wrapper = mount(AChat, {
+      shallow: true
     })
 
     expect(wrapper.element).toMatchSnapshot()
   })
 
   it('should set ref to `messages`', () => {
-    const wrapper = mount(AChat, {
-      localVue
-    })
+    const wrapper = mount(AChat)
 
     expect(wrapper.vm.$refs.messages).toBeTruthy()
   })
-
-  // @todo More tests
-  // @todo fix error `[Vuetify] Multiple instances of Vue detected`
 })

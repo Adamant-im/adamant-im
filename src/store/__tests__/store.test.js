@@ -104,6 +104,7 @@ describe('store', () => {
       ['setPassphrase', passphrase]
     ])
     expect(dispatch.args).toEqual([
+      ['reset'],
       ['afterLogin', passphrase]
     ])
   })

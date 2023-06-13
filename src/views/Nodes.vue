@@ -5,100 +5,26 @@
       :title="$t('options.nodes_list')"
       :show-back="true"
       flat
+      fixed
     />
 
     <v-container
       fluid
-      class="pa-0"
+      class="px-0 container--with-app-toolbar"
     >
-      <v-layout
-        row
-        wrap
-        justify-center
+      <v-row
+        justify="center"
+        no-gutters
       >
         <container padding>
-          <v-data-table
-            :headers="headers"
-            :items="nodes"
-            :class="`${className}__table`"
-            item-key="url"
-            select-all
-            hide-actions
-          >
-            <template
-              slot="headers"
-              slot-scope="props"
-            >
-              <tr>
-                <th style="width:56px" />
-                <th
-                  v-for="header in props.headers"
-                  :key="header.text"
-                  :class="[
-                    `${className}__header`,
-                    'pa-0',
-                    { 'text-xs-left': header.align === 'left' }
-                  ]"
-                >
-                  {{ $t(header.text) }}
-                </th>
-              </tr>
-            </template>
-
-            <template
-              slot="items"
-              slot-scope="props"
-            >
-              <td class="pr-2">
-                <v-checkbox
-                  :input-value="props.item.active"
-                  :class="`${className}__checkbox`"
-                  hide-details
-                  color="grey darken-1"
-                  @click.native="toggle(props.item)"
-                />
-              </td>
-              <td
-                :class="`${className}__body`"
-                class="pl-0 pr-2"
-                style="line-height: 1;"
-              >
-                {{ props.item.url }}
-                <span
-                  v-if="props.item.version"
-                  :class="`${className}__node-version`"
-                ><br>{{ 'v' + props.item.version }}</span>
-              </td>
-              <td
-                :class="`${className}__body`"
-                class="pl-0 pr-2"
-              >
-                <span>
-                  {{ getNodeStatus(props.item) }}
-                </span>
-                <v-icon
-                  :color="getNodeColor(props.item)"
-                  size="small"
-                >
-                  mdi-checkbox-blank-circle
-                </v-icon>
-              </td>
-              <td
-                :class="`${className}__body`"
-                class="pl-0 pr-2"
-              >
-                <v-icon :color="props.item.socketSupport ? 'green' : 'red'">
-                  {{ props.item.socketSupport ? 'mdi-check' : 'mdi-close' }}
-                </v-icon>
-              </td>
-            </template>
-          </v-data-table>
+          <nodes-table :class="`${className}__table`" />
 
           <v-checkbox
             v-model="preferFastestNodeOption"
             :label="$t('nodes.fastest_title')"
-            :class="`${className}__checkbox`"
+            :class="`${className}__checkbox mt-4`"
             color="grey darken-1"
+            hide-details
           />
           <div class="a-text-explanation-enlarged">
             {{ $t('nodes.fastest_tooltip') }}
@@ -107,8 +33,9 @@
           <v-checkbox
             v-model="useSocketConnection"
             :label="$t('nodes.use_socket_connection')"
-            :class="`${className}__checkbox`"
+            :class="`${className}__checkbox mt-4`"
             color="grey darken-1"
+            hide-details
           />
           <div class="a-text-explanation-enlarged">
             {{ $t('nodes.use_socket_connection_tooltip') }}
@@ -117,46 +44,31 @@
           <!-- eslint-disable vue/no-v-html -- Safe internal content -->
           <div
             :class="`${className}__info a-text-regular-enlarged`"
-            class="mt-4"
+            class="mt-6"
             v-html="$t('nodes.nodeLabelDescription')"
           />
           <!-- eslint-enable vue/no-v-html -->
 
           <div>&nbsp;<br>&nbsp;</div>
         </container>
-      </v-layout>
+      </v-row>
     </v-container>
   </div>
 </template>
 
 <script>
 import AppToolbarCentered from '@/components/AppToolbarCentered'
+import NodesTable from '@/components/NodesTable/NodesTable'
 
 export default {
   components: {
+    NodesTable,
     AppToolbarCentered
   },
   data: () => ({
     pagination: {
       sortBy: 'name'
     },
-    headers: [
-      {
-        text: 'nodes.host',
-        value: 'url',
-        align: 'left'
-      },
-      {
-        text: 'nodes.ping',
-        value: 'ping',
-        align: 'left'
-      },
-      {
-        text: 'nodes.socket',
-        value: 'socket',
-        align: 'left'
-      }
-    ],
     timer: null
   }),
   computed: {
@@ -179,9 +91,6 @@ export default {
       set (value) {
         this.$store.dispatch('nodes/setUseFastest', value)
       }
-    },
-    nodes () {
-      return this.$store.getters['nodes/list']
     }
   },
   mounted () {
@@ -191,114 +100,48 @@ export default {
       this.$store.dispatch('nodes/updateStatus')
     }, 10000)
   },
-  beforeDestroy () {
+  beforeUnmount () {
     clearInterval(this.timer)
-  },
-  methods: {
-    toggle (node) {
-      this.$store.dispatch('nodes/toggle', {
-        url: node.url,
-        active: !node.active
-      })
-    },
-    getNodeStatus (node) {
-      if (!node.hasMinApiVersion || !node.hasSupportedProtocol) {
-        return this.$t('nodes.unsupported')
-      } else if (!node.active) {
-        return this.$t('nodes.inactive')
-      } else if (!node.online) {
-        return this.$t('nodes.offline')
-      } else if (node.outOfSync) {
-        return this.$t('nodes.sync')
-      }
-
-      return node.ping + ' ' + this.$t('nodes.ms')
-    },
-    getNodeColor (node) {
-      let color = 'green'
-
-      if (!node.hasMinApiVersion || !node.hasSupportedProtocol) {
-        color = 'red'
-      } else if (!node.active) {
-        color = 'grey'
-      } else if (!node.online) {
-        color = 'red'
-      } else if (node.outOfSync) {
-        color = 'orange'
-      }
-
-      return color + ' lighten-1'
-    }
   }
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_variables.styl'
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import 'vuetify/settings';
+@import '../assets/styles/settings/_colors.scss';
 
-.nodes-view
-  &__table
-    margin-left: -24px
-    margin-right: -24px
+.nodes-view {
+  &__info {
+    :deep(a) {
+      text-decoration-line: none;
+      &:hover {
+        text-decoration-line: underline;
+      }
+    }
+  }
+  :deep(.v-input--selection-controls:not(.v-input--hide-details)) .v-input__slot {
+    margin-bottom: 0;
+  }
 
-    >>> table.v-table tbody td:first-child
-      padding-left: 24px
-
-  &__header
-    font-size: 12px
-    font-weight: 300
-  &__body
-    font-size: 14px
-    font-weight: 300
-  &__info
-    >>> a
-      text-decoration-line: none
-      &:hover
-        text-decoration-line: underline
-  &__node-version
-    a-text-explanation-small()
-  &__checkbox
-    >>> .v-label
-      a-text-regular-enlarged()
-  >>> .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot
-    margin-bottom: 0
+  :deep(.v-checkbox) {
+    margin-left: -8px;
+  }
+}
 
 /** Themes **/
-.theme--light
-  .nodes-view
-    &__header
-      color: $adm-colors.muted
-    &__body
-      color: $adm-colors.regular
-    &__node-version
-      color: $adm-colors.muted
-    &__checkbox
-      >>> .v-label
-        color: $adm-colors.regular
-      >>> .v-input--selection-controls__ripple
-      >>> .v-input--selection-controls__input i
-        color: $adm-colors.regular !important
-        caret-color: $adm-colors.regular !important
-
-    >>> .v-table tbody tr:not(:last-child)
-      border-bottom: 1px solid $adm-colors.secondary2
-
-.theme--dark
-  .nodes-view
-    &__node-version
-      opacity: 0.7
-
-/**
- * 1. Style VTable to be full width.
- */
-@media $display-breakpoints.sm-and-down
-  .nodes-view
-    &__table // [1]
-      margin-left: -16px
-      margin-right: -16px
-
-    >>> table.v-table tbody td:first-child
-      padding-left: 16px
+.v-theme--light {
+  .nodes-view {
+    &__checkbox {
+      :deep(.v-label) {
+        color: map-get($adm-colors, 'regular');
+      }
+      :deep(.v-input--selection-controls__ripple),
+      :deep(.v-input--selection-controls__input) i {
+        color: map-get($adm-colors, 'regular') !important;
+        caret-color: map-get($adm-colors, 'regular') !important;
+      }
+    }
+  }
+}
 </style>

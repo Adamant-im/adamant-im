@@ -1,0 +1,63 @@
+productName: ADAMANT Messenger
+appId: im.adamant.msg
+
+files:
+  - "!**/node_modules/**"
+  - "dist-electron"
+  - "package.json"
+
+directories:
+  output: './release-electron'
+  buildResources: './build'
+
+protocols:
+  - name: ADAMANT Messenger
+    schemes:
+      - adm
+
+# Windows configuration
+win:
+  icon: './build/win/icon.ico'
+  target:
+    - 'nsis'
+
+# Config for the windows installer
+nsis:
+  deleteAppDataOnUninstall: true
+  createDesktopShortcut: 'always'
+
+# Mac OS configuration
+mac:
+  category: 'public.app-category.social-networking'
+  darkModeSupport: true
+  icon: './build/osx/icon.icns'
+  entitlements: './build/osx/entitlements.mac.plist'
+  entitlementsInherit: './build/osx/entitlements.mac.plist'
+  hardenedRuntime: true
+  gatekeeperAssess: false
+
+afterSign: 'notarize.js'
+
+# Config for OSX dmg
+dmg:
+  background: './build/osx/background.jpeg'
+  contents:
+    - x: 260
+      y: 77
+    - x: 163
+      y: 186
+      type: 'link'
+      path: '/Applications'
+
+# Linux configuration
+linux: 
+  category: 'InstantMessaging'
+  desktop:
+    Icon: './build/linux/icon.png'
+    Name: 'ADAMANT Messenger'
+    Terminal: false
+    Type: 'Application'
+  artifactName: 'ADAMANT-Messenger-${version}.${ext}'
+  icon: './build/linux/'
+  target:
+    - AppImage

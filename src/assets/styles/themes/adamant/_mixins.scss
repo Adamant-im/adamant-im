@@ -1,0 +1,74 @@
+@import '../../settings/_colors.scss';
+
+@mixin a-text-regular($size: 14px, $weight: 300) {
+  font-size: $size;
+  font-weight: $weight;
+}
+
+@mixin a-text-regular-enlarged {
+  @include a-text-regular(16px);
+}
+
+@mixin a-text-regular-normal {
+  @include a-text-regular(14px, 400);
+}
+
+@mixin a-text-regular-bold {
+  @include a-text-regular(14px, 500);
+}
+
+@mixin a-text-regular-enlarged-bold {
+  @include a-text-regular(16px, 500);
+}
+
+@mixin a-text-caption {
+  @include a-text-regular(18px, 500);
+}
+
+@mixin a-text-caption-light {
+  @include a-text-regular(18px, 300);
+}
+
+@mixin a-text-explanation {
+  @include a-text-regular(12px);
+}
+
+@mixin a-text-explanation-small {
+  @include a-text-regular(10px);
+}
+
+@mixin a-text-explanation-bold {
+  @include a-text-regular(12px, 500);
+}
+
+@mixin a-text-explanation-enlarged {
+  @include a-text-regular(14px);
+}
+
+@mixin a-text-explanation-enlarged-bold {
+  @include a-text-regular(14px, 500);
+}
+
+@mixin a-text-active {
+  @include a-text-regular(16px, 500);
+  text-decoration: underline;
+  text-transform: unset;
+}
+
+@mixin a-text-header {
+  @include a-text-regular(20px, 500);
+}
+
+@mixin a-text-headline {
+  @include a-text-regular(40px, 100);
+  text-transform: uppercase;
+}
+
+/** Gradients **/
+@mixin linear-gradient-light {
+  background: repeating-linear-gradient(140deg, #f6f6f6, #f6f6f6 0.7px, #fefefe 0, #fefefe 5px);
+}
+
+@mixin linear-gradient-dark {
+  background: repeating-linear-gradient(140deg, #191919, #191919 0.7px, #212121 0, #212121 5px);
+}

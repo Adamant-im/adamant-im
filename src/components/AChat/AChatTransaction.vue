@@ -74,12 +74,11 @@
               <v-icon
                 size="13"
                 :title="statusTitle"
+                :icon="statusIcon"
                 :color="statusColor"
                 :style="statusUpdatable ? 'cursor: pointer;': 'cursor: default;'"
                 @click="updateStatus"
-              >
-                {{ statusIcon }}
-              </v-icon>
+              />
             </div>
           </div>
 
@@ -92,10 +91,16 @@
               :class="isClickable ? 'a-chat__amount--clickable': ''"
               @click="onClickAmount"
             >
-              <v-layout align-center>
+              <v-row
+                align="center"
+                no-gutters
+              >
                 <slot name="crypto" />
-                <span class="ml-2">{{ amount }}</span>
-              </v-layout>
+                <div class="a-chat__rates-column d-flex ml-4">
+                  <span class="mb-1">{{ currencyFormatter(amount, crypto) }}</span>
+                  <span class="a-chat__rates">{{ historyRate }}</span>
+                </div>
+              </v-row>
             </div>
           </div>
 
@@ -117,6 +122,9 @@
 import { tsIcon, tsUpdatable, tsColor, Chat } from '@/lib/constants'
 import { isStringEqualCI, trimMsgString } from '@/lib/textHelpers'
 import throttle from 'lodash/throttle'
+import currencyAmount from '@/filters/currencyAmount'
+import { timestampInSec } from '@/filters/helpers'
+import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 
 export default {
   props: {
@@ -163,8 +171,20 @@ export default {
     isClickable: {
       type: Boolean,
       default: false
+    },
+    crypto: {
+      type: String,
+      default: 'ADM'
+    },
+    hash: {
+      required: true,
+      type: String
+    },
+    txTimestamp: {
+      required: true
     }
   },
+  emits: ['mount', 'click:transaction', 'click:transactionStatus'],
   data () {
     return {
       dragging: false,
@@ -213,6 +233,10 @@ export default {
     },
     isSelected () {
       return this.isShowReplyToMenu
+    },
+    historyRate () {
+      const amount = currencyAmount(this.amount, this.crypto)
+      return '~' + this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.txTimestamp), amount, this.crypto)
     }
   },
   watch: {
@@ -224,6 +248,9 @@ export default {
           document.selection.empty()
         }
       }
+    },
+    txTimestamp () {
+      this.getHistoryRates()
     }
   },
   destroyed: function () {
@@ -232,6 +259,7 @@ export default {
   mounted () {
     document.addEventListener('selectionchange', this.bindSelection)
     this.$emit('mount')
+    this.getHistoryRates()
   },
   methods: {
     isStringEqualCI (string1, string2) {
@@ -320,7 +348,13 @@ export default {
       if (window && window.navigator && window.navigator.vibrate) {
         window.navigator.vibrate(100)
       }
-    }
+    },
+    getHistoryRates () {
+      this.$store.dispatch('rate/getHistoryRates', {
+        timestamp: timestampInSec(this.crypto, this.txTimestamp)
+      })
+    },
+    currencyFormatter
   }
 }
 </script>

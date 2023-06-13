@@ -1,57 +1,51 @@
 <template>
   <v-list :class="className">
-    <v-list-tile
-      avatar
+    <v-list-item
       @click="sendFunds"
     >
-      <v-list-tile-avatar :class="`${className}__avatar`">
-        <v-icon :class="`${className}__icon`">
-          mdi-bank-transfer-out
-        </v-icon>
-      </v-list-tile-avatar>
+      <template #prepend>
+        <v-icon
+          :class="`${className}__icon`"
+          icon="mdi-bank-transfer-out"
+        />
+      </template>
 
-      <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title`">
-          {{ $t('home.send_crypto', { crypto }) }}
-        </v-list-tile-title>
-      </v-list-tile-content>
-    </v-list-tile>
+      <v-list-item-title :class="`${className}__title`">
+        {{ $t('home.send_crypto', { crypto }) }}
+      </v-list-item-title>
+    </v-list-item>
 
-    <v-list-tile
+    <v-list-item
       v-if="isADM"
-      avatar
       @click="buyTokens"
     >
-      <v-list-tile-avatar :class="`${className}__avatar`">
-        <v-icon :class="`${className}__icon`">
-          mdi-finance
-        </v-icon>
-      </v-list-tile-avatar>
+      <template #prepend>
+        <v-icon
+          :class="`${className}__icon`"
+          icon="mdi-finance"
+        />
+      </template>
 
-      <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title`">
-          {{ $t('home.buy_tokens_btn') }}
-        </v-list-tile-title>
-      </v-list-tile-content>
-    </v-list-tile>
+      <v-list-item-title :class="`${className}__title`">
+        {{ $t('home.buy_tokens_btn') }}
+      </v-list-item-title>
+    </v-list-item>
 
-    <v-list-tile
+    <v-list-item
       v-if="isADM && !hasAdmTokens"
-      avatar
       @click="getFreeTokens"
     >
-      <v-list-tile-avatar :class="`${className}__avatar`">
-        <v-icon :class="`${className}__icon`">
-          mdi-gift
-        </v-icon>
-      </v-list-tile-avatar>
+      <template #prepend>
+        <v-icon
+          :class="`${className}__icon`"
+          icon="mdi-gift"
+        />
+      </template>
 
-      <v-list-tile-content>
-        <v-list-tile-title :class="`${className}__title`">
-          {{ $t('home.free_adm_btn') }}
-        </v-list-tile-title>
-      </v-list-tile-content>
-    </v-list-tile>
+      <v-list-item-title :class="`${className}__title`">
+        {{ $t('home.free_adm_btn') }}
+      </v-list-item-title>
+    </v-list-item>
 
     <buy-tokens-dialog
       v-model="showBuyTokensDialog"
@@ -109,22 +103,49 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../assets/stylus/settings/_colors.styl'
-@import '../assets/stylus/themes/adamant/_mixins.styl'
+<style lang="scss" scoped>
+@import 'vuetify/settings';
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '../assets/styles/settings/_colors.scss';
 
-.wallet-actions
-  &__title
-    a-text-caption-light()
-  &__avatar
-    min-width: unset
-    .v-avatar
-      width: unset !important
-      padding-right: 15px
+.wallet-actions {
+  &__title {
+    @include a-text-caption-light();
+  }
+  :deep(.v-list-item__prepend) {
+    > .v-icon {
+      margin-inline-end: 16px;
+    }
+  }
+  :deep(.v-list-item) {
+    padding: 0 16px;
+  }
+  :deep(.v-list-item__prepend) {
+    > .v-icon {
+      opacity: unset;
+    }
+  }
+  :deep(.v-list-item__append) {
+    > .v-icon {
+      opacity: unset;
+    }
+  }
+}
 
 /** Themes **/
-.theme--light
-  .wallet-actions
-    &__title, &__icon
-      color: $adm-colors.regular
+.v-theme--light {
+  .wallet-actions {
+    &__title, &__icon {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
+
+.v-theme--dark {
+  .wallet-actions {
+    &__title, &__icon {
+      color: map-get($shades, 'white');
+    }
+  }
+}
 </style>

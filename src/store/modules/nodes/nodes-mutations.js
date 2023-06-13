@@ -1,5 +1,3 @@
-import Vue from 'vue'
-
 export default {
   useFastest (state, value) {
     state.useFastest = value
@@ -13,6 +11,6 @@ export default {
   },
 
   status (state, status) {
-    Vue.set(state.list, status.url, status)
+    state.list[status.url] = status
   }
 }

@@ -1,3 +1,5 @@
+import { isAdamantChat } from '@/lib/chat/meta/utils'
+
 export default {
   methods: {
     /**
@@ -5,10 +7,10 @@ export default {
      * returned for the ADM system chats.
      * @param {string} address partner ADM address
      */
-    getPartnerName (address) {
+    getPartnerName(address) {
       const name = this.$store.getters['partners/displayName'](address) || ''
-      const isAdmChat = this.$store.getters['chat/isAdamantChat'](address)
-      return isAdmChat ? this.$t(name) : name
+
+      return isAdamantChat(address) ? this.$t(name) : name
     }
   }
 }

@@ -3,10 +3,9 @@
     :class="[classes, className]"
     fluid
   >
-    <v-layout
-      row
-      wrap
-      justify-center
+    <v-row
+      justify="center"
+      no-gutters
     >
       <container>
         <v-toolbar
@@ -17,10 +16,13 @@
           <v-btn
             v-if="showBack"
             icon
-            small
+            size="small"
             @click="goBack"
           >
-            <v-icon>mdi-arrow-left</v-icon>
+            <v-icon
+              icon="mdi-arrow-left"
+              size="x-large"
+            />
           </v-btn>
 
           <v-toolbar-title
@@ -37,23 +39,12 @@
           </v-toolbar-title>
         </v-toolbar>
       </container>
-    </v-layout>
+    </v-row>
   </v-container>
 </template>
 
 <script>
-import Applicationable from 'vuetify/es5/mixins/applicationable'
-
 export default {
-  mixins: [
-    Applicationable('top', [
-      'clippedLeft',
-      'clippedRight',
-      'computedHeight',
-      'invertedScroll',
-      'manualScroll'
-    ])
-  ],
   props: {
     title: {
       type: String,
@@ -64,6 +55,14 @@ export default {
       default: undefined
     },
     flat: {
+      type: Boolean,
+      default: false
+    },
+    app: {
+      type: Boolean,
+      default: false
+    },
+    fixed: {
       type: Boolean,
       default: false
     },
@@ -79,7 +78,8 @@ export default {
   computed: {
     classes () {
       return {
-        'v-toolbar--fixed': this.app
+        'v-toolbar--fixed': this.app,
+        'app-toolbar--fixed': this.fixed
       }
     },
     className: () => 'app-toolbar-centered'
@@ -87,38 +87,57 @@ export default {
   methods: {
     goBack () {
       this.$router.back()
-    },
-    updateApplication () {
-      // Forward function call from `Applicationable` mixin to `VToolbar`
-      //
-      // 1. Do not `updateApplication` when created() because VToolbar is not mounted,
-      // it will be called again when mounted().
-      if (this.$refs.toolbar) { // [1]
-        return this.$refs.toolbar.updateApplication()
-      }
     }
   }
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '~vuetify/src/stylus/settings/_colors.styl'
-@import '../assets/stylus/settings/_colors.styl'
+<style lang="scss" scoped>
+@import 'vuetify/settings';
+@import '../assets/styles/settings/_colors.scss';
 
-.app-toolbar-centered
-  padding: 0
+.app-toolbar-centered {
+  padding: 0;
 
-  >>> .v-toolbar__title:not(:first-child)
-    margin-left: 0px
+  :deep(.v-toolbar-title) {
+    letter-spacing: .02em;
+  }
+
+  :deep(.v-toolbar-title:not(:first-child)) {
+    margin-inline-start: 0;
+  }
+
+  :deep(.v-toolbar__content > .v-btn:first-child) {
+    margin-inline-start: 4px;
+  }
+
+  :deep(.v-btn:hover) {
+    > .v-btn__overlay {
+      opacity: 0;
+    }
+  }
+}
+
+.app-toolbar--fixed {
+  position: fixed;
+  z-index: 2;
+}
 
 /** Themes **/
-.theme--light
-  .app-toolbar-centered
-    .v-toolbar
-      background-color: $adm-colors.secondary2-transparent
+.v-theme--light {
+  .app-toolbar-centered {
+    .v-toolbar {
+      background-color: map-get($adm-colors, 'secondary2-transparent')
+    }
+  }
+}
 
-.theme--dark
-  .app-toolbar-centered
-    .v-toolbar
-      background-color: $shades.black
+.v-theme--dark {
+  .app-toolbar-centered {
+    .v-toolbar {
+      background-color: map-get($shades, 'black');
+      color: map-get($shades, 'white');
+    }
+  }
+}
 </style>
