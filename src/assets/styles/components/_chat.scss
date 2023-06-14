@@ -2,6 +2,7 @@
 @import '../settings/_colors.scss';
 
 $chat-form-height: 52px;
+$chat-form-height-reply-to: 99px;
 
 $chat-sender: (
   'font-size': 15px,
@@ -23,6 +24,10 @@ $chat-avatar-size: 40px;
   position: relative;
   padding-bottom: $chat-form-height;
 
+  &--reply-to {
+    padding-bottom: $chat-form-height-reply-to;
+  }
+
   &__content {
     height: inherit;
     display: flex;
@@ -42,6 +47,7 @@ $chat-avatar-size: 40px;
     top: 0;
     left: 0;
     overflow-y: scroll;
+    overflow-x: hidden;
     width: 100%;
     height: 100%;
     padding: 16px 16px 0 16px;
@@ -73,6 +79,9 @@ $chat-avatar-size: 40px;
     clear: both;
     float: left;
     max-width: 80%;
+    width: 100%;
+    position: relative;
+    display: flex;
 
     &:last-child {
       margin-bottom: 0;
@@ -81,17 +90,81 @@ $chat-avatar-size: 40px;
     &--right {
       float: right;
     }
+
+    &--touch {
+      position: unset;
+    }
+  }
+
+  &__message-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    z-index: 2;
+
+    &--selected {
+      border: 3px dashed map-get($adm-colors, 'attention');
+      z-index: 10;
+    }
   }
 
   &__message {
     display: flex;
     flex-direction: row;
-    padding-top: 8px;
-    padding-bottom: 8px;
     padding-left: 16px;
     padding-right: 16px;
-    margin-bottom: 16px;
     border-radius: 8px;
+    transition: transform 0.1s;
+    position: relative;
+
+    &--highlighted {
+      justify-content: flex-end;
+
+      .a-chat__message-card-header {
+        justify-content: flex-end;
+      }
+
+      .a-chat__message-card-body {
+        text-align: right;
+      }
+    }
+
+    &--reply-to {
+      padding: 8px;
+      background: rgba(245, 245, 245, .1);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      position: relative;
+      word-break: break-all;
+    }
+
+    &--menu {
+      position: absolute;
+      border-radius: 2px;
+      z-index: 100;
+
+      & a.v-list__tile {
+        padding: 0 8px;
+      }
+
+      & .v-list__tile__avatar {
+        min-width: unset;
+      }
+    }
+
+    &--reply-to-icon {
+      font-size: 28px;
+      position: absolute;
+      left: 26px;
+      top: calc(50% - 14px);
+      z-index: 1;
+    }
   }
 
   /**
@@ -130,6 +203,11 @@ $chat-avatar-size: 40px;
     flex-direction: row;
     align-items: center;
     min-height: 17px;
+    min-height: 17px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
   &__message-text {
@@ -260,6 +338,31 @@ $chat-avatar-size: 40px;
     left: 0;
     bottom: 0;
     width: 100%;
+    z-index: 2;
+
+    &-reply-to {
+      padding: 8px 44px 8px 8px;
+      background: rgba(245, 245, 245, .1);
+      border-radius: 8px;
+      border-left: 3px solid map-get($adm-colors, 'attention');
+      margin-bottom: 10px;
+      position: relative;
+      word-break: break-all;
+      display: flex;
+      align-items: center;
+
+      &--text {
+        margin-left: 8px
+      }
+
+      &--cancel-icon {
+        color: map-get($adm-colors, 'danger') !important;
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        cursor: pointer;
+      }
+    }
 
     /**
      * Vuetify
@@ -293,6 +396,7 @@ $chat-avatar-size: 40px;
     right: 16px;
     bottom: 16px;
     opacity: 0.7;
+    z-index: 10;
 
     &:hover {
       opacity: 1;
@@ -307,11 +411,13 @@ $chat-avatar-size: 40px;
       color: map-get($shades, 'black');
     }
 
-    &__message {
+    &__message-wrapper {
       background-color: #fff;
       box-shadow: 0 1px 10px hsla(0, 0%, 39.2%, 0.06), 0 1px 1px hsla(0, 0%, 39.2%, 0.04),
-        0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+      0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+    }
 
+    &__message {
       &--red {
         background-color: map-get($red, 'lighten-5');
       }
