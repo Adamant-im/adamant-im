@@ -168,7 +168,7 @@ export default {
 
 .v-theme--light {
   .nodes-table-item {
-    &__version {
+    &__version, &__td {
       color: map-get($adm-colors, 'muted');
     }
   }
