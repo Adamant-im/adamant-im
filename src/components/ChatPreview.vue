@@ -3,7 +3,7 @@
     v-if="isLoadingSeparator"
   >
     <div
-      style="align-items: center"
+      class="d-flex justify-center"
     >
       <v-icon
         ref="loadingDots"
