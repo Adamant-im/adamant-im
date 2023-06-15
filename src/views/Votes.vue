@@ -332,7 +332,7 @@ export default defineComponent({
       color: map-get($adm-colors, 'regular');
     }
     &__divider {
-      border-color: map-get($adm-colors, 'secondary');
+      border-color: map-get($adm-colors, 'regular');
     }
     :deep(.v-table) tbody tr:not(:last-child) {
       border-bottom: 1px solid, map-get($adm-colors, 'secondary2');
