@@ -66,10 +66,10 @@ npm run electron:dev
 npm run electron:build
 ```
 
-### Build electron for macOS, Windows and Linux
+### Build electron version and notarize the app
 
 ```
-npm run electron:build:mwl
+APPLE_NOTARIZE=true npm run electron:build
 ```
 
 ### Preview electron production build

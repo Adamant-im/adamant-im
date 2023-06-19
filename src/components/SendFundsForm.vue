@@ -49,6 +49,7 @@
             :offset-overflow="true"
             :offset-y="false"
             left
+            eager
           >
             <template #activator="{ props }">
               <v-icon
@@ -60,7 +61,7 @@
               <v-list-item @click="showQrcodeScanner = true">
                 <v-list-item-title>{{ $t('transfer.decode_from_camera') }}</v-list-item-title>
               </v-list-item>
-              <v-list-item class="v-list__tile--link">
+              <v-list-item link>
                 <v-list-item-title>
                   <qrcode-capture
                     @detect="onDetectQrcode"
@@ -88,7 +89,7 @@
       >
         <template #label>
           <span class="font-weight-medium">{{ $t('transfer.amount_label') }}</span>
-          <span class="text-body-2 a-label-secondary">
+          <span class="max-amount-label">
             &nbsp;{{ `(max: ${maxToTransferFixed} ${currency})` }}
           </span>
         </template>
@@ -192,12 +193,12 @@
 
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <v-card-text
-          class="a-text-regular-enlarged"
+          class="a-text-regular-enlarged pa-4"
           v-html="confirmMessage"
         />
         <!-- eslint-enable vue/no-v-html -->
 
-        <v-card-actions>
+        <v-card-actions class="pa-4">
           <v-spacer />
 
           <v-btn
@@ -819,6 +820,17 @@ export default {
     :deep(.v-field__field) {
       .v-label.v-field-label {
         align-items: baseline;
+
+        .max-amount-label {
+          font-size: 14px;
+        }
+      }
+    }
+
+    :deep(.v-field__outline) {
+      .v-label.v-field-label.v-field-label--floating .max-amount-label {
+        font-size: 10.5px; // -25% from original size
+        line-height: 1;
       }
     }
   }

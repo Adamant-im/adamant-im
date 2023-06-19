@@ -3,7 +3,7 @@
     v-if="isLoadingSeparator"
   >
     <div
-      style="align-items: center"
+      class="d-flex justify-center"
     >
       <v-icon
         ref="loadingDots"
@@ -20,7 +20,7 @@
   >
     <template #prepend>
       <icon
-        v-if="readOnly"
+        v-if="isWelcomeChat(contactId)"
         :class="`${className}__icon`"
       >
         <adm-fill-icon />
@@ -51,7 +51,7 @@
           'a-text-regular-enlarged-bold': true,
           [`${className}__title`]: true
         }"
-        v-text="isAdamantChat ? $t(contactName) : contactName"
+        v-text="isAdamantChat(contactId) ? $t(contactName) : contactName"
       />
 
       <!-- New chat (no messages yet) -->
@@ -118,6 +118,7 @@ import { tsIcon } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
 import currency from '@/filters/currencyAmountWithSymbol'
+import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 
 export default {
   components: {
@@ -139,17 +140,16 @@ export default {
       type: Object,
       required: true
     },
-    readOnly: {
-      type: Boolean,
-      default: false
-    },
     isMessageReadonly: {
       type: Boolean,
       default: false
     },
-    isAdamantChat: {
-      type: Boolean,
-      default: false
+    /**
+     * Must be defined if is an ADAMANT chat
+     */
+    adamantChatMeta: {
+      type: Object,
+      default: null
     },
     isLoadingSeparator: {
       type: Boolean,
@@ -192,7 +192,7 @@ export default {
     },
     lastMessageTextNoFormats () {
       if (
-        this.isAdamantChat ||
+        this.isAdamantChat(this.contactId) ||
         this.$store.state.options.formatMessages
       ) {
         return removeFormats(this.lastMessageTextLocalized)
@@ -237,7 +237,9 @@ export default {
   },
   methods: {
     formatDate,
-    currency
+    currency,
+    isAdamantChat,
+    isWelcomeChat
   }
 }
 </script>

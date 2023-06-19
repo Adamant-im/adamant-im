@@ -27,27 +27,25 @@
           </v-list-item>
 
           <v-list-item
-            v-for="action in actions"
-            :key="action.title"
             avatar
-            @click="openLink(action.link)"
+            @click="openLink(admLink)"
           >
             <template #prepend>
-              <crypto-icon :crypto="action.icon" />
+              <icon><adamant-icon /></icon>
             </template>
 
-            <v-list-item-title v-text="action.title" />
+            <v-list-item-title>{{ $t('home.buy_tokens_anonymously') }}</v-list-item-title>
           </v-list-item>
 
           <v-list-item
             avatar
-            @click="openLink('https://coindeal.com/ref/9WZN')"
+            @click="openLink('https://azbit.com/?referralCode=9YVWYAF')"
           >
             <template #prepend>
-              <icon><cdl-icon /></icon>
+              <icon><azbit-icon /></icon>
             </template>
 
-            <v-list-item-title>CoinDeal</v-list-item-title>
+            <v-list-item-title>Azbit</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-card-text>
@@ -58,16 +56,16 @@
 <script>
 import validateAddress from '@/lib/validateAddress'
 import Icon from '@/components/icons/BaseIcon'
-import CryptoIcon from '@/components/icons/CryptoIcon'
-import CdlIcon from '@/components/icons/common/Cdl'
+import AdamantIcon from '@/components/icons/common/Adamant'
+import AzbitIcon from '@/components/icons/common/Azbit'
 import ExchangerIcon from '@/components/icons/common/Exchanger'
 import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
   components: {
     Icon,
-    CryptoIcon,
-    CdlIcon,
+    AdamantIcon,
+    AzbitIcon,
     ExchangerIcon
   },
   props: {
@@ -84,6 +82,11 @@ export default {
   emits: ['update:modelValue'],
   computed: {
     className: () => 'buy-tokens-dialog',
+    admLink() {
+      return websiteUriToOnion(this.adamantAddress
+        ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
+        : `${this.$t('home.buy_tokens_btn_link')}`)
+    },
     show: {
       get () {
         return this.modelValue
@@ -92,17 +95,6 @@ export default {
         this.$emit('update:modelValue', value)
       }
     },
-    actions () {
-      return [
-        {
-          icon: 'ADM',
-          title: this.$t('home.buy_tokens_anonymously'),
-          link: websiteUriToOnion(this.adamantAddress
-            ? `${this.$t('home.buy_tokens_btn_link')}?wallet=${this.adamantAddress}`
-            : `${this.$t('home.buy_tokens_btn_link')}`)
-        }
-      ]
-    }
   },
   methods: {
     openLink (link) {

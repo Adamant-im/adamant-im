@@ -1,26 +1,18 @@
 <template>
-  <v-toolbar
-    flat
-    height="56"
-    :class="`${className}`"
-    color="transparent"
-  >
-    <v-btn
-      icon
-      @click="goBack"
-    >
+  <v-toolbar flat height="56" :class="`${className}`" color="transparent">
+    <v-btn icon @click="goBack">
       <v-icon icon="mdi-arrow-left" />
     </v-btn>
-    <div v-if="!isChatReadOnly">
+    <div v-if="!isWelcomeChat(partnerId)">
       <slot name="avatar-toolbar" />
     </div>
     <div :class="`${className}__textfield-container`">
       <div
-        v-if="isChatReadOnly"
+        v-if="isWelcomeChat(partnerId)"
         :class="`${className}__adm-chat-name`"
         :style="{ paddingLeft: '12px' }"
       >
-        {{ $t(partnerId) }}
+        {{ $t('chats.virtual.welcome_message_title') }}
       </div>
       <div v-else>
         <v-text-field
@@ -31,6 +23,7 @@
           :label="partnerId"
           hide-details
           density="compact"
+          :readonly="isAdamantChat(partnerId)"
         />
       </div>
     </div>
@@ -42,6 +35,7 @@
 <script>
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import partnerName from '@/mixins/partnerName'
+import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 
 export default {
   components: {
@@ -58,27 +52,36 @@ export default {
   computed: {
     className: () => 'chat-toolbar',
     partnerName: {
-      get () {
+      get() {
         return this.getPartnerName(this.partnerId)
       },
-      set (value) {
+      set(value) {
         this.$store.commit('partners/displayName', {
           partner: this.partnerId,
           displayName: value
         })
       }
-    },
-    isChatReadOnly () {
-      return this.$store.getters['chat/isChatReadOnly'](this.partnerId)
     }
   },
+  data: () => ({
+    lastPath: null
+  }),
+  created() {
+    this.lastPath = this.$router.options.history.state.back
+  },
   methods: {
-    goBack () {
-      this.$router.push({ name: 'Chats' })
+    goBack() {
+      if (this.lastPath === '/chats') {
+        this.$router.back()
+      } else {
+        this.$router.push({ name: 'Chats' })
+      }
     },
-    showPartnerInfo () {
+    showPartnerInfo() {
       this.$emit('partner-info', true)
-    }
+    },
+    isAdamantChat,
+    isWelcomeChat
   }
 }
 </script>
@@ -99,7 +102,7 @@ export default {
   &__adm-chat-name {
     font-size: 20px;
     font-weight: 500;
-    letter-spacing: .02em;
+    letter-spacing: 0.02em;
   }
 
   &__textfield {
@@ -119,7 +122,10 @@ export default {
   }
 
   :deep(.v-toolbar__content > .v-btn:first-child) {
-    margin-inline-start: 4px;
+    width: 36px;
+    height: 36px;
+    margin: 0 12px;
+    border-radius: 50%;
   }
 
   :deep(.v-text-field) {
@@ -143,7 +149,7 @@ export default {
       .v-label.v-field-label.v-field-label--floating {
         line-height: 20px;
         font-size: 20px;
-        transform: translateY(-6px) scale(.6875);
+        transform: translateY(-6px) scale(0.6875);
         font-weight: 500;
       }
     }
@@ -159,7 +165,8 @@ export default {
 
   :deep(.v-btn) {
     &:hover > .v-btn__overlay {
-      opacity: 0;
+      opacity: 0.2;
+      transition: all 0.4s ease;
     }
   }
 }

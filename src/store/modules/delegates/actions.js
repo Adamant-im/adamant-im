@@ -1,8 +1,13 @@
 import * as constants from '../../../lib/constants'
 import * as admApi from '../../../lib/adamant-api'
 
-function _getDelegates (context, limit = constants.Delegates.ACTIVE_DELEGATES, offset = 0, votes = []) {
-  admApi.getDelegates(limit, offset).then(response => {
+function _getDelegates(
+  context,
+  limit = constants.Delegates.ACTIVE_DELEGATES,
+  offset = 0,
+  votes = []
+) {
+  admApi.getDelegates(limit, offset).then((response) => {
     if (response.success) {
       for (const i in response.delegates) {
         const delegate = response.delegates[i]
@@ -20,8 +25,8 @@ function _getDelegates (context, limit = constants.Delegates.ACTIVE_DELEGATES, o
   })
 }
 
-function checkUnconfirmedTransactions (context) {
-  admApi.checkUnconfirmedTransactions().then(response => {
+function checkUnconfirmedTransactions(context) {
+  admApi.checkUnconfirmedTransactions().then((response) => {
     if (response.success) {
       if (response.count === 0) {
         context.commit('set_last_transaction_status', true)
@@ -32,14 +37,14 @@ function checkUnconfirmedTransactions (context) {
   })
 }
 
-function getRoundDelegates (delegates, height) {
+function getRoundDelegates(delegates, height) {
   const currentRound = round(height)
   return delegates.filter((delegate, index) => {
     return currentRound === round(height + index + 1)
   })
 }
 
-function round (height) {
+function round(height) {
   if (isNaN(height)) {
     return 0
   } else {
@@ -50,28 +55,41 @@ function round (height) {
 export default {
   reset: {
     root: true,
-    handler (context) {
+    handler(context) {
       context.commit('reset')
     }
   },
-  getDelegates (context, payload) {
-    admApi.getDelegatesWithVotes(payload.address).then(response => {
-      if (response.success) {
-        const votes = response.delegates.map(vote => vote.address)
-        admApi.getDelegatesCount().then(response => {
-          if (response.success) {
-            for (let i = 0; i < response.count / constants.Delegates.ACTIVE_DELEGATES; i++) {
-              _getDelegates(context, constants.Delegates.ACTIVE_DELEGATES, i * constants.Delegates.ACTIVE_DELEGATES, votes)
-            }
-          }
-        })
+  async getDelegates(context, payload) {
+    try {
+      const votesResponse = await admApi.getDelegatesWithVotes(payload.address)
+      const votes = votesResponse.success ? votesResponse.delegates.map((vote) => vote.address) : []
+
+      const delegatesCountResponse = await admApi.getDelegatesCount()
+      if (!delegatesCountResponse.success) {
+        console.warn(delegatesCountResponse)
+        return
       }
-    })
+
+      for (
+        let i = 0;
+        i < delegatesCountResponse.count / constants.Delegates.ACTIVE_DELEGATES;
+        i++
+      ) {
+        _getDelegates(
+          context,
+          constants.Delegates.ACTIVE_DELEGATES,
+          i * constants.Delegates.ACTIVE_DELEGATES,
+          votes
+        )
+      }
+    } catch (err) {
+      console.warn(err)
+    }
   },
-  voteForDelegates (context, payload) {
+  voteForDelegates(context, payload) {
     context.commit('reset')
     // context.commit('ajax_start', null, { root: true })
-    admApi.voteForDelegates(payload.votes).then(response => {
+    admApi.voteForDelegates(payload.votes).then((response) => {
       if (response.success) {
         context.commit('set_last_transaction_status', false)
         // removing an UI waiting state if transaction confirmation run to much time
@@ -86,8 +104,8 @@ export default {
       }
     })
   },
-  getForgingTimeForDelegate (context, delegate) {
-    admApi.getNextForgers().then(response => {
+  getForgingTimeForDelegate(context, delegate) {
+    admApi.getNextForgers().then((response) => {
       if (response.success) {
         const nextForgers = response.delegates
         const fIndex = nextForgers.indexOf(delegate.publicKey)
@@ -96,16 +114,18 @@ export default {
           address: delegate.address,
           params: { forgingTime: forgingTime }
         })
-        admApi.getBlocks().then(response => {
+        admApi.getBlocks().then((response) => {
           if (response.success) {
             const lastBlock = response.blocks[0]
-            const blocks = response.blocks.filter(x => x.generatorPublicKey === delegate.publicKey)
+            const blocks = response.blocks.filter(
+              (x) => x.generatorPublicKey === delegate.publicKey
+            )
             const time = Date.now()
             const status = { updatedAt: time }
             let isRoundDelegate = false
             if (blocks.length > 0) {
               status.lastBlock = blocks[0]
-              status.blockAt = new Date(((constants.EPOCH + status.lastBlock.timestamp) * 1000))
+              status.blockAt = new Date((constants.EPOCH + status.lastBlock.timestamp) * 1000)
               const roundDelegates = getRoundDelegates(nextForgers, lastBlock.height)
               isRoundDelegate = roundDelegates.indexOf(delegate.publicKey) !== -1
               status.networkRound = round(lastBlock.height)
@@ -132,16 +152,16 @@ export default {
             } else if (!status.blockAt || !status.updatedAt || status.lastBlock === null) {
               // Awaiting status or unprocessed
               status.code = 5
-            // For delegates which not forged a single block yet (statuses 0,3,5 not apply here)
+              // For delegates which not forged a single block yet (statuses 0,3,5 not apply here)
             } else if (!status.blockAt && status.updatedAt) {
               if (!isRoundDelegate && delegate.missedblocks === 1) {
                 // Missed block in current round
                 status.code = 1
               } else if (delegate.missedblocks > 1) {
-              // Missed more than 1 block = not forging
+                // Missed more than 1 block = not forging
                 status.code = 2
               } else if (delegate.missedblocks === 1) {
-              // Missed block in previous round
+                // Missed block in previous round
                 status.code = 4
               }
             } else {
@@ -157,8 +177,8 @@ export default {
       }
     })
   },
-  getForgedByAccount (context, delegate) {
-    admApi.getForgedByAccount(delegate.publicKey).then(response => {
+  getForgedByAccount(context, delegate) {
+    admApi.getForgedByAccount(delegate.publicKey).then((response) => {
       if (response.success) {
         context.commit('update_delegate', {
           address: delegate.address,
