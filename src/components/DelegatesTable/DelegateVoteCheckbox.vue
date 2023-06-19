@@ -31,15 +31,13 @@ export default {
     const store = useStore()
 
     const className = 'delegate-vote-checkbox'
-    const voteName = 'mdi-thumb'
     const classes = reactive({
       root: className,
       icon: `${className}__icon`
     })
     const votes = reactive({
-      root: voteName,
-      upVote: `${voteName}-up`,
-      downVote: `${voteName}-up-outline`
+      upVote: 'mdi-thumb-up',
+      downVote: 'mdi-thumb-up-outline'
     })
 
     const voted = computed(() => delegate._voted)
@@ -52,7 +50,7 @@ export default {
       if (originalVoted) {
         classes.icon = `${className}__icon`
       } else {
-        classes.icon = `${className}__upvote`
+        classes.icon = `${className}-good`
       }
     }
     const handleDownVote = (event) => {
@@ -60,8 +58,8 @@ export default {
       store.commit('delegates/downVote', address.value)
 
       if (originalVoted) {
-        classes.icon = `${className}__downvote`
-        votes.downVote = `${voteName}-down-outline`
+        classes.icon = `${className}-danger`
+        votes.downVote = 'mdi-thumb-down-outline'
       } else {
         classes.icon = `${className}__icon`
       }
@@ -88,10 +86,10 @@ export default {
     font-size: 24px !important;
     height: 24px !important;
   }
-  &__upvote {
+  &-good {
     color: map-get($adm-colors, 'good');
   }
-  &__downvote {
+  &-danger {
     color: map-get($adm-colors, 'danger');
   }
 }
