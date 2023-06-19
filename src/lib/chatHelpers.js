@@ -21,7 +21,7 @@ const KnownCryptos = Object.keys(Cryptos).reduce((map, crypto) => {
     map[key] = crypto
   }
   return map
-}, { })
+}, {})
 
 /** Cryptos, supported by other clients, but not PWA */
 const UnsupportedCryptos = {
@@ -39,7 +39,7 @@ const queue = new Queue(maxConcurent, maxQueue)
  * @param {string} recipientId
  * @returns {Promise}
  */
-export function queueMessage (message, recipientId) {
+export function queueMessage(message, recipientId) {
   return queue.add(() => {
     return admApi.sendMessage({
       to: recipientId,
@@ -55,46 +55,44 @@ export function queueMessage (message, recipientId) {
  * @param {boolean} recursive
  * @returns {Promise<{messages: Message[], lastMessageHeight: number}>} Array of messages
  */
-export function getChats (startHeight = 0, startOffset = 0, recursive = true) {
+export function getChats(startHeight = 0, startOffset = 0, recursive = true) {
   let allTransactions = []
   let lastMessageHeight = 0
 
-  function loadMessages (height = 0, offset = 0) {
-    return admApi.getChats(height, offset, 'asc')
-      .then(result => {
-        const { transactions } = result
-        const length = transactions.length
+  function loadMessages(height = 0, offset = 0) {
+    return admApi.getChats(height, offset, 'asc').then((result) => {
+      const { transactions } = result
+      const length = transactions.length
 
-        // if no more messages
-        if (length <= 0) {
-          return allTransactions
-        }
+      // if no more messages
+      if (length <= 0) {
+        return allTransactions
+      }
 
-        allTransactions = [...allTransactions, ...transactions]
+      allTransactions = [...allTransactions, ...transactions]
 
-        // Save `height` from last message.
-        lastMessageHeight = transactions[length - 1].height
+      // Save `height` from last message.
+      lastMessageHeight = transactions[length - 1].height
 
-        // recursive
-        if (recursive) {
-          return loadMessages(height, offset + length)
-        } else {
-          return allTransactions
-        }
-      })
+      // recursive
+      if (recursive) {
+        return loadMessages(height, offset + length)
+      } else {
+        return allTransactions
+      }
+    })
   }
 
-  return loadMessages(startHeight, startOffset)
-    .then(transactions => ({
-      messages: transactions,
-      lastMessageHeight: lastMessageHeight
-    }))
+  return loadMessages(startHeight, startOffset).then((transactions) => ({
+    messages: transactions,
+    lastMessageHeight: lastMessageHeight
+  }))
 }
 
 /**
  * Create empty chat.
  */
-export function createChat () {
+export function createChat() {
   return {
     messages: [],
     numOfNewMessages: 0,
@@ -111,7 +109,7 @@ export function createChat () {
  * @param {string} message
  * @param {string} status
  */
-export function createMessage ({ recipientId, senderId, message, status = TS.PENDING }) {
+export function createMessage({ recipientId, senderId, message, status = TS.PENDING }) {
   return {
     id: utils.epochTime(), // @todo uuid will be better
     recipientId,
@@ -133,7 +131,7 @@ export function createMessage ({ recipientId, senderId, message, status = TS.PEN
  * @param {string} type ADM, ETH...
  * @param {string} status
  */
-export function createTransaction (payload) {
+export function createTransaction(payload) {
   const {
     transactionId,
     recipientId,
@@ -167,7 +165,7 @@ export function createTransaction (payload) {
  * Returns real timestamp by ADM timestamp.
  * @param {number} admTimestamp
  */
-export function getRealTimestamp (admTimestamp) {
+export function getRealTimestamp(admTimestamp) {
   const foundationDate = Date.UTC(2017, 8, 2, 17, 0, 0, 0)
 
   return parseInt(admTimestamp) * 1000 + foundationDate
@@ -178,7 +176,7 @@ export function getRealTimestamp (admTimestamp) {
  * @param {Object} abstract Message object returned by the server.
  * @returns {Message} See `components/AChat/types.ts`
  */
-export function transformMessage (abstract) {
+export function transformMessage(abstract) {
   const transaction = {}
 
   // common properties for all transaction types
@@ -188,9 +186,10 @@ export function transformMessage (abstract) {
   transaction.admTimestamp = abstract.timestamp
   transaction.timestamp = getRealTimestamp(abstract.timestamp)
   transaction.confirmations = abstract.confirmations
-  transaction.status = abstract.height || abstract.confirmations > 0
-    ? TS.CONFIRMED
-    : abstract.status
+  transaction.status =
+    abstract.height || abstract.confirmations > 0
+      ? TS.CONFIRMED
+      : abstract.status
       ? abstract.status
       : TS.REGISTERED
   transaction.i18n = !!abstract.i18n
@@ -199,7 +198,8 @@ export function transformMessage (abstract) {
   transaction.height = abstract.height
   transaction.asset = {}
 
-  if (abstract.message && abstract.message.type) { // cryptos
+  if (abstract.message && abstract.message.type) {
+    // cryptos
     transaction.asset = abstract.message
     transaction.message = abstract.message.comments || ''
     transaction.amount = isNumeric(abstract.message.amount) ? +abstract.message.amount : 0
@@ -215,13 +215,12 @@ export function transformMessage (abstract) {
       transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
       transaction.status = TS.UNKNOWN
     }
-  } else { // ADM transaction or Message
+  } else {
+    // ADM transaction or Message
     transaction.message = abstract.message || ''
     transaction.hash = abstract.id // adm transaction id (hash)
 
-    abstract.amount > 0
-      ? transaction.type = 'ADM'
-      : transaction.type = 'message'
+    abstract.amount > 0 ? (transaction.type = 'ADM') : (transaction.type = 'message')
   }
 
   return transaction
