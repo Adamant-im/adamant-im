@@ -15,26 +15,12 @@
         <slot name="avatar" />
       </div>
       <div class="a-chat__message-card">
-        <div
-          v-if="!hideTime"
-          class="a-chat__message-card-header mt-1"
-        >
-          <div
-            v-if="status.status === 'CONFIRMED'"
-            class="a-chat__blockchain-status"
-          >
-            &#x26AD;
-          </div>
-          <div
-            :title="timeTitle"
-            class="a-chat__timestamp"
-          >
+        <div v-if="!hideTime" class="a-chat__message-card-header mt-1">
+          <div v-if="status.status === 'CONFIRMED'" class="a-chat__blockchain-status">&#x26AD;</div>
+          <div :title="timeTitle" class="a-chat__timestamp">
             {{ time }}
           </div>
-          <div
-            v-if="isOutgoingMessage"
-            class="a-chat__status"
-          >
+          <div v-if="isOutgoingMessage" class="a-chat__status">
             <v-icon
               v-if="status.status === 'REJECTED'"
               :icon="statusIcon"
@@ -43,27 +29,15 @@
               color="red"
               @click="$emit('resend')"
             />
-            <v-icon
-              v-else
-              :icon="statusIcon"
-              size="13"
-            />
+            <v-icon v-else :icon="statusIcon" size="13" />
           </div>
         </div>
         <div class="a-chat__message-card-body">
           <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
           <!-- AChatMessage :message <- Chat.vue :message="formatMessage(message)" <- formatMessage <- DOMPurify.sanitize() -->
-          <div
-            v-if="html"
-            class="a-chat__message-text a-text-regular-enlarged"
-            v-html="message"
-          />
+          <div v-if="html" class="a-chat__message-text a-text-regular-enlarged" v-html="message" />
           <!-- eslint-enable vue/no-v-html -->
-          <div
-            v-else
-            class="a-chat__message-text a-text-regular-enlarged"
-            v-text="message"
-          />
+          <div v-else class="a-chat__message-text a-text-regular-enlarged" v-text="message" />
         </div>
       </div>
     </div>
@@ -129,10 +103,10 @@ export default {
   },
   emits: ['resend'],
   computed: {
-    statusIcon () {
+    statusIcon() {
       return tsIcon(this.status.virtualStatus)
     },
-    isOutgoingMessage () {
+    isOutgoingMessage() {
       return isStringEqualCI(this.sender.id, this.userId)
     }
   },
@@ -145,7 +119,7 @@ export default {
     //   if (this.status === TS.REGISTERED) return TS.CONFIRMED
     //   return this.status
     // },
-    isStringEqualCI (string1, string2) {
+    isStringEqualCI(string1, string2) {
       return isStringEqualCI(string1, string2)
     }
   }
