@@ -4,13 +4,13 @@
     :src="dataUrl"
     alt=""
   >
-  <div v-else>
-    <InlineSpinner size="150" />
+  <div class="spinner" v-else>
+    <InlineSpinner size="152" />
   </div>
 </template>
 
 <script>
-import InlineSpinner from "@/components/InlineSpinner";
+import InlineSpinner from "@/components/InlineSpinner"
 import QRCode from 'qrcode'
 
 export default {
@@ -76,7 +76,7 @@ img {
   display: block; // [1]
   max-width: 100%;
 }
-div {
+.spinner {
   overflow: hidden;
 }
 </style>
