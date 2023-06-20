@@ -79,7 +79,6 @@ img {
 .spinner-container {
   display: flex;
   align-items: center;
-  width: 250px;
-  height: 250px;
+  max-width: 250px;
 }
 </style>
