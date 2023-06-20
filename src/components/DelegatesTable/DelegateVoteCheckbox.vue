@@ -50,7 +50,7 @@ export default {
       if (originalVoted) {
         classes.icon = `${className}__icon`
       } else {
-        classes.icon = `${className}-good`
+        classes.icon = `${className}__icon--good`
       }
     }
     const handleDownVote = (event) => {
@@ -58,7 +58,7 @@ export default {
       store.commit('delegates/downVote', address.value)
 
       if (originalVoted) {
-        classes.icon = `${className}-danger`
+        classes.icon = `${className}__icon--danger`
         votes.downVote = 'mdi-thumb-down-outline'
       } else {
         classes.icon = `${className}__icon`
@@ -85,12 +85,12 @@ export default {
   &__icon {
     font-size: 24px !important;
     height: 24px !important;
-  }
-  &-good {
-    color: map-get($adm-colors, 'good');
-  }
-  &-danger {
-    color: map-get($adm-colors, 'danger');
+    &--good {
+      color: map-get($adm-colors, 'good');
+    }
+    &--danger {
+      color: map-get($adm-colors, 'danger');
+    }
   }
 }
 
