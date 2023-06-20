@@ -4,8 +4,8 @@
     :src="dataUrl"
     alt=""
   >
-  <div class="spinner" v-else>
-    <InlineSpinner size="152" />
+  <div class="spinner-container" v-else>
+    <InlineSpinner :size="152" />
   </div>
 </template>
 
@@ -76,7 +76,7 @@ img {
   display: block; // [1]
   max-width: 100%;
 }
-.spinner {
+.spinner-container {
   overflow: hidden;
 }
 </style>
