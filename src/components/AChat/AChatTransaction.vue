@@ -3,15 +3,10 @@
     class="a-chat__message-container"
     :class="{ 'a-chat__message-container--right': isStringEqualCI(sender.id, userId) }"
   >
-    <div
-      class="a-chat__message"
-    >
+    <div class="a-chat__message">
       <div class="a-chat__message-card">
         <div class="a-chat__message-card-header">
-          <div
-            :title="timeTitle"
-            class="a-chat__timestamp"
-          >
+          <div :title="timeTitle" class="a-chat__timestamp">
             {{ time }}
           </div>
           <div class="a-chat__status">
@@ -20,7 +15,7 @@
               :icon="statusIcon"
               :title="statusTitle"
               :color="statusColor"
-              :style="statusUpdatable ? 'cursor: pointer;': 'cursor: default;'"
+              :style="statusUpdatable ? 'cursor: pointer;' : 'cursor: default;'"
               @click="updateStatus"
             />
           </div>
@@ -28,17 +23,18 @@
 
         <div>
           <div class="a-chat__direction a-text-regular-bold">
-            {{ isStringEqualCI(sender.id, userId) ? $t('chats.sent_label') : $t('chats.received_label') }}
+            {{
+              isStringEqualCI(sender.id, userId)
+                ? $t('chats.sent_label')
+                : $t('chats.received_label')
+            }}
           </div>
           <div
             class="a-chat__amount"
-            :class="isClickable ? 'a-chat__amount--clickable': ''"
+            :class="isClickable ? 'a-chat__amount--clickable' : ''"
             @click="onClickAmount"
           >
-            <v-row
-              align="center"
-              no-gutters
-            >
+            <v-row align="center" no-gutters>
               <slot name="crypto" />
               <div class="a-chat__rates-column d-flex ml-4">
                 <span class="mb-1">{{ currencyFormatter(amount, crypto) }}</span>
@@ -125,47 +121,54 @@ export default {
   },
   emits: ['mount', 'click:transaction', 'click:transactionStatus'],
   computed: {
-    statusTitle () {
+    statusTitle() {
       return this.$t(`chats.transaction_statuses.${this.status.virtualStatus}`)
     },
-    statusIcon () {
+    statusIcon() {
       return tsIcon(this.status.virtualStatus)
     },
-    statusUpdatable () {
+    statusUpdatable() {
       return tsUpdatable(this.status.virtualStatus, this.currency)
     },
-    statusColor () {
+    statusColor() {
       return tsColor(this.status.virtualStatus)
     },
-    historyRate () {
+    historyRate() {
       const amount = currencyAmount(this.amount, this.crypto)
-      return '~' + this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.txTimestamp), amount, this.crypto)
+      return (
+        '~' +
+        this.$store.getters['rate/historyRate'](
+          timestampInSec(this.crypto, this.txTimestamp),
+          amount,
+          this.crypto
+        )
+      )
     }
   },
   watch: {
-    txTimestamp () {
+    txTimestamp() {
       this.getHistoryRates()
     }
   },
-  mounted () {
+  mounted() {
     this.$emit('mount')
     this.getHistoryRates()
   },
   methods: {
-    isStringEqualCI (string1, string2) {
+    isStringEqualCI(string1, string2) {
       return isStringEqualCI(string1, string2)
     },
-    onClickAmount () {
+    onClickAmount() {
       if (this.isClickable) {
         this.$emit('click:transaction', this.id)
       }
     },
-    updateStatus () {
+    updateStatus() {
       if (this.statusUpdatable) {
         this.$emit('click:transactionStatus', this.id)
       }
     },
-    getHistoryRates () {
+    getHistoryRates() {
       this.$store.dispatch('rate/getHistoryRates', {
         timestamp: timestampInSec(this.crypto, this.txTimestamp)
       })
