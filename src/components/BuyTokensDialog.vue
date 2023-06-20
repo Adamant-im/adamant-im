@@ -53,7 +53,7 @@
             @click="openLink('https://stakecube.net/app/exchange/adm_usdt?layout=pro&team=adm')"
           >
             <template #prepend>
-              <icon><stakeCube-icon /></icon>
+              <icon><stake-cube-icon /></icon>
             </template>
 
             <v-list-item-title>StakeCube</v-list-item-title>
