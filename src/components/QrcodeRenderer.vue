@@ -1,11 +1,16 @@
 <template>
   <img
+    v-if="dataUrl"
     :src="dataUrl"
     alt=""
   >
+  <div v-else>
+    <InlineSpinner size="150" />
+  </div>
 </template>
 
 <script>
+import InlineSpinner from "@/components/InlineSpinner";
 import QRCode from 'qrcode'
 
 export default {
@@ -20,6 +25,9 @@ export default {
       required: true,
       type: String
     }
+  },
+  components: {
+    InlineSpinner
   },
   data: () => ({
     dataUrl: ''
@@ -67,5 +75,8 @@ export default {
 img {
   display: block; // [1]
   max-width: 100%;
+}
+div {
+  overflow: hidden;
 }
 </style>
