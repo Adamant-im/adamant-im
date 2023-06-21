@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import InlineSpinner from "@/components/InlineSpinner"
+import InlineSpinner from '@/components/InlineSpinner'
 import QRCode from 'qrcode'
 
 export default {
