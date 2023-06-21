@@ -7,17 +7,13 @@
       :partners="partners"
       :user-id="userId"
       :loading="loading"
-
       :locale="$i18n.locale"
       @scroll:top="onScrollTop"
       @scroll:bottom="onScrollBottom"
-
       @scroll="onScroll"
     >
       <template #header>
-        <chat-toolbar
-          :partner-id="partnerId"
-        >
+        <chat-toolbar :partner-id="partnerId">
           <template #avatar-toolbar>
             <ChatAvatar
               class="chat-avatar"
@@ -29,9 +25,7 @@
         </chat-toolbar>
       </template>
 
-      <template
-        #message="{ message, userId, sender, locale }"
-      >
+      <template #message="{ message, userId, sender, locale }">
         <a-chat-message
           v-if="message.type === 'message'"
           v-bind="message"
@@ -49,11 +43,7 @@
           @resend="resendMessage(partnerId, message.id)"
         >
           <template #avatar>
-            <ChatAvatar
-              :user-id="sender.id"
-              use-public-key
-              @click="onClickAvatar(sender.id)"
-            />
+            <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
           </template>
         </a-chat-message>
         <a-chat-transaction
@@ -76,9 +66,7 @@
           @mount="fetchTransactionStatus(message, partnerId)"
         >
           <template #crypto>
-            <crypto-icon
-              :crypto="message.type"
-            />
+            <crypto-icon :crypto="message.type" />
           </template>
         </a-chat-transaction>
       </template>
@@ -95,9 +83,7 @@
           @message="onMessage"
         >
           <template #prepend>
-            <chat-menu
-              :partner-id="partnerId"
-            />
+            <chat-menu :partner-id="partnerId" />
           </template>
         </a-chat-form>
       </template>
@@ -112,10 +98,7 @@
           size="small"
           @click="$refs.chat.scrollToBottom()"
         >
-          <v-icon
-            icon="mdi-chevron-down"
-            size="x-large"
-          />
+          <v-icon icon="mdi-chevron-down" size="x-large" />
         </v-btn>
       </template>
     </a-chat>
@@ -148,7 +131,7 @@ import { isWelcomeChat } from '@/lib/chat/meta/utils'
  * @param {string} userId
  * @returns {User} See `packages/chat/src/types.ts`
  */
-function getUserMeta (userId) {
+function getUserMeta(userId) {
   const user = {
     id: userId,
     name: ''
@@ -168,7 +151,7 @@ function getUserMeta (userId) {
  * @param {string} message
  * @returns {boolean}
  */
-function validateMessage (message) {
+function validateMessage(message) {
   // Ensure that message contains at least one non-whitespace character
   if (!message.trim().length) {
     return false
@@ -183,7 +166,7 @@ function validateMessage (message) {
     return false
   }
 
-  if ((message.length * 1.5) > 20000) {
+  if (message.length * 1.5 > 20000) {
     this.$store.dispatch('snackbar/show', {
       message: this.$t('chats.too_long')
     })
@@ -226,50 +209,47 @@ export default {
      * Returns array of transformed messages.
      * @returns {Message[]}
      */
-    messages () {
+    messages() {
       return this.$store.getters['chat/messages'](this.partnerId)
     },
     /**
      * Returns array of partners who participate in chat.
      * @returns {User[]}
      */
-    partners () {
-      return [
-        getUserMeta.call(this, this.userId),
-        getUserMeta.call(this, this.partnerId)
-      ]
+    partners() {
+      return [getUserMeta.call(this, this.userId), getUserMeta.call(this, this.partnerId)]
     },
-    userId () {
+    userId() {
       return this.$store.state.address
     },
-    sendMessageOnEnter () {
+    sendMessageOnEnter() {
       return this.$store.state.options.sendMessageOnEnter
     },
-    isFulfilled () {
+    isFulfilled() {
       return this.$store.state.chat.isFulfilled
     },
-    lastMessage () {
+    lastMessage() {
       return this.$store.getters['chat/lastMessage'](this.partnerId)
     },
-    chatPage () {
+    chatPage() {
       return this.$store.getters['chat/chatPage'](this.partnerId)
     },
-    scrollPosition () {
+    scrollPosition() {
       return this.$store.getters['chat/scrollPosition'](this.partnerId)
     },
-    numOfNewMessages () {
+    numOfNewMessages() {
       return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
     }
   },
   watch: {
     // Scroll to the bottom every time window focused by desktop notification
-    '$store.state.notification.desktopActivateClickCount' () {
+    '$store.state.notification.desktopActivateClickCount'() {
       nextTick(() => {
         this.$refs.chat.scrollToBottom()
       })
     },
     // scroll to bottom when received new message
-    lastMessage () {
+    lastMessage() {
       nextTick(() => {
         if (this.isScrolledToBottom) {
           this.$refs.chat.scrollToBottom()
@@ -279,18 +259,18 @@ export default {
       })
     },
     // watch `isFulfilled` when opening chat directly from address bar
-    isFulfilled (value) {
+    isFulfilled(value) {
       if (value && (!this.chatPage || this.chatPage <= 0)) this.fetchChatMessages()
     }
   },
-  created () {
+  created() {
     window.addEventListener('keyup', this.onKeyPress)
   },
-  beforeUnmount () {
+  beforeUnmount() {
     window.removeEventListener('keyup', this.onKeyPress)
     Visibility.unbind(this.visibilityId)
   },
-  mounted () {
+  mounted() {
     if (this.isFulfilled && this.chatPage <= 0) this.fetchChatMessages()
     this.scrollBehavior()
     nextTick(() => {
@@ -299,49 +279,55 @@ export default {
     this.visibilityId = Visibility.change((event, state) => {
       if (state === 'visible' && this.isScrolledToBottom) this.markAsRead()
     })
-    this.chatFormLabel = {
-      'Mac OS': this.$t('chats.message_mac_os'),
-      'Windows 10': this.$t('chats.message_windows_10')
-    }[detect().os] || this.$t('chats.message')
+    this.chatFormLabel =
+      {
+        'Mac OS': this.$t('chats.message_mac_os'),
+        'Windows 10': this.$t('chats.message_windows_10')
+      }[detect().os] || this.$t('chats.message')
   },
   methods: {
-    onMessage (message) {
+    onMessage(message) {
       if (validateMessage.call(this, message)) {
         this.sendMessage(message)
         nextTick(() => this.$refs.chat.scrollToBottom())
       }
     },
-    sendMessage (message) {
-      return this.$store.dispatch('chat/sendMessage', {
-        message,
-        recipientId: this.partnerId
+    sendMessage(message) {
+      return this.$store
+        .dispatch('chat/sendMessage', {
+          message,
+          recipientId: this.partnerId
+        })
+        .catch((err) => {
+          console.error(err.message)
+        })
+    },
+    resendMessage(recipientId, messageId) {
+      return this.$store.dispatch('chat/resendMessage', { recipientId, messageId }).catch((err) => {
+        this.$store.dispatch('snackbar/show', {
+          message: err.message
+        })
+        console.error(err.message)
       })
-        .catch(err => {
-          console.error(err.message)
-        })
     },
-    resendMessage (recipientId, messageId) {
-      return this.$store.dispatch('chat/resendMessage', { recipientId, messageId })
-        .catch(err => {
-          this.$store.dispatch('snackbar/show', {
-            message: err.message
-          })
-          console.error(err.message)
-        })
+    updateTransactionStatus(message) {
+      this.$store.dispatch(message.type.toLowerCase() + '/updateTransaction', {
+        hash: message.hash,
+        force: true,
+        updateOnly: false,
+        dropStatus: true
+      })
     },
-    updateTransactionStatus (message) {
-      this.$store.dispatch(message.type.toLowerCase() + '/updateTransaction', { hash: message.hash, force: true, updateOnly: false, dropStatus: true })
-    },
-    markAsRead () {
+    markAsRead() {
       this.$store.commit('chat/markAsRead', this.partnerId)
     },
-    onScrollTop () {
+    onScrollTop() {
       this.fetchChatMessages()
     },
-    onScrollBottom () {
+    onScrollBottom() {
       this.markAsRead()
     },
-    onScroll (scrollPosition, isBottom) {
+    onScroll(scrollPosition, isBottom) {
       this.isScrolledToBottom = isBottom
 
       this.$store.commit('chat/updateScrollPosition', {
@@ -352,10 +338,10 @@ export default {
     /**
      * @param {string} address ADAMANT address
      */
-    onClickAvatar (address) {
+    onClickAvatar(address) {
       this.$emit('click:chat-avatar', address)
     },
-    openTransaction (transaction) {
+    openTransaction(transaction) {
       if (transaction.type in Cryptos) {
         this.$router.push({
           name: 'Transaction',
@@ -369,16 +355,13 @@ export default {
         })
       }
     },
-    isTransaction (type) {
-      return (
-        type in Cryptos ||
-        type === 'UNKNOWN_CRYPTO'
-      )
+    isTransaction(type) {
+      return type in Cryptos || type === 'UNKNOWN_CRYPTO'
     },
-    isCryptoSupported (type) {
+    isCryptoSupported(type) {
       return type in Cryptos
     },
-    formatMessage (transaction) {
+    formatMessage(transaction) {
       if (this.isWelcomeChat(this.partnerId) || transaction.i18n) {
         return renderMarkdown(websiteUriToOnion(this.$t(transaction.message)))
       }
@@ -389,13 +372,14 @@ export default {
 
       return sanitizeHTML(transaction.message)
     },
-    fetchChatMessages () {
+    fetchChatMessages() {
       if (this.noMoreMessages) return
       if (this.loading) return
 
       this.loading = true
 
-      return this.$store.dispatch('chat/getChatRoomMessages', { contactId: this.partnerId })
+      return this.$store
+        .dispatch('chat/getChatRoomMessages', { contactId: this.partnerId })
         .catch(() => {
           this.noMoreMessages = true
         })
@@ -404,7 +388,7 @@ export default {
           this.$refs.chat.maintainScrollPosition()
         })
     },
-    scrollBehavior () {
+    scrollBehavior() {
       nextTick(() => {
         if (this.numOfNewMessages > 0) {
           this.$refs.chat.scrollToMessage(this.numOfNewMessages - 1)
@@ -417,7 +401,7 @@ export default {
         this.markAsRead()
       })
     },
-    onKeyPress (e) {
+    onKeyPress(e) {
       if (e.code === 'Enter' && !this.showFreeTokensDialog) this.$refs.chatForm.focus()
     },
     formatDate,
