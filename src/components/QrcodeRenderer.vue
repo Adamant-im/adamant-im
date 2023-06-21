@@ -80,5 +80,6 @@ img {
   display: flex;
   align-items: center;
   max-width: 250px;
+  overflow: hidden
 }
 </style>
