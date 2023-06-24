@@ -382,10 +382,11 @@ export function getTransactions (options = { }) {
 /**
  * Returns transaction with the specified ID.
  * @param {string} id transaction ID
+ * @param {number} returnAsset 1 - Populate `asset` property; 0 - Leave `asset` empty
  * @returns {Promise<{id: string, height: number, amount: number}>}
  */
-export function getTransaction (id) {
-  const query = { id }
+export function getTransaction (id, returnAsset = 0) {
+  const query = { id, returnAsset }
   return client.get('/api/transactions/get', query)
     .then(response => {
       if (response.success) return response
