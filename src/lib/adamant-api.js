@@ -139,7 +139,12 @@ export function getPublicKey (address = '') {
 
 /**
  * Sends message with the specified payload
- * @param {MsgParams} params
+ * @param {{
+ *   to: string,
+ *   message?: string | any,
+ *   type?: number,
+ *   amount?: number
+ * }} params
  * @returns {Promise<{success: boolean, transactionId: string}>}
  */
 export function sendMessage (params) {
