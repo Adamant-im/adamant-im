@@ -627,7 +627,6 @@ export async function getChatRooms (address, params) {
 export async function getChatRoomMessages (address1, address2, params) {
   const defaultParams = {
     orderBy: 'timestamp:desc',
-    height: 0,
     limit: 25
   }
 
