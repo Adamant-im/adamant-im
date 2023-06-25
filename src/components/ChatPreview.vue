@@ -87,7 +87,12 @@
           ]"
         >
           <v-icon
-            v-if="!isIncomingTransaction"
+            v-if="transaction.isReply"
+            icon="mdi-arrow-left-top"
+            size="15"
+          />
+          <v-icon
+            v-else-if="!isIncomingTransaction"
             :icon="statusIcon"
             size="15"
           />

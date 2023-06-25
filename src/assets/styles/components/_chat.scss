@@ -94,6 +94,18 @@ $chat-avatar-size: 40px;
     border-radius: 8px;
   }
 
+  @keyframes flashing {
+    0% {}
+    50% {
+      background-color: rgba(map-get($adm-colors, 'primary'), 0.25);
+    }
+    100% {}
+  }
+
+  &__message--flashing {
+    animation: flashing 1s 1;
+  }
+
   /**
    * 1. Аvatar must have width/height even if empty.
    */
@@ -191,6 +203,11 @@ $chat-avatar-size: 40px;
         content: '';
       }
     }
+  }
+
+  &__quoted-message {
+    margin-top: 4px;
+    margin-bottom: 4px;
   }
 
   /**

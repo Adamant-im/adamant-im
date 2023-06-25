@@ -5,7 +5,10 @@
   >
     <div
       class="a-chat__message"
-      :class="{ 'a-chat__message--highlighted': isStringEqualCI(sender.id, userId) }"
+      :class="{
+        'a-chat__message--highlighted': isStringEqualCI(sender.id, userId),
+        'a-chat__message--flashing': flashing
+      }"
     >
       <div
         v-if="showAvatar"
@@ -32,6 +35,14 @@
             <v-icon v-else :icon="statusIcon" size="13" />
           </div>
         </div>
+
+        <div v-if="isReply" class="a-chat__quoted-message">
+          <quoted-message
+            :message-id="asset.replyto_id"
+            @click="$emit('click:quotedMessage', asset.replyto_id)"
+          />
+        </div>
+
         <div class="a-chat__message-card-body">
           <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
           <!-- AChatMessage :message <- Chat.vue :message="formatMessage(message)" <- formatMessage <- DOMPurify.sanitize() -->
@@ -47,8 +58,12 @@
 <script>
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
+import QuotedMessage from './QuotedMessage'
 
 export default {
+  components: {
+    QuotedMessage
+  },
   props: {
     id: {
       type: null,
@@ -96,12 +111,28 @@ export default {
         retry: 'Message did not sent, weak connection. Click to retry'
       })
     },
+    asset: {
+      type: Object,
+      // eslint-disable-next-line vue/require-valid-default-prop
+      default: {}
+    },
+    isReply: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Highlight the message by applying a background flash effect
+     */
+    flashing: {
+      type: Boolean,
+      default: false
+    },
     hideTime: {
       type: Boolean,
       default: false
     }
   },
-  emits: ['resend'],
+  emits: ['resend', 'click:quotedMessage'],
   computed: {
     statusIcon() {
       return tsIcon(this.status.virtualStatus)

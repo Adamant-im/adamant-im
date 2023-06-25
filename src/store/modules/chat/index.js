@@ -11,7 +11,7 @@ import {
 import { isNumeric } from '@/lib/numericHelpers'
 import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { generateAdamantChats } from "./utils/generateAdamantChats";
+import { generateAdamantChats } from './utils/generateAdamantChats'
 
 export let interval
 
@@ -49,14 +49,14 @@ const getters = {
    * Returns partner IDs.
    * @returns {string[]}
    */
-  partners: state => Object.keys(state.chats),
+  partners: (state) => Object.keys(state.chats),
 
   /**
    * Returns messages by senderId.
    * @param {string} senderId
    * @returns {Message[]}
    */
-  messages: state => senderId => {
+  messages: (state) => (senderId) => {
     const chat = state.chats[senderId]
 
     if (chat) {
@@ -71,14 +71,12 @@ const getters = {
    * @param {number} id Message Id
    * @returns {Message}
    */
-  messageById: (state, getters) => id => {
+  messageById: (state, getters) => (id) => {
     const partnerIds = getters.partners
     let message
 
     partnerIds.forEach((senderId) => {
-      const found = getters.messages(senderId).find(
-        message => message.id === id
-      )
+      const found = getters.messages(senderId).find((message) => message.id === id)
 
       if (found) {
         message = found
@@ -86,6 +84,27 @@ const getters = {
     })
 
     return message
+  },
+
+  /**
+   * Return message index by transaction ID (0 = last message in the chat)
+   * @returns {number}
+   */
+  indexOfMessage: (state, getters) => (partnerId, messageId) => {
+    const messages = getters.messages(partnerId)
+    const message = messages.find((message) => message.id === messageId)
+
+    if (!message) {
+      return -1
+    }
+
+    const index = messages.indexOf(message)
+
+    if (index === -1) {
+      return -1
+    }
+
+    return messages.length - 1 - index // reverse index
   },
 
   /**
@@ -97,7 +116,7 @@ const getters = {
   partnerMessageById: (state, getters) => (partnerId, messageId) => {
     const messages = getters.messages(partnerId)
 
-    return messages.find(message => message.id === messageId)
+    return messages.find((message) => message.id === messageId)
   },
 
   /**
@@ -105,7 +124,7 @@ const getters = {
    * @param {string} senderId
    * @returns {Message}
    */
-  lastMessage: (state, getters) => senderId => {
+  lastMessage: (state, getters) => (senderId) => {
     const senderIds = getters.partners
 
     if (senderIds.includes(senderId)) {
@@ -126,7 +145,7 @@ const getters = {
    * @param {string} senderId
    * @returns {string}
    */
-  lastMessageText: (state, getters) => senderId => {
+  lastMessageText: (state, getters) => (senderId) => {
     const message = getters.lastMessage(senderId) || {}
 
     return (message && message.message) || ''
@@ -137,7 +156,7 @@ const getters = {
    * @param {string} senderId
    * @returns {string}
    */
-  lastMessageTimestamp: (state, getters) => senderId => {
+  lastMessageTimestamp: (state, getters) => (senderId) => {
     const abstract = getters.lastMessage(senderId)
 
     if (abstract && isNumeric(abstract.timestamp)) {
@@ -147,7 +166,7 @@ const getters = {
     return ''
   },
 
-  isPartnerInChatList: (state, getters) => senderId => {
+  isPartnerInChatList: (state, getters) => (senderId) => {
     return getters.partners.includes(senderId)
   },
 
@@ -156,7 +175,7 @@ const getters = {
    * @param {string} senderId
    * @returns {number}
    */
-  numOfNewMessages: state => senderId => {
+  numOfNewMessages: (state) => (senderId) => {
     const chat = state.chats[senderId]
 
     if (chat) {
@@ -170,13 +189,10 @@ const getters = {
    * Returns total number of new messages.
    * @returns {number}
    */
-  totalNumOfNewMessages: state => {
+  totalNumOfNewMessages: (state) => {
     const senderIds = Object.keys(state.chats)
 
-    return senderIds.reduce(
-      (acc, senderId) => state.chats[senderId].numOfNewMessages + acc,
-      0
-    )
+    return senderIds.reduce((acc, senderId) => state.chats[senderId].numOfNewMessages + acc, 0)
   },
 
   /**
@@ -186,13 +202,12 @@ const getters = {
   unreadMessages: (state, getters) => {
     let messages = []
 
-    getters.partners.forEach(partnerId => {
+    getters.partners.forEach((partnerId) => {
       const numOfNewMessages = getters.numOfNewMessages(partnerId)
 
       // get last `n` messages
       const partnerMessages = getters.messages(partnerId)
-      const lastPartnerMessages = partnerMessages
-        .slice(partnerMessages.length - numOfNewMessages)
+      const lastPartnerMessages = partnerMessages.slice(partnerMessages.length - numOfNewMessages)
 
       messages = [...messages, ...lastPartnerMessages]
     })
@@ -214,7 +229,7 @@ const getters = {
     const partners = getters.partners
 
     return partners
-      .map(partnerId => {
+      .map((partnerId) => {
         const message = getters.lastMessage(partnerId)
 
         return {
@@ -226,7 +241,7 @@ const getters = {
       .sort((left, right) => right.timestamp - left.timestamp)
   },
 
-  scrollPosition: state => contactId => {
+  scrollPosition: (state) => (contactId) => {
     const chat = state.chats[contactId]
 
     if (chat && chat.scrollPosition !== undefined) {
@@ -239,7 +254,7 @@ const getters = {
   /**
    * Offset for chat with contactId
    */
-  chatOffset: state => contactId => {
+  chatOffset: (state) => (contactId) => {
     const chat = state.chats[contactId]
 
     return (chat && chat.offset) || 0
@@ -248,7 +263,7 @@ const getters = {
   /**
    * Current chat history page.
    */
-  chatPage: state => contactId => {
+  chatPage: (state) => (contactId) => {
     const chat = state.chats[contactId]
 
     return (chat && chat.page) || 0
@@ -257,7 +272,7 @@ const getters = {
   /**
    * Offset for chat list
    */
-  chatListOffset: state => {
+  chatListOffset: (state) => {
     return state.offset
   }
 }
@@ -266,11 +281,11 @@ const mutations = {
   /**
    * @param {number} height
    */
-  setHeight (state, height) {
+  setHeight(state, height) {
     state.lastMessageHeight = height
   },
 
-  setChatOffset (state, { contactId, offset }) {
+  setChatOffset(state, { contactId, offset }) {
     const chat = state.chats[contactId]
 
     if (chat) {
@@ -278,7 +293,7 @@ const mutations = {
     }
   },
 
-  setChatPage (state, { contactId, page }) {
+  setChatPage(state, { contactId, page }) {
     const chat = state.chats[contactId]
 
     if (chat) {
@@ -286,7 +301,7 @@ const mutations = {
     }
   },
 
-  setOffset (state, offset) {
+  setOffset(state, offset) {
     state.offset = offset
   },
 
@@ -294,7 +309,7 @@ const mutations = {
    * When chats are loaded, set to `true`.
    * @param {boolean} value
    */
-  setFulfilled (state, value) {
+  setFulfilled(state, value) {
     state.isFulfilled = value
   },
 
@@ -302,7 +317,7 @@ const mutations = {
    * Create empty chat.
    * @param {string} partnerId
    */
-  createEmptyChat (state, partnerId) {
+  createEmptyChat(state, partnerId) {
     const chat = state.chats[partnerId]
 
     // if the chat already exists, nothing to do
@@ -317,7 +332,7 @@ const mutations = {
    * Push an message to a specific chat by senderId.
    * @param {string} userId Your address
    */
-  pushMessage (state, { message, userId, unshift = false }) {
+  pushMessage(state, { message, userId, unshift = false }) {
     const partnerId = isStringEqualCI(message.senderId, userId)
       ? message.recipientId
       : message.senderId
@@ -331,20 +346,19 @@ const mutations = {
 
     // Shouldn't duplicate local messages added directly
     // when dispatch('getNewMessages'). Just update `status, height`.
-    const localMessage = chat.messages.find(localMessage => localMessage.id === message.id)
-    if (localMessage) { // is message in state
+    const localMessage = chat.messages.find((localMessage) => localMessage.id === message.id)
+    if (localMessage) {
+      // is message in state
       localMessage.status = message.status
       localMessage.height = message.height
       return
     }
 
     // Shouldn't duplicate third-party crypto transactions
-    if (
-      message.type &&
-      message.type !== 'message' &&
-      message.type !== Cryptos.ADM
-    ) {
-      const localTransaction = chat.messages.find(localTransaction => localTransaction.hash === message.hash)
+    if (message.type && message.type !== 'message' && message.type !== Cryptos.ADM) {
+      const localTransaction = chat.messages.find(
+        (localTransaction) => localTransaction.hash === message.hash
+      )
       if (localTransaction) return
     }
 
@@ -359,10 +373,8 @@ const mutations = {
     // Exception only when `height = 0`, this means that the
     // user cleared `localStorage` or logged in first time.
     if (
-      (
-        message.height === undefined || // unconfirmed transaction (socket)
-        (message.height > state.lastMessageHeight && state.lastMessageHeight > 0)
-      ) &&
+      (message.height === undefined || // unconfirmed transaction (socket)
+        (message.height > state.lastMessageHeight && state.lastMessageHeight > 0)) &&
       !isStringEqualCI(userId, message.senderId) // do not notify yourself when send message from other device
     ) {
       chat.numOfNewMessages += 1
@@ -373,7 +385,7 @@ const mutations = {
    * Mark messages of specific chat as read.
    * @param {string} partnerId
    */
-  markAsRead (state, partnerId) {
+  markAsRead(state, partnerId) {
     const chat = state.chats[partnerId]
 
     if (chat) {
@@ -384,10 +396,10 @@ const mutations = {
   /**
    * Marks all chats as read.
    */
-  markAllAsRead (state) {
+  markAllAsRead(state) {
     const senderIds = Object.keys(state.chats)
 
-    senderIds.forEach(senderId => {
+    senderIds.forEach((senderId) => {
       state.chats[senderId].numOfNewMessages = 0
     })
   },
@@ -401,11 +413,11 @@ const mutations = {
    * @param {string} realId Real id (from server)
    * @param {string} status Message status
    */
-  updateMessage (state, { partnerId, id, realId, status }) {
+  updateMessage(state, { partnerId, id, realId, status }) {
     const chat = state.chats[partnerId]
 
     if (chat) {
-      const message = chat.messages.find(message => message.id === id)
+      const message = chat.messages.find((message) => message.id === id)
 
       if (message) {
         if (realId) {
@@ -421,7 +433,7 @@ const mutations = {
   /**
    * Add `Welcome to ADAMANT` & `ADAMANT Tokens` to state.chats.
    */
-  createAdamantChats (state) {
+  createAdamantChats(state) {
     const chats = generateAdamantChats()
 
     Object.entries(chats).forEach(([senderId, chat]) => {
@@ -429,7 +441,7 @@ const mutations = {
     })
   },
 
-  updateScrollPosition (state, { contactId, scrollPosition }) {
+  updateScrollPosition(state, { contactId, scrollPosition }) {
     const chat = state.chats[contactId]
 
     if (chat) {
@@ -437,7 +449,7 @@ const mutations = {
     }
   },
 
-  reset (state) {
+  reset(state) {
     state.chats = {}
     state.lastMessageHeight = 0
     state.isFulfilled = false
@@ -453,32 +465,32 @@ const actions = {
    *
    * @returns {Promise}
    */
-  loadChats ({ commit, dispatch, rootState }, { perPage = 25 } = {}) {
+  loadChats({ commit, dispatch, rootState }, { perPage = 25 } = {}) {
     commit('setFulfilled', false)
 
-    return admApi.getChatRooms(rootState.address)
-      .then(result => {
-        const { messages, lastMessageHeight } = result
+    return admApi.getChatRooms(rootState.address).then((result) => {
+      const { messages, lastMessageHeight } = result
 
-        dispatch('pushMessages', messages)
+      dispatch('pushMessages', messages)
 
-        if (lastMessageHeight > 0) {
-          commit('setHeight', lastMessageHeight)
-          commit('setOffset', perPage)
-        }
+      if (lastMessageHeight > 0) {
+        commit('setHeight', lastMessageHeight)
+        commit('setOffset', perPage)
+      }
 
-        commit('setFulfilled', true)
-      })
+      commit('setFulfilled', true)
+    })
   },
 
-  loadChatsPaged ({ commit, dispatch, rootState, state }, { perPage = 25 } = {}) {
+  loadChatsPaged({ commit, dispatch, rootState, state }, { perPage = 25 } = {}) {
     const offset = state.offset
 
     if (offset === -1) {
       return Promise.reject(new Error('No more chats'))
     }
 
-    return admApi.getChatRooms(rootState.address, { offset, limit: perPage })
+    return admApi
+      .getChatRooms(rootState.address, { offset, limit: perPage })
       .then(({ messages }) => {
         dispatch('pushMessages', messages)
 
@@ -497,7 +509,7 @@ const actions = {
    * @param {number} perPage Messages per page
    * @returns {Promise}
    */
-  getChatRoomMessages ({ rootState, dispatch, commit, getters }, { contactId, perPage = 25 } = {}) {
+  getChatRoomMessages({ rootState, dispatch, commit, getters }, { contactId, perPage = 25 } = {}) {
     let offset = getters.chatOffset(contactId)
     let page = getters.chatPage(contactId)
 
@@ -505,7 +517,8 @@ const actions = {
       return Promise.reject(new Error('No more messages'))
     }
 
-    return admApi.getChatRoomMessages(rootState.address, contactId, { offset, limit: perPage })
+    return admApi
+      .getChatRoomMessages(rootState.address, contactId, { offset, limit: perPage })
       .then(({ messages }) => {
         dispatch('unshiftMessages', messages)
 
@@ -524,8 +537,8 @@ const actions = {
    * Push array of messages and sort by senderId.
    * @param {Message[]} messages Array of messages
    */
-  pushMessages ({ commit, rootState }, messages) {
-    messages.forEach(message => {
+  pushMessages({ commit, rootState }, messages) {
+    messages.forEach((message) => {
       commit('pushMessage', {
         message: transformMessage(message),
         userId: rootState.address
@@ -533,8 +546,8 @@ const actions = {
     })
   },
 
-  unshiftMessages ({ commit, rootState }, messages) {
-    messages.forEach(message => {
+  unshiftMessages({ commit, rootState }, messages) {
+    messages.forEach((message) => {
       commit('pushMessage', {
         message: transformMessage(message),
         userId: rootState.address,
@@ -549,21 +562,20 @@ const actions = {
    * This is a temporary solution until the sockets are implemented.
    * @returns {Promise}
    */
-  getNewMessages ({ state, commit, dispatch }) {
+  getNewMessages({ state, commit, dispatch }) {
     if (!state.isFulfilled) {
       return Promise.reject(new Error('Chat is not fulfilled'))
     }
 
-    return getChats(state.lastMessageHeight)
-      .then(result => {
-        const { messages, lastMessageHeight } = result
+    return getChats(state.lastMessageHeight).then((result) => {
+      const { messages, lastMessageHeight } = result
 
-        dispatch('pushMessages', messages)
+      dispatch('pushMessages', messages)
 
-        if (lastMessageHeight > 0) {
-          commit('setHeight', lastMessageHeight)
-        }
-      })
+      if (lastMessageHeight > 0) {
+        commit('setHeight', lastMessageHeight)
+      }
+    })
   },
 
   /**
@@ -576,13 +588,14 @@ const actions = {
    *
    * @todo Do I need to save the partner public key in state?
    */
-  createChat ({ commit }, { partnerId, partnerName = '' }) {
+  createChat({ commit }, { partnerId, partnerName = '' }) {
     if (!validateAddress('ADM', partnerId)) {
       return Promise.reject(new Error('Invalid user address'))
     }
 
-    return admApi.getPublicKey(partnerId)
-      .then(key => {
+    return admApi
+      .getPublicKey(partnerId)
+      .then((key) => {
         // @todo this check must be performed on the server and return error 400 instead of 200
         if (!key) {
           throw new Error('Account not found')
@@ -590,13 +603,17 @@ const actions = {
 
         return key
       })
-      .then(key => {
+      .then((key) => {
         // set partner name if provided
         if (partnerName) {
-          commit('partners/displayName', {
-            partner: partnerId,
-            displayName: partnerName
-          }, { root: true })
+          commit(
+            'partners/displayName',
+            {
+              partner: partnerId,
+              displayName: partnerName
+            },
+            { root: true }
+          )
         }
 
         commit('createEmptyChat', partnerId)
@@ -613,7 +630,7 @@ const actions = {
    * @param {string} recipientId
    * @returns {Promise}
    */
-  sendMessage ({ commit, rootState }, { message, recipientId }) {
+  sendMessage({ commit, rootState }, { message, recipientId }) {
     const messageObject = createMessage({
       message,
       recipientId,
@@ -626,7 +643,7 @@ const actions = {
     })
 
     return queueMessage(message, recipientId)
-      .then(res => {
+      .then((res) => {
         // @todo this check must be performed on the server
         if (!res.success) {
           throw new Error('Message rejected')
@@ -643,7 +660,7 @@ const actions = {
 
         return res
       })
-      .catch(err => {
+      .catch((err) => {
         // update `message.status` to 'REJECTED'
         commit('updateMessage', {
           id: messageObject.id,
@@ -661,7 +678,7 @@ const actions = {
    * @param {number} id Message Id
    * @returns {Promise}
    */
-  resendMessage ({ getters, commit }, { recipientId, messageId }) {
+  resendMessage({ getters, commit }, { recipientId, messageId }) {
     const message = getters.partnerMessageById(recipientId, messageId)
 
     // update message status from `rejected` to `sent`
@@ -674,7 +691,7 @@ const actions = {
 
     if (message) {
       return queueMessage(message.message, recipientId)
-        .then(res => {
+        .then((res) => {
           if (!res.success) {
             throw new Error('Message rejected')
           }
@@ -688,7 +705,7 @@ const actions = {
 
           return res
         })
-        .catch(err => {
+        .catch((err) => {
           commit('updateMessage', {
             id: messageId,
             status: TS.REJECTED,
@@ -714,16 +731,8 @@ const actions = {
    * @param {string} comment Transaction comment
    * @returns {number} Transaction ID
    */
-  pushTransaction ({ commit, rootState }, payload) {
-    const {
-      transactionId,
-      recipientId,
-      type,
-      status,
-      amount,
-      hash,
-      comment = ''
-    } = payload
+  pushTransaction({ commit, rootState }, payload) {
+    const { transactionId, recipientId, type, status, amount, hash, comment = '' } = payload
 
     const transactionObject = createTransaction({
       transactionId,
@@ -752,12 +761,14 @@ const actions = {
 
   startInterval: {
     root: true,
-    handler ({ dispatch, rootState }) {
-      function repeat () {
+    handler({ dispatch, rootState }) {
+      function repeat() {
         dispatch('getNewMessages')
-          .catch(err => console.error(err))
+          .catch((err) => console.error(err))
           .then(() => {
-            const timeout = rootState.options.useSocketConnection ? SOCKET_ENABLED_TIMEOUT : SOCKET_DISABLED_TIMEOUT
+            const timeout = rootState.options.useSocketConnection
+              ? SOCKET_ENABLED_TIMEOUT
+              : SOCKET_DISABLED_TIMEOUT
             interval = setTimeout(repeat, timeout)
           })
       }
@@ -768,7 +779,7 @@ const actions = {
 
   stopInterval: {
     root: true,
-    handler () {
+    handler() {
       clearTimeout(interval)
     }
   },
@@ -776,7 +787,7 @@ const actions = {
   /** Resets module state **/
   reset: {
     root: true,
-    handler ({ commit }) {
+    handler({ commit }) {
       commit('reset')
     }
   }

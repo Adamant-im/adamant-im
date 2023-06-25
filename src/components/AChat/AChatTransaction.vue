@@ -3,7 +3,12 @@
     class="a-chat__message-container"
     :class="{ 'a-chat__message-container--right': isStringEqualCI(sender.id, userId) }"
   >
-    <div class="a-chat__message">
+    <div
+      class="a-chat__message"
+      :class="{
+        'a-chat__message--flashing': flashing
+      }"
+    >
       <div class="a-chat__message-card">
         <div class="a-chat__message-card-header">
           <div :title="timeTitle" class="a-chat__timestamp">
@@ -19,6 +24,13 @@
               @click="updateStatus"
             />
           </div>
+        </div>
+
+        <div v-if="isReply" class="a-chat__quoted-message">
+          <quoted-message
+            :message-id="asset.replyto_id"
+            @click="$emit('click:quotedMessage', asset.replyto_id)"
+          />
         </div>
 
         <div>
@@ -60,8 +72,12 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
+import QuotedMessage from './QuotedMessage'
 
 export default {
+  components: {
+    QuotedMessage
+  },
   props: {
     id: {
       type: null,
@@ -117,9 +133,25 @@ export default {
     },
     txTimestamp: {
       required: true
+    },
+    asset: {
+      type: Object,
+      // eslint-disable-next-line vue/require-valid-default-prop
+      default: {}
+    },
+    isReply: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Highlight the message by applying a background flash effect
+     */
+    flashing: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['mount', 'click:transaction', 'click:transactionStatus'],
+  emits: ['mount', 'click:transaction', 'click:transactionStatus', 'click:quotedMessage'],
   computed: {
     statusTitle() {
       return this.$t(`chats.transaction_statuses.${this.status.virtualStatus}`)

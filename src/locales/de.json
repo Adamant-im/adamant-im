@@ -40,6 +40,7 @@
     "start_chat": "Start chat",
     "title": "Chats",
     "too_long": "Nachricht zu lang",
+    "invalid_message": "Invalid message",
     "transaction_statuses": {
       "CONFIRMED": "Confirmed in a blockchain",
       "REGISTERED": "Delivered to a node",

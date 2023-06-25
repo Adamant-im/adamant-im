@@ -159,6 +159,23 @@ export default {
       }
     },
 
+    /**
+     * Smooth scroll to message by index (starting with the last).
+     */
+    scrollToMessageEasy(index) {
+      const elements = this.$refs.messages.children
+
+      if (!elements) return
+
+      const element = elements[elements.length - 1 - index]
+
+      if (element) {
+        element.scrollIntoView({
+          behavior: 'smooth'
+        })
+      }
+    },
+
     isScrolledToBottom () {
       const scrollOffset = (
         this.$refs.messages.scrollHeight - this.$refs.messages.scrollTop - this.$refs.messages.clientHeight

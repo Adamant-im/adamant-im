@@ -41,6 +41,10 @@
           :i18n="{ retry: $t('chats.retry_message') }"
           :hide-time="message.readonly"
           @resend="resendMessage(partnerId, message.id)"
+          :is-reply="message.isReply"
+          :asset="message.asset"
+          :flashing="flashingMessageId === message.id"
+          @click:quoted-message="onQuotedMessageClick"
         >
           <template #avatar>
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
@@ -64,6 +68,10 @@
           @click:transaction="openTransaction(message)"
           @click:transactionStatus="updateTransactionStatus(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
+          :is-reply="message.isReply"
+          :asset="message.asset"
+          :flashing="flashingMessageId === message.id"
+          @click:quoted-message="onQuotedMessageClick"
         >
           <template #crypto>
             <crypto-icon :crypto="message.type" />
@@ -202,7 +210,8 @@ export default {
     noMoreMessages: false,
     isScrolledToBottom: true,
     visibilityId: null,
-    showFreeTokensDialog: false
+    showFreeTokensDialog: false,
+    flashingMessageId: -1
   }),
   computed: {
     /**
@@ -340,6 +349,27 @@ export default {
      */
     onClickAvatar(address) {
       this.$emit('click:chat-avatar', address)
+    },
+    onQuotedMessageClick(transactionId) {
+      const transactionIndex = this.$store.getters['chat/indexOfMessage'](
+        this.partnerId,
+        transactionId
+      )
+
+      this.$refs.chat.scrollToMessageEasy(transactionIndex)
+
+      this.highlightMessage(transactionId)
+    },
+    /**
+     * Apply flash effect to a message in the chat
+     * @param transactionId
+     */
+    highlightMessage(transactionId) {
+      this.flashingMessageId = transactionId
+
+      setTimeout(() => {
+        this.flashingMessageId = -1
+      }, 1000)
     },
     openTransaction(transaction) {
       if (transaction.type in Cryptos) {
