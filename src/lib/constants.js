@@ -274,3 +274,9 @@ export function getMinAmount (crypto) {
 
   return amount
 }
+
+/**
+ * When clicking on replied message inside the chat that animation duration will
+ * be applied while scrolling.
+ **/
+export const SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION = 300 // ms

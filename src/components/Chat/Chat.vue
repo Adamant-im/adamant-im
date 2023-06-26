@@ -356,9 +356,9 @@ export default {
         transactionId
       )
 
-      this.$refs.chat.scrollToMessageEasy(transactionIndex)
-
-      this.highlightMessage(transactionId)
+      this.$refs.chat.scrollToMessageEasy(transactionIndex).then(() => {
+        this.highlightMessage(transactionId)
+      })
     },
     /**
      * Apply flash effect to a message in the chat
