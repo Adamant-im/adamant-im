@@ -110,6 +110,8 @@
         </v-btn>
       </template>
     </a-chat>
+
+    <ProgressIndicator :show="replyLoadingChatHistory" />
   </v-card>
 </template>
 
@@ -133,6 +135,7 @@ import FreeTokensDialog from '@/components/FreeTokensDialog'
 import { websiteUriToOnion } from '@/lib/uri'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
+import ProgressIndicator from '@/components/ProgressIndicator'
 
 /**
  * Returns user meta by userId.
@@ -194,7 +197,8 @@ export default {
     ChatAvatar,
     ChatMenu,
     CryptoIcon,
-    FreeTokensDialog
+    FreeTokensDialog,
+    ProgressIndicator
   },
   mixins: [transaction, partnerName],
   props: {
@@ -207,6 +211,7 @@ export default {
   data: () => ({
     chatFormLabel: '',
     loading: false,
+    replyLoadingChatHistory: false,
     noMoreMessages: false,
     isScrolledToBottom: true,
     visibilityId: null,
@@ -350,15 +355,29 @@ export default {
     onClickAvatar(address) {
       this.$emit('click:chat-avatar', address)
     },
-    onQuotedMessageClick(transactionId) {
-      const transactionIndex = this.$store.getters['chat/indexOfMessage'](
+    async onQuotedMessageClick(transactionId) {
+      let transactionIndex = this.$store.getters['chat/indexOfMessage'](
         this.partnerId,
         transactionId
       )
 
-      this.$refs.chat.scrollToMessageEasy(transactionIndex).then(() => {
-        this.highlightMessage(transactionId)
-      })
+      // if the message is not present in the store
+      // fetch chat history until reach that message
+      if (transactionIndex === -1) {
+        await this.fetchAllChatHistory()
+
+        transactionIndex = this.$store.getters['chat/indexOfMessage'](this.partnerId, transactionId)
+      }
+
+      // if after fetching chat history the message still cannot be found
+      // then do nothing
+      if (transactionIndex === -1) {
+        console.warn('onQuotedMessageClick: Transaction not found in the chat history', `tx.id="${transactionId}"`)
+        return
+      }
+
+      await this.$refs.chat.scrollToMessageEasy(transactionIndex)
+      this.highlightMessage(transactionId)
     },
     /**
      * Apply flash effect to a message in the chat
@@ -416,6 +435,27 @@ export default {
         .finally(() => {
           this.loading = false
           this.$refs.chat.maintainScrollPosition()
+        })
+    },
+    fetchAllChatHistory() {
+      const fetchMessages = async () => {
+        await this.$store.dispatch('chat/getChatRoomMessages', { contactId: this.partnerId })
+        this.$refs.chat.maintainScrollPosition()
+
+        if (this.$store.state.chat.offset > -1) {
+          await new Promise((resolve) => setTimeout(resolve, 200))
+          return fetchMessages()
+        }
+      }
+
+      this.replyLoadingChatHistory = true
+
+      return fetchMessages()
+        .catch(() => {
+          this.noMoreMessages = true
+        })
+        .finally(() => {
+          this.replyLoadingChatHistory = false
         })
     },
     scrollBehavior() {

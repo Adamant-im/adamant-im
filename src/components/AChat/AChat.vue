@@ -118,13 +118,14 @@ export default {
       } else if (scrollTop === 0) { // Scrolled to Top
         // Save current `scrollHeight` to maintain scroll
         // position when unshift new messages
-        this.currentScrollHeight = scrollHeight
         this.$emit('scroll:top')
       }
 
-      // Save currentScrollTop.
-      // Used when scrolled bottom while loading messages.
-      this.currentScrollTop = this.$refs.messages.scrollTop
+      // Save previous values of `scrollTop` and `scrollHeight`
+      // Needed for keeping the same scroll position when prepending
+      // new messages to the chat
+      this.currentScrollTop = scrollTop
+      this.currentScrollHeight = scrollHeight
 
       emitScroll.call(this)
     },
