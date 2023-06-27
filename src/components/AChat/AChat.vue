@@ -24,7 +24,7 @@
             name="messages"
             :messages="messages"
           >
-            <template v-for="message in messages">
+            <template v-for="message in messages" :key="message.id">
               <slot
                 name="message"
                 :message="message"

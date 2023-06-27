@@ -29,7 +29,6 @@
         <a-chat-message
           v-if="message.type === 'message'"
           v-bind="message"
-          :key="message.id"
           :message="formatMessage(message)"
           :time="formatDate(message.timestamp)"
           :user-id="userId"
@@ -53,7 +52,6 @@
         <a-chat-transaction
           v-else-if="isTransaction(message.type)"
           v-bind="message"
-          :key="message.id"
           :user-id="userId"
           :sender="sender"
           :amount="message.amount"
