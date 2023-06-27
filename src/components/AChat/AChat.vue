@@ -53,8 +53,6 @@ import Styler from 'stylefire'
 import { animate } from 'popmotion'
 
 import { SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION } from '@/lib/constants'
-import AChatMessage from './AChatMessage'
-import AChatTransaction from './AChatTransaction'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
 const emitScroll = throttle(function () {
@@ -62,10 +60,6 @@ const emitScroll = throttle(function () {
 }, 200)
 
 export default {
-  components: {
-    AChatMessage,
-    AChatTransaction
-  },
   props: {
     messages: {
       type: Array,
