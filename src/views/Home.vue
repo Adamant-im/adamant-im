@@ -91,7 +91,7 @@ import WalletCard from '@/components/WalletCard'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import numberFormat from '@/filters/numberFormat'
 
-import { Cryptos, CryptosNames, isErc20 } from '@/lib/constants'
+import { Cryptos, CryptosInfo, isErc20 } from '@/lib/constants'
 
 /**
  * Center VTab element on click.
@@ -136,7 +136,7 @@ export default {
           address,
           balance,
           cryptoCurrency: crypto,
-          cryptoName: CryptosNames[crypto],
+          cryptoName: CryptosInfo[crypto].name,
           erc20,
           rate
         }

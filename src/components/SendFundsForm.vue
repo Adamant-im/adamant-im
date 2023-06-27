@@ -244,9 +244,9 @@ import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
 import {
-  INCREASE_FEE_MULTIPLIER, Cryptos, CryptoAmountPrecision, CryptoNaturalUnits,
+  INCREASE_FEE_MULTIPLIER, Cryptos,
   TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount, isSelfTxAllowed,
-  minBalances, isTextDataAllowed, CryptosNames
+  CryptosInfo, isTextDataAllowed
 } from '../lib/constants'
 
 import { parseURIasAIP } from '@/lib/uri'
@@ -358,7 +358,7 @@ export default {
      * @returns {string}
      */
     textDataLabel () {
-      return this.$t('transfer.textdata_label', { crypto: CryptosNames[this.currency] })
+      return this.$t('transfer.textdata_label', { crypto: CryptosInfo[this.currency].name })
     },
 
     /**
@@ -445,8 +445,8 @@ export default {
       let amount = BigNumber(this.balance)
 
       // Some cryptos require minimum balance to maintain on a wallet
-      const minBalance = minBalances[this.currency] || 0
-      amount = amount.minus(minBalance)
+      const { minBalance } = CryptosInfo[this.currency]
+      amount = amount.minus(minBalance || 0)
 
       const amt = amount
         .minus(this.calculateTransferFee(this.balance))
@@ -481,7 +481,7 @@ export default {
       return this.getPartnerName(this.address)
     },
     exponent () {
-      return CryptoAmountPrecision[this.currency]
+      return CryptosInfo[this.currency].cryptoTransferDecimals
     },
     cryptoList () {
       return Object.keys(Cryptos)
@@ -790,7 +790,7 @@ export default {
       return amount >= min
     },
     validateNaturalUnits (amount, currency) {
-      const units = CryptoNaturalUnits[currency]
+      const units = CryptosInfo[currency].decimals
 
       const [, right = ''] = BigNumber(amount).toFixed().split('.')
 

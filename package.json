@@ -5,6 +5,7 @@
   "license": "GPLv3",
   "description": "Decentralized Messenger",
   "private": true,
+  "type": "module",
   "scripts": {
     "serve": "vite preview",
     "dev": "vite",

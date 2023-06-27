@@ -1,0 +1,152 @@
+{
+  "ADM": {
+    "symbol": "ADM",
+    "name": "ADAMANT Messenger",
+    "qrPrefix": "adm",
+    "regexAddress": "^[Uu]([0-9]{6,})$",
+    "decimals": 8,
+    "nodes": [
+      {
+        "url": "https://clown.adamant.im"
+      },
+      {
+        "url": "https://lake.adamant.im"
+      },
+      {
+        "url": "https://endless.adamant.im"
+      },
+      {
+        "url": "https://bid.adamant.im"
+      },
+      {
+        "url": "https://unusual.adamant.im"
+      },
+      {
+        "url": "https://debate.adamant.im"
+      },
+      {
+        "url": "http://23.226.231.225:36666"
+      },
+      {
+        "url": "http://78.47.205.206:36666"
+      },
+      {
+        "url": "http://5.161.53.74:36666"
+      }
+    ],
+    "createCoin": true,
+    "cryptoTransferDecimals": 8
+  },
+  "BTC": {
+    "symbol": "BTC",
+    "name": "Bitcoin",
+    "qrPrefix": "bitcoin",
+    "minBalance": 0.00001,
+    "regexAddress": "^(bc1|[13])[a-km-zA-HJ-NP-Z02-9]{25,39}$",
+    "decimals": 8,
+    "minTransferAmount": 0.00000546,
+    "nodes": [
+      {
+        "url": "https://btcnode1.adamant.im"
+      },
+      {
+        "url": "https://btcnode2.adamant.im"
+      }
+    ],
+    "createCoin": true,
+    "cryptoTransferDecimals": 8,
+    "defaultFee": 0.00003153
+  },
+  "BNB": {
+    "symbol": "BNB",
+    "name": "Binance Coin",
+    "decimals": 18,
+    "contractId": "0xB8c77482e45F1F44dE1745F52C74426C631bDD52",
+    "createCoin": false,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "type": "ERC20",
+    "defaultGasLimit": 58000,
+    "fees": "ethereum"
+  },
+  "DASH": {
+    "symbol": "DASH",
+    "name": "Dash",
+    "qrPrefix": "dash",
+    "minBalance": 0.0001,
+    "regexAddress": "^[7X][1-9A-HJ-NP-Za-km-z]{33,}$",
+    "decimals": 8,
+    "minTransferAmount": 0.00002,
+    "nodes": [
+      {
+        "url": "https://dashnode1.adamant.im"
+      }
+    ],
+    "createCoin": true,
+    "cryptoTransferDecimals": 8
+  },
+  "DOGE": {
+    "symbol": "DOGE",
+    "name": "Dogecoin",
+    "qrPrefix": "doge",
+    "regexAddress": "^[A|D|9][A-Z0-9]([0-9a-zA-Z]{9,})$",
+    "decimals": 8,
+    "minTransferAmount": 1,
+    "nodes": [
+      {
+        "url": "https://dogenode1.adamant.im"
+      },
+      {
+        "url": "https://dogenode2.adamant.im"
+      }
+    ],
+    "createCoin": true,
+    "cryptoTransferDecimals": 8
+  },
+  "ETH": {
+    "symbol": "ETH",
+    "name": "Ethereum",
+    "qrPrefix": "ethereum",
+    "regexAddress": "^[Uu]([0-9]{6,})$",
+    "decimals": 18,
+    "nodes": [
+      {
+        "url": "https://ethnode1.adamant.im",
+        "hasIndex": true
+      }
+    ],
+    "createCoin": true,
+    "cryptoTransferDecimals": 6
+  },
+  "LSK": {
+    "symbol": "LSK",
+    "name": "Lisk",
+    "qrPrefix": "lisk",
+    "minBalance": 0.05,
+    "regexAddress": "^lsk[a-z2-9]{38}$",
+    "decimals": 8,
+    "nodes": [
+      {
+        "url": "https://lisknode3.adamant.im"
+      },
+      {
+        "url": "https://lisknode4.adamant.im"
+      }
+    ],
+    "createCoin": true,
+    "cryptoTransferDecimals": 8,
+    "defaultFee": 0.00142
+  },
+  "USDS": {
+    "symbol": "USDS",
+    "name": "Stably USD",
+    "decimals": 6,
+    "contractId": "0xa4bdb11dc0a2bec88d24a3aa1e6bb17201112ebe",
+    "createCoin": false,
+    "cryptoTransferDecimals": 6,
+    "status": "active",
+    "type": "ERC20",
+    "defaultGasLimit": 58000,
+    "fees": "ethereum"
+  }
+}
