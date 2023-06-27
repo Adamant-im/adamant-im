@@ -1,27 +1,27 @@
+import { $ } from 'execa';
+
 import {readdir, readFile, writeFile} from 'fs/promises';
 import {resolve, join} from 'path';
 
 import { Cryptos as SupportedCryptos } from '../src/lib/constants/cryptos/index.js'
 
-const forEachDir = async (path, callback) => {
-  const dirents = await readdir(path, {
-    withFileTypes: true
-  });
+run()
 
-  const promises = dirents
-    .filter((dir) => dir.isDirectory())
-    .map(callback);
+async function run() {
+  // update adamant-wallets repo
+  await $`git submodule update --recursive`
 
-  await Promise.all(promises);
+  const coins = await initCoins();
+
+  await applyBlockchains(coins);
+
+  await writeFile(
+      resolve('src', 'lib', 'constants', 'cryptos', 'data.json'),
+      JSON.stringify(coins, null, 2),
+  );
 }
 
-const parseJsonFile = async (path) => {
-  const json = await readFile(path, 'utf-8');
-
-  return JSON.parse(json);
-}
-
-const initCoins = async () => {
+async function initCoins() {
   const coins = {};
   const symbols = {};
 
@@ -58,10 +58,10 @@ const initCoins = async () => {
     };
   });
 
-  return [coins, symbols];
+  return coins;
 }
 
-const applyBlockchains = async (coins, symbols) => {
+async function applyBlockchains(coins) {
   const blockchainsPath = resolve(
     'adamant-wallets',
     'assets',
@@ -93,11 +93,20 @@ const applyBlockchains = async (coins, symbols) => {
   });
 }
 
-const [coins, symbols] = await initCoins();
+async function forEachDir(path, callback) {
+  const dirents = await readdir(path, {
+    withFileTypes: true
+  });
 
-await applyBlockchains(coins, symbols);
+  const promises = dirents
+    .filter((dir) => dir.isDirectory())
+    .map(callback);
 
-await writeFile(
-    resolve('src', 'lib', 'constants', 'cryptos', 'data.json'),
-    JSON.stringify(coins, null, 2),
-);
+  await Promise.all(promises);
+}
+
+async function parseJsonFile(path) {
+  const json = await readFile(path, 'utf-8');
+
+  return JSON.parse(json);
+}
