@@ -7,7 +7,7 @@
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue'
 import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
@@ -31,7 +31,7 @@ export default defineComponent({
   },
   data: () => ({
     showWarningOnAddressesDialog: false,
-    notifications: null
+    notifications: null as Notifications | null
   }),
   computed: {
     layout() {
@@ -58,12 +58,12 @@ export default defineComponent({
       this.$store.registerModule('eth', ethModule)
 
       CryptosOrder.forEach((symbol) => {
-        const crypto = CryptosInfo[symbol]
+        const crypto = CryptosInfo[symbol as keyof typeof CryptosInfo]
 
         if (isErc20(symbol)) {
           this.$store.registerModule(
             symbol.toLowerCase(),
-            erc20Module(symbol, crypto.contractId, crypto.decimals)
+            erc20Module(symbol, (crypto as any).contractId, crypto.decimals)
           )
         }
       })
