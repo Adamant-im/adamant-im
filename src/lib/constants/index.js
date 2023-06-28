@@ -1,5 +1,4 @@
-import { Cryptos } from './cryptos'
-import CryptosInfo from './cryptos/data.json'
+import { Cryptos, CryptosInfo, CryptosOrder } from './cryptos'
 
 export const EPOCH = Date.UTC(2017, 8, 2, 17, 0, 0, 0)
 
@@ -42,7 +41,8 @@ export const Fees = {
 }
 
 /** Regex for detecting of base64 encoded string */
-export const base64regex = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
+export const base64regex =
+  /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
 
 export const Symbols = {
   CLOCK: String.fromCharCode(0x23f0), // ⏰
@@ -59,40 +59,30 @@ export const WelcomeMessage = {
   ADAMANT_ICO: 'ADAMANT Tokens'
 }
 
-export const BTC_BASED = Object.freeze([
-  Cryptos.DOGE,
-  Cryptos.DASH,
-  Cryptos.BTC
-])
+export const BTC_BASED = Object.freeze([Cryptos.DOGE, Cryptos.DASH, Cryptos.BTC])
 
-export const LSK_BASED = Object.freeze([
-  Cryptos.LSK
-])
+export const LSK_BASED = Object.freeze([Cryptos.LSK])
 
-export const INSTANT_SEND = Object.freeze([
-  Cryptos.DASH
-])
+export const INSTANT_SEND = Object.freeze([Cryptos.DASH])
 
 // Some cryptos allows to save public data with a Tx
-export const ALLOW_TEXT_DATA = Object.freeze([
-  Cryptos.LSK
-])
+export const ALLOW_TEXT_DATA = Object.freeze([Cryptos.LSK])
 
-export const isErc20 = crypto => CryptosInfo[crypto].type === 'ERC20'
+export const isErc20 = (crypto) => CryptosInfo[crypto].type === 'ERC20'
 
-export const isEthBased = crypto => isErc20(crypto) || crypto === Cryptos.ETH
+export const isEthBased = (crypto) => isErc20(crypto) || crypto === Cryptos.ETH
 
-export const isFeeEstimate = crypto => isEthBased(crypto)
+export const isFeeEstimate = (crypto) => isEthBased(crypto)
 
-export const isBtcBased = crypto => BTC_BASED.includes(crypto)
+export const isBtcBased = (crypto) => BTC_BASED.includes(crypto)
 
-export const isLskBased = crypto => LSK_BASED.includes(crypto)
+export const isLskBased = (crypto) => LSK_BASED.includes(crypto)
 
-export const isSelfTxAllowed = crypto => LSK_BASED.includes(crypto) || crypto === Cryptos.ADM
+export const isSelfTxAllowed = (crypto) => LSK_BASED.includes(crypto) || crypto === Cryptos.ADM
 
-export const isInstantSendPossible = crypto => INSTANT_SEND.includes(crypto)
+export const isInstantSendPossible = (crypto) => INSTANT_SEND.includes(crypto)
 
-export const isTextDataAllowed = crypto => ALLOW_TEXT_DATA.includes(crypto)
+export const isTextDataAllowed = (crypto) => ALLOW_TEXT_DATA.includes(crypto)
 
 export const RE_LSK_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
 
@@ -103,24 +93,22 @@ export const RE_LSK_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
  */
 
 /** Gas limit value for the ETH transfers */
-export const ETH_TRANSFER_GAS = 24000
+export const ETH_TRANSFER_GAS = CryptosInfo['ETH'].defaultGasLimit
 /** Gas limit value for the ERC-20 transfers */
 export const ERC20_TRANSFER_GAS = ETH_TRANSFER_GAS * 2.4
 
 /** Increase fee multiplier. Used as a checkbox on SendFundsForm */
 export const INCREASE_FEE_MULTIPLIER = 2
 
-export {
-  Cryptos,
-  CryptosInfo
-}
+export { Cryptos, CryptosInfo, CryptosOrder }
 
 export default {
   EPOCH,
   Transactions
 }
 
-export const UserPasswordArticleLink = 'https://medium.com/adamant-im/more-convenience-login-to-the-web-messenger-with-user-password-9d48a736dfd8'
+export const UserPasswordArticleLink =
+  'https://medium.com/adamant-im/more-convenience-login-to-the-web-messenger-with-user-password-9d48a736dfd8'
 
 export const UserPasswordHashSettings = {
   SALT: 'salt',
@@ -191,11 +179,11 @@ export const tsUpdatable = function (status, currency) {
  * @param {string} crypto crypto
  * @returns {number}
  */
-export function getMinAmount (crypto) {
-  let amount = CryptosInfo[crypto].minTransferAmount;
+export function getMinAmount(crypto) {
+  let amount = CryptosInfo[crypto].minTransferAmount
 
   if (!amount) {
-    const precision = CryptosInfo[crypto].cryptoTransferDecimals;
+    const precision = CryptosInfo[crypto].cryptoTransferDecimals
     amount = precision ? Math.pow(10, -precision) : 0
   }
 

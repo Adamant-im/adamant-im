@@ -13,7 +13,7 @@ import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
-import { Cryptos, CryptosInfo } from '@/lib/constants'
+import { CryptosInfo, CryptosOrder, isErc20 } from '@/lib/constants'
 
 const loadVuexCoinModules = async () => {
   const ethModule = await import('@/store/modules/eth')
@@ -56,14 +56,17 @@ export default defineComponent({
 
     loadVuexCoinModules().then(({ ethModule, erc20Module }) => {
       this.$store.registerModule('eth', ethModule)
-      this.$store.registerModule(
-        'bnb',
-        erc20Module(Cryptos.BNB, CryptosInfo['BNB'].contractId, 18)
-      )
-      this.$store.registerModule(
-        'usds',
-        erc20Module(Cryptos.USDS, CryptosInfo['USDS'].contractId, 6)
-      )
+
+      CryptosOrder.forEach((symbol) => {
+        const crypto = CryptosInfo[symbol]
+
+        if (isErc20(symbol)) {
+          this.$store.registerModule(
+            symbol.toLowerCase(),
+            erc20Module(symbol, crypto.contractId, crypto.decimals)
+          )
+        }
+      })
     })
   },
   beforeUnmount() {

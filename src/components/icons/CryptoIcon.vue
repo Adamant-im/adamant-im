@@ -1,27 +1,15 @@
 <template>
-  <icon
-    :width="sizePx"
-    :height="sizePx"
-    :color="fill"
-    :box-centered="boxCentered"
-  >
-    <component :is="componentName" />
+  <icon :width="sizePx" :height="sizePx" :color="fill" :box-centered="boxCentered">
+    <component :is="iconComponent" />
   </icon>
 </template>
 
 <script>
 import Icon from './BaseIcon'
-import AdmFillIcon from './AdmFill'
-import BnbFillIcon from './BnbFill'
-import EthFillIcon from './EthFill'
-import DogeFillIcon from './DogeFill'
-import DashFillIcon from './DashFill'
-import LskFillIcon from './LskFill'
-import UsdsFillIcon from './UsdsFill'
-import BtcFillIcon from './BtcFill'
 import UnknownCryptoFillIcon from './UnknownCryptoFill'
 
 import { Cryptos } from '@/lib/constants'
+import { strictCapitalize } from '@/lib/textHelpers'
 
 const SMALL_SIZE = 36
 const MEDIUM_SIZE = 48
@@ -33,14 +21,6 @@ const LARGE_SIZE = 125
 export default {
   components: {
     Icon,
-    AdmFillIcon,
-    BnbFillIcon,
-    EthFillIcon,
-    DogeFillIcon,
-    DashFillIcon,
-    LskFillIcon,
-    UsdsFillIcon,
-    BtcFillIcon,
     UnknownCryptoFillIcon
   },
   props: {
@@ -48,17 +28,14 @@ export default {
     crypto: {
       type: String,
       required: true,
-      validator: value => {
-        return (
-          value in Cryptos ||
-          value === 'UNKNOWN_CRYPTO'
-        )
+      validator: (value) => {
+        return value in Cryptos || value === 'UNKNOWN_CRYPTO'
       }
     },
     /** Icon size: can be either 'small' (36x36), 'medium' (48x48) or 'large' (125x125) or undefined */
     size: {
       type: String,
-      validator: value => ['small', 'medium', 'large'].indexOf(value) >= 0
+      validator: (value) => ['small', 'medium', 'large'].indexOf(value) >= 0
     },
     /** Fill color, e.g. '#BDBDBD' */
     fill: {
@@ -72,10 +49,7 @@ export default {
     }
   },
   computed: {
-    componentName () {
-      return `${this.crypto.toLowerCase().replace('_', '-')}-fill-icon`
-    },
-    sizePx () {
+    sizePx() {
       if (this.size === 'small') {
         return SMALL_SIZE
       } else if (this.size === 'medium') {
@@ -84,8 +58,17 @@ export default {
         return LARGE_SIZE
       }
       return undefined
+    },
+    iconComponent() {
+      const icons = import.meta.glob('./cryptos/*.vue', {
+        eager: true
+      })
+
+      const cryptoFileName = strictCapitalize(this.crypto)
+      const component = icons[`./cryptos/${cryptoFileName}Icon.vue`]
+
+      return component?.default || UnknownCryptoFillIcon
     }
   }
 }
-
 </script>

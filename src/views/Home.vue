@@ -91,7 +91,7 @@ import WalletCard from '@/components/WalletCard'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import numberFormat from '@/filters/numberFormat'
 
-import { Cryptos, CryptosInfo, isErc20 } from '@/lib/constants'
+import { Cryptos, CryptosInfo, CryptosOrder, isErc20 } from '@/lib/constants'
 
 /**
  * Center VTab element on click.
@@ -124,7 +124,7 @@ export default {
   computed: {
     className: () => 'account-view',
     wallets () {
-      return Object.keys(Cryptos).map(crypto => {
+      return CryptosOrder.map(crypto => {
         const state = this.$store.state
         const key = crypto.toLowerCase()
         const address = crypto === Cryptos.ADM ? state.address : state[key].address

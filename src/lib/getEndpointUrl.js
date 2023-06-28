@@ -5,7 +5,7 @@ import config from '../config'
  * @param {string} system system: one of `ADM` or `ETH`
  * @returns {string} endpoint URL
  */
-export default function getEndpointUrl (system = '') {
+export default function getEndpointUrl(system = '') {
   const endpoints = config.server[system.toLowerCase()] || []
   const endpoint = endpoints[Math.floor(Math.random() * endpoints.length)]
 

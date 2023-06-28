@@ -246,7 +246,7 @@ import { BigNumber } from 'bignumber.js'
 import {
   INCREASE_FEE_MULTIPLIER, Cryptos,
   TransactionStatus as TS, isErc20, isFeeEstimate, isEthBased, getMinAmount, isSelfTxAllowed,
-  CryptosInfo, isTextDataAllowed
+  CryptosInfo, CryptosOrder, isTextDataAllowed
 } from '../lib/constants'
 
 import { parseURIasAIP } from '@/lib/uri'
@@ -484,7 +484,7 @@ export default {
       return CryptosInfo[this.currency].cryptoTransferDecimals
     },
     cryptoList () {
-      return Object.keys(Cryptos)
+      return CryptosOrder
     },
     confirmMessage () {
       const msgType = this.recipientName && this.addressReadonly ? 'transfer.confirm_message_with_name' : 'transfer.confirm_message'
