@@ -1,5 +1,5 @@
 import baseState from '../eth-base/eth-base-state'
-import { Cryptos, CryptosInfo } from '../../../lib/constants'
+import { Cryptos, CryptosInfo } from '@/lib/constants'
 
 export default () => {
   return {

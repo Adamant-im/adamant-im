@@ -1,6 +1,6 @@
 import baseGetters from '../btc-base/btc-base-getters'
 import BigNumber from '../../../lib/bignumber'
-import { CryptosInfo } from '../../../lib/constants'
+import { CryptosInfo } from '@/lib/constants'
 
 const MULTIPLIER = 1e8
 
