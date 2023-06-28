@@ -7,7 +7,7 @@
   </v-app>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from 'vue'
 import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
@@ -31,7 +31,7 @@ export default defineComponent({
   },
   data: () => ({
     showWarningOnAddressesDialog: false,
-    notifications: null as Notifications | null
+    notifications: null
   }),
   computed: {
     layout() {
