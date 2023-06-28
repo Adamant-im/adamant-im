@@ -20,7 +20,7 @@
     "https": "vite preview --https",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "postinstall": "electron-builder install-app-deps && npm run update-wallets"
+    "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
     "@liskhq/lisk-cryptography": "3.2.1",
