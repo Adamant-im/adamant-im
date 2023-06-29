@@ -169,10 +169,10 @@ export default {
 .v-theme--light {
   .nodes-table-item {
     &__version {
-      color: map-get($adm-colors, 'grey');
+      color: map-get($adm-colors, 'regular');
     }
     &__td {
-      color: map-get($adm-colors, 'muted');
+      color: map-get($adm-colors, 'regular');
     }
   }
 }
