@@ -10,7 +10,6 @@ const POST_CONFIG = {
   }
 }
 
-export const TX_FEE = 1 // 1 DOGE per transaction
 export const MULTIPLIER = 1e8
 export const CHUNK_SIZE = 20
 
@@ -25,10 +24,6 @@ export default class DogeApi extends BtcBaseApi {
   getBalance () {
     return this._get(`/addr/${this.address}/balance`)
       .then(balance => Number(balance) / this.multiplier)
-  }
-
-  getFee () {
-    return TX_FEE
   }
 
   /** @override */

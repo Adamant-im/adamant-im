@@ -9,8 +9,8 @@ export const Cryptos = Object.values(CryptosInfo).reduce((cryptos, crypto) => {
   return cryptos
 }, {})
 
-export const CryptosOrder = Object.keys(Cryptos).sort(
+export const CryptosOrder = Object.values(Cryptos).sort(
   (a, b) => a.defaultOrdinalLevel - b.defaultOrdinalLevel
-)
+).map((crypto) => crypto.symbol)
 
 export { CryptosInfo }

@@ -158,7 +158,7 @@ function verifyAmount(transactionAmount, specialMessageAmount) {
 function verifyTimestamp(coin, transactionTimestamp, specialMessageTimestamp) {
   const delta = Math.abs(transactionTimestamp - specialMessageTimestamp) / 1000
 
-  const mainCoin = isErc20(coin) ? 'ETH' : coin
+  const mainCoin = CryptosInfo[coin].mainCoin || coin
   const { txConsistencyMaxTime } = CryptosInfo[mainCoin]
 
   if (txConsistencyMaxTime) {

@@ -1,20 +1,9 @@
 <template>
-  <v-row
-    justify="center"
-    no-gutters
-    :class="className"
-  >
+  <v-row justify="center" no-gutters :class="className">
     <container>
-      <v-sheet
-        class="white--text"
-        color="transparent"
-        :class="`${className}__card`"
-      >
+      <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
         <!-- Wallets -->
-        <v-sheet
-          color="transparent"
-          :class="`${className}__wallets`"
-        >
+        <v-sheet color="transparent" :class="`${className}__wallets`">
           <v-tabs
             ref="vtabs"
             v-model="currentWallet"
@@ -39,10 +28,7 @@
                 <div>{{ numberFormat(wallet.balance, 4) }}</div>
                 <div>
                   {{ wallet.cryptoCurrency }}
-                  <span
-                    v-if="wallet.erc20"
-                    style="font-size:10px"
-                  >
+                  <span v-if="wallet.erc20" style="font-size: 10px">
                     <sub>ERC20</sub>
                   </span>
                 </div>
@@ -72,10 +58,7 @@
                 @click:balance="goToTransactions"
               >
                 <template #icon>
-                  <crypto-icon
-                    :crypto="wallet.cryptoCurrency"
-                    size="large"
-                  />
+                  <crypto-icon :crypto="wallet.cryptoCurrency" size="large" />
                 </template>
               </wallet-card>
             </v-window-item>
@@ -98,14 +81,15 @@ import { Cryptos, CryptosInfo, CryptosOrder, isErc20 } from '@/lib/constants'
  *
  * @override vuetify.VTabs.methods.scrollIntoView()
  */
-function scrollIntoView () {
+function scrollIntoView() {
   if (!this.activeTab) return
   if (!this.isOverflowing) return (this.scrollOffset = 0)
 
   const totalWidth = this.widths.wrapper + this.scrollOffset
   const { clientWidth, offsetLeft } = this.activeTab.$el
 
-  const scrollOffset = this.scrollOffset - (totalWidth - offsetLeft - clientWidth / 2 - this.widths.wrapper / 2)
+  const scrollOffset =
+    this.scrollOffset - (totalWidth - offsetLeft - clientWidth / 2 - this.widths.wrapper / 2)
 
   if (scrollOffset <= 0) {
     this.scrollOffset = 0
@@ -123,8 +107,8 @@ export default {
   },
   computed: {
     className: () => 'account-view',
-    wallets () {
-      return CryptosOrder.map(crypto => {
+    wallets() {
+      return CryptosOrder.map((crypto) => {
         const state = this.$store.state
         const key = crypto.toLowerCase()
         const address = crypto === Cryptos.ADM ? state.address : state[key].address
@@ -132,21 +116,24 @@ export default {
         const erc20 = isErc20(crypto.toUpperCase())
         const currentRate = state.rate.rates[`${crypto}/${this.currentCurrency}`]
         const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0
+
+        const cryptoName =  CryptosInfo[crypto].nameShort ||  CryptosInfo[crypto].name
+
         return {
           address,
           balance,
-          cryptoCurrency: crypto,
-          cryptoName: CryptosInfo[crypto].name,
+          cryptoName,
           erc20,
-          rate
+          rate,
+          cryptoCurrency: crypto
         }
       })
     },
     currentWallet: {
-      get () {
+      get() {
         return this.$store.state.options.currentWallet
       },
-      set (value) {
+      set(value) {
         this.$store.commit('options/updateOption', {
           key: 'currentWallet',
           value
@@ -154,10 +141,10 @@ export default {
       }
     },
     currentCurrency: {
-      get () {
+      get() {
         return this.$store.state.options.currentRate
       },
-      set (value) {
+      set(value) {
         this.$store.commit('options/updateOption', {
           key: 'currentRate',
           value
@@ -165,11 +152,11 @@ export default {
       }
     }
   },
-  mounted () {
+  mounted() {
     this.$refs.vtabs.scrollIntoView = scrollIntoView
   },
   methods: {
-    goToTransactions (crypto) {
+    goToTransactions(crypto) {
       this.$router.push({
         name: 'Transactions',
         params: {
@@ -177,8 +164,10 @@ export default {
         }
       })
     },
-    onWheel (e) {
-      const currentWallet = this.wallets.find(wallet => wallet.cryptoCurrency === this.currentWallet)
+    onWheel(e) {
+      const currentWallet = this.wallets.find(
+        (wallet) => wallet.cryptoCurrency === this.currentWallet
+      )
       const currentWalletIndex = this.wallets.indexOf(currentWallet)
 
       const nextWalletIndex = e.deltaY < 0 ? currentWalletIndex + 1 : currentWalletIndex - 1
@@ -227,7 +216,7 @@ export default {
     :deep(.v-tab--selected) {
       font-weight: 500;
     }
-    :deep(.v-tab):not(.v-tab--selected)  {
+    :deep(.v-tab):not(.v-tab--selected) {
       opacity: 1;
     }
     :deep(.v-tabs.v-tabs.v-tabs .v-slide-group__prev.v-slide-group__prev--disabled) {
@@ -270,7 +259,7 @@ export default {
 /** Themes **/
 .v-theme--light {
   .account-view {
-    &__rates  {
+    &__rates {
       color: map-get($adm-colors, 'muted');
     }
     &__wallets {
@@ -285,7 +274,8 @@ export default {
           color: map-get($adm-colors, 'regular');
         }
       }
-      :deep(.v-tabs .v-slide-group__prev .v-icon), :deep(.v-tabs .v-slide-group__next .v-icon) {
+      :deep(.v-tabs .v-slide-group__prev .v-icon),
+      :deep(.v-tabs .v-slide-group__next .v-icon) {
         color: map-get($adm-colors, 'primary2');
         pointer-events: none;
       }
@@ -313,7 +303,8 @@ export default {
       :deep(.v-tabs-slider) {
         background-color: map-get($adm-colors, 'primary') !important;
       }
-      :deep(.v-tabs .v-slide-group__prev .v-icon), :deep(.v-tabs .v-slide-group__next .v-icon) {
+      :deep(.v-tabs .v-slide-group__prev .v-icon),
+      :deep(.v-tabs .v-slide-group__next .v-icon) {
         color: map-get($adm-colors, 'primary2');
         pointer-events: none;
       }
@@ -322,7 +313,7 @@ export default {
       }
       :deep(.v-tab) {
         &:not(.v-tab--selected) {
-          color: map-get($shades, 'white')
+          color: map-get($shades, 'white');
         }
       }
       :deep(.v-tab--selected) {

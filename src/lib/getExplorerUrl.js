@@ -1,4 +1,4 @@
-import { Cryptos } from './constants'
+import { Cryptos, CryptosInfo } from './constants'
 import { explorerUriToOnion } from '@/lib/uri'
 
 /**
@@ -9,19 +9,16 @@ import { explorerUriToOnion } from '@/lib/uri'
  * @returns {string} URL to the transaction details page
  */
 export default function getExplorerUrl (crypto, transactionId) {
-  switch (crypto) {
-    case Cryptos.ADM:
-      return explorerUriToOnion('https://explorer.adamant.im/tx/' + transactionId)
-    case Cryptos.LSK:
-      return 'https://lisk.observer/transaction/' + transactionId
-    case Cryptos.ETH:
-      return 'https://etherscan.io/tx/' + transactionId
-    case Cryptos.DOGE:
-      return 'https://dogechain.info/tx/' + transactionId
-    case Cryptos.DASH:
-      return 'https://dashblockexplorer.com/tx/' + transactionId
-    case Cryptos.BTC:
-      return 'https://btc.com/' + transactionId
+  let explorerUrl = CryptosInfo[crypto].explorerTx
+
+  if (explorerUrl) {
+    const data = { ID: transactionId }
+
+    explorerUrl = explorerUrl.replace(/${([a-zA-Z_]+?)}/g, (_, key) => data[key])
+  }
+
+  if (crypto === Cryptos.ADM) {
+    return explorerUriToOnion(explorerUrl)
   }
 
   return ''

@@ -15,8 +15,8 @@ async function run() {
   // update adamant-wallets repo
   await $`git submodule update --recursive`
 
-  const [coins, coinDirNames] = await initCoins()
-  await applyBlockchains(coins)
+  const [coins, { coinDirNames, coinSymbols }] = await initCoins()
+  await applyBlockchains(coins, coinSymbols)
 
   await copyIcons(coins, coinDirNames)
 
@@ -25,7 +25,9 @@ async function run() {
 
 async function initCoins() {
   const coins = {}
+
   const coinDirNames = {}
+  const coinSymbols = {}
 
   await forEachDir(GENERAL_ASSETS_PATH, async ({ name }) => {
     const path = join(GENERAL_ASSETS_PATH, name, 'info.json')
@@ -37,10 +39,12 @@ async function initCoins() {
     }
 
     coinDirNames[coin.symbol] = name
+    coinSymbols[name] = coin.symbol
 
     coins[coin.symbol] = {
       symbol: coin.symbol,
       name: coin.name,
+      nameShort: coin.nameShort,
       qrPrefix: coin.qqPrefix,
       minBalance: coin.minBalance,
       regexAddress: coin.regexAddress,
@@ -51,6 +55,7 @@ async function initCoins() {
       createCoin: coin.createCoin,
       cryptoTransferDecimals: coin.cryptoTransferDecimals,
       defaultFee: coin.defaultFee,
+      fixedFee: coin.fixedFee,
       defaultVisibility: coin.defaultVisibility,
       defaultGasLimit: coin.defaultGasLimit,
       defaultGasPriceGwei: coin.defaultGasPriceGwei,
@@ -59,10 +64,10 @@ async function initCoins() {
     }
   })
 
-  return [coins, coinDirNames]
+  return [coins, { coinDirNames, coinSymbols }]
 }
 
-async function applyBlockchains(coins) {
+async function applyBlockchains(coins, coinSymbols) {
   const blockchainsPath = resolve('adamant-wallets', 'assets', 'blockchains')
 
   await forEachDir(blockchainsPath, async ({ name: blockchainName }) => {
@@ -82,6 +87,7 @@ async function applyBlockchains(coins) {
       coins[coin.symbol] = {
         ...coins[coin.symbol],
         ...coin,
+        mainCoin: coinSymbols[info.mainCoin],
         type: info.type,
         defaultGasLimit: info.defaultGasLimit,
         fees: info.fees

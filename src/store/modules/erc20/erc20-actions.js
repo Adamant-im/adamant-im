@@ -20,13 +20,15 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
     from: context.state.address,
     to: context.state.contractAddress,
     value: '0x0',
-    // gasLimit: api.fromDecimal(ERC20_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
+    // gasLimit: api.fromDecimal(DEFAULT_ERC20_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
     // gasPrice: context.getters.gasPrice, // Set gas price to auto calc. Deprecated after London hardfork
     // nonce // Let sendTransaction choose it
-    data: contract.methods.transfer(ethAddress, ethUtils.toWhole(amount, context.state.decimals)).encodeABI()
+    data: contract.methods
+      .transfer(ethAddress, ethUtils.toWhole(amount, context.state.decimals))
+      .encodeABI()
   }
 
-  return api.estimateGas(transaction).then(gasLimit => {
+  return api.estimateGas(transaction).then((gasLimit) => {
     gasLimit = increaseFee ? gasLimit * INCREASE_FEE_MULTIPLIER : gasLimit
     transaction.gas = gasLimit
     return transaction
@@ -39,7 +41,7 @@ const parseTransaction = (context, tx) => {
 
   const decoded = abiDecoder.decodeMethod(tx.input)
   if (decoded && decoded.name === 'transfer') {
-    decoded.params.forEach(x => {
+    decoded.params.forEach((x) => {
       if (x.name === '_to') recipientId = x.value
       if (x.name === '_value') amount = ethUtils.toFraction(x.value, context.state.decimals)
     })
@@ -62,16 +64,21 @@ const parseTransaction = (context, tx) => {
 
 const createSpecificActions = (api, queue) => ({
   /** Updates ERC20 token balance */
-  updateStatus (context) {
+  updateStatus(context) {
     if (!context.state.address) return
 
     const contract = new api.Contract(Erc20, context.state.contractAddress)
-    contract.methods.balanceOf(context.state.address).call()
+    contract.methods
+      .balanceOf(context.state.address)
+      .call()
       .then(
-        balance => {
-          context.commit('balance', Number(ethUtils.toFraction(balance.toString(10), context.state.decimals)))
+        (balance) => {
+          context.commit(
+            'balance',
+            Number(ethUtils.toFraction(balance.toString(10), context.state.decimals))
+          )
         },
-        () => { } // Not this time
+        () => {} // Not this time
       )
       .then(() => {
         const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)

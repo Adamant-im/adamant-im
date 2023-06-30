@@ -1,14 +1,6 @@
-import { Cryptos, CryptosInfo, isErc20, isInstantSendPossible } from './constants'
+import { CryptosInfo, isInstantSendPossible } from './constants'
 
 /** Pending transaction may be not known to blockchain yet */
-
-/** Max number of attempts to fetch a pending transaction */
-export const OLD_PENDING_ATTEMPTS = 3
-export const NEW_PENDING_ATTEMPTS = 20
-
-/** Interval (ms) between attempts to fetch an old pending transaction */
-export const OLD_PENDING_INTERVAL = 5 * 1000
-export const NEW_PENDING_INTERVAL = 30 * 1000
 
 /** Interval (ms) between attempts to fetch an registered transaction, when InstantSend is possible */
 export const INSTANT_SEND_INTERVAL = 4 * 1000
@@ -22,8 +14,13 @@ export const INSTANT_SEND_TIME = 60 * 1000
  * @param {string} crypto crypto name
  * @returns {boolean}
  */
-export const isNew = (timestamp, crypto) =>
-  Date.now() - timestamp < getTxUpdateInterval(crypto) * NEW_PENDING_ATTEMPTS
+export const isNew = (timestamp, crypto) => {
+  const mainCoin = CryptosInfo[crypto].mainCoin || crypto
+
+  return (
+    Date.now() - timestamp < getTxUpdateInterval(crypto) * CryptosInfo[mainCoin].newPendingAttempts
+  )
+}
 
 /**
  * Returns a retry interval (ms) for a pending transaction details re-fetching
@@ -32,10 +29,12 @@ export const isNew = (timestamp, crypto) =>
  * @returns {number}
  */
 export const getPendingTxRetryTimeout = function (timestamp, crypto) {
+  const mainCoin = CryptosInfo[crypto].mainCoin || crypto
+
   if (isNew(timestamp, crypto)) {
     return getTxUpdateInterval(crypto)
   } else {
-    return CryptosInfo[crypto].txFetchInfo?.oldPendingInterval || OLD_PENDING_INTERVAL
+    return CryptosInfo[mainCoin].txFetchInfo?.oldPendingInterval
   }
 }
 
@@ -54,10 +53,12 @@ export const getRegisteredTxRetryTimeout = function (
   regularTimeout,
   gotInstantSendAlready
 ) {
+  const mainCoin = CryptosInfo[crypto].mainCoin || crypto
+
   if (!gotInstantSendAlready && isInstantSendPossible(crypto)) {
     return Date.now() - timestamp < INSTANT_SEND_TIME ? INSTANT_SEND_INTERVAL : regularTimeout
   } else {
-    return CryptosInfo[crypto].txFetchInfo?.registeredInterval || regularTimeout
+    return CryptosInfo[mainCoin].txFetchInfo?.registeredInterval || regularTimeout
   }
 }
 
@@ -68,12 +69,13 @@ export const getRegisteredTxRetryTimeout = function (
  * @returns {number}
  */
 export const getPendingTxRetryCount = function (timestamp, crypto) {
-  const { txFetchInfo } = CryptosInfo[crypto]
+  const mainCoin = CryptosInfo[crypto].mainCoin || crypto
+  const { txFetchInfo } = CryptosInfo[mainCoin]
 
   if (isNew(timestamp, crypto)) {
-    return txFetchInfo?.newPendingAttempts || NEW_PENDING_ATTEMPTS
+    return txFetchInfo?.newPendingAttempts
   } else {
-    return txFetchInfo?.oldPendingAttempts || OLD_PENDING_ATTEMPTS
+    return txFetchInfo?.oldPendingAttempts
   }
 }
 
@@ -83,9 +85,7 @@ export const getPendingTxRetryCount = function (timestamp, crypto) {
  * @returns {number}
  */
 export const getTxUpdateInterval = function (crypto) {
-  if (isErc20(crypto)) {
-    crypto = Cryptos.ETH
-  }
+  const mainCoin = CryptosInfo[crypto].mainCoin || crypto
 
-  return CryptosInfo[crypto].txFetchInfo?.newPendingInterval || NEW_PENDING_INTERVAL
+  return CryptosInfo[mainCoin].txFetchInfo?.newPendingInterval
 }
