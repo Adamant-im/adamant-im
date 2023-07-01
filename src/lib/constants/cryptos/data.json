@@ -1,4 +1,48 @@
 {
+  "BTC": {
+    "symbol": "BTC",
+    "name": "Bitcoin",
+    "qrPrefix": "bitcoin",
+    "minBalance": 0.00001,
+    "regexAddress": "/^(bc1|[13])[a-km-zA-HJ-NP-Z02-9]{25,39}$/",
+    "decimals": 8,
+    "minTransferAmount": 0.00000546,
+    "nodes": [
+      {
+        "url": "https://btcnode1.adamant.im"
+      },
+      {
+        "url": "https://btcnode2.adamant.im"
+      }
+    ],
+    "createCoin": true,
+    "cryptoTransferDecimals": 8,
+    "defaultFee": 0.00003153,
+    "defaultVisibility": true,
+    "txFetchInfo": {
+      "newPendingInterval": 10000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 40000,
+      "newPendingAttempts": 20,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 10800000,
+    "defaultOrdinalLevel": 10,
+    "explorerTx": "https://explorer.btc.com/btc/transaction/${ID}"
+  },
+  "BNB": {
+    "symbol": "BNB",
+    "name": "Binance Coin",
+    "decimals": 18,
+    "contractId": "0xB8c77482e45F1F44dE1745F52C74426C631bDD52",
+    "createCoin": false,
+    "cryptoTransferDecimals": 6,
+    "defaultGasLimit": 58000,
+    "status": "active",
+    "mainCoin": "ETH",
+    "type": "ERC20",
+    "fees": "ethereum"
+  },
   "ADM": {
     "symbol": "ADM",
     "name": "ADAMANT Messenger",
@@ -38,62 +82,9 @@
     "createCoin": true,
     "cryptoTransferDecimals": 8,
     "fixedFee": 0.5,
-    "defaultVisibility": true
-  },
-  "BTC": {
-    "symbol": "BTC",
-    "name": "Bitcoin",
-    "qrPrefix": "bitcoin",
-    "minBalance": 0.00001,
-    "regexAddress": "/^(bc1|[13])[a-km-zA-HJ-NP-Z02-9]{25,39}$/",
-    "decimals": 8,
-    "minTransferAmount": 0.00000546,
-    "nodes": [
-      {
-        "url": "https://btcnode1.adamant.im"
-      },
-      {
-        "url": "https://btcnode2.adamant.im"
-      }
-    ],
-    "createCoin": true,
-    "cryptoTransferDecimals": 8,
-    "defaultFee": 0.00003153,
     "defaultVisibility": true,
-    "txFetchInfo": {
-      "newPendingInterval": 10000,
-      "oldPendingInterval": 3000,
-      "registeredInterval": 40000,
-      "newPendingAttempts": 20,
-      "oldPendingAttempts": 4
-    },
-    "txConsistencyMaxTime": 10800000
-  },
-  "BNB": {
-    "symbol": "BNB",
-    "name": "Binance Coin",
-    "decimals": 18,
-    "contractId": "0xB8c77482e45F1F44dE1745F52C74426C631bDD52",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
-    "type": "ERC20",
-    "fees": "ethereum"
-  },
-  "BUSD": {
-    "symbol": "BUSD",
-    "name": "Binance USD",
-    "decimals": 18,
-    "contractId": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
-    "type": "ERC20",
-    "fees": "ethereum"
+    "defaultOrdinalLevel": 0,
+    "explorerTx": "https://explorer.adamant.im/tx/${ID}"
   },
   "DASH": {
     "symbol": "DASH",
@@ -119,7 +110,24 @@
       "newPendingAttempts": 20,
       "oldPendingAttempts": 4
     },
-    "txConsistencyMaxTime": 800000
+    "txConsistencyMaxTime": 800000,
+    "defaultOrdinalLevel": 80,
+    "explorerTx": "https://dashblockexplorer.com/tx/${ID}"
+  },
+  "DAI": {
+    "symbol": "DAI",
+    "name": "Dai",
+    "decimals": 18,
+    "contractId": "0x6b175474e89094c44da98b954eedeac495271d0f",
+    "createCoin": false,
+    "cryptoTransferDecimals": 6,
+    "defaultVisibility": true,
+    "defaultGasLimit": 58000,
+    "defaultOrdinalLevel": 50,
+    "status": "active",
+    "mainCoin": "ETH",
+    "type": "ERC20",
+    "fees": "ethereum"
   },
   "DOGE": {
     "symbol": "DOGE",
@@ -147,32 +155,19 @@
       "newPendingAttempts": 20,
       "oldPendingAttempts": 4
     },
-    "txConsistencyMaxTime": 900000
+    "txConsistencyMaxTime": 900000,
+    "defaultOrdinalLevel": 70,
+    "explorerTx": "https://dogechain.info/tx/${ID}"
   },
-  "ENS": {
-    "symbol": "ENS",
-    "name": "Ethereum Name Service",
+  "BUSD": {
+    "symbol": "BUSD",
+    "name": "Binance USD",
     "decimals": 18,
-    "contractId": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72",
+    "contractId": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
     "defaultGasLimit": 58000,
     "status": "active",
-    "mainCoin": "ETH",
-    "type": "ERC20",
-    "fees": "ethereum"
-  },
-  "DAI": {
-    "symbol": "DAI",
-    "name": "Dai",
-    "decimals": 18,
-    "contractId": "0x6b175474e89094c44da98b954eedeac495271d0f",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "defaultOrdinalLevel": 50,
     "mainCoin": "ETH",
     "type": "ERC20",
     "fees": "ethereum"
@@ -201,7 +196,22 @@
       "newPendingAttempts": 20,
       "oldPendingAttempts": 4
     },
-    "txConsistencyMaxTime": 1200000
+    "txConsistencyMaxTime": 1200000,
+    "defaultOrdinalLevel": 20,
+    "explorerTx": "https://etherscan.io/tx/${ID}"
+  },
+  "ENS": {
+    "symbol": "ENS",
+    "name": "Ethereum Name Service",
+    "decimals": 18,
+    "contractId": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72",
+    "createCoin": false,
+    "cryptoTransferDecimals": 6,
+    "defaultGasLimit": 58000,
+    "status": "active",
+    "mainCoin": "ETH",
+    "type": "ERC20",
+    "fees": "ethereum"
   },
   "HOT": {
     "symbol": "HOT",
@@ -225,6 +235,7 @@
     "createCoin": false,
     "cryptoTransferDecimals": 6,
     "defaultGasLimit": 58000,
+    "explorerTx": "https://explorer.injective.network/transaction/${ID}",
     "status": "active",
     "mainCoin": "ETH",
     "type": "ERC20",
@@ -269,7 +280,9 @@
       "newPendingAttempts": 15,
       "oldPendingAttempts": 4
     },
-    "txConsistencyMaxTime": 60000
+    "txConsistencyMaxTime": 60000,
+    "defaultOrdinalLevel": 60,
+    "explorerTx": "https://liskscan.com/transaction/${ID}"
   },
   "MANA": {
     "symbol": "MANA",
@@ -293,19 +306,7 @@
     "createCoin": false,
     "cryptoTransferDecimals": 6,
     "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
-    "type": "ERC20",
-    "fees": "ethereum"
-  },
-  "PAXG": {
-    "symbol": "PAXG",
-    "name": "PAX Gold",
-    "decimals": 18,
-    "contractId": "0x45804880de22913dafe09f4980848ece6ecbaf78",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
+    "explorerTx": "https://polygonscan.com/tx/${ID}",
     "status": "active",
     "mainCoin": "ETH",
     "type": "ERC20",
@@ -337,24 +338,11 @@
     "type": "ERC20",
     "fees": "ethereum"
   },
-  "SKL": {
-    "symbol": "SKL",
-    "name": "SKALE",
+  "PAXG": {
+    "symbol": "PAXG",
+    "name": "PAX Gold",
     "decimals": 18,
-    "contractId": "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
-    "type": "ERC20",
-    "fees": "ethereum"
-  },
-  "SNT": {
-    "symbol": "SNT",
-    "name": "Status",
-    "decimals": 18,
-    "contractId": "0x744d70fdbe2ba4cf95131626614a1763df805b9e",
+    "contractId": "0x45804880de22913dafe09f4980848ece6ecbaf78",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
     "defaultGasLimit": 58000,
@@ -368,6 +356,19 @@
     "name": "Synthetix Network",
     "decimals": 18,
     "contractId": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
+    "createCoin": false,
+    "cryptoTransferDecimals": 6,
+    "defaultGasLimit": 58000,
+    "status": "active",
+    "mainCoin": "ETH",
+    "type": "ERC20",
+    "fees": "ethereum"
+  },
+  "SNT": {
+    "symbol": "SNT",
+    "name": "Status",
+    "decimals": 18,
+    "contractId": "0x744d70fdbe2ba4cf95131626614a1763df805b9e",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
     "defaultGasLimit": 58000,
@@ -402,6 +403,19 @@
     "type": "ERC20",
     "fees": "ethereum"
   },
+  "SKL": {
+    "symbol": "SKL",
+    "name": "SKALE",
+    "decimals": 18,
+    "contractId": "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7",
+    "createCoin": false,
+    "cryptoTransferDecimals": 6,
+    "defaultGasLimit": 58000,
+    "status": "active",
+    "mainCoin": "ETH",
+    "type": "ERC20",
+    "fees": "ethereum"
+  },
   "USDC": {
     "symbol": "USDC",
     "name": "USD Coin",
@@ -411,8 +425,8 @@
     "cryptoTransferDecimals": 6,
     "defaultVisibility": true,
     "defaultGasLimit": 58000,
-    "status": "active",
     "defaultOrdinalLevel": 40,
+    "status": "active",
     "mainCoin": "ETH",
     "type": "ERC20",
     "fees": "ethereum"
@@ -452,8 +466,8 @@
     "cryptoTransferDecimals": 6,
     "defaultVisibility": true,
     "defaultGasLimit": 58000,
-    "status": "active",
     "defaultOrdinalLevel": 30,
+    "status": "active",
     "mainCoin": "ETH",
     "type": "ERC20",
     "fees": "ethereum"

@@ -14,7 +14,7 @@ export default function getExplorerUrl (crypto, transactionId) {
   if (explorerUrl) {
     const data = { ID: transactionId }
 
-    explorerUrl = explorerUrl.replace(/${([a-zA-Z_]+?)}/g, (_, key) => data[key])
+    explorerUrl = explorerUrl.replace(/\${([a-zA-Z_]+?)}/g, (_, key) => data[key])
   }
 
   if (crypto === Cryptos.ADM) {

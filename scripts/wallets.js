@@ -15,16 +15,19 @@ async function run() {
   // update adamant-wallets repo
   await $`git submodule update --recursive`
 
-  const [coins, { coinDirNames, coinSymbols }] = await initCoins()
+  const [coins, nodes, { coinDirNames, coinSymbols }] = await initCoins()
   await applyBlockchains(coins, coinSymbols)
 
   await copyIcons(coins, coinDirNames)
 
   await writeFile(CRYPTOS_DATA_FILE_PATH, JSON.stringify(coins, null, 2))
+
+  await updateConfig(nodes)
 }
 
 async function initCoins() {
   const coins = {}
+  const nodes = {}
 
   const coinDirNames = {}
   const coinSymbols = {}
@@ -60,11 +63,25 @@ async function initCoins() {
       defaultGasLimit: coin.defaultGasLimit,
       defaultGasPriceGwei: coin.defaultGasPriceGwei,
       txFetchInfo: coin.txFetchInfo,
-      txConsistencyMaxTime: coin.txConsistencyMaxTime
+      txConsistencyMaxTime: coin.txConsistencyMaxTime,
+      defaultOrdinalLevel: coin.defaultOrdinalLevel,
+      explorerTx: coin.explorerTx
+    }
+
+    if (coin.createCoin) {
+      const nodeName = coin.symbol.toLowerCase()
+
+      if (coin.nodes) {
+        nodes[nodeName] = coin.nodes
+      }
+
+      if (coin.serviceNodes) {
+        nodes[`${nodeName}service`] = coin.serviceNodes
+      }
     }
   })
 
-  return [coins, { coinDirNames, coinSymbols }]
+  return [coins, nodes, { coinDirNames, coinSymbols }]
 }
 
 async function applyBlockchains(coins, coinSymbols) {
@@ -111,6 +128,21 @@ async function copyIcons(coins, coinDirNames) {
       )
     }
   }
+}
+
+/**
+ * Updates the production config inside src/config
+ */
+async function updateConfig(nodes) {
+  const configPath = resolve('src/config/production.json')
+  const config = await parseJsonFile(configPath)
+
+  config.server = {
+    ...config.server, // to keep `infoservice`
+    ...nodes
+  }
+
+  await writeFile(configPath, JSON.stringify(config, null, 2))
 }
 
 async function forEachDir(path, callback) {
