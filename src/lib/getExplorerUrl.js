@@ -21,5 +21,5 @@ export default function getExplorerUrl (crypto, transactionId) {
     return explorerUriToOnion(explorerUrl)
   }
 
-  return ''
+  return explorerUrl || ''
 }
