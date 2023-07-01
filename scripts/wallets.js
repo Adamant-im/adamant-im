@@ -13,7 +13,7 @@ run()
 
 async function run() {
   // update adamant-wallets repo
-  await $`git submodule update --recursive`
+  await $`git submodule foreach git pull origin master`
 
   const [coins, nodes, { coinDirNames, coinSymbols }] = await initCoins()
   await applyBlockchains(coins, coinSymbols)

@@ -9,7 +9,8 @@
         "url": "https://lake.adamant.im"
       },
       {
-        "url": "https://endless.adamant.im"
+        "url": "https://endless.adamant.im",
+        "alt_ip": "http://149.102.157.15:36666"
       },
       {
         "url": "https://bid.adamant.im"
@@ -18,7 +19,8 @@
         "url": "https://unusual.adamant.im"
       },
       {
-        "url": "https://debate.adamant.im"
+        "url": "https://debate.adamant.im",
+        "alt_ip": "http://95.216.161.113:36666"
       },
       {
         "url": "http://23.226.231.225:36666"
@@ -28,6 +30,15 @@
       },
       {
         "url": "http://5.161.53.74:36666"
+      },
+      {
+        "url": "http://184.94.215.92:45555"
+      },
+      {
+        "url": "https://node1.adamant.business"
+      },
+      {
+        "url": "https://node2.blockchain2fa.io"
       }
     ],
     "btc": [
