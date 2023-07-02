@@ -6,7 +6,7 @@ import store from './store/index.js'
 import { i18n } from './i18n'
 import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
-import { vuetify } from '@/plugins/vuetify'
+import { vuetify } from '@/plugins/vuetify.ts'
 import { registerGlobalComponents } from './plugins/layout'
 import '@/assets/styles/app.scss'
 

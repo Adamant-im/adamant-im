@@ -12,7 +12,7 @@ import { defineComponent } from 'vue'
 import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import Notifications from '@/lib/notifications'
-import { ThemeName } from './plugins/vuetify'
+import { ThemeName } from './plugins/vuetify.ts'
 import { Cryptos } from '@/lib/constants'
 
 const loadVuexCoinModules = async () => {
