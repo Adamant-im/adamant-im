@@ -3,6 +3,7 @@ import getEnpointUrl from '../getEndpointUrl'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import * as transactions from '@liskhq/lisk-transactions'
+import { CryptosInfo } from '../constants'
 
 export const TX_DEFAULT_FEE = 0.00160
 
@@ -55,7 +56,7 @@ export default class LskBaseApi {
   }
 
   get decimals () {
-    return 8
+    return CryptosInfo[this._crypto].decimals
   }
 
   get multiplier () {

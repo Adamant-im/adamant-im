@@ -1,6 +1,6 @@
 import baseGetters from '../btc-base/btc-base-getters'
 import BigNumber from '../../../lib/bignumber'
-import { CryptoAmountPrecision } from '../../../lib/constants'
+import { CryptosInfo } from '@/lib/constants'
 
 const MULTIPLIER = 1e8
 
@@ -24,7 +24,7 @@ export default {
       return res
     }, { total: 0, count: 0, fee: 0 })
 
-    return BigNumber(calculation.fee).div(MULTIPLIER).decimalPlaces(CryptoAmountPrecision.BTC, 6)
+    return BigNumber(calculation.fee).div(MULTIPLIER).decimalPlaces(CryptosInfo['BTC'].cryptoTransferDecimals, 6)
   },
 
   height (state) {

@@ -1,7 +1,7 @@
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { ETH_TRANSFER_GAS, INCREASE_FEE_MULTIPLIER } from '../../../lib/constants'
+import { DEFAULT_ETH_TRANSFER_GAS, INCREASE_FEE_MULTIPLIER } from '../../../lib/constants'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
@@ -13,7 +13,7 @@ const STATUS_INTERVAL = 25000
  * Stores ETH address to the ADAMANT KVS if it's not there yet
  * @param {*} context
  */
-function storeEthAddress (context) {
+function storeEthAddress(context) {
   storeCryptoAddress(context.state.crypto, context.state.address)
 }
 
@@ -22,12 +22,12 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
     from: context.state.address,
     to: ethAddress,
     value: utils.toWei(amount)
-    // gas: api.fromDecimal(ETH_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
+    // gas: api.fromDecimal(DEFAULT_ETH_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
     // gasPrice: context.getters.gasPrice // Set gas price to auto calc. Deprecated after London hardfork
     // nonce // Let sendTransaction choose it
   }
 
-  return api.estimateGas(transaction).then(gasLimit => {
+  return api.estimateGas(transaction).then((gasLimit) => {
     gasLimit = increaseFee ? gasLimit * INCREASE_FEE_MULTIPLIER : gasLimit
     transaction.gas = gasLimit
     return transaction
@@ -52,7 +52,7 @@ const createSpecificActions = (api, queue) => ({
    * Requests ETH account status: balance, gas price, last block height
    * @param {*} context Vuex action context
    */
-  updateStatus (context) {
+  updateStatus(context) {
     if (!context.state.address) return
 
     const supplier = () => {
@@ -69,7 +69,7 @@ const createSpecificActions = (api, queue) => ({
           if (!err) {
             context.commit('gasPrice', {
               gasPrice: price, // string type
-              fee: +(+utils.calculateFee(ETH_TRANSFER_GAS, price)).toFixed(8) // number type, in ETH
+              fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS, price)).toFixed(8) // number type, in ETH
             })
           }
         }),

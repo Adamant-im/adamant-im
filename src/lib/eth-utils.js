@@ -9,7 +9,7 @@ const HD_KEY_PATH = "m/44'/60'/3'/1/0"
  * Converts Wei amount to Ether.
  * @param {string | number} wei Wei amount
  */
-export function toEther (wei) {
+export function toEther(wei) {
   return web3Utils.fromWei(String(wei), 'ether')
 }
 
@@ -17,8 +17,8 @@ export function toEther (wei) {
  * Converts Ether amount to Wei.
  * @param {string | number} eth Ether amount
  */
-export function toWei (eth) {
-  return web3Utils.toWei(String(eth), 'ether')
+export function toWei(eth, unit = 'ether') {
+  return web3Utils.toWei(String(eth), unit)
 }
 
 /**
@@ -27,9 +27,11 @@ export function toWei (eth) {
  * @param {string} passphrase user-defined passphrase
  * @returns {{address: string, privateKey: string}}
  */
-export function getAccountFromPassphrase (passphrase, api) {
+export function getAccountFromPassphrase(passphrase, api) {
   const seed = cache.mnemonicToSeedSync(passphrase)
-  const privateKey = web3Utils.bytesToHex(hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey)
+  const privateKey = web3Utils.bytesToHex(
+    hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey
+  )
   // web3Account is for user wallet; We don't need it, when exporting a private key
   const web3Account = api ? api.accounts.privateKeyToAccount(privateKey) : undefined
 
@@ -46,7 +48,7 @@ export function getAccountFromPassphrase (passphrase, api) {
  * @param {string|number} gasPrice gas price in wei. May be string, hex or dec number, i. e., "0x342770c00" (14000000000 wei)
  * @returns {string} fee in ETH
  */
-export function calculateFee (gasUsed, gasPrice) {
+export function calculateFee(gasUsed, gasPrice) {
   // After London hardfork we may not receive gasPrice. Still we change gasPrice to effectiveGasPrice where it's possible
   if (!gasPrice) return '0'
   const gas = BigNumber(gasUsed, 10)
@@ -62,7 +64,7 @@ export function calculateFee (gasUsed, gasPrice) {
  * @param {string|number} decimals decimal places for token's contract
  * @returns {string} value in sats
  */
-export function toWhole (amount, decimals) {
+export function toWhole(amount, decimals) {
   let [whole, fraction] = Number(amount).toFixed(decimals).replace(/0+$/, '').split('.')
   if (!whole) whole = '0'
   if (!fraction) fraction = '0'
@@ -87,13 +89,12 @@ export function toWhole (amount, decimals) {
  * @param {string} separator decimal separator sign
  * @returns {string} value in token
  */
-export function toFraction (amount, decimals, separator = '.') {
+export function toFraction(amount, decimals, separator = '.') {
   amount = `${amount}`
   const len = amount.length
 
-  const whole = len <= decimals
-    ? '0'
-    : amount.substr(0, amount.length - decimals).replace(/^0+/, '') || '0'
+  const whole =
+    len <= decimals ? '0' : amount.substr(0, amount.length - decimals).replace(/^0+/, '') || '0'
 
   let fraction = len <= decimals ? amount : amount.substr(amount.length - decimals)
   while (fraction.length < decimals) {
@@ -106,35 +107,35 @@ export function toFraction (amount, decimals, separator = '.') {
 }
 
 export class BatchQueue {
-  constructor (createBatchRequest) {
+  constructor(createBatchRequest) {
     this._createBatchRequest = createBatchRequest
     this._queue = []
     this._timer = null
   }
 
-  enqueue (key, supplier) {
+  enqueue(key, supplier) {
     if (typeof supplier !== 'function') return
-    if (this._queue.some(x => x.key === key)) return
+    if (this._queue.some((x) => x.key === key)) return
 
     const requests = supplier()
     this._queue.push({ key, requests: Array.isArray(requests) ? requests : [requests] })
   }
 
-  start () {
+  start() {
     this.stop()
     this._timer = setInterval(() => this._execute(), 2000)
   }
 
-  stop () {
+  stop() {
     clearInterval(this._timer)
   }
 
-  _execute () {
+  _execute() {
     const requests = this._queue.splice(0, 20)
     if (!requests.length) return
 
     const batch = this._createBatchRequest()
-    requests.forEach(x => x.requests.forEach(r => batch.add(r)))
+    requests.forEach((x) => x.requests.forEach((r) => batch.add(r)))
 
     batch.execute()
   }
