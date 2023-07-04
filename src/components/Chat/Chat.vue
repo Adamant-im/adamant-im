@@ -45,6 +45,7 @@
           :flashing="flashingMessageId === message.id"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="onSwipeLeft(message)"
+          @click:reply="onClickReply(message)"
         >
           <template #avatar>
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
@@ -92,6 +93,14 @@
           <template #prepend>
             <chat-menu :partner-id="partnerId" />
           </template>
+
+          <template #reply-preview v-if="replyMessage">
+            <a-chat-reply-preview
+              :partner-id="partnerId"
+              :message="replyMessage"
+              @cancel="replyMessageId = ''"
+            />
+          </template>
         </a-chat-form>
       </template>
 
@@ -128,7 +137,13 @@ import Visibility from 'visibilityjs'
 import { Cryptos } from '@/lib/constants'
 import { renderMarkdown, sanitizeHTML } from '@/lib/markdown'
 
-import { AChat, AChatMessage, AChatTransaction, AChatForm } from '@/components/AChat'
+import {
+  AChat,
+  AChatMessage,
+  AChatTransaction,
+  AChatForm,
+  AChatReplyPreview
+} from '@/components/AChat'
 import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'
@@ -195,6 +210,7 @@ function validateMessage(message) {
 
 export default {
   components: {
+    AChatReplyPreview,
     AChat,
     AChatMessage,
     AChatTransaction,
@@ -265,6 +281,9 @@ export default {
     },
     numOfNewMessages() {
       return this.$store.getters['chat/numOfNewMessages'](this.partnerId)
+    },
+    replyMessage() {
+      return this.$store.getters['chat/messageById'](this.replyMessageId)
     }
   },
   watch: {
@@ -394,11 +413,16 @@ export default {
       await this.$refs.chat.scrollToMessageEasy(transactionIndex)
       this.highlightMessage(transactionId)
     },
+    /** Reply: touch devices **/
     onSwipeLeft(message) {
       this.replyMessageId = message.id
       this.actionsMenuAlign = message.senderId === this.partnerId ? 'left' : 'right'
 
       this.actionsMenuOpen = true
+    },
+    /** Reply: desktop devices **/
+    onClickReply(message) {
+      this.replyMessageId = message.id
     },
     /**
      * Apply flash effect to a message in the chat

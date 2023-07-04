@@ -79,6 +79,13 @@ $scroll-bar-width: 4px;
     max-width: 80%;
     margin: unset; // resets margins of <v-row/>
 
+    &:hover {
+      .a-chat__message-actions-icon {
+        visibility: visible;
+        transition: visibility .5s, max-height .5s;
+      }
+    }
+
     &:last-child {
       margin-bottom: 0;
     }
@@ -105,6 +112,15 @@ $scroll-bar-width: 4px;
     padding-right: 16px;
     margin-bottom: 16px;
     border-radius: 8px;
+  }
+
+  &__message-actions-icon {
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    right: 0;
+    overflow: hidden;
+    border-radius: 0 8px;
   }
 
   @keyframes flashing {
@@ -446,6 +462,10 @@ $scroll-bar-width: 4px;
       &--green {
         background-color: map-get($grey, 'darken-3');
       }
+    }
+
+    &__message-actions-icon {
+      background-image: linear-gradient(45deg, map-get($adm-colors, 'muted'), map-get($shades, 'black') 40%);
     }
 
     &__sender {

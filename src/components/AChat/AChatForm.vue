@@ -1,6 +1,9 @@
 <template>
   <div :class="classes">
     <v-divider v-if="showDivider" class="a-chat__divider" />
+
+    <slot name="reply-preview" />
+
     <v-textarea
       ref="messageTextarea"
       v-model="message"
