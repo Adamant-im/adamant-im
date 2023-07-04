@@ -1,9 +1,6 @@
 <template>
   <div :class="classes">
-    <v-divider
-      v-if="showDivider"
-      class="a-chat__divider"
-    />
+    <v-divider v-if="showDivider" class="a-chat__divider" />
     <v-textarea
       ref="messageTextarea"
       v-model="message"
@@ -17,25 +14,15 @@
       color="primary"
       v-on="listeners"
     >
-      <template
-        v-if="showSendButton"
-        #append-inner
-      >
-        <v-icon
-          icon="mdi-send"
-          size="28"
-        />
+      <template v-if="showSendButton" #append-inner>
+        <v-icon icon="mdi-send" size="28" />
       </template>
       <template #prepend>
         <slot name="prepend" />
       </template>
     </v-textarea>
 
-    <div
-      v-if="showSendButton"
-      class="a-chat__form-send-area"
-      @click="submitMessage"
-    />
+    <div v-if="showSendButton" class="a-chat__form-send-area" @click="submitMessage" />
   </div>
 </template>
 
@@ -71,7 +58,7 @@ export default {
   }),
   computed: {
     className: () => 'a-chat',
-    classes () {
+    classes() {
       return [
         `${this.className}__form`,
         {
@@ -82,12 +69,13 @@ export default {
     /**
      * Processing `ctrl+enter`, `shift + enter` and `enter`
      */
-    listeners () {
+    listeners() {
       return {
         keypress: (e) => {
           // on some devices keyCode for CTRL+ENTER is 10
           // https://bugs.chromium.org/p/chromium/issues/detail?id=79407
-          if (e.keyCode === 13 || e.keyCode === 10) { // Enter || Ctrl+Enter
+          if (e.keyCode === 13 || e.keyCode === 10) {
+            // Enter || Ctrl+Enter
             if (this.sendOnEnter) {
               // add LF and calculate height when CTRL+ENTER or ALT+ENTER or CMD+ENTER (Mac & Windows)
               // no need to add LF for shiftKey, it will be added automatically
@@ -97,7 +85,8 @@ export default {
                 return
               }
 
-              if (!e.shiftKey) { // send message if shiftKey is not pressed
+              if (!e.shiftKey) {
+                // send message if shiftKey is not pressed
                 e.preventDefault()
                 this.submitMessage()
               }
@@ -112,27 +101,27 @@ export default {
       }
     }
   },
-  mounted () {
+  mounted() {
     if (this.messageText) {
       this.message = this.messageText
       this.focus()
     }
   },
   methods: {
-    submitMessage () {
+    submitMessage() {
       this.$emit('message', this.message)
       this.message = ''
       // Fix textarea height to 1 row after miltiline message send
       this.calculateInputHeight()
       this.focus()
     },
-    calculateInputHeight () {
+    calculateInputHeight() {
       nextTick(this.$refs.messageTextarea.calculateInputHeight)
     },
-    addLineFeed () {
+    addLineFeed() {
       this.message += '\n'
     },
-    focus () {
+    focus() {
       this.$refs.messageTextarea.focus()
     }
   }
@@ -148,14 +137,14 @@ export default {
  * 2. Align icons at the bottom.
  */
 .a-chat__form {
-  :deep(.v-text-field__slot) textarea  {
+  :deep(.v-text-field__slot) textarea {
     max-height: 230px;
     overflow-y: auto;
   }
-  :deep(.v-text-field)  {
+  :deep(.v-text-field) {
     align-items: flex-end;
   }
-  :deep(.v-textarea)  {
+  :deep(.v-textarea) {
     .v-input__prepend {
       margin-bottom: 2px;
       margin-inline-end: 9px;
