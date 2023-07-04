@@ -44,6 +44,7 @@
           :asset="message.asset"
           :flashing="flashingMessageId === message.id"
           @click:quoted-message="onQuotedMessageClick"
+          @swipe:left="onSwipeLeft(message)"
         >
           <template #avatar>
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
@@ -110,6 +111,12 @@
     </a-chat>
 
     <ProgressIndicator :show="replyLoadingChatHistory" />
+    <MessageActionsMenu
+      v-model="actionsMenuOpen"
+      :attach="messageContainerElement"
+      :message-id="replyMessageId"
+      :position="actionsMenuAlign"
+    />
   </v-card>
 </template>
 
@@ -134,6 +141,7 @@ import { websiteUriToOnion } from '@/lib/uri'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
 import ProgressIndicator from '@/components/ProgressIndicator'
+import MessageActionsMenu from '@/components/AChat/MessageActionsMenu'
 
 /**
  * Returns user meta by userId.
@@ -196,7 +204,8 @@ export default {
     ChatMenu,
     CryptoIcon,
     FreeTokensDialog,
-    ProgressIndicator
+    ProgressIndicator,
+    MessageActionsMenu
   },
   mixins: [transaction, partnerName],
   props: {
@@ -214,7 +223,12 @@ export default {
     isScrolledToBottom: true,
     visibilityId: null,
     showFreeTokensDialog: false,
-    flashingMessageId: -1
+    flashingMessageId: -1,
+
+    actionsMenuOpen: false,
+    actionsMenuAlign: 'left',
+    messageContainerElement: null,
+    replyMessageId: -1
   }),
   computed: {
     /**
@@ -370,12 +384,21 @@ export default {
       // if after fetching chat history the message still cannot be found
       // then do nothing
       if (transactionIndex === -1) {
-        console.warn('onQuotedMessageClick: Transaction not found in the chat history', `tx.id="${transactionId}"`)
+        console.warn(
+          'onQuotedMessageClick: Transaction not found in the chat history',
+          `tx.id="${transactionId}"`
+        )
         return
       }
 
       await this.$refs.chat.scrollToMessageEasy(transactionIndex)
       this.highlightMessage(transactionId)
+    },
+    onSwipeLeft(message) {
+      this.replyMessageId = message.id
+      this.actionsMenuAlign = message.senderId === this.partnerId ? 'left' : 'right'
+
+      this.actionsMenuOpen = true
     },
     /**
      * Apply flash effect to a message in the chat

@@ -1,7 +1,17 @@
 <template>
-  <div
+  <v-row
     class="a-chat__message-container"
-    :class="{ 'a-chat__message-container--right': isStringEqualCI(sender.id, userId) }"
+    :class="{
+      'a-chat__message-container--right': isStringEqualCI(sender.id, userId),
+      'a-chat__message-container--transition': elementLeftOffset === 0
+    }"
+    v-touch="{
+      move: onMove,
+      end: onSwipeEnd
+    }"
+    :style="{
+      left: `${elementLeftOffset}px`
+    }"
   >
     <div
       class="a-chat__message"
@@ -9,6 +19,7 @@
         'a-chat__message--highlighted': isStringEqualCI(sender.id, userId),
         'a-chat__message--flashing': flashing
       }"
+      :data-txid="id"
     >
       <div
         v-if="showAvatar"
@@ -52,15 +63,17 @@
         </div>
       </div>
     </div>
-  </div>
+  </v-row>
 </template>
 
-<script>
+<script lang="ts">
+import { computed, ref, defineComponent } from 'vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
 import QuotedMessage from './QuotedMessage'
+import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 
-export default {
+export default defineComponent({
   components: {
     QuotedMessage
   },
@@ -132,27 +145,27 @@ export default {
       default: false
     }
   },
-  emits: ['resend', 'click:quotedMessage'],
-  computed: {
-    statusIcon() {
-      return tsIcon(this.status.virtualStatus)
-    },
-    isOutgoingMessage() {
-      return isStringEqualCI(this.sender.id, this.userId)
-    }
-  },
-  methods: {
-    // /**
-    //  * Registered ADM transactions must be shown as confirmed, as they are socket-enabled
-    //  * @returns {string}
-    //  */
-    // virtualStatus () {
-    //   if (this.status === TS.REGISTERED) return TS.CONFIRMED
-    //   return this.status
-    // },
-    isStringEqualCI(string1, string2) {
-      return isStringEqualCI(string1, string2)
+  emits: ['resend', 'click:quotedMessage', 'swipe:left'],
+  setup(props, { emit }) {
+    const messageCardRef = ref(null)
+    const menuOpen = ref(false)
+    const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
+    const isOutgoingMessage = computed(() => isStringEqualCI(props.sender.id, props.userId))
+
+    const { onMove, onSwipeEnd, elementLeftOffset } = useSwipeLeft(() => {
+      emit('swipe:left')
+    })
+
+    return {
+      messageCardRef,
+      menuOpen,
+      statusIcon,
+      isOutgoingMessage,
+      onMove,
+      onSwipeEnd,
+      elementLeftOffset,
+      isStringEqualCI
     }
   }
-}
+})
 </script>
