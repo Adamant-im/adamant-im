@@ -291,6 +291,7 @@ $chat-avatar-size: 40px;
       mask-image: none;
       padding-top: 7px;
       padding-bottom: 7px;
+      min-height: var(--v-input-control-height);
     }
 
     .v-text-field {
