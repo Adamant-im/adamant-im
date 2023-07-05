@@ -5,6 +5,7 @@ import networks from './networks'
 import getEnpointUrl from '../getEndpointUrl'
 import BigNumber from '../bignumber'
 import { isPositiveNumber } from '@/lib/numericHelpers'
+import { CryptosInfo } from '../constants'
 
 const getUnique = values => {
   const map = values.reduce((m, v) => {
@@ -54,6 +55,11 @@ export default class BtcBaseApi {
 
   get address () {
     return this._address
+  }
+
+  /** Fee for sending tokens */
+  getFee() {
+    return CryptosInfo[this._crypto].fixedFee
   }
 
   /**

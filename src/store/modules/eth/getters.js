@@ -1,17 +1,19 @@
+import { toWei } from '@/lib/eth-utils'
 import baseGetters from '../eth-base/eth-base-getters'
+import { CryptosInfo } from '@/lib/constants'
 
-const DEFAULT_GAS_PRICE = '20000000000' // 20 Gwei
+const DEFAULT_GAS_PRICE = toWei(CryptosInfo['ETH'].defaultGasPriceGwei, 'gwei')
 
 export default {
-  gasPrice (state) {
+  gasPrice(state) {
     return state.gasPrice || DEFAULT_GAS_PRICE
   },
 
-  fee: state => amount => state.fee,
+  fee: (state) => (amount) => state.fee,
 
-  privateKey: state => state.privateKey,
+  privateKey: (state) => state.privateKey,
 
-  web3Account: state => state.web3Account,
+  web3Account: (state) => state.web3Account,
 
   ...baseGetters
 }

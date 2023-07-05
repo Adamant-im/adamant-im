@@ -8,7 +8,7 @@ import ed2curve from 'ed2curve'
 import { decode } from '@stablelib/utf8'
 import bignum from './bignumber.js'
 import ByteBuffer from 'bytebuffer'
-import constants from './constants.js'
+import constants from './constants'
 import { hexToBytes, bytesToHex } from './hex'
 import cache from '@/store/cache'
 

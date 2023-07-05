@@ -1,16 +1,6 @@
 <template>
-  <v-row
-    justify="center"
-    no-gutters
-    :class="className"
-  >
-    <app-toolbar-centered
-      app
-      :title="`${id}`"
-      flat
-      fixed
-      :class="`${className}__toolbar`"
-    />
+  <v-row justify="center" no-gutters :class="className">
+    <app-toolbar-centered app :title="`${id}`" flat fixed :class="`${className}__toolbar`" />
     <container class="container--with-app-toolbar">
       <v-list bg-color="transparent">
         <v-list-item>
@@ -34,10 +24,7 @@
             </v-list-item-title>
           </template>
 
-          <v-list-item-title
-            v-if="rate !== false"
-            :class="`${className}__value`"
-          >
+          <v-list-item-title v-if="rate !== false" :class="`${className}__value`">
             {{ rate }}
           </v-list-item-title>
         </v-list-item>
@@ -51,10 +38,7 @@
             </v-list-item-title>
           </template>
 
-          <v-list-item-title
-            v-if="historyRate !== false"
-            :class="`${className}__value`"
-          >
+          <v-list-item-title v-if="historyRate !== false" :class="`${className}__value`">
             {{ historyRate }}
           </v-list-item-title>
         </v-list-item>
@@ -79,9 +63,13 @@
               v-if="status.status === 'INVALID'"
               icon="mdi-alert-outline"
               size="20"
-              style="color: #f8a061 !important;"
+              style="color: #f8a061 !important"
             />
-            {{ $t(`transaction.statuses.${status.virtualStatus}`) }}<span v-if="status.status === 'INVALID'">{{ ': ' + $t(`transaction.inconsistent_reasons.${status.inconsistentReason}`, { crypto } ) }}</span><span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>
+            {{ $t(`transaction.statuses.${status.virtualStatus}`)
+            }}<span v-if="status.status === 'INVALID'">{{
+              ': ' + $t(`transaction.inconsistent_reasons.${status.inconsistentReason}`, { crypto })
+            }}</span
+            ><span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>
           </div>
         </v-list-item>
 
@@ -129,9 +117,7 @@
 
         <v-divider />
 
-        <v-list-item
-          @click="copyToClipboard(id)"
-        >
+        <v-list-item @click="copyToClipboard(id)">
           <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.txid') }}
@@ -145,9 +131,7 @@
 
         <v-divider />
 
-        <v-list-item
-          @click="copyToClipboard(sender)"
-        >
+        <v-list-item @click="copyToClipboard(sender)">
           <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.sender') }}
@@ -161,9 +145,7 @@
 
         <v-divider />
 
-        <v-list-item
-          @click="copyToClipboard(recipient)"
-        >
+        <v-list-item @click="copyToClipboard(recipient)">
           <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.recipient') }}
@@ -191,10 +173,7 @@
 
         <v-divider v-if="textData" />
 
-        <v-list-item
-          v-if="textData"
-          :title="textData"
-        >
+        <v-list-item v-if="textData" :title="textData">
           <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.textData') }}
@@ -208,10 +187,7 @@
 
         <v-divider v-if="explorerLink" />
 
-        <v-list-item
-          v-if="explorerLink"
-          @click="openInExplorer"
-        >
+        <v-list-item v-if="explorerLink" @click="openInExplorer">
           <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.explorer') }}
@@ -219,19 +195,13 @@
           </template>
 
           <v-list-item-title :class="`${className}__value`">
-            <v-icon
-              icon="mdi-chevron-right"
-              size="20"
-            />
+            <v-icon icon="mdi-chevron-right" size="20" />
           </v-list-item-title>
         </v-list-item>
 
         <v-divider v-if="partner && !ifComeFromChat" />
 
-        <v-list-item
-          v-if="partner && !ifComeFromChat"
-          @click="openChat"
-        >
+        <v-list-item v-if="partner && !ifComeFromChat" @click="openChat">
           <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ hasMessages ? $t('transaction.continueChat') : $t('transaction.startChat') }}
@@ -239,10 +209,7 @@
           </template>
 
           <v-list-item-title :class="`${className}__value`">
-            <v-icon
-              :icon="hasMessages ? 'mdi-comment' : 'mdi-comment-outline'"
-              size="20"
-            />
+            <v-icon :icon="hasMessages ? 'mdi-comment' : 'mdi-comment-outline'" size="20" />
           </v-list-item-title>
         </v-list-item>
       </v-list>
@@ -333,41 +300,45 @@ export default {
       const chat = this.$store.state.chat.chats[this.partner]
       return chat && chat.messages && Object.keys(chat.messages).length > 0
     },
-    placeholder () {
+    placeholder() {
       if (!this.status.status) return Symbols.CLOCK
       return this.status.status === 'REJECTED' ? Symbols.CROSS : Symbols.HOURGLASS
     },
-    ifComeFromChat () {
+    ifComeFromChat() {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'fromChat')
     },
-    comment () {
+    comment() {
       return this.admTx && this.admTx.message ? this.admTx.message : false
     },
-    statusUpdatable () {
+    statusUpdatable() {
       return tsUpdatable(this.status.virtualStatus, this.crypto)
     },
-    amountNumber () {
+    amountNumber() {
       return this.amount.replace(/[^\d.-]/g, '')
     },
-    historyRate () {
-      return this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.timestamp), this.amountNumber, this.crypto)
+    historyRate() {
+      return this.$store.getters['rate/historyRate'](
+        timestampInSec(this.crypto, this.timestamp),
+        this.amountNumber,
+        this.crypto
+      )
     },
-    rate () {
+    rate() {
       return this.$store.getters['rate/rate'](this.amountNumber, this.crypto)
     }
   },
   watch: {
     // fetch Tx status when we get admTx
-    admTx () {
+    admTx() {
       this.fetchTransactionStatus(this.admTx, this.partner)
     },
-    timestamp () {
+    timestamp() {
       nextTick(() => {
         this.getHistoryRates()
       })
     }
   },
-  mounted () {
+  mounted() {
     if (this.admTx) {
       this.fetchTransactionStatus(this.admTx, this.partner)
     }
@@ -393,17 +364,22 @@ export default {
     openChat: function () {
       this.$router.push('/chats/' + this.partner + '/')
     },
-    updateStatus () {
+    updateStatus() {
       const el = this.$refs.updateButton.$el
       el.rotate = (el.rotate || 0) + 400
       el.style.transform = `rotate(${el.rotate}grad)`
       el.style['transition-duration'] = '1s'
 
       if (this.crypto && this.statusUpdatable) {
-        this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.id, force: true, updateOnly: false, dropStatus: true })
+        this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', {
+          hash: this.id,
+          force: true,
+          updateOnly: false,
+          dropStatus: true
+        })
       }
     },
-    getHistoryRates () {
+    getHistoryRates() {
       this.$store.dispatch('rate/getHistoryRates', {
         timestamp: timestampInSec(this.crypto, this.timestamp)
       })
@@ -454,7 +430,8 @@ export default {
     }
   }
 }
-.v-theme--light, .v-theme--dark {
+.v-theme--light,
+.v-theme--dark {
   .transaction-view {
     &__value-REJECTED {
       color: map-get($adm-colors, 'danger') !important;

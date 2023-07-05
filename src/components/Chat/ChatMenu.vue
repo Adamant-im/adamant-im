@@ -2,37 +2,21 @@
   <div>
     <v-menu>
       <template #activator="{ props }">
-        <v-icon
-          class="chat-menu__icon"
-          v-bind="props"
-          icon="mdi-plus-circle-outline"
-          size="28"
-        />
+        <v-icon class="chat-menu__icon" v-bind="props" icon="mdi-plus-circle-outline" size="28" />
       </template>
 
       <v-list class="chat-menu__list">
         <!-- Cryptos -->
-        <v-list-item
-          v-for="c in cryptos"
-          :key="c"
-          @click="sendFunds(c)"
-        >
+        <v-list-item v-for="c in cryptos" :key="c" @click="sendFunds(c)">
           <template #prepend>
-            <crypto-icon
-              :crypto="c"
-              box-centered
-            />
+            <crypto-icon :crypto="c" box-centered />
           </template>
 
           <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
         </v-list-item>
 
         <!-- Actions -->
-        <v-list-item
-          v-for="item in menuItems"
-          :key="item.title"
-          :disabled="item.disabled"
-        >
+        <v-list-item v-for="item in menuItems" :key="item.title" :disabled="item.disabled">
           <template #prepend>
             <icon-box>
               <v-icon :icon="item.icon" />
@@ -44,16 +28,12 @@
       </v-list>
     </v-menu>
 
-    <ChatDialog
-      v-model="dialog"
-      :title="dialogTitle"
-      :text="dialogText"
-    />
+    <ChatDialog v-model="dialog" :title="dialogTitle" :text="dialogText" />
   </div>
 </template>
 
 <script>
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, CryptosOrder } from '@/lib/constants'
 import ChatDialog from '@/components/Chat/ChatDialog'
 import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
@@ -73,7 +53,7 @@ export default {
     }
   },
   data: () => ({
-    cryptos: Object.keys(Cryptos),
+    cryptos: CryptosOrder,
     menuItems: [
       {
         type: 'action',
@@ -94,7 +74,7 @@ export default {
     crypto: ''
   }),
   methods: {
-    sendFunds (crypto) {
+    sendFunds(crypto) {
       // check if user has crypto wallet
       // otherwise show dialog
       this.fetchCryptoAddress(crypto)
@@ -123,24 +103,26 @@ export default {
           this.dialog = true
         })
     },
-    fetchCryptoAddress (crypto) {
+    fetchCryptoAddress(crypto) {
       if (crypto === Cryptos.ADM) {
         return Promise.resolve()
       }
 
-      return this.$store.dispatch('partners/fetchAddress', {
-        crypto,
-        partner: this.partnerId,
-        moreInfo: true
-      }).then(address => {
-        if (!address) {
-          throw new Error('No crypto wallet address')
-        } else if (address.onlyLegacyLiskAddress) {
-          throw new Error('Only legacy Lisk address')
-        }
+      return this.$store
+        .dispatch('partners/fetchAddress', {
+          crypto,
+          partner: this.partnerId,
+          moreInfo: true
+        })
+        .then((address) => {
+          if (!address) {
+            throw new Error('No crypto wallet address')
+          } else if (address.onlyLegacyLiskAddress) {
+            throw new Error('Only legacy Lisk address')
+          }
 
-        return address
-      })
+          return address
+        })
     }
   }
 }

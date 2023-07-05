@@ -1,8 +1,8 @@
-import { TX_FEE } from '@/lib/bitcoin/doge-api'
+import { CryptosInfo, Cryptos } from '@/lib/constants'
 import baseGetters from '../btc-base/btc-base-getters'
 
 export default {
   ...baseGetters,
 
-  fee: state => amount => TX_FEE
+  fee: state => amount => CryptosInfo[Cryptos.DOGE].fixedFee
 }

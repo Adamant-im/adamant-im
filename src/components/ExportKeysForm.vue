@@ -123,7 +123,7 @@ import copyToClipboard from 'copy-to-clipboard'
 import { getAccountFromPassphrase as getEthAccount } from '@/lib/eth-utils'
 import { getAccount as getBtcAccount } from '@/lib/bitcoin/btc-base-api'
 import { getAccount as getLskAccount } from '@/lib/lisk/lisk-api'
-import { Cryptos, CryptosNames } from '@/lib/constants'
+import { Cryptos, CryptosInfo } from '@/lib/constants'
 import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import { ref, defineComponent } from 'vue'
@@ -138,7 +138,7 @@ function getBtcKey (crypto, passphrase, asWif) {
 
   return {
     crypto: crypto,
-    cryptoName: CryptosNames[crypto],
+    cryptoName: CryptosInfo[crypto].name,
     key
   }
 }
@@ -149,7 +149,7 @@ function getLskKey (crypto, passphrase) {
 
   return {
     crypto: crypto,
-    cryptoName: CryptosNames[crypto],
+    cryptoName: CryptosInfo[crypto].name,
     key
   }
 }

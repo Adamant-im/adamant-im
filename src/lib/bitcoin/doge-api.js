@@ -10,7 +10,6 @@ const POST_CONFIG = {
   }
 }
 
-export const TX_FEE = 1 // 1 DOGE per transaction
 export const MULTIPLIER = 1e8
 export const CHUNK_SIZE = 20
 
@@ -23,28 +22,24 @@ export default class DogeApi extends BtcBaseApi {
    * @override
    */
   getBalance () {
-    return this._get(`/addr/${this.address}/balance`)
+    return this._get(`/api/addr/${this.address}/balance`)
       .then(balance => Number(balance) / this.multiplier)
-  }
-
-  getFee () {
-    return TX_FEE
   }
 
   /** @override */
   sendTransaction (txHex) {
-    return this._post('/tx/send', { rawtx: txHex }).then(res => res.txid)
+    return this._post('/api/tx/send', { rawtx: txHex }).then(res => res.txid)
   }
 
   /** @override */
   getTransaction (txid) {
-    return this._get(`tx/${txid}`).then(tx => this._mapTransaction(tx))
+    return this._get(`/api/tx/${txid}`).then(tx => this._mapTransaction(tx))
   }
 
   /** @override */
   getTransactions ({ from = 0 }) {
     const to = from + CHUNK_SIZE
-    return this._get(`/addrs/${this.address}/txs`, { from, to })
+    return this._get(`/api/addrs/${this.address}/txs`, { from, to })
       .then(resp => ({
         ...resp,
         hasMore: to < resp.totalItems,
@@ -54,7 +49,7 @@ export default class DogeApi extends BtcBaseApi {
 
   /** @override */
   getUnspents () {
-    return this._get(`/addr/${this.address}/utxo?noCache=1`)
+    return this._get(`/api/addr/${this.address}/utxo?noCache=1`)
       .then(unspents => {
         return unspents.map(tx => ({
           ...tx,

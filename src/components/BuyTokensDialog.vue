@@ -47,6 +47,17 @@
 
             <v-list-item-title>Azbit</v-list-item-title>
           </v-list-item>
+
+          <v-list-item
+            avatar
+            @click="openLink('https://stakecube.net/app/exchange/adm_usdt?layout=pro&team=adm')"
+          >
+            <template #prepend>
+              <icon><stake-cube-icon /></icon>
+            </template>
+
+            <v-list-item-title>StakeCube</v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-card-text>
     </v-card>
@@ -59,6 +70,7 @@ import Icon from '@/components/icons/BaseIcon'
 import AdamantIcon from '@/components/icons/common/Adamant'
 import AzbitIcon from '@/components/icons/common/Azbit'
 import ExchangerIcon from '@/components/icons/common/Exchanger'
+import StakeCubeIcon from '@/components/icons/common/StakeCube.vue'
 import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
@@ -66,7 +78,8 @@ export default {
     Icon,
     AdamantIcon,
     AzbitIcon,
-    ExchangerIcon
+    ExchangerIcon,
+    StakeCubeIcon
   },
   props: {
     modelValue: {
