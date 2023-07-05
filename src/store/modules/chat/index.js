@@ -628,13 +628,15 @@ const actions = {
    *
    * @param {string} message
    * @param {string} recipientId
+   * @param {string} replyToId Optional
    * @returns {Promise}
    */
-  sendMessage({ commit, rootState }, { message, recipientId }) {
+  sendMessage({ commit, rootState }, { message, recipientId, replyToId }) {
     const messageObject = createMessage({
       message,
       recipientId,
-      senderId: rootState.address
+      senderId: rootState.address,
+      replyToId
     })
 
     commit('pushMessage', {
@@ -642,7 +644,15 @@ const actions = {
       userId: rootState.address
     })
 
-    return queueMessage(message, recipientId)
+    const type = replyToId ? 2 : 1 // 2: Rich Content Message or 1: Basic Encrypted Message
+    const messageAsset = replyToId
+      ? {
+          replyto_id: replyToId,
+          reply_message: message
+        }
+      : message
+
+    return queueMessage(messageAsset, recipientId, type)
       .then((res) => {
         // @todo this check must be performed on the server
         if (!res.success) {
@@ -690,7 +700,15 @@ const actions = {
     })
 
     if (message) {
-      return queueMessage(message.message, recipientId)
+      const type = message.isReply ? 2 : 1 // 2: Rich Content Message or 1: Basic Encrypted Message
+      const messageAsset = message.isReply
+        ? {
+            replyto_id: message.asset.replyto_id,
+            reply_message: message.message
+          }
+        : message.message
+
+      return queueMessage(messageAsset, recipientId, type)
         .then((res) => {
           if (!res.success) {
             throw new Error('Message rejected')

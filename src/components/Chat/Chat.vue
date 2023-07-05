@@ -353,13 +353,17 @@ export default {
       if (validateMessage.call(this, message)) {
         this.sendMessage(message)
         nextTick(() => this.$refs.chat.scrollToBottom())
+        this.replyMessageId = -1
       }
     },
     sendMessage(message) {
+      const replyToId = this.replyMessageId > -1 ? this.replyMessageId : undefined
+
       return this.$store
         .dispatch('chat/sendMessage', {
           message,
-          recipientId: this.partnerId
+          recipientId: this.partnerId,
+          replyToId
         })
         .catch((err) => {
           console.error(err.message)

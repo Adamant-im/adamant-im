@@ -35,15 +35,16 @@ const queue = new Queue(maxConcurent, maxQueue)
 
 /**
  * Add a message to the queue.
- * @param {string} message
+ * @param {string | object} message
  * @param {string} recipientId
  * @returns {Promise}
  */
-export function queueMessage(message, recipientId) {
+export function queueMessage(message, recipientId, type) {
   return queue.add(() => {
     return admApi.sendMessage({
       to: recipientId,
-      message
+      message,
+      type
     })
   })
 }
@@ -108,17 +109,27 @@ export function createChat() {
  * @param {string} senderId
  * @param {string} message
  * @param {string} status
+ * @param {string} replyToId Optional
  */
-export function createMessage({ recipientId, senderId, message, status = TS.PENDING }) {
-  return {
+export function createMessage({ recipientId, senderId, message, status = TS.PENDING, replyToId }) {
+  const transaction = {
     id: utils.epochTime(), // @todo uuid will be better
     recipientId,
     senderId,
     message,
     status,
     timestamp: Date.now(),
-    type: 'message'
+    type: 'message',
+    isReply: !!replyToId
   }
+
+  if (replyToId) {
+    transaction.asset = {
+      replyto_id: replyToId
+    }
+  }
+
+  return transaction
 }
 
 /**
@@ -130,6 +141,7 @@ export function createMessage({ recipientId, senderId, message, status = TS.PEND
  * @param {string} comment Transaction comment
  * @param {string} type ADM, ETH...
  * @param {string} status
+ * @param {string} replyToId optional
  */
 export function createTransaction(payload) {
   const {
@@ -140,7 +152,8 @@ export function createTransaction(payload) {
     comment,
     hash,
     type = 'ADM',
-    status = TS.PENDING
+    status = TS.PENDING,
+    replyToId
   } = payload
 
   const transaction = {
@@ -151,11 +164,18 @@ export function createTransaction(payload) {
     hash,
     type,
     status,
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    isReply: !!replyToId
   }
 
   if (comment) {
     transaction.message = comment
+  }
+
+  if (replyToId) {
+    transaction.asset = {
+      replyto_id: replyToId
+    }
   }
 
   return transaction
