@@ -16,7 +16,6 @@
     <div
       class="a-chat__message"
       :class="{
-        'a-chat__message--highlighted': isStringEqualCI(sender.id, userId),
         'a-chat__message--flashing': flashing
       }"
       :data-txid="id"
@@ -149,7 +148,6 @@ export default defineComponent({
   },
   emits: ['resend', 'click:quotedMessage', 'swipe:left'],
   setup(props, { emit }) {
-    const messageCardRef = ref(null)
     const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
     const isOutgoingMessage = computed(() => isStringEqualCI(props.sender.id, props.userId))
 
@@ -158,7 +156,6 @@ export default defineComponent({
     })
 
     return {
-      messageCardRef,
       statusIcon,
       isOutgoingMessage,
       onMove,

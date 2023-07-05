@@ -44,7 +44,6 @@
           :asset="message.asset"
           :flashing="flashingMessageId === message.id"
           @click:quoted-message="onQuotedMessageClick"
-          @click:reply="onClickReply(message)"
           @swipe:left="onSwipeLeft(message)"
         >
           <template #avatar>
@@ -84,9 +83,22 @@
           :asset="message.asset"
           :flashing="flashingMessageId === message.id"
           @click:quoted-message="onQuotedMessageClick"
+          @swipe:left="onSwipeLeft(message)"
         >
           <template #crypto>
             <crypto-icon :crypto="message.type" />
+          </template>
+
+          <template #actions>
+            <MessageActionsMenu
+              :modelValue="actionsMenuMessageId === message.id"
+              @update:modelValue="actionsMenuMessageId = -1"
+              :message-id="message.id"
+              :position="sender.id === partnerId ? 'left' : 'right'"
+              @click:reply="onClickReply(message)"
+            />
+
+            <MessageActionsDropdown @click:reply="onClickReply(message)" />
           </template>
         </a-chat-transaction>
       </template>

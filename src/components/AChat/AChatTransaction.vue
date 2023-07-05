@@ -1,13 +1,24 @@
 <template>
   <div
     class="a-chat__message-container"
-    :class="{ 'a-chat__message-container--right': isStringEqualCI(sender.id, userId) }"
+    :class="{
+      'a-chat__message-container--right': isStringEqualCI(sender.id, userId),
+      'a-chat__message-container--transition': elementLeftOffset === 0
+    }"
+    v-touch="{
+      move: onMove,
+      end: onSwipeEnd
+    }"
+    :style="{
+      left: `${elementLeftOffset}px`
+    }"
   >
     <div
       class="a-chat__message"
       :class="{
         'a-chat__message--flashing': flashing
       }"
+      :data-txid="id"
     >
       <div class="a-chat__message-card">
         <div class="a-chat__message-card-header">
@@ -63,15 +74,22 @@
         </div>
       </div>
     </div>
+
+    <slot name="actions" />
   </div>
 </template>
 
 <script>
+import { computed, watch, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useStore } from 'vuex'
+
 import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
+import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import QuotedMessage from './QuotedMessage'
 
 export default {
@@ -151,61 +169,78 @@ export default {
       default: false
     }
   },
-  emits: ['mount', 'click:transaction', 'click:transactionStatus', 'click:quotedMessage'],
-  computed: {
-    statusTitle() {
-      return this.$t(`chats.transaction_statuses.${this.status.virtualStatus}`)
-    },
-    statusIcon() {
-      return tsIcon(this.status.virtualStatus)
-    },
-    statusUpdatable() {
-      return tsUpdatable(this.status.virtualStatus, this.currency)
-    },
-    statusColor() {
-      return tsColor(this.status.virtualStatus)
-    },
-    historyRate() {
-      const amount = currencyAmount(this.amount, this.crypto)
+  emits: ['mount', 'click:transaction', 'click:transactionStatus', 'click:quotedMessage', 'swipe:left'],
+  setup(props, { emit }) {
+    const { t } = useI18n()
+    const store = useStore()
+
+    const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
+    const statusTitle = computed(() =>
+      t(`chats.transaction_statuses.${props.status.virtualStatus}`)
+    )
+    const statusUpdatable = computed(() => tsUpdatable(props.status.virtualStatus, props.currency))
+    const statusColor = computed(() => tsColor(props.status.virtualStatus))
+    const historyRate = computed(() => {
+      const amount = currencyAmount(props.amount, props.crypto)
       return (
         '~' +
-        this.$store.getters['rate/historyRate'](
-          timestampInSec(this.crypto, this.txTimestamp),
+        store.getters['rate/historyRate'](
+          timestampInSec(props.crypto, props.txTimestamp),
           amount,
-          this.crypto
+          props.crypto
         )
       )
-    }
-  },
-  watch: {
-    txTimestamp() {
-      this.getHistoryRates()
-    }
-  },
-  mounted() {
-    this.$emit('mount')
-    this.getHistoryRates()
-  },
-  methods: {
-    isStringEqualCI(string1, string2) {
-      return isStringEqualCI(string1, string2)
-    },
-    onClickAmount() {
-      if (this.isClickable) {
-        this.$emit('click:transaction', this.id)
+    })
+
+    const onClickAmount = () => {
+      if (props.isClickable) {
+        emit('click:transaction', props.id)
       }
-    },
-    updateStatus() {
-      if (this.statusUpdatable) {
-        this.$emit('click:transactionStatus', this.id)
+    }
+
+    const updateStatus = () => {
+      if (statusUpdatable.value) {
+        emit('click:transactionStatus', props.id)
       }
-    },
-    getHistoryRates() {
-      this.$store.dispatch('rate/getHistoryRates', {
-        timestamp: timestampInSec(this.crypto, this.txTimestamp)
+    }
+
+    const getHistoryRates = () => {
+      store.dispatch('rate/getHistoryRates', {
+        timestamp: timestampInSec(props.crypto, props.txTimestamp)
       })
-    },
-    currencyFormatter
+    }
+
+    watch(
+      () => props.txTimestamp,
+      () => {
+        this.getHistoryRates()
+      }
+    )
+
+    onMounted(() => {
+      emit('mount')
+      getHistoryRates()
+    })
+
+    const { onMove, onSwipeEnd, elementLeftOffset } = useSwipeLeft(() => {
+      emit('swipe:left')
+    })
+
+    return {
+      isStringEqualCI,
+      currencyFormatter,
+      statusIcon,
+      statusTitle,
+      statusUpdatable,
+      statusColor,
+      historyRate,
+      onClickAmount,
+      updateStatus,
+
+      onMove,
+      onSwipeEnd,
+      elementLeftOffset
+    }
   }
 }
 </script>
