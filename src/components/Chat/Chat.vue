@@ -442,6 +442,7 @@ export default {
     /** Reply: desktop devices **/
     onClickReply(message) {
       this.replyMessageId = message.id
+      this.$refs.chatForm.focus()
     },
     /**
      * Apply flash effect to a message in the chat
