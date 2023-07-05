@@ -3,6 +3,7 @@
     v-model="open"
     location="bottom center"
     :activator="activator"
+    :open-on-click="false"
     :content-class="{
       [classes.vOverlayContentLeft]: position === 'left',
       [classes.vOverlayContentRight]: position === 'right'
@@ -52,13 +53,6 @@ export default defineComponent({
     modelValue: {
       type: Boolean,
       required: true
-    },
-    /**
-     * Specifies which DOM element the overlay content should teleport to.
-     */
-    attach: {
-      type: Object, // type HTMLElement
-      required: false
     },
     messageId: {
       type: String,

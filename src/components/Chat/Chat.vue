@@ -44,11 +44,23 @@
           :asset="message.asset"
           :flashing="flashingMessageId === message.id"
           @click:quoted-message="onQuotedMessageClick"
-          @swipe:left="onSwipeLeft(message)"
           @click:reply="onClickReply(message)"
+          @swipe:left="onSwipeLeft(message)"
         >
           <template #avatar>
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
+          </template>
+
+          <template #actions>
+            <MessageActionsMenu
+              :modelValue="actionsMenuMessageId === message.id"
+              @update:modelValue="actionsMenuMessageId = -1"
+              :message-id="message.id"
+              :position="sender.id === partnerId ? 'left' : 'right'"
+              @click:reply="onClickReply(message)"
+            />
+
+            <MessageActionsDropdown @click:reply="onClickReply(message)" />
           </template>
         </a-chat-message>
         <a-chat-transaction
@@ -120,12 +132,6 @@
     </a-chat>
 
     <ProgressIndicator :show="replyLoadingChatHistory" />
-    <MessageActionsMenu
-      v-model="actionsMenuOpen"
-      :attach="messageContainerElement"
-      :message-id="replyMessageId"
-      :position="actionsMenuAlign"
-    />
   </v-card>
 </template>
 
@@ -157,6 +163,7 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
 import ProgressIndicator from '@/components/ProgressIndicator'
 import MessageActionsMenu from '@/components/AChat/MessageActionsMenu'
+import MessageActionsDropdown from '@/components/AChat/MessageActionsDropdown'
 
 /**
  * Returns user meta by userId.
@@ -221,7 +228,8 @@ export default {
     CryptoIcon,
     FreeTokensDialog,
     ProgressIndicator,
-    MessageActionsMenu
+    MessageActionsMenu,
+    MessageActionsDropdown
   },
   mixins: [transaction, partnerName],
   props: {
@@ -241,9 +249,7 @@ export default {
     showFreeTokensDialog: false,
     flashingMessageId: -1,
 
-    actionsMenuOpen: false,
-    actionsMenuAlign: 'left',
-    messageContainerElement: null,
+    actionsMenuMessageId: -1,
     replyMessageId: -1
   }),
   computed: {
@@ -415,10 +421,7 @@ export default {
     },
     /** Reply: touch devices **/
     onSwipeLeft(message) {
-      this.replyMessageId = message.id
-      this.actionsMenuAlign = message.senderId === this.partnerId ? 'left' : 'right'
-
-      this.actionsMenuOpen = true
+      this.actionsMenuMessageId = message.id
     },
     /** Reply: desktop devices **/
     onClickReply(message) {

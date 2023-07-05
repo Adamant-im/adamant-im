@@ -64,7 +64,7 @@
       </div>
     </div>
 
-    <MessageActionsDropdown @click:reply="$emit('click:reply')" @click:copy="$emit('click:copy')" />
+    <slot name="actions" />
   </v-row>
 </template>
 
@@ -74,11 +74,9 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
 import QuotedMessage from './QuotedMessage'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
-import MessageActionsDropdown from '@/components/AChat/MessageActionsDropdown'
 
 export default defineComponent({
   components: {
-    MessageActionsDropdown,
     QuotedMessage
   },
   props: {
@@ -149,10 +147,9 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ['resend', 'click:quotedMessage', 'swipe:left', 'click:reply', 'click:copy'],
+  emits: ['resend', 'click:quotedMessage', 'swipe:left'],
   setup(props, { emit }) {
     const messageCardRef = ref(null)
-    const menuOpen = ref(false)
     const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
     const isOutgoingMessage = computed(() => isStringEqualCI(props.sender.id, props.userId))
 
@@ -162,7 +159,6 @@ export default defineComponent({
 
     return {
       messageCardRef,
-      menuOpen,
       statusIcon,
       isOutgoingMessage,
       onMove,
