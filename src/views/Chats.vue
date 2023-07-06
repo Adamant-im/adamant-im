@@ -12,25 +12,46 @@
             class="pa-0"
             bg-color="transparent"
           >
-            <v-list-item
-              v-if="isFulfilled"
-              :class="`${className}__item`"
-              @click="showChatStartDialog = true"
+            <v-toolbar
+              subheader
+              class="pa-0"
+              bg-color="transparent"
             >
-              <template #prepend>
-                <v-icon
-                  :class="`${className}__icon`"
-                  icon="mdi-message-outline"
-                  size="16"
-                />
-              </template>
+              <v-list-item
+                v-if="unreadMessagesCount >= 1"
+                :class="`${className}__item`"
+                @click="readAll"
+              >
+                <template #prepend>
+                  <v-icon
+                    :class="`${className}__icon`"
+                    icon="mdi mdi-check-all"
+                    size="20"
+                  />
+                </template>
+              </v-list-item>
+              <v-spacer></v-spacer>
+              <v-list-item
+                v-if="isFulfilled"
+                :class="`${className}__item`"
+                @click="showChatStartDialog = true"
+              >
 
-              <div>
-                <v-list-item-title :class="`${className}__title`">
-                  {{ $t('chats.new_chat') }}
-                </v-list-item-title>
-              </div>
-            </v-list-item>
+                <template #prepend>
+                  <v-icon
+                    :class="`${className}__icon`"
+                    icon="mdi-message-outline"
+                    size="16"
+                  />
+                </template>
+
+                <div>
+                  <v-list-item-title :class="`${className}__title`">
+                    {{ $t('chats.new_chat') }}
+                  </v-list-item-title>
+                </div>
+              </v-list-item>
+            </v-toolbar>
 
             <transition-group
               v-if="isFulfilled"
@@ -55,6 +76,7 @@
               </template>
             </transition-group>
           </v-list>
+
         </v-col>
 
         <ChatSpinner :value="!isFulfilled" />
@@ -93,7 +115,8 @@ export default {
   data: () => ({
     showChatStartDialog: false,
     loading: false,
-    noMoreChats: false
+    noMoreChats: false,
+    unreadMessages: true
   }),
   computed: {
     className: () => 'chats-view',
@@ -117,7 +140,12 @@ export default {
     },
     userId () {
       return this.$store.state.address
+    },
+    unreadMessagesCount() {
+      const messages = this.$store.getters['chat/unreadMessages']
+      return messages.length
     }
+
   },
   beforeMount () {
     // When returning to chat list from a specific chat, restore noMoreChats property not to show loadingSeparator
@@ -126,6 +154,9 @@ export default {
   mounted () {
     this.showChatStartDialog = this.showNewContact
     this.attachScrollListener()
+  },
+  updated() {
+    console.log(this.unreadMessagesCount())
   },
   beforeUnmount () {
     this.destroyScrollListener()
@@ -186,7 +217,6 @@ export default {
     },
     messagesCount(partnerId) {
       const messages = this.$store.getters['chat/messages'](partnerId)
-
       return messages.length
     },
     displayChat(partnerId) {
@@ -194,6 +224,9 @@ export default {
       const ifChattedBefore = isAdamantChat(partnerId) && this.messagesCount(partnerId) > 1
 
       return isUserChat || isStaticChat(partnerId) || ifChattedBefore
+    },
+    readAll() {
+
     }
   }
 }
