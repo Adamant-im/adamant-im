@@ -213,7 +213,7 @@ export default {
     watch(
       () => props.txTimestamp,
       () => {
-        this.getHistoryRates()
+        getHistoryRates()
       }
     )
 
