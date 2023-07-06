@@ -68,7 +68,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
 import QuotedMessage from './QuotedMessage'
