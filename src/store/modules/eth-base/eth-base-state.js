@@ -1,6 +1,6 @@
 export default () => ({
-  balance: 0,
-  address: '',
+  balance: '…',
+  address: 'Unable to initialize the wallet. Update.',
   publicKey: null,
   privateKey: null,
   areOlderLoading: false,

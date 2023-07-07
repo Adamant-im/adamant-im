@@ -25,7 +25,7 @@
                 :class="`${className}__icon`"
               />
               <div>
-                <div>{{ numberFormat(wallet.balance, 4) }}</div>
+                <div>{{ wallet.balance === '…' ? '…' : numberFormat(wallet.balance, 4) }}</div>
                 <div>
                   {{ wallet.cryptoCurrency }}
                   <span v-if="wallet.erc20" style="font-size: 10px">

@@ -9,7 +9,7 @@
     >
       <v-list-item
         :class="`${className}__tile`"
-        @click="showShareURIDialog = true"
+        @click="address === 'Unable to initialize the wallet. Update.' ? false : showShareURIDialog = true"
       >
         <v-list-item-title :class="`${className}__title`">
           {{ $t('home.wallet_crypto', { crypto: cryptoName }) }}
@@ -18,7 +18,7 @@
           {{ address }}
         </v-list-item-subtitle>
 
-        <template #append>
+        <template #append v-if="address !== 'Unable to initialize the wallet. Update.'">
           <v-btn
             icon
             ripple
@@ -34,18 +34,18 @@
         </template>
       </v-list-item>
 
-      <v-list-item @click="$emit('click:balance', crypto)">
+      <v-list-item @click="balance === '…' ? false : $emit('click:balance', crypto)">
         <v-list-item-title :class="`${className}__title`">
           {{ $t('home.balance') }}
         </v-list-item-title>
         <v-list-item-subtitle :class="`${className}__subtitle`">
-          {{ currency(balance, crypto, true) }} <span
+          {{ balance === '…' ? '…' : currency(balance, crypto, true) }} <span
             v-if="$store.state.rate.isLoaded"
             class="a-text-regular"
           >~{{ rate }} {{ currentCurrency }}</span>
         </v-list-item-subtitle>
 
-        <template #append>
+        <template #append v-if="balance !== '…'">
           <v-btn
             icon
             ripple
