@@ -71,7 +71,7 @@
 import { computed, defineComponent } from 'vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
-import QuotedMessage from './QuotedMessage'
+import QuotedMessage from './QuotedMessage.vue'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 
 export default defineComponent({
