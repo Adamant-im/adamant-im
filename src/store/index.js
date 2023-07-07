@@ -11,6 +11,7 @@ import {
 import { Cryptos, Fees } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
+import { registerCryptoModules } from './utils/registerCryptoModules'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
@@ -231,6 +232,8 @@ const store = {
 
 const storeInstance = createStore(store)
 window.store = storeInstance
+
+registerCryptoModules(storeInstance)
 
 export { store } // for tests
 
