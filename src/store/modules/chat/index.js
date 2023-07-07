@@ -11,6 +11,7 @@ import {
 import { isNumeric } from '@/lib/numericHelpers'
 import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { replyMessageAsset } from '@/lib/adamant-api/asset'
 import { generateAdamantChats } from './utils/generateAdamantChats'
 
 export let interval
@@ -646,10 +647,10 @@ const actions = {
 
     const type = replyToId ? 2 : 1 // 2: Rich Content Message or 1: Basic Encrypted Message
     const messageAsset = replyToId
-      ? {
-          replyto_id: replyToId,
-          reply_message: message
-        }
+      ? replyMessageAsset({
+          replyToId,
+          replyMessage: message
+        })
       : message
 
     return queueMessage(messageAsset, recipientId, type)
@@ -750,7 +751,7 @@ const actions = {
    * @returns {number} Transaction ID
    */
   pushTransaction({ commit, rootState }, payload) {
-    const { transactionId, recipientId, type, status, amount, hash, comment = '' } = payload
+    const { transactionId, recipientId, type, status, amount, hash, comment = '', replyToId } = payload
 
     const transactionObject = createTransaction({
       transactionId,
@@ -760,7 +761,8 @@ const actions = {
       amount,
       hash,
       comment,
-      senderId: rootState.address
+      senderId: rootState.address,
+      replyToId
     })
 
     commit('pushMessage', {

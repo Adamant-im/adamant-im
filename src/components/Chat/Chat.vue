@@ -115,7 +115,10 @@
           @message="onMessage"
         >
           <template #prepend>
-            <chat-menu :partner-id="partnerId" />
+            <chat-menu
+              :partner-id="partnerId"
+              :reply-to-id="replyMessageId > -1 ? replyMessageId : undefined"
+            />
           </template>
 
           <template #reply-preview v-if="replyMessage">

@@ -208,6 +208,7 @@ import {
 
 import { parseURIasAIP } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
+import { replyMessageAsset } from '@/lib/adamant-api/asset'
 
 import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
@@ -259,6 +260,9 @@ export default {
     addressReadonly: {
       type: Boolean,
       default: false
+    },
+    replyToId: {
+      type: String
     }
   },
   emits: ['send', 'error'],
@@ -674,10 +678,19 @@ export default {
         // 1. if come from Chat then sendMessage
         // 2. else send regular transaction with `type = 0`
         if (this.address) {
+          const type = this.replyToId ? 2 : 1 // 2: Rich Content Message or 1: Basic Encrypted Message
+          const asset = this.replyToId
+            ? replyMessageAsset({
+                replyToId: this.replyToId,
+                replyMessage: this.comment
+              })
+            : this.comment
+
           promise = sendMessage({
             amount: this.amount,
-            message: this.comment,
-            to: this.cryptoAddress
+            message: asset,
+            to: this.cryptoAddress,
+            type
           })
         } else {
           promise = this.$store.dispatch('adm/sendTokens', {
@@ -694,7 +707,8 @@ export default {
           comments: this.comment,
           fee: this.transferFee,
           increaseFee: this.increaseFee,
-          textData: this.textData
+          textData: this.textData,
+          replyToId: this.replyToId
         })
       }
     },
@@ -721,7 +735,8 @@ export default {
         type: this.currency,
         status: TS.PENDING,
         amount,
-        comment: this.comment
+        comment: this.comment,
+        replyToId: this.replyToId
       })
     },
     fetchUserCryptoAddress() {

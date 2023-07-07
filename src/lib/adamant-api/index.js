@@ -1,9 +1,9 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
 
-import { Transactions, Delegates } from './constants'
-import utils from './adamant'
-import client from './adamant-api-client'
+import { Transactions, Delegates } from '@/lib/constants'
+import utils from '@/lib/adamant'
+import client from '@/lib/adamant-api-client'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { restoreState } from '@/lib/idb/state'
 import { i18n } from '@/i18n'

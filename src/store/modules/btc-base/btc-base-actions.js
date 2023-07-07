@@ -80,7 +80,7 @@ function createActions(options) {
       api.getBalance().then((balance) => context.commit('status', { balance }))
     },
 
-    sendTokens(context, { amount, admAddress, address, comments, fee }) {
+    sendTokens(context, { amount, admAddress, address, comments, fee, replyToId }) {
       if (!api) return
       address = address.trim()
 
@@ -96,7 +96,8 @@ function createActions(options) {
             amount: BigNumber(amount).toFixed(),
             comments,
             crypto,
-            hash: tx.txid
+            hash: tx.txid,
+            replyToId
           }
 
           // Send a special message to indicate that we're performing a crypto transfer

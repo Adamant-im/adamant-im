@@ -63,7 +63,7 @@ export default function createActions(config) {
       }
     },
 
-    sendTokens(context, { amount, admAddress, address, comments, increaseFee }) {
+    sendTokens(context, { amount, admAddress, address, comments, increaseFee, replyToId }) {
       address = address.trim()
       const crypto = context.state.crypto
 
@@ -83,7 +83,8 @@ export default function createActions(config) {
               amount,
               comments,
               crypto,
-              hash: signedTx.transactionHash
+              hash: signedTx.transactionHash,
+              replyToId
             }
             // Send a rich ADM message to indicate that we're performing an ETH transfer
             return context
