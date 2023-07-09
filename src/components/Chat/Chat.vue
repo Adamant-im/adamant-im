@@ -45,6 +45,7 @@
           :flashing="flashingMessageId === message.id"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="openReplyPreview(message)"
+          @longpress="openActionsMenu(message)"
         >
           <template #avatar>
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
@@ -84,6 +85,7 @@
           :flashing="flashingMessageId === message.id"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="openReplyPreview(message)"
+          @longpress="openActionsMenu(message)"
         >
           <template #crypto>
             <crypto-icon :crypto="message.type" />

@@ -12,6 +12,7 @@
     :style="{
       left: `${elementLeftOffset}px`
     }"
+    v-longpress="onLongPress"
   >
     <div
       class="a-chat__message"
@@ -169,7 +170,14 @@ export default {
       default: false
     }
   },
-  emits: ['mount', 'click:transaction', 'click:transactionStatus', 'click:quotedMessage', 'swipe:left'],
+  emits: [
+    'mount',
+    'click:transaction',
+    'click:transactionStatus',
+    'click:quotedMessage',
+    'swipe:left',
+    'longpress'
+  ],
   setup(props, { emit }) {
     const { t } = useI18n()
     const store = useStore()
@@ -210,6 +218,10 @@ export default {
       })
     }
 
+    const onLongPress = () => {
+      emit('longpress')
+    }
+
     watch(
       () => props.txTimestamp,
       () => {
@@ -236,6 +248,7 @@ export default {
       historyRate,
       onClickAmount,
       updateStatus,
+      onLongPress,
 
       onMove,
       onSwipeEnd,

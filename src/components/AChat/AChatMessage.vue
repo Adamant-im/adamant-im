@@ -12,6 +12,7 @@
     :style="{
       left: `${elementLeftOffset}px`
     }"
+    v-longpress="onLongPress"
   >
     <div
       class="a-chat__message"
@@ -146,7 +147,7 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ['resend', 'click:quotedMessage', 'swipe:left'],
+  emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress'],
   setup(props, { emit }) {
     const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
     const isOutgoingMessage = computed(() => isStringEqualCI(props.sender.id, props.userId))
@@ -155,13 +156,18 @@ export default defineComponent({
       emit('swipe:left')
     })
 
+    const onLongPress = () => {
+      emit('longpress')
+    }
+
     return {
       statusIcon,
       isOutgoingMessage,
       onMove,
       onSwipeEnd,
       elementLeftOffset,
-      isStringEqualCI
+      isStringEqualCI,
+      onLongPress
     }
   }
 })
