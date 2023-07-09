@@ -125,7 +125,7 @@
             <a-chat-reply-preview
               :partner-id="partnerId"
               :message="replyMessage"
-              @cancel="replyMessageId = ''"
+              @cancel="replyMessageId = -1"
             />
           </template>
         </a-chat-form>
@@ -327,6 +327,14 @@ export default {
     // watch `isFulfilled` when opening chat directly from address bar
     isFulfilled(value) {
       if (value && (!this.chatPage || this.chatPage <= 0)) this.fetchChatMessages()
+    },
+    replyMessageId(messageId) {
+      this.$router.replace({
+        name: 'Chat',
+        query: {
+          replyToId: messageId === -1 ? undefined : messageId
+        }
+      })
     }
   },
   created() {
