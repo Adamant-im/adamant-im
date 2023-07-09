@@ -97,6 +97,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import '../../assets/styles/settings/_colors.scss';
+@import '../../assets/styles/themes/adamant/_mixins.scss';
 
 .quoted-message {
   height: 32px;
@@ -105,6 +106,7 @@ export default defineComponent({
   cursor: pointer;
 
   &__message {
+    @include a-text-regular();
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -119,6 +121,7 @@ export default defineComponent({
   .quoted-message {
     border-left: 3px solid map-get($adm-colors, 'attention');
     background-color: map-get($adm-colors, 'secondary');
+    color: map-get($adm-colors, 'regular');
   }
 }
 
@@ -126,6 +129,7 @@ export default defineComponent({
   .quoted-message {
     border-left: 3px solid map-get($adm-colors, 'attention');
     background-color: map-get($adm-colors, 'secondary2-transparent');
+    color: map-get($adm-colors, 'secondary');
   }
 }
 </style>
