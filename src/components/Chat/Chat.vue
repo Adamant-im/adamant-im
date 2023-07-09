@@ -44,7 +44,7 @@
           :asset="message.asset"
           :flashing="flashingMessageId === message.id"
           @click:quoted-message="onQuotedMessageClick"
-          @swipe:left="onSwipeLeft(message)"
+          @swipe:left="openReplyPreview(message)"
         >
           <template #avatar>
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
@@ -56,10 +56,10 @@
               @update:modelValue="actionsMenuMessageId = -1"
               :message-id="message.id"
               :position="sender.id === partnerId ? 'left' : 'right'"
-              @click:reply="onClickReply(message)"
+              @click:reply="openReplyPreview(message)"
             />
 
-            <MessageActionsDropdown @click:reply="onClickReply(message)" />
+            <MessageActionsDropdown @click:reply="openReplyPreview(message)" />
           </template>
         </a-chat-message>
         <a-chat-transaction
@@ -83,7 +83,7 @@
           :asset="message.asset"
           :flashing="flashingMessageId === message.id"
           @click:quoted-message="onQuotedMessageClick"
-          @swipe:left="onSwipeLeft(message)"
+          @swipe:left="openReplyPreview(message)"
         >
           <template #crypto>
             <crypto-icon :crypto="message.type" />
@@ -95,10 +95,10 @@
               @update:modelValue="actionsMenuMessageId = -1"
               :message-id="message.id"
               :position="sender.id === partnerId ? 'left' : 'right'"
-              @click:reply="onClickReply(message)"
+              @click:reply="openReplyPreview(message)"
             />
 
-            <MessageActionsDropdown @click:reply="onClickReply(message)" />
+            <MessageActionsDropdown @click:reply="openReplyPreview(message)" />
           </template>
         </a-chat-transaction>
       </template>
@@ -446,12 +446,11 @@ export default {
       await this.$refs.chat.scrollToMessageEasy(transactionIndex)
       this.highlightMessage(transactionId)
     },
-    /** Reply: touch devices **/
-    onSwipeLeft(message) {
+    /** touch devices **/
+    openActionsMenu(message) {
       this.actionsMenuMessageId = message.id
     },
-    /** Reply: desktop devices **/
-    onClickReply(message) {
+    openReplyPreview(message) {
       this.replyMessageId = message.id
       this.$refs.chatForm.focus()
     },
