@@ -86,16 +86,19 @@
             `${className}__subtitle`
           ]"
         >
-          <v-icon
-            v-if="transaction.isReply"
-            icon="mdi-arrow-left-top"
-            size="15"
-          />
-          <v-icon
-            v-else-if="!isIncomingTransaction"
-            :icon="statusIcon"
-            size="15"
-          />
+          <template v-if="isOutgoingTransaction">
+            <v-icon
+              v-if="transaction.isReply && isConfirmed"
+              icon="mdi-arrow-left-top"
+              size="15"
+            />
+            <v-icon
+              v-else
+              :icon="statusIcon"
+              size="15"
+            />
+          </template>
+
           {{ lastMessageTextNoFormats }}
         </v-list-item-subtitle>
       </template>
@@ -124,6 +127,7 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 
 import currency from '@/filters/currencyAmountWithSymbol'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
+import { TransactionStatus as TS } from '@/lib/constants'
 
 export default {
   components: {
@@ -215,6 +219,9 @@ export default {
     isIncomingTransaction () {
       return !isStringEqualCI(this.userId, this.transaction.senderId)
     },
+    isOutgoingTransaction () {
+      return !this.isIncomingTransaction
+    },
     numOfNewMessages () {
       return this.$store.getters['chat/numOfNewMessages'](this.contactId)
     },
@@ -226,6 +233,9 @@ export default {
     },
     statusIcon () {
       return tsIcon(this.status.virtualStatus)
+    },
+    isConfirmed () {
+      return this.status.virtualStatus === TS.CONFIRMED
     }
   },
   watch: {
