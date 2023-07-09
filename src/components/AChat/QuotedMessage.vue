@@ -120,7 +120,7 @@ export default defineComponent({
 .v-theme--light {
   .quoted-message {
     border-left: 3px solid map-get($adm-colors, 'attention');
-    background-color: map-get($adm-colors, 'secondary');
+    background-color: map-get($adm-colors, 'secondary2');
     color: map-get($adm-colors, 'regular');
   }
 }
@@ -128,7 +128,7 @@ export default defineComponent({
 .v-theme--dark {
   .quoted-message {
     border-left: 3px solid map-get($adm-colors, 'attention');
-    background-color: map-get($adm-colors, 'secondary2-transparent');
+    background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
     color: map-get($adm-colors, 'secondary');
   }
 }
