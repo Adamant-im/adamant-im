@@ -58,9 +58,13 @@
               :message-id="message.id"
               :position="sender.id === partnerId ? 'left' : 'right'"
               @click:reply="openReplyPreview(message)"
+              @click:copy="copyMessageToClipboard(message)"
             />
 
-            <MessageActionsDropdown @click:reply="openReplyPreview(message)" />
+            <MessageActionsDropdown
+              @click:reply="openReplyPreview(message)"
+              @click:copy="copyMessageToClipboard(message)"
+            />
           </template>
         </a-chat-message>
         <a-chat-transaction
@@ -98,9 +102,13 @@
               :message-id="message.id"
               :position="sender.id === partnerId ? 'left' : 'right'"
               @click:reply="openReplyPreview(message)"
+              @click:copy="copyMessageToClipboard(message)"
             />
 
-            <MessageActionsDropdown @click:reply="openReplyPreview(message)" />
+            <MessageActionsDropdown
+              @click:reply="openReplyPreview(message)"
+              @click:copy="copyMessageToClipboard(message)"
+            />
           </template>
         </a-chat-transaction>
       </template>
@@ -156,6 +164,7 @@
 import { nextTick } from 'vue'
 import { detect } from 'detect-browser'
 import Visibility from 'visibilityjs'
+import copyToClipboard from 'copy-to-clipboard'
 
 import { Cryptos } from '@/lib/constants'
 import { renderMarkdown, sanitizeHTML } from '@/lib/markdown'
@@ -455,6 +464,10 @@ export default {
     openReplyPreview(message) {
       this.replyMessageId = message.id
       this.$refs.chatForm.focus()
+    },
+    copyMessageToClipboard({ message }) {
+      copyToClipboard(message)
+      this.$store.dispatch('snackbar/show', { message: this.$t('home.copied'), timeout: 1000 })
     },
     /**
      * Apply flash effect to a message in the chat
