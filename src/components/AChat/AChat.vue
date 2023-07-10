@@ -92,10 +92,21 @@ export default {
   mounted () {
     this.attachScrollListener()
 
+    this.currentClientHeight = this.$refs.messages.clientHeight
     const resizeHandler = () => {
       const clientHeightDelta = this.currentClientHeight - this.$refs.messages.clientHeight
 
-      this.$refs.messages.scrollTop += clientHeightDelta
+      const nonVisibleClientHeight =
+        this.$refs.messages.scrollHeight -
+        this.$refs.messages.clientHeight -
+        this.$refs.messages.scrollTop
+      const scrolledToBottom = nonVisibleClientHeight === 0
+
+      if (scrolledToBottom) {
+        // Browser updates Element.scrollTop by itself
+      } else {
+        this.$refs.messages.scrollTop += clientHeightDelta
+      }
 
       this.currentClientHeight = this.$refs.messages.clientHeight
     }
