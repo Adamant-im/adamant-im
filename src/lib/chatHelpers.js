@@ -224,6 +224,7 @@ export function transformMessage(abstract) {
       // reply with a message
       transaction.asset = abstract.message
       transaction.message = abstract.message.reply_message || ''
+      transaction.hash = abstract.id
 
       if (abstract.amount > 0) {
         transaction.type = 'ADM'
