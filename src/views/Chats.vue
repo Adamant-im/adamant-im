@@ -19,7 +19,7 @@
             >
               <v-list-item
                 v-if="unreadMessagesCount >= 1"
-                :class="`${className}__item`"
+                :class="`${className}__item ml-2`"
                 @click="readAll"
               >
                 <template #prepend>
@@ -226,7 +226,7 @@ export default {
       return isUserChat || isStaticChat(partnerId) || ifChattedBefore
     },
     readAll() {
-
+      this.$store.commit('chat/markAllAsRead')
     }
   }
 }
