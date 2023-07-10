@@ -20,20 +20,15 @@
           ref="messages"
           class="a-chat__body-messages"
         >
-          <slot
-            name="messages"
-            :messages="messages"
-          >
-            <template v-for="message in messages" :key="message.id">
-              <slot
-                name="message"
-                :message="message"
-                :sender="getSenderMeta(message.senderId)"
-                :user-id="userId"
-                :locale="locale"
-              />
-            </template>
-          </slot>
+          <template v-for="message in messages" :key="message.id">
+            <slot
+              name="message"
+              :message="message"
+              :sender="getSenderMeta(message.senderId)"
+              :user-id="userId"
+              :locale="locale"
+            />
+          </template>
         </div>
 
         <div class="a-chat__fab">
