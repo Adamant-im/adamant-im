@@ -3,16 +3,16 @@ import { Directive } from 'vue'
 export const LONG_PRESS_TIMEOUT = 500
 
 export const longPressDirective: Directive = {
-  created: (el, { value }, vNode) => {
+  created: (el: HTMLElement, { value }, vNode) => {
     if (typeof value !== 'function') {
       console.warn(`Expect a function, got ${value}`)
       return
     }
 
-    let pressTimer = null
+    let pressTimer: NodeJS.Timeout | null = null
 
-    const start = (e) => {
-      if (e.type === 'click' && e.button !== 0) {
+    const start = (e: TouchEvent) => {
+      if (e.type === 'click') {
         return
       }
 
@@ -28,7 +28,8 @@ export const longPressDirective: Directive = {
       }
     }
 
-    ;['touchstart'].forEach((e) => el.addEventListener(e, start))
-    ;['touchend', 'touchcancel'].forEach((e) => el.addEventListener(e, cancel))
+    el.addEventListener('touchstart', start)
+    el.addEventListener('touchend', cancel)
+    el.addEventListener('touchcancel', cancel)
   }
 }
