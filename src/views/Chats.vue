@@ -152,9 +152,6 @@ export default {
     this.showChatStartDialog = this.showNewContact
     this.attachScrollListener()
   },
-  updated() {
-    console.log(this.unreadMessagesCount())
-  },
   beforeUnmount () {
     this.destroyScrollListener()
   },
