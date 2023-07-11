@@ -79,13 +79,37 @@ export default {
   emits: ['scroll', 'scroll:bottom', 'scroll:top'],
   data: () => ({
     currentScrollHeight: 0,
-    currentScrollTop: 0
+    currentScrollTop: 0,
+    currentClientHeight: 0
   }),
   mounted () {
     this.attachScrollListener()
+
+    this.currentClientHeight = this.$refs.messages.clientHeight
+    const resizeHandler = () => {
+      const clientHeightDelta = this.currentClientHeight - this.$refs.messages.clientHeight
+
+      const nonVisibleClientHeight =
+        this.$refs.messages.scrollHeight -
+        this.$refs.messages.clientHeight -
+        this.$refs.messages.scrollTop
+      const scrolledToBottom = nonVisibleClientHeight === 0
+
+      if (scrolledToBottom) {
+        // Browser updates Element.scrollTop by itself
+      } else {
+        this.$refs.messages.scrollTop += clientHeightDelta
+      }
+
+      this.currentClientHeight = this.$refs.messages.clientHeight
+    }
+
+    this.resizeObserver = new ResizeObserver(resizeHandler)
+    this.resizeObserver.observe(this.$refs.messages)
   },
   beforeUnmount () {
     this.destroyScrollListener()
+    this.resizeObserver?.unobserve(this.$refs.messages)
   },
   methods: {
     attachScrollListener () {
