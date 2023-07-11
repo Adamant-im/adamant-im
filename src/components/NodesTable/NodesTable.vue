@@ -21,7 +21,21 @@ export default defineComponent({
   },
   setup() {
     const store = useStore()
-    const nodes = computed(() => store.getters['nodes/list'])
+    const nodes = computed(() => {
+      const arr = store.getters['nodes/list']
+      return arr.sort((a, b) => {
+        const alphabets = /^[a-zA-Z]+/;
+        const aAlphabets = a.url.replace(/\d+/g, "");
+        const bAlphabets = b.url.replace(/\d+/g, "");
+        if (aAlphabets === bAlphabets) {
+          const aNumber = a.url.replace(alphabets, "");
+          const bNumber = b.url.replace(alphabets, "");
+          const result = aNumber === bNumber ? 0 : parseInt(aNumber, 10) - parseInt(bNumber, 10);
+          return result;
+        }
+        return aAlphabets > bAlphabets ? 1 : -1;
+      })
+    })
 
     const className = 'nodes-table'
     const classes = {
