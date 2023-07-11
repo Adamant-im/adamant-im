@@ -12,6 +12,7 @@ import { Cryptos, Fees } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import { registerCryptoModules } from './utils/registerCryptoModules'
+import { registerVuexPlugins } from './utils/registerVuexPlugins'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
@@ -198,14 +199,6 @@ const store = {
       }
     }
   },
-  plugins: [
-    nodesPlugin,
-    sessionStoragePlugin,
-    localStoragePlugin,
-    indexedDbPlugin,
-    navigatorOnline,
-    socketsPlugin
-  ],
   modules: {
     adm: admModule, // ADM transfers
     doge: dogeModule,
@@ -229,6 +222,14 @@ const storeInstance = createStore(store)
 window.store = storeInstance
 
 registerCryptoModules(storeInstance)
+registerVuexPlugins(storeInstance, [
+  nodesPlugin,
+  sessionStoragePlugin,
+  localStoragePlugin,
+  indexedDbPlugin,
+  navigatorOnline,
+  socketsPlugin
+])
 
 export { store } // for tests
 
