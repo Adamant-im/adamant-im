@@ -76,7 +76,6 @@
               </template>
             </transition-group>
           </v-list>
-
         </v-col>
 
         <ChatSpinner :value="!isFulfilled" />
@@ -115,8 +114,7 @@ export default {
   data: () => ({
     showChatStartDialog: false,
     loading: false,
-    noMoreChats: false,
-    unreadMessages: true
+    noMoreChats: false
   }),
   computed: {
     className: () => 'chats-view',
@@ -145,7 +143,6 @@ export default {
       const messages = this.$store.getters['chat/unreadMessages']
       return messages.length
     }
-
   },
   beforeMount () {
     // When returning to chat list from a specific chat, restore noMoreChats property not to show loadingSeparator
@@ -217,6 +214,7 @@ export default {
     },
     messagesCount(partnerId) {
       const messages = this.$store.getters['chat/messages'](partnerId)
+
       return messages.length
     },
     displayChat(partnerId) {
