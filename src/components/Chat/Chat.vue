@@ -369,6 +369,10 @@ export default {
         'Mac OS': this.$t('chats.message_mac_os'),
         'Windows 10': this.$t('chats.message_windows_10')
       }[detect().os] || this.$t('chats.message')
+
+    if (this.$route.query.replyToId) {
+      this.replyMessageId = this.$route.query.replyToId
+    }
   },
   methods: {
     onMessage(message) {
