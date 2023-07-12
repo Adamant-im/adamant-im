@@ -52,7 +52,7 @@
           </template>
 
           <template #actions>
-            <MessageActionsMenu
+            <AChatMessageActionsMenu
               :modelValue="actionsMenuMessageId === message.id"
               @update:modelValue="actionsMenuMessageId = -1"
               :message-id="message.id"
@@ -61,7 +61,7 @@
               @click:copy="copyMessageToClipboard(message)"
             />
 
-            <MessageActionsDropdown
+            <AChatMessageActionsDropdown
               @click:reply="openReplyPreview(message)"
               @click:copy="copyMessageToClipboard(message)"
             />
@@ -96,7 +96,7 @@
           </template>
 
           <template #actions>
-            <MessageActionsMenu
+            <AChatMessageActionsMenu
               :modelValue="actionsMenuMessageId === message.id"
               @update:modelValue="actionsMenuMessageId = -1"
               :message-id="message.id"
@@ -105,7 +105,7 @@
               @click:copy="copyMessageToClipboard(message)"
             />
 
-            <MessageActionsDropdown
+            <AChatMessageActionsDropdown
               @click:reply="openReplyPreview(message)"
               @click:copy="copyMessageToClipboard(message)"
             />
@@ -174,7 +174,9 @@ import {
   AChatMessage,
   AChatTransaction,
   AChatForm,
-  AChatReplyPreview
+  AChatReplyPreview,
+  AChatMessageActionsMenu,
+  AChatMessageActionsDropdown
 } from '@/components/AChat'
 import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
@@ -188,8 +190,6 @@ import { websiteUriToOnion } from '@/lib/uri'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
 import ProgressIndicator from '@/components/ProgressIndicator'
-import MessageActionsMenu from '@/components/AChat/MessageActionsMenu'
-import MessageActionsDropdown from '@/components/AChat/MessageActionsDropdown'
 
 /**
  * Returns user meta by userId.
@@ -254,8 +254,8 @@ export default {
     CryptoIcon,
     FreeTokensDialog,
     ProgressIndicator,
-    MessageActionsMenu,
-    MessageActionsDropdown
+    AChatMessageActionsMenu,
+    AChatMessageActionsDropdown
   },
   mixins: [transaction, partnerName],
   props: {

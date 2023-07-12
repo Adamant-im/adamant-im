@@ -3,5 +3,15 @@ import AChatForm from './AChatForm.vue'
 import AChatMessage from './AChatMessage.vue'
 import AChatTransaction from './AChatTransaction.vue'
 import AChatReplyPreview from './AChatReplyPreview.vue'
+import AChatMessageActionsDropdown from './AChatMessageActionsDropdown.vue'
+import AChatMessageActionsMenu from './AChatMessageActionsMenu.vue'
 
-export { AChat, AChatForm, AChatMessage, AChatTransaction, AChatReplyPreview }
+export {
+  AChat,
+  AChatForm,
+  AChatMessage,
+  AChatTransaction,
+  AChatReplyPreview,
+  AChatMessageActionsDropdown,
+  AChatMessageActionsMenu
+}
