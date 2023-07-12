@@ -6,7 +6,7 @@
       </div>
 
       <div :class="classes.message">
-        {{ isCryptoTransfer ? cryptoTransferLabel : removeFormats(message.message) }}
+        {{ messageLabel }}
       </div>
 
       <v-btn
@@ -23,6 +23,7 @@
 <script>
 import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useStore } from 'vuex'
 
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import { Cryptos } from '@/lib/constants'
@@ -55,6 +56,7 @@ export default defineComponent({
   },
   setup(props) {
     const { t } = useI18n()
+    const store = useStore()
 
     const isCryptoTransfer = computed(() => {
       const validCryptos = Object.keys(Cryptos)
@@ -73,11 +75,17 @@ export default defineComponent({
       return `${direction} ${amount}${message}`
     })
 
+    const messageLabel = computed(() => {
+      return store.state.options.formatMessages
+        ? removeFormats(props.message.message)
+        : props.message.message
+    })
+
     return {
       isCryptoTransfer,
       cryptoTransferLabel,
       classes,
-      removeFormats
+      messageLabel
     }
   }
 })

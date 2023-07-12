@@ -20,7 +20,7 @@
         {{ cryptoTransferLabel }}
       </span>
       <span v-else>
-        {{ removeFormats(transaction.message) }}
+        {{ messageLabel }}
       </span>
     </div>
   </div>
@@ -122,6 +122,12 @@ export default defineComponent({
       return `${direction} ${amount}${message}`
     })
 
+    const messageLabel = computed(() => {
+      return store.state.options.formatMessages
+        ? removeFormats(transaction.value.message)
+        : transaction.value.message
+    })
+
     onMounted(async () => {
       // fetch transaction if not found in the store
       if (!transaction.value) {
@@ -151,7 +157,7 @@ export default defineComponent({
       errorCode,
       ErrorCodes,
       cryptoTransferLabel,
-      removeFormats
+      messageLabel
     }
   }
 })
