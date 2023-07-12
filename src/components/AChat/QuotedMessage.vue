@@ -8,16 +8,18 @@
 
     <div v-else-if="transaction" :class="classes.message">
       <span v-if="isCryptoTransfer">
-        {{ transaction.senderId === address ? $t('chats.sent_label') : $t('chats.received_label') }}
-        {{ currencyFormatter(transaction.amount, transaction.type) }}:
+        {{ cryptoTransferLabel }}
       </span>
-      {{ transaction.message ? transaction.message : 'Empty message' }}
+      <span v-else>
+        {{ transaction.message }}
+      </span>
     </div>
   </div>
 </template>
 
 <script>
 import { computed, defineComponent, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import { getTransaction, decodeChat } from '@/lib/adamant-api'
@@ -51,6 +53,8 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const { t } = useI18n()
+
     const loading = ref(false)
     const store = useStore()
     const invalidMessage = ref(false)
@@ -64,6 +68,17 @@ export default defineComponent({
       const validCryptos = Object.keys(Cryptos)
 
       return transaction.value ? validCryptos.includes(transaction.value.type) : false
+    })
+
+    const cryptoTransferLabel = computed(() => {
+      const direction =
+        transaction.value.senderId === address.value
+          ? t('chats.sent_label')
+          : t('chats.received_label')
+      const amount = currencyFormatter(transaction.value.amount, transaction.value.type)
+      const message = transaction.value.message ? `: ${transaction.value.message}` : ''
+
+      return `${direction} ${amount}${message}`
     })
 
     onMounted(async () => {
@@ -89,7 +104,8 @@ export default defineComponent({
       isCryptoTransfer,
       address,
       currencyFormatter,
-      invalidMessage
+      invalidMessage,
+      cryptoTransferLabel
     }
   }
 })
