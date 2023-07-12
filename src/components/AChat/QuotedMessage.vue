@@ -1,9 +1,18 @@
 <template>
-  <div :class="classes.root">
+  <div
+    :class="{
+      [classes.root]: true,
+      [classes.nonClickable]: !!errorCode
+    }"
+  >
     <v-progress-circular v-if="loading" indeterminate size="16" />
 
-    <div v-else-if="invalidMessage" :class="classes.invalidMessage">
+    <div v-else-if="errorCode === ErrorCodes.INVALID_MESSAGE" :class="classes.invalidMessage">
       {{ $t('chats.invalid_message') }}
+    </div>
+
+    <div v-else-if="errorCode === ErrorCodes.MESSAGE_NOT_FOUND" :class="classes.messageNotFound">
+      {{ $t('chats.message_not_found') }}
     </div>
 
     <div v-else-if="transaction" :class="classes.message">
@@ -30,14 +39,45 @@ import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 const className = 'quoted-message'
 const classes = {
   root: className,
+  nonClickable: `${className}--non-clickable`,
   message: `${className}__message`,
-  invalidMessage: `${className}__invalid-message`
+  invalidMessage: `${className}__invalid-message`,
+  messageNotFound: `${className}__message-not-found`
+}
+
+const ErrorCodes = {
+  MESSAGE_NOT_FOUND: 'MESSAGE_NOT_FOUND',
+  INVALID_MESSAGE: 'INVALID_MESSAGE'
+}
+
+class ValidationError extends Error {
+  constructor(message, errorCode) {
+    super(message)
+
+    this.name = 'ValidationError'
+    this.errorCode = errorCode
+  }
 }
 
 async function fetchTransaction(transactionId, address) {
   const rawTx = await getTransaction(transactionId, 1)
+
+  if (!rawTx) {
+    throw new ValidationError(
+      `QuotedMessage: Message not found: txId: ${transactionId}`,
+      ErrorCodes.MESSAGE_NOT_FOUND
+    )
+  }
+
   const publicKey = rawTx.senderId === address ? rawTx.recipientPublicKey : rawTx.senderPublicKey
   const decodedTransaction = rawTx.type === 0 ? rawTx : decodeChat(rawTx, publicKey)
+
+  if (!decodedTransaction.message) {
+    throw new ValidationError(
+      `QuotedMessage: Cannot decode the message: txId: ${transactionId}`,
+      ErrorCodes.INVALID_MESSAGE
+    )
+  }
 
   return transformMessage(decodedTransaction)
 }
@@ -57,7 +97,7 @@ export default defineComponent({
 
     const loading = ref(false)
     const store = useStore()
-    const invalidMessage = ref(false)
+    const errorCode = ref(false)
 
     const stateTransaction = ref(null)
     const cachedTransaction = computed(() => store.getters['chat/messageById'](props.messageId))
@@ -89,8 +129,11 @@ export default defineComponent({
         try {
           stateTransaction.value = await fetchTransaction(props.messageId, address.value)
         } catch (err) {
-          invalidMessage.value = true
-          console.log(err)
+          if (err.errorCode) {
+            errorCode.value = err.errorCode
+          }
+
+          console.warn(err)
         } finally {
           loading.value = false
         }
@@ -104,7 +147,8 @@ export default defineComponent({
       isCryptoTransfer,
       address,
       currencyFormatter,
-      invalidMessage,
+      errorCode,
+      ErrorCodes,
       cryptoTransferLabel
     }
   }
@@ -121,6 +165,10 @@ export default defineComponent({
   padding: 4px 8px;
   cursor: pointer;
 
+  &--non-clickable {
+    pointer-events: none;
+  }
+
   &__message {
     @include a-text-regular();
     white-space: nowrap;
@@ -129,6 +177,10 @@ export default defineComponent({
   }
 
   &__invalid-message {
+    font-style: italic;
+  }
+
+  &__message-not-found {
     font-style: italic;
   }
 }
