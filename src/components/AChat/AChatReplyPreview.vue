@@ -6,7 +6,7 @@
       </div>
 
       <div :class="classes.message">
-        {{ isCryptoTransfer ? cryptoTransferLabel : message.message }}
+        {{ isCryptoTransfer ? cryptoTransferLabel : removeFormats(message.message) }}
       </div>
 
       <v-btn
@@ -27,6 +27,7 @@ import { useI18n } from 'vue-i18n'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
+import { removeFormats } from '@/lib/markdown'
 
 const className = 'a-chat-reply-preview'
 const classes = {
@@ -75,7 +76,8 @@ export default defineComponent({
     return {
       isCryptoTransfer,
       cryptoTransferLabel,
-      classes
+      classes,
+      removeFormats
     }
   }
 })

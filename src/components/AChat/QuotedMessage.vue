@@ -20,7 +20,7 @@
         {{ cryptoTransferLabel }}
       </span>
       <span v-else>
-        {{ transaction.message }}
+        {{ removeFormats(transaction.message) }}
       </span>
     </div>
   </div>
@@ -35,6 +35,7 @@ import { getTransaction, decodeChat } from '@/lib/adamant-api'
 import { transformMessage } from '@/lib/chatHelpers'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
+import { removeFormats } from '@/lib/markdown'
 
 const className = 'quoted-message'
 const classes = {
@@ -149,7 +150,8 @@ export default defineComponent({
       currencyFormatter,
       errorCode,
       ErrorCodes,
-      cryptoTransferLabel
+      cryptoTransferLabel,
+      removeFormats
     }
   }
 })
