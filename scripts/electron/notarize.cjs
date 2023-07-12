@@ -18,8 +18,8 @@ exports.default = async function notarizing(context) {
   console.log(`Preparing the app ${appName} for notarization`)
 
   return notarize({
-    appBundleId: 'im.adamant.msg',
     appPath: `${appOutDir}/${appName}.app`,
+    tool: 'notarytool',
     appleId: process.env.APPLE_ID,
     appleIdPassword: process.env.APPLE_ID_PASS,
     teamId: process.env.APPLE_TEAM_ID
