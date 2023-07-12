@@ -36,7 +36,7 @@ mac:
   hardenedRuntime: true
   gatekeeperAssess: false
 
-afterSign: 'notarize.js'
+afterSign: 'notarize.cjs'
 
 # Config for OSX dmg
 dmg:
