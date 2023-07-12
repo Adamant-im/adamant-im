@@ -5,7 +5,9 @@
         <ChatAvatar :user-id="message.senderId" use-public-key />
       </div>
 
-      <div :class="classes.message">{{ message.message }}</div>
+      <div :class="classes.message">
+        {{ isCryptoTransfer ? cryptoTransferLabel : message.message }}
+      </div>
 
       <v-btn
         @click="$emit('cancel')"
@@ -19,9 +21,12 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
+import { Cryptos } from '@/lib/constants'
+import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 
 const className = 'a-chat-reply-preview'
 const classes = {
@@ -47,8 +52,29 @@ export default defineComponent({
       required: true
     }
   },
-  setup() {
+  setup(props) {
+    const { t } = useI18n()
+
+    const isCryptoTransfer = computed(() => {
+      const validCryptos = Object.keys(Cryptos)
+
+      return props.message ? validCryptos.includes(props.message.type) : false
+    })
+
+    const cryptoTransferLabel = computed(() => {
+      const direction =
+        props.message.senderId === props.partnerId
+          ? t('chats.received_label')
+          : t('chats.sent_label')
+      const amount = currencyFormatter(props.message.amount, props.message.type)
+      const message = props.message.message ? `: ${props.message.message}` : ''
+
+      return `${direction} ${amount}${message}`
+    })
+
     return {
+      isCryptoTransfer,
+      cryptoTransferLabel,
       classes
     }
   }
