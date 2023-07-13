@@ -55,7 +55,7 @@ export default {
       default: false
     }
   },
-  emits: ['message'],
+  emits: ['message', 'esc'],
   data: () => ({
     message: ''
   }),
@@ -99,6 +99,11 @@ export default {
                 this.submitMessage()
               }
             }
+          }
+        },
+        keydown: (e) => {
+          if (e.code === 'Escape') {
+            this.$emit('esc')
           }
         }
       }

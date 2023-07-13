@@ -123,6 +123,7 @@
           :label="chatFormLabel"
           :message-text="$route.query.messageText"
           @message="onMessage"
+          @esc="replyMessageId = -1"
         >
           <template #prepend>
             <chat-menu
