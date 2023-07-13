@@ -6,7 +6,7 @@
       </div>
 
       <div :class="classes.message">
-        {{ messageLabel }}
+        {{ isCryptoTransfer ? cryptoTransferLabel : messageLabel }}
       </div>
 
       <v-btn
