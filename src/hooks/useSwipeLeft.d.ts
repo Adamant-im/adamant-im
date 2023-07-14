@@ -10,4 +10,4 @@ interface UseSwipeLeftResult {
   elementLeftOffset: number
 }
 
-export function useSwipeLeft(onSwipe: () => OnSwipeCb): UseSwipeLeftResult
+export function useSwipeLeft(onSwipe: OnSwipeCb): UseSwipeLeftResult
