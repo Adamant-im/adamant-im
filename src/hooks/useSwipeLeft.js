@@ -1,6 +1,18 @@
 import { ref } from 'vue'
 
+/**
+ * Ratio between swipe offsetX / offsetY.
+ * The higher value, the smoother swipe is needed on X axis
+ * to activate the swipe event.
+ * @type {number}
+ */
 const SWIPE_RATIO_ACTIVATION = 2
+/**
+ * The difference between swipe start position and the current position.
+ * If the number is higher than specified below, then swipe event must
+ * be activated.
+ * @type {number}
+ */
 const SWIPE_OFFSET_X_ACTIVATION = 16
 
 export function useSwipeLeft(onSwipe) {
