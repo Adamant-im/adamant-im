@@ -269,6 +269,28 @@ $chat-avatar-size: 40px;
       mask-image: none;
       padding-top: 7px;
       padding-bottom: 7px;
+      overflow: visible; // show scrollbar even with VTextarea `auto-grow` prop enabled
+
+      /* Scrollbar styles (Firefox) */
+      scrollbar-color: map-get($adm-colors, 'secondary2-transparent' transparent);
+      scrollbar-width: thin;
+
+      /* Scrollbar styles (WebKit) */
+      &::-webkit-scrollbar {
+        width: 2px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: map-get($adm-colors, 'secondary2-transparent');
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: map-get($adm-colors, 'secondary2-transparent');
+      }
     }
 
     .v-text-field {
