@@ -82,6 +82,7 @@
     "web3-utils": "^1.9.0"
   },
   "devDependencies": {
+    "@electron/notarize": "^2.1.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-inject": "^5.0.3",
@@ -98,7 +99,6 @@
     "electron": "^23.2.1",
     "electron-builder": "^23.6.0",
     "electron-devtools-installer": "^3.2.0",
-    "electron-notarize": "^1.2.2",
     "eslint": "^8.37.0",
     "eslint-plugin-vue": "^9.10.0",
     "execa": "^7.1.1",
