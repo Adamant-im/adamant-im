@@ -1,8 +1,6 @@
 @import 'vuetify/settings';
 @import '../settings/_colors.scss';
 
-$chat-form-height: 52px;
-
 $chat-sender: (
   'font-size': 15px,
   'line-height': 1.2
@@ -21,7 +19,6 @@ $chat-avatar-size: 40px;
   text-decoration: none;
   height: 100%;
   position: relative;
-  padding-bottom: $chat-form-height;
 
   &__content {
     height: inherit;
@@ -256,9 +253,7 @@ $chat-avatar-size: 40px;
 
   &__form {
     padding: 8px;
-    position: absolute;
-    left: 0;
-    bottom: 0;
+    position: relative;
     width: 100%;
 
     /**
