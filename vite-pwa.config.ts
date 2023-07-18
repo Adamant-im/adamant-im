@@ -14,7 +14,7 @@ export default mergeConfig(
         srcDir: 'src',
         filename: 'service-worker.js',
         devOptions: {
-          enabled: true
+          enabled: false
         },
         manifest: manifest,
         manifestFilename: 'manifest.json',
