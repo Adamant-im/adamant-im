@@ -23,7 +23,7 @@
             icon
             ripple
             variant="text"
-            :class="`${className}__action`"
+            :class="`${className}__action round-btn`"
           >
             <v-icon
               :class="`${className}__icon`"
@@ -50,7 +50,7 @@
             icon
             ripple
             variant="text"
-            :class="`${className}__action`"
+            :class="`${className}__action round-btn`"
           >
             <v-icon
               :class="`${className}__icon`"

@@ -5,6 +5,7 @@
       :disabled="page <= 1"
       variant="text"
       @click="page--"
+      class="round-btn"
     >
       <v-icon icon="mdi-chevron-left" />
     </v-btn>
@@ -13,6 +14,7 @@
       :disabled="page >= pages"
       variant="text"
       @click="page++"
+      class="round-btn"
     >
       <v-icon icon="mdi-chevron-right" />
     </v-btn>

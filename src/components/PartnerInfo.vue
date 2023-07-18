@@ -13,7 +13,7 @@
         <v-btn
           variant="text"
           icon
-          class="close-icon"
+          class="close-icon round-btn"
           :size="36"
           @click="show = false"
         >

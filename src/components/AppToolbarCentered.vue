@@ -18,6 +18,7 @@
             icon
             size="small"
             @click="goBack"
+            class="round-btn"
           >
             <v-icon
               icon="mdi-arrow-left"

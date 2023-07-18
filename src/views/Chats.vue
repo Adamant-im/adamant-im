@@ -11,30 +11,28 @@
             subheader
             class="pa-0"
             bg-color="transparent"
+            v-if="isFulfilled"
           >
-            <v-toolbar
-              subheader
-              class="pa-0"
-              bg-color="transparent"
-            >
-              <v-list-item
-                v-if="unreadMessagesCount >= 1"
-                :class="`${className}__item ml-2`"
-                @click="readAll"
+            <v-row no-gutters>
+              <v-btn
+                :class="`${className}__item round-btn`"
+                @click="markAllAsRead"
+                variant="plain"
+                v-if="unreadMessagesCount > 0"
               >
                 <template #prepend>
                   <v-icon
                     :class="`${className}__icon`"
                     icon="mdi mdi-check-all"
-                    size="20"
+                    size="16"
                   />
                 </template>
-              </v-list-item>
+              </v-btn>
               <v-spacer></v-spacer>
-              <v-list-item
-                v-if="isFulfilled"
+              <v-btn
                 :class="`${className}__item`"
                 @click="showChatStartDialog = true"
+                variant="plain"
               >
 
                 <template #prepend>
@@ -50,11 +48,9 @@
                     {{ $t('chats.new_chat') }}
                   </v-list-item-title>
                 </div>
-              </v-list-item>
-            </v-toolbar>
-
+              </v-btn>
+            </v-row>
             <transition-group
-              v-if="isFulfilled"
               name="messages"
             >
               <template
@@ -140,8 +136,8 @@ export default {
       return this.$store.state.address
     },
     unreadMessagesCount() {
-      const messages = this.$store.getters['chat/unreadMessages']
-      return messages.length
+      const messages = this.$store.getters['chat/totalNumOfNewMessages']
+      return messages
     }
   },
   beforeMount () {
@@ -220,7 +216,7 @@ export default {
 
       return isUserChat || isStaticChat(partnerId) || ifChattedBefore
     },
-    readAll() {
+    markAllAsRead() {
       this.$store.commit('chat/markAllAsRead')
     }
   }
@@ -250,6 +246,10 @@ export default {
     font-weight: 300;
     font-size: 14px;
   }
+}
+
+.v-row {
+  margin: 0;
 }
 
 /** Themes **/
