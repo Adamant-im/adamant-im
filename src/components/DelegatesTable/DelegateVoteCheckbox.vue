@@ -1,23 +1,38 @@
 <template>
   <v-icon
     v-if="voted"
-    :class="classes.icon"
+    :class="{
+      [classes.icon]: true,
+      [classes.iconGood]: !originalVoted
+    }"
     icon="mdi-thumb-up"
     size="large"
     @click="handleDownVote"
   />
+
   <v-icon
     v-else
-    :class="classes.icon"
-    icon="mdi-thumb-up-outline"
+    :class="{
+      [classes.icon]: true,
+      [classes.iconDanger]: originalVoted
+    }"
+    :icon="originalVoted ? 'mdi-thumb-down-outline' : 'mdi-thumb-up-outline'"
     size="large"
     @click="handleUpVote"
   />
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, toRefs } from 'vue'
 import { useStore } from 'vuex'
+
+const className = 'delegate-vote-checkbox'
+const classes = {
+  root: className,
+  icon: `${className}__icon`,
+  iconGood: `${className}__icon--good`,
+  iconDanger: `${className}__icon--danger`
+}
 
 export default {
   props: {
@@ -27,17 +42,12 @@ export default {
     }
   },
   setup(props) {
-    const { delegate } = props
+    const { delegate } = toRefs(props)
     const store = useStore()
 
-    const className = 'delegate-vote-checkbox'
-    const classes = {
-      root: className,
-      icon: `${className}__icon`
-    }
-
-    const voted = computed(() => delegate._voted)
-    const address = computed(() => delegate.address)
+    const voted = computed(() => delegate.value._voted)
+    const originalVoted = computed(() => delegate.value.voted)
+    const address = computed(() => delegate.value.address)
 
     const handleUpVote = (event) => {
       event.stopPropagation()
@@ -49,6 +59,7 @@ export default {
     }
 
     return {
+      originalVoted,
       voted,
       handleUpVote,
       handleDownVote,
@@ -67,6 +78,14 @@ export default {
   &__icon {
     font-size: 24px !important;
     height: 24px !important;
+
+    &--good {
+      color: map-get($adm-colors, 'good');
+    }
+
+    &--danger {
+      color: map-get($adm-colors, 'danger');
+    }
   }
 }
 
