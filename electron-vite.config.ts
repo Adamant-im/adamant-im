@@ -1,10 +1,10 @@
 import { mergeConfig } from 'vite'
 import { defineConfig } from 'vitest/config'
 import electron from 'vite-plugin-electron'
-import viteConfig from './vite.config'
+import viteBaseConfig from './vite-base.config'
 
 export default mergeConfig(
-  viteConfig,
+  viteBaseConfig,
   defineConfig({
     build: {
       outDir: './dist-electron'
