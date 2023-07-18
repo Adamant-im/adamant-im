@@ -2,8 +2,7 @@ import { $ } from 'execa'
 
 import { copyFile, readdir, readFile, writeFile, mkdir, rm } from 'fs/promises'
 import { resolve, join } from 'path'
-
-import { strictCapitalize } from '../src/lib/textHelpers.js'
+import _ from 'lodash'
 
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
@@ -120,7 +119,7 @@ async function copyIcons(coins, coinDirNames) {
 
   for (const [name, coin] of Object.entries(coins)) {
     if (coin.defaultVisibility) {
-      const iconComponentName = `${strictCapitalize(coin.symbol)}Icon.vue`
+      const iconComponentName = `${_.capitalize(coin.symbol)}Icon.vue`
 
       await copyFile(
         join(GENERAL_ASSETS_PATH, coinDirNames[name], 'images', 'icon.vue'),
