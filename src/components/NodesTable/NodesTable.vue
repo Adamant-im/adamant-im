@@ -24,16 +24,12 @@ export default defineComponent({
     const nodes = computed(() => {
       const arr = store.getters['nodes/list']
       return arr.sort((a, b) => {
-        const alphabets = /^[a-zA-Z]+/;
-        const aAlphabets = a.url.replace(/\d+/g, "");
-        const bAlphabets = b.url.replace(/\d+/g, "");
-        if (aAlphabets === bAlphabets) {
-          const aNumber = a.url.replace(alphabets, "");
-          const bNumber = b.url.replace(alphabets, "");
-          const result = aNumber === bNumber ? 0 : parseInt(aNumber, 10) - parseInt(bNumber, 10);
-          return result;
+        if (/\d/.test(a.url)) {
+          return 1
+        } else if (/\d/.test(b.url)) {
+          return -1
         }
-        return aAlphabets > bAlphabets ? 1 : -1;
+        return a.url > b.url ? 1 : b.url > a.url ? -1 : 0;
       })
     })
 
