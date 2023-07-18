@@ -2,14 +2,12 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import autoprefixer from 'autoprefixer'
-import { VitePWA } from 'vite-plugin-pwa'
 import inject from '@rollup/plugin-inject'
 import commonjs from '@rollup/plugin-commonjs'
 
 import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
 import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
-import { manifest } from './vite-config/manifest'
 
 export default defineConfig({
   plugins: [
@@ -17,19 +15,6 @@ export default defineConfig({
     commonjs(),
     inject({
       Buffer: ['buffer', 'Buffer']
-    }),
-    VitePWA({
-      registerType: 'autoUpdate',
-      srcDir: 'src',
-      filename: 'service-worker.js',
-      devOptions: {
-        enabled: false
-      },
-      manifest: manifest,
-      manifestFilename: 'manifest.json',
-      workbox: {
-        maximumFileSizeToCacheInBytes: 5000000 // 5 MiB
-      }
     }),
     deferScripsPlugin(),
     preloadCSSPlugin()
