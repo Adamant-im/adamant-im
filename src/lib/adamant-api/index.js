@@ -1,7 +1,7 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
 
-import { Transactions, Delegates } from '@/lib/constants'
+import { Transactions, Delegates, MessageType } from '@/lib/constants'
 import utils from '@/lib/adamant'
 import client from '@/lib/adamant-api-client'
 import { encryptPassword } from '@/lib/idb/crypto'
@@ -179,7 +179,7 @@ export function sendMessage (params) {
  * @param {object} payload message payload
  */
 export function sendSpecialMessage (to, payload) {
-  return sendMessage({ to, message: payload, type: 2 })
+  return sendMessage({ to, message: payload, type: MessageType.RICH_CONTENT_MESSAGE })
 }
 
 /**
@@ -475,7 +475,7 @@ export function decodeChat (transaction, key) {
 
   if (!message) return transaction
 
-  if (chat.type === 2) {
+  if (chat.type === MessageType.RICH_CONTENT_MESSAGE) {
     // So-called rich-text messages of type 2 are actually JSON objects
     transaction.message = JSON.parse(message)
   } else {

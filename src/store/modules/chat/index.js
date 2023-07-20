@@ -9,9 +9,10 @@ import {
   transformMessage
 } from '@/lib/chatHelpers'
 import { isNumeric } from '@/lib/numericHelpers'
-import { EPOCH, Cryptos, TransactionStatus as TS } from '@/lib/constants'
+import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
+
 import { generateAdamantChats } from './utils/generateAdamantChats'
 
 export let interval
@@ -645,7 +646,7 @@ const actions = {
       userId: rootState.address
     })
 
-    const type = replyToId ? 2 : 1 // 2: Rich Content Message or 1: Basic Encrypted Message
+    const type = replyToId ? MessageType.RICH_CONTENT_MESSAGE : MessageType.BASIC_ENCRYPTED_MESSAGE
     const messageAsset = replyToId
       ? replyMessageAsset({
           replyToId,
@@ -701,7 +702,9 @@ const actions = {
     })
 
     if (message) {
-      const type = message.isReply ? 2 : 1 // 2: Rich Content Message or 1: Basic Encrypted Message
+      const type = message.isReply
+        ? MessageType.RICH_CONTENT_MESSAGE
+        : MessageType.BASIC_ENCRYPTED_MESSAGE
       const messageAsset = message.isReply
         ? {
             replyto_id: message.asset.replyto_id,
@@ -751,7 +754,16 @@ const actions = {
    * @returns {number} Transaction ID
    */
   pushTransaction({ commit, rootState }, payload) {
-    const { transactionId, recipientId, type, status, amount, hash, comment = '', replyToId } = payload
+    const {
+      transactionId,
+      recipientId,
+      type,
+      status,
+      amount,
+      hash,
+      comment = '',
+      replyToId
+    } = payload
 
     const transactionObject = createTransaction({
       transactionId,

@@ -1,6 +1,8 @@
+import { MessageType } from '@/lib/constants';
+
 export function cryptoTransferAsset({ cryptoSymbol, amount, hash, comments, text_fallback }) {
   const asset = {
-    type: `${cryptoSymbol.toLowerCase()}_transaction`,
+    type: MessageType.cryptoTransferMessage(cryptoSymbol),
     amount,
     hash,
     comments

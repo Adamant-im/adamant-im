@@ -192,6 +192,7 @@ import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
+
 import {
   INCREASE_FEE_MULTIPLIER,
   Cryptos,
@@ -203,8 +204,9 @@ import {
   isSelfTxAllowed,
   CryptosInfo,
   CryptosOrder,
-  isTextDataAllowed
-} from '../lib/constants'
+  isTextDataAllowed,
+  MessageType
+} from '@/lib/constants'
 
 import { parseURIasAIP } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
@@ -678,7 +680,9 @@ export default {
         // 1. if come from Chat then sendMessage
         // 2. else send regular transaction with `type = 0`
         if (this.address) {
-          const type = this.replyToId ? 2 : 1 // 2: Rich Content Message or 1: Basic Encrypted Message
+          const type = this.replyToId
+            ? MessageType.RICH_CONTENT_MESSAGE
+            : MessageType.BASIC_ENCRYPTED_MESSAGE
           const asset = this.replyToId
             ? replyMessageAsset({
                 replyToId: this.replyToId,
