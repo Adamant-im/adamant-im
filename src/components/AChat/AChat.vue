@@ -92,7 +92,7 @@ export default {
       const nonVisibleClientHeight =
         this.$refs.messages.scrollHeight -
         this.$refs.messages.clientHeight -
-        this.$refs.messages.scrollTop
+        Math.ceil(this.$refs.messages.scrollTop)
       const scrolledToBottom = nonVisibleClientHeight === 0
 
       if (scrolledToBottom) {
@@ -122,7 +122,7 @@ export default {
 
     onScroll () {
       const scrollHeight = this.$refs.messages.scrollHeight
-      const scrollTop = this.$refs.messages.scrollTop
+      const scrollTop = Math.ceil(this.$refs.messages.scrollTop)
       const clientHeight = this.$refs.messages.clientHeight
 
       // Scrolled to Bottom
@@ -131,6 +131,7 @@ export default {
       } else if (scrollTop === 0) { // Scrolled to Top
         // Save current `scrollHeight` to maintain scroll
         // position when unshift new messages
+        this.currentScrollHeight = scrollHeight
         this.$emit('scroll:top')
       }
 
@@ -216,9 +217,10 @@ export default {
     },
 
     isScrolledToBottom () {
-      const scrollOffset = (
-        this.$refs.messages.scrollHeight - this.$refs.messages.scrollTop - this.$refs.messages.clientHeight
-      )
+      const scrollOffset =
+        this.$refs.messages.scrollHeight -
+        Math.ceil(this.$refs.messages.scrollTop) -
+        this.$refs.messages.clientHeight
 
       return scrollOffset <= 60
     },

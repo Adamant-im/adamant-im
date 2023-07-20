@@ -12,6 +12,7 @@
       single-line
       auto-grow
       rows="1"
+      max-rows="10"
       variant="underlined"
       density="compact"
       color="primary"
