@@ -38,6 +38,8 @@
     "start_chat": "Start a chat",
     "title": "Chats",
     "too_long": "The message is too long",
+    "invalid_message": "Invalid message",
+    "message_not_found": "Message not found",
     "free_adm_disclaimer": "ADAMANT differs from other messengers—it is truly decentralized. Every action, including messaging, has a network fee of 0.001 ADM. To start messaging now, get your free welcoming tokens.",
     "free_adm_title": "Get free ADM tokens",
     "how_to_use_messenger": "How to start with a Blockchain Messenger",
@@ -66,7 +68,11 @@
       "welcome_message": "ADAMANT is a unique Blockchain messenger that is independent from government, corporations and even its developers. It is possible due to a decentralized network, fully open source and users' feedback. That's why every action, including messaging or saving new contacts, has a network fee of 0.001 ADM.\n\nUnlike typical P2P and centralized messengers, the blockchain system offers superior security and privacy. What’s more, it provides users with new possibilities such as storing and transferring cryptocurrencies In-Chat with full control of private keys; use ADAMANT as a 2FA solution, exchange cryptocurrency anonymously and bet on Bitcoin rates and more.\n\nThe ADAMANT blockchain system belongs to its users. Nobody can control, block, deactivate, restrict or censor accounts. Users take full responsibility for their content, messages, media, and goals and intentions of using the messenger.\n\nADAMANT is anonymous, your IP is hidden even from partners, and Tor version is available for those that want to take privacy to the next level. But remember, your security and anonymity are up to you. Do not follow links you receive, otherwise your IP can be compromised. Set a password on your device. Learn more about security and anonymity at https://adamant.im/staysecured/.\n\nMake sure you've saved your unique passphrase for this account — logout and login again. Write your passphrase on a sheet of paper as well. Only *you are responsible for the passphrase's safety*. It cannot be recovered. And if other person gets it, your tokens will be stolen and your correspondence will be compromised. Treat this matter with outmost importance, as if tokens in your wallet cost a billion dollars.\n\nTo Start messaging now, *get your free welcoming tokens* on Account tab. Then start a new chat and fill in your friend's ADM address. It is recommended to share your ADM address personally and via ADAMANT only.\n\nSearch Internet for ADAMANT bots' addresses. They can exchange cryptocurrencies, accept bets on crypto rates, and make wishes come true.\n\n",
       "welcome_message_title": "Welcome to ADAMANT"
     },
-    "you": "You"
+    "you": "You",
+    "chat_actions": {
+      "reply": "Reply",
+      "copy": "Copy"
+    }
   },
   "connection": {
     "offline": "Offline—No connection",

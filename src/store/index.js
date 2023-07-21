@@ -35,6 +35,7 @@ import identicon from './modules/identicon'
 import notification from './modules/notification'
 import cache from '@/store/cache'
 import rate from './modules/rate'
+import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant-api/asset'
 
 export let interval
 
@@ -141,16 +142,20 @@ const store = {
       }
     },
     sendCryptoTransferMessage(context, payload) {
-      const msg = {
-        type: `${payload.crypto}_transaction`,
+      const transferPayload = {
+        cryptoSymbol: payload.crypto,
         amount: payload.amount,
         hash: payload.hash,
         comments: payload.comments
       }
 
-      return sendSpecialMessage(payload.address, msg).then((result) => {
+      const asset = payload.replyToId
+        ? replyWithCryptoTransferAsset(payload.replyToId, transferPayload)
+        : cryptoTransferAsset(transferPayload)
+
+      return sendSpecialMessage(payload.address, asset).then((result) => {
         if (!result.success) {
-          throw new Error(`Failed to send "${msg.type}"`)
+          throw new Error(`Failed to send "${asset.type}"`)
         }
         return result.success
       })
