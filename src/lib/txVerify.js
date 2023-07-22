@@ -1,8 +1,8 @@
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { i18n } from '@/i18n'
+import { CryptosInfo, isErc20 } from '@/lib/constants'
 
 const AllowAmountErrorPercent = 0.3
-const AllowTimestampDeltaSec = 1800 // 30 min
 
 const TransactionInconsistentReason = {
   UNKNOWN: 'unknown',
@@ -17,7 +17,11 @@ const TransactionInconsistentReason = {
   RECIPIENT_CRYPTO_ADDRESS_MISMATCH: 'recipient_crypto_address_mismatch'
 }
 
-export function verifyTransactionDetails (transaction, admSpecialMessage, { recipientCryptoAddress, senderCryptoAddress }) {
+export function verifyTransactionDetails(
+  transaction,
+  admSpecialMessage,
+  { recipientCryptoAddress, senderCryptoAddress }
+) {
   try {
     const coin = admSpecialMessage.type
 
@@ -67,7 +71,10 @@ export function verifyTransactionDetails (transaction, admSpecialMessage, { reci
     }
 
     // Don't check timestamp if there is no timestamp yet. F. e. transaction.instantsend = true for Dash
-    if (transaction.timestamp && !verifyTimestamp(transaction.timestamp, admSpecialMessage.timestamp)) {
+    if (
+      transaction.timestamp &&
+      !verifyTimestamp(coin, transaction.timestamp, admSpecialMessage.timestamp)
+    ) {
       return {
         isTxConsistent: false,
         txCoin: coin,
@@ -102,7 +109,7 @@ export function verifyTransactionDetails (transaction, admSpecialMessage, { reci
   }
 }
 
-export function formatSendTxError (error) {
+export function formatSendTxError(error) {
   const formattedError = {}
   formattedError.details = {}
   formattedError.details.status = error.response ? error.response.status : undefined
@@ -124,7 +131,8 @@ export function formatSendTxError (error) {
       formattedError.errorMessage += errorData.errors[0].message
     } else {
       // Unknown response format
-      formattedError.errorMessage += typeof errorData === 'object' ? ` ${JSON.stringify(errorData, 0, 2)}` : errorData.toString()
+      formattedError.errorMessage +=
+        typeof errorData === 'object' ? ` ${JSON.stringify(errorData, 0, 2)}` : errorData.toString()
     }
   } else {
     if (error.message) {
@@ -141,13 +149,21 @@ export function formatSendTxError (error) {
 /**
  * Delta should be <= AllowAmountErrorPercent
  */
-function verifyAmount (transactionAmount, specialMessageAmount) {
+function verifyAmount(transactionAmount, specialMessageAmount) {
   const margin = transactionAmount / (100 / AllowAmountErrorPercent)
   const delta = Math.abs(transactionAmount - specialMessageAmount)
   return delta <= margin
 }
 
-function verifyTimestamp (transactionTimestamp, specialMessageTimestamp) {
+function verifyTimestamp(coin, transactionTimestamp, specialMessageTimestamp) {
   const delta = Math.abs(transactionTimestamp - specialMessageTimestamp) / 1000
-  return delta < AllowTimestampDeltaSec
+
+  const mainCoin = CryptosInfo[coin].mainCoin || coin
+  const { txConsistencyMaxTime } = CryptosInfo[mainCoin]
+
+  if (txConsistencyMaxTime) {
+    return delta < txConsistencyMaxTime
+  }
+
+  return true
 }

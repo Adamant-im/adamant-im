@@ -11,6 +11,8 @@ import {
 import { Cryptos, Fees } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
+import { registerCryptoModules } from './utils/registerCryptoModules'
+import { registerVuexPlugins } from './utils/registerVuexPlugins'
 import sessionStoragePlugin from './plugins/sessionStorage'
 import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
@@ -33,6 +35,7 @@ import identicon from './modules/identicon'
 import notification from './modules/notification'
 import cache from '@/store/cache'
 import rate from './modules/rate'
+import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant-api/asset'
 
 export let interval
 
@@ -139,16 +142,20 @@ const store = {
       }
     },
     sendCryptoTransferMessage(context, payload) {
-      const msg = {
-        type: `${payload.crypto}_transaction`,
+      const transferPayload = {
+        cryptoSymbol: payload.crypto,
         amount: payload.amount,
         hash: payload.hash,
         comments: payload.comments
       }
 
-      return sendSpecialMessage(payload.address, msg).then((result) => {
+      const asset = payload.replyToId
+        ? replyWithCryptoTransferAsset(payload.replyToId, transferPayload)
+        : cryptoTransferAsset(transferPayload)
+
+      return sendSpecialMessage(payload.address, asset).then((result) => {
         if (!result.success) {
-          throw new Error(`Failed to send "${msg.type}"`)
+          throw new Error(`Failed to send "${asset.type}"`)
         }
         return result.success
       })
@@ -197,14 +204,6 @@ const store = {
       }
     }
   },
-  plugins: [
-    nodesPlugin,
-    sessionStoragePlugin,
-    localStoragePlugin,
-    indexedDbPlugin,
-    navigatorOnline,
-    socketsPlugin
-  ],
   modules: {
     adm: admModule, // ADM transfers
     doge: dogeModule,
@@ -226,6 +225,16 @@ const store = {
 
 const storeInstance = createStore(store)
 window.store = storeInstance
+
+registerCryptoModules(storeInstance)
+registerVuexPlugins(storeInstance, [
+  nodesPlugin,
+  sessionStoragePlugin,
+  localStoragePlugin,
+  indexedDbPlugin,
+  navigatorOnline,
+  socketsPlugin
+])
 
 export { store } // for tests
 

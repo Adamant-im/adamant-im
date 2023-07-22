@@ -22,7 +22,7 @@
       }
     ],
     "doge": [
-      { "url": "https://dogenode1.adamant.im/api/" }
+      { "url": "https://dogenode1.adamant.im/" }
     ],
     "dash": [
       { "url": "https://dashnode1.adamant.im" }

@@ -1,3 +1,5 @@
+import { Cryptos, CryptosInfo, CryptosOrder } from './cryptos'
+
 export const EPOCH = Date.UTC(2017, 8, 2, 17, 0, 0, 0)
 
 export const Transactions = {
@@ -13,38 +15,13 @@ export const Transactions = {
   STATE: 9
 }
 
-export const Cryptos = {
-  ADM: 'ADM',
-  BTC: 'BTC',
-  ETH: 'ETH',
-  LSK: 'LSK',
-  DOGE: 'DOGE',
-  DASH: 'DASH',
-  USDS: 'USDS',
-  BNB: 'BNB'
-}
-
-export const CryptosNames = {
-  [Cryptos.ADM]: 'ADAMANT',
-  [Cryptos.BNB]: 'Binance Coin',
-  [Cryptos.ETH]: 'Ethereum',
-  [Cryptos.LSK]: 'Lisk',
-  [Cryptos.DOGE]: 'DOGE',
-  [Cryptos.DASH]: 'DASH',
-  [Cryptos.USDS]: 'Stably Dollar',
-  [Cryptos.BTC]: 'Bitcoin'
-}
-
-// Used to generate QR codes for wallets like lisk:lskk42c2ut4fmpcxf8swwcpy64fokqmfuzwupjnat
-export const CryptosQqPrefixes = {
-  [Cryptos.ADM]: 'adm',
-  [Cryptos.BNB]: 'ethereum',
-  [Cryptos.ETH]: 'ethereum',
-  [Cryptos.LSK]: 'lisk',
-  [Cryptos.DOGE]: 'doge',
-  [Cryptos.DASH]: 'dash',
-  [Cryptos.USDS]: 'ethereum',
-  [Cryptos.BTC]: 'bitcoin'
+/**
+ * @see https://github.com/Adamant-im/adamant/wiki/Message-Types
+ */
+export const MessageType = {
+  BASIC_ENCRYPTED_MESSAGE: 1,
+  RICH_CONTENT_MESSAGE: 2,
+  cryptoTransferMessage: (cryptoSymbol) => `${cryptoSymbol.toLowerCase()}_transaction`
 }
 
 export const Rates = {
@@ -62,75 +39,6 @@ export const RatesNames = {
   [Rates.CNY]: 'CNY (¥)', // Chinese Yuan
   [Rates.JPY]: 'JPY (¥)' // Japanese Yen
 }
-// Some cryptos require minimum balance to maintain on a wallet
-export const minBalances = {
-  [Cryptos.LSK]: 0.05,
-  [Cryptos.BTC]: 0.00001,
-  [Cryptos.DASH]: 0.0001
-}
-
-export const ERC20 = Object.freeze([
-  Cryptos.BNB,
-  Cryptos.USDS
-])
-
-export const BTC_BASED = Object.freeze([
-  Cryptos.DOGE,
-  Cryptos.DASH,
-  Cryptos.BTC
-])
-
-export const LSK_BASED = Object.freeze([
-  Cryptos.LSK
-])
-
-export const INSTANT_SEND = Object.freeze([
-  Cryptos.DASH
-])
-
-// Some cryptos allows to save public data with a Tx
-export const ALLOW_TEXT_DATA = Object.freeze([
-  Cryptos.LSK
-])
-
-export const isErc20 = crypto => ERC20.includes(crypto)
-
-export const isEthBased = crypto => isErc20(crypto) || crypto === Cryptos.ETH
-
-export const isFeeEstimate = crypto => isEthBased(crypto)
-
-export const isBtcBased = crypto => BTC_BASED.includes(crypto)
-
-export const isLskBased = crypto => LSK_BASED.includes(crypto)
-
-export const isSelfTxAllowed = crypto => LSK_BASED.includes(crypto) || crypto === Cryptos.ADM
-
-export const isInstantSendPossible = crypto => INSTANT_SEND.includes(crypto)
-
-export const isTextDataAllowed = crypto => ALLOW_TEXT_DATA.includes(crypto)
-
-/** Number of decimal places to send transfers for the different crypto amounts */
-export const CryptoAmountPrecision = {
-  ADM: 8,
-  ETH: 6,
-  BNB: 6,
-  DOGE: 8,
-  DASH: 8,
-  USDS: 6,
-  BTC: 8,
-  LSK: 8
-}
-
-export const CryptoNaturalUnits = {
-  ADM: 8,
-  ETH: 18,
-  BNB: 18,
-  DOGE: 8,
-  DASH: 8,
-  USDS: 6,
-  BTC: 8,
-  LSK: 8
-}
 
 /** Fees for the misc ADM operations */
 export const Fees = {
@@ -142,14 +50,8 @@ export const Fees = {
 }
 
 /** Regex for detecting of base64 encoded string */
-export const base64regex = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
-
-export const RE_ADM_ADDRESS = /^U([0-9]{6,})$/i
-export const RE_BTC_ADDRESS = /^(bc1|[13])[a-km-zA-HJ-NP-Z02-9]{25,39}$/
-export const RE_DASH_ADDRESS = /^[7X][1-9A-HJ-NP-Za-km-z]{33,}$/
-export const RE_DOGE_ADDRESS = /^[A|D|9][A-Z0-9]([0-9a-zA-Z]{9,})$/
-export const RE_LSK_ADDRESS = /^lsk[a-z2-9]{38}$/
-export const RE_LSK_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
+export const base64regex =
+  /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
 
 export const Symbols = {
   CLOCK: String.fromCharCode(0x23f0), // ⏰
@@ -166,6 +68,33 @@ export const WelcomeMessage = {
   ADAMANT_ICO: 'ADAMANT Tokens'
 }
 
+export const BTC_BASED = Object.freeze([Cryptos.DOGE, Cryptos.DASH, Cryptos.BTC])
+
+export const LSK_BASED = Object.freeze([Cryptos.LSK])
+
+export const INSTANT_SEND = Object.freeze([Cryptos.DASH])
+
+// Some cryptos allows to save public data with a Tx
+export const ALLOW_TEXT_DATA = Object.freeze([Cryptos.LSK])
+
+export const isErc20 = (crypto) => CryptosInfo[crypto].type === 'ERC20'
+
+export const isEthBased = (crypto) => isErc20(crypto) || crypto === Cryptos.ETH
+
+export const isFeeEstimate = (crypto) => isEthBased(crypto)
+
+export const isBtcBased = (crypto) => BTC_BASED.includes(crypto)
+
+export const isLskBased = (crypto) => LSK_BASED.includes(crypto)
+
+export const isSelfTxAllowed = (crypto) => LSK_BASED.includes(crypto) || crypto === Cryptos.ADM
+
+export const isInstantSendPossible = (crypto) => INSTANT_SEND.includes(crypto)
+
+export const isTextDataAllowed = (crypto) => ALLOW_TEXT_DATA.includes(crypto)
+
+export const RE_LSK_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
+
 /**
  * These gas limit values are used only for estimate fees for ETH & ERC-20 transfers in the Send tokens form,
  * Actual gas limit values are calculated with estimateGas(transactionObject)
@@ -173,19 +102,22 @@ export const WelcomeMessage = {
  */
 
 /** Gas limit value for the ETH transfers */
-export const ETH_TRANSFER_GAS = 24000
+export const DEFAULT_ETH_TRANSFER_GAS = CryptosInfo['ETH'].defaultGasLimit
 /** Gas limit value for the ERC-20 transfers */
-export const ERC20_TRANSFER_GAS = ETH_TRANSFER_GAS * 2.4
+export const DEFAULT_ERC20_TRANSFER_GAS = DEFAULT_ETH_TRANSFER_GAS * 2.4
 
 /** Increase fee multiplier. Used as a checkbox on SendFundsForm */
 export const INCREASE_FEE_MULTIPLIER = 2
+
+export { Cryptos, CryptosInfo, CryptosOrder }
 
 export default {
   EPOCH,
   Transactions
 }
 
-export const UserPasswordArticleLink = 'https://medium.com/adamant-im/more-convenience-login-to-the-web-messenger-with-user-password-9d48a736dfd8'
+export const UserPasswordArticleLink =
+  'https://medium.com/adamant-im/more-convenience-login-to-the-web-messenger-with-user-password-9d48a736dfd8'
 
 export const UserPasswordHashSettings = {
   SALT: 'salt',
@@ -252,25 +184,23 @@ export const tsUpdatable = function (status, currency) {
 }
 
 /**
- * Minimal transferrable amounts for the known cryptos
- */
-export const MinAmounts = Object.freeze({
-  BTC: 546e-8, // 546 satoshis
-  DASH: 0.00002 // otherwise, "dust" error is possible
-})
-
-/**
  * Returns minimal amount that can be transferred for the specified crypto
  * @param {string} crypto crypto
  * @returns {number}
  */
-export function getMinAmount (crypto) {
-  let amount = MinAmounts[crypto]
+export function getMinAmount(crypto) {
+  let amount = CryptosInfo[crypto].minTransferAmount
 
   if (!amount) {
-    const precision = CryptoAmountPrecision[crypto]
+    const precision = CryptosInfo[crypto].cryptoTransferDecimals
     amount = precision ? Math.pow(10, -precision) : 0
   }
 
   return amount
 }
+
+/**
+ * When clicking on replied message inside the chat that animation duration will
+ * be applied while scrolling.
+ **/
+export const SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION = 300 // ms
