@@ -8,6 +8,7 @@ import VueFormatters from './lib/formatters'
 import packageJSON from '../package.json'
 import { vuetify } from '@/plugins/vuetify'
 import { registerGlobalComponents } from './plugins/layout'
+import { longPressDirective } from '@/directives/longPress'
 import '@/assets/styles/app.scss'
 
 import 'dayjs/locale/de'
@@ -25,6 +26,7 @@ app.use(store)
 app.use(i18n)
 app.use(vuetify)
 app.use(VueFormatters)
+app.directive('longpress', longPressDirective)
 
 registerGlobalComponents(app)
 

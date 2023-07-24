@@ -50,6 +50,9 @@ export default {
     partnerId: {
       type: String,
       default: ''
+    },
+    replyToId: {
+      type: String
     }
   },
   data: () => ({
@@ -86,7 +89,8 @@ export default {
               recipientAddress: this.partnerId
             },
             query: {
-              from: `/chats/${this.partnerId}`
+              from: `/chats/${this.partnerId}`,
+              replyToId: this.replyToId
             }
           })
         })

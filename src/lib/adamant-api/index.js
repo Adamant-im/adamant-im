@@ -1,9 +1,9 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
 
-import { Transactions, Delegates } from './constants'
-import utils from './adamant'
-import client from './adamant-api-client'
+import { Transactions, Delegates, MessageType } from '@/lib/constants'
+import utils from '@/lib/adamant'
+import client from '@/lib/adamant-api-client'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { restoreState } from '@/lib/idb/state'
 import { i18n } from '@/i18n'
@@ -139,7 +139,12 @@ export function getPublicKey (address = '') {
 
 /**
  * Sends message with the specified payload
- * @param {MsgParams} params
+ * @param {{
+ *   to: string,
+ *   message?: string | any,
+ *   type?: number,
+ *   amount?: number
+ * }} params
  * @returns {Promise<{success: boolean, transactionId: string}>}
  */
 export function sendMessage (params) {
@@ -174,7 +179,7 @@ export function sendMessage (params) {
  * @param {object} payload message payload
  */
 export function sendSpecialMessage (to, payload) {
-  return sendMessage({ to, message: payload, type: 2 })
+  return sendMessage({ to, message: payload, type: MessageType.RICH_CONTENT_MESSAGE })
 }
 
 /**
@@ -382,10 +387,11 @@ export function getTransactions (options = { }) {
 /**
  * Returns transaction with the specified ID.
  * @param {string} id transaction ID
+ * @param {number} returnAsset 1 - Populate `asset` property; 0 - Leave `asset` empty
  * @returns {Promise<{id: string, height: number, amount: number}>}
  */
-export function getTransaction (id) {
-  const query = { id }
+export function getTransaction (id, returnAsset = 0) {
+  const query = { id, returnAsset }
   return client.get('/api/transactions/get', query)
     .then(response => {
       if (response.success) return response
@@ -469,7 +475,7 @@ export function decodeChat (transaction, key) {
 
   if (!message) return transaction
 
-  if (chat.type === 2) {
+  if (chat.type === MessageType.RICH_CONTENT_MESSAGE) {
     // So-called rich-text messages of type 2 are actually JSON objects
     transaction.message = JSON.parse(message)
   } else {
@@ -621,7 +627,6 @@ export async function getChatRooms (address, params) {
 export async function getChatRoomMessages (address1, address2, params) {
   const defaultParams = {
     orderBy: 'timestamp:desc',
-    height: 0,
     limit: 25
   }
 
