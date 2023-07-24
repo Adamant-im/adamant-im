@@ -8,7 +8,7 @@ import {
   sendSpecialMessage,
   getCurrentAccount
 } from '@/lib/adamant-api'
-import { Cryptos, Fees } from '@/lib/constants'
+import { Fees, FetchStatus } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import { registerCryptoModules } from './utils/registerCryptoModules'
@@ -48,6 +48,7 @@ const store = {
   state: () => ({
     address: '',
     balance: 0,
+    balanceStatus: FetchStatus.Loading,
     passphrase: '',
     password: '',
     IDBReady: false, // set `true` when state has been saved in IDB
@@ -79,6 +80,9 @@ const store = {
     },
     setBalance(state, balance) {
       state.balance = balance
+    },
+    setBalanceStatus(state, status) {
+      state.balanceStatus = status
     },
     setPassphrase(state, passphrase) {
       state.passphrase = Base64.encode(passphrase)
@@ -178,9 +182,13 @@ const store = {
     updateBalance({ commit }) {
       return getCurrentAccount().then((account) => {
         commit('setBalance', account.balance)
+        commit('setBalanceStatus', FetchStatus.Success)
         if (account.balance > Fees.KVS) {
           flushCryptoAddresses()
         }
+      }).catch(err => {
+        commit('setBalanceStatus', FetchStatus.Error)
+        throw err
       })
     },
 

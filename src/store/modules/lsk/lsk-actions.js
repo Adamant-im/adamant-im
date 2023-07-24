@@ -1,3 +1,4 @@
+import { FetchStatus } from '@/lib/constants'
 import baseActions from '../lsk-base/lsk-base-actions'
 import LskApi from '../../../lib/lisk/lisk-api'
 
@@ -11,7 +12,14 @@ const customActions = getApi => ({
     api.getAccount().then(account => {
       if (account) {
         context.commit('status', { balance: account.balance, nonce: account.nonce })
+        context.commit('setBalanceStatus', FetchStatus.Success)
+      } else {
+        context.commit('setBalanceStatus', FetchStatus.Error)
       }
+    }).catch(err => {
+      context.commit('setBalanceStatus', FetchStatus.Error)
+
+      throw err
     })
 
     // Not needed

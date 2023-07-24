@@ -1,7 +1,7 @@
 import abiDecoder from 'abi-decoder'
 
 import * as ethUtils from '../../../lib/eth-utils'
-import { INCREASE_FEE_MULTIPLIER } from '../../../lib/constants'
+import { FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
 
@@ -77,8 +77,11 @@ const createSpecificActions = (api, queue) => ({
             'balance',
             Number(ethUtils.toFraction(balance.toString(10), context.state.decimals))
           )
+          context.commit('setBalanceStatus', FetchStatus.Success)
         },
-        () => {} // Not this time
+        () => {
+          context.commit('setBalanceStatus', FetchStatus.Error)
+        }
       )
       .then(() => {
         const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)

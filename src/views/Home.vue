@@ -19,26 +19,7 @@
               :value="wallet.cryptoCurrency"
               @wheel="onWheel"
             >
-              <crypto-icon
-                :crypto="wallet.cryptoCurrency"
-                size="medium"
-                :class="`${className}__icon`"
-              />
-              <div>
-                <div>{{ numberFormat(wallet.balance, 4) }}</div>
-                <div>
-                  {{ wallet.cryptoCurrency }}
-                  <span v-if="wallet.erc20" style="font-size: 10px">
-                    <sub>ERC20</sub>
-                  </span>
-                </div>
-                <div
-                  v-if="$store.state.rate.isLoaded && wallet.rate"
-                  class="a-text-explanation account-view__rates"
-                >
-                  {{ wallet.rate }} {{ currentCurrency }}
-                </div>
-              </div>
+              <wallet-tab :wallet="wallet" :fiat-currency="currentCurrency" />
             </v-tab>
           </v-tabs>
 
@@ -71,6 +52,7 @@
 
 <script>
 import WalletCard from '@/components/WalletCard'
+import WalletTab from '@/components/WalletTab'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import numberFormat from '@/filters/numberFormat'
 
@@ -103,6 +85,7 @@ function scrollIntoView() {
 export default {
   components: {
     WalletCard,
+    WalletTab,
     CryptoIcon
   },
   computed: {

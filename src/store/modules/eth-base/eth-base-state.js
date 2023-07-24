@@ -1,5 +1,8 @@
+import { FetchStatus } from '@/lib/constants'
+
 export default () => ({
   balance: 0,
+  balanceStatus: FetchStatus.Loading,
   address: '',
   publicKey: null,
   privateKey: null,

@@ -204,3 +204,10 @@ export function getMinAmount(crypto) {
  * be applied while scrolling.
  **/
 export const SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION = 300 // ms
+
+export const FetchStatus = {
+  Idle: 'idle',
+  Loading: 'loading',
+  Success: 'success',
+  Error: 'error'
+}

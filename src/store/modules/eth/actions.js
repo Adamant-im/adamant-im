@@ -1,8 +1,8 @@
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { DEFAULT_ETH_TRANSFER_GAS, INCREASE_FEE_MULTIPLIER } from '../../../lib/constants'
-import { storeCryptoAddress } from '../../../lib/store-crypto-address'
+import { DEFAULT_ETH_TRANSFER_GAS, FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants';
+import { storeCryptoAddress } from '@/lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -61,7 +61,12 @@ const createSpecificActions = (api, queue) => ({
       return [
         // Balance
         api.getBalance.request(context.state.address, 'latest', (err, balance) => {
-          if (!err) context.commit('balance', Number(utils.toEther(balance.toString())))
+          if (!err) {
+            context.commit('balance', Number(utils.toEther(balance.toString())))
+            context.commit('setBalanceStatus', FetchStatus.Success)
+          } else {
+            context.commit('setBalanceStatus', FetchStatus.Error)
+          }
         }),
         // Current gas price
         api.getGasPrice.request((err, price) => {
