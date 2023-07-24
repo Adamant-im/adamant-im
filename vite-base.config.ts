@@ -39,7 +39,7 @@ export default defineConfig({
       os: 'os-browserify/browser',
       assert: 'assert'
     },
-    extensions: ['.js', '.json', '.vue']
+    extensions: ['.ts', '.js', '.json', '.vue']
   },
   server: {
     port: 8080
