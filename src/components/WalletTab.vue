@@ -36,7 +36,7 @@ import { useStore } from 'vuex';
 import type { PropType } from 'vue'
 
 import { Cryptos, FetchStatus } from '@/lib/constants'
-import CryptoIcon from '@/components/icons/CryptoIcon'
+import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import numberFormat from '@/filters/numberFormat'
 
 const className = 'wallet-tab'
@@ -80,6 +80,7 @@ export default defineComponent({
       const { cryptoCurrency } = props.wallet
       const cryptoModuleName = cryptoCurrency.toLowerCase()
 
+      // @ts-ignore
       if (cryptoCurrency === Cryptos.ADM) {
         return store.state.balanceStatus
       }
