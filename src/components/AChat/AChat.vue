@@ -20,20 +20,15 @@
           ref="messages"
           class="a-chat__body-messages"
         >
-          <slot
-            name="messages"
-            :messages="messages"
-          >
-            <template v-for="message in messages">
-              <slot
-                name="message"
-                :message="message"
-                :sender="getSenderMeta(message.senderId)"
-                :user-id="userId"
-                :locale="locale"
-              />
-            </template>
-          </slot>
+          <template v-for="message in messages" :key="message.id">
+            <slot
+              name="message"
+              :message="message"
+              :sender="getSenderMeta(message.senderId)"
+              :user-id="userId"
+              :locale="locale"
+            />
+          </template>
         </div>
 
         <div class="a-chat__fab">
@@ -48,9 +43,11 @@
 
 <script>
 import throttle from 'lodash/throttle'
+import scrollIntoView from 'scroll-into-view-if-needed'
+import Styler from 'stylefire'
+import { animate } from 'popmotion'
 
-import AChatMessage from './AChatMessage'
-import AChatTransaction from './AChatTransaction'
+import { SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
 const emitScroll = throttle(function () {
@@ -58,10 +55,6 @@ const emitScroll = throttle(function () {
 }, 200)
 
 export default {
-  components: {
-    AChatMessage,
-    AChatTransaction
-  },
   props: {
     messages: {
       type: Array,
@@ -99,7 +92,7 @@ export default {
       const nonVisibleClientHeight =
         this.$refs.messages.scrollHeight -
         this.$refs.messages.clientHeight -
-        this.$refs.messages.scrollTop
+        Math.ceil(this.$refs.messages.scrollTop)
       const scrolledToBottom = nonVisibleClientHeight === 0
 
       if (scrolledToBottom) {
@@ -129,7 +122,7 @@ export default {
 
     onScroll () {
       const scrollHeight = this.$refs.messages.scrollHeight
-      const scrollTop = this.$refs.messages.scrollTop
+      const scrollTop = Math.ceil(this.$refs.messages.scrollTop)
       const clientHeight = this.$refs.messages.clientHeight
 
       // Scrolled to Bottom
@@ -142,9 +135,11 @@ export default {
         this.$emit('scroll:top')
       }
 
-      // Save currentScrollTop.
-      // Used when scrolled bottom while loading messages.
-      this.currentScrollTop = this.$refs.messages.scrollTop
+      // Save previous values of `scrollTop` and `scrollHeight`
+      // Needed for keeping the same scroll position when prepending
+      // new messages to the chat
+      this.currentScrollTop = scrollTop
+      this.currentScrollHeight = scrollHeight
 
       emitScroll.call(this)
     },
@@ -183,10 +178,49 @@ export default {
       }
     },
 
+    /**
+     * Smooth scroll to message by index (starting with the last).
+     * @returns Promise<boolean> If `true` then scrolling has been applied.
+     */
+    scrollToMessageEasy(index) {
+      const elements = this.$refs.messages.children
+
+      if (!elements) return Promise.resolve(false)
+
+      const element = elements[elements.length - 1 - index]
+
+      if (!element) return Promise.resolve(false)
+
+      return new Promise((resolve) => {
+        scrollIntoView(element, {
+          behavior: (instructions) => {
+            const [{ el, top }] = instructions
+            const styler = Styler(el)
+
+            // do nothing if the element is already scrolled at target position
+            if (el.scrollTop === top) {
+              resolve(false)
+              return
+            }
+
+            animate({
+              from: el.scrollTop,
+              to: top,
+              duration: SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION,
+              onUpdate: (top) => styler.set('scrollTop', top),
+              onComplete: () => resolve(true),
+            })
+          },
+          block: 'center'
+        })
+      })
+    },
+
     isScrolledToBottom () {
-      const scrollOffset = (
-        this.$refs.messages.scrollHeight - this.$refs.messages.scrollTop - this.$refs.messages.clientHeight
-      )
+      const scrollOffset =
+        this.$refs.messages.scrollHeight -
+        Math.ceil(this.$refs.messages.scrollTop) -
+        this.$refs.messages.clientHeight
 
       return scrollOffset <= 60
     },
