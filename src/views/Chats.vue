@@ -136,8 +136,7 @@ export default {
       return this.$store.state.address
     },
     unreadMessagesCount() {
-      const messages = this.$store.getters['chat/totalNumOfNewMessages']
-      return messages
+      return this.$store.getters['chat/totalNumOfNewMessages']
     }
   },
   beforeMount () {
