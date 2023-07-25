@@ -40,6 +40,8 @@
     "start_chat": "Start chat",
     "title": "Chats",
     "too_long": "Nachricht zu lang",
+    "invalid_message": "Invalid message",
+    "message_not_found": "Message not found",
     "transaction_statuses": {
       "CONFIRMED": "Confirmed in a blockchain",
       "REGISTERED": "Delivered to a node",
@@ -49,7 +51,11 @@
       "UNKNOWN": "This cryptocurrency is not supported yet"
     },
     "welcome_message_title": "Willkommen in ADAMANT",
-    "you": "YOU"
+    "you": "YOU",
+    "chat_actions": {
+      "reply": "Reply",
+      "copy": "Copy"
+    }
   },
   "error": "Error",
   "home": {

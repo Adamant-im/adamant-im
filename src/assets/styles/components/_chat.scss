@@ -14,10 +14,15 @@ $chat-message: (
 
 $chat-avatar-size: 40px;
 
+$scroll-bar-width: 4px;
+
 .a-chat {
   display: block;
   text-decoration: none;
-  height: 100%;
+  height: 100%; // <-- Fallback for Chrome < v108
+  // Chrome supports `dvh, lvh...` units starting with v108.
+  // See https://caniuse.com/viewport-unit-variants
+  height: 100dvh;
   position: relative;
 
   &__content {
@@ -39,6 +44,7 @@ $chat-avatar-size: 40px;
     top: 0;
     left: 0;
     overflow-y: scroll;
+    overflow-x: hidden;
     width: 100%;
     height: 100%;
     padding: 16px 16px 0 16px;
@@ -49,7 +55,7 @@ $chat-avatar-size: 40px;
 
     /* Scrollbar styles (WebKit) */
     &::-webkit-scrollbar {
-      width: 4px;
+      width: $scroll-bar-width;
     }
 
     &::-webkit-scrollbar-track {
@@ -67,16 +73,33 @@ $chat-avatar-size: 40px;
 
   &__message-container {
     display: inline-block;
+    position: relative;
     clear: both;
     float: left;
     max-width: 80%;
+    margin: unset; // resets margins of <v-row/>
+
+    &:hover {
+      .a-chat__message-actions-icon {
+        visibility: visible;
+        transition: visibility .5s, max-height .5s;
+      }
+    }
 
     &:last-child {
       margin-bottom: 0;
     }
 
+    & + & {
+      margin-top: unset; // resets margins of `.v-row + .v-row`
+    }
+
     &--right {
       float: right;
+    }
+
+    &--transition {
+      transition: all .4s;
     }
   }
 
@@ -89,6 +112,27 @@ $chat-avatar-size: 40px;
     padding-right: 16px;
     margin-bottom: 16px;
     border-radius: 8px;
+  }
+
+  &__message-actions-icon {
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    right: 0;
+    overflow: hidden;
+    border-radius: 0 8px;
+  }
+
+  @keyframes flashing {
+    0% {}
+    50% {
+      background-color: rgba(map-get($adm-colors, 'primary'), 0.25);
+    }
+    100% {}
+  }
+
+  &__message--flashing {
+    animation: flashing 1s 1;
   }
 
   /**
@@ -190,6 +234,11 @@ $chat-avatar-size: 40px;
     }
   }
 
+  &__quoted-message {
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
   /**
    * 1. align text to top
    */
@@ -269,6 +318,29 @@ $chat-avatar-size: 40px;
       mask-image: none;
       padding-top: 7px;
       padding-bottom: 7px;
+      min-height: var(--v-input-control-height);
+      overflow: visible; // show scrollbar even with VTextarea `auto-grow` prop enabled
+
+      /* Scrollbar styles (Firefox) */
+      scrollbar-color: map-get($adm-colors, 'secondary2-transparent' transparent);
+      scrollbar-width: thin;
+
+      /* Scrollbar styles (WebKit) */
+      &::-webkit-scrollbar {
+        width: 2px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: map-get($adm-colors, 'secondary2-transparent');
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: map-get($adm-colors, 'secondary2-transparent');
+      }
     }
 
     .v-text-field {
@@ -410,6 +482,10 @@ $chat-avatar-size: 40px;
       &--green {
         background-color: map-get($grey, 'darken-3');
       }
+    }
+
+    &__message-actions-icon {
+      background-image: linear-gradient(45deg, map-get($adm-colors, 'muted'), map-get($shades, 'black') 40%);
     }
 
     &__sender {
