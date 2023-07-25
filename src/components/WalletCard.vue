@@ -20,16 +20,11 @@
 
         <template #append>
           <v-btn
-            icon
             ripple
             variant="text"
-            :class="`${className}__action round-btn`"
+            :class="`${className}__action`"
+            icon="mdi-share-variant"
           >
-            <v-icon
-              :class="`${className}__icon`"
-              icon="mdi-share-variant"
-              size="small"
-            />
           </v-btn>
         </template>
       </v-list-item>
@@ -47,16 +42,11 @@
 
         <template #append>
           <v-btn
-            icon
+            icon="mdi-chevron-right"
             ripple
             variant="text"
-            :class="`${className}__action round-btn`"
+            :class="`${className}__action`"
           >
-            <v-icon
-              :class="`${className}__icon`"
-              icon="mdi-chevron-right"
-              size="small"
-            />
           </v-btn>
         </template>
       </v-list-item>

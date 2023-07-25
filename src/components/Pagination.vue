@@ -1,22 +1,18 @@
 <template>
   <div>
     <v-btn
-      icon
+      icon="mdi-chevron-left"
       :disabled="page <= 1"
       variant="text"
       @click="page--"
-      class="round-btn"
     >
-      <v-icon icon="mdi-chevron-left" />
     </v-btn>
     <v-btn
-      icon
+      icon="mdi-chevron-right"
       :disabled="page >= pages"
       variant="text"
       @click="page++"
-      class="round-btn"
     >
-      <v-icon icon="mdi-chevron-right" />
     </v-btn>
   </div>
 </template>

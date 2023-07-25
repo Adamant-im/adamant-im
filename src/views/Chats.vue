@@ -15,18 +15,12 @@
           >
             <v-row no-gutters>
               <v-btn
-                :class="`${className}__item round-btn`"
+                :class="`${className}__btn`"
                 @click="markAllAsRead"
                 variant="plain"
                 v-if="unreadMessagesCount > 0"
+                icon="mdi mdi-check-all"
               >
-                <template #prepend>
-                  <v-icon
-                    :class="`${className}__icon`"
-                    icon="mdi mdi-check-all"
-                    size="16"
-                  />
-                </template>
               </v-btn>
               <v-spacer></v-spacer>
               <v-btn

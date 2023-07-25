@@ -15,15 +15,10 @@
         >
           <v-btn
             v-if="showBack"
-            icon
             size="small"
             @click="goBack"
-            class="round-btn"
+            icon="mdi-arrow-left"
           >
-            <v-icon
-              icon="mdi-arrow-left"
-              size="x-large"
-            />
           </v-btn>
 
           <v-toolbar-title
