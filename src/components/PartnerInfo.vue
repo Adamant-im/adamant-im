@@ -12,11 +12,14 @@
         <v-spacer />
         <v-btn
           variant="text"
-          icon="mdi-close"
+          icon
           class="close-icon"
-          :size="36"
           @click="show = false"
         >
+          <v-icon
+            icon="mdi-close"
+            :size="24"
+          />
         </v-btn>
       </v-card-title>
       <v-divider class="a-divider" />
