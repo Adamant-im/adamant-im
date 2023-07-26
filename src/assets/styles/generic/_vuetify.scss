@@ -34,8 +34,9 @@ html {
   }
 }
 
-.v-btn {
+.v-btn:not(.v-btn--icon) {
   letter-spacing: normal;
+  border-radius: 2px;
 }
 
 .v-theme--light {

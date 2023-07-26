@@ -18,7 +18,7 @@
                   :class="`${className}__btn mt-2`"
                   @click="markAllAsRead"
                   v-if="unreadMessagesCount > 0"
-                  icon="mdi mdi-check-all"
+                  icon="mdi-check-all"
                   size="small"
                   variant="plain"
                 >

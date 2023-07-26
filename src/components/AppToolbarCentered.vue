@@ -15,7 +15,7 @@
         >
           <v-btn
             v-if="showBack"
-            size="small"
+            size="large"
             @click="goBack"
             icon="mdi-arrow-left"
           >
