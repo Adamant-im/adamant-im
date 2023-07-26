@@ -27,12 +27,12 @@
       </span>
       <v-icon
         :class="{
-        [classes.statusIcon]: true,
-        [classes.statusIconGreen]: nodeStatusColor === 'green',
-        [classes.statusIconRed]: nodeStatusColor === 'red',
-        [classes.statusIconOrange]: nodeStatusColor === 'orange',
-        [classes.statusIconGrey]: nodeStatusColor === 'grey'
-    }"
+          [classes.statusIcon]: true,
+          [classes.statusIconGreen]: nodeStatusColor === 'green',
+          [classes.statusIconRed]: nodeStatusColor === 'red',
+          [classes.statusIconOrange]: nodeStatusColor === 'orange',
+          [classes.statusIconGrey]: nodeStatusColor === 'grey'
+        }"
         :color="nodeStatusColor"
         icon="mdi-checkbox-blank-circle"
         size="small"
@@ -80,7 +80,7 @@ function getNodeStatusColor(node) {
     color = 'orange'
   }
 
-  return color;
+  return color
 }
 
 export default {
