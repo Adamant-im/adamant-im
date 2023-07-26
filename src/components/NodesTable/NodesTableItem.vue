@@ -9,8 +9,7 @@
     >
       <v-checkbox-btn
         :model-value="active"
-        :class="classes.checkbox"
-        class="grey"
+        :class="[classes.checkbox, `${classes.statusIcon}--grey`]"
         @input="toggleActiveStatus"
       />
     </td>
@@ -27,7 +26,7 @@
         {{ nodeStatus }}
       </span>
       <v-icon
-        :class="`${classes.statusIcon} ${nodeStatusColor}`"
+        :class="[classes.statusIcon, `${classes.statusIcon}--${nodeStatusColor}`]"
         :color="nodeStatusColor"
         icon="mdi-checkbox-blank-circle"
         size="small"
@@ -37,7 +36,7 @@
     <td :class="classes.td" class="pl-0 pr-2">
       <v-icon
         :icon="socketSupport ? 'mdi-check' : 'mdi-close'"
-        :class="socketSupport ? 'green' : 'red'"
+        :class="socketSupport ? `${classes.statusIcon}--green` : `${classes.statusIcon}--red`"
       />
     </td>
   </tr>
@@ -143,6 +142,18 @@ export default {
   }
   &__status-icon {
     margin-inline-start: 4px;
+    &--green {
+      color: rgb(61, 209, 151) !important;
+    }
+    &--red {
+      color: rgb(237, 82, 112) !important;
+    }
+    &--grey {
+      color: #9e9e9e !important;
+    }
+    &--orange {
+      color: rgb(248, 160, 97) !important;
+    }
   }
   &__td-checkbox {
     width: 64px;
@@ -166,19 +177,6 @@ export default {
   }
 }
 
-.green {
-  color: rgb(61, 209, 151) !important;
-}
-.red {
-  color: rgb(237, 82, 112) !important;
-}
-.grey {
-  color: #9e9e9e !important;
-}
-.orange {
-  color: rgb(248, 160, 97) !important;
-}
-
 .v-theme--light {
   .nodes-table-item {
     &__version {
@@ -187,6 +185,20 @@ export default {
     &__td {
       color: map-get($adm-colors, 'regular');
     }
+    &__status-icon {
+      &--green {
+        color: map-get($adm-colors, 'good') !important;
+      }
+      &--red {
+        color: map-get($adm-colors, 'danger') !important;
+      }
+      &--grey {
+        color: map-get($adm-colors, 'regular') !important;
+      }
+      &--orange {
+        color: map-get($adm-colors, 'attention') !important;
+      }
+    }
   }
 }
 
@@ -194,6 +206,20 @@ export default {
   .nodes-table-item {
     &__version {
       opacity: 0.7;
+    }
+    &__status-icon {
+      &--green {
+        color: map-get($adm-colors, 'good') !important;
+      }
+      &--red {
+        color: map-get($adm-colors, 'danger') !important;
+      }
+      &--grey {
+        color: map-get($adm-colors, 'regular') !important;
+      }
+      &--orange {
+        color: map-get($adm-colors, 'attention') !important;
+      }
     }
   }
 }
