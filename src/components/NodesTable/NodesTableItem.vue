@@ -10,7 +10,7 @@
       <v-checkbox-btn
         :model-value="active"
         :class="classes.checkbox"
-        color="grey darken-1"
+        class="grey"
         @input="toggleActiveStatus"
       />
     </td>
@@ -27,7 +27,7 @@
         {{ nodeStatus }}
       </span>
       <v-icon
-        :class="classes.statusIcon"
+        :class="`${classes.statusIcon} ${nodeStatusColor}`"
         :color="nodeStatusColor"
         icon="mdi-checkbox-blank-circle"
         size="small"
@@ -37,7 +37,7 @@
     <td :class="classes.td" class="pl-0 pr-2">
       <v-icon
         :icon="socketSupport ? 'mdi-check' : 'mdi-close'"
-        :color="socketSupport ? 'green' : 'red'"
+        :class="socketSupport ? 'green' : 'red'"
       />
     </td>
   </tr>
@@ -75,7 +75,7 @@ function getNodeStatusColor(node) {
     color = 'orange'
   }
 
-  return color + ' lighten-1'
+  return color;
 }
 
 export default {
@@ -164,6 +164,19 @@ export default {
       margin-left: 8px;
     }
   }
+}
+
+.green {
+  color: rgb(61, 209, 151) !important;
+}
+.red {
+  color: rgb(237, 82, 112) !important;
+}
+.grey {
+  color: #9e9e9e !important;
+}
+.orange {
+  color: rgb(248, 160, 97) !important;
 }
 
 .v-theme--light {
