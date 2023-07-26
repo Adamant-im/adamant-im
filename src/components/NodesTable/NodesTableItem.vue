@@ -143,16 +143,16 @@ export default {
   &__status-icon {
     margin-inline-start: 4px;
     &--green {
-      color: rgb(61, 209, 151) !important;
+      color: map-get($adm-colors, 'good') !important;
     }
     &--red {
-      color: rgb(237, 82, 112) !important;
+      color: map-get($adm-colors, 'danger') !important;
     }
     &--grey {
-      color: #9e9e9e !important;
+      color: map-get($adm-colors, 'grey') !important;
     }
     &--orange {
-      color: rgb(248, 160, 97) !important;
+      color: map-get($adm-colors, 'attention') !important;
     }
   }
   &__td-checkbox {
@@ -193,7 +193,7 @@ export default {
         color: map-get($adm-colors, 'danger') !important;
       }
       &--grey {
-        color: map-get($adm-colors, 'regular') !important;
+        color: map-get($adm-colors, 'grey') !important;
       }
       &--orange {
         color: map-get($adm-colors, 'attention') !important;
@@ -215,7 +215,7 @@ export default {
         color: map-get($adm-colors, 'danger') !important;
       }
       &--grey {
-        color: map-get($adm-colors, 'regular') !important;
+        color: map-get($adm-colors, 'grey') !important;
       }
       &--orange {
         color: map-get($adm-colors, 'attention') !important;
