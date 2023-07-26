@@ -9,7 +9,7 @@
     >
       <v-checkbox-btn
         :model-value="active"
-        :class="[classes.checkbox, `${classes.statusIcon}--grey`]"
+        :class="[classes.checkbox, classes.statusIconGrey]"
         @input="toggleActiveStatus"
       />
     </td>
@@ -26,7 +26,13 @@
         {{ nodeStatus }}
       </span>
       <v-icon
-        :class="[classes.statusIcon, `${classes.statusIcon}--${nodeStatusColor}`]"
+        :class="{
+        [classes.statusIcon]: true,
+        [classes.statusIconGreen]: nodeStatusColor === 'green',
+        [classes.statusIconRed]: nodeStatusColor === 'red',
+        [classes.statusIconOrange]: nodeStatusColor === 'orange',
+        [classes.statusIconGrey]: nodeStatusColor === 'grey'
+    }"
         :color="nodeStatusColor"
         icon="mdi-checkbox-blank-circle"
         size="small"
@@ -96,6 +102,10 @@ export default {
       checkbox: `${className}__checkbox`,
       version: `${className}__version`,
       statusIcon: `${className}__status-icon`,
+      statusIconGreen: `${className}__status-icon--green`,
+      statusIconRed: `${className}__status-icon--red`,
+      statusIconOrange: `${className}__status-icon--orange`,
+      statusIconGrey: `${className}__status-icon--grey`,
       tdCheckbox: `${className}__td-checkbox`
     }
 
@@ -142,18 +152,6 @@ export default {
   }
   &__status-icon {
     margin-inline-start: 4px;
-    &--green {
-      color: map-get($adm-colors, 'good') !important;
-    }
-    &--red {
-      color: map-get($adm-colors, 'danger') !important;
-    }
-    &--grey {
-      color: map-get($adm-colors, 'grey') !important;
-    }
-    &--orange {
-      color: map-get($adm-colors, 'attention') !important;
-    }
   }
   &__td-checkbox {
     width: 64px;
