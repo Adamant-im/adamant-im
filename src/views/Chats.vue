@@ -14,14 +14,15 @@
             v-if="isFulfilled"
           >
             <v-row no-gutters>
-              <v-btn
-                :class="`${className}__btn`"
-                @click="markAllAsRead"
-                variant="plain"
-                v-if="unreadMessagesCount > 0"
-                icon="mdi mdi-check-all"
-              >
-              </v-btn>
+                <v-btn
+                  :class="`${className}__btn mt-2`"
+                  @click="markAllAsRead"
+                  v-if="unreadMessagesCount > 0"
+                  icon="mdi mdi-check-all"
+                  size="small"
+                  variant="plain"
+                >
+                </v-btn>
               <v-spacer></v-spacer>
               <v-btn
                 :class="`${className}__item`"
@@ -33,7 +34,7 @@
                   <v-icon
                     :class="`${className}__icon`"
                     icon="mdi-message-outline"
-                    size="16"
+                    size="small"
                   />
                 </template>
 
