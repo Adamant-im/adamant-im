@@ -25,6 +25,12 @@ $scroll-bar-width: 4px;
   height: 100dvh;
   position: relative;
 
+  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+    position: fixed;
+    left: 0;
+    right: 0;
+  }
+
   &__content {
     height: inherit;
     display: flex;
