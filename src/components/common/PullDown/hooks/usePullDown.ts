@@ -26,6 +26,8 @@ interface UsePullDownResult {
    * The percentage value for current progress
    */
   progressPercentage: Ref<number>
+  pullDownActivated: Ref<boolean>
+  pullDownReleased: Ref<boolean>
 }
 
 export function usePullDown(onAction: () => void): UsePullDownResult {
@@ -36,6 +38,8 @@ export function usePullDown(onAction: () => void): UsePullDownResult {
   const progressPercentage = computed(() => {
     return Math.min(elementTopOffset.value * 100 / PULL_ACTIVATION_OFFSET, 100)
   })
+  const pullDownActivated = computed(() => progressPercentage.value === 100)
+  const pullDownReleased = computed(() => elementTopOffset.value === 0)
 
   const onSwiping = (e: VuetifyTouchEvent) => {
     const offsetY = e.touchstartY - e.touchmoveY
@@ -66,6 +70,8 @@ export function usePullDown(onAction: () => void): UsePullDownResult {
     onSwiping,
     onSwipeEnd,
     elementTopOffset,
-    progressPercentage
+    progressPercentage,
+    pullDownActivated,
+    pullDownReleased
   }
 }

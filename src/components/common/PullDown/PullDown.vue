@@ -2,7 +2,7 @@
   <div
     :class="{
       [classes.root]: true,
-      [classes.rootTransition]: elementTopOffset === 0
+      [classes.rootTransition]: pullDownReleased
     }"
     v-touch="{
       move: onSwiping,
@@ -16,16 +16,16 @@
       <v-progress-circular
         :class="{
           [classes.progressCircular]: true,
-          [classes.progressCircularActivated]: progressPercentage === 100
+          [classes.progressCircularActivated]: pullDownActivated
         }"
         :model-value="progressPercentage"
-        :indeterminate="elementTopOffset === 0"
+        :indeterminate="pullDownReleased"
       />
       <div
         v-if="actionText"
         :class="{
           [classes.actionText]: true,
-          [classes.actionTextActivated]: progressPercentage === 100
+          [classes.actionTextActivated]: pullDownActivated
         }"
       >
         {{ actionText }}
@@ -63,7 +63,9 @@ export default defineComponent({
       onSwiping,
       onSwipeEnd,
       elementTopOffset,
-      progressPercentage
+      progressPercentage,
+      pullDownActivated,
+      pullDownReleased
     } = usePullDown(() => {
       emit('action')
     })
@@ -73,7 +75,9 @@ export default defineComponent({
       onSwiping,
       onSwipeEnd,
       elementTopOffset,
-      progressPercentage
+      progressPercentage,
+      pullDownActivated,
+      pullDownReleased
     }
   }
 })
