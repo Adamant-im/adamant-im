@@ -72,6 +72,9 @@
     "chat_actions": {
       "reply": "Reply",
       "copy": "Copy"
+    },
+    "pull_down_actions": {
+      "update_balances": "Update balances"
     }
   },
   "connection": {

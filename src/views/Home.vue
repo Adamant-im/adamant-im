@@ -1,53 +1,72 @@
 <template>
-  <v-row justify="center" no-gutters :class="className">
-    <container>
-      <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
-        <!-- Wallets -->
-        <v-sheet color="transparent" :class="`${className}__wallets`">
-          <v-tabs
-            ref="vtabs"
-            v-model="currentWallet"
-            :class="`${className}__tabs`"
-            grow
-            stacked
-            height="auto"
-            show-arrows
-          >
-            <v-tab
-              v-for="wallet in wallets"
-              :key="wallet.cryptoCurrency"
-              :value="wallet.cryptoCurrency"
-              @wheel="onWheel"
+  <pull-down
+    @action="updateBalances"
+    :action-text="$t('chats.pull_down_actions.update_balances')"
+  >
+    <v-row justify="center" no-gutters :class="className">
+      <container>
+        <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
+          <!-- Wallets -->
+          <v-sheet color="transparent" :class="`${className}__wallets`">
+            <v-tabs
+              ref="vtabs"
+              v-model="currentWallet"
+              :class="`${className}__tabs`"
+              grow
+              stacked
+              height="auto"
+              show-arrows
             >
-              <wallet-tab :wallet="wallet" :fiat-currency="currentCurrency" />
-            </v-tab>
-          </v-tabs>
-
-          <v-window v-model="currentWallet">
-            <v-window-item
-              v-for="wallet in wallets"
-              :key="wallet.cryptoCurrency"
-              :value="wallet.cryptoCurrency"
-            >
-              <wallet-card
-                :address="wallet.address"
-                :balance="wallet.balance"
-                :crypto="wallet.cryptoCurrency"
-                :crypto-name="wallet.cryptoName"
-                :rate="wallet.rate"
-                :current-currency="currentCurrency"
-                @click:balance="goToTransactions"
+              <v-tab
+                v-for="wallet in wallets"
+                :key="wallet.cryptoCurrency"
+                :value="wallet.cryptoCurrency"
+                @wheel="onWheel"
               >
-                <template #icon>
-                  <crypto-icon :crypto="wallet.cryptoCurrency" size="large" />
-                </template>
-              </wallet-card>
-            </v-window-item>
-          </v-window>
+                <wallet-tab :wallet="wallet" :fiat-currency="currentCurrency" />
+              </v-tab>
+            </v-tabs>
+
+            <v-window
+              v-model="currentWallet"
+              :touch="{
+                start: ({ originalEvent }) => {
+                  // Due to `stopPropagation` the `<PullDown/>` component cannot
+                  // catch `touchstart` event by itself, ending in a swipe bug.
+                  //
+                  // Override Vuetify swipe start event to disable
+                  // `originalEvent.stopPropagation()`
+                  // @source https://github.com/vuetifyjs/vuetify/blob/master/packages/vuetify/src/components/VWindow/VWindow.tsx#L208
+                  //
+                  // Note: Don't remove this function and leave it empty.
+                }
+              }
+             ">
+              <v-window-item
+                v-for="wallet in wallets"
+                :key="wallet.cryptoCurrency"
+                :value="wallet.cryptoCurrency"
+              >
+                <wallet-card
+                  :address="wallet.address"
+                  :balance="wallet.balance"
+                  :crypto="wallet.cryptoCurrency"
+                  :crypto-name="wallet.cryptoName"
+                  :rate="wallet.rate"
+                  :current-currency="currentCurrency"
+                  @click:balance="goToTransactions"
+                >
+                  <template #icon>
+                    <crypto-icon :crypto="wallet.cryptoCurrency" size="large" />
+                  </template>
+                </wallet-card>
+              </v-window-item>
+            </v-window>
+          </v-sheet>
         </v-sheet>
-      </v-sheet>
-    </container>
-  </v-row>
+      </container>
+    </v-row>
+  </pull-down>
 </template>
 
 <script>
@@ -56,6 +75,7 @@ import WalletTab from '@/components/WalletTab'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import numberFormat from '@/filters/numberFormat'
 
+import { PullDown } from '@/components/common/PullDown'
 import { Cryptos, CryptosInfo, CryptosOrder, isErc20 } from '@/lib/constants'
 
 /**
@@ -84,6 +104,7 @@ function scrollIntoView() {
 
 export default {
   components: {
+    PullDown,
     WalletCard,
     WalletTab,
     CryptoIcon
@@ -157,6 +178,9 @@ export default {
       const nextWallet = this.wallets[nextWalletIndex]
 
       if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
+    },
+    updateBalances() {
+      console.log('updateBalances')
     },
     numberFormat
   }

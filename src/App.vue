@@ -1,26 +1,22 @@
 <template>
-  <pull-to-refresh>
-    <v-app :theme="themeName" class="application--linear-gradient">
-      <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
+  <v-app :theme="themeName" class="application--linear-gradient">
+    <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
 
-        <component :is="layout">
-          <router-view />
-        </component>
-    </v-app>
-  </pull-to-refresh>
+    <component :is="layout">
+      <router-view />
+    </component>
+  </v-app>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
-import PullToRefresh from '@/components/common/PullToRefresh/PullToRefresh.vue'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
 
 export default defineComponent({
   components: {
-    PullToRefresh,
     WarningOnAddressesDialog
   },
   data: () => ({
