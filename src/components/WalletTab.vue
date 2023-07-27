@@ -81,7 +81,6 @@ export default defineComponent({
       const { cryptoCurrency } = props.wallet
       const cryptoModuleName = cryptoCurrency.toLowerCase()
 
-      // @ts-ignore
       if (cryptoCurrency === Cryptos.ADM) {
         return store.state.balanceStatus
       }
