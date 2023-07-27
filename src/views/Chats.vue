@@ -232,9 +232,6 @@ export default {
       }
     }
   }
-  &__chats-actions {
-    margin: 0;
-  }
   &__title {
     font-weight: 300;
     font-size: 14px;
