@@ -23,7 +23,7 @@
 
     <div
       v-if="isRateLoaded"
-      class="a-text-explanation account-view__rates"
+      :class="['a-text-explanation', classes.rates]"
     >
       {{ wallet.rate }} {{ fiatCurrency }}
     </div>
@@ -44,7 +44,8 @@ const classes = {
   root: className,
   cryptoIcon: `${className}__crypto-icon`,
   balanceLoading: `${className}__balance-loading`,
-  balanceError: `${className}__balance-error`
+  balanceError: `${className}__balance-error`,
+  rates: `${className}__rates`
 }
 
 type Wallet = {
@@ -103,6 +104,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import 'vuetify/settings';
+@import '../assets/styles/settings/_colors.scss';
+
 .wallet-tab {
   &__crypto-icon {
     margin-bottom: 3px;
@@ -114,6 +118,34 @@ export default defineComponent({
 
   &__balance-error {
     line-height: 1;
+  }
+
+  &__rates {
+    margin-top: 2px;
+  }
+}
+
+.v-theme--light {
+  .wallet-tab {
+    &__rates {
+      color: map-get($adm-colors, 'muted');
+    }
+  }
+}
+
+.v-theme--dark {
+  .wallet-tab {
+    &__rates {
+      color: hsla(0, 0%, 100%, 0.7);
+    }
+  }
+}
+
+.v-tab--selected {
+  .wallet-tab {
+    &__rates {
+      color: inherit;
+    }
   }
 }
 </style>

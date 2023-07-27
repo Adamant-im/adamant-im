@@ -198,10 +198,6 @@ export default {
  * 2. Reset VTabItem opacity.
  */
 .account-view {
-  &__rates {
-    margin-top: 2px;
-    color: hsla(0, 0%, 100%, 0.7);
-  }
   &__wallets {
     &.v-card {
       background-color: transparent;
@@ -268,9 +264,6 @@ export default {
 /** Themes **/
 .v-theme--light {
   .account-view {
-    &__rates {
-      color: map-get($adm-colors, 'muted');
-    }
     &__wallets {
       :deep(.v-tabs-bar) {
         background-color: map-get($adm-colors, 'secondary2-transparent');
@@ -332,12 +325,6 @@ export default {
         }
       }
     }
-  }
-}
-
-.v-tab--selected {
-  .account-view__rates {
-    color: inherit;
   }
 }
 </style>
