@@ -65,11 +65,28 @@ function createActions(options) {
       }
     },
 
+    /**
+     * @param requestedByUser If `true` then user requested balance update through UI
+     * @returns {Promise<void>}
+     */
     updateBalance: {
       root: true,
-      handler(context) {
-        context.dispatch('updateStatus')
-      }
+      async handler({ commit }, payload = {}) {
+        if (payload.requestedByUser) {
+          commit('setBalanceStatus', FetchStatus.Loading)
+        }
+
+        try {
+          const balance = await api.getBalance()
+
+          commit('status', { balance })
+          commit('setBalanceStatus', FetchStatus.Success)
+        } catch (err) {
+          commit('setBalanceStatus', FetchStatus.Error)
+
+          throw err
+        }
+      },
     },
 
     storeAddress({ state }) {

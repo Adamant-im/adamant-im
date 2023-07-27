@@ -179,7 +179,11 @@ const store = {
       commit('setIDBReady', false)
       commit('options/updateOption', { key: 'stayLoggedIn', value: false })
     },
-    updateBalance({ commit }) {
+    updateBalance({ commit }, payload = {}) {
+      if (payload.requestedByUser) {
+        commit('setBalanceStatus', FetchStatus.Loading)
+      }
+
       return getCurrentAccount().then((account) => {
         commit('setBalance', account.balance)
         commit('setBalanceStatus', FetchStatus.Success)

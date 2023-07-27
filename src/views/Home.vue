@@ -180,7 +180,9 @@ export default {
       if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
     },
     updateBalances() {
-      console.log('updateBalances')
+      this.$store.dispatch('updateBalance', {
+        requestedByUser: true
+      })
     },
     numberFormat
   }

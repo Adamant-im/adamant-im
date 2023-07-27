@@ -48,6 +48,26 @@ const parseTransaction = (context, tx) => {
 }
 
 const createSpecificActions = (api, queue) => ({
+  updateBalance: {
+    root: true,
+    async handler({ state, commit }, payload = {}) {
+      if (payload.requestedByUser) {
+        commit('setBalanceStatus', FetchStatus.Loading)
+      }
+
+      try {
+        const rawBalance = await api.getBalance(state.address, 'latest')
+        const balance = Number(utils.toEther(rawBalance.toString()))
+
+        commit('balance', balance);
+        commit('setBalanceStatus', FetchStatus.Success)
+      } catch (err) {
+        commit('setBalanceStatus', FetchStatus.Error)
+        console.log(err)
+      }
+    }
+  },
+
   /**
    * Requests ETH account status: balance, gas price, last block height
    * @param {*} context Vuex action context

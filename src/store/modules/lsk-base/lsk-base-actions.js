@@ -59,13 +59,6 @@ function createActions(options) {
       }
     },
 
-    updateBalance: {
-      root: true,
-      handler(context) {
-        context.dispatch('updateStatus')
-      }
-    },
-
     storeAddress({ state }) {
       storeCryptoAddress(state.crypto, state.address)
     },

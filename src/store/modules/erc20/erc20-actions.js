@@ -63,6 +63,27 @@ const parseTransaction = (context, tx) => {
 }
 
 const createSpecificActions = (api, queue) => ({
+  updateBalance: {
+    root: true,
+    async handler({ state, commit }, payload = {}) {
+      if (payload.requestedByUser) {
+        commit('setBalanceStatus', FetchStatus.Loading)
+      }
+
+      try {
+        const contract = new api.Contract(Erc20, state.contractAddress)
+        const rawBalance = await contract.methods.balanceOf(state.address).call()
+        const balance = Number(ethUtils.toFraction(rawBalance, state.decimals))
+
+        commit('balance', balance)
+        commit('setBalanceStatus', FetchStatus.Success)
+      } catch (err) {
+        commit('setBalanceStatus', FetchStatus.Error)
+        console.log(err)
+      }
+    }
+  },
+
   /** Updates ERC20 token balance */
   updateStatus(context) {
     if (!context.state.address) return
