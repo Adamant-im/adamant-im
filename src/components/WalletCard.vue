@@ -20,10 +20,10 @@
 
         <template #append>
           <v-btn
+            icon
             ripple
             variant="text"
             :class="`${className}__action`"
-            icon
           >
             <v-icon
               :class="`${className}__icon`"

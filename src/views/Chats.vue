@@ -232,7 +232,7 @@ export default {
       }
     }
   }
-  .&__chats-actions {
+  &__chats-actions {
     margin: 0;
   }
   &__title {
