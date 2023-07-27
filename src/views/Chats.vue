@@ -4,7 +4,7 @@
       <v-row no-gutters>
         <v-col cols="12">
           <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
-            <v-row class="chats-view__chats-actions" no-gutters>
+            <v-row :class="`${className}__chats-actions`" no-gutters>
               <v-btn
                 :class="`${className}__btn mt-2`"
                 @click="markAllAsRead"

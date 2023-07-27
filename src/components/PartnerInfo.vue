@@ -15,6 +15,7 @@
           icon
           class="close-icon"
           @click="show = false"
+          :size="36"
         >
           <v-icon
             icon="mdi-close"
