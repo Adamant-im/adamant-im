@@ -42,7 +42,7 @@
     <td :class="classes.td" class="pl-0 pr-2">
       <v-icon
         :icon="socketSupport ? 'mdi-check' : 'mdi-close'"
-        :class="socketSupport ? `${classes.statusIcon}--green` : `${classes.statusIcon}--red`"
+        :class="socketSupport ? classes.statusIconGreen : classes.statusIconRed"
       />
     </td>
   </tr>
