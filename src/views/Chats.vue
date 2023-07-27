@@ -1,41 +1,27 @@
 <template>
-  <v-row
-    justify="center"
-    :class="className"
-    no-gutters
-  >
+  <v-row justify="center" :class="className" no-gutters>
     <container>
       <v-row no-gutters>
         <v-col cols="12">
-          <v-list
-            subheader
-            class="pa-0"
-            bg-color="transparent"
-            v-if="isFulfilled"
-          >
-            <v-row no-gutters>
-                <v-btn
-                  :class="`${className}__btn mt-2`"
-                  @click="markAllAsRead"
-                  v-if="unreadMessagesCount > 0"
-                  icon="mdi-check-all"
-                  size="small"
-                  variant="plain"
-                >
-                </v-btn>
+          <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
+            <v-row class="chats-view__chats-actions" no-gutters>
+              <v-btn
+                :class="`${className}__btn mt-2`"
+                @click="markAllAsRead"
+                v-if="unreadMessagesCount > 0"
+                icon="mdi-check-all"
+                size="small"
+                variant="plain"
+              >
+              </v-btn>
               <v-spacer></v-spacer>
               <v-btn
                 :class="`${className}__item`"
                 @click="showChatStartDialog = true"
                 variant="plain"
               >
-
                 <template #prepend>
-                  <v-icon
-                    :class="`${className}__icon`"
-                    icon="mdi-message-outline"
-                    size="small"
-                  />
+                  <v-icon :class="`${className}__icon`" icon="mdi-message-outline" size="small" />
                 </template>
 
                 <div>
@@ -45,13 +31,8 @@
                 </div>
               </v-btn>
             </v-row>
-            <transition-group
-              name="messages"
-            >
-              <template
-                v-for="transaction in messages"
-                :key="transaction.contactId"
-              >
+            <transition-group name="messages">
+              <template v-for="transaction in messages" :key="transaction.contactId">
                 <chat-preview
                   v-if="displayChat(transaction.contactId)"
                   :ref="transaction.contactId"
@@ -109,44 +90,52 @@ export default {
   }),
   computed: {
     className: () => 'chats-view',
-    isFulfilled () {
+    isFulfilled() {
       return this.$store.state.chat.isFulfilled
     },
-    partners () {
+    partners() {
       return this.$store.getters['chat/partners']
     },
-    messages () {
+    messages() {
       const lastMessages = this.$store.getters['chat/lastMessages']
       // We should modify cloned message list to leave original one untouched
-      const clonedLastMessages = lastMessages.map(msg => { return { ...msg } })
+      const clonedLastMessages = lastMessages.map((msg) => {
+        return { ...msg }
+      })
       if (!this.noMoreChats && clonedLastMessages.length > 25) {
-        const lastNotAdamantChat = lastMessages.map(msg => this.isAdamantChat(msg.contactId)).lastIndexOf(false)
+        const lastNotAdamantChat = lastMessages
+          .map((msg) => this.isAdamantChat(msg.contactId))
+          .lastIndexOf(false)
         if (lastNotAdamantChat) {
-          clonedLastMessages.splice(lastNotAdamantChat + 1, 0, { loadingSeparator: true, userId: 'loadingSeparator', contactId: 'loadingSeparator' })
+          clonedLastMessages.splice(lastNotAdamantChat + 1, 0, {
+            loadingSeparator: true,
+            userId: 'loadingSeparator',
+            contactId: 'loadingSeparator'
+          })
         }
       }
       return clonedLastMessages
     },
-    userId () {
+    userId() {
       return this.$store.state.address
     },
     unreadMessagesCount() {
       return this.$store.getters['chat/totalNumOfNewMessages']
     }
   },
-  beforeMount () {
+  beforeMount() {
     // When returning to chat list from a specific chat, restore noMoreChats property not to show loadingSeparator
     this.noMoreChats = this.$store.getters['chat/chatListOffset'] === -1
   },
-  mounted () {
+  mounted() {
     this.showChatStartDialog = this.showNewContact
     this.attachScrollListener()
   },
-  beforeUnmount () {
+  beforeUnmount() {
     this.destroyScrollListener()
   },
   methods: {
-    openChat (partnerId, messageText) {
+    openChat(partnerId, messageText) {
       this.$router.push({
         name: 'Chat',
         params: { partnerId },
@@ -155,27 +144,33 @@ export default {
     },
     isAdamantChat,
     getAdamantChatMeta,
-    onError (message) {
+    onError(message) {
       this.$store.dispatch('snackbar/show', { message })
     },
-    attachScrollListener () {
+    attachScrollListener() {
       window.addEventListener('scroll', this.onScroll)
     },
-    destroyScrollListener () {
+    destroyScrollListener() {
       window.removeEventListener('scroll', this.onScroll)
     },
-    onScroll () {
+    onScroll() {
       const scrollHeight = document.documentElement.scrollHeight // all of viewport height
       const scrollTop = document.documentElement.scrollTop // current vieport scroll position
       const clientHeight = document.documentElement.clientHeight
 
       let isLoadingSeparatorVisible = false
-      if (this.$refs.loadingSeparator && this.$refs.loadingSeparator[0] && this.$refs.loadingSeparator[0].$el) {
+      if (
+        this.$refs.loadingSeparator &&
+        this.$refs.loadingSeparator[0] &&
+        this.$refs.loadingSeparator[0].$el
+      ) {
         const el = this.$refs.loadingSeparator[0].$el
-        if (el.offsetTop > 0) { // loadingSeparator is visible
+        if (el.offsetTop > 0) {
+          // loadingSeparator is visible
           const loadingSeparatorTop = el.offsetTop
           const loadingSeparatorHeight = el.clientHeight // it is nearly about bottom menu height
-          isLoadingSeparatorVisible = scrollTop + clientHeight > loadingSeparatorTop + loadingSeparatorHeight
+          isLoadingSeparatorVisible =
+            scrollTop + clientHeight > loadingSeparatorTop + loadingSeparatorHeight
         }
       }
 
@@ -185,12 +180,13 @@ export default {
         this.loadChatsPaged()
       }
     },
-    loadChatsPaged () {
+    loadChatsPaged() {
       if (this.loading) return
       if (this.noMoreChats) return
 
       this.loading = true
-      this.$store.dispatch('chat/loadChatsPaged')
+      this.$store
+        .dispatch('chat/loadChatsPaged')
         .catch(() => {
           this.noMoreChats = true
         })
@@ -236,14 +232,13 @@ export default {
       }
     }
   }
+  .&__chats-actions {
+    margin: 0;
+  }
   &__title {
     font-weight: 300;
     font-size: 14px;
   }
-}
-
-.v-row {
-  margin: 0;
 }
 
 /** Themes **/
