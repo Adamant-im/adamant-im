@@ -11,7 +11,7 @@
                 v-if="unreadMessagesCount > 0"
                 icon="mdi-check-all"
                 size="small"
-                variant="plain"
+                variant="text"
               />
               <v-spacer/>
               <v-btn
