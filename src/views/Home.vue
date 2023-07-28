@@ -30,7 +30,7 @@
             <v-window
               v-model="currentWallet"
               :touch="{
-                start: ({ originalEvent }) => {
+                start: () => {
                   // Due to `stopPropagation` the `<PullDown/>` component cannot
                   // catch `touchstart` event by itself, ending in a swipe bug.
                   //
