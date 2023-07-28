@@ -34,7 +34,7 @@
                   // Due to `stopPropagation` the `<PullDown/>` component cannot
                   // catch `touchstart` event by itself, ending in a swipe bug.
                   //
-                  // Override Vuetify swipe start event to disable
+                  // Override Vuetify swipe `start` event to prevent
                   // `originalEvent.stopPropagation()`
                   // @source https://github.com/vuetifyjs/vuetify/blob/master/packages/vuetify/src/components/VWindow/VWindow.tsx#L208
                   //
