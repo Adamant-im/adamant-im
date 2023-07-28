@@ -26,10 +26,10 @@ export default defineComponent({
 
       return [...arr].sort((a, b) => {
         if (/^http:\/\//.test(a.url) || /^http:\/\//.test(b.url)) {
-          return a.url > b.url ? -1 : b.url > a.url ? 1 : 0;
+          return a.url > b.url ? -1 : b.url > a.url ? 1 : 0
         }
 
-        return a.url > b.url ? 1 : b.url > a.url ? -1 : 0;
+        return a.url > b.url ? 1 : b.url > a.url ? -1 : 0
       })
     })
 
