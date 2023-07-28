@@ -12,9 +12,8 @@
                 icon="mdi-check-all"
                 size="small"
                 variant="plain"
-              >
-              </v-btn>
-              <v-spacer></v-spacer>
+              />
+              <v-spacer/>
               <v-btn
                 :class="`${className}__item`"
                 @click="showChatStartDialog = true"
