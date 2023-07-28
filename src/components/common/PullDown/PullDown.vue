@@ -119,7 +119,6 @@ export default defineComponent({
 
     font-size: 14px;
     font-weight: 500;
-    text-transform: uppercase;
     margin-top: 8px;
   }
 }
