@@ -5,15 +5,13 @@
       :disabled="page <= 1"
       variant="text"
       @click="page--"
-    >
-    </v-btn>
+    />
     <v-btn
       icon="mdi-chevron-right"
       :disabled="page >= pages"
       variant="text"
       @click="page++"
-    >
-    </v-btn>
+    />
   </div>
 </template>
 
