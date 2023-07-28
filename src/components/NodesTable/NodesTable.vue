@@ -21,7 +21,17 @@ export default defineComponent({
   },
   setup() {
     const store = useStore()
-    const nodes = computed(() => store.getters['nodes/list'])
+    const nodes = computed(() => {
+      const arr = store.getters['nodes/list']
+
+      return [...arr].sort((a, b) => {
+        if (/^http:\/\//.test(a.url) || /^http:\/\//.test(b.url)) {
+          return a.url > b.url ? -1 : b.url > a.url ? 1 : 0
+        }
+
+        return a.url > b.url ? 1 : b.url > a.url ? -1 : 0
+      })
+    })
 
     const className = 'nodes-table'
     const classes = {

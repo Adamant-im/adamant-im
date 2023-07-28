@@ -91,7 +91,6 @@ export default {
     }
   },
   setup(props) {
-    const { node } = props
     const { t } = useI18n()
     const store = useStore()
 
@@ -109,19 +108,20 @@ export default {
       tdCheckbox: `${className}__td-checkbox`
     }
 
-    const url = computed(() => node.url)
-    const version = computed(() => node.version)
-    const active = computed(() => node.active)
-    const socketSupport = computed(() => node.socketSupport)
+    const url = computed(() => props.node.url)
+    const version = computed(() => props.node.version)
+    const active = computed(() => props.node.active)
+    const socketSupport = computed(() => props.node.socketSupport)
 
-    const nodeStatus = computed(() => getNodeStatus(node, t))
-    const nodeStatusColor = computed(() => getNodeStatusColor(node))
+    const nodeStatus = computed(() => getNodeStatus(props.node, t))
+    const nodeStatusColor = computed(() => getNodeStatusColor(props.node))
 
     const toggleActiveStatus = () => {
       store.dispatch('nodes/toggle', {
         url: url.value,
         active: !active.value
       })
+      store.dispatch('nodes/updateStatus')
     }
 
     return {
