@@ -9,8 +9,7 @@
     >
       <v-checkbox-btn
         :model-value="active"
-        :class="classes.checkbox"
-        color="grey darken-1"
+        :class="[classes.checkbox, classes.statusIconGrey]"
         @input="toggleActiveStatus"
       />
     </td>
@@ -27,7 +26,13 @@
         {{ nodeStatus }}
       </span>
       <v-icon
-        :class="classes.statusIcon"
+        :class="{
+          [classes.statusIcon]: true,
+          [classes.statusIconGreen]: nodeStatusColor === 'green',
+          [classes.statusIconRed]: nodeStatusColor === 'red',
+          [classes.statusIconOrange]: nodeStatusColor === 'orange',
+          [classes.statusIconGrey]: nodeStatusColor === 'grey'
+        }"
         :color="nodeStatusColor"
         icon="mdi-checkbox-blank-circle"
         size="small"
@@ -37,7 +42,7 @@
     <td :class="classes.td" class="pl-0 pr-2">
       <v-icon
         :icon="socketSupport ? 'mdi-check' : 'mdi-close'"
-        :color="socketSupport ? 'green' : 'red'"
+        :class="socketSupport ? classes.statusIconGreen : classes.statusIconRed"
       />
     </td>
   </tr>
@@ -75,7 +80,7 @@ function getNodeStatusColor(node) {
     color = 'orange'
   }
 
-  return color + ' lighten-1'
+  return color
 }
 
 export default {
@@ -97,6 +102,10 @@ export default {
       checkbox: `${className}__checkbox`,
       version: `${className}__version`,
       statusIcon: `${className}__status-icon`,
+      statusIconGreen: `${className}__status-icon--green`,
+      statusIconRed: `${className}__status-icon--red`,
+      statusIconOrange: `${className}__status-icon--orange`,
+      statusIconGrey: `${className}__status-icon--grey`,
       tdCheckbox: `${className}__td-checkbox`
     }
 
@@ -174,6 +183,20 @@ export default {
     &__td {
       color: map-get($adm-colors, 'regular');
     }
+    &__status-icon {
+      &--green {
+        color: map-get($adm-colors, 'good') !important;
+      }
+      &--red {
+        color: map-get($adm-colors, 'danger') !important;
+      }
+      &--grey {
+        color: map-get($adm-colors, 'grey') !important;
+      }
+      &--orange {
+        color: map-get($adm-colors, 'attention') !important;
+      }
+    }
   }
 }
 
@@ -181,6 +204,20 @@ export default {
   .nodes-table-item {
     &__version {
       opacity: 0.7;
+    }
+    &__status-icon {
+      &--green {
+        color: map-get($adm-colors, 'good') !important;
+      }
+      &--red {
+        color: map-get($adm-colors, 'danger') !important;
+      }
+      &--grey {
+        color: map-get($adm-colors, 'grey') !important;
+      }
+      &--orange {
+        color: map-get($adm-colors, 'attention') !important;
+      }
     }
   }
 }
