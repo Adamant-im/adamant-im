@@ -1,5 +1,6 @@
 import BigNumber from '@/lib/bignumber'
 import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
+import { FetchStatus } from '@/lib/constants'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
 
@@ -64,11 +65,28 @@ function createActions(options) {
       }
     },
 
+    /**
+     * @param requestedByUser If `true` then user requested balance update through UI
+     * @returns {Promise<void>}
+     */
     updateBalance: {
       root: true,
-      handler(context) {
-        context.dispatch('updateStatus')
-      }
+      async handler({ commit }, payload = {}) {
+        if (payload.requestedByUser) {
+          commit('setBalanceStatus', FetchStatus.Loading)
+        }
+
+        try {
+          const balance = await api.getBalance()
+
+          commit('status', { balance })
+          commit('setBalanceStatus', FetchStatus.Success)
+        } catch (err) {
+          commit('setBalanceStatus', FetchStatus.Error)
+
+          throw err
+        }
+      },
     },
 
     storeAddress({ state }) {
@@ -77,7 +95,13 @@ function createActions(options) {
 
     updateStatus(context) {
       if (!api) return
-      api.getBalance().then((balance) => context.commit('status', { balance }))
+      api.getBalance().then((balance) => {
+        context.commit('status', { balance })
+        context.commit('setBalanceStatus', FetchStatus.Success)
+      }).catch(err => {
+        context.commit('setBalanceStatus', FetchStatus.Error)
+        throw err
+      })
     },
 
     sendTokens(context, { amount, admAddress, address, comments, fee, replyToId }) {

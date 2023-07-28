@@ -6,6 +6,14 @@ export default {
     state.balance = balance
   },
 
+  /**
+   * @param state
+   * @param status {FetchStatus}
+   */
+  setBalanceStatus(state, status) {
+    state.balanceStatus = status
+  },
+
   /** Set ETH account */
   account (state, account) {
     state.address = account.address

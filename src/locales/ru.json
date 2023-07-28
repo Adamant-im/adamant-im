@@ -72,6 +72,9 @@
     "chat_actions": {
       "reply": "Цитировать",
       "copy": "Копировать"
+    },
+    "pull_down_actions": {
+      "update_balances": "Обновить балансы"
     }
   },
   "connection": {

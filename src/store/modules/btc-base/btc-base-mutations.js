@@ -15,6 +15,14 @@ export default (initialState) => ({
     state.lastStatusUpdate = Date.now()
   },
 
+  /**
+   * @param state
+   * @param status {FetchStatus}
+   */
+  setBalanceStatus(state, status) {
+    state.balanceStatus = status
+  },
+
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
   bottom (state, value) {
     state.bottomReached = value

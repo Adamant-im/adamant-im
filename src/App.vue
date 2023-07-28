@@ -1,6 +1,7 @@
 <template>
   <v-app :theme="themeName" class="application--linear-gradient">
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
+
     <component :is="layout">
       <router-view />
     </component>

@@ -1,79 +1,81 @@
 <template>
-  <v-row justify="center" no-gutters :class="className">
-    <container>
-      <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
-        <!-- Wallets -->
-        <v-sheet color="transparent" :class="`${className}__wallets`">
-          <v-tabs
-            ref="vtabs"
-            v-model="currentWallet"
-            :class="`${className}__tabs`"
-            grow
-            stacked
-            height="auto"
-            show-arrows
-          >
-            <v-tab
-              v-for="wallet in wallets"
-              :key="wallet.cryptoCurrency"
-              :value="wallet.cryptoCurrency"
-              @wheel="onWheel"
+  <pull-down
+    @action="updateBalances"
+    :action-text="$t('chats.pull_down_actions.update_balances')"
+  >
+    <v-row justify="center" no-gutters :class="className">
+      <container>
+        <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
+          <!-- Wallets -->
+          <v-sheet color="transparent" :class="`${className}__wallets`">
+            <v-tabs
+              ref="vtabs"
+              v-model="currentWallet"
+              :class="`${className}__tabs`"
+              grow
+              stacked
+              height="auto"
+              show-arrows
             >
-              <crypto-icon
-                :crypto="wallet.cryptoCurrency"
-                size="medium"
-                :class="`${className}__icon`"
-              />
-              <div>
-                <div>{{ numberFormat(wallet.balance, 4) }}</div>
-                <div>
-                  {{ wallet.cryptoCurrency }}
-                  <span v-if="wallet.erc20" style="font-size: 10px">
-                    <sub>ERC20</sub>
-                  </span>
-                </div>
-                <div
-                  v-if="$store.state.rate.isLoaded && wallet.rate"
-                  class="a-text-explanation account-view__rates"
-                >
-                  {{ wallet.rate }} {{ currentCurrency }}
-                </div>
-              </div>
-            </v-tab>
-          </v-tabs>
-
-          <v-window v-model="currentWallet">
-            <v-window-item
-              v-for="wallet in wallets"
-              :key="wallet.cryptoCurrency"
-              :value="wallet.cryptoCurrency"
-            >
-              <wallet-card
-                :address="wallet.address"
-                :balance="wallet.balance"
-                :crypto="wallet.cryptoCurrency"
-                :crypto-name="wallet.cryptoName"
-                :rate="wallet.rate"
-                :current-currency="currentCurrency"
-                @click:balance="goToTransactions"
+              <v-tab
+                v-for="wallet in wallets"
+                :key="wallet.cryptoCurrency"
+                :value="wallet.cryptoCurrency"
+                @wheel="onWheel"
               >
-                <template #icon>
-                  <crypto-icon :crypto="wallet.cryptoCurrency" size="large" />
-                </template>
-              </wallet-card>
-            </v-window-item>
-          </v-window>
+                <wallet-tab :wallet="wallet" :fiat-currency="currentCurrency" />
+              </v-tab>
+            </v-tabs>
+
+            <v-window
+              v-model="currentWallet"
+              :touch="{
+                start: () => {
+                  // Due to `stopPropagation` the `<PullDown/>` component cannot
+                  // catch `touchstart` event by itself, ending in a swipe bug.
+                  //
+                  // Override Vuetify swipe `start` event to prevent
+                  // `originalEvent.stopPropagation()`
+                  // @source https://github.com/vuetifyjs/vuetify/blob/master/packages/vuetify/src/components/VWindow/VWindow.tsx#L208
+                  //
+                  // Note: Don't remove this function and leave it empty.
+                }
+              }
+             ">
+              <v-window-item
+                v-for="wallet in wallets"
+                :key="wallet.cryptoCurrency"
+                :value="wallet.cryptoCurrency"
+              >
+                <wallet-card
+                  :address="wallet.address"
+                  :balance="wallet.balance"
+                  :crypto="wallet.cryptoCurrency"
+                  :crypto-name="wallet.cryptoName"
+                  :rate="wallet.rate"
+                  :current-currency="currentCurrency"
+                  @click:balance="goToTransactions"
+                >
+                  <template #icon>
+                    <crypto-icon :crypto="wallet.cryptoCurrency" size="large" />
+                  </template>
+                </wallet-card>
+              </v-window-item>
+            </v-window>
+          </v-sheet>
         </v-sheet>
-      </v-sheet>
-    </container>
-  </v-row>
+      </container>
+    </v-row>
+  </pull-down>
 </template>
 
 <script>
 import WalletCard from '@/components/WalletCard'
+import WalletTab from '@/components/WalletTab'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import numberFormat from '@/filters/numberFormat'
 
+import { PullDown } from '@/components/common/PullDown'
 import { Cryptos, CryptosInfo, CryptosOrder, isErc20 } from '@/lib/constants'
 
 /**
@@ -102,7 +104,9 @@ function scrollIntoView() {
 
 export default {
   components: {
+    PullDown,
     WalletCard,
+    WalletTab,
     CryptoIcon
   },
   computed: {
@@ -175,6 +179,11 @@ export default {
 
       if (nextWallet) this.currentWallet = nextWallet.cryptoCurrency
     },
+    updateBalances() {
+      this.$store.dispatch('updateBalance', {
+        requestedByUser: true
+      })
+    },
     numberFormat
   }
 }
@@ -189,10 +198,6 @@ export default {
  * 2. Reset VTabItem opacity.
  */
 .account-view {
-  &__rates {
-    margin-top: 2px;
-    color: hsla(0, 0%, 100%, 0.7);
-  }
   &__wallets {
     &.v-card {
       background-color: transparent;
@@ -259,9 +264,6 @@ export default {
 /** Themes **/
 .v-theme--light {
   .account-view {
-    &__rates {
-      color: map-get($adm-colors, 'muted');
-    }
     &__wallets {
       :deep(.v-tabs-bar) {
         background-color: map-get($adm-colors, 'secondary2-transparent');
@@ -323,12 +325,6 @@ export default {
         }
       }
     }
-  }
-}
-
-.v-tab--selected {
-  .account-view__rates {
-    color: inherit;
   }
 }
 </style>

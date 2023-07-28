@@ -1,7 +1,7 @@
 import abiDecoder from 'abi-decoder'
 
 import * as ethUtils from '../../../lib/eth-utils'
-import { INCREASE_FEE_MULTIPLIER } from '../../../lib/constants'
+import { FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
 
@@ -63,6 +63,27 @@ const parseTransaction = (context, tx) => {
 }
 
 const createSpecificActions = (api, queue) => ({
+  updateBalance: {
+    root: true,
+    async handler({ state, commit }, payload = {}) {
+      if (payload.requestedByUser) {
+        commit('setBalanceStatus', FetchStatus.Loading)
+      }
+
+      try {
+        const contract = new api.Contract(Erc20, state.contractAddress)
+        const rawBalance = await contract.methods.balanceOf(state.address).call()
+        const balance = Number(ethUtils.toFraction(rawBalance, state.decimals))
+
+        commit('balance', balance)
+        commit('setBalanceStatus', FetchStatus.Success)
+      } catch (err) {
+        commit('setBalanceStatus', FetchStatus.Error)
+        console.log(err)
+      }
+    }
+  },
+
   /** Updates ERC20 token balance */
   updateStatus(context) {
     if (!context.state.address) return
@@ -77,8 +98,11 @@ const createSpecificActions = (api, queue) => ({
             'balance',
             Number(ethUtils.toFraction(balance.toString(10), context.state.decimals))
           )
+          context.commit('setBalanceStatus', FetchStatus.Success)
         },
-        () => {} // Not this time
+        () => {
+          context.commit('setBalanceStatus', FetchStatus.Error)
+        }
       )
       .then(() => {
         const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)

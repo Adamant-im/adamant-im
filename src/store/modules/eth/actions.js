@@ -1,8 +1,8 @@
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { DEFAULT_ETH_TRANSFER_GAS, INCREASE_FEE_MULTIPLIER } from '../../../lib/constants'
-import { storeCryptoAddress } from '../../../lib/store-crypto-address'
+import { DEFAULT_ETH_TRANSFER_GAS, FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants';
+import { storeCryptoAddress } from '@/lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -48,6 +48,26 @@ const parseTransaction = (context, tx) => {
 }
 
 const createSpecificActions = (api, queue) => ({
+  updateBalance: {
+    root: true,
+    async handler({ state, commit }, payload = {}) {
+      if (payload.requestedByUser) {
+        commit('setBalanceStatus', FetchStatus.Loading)
+      }
+
+      try {
+        const rawBalance = await api.getBalance(state.address, 'latest')
+        const balance = Number(utils.toEther(rawBalance.toString()))
+
+        commit('balance', balance);
+        commit('setBalanceStatus', FetchStatus.Success)
+      } catch (err) {
+        commit('setBalanceStatus', FetchStatus.Error)
+        console.log(err)
+      }
+    }
+  },
+
   /**
    * Requests ETH account status: balance, gas price, last block height
    * @param {*} context Vuex action context
@@ -61,7 +81,12 @@ const createSpecificActions = (api, queue) => ({
       return [
         // Balance
         api.getBalance.request(context.state.address, 'latest', (err, balance) => {
-          if (!err) context.commit('balance', Number(utils.toEther(balance.toString())))
+          if (!err) {
+            context.commit('balance', Number(utils.toEther(balance.toString())))
+            context.commit('setBalanceStatus', FetchStatus.Success)
+          } else {
+            context.commit('setBalanceStatus', FetchStatus.Error)
+          }
         }),
         // Current gas price
         api.getGasPrice.request((err, price) => {
