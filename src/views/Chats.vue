@@ -6,7 +6,7 @@
           <v-list subheader class="pa-0" bg-color="transparent" v-if="isFulfilled">
             <v-row :class="`${className}__chats-actions`" no-gutters>
               <v-btn
-                :class="`${className}__btn mt-2`"
+                :class="`${className}__btn mt-2 ml-4`"
                 @click="markAllAsRead"
                 v-if="unreadMessagesCount > 0"
                 icon="mdi-check-all"
