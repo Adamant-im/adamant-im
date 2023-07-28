@@ -5,7 +5,7 @@
       [classes.icon]: true,
       [classes.iconGood]: !originalVoted
     }"
-    icon="mdi-thumb-up"
+    :icon="originalVoted ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'"
     size="large"
     @click="handleDownVote"
   />
