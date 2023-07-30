@@ -18,6 +18,14 @@ ADAMANT Messenger has built-in crypto Exchanger and Adelina, an AI chat assistan
 
 ## Project setup
 
+Clone the repository:
+
+```
+git clone --recursive https://github.com/Adamant-im/adamant-im.git
+```
+
+Install the dependencies:
+
 ```
 npm install
 ```

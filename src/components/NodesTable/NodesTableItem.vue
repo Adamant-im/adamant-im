@@ -9,8 +9,7 @@
     >
       <v-checkbox-btn
         :model-value="active"
-        :class="classes.checkbox"
-        color="grey darken-1"
+        :class="[classes.checkbox, classes.statusIconGrey]"
         @input="toggleActiveStatus"
       />
     </td>
@@ -27,7 +26,13 @@
         {{ nodeStatus }}
       </span>
       <v-icon
-        :class="classes.statusIcon"
+        :class="{
+          [classes.statusIcon]: true,
+          [classes.statusIconGreen]: nodeStatusColor === 'green',
+          [classes.statusIconRed]: nodeStatusColor === 'red',
+          [classes.statusIconOrange]: nodeStatusColor === 'orange',
+          [classes.statusIconGrey]: nodeStatusColor === 'grey'
+        }"
         :color="nodeStatusColor"
         icon="mdi-checkbox-blank-circle"
         size="small"
@@ -37,7 +42,7 @@
     <td :class="classes.td" class="pl-0 pr-2">
       <v-icon
         :icon="socketSupport ? 'mdi-check' : 'mdi-close'"
-        :color="socketSupport ? 'green' : 'red'"
+        :class="socketSupport ? classes.statusIconGreen : classes.statusIconRed"
       />
     </td>
   </tr>
@@ -75,7 +80,7 @@ function getNodeStatusColor(node) {
     color = 'orange'
   }
 
-  return color + ' lighten-1'
+  return color
 }
 
 export default {
@@ -86,7 +91,6 @@ export default {
     }
   },
   setup(props) {
-    const { node } = props
     const { t } = useI18n()
     const store = useStore()
 
@@ -97,22 +101,27 @@ export default {
       checkbox: `${className}__checkbox`,
       version: `${className}__version`,
       statusIcon: `${className}__status-icon`,
+      statusIconGreen: `${className}__status-icon--green`,
+      statusIconRed: `${className}__status-icon--red`,
+      statusIconOrange: `${className}__status-icon--orange`,
+      statusIconGrey: `${className}__status-icon--grey`,
       tdCheckbox: `${className}__td-checkbox`
     }
 
-    const url = computed(() => node.url)
-    const version = computed(() => node.version)
-    const active = computed(() => node.active)
-    const socketSupport = computed(() => node.socketSupport)
+    const url = computed(() => props.node.url)
+    const version = computed(() => props.node.version)
+    const active = computed(() => props.node.active)
+    const socketSupport = computed(() => props.node.socketSupport)
 
-    const nodeStatus = computed(() => getNodeStatus(node, t))
-    const nodeStatusColor = computed(() => getNodeStatusColor(node))
+    const nodeStatus = computed(() => getNodeStatus(props.node, t))
+    const nodeStatusColor = computed(() => getNodeStatusColor(props.node))
 
     const toggleActiveStatus = () => {
       store.dispatch('nodes/toggle', {
         url: url.value,
         active: !active.value
       })
+      store.dispatch('nodes/updateStatus')
     }
 
     return {
@@ -169,7 +178,24 @@ export default {
 .v-theme--light {
   .nodes-table-item {
     &__version {
-      color: map-get($adm-colors, 'muted');
+      color: map-get($adm-colors, 'regular');
+    }
+    &__td {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__status-icon {
+      &--green {
+        color: map-get($adm-colors, 'good') !important;
+      }
+      &--red {
+        color: map-get($adm-colors, 'danger') !important;
+      }
+      &--grey {
+        color: map-get($adm-colors, 'grey') !important;
+      }
+      &--orange {
+        color: map-get($adm-colors, 'attention') !important;
+      }
     }
   }
 }
@@ -178,6 +204,20 @@ export default {
   .nodes-table-item {
     &__version {
       opacity: 0.7;
+    }
+    &__status-icon {
+      &--green {
+        color: map-get($adm-colors, 'good') !important;
+      }
+      &--red {
+        color: map-get($adm-colors, 'danger') !important;
+      }
+      &--grey {
+        color: map-get($adm-colors, 'grey') !important;
+      }
+      &--orange {
+        color: map-get($adm-colors, 'attention') !important;
+      }
     }
   }
 }

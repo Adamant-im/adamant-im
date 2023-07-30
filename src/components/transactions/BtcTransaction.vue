@@ -23,7 +23,7 @@
 import TransactionTemplate from './TransactionTemplate.vue'
 import getExplorerUrl from '../../lib/getExplorerUrl'
 import partnerName from '@/mixins/partnerName'
-import { CryptoNaturalUnits } from '@/lib/constants'
+import { CryptosInfo } from '@/lib/constants'
 
 import transaction from '@/mixins/transaction'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -40,7 +40,7 @@ export default {
     fee () {
       const fee = this.transaction.fee
       if (!fee) return ''
-      return `${+fee.toFixed(CryptoNaturalUnits[this.crypto])} ${this.crypto.toUpperCase()}`
+      return `${+fee.toFixed(CryptosInfo[this.crypto].decimals)} ${this.crypto.toUpperCase()}`
     },
     cryptoKey () {
       return this.crypto.toLowerCase()

@@ -1,3 +1,4 @@
+import { FetchStatus } from '@/lib/constants'
 import baseActions from '../btc-base/btc-base-actions'
 import BtcApi from '../../../lib/bitcoin/bitcoin-api'
 
@@ -9,7 +10,13 @@ const customActions = getApi => ({
     const api = getApi()
 
     if (!api) return
-    api.getBalance().then(balance => context.commit('status', { balance }))
+    api.getBalance().then(balance => {
+      context.commit('status', { balance })
+      context.commit('setBalanceStatus', FetchStatus.Success)
+    }).catch(err => {
+      context.commit('setBalanceStatus', FetchStatus.Error)
+      throw err
+    })
 
     // The unspent transactions are needed to estimate the fee
     api.getUnspents().then(utxo => context.commit('utxo', utxo))

@@ -3,7 +3,7 @@ import LskBaseApi from '../../../lib/lisk/lsk-base-api'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
 
-const DEFAULT_CUSTOM_ACTIONS = () => ({ })
+const DEFAULT_CUSTOM_ACTIONS = () => ({})
 
 /**
  * @typedef {Object} Options
@@ -15,15 +15,12 @@ const DEFAULT_CUSTOM_ACTIONS = () => ({ })
  */
 
 /**
-  * Creates actions for the LSK-based crypto
-  * @param {Options} options config options
-  */
-function createActions (options) {
+ * Creates actions for the LSK-based crypto
+ * @param {Options} options config options
+ */
+function createActions(options) {
   const Api = options.apiCtor || LskBaseApi
-  const {
-    customActions = DEFAULT_CUSTOM_ACTIONS,
-    fetchRetryTimeout
-  } = options
+  const { customActions = DEFAULT_CUSTOM_ACTIONS, fetchRetryTimeout } = options
 
   /** @type {LskBaseApi} */
   let api = null
@@ -31,7 +28,7 @@ function createActions (options) {
   return {
     afterLogin: {
       root: true,
-      handler (context, passphrase) {
+      handler(context, passphrase) {
         api = new Api(passphrase)
         context.commit('address', api.address)
         context.dispatch('updateStatus')
@@ -42,7 +39,7 @@ function createActions (options) {
     /** Resets module state */
     reset: {
       root: true,
-      handler (context) {
+      handler(context) {
         api = null
         context.commit('reset')
       }
@@ -51,7 +48,7 @@ function createActions (options) {
     /** Handles store rehydratation: generates an account if one is not ready yet */
     rehydrate: {
       root: true,
-      handler (context) {
+      handler(context) {
         const passphrase = context.rootGetters.getPassPhrase
         if (passphrase) {
           api = new Api(passphrase)
@@ -62,30 +59,27 @@ function createActions (options) {
       }
     },
 
-    updateBalance: {
-      root: true,
-      handler (context) {
-        context.dispatch('updateStatus')
-      }
-    },
-
-    storeAddress ({ state }) {
+    storeAddress({ state }) {
       storeCryptoAddress(state.crypto, state.address)
     },
 
-    updateStatus (context) {
+    updateStatus(context) {
       if (!api) return
-      api.getBalance().then(balance => context.commit('status', { balance }))
+      api.getBalance().then((balance) => context.commit('status', { balance }))
     },
 
-    sendTokens (context, { amount, admAddress, address, comments, fee, increaseFee, textData }) {
+    sendTokens(
+      context,
+      { amount, admAddress, address, comments, fee, increaseFee, textData, replyToId }
+    ) {
       if (!api) return
       address = address.trim()
 
       const crypto = context.state.crypto
 
-      return api.createTransaction(address, amount, fee, context.state.nonce, textData)
-        .then(tx => {
+      return api
+        .createTransaction(address, amount, fee, context.state.nonce, textData)
+        .then((tx) => {
           if (!admAddress) return tx.hex
 
           const msgPayload = {
@@ -93,17 +87,21 @@ function createActions (options) {
             amount: BigNumber(amount).toFixed(),
             comments,
             crypto,
-            hash: tx.txid
+            hash: tx.txid,
+            replyToId
           }
 
           // Send a special message to indicate that we're performing a crypto transfer
-          return context.dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
-            .then(success => success ? tx.hex : Promise.reject(new Error('adm_message')))
+          return context
+            .dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
+            .then((success) => (success ? tx.hex : Promise.reject(new Error('adm_message'))))
         })
-        .then(rawTx => api.sendTransaction(rawTx).then(
-          hash => ({ hash }),
-          error => ({ error })
-        ))
+        .then((rawTx) =>
+          api.sendTransaction(rawTx).then(
+            (hash) => ({ hash }),
+            (error) => ({ error })
+          )
+        )
         .then(({ hash, error }) => {
           if (error) {
             context.commit('transactions', [{ hash, status: 'REJECTED' }])
@@ -111,16 +109,18 @@ function createActions (options) {
           } else {
             console.log(`${crypto} transaction has been sent: ${hash}`)
 
-            context.commit('transactions', [{
-              hash,
-              senderId: context.state.address,
-              recipientId: address,
-              amount,
-              fee,
-              status: 'PENDING',
-              timestamp: Date.now(),
-              data: textData
-            }])
+            context.commit('transactions', [
+              {
+                hash,
+                senderId: context.state.address,
+                recipientId: address,
+                amount,
+                fee,
+                status: 'PENDING',
+                timestamp: Date.now(),
+                data: textData
+              }
+            ])
 
             context.dispatch('getTransaction', { hash, force: true })
 
@@ -134,7 +134,7 @@ function createActions (options) {
      * @param {object} context Vuex action context
      * @
      */
-    calculateFee (context, payload) {
+    calculateFee(context, payload) {
       if (!api) return
       return api.getFee(payload.address, payload.amount, payload.nonce, payload.data)
     },
@@ -144,7 +144,7 @@ function createActions (options) {
      * @param {object} context Vuex action context
      * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
      */
-    async getTransaction (context, payload) {
+    async getTransaction(context, payload) {
       if (!api) return
       if (!payload.hash) return
 
@@ -154,19 +154,21 @@ function createActions (options) {
       // Set a stub so far, if the transaction is not in the store yet
       if (!existing || payload.dropStatus) {
         payload.updateOnly = false
-        context.commit('transactions', [{
-          hash: payload.hash,
-          timestamp: (existing && existing.timestamp) || payload.timestamp || Date.now(),
-          amount: payload.amount,
-          status: 'PENDING'
-        }])
+        context.commit('transactions', [
+          {
+            hash: payload.hash,
+            timestamp: (existing && existing.timestamp) || payload.timestamp || Date.now(),
+            amount: payload.amount,
+            status: 'PENDING'
+          }
+        ])
         existing = context.state.transactions[payload.hash]
       }
 
       let tx = null
       try {
         tx = await api.getTransaction(payload.hash)
-      } catch (e) { }
+      } catch (e) {}
 
       let retry = false
       let retryTimeout = 0
@@ -187,8 +189,16 @@ function createActions (options) {
         retry = true
       } else {
         // The network does not yet know this transaction. We'll make several attempts to retrieve it.
-        retry = attempt < tf.getPendingTxRetryCount(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
-        retryTimeout = tf.getPendingTxRetryTimeout(payload.timestamp || (existing && existing.timestamp), context.state.crypto)
+        retry =
+          attempt <
+          tf.getPendingTxRetryCount(
+            payload.timestamp || (existing && existing.timestamp),
+            context.state.crypto
+          )
+        retryTimeout = tf.getPendingTxRetryTimeout(
+          payload.timestamp || (existing && existing.timestamp),
+          context.state.crypto
+        )
       }
 
       if (!retry) {
@@ -212,17 +222,21 @@ function createActions (options) {
      * @param {{ dispatch: function }} param0 Vuex context
      * @param {{hash: string}} payload action payload
      */
-    updateTransaction ({ dispatch }, payload) {
-      return dispatch('getTransaction', { ...payload, force: payload.force, updateOnly: payload.updateOnly })
+    updateTransaction({ dispatch }, payload) {
+      return dispatch('getTransaction', {
+        ...payload,
+        force: payload.force,
+        updateOnly: payload.updateOnly
+      })
     },
 
     /**
      * Retrieves new transactions: those that follow the most recently retrieved one.
      * @param {any} context Vuex action context
      */
-    async getNewTransactions (context) {
+    async getNewTransactions(context) {
       if (!api) return
-      const options = { }
+      const options = {}
       // Magic here helps to refresh Tx list when browser deletes it
       if (Object.keys(context.state.transactions).length < context.state.transactionsCount) {
         context.state.transactionsCount = 0
@@ -240,7 +254,7 @@ function createActions (options) {
 
       context.commit('areRecentLoading', true)
       return api.getTransactions(options).then(
-        transactions => {
+        (transactions) => {
           context.commit('areRecentLoading', false)
           if (transactions && transactions.length > 0) {
             context.commit('transactions', { transactions, updateTimestamps: true })
@@ -250,7 +264,7 @@ function createActions (options) {
             }
           }
         },
-        error => {
+        (error) => {
           context.commit('areRecentLoading', false)
           return Promise.reject(error)
         }
@@ -261,12 +275,12 @@ function createActions (options) {
      * Retrieves old transactions: those that preceded the oldest among the retrieved ones.
      * @param {any} context Vuex action context
      */
-    async getOldTransactions (context) {
+    async getOldTransactions(context) {
       if (!api) return
       // If we already have the most old transaction for this address, no need to request anything
       if (context.state.bottomReached) return Promise.resolve()
 
-      const options = { }
+      const options = {}
       if (context.state.minTimestamp < Infinity) {
         options.toTimestamp = context.state.minTimestamp
       }
@@ -274,22 +288,25 @@ function createActions (options) {
 
       context.commit('areOlderLoading', true)
 
-      return api.getTransactions(options).then(transactions => {
-        context.commit('areOlderLoading', false)
+      return api.getTransactions(options).then(
+        (transactions) => {
+          context.commit('areOlderLoading', false)
 
-        if (transactions && transactions.length > 0) {
-          context.commit('transactions', { transactions, updateTimestamps: true })
-        }
+          if (transactions && transactions.length > 0) {
+            context.commit('transactions', { transactions, updateTimestamps: true })
+          }
 
-        // Successful but empty response means, that the oldest transaction for the current
-        // address has been received already
-        if (transactions && transactions.length === 0) {
-          context.commit('bottom', true)
+          // Successful but empty response means, that the oldest transaction for the current
+          // address has been received already
+          if (transactions && transactions.length === 0) {
+            context.commit('bottom', true)
+          }
+        },
+        (error) => {
+          context.commit('areOlderLoading', false)
+          return Promise.reject(error)
         }
-      }, error => {
-        context.commit('areOlderLoading', false)
-        return Promise.reject(error)
-      })
+      )
     },
 
     ...customActions(() => api)

@@ -1,8 +1,7 @@
 import { isAddress as isEthAddress, isHexStrict } from 'web3-utils'
 import { validateBase32Address as isLskAddress } from '@liskhq/lisk-cryptography'
 import {
-  Cryptos, CryptosQqPrefixes,
-  RE_ADM_ADDRESS, RE_BTC_ADDRESS, RE_DASH_ADDRESS, RE_DOGE_ADDRESS, RE_LSK_ADDRESS
+  Cryptos, CryptosInfo,
 } from './constants'
 
 /**
@@ -68,23 +67,26 @@ export function parseURIasAIP (uri = getAddressBarURI()) {
     }
   } else {
     address = origin
-    if (RE_ADM_ADDRESS.test(address)) {
-      crypto = Cryptos.ADM
-    } else if (RE_BTC_ADDRESS.test(address)) {
-      crypto = Cryptos.BTC
-    } else if (RE_DASH_ADDRESS.test(address)) {
-      crypto = Cryptos.DASH
-    } else if (RE_DOGE_ADDRESS.test(address)) {
-      crypto = Cryptos.DOGE
-    } else if (isHexStrict(address) && isEthAddress(address)) {
+
+    for (const [symbol, { regexAddress }] of Object.entries(CryptosInfo)) {
+      if (new RegExp(regexAddress).test(address)) {
+        crypto = symbol
+      }
+    }
+
+    if (isHexStrict(address) && isEthAddress(address)) {
       crypto = Cryptos.ETH
-    } else if (RE_LSK_ADDRESS.test(address)) {
+    }
+
+    if (crypto === Cryptos.LSK) {
       // We need to use try-catch https://github.com/LiskHQ/lisk-sdk/issues/6652
       try {
-        if (isLskAddress(address)) {
-          crypto = Cryptos.LSK
+        if (!isLskAddress(address)) {
+          crypto = ''
         }
-      } catch (e) { }
+      } catch (e) {
+        crypto = ''
+      }
     }
   }
 
@@ -108,9 +110,9 @@ export function generateURI (crypto = Cryptos.ADM, address, name) {
     return `${hostname}?address=${address}${label}`
   }
 
-  const cryptoQrPrefix = CryptosQqPrefixes[crypto]
-  if (cryptoQrPrefix) {
-    return `${cryptoQrPrefix}:${address}`
+  const { qrPrefix } = CryptosInfo[crypto]
+  if (qrPrefix) {
+    return `${qrPrefix}:${address}`
   } else {
     return address
   }

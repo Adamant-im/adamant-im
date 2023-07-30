@@ -22,6 +22,7 @@
             :recipient-address="recipientAddress"
             :amount-to-send="amountToSend"
             :address-readonly="comeFromChat"
+            :reply-to-id="$route.query.replyToId"
             @send="onSend"
             @error="onError"
           />

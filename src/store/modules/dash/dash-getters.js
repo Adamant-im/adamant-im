@@ -1,8 +1,8 @@
 import baseGetters from '../btc-base/btc-base-getters'
-import { TX_FEE } from '../../../lib/bitcoin/dash-api'
+import { Cryptos, CryptosInfo } from '@/lib/constants'
 
 export default {
   ...baseGetters,
 
-  fee: state => amount => TX_FEE
+  fee: state => amount => CryptosInfo[Cryptos.DASH].fixedFee
 }

@@ -1,11 +1,25 @@
 <template>
-  <div
+  <v-row
     class="a-chat__message-container"
-    :class="{ 'a-chat__message-container--right': isStringEqualCI(sender.id, userId) }"
+    :class="{
+      'a-chat__message-container--right': isStringEqualCI(sender.id, userId),
+      'a-chat__message-container--transition': elementLeftOffset === 0
+    }"
+    v-touch="{
+      move: onMove,
+      end: onSwipeEnd
+    }"
+    :style="{
+      left: `${elementLeftOffset}px`
+    }"
+    v-longpress="onLongPress"
   >
     <div
       class="a-chat__message"
-      :class="{ 'a-chat__message--highlighted': isStringEqualCI(sender.id, userId) }"
+      :class="{
+        'a-chat__message--flashing': flashing
+      }"
+      :data-txid="id"
     >
       <div
         v-if="showAvatar"
@@ -15,26 +29,12 @@
         <slot name="avatar" />
       </div>
       <div class="a-chat__message-card">
-        <div
-          v-if="!hideTime"
-          class="a-chat__message-card-header mt-1"
-        >
-          <div
-            v-if="status.status === 'CONFIRMED'"
-            class="a-chat__blockchain-status"
-          >
-            &#x26AD;
-          </div>
-          <div
-            :title="timeTitle"
-            class="a-chat__timestamp"
-          >
+        <div v-if="!hideTime" class="a-chat__message-card-header mt-1">
+          <div v-if="status.status === 'CONFIRMED'" class="a-chat__blockchain-status">&#x26AD;</div>
+          <div :title="timeTitle" class="a-chat__timestamp">
             {{ time }}
           </div>
-          <div
-            v-if="isOutgoingMessage"
-            class="a-chat__status"
-          >
+          <div v-if="isOutgoingMessage" class="a-chat__status">
             <v-icon
               v-if="status.status === 'REJECTED'"
               :icon="statusIcon"
@@ -43,38 +43,42 @@
               color="red"
               @click="$emit('resend')"
             />
-            <v-icon
-              v-else
-              :icon="statusIcon"
-              size="13"
-            />
+            <v-icon v-else :icon="statusIcon" size="13" />
           </div>
         </div>
+
+        <div v-if="isReply" class="a-chat__quoted-message">
+          <quoted-message
+            :message-id="asset.replyto_id"
+            @click="$emit('click:quotedMessage', asset.replyto_id)"
+          />
+        </div>
+
         <div class="a-chat__message-card-body">
           <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
           <!-- AChatMessage :message <- Chat.vue :message="formatMessage(message)" <- formatMessage <- DOMPurify.sanitize() -->
-          <div
-            v-if="html"
-            class="a-chat__message-text a-text-regular-enlarged"
-            v-html="message"
-          />
+          <div v-if="html" class="a-chat__message-text a-text-regular-enlarged" v-html="message" />
           <!-- eslint-enable vue/no-v-html -->
-          <div
-            v-else
-            class="a-chat__message-text a-text-regular-enlarged"
-            v-text="message"
-          />
+          <div v-else class="a-chat__message-text a-text-regular-enlarged" v-text="message" />
         </div>
       </div>
     </div>
-  </div>
+
+    <slot name="actions" />
+  </v-row>
 </template>
 
-<script>
+<script lang="ts">
+import { computed, defineComponent } from 'vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
+import QuotedMessage from './QuotedMessage.vue'
+import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 
-export default {
+export default defineComponent({
+  components: {
+    QuotedMessage
+  },
   props: {
     id: {
       type: null,
@@ -122,32 +126,49 @@ export default {
         retry: 'Message did not sent, weak connection. Click to retry'
       })
     },
+    asset: {
+      type: Object,
+      // eslint-disable-next-line vue/require-valid-default-prop
+      default: {}
+    },
+    isReply: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Highlight the message by applying a background flash effect
+     */
+    flashing: {
+      type: Boolean,
+      default: false
+    },
     hideTime: {
       type: Boolean,
       default: false
     }
   },
-  emits: ['resend'],
-  computed: {
-    statusIcon () {
-      return tsIcon(this.status.virtualStatus)
-    },
-    isOutgoingMessage () {
-      return isStringEqualCI(this.sender.id, this.userId)
+  emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress'],
+  setup(props, { emit }) {
+    const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
+    const isOutgoingMessage = computed(() => isStringEqualCI(props.sender.id, props.userId))
+
+    const { onMove, onSwipeEnd, elementLeftOffset } = useSwipeLeft(() => {
+      emit('swipe:left')
+    })
+
+    const onLongPress = () => {
+      emit('longpress')
     }
-  },
-  methods: {
-    // /**
-    //  * Registered ADM transactions must be shown as confirmed, as they are socket-enabled
-    //  * @returns {string}
-    //  */
-    // virtualStatus () {
-    //   if (this.status === TS.REGISTERED) return TS.CONFIRMED
-    //   return this.status
-    // },
-    isStringEqualCI (string1, string2) {
-      return isStringEqualCI(string1, string2)
+
+    return {
+      statusIcon,
+      isOutgoingMessage,
+      onMove,
+      onSwipeEnd,
+      elementLeftOffset,
+      isStringEqualCI,
+      onLongPress
     }
   }
-}
+})
 </script>

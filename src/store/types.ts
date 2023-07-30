@@ -1,6 +1,7 @@
 export interface RootState {
   address: string
   balance: number
+  balanceStatus: string // FetchStatus
   passphrase: string
   password: string
   IDBReady: boolean

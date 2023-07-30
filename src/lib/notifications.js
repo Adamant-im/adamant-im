@@ -65,7 +65,8 @@ class PushNotification extends Notification {
     } else {
       message = this.lastUnread.message
     }
-    return `${this.partnerIdentity}: ${removeFormats(message)}`
+    const processedMessage = this.store.state.options.formatMessages ? removeFormats(message) : message
+    return `${this.partnerIdentity}: ${processedMessage}`
   }
 
   increaseCounter () {
