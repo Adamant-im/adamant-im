@@ -22,6 +22,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@capacitor/android": "^5.2.2",
     "@capacitor/core": "^5.2.2",
     "@liskhq/lisk-cryptography": "3.2.1",
     "@liskhq/lisk-transactions": "5.2.2",
