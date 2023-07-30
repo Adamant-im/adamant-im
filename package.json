@@ -22,6 +22,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@capacitor/core": "^5.2.2",
     "@liskhq/lisk-cryptography": "3.2.1",
     "@liskhq/lisk-transactions": "5.2.2",
     "@mdi/font": "^7.2.96",
@@ -84,6 +85,7 @@
     "web3-utils": "^1.9.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^5.2.2",
     "@electron/notarize": "^2.1.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@rollup/plugin-commonjs": "^25.0.3",
