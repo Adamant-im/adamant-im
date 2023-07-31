@@ -57,13 +57,13 @@ jobs:
             --keystorealiaspass $ANDROID_KEYSTORE_ALIAS_PASSWORD \
             --androidreleasetype $ANDROID_RELEASE_TYPE
 
-      - name: Clean Keystore file 🧹
-        run: |
-          rm android/app.keystore
-
       - name: Save artifacts 💾
         uses: actions/upload-artifact@v3
         with:
           name: android-release-app
           path: |
             android/app/build/outputs/apk/release/*
+
+      - name: Clean Keystore file 🧹
+        run: |
+          rm android/app.keystore
