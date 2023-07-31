@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - dev
+      - feat/capacitor.js
 
 env:
   GH_TOKEN: ${{ secrets.github_token }}
