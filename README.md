@@ -86,6 +86,21 @@ APPLE_NOTARIZE=true npm run electron:build
 npm run electron:serve
 ```
 
+### Run Android app in the emulator
+
+```shell
+$ npm run android:preview
+```
+
+Note: **Java 17** and **Android Studio** is required.
+
+### Build and sign Android app
+
+```shell
+$ cp capacitor.env.example capacitor.env # replace ENV values before build
+$ npm run android:build
+```
+
 [Download pre-build apps](https://adamant.im/#adm-apps) for macOS, Windows and Linux.
 
 #### Note for Windows users

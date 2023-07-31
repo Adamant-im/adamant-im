@@ -40,3 +40,8 @@ yarn-error.log*
 
 # Vercel
 .vercel
+
+# Capacitor
+capacitor.env
+# Keep app.keystore in the folowing folder
+.capacitor
