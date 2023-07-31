@@ -10,7 +10,7 @@ on:
 env:
   GH_TOKEN: ${{ secrets.github_token }}
   ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-  ANDROID_KEYSTORE_PATH: './android/app.keystore'
+  ANDROID_KEYSTORE_PATH: './app.keystore' # relative to `./android` dir
   ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
   ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
   ANDROID_KEYSTORE_ALIAS_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
@@ -44,7 +44,7 @@ jobs:
       - name: Extract Android signing key from ENV 🔑
         run: |
           echo "$ANDROID_KEYSTORE_BASE64" > android/keystore.base64
-          base64 -d android/keystore.base64 > $ANDROID_KEYSTORE_PATH
+          base64 -d android/keystore.base64 > android/app.keystore
           rm android/keystore.base64
 
       - name: Build and Sign Android App 🛠️
@@ -59,7 +59,7 @@ jobs:
 
       - name: Clean Keystore file 🧹
         run: |
-          rm $ANDROID_KEYSTORE_PATH
+          rm android/app.keystore
 
       - name: Save artifacts 💾
         uses: actions/upload-artifact@v3
