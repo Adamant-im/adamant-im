@@ -43,5 +43,4 @@ yarn-error.log*
 
 # Capacitor
 capacitor.env
-# Keep app.keystore in the folowing folder
-.capacitor
+capacitor/app.keystore
