@@ -40,3 +40,7 @@ yarn-error.log*
 
 # Vercel
 .vercel
+
+# adamant-schema
+src/lib/schema/*
+!src/lib/schema/config.json
