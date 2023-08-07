@@ -18,6 +18,7 @@
     "electron:serve": "vite preview --config electron-vite.config.ts",
     "android:preview": "cap sync && cap open android",
     "android:build": "node scripts/capacitor/build-android.mjs",
+    "android:generate-assets": "npx @capacitor/assets generate --android --assetPath capacitor/assets --iconBackgroundColor '#FFF' --iconBackgroundColorDark '#000' --splashBackgroundColor '#FFF' --splashBackgroundColorDark '#000'",
     "https": "vite preview --https",
     "test": "vitest",
     "coverage": "vitest run --coverage",
@@ -88,6 +89,7 @@
     "web3-utils": "^1.9.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^2.0.4",
     "@capacitor/cli": "^5.2.2",
     "@electron/notarize": "^2.1.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",

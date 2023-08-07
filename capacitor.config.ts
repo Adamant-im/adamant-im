@@ -6,6 +6,11 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     androidScheme: 'https'
+  },
+  plugins: {
+    SplashScreen: {
+      androidScaleType: "CENTER_CROP", // fix logo stretching
+    }
   }
 };
 
