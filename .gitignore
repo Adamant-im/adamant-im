@@ -43,4 +43,5 @@ yarn-error.log*
 
 # adamant-schema
 src/lib/schema/*
+!src/lib/schema/schema.json
 !src/lib/schema/config.json

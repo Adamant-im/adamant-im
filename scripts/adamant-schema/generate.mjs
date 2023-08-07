@@ -1,14 +1,15 @@
 import { $ } from 'execa'
 import { resolve } from 'path'
 
+const schemaPath = './src/lib/schema'
 const args = {
-  specFile: "https://schema.adamant.im/schema.json",
+  specFile: resolve(schemaPath, 'schema.json'),
   generatorName: "typescript-axios",
   // Template
   // https://github.com/nicobao/openapi-generator/tree/master/samples/client/others/typescript-axios/with-separate-models-and-api-inheritance
   template: "typescript-axios",
-  config: resolve("./src/lib/schema/config.json"),
-  output: resolve("./src/lib/schema"),
+  config: resolve(schemaPath, 'config.json'),
+  output: resolve(schemaPath),
 };
 
 run()
