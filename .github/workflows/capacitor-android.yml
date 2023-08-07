@@ -39,7 +39,9 @@ jobs:
         run: npm ci
 
       - name: Build PWA
-        run: npm run build
+        run: |
+          npm run schema:generate
+          npm run build
 
       - name: Extract Android signing key from ENV 🔑
         run: |
