@@ -44,3 +44,8 @@ yarn-error.log*
 # Capacitor
 capacitor.env
 capacitor/app.keystore
+
+# adamant-schema
+src/lib/schema/*
+!src/lib/schema/schema.json
+!src/lib/schema/config.json
