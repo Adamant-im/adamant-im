@@ -1,9 +1,5 @@
 {
-  "sortParamsByRequiredFlag": true,
-  "ensureUniqueParams": true,
-  "allowUnicodeIdentifiers": false,
-  "modelPropertyNaming": "original",
-  "supportsES6": false,
-  "npmName": "adamant-schema",
-  "npmVersion": "0.7.0"
+  "supportsES6": true,
+  "useSingleRequestParameter": true,
+  "allowUnicodeIdentifiers": true
 }

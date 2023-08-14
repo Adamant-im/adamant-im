@@ -5,11 +5,10 @@ const schemaPath = './src/lib/schema'
 const args = {
   specFile: resolve(schemaPath, 'schema.json'),
   generatorName: "typescript-axios",
-  // Template
-  // https://github.com/nicobao/openapi-generator/tree/master/samples/client/others/typescript-axios/with-separate-models-and-api-inheritance
+  // @source https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator/src/main/resources/typescript-axios
   template: "typescript-axios",
   config: resolve(schemaPath, 'config.json'),
-  output: resolve(schemaPath),
+  output: resolve(schemaPath, './client'),
 };
 
 run()
