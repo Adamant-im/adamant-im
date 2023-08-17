@@ -1583,6 +1583,11 @@
         "properties": {
           "chat": {
             "type": "object",
+            "required": [
+              "message",
+              "own_message",
+              "type"
+            ],
             "properties": {
               "message": {
                 "type": "string",
@@ -2073,8 +2078,7 @@
       "VoteForDelegateAsset": {
         "type": "object",
         "required": [
-          "added",
-          "deleted"
+          "votes"
         ],
         "properties": {
           "votes": {
@@ -2392,6 +2396,11 @@
         "properties": {
           "state": {
             "type": "object",
+            "required": [
+              "key",
+              "value",
+              "type"
+            ],
             "properties": {
               "key": {
                 "type": "string"
@@ -2715,6 +2724,766 @@
           }
         ]
       }
+    },
+    "parameters": {
+      "senderId": {
+        "name": "senderId",
+        "in": "query",
+        "description": "Filter by senderId",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "andSenderId": {
+        "name": "and:senderId",
+        "in": "query",
+        "description": "Filter by senderId (`and` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orSenderId": {
+        "name": "or:senderId",
+        "in": "query",
+        "description": "Filter by senderId (`or` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "recipientId": {
+        "name": "recipientId",
+        "in": "query",
+        "description": "Filter by recipientId",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "andRecipientId": {
+        "name": "and:recipientId",
+        "in": "query",
+        "description": "Filter by recipientId (`and` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orRecipientId": {
+        "name": "or:recipientId",
+        "in": "query",
+        "description": "Filter by recipientId (`or` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "offset": {
+        "name": "offset",
+        "in": "query",
+        "description": "Offset value for results.",
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "default": 0
+        },
+        "required": false
+      },
+      "orderBy": {
+        "name": "orderBy",
+        "in": "query",
+        "description": "Order results by field name.",
+        "schema": {
+          "type": "string",
+          "example": "timestamp:desc",
+          "default": "timestamp:desc"
+        },
+        "required": false
+      },
+      "userId": {
+        "name": "userId",
+        "in": "query",
+        "description": "Filter by senderId/recipientId.\nThe query will look like `tx.senderId = {userId} OR tx.recipientId = {userId}`.\n",
+        "schema": {
+          "type": "string",
+          "example": "U14236667426471084862"
+        },
+        "required": false
+      },
+      "andUserId": {
+        "name": "and:userId",
+        "in": "query",
+        "description": "Filter by senderId/recipientId (`and` operator).\nThe query will look like `tx.senderId = {userId} OR tx.recipientId = {userId}`.\n",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orUserId": {
+        "name": "or:userId",
+        "in": "query",
+        "description": "Filter by senderId/recipientId (`or` operator).\nThe query will look like `tx.senderId = {userId} OR tx.recipientId = {userId}`.\n",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "withoutDirectTransfers": {
+        "name": "withoutDirectTransfers",
+        "in": "query",
+        "description": "When set to `true`, excludes type `0` transactions (direct token transfers) from results. Default is `false`.",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        },
+        "required": false
+      },
+      "limit": {
+        "name": "limit",
+        "in": "query",
+        "description": "Limit number of transactions in the result",
+        "schema": {
+          "type": "integer",
+          "example": 10,
+          "default": 25
+        },
+        "required": false
+      },
+      "fromHeight": {
+        "name": "fromHeight",
+        "in": "query",
+        "description": "Filter starting from specific `height`",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "andFromHeight": {
+        "name": "and:fromHeight",
+        "in": "query",
+        "description": "Filter starting from specific height (`and` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orFromHeight": {
+        "name": "or:fromHeight",
+        "in": "query",
+        "description": "Filter starting from specific height (`or` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "toHeight": {
+        "name": "toHeight",
+        "in": "query",
+        "description": "Filter results till block with specific height",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "andToHeight": {
+        "name": "and:toHeight",
+        "in": "query",
+        "description": "Filter results till block with specific height (`and` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orToHeight": {
+        "name": "or:toHeight",
+        "in": "query",
+        "description": "Filter results till block with specific height (`or` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "inId": {
+        "name": "inId",
+        "in": "query",
+        "description": "Filter by recipientId/senderId `(\"recipientId\" = ${inId} OR \"senderId\" = ${inId})`",
+        "schema": {
+          "type": "string",
+          "example": "U14236667426471084862"
+        },
+        "required": false
+      },
+      "andInId": {
+        "name": "and:inId",
+        "in": "query",
+        "description": "Filter by recipientId/senderId `(\"recipientId\" = ${inId} OR \"senderId\" = ${inId})` with `and` operator",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orInId": {
+        "name": "or:inId",
+        "in": "query",
+        "description": "Filter by recipientId/senderId `(\"recipientId\" = ${inId} OR \"senderId\" = ${inId})` with `or` operator",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "type": {
+        "name": "type",
+        "in": "query",
+        "description": "Get messages of specified type. See [Message Types](https://github.com/Adamant-im/adamant/wiki/Message-Types).\nIf `type` is not set, all types of transactions will be returned.\n",
+        "schema": {
+          "type": "integer",
+          "example": 2
+        },
+        "required": false
+      },
+      "andType": {
+        "name": "and:type",
+        "in": "query",
+        "description": "Get messages of specified type. See [Message Types](https://github.com/Adamant-im/adamant/wiki/Message-Types).\nIf `type` is not set, all types of transactions will be returned.\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orType": {
+        "name": "or:type",
+        "in": "query",
+        "description": "Get messages of specified type. See [Message Types](https://github.com/Adamant-im/adamant/wiki/Message-Types).\nIf `type` is not set, all types of transactions will be returned.\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "limit-2": {
+        "name": "limit",
+        "in": "query",
+        "description": "Limit number of transactions in the result",
+        "schema": {
+          "type": "integer",
+          "example": 10,
+          "default": 100
+        },
+        "required": false
+      },
+      "senderIds": {
+        "name": "senderIds",
+        "in": "query",
+        "description": "Filter by list of senders. Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "U18132012621449491414,U15881344309699504778"
+        },
+        "required": false
+      },
+      "andSenderIds": {
+        "name": "and:senderIds",
+        "in": "query",
+        "description": "Filter by list of senders (`and` operator). Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "U18132012621449491414,U15881344309699504778"
+        },
+        "required": false
+      },
+      "orSenderIds": {
+        "name": "or:senderIds",
+        "in": "query",
+        "description": "Filter by list of senders (`or` operator). Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "U18132012621449491414,U15881344309699504778"
+        },
+        "required": false
+      },
+      "key": {
+        "name": "key",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "example": "eth:address",
+          "description": "Get transactions of specified KVS key"
+        }
+      },
+      "keyIds": {
+        "name": "keyIds",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "example": [
+            "eth:address",
+            "doge:address",
+            "dash:address",
+            "btc:address"
+          ],
+          "description": "Get transactions of specified KVS keys. Array of keys, comma-separated."
+        }
+      },
+      "type-2": {
+        "name": "type",
+        "in": "query",
+        "description": "When sending KVS transaction, type field of state object must be as follows:\n\n- `0` for full re-writing of contents by specified key value\n- `1` for incremental appending contents\n\nFor more details see [AIP 11: Behavior for KVS data](https://aips.adamant.im/AIPS/aip-11)\n",
+        "schema": {
+          "type": "integer",
+          "example": 1,
+          "default": 0,
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "required": false
+      },
+      "blockId": {
+        "name": "blockId",
+        "in": "query",
+        "description": "Filter by specific block",
+        "schema": {
+          "type": "number",
+          "example": 7917597195203394000
+        },
+        "required": false
+      },
+      "andBlockId": {
+        "name": "and:blockId",
+        "in": "query",
+        "description": "Filter by specific block (`and` condition)",
+        "schema": {
+          "type": "number"
+        },
+        "required": false
+      },
+      "orBlockId": {
+        "name": "or:blockId",
+        "in": "query",
+        "description": "Filter by specific block (`or` condition)",
+        "schema": {
+          "type": "number"
+        },
+        "required": false
+      },
+      "senderPublicKey": {
+        "name": "senderPublicKey",
+        "in": "query",
+        "description": "Filter by sender publicKey",
+        "schema": {
+          "type": "string",
+          "example": "801846655523f5e21f2d454b2f98f70aaf5d3887c806463100a1764a4e7c1457"
+        },
+        "required": false
+      },
+      "andSenderPublicKey": {
+        "name": "and:senderPublicKey",
+        "in": "query",
+        "description": "Filter by sender publicKey (`and` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orSenderPublicKey": {
+        "name": "or:senderPublicKey",
+        "in": "query",
+        "description": "Filter by sender publicKey (`or` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "recipientPublicKey": {
+        "name": "recipientPublicKey",
+        "in": "query",
+        "description": "Filter by recipient publicKey",
+        "schema": {
+          "type": "string",
+          "example": "125a9b8304ef885053c630041f57493343d7f6023107c5dc8b8148147e732c93"
+        },
+        "required": false
+      },
+      "andRecipientPublicKey": {
+        "name": "and:recipientPublicKey",
+        "in": "query",
+        "description": "Filter by recipient publicKey (`and` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orRecipientPublicKey": {
+        "name": "or:recipientPublicKey",
+        "in": "query",
+        "description": "Filter by recipient publicKey (`or` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "fromTimestamp": {
+        "name": "fromTimestamp",
+        "in": "query",
+        "description": "Filter by timestamp",
+        "schema": {
+          "type": "number",
+          "example": 37059538
+        },
+        "required": false
+      },
+      "andFromTimestamp": {
+        "name": "and:fromTimestamp",
+        "in": "query",
+        "description": "Filter by timestamp (`and` operator)",
+        "schema": {
+          "type": "number",
+          "example": 37059538
+        },
+        "required": false
+      },
+      "orFromTimestamp": {
+        "name": "or:fromTimestamp",
+        "in": "query",
+        "description": "Filter by timestamp (`or` operator)",
+        "schema": {
+          "type": "number",
+          "example": 37059538
+        },
+        "required": false
+      },
+      "toTimestamp": {
+        "name": "toTimestamp",
+        "in": "query",
+        "description": "Filter by timestamp",
+        "schema": {
+          "type": "number",
+          "example": 37059538
+        },
+        "required": false
+      },
+      "andToTimestamp": {
+        "name": "and:toTimestamp",
+        "in": "query",
+        "description": "Filter by timestamp (`and` operator)",
+        "schema": {
+          "type": "number",
+          "example": 37059538
+        },
+        "required": false
+      },
+      "orToTimestamp": {
+        "name": "or:toTimestamp",
+        "in": "query",
+        "description": "Filter by timestamp (`or` operator)",
+        "schema": {
+          "type": "number",
+          "example": 37059538
+        },
+        "required": false
+      },
+      "recipientIds": {
+        "name": "recipientIds",
+        "in": "query",
+        "description": "Filter by list of recipients. Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "U18132012621449491414,U15881344309699504778"
+        },
+        "required": false
+      },
+      "andRecipientIds": {
+        "name": "and:recipientIds",
+        "in": "query",
+        "description": "Filter by list of recipients (`and` operator). Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "U18132012621449491414,U15881344309699504778"
+        },
+        "required": false
+      },
+      "orRecipientIds": {
+        "name": "or:recipientIds",
+        "in": "query",
+        "description": "Filter by list of recipients (`or` operator). Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "U18132012621449491414,U15881344309699504778"
+        },
+        "required": false
+      },
+      "senderPublicKeys": {
+        "name": "senderPublicKeys",
+        "in": "query",
+        "description": "Filter by sender publicKeys. Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "801846655523f5e21f2d454b2f98f70aaf5d3887c806463100a1764a4e7c1457,125a9b8304ef885053c630041f57493343d7f6023107c5dc8b8148147e732c93"
+        },
+        "required": false
+      },
+      "andSenderPublicKeys": {
+        "name": "and:senderPublicKeys",
+        "in": "query",
+        "description": "Filter by sender publicKeys (`and` operator). Separated by comma",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orSenderPublicKeys": {
+        "name": "or:senderPublicKeys",
+        "in": "query",
+        "description": "Filter by sender publicKeys (`or` operator). Separated by comma",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "recipientPublicKeys": {
+        "name": "recipientPublicKeys",
+        "in": "query",
+        "description": "Filter by recipient publicKeys. Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "801846655523f5e21f2d454b2f98f70aaf5d3887c806463100a1764a4e7c1457,125a9b8304ef885053c630041f57493343d7f6023107c5dc8b8148147e732c93"
+        },
+        "required": false
+      },
+      "andRecipientPublicKeys": {
+        "name": "and:recipientPublicKeys",
+        "in": "query",
+        "description": "Filter by recipient publicKeys (`and` operator). Separated by comma",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orRecipientPublicKeys": {
+        "name": "or:recipientPublicKeys",
+        "in": "query",
+        "description": "Filter by recipient publicKeys (`or` operator). Separated by comma",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "minAmount": {
+        "name": "minAmount",
+        "in": "query",
+        "description": "Filter results with `amount` not less than specified Integer value of 1/10^8 tokens (1 ADM = 100000000).\n",
+        "schema": {
+          "type": "integer",
+          "example": 1000000000000001
+        },
+        "required": false
+      },
+      "andMinAmount": {
+        "name": "and:minAmount",
+        "in": "query",
+        "description": "Filter results with `amount` not less than specified Integer value of 1/10^8 tokens (1 ADM = 100000000).\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orMinAmount": {
+        "name": "or:minAmount",
+        "in": "query",
+        "description": "Filter results with `amount` not less than specified Integer value of 1/10^8 tokens (1 ADM = 100000000).\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "maxAmount": {
+        "name": "maxAmount",
+        "in": "query",
+        "description": "Filter results with `amount` not more than specified Integer value of 1/10^8 tokens (1 ADM = 100000000).\n",
+        "schema": {
+          "type": "integer",
+          "example": 50000000
+        },
+        "required": false
+      },
+      "andMaxAmount": {
+        "name": "and:maxAmount",
+        "in": "query",
+        "description": "Filter results with `amount` not more than specified Integer value of 1/10^8 tokens (1 ADM = 100000000).\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orMaxAmount": {
+        "name": "or:maxAmount",
+        "in": "query",
+        "description": "Filter results with `amount` not more than specified Integer value of 1/10^8 tokens (1 ADM = 100000000).\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "minFee": {
+        "name": "minFee",
+        "in": "query",
+        "description": "Filter by `fee`",
+        "schema": {
+          "type": "integer",
+          "example": 100000
+        },
+        "required": false
+      },
+      "andMinFee": {
+        "name": "and:minFee",
+        "in": "query",
+        "description": "Filter by `fee` (`and` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orMinFee": {
+        "name": "or:minFee",
+        "in": "query",
+        "description": "Filter by `fee` (`or` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "maxFee": {
+        "name": "maxFee",
+        "in": "query",
+        "description": "Filter by `fee`",
+        "schema": {
+          "type": "integer",
+          "example": 100000
+        },
+        "required": false
+      },
+      "andMaxFee": {
+        "name": "and:maxFee",
+        "in": "query",
+        "description": "Filter by `fee` (`and` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orMaxFee": {
+        "name": "or:maxFee",
+        "in": "query",
+        "description": "Filter by `fee` (`or` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "minConfirmations": {
+        "name": "minConfirmations",
+        "in": "query",
+        "description": "Filter by `confirmations` property",
+        "schema": {
+          "type": "integer",
+          "example": 10
+        },
+        "required": false
+      },
+      "andMinConfirmations": {
+        "name": "and:minConfirmations",
+        "in": "query",
+        "description": "Filter by `confirmations` property (`and` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orMinConfirmations": {
+        "name": "or:minConfirmations",
+        "in": "query",
+        "description": "Filter by `confirmations` property (`or` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "type-3": {
+        "name": "type",
+        "in": "query",
+        "description": "Get transactions of specified type. See [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types).\nIf `type` is not set, all types of transactions will be returned.\n",
+        "schema": {
+          "type": "integer",
+          "example": 8
+        },
+        "required": false
+      },
+      "andType-2": {
+        "name": "and:type",
+        "in": "query",
+        "description": "Get transactions of specified type. See [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types).\nIf `type` is not set, all types of transactions will be returned.\n",
+        "schema": {
+          "type": "integer",
+          "example": 8
+        },
+        "required": false
+      },
+      "orType-2": {
+        "name": "or:type",
+        "in": "query",
+        "description": "Get transactions of specified type. See [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types).\nIf `type` is not set, all types of transactions will be returned.\n",
+        "schema": {
+          "type": "integer",
+          "example": 8
+        },
+        "required": false
+      },
+      "types": {
+        "name": "types",
+        "in": "query",
+        "description": "Get transactions of specified list of types, separated by commas.\nSee [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types).\n",
+        "schema": {
+          "type": "integer",
+          "example": "9,0"
+        },
+        "required": false
+      },
+      "andTypes": {
+        "name": "and:types",
+        "in": "query",
+        "description": "Get transactions of specified list of types, separated by commas.\nSee [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types).\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orTypes": {
+        "name": "or:types",
+        "in": "query",
+        "description": "Get transactions of specified list of types, separated by commas.\nSee [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types).\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "returnAsset": {
+        "name": "returnAsset",
+        "in": "query",
+        "description": "Get transaction's asset when set to `1`. Default is `0`.",
+        "schema": {
+          "type": "integer",
+          "example": 1,
+          "default": 0
+        },
+        "required": false
+      }
     }
   },
   "tags": [
@@ -2781,6 +3550,7 @@
         "tags": [
           "Account"
         ],
+        "operationId": "getAccountInfo",
         "description": "Get account information by ADAMANT address or by Public Key",
         "parameters": [
           {
@@ -2819,6 +3589,7 @@
         "tags": [
           "Account"
         ],
+        "operationId": "getAccountBalance",
         "description": "Get account balance",
         "parameters": [
           {
@@ -2849,6 +3620,7 @@
         "tags": [
           "Account"
         ],
+        "operationId": "getAccountPublicKey",
         "description": "Get account Public Key",
         "parameters": [
           {
@@ -2879,6 +3651,7 @@
         "tags": [
           "Account"
         ],
+        "operationId": "createNewAccount",
         "description": "Create new account",
         "requestBody": {
           "content": {
@@ -2908,6 +3681,7 @@
         "tags": [
           "Blocks"
         ],
+        "operationId": "getBlockInfo",
         "description": "Get block information by ID",
         "parameters": [
           {
@@ -2939,6 +3713,7 @@
         "tags": [
           "Blocks"
         ],
+        "operationId": "getBlocks",
         "description": "Get list of blocks",
         "parameters": [
           {
@@ -3003,6 +3778,7 @@
         "tags": [
           "Chats"
         ],
+        "operationId": "getChatRooms",
         "description": "Get list of Chats",
         "parameters": [
           {
@@ -3014,6 +3790,45 @@
               "type": "string",
               "example": "U839357947177758191"
             }
+          },
+          {
+            "$ref": "#/components/parameters/senderId"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/recipientId"
+          },
+          {
+            "$ref": "#/components/parameters/andRecipientId"
+          },
+          {
+            "$ref": "#/components/parameters/orRecipientId"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          },
+          {
+            "$ref": "#/components/parameters/orderBy"
+          },
+          {
+            "$ref": "#/components/parameters/userId"
+          },
+          {
+            "$ref": "#/components/parameters/andUserId"
+          },
+          {
+            "$ref": "#/components/parameters/orUserId"
+          },
+          {
+            "$ref": "#/components/parameters/withoutDirectTransfers"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
           }
         ],
         "responses": {
@@ -3035,6 +3850,7 @@
         "tags": [
           "Chats"
         ],
+        "operationId": "getChatroomMessages",
         "description": "Get messages between two accounts",
         "parameters": [
           {
@@ -3061,23 +3877,23 @@
             "name": "limit",
             "in": "query",
             "description": "Limit number of messages.",
-            "default": 100,
             "required": false,
             "schema": {
               "type": "integer",
               "format": "int32",
-              "maximum": 100
+              "maximum": 100,
+              "default": 100
             }
           },
           {
             "name": "offset",
             "in": "query",
             "description": "Skips **n** messages. Used for pagination",
-            "default": 0,
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int32",
+              "default": 0
             }
           },
           {
@@ -3085,10 +3901,10 @@
             "in": "query",
             "description": "Order by field",
             "required": false,
-            "default": "timestamp:desc",
             "schema": {
               "type": "string",
-              "example": "timestamp:desc"
+              "example": "timestamp:desc",
+              "default": "timestamp:desc"
             }
           },
           {
@@ -3125,37 +3941,71 @@
         "tags": [
           "Chats"
         ],
+        "operationId": "getChatMessages",
         "description": "Returns list of transactions with `type = 8` (deprecated, use `/chatrooms` instead)",
         "parameters": [
           {
-            "name": "address",
-            "in": "query",
-            "description": "ADAMANT address",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "U839357947177758191"
-            }
+            "$ref": "#/components/parameters/fromHeight"
           },
           {
-            "name": "orderBy",
-            "in": "query",
-            "description": "Order by field",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "example": "timestamp:desc"
-            }
+            "$ref": "#/components/parameters/andFromHeight"
           },
           {
-            "name": "fromHeight",
-            "in": "query",
-            "description": "Filter transactions starting from specified block `height`",
-            "required": false,
-            "schema": {
-              "type": "number",
-              "example": 6184187
-            }
+            "$ref": "#/components/parameters/orFromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/toHeight"
+          },
+          {
+            "$ref": "#/components/parameters/andToHeight"
+          },
+          {
+            "$ref": "#/components/parameters/orToHeight"
+          },
+          {
+            "$ref": "#/components/parameters/senderId"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/recipientId"
+          },
+          {
+            "$ref": "#/components/parameters/andRecipientId"
+          },
+          {
+            "$ref": "#/components/parameters/orRecipientId"
+          },
+          {
+            "$ref": "#/components/parameters/inId"
+          },
+          {
+            "$ref": "#/components/parameters/andInId"
+          },
+          {
+            "$ref": "#/components/parameters/orInId"
+          },
+          {
+            "$ref": "#/components/parameters/type"
+          },
+          {
+            "$ref": "#/components/parameters/andType"
+          },
+          {
+            "$ref": "#/components/parameters/orType"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          },
+          {
+            "$ref": "#/components/parameters/orderBy"
+          },
+          {
+            "$ref": "#/components/parameters/limit-2"
           }
         ],
         "responses": {
@@ -3177,6 +4027,7 @@
         "tags": [
           "Chats"
         ],
+        "operationId": "sendMessage",
         "description": "Broadcast transactions of `type 8 — Сhat/Message`",
         "requestBody": {
           "content": {
@@ -3206,6 +4057,7 @@
         "tags": [
           "Delegates and Voting"
         ],
+        "operationId": "getDelegates",
         "description": "Retrieves list of registered ADAMANT delegates",
         "parameters": [
           {
@@ -3249,6 +4101,7 @@
         "tags": [
           "Delegates and Voting"
         ],
+        "operationId": "registerNewDelegate",
         "description": "Register new delegate",
         "requestBody": {
           "content": {
@@ -3278,6 +4131,7 @@
         "tags": [
           "Delegates and Voting"
         ],
+        "operationId": "getDelegateInfo",
         "description": "Get delegate info by `username` or `publicKey`",
         "parameters": [
           {
@@ -3318,6 +4172,7 @@
         "tags": [
           "Delegates and Voting"
         ],
+        "operationId": "searchDelegate",
         "description": "Search delegates by `username`",
         "parameters": [
           {
@@ -3349,6 +4204,7 @@
         "tags": [
           "Delegates and Voting"
         ],
+        "operationId": "getDelegatesCount",
         "description": "Get total count of delegates",
         "responses": {
           "200": {
@@ -3369,6 +4225,7 @@
         "tags": [
           "Delegates and Voting"
         ],
+        "operationId": "getDelegateForgingActivity",
         "description": "Get forging activity of a delegate",
         "parameters": [
           {
@@ -3401,6 +4258,7 @@
         "tags": [
           "Delegates and Voting"
         ],
+        "operationId": "getNextForgers",
         "description": "Returns list of next forgers",
         "responses": {
           "200": {
@@ -3421,6 +4279,7 @@
         "tags": [
           "Delegates and Voting"
         ],
+        "operationId": "getDelegateVoters",
         "description": "Get list of delegate's voters",
         "parameters": [
           {
@@ -3453,6 +4312,7 @@
         "tags": [
           "Delegates and Voting"
         ],
+        "operationId": "getDelegateVotes",
         "description": "Current votes of specific ADAMANT account",
         "parameters": [
           {
@@ -3482,6 +4342,7 @@
         "tags": [
           "Delegates and Voting"
         ],
+        "operationId": "voteForDelegates",
         "description": "Vote for delegates",
         "requestBody": {
           "content": {
@@ -3511,6 +4372,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getPeers",
         "description": "Get list of connected peer nodes",
         "parameters": [
           {
@@ -3577,6 +4439,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getNodeLoadingStatus",
         "description": "Returns information of node's loading process",
         "responses": {
           "200": {
@@ -3597,6 +4460,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getNodeSyncStatus",
         "description": "Returns information of the node sync process with other peers",
         "responses": {
           "200": {
@@ -3617,6 +4481,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getNodePingStatus",
         "description": "Get ping status",
         "responses": {
           "200": {
@@ -3637,6 +4502,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getNodeVersion",
         "description": "Returns node software information",
         "responses": {
           "200": {
@@ -3657,6 +4523,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getBroadhash",
         "description": "Broadhash is established as an aggregated rolling hash of the past five blocks present in the database.",
         "responses": {
           "200": {
@@ -3677,6 +4544,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getEpoch",
         "description": "Returns time when blockchain epoch starts. Value `2017-09-02T17:00:00.000Z` is for mainnet.",
         "responses": {
           "200": {
@@ -3697,6 +4565,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getHeight",
         "description": "Returns current node's blockchain height",
         "responses": {
           "200": {
@@ -3717,6 +4586,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getTokenTransferFee",
         "description": "Returns current fee value for `type 0` (token transfer) transactions. Integer amount of 1/10^8 ADM tokens (1 ADM = 100000000).",
         "responses": {
           "200": {
@@ -3737,6 +4607,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getFees",
         "description": "Returns current fee values for different transaction types",
         "responses": {
           "200": {
@@ -3757,6 +4628,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getNethash",
         "description": "The nethash describes e.g. the Mainnet or the Testnet, that the node is connecting to.",
         "responses": {
           "200": {
@@ -3777,6 +4649,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getMilestone",
         "description": "Return current slot height, which determines reward a delegate will get for forging a block.",
         "responses": {
           "200": {
@@ -3797,6 +4670,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getReward",
         "description": "Returns reward — the reward a delegate will get for forging a block. Integer amount of 1/10^8 ADM tokens (1 ADM = 100000000). Depends on the slot height.",
         "responses": {
           "200": {
@@ -3817,6 +4691,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getTokenTotalSupply",
         "description": "Returns total current supply of ADM tokens in network. Integer amount of 1/10^8 ADM tokens (1 ADM = 100000000). Total supply increases with every new forged block.",
         "responses": {
           "200": {
@@ -3837,6 +4712,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getNetworkInfo",
         "description": "Returns blockchain network information in a single request",
         "responses": {
           "200": {
@@ -3857,6 +4733,7 @@
         "tags": [
           "Nodes and Blockchain"
         ],
+        "operationId": "getNodeStatus",
         "description": "Returns both ADAMANT blockchain network information and Node information in a single request.",
         "responses": {
           "200": {
@@ -3877,69 +4754,62 @@
         "tags": [
           "KVS"
         ],
+        "operationId": "getKVS",
         "description": "Fetch data from KVS. As a result you'll get a list of transactions of `type = 9` with KVS data, stored in `asset.state` field.",
         "parameters": [
           {
-            "name": "key",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "example": "eth:address"
-            }
+            "$ref": "#/components/parameters/fromHeight"
           },
           {
-            "name": "keyIds",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "example": [
-                "eth:address",
-                "doge:address",
-                "dash:address",
-                "btc:address"
-              ],
-              "description": "Array of keys, comma-separated in string format"
-            }
+            "$ref": "#/components/parameters/andFromHeight"
           },
           {
-            "name": "senderId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "example": "U14236667426471084862"
-            }
+            "$ref": "#/components/parameters/orFromHeight"
           },
           {
-            "name": "senderIds",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "example": [
-                "U3461022864428928223",
-                "U17790659840463725618",
-                "U43512412354440829"
-              ],
-              "description": "Array of ADAMANT addresses, comma-separated in string format"
-            }
+            "$ref": "#/components/parameters/toHeight"
           },
           {
-            "name": "orderBy",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "example": "timestamp:desc"
-            }
+            "$ref": "#/components/parameters/andToHeight"
+          },
+          {
+            "$ref": "#/components/parameters/orToHeight"
+          },
+          {
+            "$ref": "#/components/parameters/senderId"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/senderIds"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderIds"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderIds"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          },
+          {
+            "$ref": "#/components/parameters/orderBy"
+          },
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/keyIds"
+          },
+          {
+            "$ref": "#/components/parameters/type-2"
+          },
+          {
+            "$ref": "#/components/parameters/limit-2"
           }
         ],
         "responses": {
@@ -3954,11 +4824,14 @@
             }
           }
         }
-      },
+      }
+    },
+    "/states/store": {
       "post": {
         "tags": [
           "KVS"
         ],
+        "operationId": "setKVS",
         "description": "Creates a KVS transaction (`type 9`)",
         "requestBody": {
           "content": {
@@ -3988,37 +4861,209 @@
         "tags": [
           "Transactions"
         ],
-        "description": "Returns list of transactions",
+        "operationId": "getTransactions",
+        "description": "Returns list of transactions\n\nYou can filter by single parameter, or by multiple parameters using logical operator `and` or `or`.\nFor more details check [Transactions Query Language](https://github.com/Adamant-im/adamant/wiki/Transactions-Query-Language)\n\nThe params `blockId` act by default as `or` operator.\n",
         "parameters": [
           {
-            "name": "minAmount",
-            "in": "query",
-            "description": "Filter results by min `amount` property",
-            "schema": {
-              "type": "integer",
-              "example": 100000000000001
-            },
-            "required": false
+            "$ref": "#/components/parameters/blockId"
           },
           {
-            "name": "fromHeight",
-            "in": "query",
-            "description": "Filter results starting from specific `height`",
-            "schema": {
-              "type": "integer",
-              "example": 7585271
-            },
-            "required": false
+            "$ref": "#/components/parameters/andBlockId"
           },
           {
-            "name": "limit",
-            "in": "query",
-            "description": "Limit number of transactions in the result",
-            "schema": {
-              "type": "integer",
-              "example": 10
-            },
-            "required": false
+            "$ref": "#/components/parameters/orBlockId"
+          },
+          {
+            "$ref": "#/components/parameters/senderPublicKey"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderPublicKey"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderPublicKey"
+          },
+          {
+            "$ref": "#/components/parameters/recipientPublicKey"
+          },
+          {
+            "$ref": "#/components/parameters/andRecipientPublicKey"
+          },
+          {
+            "$ref": "#/components/parameters/orRecipientPublicKey"
+          },
+          {
+            "$ref": "#/components/parameters/senderId"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/recipientId"
+          },
+          {
+            "$ref": "#/components/parameters/andRecipientId"
+          },
+          {
+            "$ref": "#/components/parameters/orRecipientId"
+          },
+          {
+            "$ref": "#/components/parameters/inId"
+          },
+          {
+            "$ref": "#/components/parameters/andInId"
+          },
+          {
+            "$ref": "#/components/parameters/orInId"
+          },
+          {
+            "$ref": "#/components/parameters/fromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/andFromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/orFromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/toHeight"
+          },
+          {
+            "$ref": "#/components/parameters/andToHeight"
+          },
+          {
+            "$ref": "#/components/parameters/orToHeight"
+          },
+          {
+            "$ref": "#/components/parameters/fromTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/andFromTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/orFromTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/toTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/andToTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/orToTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/senderIds"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderIds"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderIds"
+          },
+          {
+            "$ref": "#/components/parameters/recipientIds"
+          },
+          {
+            "$ref": "#/components/parameters/andRecipientIds"
+          },
+          {
+            "$ref": "#/components/parameters/orRecipientIds"
+          },
+          {
+            "$ref": "#/components/parameters/senderPublicKeys"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderPublicKeys"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderPublicKeys"
+          },
+          {
+            "$ref": "#/components/parameters/recipientPublicKeys"
+          },
+          {
+            "$ref": "#/components/parameters/andRecipientPublicKeys"
+          },
+          {
+            "$ref": "#/components/parameters/orRecipientPublicKeys"
+          },
+          {
+            "$ref": "#/components/parameters/minAmount"
+          },
+          {
+            "$ref": "#/components/parameters/andMinAmount"
+          },
+          {
+            "$ref": "#/components/parameters/orMinAmount"
+          },
+          {
+            "$ref": "#/components/parameters/maxAmount"
+          },
+          {
+            "$ref": "#/components/parameters/andMaxAmount"
+          },
+          {
+            "$ref": "#/components/parameters/orMaxAmount"
+          },
+          {
+            "$ref": "#/components/parameters/minFee"
+          },
+          {
+            "$ref": "#/components/parameters/andMinFee"
+          },
+          {
+            "$ref": "#/components/parameters/orMinFee"
+          },
+          {
+            "$ref": "#/components/parameters/maxFee"
+          },
+          {
+            "$ref": "#/components/parameters/andMaxFee"
+          },
+          {
+            "$ref": "#/components/parameters/orMaxFee"
+          },
+          {
+            "$ref": "#/components/parameters/minConfirmations"
+          },
+          {
+            "$ref": "#/components/parameters/andMinConfirmations"
+          },
+          {
+            "$ref": "#/components/parameters/orMinConfirmations"
+          },
+          {
+            "$ref": "#/components/parameters/type-3"
+          },
+          {
+            "$ref": "#/components/parameters/andType-2"
+          },
+          {
+            "$ref": "#/components/parameters/orType-2"
+          },
+          {
+            "$ref": "#/components/parameters/types"
+          },
+          {
+            "$ref": "#/components/parameters/andTypes"
+          },
+          {
+            "$ref": "#/components/parameters/orTypes"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          },
+          {
+            "$ref": "#/components/parameters/orderBy"
+          },
+          {
+            "$ref": "#/components/parameters/limit-2"
+          },
+          {
+            "$ref": "#/components/parameters/returnAsset"
           }
         ],
         "responses": {
@@ -4038,6 +5083,7 @@
         "tags": [
           "Transactions"
         ],
+        "operationId": "sendTransaction",
         "description": "Broadcast [any type](https://github.com/Adamant-im/adamant/wiki/Transaction-Types) of transaction",
         "requestBody": {
           "content": {
@@ -4067,6 +5113,7 @@
         "tags": [
           "Transactions"
         ],
+        "operationId": "getTransaction",
         "description": "Get transaction by ID",
         "parameters": [
           {
@@ -4108,6 +5155,7 @@
         "tags": [
           "Transactions"
         ],
+        "operationId": "getTransactionsCount",
         "description": "Get `confirmed`, `uncofirmed` and `queued` transactions count",
         "responses": {
           "200": {
@@ -4128,7 +5176,8 @@
         "tags": [
           "Transactions"
         ],
-        "description": "Get queued transactions count",
+        "operationId": "getQueuedTransactions",
+        "description": "Get queued transactions",
         "responses": {
           "200": {
             "description": "Successful response",
@@ -4148,6 +5197,7 @@
         "tags": [
           "Transactions"
         ],
+        "operationId": "getQueuedTransaction",
         "description": "Get queued transaction by ID",
         "parameters": [
           {
@@ -4180,6 +5230,7 @@
         "tags": [
           "Transactions"
         ],
+        "operationId": "getUnconfirmedTransactions",
         "description": "Get unconfirmed transactions",
         "responses": {
           "200": {
@@ -4200,6 +5251,7 @@
         "tags": [
           "Transactions"
         ],
+        "operationId": "getUncorfirmedTransaction",
         "description": "Get unconfirmed transaction by ID",
         "parameters": [
           {
@@ -4232,6 +5284,7 @@
         "tags": [
           "Transactions"
         ],
+        "operationId": "sendTokens",
         "description": "Broadcast transactions of `type 0 — Token transfer` or `type 8 — Chat/Message`. See [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types)",
         "requestBody": {
           "content": {
