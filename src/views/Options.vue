@@ -89,11 +89,10 @@
               <v-checkbox
                 :label="$t('options.stay_logged_in')"
                 color="grey darken-1"
-                v-model="stayLoggedIn"
-                readonly
+                :modelValue="stayLoggedIn"
+                @update:modelValue="onCheckStayLoggedIn"
                 density="comfortable"
                 hide-details
-                @click="onCheckStayLoggedIn"
               />
 
               <div class="a-text-explanation-enlarged">
@@ -505,7 +504,8 @@ export default {
     &__action {
       color: map-get($adm-colors, 'regular');
     }
-    :deep(.v-label), &__label {
+    :deep(.v-label),
+    &__label {
       color: map-get($adm-colors, 'regular');
     }
     .v-divider {
