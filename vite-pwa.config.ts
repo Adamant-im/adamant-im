@@ -1,5 +1,4 @@
-import { mergeConfig } from 'vite'
-import { defineConfig } from 'vitest/config'
+import { mergeConfig, defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 import viteBaseConfig from './vite-base.config'
@@ -21,7 +20,7 @@ export default mergeConfig(
         workbox: {
           maximumFileSizeToCacheInBytes: 5000000 // 5 MiB
         }
-      }),
+      })
     ]
   })
 )
