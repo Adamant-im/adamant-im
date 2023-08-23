@@ -133,7 +133,7 @@ export function getChats(
   orderBy?: 'asc' | 'desc'
 ): Promise<{
   count: number
-  transactions: Array<ReturnType<typeof decodeChat>>
+  transactions: Array<DecodedChatMessageTransaction>
 }>
 
 type DecodedChatMessageTransaction = ChatMessageTransaction & {

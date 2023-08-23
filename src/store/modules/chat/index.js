@@ -6,8 +6,8 @@ import {
   queueMessage,
   createMessage,
   createTransaction,
-  transformMessage
-} from '@/lib/chatHelpers'
+  normalizeMessage
+} from '@/lib/chat/helpers'
 import { isNumeric } from '@/lib/numericHelpers'
 import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -542,7 +542,7 @@ const actions = {
   pushMessages({ commit, rootState }, messages) {
     messages.forEach((message) => {
       commit('pushMessage', {
-        message: transformMessage(message),
+        message: normalizeMessage(message),
         userId: rootState.address
       })
     })
@@ -551,7 +551,7 @@ const actions = {
   unshiftMessages({ commit, rootState }, messages) {
     messages.forEach((message) => {
       commit('pushMessage', {
-        message: transformMessage(message),
+        message: normalizeMessage(message),
         userId: rootState.address,
 
         unshift: true
