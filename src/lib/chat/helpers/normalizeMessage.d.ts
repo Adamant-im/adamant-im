@@ -1,5 +1,5 @@
 import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
-import { TransactionStatus } from '@/lib/constants'
+import { TransactionStatusType } from '@/lib/constants'
 
 export type NormalizedChatMessageTransaction = Pick<
   DecodedChatMessageTransaction,
@@ -8,7 +8,7 @@ export type NormalizedChatMessageTransaction = Pick<
   type: string // @todo use string literal
   timestamp: number
   admTimestamp: number
-  status: TransactionStatus
+  status: TransactionStatusType
   i18n: boolean
   amount: number
   message: any // @todo maybe type
