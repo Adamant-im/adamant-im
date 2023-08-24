@@ -1,4 +1,5 @@
 import utils from '@/lib/adamant'
+import { TransactionStatus as TS } from '@/lib/constants'
 
 /**
  * Creates a message object with uniq ID.
