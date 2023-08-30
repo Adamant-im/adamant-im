@@ -169,7 +169,7 @@ import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
 
 import { Cryptos } from '@/lib/constants'
-import { renderMarkdown, sanitizeHTML } from '@/lib/markdown'
+import { formatMarkdown } from '@/filters/formatMarkdown'
 
 import {
   AChat,
@@ -188,7 +188,6 @@ import partnerName from '@/mixins/partnerName'
 import formatDate from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import FreeTokensDialog from '@/components/FreeTokensDialog'
-import { websiteUriToOnion } from '@/lib/uri'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
 import ProgressIndicator from '@/components/ProgressIndicator'
@@ -514,15 +513,7 @@ export default {
       return type in Cryptos
     },
     formatMessage(transaction) {
-      if (this.isWelcomeChat(this.partnerId) || transaction.i18n) {
-        return renderMarkdown(websiteUriToOnion(this.$t(transaction.message)))
-      }
-
-      if (this.$store.state.options.formatMessages) {
-        return renderMarkdown(transaction.message)
-      }
-
-      return sanitizeHTML(transaction.message)
+      return formatMarkdown(transaction, this.partnerId, this.$store.state.options.formatMessages)
     },
     fetchChatMessages() {
       if (this.noMoreMessages) return
