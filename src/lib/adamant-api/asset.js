@@ -28,3 +28,10 @@ export function replyWithCryptoTransferAsset(replyToId, transferPayload) {
     reply_message: cryptoTransferAsset(transferPayload)
   }
 }
+
+export function reactionAsset(reactToId, reactMessage) {
+  return {
+    reactto_id: reactToId,
+    react_message: reactMessage
+  }
+}

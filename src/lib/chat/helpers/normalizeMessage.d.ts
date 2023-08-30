@@ -13,7 +13,8 @@ export type NormalizedChatMessageTransaction = Pick<
   amount: number
   message: any // @todo maybe type
   hash: string
-  isReply: boolean
+  isReply?: boolean
+  isReaction?: boolean
 }
 
 export function normalizeMessage(

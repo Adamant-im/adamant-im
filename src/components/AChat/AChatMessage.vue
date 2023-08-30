@@ -54,6 +54,8 @@
           />
         </div>
 
+        <v-btn @click="onReaction">Send reaction</v-btn>
+
         <div class="a-chat__message-card-body">
           <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
           <!-- AChatMessage :message <- Chat.vue :message="formatMessage(message)" <- formatMessage <- DOMPurify.sanitize() -->
@@ -63,6 +65,8 @@
         </div>
       </div>
     </div>
+
+    <a-chat-reaction :asset="{ reactto_id: 123, react_message: '🫡' }" />
 
     <slot name="actions" />
   </v-row>
@@ -74,9 +78,11 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
 import QuotedMessage from './QuotedMessage.vue'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
+import AChatReaction from './AChatReaction.vue'
 
 export default defineComponent({
   components: {
+    AChatReaction,
     QuotedMessage
   },
   props: {
@@ -147,7 +153,7 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress'],
+  emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress', 'reaction'],
   setup(props, { emit }) {
     const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
     const isOutgoingMessage = computed(() => isStringEqualCI(props.sender.id, props.userId))
@@ -160,6 +166,10 @@ export default defineComponent({
       emit('longpress')
     }
 
+    const onReaction = () => {
+      emit('reaction', props.id, '🫡') // @todo emoji
+    }
+
     return {
       statusIcon,
       isOutgoingMessage,
@@ -167,7 +177,8 @@ export default defineComponent({
       onSwipeEnd,
       elementLeftOffset,
       isStringEqualCI,
-      onLongPress
+      onLongPress,
+      onReaction
     }
   }
 })

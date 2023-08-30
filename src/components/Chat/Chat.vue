@@ -46,6 +46,7 @@
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="openReplyPreview(message)"
           @longpress="openActionsMenu(message)"
+          @reaction="sendReaction"
         >
           <template #avatar>
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
@@ -402,6 +403,13 @@ export default {
           message: err.message
         })
         console.error(err.message)
+      })
+    },
+    sendReaction(reactToId, reactMessage) {
+      return this.$store.dispatch('chat/sendReaction', {
+        recipientId: this.partnerId,
+        reactToId,
+        reactMessage
       })
     },
     updateTransactionStatus(message) {
