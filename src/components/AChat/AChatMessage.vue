@@ -2,7 +2,7 @@
   <v-row
     class="a-chat__message-container"
     :class="{
-      'a-chat__message-container--right': isStringEqualCI(sender.id, userId),
+      'a-chat__message-container--right': isStringEqualCI(transaction.senderId, userId),
       'a-chat__message-container--transition': elementLeftOffset === 0
     }"
     v-touch="{
@@ -19,26 +19,26 @@
       :class="{
         'a-chat__message--flashing': flashing
       }"
-      :data-txid="id"
+      :data-txid="transaction.id"
     >
       <div
         v-if="showAvatar"
         class="a-chat__message-avatar hidden-xs-only"
-        :class="{ 'a-chat__message-avatar--right': isStringEqualCI(sender.id, userId) }"
+        :class="{ 'a-chat__message-avatar--right': isStringEqualCI(transaction.senderId, userId) }"
       >
         <slot name="avatar" />
       </div>
       <div class="a-chat__message-card">
-        <div v-if="!hideTime" class="a-chat__message-card-header mt-1">
+        <div class="a-chat__message-card-header mt-1">
           <div v-if="status.status === 'CONFIRMED'" class="a-chat__blockchain-status">&#x26AD;</div>
-          <div :title="timeTitle" class="a-chat__timestamp">
+          <div class="a-chat__timestamp">
             {{ time }}
           </div>
           <div v-if="isOutgoingMessage" class="a-chat__status">
             <v-icon
               v-if="status.status === 'REJECTED'"
               :icon="statusIcon"
-              :title="i18n.retry"
+              :title="$t('chats.retry_message')"
               size="15"
               color="red"
               @click="$emit('resend')"
@@ -47,10 +47,10 @@
           </div>
         </div>
 
-        <div v-if="isReply" class="a-chat__quoted-message">
+        <div v-if="transaction.isReply" class="a-chat__quoted-message">
           <quoted-message
-            :message-id="asset.replyto_id"
-            @click="$emit('click:quotedMessage', asset.replyto_id)"
+            :message-id="transaction.asset.replyto_id"
+            @click="$emit('click:quotedMessage', transaction.asset.replyto_id)"
           />
         </div>
 
@@ -59,9 +59,17 @@
         <div class="a-chat__message-card-body">
           <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
           <!-- AChatMessage :message <- Chat.vue :message="formatMessage(message)" <- formatMessage <- DOMPurify.sanitize() -->
-          <div v-if="html" class="a-chat__message-text a-text-regular-enlarged" v-html="message" />
+          <div
+            v-if="html"
+            class="a-chat__message-text a-text-regular-enlarged"
+            v-html="formattedMessage"
+          />
           <!-- eslint-enable vue/no-v-html -->
-          <div v-else class="a-chat__message-text a-text-regular-enlarged" v-text="message" />
+          <div
+            v-else
+            class="a-chat__message-text a-text-regular-enlarged"
+            v-text="formattedMessage"
+          />
         </div>
       </div>
     </div>
@@ -73,12 +81,20 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
+import { useStore } from 'vuex'
+
+import { useFormatMessage } from './hooks/useFormatMessage.ts'
+import { usePartnerId } from './hooks/usePartnerId.ts'
+import { useTransactionTime } from './hooks/useTransactionTime.ts'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
 import QuotedMessage from './QuotedMessage.vue'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
-import AChatReaction from './AChatReaction.vue'
+import formatDate from '@/filters/date'
+import { isWelcomeChat } from '@/lib/chat/meta/utils'
+import AChatReaction from './AChatReaction'
 
 export default defineComponent({
   components: {
@@ -86,58 +102,15 @@ export default defineComponent({
     QuotedMessage
   },
   props: {
-    id: {
-      type: null,
+    transaction: {
+      type: Object as PropType<NormalizedChatMessageTransaction>,
       required: true
-    },
-    message: {
-      type: String,
-      default: ''
-    },
-    time: {
-      type: String,
-      default: ''
-    },
-    timeTitle: {
-      type: String,
-      default: ''
     },
     status: {
       type: Object,
       required: true
     },
-    userId: {
-      type: String,
-      default: ''
-    },
-    sender: {
-      type: Object,
-      required: true
-    },
-    showAvatar: {
-      type: Boolean,
-      default: true
-    },
-    locale: {
-      type: String,
-      default: 'en'
-    },
     html: {
-      type: Boolean,
-      default: false
-    },
-    i18n: {
-      type: Object,
-      default: () => ({
-        retry: 'Message did not sent, weak connection. Click to retry'
-      })
-    },
-    asset: {
-      type: Object,
-      // eslint-disable-next-line vue/require-valid-default-prop
-      default: {}
-    },
-    isReply: {
       type: Boolean,
       default: false
     },
@@ -147,16 +120,23 @@ export default defineComponent({
     flashing: {
       type: Boolean,
       default: false
-    },
-    hideTime: {
-      type: Boolean,
-      default: false
     }
   },
   emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress', 'reaction'],
   setup(props, { emit }) {
+    const store = useStore()
+
+    const userId = computed(() => store.state.address)
+    const partnerId = usePartnerId(props.transaction)
+
+    const showAvatar = computed(() => !isWelcomeChat(partnerId.value))
+
     const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
-    const isOutgoingMessage = computed(() => isStringEqualCI(props.sender.id, props.userId))
+    const isOutgoingMessage = computed(() =>
+      isStringEqualCI(props.transaction.senderId, userId.value)
+    )
+    const formattedMessage = useFormatMessage(props.transaction)
+    const time = useTransactionTime(props.transaction)
 
     const { onMove, onSwipeEnd, elementLeftOffset } = useSwipeLeft(() => {
       emit('swipe:left')
@@ -167,18 +147,23 @@ export default defineComponent({
     }
 
     const onReaction = () => {
-      emit('reaction', props.id, '🫡') // @todo emoji
+      emit('reaction', props.transaction.id, '🫡') // @todo emoji remove
     }
 
     return {
+      userId,
       statusIcon,
       isOutgoingMessage,
+      formattedMessage,
+      showAvatar,
       onMove,
       onSwipeEnd,
       elementLeftOffset,
       isStringEqualCI,
       onLongPress,
-      onReaction
+      onReaction,
+      formatDate,
+      time
     }
   }
 })

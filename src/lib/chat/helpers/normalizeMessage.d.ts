@@ -15,6 +15,7 @@ export type NormalizedChatMessageTransaction = Pick<
   hash: string
   isReply?: boolean
   isReaction?: boolean
+  asset: any // @todo types
 }
 
 export function normalizeMessage(

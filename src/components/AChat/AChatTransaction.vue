@@ -2,7 +2,7 @@
   <div
     class="a-chat__message-container"
     :class="{
-      'a-chat__message-container--right': isStringEqualCI(sender.id, userId),
+      'a-chat__message-container--right': isStringEqualCI(transaction.senderId, userId),
       'a-chat__message-container--transition': elementLeftOffset === 0
     }"
     v-touch="{
@@ -19,11 +19,11 @@
       :class="{
         'a-chat__message--flashing': flashing
       }"
-      :data-txid="id"
+      :data-txid="transaction.id"
     >
       <div class="a-chat__message-card">
         <div class="a-chat__message-card-header">
-          <div :title="timeTitle" class="a-chat__timestamp">
+          <div class="a-chat__timestamp">
             {{ time }}
           </div>
           <div class="a-chat__status">
@@ -38,30 +38,30 @@
           </div>
         </div>
 
-        <div v-if="isReply" class="a-chat__quoted-message">
+        <div v-if="transaction.isReply" class="a-chat__quoted-message">
           <quoted-message
-            :message-id="asset.replyto_id"
-            @click="$emit('click:quotedMessage', asset.replyto_id)"
+            :message-id="transaction.asset.replyto_id"
+            @click="$emit('click:quotedMessage', transaction.asset.replyto_id)"
           />
         </div>
 
         <div>
           <div class="a-chat__direction a-text-regular-bold">
             {{
-              isStringEqualCI(sender.id, userId)
+              isStringEqualCI(transaction.senderId, userId)
                 ? $t('chats.sent_label')
                 : $t('chats.received_label')
             }}
           </div>
           <div
             class="a-chat__amount"
-            :class="isClickable ? 'a-chat__amount--clickable' : ''"
+            :class="isCryptoSupported ? 'a-chat__amount--clickable' : ''"
             @click="onClickAmount"
           >
             <v-row align="center" no-gutters>
               <slot name="crypto" />
               <div class="a-chat__rates-column d-flex ml-4">
-                <span class="mb-1">{{ currencyFormatter(amount, crypto) }}</span>
+                <span class="mb-1">{{ currencyFormatter(transaction.amount, crypto) }}</span>
                 <span class="a-chat__rates">{{ historyRate }}</span>
               </div>
             </v-row>
@@ -70,7 +70,7 @@
 
         <div class="a-chat__message-card-body">
           <div class="a-chat__message-text mb-1 a-text-regular-enlarged">
-            {{ message }}
+            {{ transaction.message }}
           </div>
         </div>
       </div>
@@ -80,12 +80,14 @@
   </div>
 </template>
 
-<script>
-import { computed, watch, onMounted } from 'vue'
+<script lang="ts">
+import { useTransactionTime } from '@/components/AChat/hooks/useTransactionTime.ts'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { computed, watch, onMounted, defineComponent, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
-import { tsIcon, tsUpdatable, tsColor } from '@/lib/constants'
+import { tsIcon, tsUpdatable, tsColor, Cryptos } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
@@ -93,74 +95,25 @@ import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import QuotedMessage from './QuotedMessage'
 
-export default {
+export default defineComponent({
   components: {
     QuotedMessage
   },
   props: {
-    id: {
-      type: null,
+    transaction: {
+      type: Object as PropType<NormalizedChatMessageTransaction>,
       required: true
-    },
-    currency: {
-      type: String,
-      default: ''
-    },
-    message: {
-      type: String,
-      default: ''
-    },
-    time: {
-      type: String,
-      default: ''
-    },
-    timeTitle: {
-      type: String,
-      default: ''
-    },
-    userId: {
-      type: String,
-      default: ''
-    },
-    sender: {
-      type: Object,
-      required: true
-    },
-    amount: {
-      type: [Number, String],
-      default: 0
-    },
-    locale: {
-      type: String,
-      default: 'en'
     },
     status: {
       type: Object,
       required: true
     },
-    isClickable: {
-      type: Boolean,
-      default: false
-    },
     crypto: {
       type: String,
       default: 'ADM'
     },
-    hash: {
-      required: true,
-      type: String
-    },
     txTimestamp: {
       required: true
-    },
-    asset: {
-      type: Object,
-      // eslint-disable-next-line vue/require-valid-default-prop
-      default: {}
-    },
-    isReply: {
-      type: Boolean,
-      default: false
     },
     /**
      * Highlight the message by applying a background flash effect
@@ -182,14 +135,19 @@ export default {
     const { t } = useI18n()
     const store = useStore()
 
+    const userId = computed(() => store.state.address)
+
+    const time = useTransactionTime(props.transaction)
+    const isCryptoSupported = computed(() => props.transaction.type in Cryptos)
+
     const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
     const statusTitle = computed(() =>
       t(`chats.transaction_statuses.${props.status.virtualStatus}`)
     )
-    const statusUpdatable = computed(() => tsUpdatable(props.status.virtualStatus, props.currency))
+    const statusUpdatable = computed(() => tsUpdatable(props.status.virtualStatus, props.crypto))
     const statusColor = computed(() => tsColor(props.status.virtualStatus))
     const historyRate = computed(() => {
-      const amount = currencyAmount(props.amount, props.crypto)
+      const amount = currencyAmount(props.transaction.amount, props.crypto)
       return (
         '~' +
         store.getters['rate/historyRate'](
@@ -201,14 +159,14 @@ export default {
     })
 
     const onClickAmount = () => {
-      if (props.isClickable) {
-        emit('click:transaction', props.id)
+      if (isCryptoSupported.value) {
+        emit('click:transaction', props.transaction.id)
       }
     }
 
     const updateStatus = () => {
       if (statusUpdatable.value) {
-        emit('click:transactionStatus', props.id)
+        emit('click:transactionStatus', props.transaction.id)
       }
     }
 
@@ -239,6 +197,11 @@ export default {
     })
 
     return {
+      userId,
+
+      time,
+      isCryptoSupported,
+
       isStringEqualCI,
       currencyFormatter,
       statusIcon,
@@ -255,5 +218,5 @@ export default {
       elementLeftOffset
     }
   }
-}
+})
 </script>
