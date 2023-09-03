@@ -521,14 +521,14 @@ const actions = {
     }
 
     return admApi
-      .getChatRoomMessages(rootState.address, contactId, { offset, limit: perPage })
-      .then(({ messages }) => {
+      .getChatRoomMessages(rootState.address, contactId, { offset, limit: perPage }, true)
+      .then(({ messages, lastOffset }) => {
         dispatch('unshiftMessages', messages)
 
         if (messages.length <= 0) {
           commit('setChatOffset', { contactId, offset: -1 }) // no more messages
         } else {
-          offset = offset + perPage
+          offset = lastOffset
 
           commit('setChatOffset', { contactId, offset })
           commit('setChatPage', { contactId, page: ++page })

@@ -174,5 +174,6 @@ type GetChatRoomMessagesParams = Pick<
 export function getChatRoomMessages(
   address1: string,
   address2: string,
-  params: GetChatRoomMessagesParams
+  params: GetChatRoomMessagesParams,
+  recursive: boolean = false
 ): Promise<Array<ReturnType<typeof decodeChat>>>
