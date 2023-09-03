@@ -3,7 +3,8 @@
     class="a-chat__message-container"
     :class="{
       'a-chat__message-container--right': isStringEqualCI(transaction.senderId, userId),
-      'a-chat__message-container--transition': elementLeftOffset === 0
+      'a-chat__message-container--transition': elementLeftOffset === 0,
+      'a-chat__message-container--disable-max-width': disableMaxWidth
     }"
     v-touch="{
       move: onMove,
@@ -19,7 +20,7 @@
       :class="{
         'a-chat__message--flashing': flashing
       }"
-      :data-txid="transaction.id"
+      :data-id="dataId"
     >
       <div class="a-chat__message-card">
         <div class="a-chat__message-card-header">
@@ -104,6 +105,9 @@ export default defineComponent({
       type: Object as PropType<NormalizedChatMessageTransaction>,
       required: true
     },
+    dataId: {
+      type: String
+    },
     status: {
       type: Object,
       required: true
@@ -121,6 +125,9 @@ export default defineComponent({
     flashing: {
       type: Boolean,
       default: false
+    },
+    disableMaxWidth: {
+      type: Boolean
     }
   },
   emits: [

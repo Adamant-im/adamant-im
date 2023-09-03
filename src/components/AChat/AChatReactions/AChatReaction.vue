@@ -1,6 +1,6 @@
 <template>
   <div :class="classes.root">
-    {{ asset.react_message }}
+    <div :class="classes.emoji">{{ asset.react_message }}</div>
   </div>
 </template>
 
@@ -10,15 +10,16 @@ import { ReactionAsset } from '@/lib/adamant-api/asset'
 
 const className = 'a-chat-reaction'
 const classes = {
-  root: className
+  root: className,
+  emoji: `${className}__emoji`
 }
 
 export default defineComponent({
   props: {
     asset: {
-      type: Object,
+      type: Object as PropType<ReactionAsset>,
       required: true
-    } as PropType<ReactionAsset>
+    }
   },
   setup() {
     return {
@@ -32,24 +33,27 @@ export default defineComponent({
 @import 'vuetify/settings';
 
 .a-chat-reaction {
-  border-radius: 8px;
-  padding: 2px 4px;
-  display: inline-block;
-  position: absolute;
-  bottom: 0;
-  right: -8px;
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 18px;
+  height: 18px;
+
+  &__emoji {
+    text-align: center;
+    vertical-align: middle;
+    line-height: 1;
+    font-size: 12px;
+  }
 }
 
 .v-theme--light {
   .a-chat-reaction {
-    background-color: map-get($shades, 'white');
   }
 }
 
 .v-theme--dark {
   .a-chat-reaction {
-    background-color: map-get($shades, 'white');
   }
 }
 </style>

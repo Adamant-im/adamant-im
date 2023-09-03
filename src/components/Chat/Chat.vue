@@ -12,6 +12,52 @@
       @scroll:bottom="onScrollBottom"
       @scroll="onScroll"
     >
+      <template #overlay v-if="actionMessage">
+        <a-chat-actions-overlay
+          :modelValue="actionsMenuMessageId !== -1"
+          @update:modelValue="actionsMenuMessageId = -1"
+          :transaction="actionMessage"
+        >
+          <a-chat-message
+            v-if="actionMessage.type === 'message'"
+            :transaction="actionMessage"
+            :status="getTransactionStatus(actionMessage)"
+            :data-id="'action-message'"
+            html
+            disable-max-width
+          >
+            <template #avatar>
+              <ChatAvatar :user-id="partnerId" use-public-key @click="onClickAvatar(partnerId)" />
+            </template>
+          </a-chat-message>
+
+          <a-chat-transaction
+            v-else-if="isTransaction(actionMessage.type)"
+            :transaction="actionMessage"
+            :crypto="actionMessage.type"
+            :tx-timestamp="getTransaction(actionMessage.type, actionMessage.hash).timestamp"
+            :status="getTransactionStatus(actionMessage)"
+            :data-id="'action-message'"
+            disable-max-width
+          >
+            <template #crypto>
+              <crypto-icon :crypto="actionMessage.type" />
+            </template>
+          </a-chat-transaction>
+
+          <template #top>
+            <AChatReactionSelect :transaction="actionMessage" @react="sendReaction" />
+          </template>
+
+          <template #bottom>
+            <AChatMessageActionsMenu
+              @click:reply="openReplyPreview(actionMessage)"
+              @click:copy="copyMessageToClipboard(actionMessage)"
+            />
+          </template>
+        </a-chat-actions-overlay>
+      </template>
+
       <template #header>
         <chat-toolbar :partner-id="partnerId">
           <template #avatar-toolbar>
@@ -32,6 +78,7 @@
           :status="getTransactionStatus(message)"
           :html="true"
           :flashing="flashingMessageId === message.id"
+          :data-id="message.id"
           @resend="resendMessage(partnerId, message.id)"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="openReplyPreview(message)"
@@ -41,22 +88,6 @@
           <template #avatar>
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
           </template>
-
-          <template #actions>
-            <AChatMessageActionsMenu
-              :modelValue="actionsMenuMessageId === message.id"
-              @update:modelValue="actionsMenuMessageId = -1"
-              :message-id="message.id"
-              :position="sender.id === partnerId ? 'left' : 'right'"
-              @click:reply="openReplyPreview(message)"
-              @click:copy="copyMessageToClipboard(message)"
-            />
-
-            <AChatMessageActionsDropdown
-              @click:reply="openReplyPreview(message)"
-              @click:copy="copyMessageToClipboard(message)"
-            />
-          </template>
         </a-chat-message>
         <a-chat-transaction
           v-else-if="isTransaction(message.type)"
@@ -65,6 +96,7 @@
           :tx-timestamp="getTransaction(message.type, message.hash).timestamp"
           :status="getTransactionStatus(message)"
           :flashing="flashingMessageId === message.id"
+          :data-id="message.id"
           @click:transaction="openTransaction(message)"
           @click:transactionStatus="updateTransactionStatus(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
@@ -74,22 +106,6 @@
         >
           <template #crypto>
             <crypto-icon :crypto="message.type" />
-          </template>
-
-          <template #actions>
-            <AChatMessageActionsMenu
-              :modelValue="actionsMenuMessageId === message.id"
-              @update:modelValue="actionsMenuMessageId = -1"
-              :message-id="message.id"
-              :position="sender.id === partnerId ? 'left' : 'right'"
-              @click:reply="openReplyPreview(message)"
-              @click:copy="copyMessageToClipboard(message)"
-            />
-
-            <AChatMessageActionsDropdown
-              @click:reply="openReplyPreview(message)"
-              @click:copy="copyMessageToClipboard(message)"
-            />
           </template>
         </a-chat-transaction>
       </template>
@@ -158,7 +174,9 @@ import {
   AChatForm,
   AChatReplyPreview,
   AChatMessageActionsMenu,
-  AChatMessageActionsDropdown
+  AChatMessageActionsDropdown,
+  AChatActionsOverlay,
+  AChatReactionSelect
 } from '@/components/AChat'
 import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
@@ -236,7 +254,9 @@ export default {
     FreeTokensDialog,
     ProgressIndicator,
     AChatMessageActionsMenu,
-    AChatMessageActionsDropdown
+    AChatMessageActionsDropdown,
+    AChatActionsOverlay,
+    AChatReactionSelect
   },
   mixins: [transaction, partnerName],
   props: {
@@ -297,6 +317,9 @@ export default {
     },
     replyMessage() {
       return this.$store.getters['chat/messageById'](this.replyMessageId)
+    },
+    actionMessage() {
+      return this.$store.getters['chat/messageById'](this.actionsMenuMessageId)
     }
   },
   watch: {
@@ -385,6 +408,8 @@ export default {
       })
     },
     sendReaction(reactToId, reactMessage) {
+      this.actionsMenuMessageId = -1
+
       return this.$store.dispatch('chat/sendReaction', {
         recipientId: this.partnerId,
         reactToId,
@@ -454,10 +479,14 @@ export default {
       this.actionsMenuMessageId = message.id
     },
     openReplyPreview(message) {
+      this.actionsMenuMessageId = -1
+
       this.replyMessageId = message.id
       this.$refs.chatForm.focus()
     },
     copyMessageToClipboard({ message }) {
+      this.actionsMenuMessageId = -1
+
       copyToClipboard(message)
       this.$store.dispatch('snackbar/show', { message: this.$t('home.copied'), timeout: 1000 })
     },

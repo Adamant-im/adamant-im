@@ -120,3 +120,5 @@ export declare const FetchStatus: {
   Success: 'success'
   Error: 'error'
 }
+
+export declare const REACT_EMOJIS: Record<string, string>

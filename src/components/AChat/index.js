@@ -5,6 +5,8 @@ import AChatTransaction from './AChatTransaction.vue'
 import AChatReplyPreview from './AChatReplyPreview.vue'
 import AChatMessageActionsDropdown from './AChatMessageActionsDropdown.vue'
 import AChatMessageActionsMenu from './AChatMessageActionsMenu.vue'
+import AChatReactionSelect from './AChatReactionSelect/AChatReactionSelect.vue'
+import AChatActionsOverlay from './AChatActionsOverlay.vue'
 
 export {
   AChat,
@@ -13,5 +15,7 @@ export {
   AChatTransaction,
   AChatReplyPreview,
   AChatMessageActionsDropdown,
-  AChatMessageActionsMenu
+  AChatMessageActionsMenu,
+  AChatReactionSelect,
+  AChatActionsOverlay
 }

@@ -69,6 +69,28 @@ const getters = {
     return []
   },
 
+  reactions: (state, getters) => (transactionId, partnerId) => {
+    const messages = getters.messages(partnerId)
+
+    return messages.filter(
+      (message) => message.type === 'reaction' && message.asset.reactto_id === transactionId
+    )
+  },
+
+  reactionsBySenderId: (state, getters) => (transactionId, partnerId, senderId) => {
+    const reactions = getters.reactions(transactionId, partnerId)
+
+    return reactions.filter((reaction) => reaction.senderId === senderId)
+  },
+
+  lastReaction: (state, getters) => (transactionId, partnerId, senderId) => {
+    const reactions = getters.reactionsBySenderId(transactionId, partnerId, senderId)
+
+    if (reactions.length === 0) return null
+
+    return reactions[reactions.length - 1]
+  },
+
   /**
    * Return message by ID.
    * @param {number} id Message Id
@@ -765,7 +787,6 @@ const actions = {
     })
 
     const type = MessageType.RICH_CONTENT_MESSAGE
-
     return queueMessage(messageObject.asset, recipientId, type)
       .then((res) => {
         // @todo this check must be performed on the server

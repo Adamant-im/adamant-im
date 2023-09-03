@@ -3,7 +3,8 @@
     class="a-chat__message-container"
     :class="{
       'a-chat__message-container--right': isStringEqualCI(transaction.senderId, userId),
-      'a-chat__message-container--transition': elementLeftOffset === 0
+      'a-chat__message-container--transition': elementLeftOffset === 0,
+      'a-chat__message-container--disable-max-width': disableMaxWidth
     }"
     v-touch="{
       move: onMove,
@@ -19,7 +20,7 @@
       :class="{
         'a-chat__message--flashing': flashing
       }"
-      :data-txid="transaction.id"
+      :data-id="dataId"
     >
       <div
         v-if="showAvatar"
@@ -54,8 +55,6 @@
           />
         </div>
 
-        <v-btn @click="onReaction">Send reaction</v-btn>
-
         <div class="a-chat__message-card-body">
           <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
           <!-- AChatMessage :message <- Chat.vue :message="formatMessage(message)" <- formatMessage <- DOMPurify.sanitize() -->
@@ -74,7 +73,7 @@
       </div>
     </div>
 
-    <a-chat-reaction :asset="{ reactto_id: 123, react_message: '🫡' }" />
+    <a-chat-reactions :transaction="transaction" />
 
     <slot name="actions" />
   </v-row>
@@ -84,9 +83,9 @@
 import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 
-import { useFormatMessage } from './hooks/useFormatMessage.ts'
-import { usePartnerId } from './hooks/usePartnerId.ts'
-import { useTransactionTime } from './hooks/useTransactionTime.ts'
+import { useFormatMessage } from './hooks/useFormatMessage'
+import { usePartnerId } from './hooks/usePartnerId'
+import { useTransactionTime } from './hooks/useTransactionTime'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
@@ -94,17 +93,20 @@ import QuotedMessage from './QuotedMessage.vue'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import formatDate from '@/filters/date'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
-import AChatReaction from './AChatReaction'
+import AChatReactions from './AChatReactions/AChatReactions'
 
 export default defineComponent({
   components: {
-    AChatReaction,
+    AChatReactions,
     QuotedMessage
   },
   props: {
     transaction: {
       type: Object as PropType<NormalizedChatMessageTransaction>,
       required: true
+    },
+    dataId: {
+      type: String
     },
     status: {
       type: Object,
@@ -120,6 +122,9 @@ export default defineComponent({
     flashing: {
       type: Boolean,
       default: false
+    },
+    disableMaxWidth: {
+      type: Boolean
     }
   },
   emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress', 'reaction'],
@@ -146,10 +151,6 @@ export default defineComponent({
       emit('longpress')
     }
 
-    const onReaction = () => {
-      emit('reaction', props.transaction.id, '🫡') // @todo emoji remove
-    }
-
     return {
       userId,
       statusIcon,
@@ -161,7 +162,6 @@ export default defineComponent({
       elementLeftOffset,
       isStringEqualCI,
       onLongPress,
-      onReaction,
       formatDate,
       time
     }

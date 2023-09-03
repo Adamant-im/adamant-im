@@ -84,11 +84,14 @@ $scroll-bar-width: 4px;
     float: left;
     max-width: 80%;
     margin: unset; // resets margins of <v-row/>
+    margin-bottom: 16px;
 
     &:hover {
       .a-chat__message-actions-icon {
         visibility: visible;
-        transition: visibility .5s, max-height .5s;
+        transition:
+          visibility 0.5s,
+          max-height 0.5s;
       }
     }
 
@@ -98,6 +101,7 @@ $scroll-bar-width: 4px;
 
     & + & {
       margin-top: unset; // resets margins of `.v-row + .v-row`
+      margin-bottom: 16px;
     }
 
     &--right {
@@ -105,7 +109,11 @@ $scroll-bar-width: 4px;
     }
 
     &--transition {
-      transition: all .4s;
+      transition: all 0.4s;
+    }
+
+    &--disable-max-width {
+      max-width: unset;
     }
   }
 
@@ -116,7 +124,6 @@ $scroll-bar-width: 4px;
     padding-bottom: 8px;
     padding-left: 16px;
     padding-right: 16px;
-    margin-bottom: 16px;
     border-radius: 8px;
   }
 
@@ -130,11 +137,13 @@ $scroll-bar-width: 4px;
   }
 
   @keyframes flashing {
-    0% {}
+    0% {
+    }
     50% {
       background-color: rgba(map-get($adm-colors, 'primary'), 0.25);
     }
-    100% {}
+    100% {
+    }
   }
 
   &__message--flashing {
@@ -371,6 +380,14 @@ $scroll-bar-width: 4px;
       opacity: 1;
     }
   }
+  &__overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    backdrop-filter: blur(6px);
+  }
 }
 
 /** Themes **/
@@ -382,7 +399,9 @@ $scroll-bar-width: 4px;
 
     &__message {
       background-color: #fff;
-      box-shadow: 0 1px 10px hsla(0, 0%, 39.2%, 0.06), 0 1px 1px hsla(0, 0%, 39.2%, 0.04),
+      box-shadow:
+        0 1px 10px hsla(0, 0%, 39.2%, 0.06),
+        0 1px 1px hsla(0, 0%, 39.2%, 0.04),
         0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
 
       &--red {
@@ -480,7 +499,9 @@ $scroll-bar-width: 4px;
 
     &__message {
       background-color: #000;
-      box-shadow: 0 1px 10px hsla(0, 0%, 39.2%, 0.06), 0 1px 1px hsla(0, 0%, 39.2%, 0.04),
+      box-shadow:
+        0 1px 10px hsla(0, 0%, 39.2%, 0.06),
+        0 1px 1px hsla(0, 0%, 39.2%, 0.04),
         0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
       &--red {
         background-color: map-get($grey, 'darken-3');
@@ -491,7 +512,11 @@ $scroll-bar-width: 4px;
     }
 
     &__message-actions-icon {
-      background-image: linear-gradient(45deg, map-get($adm-colors, 'muted'), map-get($shades, 'black') 40%);
+      background-image: linear-gradient(
+        45deg,
+        map-get($adm-colors, 'muted'),
+        map-get($shades, 'black') 40%
+      );
     }
 
     &__sender {

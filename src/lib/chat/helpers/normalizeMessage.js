@@ -34,7 +34,6 @@ export function normalizeMessage(abstract) {
     transaction.asset = abstract.message
     transaction.hash = abstract.id
     transaction.type = 'reaction'
-    console.log('yes', transaction)
   } else if (abstract.message && abstract.message.replyto_id && abstract.message.reply_message) {
     // AIP-16: Reply message
     if (typeof abstract.message.reply_message === 'string') {
