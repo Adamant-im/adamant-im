@@ -380,7 +380,12 @@ const mutations = {
     }
 
     // Shouldn't duplicate third-party crypto transactions
-    if (message.type && message.type !== 'message' && message.type !== Cryptos.ADM) {
+    if (
+      message.type &&
+      message.type !== 'message' &&
+      message.type !== 'reaction' &&
+      message.type !== Cryptos.ADM
+    ) {
       const localTransaction = chat.messages.find(
         (localTransaction) => localTransaction.hash === message.hash
       )
