@@ -19,6 +19,7 @@
     "electron:serve": "vite preview --config electron-vite.config.ts",
     "https": "vite preview --https",
     "test": "vitest",
+    "test:e2e": "vitest --dir tests/e2e",
     "coverage": "vitest run --coverage",
     "postinstall": "electron-builder install-app-deps && npm run schema:generate"
   },
