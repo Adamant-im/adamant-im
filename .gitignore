@@ -45,3 +45,6 @@ yarn-error.log*
 src/lib/schema/*
 !src/lib/schema/schema.json
 !src/lib/schema/config.json
+/test-results/
+/playwright-report/
+/playwright/.cache/
