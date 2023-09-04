@@ -81,8 +81,6 @@ export default defineComponent({
       right: `${rect.value?.right}px`
     })
 
-    console.log(position)
-
     onMounted(() => {
       nextTick(() => {
         if (rect.value) {
