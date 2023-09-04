@@ -83,10 +83,20 @@
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="openReplyPreview(message)"
           @longpress="openActionsMenu(message)"
-          @reaction="sendReaction"
         >
           <template #avatar>
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
+          </template>
+
+          <template #actions>
+            <AChatMessageActionsDropdown
+              :transaction="message"
+              @click:reply="openReplyPreview(message)"
+              @click:copy="copyMessageToClipboard(message)"
+              @react="sendReaction"
+            >
+              <AChatReactionSelect :transaction="message" @react="sendReaction" />
+            </AChatMessageActionsDropdown>
           </template>
         </a-chat-message>
         <a-chat-transaction
@@ -106,6 +116,17 @@
         >
           <template #crypto>
             <crypto-icon :crypto="message.type" />
+          </template>
+
+          <template #actions>
+            <AChatMessageActionsDropdown
+              :transaction="message"
+              @click:reply="openReplyPreview(message)"
+              @click:copy="copyMessageToClipboard(message)"
+              @react="sendReaction"
+            >
+              <AChatReactionSelect :transaction="message" @react="sendReaction" />
+            </AChatMessageActionsDropdown>
           </template>
         </a-chat-transaction>
       </template>

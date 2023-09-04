@@ -127,7 +127,7 @@ export default defineComponent({
       type: Boolean
     }
   },
-  emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress', 'reaction'],
+  emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress'],
   setup(props, { emit }) {
     const store = useStore()
 
