@@ -16,7 +16,7 @@ import { usePartnerId } from '@/components/AChat/hooks/usePartnerId.ts'
 import { computed, defineComponent, PropType } from 'vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { useStore } from 'vuex'
-import AChatReaction from './AChatReaction'
+import AChatReaction from './AChatReaction.vue'
 
 const className = 'a-chat-reactions'
 const classes = {

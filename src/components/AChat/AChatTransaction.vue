@@ -84,6 +84,7 @@
 <script lang="ts">
 import { useTransactionTime } from '@/components/AChat/hooks/useTransactionTime.ts'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { CryptoSymbol } from "@/lib/constants/cryptos";
 import { computed, watch, onMounted, defineComponent, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
@@ -94,7 +95,7 @@ import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
-import QuotedMessage from './QuotedMessage'
+import QuotedMessage from './QuotedMessage.vue'
 
 export default defineComponent({
   components: {
@@ -151,7 +152,7 @@ export default defineComponent({
     const statusTitle = computed(() =>
       t(`chats.transaction_statuses.${props.status.virtualStatus}`)
     )
-    const statusUpdatable = computed(() => tsUpdatable(props.status.virtualStatus, props.crypto))
+    const statusUpdatable = computed(() => tsUpdatable(props.status.virtualStatus, props.crypto as CryptoSymbol))
     const statusColor = computed(() => tsColor(props.status.virtualStatus))
     const historyRate = computed(() => {
       const amount = currencyAmount(props.transaction.amount, props.crypto)

@@ -8,7 +8,7 @@ import { Cryptos } from '@/lib/constants'
  * @param {boolean} isAdmBalance - Amount is ADM balance
  * @returns {string}
  */
-export default (amount, symbol = Cryptos.ADM, isAdmBalance) => {
+export default (amount, symbol = Cryptos.ADM, isAdmBalance = false) => {
   if (amount !== undefined) {
     const formatted = BigNumber(
       !isAdmBalance && symbol === Cryptos.ADM ? amount / 1e8 : amount
