@@ -77,8 +77,6 @@
       </div>
     </div>
 
-    <a-chat-reactions :transaction="transaction" />
-
     <slot name="actions" />
   </div>
 </template>
@@ -97,11 +95,9 @@ import { timestampInSec } from '@/filters/helpers'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import QuotedMessage from './QuotedMessage'
-import AChatReactions from './AChatReactions/AChatReactions'
 
 export default defineComponent({
   components: {
-    AChatReactions,
     QuotedMessage
   },
   props: {

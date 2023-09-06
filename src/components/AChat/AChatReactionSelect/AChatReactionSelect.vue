@@ -73,6 +73,8 @@ export default defineComponent({
   align-items: center;
   padding: 4px;
   border-radius: 16px;
+  cursor: pointer;
+
 
   &__item {
   }

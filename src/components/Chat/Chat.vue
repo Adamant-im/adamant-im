@@ -15,7 +15,7 @@
       <template #overlay v-if="actionMessage">
         <a-chat-actions-overlay
           :modelValue="actionsMenuMessageId !== -1"
-          @update:modelValue="actionsMenuMessageId = -1"
+          @update:modelValue="closeActionsMenu"
           :transaction="actionMessage"
         >
           <a-chat-message
@@ -46,7 +46,11 @@
           </a-chat-transaction>
 
           <template #top>
-            <AChatReactionSelect :transaction="actionMessage" @react="sendReaction" />
+            <AChatReactionSelect
+              :transaction="actionMessage"
+              @react="sendReaction"
+              @click="openActionsMenu(actionMessage)"
+            />
           </template>
 
           <template #bottom>
@@ -89,6 +93,8 @@
           </template>
 
           <template #actions>
+            <AChatReactions :transaction="message" />
+
             <AChatMessageActionsDropdown
               :transaction="message"
               @click:reply="openReplyPreview(message)"
@@ -119,6 +125,8 @@
           </template>
 
           <template #actions>
+            <AChatReactions :transaction="message" />
+
             <AChatMessageActionsDropdown
               :transaction="message"
               @click:reply="openReplyPreview(message)"
@@ -180,6 +188,7 @@
 </template>
 
 <script>
+import AChatReactions from '@/components/AChat/AChatReactions/AChatReactions.vue'
 import { nextTick } from 'vue'
 import { detect } from 'detect-browser'
 import Visibility from 'visibilityjs'
@@ -263,6 +272,7 @@ function validateMessage(message) {
 
 export default {
   components: {
+    AChatReactions,
     AChatReplyPreview,
     AChat,
     AChatMessage,
@@ -499,14 +509,17 @@ export default {
     openActionsMenu(message) {
       this.actionsMenuMessageId = message.id
     },
-    openReplyPreview(message) {
+    closeActionsMenu() {
       this.actionsMenuMessageId = -1
+    },
+    openReplyPreview(message) {
+      this.closeActionsMenu()
 
       this.replyMessageId = message.id
       this.$refs.chatForm.focus()
     },
     copyMessageToClipboard({ message }) {
-      this.actionsMenuMessageId = -1
+      this.closeActionsMenu()
 
       copyToClipboard(message)
       this.$store.dispatch('snackbar/show', { message: this.$t('home.copied'), timeout: 1000 })

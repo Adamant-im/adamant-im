@@ -73,8 +73,6 @@
       </div>
     </div>
 
-    <a-chat-reactions :transaction="transaction" />
-
     <slot name="actions" />
   </v-row>
 </template>
@@ -93,11 +91,9 @@ import QuotedMessage from './QuotedMessage.vue'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import formatDate from '@/filters/date'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
-import AChatReactions from './AChatReactions/AChatReactions'
 
 export default defineComponent({
   components: {
-    AChatReactions,
     QuotedMessage
   },
   props: {
