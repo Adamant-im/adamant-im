@@ -87,7 +87,7 @@ export default defineComponent({
 
 .v-theme--light {
   .a-chat-reactions {
-    background-color: map-get($shades, 'white');
+    background-color: map-get($adm-colors, 'secondary');
   }
 }
 

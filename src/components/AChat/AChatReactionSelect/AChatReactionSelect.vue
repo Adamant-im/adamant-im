@@ -65,6 +65,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@import 'vuetify/settings';
 @import '../../../assets/styles/settings/_colors.scss';
 
 .a-chat-reaction-select {
@@ -79,6 +80,8 @@ export default defineComponent({
 
 .v-theme--light {
   .a-chat-reaction-select {
+    background-color: map-get($shades, 'white');
+    border: 1px solid map-get($adm-colors, 'secondary2');
   }
 }
 

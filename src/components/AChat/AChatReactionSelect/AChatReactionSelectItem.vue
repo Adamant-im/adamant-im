@@ -57,14 +57,6 @@ export default defineComponent({
   cursor: pointer;
   transition: background-color 50ms ease-out 100ms;
 
-  &:hover {
-    background-color: map-get($adm-colors, 'secondary2-transparent');
-  }
-
-  &--selected {
-    background-color: map-get($adm-colors, 'secondary2-transparent');
-  }
-
   &__emoji {
     font-size: 24px;
     text-align: center;
@@ -74,11 +66,25 @@ export default defineComponent({
 
 .v-theme--light {
   .a-chat-reaction-select-item {
+    &:hover {
+      background-color: map-get($adm-colors, 'secondary2');
+    }
+
+    &--selected {
+      background-color: map-get($adm-colors, 'secondary2');
+    }
   }
 }
 
 .v-theme--dark {
   .a-chat-reaction-select-item {
+    &:hover {
+      background-color: map-get($adm-colors, 'secondary2-transparent');
+    }
+
+    &--selected {
+      background-color: map-get($adm-colors, 'secondary2-transparent');
+    }
   }
 }
 </style>
