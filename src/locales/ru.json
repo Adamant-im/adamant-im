@@ -75,7 +75,9 @@
     },
     "pull_down_actions": {
       "update_balances": "Обновить балансы"
-    }
+    },
+    "you_reacted": "Вы: Реакция",
+    "partner_reacted": "Реакция"
   },
   "connection": {
     "offline": "Нет подключения к Интернету",

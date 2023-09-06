@@ -75,7 +75,9 @@
     },
     "pull_down_actions": {
       "update_balances": "Update balances"
-    }
+    },
+    "you_reacted": "You: Reacted",
+    "partner_reacted": "Reacted"
   },
   "connection": {
     "offline": "Offline—No connection",
