@@ -444,7 +444,7 @@ export default {
       // if the message is not present in the store
       // fetch chat history until reach that message
       if (transactionIndex === -1) {
-        await this.fetchAllChatHistory()
+        await this.fetchUntilFindTransaction(transactionId)
 
         transactionIndex = this.$store.getters['chat/indexOfMessage'](this.partnerId, transactionId)
       }
@@ -532,10 +532,17 @@ export default {
           this.$refs.chat.maintainScrollPosition()
         })
     },
-    fetchAllChatHistory() {
+    fetchUntilFindTransaction(transactionId) {
       const fetchMessages = async () => {
         await this.$store.dispatch('chat/getChatRoomMessages', { contactId: this.partnerId })
+
         this.$refs.chat.maintainScrollPosition()
+
+        const transactionFound = this.$store.getters['chat/partnerMessageById'](
+          this.partnerId,
+          transactionId
+        )
+        if (transactionFound) return
 
         if (this.$store.state.chat.offset > -1) {
           await new Promise((resolve) => setTimeout(resolve, 200))
