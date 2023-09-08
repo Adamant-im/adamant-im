@@ -1,6 +1,10 @@
 <template>
   <div :class="classes.root">
     <div :class="classes.emoji">{{ asset.react_message }}</div>
+
+    <div :class="classes.avatar" v-if="$slots.avatar">
+      <slot name="avatar" />
+    </div>
   </div>
 </template>
 
@@ -11,7 +15,8 @@ import { ReactionAsset } from '@/lib/adamant-api/asset'
 const className = 'a-chat-reaction'
 const classes = {
   root: className,
-  emoji: `${className}__emoji`
+  emoji: `${className}__emoji`,
+  avatar: `${className}__avatar`
 }
 
 export default defineComponent({
@@ -38,12 +43,19 @@ export default defineComponent({
   justify-content: space-around;
   width: 18px;
   height: 18px;
+  position: relative;
 
   &__emoji {
     text-align: center;
     vertical-align: middle;
     line-height: 1;
     font-size: 12px;
+  }
+
+  &__avatar {
+    position: absolute;
+    bottom: -6px;
+    right: -6px;
   }
 }
 

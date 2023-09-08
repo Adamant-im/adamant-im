@@ -7,12 +7,17 @@
     }"
   >
     <a-chat-reaction v-if="displayPartnerReaction" :asset="partnerReaction.asset" />
-    <a-chat-reaction v-if="displayMyReaction" :asset="myReaction.asset" />
+    <a-chat-reaction v-if="displayMyReaction" :asset="myReaction.asset">
+      <template #avatar>
+        <ChatAvatar user-id="U123456" :size="12" />
+      </template>
+    </a-chat-reaction>
   </div>
 </template>
 
 <script lang="ts">
 import { usePartnerId } from '@/components/AChat/hooks/usePartnerId.ts'
+import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import { isEmptyReaction } from '@/lib/chat/helpers'
 import { computed, defineComponent, PropType } from 'vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
@@ -27,6 +32,7 @@ const classes = {
 
 export default defineComponent({
   components: {
+    ChatAvatar,
     AChatReaction
   },
   props: {
@@ -72,7 +78,7 @@ export default defineComponent({
 .a-chat-reactions {
   position: absolute;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   font-size: 16px;
   border-radius: 8px;
   padding: 2px;

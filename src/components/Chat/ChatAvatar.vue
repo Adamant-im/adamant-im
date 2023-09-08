@@ -120,8 +120,14 @@ export default {
 
 <style lang="scss" scoped>
 .chat-avatar {
+  line-height: 1;
+
   &--clickable {
     cursor: pointer;
+  }
+
+  img {
+    display: block;
   }
 }
 </style>
