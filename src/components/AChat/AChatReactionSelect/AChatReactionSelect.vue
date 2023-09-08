@@ -10,7 +10,13 @@
         @update:model-value="onReact"
       />
 
-      <v-btn :size="36" icon :class="classes.moreButton" @click="$emit('click:emojiPicker')" elevation="0">
+      <v-btn
+        :size="36"
+        icon
+        :class="classes.moreButton"
+        @click="$emit('click:emojiPicker')"
+        elevation="0"
+      >
         <v-icon :size="24" icon="mdi-chevron-down" />
       </v-btn>
     </div>
@@ -58,7 +64,8 @@ export default defineComponent({
 
     const onReact = (state: boolean, emoji: string) => {
       if (!state) {
-        // Reaction cannot be deleted
+        // Delete reaction
+        emit('react', props.transaction.id, '')
         return
       }
 
