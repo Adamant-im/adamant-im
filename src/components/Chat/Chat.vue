@@ -46,15 +46,22 @@
           </a-chat-transaction>
 
           <template #top>
+            <EmojiPicker
+              v-if="showEmojiPicker"
+              @emoji:select="onEmojiSelect"
+            />
+
             <AChatReactionSelect
+              v-else
               :transaction="actionMessage"
               @react="sendReaction"
-              @click="openActionsMenu(actionMessage)"
+              @click:emoji-picker="showEmojiPicker = true"
             />
           </template>
 
           <template #bottom>
             <AChatMessageActionsMenu
+              v-if="!showEmojiPicker"
               @click:reply="openReplyPreview(actionMessage)"
               @click:copy="copyMessageToClipboard(actionMessage)"
             />
@@ -99,9 +106,29 @@
               :transaction="message"
               @click:reply="openReplyPreview(message)"
               @click:copy="copyMessageToClipboard(message)"
-              @react="sendReaction"
+              @dialog:close="showEmojiPicker = false"
             >
-              <AChatReactionSelect :transaction="message" @react="sendReaction" />
+              <template #top>
+                <EmojiPicker
+                  v-if="showEmojiPicker"
+                  @emoji:select="onEmojiSelect"
+                />
+
+                <AChatReactionSelect
+                  v-else
+                  :transaction="message"
+                  @react="sendReaction"
+                  @click:emoji-picker="showEmojiPicker = true"
+                />
+              </template>
+
+              <template #bottom>
+                <AChatMessageActionsList
+                  v-if="!showEmojiPicker"
+                  @click:reply="openReplyPreview(message)"
+                  @click:copy="copyMessageToClipboard(message)"
+                />
+              </template>
             </AChatMessageActionsDropdown>
           </template>
         </a-chat-message>
@@ -132,8 +159,29 @@
               @click:reply="openReplyPreview(message)"
               @click:copy="copyMessageToClipboard(message)"
               @react="sendReaction"
+              @dialog:close="showEmojiPicker = false"
             >
-              <AChatReactionSelect :transaction="message" @react="sendReaction" />
+              <template #top>
+                <EmojiPicker
+                  v-if="showEmojiPicker"
+                  @emoji:select="onEmojiSelect"
+                />
+
+                <AChatReactionSelect
+                  v-else
+                  :transaction="message"
+                  @react="sendReaction"
+                  @click:emoji-picker="showEmojiPicker = true"
+                />
+              </template>
+
+              <template #bottom>
+                <AChatMessageActionsList
+                  v-if="!showEmojiPicker"
+                  @click:reply="openReplyPreview(message)"
+                  @click:copy="copyMessageToClipboard(message)"
+                />
+              </template>
             </AChatMessageActionsDropdown>
           </template>
         </a-chat-transaction>
@@ -188,6 +236,7 @@
 </template>
 
 <script>
+import AChatMessageActionsList from '@/components/AChat/AChatMessageActionsList.vue'
 import AChatReactions from '@/components/AChat/AChatReactions/AChatReactions.vue'
 import { nextTick } from 'vue'
 import { detect } from 'detect-browser'
@@ -196,6 +245,7 @@ import copyToClipboard from 'copy-to-clipboard'
 
 import { Cryptos } from '@/lib/constants'
 import { formatMarkdown } from '@/filters/formatMarkdown'
+import EmojiPicker from '@/components/EmojiPicker.vue'
 
 import {
   AChat,
@@ -272,6 +322,7 @@ function validateMessage(message) {
 
 export default {
   components: {
+    AChatMessageActionsList,
     AChatReactions,
     AChatReplyPreview,
     AChat,
@@ -287,7 +338,8 @@ export default {
     AChatMessageActionsMenu,
     AChatMessageActionsDropdown,
     AChatActionsOverlay,
-    AChatReactionSelect
+    AChatReactionSelect,
+    EmojiPicker
   },
   mixins: [transaction, partnerName],
   props: {
@@ -308,7 +360,8 @@ export default {
     flashingMessageId: -1,
 
     actionsMenuMessageId: -1,
-    replyMessageId: -1
+    replyMessageId: -1,
+    showEmojiPicker: false
   }),
   computed: {
     /**
@@ -439,13 +492,16 @@ export default {
       })
     },
     sendReaction(reactToId, reactMessage) {
-      this.actionsMenuMessageId = -1
+      this.closeActionsMenu()
 
       return this.$store.dispatch('chat/sendReaction', {
         recipientId: this.partnerId,
         reactToId,
         reactMessage
       })
+    },
+    onEmojiSelect(transactionId, emoji) {
+      this.sendReaction(transactionId, emoji)
     },
     updateTransactionStatus(message) {
       this.$store.dispatch(message.type.toLowerCase() + '/updateTransaction', {
@@ -511,6 +567,7 @@ export default {
     },
     closeActionsMenu() {
       this.actionsMenuMessageId = -1
+      this.showEmojiPicker = false
     },
     openReplyPreview(message) {
       this.closeActionsMenu()

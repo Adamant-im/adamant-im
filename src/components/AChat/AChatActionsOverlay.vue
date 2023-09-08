@@ -83,13 +83,13 @@ export default defineComponent({
 
     onMounted(() => {
       nextTick(() => {
-        if (rect.value) {
-          if (rect.value.top > window.innerHeight / 2) {
+        setTimeout(() => {
+          if (rect.value) {
             const halfOfElementHeight = rect.value ? rect.value.height / 2 : 0
 
             position.top = `calc(50% - ${halfOfElementHeight}px)`
           }
-        }
+        }, 0)
       })
     })
 
@@ -126,7 +126,7 @@ export default defineComponent({
 
   &__message {
     position: fixed;
-    transition: all 0.2s ease;
+    transition: all 0.05s ease;
   }
 
   &__reaction-select {

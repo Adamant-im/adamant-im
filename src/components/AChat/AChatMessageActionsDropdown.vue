@@ -1,5 +1,10 @@
 <template>
-  <v-menu :min-width="80" :max-width="250">
+  <v-menu
+    :min-width="80"
+    :max-width="264"
+    :close-on-content-click="false"
+    @update:model-value="emit('dialog:close')"
+  >
     <template #activator="{ props }">
       <v-btn
         v-bind="props"
@@ -15,28 +20,10 @@
 
     <div>
       <div :class="classes.reactionSelect">
-        <slot />
+        <slot name="top" />
       </div>
 
-      <v-list density="compact" variant="text" elevation="9" :class="classes.list">
-        <v-list-item @click="$emit('click:reply')">
-          <v-list-item-title>{{ t('chats.chat_actions.reply') }}</v-list-item-title>
-
-          <template #append>
-            <v-icon icon="mdi-reply" />
-          </template>
-        </v-list-item>
-
-        <v-divider />
-
-        <v-list-item @click="$emit('click:copy')">
-          <v-list-item-title>{{ t('chats.chat_actions.copy') }}</v-list-item-title>
-
-          <template #append>
-            <v-icon icon="mdi-content-copy" />
-          </template>
-        </v-list-item>
-      </v-list>
+      <slot name="bottom" />
     </div>
   </v-menu>
 </template>
@@ -50,8 +37,7 @@ import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 const className = 'message-actions-dropdown'
 const classes = {
   root: className,
-  reactionSelect: `${className}__reaction-select`,
-  list: `${className}__list`
+  reactionSelect: `${className}__reaction-select`
 }
 
 export default defineComponent({
@@ -61,11 +47,11 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['click:reply', 'click:copy', 'react'],
-  setup() {
+  emits: ['click:reply', 'click:copy', 'dialog:close'],
+  setup(props, { emit }) {
     const { t } = useI18n()
 
-    return { t, classes }
+    return { t, classes, emit }
   }
 })
 </script>
@@ -74,13 +60,6 @@ export default defineComponent({
 .message-actions-dropdown {
   &__reaction-select {
     margin-top: 8px;
-  }
-
-  &__list {
-    padding-top: 0;
-    padding-bottom: 0;
-    border-radius: 8px;
-    margin-top: 16px;
   }
 }
 </style>
