@@ -3,7 +3,8 @@
     :min-width="80"
     :max-width="264"
     :close-on-content-click="false"
-    @update:model-value="emit('dialog:close')"
+    :model-value="open"
+    @update:model-value="toggleMenu"
   >
     <template #activator="{ props }">
       <v-btn
@@ -13,6 +14,7 @@
         :ripple="false"
         :elevation="0"
         class="a-chat__message-actions-icon"
+        @click="toggleMenu(true)"
       >
         <v-icon icon="mdi-chevron-down" :size="24" />
       </v-btn>
@@ -45,13 +47,20 @@ export default defineComponent({
     transaction: {
       type: Object as PropType<NormalizedChatMessageTransaction>,
       required: true
+    },
+    open: {
+      type: Boolean
     }
   },
-  emits: ['click:reply', 'click:copy', 'dialog:close'],
+  emits: ['click:reply', 'click:copy', 'open:change'],
   setup(props, { emit }) {
     const { t } = useI18n()
 
-    return { t, classes, emit }
+    const toggleMenu = (state: boolean) => {
+      emit('open:change', state, props.transaction)
+    }
+
+    return { t, classes, toggleMenu, emit }
   }
 })
 </script>

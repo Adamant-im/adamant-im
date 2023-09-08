@@ -46,10 +46,7 @@
           </a-chat-transaction>
 
           <template #top>
-            <EmojiPicker
-              v-if="showEmojiPicker"
-              @emoji:select="onEmojiSelect"
-            />
+            <EmojiPicker v-if="showEmojiPicker" @emoji:select="onEmojiSelect" />
 
             <AChatReactionSelect
               v-else
@@ -104,15 +101,13 @@
 
             <AChatMessageActionsDropdown
               :transaction="message"
+              :open="actionsDropdownMessageId === message.id"
+              @open:change="toggleActionsDropdown"
               @click:reply="openReplyPreview(message)"
               @click:copy="copyMessageToClipboard(message)"
-              @dialog:close="showEmojiPicker = false"
             >
               <template #top>
-                <EmojiPicker
-                  v-if="showEmojiPicker"
-                  @emoji:select="onEmojiSelect"
-                />
+                <EmojiPicker v-if="showEmojiPicker" @emoji:select="onEmojiSelect" />
 
                 <AChatReactionSelect
                   v-else
@@ -156,16 +151,13 @@
 
             <AChatMessageActionsDropdown
               :transaction="message"
+              :open="actionsDropdownMessageId === message.id"
+              @open:change="toggleActionsDropdown"
               @click:reply="openReplyPreview(message)"
               @click:copy="copyMessageToClipboard(message)"
-              @react="sendReaction"
-              @dialog:close="showEmojiPicker = false"
             >
               <template #top>
-                <EmojiPicker
-                  v-if="showEmojiPicker"
-                  @emoji:select="onEmojiSelect"
-                />
+                <EmojiPicker v-if="showEmojiPicker" @emoji:select="onEmojiSelect" />
 
                 <AChatReactionSelect
                   v-else
@@ -360,6 +352,7 @@ export default {
     flashingMessageId: -1,
 
     actionsMenuMessageId: -1,
+    actionsDropdownMessageId: -1,
     replyMessageId: -1,
     showEmojiPicker: false
   }),
@@ -493,6 +486,7 @@ export default {
     },
     sendReaction(reactToId, reactMessage) {
       this.closeActionsMenu()
+      this.closeActionsDropdown()
 
       return this.$store.dispatch('chat/sendReaction', {
         recipientId: this.partnerId,
@@ -569,14 +563,27 @@ export default {
       this.actionsMenuMessageId = -1
       this.showEmojiPicker = false
     },
+    closeActionsDropdown() {
+      this.actionsDropdownMessageId = -1
+    },
+    toggleActionsDropdown(open, transaction) {
+      if (open) {
+        this.actionsDropdownMessageId = transaction.id
+      } else {
+        this.closeActionsDropdown()
+        this.showEmojiPicker = false
+      }
+    },
     openReplyPreview(message) {
       this.closeActionsMenu()
+      this.closeActionsDropdown()
 
       this.replyMessageId = message.id
       this.$refs.chatForm.focus()
     },
     copyMessageToClipboard({ message }) {
       this.closeActionsMenu()
+      this.closeActionsDropdown()
 
       copyToClipboard(message)
       this.$store.dispatch('snackbar/show', { message: this.$t('home.copied'), timeout: 1000 })
