@@ -79,6 +79,9 @@ export default defineComponent({
   margin-right: -4px;
   margin-bottom: -4px;
 
+  cursor: default;
+  user-select: none;
+
   &__left {
     right: unset;
     left: 100%;

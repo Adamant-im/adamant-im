@@ -89,6 +89,7 @@ export default defineComponent({
 .a-chat-reaction-select {
   border-radius: 16px;
   cursor: pointer;
+  user-select: none;
 
   &__predefined-reactions {
     display: flex;
