@@ -1,16 +1,13 @@
 <template>
   <div
-    v-if="
-      (partnerReaction && !isEmptyReaction(partnerReaction)) ||
-      (myReaction && !isEmptyReaction(myReaction))
-    "
+    v-if="displayReactions"
     :class="{
       [classes.root]: true,
       [classes.left]: transaction.senderId === partnerId
     }"
   >
-    <a-chat-reaction v-if="partnerReaction" :asset="partnerReaction.asset" />
-    <a-chat-reaction v-if="myReaction" :asset="myReaction.asset" />
+    <a-chat-reaction v-if="displayPartnerReaction" :asset="partnerReaction.asset" />
+    <a-chat-reaction v-if="displayMyReaction" :asset="myReaction.asset" />
   </div>
 </template>
 
@@ -40,6 +37,7 @@ export default defineComponent({
   setup(props) {
     const store = useStore()
     const partnerId = usePartnerId(props.transaction)
+
     const myReaction = computed(() =>
       store.getters['chat/lastReaction'](props.transaction.id, partnerId.value, store.state.address)
     )
@@ -50,12 +48,20 @@ export default defineComponent({
     const isEmptyReaction = (reaction: NormalizedChatMessageTransaction) =>
       reaction.asset.react_message === ''
 
+    const displayMyReaction = computed(() => myReaction.value && !isEmptyReaction(myReaction.value))
+    const displayPartnerReaction = computed(
+      () => partnerReaction.value && !isEmptyReaction(partnerReaction.value)
+    )
+    const displayReactions = computed(() => displayMyReaction.value || displayPartnerReaction.value)
+
     return {
       classes,
       partnerId,
       myReaction,
       partnerReaction,
-      isEmptyReaction
+      displayMyReaction,
+      displayPartnerReaction,
+      displayReactions
     }
   }
 })
