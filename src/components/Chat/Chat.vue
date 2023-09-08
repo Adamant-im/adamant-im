@@ -54,7 +54,8 @@
             <AChatReactionSelect
               v-else
               :transaction="actionMessage"
-              @react="sendReaction"
+              @reaction:add="sendReaction"
+              @reaction:remove="removeReaction"
               @click:emoji-picker="showEmojiPicker = true"
             />
           </template>
@@ -118,7 +119,8 @@
                 <AChatReactionSelect
                   v-else
                   :transaction="message"
-                  @react="sendReaction"
+                  @reaction:add="sendReaction"
+                  @reaction:remove="removeReaction"
                   @click:emoji-picker="showEmojiPicker = true"
                 />
               </template>
@@ -171,7 +173,8 @@
                 <AChatReactionSelect
                   v-else
                   :transaction="message"
-                  @react="sendReaction"
+                  @reaction:add="sendReaction"
+                  @reaction:remove="removeReaction"
                   @click:emoji-picker="showEmojiPicker = true"
                 />
               </template>
@@ -239,6 +242,7 @@
 <script>
 import AChatMessageActionsList from '@/components/AChat/AChatMessageActionsList.vue'
 import AChatReactions from '@/components/AChat/AChatReactions/AChatReactions.vue'
+import { emojiWeight } from '@/lib/chat/emoji-weight/emojiWeight'
 import { nextTick } from 'vue'
 import { detect } from 'detect-browser'
 import Visibility from 'visibilityjs'
@@ -493,14 +497,28 @@ export default {
         console.error(err.message)
       })
     },
-    sendReaction(reactToId, reactMessage) {
+    sendReaction(reactToId, emoji) {
       this.closeActionsMenu()
       this.closeActionsDropdown()
+
+      emojiWeight.addReaction(emoji)
 
       return this.$store.dispatch('chat/sendReaction', {
         recipientId: this.partnerId,
         reactToId,
-        reactMessage
+        reactMessage: emoji
+      })
+    },
+    removeReaction(reactToId, emoji) {
+      this.closeActionsMenu()
+      this.closeActionsDropdown()
+
+      emojiWeight.removeReaction(emoji)
+
+      return this.$store.dispatch('chat/sendReaction', {
+        recipientId: this.partnerId,
+        reactToId,
+        reactMessage: ''
       })
     },
     onEmojiSelect(transactionId, emoji) {

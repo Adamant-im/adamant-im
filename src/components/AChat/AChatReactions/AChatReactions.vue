@@ -13,6 +13,7 @@
 
 <script lang="ts">
 import { usePartnerId } from '@/components/AChat/hooks/usePartnerId.ts'
+import { isEmptyReaction } from '@/lib/chat/helpers'
 import { computed, defineComponent, PropType } from 'vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { useStore } from 'vuex'
@@ -44,9 +45,6 @@ export default defineComponent({
     const partnerReaction = computed(() =>
       store.getters['chat/lastReaction'](props.transaction.id, partnerId.value, partnerId.value)
     )
-
-    const isEmptyReaction = (reaction: NormalizedChatMessageTransaction) =>
-      reaction.asset.react_message === ''
 
     const displayMyReaction = computed(() => myReaction.value && !isEmptyReaction(myReaction.value))
     const displayPartnerReaction = computed(

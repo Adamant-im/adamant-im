@@ -3,7 +3,7 @@
     <div :class="classes.predefinedReactions" v-if="!showEmojiPicker">
       <a-chat-reaction-select-item
         :class="classes.item"
-        v-for="emoji in REACT_EMOJIS"
+        v-for="emoji in emojis"
         :key="emoji"
         :emoji="emoji"
         :model-value="lastReaction ? lastReaction.asset.react_message === emoji : false"
@@ -24,13 +24,13 @@
 </template>
 
 <script lang="ts">
+import { emojiWeight } from '@/lib/chat/emoji-weight/emojiWeight'
 import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 
 import { usePartnerId } from '@/components/AChat/hooks/usePartnerId'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { isEmptyReaction, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import AChatReactionSelectItem from './AChatReactionSelectItem.vue'
-import { REACT_EMOJIS } from '@/lib/constants'
 
 const className = 'a-chat-reaction-select'
 const classes = {
@@ -53,7 +53,7 @@ export default defineComponent({
       type: Boolean
     }
   },
-  emits: ['react', 'click:emojiPicker'],
+  emits: ['reaction:add', 'reaction:remove', 'click:emojiPicker'],
   setup(props, { emit }) {
     const store = useStore()
     const partnerId = usePartnerId(props.transaction)
@@ -62,19 +62,32 @@ export default defineComponent({
       store.getters['chat/lastReaction'](props.transaction.id, partnerId.value, store.state.address)
     )
 
+    const emojis = computed(() => {
+      const mostUsedEmojis = new Set<string>()
+
+      if (lastReaction.value && !isEmptyReaction(lastReaction.value)) {
+        mostUsedEmojis.add(lastReaction.value.asset.react_message)
+      }
+
+      const emojis = Object.keys(emojiWeight.getMap())
+      emojis.forEach((emoji) => mostUsedEmojis.add(emoji))
+
+      return Array.from(mostUsedEmojis).slice(0, 6)
+    })
+
     const onReact = (state: boolean, emoji: string) => {
       if (!state) {
         // Delete reaction
-        emit('react', props.transaction.id, '')
+        emit('reaction:remove', props.transaction.id, emoji)
         return
       }
 
-      emit('react', props.transaction.id, emoji)
+      emit('reaction:add', props.transaction.id, emoji)
     }
 
     return {
       classes,
-      REACT_EMOJIS,
+      emojis,
       lastReaction,
       onReact
     }

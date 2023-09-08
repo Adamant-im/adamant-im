@@ -214,14 +214,15 @@ export const FetchStatus = {
 
 export const REACT_EMOJIS = {
   FACE_WITH_TEARS_OF_JOY: '😂',
-  GRINNING_FACE_WITH_SMILING_EYES: '😄',
   FIRE: '🔥',
-  THINKING_FACE: '🤔',
-  FOLDED_HANDS: '🙏',
+  GRINNING_FACE_WITH_SMILING_EYES: '😄',
+  THUMB_UP: '👍',
+  OK_HAND: '👌',
+  RED_HEART: '❤️',
   SLIGHTLY_SMILING_FACE: '🙂',
-  // FLUSHED_FACE: '😳',
-  // THUMB_UP: '👍',
-  // WAVING_HAND: '👋',
-  // PARTY_POPPER: '🎉',
-  // RED_HEART: '❤️'
+  THINKING_FACE: '🤔',
+  WAVING_HAND: '👋',
+  FOLDED_HANDS: '🙏',
+  FLUSHED_FACE: '😳',
+  PARTY_POPPER: '🎉',
 }
