@@ -30,20 +30,20 @@ export const emojiWeight = {
         ...emojidWeightMap
       }
 
-      const sorted = Object.entries(weightMap)
-        .sort(([, leftWeight], [, rightWeight]) => leftWeight > rightWeight)
-        .reduce((acc, [emoji, weight]) => {
-          acc[emoji] = weight
-          return acc
-        }, {})
-
-      return sorted
+      return weightMap
     } catch (err) {
       // reset store item
       localStorage.setItem(EMOJI_WEIGHT_STORE_KEY, JSON.stringify(DEFAULT_EMOJI_WEIGHT_MAP))
 
       return DEFAULT_EMOJI_WEIGHT_MAP
     }
+  },
+  getEmojis() {
+    return Object.entries(this.getMap())
+      .sort(([, leftWeight], [, rightWeight]) => rightWeight - leftWeight)
+      .reduce((acc, [emoji]) => {
+        return [...acc, emoji]
+      }, [])
   },
   save(weightMap) {
     localStorage.setItem(EMOJI_WEIGHT_STORE_KEY, JSON.stringify(weightMap))

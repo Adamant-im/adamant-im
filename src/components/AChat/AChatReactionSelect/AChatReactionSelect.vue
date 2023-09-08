@@ -69,7 +69,7 @@ export default defineComponent({
         mostUsedEmojis.add(lastReaction.value.asset.react_message)
       }
 
-      const emojis = Object.keys(emojiWeight.getMap())
+      const emojis = emojiWeight.getEmojis()
       emojis.forEach((emoji) => mostUsedEmojis.add(emoji))
 
       return Array.from(mostUsedEmojis).slice(0, 6)
