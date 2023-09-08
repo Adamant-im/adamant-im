@@ -21,7 +21,7 @@
     </template>
 
     <div>
-      <div :class="classes.reactionSelect">
+      <div :class="classes.top">
         <slot name="top" />
       </div>
 
@@ -39,7 +39,7 @@ import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 const className = 'message-actions-dropdown'
 const classes = {
   root: className,
-  reactionSelect: `${className}__reaction-select`
+  top: `${className}__top`
 }
 
 export default defineComponent({
@@ -67,7 +67,7 @@ export default defineComponent({
 
 <style lang="scss">
 .message-actions-dropdown {
-  &__reaction-select {
+  &__top {
     margin-top: 8px;
   }
 }
