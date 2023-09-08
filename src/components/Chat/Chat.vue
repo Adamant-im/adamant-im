@@ -46,7 +46,10 @@
           </a-chat-transaction>
 
           <template #top>
-            <EmojiPicker v-if="showEmojiPicker" @emoji:select="onEmojiSelect" />
+            <EmojiPicker
+              v-if="showEmojiPicker"
+              @emoji:select="(emoji) => onEmojiSelect(actionMessage.id, emoji)"
+            />
 
             <AChatReactionSelect
               v-else
@@ -107,7 +110,10 @@
               @click:copy="copyMessageToClipboard(message)"
             >
               <template #top>
-                <EmojiPicker v-if="showEmojiPicker" @emoji:select="onEmojiSelect" />
+                <EmojiPicker
+                  v-if="showEmojiPicker"
+                  @emoji:select="(emoji) => onEmojiSelect(message.id, emoji)"
+                />
 
                 <AChatReactionSelect
                   v-else
@@ -157,7 +163,10 @@
               @click:copy="copyMessageToClipboard(message)"
             >
               <template #top>
-                <EmojiPicker v-if="showEmojiPicker" @emoji:select="onEmojiSelect" />
+                <EmojiPicker
+                  v-if="showEmojiPicker"
+                  @emoji:select="(emoji) => onEmojiSelect(message.id, emoji)"
+                />
 
                 <AChatReactionSelect
                   v-else
