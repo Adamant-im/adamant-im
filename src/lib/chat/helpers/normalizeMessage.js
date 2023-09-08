@@ -30,7 +30,11 @@ export function normalizeMessage(abstract) {
   transaction.height = abstract.height
   transaction.asset = {}
 
-  if (abstract.message && abstract.message.reactto_id && abstract.message.react_message) {
+  if (
+    abstract.message &&
+    abstract.message.reactto_id &&
+    typeof abstract.message.react_message === 'string'
+  ) {
     transaction.asset = abstract.message
     transaction.hash = abstract.id
     transaction.type = 'reaction'
