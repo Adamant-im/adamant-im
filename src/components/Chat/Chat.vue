@@ -646,9 +646,6 @@ export default {
     isCryptoSupported(type) {
       return type in Cryptos
     },
-    formatMessage(transaction) {
-      return formatMarkdown(transaction, this.partnerId, this.$store.state.options.formatMessages)
-    },
     fetchChatMessages() {
       if (this.noMoreMessages) return
       if (this.loading) return

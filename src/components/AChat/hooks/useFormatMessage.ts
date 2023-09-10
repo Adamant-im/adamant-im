@@ -1,17 +1,20 @@
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import { formatMarkdown } from '@/filters/formatMarkdown'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { usePartnerId } from '@/components/AChat/hooks/usePartnerId.ts'
 
 export function useFormatMessage(transaction: NormalizedChatMessageTransaction) {
   const store = useStore()
+  const { t } = useI18n()
 
-  const userId = computed(() => store.state.address)
-  const partnerId =
-    transaction.senderId === userId.value ? transaction.recipientId : transaction.senderId
+  const partnerId = usePartnerId(transaction)
+  const formatMessagesOptionEnabled = computed(() => store.state.options.formatMessages)
+  const formattedMessage = computed(() =>
+    formatMarkdown(transaction, partnerId.value, formatMessagesOptionEnabled.value, t)
+  )
 
-  const formatMessagesOptionEnabled = store.state.options.formatMessages
-
-  return formatMarkdown(transaction, partnerId, formatMessagesOptionEnabled)
+  return formattedMessage
 }
