@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ADAMANT Messenger</string>
+    <string name="title_activity_main">ADAMANT Messenger</string>
+    <string name="package_name">im.adamant.adamantmessengerpwa</string>
+    <string name="custom_url_scheme">im.adamant.adamantmessengerpwa</string>
+</resources>

@@ -17,12 +17,17 @@
     "electron:build": "vue-tsc && vite build --config electron-vite.config.ts && electron-builder",
     "electron:dev": "vite dev --config electron-vite.config.ts",
     "electron:serve": "vite preview --config electron-vite.config.ts",
+    "android:preview": "cap sync && cap open android",
+    "android:build": "node scripts/capacitor/build-android.mjs",
+    "android:generate-assets": "npx @capacitor/assets generate --android --assetPath capacitor/assets --iconBackgroundColor '#FFF' --iconBackgroundColorDark '#000' --splashBackgroundColor '#FFF' --splashBackgroundColorDark '#000'",
     "https": "vite preview --https",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "postinstall": "electron-builder install-app-deps && npm run schema:generate"
   },
   "dependencies": {
+    "@capacitor/android": "^5.2.2",
+    "@capacitor/core": "^5.2.2",
     "@liskhq/lisk-cryptography": "3.2.1",
     "@liskhq/lisk-transactions": "5.2.2",
     "@mdi/font": "^7.2.96",
@@ -85,6 +90,8 @@
     "web3-utils": "^1.9.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^2.0.4",
+    "@capacitor/cli": "^5.2.2",
     "@electron/notarize": "^2.1.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@openapitools/openapi-generator-cli": "^2.7.0",
@@ -99,6 +106,7 @@
     "@vue/test-utils": "^2.4.1",
     "autoprefixer": "^10.4.14",
     "cross-env": "^7.0.3",
+    "dotenv": "^16.3.1",
     "electron": "^25.3.1",
     "electron-builder": "^24.4.0",
     "electron-devtools-installer": "^3.2.0",
