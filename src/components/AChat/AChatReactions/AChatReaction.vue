@@ -54,8 +54,8 @@ export default defineComponent({
 
   &__avatar {
     position: absolute;
-    bottom: -10px;
-    right: -10px;
+    bottom: -9px;
+    right: -9px;
   }
 }
 

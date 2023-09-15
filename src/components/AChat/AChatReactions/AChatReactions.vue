@@ -6,12 +6,17 @@
       [classes.left]: transaction.senderId === partnerId
     }"
   >
-    <a-chat-reaction v-if="displayPartnerReaction" :asset="partnerReaction.asset" />
-    <a-chat-reaction v-if="displayMyReaction" :asset="myReaction.asset">
+    <a-chat-reaction
+      :class="classes.reaction"
+      v-if="displayPartnerReaction"
+      :asset="partnerReaction.asset"
+    >
       <template #avatar>
-        <ChatAvatar user-id="U123456" :size="18" />
+        <ChatAvatar :user-id="partnerId" :size="16" />
       </template>
     </a-chat-reaction>
+
+    <a-chat-reaction :class="classes.reaction" v-if="displayMyReaction" :asset="myReaction.asset" />
   </div>
 </template>
 
@@ -27,7 +32,8 @@ import AChatReaction from './AChatReaction.vue'
 const className = 'a-chat-reactions'
 const classes = {
   root: className,
-  left: `${className}__left`
+  left: `${className}--left`,
+  reaction: `${className}__reaction`
 }
 
 export default defineComponent({
@@ -91,11 +97,17 @@ export default defineComponent({
   cursor: default;
   user-select: none;
 
-  &__left {
+  &--left {
     right: unset;
     left: 100%;
     margin-right: unset;
     margin-left: -4px;
+  }
+
+  &__reaction {
+    & ~ & {
+      margin-left: 4px;
+    }
   }
 }
 
