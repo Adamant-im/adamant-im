@@ -101,7 +101,7 @@
           </template>
 
           <template #actions>
-            <AChatReactions :transaction="message" />
+            <AChatReactions @click="handleClickReactions(message)" :transaction="message" />
 
             <AChatMessageActionsDropdown
               :transaction="message"
@@ -155,7 +155,7 @@
           </template>
 
           <template #actions>
-            <AChatReactions :transaction="message" />
+            <AChatReactions @click="handleClickReactions(message)" :transaction="message" />
 
             <AChatMessageActionsDropdown
               :transaction="message"
@@ -583,22 +583,34 @@ export default {
       this.highlightMessage(transactionId)
     },
     /** touch devices **/
-    openActionsMenu(message) {
-      this.actionsMenuMessageId = message.id
+    openActionsMenu(transaction) {
+      this.actionsMenuMessageId = transaction.id
     },
     closeActionsMenu() {
       this.actionsMenuMessageId = -1
       this.showEmojiPicker = false
     },
+    openActionsDropdown(transaction) {
+      this.actionsDropdownMessageId = transaction.id
+    },
     closeActionsDropdown() {
       this.actionsDropdownMessageId = -1
+      this.showEmojiPicker = false
     },
     toggleActionsDropdown(open, transaction) {
       if (open) {
-        this.actionsDropdownMessageId = transaction.id
+        this.openActionsDropdown(transaction)
       } else {
         this.closeActionsDropdown()
-        this.showEmojiPicker = false
+      }
+    },
+    handleClickReactions(transaction) {
+      const isMobile = window.innerWidth < 600
+
+      if (isMobile) {
+        this.openActionsMenu(transaction)
+      } else {
+        this.toggleActionsDropdown(true, transaction)
       }
     },
     openReplyPreview(message) {
