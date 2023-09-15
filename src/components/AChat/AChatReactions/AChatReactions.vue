@@ -9,7 +9,7 @@
     <a-chat-reaction v-if="displayPartnerReaction" :asset="partnerReaction.asset" />
     <a-chat-reaction v-if="displayMyReaction" :asset="myReaction.asset">
       <template #avatar>
-        <ChatAvatar user-id="U123456" :size="12" />
+        <ChatAvatar user-id="U123456" :size="18" />
       </template>
     </a-chat-reaction>
   </div>
@@ -79,7 +79,6 @@ export default defineComponent({
   position: absolute;
   display: flex;
   flex-direction: row;
-  font-size: 16px;
   border-radius: 8px;
   padding: 2px;
 

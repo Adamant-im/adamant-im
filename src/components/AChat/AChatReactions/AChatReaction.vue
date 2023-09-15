@@ -41,21 +41,21 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-around;
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   position: relative;
 
   &__emoji {
     text-align: center;
     vertical-align: middle;
     line-height: 1;
-    font-size: 12px;
+    font-size: 16px;
   }
 
   &__avatar {
     position: absolute;
-    bottom: -6px;
-    right: -6px;
+    bottom: -10px;
+    right: -10px;
   }
 }
 
