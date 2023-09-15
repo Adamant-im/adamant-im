@@ -77,7 +77,9 @@
       "update_balances": "Обновить балансы"
     },
     "you_reacted": "Вы: Отреагировали",
-    "partner_reacted": "Отреагировал"
+    "partner_reacted": "Отреагировал",
+    "you_removed_reaction": "Вы: Удалили реакцию",
+    "partner_removed_reaction": "Удалил реакцию"
   },
   "connection": {
     "offline": "Нет подключения к Интернету",

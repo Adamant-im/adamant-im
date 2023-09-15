@@ -149,11 +149,21 @@ export default {
     },
     reactedText() {
       const reaction = this.transaction.asset.react_message
-      const label = this.isOutgoingTransaction
-        ? this.$t('chats.you_reacted')
-        : this.$t('chats.partner_reacted')
+      const isRemoveReaction = !reaction
 
-      return `${label} ${reaction}`
+      if (isRemoveReaction) {
+        const label = this.isOutgoingTransaction
+          ? this.$t('chats.you_removed_reaction')
+          : this.$t('chats.partner_removed_reaction')
+
+        return label
+      } else {
+        const label = this.isOutgoingTransaction
+          ? this.$t('chats.you_reacted')
+          : this.$t('chats.partner_reacted')
+
+        return `${label} ${reaction}`
+      }
     },
     isNewChat() {
       return !this.transaction.type

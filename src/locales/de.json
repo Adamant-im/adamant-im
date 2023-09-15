@@ -60,7 +60,9 @@
       "update_balances": "Update balances"
     },
     "you_reacted": "You: Reacted",
-    "partner_reacted": "Reacted"
+    "partner_reacted": "Reacted",
+    "you_removed_reaction": "You: Removed reaction",
+    "partner_removed_reaction": "Removed reaction"
   },
   "error": "Error",
   "home": {
