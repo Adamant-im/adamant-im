@@ -153,13 +153,13 @@ export default {
 
       if (isRemoveReaction) {
         const label = this.isOutgoingTransaction
-          ? this.$t('chats.you_removed_reaction')
+          ? `${this.$t('chats.you')}: ${this.$t('chats.you_removed_reaction')}`
           : this.$t('chats.partner_removed_reaction')
 
         return label
       } else {
         const label = this.isOutgoingTransaction
-          ? this.$t('chats.you_reacted')
+          ? `${this.$t('chats.you')}: ${this.$t('chats.you_reacted')}`
           : this.$t('chats.partner_reacted')
 
         return `${label} ${reaction}`

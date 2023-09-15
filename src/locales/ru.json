@@ -76,9 +76,9 @@
     "pull_down_actions": {
       "update_balances": "Обновить балансы"
     },
-    "you_reacted": "Вы: Отреагировали",
+    "you_reacted": "Отреагировали",
     "partner_reacted": "Отреагировал",
-    "you_removed_reaction": "Вы: Удалили реакцию",
+    "you_removed_reaction": "Удалили реакцию",
     "partner_removed_reaction": "Удалил реакцию"
   },
   "connection": {
