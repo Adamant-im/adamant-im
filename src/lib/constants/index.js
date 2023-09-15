@@ -224,5 +224,5 @@ export const REACT_EMOJIS = {
   WAVING_HAND: '👋',
   FOLDED_HANDS: '🙏',
   FLUSHED_FACE: '😳',
-  PARTY_POPPER: '🎉',
+  PARTY_POPPER: '🎉'
 }

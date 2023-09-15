@@ -94,7 +94,7 @@
           @resend="resendMessage(partnerId, message.id)"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="openReplyPreview(message)"
-          @longpress="openActionsMenu(message)"
+          @longpress="onMessageLongPress(message)"
         >
           <template #avatar>
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
@@ -148,7 +148,7 @@
           @mount="fetchTransactionStatus(message, partnerId)"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="openReplyPreview(message)"
-          @longpress="openActionsMenu(message)"
+          @longpress="onMessageLongPress(message)"
         >
           <template #crypto>
             <crypto-icon :crypto="message.type" />
@@ -243,13 +243,13 @@
 import AChatMessageActionsList from '@/components/AChat/AChatMessageActionsList.vue'
 import AChatReactions from '@/components/AChat/AChatReactions/AChatReactions.vue'
 import { emojiWeight } from '@/lib/chat/emoji-weight/emojiWeight'
+import { vibrate } from "@/lib/vibrate";
 import { nextTick } from 'vue'
 import { detect } from 'detect-browser'
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
 
 import { Cryptos } from '@/lib/constants'
-import { formatMarkdown } from '@/filters/formatMarkdown'
 import EmojiPicker from '@/components/EmojiPicker.vue'
 
 import {
@@ -583,6 +583,10 @@ export default {
       this.highlightMessage(transactionId)
     },
     /** touch devices **/
+    onMessageLongPress(transaction) {
+      vibrate.short()
+      this.openActionsMenu(transaction)
+    },
     openActionsMenu(transaction) {
       this.actionsMenuMessageId = transaction.id
     },
@@ -590,6 +594,7 @@ export default {
       this.actionsMenuMessageId = -1
       this.showEmojiPicker = false
     },
+    /** desktop **/
     openActionsDropdown(transaction) {
       this.actionsDropdownMessageId = transaction.id
     },
