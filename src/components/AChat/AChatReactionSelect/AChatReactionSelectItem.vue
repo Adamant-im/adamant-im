@@ -83,7 +83,7 @@ export default defineComponent({
     }
 
     &--selected {
-      background-color: map-get($adm-colors, 'secondary2-transparent');
+      background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
     }
   }
 }

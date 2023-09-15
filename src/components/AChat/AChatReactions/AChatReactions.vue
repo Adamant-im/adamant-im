@@ -108,7 +108,7 @@ export default defineComponent({
 
 .v-theme--dark {
   .a-chat-reactions {
-    background-color: map-get($adm-colors, 'regular');
+    background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
   }
 }
 </style>
