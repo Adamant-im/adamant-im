@@ -584,7 +584,7 @@ export default {
     },
     /** touch devices **/
     onMessageLongPress(transaction) {
-      vibrate.short()
+      vibrate.veryShort()
       this.openActionsMenu(transaction)
     },
     openActionsMenu(transaction) {
