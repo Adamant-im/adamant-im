@@ -135,7 +135,7 @@ export default {
 .v-theme--dark {
   .app-toolbar-centered {
     .v-toolbar {
-      background-color: map-get($shades, 'black');
+      background-color: map-get($adm-colors, 'black');
       color: map-get($shades, 'white');
     }
   }

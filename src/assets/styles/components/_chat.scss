@@ -498,7 +498,7 @@ $scroll-bar-width: 4px;
     }
 
     &__message {
-      background-color: #000;
+      background-color: map-get($adm-colors, 'black');
       box-shadow:
         0 1px 10px hsla(0, 0%, 39.2%, 0.06),
         0 1px 1px hsla(0, 0%, 39.2%, 0.04),

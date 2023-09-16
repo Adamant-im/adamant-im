@@ -168,7 +168,7 @@ export default defineComponent({
 .v-theme--dark {
   .app-navigation {
     &.v-bottom-navigation {
-      background-color: map-get($shades, 'black');
+      background-color: map-get($adm-colors, 'black');
     }
     :deep(.v-btn.v-btn--active) {
       color: map-get($shades, 'white');
