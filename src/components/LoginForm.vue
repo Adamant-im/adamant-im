@@ -16,10 +16,10 @@
               @click="togglePassphraseVisibility"
               icon
               :ripple="false"
-              size="28"
+              :size="28"
               variant="plain"
             >
-              <v-icon :icon="showPassphrase ? 'mdi-eye' : 'mdi-eye-off'" size="20" />
+              <v-icon :icon="showPassphrase ? 'mdi-eye' : 'mdi-eye-off'" :size="24" />
             </v-btn>
           </template>
         </v-text-field>
