@@ -11,13 +11,15 @@
       />
 
       <v-btn
-        :size="36"
         icon
+        variant="tonal"
+        :ripple="false"
         :class="classes.moreButton"
         @click="$emit('click:emojiPicker')"
-        elevation="0"
+        :elevation="0"
+        :size="32"
       >
-        <v-icon :size="24" icon="mdi-chevron-down" />
+        <v-icon icon="mdi-chevron-down" :size="24" />
       </v-btn>
     </div>
   </div>
@@ -123,7 +125,8 @@ export default defineComponent({
     border: 1px solid map-get($adm-colors, 'secondary2');
 
     &__more-button {
-      background-color: map-get($adm-colors, 'grey');
+      color: map-get($shades, 'black');
+      background-color: map-get($adm-colors, 'grey-transparent');
     }
   }
 }
