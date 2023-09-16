@@ -127,7 +127,7 @@ export default {
 .v-theme--light {
   .app-toolbar-centered {
     .v-toolbar {
-      background-color: map-get($adm-colors, 'secondary2-transparent')
+      background-color: map-get($adm-colors, 'secondary2')
     }
   }
 }
