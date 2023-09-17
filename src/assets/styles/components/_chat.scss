@@ -489,6 +489,9 @@ $scroll-bar-width: 4px;
         color: map-get($adm-colors, 'primary') !important;
       }
     }
+    &__send-icon {
+      color: map-get($grey, 'darken-1');
+    }
   }
 }
 .v-theme--dark {
@@ -543,6 +546,8 @@ $scroll-bar-width: 4px;
 
     &__form {
       background-color: map-get($grey, 'darken-4');
+    }
+    &__send-icon {
     }
   }
 }
