@@ -4,13 +4,15 @@
       :class="classes.message"
       :style="{
         top: position.top,
-        left: position.left
+        left: position.left,
+        width: position.width
       }"
     >
       <div
         :class="{
           [classes.reactionSelect]: true,
-          [classes.reactionSelectLeft]: transaction.senderId === partnerId
+          [classes.reactionSelectLeft]: transaction.senderId === partnerId,
+          [classes.reactionSelectBottom]: isLargeMessage
         }"
       >
         <slot name="top" />
@@ -21,7 +23,8 @@
       <div
         :class="{
           [classes.menu]: true,
-          [classes.menuLeft]: transaction.senderId === partnerId
+          [classes.menuLeft]: transaction.senderId === partnerId,
+          [classes.menuBottom]: isLargeMessage
         }"
       >
         <slot name="bottom" />
@@ -33,7 +36,7 @@
 <script lang="ts">
 import { usePartnerId } from '@/components/AChat/hooks/usePartnerId.ts'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { computed, defineComponent, nextTick, onMounted, PropType, reactive, ref } from 'vue'
+import { computed, defineComponent, onMounted, PropType, reactive, ref } from 'vue'
 
 const className = 'a-chat-actions-overlay'
 const classes = {
@@ -41,8 +44,10 @@ const classes = {
   message: `${className}__message`,
   reactionSelect: `${className}__reaction-select`,
   reactionSelectLeft: `${className}__reaction-select--left`,
+  reactionSelectBottom: `${className}__reaction-select--bottom`,
   menu: `${className}__menu`,
-  menuLeft: `${className}__menu--left`
+  menuLeft: `${className}__menu--left`,
+  menuBottom: `${className}__menu--bottom`
 }
 
 export default defineComponent({
@@ -78,19 +83,24 @@ export default defineComponent({
       top: `${rect.value?.top}px`,
       left: `${rect.value?.left}px`,
       bottom: `${rect.value?.bottom}px`,
-      right: `${rect.value?.right}px`
+      right: `${rect.value?.right}px`,
+      width: `${rect.value?.width}px`
+    })
+
+    const isLargeMessage = computed(() => {
+      if (!rect.value) return false
+
+      return rect.value.height > window.innerHeight / 2
     })
 
     onMounted(() => {
-      nextTick(() => {
-        setTimeout(() => {
-          if (rect.value) {
-            const halfOfElementHeight = rect.value ? rect.value.height / 2 : 0
+      setTimeout(() => {
+        if (rect.value) {
+          const halfOfElementHeight = rect.value ? rect.value.height : 0
 
-            position.top = `calc(50% - ${halfOfElementHeight}px)`
-          }
-        }, 0)
-      })
+          position.top = `calc(50% - ${halfOfElementHeight}px)`
+        }
+      }, 0)
     })
 
     const handleClick = (e: MouseEvent) => {
@@ -110,7 +120,8 @@ export default defineComponent({
       position,
       rootRef,
       handleClick,
-      partnerId
+      partnerId,
+      isLargeMessage
     }
   }
 })
@@ -133,6 +144,7 @@ export default defineComponent({
     position: absolute;
     bottom: 100%;
     margin-bottom: 16px;
+    z-index: 1;
 
     right: 0;
     left: unset;
@@ -140,6 +152,11 @@ export default defineComponent({
     &--left {
       left: 0;
       right: unset;
+    }
+
+    &--bottom {
+      bottom: unset;
+      top: 100%;
     }
   }
 
@@ -153,6 +170,10 @@ export default defineComponent({
     &--left {
       left: 0;
       right: unset;
+    }
+
+    &--bottom {
+      margin-top: calc(46px + 16px); // <AReactionSelect/> height + margin
     }
   }
 }
