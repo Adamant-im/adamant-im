@@ -18,7 +18,8 @@
     <div
       class="a-chat__message"
       :class="{
-        'a-chat__message--flashing': flashing
+        'a-chat__message--flashing': flashing,
+        'elevation-9': elevation
       }"
       :data-id="dataId"
     >
@@ -84,7 +85,7 @@
 <script lang="ts">
 import { useTransactionTime } from '@/components/AChat/hooks/useTransactionTime.ts'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { CryptoSymbol } from "@/lib/constants/cryptos";
+import { CryptoSymbol } from '@/lib/constants/cryptos'
 import { computed, watch, onMounted, defineComponent, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
@@ -129,6 +130,9 @@ export default defineComponent({
     },
     disableMaxWidth: {
       type: Boolean
+    },
+    elevation: {
+      type: Boolean
     }
   },
   emits: [
@@ -152,7 +156,9 @@ export default defineComponent({
     const statusTitle = computed(() =>
       t(`chats.transaction_statuses.${props.status.virtualStatus}`)
     )
-    const statusUpdatable = computed(() => tsUpdatable(props.status.virtualStatus, props.crypto as CryptoSymbol))
+    const statusUpdatable = computed(() =>
+      tsUpdatable(props.status.virtualStatus, props.crypto as CryptoSymbol)
+    )
     const statusColor = computed(() => tsColor(props.status.virtualStatus))
     const historyRate = computed(() => {
       const amount = currencyAmount(props.transaction.amount, props.crypto)

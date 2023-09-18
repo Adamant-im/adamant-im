@@ -25,6 +25,7 @@
             :data-id="'action-message'"
             html
             disable-max-width
+            elevation
           >
             <template #avatar>
               <ChatAvatar :user-id="partnerId" use-public-key @click="onClickAvatar(partnerId)" />
@@ -39,6 +40,7 @@
             :status="getTransactionStatus(actionMessage)"
             :data-id="'action-message'"
             disable-max-width
+            elevation
           >
             <template #crypto>
               <crypto-icon :crypto="actionMessage.type" />
@@ -49,6 +51,7 @@
             <EmojiPicker
               v-if="showEmojiPicker"
               @emoji:select="(emoji) => onEmojiSelect(actionMessage.id, emoji)"
+              elevation
             />
 
             <AChatReactionSelect
@@ -114,6 +117,7 @@
                 <EmojiPicker
                   v-if="showEmojiPicker"
                   @emoji:select="(emoji) => onEmojiSelect(message.id, emoji)"
+                  elevation
                 />
 
                 <AChatReactionSelect
@@ -168,6 +172,7 @@
                 <EmojiPicker
                   v-if="showEmojiPicker"
                   @emoji:select="(emoji) => onEmojiSelect(message.id, emoji)"
+                  elevation
                 />
 
                 <AChatReactionSelect

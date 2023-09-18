@@ -1,5 +1,10 @@
 <template>
-  <div :class="classes.root">
+  <div
+    :class="{
+      [classes.root]: true,
+      'elevation-9': elevation
+    }"
+  >
     <div ref="container" />
   </div>
 </template>
@@ -15,6 +20,11 @@ const classes = {
 }
 
 export default defineComponent({
+  props: {
+    elevation: {
+      type: Boolean
+    }
+  },
   emits: ['emoji:select'],
   setup(props, { emit }) {
     const { isDarkTheme } = useTheme()
@@ -52,9 +62,12 @@ export default defineComponent({
 
 <style lang="scss">
 .emoji-picker {
+  border-radius: 8px;
+
   em-emoji-picker {
     width: 264px;
     height: 264px;
+    border-radius: 8px;
 
     #root {
       border-top-left-radius: 0;

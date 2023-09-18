@@ -18,7 +18,8 @@
     <div
       class="a-chat__message"
       :class="{
-        'a-chat__message--flashing': flashing
+        'a-chat__message--flashing': flashing,
+        'elevation-9': elevation
       }"
       :data-id="dataId"
     >
@@ -120,6 +121,9 @@ export default defineComponent({
       default: false
     },
     disableMaxWidth: {
+      type: Boolean
+    },
+    elevation: {
       type: Boolean
     }
   },

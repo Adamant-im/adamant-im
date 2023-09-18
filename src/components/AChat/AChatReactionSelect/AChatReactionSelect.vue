@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes.root">
+  <div :class="[classes.root, 'elevation-9']">
     <div :class="classes.predefinedReactions" v-if="!showEmojiPicker">
       <a-chat-reaction-select-item
         :class="classes.item"
