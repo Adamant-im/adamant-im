@@ -96,7 +96,7 @@
           :data-id="message.id"
           @resend="resendMessage(partnerId, message.id)"
           @click:quoted-message="onQuotedMessageClick"
-          @swipe:left="onSwipeLeft"
+          @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
         >
           <template #avatar>
