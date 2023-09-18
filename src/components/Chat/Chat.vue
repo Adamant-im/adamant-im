@@ -103,7 +103,7 @@
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
           </template>
 
-          <template #actions>
+          <template #actions v-if="!isWelcomeChat(partnerId)">
             <AChatReactions @click="handleClickReactions(message)" :transaction="message" />
 
             <AChatMessageActionsDropdown
@@ -158,7 +158,7 @@
             <crypto-icon :crypto="message.type" />
           </template>
 
-          <template #actions>
+          <template #actions v-if="!isWelcomeChat(partnerId)">
             <AChatReactions @click="handleClickReactions(message)" :transaction="message" />
 
             <AChatMessageActionsDropdown
@@ -589,6 +589,8 @@ export default {
     },
     /** touch devices **/
     onMessageLongPress(transaction) {
+      if (isWelcomeChat(this.partnerId)) return;
+
       vibrate.veryShort()
       this.openActionsMenu(transaction)
     },
