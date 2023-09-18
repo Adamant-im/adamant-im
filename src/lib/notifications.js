@@ -153,7 +153,7 @@ class SoundNotification extends Notification {
   }
 
   notify(messageArrived) {
-    if (messageArrived) {
+    if (messageArrived && this.lastUnread) {
       this.audio.play()
     }
   }
