@@ -96,7 +96,7 @@
           :data-id="message.id"
           @resend="resendMessage(partnerId, message.id)"
           @click:quoted-message="onQuotedMessageClick"
-          @swipe:left="openReplyPreview(message)"
+          @swipe:left="onSwipeLeft"
           @longpress="onMessageLongPress(message)"
         >
           <template #avatar>
@@ -151,7 +151,7 @@
           @click:transactionStatus="updateTransactionStatus(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
           @click:quoted-message="onQuotedMessageClick"
-          @swipe:left="openReplyPreview(message)"
+          @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
         >
           <template #crypto>
@@ -248,7 +248,7 @@
 import AChatMessageActionsList from '@/components/AChat/AChatMessageActionsList.vue'
 import AChatReactions from '@/components/AChat/AChatReactions/AChatReactions.vue'
 import { emojiWeight } from '@/lib/chat/emoji-weight/emojiWeight'
-import { vibrate } from "@/lib/vibrate";
+import { vibrate } from '@/lib/vibrate'
 import { nextTick } from 'vue'
 import { detect } from 'detect-browser'
 import Visibility from 'visibilityjs'
@@ -507,6 +507,7 @@ export default {
       this.closeActionsDropdown()
 
       emojiWeight.addReaction(emoji)
+      vibrate.veryShort()
 
       return this.$store.dispatch('chat/sendReaction', {
         recipientId: this.partnerId,
@@ -589,10 +590,14 @@ export default {
     },
     /** touch devices **/
     onMessageLongPress(transaction) {
-      if (isWelcomeChat(this.partnerId)) return;
+      if (isWelcomeChat(this.partnerId)) return
 
-      vibrate.veryShort()
       this.openActionsMenu(transaction)
+      vibrate.veryShort()
+    },
+    onSwipeLeft(message) {
+      this.openReplyPreview(message)
+      vibrate.veryShort()
     },
     openActionsMenu(transaction) {
       this.actionsMenuMessageId = transaction.id
