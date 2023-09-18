@@ -1,22 +1,21 @@
 <template>
   <div
-    v-if="displayReactions"
+    v-if="reactions.length > 0"
     :class="{
       [classes.root]: true,
       [classes.left]: transaction.senderId === partnerId
     }"
   >
     <a-chat-reaction
+      v-for="reaction of reactions"
+      :key="reaction.id"
       :class="classes.reaction"
-      v-if="displayPartnerReaction"
-      :asset="partnerReaction.asset"
+      :asset="reaction.asset"
     >
-      <template #avatar>
+      <template #avatar v-if="reaction.senderId === partnerId">
         <ChatAvatar :user-id="partnerId" :size="16" />
       </template>
     </a-chat-reaction>
-
-    <a-chat-reaction :class="classes.reaction" v-if="displayMyReaction" :asset="myReaction.asset" />
   </div>
 </template>
 
@@ -62,16 +61,20 @@ export default defineComponent({
     const displayPartnerReaction = computed(
       () => partnerReaction.value && !isEmptyReaction(partnerReaction.value)
     )
-    const displayReactions = computed(() => displayMyReaction.value || displayPartnerReaction.value)
+
+    const reactions = computed(() => {
+      const list = []
+
+      if (displayMyReaction.value) list.push(myReaction.value)
+      if (displayPartnerReaction.value) list.push(partnerReaction.value)
+
+      return list.sort((left, right) => left.timestamp - right.timestamp)
+    })
 
     return {
       classes,
       partnerId,
-      myReaction,
-      partnerReaction,
-      displayMyReaction,
-      displayPartnerReaction,
-      displayReactions
+      reactions
     }
   }
 })
