@@ -116,7 +116,7 @@ const getters = {
    * @returns {number}
    */
   indexOfMessage: (state, getters) => (partnerId, messageId) => {
-    const messages = getters.messages(partnerId)
+    const messages = getters.messages(partnerId).filter((message) => message.type !== 'reaction')
     const message = messages.find((message) => message.id === messageId)
 
     if (!message) {
