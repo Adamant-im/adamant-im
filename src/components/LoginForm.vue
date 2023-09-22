@@ -7,7 +7,7 @@
           :label="$t('login.password_label')"
           autocomplete="current-password"
           class="text-center"
-          color="#BBDEFB"
+          color="white"
           :type="showPassphrase ? 'text' : 'password'"
           variant="underlined"
         >
