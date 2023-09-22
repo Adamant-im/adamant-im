@@ -11,7 +11,7 @@
       end: onSwipeEnd
     }"
     :style="{
-      left: `${elementLeftOffset}px`
+      left: swipeDisabled ? '0px' : `${elementLeftOffset}px`
     }"
     v-longpress="onLongPress"
   >
@@ -132,6 +132,9 @@ export default defineComponent({
       type: Boolean
     },
     elevation: {
+      type: Boolean
+    },
+    swipeDisabled: {
       type: Boolean
     }
   },

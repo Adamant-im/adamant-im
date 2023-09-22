@@ -94,6 +94,7 @@
           :html="true"
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
+          :swipe-disabled="isWelcomeMessage(message)"
           @resend="resendMessage(partnerId, message.id)"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="onSwipeLeft(message)"
@@ -103,7 +104,7 @@
             <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
           </template>
 
-          <template #actions v-if="!isWelcomeChat(partnerId)">
+          <template #actions v-if="isRealMessage(message)">
             <AChatReactions @click="handleClickReactions(message)" :transaction="message" />
 
             <AChatMessageActionsDropdown
@@ -147,6 +148,7 @@
           :status="getTransactionStatus(message)"
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
+          :swipe-disabled="isWelcomeMessage(message)"
           @click:transaction="openTransaction(message)"
           @click:transactionStatus="updateTransactionStatus(message)"
           @mount="fetchTransactionStatus(message, partnerId)"
@@ -158,7 +160,7 @@
             <crypto-icon :crypto="message.type" />
           </template>
 
-          <template #actions v-if="!isWelcomeChat(partnerId)">
+          <template #actions v-if="isRealMessage(message)">
             <AChatReactions @click="handleClickReactions(message)" :transaction="message" />
 
             <AChatMessageActionsDropdown
@@ -277,7 +279,7 @@ import formatDate from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import FreeTokensDialog from '@/components/FreeTokensDialog'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { isWelcomeChat } from '@/lib/chat/meta/utils'
+import { isWelcomeChat, isWelcomeMessage } from '@/lib/chat/meta/utils'
 import ProgressIndicator from '@/components/ProgressIndicator'
 
 /**
@@ -590,12 +592,14 @@ export default {
     },
     /** touch devices **/
     onMessageLongPress(transaction) {
-      if (isWelcomeChat(this.partnerId)) return
+      if (isWelcomeMessage(transaction)) return
 
       this.openActionsMenu(transaction)
       vibrate.veryShort()
     },
     onSwipeLeft(message) {
+      if (isWelcomeMessage(message)) return
+
       this.openReplyPreview(message)
       vibrate.veryShort()
     },
@@ -643,6 +647,9 @@ export default {
 
       copyToClipboard(message)
       this.$store.dispatch('snackbar/show', { message: this.$t('home.copied'), timeout: 1000 })
+    },
+    isRealMessage(transaction) {
+      return !isWelcomeMessage(transaction)
     },
     /**
      * Apply flash effect to a message in the chat
@@ -736,7 +743,8 @@ export default {
       if (e.code === 'Enter' && !this.showFreeTokensDialog) this.$refs.chatForm.focus()
     },
     formatDate,
-    isWelcomeChat
+    isWelcomeChat,
+    isWelcomeMessage
   }
 }
 </script>
