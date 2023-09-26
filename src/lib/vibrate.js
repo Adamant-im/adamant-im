@@ -16,35 +16,19 @@ function checkVibrateIsSupported() {
   return false
 }
 
-export const vibrate = {
-  veryShort() {
-    if (!checkVibrateIsSupported()) return
+function createVibrationPattern(pattern) {
+  if (!checkVibrateIsSupported()) return
 
-    navigator.vibrate(VIBRATION_PATTERN.VERY_SHORT)
-  },
-  short() {
-    if (!checkVibrateIsSupported()) return
-
-    navigator.vibrate(VIBRATION_PATTERN.SHORT)
-  },
-  medium() {
-    if (!checkVibrateIsSupported()) return
-
-    navigator.vibrate(VIBRATION_PATTERN.MEDIUM)
-  },
-  long() {
-    if (!checkVibrateIsSupported()) return
-
-    navigator.vibrate(VIBRATION_PATTERN.LONG)
-  },
-  doubleVeryShort() {
-    if (!checkVibrateIsSupported()) return
-
-    navigator.vibrate(VIBRATION_PATTERN.DOUBLE_VERY_SHORT)
-  },
-  tripleVeryShort() {
-    if (!checkVibrateIsSupported()) return
-
-    navigator.vibrate(VIBRATION_PATTERN.TRIPLE_VERY_SHORT)
+  return () => {
+    navigator.vibrate(pattern)
   }
+}
+
+export const vibrate = {
+  veryShort: createVibrationPattern(VIBRATION_PATTERN.VERY_SHORT),
+  short: createVibrationPattern(VIBRATION_PATTERN.SHORT),
+  medium: createVibrationPattern(VIBRATION_PATTERN.MEDIUM),
+  long: createVibrationPattern(VIBRATION_PATTERN.LONG),
+  doubleVeryShort: createVibrationPattern(VIBRATION_PATTERN.DOUBLE_VERY_SHORT),
+  tripleVeryShort: createVibrationPattern(VIBRATION_PATTERN.TRIPLE_VERY_SHORT)
 }

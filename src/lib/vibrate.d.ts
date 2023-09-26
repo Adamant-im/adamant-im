@@ -1,4 +1,6 @@
-export declare const VIBRATION_INTERVAL: Record<string, number[]>
+declare const VIBRATION_PATTERN: Record<string, number[]>
+
+declare function createVibrationPattern(pattern: number[]): () => void
 
 export declare const vibrate: {
   veryShort: () => void
