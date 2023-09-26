@@ -2,7 +2,6 @@
   <div :class="[classes.root, 'elevation-9']">
     <div :class="classes.predefinedReactions" v-if="!showEmojiPicker">
       <a-chat-reaction-select-item
-        :class="classes.item"
         v-for="emoji in emojis"
         :key="emoji"
         :emoji="emoji"
@@ -37,7 +36,6 @@ import AChatReactionSelectItem from './AChatReactionSelectItem.vue'
 const className = 'a-chat-reaction-select'
 const classes = {
   root: className,
-  item: `${className}__item`,
   predefinedReactions: `${className}__predefined-reactions`,
   moreButton: `${className}__more-button`
 }
@@ -110,9 +108,6 @@ export default defineComponent({
     display: flex;
     align-items: center;
     padding: 4px;
-  }
-
-  &__item {
   }
 
   &__more-button {
