@@ -17,9 +17,9 @@ function checkVibrateIsSupported() {
 }
 
 function createVibrationPattern(pattern) {
-  if (!checkVibrateIsSupported()) return
-
   return () => {
+    if (!checkVibrateIsSupported()) return
+
     navigator.vibrate(pattern)
   }
 }
