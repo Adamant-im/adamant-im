@@ -8,7 +8,7 @@ import currencyAmount from './currencyAmount'
  * @param {boolean} isAdmBalance - Amount is ADM balance
  * @returns {string}
  */
-export default (amount, symbol = Cryptos.ADM, isAdmBalance) => {
+export default (amount, symbol = Cryptos.ADM, isAdmBalance = false) => {
   if (amount !== undefined) {
     return `${currencyAmount(amount, symbol, isAdmBalance)} ${symbol}`
   } else {

@@ -32,7 +32,7 @@ import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import { getTransaction, decodeChat } from '@/lib/adamant-api'
-import { transformMessage } from '@/lib/chatHelpers'
+import { normalizeMessage } from '@/lib/chat/helpers'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { removeFormats } from '@/lib/markdown'
@@ -80,7 +80,7 @@ async function fetchTransaction(transactionId, address) {
     )
   }
 
-  return transformMessage(decodedTransaction)
+  return normalizeMessage(decodedTransaction)
 }
 
 export default defineComponent({

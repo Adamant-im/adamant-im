@@ -38,6 +38,10 @@
 
       <slot name="form" />
     </div>
+
+    <div v-if="$slots.overlay" class="a-chat__overlay">
+      <slot name="overlay" />
+    </div>
   </div>
 </template>
 

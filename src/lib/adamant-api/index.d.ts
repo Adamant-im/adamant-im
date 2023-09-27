@@ -1,12 +1,14 @@
-import { Store } from 'vuex';
+import { Store } from 'vuex'
 
 import { Transactions } from '@/lib/constants'
-import { CryptoSymbol } from '@/lib/constants/cryptos';
+import { CryptoSymbol } from '@/lib/constants/cryptos'
 import {
   AccountDto,
   AnyTransaction,
   BaseTransaction,
-  ChatMessageTransaction, ChatsApiGetChatroomMessagesRequest, ChatsApiGetChatRoomsRequest,
+  ChatMessageTransaction,
+  ChatsApiGetChatroomMessagesRequest,
+  ChatsApiGetChatRoomsRequest,
   CreateNewChatMessageResponseDto,
   GetAccountVotesResponseDto,
   GetBlocksResponseDto,
@@ -26,19 +28,31 @@ import {
   SetKVSResponseDto,
   TransactionsApiGetTransactionsRequest,
   TransferTokenResponseDto
-} from '@/lib/schema/client/api';
-import { RootState } from '@/store/types';
+} from '@/lib/schema/client/api'
+import { RootState } from '@/store/types'
 
 export type UnsignedNewTransaction = Pick<
   BaseTransaction,
   'type' | 'amount' | 'senderId' | 'senderPublicKey'
 >
 
-export type RegisterChatMessageTransactionUnsigned = Omit<RegisterChatMessageTransaction, 'signature' | 'timestamp'>
-export type RegisterTokenTransferTransactionUnsigned = Omit<RegisterTokenTransferTransaction, 'signature' | 'timestamp'>
+export type RegisterChatMessageTransactionUnsigned = Omit<
+  RegisterChatMessageTransaction,
+  'signature' | 'timestamp'
+>
+export type RegisterTokenTransferTransactionUnsigned = Omit<
+  RegisterTokenTransferTransaction,
+  'signature' | 'timestamp'
+>
 export type RegisterKVSTransactionUnsigned = Omit<RegisterKVSTransaction, 'signature' | 'timestamp'>
-export type RegisterVoteForDelegateTransactionUnsigned = Omit<RegisterVoteForDelegateTransaction, 'signature' | 'timestamp'>
-export type RegisterNewDelegateTransactionUnsigned = Omit<RegisterNewDelegateTransaction, 'signature' | 'timestamp'>
+export type RegisterVoteForDelegateTransactionUnsigned = Omit<
+  RegisterVoteForDelegateTransaction,
+  'signature' | 'timestamp'
+>
+export type RegisterNewDelegateTransactionUnsigned = Omit<
+  RegisterNewDelegateTransaction,
+  'signature' | 'timestamp'
+>
 
 export type RegisterAnyTransactionUnsigned =
   | RegisterChatMessageTransactionUnsigned
@@ -49,7 +63,10 @@ export type RegisterAnyTransactionUnsigned =
 
 export function newTransaction(type: number): UnsignedNewTransaction
 
-export function signTransaction(transaction: RegisterAnyTransactionUnsigned, timeDelta: number): RegisterAnyTransaction
+export function signTransaction(
+  transaction: RegisterAnyTransactionUnsigned,
+  timeDelta: number
+): RegisterAnyTransaction
 
 export function unlock(passphrase: string): string
 
@@ -69,9 +86,7 @@ export type SendMessageParams = {
   type?: typeof Transactions.SEND | typeof Transactions.CHAT_MESSAGE
   amount?: number
 }
-export function sendMessage(
-  params: SendMessageParams
-): Promise<CreateNewChatMessageResponseDto>
+export function sendMessage(params: SendMessageParams): Promise<CreateNewChatMessageResponseDto>
 
 export function sendSpecialMessage(
   to: string,
@@ -84,11 +99,7 @@ export function storeValue(
   encode?: boolean
 ): Promise<SetKVSResponseDto>
 
-export function getStored(
-  key: string,
-  ownerAddress: string,
-  records?: number
-): Promise<unknown>
+export function getStored(key: string, ownerAddress: string, records?: number): Promise<unknown>
 
 export function sendTokens(to: string, amount: number): Promise<TransferTokenResponseDto>
 export function getDelegates(limit: number, offset: number): Promise<GetDelegatesResponseDto>
@@ -103,7 +114,6 @@ export function getForgedByAccount(): Promise<GetDelegateStatsResponseDto>
 
 export function storeCryptoAddress(crypto: CryptoSymbol, address: string): Promise<boolean>
 
-
 type GetTransactionsOptions = Pick<
   TransactionsApiGetTransactionsRequest,
   'minAmount' | 'toHeight' | 'fromHeight' | 'type' | 'orderBy'
@@ -113,7 +123,8 @@ export function getTransactions(
 ): Promise<GetTransactionsResponseDto>
 
 export function getTransaction(
-  id: string, returnAsset?: 0 | 1
+  id: string,
+  returnAsset?: 0 | 1
 ): Promise<AnyTransaction | QueuedTransaction | null>
 
 export function getChats(
@@ -121,8 +132,8 @@ export function getChats(
   offset?: number,
   orderBy?: 'asc' | 'desc'
 ): Promise<{
-  count: number,
-  transactions: Array<ReturnType<typeof decodeChat>>
+  count: number
+  transactions: Array<DecodedChatMessageTransaction>
 }>
 
 type DecodedChatMessageTransaction = ChatMessageTransaction & {
@@ -137,9 +148,7 @@ export function decodeChat(
 
 export function getI18nMessage(message: string, senderId: string): string
 
-export function loginOrRegister(): Promise<
-  ReturnType<typeof getCurrentAccount>
->
+export function loginOrRegister(): Promise<ReturnType<typeof getCurrentAccount>>
 
 export type CurrentAccountWithPassphrase = CurrentAccount & {
   passphrase: string
@@ -150,10 +159,7 @@ export function loginViaPassword(
   store: Store<RootState>
 ): Promise<CurrentAccountWithPassphrase>
 
-type GetChatRoomsParams = Pick<
-  ChatsApiGetChatRoomsRequest,
-  'offset' | 'limit' | 'orderBy'
->
+type GetChatRoomsParams = Pick<ChatsApiGetChatRoomsRequest, 'offset' | 'limit' | 'orderBy'>
 
 export function getChatRooms(
   address: string,
@@ -168,5 +174,6 @@ type GetChatRoomMessagesParams = Pick<
 export function getChatRoomMessages(
   address1: string,
   address2: string,
-  params: GetChatRoomMessagesParams
+  params: GetChatRoomMessagesParams,
+  recursive: boolean = false
 ): Promise<Array<ReturnType<typeof decodeChat>>>

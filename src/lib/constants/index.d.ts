@@ -88,7 +88,7 @@ export declare const UserPasswordHashSettings: {
   DIGEST: string
 }
 
-export type TransactionStatus =
+export type TransactionStatusType =
   | 'CONFIRMED'
   | 'PENDING'
   | 'REGISTERED'
@@ -97,7 +97,7 @@ export type TransactionStatus =
   | 'UNKNOWN'
 
 export declare const TransactionStatus: {
-  [K in TransactionStatus]: K
+  [K in TransactionStatusType]: K
 }
 
 export declare const TransactionAdditionalStatus: {
@@ -106,9 +106,9 @@ export declare const TransactionAdditionalStatus: {
   ADM_REGISTERED: string
 }
 
-export declare const tsIcon: (status: TransactionStatus) => string
-export declare const tsColor: (status: TransactionStatus) => string
-export declare const tsUpdatable: (status: TransactionStatus, currency: CryptoSymbol) => boolean
+export declare const tsIcon: (status: TransactionStatusType) => string
+export declare const tsColor: (status: TransactionStatusType) => string
+export declare const tsUpdatable: (status: TransactionStatusType, currency: CryptoSymbol) => boolean
 
 export function getMinAmount(crypto: CryptoSymbol): number
 
@@ -120,3 +120,5 @@ export declare const FetchStatus: {
   Success: 'success'
   Error: 'error'
 }
+
+export declare const REACT_EMOJIS: Record<string, string>

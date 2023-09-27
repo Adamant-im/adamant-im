@@ -29,5 +29,8 @@ module.exports = {
       '<template>': 'espree'
     }
   },
-  plugins: ['vue', '@typescript-eslint']
+  plugins: ['vue', '@typescript-eslint'],
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'off'
+  }
 }

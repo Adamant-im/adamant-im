@@ -1,5 +1,11 @@
 <template>
-  <v-menu :min-width="80" :max-width="184">
+  <v-menu
+    :min-width="80"
+    :max-width="264"
+    :close-on-content-click="false"
+    :model-value="open"
+    @update:model-value="toggleMenu"
+  >
     <template #activator="{ props }">
       <v-btn
         v-bind="props"
@@ -8,58 +14,61 @@
         :ripple="false"
         :elevation="0"
         class="a-chat__message-actions-icon"
+        @click="toggleMenu(true)"
       >
         <v-icon icon="mdi-chevron-down" :size="24" />
       </v-btn>
     </template>
 
-    <v-list density="compact" variant="text" elevation="9" :class="classes.list">
-      <v-list-item @click="$emit('click:reply')">
-        <v-list-item-title>{{ t('chats.chat_actions.reply') }}</v-list-item-title>
+    <div>
+      <div :class="classes.top">
+        <slot name="top" />
+      </div>
 
-        <template #append>
-          <v-icon icon="mdi-reply" />
-        </template>
-      </v-list-item>
-
-      <v-divider />
-
-      <v-list-item @click="$emit('click:copy')">
-        <v-list-item-title>{{ t('chats.chat_actions.copy') }}</v-list-item-title>
-
-        <template #append>
-          <v-icon icon="mdi-content-copy" />
-        </template>
-      </v-list-item>
-    </v-list>
+      <slot name="bottom" />
+    </div>
   </v-menu>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script lang="ts">
+import { defineComponent, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
+
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 
 const className = 'message-actions-dropdown'
 const classes = {
   root: className,
-  list: `${className}__list`
+  top: `${className}__top`
 }
 
 export default defineComponent({
-  emits: ['click:reply', 'click:copy'],
-  setup() {
+  props: {
+    transaction: {
+      type: Object as PropType<NormalizedChatMessageTransaction>,
+      required: true
+    },
+    open: {
+      type: Boolean
+    }
+  },
+  emits: ['click:reply', 'click:copy', 'open:change'],
+  setup(props, { emit }) {
     const { t } = useI18n()
 
-    return { t, classes }
+    const toggleMenu = (state: boolean) => {
+      emit('open:change', state, props.transaction)
+    }
+
+    return { t, classes, toggleMenu, emit }
   }
 })
 </script>
 
 <style lang="scss">
 .message-actions-dropdown {
-  &__list {
-    padding-top: 0;
-    padding-bottom: 0;
+  &__top {
+    margin-top: 8px;
   }
 }
 </style>

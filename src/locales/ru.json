@@ -75,7 +75,11 @@
     },
     "pull_down_actions": {
       "update_balances": "Обновить балансы"
-    }
+    },
+    "you_reacted": "Отреагировали",
+    "partner_reacted": "Отреагировал",
+    "you_removed_reaction": "Убрали реакцию",
+    "partner_removed_reaction": "Убрал реакцию"
   },
   "connection": {
     "offline": "Нет подключения к Интернету",
