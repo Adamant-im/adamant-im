@@ -32,7 +32,7 @@ export default defineComponent({
     const picker = ref<Picker>()
 
     onMounted(async () => {
-      const { data } = await axios.get('https://cdn.jsdelivr.net/npm/@emoji-mart/data')
+      const { data } = await axios.get('/emojis/data.json')
 
       picker.value = new Picker({
         data,
