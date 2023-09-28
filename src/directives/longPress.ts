@@ -29,7 +29,10 @@ export const longPressDirective: Directive = {
       }
 
       if (pressTimer === null) {
-        pressTimer = setTimeout(() => value(e), LONG_PRESS_TIMEOUT)
+        pressTimer = setTimeout(() => {
+          value(e)
+          pressTimer = null
+        }, LONG_PRESS_TIMEOUT)
       }
     }
 

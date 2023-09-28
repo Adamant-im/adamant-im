@@ -15,7 +15,7 @@
     "date_yesterday": "Yesterday",
     "incorrect_address": "Incorrect ADM address",
     "no_public_key": "This address is not active yet. Unable to start a chat",
-    "unable_to_retrieve_no_public_key": "`{ Unable to decrypt message: no partner's public key }`",
+    "unable_to_retrieve_no_public_key": "`Unable to decrypt message: no partner's public key`",
     "me": "Me",
     "message": "Type a message",
     "message_mac_os": "Type a message. Cmd + Ctrl + Space for Emoji picker",
@@ -75,7 +75,11 @@
     },
     "pull_down_actions": {
       "update_balances": "Update balances"
-    }
+    },
+    "you_reacted": "Reacted",
+    "partner_reacted": "Reacted",
+    "you_removed_reaction": "Removed reaction",
+    "partner_removed_reaction": "Removed reaction"
   },
   "connection": {
     "offline": "Offline—No connection",
@@ -258,7 +262,7 @@
       "REGISTERED": "Pending, waiting for confirmations",
       "CONFIRMED": "Success",
       "INVALID": "Inconsistent",
-      "UNKNOWN": "Unknown"      
+      "UNKNOWN": "Unknown"
     },
     "statuses_add": {
       "instant_send": "Confirmed as InstantSend (yet 0 network confirmations)",

@@ -19,7 +19,7 @@
       v-on="listeners"
     >
       <template v-if="showSendButton" #append-inner>
-        <v-icon icon="mdi-send" size="28" />
+        <v-icon class="a-chat__send-icon" icon="mdi-send" size="28" />
       </template>
       <template #prepend>
         <slot name="prepend" />

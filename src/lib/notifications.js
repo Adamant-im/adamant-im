@@ -4,12 +4,12 @@ import Notify from 'notifyjs'
 import Visibility from 'visibilityjs'
 import currency from '@/filters/currencyAmountWithSymbol'
 import { removeFormats } from '@/lib/markdown'
-import { isAdamantChat } from "@/lib/chat/meta/utils";
+import { isAdamantChat } from '@/lib/chat/meta/utils'
 
 let _this
 
 class Notification {
-  constructor (ctx) {
+  constructor(ctx) {
     _this = ctx
     this.i18n = ctx.$i18n
     this.router = ctx.$router
@@ -17,63 +17,79 @@ class Notification {
     this.interval = null
   }
 
-  get lastUnread () {
-    return this.store.getters['chat/lastUnreadMessage']
+  get lastUnread() {
+    const transaction = this.store.getters['chat/lastUnreadMessage']
+
+    // don't show remove reaction
+    if (transaction.type === 'reaction' && !transaction.asset.react_message) {
+      return null
+    }
+
+    return transaction
   }
 
-  get partnerAddress () {
+  get partnerAddress() {
     return this.lastUnread && this.lastUnread.senderId
   }
 
-  get partnerIdentity () {
+  get partnerIdentity() {
     const isAdmChat = isAdamantChat(this.partnerAddress)
-    const name = this.store.getters['partners/displayName'](this.partnerAddress) || this.partnerAddress
+    const name =
+      this.store.getters['partners/displayName'](this.partnerAddress) || this.partnerAddress
     return isAdmChat ? this.i18n.t(name) : name
   }
 
-  get pushAllowed () {
+  get pushAllowed() {
     return this.store.state.options.allowPushNotifications
   }
 
-  get soundAllowed () {
+  get soundAllowed() {
     return this.store.state.options.allowSoundNotifications
   }
 
-  get tabAllowed () {
+  get tabAllowed() {
     return this.store.state.options.allowTabNotifications
   }
 
-  get tabHidden () {
+  get tabHidden() {
     return Visibility.hidden()
   }
 
-  get unreadAmount () {
+  get unreadAmount() {
     return this.store.getters['chat/totalNumOfNewMessages']
   }
 }
 
 class PushNotification extends Notification {
-  constructor (ctx) {
+  constructor(ctx) {
     super(ctx)
     this.tag = null
   }
 
-  get messageBody () {
+  get messageBody() {
     let message
-    if (this.lastUnread.type !== 'message') {
-      message = `${this.i18n.t('chats.received_label')} ${currency(this.lastUnread.amount, this.lastUnread.type)}`
+    if (this.lastUnread.type === 'reaction') {
+      const emoji = this.lastUnread.asset.react_message
+      message = `${this.i18n.t('chats.partner_reacted')} ${emoji}`
+    } else if (this.lastUnread.type !== 'message') {
+      message = `${this.i18n.t('chats.received_label')} ${currency(
+        this.lastUnread.amount,
+        this.lastUnread.type
+      )}`
     } else {
       message = this.lastUnread.message
     }
-    const processedMessage = this.store.state.options.formatMessages ? removeFormats(message) : message
+    const processedMessage = this.store.state.options.formatMessages
+      ? removeFormats(message)
+      : message
     return `${this.partnerIdentity}: ${processedMessage}`
   }
 
-  increaseCounter () {
+  increaseCounter() {
     this.store.commit('notification/increaseDesktopActivateClickCount')
   }
 
-  notify (messageArrived) {
+  notify(messageArrived) {
     try {
       Notify.requestPermission(
         // Permission granted
@@ -131,25 +147,25 @@ class PushNotification extends Notification {
 }
 
 class SoundNotification extends Notification {
-  constructor (ctx) {
+  constructor(ctx) {
     super(ctx)
     this.audio = new Audio('/sound/bbpro_link.mp3')
   }
 
-  notify (messageArrived) {
-    if (messageArrived) {
+  notify(messageArrived) {
+    if (messageArrived && this.lastUnread) {
       this.audio.play()
     }
   }
 }
 
 class TabNotification extends Notification {
-  constructor (ctx) {
+  constructor(ctx) {
     super(ctx)
     this.showAmount = true
   }
 
-  notify () {
+  notify() {
     if (this.unreadAmount > 0 && this.lastUnread && this.tabHidden) {
       if (!this.interval) {
         this.showAmount = true
@@ -158,7 +174,7 @@ class TabNotification extends Notification {
     }
   }
 
-  start () {
+  start() {
     this.interval = window.setInterval(() => {
       if (this.unreadAmount && this.showAmount) {
         if (this.unreadAmount < 100) {
@@ -173,7 +189,7 @@ class TabNotification extends Notification {
     }, 1e3)
   }
 
-  stop () {
+  stop() {
     if (this.interval) {
       window.clearInterval(this.interval)
       this.interval = null
@@ -183,7 +199,7 @@ class TabNotification extends Notification {
 }
 
 export default class extends Notification {
-  constructor (ctx) {
+  constructor(ctx) {
     super(ctx)
     this.prevAmount = 0
     this.push = new PushNotification(ctx)
@@ -192,11 +208,11 @@ export default class extends Notification {
   }
 
   // Returns true once message arrived
-  get messageArrived () {
+  get messageArrived() {
     return this.unreadAmount > this.prevAmount
   }
 
-  start () {
+  start() {
     this.interval = window.setInterval(() => {
       if (this.pushAllowed) {
         this.push.notify(this.messageArrived)
@@ -211,7 +227,7 @@ export default class extends Notification {
     }, 3e3)
   }
 
-  stop () {
+  stop() {
     if (this.interval) {
       window.clearInterval(this.interval)
       this.interval = null

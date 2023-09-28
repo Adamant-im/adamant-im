@@ -1,0 +1,5313 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ADAMANT OpenAPI Specification",
+    "description": "Schema JSON is located [here](/schema.json).",
+    "version": "0.7.0"
+  },
+  "servers": [
+    {
+      "url": "https://unusual.adamant.im/api",
+      "description": "Mainnet Unusual"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "GetAccountInfoResponseDto": {
+        "required": [
+          "account",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "account": {
+            "$ref": "#/components/schemas/AccountDto"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "account": {
+            "address": "U777355171330060015",
+            "unconfirmedBalance": "4509718944753",
+            "balance": "4509718944753",
+            "publicKey": "a9407418dafb3c8aeee28f3263fd55bae0f528a5697a9df0e77e6568b19dfe34",
+            "unconfirmedSignature": 0,
+            "secondSignature": 0,
+            "secondPublicKey": null,
+            "multisignatures": [],
+            "u_multisignatures": []
+          },
+          "success": true,
+          "nodeTimestamp": 58030181
+        }
+      },
+      "GetAccountBalanceResponseDto": {
+        "required": [
+          "balance",
+          "unconfirmedBalance",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "balance": {
+            "type": "string",
+            "format": "int64"
+          },
+          "unconfirmedBalance": {
+            "type": "string",
+            "format": "int64"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "balance": "4509718944753",
+          "unconfirmedBalance": "4509718944753",
+          "success": true,
+          "nodeTimestamp": 58043820
+        }
+      },
+      "GetAccountPublicKeyResponseDto": {
+        "required": [
+          "publicKey",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "publicKey": {
+            "$ref": "#/components/schemas/PublicKey"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "publicKey": "a9407418dafb3c8aeee28f3263fd55bae0f528a5697a9df0e77e6568b19dfe34",
+          "balance": "4509718944753",
+          "unconfirmedBalance": "4509718944753"
+        }
+      },
+      "CreateNewAccountRequestBody": {
+        "required": [
+          "publicKey",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "publicKey": {
+            "$ref": "#/components/schemas/PublicKey"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "publicKey": "a9407418dafb3c8aeee28f3263fd55bae0f528a5697a9df0e77e6568b19dfe34",
+          "balance": "4509718944753",
+          "unconfirmedBalance": "4509718944753"
+        }
+      },
+      "CreateNewAccountResponseDto": {
+        "required": [
+          "account",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "account": {
+            "$ref": "#/components/schemas/AccountDto"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "account": {
+            "address": "U4697606961271319613",
+            "unconfirmedBalance": "0",
+            "balance": "0",
+            "publicKey": "bee368cc0ce2974adcbcc97e649ac18a031492a579034abed5f77d667001d450",
+            "unconfirmedSignature": 0,
+            "secondSignature": 0,
+            "secondPublicKey": null,
+            "multisignatures": null,
+            "u_multisignatures": null
+          },
+          "success": true,
+          "nodeTimestamp": 63205623
+        }
+      },
+      "GetBlockInfoResponseDto": {
+        "required": [
+          "block",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "block": {
+            "$ref": "#/components/schemas/BlockInfoDto"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          }
+        }
+      },
+      "GetBlocksResponseDto": {
+        "required": [
+          "blocks",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BlockInfoDto"
+            }
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          }
+        }
+      },
+      "GetChatRoomsResponseDto": {
+        "required": [
+          "chats",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "chats": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "lastTransaction": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/TokenTransferTransaction"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ChatMessageTransaction"
+                    }
+                  ]
+                },
+                "participants": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatParticipant"
+                  }
+                }
+              }
+            }
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          }
+        }
+      },
+      "GetChatMessagesResponseDto": {
+        "required": [
+          "messages",
+          "participants",
+          "count",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/TokenTransferTransaction"
+                },
+                {
+                  "$ref": "#/components/schemas/ChatMessageTransaction"
+                }
+              ]
+            }
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatParticipant"
+            }
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          }
+        }
+      },
+      "GetChatTransactionsResponseDto": {
+        "required": [
+          "transactions",
+          "count",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessageTransaction"
+            }
+          },
+          "count": {
+            "type": "string",
+            "description": "Number in string format"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          }
+        }
+      },
+      "CreateNewChatMessageRequestBody": {
+        "required": [
+          "transaction"
+        ],
+        "properties": {
+          "transaction": {
+            "$ref": "#/components/schemas/RegisterChatMessageTransaction"
+          }
+        }
+      },
+      "CreateNewChatMessageResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "transactionId"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          },
+          "transactionId": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "success": true,
+          "nodeTimestamp": 63205623,
+          "transactionId": "2515012750420367858"
+        }
+      },
+      "GetDelegatesResponseDto": {
+        "required": [
+          "delegates",
+          "totalCount",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "delegates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DelegateDto"
+            }
+          },
+          "totalCount": {
+            "type": "integer",
+            "example": 254
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 61762271
+          }
+        }
+      },
+      "GetDelegateResponseDto": {
+        "required": [
+          "delegate",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "delegate": {
+            "$ref": "#/components/schemas/DelegateDto"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 61762271
+          }
+        }
+      },
+      "RegisterDelegateRequestBody": {
+        "$ref": "#/components/schemas/RegisterNewDelegateTransaction"
+      },
+      "RegisterDelegateResponseDto": {
+        "required": [
+          "transaction",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "transaction": {
+            "$ref": "#/components/schemas/RegisterDelegateTransactionDto"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 61762271
+          }
+        }
+      },
+      "SearchDelegateResponseDto": {
+        "required": [
+          "delegates",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "delegates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchDelegateDto"
+            }
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 61762271
+          }
+        }
+      },
+      "GetDelegatesCountResponseDto": {
+        "required": [
+          "count",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 255
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "integer",
+            "example": 61762271
+          }
+        }
+      },
+      "GetDelegateStatsResponseDto": {
+        "required": [
+          "fees",
+          "rewards",
+          "forged",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "fees": {
+            "type": "string",
+            "description": "Total sum of fees forged by delegate",
+            "example": "586039475511"
+          },
+          "rewards": {
+            "type": "string",
+            "description": "Total sum of rewards made by delegate",
+            "example": "3943485000000"
+          },
+          "forged": {
+            "type": "string",
+            "description": "Total sum of forged tokens",
+            "example": "4529524475511"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 61762271
+          }
+        }
+      },
+      "GetNextForgersResponseDto": {
+        "required": [
+          "currentBlock",
+          "currentBlockSlot",
+          "currentSlot",
+          "delegates",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "delegates": {
+            "type": "array",
+            "description": "Array of next forgers public keys",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "677c6db63548c99674fed0571da522a6a9569d0c1da9669734a3625645519641",
+              "150d638714f65845b50f1ff58f3da2c2baa3a1dc8bf59a9884c10da5a8e951c6"
+            ]
+          },
+          "currentSlot": {
+            "type": "integer",
+            "description": "Current slot number",
+            "example": 11610423
+          },
+          "currentBlock": {
+            "type": "integer",
+            "description": "Current blockchain height",
+            "example": 10146268
+          },
+          "currentBlockSlot": {
+            "type": "integer",
+            "description": "Current block slot number",
+            "example": 11610422
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 61762271
+          }
+        }
+      },
+      "GetVotersResponseDto": {
+        "required": [
+          "accounts",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VoterDto"
+            }
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 61762271
+          }
+        }
+      },
+      "GetAccountVotesResponseDto": {
+        "required": [
+          "delegates",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "delegates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DelegateDto"
+            },
+            "description": "List of delegates account voted for."
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 61762271
+          }
+        }
+      },
+      "RegisterVotesRequestBody": {
+        "$ref": "#/components/schemas/RegisterVoteForDelegateTransaction"
+      },
+      "RegisterVotesResponseDto": {
+        "required": [
+          "transaction",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "transaction": {
+            "$ref": "#/components/schemas/RegisterVotesTransactionDto"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 61762271
+          }
+        }
+      },
+      "GetPeersResponseDto": {
+        "required": [
+          "peers",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "peers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PeerDto"
+            }
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          }
+        }
+      },
+      "GetLoadingStatusResponseDto": {
+        "required": [
+          "loaded",
+          "now",
+          "blocksCount",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "loaded": {
+            "type": "boolean"
+          },
+          "now": {
+            "type": "integer"
+          },
+          "blocksCount": {
+            "type": "integer"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "loaded": true,
+          "now": 10144343,
+          "blocksCount": 0,
+          "success": true,
+          "nodeTimestamp": 58052355
+        }
+      },
+      "GetSyncStatusResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "syncing",
+          "blocks",
+          "height",
+          "broadhash",
+          "consensus"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          },
+          "syncing": {
+            "type": "boolean"
+          },
+          "blocks": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "broadhash": {
+            "type": "string"
+          },
+          "consensus": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "success": true,
+          "nodeTimestamp": 58052355,
+          "syncing": false,
+          "blocks": 0,
+          "height": 10146332,
+          "broadhash": "09f2f5614cf7209979dc1df2dd92d16aade904dae6c9b68bccaeb234647b3c18",
+          "consensus": 94.32
+        }
+      },
+      "GetPingStatusResponseDto": {
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "success": true
+        }
+      },
+      "GetNodeVersionResponseDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NodeVersion"
+          },
+          {
+            "type": "object",
+            "required": [
+              "success",
+              "nodeTimestamp"
+            ],
+            "properties": {
+              "success": {
+                "type": "boolean",
+                "example": true
+              },
+              "nodeTimestamp": {
+                "type": "number",
+                "example": 58052984
+              }
+            }
+          }
+        ]
+      },
+      "GetBroadhashResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "broadhash"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          },
+          "broadhash": {
+            "type": "string",
+            "description": "Broadhash is established as an aggregated rolling hash of the past five blocks present in the database"
+          }
+        },
+        "example": {
+          "success": true,
+          "nodeTimestamp": 58052355,
+          "broadhash": "e1aedd2818679c174e3f6e31891c34f4069927f33f145e1b81fe5d978733e794"
+        }
+      },
+      "GetEpochResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "epoch"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          },
+          "epoch": {
+            "type": "string",
+            "description": "Time when blockchain epoch starts. Value `2017-09-02T17:00:00.000Z` is for mainnet."
+          }
+        },
+        "example": {
+          "success": true,
+          "nodeTimestamp": 58646306,
+          "epoch": "2017-09-02T17:00:00.000Z"
+        }
+      },
+      "GetHeightResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "height"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          },
+          "height": {
+            "type": "integer",
+            "description": "Current node height."
+          }
+        },
+        "example": {
+          "success": true,
+          "nodeTimestamp": 58646306,
+          "height": 10145318
+        }
+      },
+      "GetTokenTransferFeeResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "fee"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          },
+          "fee": {
+            "type": "integer",
+            "description": "Current fee value for `type 0` (token transfer) transactions. Integer amount of 1/10^8 ADM tokens (1 ADM = 100000000)."
+          }
+        },
+        "example": {
+          "success": true,
+          "nodeTimestamp": 58646306,
+          "fee": 50000000
+        }
+      },
+      "GetTransactionTypesFeesResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "fees"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 58646306
+          },
+          "fees": {
+            "$ref": "#/components/schemas/TransactionTypesFeesDto"
+          }
+        }
+      },
+      "GetNethashResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "nethash"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          },
+          "nethash": {
+            "type": "string",
+            "description": "The `nethash` describes e.g. the Mainnet or the Testnet, that the node is connecting to."
+          }
+        },
+        "example": {
+          "success": true,
+          "nodeTimestamp": 58646306,
+          "nethash": "bd330166898377fb28743ceef5e43a5d9d0a3efd9b3451fb7bc53530bb0a6d64"
+        }
+      },
+      "GetMilestoneResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "milestone"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          },
+          "milestone": {
+            "type": "integer",
+            "description": "Current slot height, which determines reward a delegate will get for forging a block."
+          }
+        },
+        "example": {
+          "success": true,
+          "nodeTimestamp": 58646306,
+          "milestone": 1
+        }
+      },
+      "GetRewardResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "reward"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          },
+          "reward": {
+            "type": "integer",
+            "description": "The reward a delegate will get for forging a block. Integer amount of 1/10^8 ADM tokens (1 ADM = 100000000). Depends on the slot height."
+          }
+        },
+        "example": {
+          "success": true,
+          "nodeTimestamp": 58646306,
+          "reward": 45000000
+        }
+      },
+      "GetTokensTotalSupplyResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "supply"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          },
+          "supply": {
+            "type": "integer",
+            "description": "Total current supply of ADM tokens in the network. Integer amount of 1/10^8 ADM tokens (1 ADM = 100000000). Total supply increases with every new forged block."
+          }
+        },
+        "example": {
+          "success": true,
+          "nodeTimestamp": 58646306,
+          "supply": 10198038140000000
+        }
+      },
+      "GetNetworkInfoResponseDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NetworkStatus"
+          },
+          {
+            "type": "object",
+            "required": [
+              "success",
+              "nodeTimestamp"
+            ],
+            "properties": {
+              "success": {
+                "type": "boolean"
+              },
+              "nodeTimestamp": {
+                "type": "number"
+              }
+            }
+          }
+        ]
+      },
+      "GetNodeStatusResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "network",
+          "version",
+          "wsClient"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 58052984
+          },
+          "network": {
+            "$ref": "#/components/schemas/NetworkStatus"
+          },
+          "version": {
+            "$ref": "#/components/schemas/NodeVersion"
+          },
+          "wsClient": {
+            "$ref": "#/components/schemas/WsClient"
+          }
+        }
+      },
+      "GetKVSResponseDto": {
+        "required": [
+          "transactions",
+          "count",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KVSTransaction"
+            }
+          },
+          "count": {
+            "type": "string",
+            "example": "1",
+            "description": "Integer in string format"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 63647706
+          }
+        }
+      },
+      "SetKVSRequestBody": {
+        "required": [
+          "transaction"
+        ],
+        "properties": {
+          "transaction": {
+            "$ref": "#/components/schemas/RegisterKVSTransaction"
+          }
+        }
+      },
+      "SetKVSResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "transactionId"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          },
+          "transactionId": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "success": true,
+          "nodeTimestamp": 63410860,
+          "transactionId": "3888802408802922744"
+        }
+      },
+      "GetTransactionsResponseDto": {
+        "required": [
+          "transactions",
+          "count",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AnyTransaction"
+            }
+          },
+          "count": {
+            "type": "string",
+            "example": "1",
+            "description": "Integer in string format"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 63647706
+          }
+        }
+      },
+      "GetTransactionByIdResponseDto": {
+        "required": [
+          "transaction",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "transaction": {
+            "$ref": "#/components/schemas/AnyTransaction"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 63647706
+          }
+        }
+      },
+      "GetTransactionsCountResponseDto": {
+        "required": [
+          "success",
+          "nodeTimestamp",
+          "confirmed",
+          "unconfirmed",
+          "queued",
+          "multisignature"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "nodeTimestamp": {
+            "type": "number"
+          },
+          "confirmed": {
+            "type": "integer"
+          },
+          "unconfirmed": {
+            "type": "integer"
+          },
+          "queued": {
+            "type": "integer"
+          },
+          "multisignature": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "success": true,
+          "nodeTimestamp": 59979539,
+          "confirmed": 256953,
+          "unconfirmed": 44,
+          "queued": 4,
+          "multisignature": 0
+        }
+      },
+      "GetQueuedTransactionsResponseDto": {
+        "required": [
+          "transactions",
+          "count",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueuedTransaction"
+            }
+          },
+          "count": {
+            "type": "string",
+            "example": "1",
+            "description": "Integer in string format"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 63647706
+          }
+        }
+      },
+      "GetQueuedTransactionByIdResponseDto": {
+        "required": [
+          "transaction",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "transaction": {
+            "$ref": "#/components/schemas/QueuedTransaction"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 63647706
+          }
+        }
+      },
+      "GetUnconfirmedTransactionsResponseDto": {
+        "required": [
+          "transactions",
+          "count",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueuedTransaction"
+            }
+          },
+          "count": {
+            "type": "string",
+            "example": "1",
+            "description": "Integer in string format"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 63647706
+          }
+        }
+      },
+      "GetUnconfirmedTransactionByIdResponseDto": {
+        "required": [
+          "transaction",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "transaction": {
+            "$ref": "#/components/schemas/QueuedTransaction"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 63647706
+          }
+        }
+      },
+      "TransferTokenRequestBody": {
+        "required": [
+          "transaction"
+        ],
+        "properties": {
+          "transaction": {
+            "$ref": "#/components/schemas/RegisterTokenTransferTransaction"
+          }
+        }
+      },
+      "TransferTokenResponseDto": {
+        "required": [
+          "transactionId",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "example": "6146865104403680934"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 63647706
+          }
+        }
+      },
+      "RegisterTransactionRequestBody": {
+        "required": [
+          "transaction"
+        ],
+        "properties": {
+          "transaction": {
+            "$ref": "#/components/schemas/RegisterAnyTransaction"
+          }
+        }
+      },
+      "RegisterTransactionResponseDto": {
+        "required": [
+          "transactionId",
+          "success",
+          "nodeTimestamp"
+        ],
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "example": "6146865104403680934"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "nodeTimestamp": {
+            "type": "number",
+            "example": 63647706
+          }
+        }
+      },
+      "PublicKey": {
+        "type": "string",
+        "description": "256 bit public key of ADAMANT address in hex format",
+        "example": "ef5e78a3d02e6d82f4ac0c5b8923c1b86185bd17c27c9ac027c20ec62db79a84"
+      },
+      "AccountDto": {
+        "required": [
+          "address",
+          "unconfirmedBalance",
+          "balance",
+          "publicKey",
+          "unconfirmedSignature",
+          "secondSignature",
+          "secondPublicKey",
+          "multisignatures",
+          "u_multisignatures"
+        ],
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "unconfirmedBalance": {
+            "type": "string",
+            "format": "int64"
+          },
+          "balance": {
+            "type": "string",
+            "format": "int64"
+          },
+          "publicKey": {
+            "$ref": "#/components/schemas/PublicKey"
+          },
+          "unconfirmedSignature": {
+            "type": "number"
+          },
+          "secondSignature": {
+            "type": "number"
+          },
+          "secondPublicKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "multisignatures": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": []
+          },
+          "u_multisignatures": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": []
+          }
+        }
+      },
+      "BlockInfoDto": {
+        "required": [
+          "id",
+          "version",
+          "timestamp",
+          "height",
+          "previousBlock",
+          "numberOfTransactions",
+          "totalAmount",
+          "totalFee",
+          "reward",
+          "payloadLength",
+          "payloadHash",
+          "generatorId",
+          "blockSignature",
+          "confirmations",
+          "totalForged"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "int64"
+          },
+          "version": {
+            "type": "number"
+          },
+          "timestamp": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          },
+          "previousBlock": {
+            "type": "string",
+            "format": "int64"
+          },
+          "numberOfTransactions": {
+            "type": "number"
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "totalFee": {
+            "type": "number"
+          },
+          "reward": {
+            "type": "number"
+          },
+          "payloadLength": {
+            "type": "number"
+          },
+          "payloadHash": {
+            "type": "string"
+          },
+          "generatorId": {
+            "type": "string"
+          },
+          "blockSignature": {
+            "type": "string"
+          },
+          "confirmations": {
+            "type": "number"
+          },
+          "totalForged": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "example": {
+          "id": "11114690216332606721",
+          "version": 0,
+          "timestamp": 61741820,
+          "height": 10873829,
+          "previousBlock": "11483763337863654141",
+          "numberOfTransactions": 1,
+          "totalAmount": 10000000,
+          "totalFee": 50000000,
+          "reward": 45000000,
+          "payloadLength": 117,
+          "payloadHash": "f7c0fa338a3a848119cad999d8035ab3fcb3d274a4555e141ebeb86205e41345",
+          "generatorPublicKey": "134a5de88c7da1ec71e75b5250d24168c6c6e3965ff16bd71497bd015d40ea6a",
+          "generatorId": "U3238410389688281135",
+          "blockSignature": "18607b15417a6b0a56b4c74cacd713ad7a10df16ec3ab45a697fa72b6f811f9213d895b7e0fbca71cf74323d60148d0991668e5368386408f4d841496ed2280d",
+          "confirmations": 1093,
+          "totalForged": "95000000"
+        }
+      },
+      "BaseTransaction": {
+        "required": [
+          "id",
+          "height",
+          "blockId",
+          "type",
+          "block_timestamp",
+          "timestamp",
+          "senderPublicKey",
+          "senderId",
+          "recipientId",
+          "recipientPublicKey",
+          "amount",
+          "fee",
+          "signature",
+          "signatures",
+          "confirmations",
+          "asset"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "height": {
+            "type": "number"
+          },
+          "blockId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9,
+            "example": 0,
+            "description": "Type of transaction. See [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types)."
+          },
+          "block_timestamp": {
+            "type": "number"
+          },
+          "timestamp": {
+            "type": "number"
+          },
+          "senderPublicKey": {
+            "type": "string"
+          },
+          "senderId": {
+            "type": "string"
+          },
+          "recipientId": {
+            "type": "string"
+          },
+          "recipientPublicKey": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "format": "int64",
+            "description": "Amount to transfer, 8 decimal points (100000000 equals to 1 ADM). For non-transfer transactions must be `0`"
+          },
+          "fee": {
+            "type": "number",
+            "description": "Fee for operation. Depends on [Transaction Type](https://github.com/Adamant-im/adamant/wiki/Transaction-Types)"
+          },
+          "signature": {
+            "type": "string"
+          },
+          "signatures": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": []
+            }
+          },
+          "confirmations": {
+            "type": "number"
+          },
+          "asset": {
+            "type": "object",
+            "example": {}
+          }
+        }
+      },
+      "TokenTransferAsset": {
+        "type": "object",
+        "properties": {},
+        "example": {},
+        "description": "An empty object"
+      },
+      "TokenTransferTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseTransaction"
+          },
+          {
+            "type": "object",
+            "required": [
+              "asset",
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 0,
+                "example": 0,
+                "description": "Always equal to `0`"
+              },
+              "asset": {
+                "$ref": "#/components/schemas/TokenTransferAsset"
+              }
+            }
+          }
+        ],
+        "example": {
+          "id": 16682447412632443000,
+          "height": 10527806,
+          "blockId": 2635215585577611300,
+          "type": 0,
+          "block_timestamp": 59979295,
+          "timestamp": 59979276,
+          "senderPublicKey": "632816f2c44a08f282e85532443d73286cadc6d9820d5d25c9d50d8e01c668e0",
+          "senderId": "U17362714543155685887",
+          "recipientId": "U17819800352812315500",
+          "recipientPublicKey": "28994b2cd075fd442e6ce78fa8c07966ed122932ff07411fed3c918e495586e2",
+          "amount": 100000000,
+          "fee": 50000000,
+          "signature": "1db7e9111eaca790b73d51c32572739c46fcba3962aff55ca47ecf9a8c9fcb82c323de39ed60bc87d81a1245d43b5351b9dd44ad70128d78536250168b64c408",
+          "signatures": [],
+          "confirmations": 18431929,
+          "asset": {}
+        }
+      },
+      "ChatMessageAsset": {
+        "type": "object",
+        "required": [
+          "chat"
+        ],
+        "properties": {
+          "chat": {
+            "type": "object",
+            "required": [
+              "message",
+              "own_message",
+              "type"
+            ],
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": "Encrypted message"
+              },
+              "own_message": {
+                "type": "string",
+                "description": "Nonce"
+              },
+              "type": {
+                "type": "integer",
+                "description": "Type of chat message (1 - Basic Encrypted Message, 2 - Rich Content Message, 3 - Signal Message). See details https://github.com/Adamant-im/adamant/wiki/Message-Types"
+              }
+            }
+          }
+        },
+        "example": {
+          "chat": {
+            "message": "748e4e9cffc969dfa4c1d7b9b708cb171c9e",
+            "own_message": "96904970891b838c9a3ab1b9a6f31ec194ec94ffaa95d0cd",
+            "type": 1
+          }
+        }
+      },
+      "ChatMessageTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseTransaction"
+          },
+          {
+            "type": "object",
+            "required": [
+              "asset",
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "integer",
+                "minimum": 8,
+                "maximum": 8,
+                "example": 8,
+                "description": "Always equal to `8`"
+              },
+              "asset": {
+                "$ref": "#/components/schemas/ChatMessageAsset"
+              }
+            }
+          }
+        ],
+        "example": {
+          "id": 17242227802580636000,
+          "height": 7583081,
+          "blockId": 10363608465961390000,
+          "type": 8,
+          "block_timestamp": 64874935,
+          "timestamp": 64874929,
+          "senderPublicKey": "b34d48d8d70b3a91f766df34789abf0cad62da7207e171d997508a460217c5d3",
+          "senderId": "U13267906643444995032",
+          "recipientId": "U9203183357885757380",
+          "recipientPublicKey": "741d3d1f52e609eef981e9ab370ec1e7c3ff70cafad94691937a2bb6d84bbff2",
+          "amount": 0,
+          "fee": 100000,
+          "signature": "8803346cf43457aba3480311ee489706ec66493fa043c4d1732682eb86e88d96f36a7e87c1d0d00dd3963f75e763e5554df402ee0aa79bd59bd55185a6e49a03",
+          "signatures": [],
+          "confirmations": 23229462,
+          "asset": {
+            "chat": {
+              "message": "2f045f1d4a5198843999e2948b0cc78806",
+              "own_message": "a7cd3fa21e543dcc9f0564387d83c4d862137a2da37f29d4",
+              "type": 1
+            }
+          }
+        }
+      },
+      "AdamantAddress": {
+        "type": "string",
+        "description": "ADAMANT address",
+        "example": "U8916295525136600565"
+      },
+      "ChatParticipant": {
+        "required": [
+          "address",
+          "publicKey"
+        ],
+        "properties": {
+          "address": {
+            "$ref": "#/components/schemas/AdamantAddress"
+          },
+          "publicKey": {
+            "$ref": "#/components/schemas/PublicKey"
+          }
+        }
+      },
+      "RegisterTransactionBase": {
+        "required": [
+          "type",
+          "amount",
+          "senderId",
+          "senderPublicKey",
+          "signature",
+          "timestamp"
+        ],
+        "properties": {
+          "type": {
+            "type": "integer"
+          },
+          "amount": {
+            "type": "integer"
+          },
+          "senderId": {
+            "type": "string"
+          },
+          "senderPublicKey": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "type": 0,
+          "amount": 0,
+          "senderId": "U14236667426471084862",
+          "senderPublicKey": "8cd9631f9f634a361ea3b85cbd0df882633e39e7d26d7bc615bbcf75e41524ef",
+          "signature": "b3982d603be8f0246fa663e9f012bf28b198cd28f82473db1eb4a342d890f7a2a2c1845db8d256bb5bce1e64a9425822a91e10bf960a2e0b55e20b4841e4ae0b",
+          "timestamp": 63228852
+        }
+      },
+      "RegisterChatMessageTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RegisterTransactionBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "asset",
+              "recipientId"
+            ],
+            "properties": {
+              "type": {
+                "type": "integer",
+                "minimum": 8,
+                "maximum": 8,
+                "example": 8,
+                "description": "Always equal to `8`"
+              },
+              "recipientId": {
+                "type": "string"
+              },
+              "asset": {
+                "$ref": "#/components/schemas/ChatMessageAsset"
+              }
+            }
+          }
+        ]
+      },
+      "DelegateDto": {
+        "required": [
+          "username",
+          "address",
+          "publicKey",
+          "vote",
+          "votesWeight",
+          "producedblocks",
+          "missedblocks",
+          "rate",
+          "rank",
+          "approval",
+          "productivity"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Unique delegate's nickname"
+          },
+          "address": {
+            "type": "string",
+            "description": "Delegate address"
+          },
+          "publicKey": {
+            "type": "string",
+            "description": "Delegate Public Key"
+          },
+          "vote": {
+            "type": "string",
+            "description": "Vote weight (obsolete, not used)"
+          },
+          "votesWeight": {
+            "type": "string",
+            "description": "Vote weight (Fair Delegate System)"
+          },
+          "producedlocks": {
+            "type": "integer",
+            "description": "Count of produced blocks"
+          },
+          "missedblocks": {
+            "type": "integer",
+            "description": "Count of missed blocks"
+          },
+          "rate": {
+            "type": "integer",
+            "description": "Current position in the Delegates List"
+          },
+          "rank": {
+            "type": "integer",
+            "description": "Current position in the Delegates List"
+          },
+          "approval": {
+            "type": "number",
+            "description": "Share of votes of all votes in the system"
+          },
+          "productivity": {
+            "type": "number",
+            "description": "Productivity / Uptime of a delegate. If `0`, delegate is not active now"
+          }
+        },
+        "example": {
+          "username": "galaxy",
+          "address": "U17457189553820283321",
+          "publicKey": "7e26562594685ba12c0bb99ae80692947828afb71962d54634795d78b3ea7023",
+          "vote": "248994436803629",
+          "votesWeight": "83910064952101",
+          "producedblocks": 269879,
+          "missedblocks": 567,
+          "rate": 10,
+          "rank": 10,
+          "approval": 0.76,
+          "productivity": 99.79
+        }
+      },
+      "RegisterNewDelegateTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RegisterTransactionBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "asset",
+              "type",
+              "senderId"
+            ],
+            "properties": {
+              "type": {
+                "type": "integer",
+                "minimum": 2,
+                "maximum": 2,
+                "example": 2,
+                "description": "Should be always equal to `2`"
+              },
+              "asset": {
+                "type": "object",
+                "required": [
+                  "delegate"
+                ],
+                "properties": {
+                  "delegate": {
+                    "type": "object",
+                    "required": [
+                      "username",
+                      "publicKey"
+                    ],
+                    "properties": {
+                      "username": {
+                        "type": "string"
+                      },
+                      "publicKey": {
+                        "$ref": "#/components/schemas/PublicKey"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "example": {
+          "type": 2,
+          "amount": 0,
+          "senderId": "U3031563782805250428",
+          "senderPublicKey": "a339974effc141f302bd3589c603bdc9468dd66bcc424b60025b36999eb69ca3",
+          "signature": "c2e4a3ef7f0d363611a2b22b96feff269f1a0cbb61741a2ce55756bb9324826092fd9bff6348145e3cc384c097f101a493b9136da5236292ecf8b1ed6657dd01",
+          "timestamp": 166805250,
+          "asset": {
+            "delegate": {
+              "username": "kpeo",
+              "publicKey": "a339974effc141f302bd3589c603bdc9468dd66bcc424b60025b36999eb69ca3"
+            }
+          }
+        }
+      },
+      "QueuedTransaction": {
+        "required": [
+          "recipientId",
+          "amount",
+          "type",
+          "senderId",
+          "senderPublicKey",
+          "timestmap",
+          "signature",
+          "id",
+          "fee",
+          "relays",
+          "receivedAt"
+        ],
+        "properties": {
+          "recipientId": {
+            "type": "string",
+            "example": "U14236667426471084862"
+          },
+          "amount": {
+            "type": "integer",
+            "example": 0
+          },
+          "type": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9,
+            "example": 3,
+            "description": "See [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types)"
+          },
+          "senderId": {
+            "type": "string",
+            "example": "U14236667426471084862"
+          },
+          "senderPublicKey": {
+            "type": "string",
+            "example": "8cd9631f9f634a361ea3b85cbd0df882633e39e7d26d7bc615bbcf75e41524ef"
+          },
+          "timestamp": {
+            "type": "integer",
+            "example": 63394407
+          },
+          "signature": {
+            "type": "string",
+            "example": "7f4f5d240fc66da1cbdb3fe291d6fcec006848236355aebe346fcd1e3ba500caeac1ed0af6f3d7f912a889a1bbedc1d7bab17b6ebd36386b81df78189ddf7c07"
+          },
+          "id": {
+            "type": "string",
+            "example": "13616514419605573351"
+          },
+          "fee": {
+            "type": "integer",
+            "example": 5000000000
+          },
+          "relays": {
+            "type": "integer",
+            "example": 1
+          },
+          "receivedAt": {
+            "type": "string",
+            "description": "Date and time in ISO 8601 format",
+            "example": "2019-09-06T10:33:28.054Z"
+          }
+        }
+      },
+      "RegisterDelegateAsset": {
+        "type": "object",
+        "required": [
+          "delegate"
+        ],
+        "properties": {
+          "delegate": {
+            "type": "object",
+            "required": [
+              "address",
+              "username",
+              "publicKey"
+            ],
+            "properties": {
+              "address": {
+                "$ref": "#/components/schemas/AdamantAddress"
+              },
+              "username": {
+                "type": "string"
+              },
+              "publicKey": {
+                "$ref": "#/components/schemas/PublicKey"
+              }
+            }
+          }
+        },
+        "example": {
+          "delegate": {
+            "address": "U3031563782805250428",
+            "username": "kpeo",
+            "publicKey": "a339974effc141f302bd3589c603bdc9468dd66bcc424b60025b36999eb69ca3"
+          }
+        }
+      },
+      "RegisterDelegateTransactionDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/QueuedTransaction"
+          },
+          {
+            "type": "object",
+            "required": [
+              "asset",
+              "type"
+            ],
+            "properties": {
+              "asset": {
+                "$ref": "#/components/schemas/RegisterDelegateAsset"
+              },
+              "type": {
+                "type": "integer",
+                "minimum": 2,
+                "maximum": 2,
+                "example": 2,
+                "description": "Always equal to `2`"
+              },
+              "fee": {
+                "type": "integer",
+                "minimum": 300000000000,
+                "maximum": 300000000000,
+                "example": 300000000000,
+                "description": "Always equal to `300000000000`"
+              }
+            }
+          }
+        ]
+      },
+      "SearchDelegateDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/DelegateDto"
+          },
+          {
+            "type": "object",
+            "required": [
+              "voters_cnt",
+              "register_timestamp"
+            ],
+            "properties": {
+              "voters_cnt": {
+                "type": "integer",
+                "description": "Number of accounts who voted for delegate",
+                "example": 12
+              },
+              "register_timestamp": {
+                "type": "integer",
+                "description": "Epoch timestamp of when delegate was registered",
+                "example": 45523238
+              }
+            }
+          }
+        ]
+      },
+      "VoterDto": {
+        "required": [
+          "username",
+          "address",
+          "publicKey",
+          "balance"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "nullable": true,
+            "description": "Voter's delegate username. `null` if address is not a delegate."
+          },
+          "address": {
+            "type": "string",
+            "description": "Voter's ADAMANT address"
+          },
+          "publicKey": {
+            "type": "string",
+            "description": "Voter's ADAMANT public key"
+          },
+          "balance": {
+            "type": "string",
+            "description": "ADM balance of voter's ADAMANT wallet. Integer amount of 1/10^8 ADM tokens (1 ADM = 100000000)"
+          }
+        },
+        "example": {
+          "username": "leg",
+          "address": "U12609717384103730908",
+          "publicKey": "559418798f67a81b7f893aa8eab1218b9838a6b0bcd2bc8968c6d490ae0d5d77",
+          "balance": "506697"
+        }
+      },
+      "VoteForDelegateAsset": {
+        "type": "object",
+        "required": [
+          "votes"
+        ],
+        "properties": {
+          "votes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Delegate public key. Leave as is for Upvote or prefix the public key with minus sign (`-`) for Downvote",
+              "example": "-c0c580c3fb89409f32181fef58935f286f0c1bbf61bd727084ed915b3a4bc95b"
+            }
+          }
+        },
+        "example": {
+          "votes": [
+            "-c0c580c3fb89409f32181fef58935f286f0c1bbf61bd727084ed915b3a4bc95b",
+            "ac903ab58135cd5f0613a929d876953214d224034b73c33e63bc153d669447f4"
+          ]
+        }
+      },
+      "RegisterVoteForDelegateTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RegisterTransactionBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "asset",
+              "recipientId",
+              "type",
+              "senderId"
+            ],
+            "properties": {
+              "asset": {
+                "$ref": "#/components/schemas/VoteForDelegateAsset"
+              },
+              "recipientId": {
+                "type": "string",
+                "description": "ADAMANT address of account who votes. Same as `senderId`",
+                "example": "U14236667426471084862"
+              },
+              "type": {
+                "type": "integer",
+                "minimum": 3,
+                "maximum": 3,
+                "example": 3,
+                "description": "Should be always equal to `3`"
+              },
+              "senderId": {
+                "type": "string",
+                "description": "ADAMANT address of account who votes. Same as `recipientId`",
+                "example": "U14236667426471084862"
+              }
+            }
+          }
+        ]
+      },
+      "RegisterVotesTransactionDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/QueuedTransaction"
+          },
+          {
+            "type": "object",
+            "required": [
+              "asset",
+              "type",
+              "success",
+              "nodeTimestamp"
+            ],
+            "properties": {
+              "asset": {
+                "$ref": "#/components/schemas/VoteForDelegateAsset"
+              },
+              "type": {
+                "type": "integer",
+                "minimum": 3,
+                "maximum": 3,
+                "example": 3,
+                "description": "Always equal to `3`"
+              },
+              "success": {
+                "type": "boolean",
+                "example": true
+              },
+              "nodeTimestamp": {
+                "type": "number",
+                "example": 61762271
+              }
+            }
+          }
+        ]
+      },
+      "PeerDto": {
+        "required": [
+          "ip",
+          "port",
+          "state",
+          "os",
+          "version",
+          "broadhash",
+          "height",
+          "clock",
+          "updated",
+          "nonce"
+        ],
+        "properties": {
+          "ip": {
+            "type": "string",
+            "description": "IPv4 address of node"
+          },
+          "port": {
+            "type": "string",
+            "description": "Port number of ADAMANT node. `36666` for mainnet or `36667` for testnet"
+          },
+          "state": {
+            "type": "integer",
+            "description": "State of the peer. Available values: Connected (2), Disconnected, Banned"
+          },
+          "os": {
+            "type": "string",
+            "description": "Node's operating system"
+          },
+          "version": {
+            "type": "string",
+            "description": "ADAMANT node software version"
+          },
+          "broadhash": {
+            "type": "string",
+            "description": "Broadhash on the peer node. Broadhash is established as an aggregated rolling hash of the past five blocks present in the database."
+          },
+          "height": {
+            "type": "integer",
+            "description": "Current node's blockchain height"
+          },
+          "clock": {
+            "type": "string",
+            "nullable": true
+          },
+          "updated": {
+            "type": "integer",
+            "description": "Unix timestamp based in ms, when peer updated"
+          },
+          "nonce": {
+            "type": "string",
+            "description": "Unique Identifier for the peer. Random string."
+          }
+        },
+        "example": {
+          "ip": "194.32.79.175",
+          "port": 36666,
+          "state": 2,
+          "os": "linux4.15.0-36-generic",
+          "version": "0.4.0",
+          "broadhash": "3dfdf6c7bbaf7537eac9c70432f7ba1cae835b9b15e4ecd97e147616dde67e62",
+          "height": 10146365,
+          "clock": null,
+          "updated": 1562424199553,
+          "nonce": "jxXV6g0sHJhmDubq"
+        }
+      },
+      "NodeVersion": {
+        "required": [
+          "build",
+          "commit",
+          "version"
+        ],
+        "properties": {
+          "build": {
+            "type": "string"
+          },
+          "commit": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "build": "",
+          "commit": "b07aaf9580dffb5cc95cc65f303f6f1e5fca7d9c",
+          "version": "0.5.2"
+        }
+      },
+      "TransactionTypesFeesDto": {
+        "required": [
+          "send",
+          "vote",
+          "delegate",
+          "old_chat_message",
+          "chat_message",
+          "state_store",
+          "profile_update",
+          "avatar_upload"
+        ],
+        "properties": {
+          "send": {
+            "type": "integer",
+            "description": "Token transfer, type 0"
+          },
+          "vote": {
+            "type": "integer",
+            "description": "Voting for delegate, type 3"
+          },
+          "delegate": {
+            "type": "integer",
+            "description": "Registration of a new delegate, type 2"
+          },
+          "old_chat_message": {
+            "type": "integer",
+            "description": "Sending a message (not used for now)"
+          },
+          "chat_message": {
+            "type": "integer",
+            "description": "Sending a message, type 8"
+          },
+          "state_store": {
+            "type": "integer",
+            "description": "Storing data in KVS, type 9"
+          },
+          "profile_update": {
+            "type": "integer"
+          },
+          "avatar_upload": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "send": 50000000,
+          "vote": 5000000000,
+          "delegate": 300000000000,
+          "old_chat_message": 500000,
+          "chat_message": 100000,
+          "state_store": 100000,
+          "profile_update": 5000000,
+          "avatar_upload": 10000000
+        }
+      },
+      "NetworkStatus": {
+        "required": [
+          "broadhash",
+          "epoch",
+          "height",
+          "fee",
+          "milestone",
+          "nethash",
+          "reward",
+          "supply"
+        ],
+        "properties": {
+          "broadhash": {
+            "type": "string",
+            "description": "Broadhash is established as an aggregated rolling hash of the past five blocks present in the database"
+          },
+          "epoch": {
+            "type": "string",
+            "description": "Time when blockchain epoch starts. Value `2017-09-02T17:00:00.000Z` is for mainnet."
+          },
+          "height": {
+            "type": "integer"
+          },
+          "fee": {
+            "type": "integer"
+          },
+          "milestone": {
+            "type": "integer",
+            "description": "Current slot height, which determines reward a delegate will get for forging a block."
+          },
+          "nethash": {
+            "type": "string",
+            "description": "The `nethash` describes e.g. the Mainnet or the Testnet, that the node is connecting to."
+          },
+          "reward": {
+            "type": "integer",
+            "description": "The reward a delegate will get for forging a block. Integer amount of 1/10^8 ADM tokens (1 ADM = 100000000)."
+          },
+          "supply": {
+            "type": "integer",
+            "description": "Total current supply of ADM tokens in the network. Integer amount of 1/10^8 ADM tokens (1 ADM = 100000000)."
+          }
+        },
+        "example": {
+          "broadhash": "4a28272c915f74d118120bb47db547a18a7512e1d48092c48be86939a6d45b89",
+          "epoch": "2017-09-02T17:00:00.000Z",
+          "height": 10145334,
+          "fee": 50000000,
+          "milestone": 1,
+          "nethash": "bd330166898377fb28743ceef5e43a5d9d0a3efd9b3451fb7bc53530bb0a6d64",
+          "reward": 45000000,
+          "supply": 10198040075000000
+        }
+      },
+      "WsClient": {
+        "required": [
+          "enabled",
+          "port"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "port": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "enabled": true,
+          "port": 36668
+        }
+      },
+      "KVSTransactionAsset": {
+        "type": "object",
+        "required": [
+          "state"
+        ],
+        "properties": {
+          "state": {
+            "type": "object",
+            "required": [
+              "key",
+              "value",
+              "type"
+            ],
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "type": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 0
+              }
+            }
+          }
+        },
+        "example": {
+          "state": {
+            "key": "eth:address",
+            "value": "0x2391EEaEc07B927D2BA4Fa5cB3cE4b490Fa6fffC",
+            "type": 0
+          }
+        }
+      },
+      "KVSTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseTransaction"
+          },
+          {
+            "type": "object",
+            "required": [
+              "asset",
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "integer",
+                "minimum": 9,
+                "maximum": 9,
+                "example": 9,
+                "description": "Always equal to `9`"
+              },
+              "recipientId": {
+                "type": "string",
+                "nullable": true,
+                "description": "There is no recipient for this type of transaction"
+              },
+              "recipientPublicKey": {
+                "type": "string",
+                "nullable": true,
+                "description": "There is no recipient for this type of transaction"
+              },
+              "asset": {
+                "$ref": "#/components/schemas/KVSTransactionAsset"
+              }
+            }
+          }
+        ],
+        "example": {
+          "id": 11325216963059857000,
+          "height": 3377231,
+          "blockId": 14121859709526400000,
+          "type": 9,
+          "block_timestamp": 23943500,
+          "timestamp": 23943500,
+          "senderPublicKey": "ac903ab58135cd5f0613a929d876953214d224034b73c33e63bc153d669447f4",
+          "senderId": "U5517006347330072401",
+          "recipientId": null,
+          "recipientPublicKey": null,
+          "amount": 0,
+          "fee": 100000,
+          "signature": "4c3bcca1f6c921cef7ce07f4e641f668c5c0660bb6432335d5e2117c7a4d8378b352e7fa4fac3126bd7228f5b9ac5d57100bb161da02f7efc16df9f7e602b10d",
+          "signatures": [],
+          "confirmations": 7856415,
+          "asset": {
+            "state": {
+              "key": "eth:address",
+              "value": "0x2391EEaEc07B927D2BA4Fa5cB3cE4b490Fa6fffC",
+              "type": 0
+            }
+          }
+        }
+      },
+      "RegisterKVSTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RegisterTransactionBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "asset"
+            ],
+            "properties": {
+              "type": {
+                "type": "integer",
+                "minimum": 9,
+                "maximum": 9,
+                "example": 9,
+                "description": "Should be always equal to `9` (Store in KVS transaction type)"
+              },
+              "asset": {
+                "$ref": "#/components/schemas/KVSTransactionAsset"
+              }
+            }
+          }
+        ]
+      },
+      "RegisterDelegateTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseTransaction"
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "asset"
+            ],
+            "properties": {
+              "type": {
+                "type": "integer",
+                "minimum": 2,
+                "maximum": 2,
+                "example": 2,
+                "description": "Always equal to `2`"
+              },
+              "recipientId": {
+                "type": "string",
+                "nullable": true,
+                "description": "There is no recipient for this type of transaction"
+              },
+              "recipientPublicKey": {
+                "type": "string",
+                "nullable": true,
+                "description": "There is no recipient for this type of transaction"
+              },
+              "asset": {
+                "$ref": "#/components/schemas/RegisterDelegateAsset"
+              }
+            }
+          }
+        ],
+        "example": {
+          "id": 14674137414602658000,
+          "height": 31536741,
+          "blockId": 15921349202793791000,
+          "type": 2,
+          "block_timestamp": 166805152,
+          "timestamp": 166805152,
+          "senderPublicKey": "a339974effc141f302bd3589c603bdc9468dd66bcc424b60025b36999eb69ca3",
+          "senderId": "U3031563782805250428",
+          "recipientId": null,
+          "recipientPublicKey": null,
+          "amount": 0,
+          "fee": 300000000000,
+          "relays": 1,
+          "signature": "1833a86e24d57ad6dbd30c47924500a03096fd06076fafe5bca4f23ab4629268f3b1a58a1ce275356bc0b79f64a11b8abe9bec6c3d55202d6393327f9278910b",
+          "signatures": [],
+          "confirmations": 427,
+          "asset": {
+            "delegate": {
+              "username": "kpeo",
+              "publicKey": "a339974effc141f302bd3589c603bdc9468dd66bcc424b60025b36999eb69ca3",
+              "address": "U3031563782805250428"
+            }
+          }
+        }
+      },
+      "VoteForDelegateTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseTransaction"
+          },
+          {
+            "type": "object",
+            "required": [
+              "votes",
+              "asset",
+              "type"
+            ],
+            "properties": {
+              "votes": {
+                "type": "object",
+                "properties": {
+                  "added": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "Delegate public key",
+                      "example": "c0c580c3fb89409f32181fef58935f286f0c1bbf61bd727084ed915b3a4bc95b"
+                    },
+                    "description": "List of Upvoted delegates"
+                  },
+                  "deleted": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "Delegate public key",
+                      "example": "c0c580c3fb89409f32181fef58935f286f0c1bbf61bd727084ed915b3a4bc95b"
+                    },
+                    "description": "List of Downvoted delegates"
+                  }
+                }
+              },
+              "type": {
+                "type": "integer",
+                "minimum": 3,
+                "maximum": 3,
+                "example": 3,
+                "description": "Always equal to `3`"
+              },
+              "asset": {
+                "$ref": "#/components/schemas/VoteForDelegateAsset"
+              }
+            }
+          }
+        ],
+        "example": {
+          "id": 9888167852341778000,
+          "height": 10488572,
+          "blockId": 16481510969712464000,
+          "type": 3,
+          "block_timestamp": 59782601,
+          "timestamp": 59782601,
+          "senderPublicKey": "9560562121cdc41112a0b288101079346d9c67f5bbff1f4d5a29483258c9477a",
+          "senderId": "U9221911598904803004",
+          "recipientId": "U9221911598904803004",
+          "recipientPublicKey": "9560562121cdc41112a0b288101079346d9c67f5bbff1f4d5a29483258c9477a",
+          "amount": 0,
+          "fee": 5000000000,
+          "signature": "fe199a4a5790186c1c482c6f5c0de5b7baa0a66e4b97abcb96f47e197880ea8333dc57e1b497e32eabdb157ac834dbd85d58d7c550e8aabe208af79026279c04",
+          "signatures": [],
+          "confirmations": 745088,
+          "asset": {
+            "votes": [
+              "-c0c580c3fb89409f32181fef58935f286f0c1bbf61bd727084ed915b3a4bc95b"
+            ]
+          },
+          "votes": {
+            "added": [],
+            "deleted": [
+              "c0c580c3fb89409f32181fef58935f286f0c1bbf61bd727084ed915b3a4bc95b"
+            ]
+          }
+        }
+      },
+      "AnyTransaction": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/TokenTransferTransaction"
+          },
+          {
+            "$ref": "#/components/schemas/RegisterDelegateTransaction"
+          },
+          {
+            "$ref": "#/components/schemas/VoteForDelegateTransaction"
+          },
+          {
+            "$ref": "#/components/schemas/ChatMessageTransaction"
+          },
+          {
+            "$ref": "#/components/schemas/KVSTransaction"
+          }
+        ]
+      },
+      "RegisterTokenTransferTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RegisterTransactionBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "amount",
+              "recipientId"
+            ],
+            "properties": {
+              "type": {
+                "type": "integer",
+                "description": "Can be `type 0 — Token transfer` or `type 8 — Chat/Message`."
+              },
+              "recipientId": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "integer",
+                "description": "Amount of token to transfer"
+              }
+            },
+            "example": {
+              "type": 0,
+              "amount": 100000000,
+              "senderId": "U14236667426471084862",
+              "senderPublicKey": "8cd9631f9f634a361ea3b85cbd0df882633e39e7d26d7bc615bbcf75e41524ef",
+              "recipientId": "U16655734187932477074",
+              "timestamp": 63228852,
+              "signature": "b3982d603be8f0246fa663e9f012bf28b198cd28f82473db1eb4a342d890f7a2a2c1845db8d256bb5bce1e64a9425822a91e10bf960a2e0b55e20b4841e4ae0b"
+            }
+          }
+        ]
+      },
+      "RegisterAnyTransaction": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RegisterVoteForDelegateTransaction"
+          },
+          {
+            "$ref": "#/components/schemas/RegisterTokenTransferTransaction"
+          },
+          {
+            "$ref": "#/components/schemas/RegisterKVSTransaction"
+          },
+          {
+            "$ref": "#/components/schemas/RegisterChatMessageTransaction"
+          },
+          {
+            "$ref": "#/components/schemas/RegisterNewDelegateTransaction"
+          }
+        ]
+      }
+    },
+    "parameters": {
+      "senderId": {
+        "name": "senderId",
+        "in": "query",
+        "description": "Filter by senderId",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "andSenderId": {
+        "name": "and:senderId",
+        "in": "query",
+        "description": "Filter by senderId (`and` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orSenderId": {
+        "name": "or:senderId",
+        "in": "query",
+        "description": "Filter by senderId (`or` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "recipientId": {
+        "name": "recipientId",
+        "in": "query",
+        "description": "Filter by recipientId",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "andRecipientId": {
+        "name": "and:recipientId",
+        "in": "query",
+        "description": "Filter by recipientId (`and` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orRecipientId": {
+        "name": "or:recipientId",
+        "in": "query",
+        "description": "Filter by recipientId (`or` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "offset": {
+        "name": "offset",
+        "in": "query",
+        "description": "Offset value for results.",
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "default": 0
+        },
+        "required": false
+      },
+      "orderBy": {
+        "name": "orderBy",
+        "in": "query",
+        "description": "Order results by field name.",
+        "schema": {
+          "type": "string",
+          "example": "timestamp:desc",
+          "default": "timestamp:desc"
+        },
+        "required": false
+      },
+      "userId": {
+        "name": "userId",
+        "in": "query",
+        "description": "Filter by senderId/recipientId.\nThe query will look like `tx.senderId = {userId} OR tx.recipientId = {userId}`.\n",
+        "schema": {
+          "type": "string",
+          "example": "U14236667426471084862"
+        },
+        "required": false
+      },
+      "andUserId": {
+        "name": "and:userId",
+        "in": "query",
+        "description": "Filter by senderId/recipientId (`and` operator).\nThe query will look like `tx.senderId = {userId} OR tx.recipientId = {userId}`.\n",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orUserId": {
+        "name": "or:userId",
+        "in": "query",
+        "description": "Filter by senderId/recipientId (`or` operator).\nThe query will look like `tx.senderId = {userId} OR tx.recipientId = {userId}`.\n",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "withoutDirectTransfers": {
+        "name": "withoutDirectTransfers",
+        "in": "query",
+        "description": "When set to `true`, excludes type `0` transactions (direct token transfers) from results. Default is `false`.",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        },
+        "required": false
+      },
+      "limit": {
+        "name": "limit",
+        "in": "query",
+        "description": "Limit number of transactions in the result",
+        "schema": {
+          "type": "integer",
+          "example": 10,
+          "default": 25
+        },
+        "required": false
+      },
+      "fromHeight": {
+        "name": "fromHeight",
+        "in": "query",
+        "description": "Filter starting from specific `height`",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "andFromHeight": {
+        "name": "and:fromHeight",
+        "in": "query",
+        "description": "Filter starting from specific height (`and` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orFromHeight": {
+        "name": "or:fromHeight",
+        "in": "query",
+        "description": "Filter starting from specific height (`or` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "toHeight": {
+        "name": "toHeight",
+        "in": "query",
+        "description": "Filter results till block with specific height",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "andToHeight": {
+        "name": "and:toHeight",
+        "in": "query",
+        "description": "Filter results till block with specific height (`and` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orToHeight": {
+        "name": "or:toHeight",
+        "in": "query",
+        "description": "Filter results till block with specific height (`or` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "inId": {
+        "name": "inId",
+        "in": "query",
+        "description": "Filter by recipientId/senderId `(\"recipientId\" = ${inId} OR \"senderId\" = ${inId})`",
+        "schema": {
+          "type": "string",
+          "example": "U14236667426471084862"
+        },
+        "required": false
+      },
+      "andInId": {
+        "name": "and:inId",
+        "in": "query",
+        "description": "Filter by recipientId/senderId `(\"recipientId\" = ${inId} OR \"senderId\" = ${inId})` with `and` operator",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orInId": {
+        "name": "or:inId",
+        "in": "query",
+        "description": "Filter by recipientId/senderId `(\"recipientId\" = ${inId} OR \"senderId\" = ${inId})` with `or` operator",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "type": {
+        "name": "type",
+        "in": "query",
+        "description": "Get messages of specified type. See [Message Types](https://github.com/Adamant-im/adamant/wiki/Message-Types).\nIf `type` is not set, all types of transactions will be returned.\n",
+        "schema": {
+          "type": "integer",
+          "example": 2
+        },
+        "required": false
+      },
+      "andType": {
+        "name": "and:type",
+        "in": "query",
+        "description": "Get messages of specified type. See [Message Types](https://github.com/Adamant-im/adamant/wiki/Message-Types).\nIf `type` is not set, all types of transactions will be returned.\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orType": {
+        "name": "or:type",
+        "in": "query",
+        "description": "Get messages of specified type. See [Message Types](https://github.com/Adamant-im/adamant/wiki/Message-Types).\nIf `type` is not set, all types of transactions will be returned.\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "limit-2": {
+        "name": "limit",
+        "in": "query",
+        "description": "Limit number of transactions in the result",
+        "schema": {
+          "type": "integer",
+          "example": 10,
+          "default": 100
+        },
+        "required": false
+      },
+      "senderIds": {
+        "name": "senderIds",
+        "in": "query",
+        "description": "Filter by list of senders. Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "U18132012621449491414,U15881344309699504778"
+        },
+        "required": false
+      },
+      "andSenderIds": {
+        "name": "and:senderIds",
+        "in": "query",
+        "description": "Filter by list of senders (`and` operator). Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "U18132012621449491414,U15881344309699504778"
+        },
+        "required": false
+      },
+      "orSenderIds": {
+        "name": "or:senderIds",
+        "in": "query",
+        "description": "Filter by list of senders (`or` operator). Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "U18132012621449491414,U15881344309699504778"
+        },
+        "required": false
+      },
+      "key": {
+        "name": "key",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "example": "eth:address",
+          "description": "Get transactions of specified KVS key"
+        }
+      },
+      "keyIds": {
+        "name": "keyIds",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "example": [
+            "eth:address",
+            "doge:address",
+            "dash:address",
+            "btc:address"
+          ],
+          "description": "Get transactions of specified KVS keys. Array of keys, comma-separated."
+        }
+      },
+      "type-2": {
+        "name": "type",
+        "in": "query",
+        "description": "When sending KVS transaction, type field of state object must be as follows:\n\n- `0` for full re-writing of contents by specified key value\n- `1` for incremental appending contents\n\nFor more details see [AIP 11: Behavior for KVS data](https://aips.adamant.im/AIPS/aip-11)\n",
+        "schema": {
+          "type": "integer",
+          "example": 1,
+          "default": 0,
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "required": false
+      },
+      "blockId": {
+        "name": "blockId",
+        "in": "query",
+        "description": "Filter by specific block",
+        "schema": {
+          "type": "number",
+          "example": 7917597195203394000
+        },
+        "required": false
+      },
+      "andBlockId": {
+        "name": "and:blockId",
+        "in": "query",
+        "description": "Filter by specific block (`and` condition)",
+        "schema": {
+          "type": "number"
+        },
+        "required": false
+      },
+      "orBlockId": {
+        "name": "or:blockId",
+        "in": "query",
+        "description": "Filter by specific block (`or` condition)",
+        "schema": {
+          "type": "number"
+        },
+        "required": false
+      },
+      "senderPublicKey": {
+        "name": "senderPublicKey",
+        "in": "query",
+        "description": "Filter by sender publicKey",
+        "schema": {
+          "type": "string",
+          "example": "801846655523f5e21f2d454b2f98f70aaf5d3887c806463100a1764a4e7c1457"
+        },
+        "required": false
+      },
+      "andSenderPublicKey": {
+        "name": "and:senderPublicKey",
+        "in": "query",
+        "description": "Filter by sender publicKey (`and` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orSenderPublicKey": {
+        "name": "or:senderPublicKey",
+        "in": "query",
+        "description": "Filter by sender publicKey (`or` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "recipientPublicKey": {
+        "name": "recipientPublicKey",
+        "in": "query",
+        "description": "Filter by recipient publicKey",
+        "schema": {
+          "type": "string",
+          "example": "125a9b8304ef885053c630041f57493343d7f6023107c5dc8b8148147e732c93"
+        },
+        "required": false
+      },
+      "andRecipientPublicKey": {
+        "name": "and:recipientPublicKey",
+        "in": "query",
+        "description": "Filter by recipient publicKey (`and` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orRecipientPublicKey": {
+        "name": "or:recipientPublicKey",
+        "in": "query",
+        "description": "Filter by recipient publicKey (`or` operator)",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "fromTimestamp": {
+        "name": "fromTimestamp",
+        "in": "query",
+        "description": "Filter by timestamp",
+        "schema": {
+          "type": "number",
+          "example": 37059538
+        },
+        "required": false
+      },
+      "andFromTimestamp": {
+        "name": "and:fromTimestamp",
+        "in": "query",
+        "description": "Filter by timestamp (`and` operator)",
+        "schema": {
+          "type": "number",
+          "example": 37059538
+        },
+        "required": false
+      },
+      "orFromTimestamp": {
+        "name": "or:fromTimestamp",
+        "in": "query",
+        "description": "Filter by timestamp (`or` operator)",
+        "schema": {
+          "type": "number",
+          "example": 37059538
+        },
+        "required": false
+      },
+      "toTimestamp": {
+        "name": "toTimestamp",
+        "in": "query",
+        "description": "Filter by timestamp",
+        "schema": {
+          "type": "number",
+          "example": 37059538
+        },
+        "required": false
+      },
+      "andToTimestamp": {
+        "name": "and:toTimestamp",
+        "in": "query",
+        "description": "Filter by timestamp (`and` operator)",
+        "schema": {
+          "type": "number",
+          "example": 37059538
+        },
+        "required": false
+      },
+      "orToTimestamp": {
+        "name": "or:toTimestamp",
+        "in": "query",
+        "description": "Filter by timestamp (`or` operator)",
+        "schema": {
+          "type": "number",
+          "example": 37059538
+        },
+        "required": false
+      },
+      "recipientIds": {
+        "name": "recipientIds",
+        "in": "query",
+        "description": "Filter by list of recipients. Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "U18132012621449491414,U15881344309699504778"
+        },
+        "required": false
+      },
+      "andRecipientIds": {
+        "name": "and:recipientIds",
+        "in": "query",
+        "description": "Filter by list of recipients (`and` operator). Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "U18132012621449491414,U15881344309699504778"
+        },
+        "required": false
+      },
+      "orRecipientIds": {
+        "name": "or:recipientIds",
+        "in": "query",
+        "description": "Filter by list of recipients (`or` operator). Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "U18132012621449491414,U15881344309699504778"
+        },
+        "required": false
+      },
+      "senderPublicKeys": {
+        "name": "senderPublicKeys",
+        "in": "query",
+        "description": "Filter by sender publicKeys. Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "801846655523f5e21f2d454b2f98f70aaf5d3887c806463100a1764a4e7c1457,125a9b8304ef885053c630041f57493343d7f6023107c5dc8b8148147e732c93"
+        },
+        "required": false
+      },
+      "andSenderPublicKeys": {
+        "name": "and:senderPublicKeys",
+        "in": "query",
+        "description": "Filter by sender publicKeys (`and` operator). Separated by comma",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orSenderPublicKeys": {
+        "name": "or:senderPublicKeys",
+        "in": "query",
+        "description": "Filter by sender publicKeys (`or` operator). Separated by comma",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "recipientPublicKeys": {
+        "name": "recipientPublicKeys",
+        "in": "query",
+        "description": "Filter by recipient publicKeys. Separated by comma",
+        "schema": {
+          "type": "string",
+          "example": "801846655523f5e21f2d454b2f98f70aaf5d3887c806463100a1764a4e7c1457,125a9b8304ef885053c630041f57493343d7f6023107c5dc8b8148147e732c93"
+        },
+        "required": false
+      },
+      "andRecipientPublicKeys": {
+        "name": "and:recipientPublicKeys",
+        "in": "query",
+        "description": "Filter by recipient publicKeys (`and` operator). Separated by comma",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "orRecipientPublicKeys": {
+        "name": "or:recipientPublicKeys",
+        "in": "query",
+        "description": "Filter by recipient publicKeys (`or` operator). Separated by comma",
+        "schema": {
+          "type": "string"
+        },
+        "required": false
+      },
+      "minAmount": {
+        "name": "minAmount",
+        "in": "query",
+        "description": "Filter results with `amount` not less than specified Integer value of 1/10^8 tokens (1 ADM = 100000000).\n",
+        "schema": {
+          "type": "integer",
+          "example": 1000000000000001
+        },
+        "required": false
+      },
+      "andMinAmount": {
+        "name": "and:minAmount",
+        "in": "query",
+        "description": "Filter results with `amount` not less than specified Integer value of 1/10^8 tokens (1 ADM = 100000000).\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orMinAmount": {
+        "name": "or:minAmount",
+        "in": "query",
+        "description": "Filter results with `amount` not less than specified Integer value of 1/10^8 tokens (1 ADM = 100000000).\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "maxAmount": {
+        "name": "maxAmount",
+        "in": "query",
+        "description": "Filter results with `amount` not more than specified Integer value of 1/10^8 tokens (1 ADM = 100000000).\n",
+        "schema": {
+          "type": "integer",
+          "example": 50000000
+        },
+        "required": false
+      },
+      "andMaxAmount": {
+        "name": "and:maxAmount",
+        "in": "query",
+        "description": "Filter results with `amount` not more than specified Integer value of 1/10^8 tokens (1 ADM = 100000000).\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orMaxAmount": {
+        "name": "or:maxAmount",
+        "in": "query",
+        "description": "Filter results with `amount` not more than specified Integer value of 1/10^8 tokens (1 ADM = 100000000).\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "minFee": {
+        "name": "minFee",
+        "in": "query",
+        "description": "Filter by `fee`",
+        "schema": {
+          "type": "integer",
+          "example": 100000
+        },
+        "required": false
+      },
+      "andMinFee": {
+        "name": "and:minFee",
+        "in": "query",
+        "description": "Filter by `fee` (`and` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orMinFee": {
+        "name": "or:minFee",
+        "in": "query",
+        "description": "Filter by `fee` (`or` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "maxFee": {
+        "name": "maxFee",
+        "in": "query",
+        "description": "Filter by `fee`",
+        "schema": {
+          "type": "integer",
+          "example": 100000
+        },
+        "required": false
+      },
+      "andMaxFee": {
+        "name": "and:maxFee",
+        "in": "query",
+        "description": "Filter by `fee` (`and` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orMaxFee": {
+        "name": "or:maxFee",
+        "in": "query",
+        "description": "Filter by `fee` (`or` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "minConfirmations": {
+        "name": "minConfirmations",
+        "in": "query",
+        "description": "Filter by `confirmations` property",
+        "schema": {
+          "type": "integer",
+          "example": 10
+        },
+        "required": false
+      },
+      "andMinConfirmations": {
+        "name": "and:minConfirmations",
+        "in": "query",
+        "description": "Filter by `confirmations` property (`and` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orMinConfirmations": {
+        "name": "or:minConfirmations",
+        "in": "query",
+        "description": "Filter by `confirmations` property (`or` operator)",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "type-3": {
+        "name": "type",
+        "in": "query",
+        "description": "Get transactions of specified type. See [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types).\nIf `type` is not set, all types of transactions will be returned.\n",
+        "schema": {
+          "type": "integer",
+          "example": 8
+        },
+        "required": false
+      },
+      "andType-2": {
+        "name": "and:type",
+        "in": "query",
+        "description": "Get transactions of specified type. See [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types).\nIf `type` is not set, all types of transactions will be returned.\n",
+        "schema": {
+          "type": "integer",
+          "example": 8
+        },
+        "required": false
+      },
+      "orType-2": {
+        "name": "or:type",
+        "in": "query",
+        "description": "Get transactions of specified type. See [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types).\nIf `type` is not set, all types of transactions will be returned.\n",
+        "schema": {
+          "type": "integer",
+          "example": 8
+        },
+        "required": false
+      },
+      "types": {
+        "name": "types",
+        "in": "query",
+        "description": "Get transactions of specified list of types, separated by commas.\nSee [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types).\n",
+        "schema": {
+          "type": "integer",
+          "example": "9,0"
+        },
+        "required": false
+      },
+      "andTypes": {
+        "name": "and:types",
+        "in": "query",
+        "description": "Get transactions of specified list of types, separated by commas.\nSee [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types).\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "orTypes": {
+        "name": "or:types",
+        "in": "query",
+        "description": "Get transactions of specified list of types, separated by commas.\nSee [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types).\n",
+        "schema": {
+          "type": "integer"
+        },
+        "required": false
+      },
+      "returnAsset": {
+        "name": "returnAsset",
+        "in": "query",
+        "description": "Get transaction's asset when set to `1`. Default is `0`.",
+        "schema": {
+          "type": "integer",
+          "example": 1,
+          "default": 0
+        },
+        "required": false
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Account",
+      "description": "Endpoints intended to interact with ADAMANT accounts",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "https://github.com/Adamant-im/adamant/wiki/API-Specification#Account-1"
+      }
+    },
+    {
+      "name": "Blocks",
+      "description": "List of endpoints giving information of blocks in ADAMANT blockchain",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "https://github.com/Adamant-im/adamant/wiki/API-Specification#Blocks-1"
+      }
+    },
+    {
+      "name": "Chats",
+      "description": "List of endpoints intended to work with chats and chatrooms in ADAMANT blockchain",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "https://github.com/Adamant-im/adamant/wiki/API-Specification#Chats-and-Chatrooms-1"
+      }
+    },
+    {
+      "name": "Delegates and Voting",
+      "description": "Endpoints useful in working with delegate system of ADAMANT blockchain",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "https://github.com/Adamant-im/adamant/wiki/API-Specification#Delegates-and-voting-1"
+      }
+    },
+    {
+      "name": "Nodes and Blockchain",
+      "description": "List of endpoints useful in work with ADAMANT blockchain in general",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "https://github.com/Adamant-im/adamant/wiki/API-Specification#Nodes-and-Blockchain-1"
+      }
+    },
+    {
+      "name": "KVS",
+      "description": "Endpoints intended to store data in ADAMANT Key-Value Storage (KVS)",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "https://github.com/Adamant-im/adamant/wiki/API-Specification#states-key-value-storage-kvs-1"
+      }
+    },
+    {
+      "name": "Transactions",
+      "description": "Contains endpoints useful to interact with transactions of ADAMANT blockchain",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "https://github.com/Adamant-im/adamant/wiki/API-Specification#Transactions-1"
+      }
+    }
+  ],
+  "paths": {
+    "/accounts": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "getAccountInfo",
+        "description": "Get account information by ADAMANT address or by Public Key",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "publicKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountInfoResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/getBalance": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "getAccountBalance",
+        "description": "Get account balance",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account balance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountBalanceResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/getPublicKey": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "getAccountPublicKey",
+        "description": "Get account Public Key",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account Public Key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountPublicKeyResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/new": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "createNewAccount",
+        "description": "Create new account",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNewAccountRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateNewAccountResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blocks/get": {
+      "get": {
+        "tags": [
+          "Blocks"
+        ],
+        "operationId": "getBlockInfo",
+        "description": "Get block information by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Block ID",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Block information",
+            "content": {
+              "applicaton/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetBlockInfoResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blocks": {
+      "get": {
+        "tags": [
+          "Blocks"
+        ],
+        "operationId": "getBlocks",
+        "description": "Get list of blocks",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "How much blocks to get, integer. Default is `100`.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Height offset value for results. Default is `0`.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "generatorPublicKey",
+            "in": "query",
+            "description": "Delegate's public key of ADAMANT address who generated the block",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "height",
+            "in": "query",
+            "description": "Get block of specific node's height",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lisk of blocks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetBlocksResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chatrooms/{address}": {
+      "get": {
+        "tags": [
+          "Chats"
+        ],
+        "operationId": "getChatRooms",
+        "description": "Get list of Chats",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "description": "ADAMANT address",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "U839357947177758191"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/senderId"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/recipientId"
+          },
+          {
+            "$ref": "#/components/parameters/andRecipientId"
+          },
+          {
+            "$ref": "#/components/parameters/orRecipientId"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          },
+          {
+            "$ref": "#/components/parameters/orderBy"
+          },
+          {
+            "$ref": "#/components/parameters/userId"
+          },
+          {
+            "$ref": "#/components/parameters/andUserId"
+          },
+          {
+            "$ref": "#/components/parameters/orUserId"
+          },
+          {
+            "$ref": "#/components/parameters/withoutDirectTransfers"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat rooms",
+            "content": {
+              "applicaton/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatRoomsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chatrooms/{ownAddress}/{partnerAddress}": {
+      "get": {
+        "tags": [
+          "Chats"
+        ],
+        "operationId": "getChatroomMessages",
+        "description": "Get messages between two accounts",
+        "parameters": [
+          {
+            "name": "ownAddress",
+            "in": "path",
+            "description": "Your ADAMANT address",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "U8916295525136600565"
+            }
+          },
+          {
+            "name": "partnerAddress",
+            "in": "path",
+            "description": "Partner ADAMANT address",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "U2707535059340134112"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit number of messages.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Skips **n** messages. Used for pagination",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "Order by field",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "timestamp:desc",
+              "default": "timestamp:desc"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Filter by `asset.chat.type`. See [Message Types](https://github.com/Adamant-im/adamant/wiki/Message-Types)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 1,
+              "enum": [
+                1,
+                2
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat messages",
+            "content": {
+              "applicaton/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatMessagesResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/get": {
+      "get": {
+        "tags": [
+          "Chats"
+        ],
+        "operationId": "getChatMessages",
+        "description": "Returns list of transactions with `type = 8` (deprecated, use `/chatrooms` instead)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/fromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/andFromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/orFromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/toHeight"
+          },
+          {
+            "$ref": "#/components/parameters/andToHeight"
+          },
+          {
+            "$ref": "#/components/parameters/orToHeight"
+          },
+          {
+            "$ref": "#/components/parameters/senderId"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/recipientId"
+          },
+          {
+            "$ref": "#/components/parameters/andRecipientId"
+          },
+          {
+            "$ref": "#/components/parameters/orRecipientId"
+          },
+          {
+            "$ref": "#/components/parameters/inId"
+          },
+          {
+            "$ref": "#/components/parameters/andInId"
+          },
+          {
+            "$ref": "#/components/parameters/orInId"
+          },
+          {
+            "$ref": "#/components/parameters/type"
+          },
+          {
+            "$ref": "#/components/parameters/andType"
+          },
+          {
+            "$ref": "#/components/parameters/orType"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          },
+          {
+            "$ref": "#/components/parameters/orderBy"
+          },
+          {
+            "$ref": "#/components/parameters/limit-2"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChatTransactionsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/process": {
+      "post": {
+        "tags": [
+          "Chats"
+        ],
+        "operationId": "sendMessage",
+        "description": "Broadcast transactions of `type 8 — Сhat/Message`",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNewChatMessageRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateNewChatMessageResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delegates": {
+      "get": {
+        "tags": [
+          "Delegates and Voting"
+        ],
+        "operationId": "getDelegates",
+        "description": "Retrieves list of registered ADAMANT delegates",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of delegates to retrieve, integer. Default is `101` (active delegates).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "default": 101
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Height offset value for results. Default is `0`.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of delegates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDelegatesResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Delegates and Voting"
+        ],
+        "operationId": "registerNewDelegate",
+        "description": "Register new delegate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterNewDelegateTransaction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterDelegateResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delegates/get": {
+      "get": {
+        "tags": [
+          "Delegates and Voting"
+        ],
+        "operationId": "getDelegateInfo",
+        "description": "Get delegate info by `username` or `publicKey`",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "lynx"
+            }
+          },
+          {
+            "name": "publicKey",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "ef5e78a3d02e6d82f4ac0c5b8923c1b86185bd17c27c9ac027c20ec62db79a84"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delegate info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDelegateResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delegates/search": {
+      "get": {
+        "tags": [
+          "Delegates and Voting"
+        ],
+        "operationId": "searchDelegate",
+        "description": "Search delegates by `username`",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Partial or full username of a delegate",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delegate info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchDelegateResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delegates/count": {
+      "get": {
+        "tags": [
+          "Delegates and Voting"
+        ],
+        "operationId": "getDelegatesCount",
+        "description": "Get total count of delegates",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDelegatesCountResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delegates/forging/getForgedByAccount": {
+      "get": {
+        "tags": [
+          "Delegates and Voting"
+        ],
+        "operationId": "getDelegateForgingActivity",
+        "description": "Get forging activity of a delegate",
+        "parameters": [
+          {
+            "name": "generatorPublicKey",
+            "in": "query",
+            "description": "Delegate's publicKey",
+            "schema": {
+              "type": "string",
+              "example": "a9407418dafb3c8aeee28f3263fd55bae0f528a5697a9df0e77e6568b19dfe34"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDelegateStatsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delegates/getNextForgers": {
+      "get": {
+        "tags": [
+          "Delegates and Voting"
+        ],
+        "operationId": "getNextForgers",
+        "description": "Returns list of next forgers",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetNextForgersResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delegates/voters": {
+      "get": {
+        "tags": [
+          "Delegates and Voting"
+        ],
+        "operationId": "getDelegateVoters",
+        "description": "Get list of delegate's voters",
+        "parameters": [
+          {
+            "name": "publicKey",
+            "in": "query",
+            "description": "Delegate's ADAMANT public key",
+            "schema": {
+              "type": "string",
+              "example": "a9407418dafb3c8aeee28f3263fd55bae0f528a5697a9df0e77e6568b19dfe34"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetVotersResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/delegates": {
+      "get": {
+        "tags": [
+          "Delegates and Voting"
+        ],
+        "operationId": "getDelegateVotes",
+        "description": "Current votes of specific ADAMANT account",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "U777355171330060015"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountVotesResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Delegates and Voting"
+        ],
+        "operationId": "voteForDelegates",
+        "description": "Vote for delegates",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterVoteForDelegateTransaction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterVotesResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/peers": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getPeers",
+        "description": "Get list of connected peer nodes",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limit number of nodes. Default is `100`.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Height offset value for results. Default is `0`.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "os",
+            "in": "query",
+            "description": "Filter results by Operating System",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "linux4.15.0-36-generic"
+            }
+          },
+          {
+            "name": "ip",
+            "in": "query",
+            "description": "Filter results by IP",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "194.32.79.175"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPeersResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/loader/status": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getNodeLoadingStatus",
+        "description": "Returns information of node's loading process",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetLoadingStatusResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/loader/status/sync": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getNodeSyncStatus",
+        "description": "Returns information of the node sync process with other peers",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSyncStatusResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/loader/status/ping": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getNodePingStatus",
+        "description": "Get ping status",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPingStatusResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/peers/version": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getNodeVersion",
+        "description": "Returns node software information",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetNodeVersionResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blocks/getBroadhash": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getBroadhash",
+        "description": "Broadhash is established as an aggregated rolling hash of the past five blocks present in the database.",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetBroadhashResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blocks/getEpoch": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getEpoch",
+        "description": "Returns time when blockchain epoch starts. Value `2017-09-02T17:00:00.000Z` is for mainnet.",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetEpochResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blocks/getHeight": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getHeight",
+        "description": "Returns current node's blockchain height",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetHeightResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blocks/getFee": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getTokenTransferFee",
+        "description": "Returns current fee value for `type 0` (token transfer) transactions. Integer amount of 1/10^8 ADM tokens (1 ADM = 100000000).",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTokenTransferFeeResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blocks/getFees": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getFees",
+        "description": "Returns current fee values for different transaction types",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTransactionTypesFeesResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blocks/getNethash": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getNethash",
+        "description": "The nethash describes e.g. the Mainnet or the Testnet, that the node is connecting to.",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetNethashResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blocks/getMilestone": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getMilestone",
+        "description": "Return current slot height, which determines reward a delegate will get for forging a block.",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetMilestoneResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blocks/getReward": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getReward",
+        "description": "Returns reward — the reward a delegate will get for forging a block. Integer amount of 1/10^8 ADM tokens (1 ADM = 100000000). Depends on the slot height.",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetRewardResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blocks/getSupply": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getTokenTotalSupply",
+        "description": "Returns total current supply of ADM tokens in network. Integer amount of 1/10^8 ADM tokens (1 ADM = 100000000). Total supply increases with every new forged block.",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTokensTotalSupplyResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blocks/getStatus": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getNetworkInfo",
+        "description": "Returns blockchain network information in a single request",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetNetworkInfoResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/node/status": {
+      "get": {
+        "tags": [
+          "Nodes and Blockchain"
+        ],
+        "operationId": "getNodeStatus",
+        "description": "Returns both ADAMANT blockchain network information and Node information in a single request.",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetNodeStatusResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/states/get": {
+      "get": {
+        "tags": [
+          "KVS"
+        ],
+        "operationId": "getKVS",
+        "description": "Fetch data from KVS. As a result you'll get a list of transactions of `type = 9` with KVS data, stored in `asset.state` field.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/fromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/andFromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/orFromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/toHeight"
+          },
+          {
+            "$ref": "#/components/parameters/andToHeight"
+          },
+          {
+            "$ref": "#/components/parameters/orToHeight"
+          },
+          {
+            "$ref": "#/components/parameters/senderId"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/senderIds"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderIds"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderIds"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          },
+          {
+            "$ref": "#/components/parameters/orderBy"
+          },
+          {
+            "$ref": "#/components/parameters/key"
+          },
+          {
+            "$ref": "#/components/parameters/keyIds"
+          },
+          {
+            "$ref": "#/components/parameters/type-2"
+          },
+          {
+            "$ref": "#/components/parameters/limit-2"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetKVSResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/states/store": {
+      "post": {
+        "tags": [
+          "KVS"
+        ],
+        "operationId": "setKVS",
+        "description": "Creates a KVS transaction (`type 9`)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetKVSRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetKVSResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "getTransactions",
+        "description": "Returns list of transactions\n\nYou can filter by single parameter, or by multiple parameters using logical operator `and` or `or`.\nFor more details check [Transactions Query Language](https://github.com/Adamant-im/adamant/wiki/Transactions-Query-Language)\n\nThe params `blockId` act by default as `or` operator.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/blockId"
+          },
+          {
+            "$ref": "#/components/parameters/andBlockId"
+          },
+          {
+            "$ref": "#/components/parameters/orBlockId"
+          },
+          {
+            "$ref": "#/components/parameters/senderPublicKey"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderPublicKey"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderPublicKey"
+          },
+          {
+            "$ref": "#/components/parameters/recipientPublicKey"
+          },
+          {
+            "$ref": "#/components/parameters/andRecipientPublicKey"
+          },
+          {
+            "$ref": "#/components/parameters/orRecipientPublicKey"
+          },
+          {
+            "$ref": "#/components/parameters/senderId"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderId"
+          },
+          {
+            "$ref": "#/components/parameters/recipientId"
+          },
+          {
+            "$ref": "#/components/parameters/andRecipientId"
+          },
+          {
+            "$ref": "#/components/parameters/orRecipientId"
+          },
+          {
+            "$ref": "#/components/parameters/inId"
+          },
+          {
+            "$ref": "#/components/parameters/andInId"
+          },
+          {
+            "$ref": "#/components/parameters/orInId"
+          },
+          {
+            "$ref": "#/components/parameters/fromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/andFromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/orFromHeight"
+          },
+          {
+            "$ref": "#/components/parameters/toHeight"
+          },
+          {
+            "$ref": "#/components/parameters/andToHeight"
+          },
+          {
+            "$ref": "#/components/parameters/orToHeight"
+          },
+          {
+            "$ref": "#/components/parameters/fromTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/andFromTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/orFromTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/toTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/andToTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/orToTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/senderIds"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderIds"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderIds"
+          },
+          {
+            "$ref": "#/components/parameters/recipientIds"
+          },
+          {
+            "$ref": "#/components/parameters/andRecipientIds"
+          },
+          {
+            "$ref": "#/components/parameters/orRecipientIds"
+          },
+          {
+            "$ref": "#/components/parameters/senderPublicKeys"
+          },
+          {
+            "$ref": "#/components/parameters/andSenderPublicKeys"
+          },
+          {
+            "$ref": "#/components/parameters/orSenderPublicKeys"
+          },
+          {
+            "$ref": "#/components/parameters/recipientPublicKeys"
+          },
+          {
+            "$ref": "#/components/parameters/andRecipientPublicKeys"
+          },
+          {
+            "$ref": "#/components/parameters/orRecipientPublicKeys"
+          },
+          {
+            "$ref": "#/components/parameters/minAmount"
+          },
+          {
+            "$ref": "#/components/parameters/andMinAmount"
+          },
+          {
+            "$ref": "#/components/parameters/orMinAmount"
+          },
+          {
+            "$ref": "#/components/parameters/maxAmount"
+          },
+          {
+            "$ref": "#/components/parameters/andMaxAmount"
+          },
+          {
+            "$ref": "#/components/parameters/orMaxAmount"
+          },
+          {
+            "$ref": "#/components/parameters/minFee"
+          },
+          {
+            "$ref": "#/components/parameters/andMinFee"
+          },
+          {
+            "$ref": "#/components/parameters/orMinFee"
+          },
+          {
+            "$ref": "#/components/parameters/maxFee"
+          },
+          {
+            "$ref": "#/components/parameters/andMaxFee"
+          },
+          {
+            "$ref": "#/components/parameters/orMaxFee"
+          },
+          {
+            "$ref": "#/components/parameters/minConfirmations"
+          },
+          {
+            "$ref": "#/components/parameters/andMinConfirmations"
+          },
+          {
+            "$ref": "#/components/parameters/orMinConfirmations"
+          },
+          {
+            "$ref": "#/components/parameters/type-3"
+          },
+          {
+            "$ref": "#/components/parameters/andType-2"
+          },
+          {
+            "$ref": "#/components/parameters/orType-2"
+          },
+          {
+            "$ref": "#/components/parameters/types"
+          },
+          {
+            "$ref": "#/components/parameters/andTypes"
+          },
+          {
+            "$ref": "#/components/parameters/orTypes"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          },
+          {
+            "$ref": "#/components/parameters/orderBy"
+          },
+          {
+            "$ref": "#/components/parameters/limit-2"
+          },
+          {
+            "$ref": "#/components/parameters/returnAsset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTransactionsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "sendTransaction",
+        "description": "Broadcast [any type](https://github.com/Adamant-im/adamant/wiki/Transaction-Types) of transaction",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterTransactionRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterTransactionResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/get": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "getTransaction",
+        "description": "Get transaction by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Transaction ID",
+            "schema": {
+              "type": "string",
+              "example": "12154642911137703318"
+            },
+            "required": false
+          },
+          {
+            "name": "returnAsset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTransactionByIdResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/count": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "getTransactionsCount",
+        "description": "Get `confirmed`, `uncofirmed` and `queued` transactions count",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTransactionsCountResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/queued": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "getQueuedTransactions",
+        "description": "Get queued transactions",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetQueuedTransactionsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/queued/get": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "getQueuedTransaction",
+        "description": "Get queued transaction by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Transaction ID",
+            "schema": {
+              "type": "string",
+              "example": "12154642911137703318"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetQueuedTransactionsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/unconfirmed": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "getUnconfirmedTransactions",
+        "description": "Get unconfirmed transactions",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUnconfirmedTransactionsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/unconfirmed/get": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "getUncorfirmedTransaction",
+        "description": "Get unconfirmed transaction by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Transaction ID",
+            "schema": {
+              "type": "string",
+              "example": "12154642911137703318"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUnconfirmedTransactionByIdResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/process": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "sendTokens",
+        "description": "Broadcast transactions of `type 0 — Token transfer` or `type 8 — Chat/Message`. See [Transaction Types](https://github.com/Adamant-im/adamant/wiki/Transaction-Types)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferTokenRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferTokenResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

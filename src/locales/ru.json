@@ -15,7 +15,7 @@
     "date_yesterday": "Вчера",
     "incorrect_address": "Неправильный ADM-адрес",
     "no_public_key": "Этот адрес еще не использовался. С ним нельзя начать чат",
-    "unable_to_retrieve_no_public_key": "`{ Не могу прочитать сообщение: нет публичного ключа собеседника }`",
+    "unable_to_retrieve_no_public_key": "`Не могу прочитать сообщение: нет публичного ключа собеседника`",
     "me": "Я",
     "message": "Введите сообщение",
     "message_mac_os": "Введите сообщение. Cmd + Ctrl + Space для выбора смайлика",
@@ -75,7 +75,11 @@
     },
     "pull_down_actions": {
       "update_balances": "Обновить балансы"
-    }
+    },
+    "you_reacted": "Отреагировали",
+    "partner_reacted": "Отреагировал",
+    "you_removed_reaction": "Убрали реакцию",
+    "partner_removed_reaction": "Убрал реакцию"
   },
   "connection": {
     "offline": "Нет подключения к Интернету",

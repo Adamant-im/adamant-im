@@ -211,3 +211,18 @@ export const FetchStatus = {
   Success: 'success',
   Error: 'error'
 }
+
+export const REACT_EMOJIS = {
+  FACE_WITH_TEARS_OF_JOY: '😂',
+  FIRE: '🔥',
+  GRINNING_FACE_WITH_SMILING_EYES: '😄',
+  THUMB_UP: '👍',
+  OK_HAND: '👌',
+  RED_HEART: '❤️',
+  SLIGHTLY_SMILING_FACE: '🙂',
+  THINKING_FACE: '🤔',
+  WAVING_HAND: '👋',
+  FOLDED_HANDS: '🙏',
+  FLUSHED_FACE: '😳',
+  PARTY_POPPER: '🎉'
+}

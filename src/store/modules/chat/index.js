@@ -6,8 +6,9 @@ import {
   queueMessage,
   createMessage,
   createTransaction,
-  transformMessage
-} from '@/lib/chatHelpers'
+  createReaction,
+  normalizeMessage
+} from '@/lib/chat/helpers'
 import { isNumeric } from '@/lib/numericHelpers'
 import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -68,6 +69,28 @@ const getters = {
     return []
   },
 
+  reactions: (state, getters) => (transactionId, partnerId) => {
+    const messages = getters.messages(partnerId)
+
+    return messages.filter(
+      (message) => message.type === 'reaction' && message.asset.reactto_id === transactionId
+    )
+  },
+
+  reactionsBySenderId: (state, getters) => (transactionId, partnerId, senderId) => {
+    const reactions = getters.reactions(transactionId, partnerId)
+
+    return reactions.filter((reaction) => reaction.senderId === senderId)
+  },
+
+  lastReaction: (state, getters) => (transactionId, partnerId, senderId) => {
+    const reactions = getters.reactionsBySenderId(transactionId, partnerId, senderId)
+
+    if (reactions.length === 0) return null
+
+    return reactions[reactions.length - 1]
+  },
+
   /**
    * Return message by ID.
    * @param {number} id Message Id
@@ -93,7 +116,7 @@ const getters = {
    * @returns {number}
    */
   indexOfMessage: (state, getters) => (partnerId, messageId) => {
-    const messages = getters.messages(partnerId)
+    const messages = getters.messages(partnerId).filter((message) => message.type !== 'reaction')
     const message = messages.find((message) => message.id === messageId)
 
     if (!message) {
@@ -357,7 +380,12 @@ const mutations = {
     }
 
     // Shouldn't duplicate third-party crypto transactions
-    if (message.type && message.type !== 'message' && message.type !== Cryptos.ADM) {
+    if (
+      message.type &&
+      message.type !== 'message' &&
+      message.type !== 'reaction' &&
+      message.type !== Cryptos.ADM
+    ) {
       const localTransaction = chat.messages.find(
         (localTransaction) => localTransaction.hash === message.hash
       )
@@ -520,14 +548,14 @@ const actions = {
     }
 
     return admApi
-      .getChatRoomMessages(rootState.address, contactId, { offset, limit: perPage })
-      .then(({ messages }) => {
+      .getChatRoomMessages(rootState.address, contactId, { offset, limit: perPage }, true)
+      .then(({ messages, lastOffset }) => {
         dispatch('unshiftMessages', messages)
 
         if (messages.length <= 0) {
           commit('setChatOffset', { contactId, offset: -1 }) // no more messages
         } else {
-          offset = offset + perPage
+          offset = lastOffset
 
           commit('setChatOffset', { contactId, offset })
           commit('setChatPage', { contactId, page: ++page })
@@ -542,7 +570,7 @@ const actions = {
   pushMessages({ commit, rootState }, messages) {
     messages.forEach((message) => {
       commit('pushMessage', {
-        message: transformMessage(message),
+        message: normalizeMessage(message),
         userId: rootState.address
       })
     })
@@ -551,7 +579,7 @@ const actions = {
   unshiftMessages({ commit, rootState }, messages) {
     messages.forEach((message) => {
       commit('pushMessage', {
-        message: transformMessage(message),
+        message: normalizeMessage(message),
         userId: rootState.address,
 
         unshift: true
@@ -739,6 +767,59 @@ const actions = {
     }
 
     return Promise.reject(new Error('Message not found in history'))
+  },
+
+  /**
+   * React to a message with emoji.
+   * After confirmation, `id` and `status` will be updated.
+   *
+   * @param {string} recipientId
+   * @param {string} reactToId
+   * @param {string} reactMessage Emoji
+   * @returns {Promise}
+   */
+  sendReaction({ commit, rootState }, { recipientId, reactToId, reactMessage }) {
+    const messageObject = createReaction({
+      recipientId,
+      senderId: rootState.address,
+      reactToId,
+      reactMessage
+    })
+
+    commit('pushMessage', {
+      message: messageObject,
+      userId: rootState.address
+    })
+
+    const type = MessageType.RICH_CONTENT_MESSAGE
+    return queueMessage(messageObject.asset, recipientId, type)
+      .then((res) => {
+        // @todo this check must be performed on the server
+        if (!res.success) {
+          throw new Error('Message rejected')
+        }
+
+        // update `message.status` to 'REGISTERED'
+        // and `message.id` with `realId` from server
+        commit('updateMessage', {
+          id: messageObject.id,
+          realId: res.transactionId,
+          status: TS.REGISTERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
+          partnerId: recipientId
+        })
+
+        return res
+      })
+      .catch((err) => {
+        // update `message.status` to 'REJECTED'
+        commit('updateMessage', {
+          id: messageObject.id,
+          status: TS.REJECTED,
+          partnerId: recipientId
+        })
+
+        throw err // call the error again so that it can be processed inside view
+      })
   },
 
   /**
