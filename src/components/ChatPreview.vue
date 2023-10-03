@@ -276,6 +276,10 @@ export default {
   }
 
   &__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: 80px;
     line-height: 24px;
     margin-bottom: 0;
   }
