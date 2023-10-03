@@ -232,6 +232,7 @@
           v-if="!isScrolledToBottom"
           class="ma-0 grey--text"
           color="grey lighten-3"
+          :icon="true"
           depressed
           fab
           size="small"
