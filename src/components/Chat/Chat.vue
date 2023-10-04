@@ -234,7 +234,7 @@
           location="top center"
           v-if="!isScrolledToBottom"
           color="primary"
-          :content="numOfNewMessages > 0 ? numOfNewMessages : none"
+          :content="numOfNewMessages > 0 ? numOfNewMessages : undefined"
         >
           <v-btn
             class="ma-0 grey--text"
