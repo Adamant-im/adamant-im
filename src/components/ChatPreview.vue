@@ -301,8 +301,7 @@ export default {
     @include a-text-explanation-small();
     margin-left: 16px;
     white-space: nowrap;
-    top: 16px;
-    right: 16px;
+    margin-top: 4px;
   }
 
   &__badge {
