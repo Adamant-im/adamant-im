@@ -228,28 +228,26 @@
       </template>
 
       <template #fab>
-        <div>
-          <v-badge
-            :modelValue="numOfNewMessages > 0"
-            floating
-            location="top center"
-            v-if="!isScrolledToBottom"
-            color="primary"
-            :content="numOfNewMessages > 0 ? numOfNewMessages : none"
+        <v-badge
+          :modelValue="numOfNewMessages > 0"
+          floating
+          location="top center"
+          v-if="!isScrolledToBottom"
+          color="primary"
+          :content="numOfNewMessages > 0 ? numOfNewMessages : none"
+        >
+          <v-btn
+            class="ma-0 grey--text"
+            color="grey lighten-3"
+            icon
+            depressed
+            fab
+            size="small"
+            @click="$refs.chat.scrollToBottom()"
           >
-            <v-btn
-              class="ma-0 grey--text"
-              color="grey lighten-3"
-              icon
-              depressed
-              fab
-              size="small"
-              @click="$refs.chat.scrollToBottom()"
-            >
-              <v-icon icon="mdi-chevron-down" size="x-large" />
-            </v-btn>
-          </v-badge>
-        </div>
+            <v-icon icon="mdi-chevron-down" size="x-large" />
+          </v-btn>
+        </v-badge>
       </template>
     </a-chat>
 
