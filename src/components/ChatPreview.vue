@@ -282,9 +282,6 @@ export default {
   }
 
   &__title {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     line-height: 24px;
     margin-bottom: 0;
   }
