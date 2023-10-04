@@ -230,25 +230,23 @@
       <template #fab>
         <div>
           <v-badge
-            :modelValue="numOfNewMessages > 0 ? true : false"
+            :modelValue="numOfNewMessages > 0"
             floating
             location="top center"
             v-if="!isScrolledToBottom"
-            class="ok"
             color="primary"
             :content="numOfNewMessages > 0 ? numOfNewMessages : none"
           >
             <v-btn
-              v-if="!isScrolledToBottom"
               class="ma-0 grey--text"
               color="grey lighten-3"
-              :icon="true"
+              icon
               depressed
               fab
               size="small"
               @click="$refs.chat.scrollToBottom()"
             >
-              <div><v-icon icon="mdi-chevron-down" size="x-large" /></div>
+              <v-icon icon="mdi-chevron-down" size="x-large" />
             </v-btn>
           </v-badge>
         </div>
