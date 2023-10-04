@@ -27,13 +27,18 @@
     </template>
 
     <div>
-      <v-list-item-title
-        :class="{
-          'a-text-regular-enlarged-bold': true,
-          [`${className}__title`]: true
-        }"
-        v-text="isAdamantChat(contactId) ? $t(contactName) : contactName"
-      />
+      <div :class="`${className}__heading`">
+        <v-list-item-title
+          :class="{
+            'a-text-regular-enlarged-bold': true,
+            [`${className}__title`]: true
+          }"
+          v-text="isAdamantChat(contactId) ? $t(contactName) : contactName"
+        />
+        <div v-if="!isMessageReadonly" :class="`${className}__date`">
+          {{ formatDate(createdAt) }}
+        </div>
+      </div>
 
       <!-- New chat (no messages yet) -->
       <template v-if="isNewChat">
@@ -69,10 +74,6 @@
           {{ lastMessageTextNoFormats }}
         </v-list-item-subtitle>
       </template>
-    </div>
-
-    <div v-if="!isMessageReadonly" :class="`${className}__date`">
-      {{ formatDate(createdAt) }}
     </div>
   </v-list-item>
 </template>
@@ -262,6 +263,7 @@ export default {
 /**
  * 1. Message/Transaction content.
  */
+
 .chat-brief {
   position: relative;
 
@@ -275,11 +277,15 @@ export default {
     margin-right: 16px;
   }
 
+  &__heading {
+    display: flex;
+    justify-content: space-between;
+  }
+
   &__title {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    margin-right: 80px;
     line-height: 24px;
     margin-bottom: 0;
   }
@@ -294,7 +300,8 @@ export default {
 
   &__date {
     @include a-text-explanation-small();
-    position: absolute;
+    margin-left: 16px;
+    white-space: nowrap;
     top: 16px;
     right: 16px;
   }
