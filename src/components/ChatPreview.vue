@@ -263,7 +263,6 @@ export default {
 /**
  * 1. Message/Transaction content.
  */
-
 .chat-brief {
   position: relative;
 
