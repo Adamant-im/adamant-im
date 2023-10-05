@@ -442,7 +442,7 @@ export default {
           this.$refs.chat.scrollToBottom()
         }
 
-        if (!Visibility.hidden()) this.markAsRead()
+        if (!Visibility.hidden() && this.isScrolledToBottom) this.markAsRead()
       })
     },
     // watch `isFulfilled` when opening chat directly from address bar
