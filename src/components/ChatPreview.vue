@@ -279,6 +279,7 @@ export default {
   &__heading {
     display: flex;
     justify-content: space-between;
+    align-items: center;
   }
 
   &__title {
@@ -298,7 +299,6 @@ export default {
     @include a-text-explanation-small();
     margin-left: 16px;
     white-space: nowrap;
-    margin-top: 4px;
   }
 
   &__badge {
