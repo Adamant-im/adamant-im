@@ -209,6 +209,7 @@
           :message-text="$route.query.messageText"
           @message="onMessage"
           @esc="replyMessageId = -1"
+          :clearInputValueOnSend="this.$store.state.balance < 0.001 === false"
         >
           <template #prepend>
             <chat-menu

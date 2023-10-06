@@ -54,6 +54,10 @@ export default {
     showDivider: {
       type: Boolean,
       default: false
+    },
+    clearInputValueOnSend: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['message', 'esc'],
@@ -119,7 +123,9 @@ export default {
   methods: {
     submitMessage() {
       this.$emit('message', this.message)
-      this.message = ''
+      if (this.clearInputValueOnSend === true) {
+        this.message = ''
+      }
       // Fix textarea height to 1 row after miltiline message send
       this.calculateInputHeight()
       this.focus()
