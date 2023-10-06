@@ -123,7 +123,7 @@ export default {
   methods: {
     submitMessage() {
       this.$emit('message', this.message)
-      if (this.clearInputValueOnSend === true) {
+      if (this.clearInputValueOnSend) {
         this.message = ''
       }
       // Fix textarea height to 1 row after miltiline message send
