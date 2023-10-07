@@ -1,6 +1,15 @@
 <template>
   <div :class="classes.root">
-    <div :class="classes.emoji">{{ asset.react_message }}</div>
+    <div
+      :class="{
+        active: true,
+        animate__animated: true,
+        animate__heartBeat: true,
+        [classes.emoji]: true
+      }"
+    >
+      {{ asset.react_message }}
+    </div>
 
     <div :class="classes.avatar" v-if="$slots.avatar">
       <slot name="avatar" />
@@ -9,6 +18,7 @@
 </template>
 
 <script lang="ts">
+import 'animate.css'
 import { defineComponent, PropType } from 'vue'
 import { ReactionAsset } from '@/lib/adamant-api/asset'
 
