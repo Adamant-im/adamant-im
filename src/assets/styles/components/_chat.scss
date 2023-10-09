@@ -196,19 +196,16 @@ $scroll-bar-width: 4px;
     word-wrap: break-word;
 
     code {
-      line-height: 1rem;
-      color: #2e7eed;
+      
+      color: #ffffff;
       font-weight: inherit;
       font-size: 12px;
-      padding: 8px;
-      margin-bottom: 8px;
-      tab-size: 4;
-      border-radius: 4px;
-      border-style: solid;
-      border-width: 1px;
-      border-color: rgb(224, 224, 224);
+      padding: 2px 4px;
+      border-radius: 6px;
+      background-color: map-get($adm-colors, 'regular');
       overflow-x: auto;
       max-width: 100%;
+      
     }
 
     code:before {
