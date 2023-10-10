@@ -228,17 +228,26 @@
       </template>
 
       <template #fab>
-        <v-btn
+        <v-badge
+          :modelValue="numOfNewMessages > 0"
+          floating
+          location="top center"
           v-if="!isScrolledToBottom"
-          class="ma-0 grey--text"
-          color="grey lighten-3"
-          depressed
-          fab
-          size="small"
-          @click="$refs.chat.scrollToBottom()"
+          color="primary"
+          :content="numOfNewMessages > 0 ? numOfNewMessages : undefined"
         >
-          <v-icon icon="mdi-chevron-down" size="x-large" />
-        </v-btn>
+          <v-btn
+            class="ma-0 grey--text"
+            color="grey lighten-3"
+            icon
+            depressed
+            fab
+            size="small"
+            @click="$refs.chat.scrollToBottom()"
+          >
+            <v-icon icon="mdi-chevron-down" size="x-large" />
+          </v-btn>
+        </v-badge>
       </template>
     </a-chat>
 
@@ -433,7 +442,7 @@ export default {
           this.$refs.chat.scrollToBottom()
         }
 
-        if (!Visibility.hidden()) this.markAsRead()
+        if (!Visibility.hidden() && this.isScrolledToBottom) this.markAsRead()
       })
     },
     // watch `isFulfilled` when opening chat directly from address bar
