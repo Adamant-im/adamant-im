@@ -196,17 +196,15 @@ $scroll-bar-width: 4px;
     word-wrap: break-word;
 
     code {
-      
-      color: #ffffff;
       font-weight: inherit;
-      font-size: 12px;
+      font-size: 14px;
       padding: 2px 4px;
       border-radius: 6px;
-      background-color: map-get($adm-colors, 'regular');
       overflow-x: auto;
       max-width: 100%;
-      
-    }
+      tab-size: 4;
+      line-height:24px
+   }
 
     code:before {
       letter-spacing: inherit;
@@ -233,15 +231,12 @@ $scroll-bar-width: 4px;
       padding: 8px;
       margin-bottom: 8px;
       tab-size: 4;
-      border-radius: 4px;
-      border-style: solid;
-      border-width: 1px;
+      border-radius: 6px;
       overflow-x: auto;
       max-width: 100%;
-      border-color: rgb(224, 224, 224);
-
-      code:before {
-        content: '';
+      
+      code{
+        padding: 0px;
       }
     }
   }
@@ -441,6 +436,11 @@ $scroll-bar-width: 4px;
         color: map-get($blue, 'base');
       }
 
+      code{
+        background-color: map-get($grey, 'lighten-4');
+        color: map-get($grey, 'darken-3');
+        border-color: map-get($grey, 'lighten-2');}
+
       pre {
         background-color: map-get($grey, 'lighten-4');
         color: map-get($grey, 'darken-3');
@@ -534,10 +534,22 @@ $scroll-bar-width: 4px;
       a {
         color: map-get($blue, 'lighten-2');
       }
+
+      code{
+        color: #ffffff;
+        border-color: map-get($grey, 'darken-2');
+        background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
+      }
       pre {
-        background-color: map-get($grey, 'darken-4');
+        
         color: inherit;
         border-color: map-get($grey, 'darken-2');
+        background-color: map-get($adm-colors, 'secondary2-slightly-transparent') !important;
+
+        
+        code {
+          background-color: transparent;
+        }
       }
     }
 
