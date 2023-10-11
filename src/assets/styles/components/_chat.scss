@@ -203,8 +203,8 @@ $scroll-bar-width: 4px;
       overflow-x: auto;
       max-width: 100%;
       tab-size: 4;
-      line-height:24px
-   }
+      line-height: 24px;
+    }
 
     code:before {
       letter-spacing: inherit;
@@ -234,8 +234,8 @@ $scroll-bar-width: 4px;
       border-radius: 6px;
       overflow-x: auto;
       max-width: 100%;
-      
-      code{
+
+      code {
         padding: 0px;
       }
     }
@@ -436,10 +436,11 @@ $scroll-bar-width: 4px;
         color: map-get($blue, 'base');
       }
 
-      code{
+      code {
         background-color: map-get($grey, 'lighten-4');
         color: map-get($grey, 'darken-3');
-        border-color: map-get($grey, 'lighten-2');}
+        border-color: map-get($grey, 'lighten-2');
+      }
 
       pre {
         background-color: map-get($grey, 'lighten-4');
@@ -535,18 +536,16 @@ $scroll-bar-width: 4px;
         color: map-get($blue, 'lighten-2');
       }
 
-      code{
-        color: #ffffff;
+      code {
+        color: map-get($shades, 'white');
         border-color: map-get($grey, 'darken-2');
         background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
       }
       pre {
-        
         color: inherit;
         border-color: map-get($grey, 'darken-2');
-        background-color: map-get($adm-colors, 'secondary2-slightly-transparent') !important;
+        background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
 
-        
         code {
           background-color: transparent;
         }
