@@ -1,4 +1,5 @@
 <template>
+  <nodes-toolbar />
   <v-table :class="classes.root">
     <nodes-table-head />
 
@@ -13,9 +14,11 @@ import { computed, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import NodesTableItem from '@/components/NodesTable/NodesTableItem'
 import NodesTableHead from '@/components/NodesTable/NodesTableHead'
+import NodesToolbar from '@/components/NodesTable/NodesToolbar.vue'
 
 export default defineComponent({
   components: {
+    NodesToolbar,
     NodesTableHead,
     NodesTableItem
   },
@@ -50,6 +53,7 @@ export default defineComponent({
 @import 'vuetify/settings';
 
 .nodes-table {
+  --v-table-header-height: 52px;
   margin-left: -24px;
   margin-right: -24px;
   max-width: unset !important;
