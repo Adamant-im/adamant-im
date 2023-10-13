@@ -73,11 +73,11 @@ export default defineComponent({
     })
 
     const shouldAnimate = (reaction: NormalizedChatMessageTransaction) => {
-      let transactionInMs = reaction.timestamp
-      let dateNowInMs = Date.now()
-      let differenseInMs = dateNowInMs - transactionInMs
+      const transactionInMs = reaction.timestamp
+      const dateNowInMs = Date.now()
+      const differenceInMs = dateNowInMs - transactionInMs
 
-      return differenseInMs < 1000
+      return differenceInMs < 1000
     }
 
     return {
