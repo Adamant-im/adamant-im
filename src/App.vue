@@ -1,9 +1,24 @@
 <template>
-  <v-app :theme="themeName" class="application--linear-gradient">
+  <v-app
+    :theme="themeName"
+    class="application--linear-gradient"
+    :style="{
+      fontFamily: font
+    }"
+  >
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
 
     <component :is="layout">
       <router-view />
+      <select class="position" v-model="font">
+        <option value="'Exo 2', sans-serif">Exo 2</option>
+        <option value="Arial, sans-serif">Arial</option>
+        <option value="Helvetica, sans-serif">Helvetica</option>
+        <option value="Verdana, sans-serif">Verdana</option>
+        <option value="Tahoma, sans-serif">Tahoma</option>
+        <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+        <option value="'Gill Sans', sans-serif">Gill Sans</option>
+      </select>
     </component>
   </v-app>
 </template>
@@ -21,7 +36,8 @@ export default defineComponent({
   },
   data: () => ({
     showWarningOnAddressesDialog: false,
-    notifications: null as Notifications | null
+    notifications: null as Notifications | null,
+    font: "'Exo 2', sans-serif"
   }),
   computed: {
     layout() {
@@ -63,7 +79,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import './assets/styles/themes/adamant/_mixins.scss';
 
 .v-theme--light.application--linear-gradient {
@@ -71,5 +87,14 @@ export default defineComponent({
 }
 .v-theme--dark.application--linear-gradient {
   @include linear-gradient-dark();
+}
+.position {
+  position: fixed;
+  left: 32px;
+  top: 16px;
+  width: 80px;
+  padding: 4px;
+  background-color: map-get($adm-colors, 'good');
+  text-align: center;
 }
 </style>
