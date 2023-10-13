@@ -11,6 +11,7 @@
       :key="reaction.id"
       :class="classes.reaction"
       :asset="reaction.asset"
+      :animate="shouldAnimate(reaction)"
     >
       <template #avatar v-if="reaction.senderId === partnerId">
         <ChatAvatar :user-id="partnerId" :size="16" />
@@ -71,10 +72,19 @@ export default defineComponent({
       return list.sort((left, right) => left.timestamp - right.timestamp)
     })
 
+    const shouldAnimate = (reaction: NormalizedChatMessageTransaction) => {
+      let transactionInMs = reaction.timestamp
+      let dateNowInMs = Date.now()
+      let differenseInMs = dateNowInMs - transactionInMs
+
+      return differenseInMs < 1000
+    }
+
     return {
       classes,
       partnerId,
-      reactions
+      reactions,
+      shouldAnimate
     }
   }
 })

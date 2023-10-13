@@ -2,9 +2,8 @@
   <div :class="classes.root">
     <div
       :class="{
-        active: true,
-        animate__animated: true,
-        animate__heartBeat: true,
+        animate__animated: animate,
+        animate__heartBeat: animate,
         [classes.emoji]: true
       }"
     >
@@ -34,6 +33,9 @@ export default defineComponent({
     asset: {
       type: Object as PropType<ReactionAsset>,
       required: true
+    },
+    animate: {
+      type: Boolean
     }
   },
   setup() {
