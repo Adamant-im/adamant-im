@@ -1,5 +1,6 @@
 import hdkey from 'hdkey'
 import * as web3Utils from 'web3-utils'
+import { privateKeyToAccount } from 'web3-eth-accounts'
 import BigNumber from 'bignumber.js'
 import cache from '@/store/cache.js'
 
@@ -33,7 +34,7 @@ export function getAccountFromPassphrase(passphrase, api) {
     hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey
   )
   // web3Account is for user wallet; We don't need it, when exporting a private key
-  const web3Account = api ? api.accounts.privateKeyToAccount(privateKey) : undefined
+  const web3Account = api ? privateKeyToAccount(privateKey) : undefined
 
   return {
     web3Account,
