@@ -1,5 +1,5 @@
 import hdkey from 'hdkey'
-import web3Utils from 'web3-utils'
+import * as web3Utils from 'web3-utils'
 import BigNumber from 'bignumber.js'
 import cache from '@/store/cache.js'
 
