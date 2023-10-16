@@ -301,7 +301,7 @@ class ApiClient {
    * Creates new client instance
    * @param {Array<string>} endpoints endpoints URLs
    */
-  constructor (endpoints = [], minApiVersion = '0.0.0') {
+  constructor (endpoints = [], minNodeVersion = '0.0.0') {
     /**
      * List of the available nodes
      * @type {Array<ApiNode>}
@@ -312,7 +312,7 @@ class ApiClient {
      * Minimum API version a node is required to have
      * @type {String}
      */
-    this._minApiVersion = minApiVersion
+    this._minNodeVersion = minNodeVersion
     /**
      * A callback that is called every time a node status is updated
      * @type {function({url: string, ping: number, online: boolean}): void}
@@ -338,7 +338,7 @@ class ApiClient {
       version: node.version,
       active: node.active,
       outOfSync: node.outOfSync,
-      hasMinApiVersion: node.version >= this._minApiVersion,
+      hasMinNodeVersion: node.version >= this._minNodeVersion,
       hasSupportedProtocol: node._hasSupportedProtocol,
       socketSupport: node.socketSupport
     })
@@ -519,7 +519,7 @@ class ApiClient {
    * @returns {boolean}
    */
   _isCompatible (version) {
-    return !!(version && semver.gte(version, this._minApiVersion))
+    return !!(version && semver.gte(version, this._minNodeVersion))
   }
 
   /**
@@ -559,7 +559,7 @@ class ApiClient {
   }
 }
 
-const endpoints = config.server.adm.map(endpoint => endpoint.url)
-const apiClient = new ApiClient(endpoints, config.minApiVersion)
+const endpoints = config.adm.nodes.map(endpoint => endpoint.url)
+const apiClient = new ApiClient(endpoints, config.adm.minNodeVersion)
 
 export default apiClient

@@ -1,7 +1,7 @@
 {
-  "minApiVersion": "0.5.2",
-  "server": {
-    "adm": [
+  "adm": {
+    "minNodeVersion": "0.5.2",
+    "nodes": [
       {
         "url": "http://37g5to2z6bdoeegun4hms2hvkfbdxh4rcon4e3p267wtfkh4ji2ns6id.onion"
       },
@@ -18,32 +18,67 @@
         "url": "http://rukehjd2yalzgny7mdjqtzown2mazsaeh4zr7zjdg4l5afkgc3z2kgqd.onion"
       }
     ],
-    "eth": [
+    "services": {
+      "infoService": [
+        {
+          "url": "http://czjsawp2crjmnkliw2h2kpk7wwd3a36zvvnvqgvzmi4t4vc2yzm7j2qd.onion"
+        }
+      ]
+    },
+    "explorerTx": "http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion/tx/${ID}"
+  },
+  "btc": {
+    "nodes": [
+      {
+        "url": "http://mgplh7en3d6ywsec5h6q3tc6mirsleb5cmlyn6nmp25qrb6gy35nypad.onion"
+      }
+    ],
+    "explorerTx": "https://explorer.btc.com/btc/transaction/${ID}"
+  },
+  "dash": {
+    "nodes": [
+      {
+        "url": "http://ldod53womnlwjmd4noq5yuq26xx3mmbrr4uogkfymuakhofjcuqeygad.onion"
+      }
+    ],
+    "explorerTx": "https://dashblockexplorer.com/tx/${ID}"
+  },
+  "doge": {
+    "nodes": [
+      {
+        "url": "http://mtg4mq43p67cbj6qwcqgppjv7uzm7ximjlzapsbnbh5ls6zqkjsq26ad.onion"
+      }
+    ],
+    "explorerTx": "https://dogechain.info/tx/${ID}"
+  },
+  "eth": {
+    "nodes": [
       {
         "url": "http://vj3qid4h2d4cj2gexivjuuybah3mjzenpdyr5bj6z4hctp52jn6qsgid.onion",
         "hasIndex": true
       }
     ],
-    "doge": [
-      { "url": "http://mtg4mq43p67cbj6qwcqgppjv7uzm7ximjlzapsbnbh5ls6zqkjsq26ad.onion" }
-    ],
-    "dash": [
-      { "url": "http://ldod53womnlwjmd4noq5yuq26xx3mmbrr4uogkfymuakhofjcuqeygad.onion" }
-    ],
-    "btc": [
-      { "url": "http://mgplh7en3d6ywsec5h6q3tc6mirsleb5cmlyn6nmp25qrb6gy35nypad.onion" }
-    ],
-    "lsk": [
-      { "url": "http://nl2c4vcsdrd6je3ebt4236yst55mbso72ojmksrmlyoikapgnu647tid.onion" },
-      { "url": "http://qpjxvkathebm7oso3dk5hb4cggbeecqvcpcthuxlpovtn66plr6f4wyd.onion" }
-    ],
-    "lskservice": [
-      { "url": "http://xqrymra5go2nb3cslb3c3iv4weeuicybcxpjee4ay2indk2hgo7rw4qd.onion" },
-      { "url": "http://s2q6phc22icy73zjccjq66555gwtvyuyrodmadwhjdhmvyehb3qrcsid.onion" }
-    ],
-    "infoservice": [
-      { "url": "http://czjsawp2crjmnkliw2h2kpk7wwd3a36zvvnvqgvzmi4t4vc2yzm7j2qd.onion" }
-    ]
+    "explorerTx": "https://etherscan.io/tx/${ID}"
   },
-  "env": "production"
+  "lsk": {
+    "nodes": [
+      {
+        "url": "http://nl2c4vcsdrd6je3ebt4236yst55mbso72ojmksrmlyoikapgnu647tid.onion"
+      },
+      {
+        "url": "http://qpjxvkathebm7oso3dk5hb4cggbeecqvcpcthuxlpovtn66plr6f4wyd.onion"
+      }
+    ],
+    "explorerTx": "https://liskscan.com/transaction/${ID}",
+    "services": {
+      "lskService": [
+        {
+          "url": "http://xqrymra5go2nb3cslb3c3iv4weeuicybcxpjee4ay2indk2hgo7rw4qd.onion"
+        },
+        {
+          "url": "http://s2q6phc22icy73zjccjq66555gwtvyuyrodmadwhjdhmvyehb3qrcsid.onion"
+        }
+      ]
+    }
+  }
 }

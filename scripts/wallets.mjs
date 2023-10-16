@@ -14,19 +14,21 @@ async function run() {
   // update adamant-wallets repo
   await $`git submodule foreach git pull origin master`
 
-  const [coins, nodes, { coinDirNames, coinSymbols }] = await initCoins()
+  const { coins, config, coinDirNames, coinSymbols } = await initCoins()
   await applyBlockchains(coins, coinSymbols)
 
   await copyIcons(coins, coinDirNames)
 
   await writeFile(CRYPTOS_DATA_FILE_PATH, JSON.stringify(coins, null, 2))
 
-  await updateConfig(nodes)
+  await updateProductionConfig(config)
+  await updateDevelopmentConfig(config)
+  await updateTorConfig(config)
 }
 
 async function initCoins() {
+  const config = {}
   const coins = {}
-  const nodes = {}
 
   const coinDirNames = {}
   const coinSymbols = {}
@@ -69,18 +71,16 @@ async function initCoins() {
 
     if (coin.createCoin) {
       const nodeName = coin.symbol.toLowerCase()
-
-      if (coin.nodes) {
-        nodes[nodeName] = coin.nodes
-      }
-
-      if (coin.serviceNodes) {
-        nodes[`${nodeName}service`] = coin.serviceNodes
-      }
+      config[nodeName] = coin
     }
   })
 
-  return [coins, nodes, { coinDirNames, coinSymbols }]
+  return {
+    coins,
+    config,
+    coinDirNames,
+    coinSymbols
+  }
 }
 
 async function applyBlockchains(coins, coinSymbols) {
@@ -129,19 +129,55 @@ async function copyIcons(coins, coinDirNames) {
   }
 }
 
-/**
- * Updates the production config inside src/config
- */
-async function updateConfig(nodes) {
-  const configPath = resolve('src/config/production.json')
-  const config = await parseJsonFile(configPath)
+function updateProductionConfig(configs) {
+  return updateConfig(configs, 'production')
+}
 
-  config.server = {
-    ...config.server, // to keep `infoservice`
-    ...nodes
+function updateDevelopmentConfig(configs) {
+  return updateConfig(configs, 'development')
+}
+
+function updateTorConfig(configs) {
+  const torConfigs = Object.entries(configs)
+    .map(([symbol, config]) => {
+      const torConfig = _.mergeWith(config, config.tor, (value, srcValue) => {
+        // customizer overrides `nodes`, `services` and `links`
+        // instead of merging them
+        if (_.isArray(srcValue)) {
+          return srcValue
+        }
+      })
+
+      return [symbol, torConfig]
+    })
+    .reduce(
+      (acc, [key, value]) => ({
+        ...acc,
+        [key]: value
+      }),
+      {}
+    )
+
+  return updateConfig(torConfigs, 'tor')
+}
+
+/**
+ * Updates the config inside src/config
+ */
+async function updateConfig(configs, configName) {
+  const configPath = resolve(`src/config/${configName}.json`)
+  const configFile = await parseJsonFile(configPath)
+
+  for (const configKey in configs) {
+    const config = configs[configKey]
+
+    configFile[configKey].explorerTx = config.explorerTx
+    configFile[configKey].minNodeVersion = config.minNodeVersion
+    configFile[configKey].nodes = config.nodes
+    configFile[configKey].services = config.services
   }
 
-  await writeFile(configPath, JSON.stringify(config, null, 2))
+  await writeFile(configPath, JSON.stringify(configFile, null, 2))
 }
 
 async function forEachDir(path, callback) {
