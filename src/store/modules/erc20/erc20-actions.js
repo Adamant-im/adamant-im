@@ -2,8 +2,10 @@ import abiDecoder from 'abi-decoder'
 
 import * as ethUtils from '../../../lib/eth-utils'
 import { FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
+import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
+import getEndpointUrl from '@/lib/getEndpointUrl'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -14,7 +16,7 @@ const STATUS_INTERVAL = 25000
 abiDecoder.addABI(Erc20)
 
 const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
-  const contract = new api.Contract(Erc20, context.state.contractAddress)
+  const contract = new EthContract(Erc20, context.state.contractAddress)
 
   const transaction = {
     from: context.state.address,
@@ -52,17 +54,17 @@ const parseTransaction = (context, tx) => {
       // Why comparing to eth.actions, there is no fee and status?
       hash: tx.hash,
       senderId: tx.from,
-      blockNumber: tx.blockNumber,
+      blockNumber: Number(tx.blockNumber),
       amount,
       recipientId,
-      gasPrice: +(tx.gasPrice || tx.effectiveGasPrice)
+      gasPrice: Number(tx.gasPrice || tx.effectiveGasPrice)
     }
   }
 
   return null
 }
 
-const createSpecificActions = (api, queue) => ({
+const createSpecificActions = (api) => ({
   updateBalance: {
     root: true,
     async handler({ state, commit }, payload = {}) {
@@ -71,7 +73,9 @@ const createSpecificActions = (api, queue) => ({
       }
 
       try {
-        const contract = new api.Contract(Erc20, state.contractAddress)
+        const contract = new EthContract(Erc20, state.contractAddress)
+        const endpoint = getEndpointUrl('ETH')
+        contract.setProvider(endpoint)
         const rawBalance = await contract.methods.balanceOf(state.address).call()
         const balance = Number(ethUtils.toFraction(rawBalance, state.decimals))
 
@@ -88,7 +92,10 @@ const createSpecificActions = (api, queue) => ({
   updateStatus(context) {
     if (!context.state.address) return
 
-    const contract = new api.Contract(Erc20, context.state.contractAddress)
+    const contract = new EthContract(Erc20, context.state.contractAddress)
+    const endpoint = getEndpointUrl('ETH')
+    contract.setProvider(endpoint)
+
     contract.methods
       .balanceOf(context.state.address)
       .call()
