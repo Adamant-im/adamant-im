@@ -2,7 +2,7 @@ import * as bitcoin from 'bitcoinjs-lib'
 import axios from 'axios'
 
 import networks from './networks'
-import getEnpointUrl from '../getEndpointUrl'
+import { getRandomNodeUrl } from "@/config/utils";
 import BigNumber from '../bignumber'
 import { isPositiveNumber } from '@/lib/numericHelpers'
 import { CryptosInfo } from '../constants'
@@ -173,7 +173,7 @@ export default class BtcBaseApi {
 
   /** Picks a client for a random API endpoint */
   _getClient () {
-    const url = getEnpointUrl(this._crypto)
+    const url = getRandomNodeUrl(this._crypto.toLowerCase())
     if (!this._clients[url]) {
       this._clients[url] = createClient(url)
     }

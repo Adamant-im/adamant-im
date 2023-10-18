@@ -131,17 +131,3 @@ export function websiteUriToOnion (str) {
 
   return str
 }
-
-/**
- * Replaces https://explorer.adamant.im URI to tor-explorer if host is .onion
- * @param {string} str String, that may contain https://explorer.adamant.im URI
- * @returns {string}
- */
-export function explorerUriToOnion (str) {
-  const hostname = window.location.origin
-  if (hostname.includes('.onion')) {
-    str = str.replace('https://explorer.adamant.im', 'http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion')
-  }
-
-  return str
-}
