@@ -1,6 +1,6 @@
 {
   "adm": {
-    "minNodeVersion": "0.5.2",
+    "minNodeVersion": "0.7.0",
     "nodes": [
       {
         "url": "http://37g5to2z6bdoeegun4hms2hvkfbdxh4rcon4e3p267wtfkh4ji2ns6id.onion"
@@ -25,15 +25,22 @@
         }
       ]
     },
-    "explorerTx": "http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion/tx/${ID}"
+    "explorerTx": "http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion/tx/${ID}",
+    "explorer": "http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion",
+    "explorerAddress": "http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion/address/${ID}"
   },
   "btc": {
     "nodes": [
       {
+        "url": "http://cc6ibzkfeseuwnmtjc6hlsd44bzg2sr3shbv7n35nj2rk2vm6dmtlnqd.onion"
+      },
+      {
         "url": "http://mgplh7en3d6ywsec5h6q3tc6mirsleb5cmlyn6nmp25qrb6gy35nypad.onion"
       }
     ],
-    "explorerTx": "https://explorer.btc.com/btc/transaction/${ID}"
+    "explorerTx": "https://explorer.btc.com/btc/transaction/${ID}",
+    "explorer": "https://explorer.btc.com",
+    "explorerAddress": "https://explorer.btc.com/btc/address/${ID}"
   },
   "dash": {
     "nodes": [
@@ -41,24 +48,37 @@
         "url": "http://ldod53womnlwjmd4noq5yuq26xx3mmbrr4uogkfymuakhofjcuqeygad.onion"
       }
     ],
-    "explorerTx": "https://dashblockexplorer.com/tx/${ID}"
+    "explorerTx": "https://dashblockexplorer.com/tx/${ID}",
+    "explorer": "https://dashblockexplorer.com",
+    "explorerAddress": "https://dashblockexplorer.com/address/${ID}"
   },
   "doge": {
     "nodes": [
       {
         "url": "http://mtg4mq43p67cbj6qwcqgppjv7uzm7ximjlzapsbnbh5ls6zqkjsq26ad.onion"
+      },
+      {
+        "url": "http://bfu3iiofsagyhi22zijfilbkzlzbalpylhhfcluqmezx2avdwcxut7yd.onion"
       }
     ],
-    "explorerTx": "https://dogechain.info/tx/${ID}"
+    "explorerTx": "https://dogechain.info/tx/${ID}",
+    "explorer": "https://dogechain.info",
+    "explorerAddress": "https://dogechain.info/address/${ID}"
   },
   "eth": {
     "nodes": [
       {
         "url": "http://vj3qid4h2d4cj2gexivjuuybah3mjzenpdyr5bj6z4hctp52jn6qsgid.onion",
         "hasIndex": true
+      },
+      {
+        "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+        "hasIndex": true
       }
     ],
-    "explorerTx": "https://etherscan.io/tx/${ID}"
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorer": "https://etherscan.io",
+    "explorerAddress": "https://etherscan.io/address/${ID}"
   },
   "lsk": {
     "nodes": [
@@ -79,6 +99,8 @@
           "url": "http://s2q6phc22icy73zjccjq66555gwtvyuyrodmadwhjdhmvyehb3qrcsid.onion"
         }
       ]
-    }
+    },
+    "explorer": "https://liskscan.com",
+    "explorerAddress": "https://liskscan.com/account/${ID}"
   }
 }

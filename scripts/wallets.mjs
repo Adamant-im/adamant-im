@@ -171,7 +171,9 @@ async function updateConfig(configs, configName) {
   for (const configKey in configs) {
     const config = configs[configKey]
 
+    configFile[configKey].explorer = config.explorer
     configFile[configKey].explorerTx = config.explorerTx
+    configFile[configKey].explorerAddress = config.explorerAddress
     configFile[configKey].minNodeVersion = config.minNodeVersion
     configFile[configKey].nodes = config.nodes
     configFile[configKey].services = config.services
