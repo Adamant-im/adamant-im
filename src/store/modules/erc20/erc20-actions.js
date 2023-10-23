@@ -1,11 +1,10 @@
-import abiDecoder from 'abi-decoder'
-
 import * as ethUtils from '../../../lib/eth-utils'
 import { FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
 import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
 import getEndpointUrl from '@/lib/getEndpointUrl'
+import abiDecoder from '@/lib/abi/abi-decoder'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
