@@ -86,7 +86,7 @@ export default class BtcBaseApi {
   async createTransaction(address = '', amount = 0, fee) {
     const unspents = await this.getUnspents()
 
-    // // populate with txHex <--
+    // populate unspents with full transaction in HEX
     for (const unspent of unspents) {
       const txHex = await this._get(`/tx/${unspent.txid}/hex`)
       unspent.txHex = txHex
