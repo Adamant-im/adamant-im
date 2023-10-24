@@ -4,7 +4,7 @@ import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
 import getEndpointUrl from '@/lib/getEndpointUrl'
-import abiDecoder from '@/lib/abi/abi-decoder'
+import { AbiDecoder } from '@/lib/abi/abi-decoder'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -12,7 +12,7 @@ let lastStatusUpdate = 0
 const STATUS_INTERVAL = 25000
 
 // Setup decoder
-abiDecoder.addABI(Erc20)
+const abiDecoder = new AbiDecoder(Erc20)
 
 const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
