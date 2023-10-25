@@ -202,7 +202,7 @@ export default function createActions(config) {
       }
 
       void api.getTransaction(payload.hash).then((tx) => {
-        if (tx && tx.input) {
+        if (tx?.input) {
           const transaction = parseTransaction(context, tx)
           const status = existing ? existing.status : 'REGISTERED'
           if (transaction) {
@@ -223,12 +223,12 @@ export default function createActions(config) {
 
         const attempt = payload.attempt || 0
         const retryCount = tf.getPendingTxRetryCount(
-          payload.timestamp || (existing && existing.timestamp),
+          payload.timestamp || existing?.timestamp,
           context.state.crypto
         )
         const retry = attempt < retryCount
         const retryTimeout = tf.getPendingTxRetryTimeout(
-          payload.timestamp || (existing && existing.timestamp),
+          payload.timestamp || existing?.timestamp,
           context.state.crypto
         )
 
