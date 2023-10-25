@@ -1,3 +1,6 @@
+/**
+ * The code is based on https://github.com/Consensys/abi-decoder
+ */
 import type { Components, JsonEventInterface, JsonFunctionInterface } from 'web3-types'
 import { sha3 } from 'web3-utils'
 import { decodeParameters } from 'web3-eth-abi'
