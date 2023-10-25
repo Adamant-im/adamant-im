@@ -121,9 +121,9 @@ export class AbiDecoder {
       }
 
       const inputTypes = abi.inputs.map(componentType)
-      const signature = sha3(abi.name + '(' + inputTypes.join(',') + ')')
+      const signature = sha3(abi.name + '(' + inputTypes.join(',') + ')') as string
 
-      const methodId = abi.type === 'event' ? signature!.slice(2) : signature!.slice(2, 10) // event | function
+      const methodId = abi.type === 'event' ? signature.slice(2) : signature.slice(2, 10) // event | function
 
       methods[methodId] = abi
     }
