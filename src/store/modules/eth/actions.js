@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
@@ -28,7 +29,10 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
   }
 
   return api.estimateGas(transaction).then((gasLimit) => {
-    gasLimit = increaseFee ? gasLimit * INCREASE_FEE_MULTIPLIER : gasLimit
+    gasLimit = increaseFee
+      ? BigNumber(gasLimit).times(INCREASE_FEE_MULTIPLIER).toNumber()
+      : gasLimit
+
     transaction.gas = gasLimit
     return transaction
   })
