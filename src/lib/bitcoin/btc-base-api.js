@@ -99,7 +99,6 @@ export default class BtcBaseApi {
     txid = txid.toString('hex').match(/.{2}/g).reverse().join('')
 
     return { hex, txid }
-    // })
   }
 
   /**
