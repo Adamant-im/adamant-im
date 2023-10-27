@@ -121,7 +121,6 @@
 <script>
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import Pagination from '@/components/Pagination'
-import { explorerUriToOnion } from '@/lib/uri'
 import DelegatesTable from '@/components/DelegatesTable/DelegatesTable'
 import { computed, onMounted, ref, reactive, defineComponent } from "vue"
 import { useStore } from "vuex"
@@ -185,7 +184,6 @@ export default defineComponent({
       })
     })
 
-    const getExplorerUrl = () => explorerUriToOnion('https://explorer.adamant.im/delegate/')
     const upVote = (id) => {
       store.commit('delegates/upVote', id)
     }
@@ -262,7 +260,6 @@ export default defineComponent({
       pages,
       showPagination,
       reviewButtonDisabled,
-      getExplorerUrl,
       upVote,
       downVote,
       sendVotes,

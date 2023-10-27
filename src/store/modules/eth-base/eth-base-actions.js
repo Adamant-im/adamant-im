@@ -1,6 +1,6 @@
 import Web3Eth from 'web3-eth'
 
-import getEndpointUrl from '../../../lib/getEndpointUrl'
+import { getRandomNodeUrl } from '@/config/utils'
 import * as utils from '../../../lib/eth-utils'
 import { getTransactions } from '../../../lib/eth-index'
 import * as tf from '../../../lib/transactionsFetching'
@@ -11,7 +11,7 @@ const RETRY_TIMEOUT = 20 * 1000
 const CHUNK_SIZE = 25
 
 export default function createActions(config) {
-  const endpoint = getEndpointUrl('ETH')
+  const endpoint = getRandomNodeUrl('eth')
   const api = new Web3Eth(endpoint)
   const queue = new utils.BatchQueue(() => new api.BatchRequest())
 
