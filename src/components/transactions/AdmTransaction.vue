@@ -20,7 +20,7 @@
 <script>
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
-import { Cryptos } from '../../lib/constants'
+import { Cryptos } from '@/lib/constants'
 
 import transaction from '@/mixins/transaction'
 import partnerName from '@/mixins/partnerName'
