@@ -34,7 +34,6 @@ jobs:
       - name: Build PWA 🛠️
         run: |
           npm run schema:generate
-          npm run wallets:types:generate
           npm run build
 
       - name: Archive artifacts 📁

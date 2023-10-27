@@ -21,7 +21,7 @@
     "https": "vite preview --https",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "postinstall": "electron-builder install-app-deps && npm run schema:generate && npm run wallets:types:generate"
+    "postinstall": "electron-builder install-app-deps && npm run schema:generate"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.1.2",

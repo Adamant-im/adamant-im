@@ -34,7 +34,6 @@ jobs:
       - name: Build and Sign Electron App 🛠️
         run: |
           npm run schema:generate
-          npm run wallets:types:generate
           npm run electron:build
 
       - name: Save artifacts
