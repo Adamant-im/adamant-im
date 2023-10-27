@@ -67,7 +67,7 @@ export default {
       )
     },
     explorerLink() {
-      return getExplorerTxUrl(Cryptos.ADM, this.id) || ''
+      return getExplorerTxUrl(Cryptos.ADM, this.id)
     },
     status() {
       return this.transaction.status || ''
