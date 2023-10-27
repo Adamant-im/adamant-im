@@ -1,5 +1,6 @@
 import hdkey from 'hdkey'
-import web3Utils from 'web3-utils'
+import * as web3Utils from 'web3-utils'
+import { privateKeyToAccount } from 'web3-eth-accounts'
 import BigNumber from 'bignumber.js'
 import cache from '@/store/cache.js'
 
@@ -33,7 +34,7 @@ export function getAccountFromPassphrase(passphrase, api) {
     hdkey.fromMasterSeed(seed).derive(HD_KEY_PATH)._privateKey
   )
   // web3Account is for user wallet; We don't need it, when exporting a private key
-  const web3Account = api ? api.accounts.privateKeyToAccount(privateKey) : undefined
+  const web3Account = api ? privateKeyToAccount(privateKey) : undefined
 
   return {
     web3Account,
@@ -104,39 +105,4 @@ export function toFraction(amount, decimals, separator = '.') {
   fraction = fraction.replace(/0+$/, '')
 
   return whole + (fraction ? separator + fraction : '')
-}
-
-export class BatchQueue {
-  constructor(createBatchRequest) {
-    this._createBatchRequest = createBatchRequest
-    this._queue = []
-    this._timer = null
-  }
-
-  enqueue(key, supplier) {
-    if (typeof supplier !== 'function') return
-    if (this._queue.some((x) => x.key === key)) return
-
-    const requests = supplier()
-    this._queue.push({ key, requests: Array.isArray(requests) ? requests : [requests] })
-  }
-
-  start() {
-    this.stop()
-    this._timer = setInterval(() => this._execute(), 2000)
-  }
-
-  stop() {
-    clearInterval(this._timer)
-  }
-
-  _execute() {
-    const requests = this._queue.splice(0, 20)
-    if (!requests.length) return
-
-    const batch = this._createBatchRequest()
-    requests.forEach((x) => x.requests.forEach((r) => batch.add(r)))
-
-    batch.execute()
-  }
 }

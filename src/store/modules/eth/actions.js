@@ -1,7 +1,8 @@
+import BigNumber from 'bignumber.js'
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { DEFAULT_ETH_TRANSFER_GAS, FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants';
+import { DEFAULT_ETH_TRANSFER_GAS, FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
 import { storeCryptoAddress } from '@/lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
@@ -28,7 +29,10 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
   }
 
   return api.estimateGas(transaction).then((gasLimit) => {
-    gasLimit = increaseFee ? gasLimit * INCREASE_FEE_MULTIPLIER : gasLimit
+    gasLimit = increaseFee
+      ? BigNumber(gasLimit).times(INCREASE_FEE_MULTIPLIER).toNumber()
+      : gasLimit
+
     transaction.gas = gasLimit
     return transaction
   })
@@ -42,12 +46,12 @@ const parseTransaction = (context, tx) => {
     amount: utils.toEther(tx.value.toString(10)),
     fee: utils.calculateFee(tx.gas, (tx.gasPrice || tx.effectiveGasPrice).toString(10)),
     status: tx.blockNumber ? 'CONFIRMED' : 'PENDING',
-    blockNumber: tx.blockNumber,
-    gasPrice: +(tx.gasPrice || tx.effectiveGasPrice)
+    blockNumber: Number(tx.blockNumber),
+    gasPrice: Number(tx.gasPrice || tx.effectiveGasPrice)
   }
 }
 
-const createSpecificActions = (api, queue) => ({
+const createSpecificActions = (api) => ({
   updateBalance: {
     root: true,
     async handler({ state, commit }, payload = {}) {
@@ -59,7 +63,7 @@ const createSpecificActions = (api, queue) => ({
         const rawBalance = await api.getBalance(state.address, 'latest')
         const balance = Number(utils.toEther(rawBalance.toString()))
 
-        commit('balance', balance);
+        commit('balance', balance)
         commit('setBalanceStatus', FetchStatus.Success)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
@@ -75,40 +79,29 @@ const createSpecificActions = (api, queue) => ({
   updateStatus(context) {
     if (!context.state.address) return
 
-    const supplier = () => {
-      if (!context.state.address) return []
+    // Balance
+    void api.getBalance(context.state.address, 'latest').then((balance) => {
+      context.commit('balance', Number(utils.toEther(balance.toString())))
+      context.commit('setBalanceStatus', FetchStatus.Success)
+    })
 
-      return [
-        // Balance
-        api.getBalance.request(context.state.address, 'latest', (err, balance) => {
-          if (!err) {
-            context.commit('balance', Number(utils.toEther(balance.toString())))
-            context.commit('setBalanceStatus', FetchStatus.Success)
-          } else {
-            context.commit('setBalanceStatus', FetchStatus.Error)
-          }
-        }),
-        // Current gas price
-        api.getGasPrice.request((err, price) => {
-          // It is OK with London hardfork
-          if (!err) {
-            context.commit('gasPrice', {
-              gasPrice: price, // string type
-              fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS, price)).toFixed(8) // number type, in ETH
-            })
-          }
-        }),
-        // Current block number
-        api.getBlockNumber.request((err, number) => {
-          if (!err) context.commit('blockNumber', number)
-        })
-      ]
-    }
+    // Current gas price
+    void api.getGasPrice().then((price) => {
+      // It is OK with London hardfork
+      context.commit('gasPrice', {
+        gasPrice: price, // string type
+        fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS, price)).toFixed(8) // number type, in ETH
+      })
+    })
+
+    // Current block number
+    void api.getBlockNumber().then((number) => {
+      context.commit('blockNumber', Number(number))
+    })
 
     const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)
     setTimeout(() => {
       if (context.state.address) {
-        queue.enqueue('status', supplier)
         lastStatusUpdate = Date.now()
         context.dispatch('updateStatus')
       }
