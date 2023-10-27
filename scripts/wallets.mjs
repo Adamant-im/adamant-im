@@ -138,25 +138,17 @@ function updateDevelopmentConfig(configs) {
 }
 
 function updateTorConfig(configs) {
-  const torConfigs = Object.entries(configs)
-    .map(([symbol, config]) => {
-      const torConfig = _.mergeWith(config, config.tor, (value, srcValue) => {
-        // customizer overrides `nodes`, `services` and `links`
-        // instead of merging them
-        if (_.isArray(srcValue)) {
-          return srcValue
-        }
-      })
-
-      return [symbol, torConfig]
+  const torConfigs = _.mapValues(configs, (config) => {
+    const torConfig = _.mergeWith(config, config.tor, (value, srcValue) => {
+      // customizer overrides `nodes`, `services` and `links`
+      // instead of merging them
+      if (_.isArray(srcValue)) {
+        return srcValue
+      }
     })
-    .reduce(
-      (acc, [key, value]) => ({
-        ...acc,
-        [key]: value
-      }),
-      {}
-    )
+
+    return torConfig
+  })
 
   return updateConfig(torConfigs, 'tor')
 }
