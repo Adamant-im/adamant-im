@@ -3,7 +3,7 @@ import { FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
 import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
-import getEndpointUrl from '@/lib/getEndpointUrl'
+import { getRandomNodeUrl } from '@/config/utils'
 import { AbiDecoder } from '@/lib/abi/abi-decoder'
 
 /** Timestamp of the most recent status update */
@@ -73,7 +73,7 @@ const createSpecificActions = (api) => ({
 
       try {
         const contract = new EthContract(Erc20, state.contractAddress)
-        const endpoint = getEndpointUrl('ETH')
+        const endpoint = getRandomNodeUrl('eth')
         contract.setProvider(endpoint)
         const rawBalance = await contract.methods.balanceOf(state.address).call()
         const balance = Number(ethUtils.toFraction(rawBalance, state.decimals))
@@ -92,7 +92,7 @@ const createSpecificActions = (api) => ({
     if (!context.state.address) return
 
     const contract = new EthContract(Erc20, context.state.contractAddress)
-    const endpoint = getEndpointUrl('ETH')
+    const endpoint = getRandomNodeUrl('eth')
     contract.setProvider(endpoint)
 
     contract.methods
