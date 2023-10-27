@@ -33,12 +33,12 @@ export function getRandomServiceUrl<B extends BlockchainSymbol, S extends Servic
   serviceName: S
 ): string {
   const serviceList = getService<B, S>(blockchain, serviceName)
-  const index = Math.floor(Math.random() * serviceList.length)
-
-  const service = serviceList[index]
-  if (!service) {
+  if (serviceList.length === 0) {
     throw new Error(`Missing services in "${blockchain}" configuration`)
   }
+
+  const index = Math.floor(Math.random() * serviceList.length)
+  const service = serviceList[index]
 
   return service.url
 }
