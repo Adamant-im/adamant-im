@@ -108,9 +108,9 @@ function getTotalFromRange (range = '') {
 }
 
 function getUrl () {
-  const servers = config.server.eth.filter(x => x.hasIndex).map(x => x.url)
-  const index = Math.floor(Math.random() * servers.length)
-  return servers[index] + '/ethtxs'
+  const nodes = config.eth.nodes.filter(x => x.hasIndex).map(x => x.url)
+  const index = Math.floor(Math.random() * nodes.length)
+  return nodes[index] + '/ethtxs'
 }
 
 /**

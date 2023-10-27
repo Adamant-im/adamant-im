@@ -54,7 +54,7 @@ import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 function getNodeStatus(node, t) {
-  if (!node.hasMinApiVersion || !node.hasSupportedProtocol) {
+  if (!node.hasMinNodeVersion || !node.hasSupportedProtocol) {
     return t('nodes.unsupported')
   } else if (!node.active) {
     return t('nodes.inactive')
@@ -70,7 +70,7 @@ function getNodeStatus(node, t) {
 function getNodeStatusColor(node) {
   let color = 'green'
 
-  if (!node.hasMinApiVersion || !node.hasSupportedProtocol) {
+  if (!node.hasMinNodeVersion || !node.hasSupportedProtocol) {
     color = 'red'
   } else if (!node.active) {
     color = 'grey'

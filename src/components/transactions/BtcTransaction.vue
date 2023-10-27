@@ -21,7 +21,7 @@
 
 <script>
 import TransactionTemplate from './TransactionTemplate.vue'
-import getExplorerUrl from '../../lib/getExplorerUrl'
+import { getExplorerTxUrl } from '@/config/utils'
 import partnerName from '@/mixins/partnerName'
 import { CryptosInfo } from '@/lib/constants'
 
@@ -101,7 +101,7 @@ export default {
       return this.getAdmAddress(id)
     },
     explorerLink () {
-      return getExplorerUrl(this.crypto, this.id)
+      return getExplorerTxUrl(this.crypto, this.id)
     },
     confirmations () {
       const { height, confirmations } = this.transaction
