@@ -81,18 +81,18 @@ class AdmClient {
     this.statusPromise = new Promise<void>((resolve, reject) => {
       let done = false
 
-      const promises = this.nodes
-        .filter((x) => x.active)
-        .map((x) => {
-          return x.updateStatus().then(() => {
-            this.fireStatusUpdate(x)
-            // Resolve the `_statusPromise` if it's a good node.
-            if (!done && x.online && this.isCompatible(x.version)) {
-              done = true
-              resolve()
-            }
-          })
+      const activeNodes = this.nodes.filter((node) => node.active)
+
+      const promises = activeNodes.map((node) => {
+        return node.updateStatus().then(() => {
+          this.fireStatusUpdate(node)
+          // Resolve the `statusPromise` if it's a good node.
+          if (!done && node.online && this.isCompatible(node.version)) {
+            done = true
+            resolve()
+          }
         })
+      })
 
       Promise.all(promises).then(() => {
         // If all nodes have been checked and none of them is online or
@@ -106,15 +106,14 @@ class AdmClient {
           this.updateSyncStatuses()
         }
       })
-    }).then(
-      () => {
+    })
+      .then(() => {
         if (this.onInit) this.onInit()
-      },
-      (error) => {
+      })
+      .catch((error) => {
         if (this.onInit) this.onInit(error)
         return Promise.reject(error)
-      }
-    )
+      })
   }
 
   /**
@@ -151,29 +150,28 @@ class AdmClient {
    * Performs an API request.
    * @param {RequestConfig} config request config
    */
-  request<P extends Payload = Payload>(config: RequestConfig<P>): Promise<any> {
+  async request<P extends Payload = Payload>(config: RequestConfig<P>): Promise<any> {
     // First wait until we get at least one compatible node
-    return this.statusPromise.then(() => {
-      const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
+    await this.statusPromise
 
-      if (!node) {
-        // All nodes seem to be offline: let's refresh the statuses
+    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
+    if (!node) {
+      // All nodes seem to be offline: let's refresh the statuses
+      this.updateStatus()
+      // But there's nothing we can do right now
+      return Promise.reject(new Error('No online nodes at the moment'))
+    }
+
+    return node.request(config).catch((error) => {
+      if (error.code === 'NODE_OFFLINE') {
+        // Notify the world that the node is down
+        this.fireStatusUpdate(node)
+        // Initiate nodes status check
         this.updateStatus()
-        // But there's nothing we can do right now
-        return Promise.reject(new Error('No online nodes at the moment'))
+        // If the selected node is not available, repeat the request with another one.
+        return this.request(config)
       }
-
-      return node.request(config).catch((error) => {
-        if (error.code === 'NODE_OFFLINE') {
-          // Notify the world that the node is down
-          this.fireStatusUpdate(node)
-          // Initiate nodes status check
-          this.updateStatus()
-          // If the selected node is not available, repeat the request with another one.
-          return this.request(config)
-        }
-        throw error
-      })
+      throw error
     })
   }
 
@@ -257,11 +255,14 @@ class AdmClient {
       return out
     }, null)
 
+    if (!winner) {
+      console.log('AdmClient: updateSyncStatuses: No winner found')
+      return
+    }
+
     // Finally, all the nodes from the winner list are considered to be in sync, all the
     // others are not
     nodes.forEach((node) => {
-      if (!winner) return
-
       node.outOfSync = !winner.nodes.includes(node)
       this.fireStatusUpdate(node)
     })
