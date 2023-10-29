@@ -3,7 +3,7 @@ import { Base64 } from 'js-base64'
 
 import { Transactions, Delegates, MessageType } from '@/lib/constants'
 import utils from '@/lib/adamant'
-import client from '@/lib/adamant-api-client'
+import client from '@/lib/nodes/adm/AdmClient'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { restoreState } from '@/lib/idb/state'
 import { i18n } from '@/i18n'

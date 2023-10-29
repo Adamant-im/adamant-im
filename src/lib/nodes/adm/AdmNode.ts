@@ -22,7 +22,7 @@ class NodeOfflineError extends Error {
   }
 }
 
-type NodeStatus = {
+type FetchNodeStatusResult = {
   online: boolean
   socketSupport: boolean
   version?: string
@@ -31,12 +31,30 @@ type NodeStatus = {
   wsPort?: string
 }
 
-type Payload =
+type GetNodeStatusResult = {
+  url: string
+  port: string
+  hostname: string
+  protocol: string
+  wsProtocol: 'ws:' | 'wss:'
+  wsPort: string
+  wsPortNeeded: boolean
+  online: boolean
+  ping: number
+  version: string
+  active: boolean
+  outOfSync: boolean
+  hasMinNodeVersion: boolean
+  hasSupportedProtocol: boolean
+  socketSupport: boolean
+}
+
+export type Payload =
   | Record<string, any>
   | {
       (ctx: AdmNode): Record<string, any>
     }
-type RequestConfig<P extends Payload> = {
+export type RequestConfig<P extends Payload> = {
   url: string
   method?: string
   payload?: P
@@ -108,6 +126,10 @@ export class AdmNode {
    */
   version = ''
   /**
+   * Minimal required Node API version.
+   */
+  minNodeVersion: string
+  /**
    * Current block height
    */
   height = 0
@@ -118,7 +140,7 @@ export class AdmNode {
 
   client: AxiosInstance
 
-  constructor(baseUrl: string) {
+  constructor(baseUrl: string, minNodeVersion = '0.0.0') {
     this.baseUrl = baseUrl
     this.protocol = new URL(baseUrl).protocol
     this.port = new URL(baseUrl).port
@@ -127,6 +149,7 @@ export class AdmNode {
     this.wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:'
     this.wsPortNeeded = this.wsProtocol === 'ws:' && !this.hostname.includes('.onion')
     this.hasSupportedProtocol = !(this.protocol === 'http:' && appProtocol === 'https:')
+    this.minNodeVersion = minNodeVersion
 
     this.client = axios.create({
       baseURL: this.baseUrl
@@ -181,7 +204,7 @@ export class AdmNode {
    */
   async updateStatus() {
     try {
-      const status = await this.getNodeStatus()
+      const status = await this.fetchNodeStatus()
 
       if (status.version) {
         this.version = status.version
@@ -204,10 +227,10 @@ export class AdmNode {
   }
 
   /**
-   * Gets node version, block height and ping.
+   * Fetch node version, block height and ping.
    * @returns {Promise<{version: string, height: number, ping: number}>}
    */
-  private async getNodeStatus(): Promise<NodeStatus> {
+  private async fetchNodeStatus(): Promise<FetchNodeStatusResult> {
     if (!this.hasSupportedProtocol) {
       return Promise.reject({
         online: false,
@@ -229,5 +252,25 @@ export class AdmNode {
     }
 
     throw new Error('Request to /api/node/status was unsuccessful')
+  }
+
+  getNodeStatus(): GetNodeStatusResult {
+    return {
+      url: this.url,
+      port: this.port,
+      hostname: this.hostname,
+      protocol: this.protocol,
+      wsProtocol: this.wsProtocol,
+      wsPort: this.wsPort,
+      wsPortNeeded: this.wsPortNeeded,
+      online: this.online,
+      ping: this.ping,
+      version: this.version,
+      active: this.active,
+      outOfSync: this.outOfSync,
+      hasMinNodeVersion: this.version >= this.minNodeVersion,
+      hasSupportedProtocol: this.hasSupportedProtocol,
+      socketSupport: this.socketSupport
+    }
   }
 }

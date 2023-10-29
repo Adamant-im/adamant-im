@@ -1,22 +1,22 @@
-import apiClient from '../../../lib/adamant-api-client'
+import admClient from '@/lib/nodes/adm/AdmClient'
 
 export default store => {
   // initial nodes state
-  apiClient.getNodes().forEach(node => store.commit('nodes/status', node))
+  admClient.getNodes().forEach(node => store.commit('nodes/status', node))
 
-  apiClient.updateStatus()
+  admClient.updateStatus()
 
   store.subscribe(mutation => {
     if (mutation.type === 'nodes/useFastest') {
-      apiClient.useFastest = !!mutation.payload
+      admClient.useFastest = !!mutation.payload
     }
 
     if (mutation.type === 'nodes/toggle') {
-      apiClient.toggleNode(mutation.payload.url, mutation.payload.active)
+      admClient.toggleNode(mutation.payload.url, mutation.payload.active)
     }
   })
 
-  apiClient.onStatusUpdate(status => {
+  admClient.onStatusUpdate(status => {
     store.commit('nodes/status', status)
   })
 }
