@@ -1,4 +1,5 @@
 import utils from '@/lib/adamant'
+import { NodeOfflineError } from '@/lib/nodes/utils/errors'
 import { GetNodeStatusResponseDto } from '@/lib/schema/client'
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 
@@ -6,21 +7,6 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
  * Protocol on host where app is running, f. e., http: or https:
  */
 const appProtocol = location.protocol
-
-/**
- * Custom error to indicate that the endpoint is not available
- */
-class NodeOfflineError extends Error {
-  code = 'NODE_OFFLINE'
-
-  constructor() {
-    super('Node is offline')
-
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, NodeOfflineError)
-    }
-  }
-}
 
 type FetchNodeStatusResult = {
   online: boolean

@@ -1,3 +1,4 @@
+import { isNodeOfflineError } from '@/lib/nodes/utils/errors'
 import { NodeInfo } from '@/types/wallets'
 import { AdmNode, Payload, RequestConfig } from './AdmNode'
 import { filterSyncedNodes } from '../utils/filterSyncedNodes'
@@ -156,7 +157,7 @@ class AdmClient {
     }
 
     return node.request(config).catch((error) => {
-      if (error.code === 'NODE_OFFLINE') {
+      if (isNodeOfflineError(error)) {
         // Notify the world that the node is down
         this.fireStatusUpdate(node)
         // Initiate nodes status check
