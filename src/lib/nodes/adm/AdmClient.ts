@@ -1,16 +1,9 @@
 import { NodeInfo } from '@/types/wallets'
 import { AdmNode, Payload, RequestConfig } from './AdmNode'
+import { filterSyncedNodes } from '../utils/filterSyncedNodes'
 
 import config from '@/config'
 import semver from 'semver'
-
-/**
- * Allowed height delta for the nodes.
- *
- * If two nodes' heights differ by no more than this value,
- * they are considered to be in sync with each other.
- */
-const HEIGHT_EPSILON = 10
 
 /**
  * Interval how often to update node statuses
@@ -237,35 +230,14 @@ class AdmClient {
   private updateSyncStatuses() {
     const nodes = this.nodes.filter((x) => x.online && x.active)
 
-    // For each node we take its height and list of nodes that have the same height ± epsilon
-    const grouped = nodes.map((node) => {
-      return {
-        /** In case of "win" this height will be considered to be real height of the network */
-        height: node.height,
-        /** List of nodes with the same (or close) height, including current one */
-        nodes: nodes.filter((x) => Math.abs(node.height - x.height) <= HEIGHT_EPSILON)
-      }
-    })
-
-    // A group with the longest same-height nodes list wins.
-    // If two groups have the same number of nodes, the one with the biggest height wins.
-    const winner = grouped.reduce<{ height: number; nodes: AdmNode[] } | null>((out, x) => {
-      if (!out) return x
-      if (out.nodes.length < x.nodes.length || out.height < x.height) return x
-      return out
-    }, null)
-
-    if (!winner) {
-      console.log('AdmClient: updateSyncStatuses: No winner found')
-      return
-    }
+    const nodesInSync = filterSyncedNodes(nodes)
 
     // Finally, all the nodes from the winner list are considered to be in sync, all the
     // others are not
-    nodes.forEach((node) => {
-      node.outOfSync = !winner.nodes.includes(node)
+    for (const node of nodes) {
+      node.outOfSync = !nodesInSync.nodes.includes(node)
       this.fireStatusUpdate(node)
-    })
+    }
   }
 }
 
