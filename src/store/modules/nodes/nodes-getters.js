@@ -1,5 +1,8 @@
 export default {
-  list (state) {
-    return Object.values(state.list)
+  adm(state) {
+    return Object.values(state.adm)
+  },
+  eth(state) {
+    return Object.values(state.eth)
   }
 }

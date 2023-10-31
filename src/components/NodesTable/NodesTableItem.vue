@@ -11,6 +11,7 @@
         :model-value="active"
         :class="[classes.checkbox, classes.statusIconGrey]"
         @input="toggleActiveStatus"
+        :disabled="disableCheckbox"
       />
     </td>
 
@@ -88,6 +89,9 @@ export default {
     node: {
       type: Object,
       required: true
+    },
+    disableCheckbox: {
+      type: Boolean
     }
   },
   setup(props) {

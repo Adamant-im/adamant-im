@@ -1,4 +1,5 @@
 export default {
-  list: { },
+  adm: {},
+  eth: {},
   useFastest: false
 }

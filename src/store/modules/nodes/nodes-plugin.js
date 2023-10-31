@@ -1,22 +1,25 @@
-import admClient from '@/lib/nodes/adm/AdmClient'
+import { adm } from '@/lib/nodes/adm'
+import { eth } from '@/lib/nodes/eth'
 
-export default store => {
+export default (store) => {
   // initial nodes state
-  admClient.getNodes().forEach(node => store.commit('nodes/status', node))
+  adm.getNodes().forEach((status) => store.commit('nodes/status', { status, nodeType: 'adm' }))
+  eth.getNodes().forEach((status) => store.commit('nodes/status', { status, nodeType: 'eth' }))
 
-  admClient.updateStatus()
-
-  store.subscribe(mutation => {
+  store.subscribe((mutation) => {
     if (mutation.type === 'nodes/useFastest') {
-      admClient.useFastest = !!mutation.payload
+      adm.useFastest = !!mutation.payload
     }
 
     if (mutation.type === 'nodes/toggle') {
-      admClient.toggleNode(mutation.payload.url, mutation.payload.active)
+      adm.toggleNode(mutation.payload.url, mutation.payload.active)
     }
   })
 
-  admClient.onStatusUpdate(status => {
-    store.commit('nodes/status', status)
+  adm.onStatusUpdate((status) => {
+    store.commit('nodes/status', { status, nodeType: 'adm' })
+  })
+  eth.onStatusUpdate((status) => {
+    store.commit('nodes/status', { status, nodeType: 'eth' })
   })
 }

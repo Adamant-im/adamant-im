@@ -3,7 +3,8 @@
     <nodes-table-head />
 
     <tbody>
-      <nodes-table-item v-for="node in nodes" :key="node.name" :node="node" />
+      <nodes-table-item v-for="node in admNodes" :key="node.url" :node="node" />
+      <nodes-table-item v-for="node in ethNodes" :key="node.url" :node="node" disable-checkbox />
     </tbody>
   </v-table>
 </template>
@@ -21,8 +22,8 @@ export default defineComponent({
   },
   setup() {
     const store = useStore()
-    const nodes = computed(() => {
-      const arr = store.getters['nodes/list']
+    const admNodes = computed(() => {
+      const arr = store.getters['nodes/adm']
 
       return [...arr].sort((a, b) => {
         if (/^http:\/\//.test(a.url) || /^http:\/\//.test(b.url)) {
@@ -32,6 +33,7 @@ export default defineComponent({
         return a.url > b.url ? 1 : b.url > a.url ? -1 : 0
       })
     })
+    const ethNodes = computed(() => store.getters['nodes/eth'])
 
     const className = 'nodes-table'
     const classes = {
@@ -39,7 +41,8 @@ export default defineComponent({
     }
 
     return {
-      nodes,
+      admNodes,
+      ethNodes,
       classes
     }
   }

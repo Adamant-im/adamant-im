@@ -4,13 +4,13 @@ export default {
   },
 
   toggle (state, payload) {
-    const node = state.list[payload.url]
+    const node = state.adm[payload.url]
     if (node) {
       node.active = payload.active
     }
   },
 
-  status (state, status) {
-    state.list[status.url] = status
+  status (state, { status, nodeType }) {
+    state[nodeType][status.url] = status
   }
 }

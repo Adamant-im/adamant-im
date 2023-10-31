@@ -28,7 +28,7 @@ const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
     // nonce // Let sendTransaction choose it
   }
 
-  return api.estimateGas(transaction).then((gasLimit) => {
+  return api.getClient().estimateGas(transaction).then((gasLimit) => {
     gasLimit = increaseFee
       ? BigNumber(gasLimit).times(INCREASE_FEE_MULTIPLIER).toNumber()
       : gasLimit
@@ -60,7 +60,7 @@ const createSpecificActions = (api) => ({
       }
 
       try {
-        const rawBalance = await api.getBalance(state.address, 'latest')
+        const rawBalance = await api.getClient().getBalance(state.address, 'latest')
         const balance = Number(utils.toEther(rawBalance.toString()))
 
         commit('balance', balance)
@@ -80,13 +80,13 @@ const createSpecificActions = (api) => ({
     if (!context.state.address) return
 
     // Balance
-    void api.getBalance(context.state.address, 'latest').then((balance) => {
+    void api.getClient().getBalance(context.state.address, 'latest').then((balance) => {
       context.commit('balance', Number(utils.toEther(balance.toString())))
       context.commit('setBalanceStatus', FetchStatus.Success)
     })
 
     // Current gas price
-    void api.getGasPrice().then((price) => {
+    void api.getClient().getGasPrice().then((price) => {
       // It is OK with London hardfork
       context.commit('gasPrice', {
         gasPrice: price, // string type
@@ -95,7 +95,7 @@ const createSpecificActions = (api) => ({
     })
 
     // Current block number
-    void api.getBlockNumber().then((number) => {
+    void api.getClient().getBlockNumber().then((number) => {
       context.commit('blockNumber', Number(number))
     })
 
