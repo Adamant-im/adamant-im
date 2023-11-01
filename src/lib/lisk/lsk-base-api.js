@@ -7,30 +7,6 @@ import { CryptosInfo } from '../constants'
 
 export const TX_DEFAULT_FEE = 0.0016
 
-const createClient = (url) => {
-  const client = axios.create({ baseURL: url })
-  client.interceptors.response.use(null, (error) => {
-    if (error.response && Number(error.response.status) >= 500) {
-      console.error(`Request to ${url} failed.`, error)
-    }
-    // Lisk is spamming with 404 in console, when there is no LSK account
-    // There is no way to disable 404 logging for Chrome
-    if (error.response && Number(error.response.status) === 404) {
-      if (
-        error.response.data &&
-        error.response.data.errors &&
-        error.response.data.errors[0] &&
-        error.response.data.errors[0].message &&
-        error.response.data.errors[0].message.includes('was not found')
-      ) {
-        return error.response
-      }
-    }
-    return Promise.reject(error)
-  })
-  return client
-}
-
 const createServiceClient = (url) => {
   const client = axios.create({ baseURL: url })
   client.interceptors.response.use(null, (error) => {
@@ -201,15 +177,6 @@ export default class LskBaseApi {
    */
   getTransactions(options) {
     return Promise.resolve({ hasMore: false, items: [] })
-  }
-
-  /** Picks a LSK node's (core) client for a random API endpoint */
-  _getClient() {
-    const url = getRandomNodeUrl(this._crypto.toLowerCase())
-    if (!this._clients[url]) {
-      this._clients[url] = createClient(url)
-    }
-    return this._clients[url]
   }
 
   /** Picks a Lisk Service client for a random API endpoint */

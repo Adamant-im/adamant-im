@@ -13,5 +13,8 @@ export default {
   },
   dash(state) {
     return Object.values(state.dash)
+  },
+  lsk(state) {
+    return Object.values(state.lsk)
   }
 }

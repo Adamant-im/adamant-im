@@ -4,5 +4,6 @@ export default {
   btc: {},
   doge: {},
   dash: {},
+  lsk: {},
   useFastest: false
 }

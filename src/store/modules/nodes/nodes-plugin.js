@@ -3,6 +3,7 @@ import { eth } from '@/lib/nodes/eth'
 import { btc } from '@/lib/nodes/btc'
 import { doge } from '@/lib/nodes/doge'
 import { dash } from '@/lib/nodes/dash'
+import { lsk } from '@/lib/nodes/lsk'
 
 export default (store) => {
   // initial nodes state
@@ -11,6 +12,7 @@ export default (store) => {
   btc.getNodes().forEach((status) => store.commit('nodes/status', { status, nodeType: 'btc' }))
   doge.getNodes().forEach((status) => store.commit('nodes/status', { status, nodeType: 'doge' }))
   dash.getNodes().forEach((status) => store.commit('nodes/status', { status, nodeType: 'dash' }))
+  lsk.getNodes().forEach((status) => store.commit('nodes/status', { status, nodeType: 'lsk' }))
 
   store.subscribe((mutation) => {
     if (mutation.type === 'nodes/useFastest') {
@@ -36,5 +38,8 @@ export default (store) => {
   })
   dash.onStatusUpdate((status) => {
     store.commit('nodes/status', { status, nodeType: 'dash' })
+  })
+  lsk.onStatusUpdate((status) => {
+    store.commit('nodes/status', { status, nodeType: 'lsk' })
   })
 }
