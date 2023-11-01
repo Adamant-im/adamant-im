@@ -7,5 +7,11 @@ export default {
   },
   btc(state) {
     return Object.values(state.btc)
+  },
+  doge(state) {
+    return Object.values(state.doge)
+  },
+  dash(state) {
+    return Object.values(state.dash)
   }
 }

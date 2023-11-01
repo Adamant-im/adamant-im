@@ -3,6 +3,7 @@ import qs from 'qs'
 import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
 import BigNumber from '../bignumber'
+import { doge } from '@/lib/nodes/doge'
 
 const POST_CONFIG = {
   headers: {
@@ -60,11 +61,11 @@ export default class DogeApi extends BtcBaseApi {
 
   /** Executes a GET request to the DOGE API */
   _get (url, params) {
-    return this._getClient().get(url, { params }).then(response => response.data)
+    return doge.getClient().get(url, { params }).then(response => response.data)
   }
 
   /** Executes a POST request to the DOGE API */
   _post (url, data) {
-    return this._getClient().post(url, qs.stringify(data), POST_CONFIG).then(response => response.data)
+    return doge.getClient().post(url, qs.stringify(data), POST_CONFIG).then(response => response.data)
   }
 }

@@ -1,5 +1,6 @@
 import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
+import { btc } from '@/lib/nodes/btc'
 
 export default class BitcoinApi extends BtcBaseApi {
   constructor (passphrase) {
@@ -27,7 +28,7 @@ export default class BitcoinApi extends BtcBaseApi {
 
   /** @override */
   sendTransaction (txHex) {
-    return this._getClient().post('/tx', txHex).then(response => response.data)
+    return btc.getClient().post('/tx', txHex).then(response => response.data)
   }
 
   /** @override */
@@ -78,6 +79,6 @@ export default class BitcoinApi extends BtcBaseApi {
 
   /** Executes a GET request to the API */
   _get (url, params) {
-    return this._getClient().get(url, { params }).then(response => response.data)
+    return btc.getClient().get(url, { params }).then(response => response.data)
   }
 }

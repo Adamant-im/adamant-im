@@ -50,7 +50,6 @@ export default class BtcBaseApi {
     this._network = account.network
     this._keyPair = account.keyPair
     this._address = account.address
-    this._clients = {}
     this._crypto = crypto
   }
 
@@ -195,15 +194,6 @@ export default class BtcBaseApi {
     const tx = txb.extractTransaction()
 
     return tx.toHex()
-  }
-
-  /** Picks a client for a random API endpoint */
-  _getClient () {
-    const url = getRandomNodeUrl(this._crypto.toLowerCase())
-    if (!this._clients[url]) {
-      this._clients[url] = createClient(url)
-    }
-    return this._clients[url]
   }
 
   _mapTransaction(tx) {
