@@ -142,7 +142,8 @@ export abstract class Node<C = unknown> {
       outOfSync: this.outOfSync,
       hasMinNodeVersion: this.version >= this.minNodeVersion,
       hasSupportedProtocol: this.hasSupportedProtocol,
-      socketSupport: this.socketSupport
+      socketSupport: this.socketSupport,
+      height: this.height
     }
   }
 
