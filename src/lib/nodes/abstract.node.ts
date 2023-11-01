@@ -11,7 +11,7 @@ const appProtocol = location.protocol
 /**
  * Interval how often to update node statuses
  */
-const REVISE_CONNECTION_TIMEOUT = 5000
+const REVISE_CONNECTION_TIMEOUT = 60000
 
 export abstract class Node<C = unknown> {
   /**
