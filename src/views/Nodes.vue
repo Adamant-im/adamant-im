@@ -96,6 +96,7 @@ export default {
   mounted () {
     this.$store.dispatch('nodes/restore')
 
+    this.$store.dispatch('nodes/updateStatus')
     this.timer = setInterval(() => {
       this.$store.dispatch('nodes/updateStatus')
     }, 10000)
