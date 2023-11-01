@@ -4,5 +4,8 @@ export default {
   },
   eth(state) {
     return Object.values(state.eth)
+  },
+  btc(state) {
+    return Object.values(state.btc)
   }
 }

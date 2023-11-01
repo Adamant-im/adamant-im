@@ -5,6 +5,7 @@
     <tbody>
       <nodes-table-item v-for="node in admNodes" :key="node.url" :node="node" />
       <nodes-table-item v-for="node in ethNodes" :key="node.url" :node="node" disable-checkbox />
+      <nodes-table-item v-for="node in btcNodes" :key="node.url" :node="node" disable-checkbox />
     </tbody>
   </v-table>
 </template>
@@ -34,6 +35,7 @@ export default defineComponent({
       })
     })
     const ethNodes = computed(() => store.getters['nodes/eth'])
+    const btcNodes = computed(() => store.getters['nodes/btc'])
 
     const className = 'nodes-table'
     const classes = {
@@ -43,6 +45,7 @@ export default defineComponent({
     return {
       admNodes,
       ethNodes,
+      btcNodes,
       classes
     }
   }

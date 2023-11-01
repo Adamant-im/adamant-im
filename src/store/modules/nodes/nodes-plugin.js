@@ -1,10 +1,12 @@
 import { adm } from '@/lib/nodes/adm'
 import { eth } from '@/lib/nodes/eth'
+import { btc } from '@/lib/nodes/btc'
 
 export default (store) => {
   // initial nodes state
   adm.getNodes().forEach((status) => store.commit('nodes/status', { status, nodeType: 'adm' }))
   eth.getNodes().forEach((status) => store.commit('nodes/status', { status, nodeType: 'eth' }))
+  btc.getNodes().forEach((status) => store.commit('nodes/status', { status, nodeType: 'btc' }))
 
   store.subscribe((mutation) => {
     if (mutation.type === 'nodes/useFastest') {
@@ -21,5 +23,8 @@ export default (store) => {
   })
   eth.onStatusUpdate((status) => {
     store.commit('nodes/status', { status, nodeType: 'eth' })
+  })
+  btc.onStatusUpdate((status) => {
+    store.commit('nodes/status', { status, nodeType: 'btc' })
   })
 }

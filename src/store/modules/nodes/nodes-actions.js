@@ -1,5 +1,6 @@
 import { adm } from '@/lib/nodes/adm'
 import { eth } from '@/lib/nodes/eth'
+import { btc } from '@/lib/nodes/btc'
 
 export default {
   restore({ state }) {
@@ -11,6 +12,7 @@ export default {
   updateStatus() {
     adm.checkHealth()
     eth.checkHealth()
+    btc.checkHealth()
   },
 
   toggle(context, payload) {
