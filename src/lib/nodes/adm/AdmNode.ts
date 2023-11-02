@@ -50,7 +50,7 @@ export class AdmNode extends Node {
    * The `payload` of the `cfg` can be either an object or a function that
    * accepts `ApiNode` as a first argument and returns an object.
    */
-  request<P extends Payload = Payload>(cfg: RequestConfig<P>) {
+  request<P extends Payload = Payload, R = any>(cfg: RequestConfig<P>): Promise<R> {
     const { url, method = 'get', payload } = cfg
 
     const config: AxiosRequestConfig = {

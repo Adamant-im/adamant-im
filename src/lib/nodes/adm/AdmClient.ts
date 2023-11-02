@@ -41,7 +41,7 @@ export class AdmClient extends Client<AdmNode> {
    * Performs an API request.
    * @param {RequestConfig} config request config
    */
-  async request<P extends Payload = Payload>(config: RequestConfig<P>): Promise<any> {
+  async request<P extends Payload = Payload, R = any>(config: RequestConfig<P>): Promise<R> {
     const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
     if (!node) {
       // All nodes seem to be offline: let's refresh the statuses
