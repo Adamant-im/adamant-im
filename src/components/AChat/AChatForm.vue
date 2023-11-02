@@ -55,10 +55,6 @@ export default {
       type: Boolean,
       default: false
     },
-    clearInputValueOnSend: {
-      type: Boolean,
-      default: true
-    },
     /**
      * Message validator.
      */
