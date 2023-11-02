@@ -62,13 +62,4 @@ export class AdmClient extends Client<AdmNode> {
       throw error
     })
   }
-
-  /**
-   * Checks if the supplied version is compatible with the minimal allowed one.
-   * @param {string} version version to check
-   * @returns {boolean}
-   */
-  private isCompatible(version: string) {
-    return !!(version && semver.gte(version, this.minNodeVersion))
-  }
 }
