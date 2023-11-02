@@ -1,5 +1,5 @@
 import Web3Eth from 'web3-eth'
-import { HttpProvider } from './HttpProvider'
+import { HttpProvider } from 'web3-providers-http'
 import { Node } from '@/lib/nodes/abstract.node'
 
 /**
