@@ -3,6 +3,9 @@ type HealthcheckResult = {
   ping: number
 }
 
+type HttpProtocol = 'http:' | 'https:'
+type WsProtocol = 'ws:' | 'wss:'
+
 /**
  * Protocol on host where app is running, f. e., http: or https:
  */
@@ -38,7 +41,7 @@ export abstract class Node<C = unknown> {
   /**
    * Node protocol, like http: or https:
    */
-  protocol: string
+  protocol: HttpProtocol
   /**
    * Node port like 36666 for http nodes (default)
    */
@@ -50,7 +53,7 @@ export abstract class Node<C = unknown> {
   /**
    * WebSocket protocol
    */
-  wsProtocol: 'ws:' | 'wss:' = 'wss:'
+  wsProtocol: WsProtocol = 'wss:'
   /**
    * If Socket port like :36668 needed for connection
    */
@@ -94,7 +97,7 @@ export abstract class Node<C = unknown> {
 
   constructor(url: string, minNodeVersion = '', version = '0.0.0') {
     this.url = url
-    this.protocol = new URL(url).protocol
+    this.protocol = new URL(url).protocol as HttpProtocol
     this.port = new URL(url).port
     this.hostname = new URL(url).hostname
     this.minNodeVersion = minNodeVersion
