@@ -208,8 +208,9 @@
           :label="chatFormLabel"
           :message-text="$route.query.messageText"
           @message="onMessage"
+          @error="onMessageError"
           @esc="replyMessageId = -1"
-          :clear-input-value-on-send="this.$store.state.balance >= 0.001"
+          :validator="messageValidator.bind(this)"
         >
           <template #prepend>
             <chat-menu
@@ -306,31 +307,33 @@ function getUserMeta(userId) {
 /**
  * Validate message before sending.
  * @param {string} message
- * @returns {boolean}
+ * @returns {string | false} If `false` then validation passed without errors.
  */
+const validationErrors = {
+  emptyMessage: 'EMPTY_MESSAGE',
+  notEnoughFunds: 'NON_ENOUGH_FUNDS',
+  notEnoughFundsNewAccount: 'NON_ENOUGH_FUNDS_NEW_ACCOUNT',
+  messageTooLong: 'MESSAGE_LENGTH_EXCEED'
+}
 function validateMessage(message) {
   // Ensure that message contains at least one non-whitespace character
   if (!message.trim().length) {
-    return false
+    return validationErrors.emptyMessage
   }
 
   if (this.$store.state.balance < 0.001) {
     if (this.$store.getters.isAccountNew()) {
-      this.showFreeTokensDialog = true
+      return validationErrors.notEnoughFundsNewAccount
     } else {
-      this.$store.dispatch('snackbar/show', { message: this.$t('chats.no_money') })
+      return validationErrors.notEnoughFunds
     }
-    return false
   }
 
   if (message.length * 1.5 > 20000) {
-    this.$store.dispatch('snackbar/show', {
-      message: this.$t('chats.too_long')
-    })
-    return false
+    return validationErrors.messageTooLong
   }
 
-  return true
+  return false
 }
 
 export default {
@@ -477,11 +480,25 @@ export default {
     }
   },
   methods: {
+    messageValidator: validateMessage,
     onMessage(message) {
-      if (validateMessage.call(this, message)) {
-        this.sendMessage(message)
-        nextTick(() => this.$refs.chat.scrollToBottom())
-        this.replyMessageId = -1
+      this.sendMessage(message)
+      nextTick(() => this.$refs.chat.scrollToBottom())
+      this.replyMessageId = -1
+    },
+    onMessageError(error) {
+      switch (error) {
+        case validationErrors.notEnoughFundsNewAccount:
+          this.showFreeTokensDialog = true
+          return
+        case validationErrors.notEnoughFunds:
+          this.$store.dispatch('snackbar/show', { message: this.$t('chats.no_money') })
+          return
+        case validationErrors.messageTooLong:
+          this.$store.dispatch('snackbar/show', {
+            message: this.$t('chats.too_long')
+          })
+          return
       }
     },
     sendMessage(message) {

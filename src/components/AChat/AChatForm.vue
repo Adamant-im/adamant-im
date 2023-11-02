@@ -58,9 +58,16 @@ export default {
     clearInputValueOnSend: {
       type: Boolean,
       default: true
+    },
+    /**
+     * Message validator.
+     */
+    validator: {
+      type: Function,
+      required: true
     }
   },
-  emits: ['message', 'esc'],
+  emits: ['message', 'esc', 'error'],
   data: () => ({
     message: ''
   }),
@@ -122,10 +129,14 @@ export default {
   },
   methods: {
     submitMessage() {
-      this.$emit('message', this.message)
-      if (this.clearInputValueOnSend) {
+      const error = this.validator(this.message)
+      if (error === false) {
+        this.$emit('message', this.message)
         this.message = ''
+      } else {
+        this.$emit('error', error)
       }
+
       // Fix textarea height to 1 row after miltiline message send
       this.calculateInputHeight()
       this.focus()
