@@ -7,6 +7,8 @@
     <container>
       <div class="text-right">
         <language-switcher prepend-icon="mdi-chevron-right" />
+
+        <v-btn @click="$router.push('/options/nodes')" icon="mdi-cog" variant="plain" />
       </div>
 
       <v-sheet
