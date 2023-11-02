@@ -14,7 +14,7 @@ import semver from 'semver'
 export class AdmClient extends Client<AdmNode> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
     super()
-    this.nodes = endpoints.map((endpoint) => new AdmNode(endpoint))
+    this.nodes = endpoints.map((endpoint) => new AdmNode(endpoint, minNodeVersion))
     this.minNodeVersion = minNodeVersion
     this.useFastest = false
 
