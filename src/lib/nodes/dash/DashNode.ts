@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios'
+import { createBtcLikeClient } from '../utils/createBtcLikeClient'
+import type { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 
 /**
@@ -11,13 +12,7 @@ export class DashNode extends Node {
   constructor(url: string) {
     super(url)
 
-    this.client = axios.create({ baseURL: url })
-    this.client.interceptors.response.use(null, (error) => {
-      if (error.response && Number(error.response.status) >= 500) {
-        console.error('Request failed', error)
-      }
-      return Promise.reject(error)
-    })
+    this.client = createBtcLikeClient(url)
 
     void this.startHealthcheck()
   }
