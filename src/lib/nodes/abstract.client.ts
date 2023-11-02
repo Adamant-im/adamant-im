@@ -1,4 +1,4 @@
-import { filterSyncedNodes } from './utils/filterSyncedNodes.ts'
+import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
 
 export abstract class Client<N extends Node> {
