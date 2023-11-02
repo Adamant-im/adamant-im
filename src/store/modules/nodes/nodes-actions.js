@@ -6,12 +6,6 @@ import { dash } from '@/lib/nodes/dash'
 import { lsk } from '@/lib/nodes/lsk'
 
 export default {
-  restore({ state }) {
-    const nodes = Object.values(state.adm)
-
-    nodes.forEach((node) => adm.toggleNode(node.url, node.active))
-  },
-
   updateStatus() {
     adm.checkHealth()
     eth.checkHealth()

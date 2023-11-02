@@ -57,14 +57,12 @@ export abstract class Client<N extends Node> {
   }
 
   /**
-   * Enables/disables an node.
-   * @param {String} url node URL
-   * @param {Boolean} active set node active or not
+   * Enables/disables a node.
    */
   toggleNode(url: string, active: boolean) {
     const node = this.nodes.find((x) => x.url === url)
     if (node) {
-      node.active = active
+      node.toggleNode(active)
     }
   }
 

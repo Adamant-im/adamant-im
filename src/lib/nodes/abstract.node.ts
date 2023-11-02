@@ -1,3 +1,5 @@
+import { nodesStorage } from './storage'
+
 type HealthcheckResult = {
   height: number
   ping: number
@@ -103,6 +105,7 @@ export abstract class Node<C = unknown> {
     this.minNodeVersion = minNodeVersion
     this.version = version
     this.hasSupportedProtocol = !(this.protocol === 'http:' && appProtocol === 'https:')
+    this.active = nodesStorage.isActive(url)
   }
 
   async startHealthcheck() {
@@ -151,6 +154,15 @@ export abstract class Node<C = unknown> {
   }
 
   protected abstract checkHealth(): Promise<HealthcheckResult>
+
+  /**
+   * Enables/disables a node.
+   */
+  toggleNode(active: boolean) {
+    this.active = active
+
+    nodesStorage.saveActive(this.url, active)
+  }
 }
 
 export type NodeStatusResult = ReturnType<Node['getStatus']>
