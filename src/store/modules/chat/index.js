@@ -92,7 +92,12 @@ const getters = {
     return reactions[reactions.length - 1]
   },
 
-  animateLastReaction: (state, getters) => {},
+  isLastReaction: (state, getters) => (transactionId, partnerId) => {
+    const messages = getters.messages(partnerId)
+    const index = messages.findIndex((message) => message.id === transactionId)
+
+    return index === messages.length - 1
+  },
 
   /**
    * Return message by ID.
@@ -482,8 +487,8 @@ const mutations = {
     }
   },
 
-  updateAnimateLastReaction(state, state) {
-    state.animateLastReaction = state
+  updateAnimateLastReaction(state, value) {
+    state.animateLastReaction = value
   },
 
   reset(state) {
@@ -831,8 +836,11 @@ const actions = {
       })
   },
 
-  animateReaction({ commit }, reactionId) {
-    commit('updateAnimatedReactionId', reactionId)
+  animateReaction({ commit }) {
+    commit('updateAnimateLastReaction', true)
+    setTimeout(() => {
+      commit('updateAnimateLastReaction', false)
+    }, 3000)
   },
 
   /**

@@ -73,11 +73,9 @@ export default defineComponent({
     })
 
     const shouldAnimate = (reaction: NormalizedChatMessageTransaction) => {
-      const transactionInMs = reaction.timestamp
-      const dateNowInMs = Date.now()
-      const differenceInMs = dateNowInMs - transactionInMs
+      const isLastReaction = store.getters['chat/isLastReaction'](reaction.id, partnerId.value)
 
-      return differenceInMs < 1000
+      return isLastReaction && store.state.chat.animateLastReaction
     }
 
     return {

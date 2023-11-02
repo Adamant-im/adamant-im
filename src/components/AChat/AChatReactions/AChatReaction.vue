@@ -3,7 +3,7 @@
     <div
       :class="{
         [classes.emoji]: true,
-        [classes.emojiAnimate]: reactionId === $store.state.chat.animatedReactionId
+        [classes.emojiAnimate]: animate
       }"
     >
       {{ asset.react_message }}
@@ -31,6 +31,10 @@ export default defineComponent({
   props: {
     asset: {
       type: Object as PropType<ReactionAsset>,
+      required: true
+    },
+    animate: {
+      type: Boolean,
       required: true
     }
   },
