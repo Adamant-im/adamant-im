@@ -2,8 +2,6 @@ import { isNodeOfflineError } from '@/lib/nodes/utils/errors'
 import { AdmNode, Payload, RequestConfig } from './AdmNode'
 import { Client } from '../abstract.client'
 
-import semver from 'semver'
-
 /**
  * Provides methods for calling the ADAMANT API.
  *
