@@ -304,17 +304,17 @@ function getUserMeta(userId) {
   return user
 }
 
-/**
- * Validate message before sending.
- * @param {string} message
- * @returns {string | false} If `false` then validation passed without errors.
- */
 const validationErrors = {
   emptyMessage: 'EMPTY_MESSAGE',
   notEnoughFunds: 'NON_ENOUGH_FUNDS',
   notEnoughFundsNewAccount: 'NON_ENOUGH_FUNDS_NEW_ACCOUNT',
   messageTooLong: 'MESSAGE_LENGTH_EXCEED'
 }
+/**
+ * Validate message before sending.
+ * @param {string} message
+ * @returns {string | false} If `false` then validation passed without errors.
+ */
 function validateMessage(message) {
   // Ensure that message contains at least one non-whitespace character
   if (!message.trim().length) {
