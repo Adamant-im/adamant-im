@@ -258,7 +258,7 @@ import { detect } from 'detect-browser'
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
 
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, Fees } from '@/lib/constants'
 import EmojiPicker from '@/components/EmojiPicker.vue'
 
 import {
@@ -321,7 +321,7 @@ function validateMessage(message) {
     return validationErrors.emptyMessage
   }
 
-  if (this.$store.state.balance < 0.001) {
+  if (this.$store.state.balance < Fees.NOT_ADM_TRANSFER) {
     if (this.$store.getters.isAccountNew()) {
       return validationErrors.notEnoughFundsNewAccount
     } else {
