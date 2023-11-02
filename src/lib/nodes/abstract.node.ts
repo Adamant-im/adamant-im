@@ -110,17 +110,22 @@ export abstract class Node<C = unknown> {
 
   async startHealthcheck() {
     clearInterval(this.timer)
-    try {
-      const health = await this.checkHealth()
 
-      this.height = health.height
-      this.ping = health.ping
-      this.online = true
-    } catch (err) {
-      this.online = false
+    // Check health only for enabled nodes
+    if (this.active) {
+      try {
+        const health = await this.checkHealth()
+
+        this.height = health.height
+        this.ping = health.ping
+        this.online = true
+      } catch (err) {
+        this.online = false
+      }
+
+      this.fireStatusChange()
     }
 
-    this.fireStatusChange()
     this.timer = setTimeout(() => this.startHealthcheck(), REVISE_CONNECTION_TIMEOUT)
   }
 
