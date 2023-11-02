@@ -1,5 +1,7 @@
+import type { NodeType } from '@/lib/nodes/types'
 import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
+import { nodesStorage } from './storage'
 
 export abstract class Client<N extends Node> {
   /**
@@ -18,6 +20,15 @@ export abstract class Client<N extends Node> {
    * A callback that is called every time a node status is updated
    */
   statusUpdateCallback?: (status: ReturnType<Node['getStatus']>) => void
+  /**
+   * Node type
+   */
+  type: NodeType
+
+  constructor(type: NodeType) {
+    this.type = type
+    this.useFastest = nodesStorage.getUseFastest(type)
+  }
 
   protected async watchNodeStatusChange() {
     for (const node of this.nodes) {
@@ -64,6 +75,12 @@ export abstract class Client<N extends Node> {
     if (node) {
       node.toggleNode(active)
     }
+  }
+
+  setUseFastest(state: boolean) {
+    this.useFastest = state
+
+    nodesStorage.setUseFastest(state, this.type)
   }
 
   /**

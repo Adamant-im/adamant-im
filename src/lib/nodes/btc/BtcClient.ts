@@ -10,10 +10,9 @@ import { Client } from '../abstract.client'
  */
 export class BtcClient extends Client<BtcNode> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
-    super()
+    super('btc')
     this.nodes = endpoints.map((endpoint) => new BtcNode(endpoint))
     this.minNodeVersion = minNodeVersion
-    this.useFastest = false
 
     void this.watchNodeStatusChange()
   }

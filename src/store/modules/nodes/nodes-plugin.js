@@ -9,10 +9,11 @@ export default (store) => {
       store.commit('nodes/status', { status, nodeType })
     })
   }
+  store.commit('nodes/useFastest', nodes.adm.useFastest)
 
   store.subscribe((mutation) => {
     if (mutation.type === 'nodes/useFastest') {
-      nodes.adm.useFastest = !!mutation.payload
+      nodes.adm.setUseFastest(!!mutation.payload)
     }
 
     if (mutation.type === 'nodes/toggle') {
