@@ -840,7 +840,7 @@ const actions = {
     commit('updateAnimateLastReaction', true)
     setTimeout(() => {
       commit('updateAnimateLastReaction', false)
-    }, 3000)
+    }, 1500)
   },
 
   /**

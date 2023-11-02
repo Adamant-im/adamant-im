@@ -81,15 +81,15 @@ export default defineComponent({
     transition-timing-function: ease-out;
   }
   10% {
-    transform: scale(1.35);
+    transform: scale(1.17);
     transition-timing-function: ease-in;
   }
   17% {
-    transform: scale(1.43);
+    transform: scale(1.24);
     transition-timing-function: ease-out;
   }
   33% {
-    transform: scale(1.28);
+    transform: scale(1.11);
     transition-timing-function: ease-in;
   }
   45% {
