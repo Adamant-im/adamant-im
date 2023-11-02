@@ -58,6 +58,7 @@ import { computed, PropType } from 'vue'
 import { useI18n, type VueI18nTranslation } from 'vue-i18n'
 import { useStore } from 'vuex'
 import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import type { NodeType } from "@/lib/nodes/types";
 
 import BlockchainLabel from './BlockchainLabel.vue'
 
@@ -106,11 +107,8 @@ export default {
       type: Object as PropType<NodeStatusResult>,
       required: true
     },
-    /**
-     * Enum: adm | eth | btc | doge | dash | lsk
-     */
     blockchain: {
-      type: String as PropType<'adm' | 'eth' | 'btc' | 'doge' | 'dash' | 'lsk'>,
+      type: String as PropType<NodeType>,
       required: true
     }
   },
