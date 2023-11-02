@@ -3,7 +3,7 @@
     <v-list :class="classes.list" density="compact">
       <v-list-item :class="classes.listItem">
         <v-list-item-title :class="classes.address">
-          <a :href="getExplorerUrl() + delegate.address" target="_blank" rel="noopener">
+          <a :href="getExplorerDelegateUrl(delegate.address)" target="_blank" rel="noopener">
             {{ delegate.address }}
           </a>
         </v-list-item-title>
@@ -30,12 +30,8 @@
 import { computed, defineComponent, toRefs } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { explorerUriToOnion } from '@/lib/uri'
+import { getExplorerDelegateUrl } from "@/config/utils";
 import numberFormat from '@/filters/numberFormat'
-
-function getExplorerUrl() {
-  return explorerUriToOnion('https://explorer.adamant.im/delegate/')
-}
 
 export default defineComponent({
   props: {
@@ -78,7 +74,7 @@ export default defineComponent({
     return {
       classes,
       delegateDetails,
-      getExplorerUrl
+      getExplorerDelegateUrl
     }
   }
 })

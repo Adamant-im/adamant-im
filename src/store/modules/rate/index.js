@@ -1,5 +1,5 @@
 import axios from 'axios'
-import getEnpointUrl from '@/lib/getEndpointUrl'
+import { getRandomServiceUrl } from '@/config/utils'
 
 const state = () => ({
   rates: {},
@@ -23,7 +23,7 @@ const mutations = {
 }
 const actions = {
   getAllRates ({ commit }) {
-    const url = getEnpointUrl('infoservice')
+    const url = getRandomServiceUrl('adm', 'infoService')
     return new Promise((resolve, reject) => {
       axios
         .get(`${url}/get`)
@@ -40,7 +40,7 @@ const actions = {
   },
   getHistoryRates ({ state, commit }, { timestamp }) {
     if (!timestamp) return
-    const url = getEnpointUrl('infoservice')
+    const url = getRandomServiceUrl('adm', 'infoService')
     if (state.historyRates[timestamp] !== undefined) {
       return state.historyRates[timestamp]
     } else {
