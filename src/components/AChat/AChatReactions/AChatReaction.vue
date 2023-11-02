@@ -2,9 +2,8 @@
   <div :class="classes.root">
     <div
       :class="{
-        animate__animated: animate,
-        animate__heartBeat: animate,
-        [classes.emoji]: true
+        [classes.emoji]: true,
+        [classes.emojiAnimate]: reactionId === $store.state.chat.animatedReactionId
       }"
     >
       {{ asset.react_message }}
@@ -17,7 +16,6 @@
 </template>
 
 <script lang="ts">
-import 'animate.css'
 import { defineComponent, PropType } from 'vue'
 import { ReactionAsset } from '@/lib/adamant-api/asset'
 
@@ -25,6 +23,7 @@ const className = 'a-chat-reaction'
 const classes = {
   root: className,
   emoji: `${className}__emoji`,
+  emojiAnimate: `${className}__emoji--animate`,
   avatar: `${className}__avatar`
 }
 
@@ -33,9 +32,6 @@ export default defineComponent({
     asset: {
       type: Object as PropType<ReactionAsset>,
       required: true
-    },
-    animate: {
-      type: Boolean
     }
   },
   setup() {
@@ -64,10 +60,37 @@ export default defineComponent({
     font-size: 16px;
   }
 
+  &__emoji--animate {
+    animation: animate__heartBeat 1.5s ease-in-out;
+  }
+
   &__avatar {
     position: absolute;
     bottom: -9px;
     right: -9px;
+  }
+}
+@keyframes animate__heartBeat {
+  0% {
+    transform: scale(1);
+    transform-origin: center center;
+    transition-timing-function: ease-out;
+  }
+  10% {
+    transform: scale(1.35);
+    transition-timing-function: ease-in;
+  }
+  17% {
+    transform: scale(1.43);
+    transition-timing-function: ease-out;
+  }
+  33% {
+    transform: scale(1.28);
+    transition-timing-function: ease-in;
+  }
+  45% {
+    transform: scale(1);
+    transition-timing-function: ease-out;
   }
 }
 

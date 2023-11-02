@@ -31,7 +31,6 @@
     "@zxing/browser": "^0.1.4",
     "@zxing/library": "^0.20.0",
     "abi-decoder": "^2.4.0",
-    "animate.css": "^4.1.1",
     "assert": "^2.1.0",
     "axios": "^1.5.0",
     "b64-to-blob": "^1.2.19",
