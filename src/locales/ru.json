@@ -169,6 +169,8 @@
     "ping": "Пинг",
     "socket": "Сокеты",
     "unsupported": "Не поддерживается",
+    "unsupported_reason_protocol": "Протокол не поддерживается",
+    "unsupported_reason_api_version": "API версия устарела",
     "use_socket_connection": "Использовать сокет-подключения",
     "use_socket_connection_tooltip": "Сокеты позволяют получать новые сообщения мгновенно, как классические P2P-мессенджеры"
   },

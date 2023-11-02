@@ -23,25 +23,28 @@
       </div>
     </td>
 
-    <td :class="classes.td" class="pl-0 pr-2">
-      <span>
-        {{ nodeStatus }}
-      </span>
-      <v-icon
-        :class="{
-          [classes.statusIcon]: true,
-          [classes.statusIconGreen]: nodeStatusColor === 'green',
-          [classes.statusIconRed]: nodeStatusColor === 'red',
-          [classes.statusIconOrange]: nodeStatusColor === 'orange',
-          [classes.statusIconGrey]: nodeStatusColor === 'grey'
-        }"
-        :color="nodeStatusColor"
-        icon="mdi-checkbox-blank-circle"
-        size="small"
-      />
+    <td :class="classes.td" class="pl-0 pr-2" :colspan="unsupported ? 2 : 1">
+      <div>
+        <span>
+          {{ nodeStatus }}
+        </span>
+        <v-icon
+          :class="{
+            [classes.statusIcon]: true,
+            [classes.statusIconGreen]: nodeStatusColor === 'green',
+            [classes.statusIconRed]: nodeStatusColor === 'red',
+            [classes.statusIconOrange]: nodeStatusColor === 'orange',
+            [classes.statusIconGrey]: nodeStatusColor === 'grey'
+          }"
+          :color="nodeStatusColor"
+          icon="mdi-checkbox-blank-circle"
+          size="small"
+        />
+      </div>
+      <span v-if="nodeStatusReason" :class="classes.statusSubtitle">{{ nodeStatusReason }}</span>
     </td>
 
-    <td :class="classes.td" class="pl-0 pr-2">
+    <td v-if="!unsupported" :class="classes.td" class="pl-0 pr-2">
       <v-icon
         :icon="socketSupport ? 'mdi-check' : 'mdi-close'"
         :class="socketSupport ? classes.statusIconGreen : classes.statusIconRed"
@@ -70,6 +73,14 @@ function getNodeStatus(node: NodeStatusResult, t: VueI18nTranslation) {
   }
 
   return node.ping + ' ' + t('nodes.ms')
+}
+
+function getNodeStatusReason(node: NodeStatusResult, t: VueI18nTranslation) {
+  if (!node.hasMinNodeVersion) {
+    return t('nodes.unsupported_reason_api_version')
+  } else if (!node.hasSupportedProtocol) {
+    return t('nodes.unsupported_reason_protocol')
+  }
 }
 
 function getNodeStatusColor(node: NodeStatusResult) {
@@ -113,6 +124,7 @@ export default {
       td: `${className}__td`,
       checkbox: `${className}__checkbox`,
       version: `${className}__version`,
+      statusSubtitle: `${className}__status-subtitle`,
       statusIcon: `${className}__status-icon`,
       statusIconGreen: `${className}__status-icon--green`,
       statusIconRed: `${className}__status-icon--red`,
@@ -127,7 +139,12 @@ export default {
     const socketSupport = computed(() => props.node.socketSupport)
 
     const nodeStatus = computed(() => getNodeStatus(props.node, t))
+    const nodeStatusReason = computed(() => getNodeStatusReason(props.node, t))
     const nodeStatusColor = computed(() => getNodeStatusColor(props.node))
+
+    const unsupported = computed(
+      () => !props.node.hasMinNodeVersion || !props.node.hasSupportedProtocol || !props.node.online
+    )
 
     const toggleActiveStatus = () => {
       store.dispatch('nodes/toggle', {
@@ -144,8 +161,10 @@ export default {
       active,
       socketSupport,
       nodeStatus,
+      nodeStatusReason,
       toggleActiveStatus,
-      nodeStatusColor
+      nodeStatusColor,
+      unsupported
     }
   }
 }
@@ -165,6 +184,10 @@ export default {
   }
   &__status-icon {
     margin-inline-start: 4px;
+  }
+  &__status-subtitle {
+    font-size: 12px;
+    font-weight: 300;
   }
   &__td-checkbox {
     width: 64px;
@@ -196,6 +219,9 @@ export default {
     &__td {
       color: map-get($adm-colors, 'regular');
     }
+    &__status-subtitle {
+      color: map-get($adm-colors, 'regular');
+    }
     &__status-icon {
       &--green {
         color: map-get($adm-colors, 'good') !important;
@@ -216,6 +242,10 @@ export default {
 .v-theme--dark {
   .nodes-table-item {
     &__version {
+      opacity: 0.7;
+    }
+    &__status-subtitle {
+      color: map-get($shades, 'white');
       opacity: 0.7;
     }
     &__status-icon {
