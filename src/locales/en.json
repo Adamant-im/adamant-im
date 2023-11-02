@@ -168,7 +168,7 @@
     "ping": "Ping",
     "socket": "Socket",
     "unsupported": "Unsupported",
-    "unsupported_reason_protocol": "Http is not allowed",
+    "unsupported_reason_protocol": "HTTP is not allowed",
     "unsupported_reason_api_version": "Outdated API version",
     "use_socket_connection": "Use socket connections",
     "use_socket_connection_tooltip": "WebSockets allow to get new messages instantly like P2P messengers"
