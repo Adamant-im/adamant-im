@@ -3,12 +3,12 @@
     <nodes-table-head />
 
     <tbody>
-      <nodes-table-item v-for="node in admNodes" :key="node.url" :node="node" />
-      <nodes-table-item v-for="node in ethNodes" :key="node.url" :node="node" disable-checkbox />
-      <nodes-table-item v-for="node in btcNodes" :key="node.url" :node="node" disable-checkbox />
-      <nodes-table-item v-for="node in dogeNodes" :key="node.url" :node="node" disable-checkbox />
-      <nodes-table-item v-for="node in dashNodes" :key="node.url" :node="node" disable-checkbox />
-      <nodes-table-item v-for="node in lskNodes" :key="node.url" :node="node" disable-checkbox />
+      <nodes-table-item v-for="node in admNodes" :key="node.url" blockchain="adm" :node="node" />
+      <nodes-table-item v-for="node in ethNodes" :key="node.url" blockchain="eth" :node="node" />
+      <nodes-table-item v-for="node in btcNodes" :key="node.url" blockchain="btc" :node="node" />
+      <nodes-table-item v-for="node in dogeNodes" :key="node.url" blockchain="doge" :node="node" />
+      <nodes-table-item v-for="node in dashNodes" :key="node.url" blockchain="dash" :node="node" />
+      <nodes-table-item v-for="node in lskNodes" :key="node.url" blockchain="lsk" :node="node" />
     </tbody>
   </v-table>
 </template>

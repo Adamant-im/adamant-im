@@ -149,3 +149,5 @@ export abstract class Node<C = unknown> {
 
   protected abstract checkHealth(): Promise<HealthcheckResult>
 }
+
+export type NodeStatusResult = ReturnType<Node['getStatus']>

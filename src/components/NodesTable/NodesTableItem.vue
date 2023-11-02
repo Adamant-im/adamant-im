@@ -11,12 +11,13 @@
         :model-value="active"
         :class="[classes.checkbox, classes.statusIconGrey]"
         @input="toggleActiveStatus"
-        :disabled="disableCheckbox"
+        :disabled="blockchain !== 'adm'"
       />
     </td>
 
     <td :class="classes.td" class="pl-0 pr-2">
       {{ url }}
+      <blockchain-label v-if="blockchain !== 'adm'" :label="blockchain" />
       <div v-if="version" :class="classes.version">
         {{ 'v' + version }}
       </div>
@@ -49,12 +50,15 @@
   </tr>
 </template>
 
-<script>
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+<script lang="ts">
+import { computed, PropType } from 'vue'
+import { useI18n, type VueI18nTranslation } from 'vue-i18n'
 import { useStore } from 'vuex'
+import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
-function getNodeStatus(node, t) {
+import BlockchainLabel from './BlockchainLabel.vue'
+
+function getNodeStatus(node: NodeStatusResult, t: VueI18nTranslation) {
   if (!node.hasMinNodeVersion || !node.hasSupportedProtocol) {
     return t('nodes.unsupported')
   } else if (!node.active) {
@@ -68,7 +72,7 @@ function getNodeStatus(node, t) {
   return node.ping + ' ' + t('nodes.ms')
 }
 
-function getNodeStatusColor(node) {
+function getNodeStatusColor(node: NodeStatusResult) {
   let color = 'green'
 
   if (!node.hasMinNodeVersion || !node.hasSupportedProtocol) {
@@ -85,13 +89,18 @@ function getNodeStatusColor(node) {
 }
 
 export default {
+  components: { BlockchainLabel },
   props: {
     node: {
-      type: Object,
+      type: Object as PropType<NodeStatusResult>,
       required: true
     },
-    disableCheckbox: {
-      type: Boolean
+    /**
+     * Enum: adm | eth | btc | doge | dash | lsk
+     */
+    blockchain: {
+      type: String as PropType<'adm' | 'eth' | 'btc' | 'doge' | 'dash' | 'lsk'>,
+      required: true
     }
   },
   setup(props) {
