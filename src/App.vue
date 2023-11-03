@@ -18,11 +18,6 @@
         <option value="Tahoma, sans-serif">Tahoma</option>
         <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
         <option value="'Gill Sans', sans-serif">Gill Sans</option>
-        <option
-          value="system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'"
-        >
-          System
-        </option>
       </select>
     </component>
   </v-app>
