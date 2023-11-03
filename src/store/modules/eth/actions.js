@@ -18,24 +18,25 @@ function storeEthAddress(context) {
   storeCryptoAddress(context.state.crypto, context.state.address)
 }
 
-const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
+const initTransaction = async (api, context, ethAddress, amount, increaseFee) => {
+  const nonce = await api.getTransactionCount(context.state.address)
+  const gasPrice = await api.getGasPrice()
+
   const transaction = {
     from: context.state.address,
     to: ethAddress,
-    value: utils.toWei(amount)
-    // gas: api.fromDecimal(DEFAULT_ETH_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
-    // gasPrice: context.getters.gasPrice // Set gas price to auto calc. Deprecated after London hardfork
-    // nonce // Let sendTransaction choose it
+    value: BigInt(utils.toWei(amount)),
+    // gasLimit: api.fromDecimal(DEFAULT_ETH_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
+    gasPrice,
+    nonce
   }
 
-  return api.estimateGas(transaction).then((gasLimit) => {
-    gasLimit = increaseFee
-      ? BigNumber(gasLimit).times(INCREASE_FEE_MULTIPLIER).toNumber()
-      : gasLimit
+  const defaultGasLimit = await api.estimateGas(transaction)
+  transaction.gasLimit = increaseFee
+    ? defaultGasLimit * BigInt(INCREASE_FEE_MULTIPLIER)
+    : defaultGasLimit
 
-    transaction.gas = gasLimit
-    return transaction
-  })
+  return transaction
 }
 
 const parseTransaction = (context, tx) => {
@@ -89,7 +90,7 @@ const createSpecificActions = (api) => ({
     void api.getGasPrice().then((price) => {
       // It is OK with London hardfork
       context.commit('gasPrice', {
-        gasPrice: price, // string type
+        gasPrice: Number(price), // string type
         fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS, price)).toFixed(8) // number type, in ETH
       })
     })
