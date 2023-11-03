@@ -56,11 +56,8 @@ export function renderMarkdown (text = '') {
  * @returns {string} resulting clear text of the first line
  */
 export function removeFormats (text = '') {
-  // get first line
-  const line = /^([^\n]*)\n?/.exec(text)[1]
-
   const node = document.createElement('div')
-  node.innerHTML = marked(DOMPurify.sanitize(line), { renderer })
+  node.innerHTML = marked(DOMPurify.sanitize(text), { renderer })
 
   return node.textContent || node.innerText || ''
 }
