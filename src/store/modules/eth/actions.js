@@ -30,10 +30,8 @@ const initTransaction = async (api, context, ethAddress, amount, increaseFee) =>
     nonce
   }
 
-  const defaultGasLimit = await api.estimateGas(transaction)
-  transaction.gasLimit = increaseFee
-    ? defaultGasLimit * BigInt(INCREASE_FEE_MULTIPLIER)
-    : defaultGasLimit
+  const gasLimit = await api.estimateGas(transaction)
+  transaction.gasLimit = increaseFee ? gasLimit * BigInt(INCREASE_FEE_MULTIPLIER) : gasLimit
 
   return transaction
 }
