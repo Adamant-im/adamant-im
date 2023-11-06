@@ -107,7 +107,7 @@ export const DEFAULT_ETH_TRANSFER_GAS = CryptosInfo['ETH'].defaultGasLimit
 export const DEFAULT_ERC20_TRANSFER_GAS = DEFAULT_ETH_TRANSFER_GAS * 2.4
 
 /** Increase fee multiplier. Used as a checkbox on SendFundsForm */
-export const INCREASE_FEE_MULTIPLIER = 2
+export const INCREASE_FEE_MULTIPLIER = 1.5
 
 export { Cryptos, CryptosInfo, CryptosOrder }
 
