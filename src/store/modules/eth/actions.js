@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js'
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
@@ -87,7 +86,7 @@ const createSpecificActions = (api) => ({
     void api.getGasPrice().then((price) => {
       context.commit('gasPrice', {
         gasPrice: Number(price),
-        fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS, price)).toFixed(8)
+        fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS_LIMIT, price)).toFixed(8)
       })
     })
 

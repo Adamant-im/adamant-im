@@ -70,8 +70,8 @@ export declare const isTextDataAllowed: (crypto: CryptoSymbol) => boolean
 
 export declare const RE_LSK_ADDRESS_LEGACY: RegExp
 
-export declare const DEFAULT_ETH_TRANSFER_GAS: number
-export declare const DEFAULT_ERC20_TRANSFER_GAS: number
+export declare const DEFAULT_ETH_TRANSFER_GAS_LIMIT: number
+export declare const DEFAULT_ERC20_TRANSFER_GAS_LIMIT: number
 export declare const INCREASE_FEE_MULTIPLIER: number
 
 export { Cryptos, CryptosInfo, CryptosOrder }
