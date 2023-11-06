@@ -24,10 +24,8 @@
     </td>
 
     <td :class="classes.td" class="pl-0 pr-2" :colspan="unsupported ? 2 : 1">
-      <div>
-        <span>
-          {{ nodeStatus }}
-        </span>
+      <div :class="classes.status">
+        {{ nodeStatus }}
         <v-icon
           :class="{
             [classes.statusIcon]: true,
@@ -58,7 +56,7 @@ import { computed, PropType } from 'vue'
 import { useI18n, type VueI18nTranslation } from 'vue-i18n'
 import { useStore } from 'vuex'
 import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
-import type { NodeType } from "@/lib/nodes/types";
+import type { NodeType } from '@/lib/nodes/types'
 
 import BlockchainLabel from './BlockchainLabel.vue'
 
@@ -122,6 +120,7 @@ export default {
       td: `${className}__td`,
       checkbox: `${className}__checkbox`,
       version: `${className}__version`,
+      status: `${className}__status`,
       statusSubtitle: `${className}__status-subtitle`,
       statusIcon: `${className}__status-icon`,
       statusIconGreen: `${className}__status-icon--green`,
@@ -179,6 +178,10 @@ export default {
   }
   &__version {
     @include a-text-explanation-small();
+  }
+  &__status {
+    line-height: 17px;
+    display: flex;
   }
   &__status-icon {
     margin-inline-start: 4px;
