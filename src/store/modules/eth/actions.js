@@ -26,7 +26,6 @@ const initTransaction = async (api, context, ethAddress, amount, increaseFee) =>
     from: context.state.address,
     to: ethAddress,
     value: BigInt(utils.toWei(amount)),
-    // gasLimit: api.fromDecimal(DEFAULT_ETH_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
     gasPrice,
     nonce
   }
@@ -88,10 +87,9 @@ const createSpecificActions = (api) => ({
 
     // Current gas price
     void api.getGasPrice().then((price) => {
-      // It is OK with London hardfork
       context.commit('gasPrice', {
-        gasPrice: Number(price), // string type
-        fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS, price)).toFixed(8) // number type, in ETH
+        gasPrice: Number(price),
+        fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS, price)).toFixed(8)
       })
     })
 

@@ -24,7 +24,6 @@ const initTransaction = async (api, context, ethAddress, amount, increaseFee) =>
     from: context.state.address,
     to: context.state.contractAddress,
     value: '0x0',
-    // gasLimit: api.fromDecimal(DEFAULT_ERC20_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
     gasPrice,
     nonce,
     data: contract.methods
