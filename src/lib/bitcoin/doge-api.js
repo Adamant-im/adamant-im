@@ -141,6 +141,12 @@ export default class DogeApi extends BtcBaseApi {
   }
 
   /** @override */
+  getTransactionHex(txid) {
+    const { rawtx } = this._get(`/api/rawtx/${txid}`)
+    return rawtx
+  }
+
+  /** @override */
   getTransactions({ from = 0 }) {
     const to = from + CHUNK_SIZE
     return this._get(`/api/addrs/${this.address}/txs`, { from, to }).then((resp) => ({
