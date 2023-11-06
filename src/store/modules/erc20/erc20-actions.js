@@ -1,5 +1,9 @@
 import * as ethUtils from '../../../lib/eth-utils'
-import { FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
+import {
+  FetchStatus,
+  INCREASE_FEE_MULTIPLIER,
+  DEFAULT_ERC20_TRANSFER_GAS_LIMIT
+} from '@/lib/constants'
 import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
@@ -31,7 +35,9 @@ const initTransaction = async (api, context, ethAddress, amount, increaseFee) =>
       .encodeABI()
   }
 
-  const gasLimit = await api.estimateGas(transaction)
+  const gasLimit = await api
+    .estimateGas(transaction)
+    .catch(() => BigInt(DEFAULT_ERC20_TRANSFER_GAS_LIMIT))
   transaction.gasLimit = increaseFee ? gasLimit * BigInt(INCREASE_FEE_MULTIPLIER) : gasLimit
 
   return transaction

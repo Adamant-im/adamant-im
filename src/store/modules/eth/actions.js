@@ -1,7 +1,11 @@
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { DEFAULT_ETH_TRANSFER_GAS, FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
+import {
+  DEFAULT_ETH_TRANSFER_GAS_LIMIT,
+  FetchStatus,
+  INCREASE_FEE_MULTIPLIER
+} from '@/lib/constants'
 import { storeCryptoAddress } from '@/lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
@@ -29,7 +33,9 @@ const initTransaction = async (api, context, ethAddress, amount, increaseFee) =>
     nonce
   }
 
-  const gasLimit = await api.estimateGas(transaction)
+  const gasLimit = await api
+    .estimateGas(transaction)
+    .catch(() => BigInt(DEFAULT_ETH_TRANSFER_GAS_LIMIT))
   transaction.gasLimit = increaseFee ? gasLimit * BigInt(INCREASE_FEE_MULTIPLIER) : gasLimit
 
   return transaction
