@@ -1,3 +1,1 @@
-import NodesTable from './NodesTable/NodesTable.vue'
-
-export { NodesTable }
+export { default as NodesTable } from './NodesTable/NodesTable.vue'

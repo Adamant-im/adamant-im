@@ -78,7 +78,7 @@ export abstract class Node<C = unknown> {
   /**
    * Node API version.
    */
-  version = '0.0.0'
+  version = ''
   /**
    * Minimal required Node API version.
    */

@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, toRef } from 'vue'
+import { defineComponent, PropType, toRefs } from 'vue'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useNodeStatus } from '@/components/nodes/hooks'
 
@@ -43,7 +43,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const node = toRef(props.node)
+    const { node } = toRefs(props)
 
     const { nodeStatusTitle, nodeStatusText, nodeStatusColor } = useNodeStatus(node)
 

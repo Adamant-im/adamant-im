@@ -1,12 +1,6 @@
 <template>
   <tr :class="classes.root">
-    <td
-      :class="{
-        [classes.td]: true,
-        [classes.tdCheckbox]: true
-      }"
-      class="pl-0 pr-0"
-    >
+    <td :class="[classes.column, classes.columnCheckbox]" class="pl-0 pr-0">
       <v-checkbox-btn
         :model-value="active"
         :class="classes.checkbox"
@@ -15,7 +9,7 @@
       />
     </td>
 
-    <td :class="classes.td" class="pl-0 pr-2">
+    <td :class="classes.column" class="pl-0 pr-2">
       {{ url }}
       <blockchain-label v-if="blockchain !== 'adm'" :label="blockchain" />
       <div v-if="version" :class="classes.version">
@@ -23,12 +17,12 @@
       </div>
     </td>
 
-    <td :class="classes.td" class="pl-0 pr-2" :colspan="isUnsupported ? 2 : 1">
+    <td :class="classes.column" class="pl-0 pr-2" :colspan="isUnsupported ? 2 : 1">
       <NodeStatus :node="node" />
     </td>
 
-    <td v-if="!isUnsupported" :class="classes.td" class="pl-0 pr-2">
-      <SocketSupport node="node" />
+    <td v-if="!isUnsupported" :class="classes.column" class="pl-0 pr-2">
+      <SocketSupport :node="node" />
     </td>
   </tr>
 </template>
@@ -59,23 +53,22 @@ export default {
     }
   },
   setup(props) {
-    const { node } = toRefs(props)
     const store = useStore()
 
     const className = 'nodes-table-item'
     const classes = {
       root: className,
-      td: `${className}__td`,
+      column: `${className}__column`,
+      columnCheckbox: `${className}__column--checkbox`,
       checkbox: `${className}__checkbox`,
-      version: `${className}__version`,
-      tdCheckbox: `${className}__td-checkbox`
+      version: `${className}__version`
     }
 
     const url = computed(() => props.node.url)
     const version = computed(() => props.node.version)
     const active = computed(() => props.node.active)
     const socketSupport = computed(() => props.node.socketSupport)
-    const isUnsupported = computed(() => node.value.status === 'unsupported_version')
+    const isUnsupported = computed(() => props.node.status === 'unsupported_version')
 
     const toggleActiveStatus = () => {
       store.dispatch('nodes/toggle', {
@@ -104,15 +97,16 @@ export default {
 @import '../../../../assets/styles/themes/adamant/_mixins.scss';
 
 .nodes-table-item {
-  &__td {
+  &__column {
     font-size: 14px;
+
+    &--checkbox {
+      width: 64px;
+      max-width: 64px;
+    }
   }
   &__version {
     @include a-text-explanation-small();
-  }
-  &__td-checkbox {
-    width: 64px;
-    max-width: 64px;
   }
   &__checkbox {
     font-size: 16px;
@@ -122,9 +116,11 @@ export default {
 
 @media #{map-get($display-breakpoints, 'sm-and-down')} {
   .nodes-table-item {
-    &__td-checkbox {
-      width: 56px;
-      max-width: 56px;
+    &__column {
+      &--checkbox {
+        width: 56px;
+        max-width: 56px;
+      }
     }
     &__checkbox {
       margin-left: 8px;
@@ -137,7 +133,7 @@ export default {
     &__version {
       color: map-get($adm-colors, 'regular');
     }
-    &__td {
+    &__column {
       color: map-get($adm-colors, 'regular');
     }
     &__checkbox {

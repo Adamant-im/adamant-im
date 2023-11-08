@@ -40,21 +40,23 @@ export default defineComponent({
 
 .v-theme--light {
   .socket-support {
-    &--green {
+    &--supported {
       color: map-get($adm-colors, 'good') !important;
     }
-    &--red {
+    &--unsupported {
       color: map-get($adm-colors, 'danger') !important;
     }
   }
 }
 
 .v-theme--dark {
-  &--green {
-    color: map-get($adm-colors, 'good') !important;
-  }
-  &--red {
-    color: map-get($adm-colors, 'danger') !important;
+  .socket-support {
+    &--supported {
+      color: map-get($adm-colors, 'good') !important;
+    }
+    &--unsupported {
+      color: map-get($adm-colors, 'danger') !important;
+    }
   }
 }
 </style>
