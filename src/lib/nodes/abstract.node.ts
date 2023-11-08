@@ -58,7 +58,7 @@ export abstract class Node<C = unknown> {
    * If Socket port like :36668 needed for connection
    */
   wsPortNeeded = false
-  hasSupportedProtocol = false
+  hasSupportedProtocol = true
 
   // Healthcheck related params
   /**
@@ -95,7 +95,7 @@ export abstract class Node<C = unknown> {
   timer?: NodeJS.Timeout
   abstract client: C
 
-  constructor(url: string, minNodeVersion = '', version = '0.0.0') {
+  constructor(url: string, version = '', minNodeVersion = '') {
     this.url = url
     this.protocol = new URL(url).protocol as HttpProtocol
     this.port = new URL(url).port
@@ -143,11 +143,20 @@ export abstract class Node<C = unknown> {
       version: this.version,
       active: this.active,
       outOfSync: this.outOfSync,
-      hasMinNodeVersion: this.version >= this.minNodeVersion,
+      hasMinNodeVersion: this.hasMinNodeVersion(),
       hasSupportedProtocol: this.hasSupportedProtocol,
       socketSupport: this.socketSupport,
       height: this.height
     }
+  }
+
+  hasMinNodeVersion() {
+    // if not provided then it doesn't require min version check
+    if (!this.minNodeVersion) {
+      return true
+    }
+
+    return this.version >= this.minNodeVersion
   }
 
   protected abstract checkHealth(): Promise<HealthcheckResult>
