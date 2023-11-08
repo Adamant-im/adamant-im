@@ -12,9 +12,7 @@
     <td :class="classes.column" class="pl-0 pr-2">
       {{ url }}
       <blockchain-label v-if="blockchain !== 'adm'" :label="blockchain" />
-      <div v-if="version" :class="classes.version">
-        {{ 'v' + version }}
-      </div>
+      <NodeVersion v-if="node.version" :node="node" />
     </td>
 
     <td :class="classes.column" class="pl-0 pr-2" :colspan="isUnsupported ? 2 : 1">
@@ -34,11 +32,13 @@ import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import type { NodeType } from '@/lib/nodes/types'
 import BlockchainLabel from './BlockchainLabel.vue'
 import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
+import NodeVersion from '@/components/nodes/components/NodeVersion.vue'
 import SocketSupport from '@/components/nodes/components/SocketSupport.vue'
 
 export default {
   components: {
     NodeStatus,
+    NodeVersion,
     SocketSupport,
     BlockchainLabel
   },
@@ -61,11 +61,9 @@ export default {
       column: `${className}__column`,
       columnCheckbox: `${className}__column--checkbox`,
       checkbox: `${className}__checkbox`,
-      version: `${className}__version`
     }
 
     const url = computed(() => props.node.url)
-    const version = computed(() => props.node.version)
     const active = computed(() => props.node.active)
     const socketSupport = computed(() => props.node.socketSupport)
     const isUnsupported = computed(() => props.node.status === 'unsupported_version')
@@ -81,7 +79,6 @@ export default {
     return {
       classes,
       url,
-      version,
       active,
       socketSupport,
       isUnsupported,
@@ -105,9 +102,6 @@ export default {
       max-width: 64px;
     }
   }
-  &__version {
-    @include a-text-explanation-small();
-  }
   &__checkbox {
     font-size: 16px;
     margin-left: 16px;
@@ -130,9 +124,6 @@ export default {
 
 .v-theme--light {
   .nodes-table-item {
-    &__version {
-      color: map-get($adm-colors, 'regular');
-    }
     &__column {
       color: map-get($adm-colors, 'regular');
     }
@@ -144,9 +135,6 @@ export default {
 
 .v-theme--dark {
   .nodes-table-item {
-    &__version {
-      opacity: 0.7;
-    }
     &__checkbox {
       color: map-get($adm-colors, 'grey') !important;
     }
