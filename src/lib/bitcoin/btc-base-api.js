@@ -119,7 +119,7 @@ export default class BtcBaseApi {
     return Promise.resolve(null)
   }
 
-  async getTransactionHex(txid) {
+  getTransactionHex(txid) {
     return Promise.resolve(null)
   }
 

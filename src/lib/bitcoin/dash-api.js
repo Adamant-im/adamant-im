@@ -42,8 +42,8 @@ export default class DashApi extends BtcBaseApi {
   }
 
   /** @override */
-  async getTransactionHex(txid) {
-    return await this._invoke('getrawtransaction', [txid, false])
+  getTransactionHex(txid) {
+    return this._invoke('getrawtransaction', [txid, false])
   }
 
   /** @override */
