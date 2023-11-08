@@ -102,7 +102,7 @@ export default class DogeApi extends BtcBaseApi {
 
     for (let i = 0; i < inputsCount; ++i) {
       psbt.signInput(i, this._keyPair)
-      psbt.validateSignaturesOfInput(i, this.validator)
+      psbt.validateSignaturesOfInput(i, this._validator)
     }
 
     psbt.finalizeAllInputs()
@@ -161,7 +161,7 @@ export default class DogeApi extends BtcBaseApi {
       .then((response) => response.data)
   }
 
-  validator(pubkey, msghash, signature) {
+  _validator(pubkey, msghash, signature) {
     return ECPairAPI.fromPublicKey(pubkey).verify(msghash, signature)
   }
 }
