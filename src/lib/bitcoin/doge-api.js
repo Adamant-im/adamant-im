@@ -7,6 +7,7 @@ import * as bitcoin from 'bitcoinjs-lib'
 import { isPositiveNumber } from '../numericHelpers'
 import { ECPairFactory } from 'ecpair'
 import * as tinysecp from 'tiny-secp256k1'
+import { convertToSmallestUnit } from './bitcoin-utils'
 
 const ECPairAPI = ECPairFactory(tinysecp)
 
@@ -41,91 +42,71 @@ export default class DogeApi extends BtcBaseApi {
   }
 
   /** @override */
-  async createTransaction(address = '', amount = 0, fee) {
-    const unspents = await this.getUnspents()
-
-    // populate unspents with full transaction in HEX
-    for (const unspent of unspents) {
-      // insight API v0.2.18
-      const { rawtx } = await this._get(`/api/rawtx/${unspent.txid}`)
-      unspent.txHex = rawtx
-    }
-
-    const hex = await this._buildTransaction(address, amount, unspents, fee)
-
-    let txid = bitcoin.crypto.sha256(Buffer.from(hex, 'hex'))
-    txid = bitcoin.crypto.sha256(Buffer.from(txid))
-    txid = txid.toString('hex').match(/.{2}/g).reverse().join('')
-
-    return { hex, txid }
-  }
-
-  /** @override */
   async _buildTransaction(address, amount, unspents, fee) {
-    amount = new BigNumber(amount).times(this.multiplier).toNumber()
-    amount = Math.floor(amount)
-    const heldFee = Math.floor(new BigNumber(fee).times(this.multiplier).toNumber())
+    const localAmount = convertToSmallestUnit(amount, this.multiplier)
+    const heldFee = convertToSmallestUnit(fee, this.multiplier)
 
-    const txb = new bitcoin.Psbt({
+    const psbt = new bitcoin.Psbt({
       network: this._network
     })
-    txb.setVersion(1)
-    txb.setMaximumFeeRate(heldFee)
+    psbt.setVersion(1)
+    psbt.setMaximumFeeRate(heldFee)
 
-    let target = amount + heldFee
+    const target = localAmount + heldFee
     let transferAmount = 0
-    let inputs = 0
+    let inputsCount = 0
     let estimatedTxBytes = 0
 
-    unspents.forEach((tx) => {
-      const amt = Math.floor(tx.amount)
-      if (transferAmount < target) {
-        const buffer = Buffer.from(tx.txHex, 'hex')
-        txb.addInput({
-          hash: tx.txid,
-          index: tx.vout,
-          nonWitnessUtxo: buffer
-        })
-        transferAmount += amt
-        estimatedTxBytes += buffer.length
-        inputs++
+    for (const tx of unspents) {
+      if (transferAmount >= target) {
+        break
       }
-    })
+      const buffer = Buffer.from(tx.txHex, 'hex')
+      psbt.addInput({
+        hash: tx.txid,
+        index: tx.vout,
+        nonWitnessUtxo: buffer
+      })
+      transferAmount += tx.amount
+      estimatedTxBytes += buffer.length
+      inputsCount++
+    }
 
-    txb.addOutput({
+    transferAmount = Math.floor(transferAmount)
+
+    psbt.addOutput({
       address,
-      value: amount
+      value: localAmount
     })
 
     // Estimated fee based on https://github.com/dogecoin/dogecoin/blob/master/doc/fee-recommendation.md
     const currentFeeRate = await this.getFeePerByte()
     let estimatedFee = Math.floor(
-      new BigNumber(currentFeeRate * (estimatedTxBytes + OUTPUTS_COMPENSATION))
+      new BigNumber(currentFeeRate)
+        .times(estimatedTxBytes + OUTPUTS_COMPENSATION)
         .times(this.multiplier)
         .toNumber()
     )
 
-    if (estimatedFee >= heldFee) {
-      estimatedFee = heldFee
-    }
+    estimatedFee = Math.min(estimatedFee, heldFee)
 
     // This is a necessary step
-    // If we'll not add a change to output, it will burn in hell
-    const change = transferAmount - amount - estimatedFee
-    if (isPositiveNumber(change)) {
-      txb.addOutput({
+    // If we'll not add a difference to output, it will burn in hell
+    const difference = transferAmount - localAmount - estimatedFee
+    if (isPositiveNumber(difference)) {
+      psbt.addOutput({
         address: this._address,
-        value: change
+        value: difference
       })
     }
 
-    for (let i = 0; i < inputs; ++i) {
-      txb.signInput(i, this._keyPair)
-      txb.validateSignaturesOfInput(i, this.validator)
+    for (let i = 0; i < inputsCount; ++i) {
+      psbt.signInput(i, this._keyPair)
+      psbt.validateSignaturesOfInput(i, this.validator)
     }
 
-    txb.finalizeAllInputs()
-    const tx = txb.extractTransaction()
+    psbt.finalizeAllInputs()
+    const tx = psbt.extractTransaction()
 
     return tx.toHex()
   }
@@ -141,8 +122,8 @@ export default class DogeApi extends BtcBaseApi {
   }
 
   /** @override */
-  getTransactionHex(txid) {
-    const { rawtx } = this._get(`/api/rawtx/${txid}`)
+  async getTransactionHex(txid) {
+    const { rawtx } = await this._get(`/api/rawtx/${txid}`)
     return rawtx
   }
 

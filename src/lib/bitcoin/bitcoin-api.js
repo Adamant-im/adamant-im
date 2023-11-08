@@ -47,8 +47,8 @@ export default class BitcoinApi extends BtcBaseApi {
   }
 
   /** @override */
-  getTransactionHex(txid) {
-    return this._get(`/tx/${txid}/hex`)
+  async getTransactionHex(txid) {
+    return await this._get(`/tx/${txid}/hex`)
   }
 
   /** @override */
