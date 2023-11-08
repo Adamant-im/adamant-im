@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { computed, PropType, toRefs } from 'vue'
+import { computed, PropType } from 'vue'
 import { useStore } from 'vuex'
 import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import type { NodeType } from '@/lib/nodes/types'
