@@ -60,7 +60,7 @@ export default {
       root: className,
       column: `${className}__column`,
       columnCheckbox: `${className}__column--checkbox`,
-      checkbox: `${className}__checkbox`,
+      checkbox: `${className}__checkbox`
     }
 
     const url = computed(() => props.node.url)

@@ -20,6 +20,10 @@ function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation) {
 }
 
 function getNodeStatusText(node: NodeStatusResult, t: VueI18nTranslation) {
+  if (node.online) {
+    return t('nodes.height') + ': ' + node.height
+  }
+
   if (!node.hasMinNodeVersion) {
     return t('nodes.unsupported_reason_api_version')
   } else if (!node.hasSupportedProtocol) {
