@@ -16,8 +16,8 @@
 <script>
 import { computed, defineComponent } from 'vue'
 import { useStore } from 'vuex'
-import NodesTableItem from '@/components/NodesTable/NodesTableItem'
-import NodesTableHead from '@/components/NodesTable/NodesTableHead'
+import NodesTableItem from './NodesTableItem'
+import NodesTableHead from './NodesTableHead'
 
 export default defineComponent({
   components: {

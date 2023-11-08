@@ -58,7 +58,7 @@
 
 <script>
 import AppToolbarCentered from '@/components/AppToolbarCentered'
-import NodesTable from '@/components/NodesTable/NodesTable'
+import NodesTable from '@/components/nodes/adm'
 
 export default {
   components: {

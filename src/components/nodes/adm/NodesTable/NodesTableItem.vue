@@ -1,0 +1,159 @@
+<template>
+  <tr :class="classes.root">
+    <td
+      :class="{
+        [classes.td]: true,
+        [classes.tdCheckbox]: true
+      }"
+      class="pl-0 pr-0"
+    >
+      <v-checkbox-btn
+        :model-value="active"
+        :class="classes.checkbox"
+        @input="toggleActiveStatus"
+        :disabled="blockchain !== 'adm'"
+      />
+    </td>
+
+    <td :class="classes.td" class="pl-0 pr-2">
+      {{ url }}
+      <blockchain-label v-if="blockchain !== 'adm'" :label="blockchain" />
+      <div v-if="version" :class="classes.version">
+        {{ 'v' + version }}
+      </div>
+    </td>
+
+    <td :class="classes.td" class="pl-0 pr-2" :colspan="isUnsupported ? 2 : 1">
+      <NodeStatus :node="node" />
+    </td>
+
+    <td v-if="!isUnsupported" :class="classes.td" class="pl-0 pr-2">
+      <SocketSupport node="node" />
+    </td>
+  </tr>
+</template>
+
+<script lang="ts">
+import { computed, PropType, toRefs } from 'vue'
+import { useStore } from 'vuex'
+import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import type { NodeType } from '@/lib/nodes/types'
+import BlockchainLabel from './BlockchainLabel.vue'
+import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
+import SocketSupport from '@/components/nodes/components/SocketSupport.vue'
+
+export default {
+  components: {
+    NodeStatus,
+    SocketSupport,
+    BlockchainLabel
+  },
+  props: {
+    node: {
+      type: Object as PropType<NodeStatusResult>,
+      required: true
+    },
+    blockchain: {
+      type: String as PropType<NodeType>,
+      required: true
+    }
+  },
+  setup(props) {
+    const { node } = toRefs(props)
+    const store = useStore()
+
+    const className = 'nodes-table-item'
+    const classes = {
+      root: className,
+      td: `${className}__td`,
+      checkbox: `${className}__checkbox`,
+      version: `${className}__version`,
+      tdCheckbox: `${className}__td-checkbox`
+    }
+
+    const url = computed(() => props.node.url)
+    const version = computed(() => props.node.version)
+    const active = computed(() => props.node.active)
+    const socketSupport = computed(() => props.node.socketSupport)
+    const isUnsupported = computed(() => node.value.status === 'unsupported_version')
+
+    const toggleActiveStatus = () => {
+      store.dispatch('nodes/toggle', {
+        url: url.value,
+        active: !active.value
+      })
+      store.dispatch('nodes/updateStatus')
+    }
+
+    return {
+      classes,
+      url,
+      version,
+      active,
+      socketSupport,
+      isUnsupported,
+      toggleActiveStatus
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+@import 'vuetify/settings';
+@import '../../../../assets/styles/settings/_colors.scss';
+@import '../../../../assets/styles/themes/adamant/_mixins.scss';
+
+.nodes-table-item {
+  &__td {
+    font-size: 14px;
+  }
+  &__version {
+    @include a-text-explanation-small();
+  }
+  &__td-checkbox {
+    width: 64px;
+    max-width: 64px;
+  }
+  &__checkbox {
+    font-size: 16px;
+    margin-left: 16px;
+  }
+}
+
+@media #{map-get($display-breakpoints, 'sm-and-down')} {
+  .nodes-table-item {
+    &__td-checkbox {
+      width: 56px;
+      max-width: 56px;
+    }
+    &__checkbox {
+      margin-left: 8px;
+    }
+  }
+}
+
+.v-theme--light {
+  .nodes-table-item {
+    &__version {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__td {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__checkbox {
+      color: map-get($adm-colors, 'grey') !important;
+    }
+  }
+}
+
+.v-theme--dark {
+  .nodes-table-item {
+    &__version {
+      opacity: 0.7;
+    }
+    &__checkbox {
+      color: map-get($adm-colors, 'grey') !important;
+    }
+  }
+}
+</style>

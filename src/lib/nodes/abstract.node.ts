@@ -1,3 +1,5 @@
+import { NodeStatus } from '@/lib/nodes/types.ts'
+
 type HealthcheckResult = {
   height: number
   ping: number
@@ -146,8 +148,23 @@ export abstract class Node<C = unknown> {
       hasMinNodeVersion: this.hasMinNodeVersion(),
       hasSupportedProtocol: this.hasSupportedProtocol,
       socketSupport: this.socketSupport,
-      height: this.height
+      height: this.height,
+      status: this.getNodeStatus()
     }
+  }
+
+  getNodeStatus(): NodeStatus {
+    if (!this.hasMinNodeVersion() || !this.hasSupportedProtocol) {
+      return 'unsupported_version'
+    } else if (!this.active) {
+      return 'disabled'
+    } else if (!this.online) {
+      return 'offline'
+    } else if (this.outOfSync) {
+      return 'sync'
+    }
+
+    return 'online'
   }
 
   hasMinNodeVersion() {
