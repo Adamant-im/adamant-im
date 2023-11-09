@@ -2,7 +2,7 @@
   <thead :class="classes.root">
     <tr>
       <th :class="classes.checkbox" v-if="!hideCheckbox" />
-      <th :class="classes.th" v-if="!hideLabel" />
+      <th :class="classes.label" class="pl-0" v-if="!hideLabel" />
       <th :class="classes.th" class="pl-0 pr-2" v-if="!hideHost">
         {{ t('nodes.host') }}
       </th>
@@ -44,7 +44,8 @@ export default {
     const classes = {
       root: className,
       th: `${className}__th`,
-      checkbox: `${className}__checkbox`
+      checkbox: `${className}__checkbox`,
+      label: `${className}__label`
     }
 
     return {
@@ -66,6 +67,10 @@ export default {
   &__checkbox {
     padding-left: 0 !important;
     padding-right: 0 !important;
+  }
+
+  &__label {
+    width: 104px;
   }
 }
 </style>
