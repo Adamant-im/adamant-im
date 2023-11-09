@@ -1,4 +1,5 @@
 export type TNodeLabel =
+  | 'adm-node'
   | 'eth-node'
   | 'eth-indexer'
   | 'btc-node'
@@ -27,6 +28,7 @@ type NodeLabels<V extends TNodeLabel = TNodeLabel> = {
 }
 
 export const NODE_LABELS: NodeLabels = {
+  AdmNode: 'adm-node',
   EthNode: 'eth-node',
   EthIndexer: 'eth-indexer',
   BtcNode: 'btc-node',

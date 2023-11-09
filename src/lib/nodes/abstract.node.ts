@@ -1,4 +1,5 @@
-import { NodeStatus } from '@/lib/nodes/types.ts'
+import { TNodeLabel } from './constants'
+import { NodeStatus } from './types'
 
 type HealthcheckResult = {
   height: number
@@ -91,14 +92,16 @@ export abstract class Node<C = unknown> {
    * Will be updated after `GET /api/node/status`
    */
   socketSupport = false
+  label: TNodeLabel
 
   onStatusChangeCallback?: (nodeStatus: ReturnType<typeof this.getStatus>) => void
 
   timer?: NodeJS.Timeout
   abstract client: C
 
-  constructor(url: string, version = '', minNodeVersion = '') {
+  constructor(url: string, label: TNodeLabel, version = '', minNodeVersion = '') {
     this.url = url
+    this.label = label
     this.protocol = new URL(url).protocol as HttpProtocol
     this.port = new URL(url).port
     this.hostname = new URL(url).hostname
@@ -149,7 +152,8 @@ export abstract class Node<C = unknown> {
       hasSupportedProtocol: this.hasSupportedProtocol,
       socketSupport: this.socketSupport,
       height: this.height,
-      status: this.getNodeStatus()
+      status: this.getNodeStatus(),
+      label: this.label
     }
   }
 

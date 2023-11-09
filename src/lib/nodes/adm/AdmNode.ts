@@ -3,6 +3,7 @@ import { NodeOfflineError } from '@/lib/nodes/utils/errors'
 import { GetNodeStatusResponseDto } from '@/lib/schema/client'
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
+import { NODE_LABELS } from '@/lib/nodes/constants'
 
 type FetchNodeInfoResult = {
   socketSupport: boolean
@@ -30,7 +31,7 @@ export class AdmNode extends Node {
   client: AxiosInstance
 
   constructor(url: string, minNodeVersion = '0.0.0') {
-    super(url, minNodeVersion, minNodeVersion)
+    super(url, NODE_LABELS.AdmNode, minNodeVersion, minNodeVersion)
 
     this.wsPort = '36668' // default wsPort
     this.wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:'

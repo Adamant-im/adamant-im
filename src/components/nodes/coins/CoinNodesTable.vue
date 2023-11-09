@@ -3,47 +3,19 @@
     <NodesTableHead hide-checkbox hide-socket />
 
     <tbody>
-      <CoinNodesTableItem
-        v-for="node in ethNodes"
-        :key="node.url"
-        :label="NODE_LABELS.EthNode"
-        :node="node"
-      />
-      <CoinNodesTableItem
-        v-for="node in btcNodes"
-        :key="node.url"
-        :label="NODE_LABELS.BtcNode"
-        :node="node"
-      />
-      <CoinNodesTableItem
-        v-for="node in dogeNodes"
-        :key="node.url"
-        :label="NODE_LABELS.DogeNode"
-        :node="node"
-      />
-      <CoinNodesTableItem
-        v-for="node in dashNodes"
-        :key="node.url"
-        :label="NODE_LABELS.DashNode"
-        :node="node"
-      />
-      <CoinNodesTableItem
-        v-for="node in lskNodes"
-        :key="node.url"
-        :label="NODE_LABELS.LskNode"
-        :node="node"
-      />
+      <CoinNodesTableItem v-for="node in nodes" :key="node.url" :label="node.label" :node="node" />
     </tbody>
   </NodesTableContainer>
 </template>
 
-<script>
+<script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
 import CoinNodesTableItem from './CoinNodesTableItem.vue'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { type NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 const className = 'nodes-table'
 const classes = {
@@ -59,18 +31,10 @@ export default defineComponent({
   setup() {
     const store = useStore()
 
-    const ethNodes = computed(() => store.getters['nodes/eth'])
-    const btcNodes = computed(() => store.getters['nodes/btc'])
-    const dogeNodes = computed(() => store.getters['nodes/doge'])
-    const dashNodes = computed(() => store.getters['nodes/dash'])
-    const lskNodes = computed(() => store.getters['nodes/lsk'])
+    const nodes = computed<NodeStatusResult[]>(() => store.getters['nodes/coins'])
 
     return {
-      ethNodes,
-      btcNodes,
-      dogeNodes,
-      dashNodes,
-      lskNodes,
+      nodes,
       NODE_LABELS,
       classes
     }
