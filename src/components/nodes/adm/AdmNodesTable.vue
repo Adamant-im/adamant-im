@@ -14,6 +14,7 @@ import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
 import AdmNodesTableItem from './AdmNodesTableItem.vue'
+import { sortNodesFn } from '@/components/nodes/utils/sortNodesFn'
 
 const className = 'adm-nodes-table'
 const classes = {
@@ -31,13 +32,7 @@ export default defineComponent({
     const admNodes = computed(() => {
       const arr = store.getters['nodes/adm']
 
-      return [...arr].sort((a, b) => {
-        if (/^http:\/\//.test(a.url) || /^http:\/\//.test(b.url)) {
-          return a.url > b.url ? -1 : b.url > a.url ? 1 : 0
-        }
-
-        return a.url > b.url ? 1 : b.url > a.url ? -1 : 0
-      })
+      return [...arr].sort(sortNodesFn)
     })
 
     return {

@@ -16,6 +16,7 @@ import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
 import CoinNodesTableItem from './CoinNodesTableItem.vue'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { type NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { sortNodesFn } from '@/components/nodes/utils/sortNodesFn'
 
 const className = 'nodes-table'
 const classes = {
@@ -31,7 +32,11 @@ export default defineComponent({
   setup() {
     const store = useStore()
 
-    const nodes = computed<NodeStatusResult[]>(() => store.getters['nodes/coins'])
+    const nodes = computed<NodeStatusResult[]>(() => {
+      const arr = store.getters['nodes/coins']
+
+      return [...arr].sort(sortNodesFn)
+    })
 
     return {
       nodes,
