@@ -1,12 +1,7 @@
 <template>
   <tr :class="classes.root">
     <NodeColumn checkbox>
-      <v-checkbox-btn
-        :model-value="active"
-        :class="classes.checkbox"
-        @input="toggleActiveStatus"
-        :disabled="blockchain !== 'adm'"
-      />
+      <NodeStatusCheckbox :value="active" @change="toggleActiveStatus" />
     </NodeColumn>
 
     <NodeColumn>
@@ -35,14 +30,24 @@ import NodeLabel from '@/components/nodes/components/NodeLabel.vue'
 import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
 import NodeVersion from '@/components/nodes/components/NodeVersion.vue'
 import SocketSupport from '@/components/nodes/components/SocketSupport.vue'
+import NodeStatusCheckbox from '@/components/nodes/components/NodeStatusCheckbox.vue'
+
+const className = 'amd-nodes-table-item'
+const classes = {
+  root: className,
+  column: `${className}__column`,
+  columnCheckbox: `${className}__column--checkbox`,
+  checkbox: `${className}__checkbox`
+}
 
 export default {
   components: {
+    NodeStatusCheckbox,
     NodeColumn,
     NodeStatus,
     NodeVersion,
     SocketSupport,
-    NodeLabel,
+    NodeLabel
   },
   props: {
     node: {
@@ -56,14 +61,6 @@ export default {
   },
   setup(props) {
     const store = useStore()
-
-    const className = 'nodes-table-item'
-    const classes = {
-      root: className,
-      column: `${className}__column`,
-      columnCheckbox: `${className}__column--checkbox`,
-      checkbox: `${className}__checkbox`
-    }
 
     const url = computed(() => props.node.url)
     const active = computed(() => props.node.active)
@@ -91,38 +88,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import 'vuetify/settings';
-@import '../../../../assets/styles/settings/_colors.scss';
-@import '../../../../assets/styles/themes/adamant/_mixins.scss';
-
-.nodes-table-item {
-  &__checkbox {
-    font-size: 16px;
-    margin-left: 16px;
-  }
-}
-
-@media #{map-get($display-breakpoints, 'sm-and-down')} {
-  .nodes-table-item {
-    &__checkbox {
-      margin-left: 8px;
-    }
-  }
-}
-
-.v-theme--light {
-  .nodes-table-item {
-    &__checkbox {
-      color: map-get($adm-colors, 'grey') !important;
-    }
-  }
-}
-
-.v-theme--dark {
-  .nodes-table-item {
-    &__checkbox {
-      color: map-get($adm-colors, 'grey') !important;
-    }
-  }
+.amd-nodes-table-item {
 }
 </style>
