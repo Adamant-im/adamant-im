@@ -3,7 +3,7 @@ import { Cryptos } from '../constants'
 import { dash } from '@/lib/nodes/dash'
 
 class DashApiError extends Error {
-  constructor (method, error) {
+  constructor(method, error) {
     super('Dash API returned an error')
 
     this.code = 'DASH_API'
@@ -17,55 +17,61 @@ class DashApiError extends Error {
 }
 
 export default class DashApi extends BtcBaseApi {
-  constructor (passphrase) {
+  constructor(passphrase) {
     super(Cryptos.DASH, passphrase)
   }
 
   /**
    * @override
    */
-  getBalance () {
-    return this._invoke('getaddressbalance', [this.address])
-      .then(result => Number(result.balance) / this.multiplier)
+  getBalance() {
+    return this._invoke('getaddressbalance', [this.address]).then(
+      (result) => Number(result.balance) / this.multiplier
+    )
   }
 
   /** @override */
-  sendTransaction (txHex) {
+  sendTransaction(txHex) {
     return this._invoke('sendrawtransaction', [txHex])
   }
 
   /** @override */
-  getTransaction (txid) {
-    return this._invoke('getrawtransaction', [txid, true])
-      .then(result => this._mapTransaction(result))
+  getTransaction(txid) {
+    return this._invoke('getrawtransaction', [txid, true]).then((result) =>
+      this._mapTransaction(result)
+    )
   }
 
   /** @override */
-  getTransactions (options) {
+  getTransactionHex(txid) {
+    return this._invoke('getrawtransaction', [txid, false])
+  }
+
+  /** @override */
+  getTransactions(options) {
     return this._invoke('getaddresstxids', [this._address])
-      .then(txids => {
+      .then((txids) => {
         const excludes = options.excludes || []
         return txids
-          .filter(x => !excludes.includes(x))
-          .map(x => ({
+          .filter((x) => !excludes.includes(x))
+          .map((x) => ({
             method: 'getrawtransaction',
             params: [x, true]
           }))
       })
-      .then(calls => this._invokeMany(calls))
-      .then(results => results
-        .filter(x => !x.error && x.result)
-        .map(x => this._mapTransaction(x.result))
+      .then((calls) => this._invokeMany(calls))
+      .then((results) =>
+        results.filter((x) => !x.error && x.result).map((x) => this._mapTransaction(x.result))
       )
-      .then(items => ({ hasMore: false, items }))
+      .then((items) => ({ hasMore: false, items }))
   }
 
   /** @override */
-  getUnspents () {
-    return this._invoke('getaddressutxos', [this.address]).then(result => {
+  getUnspents() {
+    return this._invoke('getaddressutxos', [this.address]).then((result) => {
       if (!Array.isArray(result)) return []
 
-      return result.map(x => ({
+      return result.map((x) => ({
         txid: x.txid,
         amount: x.satoshis,
         vout: x.outputIndex
@@ -74,10 +80,10 @@ export default class DashApi extends BtcBaseApi {
   }
 
   /** @override */
-  _mapTransaction (tx) {
+  _mapTransaction(tx) {
     return super._mapTransaction({
       ...tx,
-      vin: tx.vin.map(x => ({ ...x, addr: x.address }))
+      vin: tx.vin.map((x) => ({ ...x, addr: x.address }))
     })
   }
 
@@ -87,16 +93,18 @@ export default class DashApi extends BtcBaseApi {
    * @param {object | Array<any>} params method params
    * @returns {Promise<any>} method result
    */
-  _invoke (method, params) {
-    return dash.getClient().post('/', { method, params })
+  _invoke(method, params) {
+    return dash.getClient()
+      .post('/', { method, params })
       .then(({ data }) => {
         if (data.error) throw new DashApiError(method, data.error)
         return data.result
       })
   }
 
-  _invokeMany (calls) {
-    return dash.getClient().post('/', calls)
-      .then(response => response.data)
+  _invokeMany(calls) {
+    return dash.getClient()
+      .post('/', calls)
+      .then((response) => response.data)
   }
 }
