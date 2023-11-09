@@ -1,7 +1,7 @@
 <template>
   <tr :class="classes.root">
     <NodeColumn align="right">
-      <NodeLabel :label="blockchain" />
+      <NodeLabel :label="label" />
     </NodeColumn>
 
     <NodeColumn>
@@ -19,7 +19,7 @@
 import { computed, PropType } from 'vue'
 import { useStore } from 'vuex'
 import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
-import type { NodeType } from '@/lib/nodes/types'
+import type { TNodeLabel } from '@/lib/nodes/constants'
 import NodeColumn from '@/components/nodes/components/NodeColumn.vue'
 import NodeLabel from '@/components/nodes/components/NodeLabel.vue'
 import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
@@ -45,8 +45,8 @@ export default {
       type: Object as PropType<NodeStatusResult>,
       required: true
     },
-    blockchain: {
-      type: String as PropType<NodeType>,
+    label: {
+      type: String as PropType<TNodeLabel>,
       required: true
     }
   },

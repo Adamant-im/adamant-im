@@ -6,7 +6,6 @@
 
     <NodeColumn>
       {{ url }}
-      <NodeLabel v-if="blockchain !== 'adm'" :label="blockchain" />
       <NodeVersion v-if="node.version" :node="node" />
     </NodeColumn>
 
@@ -24,9 +23,7 @@
 import { computed, PropType } from 'vue'
 import { useStore } from 'vuex'
 import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
-import type { NodeType } from '@/lib/nodes/types'
 import NodeColumn from '@/components/nodes/components/NodeColumn.vue'
-import NodeLabel from '@/components/nodes/components/NodeLabel.vue'
 import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
 import NodeVersion from '@/components/nodes/components/NodeVersion.vue'
 import SocketSupport from '@/components/nodes/components/SocketSupport.vue'
@@ -47,15 +44,10 @@ export default {
     NodeStatus,
     NodeVersion,
     SocketSupport,
-    NodeLabel
   },
   props: {
     node: {
       type: Object as PropType<NodeStatusResult>,
-      required: true
-    },
-    blockchain: {
-      type: String as PropType<NodeType>,
       required: true
     }
   },
