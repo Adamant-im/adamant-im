@@ -1,6 +1,6 @@
 <template>
-  <v-table :class="classes.root">
-    <nodes-table-head />
+  <NodesTable>
+    <NodesTableHead />
 
     <tbody>
       <nodes-table-item v-for="node in admNodes" :key="node.url" blockchain="adm" :node="node" />
@@ -10,17 +10,19 @@
       <nodes-table-item v-for="node in dashNodes" :key="node.url" blockchain="dash" :node="node" />
       <nodes-table-item v-for="node in lskNodes" :key="node.url" blockchain="lsk" :node="node" />
     </tbody>
-  </v-table>
+  </NodesTable>
 </template>
 
 <script>
 import { computed, defineComponent } from 'vue'
 import { useStore } from 'vuex'
+import NodesTable from '@/components/nodes/components/NodesTable.vue'
 import NodesTableItem from './NodesTableItem'
-import NodesTableHead from './NodesTableHead'
+import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
 
 export default defineComponent({
   components: {
+    NodesTable,
     NodesTableHead,
     NodesTableItem
   },
