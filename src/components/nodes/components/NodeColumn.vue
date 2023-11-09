@@ -2,7 +2,9 @@
   <td
     :class="{
       [classes.root]: true,
-      [classes.checkbox]: checkbox
+      [classes.checkbox]: checkbox,
+      [classes.alignRight]: align === 'right',
+      [classes.alignCenter]: align === 'center'
     }"
   >
     <slot />
@@ -10,12 +12,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 
 const className = 'node-column'
 const classes = {
   root: className,
-  checkbox: `${className}--checkbox`
+  checkbox: `${className}--checkbox`,
+  alignRight: `${className}--align-right`,
+  alignCenter: `${className}--align-center`
 }
 
 export default defineComponent({
@@ -25,6 +29,9 @@ export default defineComponent({
      */
     checkbox: {
       type: Boolean
+    },
+    align: {
+      type: String as PropType<'left' | 'right' | 'center'>,
     }
   },
   setup() {
@@ -48,6 +55,14 @@ export default defineComponent({
     width: 64px;
     max-width: 64px;
     padding-right: 0 !important;
+  }
+
+  &--align-right {
+    text-align: right;
+  }
+
+  &--align-center {
+    text-align: center;
   }
 }
 

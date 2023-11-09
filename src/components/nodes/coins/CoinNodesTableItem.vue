@@ -1,6 +1,6 @@
 <template>
   <tr :class="classes.root">
-    <NodeColumn checkbox>
+    <NodeColumn align="right">
       <NodeLabel :label="blockchain" />
     </NodeColumn>
 

@@ -2,9 +2,7 @@
   <thead :class="classes.root">
     <tr>
       <th :class="classes.checkbox" v-if="!hideCheckbox" />
-      <th :class="classes.th" class="pl-0 pr-2" v-if="!hideLabel">
-        {{ t('nodes.label') }}
-      </th>
+      <th :class="classes.th" v-if="!hideLabel" />
       <th :class="classes.th" class="pl-0 pr-2" v-if="!hideHost">
         {{ t('nodes.host') }}
       </th>
