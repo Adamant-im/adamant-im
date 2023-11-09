@@ -159,6 +159,7 @@
     "active": "Active",
     "fastest_title": "Choose the fastest node",
     "fastest_tooltip": "Requests will be processed with a fastest node",
+    "label": "Type",
     "host": "Host",
     "inactive": "Inactive",
     "sync": "Sync",
