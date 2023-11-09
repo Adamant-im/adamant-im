@@ -2,7 +2,7 @@ import * as bitcoin from 'bitcoinjs-lib'
 import axios from 'axios'
 
 import networks from './networks'
-import { getRandomNodeUrl } from "@/config/utils";
+import { getRandomNodeUrl } from '@/config/utils'
 import BigNumber from '../bignumber'
 import { isPositiveNumber } from '@/lib/numericHelpers'
 import { CryptosInfo } from '../constants'
@@ -88,8 +88,7 @@ export default class BtcBaseApi {
 
     // populate unspents with full transaction in HEX
     for (const unspent of unspents) {
-      const txHex = await this._get(`/tx/${unspent.txid}/hex`)
-      unspent.txHex = txHex
+      unspent.txHex = await this.getTransactionHex(unspent.txid)
     }
 
     const hex = this._buildTransaction(address, amount, unspents, fee)
@@ -117,6 +116,10 @@ export default class BtcBaseApi {
    * @returns {Promise<object>}
    */
   getTransaction(txid) {
+    return Promise.resolve(null)
+  }
+
+  getTransactionHex(txid) {
     return Promise.resolve(null)
   }
 
@@ -198,7 +201,7 @@ export default class BtcBaseApi {
   }
 
   /** Picks a client for a random API endpoint */
-  _getClient () {
+  _getClient() {
     const url = getRandomNodeUrl(this._crypto.toLowerCase())
     if (!this._clients[url]) {
       this._clients[url] = createClient(url)
