@@ -7,7 +7,7 @@
 <script>
 import { defineComponent } from 'vue'
 
-const className = 'nodes-table'
+const className = 'nodes-table-container'
 const classes = {
   root: className
 }
@@ -21,24 +21,14 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import 'vuetify/settings';
 
-.nodes-table {
-  margin-left: -24px;
-  margin-right: -24px;
-  max-width: unset !important;
-}
-
-@media #{map-get($display-breakpoints, 'sm-and-down')} {
-  .nodes-table {
-    margin-left: -16px;
-    margin-right: -16px;
-  }
+.nodes-table-container {
 }
 
 .v-theme--dark {
-  .nodes-table {
+  .nodes-table-container {
     background-color: rgb(var(--v-theme-on-surface-variant));
   }
 }

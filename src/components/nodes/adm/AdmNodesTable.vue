@@ -1,17 +1,17 @@
 <template>
-  <NodesTable>
+  <NodesTableContainer>
     <NodesTableHead hide-label />
 
     <tbody>
       <AdmNodesTableItem v-for="node in admNodes" :key="node.url" blockchain="adm" :node="node" />
     </tbody>
-  </NodesTable>
+  </NodesTableContainer>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { useStore } from 'vuex'
-import NodesTable from '@/components/nodes/components/NodesTable.vue'
+import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
 import AdmNodesTableItem from './AdmNodesTableItem.vue'
 
@@ -22,7 +22,7 @@ const classes = {
 
 export default defineComponent({
   components: {
-    NodesTable,
+    NodesTableContainer,
     NodesTableHead,
     AdmNodesTableItem
   },
