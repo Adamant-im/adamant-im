@@ -11,7 +11,7 @@
 
     <td :class="classes.column" class="pl-0 pr-2">
       {{ url }}
-      <blockchain-label v-if="blockchain !== 'adm'" :label="blockchain" />
+      <NodeLabel v-if="blockchain !== 'adm'" :label="blockchain" />
       <NodeVersion v-if="node.version" :node="node" />
     </td>
 
@@ -30,7 +30,7 @@ import { computed, PropType } from 'vue'
 import { useStore } from 'vuex'
 import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import type { NodeType } from '@/lib/nodes/types'
-import BlockchainLabel from './BlockchainLabel.vue'
+import NodeLabel from './NodeLabel.vue'
 import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
 import NodeVersion from '@/components/nodes/components/NodeVersion.vue'
 import SocketSupport from '@/components/nodes/components/SocketSupport.vue'
@@ -40,7 +40,7 @@ export default {
     NodeStatus,
     NodeVersion,
     SocketSupport,
-    BlockchainLabel
+    NodeLabel
   },
   props: {
     node: {
