@@ -20,9 +20,9 @@ export class BtcNode extends Node {
 
   protected async checkHealth() {
     const time = Date.now()
-    const blockNumber = await this.client
-      .get('/blocks/tip/height')
-      .then((data) => Number(data) || 0)
+    const blockNumber = await this.client.get('/blocks/tip/height').then((res) => {
+      return Number(res.data) || 0
+    })
 
     return {
       height: Number(blockNumber),
