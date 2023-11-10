@@ -1,8 +1,6 @@
 import * as bitcoin from 'bitcoinjs-lib'
-import axios from 'axios'
 
 import networks from './networks'
-import { getRandomNodeUrl } from '@/config/utils'
 import BigNumber from '../bignumber'
 import { isPositiveNumber } from '@/lib/numericHelpers'
 import { CryptosInfo } from '../constants'
@@ -18,17 +16,6 @@ const getUnique = (values) => {
     return m
   }, {})
   return Object.keys(map)
-}
-
-const createClient = (url) => {
-  const client = axios.create({ baseURL: url })
-  client.interceptors.response.use(null, (error) => {
-    if (error.response && Number(error.response.status) >= 500) {
-      console.error('Request failed', error)
-    }
-    return Promise.reject(error)
-  })
-  return client
 }
 
 export function getAccount(crypto, passphrase) {
