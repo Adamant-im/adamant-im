@@ -43,7 +43,7 @@ export default class DogeApi extends BtcBaseApi {
   }
 
   /** @override */
-  async _buildTransaction(address, amount, unspents, fee) {
+  async buildTransaction(address, amount, unspents, fee) {
     const localAmount = convertToSmallestUnit(amount, this.multiplier)
     const heldFee = convertToSmallestUnit(fee, this.multiplier)
 

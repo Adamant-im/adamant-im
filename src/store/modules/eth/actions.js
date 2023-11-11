@@ -1,8 +1,11 @@
-import BigNumber from 'bignumber.js'
 import * as utils from '../../../lib/eth-utils'
 import createActions from '../eth-base/eth-base-actions'
 
-import { DEFAULT_ETH_TRANSFER_GAS, FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
+import {
+  DEFAULT_ETH_TRANSFER_GAS_LIMIT,
+  FetchStatus,
+  INCREASE_FEE_MULTIPLIER
+} from '@/lib/constants'
 import { storeCryptoAddress } from '@/lib/store-crypto-address'
 
 /** Timestamp of the most recent status update */
@@ -18,24 +21,25 @@ function storeEthAddress(context) {
   storeCryptoAddress(context.state.crypto, context.state.address)
 }
 
-const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
+const initTransaction = async (api, context, ethAddress, amount, increaseFee) => {
+  const nonce = await api.getClient().getTransactionCount(context.state.address)
+  const gasPrice = await api.getClient().getGasPrice()
+
   const transaction = {
     from: context.state.address,
     to: ethAddress,
-    value: utils.toWei(amount)
-    // gas: api.fromDecimal(DEFAULT_ETH_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
-    // gasPrice: context.getters.gasPrice // Set gas price to auto calc. Deprecated after London hardfork
-    // nonce // Let sendTransaction choose it
+    value: BigInt(utils.toWei(amount)),
+    gasPrice,
+    nonce
   }
 
-  return api.getClient().estimateGas(transaction).then((gasLimit) => {
-    gasLimit = increaseFee
-      ? BigNumber(gasLimit).times(INCREASE_FEE_MULTIPLIER).toNumber()
-      : gasLimit
+  const gasLimit = await api
+    .getClient()
+    .estimateGas(transaction)
+    .catch(() => BigInt(DEFAULT_ETH_TRANSFER_GAS_LIMIT))
+  transaction.gasLimit = increaseFee ? gasLimit * BigInt(INCREASE_FEE_MULTIPLIER) : gasLimit
 
-    transaction.gas = gasLimit
-    return transaction
-  })
+  return transaction
 }
 
 const parseTransaction = (context, tx) => {
@@ -80,24 +84,32 @@ const createSpecificActions = (api) => ({
     if (!context.state.address) return
 
     // Balance
-    void api.getClient().getBalance(context.state.address, 'latest').then((balance) => {
-      context.commit('balance', Number(utils.toEther(balance.toString())))
-      context.commit('setBalanceStatus', FetchStatus.Success)
-    })
+    void api
+      .getClient()
+      .getBalance(context.state.address, 'latest')
+      .then((balance) => {
+        context.commit('balance', Number(utils.toEther(balance.toString())))
+        context.commit('setBalanceStatus', FetchStatus.Success)
+      })
 
     // Current gas price
-    void api.getClient().getGasPrice().then((price) => {
-      // It is OK with London hardfork
-      context.commit('gasPrice', {
-        gasPrice: price, // string type
-        fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS, price)).toFixed(8) // number type, in ETH
+    void api
+      .getClient()
+      .getGasPrice()
+      .then((price) => {
+        context.commit('gasPrice', {
+          gasPrice: Number(price),
+          fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS_LIMIT, price)).toFixed(8)
+        })
       })
-    })
 
     // Current block number
-    void api.getClient().getBlockNumber().then((number) => {
-      context.commit('blockNumber', Number(number))
-    })
+    void api
+      .getClient()
+      .getBlockNumber()
+      .then((number) => {
+        context.commit('blockNumber', Number(number))
+      })
 
     const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)
     setTimeout(() => {

@@ -77,7 +77,7 @@ export default class BtcBaseApi {
       unspent.txHex = await this.getTransactionHex(unspent.txid)
     }
 
-    const hex = this._buildTransaction(address, amount, unspents, fee)
+    const hex = await this.buildTransaction(address, amount, unspents, fee)
 
     let txid = bitcoin.crypto.sha256(Buffer.from(hex, 'hex'))
     txid = bitcoin.crypto.sha256(Buffer.from(txid))
@@ -136,7 +136,7 @@ export default class BtcBaseApi {
    * @param {number} fee transaction fee in primary units (BTC, DOGE, DASH, etc)
    * @returns {string}
    */
-  _buildTransaction(address, amount, unspents, fee) {
+  buildTransaction(address, amount, unspents, fee) {
     amount = new BigNumber(amount).times(this.multiplier).toNumber()
     amount = Math.floor(amount)
 
