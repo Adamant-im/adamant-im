@@ -1,5 +1,9 @@
 import * as ethUtils from '../../../lib/eth-utils'
-import { FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
+import {
+  FetchStatus,
+  INCREASE_FEE_MULTIPLIER,
+  DEFAULT_ERC20_TRANSFER_GAS_LIMIT
+} from '@/lib/constants'
 import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
@@ -13,29 +17,30 @@ const STATUS_INTERVAL = 25000
 // Setup decoder
 const abiDecoder = new AbiDecoder(Erc20)
 
-const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
+const initTransaction = async (api, context, ethAddress, amount, increaseFee) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
+
+  const nonce = await api.getClient().getTransactionCount(context.state.address)
+  const gasPrice = await api.getClient().getGasPrice()
 
   const transaction = {
     from: context.state.address,
     to: context.state.contractAddress,
     value: '0x0',
-    // gasLimit: api.fromDecimal(DEFAULT_ERC20_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
-    // gasPrice: context.getters.gasPrice, // Set gas price to auto calc. Deprecated after London hardfork
-    // nonce // Let sendTransaction choose it
+    gasPrice,
+    nonce,
     data: contract.methods
       .transfer(ethAddress, ethUtils.toWhole(amount, context.state.decimals))
       .encodeABI()
   }
 
-  return api
+  const gasLimit = await api
     .getClient()
     .estimateGas(transaction)
-    .then((gasLimit) => {
-      gasLimit = increaseFee ? gasLimit * INCREASE_FEE_MULTIPLIER : gasLimit
-      transaction.gas = gasLimit
-      return transaction
-    })
+    .catch(() => BigInt(DEFAULT_ERC20_TRANSFER_GAS_LIMIT))
+  transaction.gasLimit = increaseFee ? gasLimit * BigInt(INCREASE_FEE_MULTIPLIER) : gasLimit
+
+  return transaction
 }
 
 const parseTransaction = (context, tx) => {

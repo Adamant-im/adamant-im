@@ -4,6 +4,7 @@ import * as utils from '../../../lib/eth-utils'
 import { getTransactions } from '../../../lib/eth-index'
 import * as tf from '../../../lib/transactionsFetching'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { signTransaction, TransactionFactory } from 'web3-eth-accounts'
 import api from '@/lib/nodes/eth'
 
 /** Interval between attempts to fetch the registered tx details */
@@ -61,7 +62,9 @@ export default function createActions(config) {
 
       return initTransaction(api, context, address, amount, increaseFee)
         .then((ethTx) => {
-          return api.getClient().accounts.signTransaction(ethTx, context.state.privateKey).then((signedTx) => {
+          const tx = TransactionFactory.fromTxData(ethTx)
+
+          return signTransaction(tx, context.state.privateKey).then((signedTx) => {
             const txInfo = {
               signedTx,
               ethTx
@@ -133,7 +136,7 @@ export default function createActions(config) {
                 recipientId: address,
                 amount,
                 fee: utils.calculateFee(
-                  sentTxInfo.txInfo.ethTx.gas,
+                  sentTxInfo.txInfo.ethTx.gasLimit,
                   sentTxInfo.txInfo.ethTx.gasPrice
                 ),
                 status: 'PENDING',

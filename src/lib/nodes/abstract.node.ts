@@ -1,3 +1,5 @@
+import { TNodeLabel } from './constants'
+import { NodeStatus } from './types'
 import { nodesStorage } from './storage'
 
 type HealthcheckResult = {
@@ -60,7 +62,7 @@ export abstract class Node<C = unknown> {
    * If Socket port like :36668 needed for connection
    */
   wsPortNeeded = false
-  hasSupportedProtocol = false
+  hasSupportedProtocol = true
 
   // Healthcheck related params
   /**
@@ -78,7 +80,7 @@ export abstract class Node<C = unknown> {
   /**
    * Node API version.
    */
-  version = '0.0.0'
+  version = ''
   /**
    * Minimal required Node API version.
    */
@@ -91,14 +93,16 @@ export abstract class Node<C = unknown> {
    * Will be updated after `GET /api/node/status`
    */
   socketSupport = false
+  label: TNodeLabel
 
   onStatusChangeCallback?: (nodeStatus: ReturnType<typeof this.getStatus>) => void
 
   timer?: NodeJS.Timeout
   abstract client: C
 
-  constructor(url: string, minNodeVersion = '', version = '0.0.0') {
+  constructor(url: string, label: TNodeLabel, version = '', minNodeVersion = '') {
     this.url = url
+    this.label = label
     this.protocol = new URL(url).protocol as HttpProtocol
     this.port = new URL(url).port
     this.hostname = new URL(url).hostname
@@ -151,11 +155,36 @@ export abstract class Node<C = unknown> {
       version: this.version,
       active: this.active,
       outOfSync: this.outOfSync,
-      hasMinNodeVersion: this.version >= this.minNodeVersion,
+      hasMinNodeVersion: this.hasMinNodeVersion(),
       hasSupportedProtocol: this.hasSupportedProtocol,
       socketSupport: this.socketSupport,
-      height: this.height
+      height: this.height,
+      status: this.getNodeStatus(),
+      label: this.label
     }
+  }
+
+  getNodeStatus(): NodeStatus {
+    if (!this.hasMinNodeVersion() || !this.hasSupportedProtocol) {
+      return 'unsupported_version'
+    } else if (!this.active) {
+      return 'disabled'
+    } else if (!this.online) {
+      return 'offline'
+    } else if (this.outOfSync) {
+      return 'sync'
+    }
+
+    return 'online'
+  }
+
+  hasMinNodeVersion() {
+    // if not provided then it doesn't require min version check
+    if (!this.minNodeVersion) {
+      return true
+    }
+
+    return this.version >= this.minNodeVersion
   }
 
   protected abstract checkHealth(): Promise<HealthcheckResult>

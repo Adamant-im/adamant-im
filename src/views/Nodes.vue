@@ -17,7 +17,7 @@
         no-gutters
       >
         <container padding>
-          <nodes-table :class="`${className}__table`" />
+          <NodesTable />
 
           <v-checkbox
             v-model="preferFastestNodeOption"
@@ -58,7 +58,7 @@
 
 <script>
 import AppToolbarCentered from '@/components/AppToolbarCentered'
-import NodesTable from '@/components/NodesTable/NodesTable'
+import NodesTable from '@/components/nodes/NodesTable'
 
 export default {
   components: {

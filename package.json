@@ -1,6 +1,6 @@
 {
   "name": "adamant-im",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "author": "ADAMANT Foundation <devs@adamant.im>",
   "license": "GPLv3",
   "description": "Decentralized Messenger",
@@ -111,7 +111,7 @@
     "@vue/test-utils": "^2.4.1",
     "autoprefixer": "^10.4.16",
     "cross-env": "^7.0.3",
-    "electron": "^26.2.2",
+    "electron": "^26.2.4",
     "electron-builder": "^24.6.4",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^8.49.0",

@@ -16,5 +16,8 @@ export default {
   },
   lsk(state) {
     return Object.values(state.lsk)
+  },
+  coins(state, getters) {
+    return [...getters.eth, ...getters.btc, ...getters.doge, ...getters.dash, ...getters.lsk]
   }
 }

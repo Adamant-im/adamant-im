@@ -159,6 +159,11 @@
     "active": "Active",
     "fastest_title": "Choose the fastest node",
     "fastest_tooltip": "Requests will be processed with a fastest node",
+    "tabs": {
+      "adm_nodes": "ADM nodes",
+      "coin_nodes": "Coin nodes"
+    },
+    "label": "Type",
     "host": "Host",
     "inactive": "Inactive",
     "sync": "Sync",

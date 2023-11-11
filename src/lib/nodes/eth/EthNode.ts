@@ -1,6 +1,7 @@
 import Web3Eth from 'web3-eth'
 import { HttpProvider } from 'web3-providers-http'
 import { Node } from '@/lib/nodes/abstract.node'
+import { NODE_LABELS } from '@/lib/nodes/constants'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -14,7 +15,7 @@ export class EthNode extends Node {
   client: Web3Eth
 
   constructor(url: string) {
-    super(url)
+    super(url, NODE_LABELS.EthNode)
 
     this.provider = new HttpProvider(this.url)
     this.client = new Web3Eth(this.provider)

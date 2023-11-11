@@ -1,14 +1,15 @@
 <template>
   <thead :class="classes.root">
     <tr>
-      <th :class="classes.checkbox" />
-      <th :class="classes.th" class="pl-0 pr-2">
+      <th :class="classes.checkbox" v-if="!hideCheckbox" />
+      <th :class="classes.label" class="pl-0" v-if="!hideLabel" />
+      <th :class="classes.th" class="pl-0 pr-2" v-if="!hideHost">
         {{ t('nodes.host') }}
       </th>
-      <th :class="classes.th" class="pl-0 pr-2">
+      <th :class="classes.th" class="pl-0 pr-2" v-if="!hidePing">
         {{ t('nodes.ping') }}
       </th>
-      <th :class="classes.th" class="pl-0 pr-2">
+      <th :class="classes.th" class="pl-0 pr-2" v-if="!hideSocket">
         {{ t('nodes.socket') }}
       </th>
     </tr>
@@ -19,6 +20,23 @@
 import { useI18n } from 'vue-i18n'
 
 export default {
+  props: {
+    hideCheckbox: {
+      type: Boolean
+    },
+    hideLabel: {
+      type: Boolean
+    },
+    hideHost: {
+      type: Boolean
+    },
+    hidePing: {
+      type: Boolean
+    },
+    hideSocket: {
+      type: Boolean
+    }
+  },
   setup() {
     const { t } = useI18n()
 
@@ -26,7 +44,8 @@ export default {
     const classes = {
       root: className,
       th: `${className}__th`,
-      checkbox: `${className}__checkbox`
+      checkbox: `${className}__checkbox`,
+      label: `${className}__label`
     }
 
     return {
@@ -48,6 +67,10 @@ export default {
   &__checkbox {
     padding-left: 0 !important;
     padding-right: 0 !important;
+  }
+
+  &__label {
+    width: 104px;
   }
 }
 </style>

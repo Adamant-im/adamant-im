@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
+import { NODE_LABELS } from '@/lib/nodes/constants'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -9,7 +10,7 @@ export class LskNode extends Node {
   client: AxiosInstance
 
   constructor(url: string) {
-    super(url)
+    super(url, NODE_LABELS.LskNode)
 
     this.client = axios.create({ baseURL: url })
     this.client.interceptors.response.use(null, (error) => {

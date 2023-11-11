@@ -1,18 +1,10 @@
-import { adm } from '@/lib/nodes/adm'
-import { eth } from '@/lib/nodes/eth'
-import { btc } from '@/lib/nodes/btc'
-import { doge } from '@/lib/nodes/doge'
-import { dash } from '@/lib/nodes/dash'
-import { lsk } from '@/lib/nodes/lsk'
+import { nodes } from '@/lib/nodes'
 
 export default {
   updateStatus() {
-    adm.checkHealth()
-    eth.checkHealth()
-    btc.checkHealth()
-    doge.checkHealth()
-    dash.checkHealth()
-    lsk.checkHealth()
+    for (const [, client] of Object.entries(nodes)) {
+      client.checkHealth()
+    }
   },
 
   toggle(context, payload) {

@@ -1,8 +1,6 @@
 import * as bitcoin from 'bitcoinjs-lib'
-import axios from 'axios'
 
 import networks from './networks'
-import { getRandomNodeUrl } from "@/config/utils";
 import BigNumber from '../bignumber'
 import { isPositiveNumber } from '@/lib/numericHelpers'
 import { CryptosInfo } from '../constants'
@@ -18,17 +16,6 @@ const getUnique = (values) => {
     return m
   }, {})
   return Object.keys(map)
-}
-
-const createClient = (url) => {
-  const client = axios.create({ baseURL: url })
-  client.interceptors.response.use(null, (error) => {
-    if (error.response && Number(error.response.status) >= 500) {
-      console.error('Request failed', error)
-    }
-    return Promise.reject(error)
-  })
-  return client
 }
 
 export function getAccount(crypto, passphrase) {
@@ -87,11 +74,10 @@ export default class BtcBaseApi {
 
     // populate unspents with full transaction in HEX
     for (const unspent of unspents) {
-      const txHex = await this._get(`/tx/${unspent.txid}/hex`)
-      unspent.txHex = txHex
+      unspent.txHex = await this.getTransactionHex(unspent.txid)
     }
 
-    const hex = this._buildTransaction(address, amount, unspents, fee)
+    const hex = await this.buildTransaction(address, amount, unspents, fee)
 
     let txid = bitcoin.crypto.sha256(Buffer.from(hex, 'hex'))
     txid = bitcoin.crypto.sha256(Buffer.from(txid))
@@ -116,6 +102,10 @@ export default class BtcBaseApi {
    * @returns {Promise<object>}
    */
   getTransaction(txid) {
+    return Promise.resolve(null)
+  }
+
+  getTransactionHex(txid) {
     return Promise.resolve(null)
   }
 
@@ -146,7 +136,7 @@ export default class BtcBaseApi {
    * @param {number} fee transaction fee in primary units (BTC, DOGE, DASH, etc)
    * @returns {string}
    */
-  _buildTransaction(address, amount, unspents, fee) {
+  buildTransaction(address, amount, unspents, fee) {
     amount = new BigNumber(amount).times(this.multiplier).toNumber()
     amount = Math.floor(amount)
 
