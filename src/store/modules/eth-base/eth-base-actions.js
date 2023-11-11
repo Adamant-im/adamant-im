@@ -1,21 +1,17 @@
-import Web3Eth from 'web3-eth'
 import BigNumber from 'bignumber.js'
 
-import { getRandomNodeUrl } from '@/config/utils'
 import * as utils from '../../../lib/eth-utils'
 import { getTransactions } from '../../../lib/eth-index'
 import * as tf from '../../../lib/transactionsFetching'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { signTransaction, TransactionFactory } from 'web3-eth-accounts'
+import api from '@/lib/nodes/eth'
 
 /** Interval between attempts to fetch the registered tx details */
 const RETRY_TIMEOUT = 20 * 1000
 const CHUNK_SIZE = 25
 
 export default function createActions(config) {
-  const endpoint = getRandomNodeUrl('eth')
-  const api = new Web3Eth(endpoint)
-
   const { onInit = () => {}, initTransaction, parseTransaction, createSpecificActions } = config
 
   return {
@@ -92,7 +88,7 @@ export default function createActions(config) {
           })
         })
         .then((txInfo) => {
-          return api.sendSignedTransaction(txInfo.signedTx.rawTransaction).then(
+          return api.getClient().sendSignedTransaction(txInfo.signedTx.rawTransaction).then(
             (hash) => ({ txInfo, hash }),
             (error) => {
               // Known bug that after Tx sent successfully, this error occurred anyway https://github.com/ethereum/web3.js/issues/3145
@@ -169,7 +165,7 @@ export default function createActions(config) {
       const transaction = context.state.transactions[payload.hash]
       if (!transaction) return
 
-      void api.getBlock(payload.blockNumber).then((block) => {
+      void api.getClient().getBlock(payload.blockNumber).then((block) => {
         // Converting from BigInt into Number must be safe
         const timestamp = BigNumber(block.timestamp.toString()).multipliedBy(1000).toNumber()
 
@@ -204,7 +200,7 @@ export default function createActions(config) {
         ])
       }
 
-      void api.getTransaction(payload.hash).then((tx) => {
+      void api.getClient().getTransaction(payload.hash).then((tx) => {
         if (tx?.input) {
           const transaction = parseTransaction(context, tx)
           const status = existing ? existing.status : 'REGISTERED'
@@ -267,7 +263,7 @@ export default function createActions(config) {
 
       const gasPrice = transaction.gasPrice
 
-      void api.getTransactionReceipt(payload.hash).then((tx) => {
+      void api.getClient().getTransactionReceipt(payload.hash).then((tx) => {
         let replay = true
 
         if (tx) {

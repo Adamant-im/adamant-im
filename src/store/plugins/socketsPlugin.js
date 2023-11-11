@@ -49,7 +49,7 @@ export default store => {
       mutation.type === 'nodes/status' ||
       mutation.type === 'nodes/toggle'
     ) {
-      socketClient.setNodes(store.getters['nodes/list'])
+      socketClient.setNodes(store.getters['nodes/adm'])
     }
 
     if (mutation.type === 'nodes/useFastest') {

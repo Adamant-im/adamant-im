@@ -1,21 +1,23 @@
-import apiClient from '../../../lib/adamant-api-client'
+import { nodes } from '@/lib/nodes'
 
 export default {
-  restore ({ state }) {
-    const nodes = Object.values(state.list)
+  restore({ state }) {
+    const admNodes = Object.values(state.adm)
 
-    nodes.forEach(node => apiClient.toggleNode(node.url, node.active))
+    admNodes.forEach((node) => nodes.adm.toggleNode(node.url, node.active))
   },
 
-  updateStatus () {
-    apiClient.updateStatus()
+  updateStatus() {
+    for (const [, client] of Object.entries(nodes)) {
+      client.checkHealth()
+    }
   },
 
-  toggle (context, payload) {
+  toggle(context, payload) {
     context.commit('toggle', payload)
   },
 
-  setUseFastest (context, payload) {
+  setUseFastest(context, payload) {
     context.commit('useFastest', payload)
   }
 }

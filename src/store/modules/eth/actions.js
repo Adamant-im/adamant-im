@@ -22,8 +22,8 @@ function storeEthAddress(context) {
 }
 
 const initTransaction = async (api, context, ethAddress, amount, increaseFee) => {
-  const nonce = await api.getTransactionCount(context.state.address)
-  const gasPrice = await api.getGasPrice()
+  const nonce = await api.getClient().getTransactionCount(context.state.address)
+  const gasPrice = await api.getClient().getGasPrice()
 
   const transaction = {
     from: context.state.address,
@@ -34,6 +34,7 @@ const initTransaction = async (api, context, ethAddress, amount, increaseFee) =>
   }
 
   const gasLimit = await api
+    .getClient()
     .estimateGas(transaction)
     .catch(() => BigInt(DEFAULT_ETH_TRANSFER_GAS_LIMIT))
   transaction.gasLimit = increaseFee ? gasLimit * BigInt(INCREASE_FEE_MULTIPLIER) : gasLimit
@@ -63,7 +64,7 @@ const createSpecificActions = (api) => ({
       }
 
       try {
-        const rawBalance = await api.getBalance(state.address, 'latest')
+        const rawBalance = await api.getClient().getBalance(state.address, 'latest')
         const balance = Number(utils.toEther(rawBalance.toString()))
 
         commit('balance', balance)
@@ -83,23 +84,32 @@ const createSpecificActions = (api) => ({
     if (!context.state.address) return
 
     // Balance
-    void api.getBalance(context.state.address, 'latest').then((balance) => {
-      context.commit('balance', Number(utils.toEther(balance.toString())))
-      context.commit('setBalanceStatus', FetchStatus.Success)
-    })
+    void api
+      .getClient()
+      .getBalance(context.state.address, 'latest')
+      .then((balance) => {
+        context.commit('balance', Number(utils.toEther(balance.toString())))
+        context.commit('setBalanceStatus', FetchStatus.Success)
+      })
 
     // Current gas price
-    void api.getGasPrice().then((price) => {
-      context.commit('gasPrice', {
-        gasPrice: Number(price),
-        fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS_LIMIT, price)).toFixed(8)
+    void api
+      .getClient()
+      .getGasPrice()
+      .then((price) => {
+        context.commit('gasPrice', {
+          gasPrice: Number(price),
+          fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS_LIMIT, price)).toFixed(8)
+        })
       })
-    })
 
     // Current block number
-    void api.getBlockNumber().then((number) => {
-      context.commit('blockNumber', Number(number))
-    })
+    void api
+      .getClient()
+      .getBlockNumber()
+      .then((number) => {
+        context.commit('blockNumber', Number(number))
+      })
 
     const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)
     setTimeout(() => {
