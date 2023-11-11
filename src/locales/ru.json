@@ -171,7 +171,6 @@
     "ms": "мс",
     "nodeLabelDescription": "Поддержите децентрализацию и повысьте уровень приватности — <a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">установите свой узел (ноду) АДАМАНТа</a>. Чтобы добавить свои узлы в список для подключения, вам нужно <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">развернуть свое веб-приложение на отдельном домене</a>. Это ограничение связано с политикой безопасности Content Security Policy (CSP).",
     "offline": "Недоступна",
-    "height": "Высота",
     "ping": "Пинг",
     "socket": "Сокеты",
     "unsupported": "Не поддерживается",

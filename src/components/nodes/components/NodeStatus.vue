@@ -16,7 +16,10 @@
     />
   </div>
 
-  <span v-if="nodeStatusText" :class="classes.statusText">{{ nodeStatusText }}</span>
+  <span v-if="nodeStatusDetail" :class="classes.statusText">
+    <v-icon v-if="nodeStatusDetail.icon" :icon="nodeStatusDetail.icon" :size="12" />
+    {{ nodeStatusDetail.text }}
+  </span>
 </template>
 
 <script lang="ts">
@@ -45,11 +48,11 @@ export default defineComponent({
   setup(props) {
     const { node } = toRefs(props)
 
-    const { nodeStatusTitle, nodeStatusText, nodeStatusColor } = useNodeStatus(node)
+    const { nodeStatusTitle, nodeStatusDetail, nodeStatusColor } = useNodeStatus(node)
 
     return {
       nodeStatusTitle,
-      nodeStatusText,
+      nodeStatusDetail,
       nodeStatusColor,
       classes
     }

@@ -5,6 +5,13 @@ import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { NodeStatus } from '@/lib/nodes/types'
 
 type StatusColor = 'green' | 'red' | 'grey' | 'orange'
+type NodeStatusDetail = {
+  text: string | number
+  /**
+   * Icon name
+   */
+  icon?: string
+}
 
 function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation) {
   const i18n: Record<NodeStatus, string> = {
@@ -19,18 +26,26 @@ function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation) {
   return t(i18nKey)
 }
 
-function getNodeStatusText(node: NodeStatusResult, t: VueI18nTranslation) {
-  if (node.online) {
-    return t('nodes.height') + ': ' + node.height
-  }
-
+function getNodeStatusDetail(
+  node: NodeStatusResult,
+  t: VueI18nTranslation
+): NodeStatusDetail | null {
   if (!node.hasMinNodeVersion) {
-    return t('nodes.unsupported_reason_api_version')
+    return {
+      text: t('nodes.unsupported_reason_api_version')
+    }
   } else if (!node.hasSupportedProtocol) {
-    return t('nodes.unsupported_reason_protocol')
+    return {
+      text: t('nodes.unsupported_reason_protocol')
+    }
+  } else if (node.online) {
+    return {
+      text: node.height,
+      icon: 'mdi-cube-outline'
+    }
   }
 
-  return ''
+  return null
 }
 
 function getNodeStatusColor(node: NodeStatusResult) {
@@ -47,7 +62,7 @@ function getNodeStatusColor(node: NodeStatusResult) {
 
 type UseNodeStatusResult = {
   nodeStatusTitle: Ref<string>
-  nodeStatusText: Ref<string>
+  nodeStatusDetail: Ref<NodeStatusDetail | null>
   nodeStatusColor: Ref<StatusColor>
 }
 
@@ -55,12 +70,12 @@ export function useNodeStatus(node: Ref<NodeStatusResult>): UseNodeStatusResult 
   const { t } = useI18n()
 
   const nodeStatusTitle = computed(() => getNodeStatusTitle(node.value, t))
-  const nodeStatusText = computed(() => getNodeStatusText(node.value, t))
+  const nodeStatusDetail = computed(() => getNodeStatusDetail(node.value, t))
   const nodeStatusColor = computed(() => getNodeStatusColor(node.value))
 
   return {
     nodeStatusTitle,
-    nodeStatusText,
+    nodeStatusDetail,
     nodeStatusColor
   }
 }
