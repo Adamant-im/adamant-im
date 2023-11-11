@@ -169,7 +169,17 @@
     "socket": "Socket",
     "unsupported": "Unsupported",
     "use_socket_connection": "Use socket connections",
-    "use_socket_connection_tooltip": "WebSockets allow to get new messages instantly like P2P messengers"
+    "use_socket_connection_tooltip": "WebSockets allow to get new messages instantly like P2P messengers",
+    "custom_node": {
+      "dialog_title": "Add a custom node",
+      "form": {
+        "host_input": {
+          "label": "Host",
+          "hint": "e.g. https://your-custom-node-url.com"
+        },
+        "submit_button_title": "Add"
+      }
+    }
   },
   "notifications": {
     "tabMessage": {
