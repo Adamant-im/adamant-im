@@ -38,7 +38,7 @@ const initTransaction = async (api, context, ethAddress, amount, increaseFee) =>
   const gasLimit = await api
     .estimateGas(transaction)
     .catch(() => BigInt(DEFAULT_ERC20_TRANSFER_GAS_LIMIT))
-  transaction.gasLimit = increaseFee ? gasLimit * BigInt(INCREASE_FEE_MULTIPLIER) : gasLimit
+  transaction.gasLimit = increaseFee ? ethUtils.increaseFee(gasLimit) : gasLimit
 
   return transaction
 }
