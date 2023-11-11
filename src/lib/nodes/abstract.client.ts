@@ -73,7 +73,7 @@ export abstract class Client<N extends Node> {
   toggleNode(url: string, active: boolean) {
     const node = this.nodes.find((x) => x.url === url)
     if (node) {
-      node.toggleNode(active)
+      return node.toggleNode(active)
     }
   }
 

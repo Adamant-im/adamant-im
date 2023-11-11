@@ -43,7 +43,7 @@ export default {
     NodeColumn,
     NodeStatus,
     NodeVersion,
-    SocketSupport,
+    SocketSupport
   },
   props: {
     node: {

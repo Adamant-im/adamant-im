@@ -196,6 +196,8 @@ export abstract class Node<C = unknown> {
     this.active = active
 
     nodesStorage.saveActive(this.url, active)
+
+    return this.getStatus()
   }
 }
 
