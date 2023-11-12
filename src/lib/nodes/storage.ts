@@ -39,15 +39,17 @@ function saveState(newState: State) {
   window.localStorage.setItem(NODES_STATE_STORAGE_KEY, rawData)
 }
 
-function getOptions(): Options {
-  return getItem(NODES_OPTIONS_STORAGE_KEY, {
-    adm: { useFastest: false },
-    btc: { useFastest: false },
-    doge: { useFastest: false },
-    dash: { useFastest: false },
-    eth: { useFastest: false },
-    lsk: { useFastest: false }
-  } as const)
+const defaultOptions: Options = {
+  adm: { useFastest: false },
+  btc: { useFastest: false },
+  doge: { useFastest: false },
+  dash: { useFastest: false },
+  eth: { useFastest: false },
+  lsk: { useFastest: false }
+}
+
+function getOptions() {
+  return getItem(NODES_OPTIONS_STORAGE_KEY, defaultOptions)
 }
 
 function saveOptions(newOptions: Options) {
