@@ -9,7 +9,7 @@
         :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
       >
       </v-badge>
-      <v-icon class="padding" icon="mdi-arrow-left" />
+      <v-icon icon="mdi-arrow-left" />
     </v-btn>
     <div v-if="!isWelcomeChat(partnerId)">
       <slot name="avatar-toolbar" />
