@@ -165,10 +165,10 @@ export abstract class Node<C = unknown> {
   }
 
   getNodeStatus(): NodeStatus {
-    if (!this.hasMinNodeVersion() || !this.hasSupportedProtocol) {
-      return 'unsupported_version'
-    } else if (!this.active) {
+    if (!this.active) {
       return 'disabled'
+    } else if (!this.hasMinNodeVersion() || !this.hasSupportedProtocol) {
+      return 'unsupported_version'
     } else if (!this.online) {
       return 'offline'
     } else if (this.outOfSync) {

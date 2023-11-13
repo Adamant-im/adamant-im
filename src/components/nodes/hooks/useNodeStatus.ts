@@ -30,6 +30,10 @@ function getNodeStatusDetail(
   node: NodeStatusResult,
   t: VueI18nTranslation
 ): NodeStatusDetail | null {
+  if (!node.active) {
+    return null
+  }
+
   if (!node.hasMinNodeVersion) {
     return {
       text: t('nodes.unsupported_reason_api_version')

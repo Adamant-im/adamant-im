@@ -9,11 +9,11 @@
       <NodeVersion v-if="node.version" :node="node" />
     </NodeColumn>
 
-    <NodeColumn :colspan="isUnsupported ? 2 : 1">
+    <NodeColumn :colspan="!showSocketColumn ? 2 : 1">
       <NodeStatus :node="node" />
     </NodeColumn>
 
-    <NodeColumn v-if="!isUnsupported">
+    <NodeColumn v-if="showSocketColumn">
       <SocketSupport :node="node" />
     </NodeColumn>
   </tr>
@@ -59,6 +59,8 @@ export default {
     const socketSupport = computed(() => props.node.socketSupport)
     const isUnsupported = computed(() => props.node.status === 'unsupported_version')
 
+    const showSocketColumn = computed(() => active.value && !isUnsupported.value)
+
     const toggleActiveStatus = () => {
       store.dispatch('nodes/toggle', {
         url: url.value,
@@ -73,6 +75,7 @@ export default {
       active,
       socketSupport,
       isUnsupported,
+      showSocketColumn,
       toggleActiveStatus
     }
   }
