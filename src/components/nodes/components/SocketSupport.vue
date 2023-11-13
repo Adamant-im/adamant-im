@@ -1,19 +1,34 @@
 <template>
   <v-icon
     :icon="node.socketSupport ? 'mdi-check' : 'mdi-close'"
-    :class="node.socketSupport ? classes.supported : classes.unsupported"
+    :class="{
+      [classes.green]: socketStatus === 'supported',
+      [classes.red]: socketStatus === 'unsupported',
+      [classes.grey]: socketStatus === 'disabled'
+    }"
   />
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
 
 import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
 
 const className = 'socket-support'
 const classes = {
-  supported: `${className}--supported`,
-  unsupported: `${className}--unsupported`
+  green: `${className}--green`,
+  red: `${className}--red`,
+  grey: `${className}--grey`
+}
+
+type SocketSupportStatus = 'supported' | 'unsupported' | 'disabled'
+
+function getSocketStatus(node: NodeStatusResult): SocketSupportStatus {
+  if (!node.active) {
+    return 'disabled'
+  }
+
+  return node.socketSupport ? 'supported' : 'unsupported'
 }
 
 export default defineComponent({
@@ -23,9 +38,12 @@ export default defineComponent({
       required: true
     }
   },
-  setup() {
+  setup(props) {
+    const socketStatus = computed(() => getSocketStatus(props.node))
+
     return {
-      classes
+      classes,
+      socketStatus
     }
   }
 })
@@ -40,22 +58,28 @@ export default defineComponent({
 
 .v-theme--light {
   .socket-support {
-    &--supported {
+    &--green {
       color: map-get($adm-colors, 'good') !important;
     }
-    &--unsupported {
+    &--red {
       color: map-get($adm-colors, 'danger') !important;
+    }
+    &--grey {
+      color: map-get($adm-colors, 'grey') !important;
     }
   }
 }
 
 .v-theme--dark {
   .socket-support {
-    &--supported {
+    &--green {
       color: map-get($adm-colors, 'good') !important;
     }
-    &--unsupported {
+    &--red {
       color: map-get($adm-colors, 'danger') !important;
+    }
+    &--grey {
+      color: map-get($adm-colors, 'grey') !important;
     }
   }
 }
