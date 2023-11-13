@@ -39,7 +39,8 @@
       </v-list-item-title>
 
       <v-list-item-subtitle :class="`${className}__date`" class="a-text-explanation-small">
-        {{ formatDate(createdAt) }}
+        <span v-if="!isNaN(createdAt)">{{ formatDate(createdAt) }}</span>
+        <span v-else-if="status" :class="`${className}__status`">{{ status }}</span>
       </v-list-item-subtitle>
 
       <template #append>
@@ -77,6 +78,10 @@ export default {
     },
     // Crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     senderId: {
+      type: String,
+      required: true
+    },
+    status: {
       type: String,
       required: true
     },
@@ -267,6 +272,9 @@ export default {
   }
   &__action {
     min-width: 36px;
+  }
+  &__status {
+    color: map-get($adm-colors, 'attention');
   }
   // Do not break computed length of v-divider
   /*&__tile*/

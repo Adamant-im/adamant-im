@@ -1,4 +1,8 @@
-const sortFunc = (a, b) => ((b && b.timestamp) || 0) - ((a && a.timestamp) || 0)
+const sortFunc = (a, b) => {
+  if (a && !a.timestamp) return -1
+  if (b && !b.timestamp) return 1
+  return ((b && b.timestamp) || 0) - ((a && a.timestamp) || 0)
+}
 
 export default {
   transaction: (state) => (id) => state.transactions[id],
