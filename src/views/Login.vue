@@ -7,7 +7,8 @@
     <container>
       <div class="text-right">
         <language-switcher prepend-icon="mdi-chevron-right" />
-
+      </div>
+      <div class="text-right">
         <v-btn @click="$router.push('/options/nodes')" icon="mdi-cog" variant="plain" />
       </div>
 
