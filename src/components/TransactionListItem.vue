@@ -40,7 +40,9 @@
 
       <v-list-item-subtitle :class="`${className}__date`" class="a-text-explanation-small">
         <span v-if="!isNaN(createdAt)">{{ formatDate(createdAt) }}</span>
-        <span v-else-if="status" :class="`${className}__status`">{{ status }}</span>
+        <span v-else-if="status" :class="`${className}__status`">{{
+          $t(`transaction.statuses.${status}`)
+        }}</span>
       </v-list-item-subtitle>
 
       <template #append>
