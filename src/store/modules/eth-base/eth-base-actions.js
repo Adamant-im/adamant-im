@@ -57,6 +57,9 @@ export default function createActions(config) {
     },
 
     sendTokens(context, { amount, admAddress, address, comments, increaseFee, replyToId }) {
+      if (context.state.isTransactionInProcess) return
+
+      context.commit('setTransactionInProcess', true)
       address = address.trim()
       const crypto = context.state.crypto
 
@@ -88,17 +91,20 @@ export default function createActions(config) {
           })
         })
         .then((txInfo) => {
-          return api.getClient().sendSignedTransaction(txInfo.signedTx.rawTransaction).then(
-            (hash) => ({ txInfo, hash }),
-            (error) => {
-              // Known bug that after Tx sent successfully, this error occurred anyway https://github.com/ethereum/web3.js/issues/3145
-              if (!error.toString().includes('Failed to check for transaction receipt')) {
-                return { txInfo, error }
-              } else {
-                return { txInfo, hash: txInfo.signedTx.transactionHash }
+          return api
+            .getClient()
+            .sendSignedTransaction(txInfo.signedTx.rawTransaction)
+            .then(
+              (hash) => ({ txInfo, hash }),
+              (error) => {
+                // Known bug that after Tx sent successfully, this error occurred anyway https://github.com/ethereum/web3.js/issues/3145
+                if (!error.toString().includes('Failed to check for transaction receipt')) {
+                  return { txInfo, error }
+                } else {
+                  return { txInfo, hash: txInfo.signedTx.transactionHash }
+                }
               }
-            }
-          )
+            )
         })
         .then((sentTxInfo) => {
           // Since London OpenEthereum (or web3?) update v3.3.0-rc.4, hash is an object, not a hex string
@@ -154,6 +160,7 @@ export default function createActions(config) {
             return sentTxInfo.hash
           }
         })
+        .finally(() => context.commit('setTransactionInProcess', false))
     },
 
     /**
@@ -165,17 +172,20 @@ export default function createActions(config) {
       const transaction = context.state.transactions[payload.hash]
       if (!transaction) return
 
-      void api.getClient().getBlock(payload.blockNumber).then((block) => {
-        // Converting from BigInt into Number must be safe
-        const timestamp = BigNumber(block.timestamp.toString()).multipliedBy(1000).toNumber()
+      void api
+        .getClient()
+        .getBlock(payload.blockNumber)
+        .then((block) => {
+          // Converting from BigInt into Number must be safe
+          const timestamp = BigNumber(block.timestamp.toString()).multipliedBy(1000).toNumber()
 
-        context.commit('transactions', [
-          {
-            hash: transaction.hash,
-            timestamp
-          }
-        ])
-      })
+          context.commit('transactions', [
+            {
+              hash: transaction.hash,
+              timestamp
+            }
+          ])
+        })
     },
 
     /**
@@ -200,56 +210,59 @@ export default function createActions(config) {
         ])
       }
 
-      void api.getClient().getTransaction(payload.hash).then((tx) => {
-        if (tx?.input) {
-          const transaction = parseTransaction(context, tx)
-          const status = existing ? existing.status : 'REGISTERED'
-          if (transaction) {
-            context.commit('transactions', [
-              {
-                ...transaction,
-                status
-              }
-            ])
-            // Fetch receipt details: status and actual gas consumption
-            const { attempt, ...receiptPayload } = payload
-            context.dispatch('getTransactionReceipt', receiptPayload)
-            // Now we know that the transaction has been registered by the ETH network.
-            // Nothing else to do here, let's proceed to checking its status (see getTransactionReceipt)
-            return
+      void api
+        .getClient()
+        .getTransaction(payload.hash)
+        .then((tx) => {
+          if (tx?.input) {
+            const transaction = parseTransaction(context, tx)
+            const status = existing ? existing.status : 'REGISTERED'
+            if (transaction) {
+              context.commit('transactions', [
+                {
+                  ...transaction,
+                  status
+                }
+              ])
+              // Fetch receipt details: status and actual gas consumption
+              const { attempt, ...receiptPayload } = payload
+              context.dispatch('getTransactionReceipt', receiptPayload)
+              // Now we know that the transaction has been registered by the ETH network.
+              // Nothing else to do here, let's proceed to checking its status (see getTransactionReceipt)
+              return
+            }
           }
-        }
 
-        const attempt = payload.attempt || 0
-        const retryCount = tf.getPendingTxRetryCount(
-          payload.timestamp || existing?.timestamp,
-          context.state.crypto
-        )
-        const retry = attempt < retryCount
-        const retryTimeout = tf.getPendingTxRetryTimeout(
-          payload.timestamp || existing?.timestamp,
-          context.state.crypto
-        )
+          const attempt = payload.attempt || 0
+          const retryCount = tf.getPendingTxRetryCount(
+            payload.timestamp || existing?.timestamp,
+            context.state.crypto
+          )
+          const retry = attempt < retryCount
+          const retryTimeout = tf.getPendingTxRetryTimeout(
+            payload.timestamp || existing?.timestamp,
+            context.state.crypto
+          )
 
-        if (!retry) {
-          // Give up, if transaction could not be found after so many attempts
-          context.commit('transactions', [{ hash: payload.hash, status: 'REJECTED' }])
-        } else if (!payload.updateOnly) {
-          // In case of an error or a pending transaction fetch its details once again later
-          // Increment attempt counter, if no transaction was found so far
-          const newPayload = tx
-            ? payload
-            : {
-                ...payload,
-                attempt: attempt + 1,
-                force: true,
-                updateOnly: false,
-                dropStatus: false
-              }
+          if (!retry) {
+            // Give up, if transaction could not be found after so many attempts
+            context.commit('transactions', [{ hash: payload.hash, status: 'REJECTED' }])
+          } else if (!payload.updateOnly) {
+            // In case of an error or a pending transaction fetch its details once again later
+            // Increment attempt counter, if no transaction was found so far
+            const newPayload = tx
+              ? payload
+              : {
+                  ...payload,
+                  attempt: attempt + 1,
+                  force: true,
+                  updateOnly: false,
+                  dropStatus: false
+                }
 
-          setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
-        }
-      })
+            setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
+          }
+        })
     },
 
     /**
@@ -263,44 +276,47 @@ export default function createActions(config) {
 
       const gasPrice = transaction.gasPrice
 
-      void api.getClient().getTransactionReceipt(payload.hash).then((tx) => {
-        let replay = true
+      void api
+        .getClient()
+        .getTransactionReceipt(payload.hash)
+        .then((tx) => {
+          let replay = true
 
-        if (tx) {
-          const update = {
-            hash: payload.hash,
-            fee: utils.calculateFee(tx.gasUsed, gasPrice)
+          if (tx) {
+            const update = {
+              hash: payload.hash,
+              fee: utils.calculateFee(tx.gasUsed, gasPrice)
+            }
+
+            if (Number(tx.status) === 0) {
+              // Status "0x0" means that the transaction has been rejected
+              update.status = 'REJECTED'
+            } else if (tx.blockNumber) {
+              // If blockNumber is not null, the transaction is confirmed
+              update.status = 'CONFIRMED'
+              update.blockNumber = Number(tx.blockNumber)
+            }
+
+            context.commit('transactions', [update])
+
+            if (tx.blockNumber) {
+              context.dispatch('getBlock', {
+                ...payload,
+                blockNumber: Number(tx.blockNumber)
+              })
+            }
+
+            // Re-fetch tx details if it's status is still unknown
+            replay = !update.status
           }
 
-          if (Number(tx.status) === 0) {
-            // Status "0x0" means that the transaction has been rejected
-            update.status = 'REJECTED'
-          } else if (tx.blockNumber) {
-            // If blockNumber is not null, the transaction is confirmed
-            update.status = 'CONFIRMED'
-            update.blockNumber = Number(tx.blockNumber)
+          if (replay) {
+            // In case of an error or a pending transaction fetch its receipt once again later
+            // Increment attempt counter, if no transaction was found so far
+            const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
+            setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), RETRY_TIMEOUT)
           }
-
-          context.commit('transactions', [update])
-
-          if (tx.blockNumber) {
-            context.dispatch('getBlock', {
-              ...payload,
-              blockNumber: Number(tx.blockNumber)
-            })
-          }
-
-          // Re-fetch tx details if it's status is still unknown
-          replay = !update.status
-        }
-
-        if (replay) {
-          // In case of an error or a pending transaction fetch its receipt once again later
-          // Increment attempt counter, if no transaction was found so far
-          const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
-          setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), RETRY_TIMEOUT)
-        }
-      })
+        })
     },
 
     /**

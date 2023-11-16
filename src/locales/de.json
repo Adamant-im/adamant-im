@@ -230,7 +230,8 @@
     "no_address_title": "Recipient has no {crypto} wallet yet",
     "send_button": "Betrag senden",
     "to_address_label": "An die Adresse",
-    "to_name_label": "To {name}"
+    "to_name_label": "To {name}",
+    "tooFast": "Offenbar haben Sie eine ausstehende {coin} Transaktion. Warten Sie, bis die Blockchain es verarbeitet hat, und versuchen Sie es erneut."
   },
   "votes": {
     "delegate_approval": "Blocks approved",

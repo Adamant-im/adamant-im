@@ -335,6 +335,7 @@
     "send_button": "Send",
     "to_address_label": "To Address",
     "to_name_label": "To {name}",
+    "tooFast": "It seems you have a pending {coin} tx. Wait while the blockchain confirms it, and try again.",
     "warning_on_partner_address": {
       "warning": "Warning",
       "headline": "Partner's account may be compromised",

@@ -1,17 +1,18 @@
 import { FetchStatus } from '@/lib/constants'
 
 export default () => ({
-  balance: 0,
-  balanceStatus: FetchStatus.Loading,
   address: '',
-  publicKey: null,
-  privateKey: null,
   areOlderLoading: false,
   areRecentLoading: false,
-  transactions: { },
-  transactionsCount: 0, // browser stores ints, but fails with objects and arrays
   areTransactionsLoading: false,
-  minHeight: Infinity,
+  balance: 0,
+  balanceStatus: FetchStatus.Loading,
+  bottomReached: false,
+  isTransactionInProcess: false,
   maxHeight: -1,
-  bottomReached: false
+  minHeight: Infinity,
+  privateKey: null,
+  publicKey: null,
+  transactions: {},
+  transactionsCount: 0 // browser stores ints, but fails with objects and arrays
 })
