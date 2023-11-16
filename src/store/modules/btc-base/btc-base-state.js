@@ -2,11 +2,12 @@ import { FetchStatus } from '@/lib/constants'
 
 export default () => ({
   address: '',
+  areOlderLoading: false,
+  areRecentLoading: false,
+  areTransactionsLoading: false,
   balance: 0,
   balanceStatus: FetchStatus.Loading,
-  transactions: { },
-  areTransactionsLoading: false,
-  areRecentLoading: false,
-  areOlderLoading: false,
-  bottomReached: false
+  bottomReached: false,
+  isTransactionInProcess: false,
+  transactions: {}
 })
