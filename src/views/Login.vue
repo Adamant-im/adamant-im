@@ -8,8 +8,8 @@
       <div class="text-right">
         <language-switcher prepend-icon="mdi-chevron-right" />
       </div>
-      <div class="text-right">
-        <v-btn @click="$router.push('/options/nodes')" icon variant="flat" :size="32">
+      <div class="text-right" style="height: 0">
+        <v-btn @click="$router.push('/options/nodes')" icon variant="flat" :size="32" style="margin-right: 8px">
           <v-icon icon="mdi-cog"/>
         </v-btn>
       </div>
