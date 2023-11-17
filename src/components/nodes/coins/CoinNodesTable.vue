@@ -14,7 +14,6 @@ import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
 import CoinNodesTableItem from './CoinNodesTableItem.vue'
-import { NODE_LABELS } from '@/lib/nodes/constants'
 import { type NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { sortNodesFn } from '@/components/nodes/utils/sortNodesFn'
 
@@ -40,7 +39,6 @@ export default defineComponent({
 
     return {
       nodes,
-      NODE_LABELS,
       classes
     }
   }

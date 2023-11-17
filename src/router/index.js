@@ -25,7 +25,7 @@ const routes = [
     name: 'Nodes',
     component: Nodes,
     meta: {
-      requiresAuth: true,
+      requiresAuth: false,
       layout: 'no-container',
       scrollPosition: {
         x: 0,

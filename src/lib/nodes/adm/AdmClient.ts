@@ -11,10 +11,9 @@ import { Client } from '../abstract.client'
  */
 export class AdmClient extends Client<AdmNode> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
-    super()
+    super('adm')
     this.nodes = endpoints.map((endpoint) => new AdmNode(endpoint, minNodeVersion))
     this.minNodeVersion = minNodeVersion
-    this.useFastest = false
 
     void this.watchNodeStatusChange()
   }

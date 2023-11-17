@@ -41,7 +41,10 @@ export class AdmNode extends Node {
       baseURL: this.url
     })
 
-    void this.fetchNodeInfo()
+    // Don't fetch node info if user disabled it
+    if (this.active) {
+      void this.fetchNodeInfo()
+    }
     void this.startHealthcheck()
   }
 
