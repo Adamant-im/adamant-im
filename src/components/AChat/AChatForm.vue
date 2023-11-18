@@ -19,10 +19,11 @@
       v-on="listeners"
     >
       <template v-if="showSendButton" #append-inner>
+        <slot name="append" />
         <v-icon class="a-chat__send-icon" icon="mdi-send" size="28" />
       </template>
       <template #prepend>
-        <slot name="prepend" />
+        <chat-emojis @get-emoji-picture="emojiPicture"></chat-emojis>
       </template>
     </v-textarea>
 
@@ -32,8 +33,10 @@
 
 <script>
 import { nextTick } from 'vue'
+import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 
 export default {
+  components: { ChatEmojis },
   props: {
     messageText: {
       default: '',
@@ -124,6 +127,11 @@ export default {
     }
   },
   methods: {
+    emojiPicture(emoji) {
+      this.message = this.message + emoji
+      this.focus()
+    },
+
     submitMessage() {
       const error = this.validator(this.message)
       if (error === false) {

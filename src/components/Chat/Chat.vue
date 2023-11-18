@@ -212,8 +212,9 @@
           @esc="replyMessageId = -1"
           :validator="messageValidator.bind(this)"
         >
-          <template #prepend>
+          <template #append>
             <chat-menu
+              class="chat-menu"
               :partner-id="partnerId"
               :reply-to-id="replyMessageId > -1 ? replyMessageId : undefined"
             />
@@ -281,6 +282,7 @@ import {
   AChatActionsOverlay,
   AChatReactionSelect
 } from '@/components/AChat'
+
 import ChatToolbar from '@/components/Chat/ChatToolbar'
 import ChatAvatar from '@/components/Chat/ChatAvatar'
 import ChatMenu from '@/components/Chat/ChatMenu'
@@ -777,6 +779,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.chat-menu {
+  margin-right: 8px;
+}
 .chat {
   height: 100vh;
   box-shadow: none;
