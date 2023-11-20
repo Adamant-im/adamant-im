@@ -277,16 +277,17 @@
       "adm_registered": "Подтверждена как зарегистрированная на узле АДАМАНТа (пока 0 подтверждений сети)"
     },
     "inconsistent_reasons": {
-      "unknown": "Не удалось проверить транзакцию. Что-то пошло не так",
-      "no_recipient_crypto_address": "Нет {crypto}-адреса получателя",
-      "no_sender_crypto_address": "Нет {crypto}-адреса отправителя",
+      "is_duplicate": "Задублированная транзакция",
       "no_recipient_adm_id": "Нет ADM-адреса получателя",
+      "no_recipient_crypto_address": "Нет {crypto}-адреса получателя",
       "no_sender_adm_id": "Нет ADM-адреса отправителя",
-      "wrong_tx_hash": "Неверный хэш транзакции. Остерегайтесь мошенников",
+      "no_sender_crypto_address": "Нет {crypto}-адреса отправителя",
+      "recipient_crypto_address_mismatch": "{crypto}-адрес получателя не сходится. Остерегайтесь мошенников",
+      "sender_crypto_address_mismatch": "{crypto}-адрес отправителя не сходится. Остерегайтесь мошенников",
+      "unknown": "Не удалось проверить транзакцию. Что-то пошло не так",
       "wrong_amount": "Неверное количество {crypto}. Остерегайтесь мошенников",
       "wrong_timestamp": "Сообщение и {crypto}-транзакция имеют различное время. Это возможно, но лучше перепроверьте",
-      "sender_crypto_address_mismatch": "{crypto}-адрес отправителя не сходится. Остерегайтесь мошенников",
-      "recipient_crypto_address_mismatch": "{crypto}-адрес получателя не сходится. Остерегайтесь мошенников"
+      "wrong_tx_hash": "Неверный хэш транзакции. Остерегайтесь мошенников"
     },
     "transactions": "Транзакции",
     "txid": "№ транзакции"

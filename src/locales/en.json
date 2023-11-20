@@ -276,16 +276,17 @@
       "adm_registered": "Confirmed as registered in ADAMANT blockchain (yet 0 network confirmations)"
     },
     "inconsistent_reasons": {
-      "unknown": "Failed to check Tx. Somethings went wrong",
-      "no_recipient_crypto_address": "Unable to get recipient's {crypto} address",
-      "no_sender_crypto_address": "Unable to get sender's {crypto} address",
+      "is_duplicate": "Duplicated transaction",
       "no_recipient_adm_id": "Unable to get recipient's ADM address",
+      "no_recipient_crypto_address": "Unable to get recipient's {crypto} address",
       "no_sender_adm_id": "Unable to get sender's ADM address",
-      "wrong_tx_hash": "Wrong Tx hash. Be aware of fraud",
+      "no_sender_crypto_address": "Unable to get sender's {crypto} address",
+      "recipient_crypto_address_mismatch": "Recipient's {crypto} address differs. Be aware of fraud",
+      "sender_crypto_address_mismatch": "Sender's {crypto} address differs. Be aware of fraud",
+      "unknown": "Failed to check Tx. Somethings went wrong",
       "wrong_amount": "Wrong {crypto} amount. Be aware of fraud",
       "wrong_timestamp": "Message and {crypto} Tx has different timestamps. It is possible, but check twice",
-      "sender_crypto_address_mismatch": "Sender's {crypto} address differs. Be aware of fraud",
-      "recipient_crypto_address_mismatch": "Recipient's {crypto} address differs. Be aware of fraud"
+      "wrong_tx_hash": "Wrong Tx hash. Be aware of fraud"
     },
     "transactions": "Transactions",
     "txid": "Transaction #"
