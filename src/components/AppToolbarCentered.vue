@@ -86,6 +86,12 @@ export default {
   },
   methods: {
     goBack () {
+      // there are no pages in history to go back
+      if (history.length === 1) {
+        this.$router.replace('/')
+        return
+      }
+
       this.$router.back()
     }
   }
