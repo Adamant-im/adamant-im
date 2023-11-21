@@ -17,13 +17,14 @@
       density="compact"
       color="primary"
       v-on="listeners"
+      autofocus="true"
     >
+      <template #prepend-inner>
+        <chat-emojis @get-emoji-picture="emojiPicture"></chat-emojis>
+      </template>
       <template v-if="showSendButton" #append-inner>
         <slot name="append" />
         <v-icon class="a-chat__send-icon" icon="mdi-send" size="28" />
-      </template>
-      <template #prepend>
-        <chat-emojis @get-emoji-picture="emojiPicture"></chat-emojis>
       </template>
     </v-textarea>
 
@@ -180,7 +181,8 @@ export default {
       margin-inline-end: 9px;
       padding-top: 0;
     }
-    .v-field__append-inner {
+    .v-field__append-inner,
+    .v-field__prepend-inner {
       margin-top: auto;
       padding-top: 0;
       margin-bottom: 4px;

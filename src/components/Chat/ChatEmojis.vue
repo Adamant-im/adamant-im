@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-menu>
+    <v-menu :close-on-content-click="false">
       <template v-slot:activator="{ props }">
         <v-icon class="chat-emojis__icon" icon="mdi-emoticon-outline" size="28" v-bind="props" />
       </template>
