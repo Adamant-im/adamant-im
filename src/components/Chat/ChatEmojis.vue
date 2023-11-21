@@ -1,13 +1,11 @@
 <template>
-  <div>
-    <v-menu :close-on-content-click="false">
-      <template v-slot:activator="{ props }">
-        <v-icon class="chat-emojis__icon" icon="mdi-emoticon-outline" size="28" v-bind="props" />
-      </template>
+  <v-menu :close-on-content-click="false" transition="slide-y-reverse-transition">
+    <template #activator="{ props }">
+      <v-icon class="chat-emojis__icon" icon="mdi-emoticon-outline" size="28" v-bind="props" />
+    </template>
 
-      <emoji-picker @emoji:select="getEmoji"></emoji-picker>
-    </v-menu>
-  </div>
+    <emoji-picker @emoji:select="getEmoji"></emoji-picker>
+  </v-menu>
 </template>
 <script>
 import emojiPicker from '@/components/EmojiPicker.vue'
