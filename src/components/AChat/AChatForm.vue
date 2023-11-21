@@ -20,7 +20,11 @@
       autofocus="true"
     >
       <template #prepend-inner>
-        <chat-emojis @get-emoji-picture="emojiPicture"></chat-emojis>
+        <chat-emojis
+          :open="emojiPickerOpen"
+          @onChange="onToggleEmojiPicker"
+          @get-emoji-picture="emojiPicture"
+        ></chat-emojis>
       </template>
       <template v-if="showSendButton" #append-inner>
         <slot name="append" />
@@ -69,7 +73,8 @@ export default {
   },
   emits: ['message', 'esc', 'error'],
   data: () => ({
-    message: ''
+    message: '',
+    emojiPickerOpen: false
   }),
   computed: {
     className: () => 'a-chat',
@@ -129,7 +134,23 @@ export default {
   },
   methods: {
     emojiPicture(emoji) {
-      this.message = this.message + emoji
+      const caretPosition = this.$refs.messageTextarea.selectionStart
+
+      const before = this.message.slice(0, caretPosition)
+      const after = this.message.slice(caretPosition)
+      this.message = before + emoji + after
+
+      // Set the cursor position to after the newly inserted text
+      const newCaretPosition = caretPosition + emoji.length
+      this.focus()
+      this.$nextTick(() => {
+        this.$refs.messageTextarea.setSelectionRange(newCaretPosition, newCaretPosition)
+      })
+    },
+
+    onToggleEmojiPicker(state) {
+      this.emojiPickerOpen = state
+
       this.focus()
     },
 
