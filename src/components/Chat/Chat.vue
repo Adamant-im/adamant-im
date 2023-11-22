@@ -211,6 +211,7 @@
           @error="onMessageError"
           @esc="replyMessageId = -1"
           :validator="messageValidator.bind(this)"
+          :partner-id="partnerId"
         >
           <template #prepend>
             <chat-menu

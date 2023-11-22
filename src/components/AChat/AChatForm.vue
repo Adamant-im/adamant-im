@@ -7,6 +7,7 @@
     <v-textarea
       ref="messageTextarea"
       v-model="message"
+      @input="newLetter"
       :placeholder="label"
       hide-details
       single-line
@@ -35,6 +36,10 @@ import { nextTick } from 'vue'
 
 export default {
   props: {
+    partnerId: {
+      default: '',
+      type: String
+    },
     messageText: {
       default: '',
       type: String
@@ -121,14 +126,24 @@ export default {
     if (this.messageText) {
       this.message = this.messageText
       this.focus()
+    } else if (this.$store.getters['draftMessage/draftMessage'](this.partnerId)) {
+      this.message = this.$store.getters['draftMessage/draftMessage'](this.partnerId)
+      this.focus()
     }
   },
   methods: {
+    newLetter: function () {
+      this.$store.commit('draftMessage/saveMessage', {
+        message: this.message,
+        partnerId: this.partnerId
+      })
+    },
     submitMessage() {
       const error = this.validator(this.message)
       if (error === false) {
         this.$emit('message', this.message)
         this.message = ''
+        this.$store.commit('draftMessage/deleteMessage', this.partnerId)
       } else {
         this.$emit('error', error)
       }
