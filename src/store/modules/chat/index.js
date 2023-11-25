@@ -385,6 +385,19 @@ const mutations = {
       return
     }
 
+    // Shouldn't duplicate third-party crypto transactions
+    if (
+      message.type &&
+      message.type !== 'message' &&
+      message.type !== 'reaction' &&
+      message.type !== Cryptos.ADM
+    ) {
+      const localTransaction = chat.messages.find(
+        (localTransaction) => localTransaction.hash === message.hash
+      )
+      if (localTransaction) return
+    }
+
     // use unshift when loading chat history
     if (unshift) {
       chat.messages.unshift(message)

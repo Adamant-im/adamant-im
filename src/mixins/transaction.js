@@ -126,23 +126,6 @@ export default {
           return status
         }
 
-        const partnerId =
-          admSpecialMessage.recipientId === this.$store.state.address
-            ? admSpecialMessage.senderId
-            : admSpecialMessage.recipientId
-        const messages = this.$store.getters['chat/messages'](partnerId)
-        const originalTxIndex = messages.findIndex(
-          (message) => message.hash === admSpecialMessage.hash
-        )
-        const currentTxIndex = messages.indexOf(admSpecialMessage)
-        const isDuplicate = originalTxIndex !== currentTxIndex
-        if (isDuplicate) {
-          status.status = TS.INVALID
-          status.virtualStatus = TS.INVALID
-
-          return status
-        }
-
         const getterName = type.toLowerCase() + '/transaction'
         const getter = this.$store.getters[getterName]
         if (!getter) return status
