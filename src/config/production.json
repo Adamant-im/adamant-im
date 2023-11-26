@@ -1,7 +1,7 @@
 {
-  "minApiVersion": "0.5.2",
-  "server": {
-    "adm": [
+  "adm": {
+    "minNodeVersion": "0.7.0",
+    "nodes": [
       {
         "url": "https://clown.adamant.im"
       },
@@ -38,7 +38,20 @@
         "url": "https://node2.blockchain2fa.io"
       }
     ],
-    "btc": [
+    "services": {
+      "infoService": [
+        {
+          "url": "https://info.adamant.im",
+          "alt_ip": "http://88.198.156.44:80"
+        }
+      ]
+    },
+    "explorerTx": "https://explorer.adamant.im/tx/${ID}",
+    "explorer": "https://explorer.adamant.im",
+    "explorerAddress": "https://explorer.adamant.im/address/${ID}"
+  },
+  "btc": {
+    "nodes": [
       {
         "url": "https://btcnode1.adamant.im",
         "alt_ip": "http://176.9.38.204:44099"
@@ -48,12 +61,22 @@
         "alt_ip": "http://176.9.32.126:44099"
       }
     ],
-    "dash": [
+    "explorerTx": "https://explorer.btc.com/btc/transaction/${ID}",
+    "explorer": "https://explorer.btc.com",
+    "explorerAddress": "https://explorer.btc.com/btc/address/${ID}"
+  },
+  "dash": {
+    "nodes": [
       {
         "url": "https://dashnode1.adamant.im"
       }
     ],
-    "doge": [
+    "explorerTx": "https://dashblockexplorer.com/tx/${ID}",
+    "explorer": "https://dashblockexplorer.com",
+    "explorerAddress": "https://dashblockexplorer.com/address/${ID}"
+  },
+  "doge": {
+    "nodes": [
       {
         "url": "https://dogenode1.adamant.im"
       },
@@ -62,7 +85,12 @@
         "alt_ip": "http://176.9.32.126:44098"
       }
     ],
-    "eth": [
+    "explorerTx": "https://dogechain.info/tx/${ID}",
+    "explorer": "https://dogechain.info",
+    "explorerAddress": "https://dogechain.info/address/${ID}"
+  },
+  "eth": {
+    "nodes": [
       {
         "url": "https://ethnode1.adamant.im",
         "alt_ip": "http://95.216.41.106:44099",
@@ -74,7 +102,12 @@
         "hasIndex": true
       }
     ],
-    "lsk": [
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorer": "https://etherscan.io",
+    "explorerAddress": "https://etherscan.io/address/${ID}"
+  },
+  "lsk": {
+    "nodes": [
       {
         "url": "https://lisknode3.adamant.im"
       },
@@ -82,19 +115,18 @@
         "url": "https://lisknode4.adamant.im"
       }
     ],
-    "lskservice": [
-      {
-        "url": "https://liskservice3.adamant.im"
-      },
-      {
-        "url": "https://liskservice4.adamant.im"
-      }
-    ],
-    "infoservice": [
-      {
-        "url": "https://info.adamant.im"
-      }
-    ]
-  },
-  "env": "production"
+    "explorerTx": "https://liskscan.com/transaction/${ID}",
+    "services": {
+      "lskService": [
+        {
+          "url": "https://liskservice3.adamant.im"
+        },
+        {
+          "url": "https://liskservice4.adamant.im"
+        }
+      ]
+    },
+    "explorer": "https://liskscan.com",
+    "explorerAddress": "https://liskscan.com/account/${ID}"
+  }
 }

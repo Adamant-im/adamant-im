@@ -1,9 +1,13 @@
-import abiDecoder from 'abi-decoder'
-
 import * as ethUtils from '../../../lib/eth-utils'
-import { FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
+import {
+  FetchStatus,
+  INCREASE_FEE_MULTIPLIER,
+  DEFAULT_ERC20_TRANSFER_GAS_LIMIT
+} from '@/lib/constants'
+import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
+import { AbiDecoder } from '@/lib/abi/abi-decoder'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -11,28 +15,32 @@ let lastStatusUpdate = 0
 const STATUS_INTERVAL = 25000
 
 // Setup decoder
-abiDecoder.addABI(Erc20)
+const abiDecoder = new AbiDecoder(Erc20)
 
-const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
-  const contract = new api.Contract(Erc20, context.state.contractAddress)
+const initTransaction = async (api, context, ethAddress, amount, increaseFee) => {
+  const contract = new EthContract(Erc20, context.state.contractAddress)
+
+  const nonce = await api.getClient().getTransactionCount(context.state.address)
+  const gasPrice = await api.getClient().getGasPrice()
 
   const transaction = {
     from: context.state.address,
     to: context.state.contractAddress,
     value: '0x0',
-    // gasLimit: api.fromDecimal(DEFAULT_ERC20_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
-    // gasPrice: context.getters.gasPrice, // Set gas price to auto calc. Deprecated after London hardfork
-    // nonce // Let sendTransaction choose it
+    gasPrice,
+    nonce,
     data: contract.methods
       .transfer(ethAddress, ethUtils.toWhole(amount, context.state.decimals))
       .encodeABI()
   }
 
-  return api.estimateGas(transaction).then((gasLimit) => {
-    gasLimit = increaseFee ? gasLimit * INCREASE_FEE_MULTIPLIER : gasLimit
-    transaction.gas = gasLimit
-    return transaction
-  })
+  const gasLimit = await api
+    .getClient()
+    .estimateGas(transaction)
+    .catch(() => BigInt(DEFAULT_ERC20_TRANSFER_GAS_LIMIT))
+  transaction.gasLimit = increaseFee ? ethUtils.increaseFee(gasLimit) : gasLimit
+
+  return transaction
 }
 
 const parseTransaction = (context, tx) => {
@@ -52,17 +60,17 @@ const parseTransaction = (context, tx) => {
       // Why comparing to eth.actions, there is no fee and status?
       hash: tx.hash,
       senderId: tx.from,
-      blockNumber: tx.blockNumber,
+      blockNumber: Number(tx.blockNumber),
       amount,
       recipientId,
-      gasPrice: +(tx.gasPrice || tx.effectiveGasPrice)
+      gasPrice: Number(tx.gasPrice || tx.effectiveGasPrice)
     }
   }
 
   return null
 }
 
-const createSpecificActions = (api, queue) => ({
+const createSpecificActions = (api) => ({
   updateBalance: {
     root: true,
     async handler({ state, commit }, payload = {}) {
@@ -71,7 +79,9 @@ const createSpecificActions = (api, queue) => ({
       }
 
       try {
-        const contract = new api.Contract(Erc20, state.contractAddress)
+        const contract = new EthContract(Erc20, state.contractAddress)
+        contract.setProvider(api.getClient().provider)
+
         const rawBalance = await contract.methods.balanceOf(state.address).call()
         const balance = Number(ethUtils.toFraction(rawBalance, state.decimals))
 
@@ -88,7 +98,9 @@ const createSpecificActions = (api, queue) => ({
   updateStatus(context) {
     if (!context.state.address) return
 
-    const contract = new api.Contract(Erc20, context.state.contractAddress)
+    const contract = new EthContract(Erc20, context.state.contractAddress)
+    contract.setProvider(api.getClient().provider)
+
     contract.methods
       .balanceOf(context.state.address)
       .call()

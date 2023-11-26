@@ -1,39 +1,15 @@
 import axios from 'axios'
-import getEnpointUrl from '../getEndpointUrl'
+import { getRandomNodeUrl, getRandomServiceUrl } from '@/config/utils'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import * as transactions from '@liskhq/lisk-transactions'
 import { CryptosInfo } from '../constants'
 
-export const TX_DEFAULT_FEE = 0.00160
+export const TX_DEFAULT_FEE = 0.0016
 
-const createClient = url => {
+const createServiceClient = (url) => {
   const client = axios.create({ baseURL: url })
-  client.interceptors.response.use(null, error => {
-    if (error.response && Number(error.response.status) >= 500) {
-      console.error(`Request to ${url} failed.`, error)
-    }
-    // Lisk is spamming with 404 in console, when there is no LSK account
-    // There is no way to disable 404 logging for Chrome
-    if (error.response && Number(error.response.status) === 404) {
-      if (
-        error.response.data &&
-        error.response.data.errors &&
-        error.response.data.errors[0] &&
-        error.response.data.errors[0].message &&
-        error.response.data.errors[0].message.includes('was not found')
-      ) {
-        return error.response
-      }
-    }
-    return Promise.reject(error)
-  })
-  return client
-}
-
-const createServiceClient = url => {
-  const client = axios.create({ baseURL: url })
-  client.interceptors.response.use(null, error => {
+  client.interceptors.response.use(null, (error) => {
     if (error.response && Number(error.response.status) >= 500) {
       console.error(`Request to ${url} failed.`, error)
     }
@@ -47,19 +23,19 @@ export default class LskBaseApi {
    * Constructor
    * @abstract
    */
-  constructor (crypto, passphrase) {
-    this._clients = { }
+  constructor(crypto, passphrase) {
+    this._clients = {}
     this._crypto = crypto
     this._network = undefined
     this._keyPair = undefined
     this._address = undefined
   }
 
-  get decimals () {
+  get decimals() {
     return CryptosInfo[this._crypto].decimals
   }
 
-  get multiplier () {
+  get multiplier() {
     return 1e8
   }
 
@@ -67,7 +43,7 @@ export default class LskBaseApi {
    * Get Token/Send module Id
    * @returns {number}
    */
-  get moduleId () {
+  get moduleId() {
     return 2
   }
 
@@ -76,15 +52,15 @@ export default class LskBaseApi {
    * @abstract
    * @returns {number}
    */
-  get assetId () {
+  get assetId() {
     return undefined
   }
 
-  get address () {
+  get address() {
     return this._address
   }
 
-  get addressHex () {
+  get addressHex() {
     return this._addressHex
   }
 
@@ -93,11 +69,11 @@ export default class LskBaseApi {
    * @abstract
    * @returns {object} JSON schema
    */
-  get assetSchema () {
-    return { }
+  get assetSchema() {
+    return {}
   }
 
-  get networkIdentifier () {
+  get networkIdentifier() {
     // Testnet: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c'
     // Mainnet: '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99'
     const networkIdentifier = '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99'
@@ -109,7 +85,7 @@ export default class LskBaseApi {
    * @abstract
    * @returns {Promise<number>}
    */
-  getAccount () {
+  getAccount() {
     return Promise.resolve(0)
   }
 
@@ -118,7 +94,7 @@ export default class LskBaseApi {
    * @abstract
    * @returns {Promise<number>}
    */
-  getHeight () {
+  getHeight() {
     return Promise.resolve(0)
   }
 
@@ -127,7 +103,7 @@ export default class LskBaseApi {
    * @abstract
    * @returns {BigInt}
    */
-  getFee (address = '', amount = 0, nonce, data = '') {
+  getFee(address = '', amount = 0, nonce, data = '') {
     const tx = this._buildTransaction(address, amount, TX_DEFAULT_FEE, nonce, data)
     return tx && tx.minFee ? tx.minFee : TX_DEFAULT_FEE
   }
@@ -136,7 +112,7 @@ export default class LskBaseApi {
    * Creates an LSK-based transaction as an object with specific types
    * @returns {object}
    */
-  _buildTransaction (address, amount, fee, nonce, data = '') {
+  _buildTransaction(address, amount, fee, nonce, data = '') {
     const amountString = transactions.convertLSKToBeddows((+amount).toFixed(this.decimals))
     const feeString = transactions.convertLSKToBeddows((+fee).toFixed(this.decimals))
     const nonceString = nonce.toString()
@@ -170,7 +146,7 @@ export default class LskBaseApi {
    * @param {string} data transaction data field
    * @returns {Promise<{hex: string, txid: string}>}
    */
-  createTransaction (address = '', amount = 0, fee, nonce, data) {
+  createTransaction(address = '', amount = 0, fee, nonce, data) {
     return Promise.resolve({ hex: undefined, txid: undefined })
   }
 
@@ -179,7 +155,7 @@ export default class LskBaseApi {
    * @abstract
    * @param {string} txHex raw transaction as a HEX literal
    */
-  sendTransaction (txHex) {
+  sendTransaction(txHex) {
     return Promise.resolve('')
   }
 
@@ -189,7 +165,7 @@ export default class LskBaseApi {
    * @param {*} txid transaction ID
    * @returns {Promise<object>}
    */
-  getTransaction (txid) {
+  getTransaction(txid) {
     return Promise.resolve(null)
   }
 
@@ -199,29 +175,20 @@ export default class LskBaseApi {
    * @param {any} options crypto-specific options
    * @returns {Promise<{hasMore: boolean, items: Array}>}
    */
-  getTransactions (options) {
+  getTransactions(options) {
     return Promise.resolve({ hasMore: false, items: [] })
   }
 
-  /** Picks a LSK node's (core) client for a random API endpoint */
-  _getClient () {
-    const url = getEnpointUrl(this._crypto)
-    if (!this._clients[url]) {
-      this._clients[url] = createClient(url)
-    }
-    return this._clients[url]
-  }
-
   /** Picks a Lisk Service client for a random API endpoint */
-  _getServiceClient () {
-    const url = getEnpointUrl(this._crypto + 'service')
+  _getServiceClient() {
+    const url = getRandomServiceUrl(this._crypto.toLowerCase(), 'lskService')
     if (!this._clients[url]) {
       this._clients[url] = createServiceClient(url)
     }
     return this._clients[url]
   }
 
-  _mapTransaction (tx) {
+  _mapTransaction(tx) {
     const direction = isStringEqualCI(tx.sender.address, this._address) ? 'from' : 'to'
     // no confirmations field
     // additional data: asset, receivedAt, blockId, height, type, recipientPublicKey, senderSecondPublicKey

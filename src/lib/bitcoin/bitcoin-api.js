@@ -1,66 +1,74 @@
 import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
+import { btc } from '@/lib/nodes/btc'
 
 export default class BitcoinApi extends BtcBaseApi {
-  constructor (passphrase) {
+  constructor(passphrase) {
     super(Cryptos.BTC, passphrase)
   }
 
   /**
    * @override
    */
-  getBalance () {
+  getBalance() {
     return this._get(`/address/${this.address}`).then(
-      data => (data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum) / this.multiplier
+      (data) => (data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum) / this.multiplier
     )
   }
 
   /** @override */
-  getFee () {
+  getFee() {
     return 0
   }
 
   /** Returns last block height */
-  getHeight () {
-    return this._get('/blocks/tip/height').then(data => Number(data) || 0)
+  getHeight() {
+    return this._get('/blocks/tip/height').then((data) => Number(data) || 0)
   }
 
   /** @override */
-  sendTransaction (txHex) {
-    return this._getClient().post('/tx', txHex).then(response => response.data)
+  sendTransaction(txHex) {
+    return btc.getClient()
+      .post('/tx', txHex)
+      .then((response) => response.data)
   }
 
   /** @override */
-  getTransaction (txid) {
-    return this._get(`/tx/${txid}`).then(x => this._mapTransaction(x))
+  getTransaction(txid) {
+    return this._get(`/tx/${txid}`).then((x) => this._mapTransaction(x))
   }
 
   /** @override */
-  getTransactions ({ toTx = '' }) {
+  getTransactions({ toTx = '' }) {
     let url = `/address/${this.address}/txs`
     if (toTx) {
       url += `/chain/${toTx}`
     }
-    return this._get(url).then(transactions => transactions.map(x => this._mapTransaction(x)))
+    return this._get(url).then((transactions) => transactions.map((x) => this._mapTransaction(x)))
   }
 
   /** @override */
-  getUnspents () {
-    return this._get(`/address/${this.address}/utxo`).then(outputs =>
-      outputs.map(x => ({ txid: x.txid, amount: x.value, vout: x.vout }))
+  getTransactionHex(txid) {
+    return this._get(`/tx/${txid}/hex`)
+  }
+
+  /** @override */
+  getUnspents() {
+    return this._get(`/address/${this.address}/utxo`).then((outputs) =>
+      outputs.map((x) => ({ txid: x.txid, amount: x.value, vout: x.vout }))
     )
   }
 
-  getFeeRate () {
-    return this._get('/fee-estimates').then(estimates => estimates['2'])
+  getFeeRate() {
+    return this._get('/fee-estimates').then((estimates) => estimates['2'])
   }
 
   /** @override */
-  _mapTransaction (tx) {
+  _mapTransaction(tx) {
     const mapped = super._mapTransaction({
       ...tx,
-      vin: tx.vin.map(x => ({ ...x, addr: x.prevout.scriptpubkey_address })),
-      vout: tx.vout.map(x => ({
+      vin: tx.vin.map((x) => ({ ...x, addr: x.prevout.scriptpubkey_address })),
+      vout: tx.vout.map((x) => ({
         ...x,
         scriptPubKey: { addresses: [x.scriptpubkey_address] }
       })),
@@ -77,7 +85,9 @@ export default class BitcoinApi extends BtcBaseApi {
   }
 
   /** Executes a GET request to the API */
-  _get (url, params) {
-    return this._getClient().get(url, { params }).then(response => response.data)
+  _get(url, params) {
+    return btc.getClient()
+      .get(url, { params })
+      .then((response) => response.data)
   }
 }

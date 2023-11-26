@@ -1,24 +1,21 @@
-import Web3Eth from 'web3-eth'
+import BigNumber from 'bignumber.js'
 
-import getEndpointUrl from '../../../lib/getEndpointUrl'
 import * as utils from '../../../lib/eth-utils'
 import { getTransactions } from '../../../lib/eth-index'
 import * as tf from '../../../lib/transactionsFetching'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { signTransaction, TransactionFactory } from 'web3-eth-accounts'
+import api from '@/lib/nodes/eth'
 
 /** Interval between attempts to fetch the registered tx details */
 const RETRY_TIMEOUT = 20 * 1000
 const CHUNK_SIZE = 25
 
 export default function createActions(config) {
-  const endpoint = getEndpointUrl('ETH')
-  const api = new Web3Eth(endpoint)
-  const queue = new utils.BatchQueue(() => new api.BatchRequest())
-
   const { onInit = () => {}, initTransaction, parseTransaction, createSpecificActions } = config
 
   return {
-    ...createSpecificActions(api, queue),
+    ...createSpecificActions(api),
 
     /**
      * Handles `afterLogin` action: generates ETH-account and requests its balance.
@@ -29,7 +26,6 @@ export default function createActions(config) {
         const account = utils.getAccountFromPassphrase(passphrase, api)
         context.commit('account', account)
         context.dispatch('updateStatus')
-        queue.start()
 
         onInit(context)
       }
@@ -39,7 +35,6 @@ export default function createActions(config) {
     reset: {
       root: true,
       handler(context) {
-        queue.stop()
         context.commit('reset')
       }
     },
@@ -58,8 +53,6 @@ export default function createActions(config) {
         }
 
         context.dispatch('updateStatus')
-
-        queue.start()
       }
     },
 
@@ -69,7 +62,9 @@ export default function createActions(config) {
 
       return initTransaction(api, context, address, amount, increaseFee)
         .then((ethTx) => {
-          return api.accounts.signTransaction(ethTx, context.state.privateKey).then((signedTx) => {
+          const tx = TransactionFactory.fromTxData(ethTx)
+
+          return signTransaction(tx, context.state.privateKey).then((signedTx) => {
             const txInfo = {
               signedTx,
               ethTx
@@ -93,7 +88,7 @@ export default function createActions(config) {
           })
         })
         .then((txInfo) => {
-          return api.sendSignedTransaction(txInfo.signedTx.rawTransaction).then(
+          return api.getClient().sendSignedTransaction(txInfo.signedTx.rawTransaction).then(
             (hash) => ({ txInfo, hash }),
             (error) => {
               // Known bug that after Tx sent successfully, this error occurred anyway https://github.com/ethereum/web3.js/issues/3145
@@ -141,7 +136,7 @@ export default function createActions(config) {
                 recipientId: address,
                 amount,
                 fee: utils.calculateFee(
-                  sentTxInfo.txInfo.ethTx.gas,
+                  sentTxInfo.txInfo.ethTx.gasLimit,
                   sentTxInfo.txInfo.ethTx.gasPrice
                 ),
                 status: 'PENDING',
@@ -170,19 +165,17 @@ export default function createActions(config) {
       const transaction = context.state.transactions[payload.hash]
       if (!transaction) return
 
-      const supplier = () =>
-        api.getBlock.request(payload.blockNumber, (err, block) => {
-          if (!err && block) {
-            context.commit('transactions', [
-              {
-                hash: transaction.hash,
-                timestamp: block.timestamp * 1000
-              }
-            ])
-          }
-        })
+      void api.getClient().getBlock(payload.blockNumber).then((block) => {
+        // Converting from BigInt into Number must be safe
+        const timestamp = BigNumber(block.timestamp.toString()).multipliedBy(1000).toNumber()
 
-      queue.enqueue('block:' + payload.blockNumber, supplier)
+        context.commit('transactions', [
+          {
+            hash: transaction.hash,
+            timestamp
+          }
+        ])
+      })
     },
 
     /**
@@ -207,60 +200,56 @@ export default function createActions(config) {
         ])
       }
 
-      const key = 'transaction:' + payload.hash
-      const supplier = () =>
-        api.getTransaction.request(payload.hash, (err, tx) => {
-          if (!err && tx && tx.input) {
-            const transaction = parseTransaction(context, tx)
-            const status = existing ? existing.status : 'REGISTERED'
-            if (transaction) {
-              context.commit('transactions', [
-                {
-                  ...transaction,
-                  status
-                }
-              ])
-              // Fetch receipt details: status and actual gas consumption
-              const { attempt, ...receiptPayload } = payload
-              context.dispatch('getTransactionReceipt', receiptPayload)
-              // Now we know that the transaction has been registered by the ETH network.
-              // Nothing else to do here, let's proceed to checking its status (see getTransactionReceipt)
-              return
-            }
+      void api.getClient().getTransaction(payload.hash).then((tx) => {
+        if (tx?.input) {
+          const transaction = parseTransaction(context, tx)
+          const status = existing ? existing.status : 'REGISTERED'
+          if (transaction) {
+            context.commit('transactions', [
+              {
+                ...transaction,
+                status
+              }
+            ])
+            // Fetch receipt details: status and actual gas consumption
+            const { attempt, ...receiptPayload } = payload
+            context.dispatch('getTransactionReceipt', receiptPayload)
+            // Now we know that the transaction has been registered by the ETH network.
+            // Nothing else to do here, let's proceed to checking its status (see getTransactionReceipt)
+            return
           }
+        }
 
-          const attempt = payload.attempt || 0
-          const retryCount = tf.getPendingTxRetryCount(
-            payload.timestamp || (existing && existing.timestamp),
-            context.state.crypto
-          )
-          const retry = attempt < retryCount
-          const retryTimeout = tf.getPendingTxRetryTimeout(
-            payload.timestamp || (existing && existing.timestamp),
-            context.state.crypto
-          )
+        const attempt = payload.attempt || 0
+        const retryCount = tf.getPendingTxRetryCount(
+          payload.timestamp || existing?.timestamp,
+          context.state.crypto
+        )
+        const retry = attempt < retryCount
+        const retryTimeout = tf.getPendingTxRetryTimeout(
+          payload.timestamp || existing?.timestamp,
+          context.state.crypto
+        )
 
-          if (!retry) {
-            // Give up, if transaction could not be found after so many attempts
-            context.commit('transactions', [{ hash: payload.hash, status: 'REJECTED' }])
-          } else if (!payload.updateOnly) {
-            // In case of an error or a pending transaction fetch its details once again later
-            // Increment attempt counter, if no transaction was found so far
-            const newPayload = tx
-              ? payload
-              : {
-                  ...payload,
-                  attempt: attempt + 1,
-                  force: true,
-                  updateOnly: false,
-                  dropStatus: false
-                }
+        if (!retry) {
+          // Give up, if transaction could not be found after so many attempts
+          context.commit('transactions', [{ hash: payload.hash, status: 'REJECTED' }])
+        } else if (!payload.updateOnly) {
+          // In case of an error or a pending transaction fetch its details once again later
+          // Increment attempt counter, if no transaction was found so far
+          const newPayload = tx
+            ? payload
+            : {
+                ...payload,
+                attempt: attempt + 1,
+                force: true,
+                updateOnly: false,
+                dropStatus: false
+              }
 
-            setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
-          }
-        })
-
-      queue.enqueue(key, supplier)
+          setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
+        }
+      })
     },
 
     /**
@@ -274,47 +263,44 @@ export default function createActions(config) {
 
       const gasPrice = transaction.gasPrice
 
-      const supplier = () =>
-        api.getTransactionReceipt.request(payload.hash, (err, tx) => {
-          let replay = true
+      void api.getClient().getTransactionReceipt(payload.hash).then((tx) => {
+        let replay = true
 
-          if (!err && tx) {
-            const update = {
-              hash: payload.hash,
-              fee: utils.calculateFee(tx.gasUsed, gasPrice)
-            }
-
-            if (Number(tx.status) === 0) {
-              // Status "0x0" means that the transaction has been rejected
-              update.status = 'REJECTED'
-            } else if (tx.blockNumber) {
-              // If blockNumber is not null, the transaction is confirmed
-              update.status = 'CONFIRMED'
-              update.blockNumber = tx.blockNumber
-            }
-
-            context.commit('transactions', [update])
-
-            if (tx.blockNumber) {
-              context.dispatch('getBlock', {
-                ...payload,
-                blockNumber: tx.blockNumber
-              })
-            }
-
-            // Re-fetch tx details if it's status is still unknown
-            replay = !update.status
+        if (tx) {
+          const update = {
+            hash: payload.hash,
+            fee: utils.calculateFee(tx.gasUsed, gasPrice)
           }
 
-          if (replay) {
-            // In case of an error or a pending transaction fetch its receipt once again later
-            // Increment attempt counter, if no transaction was found so far
-            const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
-            setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), RETRY_TIMEOUT)
+          if (Number(tx.status) === 0) {
+            // Status "0x0" means that the transaction has been rejected
+            update.status = 'REJECTED'
+          } else if (tx.blockNumber) {
+            // If blockNumber is not null, the transaction is confirmed
+            update.status = 'CONFIRMED'
+            update.blockNumber = Number(tx.blockNumber)
           }
-        })
 
-      queue.enqueue('transactionReceipt:' + payload.hash, supplier)
+          context.commit('transactions', [update])
+
+          if (tx.blockNumber) {
+            context.dispatch('getBlock', {
+              ...payload,
+              blockNumber: Number(tx.blockNumber)
+            })
+          }
+
+          // Re-fetch tx details if it's status is still unknown
+          replay = !update.status
+        }
+
+        if (replay) {
+          // In case of an error or a pending transaction fetch its receipt once again later
+          // Increment attempt counter, if no transaction was found so far
+          const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
+          setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), RETRY_TIMEOUT)
+        }
+      })
     },
 
     /**

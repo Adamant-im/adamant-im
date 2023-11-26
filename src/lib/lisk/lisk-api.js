@@ -7,6 +7,7 @@ import * as transactions from '@liskhq/lisk-transactions'
 import pbkdf2 from 'pbkdf2'
 import sodium from 'sodium-browserify-tweetnacl'
 import networks from './networks'
+import { lsk } from '@/lib/nodes/lsk'
 
 export const LiskHashSettings = {
   SALT: 'adm',
@@ -147,7 +148,7 @@ export default class LiskApi extends LskBaseApi {
 
   /** @override */
   sendTransaction (signedTx) {
-    return this._getClient().post('/api/transactions', signedTx).then(response => {
+    return lsk.getClient().post('/api/transactions', signedTx).then(response => {
       return response.data.data.transactionId
     })
   }
@@ -203,7 +204,7 @@ export default class LiskApi extends LskBaseApi {
 
   /** Executes a GET request to the node's core API */
   _get (url, params) {
-    return this._getClient().get(url, { params }).then(response => response.data)
+    return lsk.getClient().get(url, { params }).then(response => response.data)
   }
 
   /** Executes a GET request to the Lisk Service API */

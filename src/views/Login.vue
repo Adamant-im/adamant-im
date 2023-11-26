@@ -5,8 +5,15 @@
     :class="className"
   >
     <container>
-      <div class="text-right">
-        <language-switcher prepend-icon="mdi-chevron-right" />
+      <div :class="`${className}__buttons`">
+        <div class="text-right">
+          <language-switcher prepend-icon="mdi-chevron-right" />
+        </div>
+        <div :class="`${className}__settings-button`">
+          <v-btn @click="$router.push('/options/nodes')" icon variant="flat" :size="32">
+            <v-icon icon="mdi-cog"/>
+          </v-btn>
+        </div>
       </div>
 
       <v-sheet
@@ -256,6 +263,14 @@ export default defineComponent({
   }
   &__icon {
     transition: 0.2s linear;
+  }
+  &__buttons {
+    position: relative;
+  }
+  &__settings-button {
+    position: absolute;
+    right: 0;
+    margin-right: 8px;
   }
 }
 

@@ -159,6 +159,11 @@
     "active": "Active",
     "fastest_title": "Choose the fastest node",
     "fastest_tooltip": "Requests will be processed with a fastest node",
+    "tabs": {
+      "adm_nodes": "ADM nodes",
+      "coin_nodes": "Coin nodes"
+    },
+    "label": "Type",
     "host": "Host",
     "inactive": "Inactive",
     "sync": "Sync",
@@ -168,6 +173,8 @@
     "ping": "Ping",
     "socket": "Socket",
     "unsupported": "Unsupported",
+    "unsupported_reason_protocol": "HTTP is not allowed",
+    "unsupported_reason_api_version": "Outdated API version",
     "use_socket_connection": "Use socket connections",
     "use_socket_connection_tooltip": "WebSockets allow to get new messages instantly like P2P messengers"
   },
