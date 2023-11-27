@@ -4,46 +4,10 @@ import { getMillisTimestamp, getLiskTimestamp } from './lisk-utils'
 import { bytesToHex } from '@/lib/hex'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import * as transactions from '@liskhq/lisk-transactions'
-import pbkdf2 from 'pbkdf2'
-import sodium from 'sodium-browserify-tweetnacl'
-import networks from './networks'
 import { lsk } from '@/lib/nodes/lsk'
-
-export const LiskHashSettings = {
-  SALT: 'adm',
-  ITERATIONS: 2048,
-  KEYLEN: 32,
-  DIGEST: 'sha256'
-}
+import { getAccount } from './lisk-utils'
 
 export const TX_CHUNK_SIZE = 25
-
-export function getAccount(crypto, passphrase) {
-  const network = networks[crypto]
-  const liskSeed = pbkdf2.pbkdf2Sync(
-    passphrase,
-    LiskHashSettings.SALT,
-    LiskHashSettings.ITERATIONS,
-    LiskHashSettings.KEYLEN,
-    LiskHashSettings.DIGEST
-  )
-  const keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
-  const addressHexBinary = cryptography.getAddressFromPublicKey(keyPair.publicKey)
-  const addressHex = bytesToHex(addressHexBinary)
-  const address = cryptography.getBase32AddressFromPublicKey(keyPair.publicKey)
-  // Don't work currently https://github.com/LiskHQ/lisk-sdk/issues/6651
-  // const addressLegacy = cryptography.getLegacyAddressFromPublicKey(keyPair.publicKey)
-  // const addressLegacy = cryptography.getLegacyAddressFromPrivateKey(keyPair.secretKey)
-  const addressLegacy = 'cryptography.getLegacyAddressFromPublicKey(bytesToHex(keyPair.publicKey))'
-  return {
-    network,
-    keyPair,
-    address,
-    addressHexBinary,
-    addressHex,
-    addressLegacy
-  }
-}
 
 export default class LiskApi extends LskBaseApi {
   constructor(passphrase) {
