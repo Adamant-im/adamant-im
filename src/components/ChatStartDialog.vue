@@ -112,8 +112,6 @@ import validateAddress from '@/lib/validateAddress'
 import QrcodeCapture from '@/components/QrcodeCapture'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
-import Icon from '@/components/icons/BaseIcon'
-import QrCodeScanIcon from '@/components/icons/common/QrCodeScan'
 import partnerName from '@/mixins/partnerName'
 
 export default {
@@ -121,8 +119,6 @@ export default {
     QrcodeCapture,
     QrcodeScannerDialog,
     QrcodeRendererDialog,
-    Icon,
-    QrCodeScanIcon
   },
   mixins: [partnerName],
   props: {
@@ -179,7 +175,7 @@ export default {
         partnerId: this.recipientAddress,
         partnerName: this.recipientName
       })
-        .then((key) => {
+        .then((_publicKey) => {
           this.$emit('start-chat', this.recipientAddress, this.uriMessage)
           this.show = false
         })
