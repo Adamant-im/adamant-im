@@ -96,6 +96,8 @@
     "web3-utils": "^4.0.7"
   },
   "devDependencies": {
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
     "@electron/notarize": "^2.2.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@openapitools/openapi-generator-cli": "^2.7.0",
@@ -147,7 +149,10 @@
   },
   "main": "dist-electron/main.js",
   "lint-staged": {
-    "*.(ts|js|vue)": ["eslint --fix", "prettier --write"]
+    "*.(ts|js|vue)": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "keywords": [
     "adm",
