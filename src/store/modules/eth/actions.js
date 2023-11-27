@@ -3,7 +3,7 @@ import createActions from '../eth-base/eth-base-actions'
 
 import { DEFAULT_ETH_TRANSFER_GAS_LIMIT, FetchStatus } from '@/lib/constants'
 import { storeCryptoAddress } from '@/lib/store-crypto-address'
-import { checkNonce } from '@/lib/txVerify'
+import { checkTxInProcess } from '@/lib/txVerify'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -19,7 +19,7 @@ function storeEthAddress(context) {
 }
 
 const initTransaction = async (api, context, ethAddress, amount, increaseFee) => {
-  const nonce = await checkNonce(api, context)
+  const nonce = await checkTxInProcess(api, context)
   const gasPrice = await api.getClient().getGasPrice()
 
   const transaction = {

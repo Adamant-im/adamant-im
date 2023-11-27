@@ -50,7 +50,7 @@ const store = {
     balance: 0,
     balanceStatus: FetchStatus.Loading,
     IDBReady: false, // set `true` when state has been saved in IDB
-    nonces: {},
+    transactionsInProcess: {},
     passphrase: '',
     password: '',
     publicKeys: {}
@@ -59,7 +59,7 @@ const store = {
     isLogged: (state) => state.passphrase.length > 0,
     getPassPhrase: (state) => state.passphrase, // compatibility getter for ERC20 modules
     publicKey: (state) => (adamantAddress) => state.publicKeys[adamantAddress],
-    getNonce: (state) => (key) => state.nonces[key],
+    getTransactionInProcess: (state) => (key) => state.transactionsInProcess[key],
     isAccountNew: (state) =>
       function () {
         /*
@@ -77,8 +77,8 @@ const store = {
       }
   },
   mutations: {
-    deleteNonce(state, payload) {
-      delete state.nonces[payload]
+    deleteTransactionInProcess(state, payload) {
+      delete state.transactionsInProcess[payload]
     },
     setAddress(state, address) {
       state.address = address
@@ -88,9 +88,6 @@ const store = {
     },
     setBalanceStatus(state, status) {
       state.balanceStatus = status
-    },
-    setNonce(state, payload) {
-      state.nonces = { ...state.nonces, ...payload }
     },
     setPassphrase(state, passphrase) {
       state.passphrase = Base64.encode(passphrase)
@@ -104,14 +101,17 @@ const store = {
     setIDBReady(state, value) {
       state.IDBReady = value
     },
+    setTransactionInProcess(state, payload) {
+      state.transactionsInProcess = { ...state.transactionsInProcess, ...payload }
+    },
     reset(state) {
       state.address = ''
       state.balance = 0
-      state.nonces = {}
       state.passphrase = ''
       state.password = ''
       state.IDBReady = false
       state.publicKeys = {}
+      state.transactionsInProcess = {}
       cache.resetCachedSeed()
     },
     setPublicKey(state, { adamantAddress, publicKey }) {
@@ -119,8 +119,8 @@ const store = {
     }
   },
   actions: {
-    deleteNonce({ commit }, payload) {
-      commit('deleteNonce', payload)
+    deleteTransactionInProcess({ commit }, payload) {
+      commit('deleteTransactionInProcess', payload)
     },
     login({ commit, dispatch }, passphrase) {
       // First, clear previous account data, if it exists. Calls resetState(state, getInitialState()) also
@@ -146,8 +146,8 @@ const store = {
     logout({ dispatch }) {
       dispatch('reset')
     },
-    setNonce({ commit }, payload) {
-      commit('setNonce', payload)
+    setTransactionInProcess({ commit }, payload) {
+      commit('setTransactionInProcess', payload)
     },
     unlock({ state, dispatch }) {
       // user updated an app, F5 or something

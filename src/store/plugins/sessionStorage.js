@@ -10,7 +10,7 @@ const vuexPersistence = new VuexPersistence({
       balance: state.balance,
       passphrase: state.passphrase,
       password: state.password,
-      nonces: state.nonces
+      transactionsInProcess: state.transactionsInProcess
     }
   }
 })

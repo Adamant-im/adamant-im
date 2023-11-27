@@ -2,6 +2,7 @@ import BigNumber from '@/lib/bignumber'
 import LskBaseApi from '../../../lib/lisk/lsk-base-api'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
+import { checkTxInProcess } from '../../../lib/txVerify'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 
@@ -77,56 +78,58 @@ function createActions(options) {
 
       const crypto = context.state.crypto
 
-      return api
-        .createTransaction(address, amount, fee, context.state.nonce, textData)
-        .then((tx) => {
-          if (!admAddress) return tx.hex
+      return checkTxInProcess(api, context, false, context.state.nonce).then((nonce) => {
+        return api
+          .createTransaction(address, amount, fee, nonce, textData)
+          .then((tx) => {
+            if (!admAddress) return tx.hex
 
-          const msgPayload = {
-            address: admAddress,
-            amount: BigNumber(amount).toFixed(),
-            comments,
-            crypto,
-            hash: tx.txid,
-            replyToId
-          }
+            const msgPayload = {
+              address: admAddress,
+              amount: BigNumber(amount).toFixed(),
+              comments,
+              crypto,
+              hash: tx.txid,
+              replyToId
+            }
 
-          // Send a special message to indicate that we're performing a crypto transfer
-          return context
-            .dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
-            .then((success) => (success ? tx.hex : Promise.reject(new Error('adm_message'))))
-        })
-        .then((rawTx) =>
-          api.sendTransaction(rawTx).then(
-            (hash) => ({ hash }),
-            (error) => ({ error })
+            // Send a special message to indicate that we're performing a crypto transfer
+            return context
+              .dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
+              .then((success) => (success ? tx.hex : Promise.reject(new Error('adm_message'))))
+          })
+          .then((rawTx) =>
+            api.sendTransaction(rawTx).then(
+              (hash) => ({ hash }),
+              (error) => ({ error })
+            )
           )
-        )
-        .then(({ hash, error }) => {
-          if (error) {
-            context.commit('transactions', [{ hash, status: 'REJECTED' }])
-            throw error
-          } else {
-            console.log(`${crypto} transaction has been sent: ${hash}`)
+          .then(({ hash, error }) => {
+            if (error) {
+              context.commit('transactions', [{ hash, status: 'REJECTED' }])
+              throw error
+            } else {
+              console.log(`${crypto} transaction has been sent: ${hash}`)
 
-            context.commit('transactions', [
-              {
-                hash,
-                senderId: context.state.address,
-                recipientId: address,
-                amount,
-                fee,
-                status: 'PENDING',
-                timestamp: Date.now(),
-                data: textData
-              }
-            ])
+              context.commit('transactions', [
+                {
+                  hash,
+                  senderId: context.state.address,
+                  recipientId: address,
+                  amount,
+                  fee,
+                  status: 'PENDING',
+                  timestamp: Date.now(),
+                  data: textData
+                }
+              ])
 
-            context.dispatch('getTransaction', { hash, force: true })
+              context.dispatch('getTransaction', { hash, force: true })
 
-            return hash
-          }
-        })
+              return hash
+            }
+          })
+      })
     },
 
     /**

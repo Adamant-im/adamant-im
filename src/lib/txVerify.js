@@ -17,17 +17,38 @@ const TransactionInconsistentReason = {
   RECIPIENT_CRYPTO_ADDRESS_MISMATCH: 'recipient_crypto_address_mismatch'
 }
 
-export async function checkNonce(api, context) {
+export async function checkTxInProcess(api, context, withoutNonce = true, externalNonce = null) {
   const fetchInfo = CryptosInfo[context.state.crypto].txFetchInfo
   const TX_LOCK_TIME = fetchInfo.newPendingAttempts * fetchInfo.newPendingInterval
 
-  const nonce = await api.getClient().getTransactionCount(context.state.address)
-  const currentNonce = context.rootGetters.getNonce(context.state.crypto)
+  const currentNonce = context.rootGetters.getTransactionInProcess(context.state.crypto)
 
   const expiration = Date.now()
   const estimatedExpiration = expiration + TX_LOCK_TIME
 
-  // if crypto has nonce, we should check it
+  function dispatchTxInProcess(nonce = null) {
+    context.dispatch(
+      'setTransactionInProcess',
+      { [context.state.crypto]: { nonce: nonce?.toString(), expiration: estimatedExpiration } },
+      { root: true }
+    )
+  }
+
+  // For coins like BTC
+  if (withoutNonce) {
+    if (currentNonce && expiration < currentNonce.expiration) {
+      throw new Error('The tx with a same nonce already exists')
+    }
+
+    dispatchTxInProcess()
+
+    return null
+  }
+
+  const nonce =
+    externalNonce || (await api.getClient().getTransactionCount(context.state.address)) || null
+
+  // if crypto may has nonce, we should check it
   if (nonce) {
     if (
       currentNonce &&
@@ -36,23 +57,14 @@ export async function checkNonce(api, context) {
     ) {
       throw new Error('The same nonce already exists')
     }
-
-    context.dispatch(
-      'setNonce',
-      { [context.state.crypto]: { nonce: nonce.toString(), expiration: estimatedExpiration } },
-      { root: true }
-    )
+    dispatchTxInProcess(nonce)
   } else {
     // otherwise just increase expiration time
     if (currentNonce && expiration < currentNonce.expiration) {
       throw new Error('The same nonce already exists')
     }
 
-    context.dispatch(
-      'setNonce',
-      { [context.state.crypto]: { expiration: estimatedExpiration } },
-      { root: true }
-    )
+    dispatchTxInProcess()
   }
 
   return nonce || null

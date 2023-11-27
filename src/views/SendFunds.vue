@@ -71,7 +71,7 @@ export default {
     onSend(transactionId, crypto) {
       const userComeFrom = this.$route.query.from
 
-      this.$store.dispatch('deleteNonce', this.cryptoCurrency, { root: true })
+      this.$store.dispatch('deleteTransactionInProcess', this.cryptoCurrency, { root: true })
       if (userComeFrom) {
         this.$router.replace(userComeFrom)
       } else {
