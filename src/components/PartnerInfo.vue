@@ -36,12 +36,14 @@
           </template>
           <v-list-item-title
             :class="`${className}__address`"
-            v-text="address"
-          />
+          >
+            {{ address }}
+          </v-list-item-title>
           <v-list-item-subtitle
             :class="`${className}__username`"
-            v-text="isMe ? $t('chats.me') : name"
-          />
+          >
+            {{ isMe ? $t('chats.me') : name }}
+          </v-list-item-subtitle>
         </v-list-item>
       </v-list>
       <v-row

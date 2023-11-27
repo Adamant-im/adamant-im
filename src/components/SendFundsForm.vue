@@ -152,9 +152,8 @@
 
         <v-divider class="a-divider" />
 
-        <!-- eslint-disable vue/no-v-html -- Safe internal content -->
+        <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -- Safe internal content -->
         <v-card-text class="a-text-regular-enlarged pa-4" v-html="confirmMessage" />
-        <!-- eslint-enable vue/no-v-html -->
 
         <v-card-actions class="pa-4">
           <v-spacer />

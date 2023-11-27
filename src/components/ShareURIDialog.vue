@@ -18,8 +18,9 @@
           <v-list-item @click="copyAddress">
             <v-list-item-title
               :class="`${className}__list-item-title`"
-              v-text="$t('home.copy_address')"
-            />
+            >
+              {{ $t('home.copy_address') }}
+            </v-list-item-title>
           </v-list-item>
           <v-list-item
             v-if="isADM"
@@ -27,14 +28,16 @@
           >
             <v-list-item-title
               :class="`${className}__list-item-title`"
-              v-text="$t('home.copy_uri')"
-            />
+            >
+              {{ $t('home.copy_uri') }}
+            </v-list-item-title>
           </v-list-item>
           <v-list-item @click="openQRCodeRenderer">
             <v-list-item-title
               :class="`${className}__list-item-title`"
-              v-text="$t('home.show_qr_code')"
-            />
+            >
+              {{ $t('home.show_qr_code') }}
+            </v-list-item-title>
           </v-list-item>
         </v-list>
       </v-card-text>

@@ -33,8 +33,8 @@
             'a-text-regular-enlarged-bold': true,
             [`${className}__title`]: true
           }"
-          v-text="isAdamantChat(contactId) ? $t(contactName) : contactName"
-        />
+          >{{ isAdamantChat(contactId) ? $t(contactName) : contactName }}</v-list-item-title
+        >
         <div v-if="!isMessageReadonly" :class="`${className}__date`">
           {{ formatDate(createdAt) }}
         </div>
