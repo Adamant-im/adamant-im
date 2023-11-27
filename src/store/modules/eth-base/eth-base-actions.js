@@ -57,9 +57,6 @@ export default function createActions(config) {
     },
 
     sendTokens(context, { amount, admAddress, address, comments, increaseFee, replyToId }) {
-      if (context.state.isTransactionInProcess) return
-
-      context.commit('setTransactionInProcess', true)
       address = address.trim()
       const crypto = context.state.crypto
 
@@ -160,7 +157,6 @@ export default function createActions(config) {
             return sentTxInfo.hash
           }
         })
-        .finally(() => context.commit('setTransactionInProcess', false))
     },
 
     /**

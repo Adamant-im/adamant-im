@@ -23,11 +23,6 @@ export default (initialState) => ({
     state.balanceStatus = status
   },
 
-  /** Sets a flag, indicating that the transaction not finished yet */
-  setTransactionInProcess(state, status) {
-    state.isTransactionInProcess = status
-  },
-
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
   bottom(state, value) {
     state.bottomReached = value

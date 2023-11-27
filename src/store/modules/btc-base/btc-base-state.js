@@ -8,6 +8,5 @@ export default () => ({
   balance: 0,
   balanceStatus: FetchStatus.Loading,
   bottomReached: false,
-  isTransactionInProcess: false,
   transactions: {}
 })

@@ -14,11 +14,6 @@ export default {
     state.balanceStatus = status
   },
 
-  /** Sets a flag, indicating that the transaction not finished yet */
-  setTransactionInProcess(state, status) {
-    state.isTransactionInProcess = status
-  },
-
   /** Set ETH account */
   account(state, account) {
     state.address = account.address

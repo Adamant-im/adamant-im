@@ -109,9 +109,7 @@ function createActions(options) {
 
     sendTokens(context, { amount, admAddress, address, comments, fee, replyToId }) {
       if (!api) return
-      if (context.state.isTransactionInProcess) return
 
-      context.commit('setTransactionInProcess', true)
       address = address.trim()
 
       const crypto = context.state.crypto
@@ -165,7 +163,6 @@ function createActions(options) {
             return hash
           }
         })
-        .finally(() => context.commit('setTransactionInProcess', false))
     },
 
     /**

@@ -8,7 +8,6 @@ export default () => ({
   balance: 0,
   balanceStatus: FetchStatus.Loading,
   bottomReached: false,
-  isTransactionInProcess: false,
   maxHeight: -1,
   minHeight: Infinity,
   privateKey: null,
