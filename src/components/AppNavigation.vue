@@ -90,7 +90,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 /**
  * 1. Navigation Button.

@@ -75,7 +75,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import 'vuetify/_settings.scss';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .free-tokens-dialog {
   &__card-text {

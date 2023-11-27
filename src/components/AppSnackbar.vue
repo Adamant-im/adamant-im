@@ -55,8 +55,8 @@ export default {
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import '../assets/styles/themes/adamant/_mixins.scss';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .app-snackbar {
   :deep(.v-snackbar__wrapper) {

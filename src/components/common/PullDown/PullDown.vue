@@ -85,7 +85,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import '../../../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .pull-down {
   position: relative;
