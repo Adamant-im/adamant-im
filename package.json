@@ -15,6 +15,7 @@
     "build": "vue-tsc && vite build --config vite-pwa.config.ts",
     "lint": "eslint --ext .ts,.js,.vue --fix ./src",
     "prettify": "prettier --write src/",
+    "typecheck": "vue-tsc --noEmit",
     "schema:generate": "node scripts/adamant-schema/generate.mjs",
     "electron:build": "vue-tsc && vite build --config electron-vite.config.ts && electron-builder",
     "electron:dev": "vite dev --config electron-vite.config.ts",
