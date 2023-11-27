@@ -6,5 +6,11 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true
   },
-  "include": ["vite-base.config.ts"]
+  "include": [
+    "vite-config/**/*.ts",
+    "vite-base.config.ts",
+    "vite-pwa.config.ts",
+    "vitest.config.ts",
+    "electron-vite.config.ts",
+  ]
 }
