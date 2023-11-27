@@ -24,10 +24,10 @@ export default {
     AppNavigation
   },
   computed: {
-    containerNoPadding () {
+    containerNoPadding() {
       return this.$route.meta.containerNoPadding
     },
-    showNavigation () {
+    showNavigation() {
       return this.$route.meta.showNavigation || false
     }
   }

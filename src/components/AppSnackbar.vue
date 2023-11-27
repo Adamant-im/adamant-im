@@ -18,11 +18,7 @@
         fab
         @click="show = false"
       >
-        <v-icon
-          :class="`${className}__icon`"
-          icon="mdi-close"
-          size="dense"
-        />
+        <v-icon :class="`${className}__icon`" icon="mdi-close" size="dense" />
       </v-btn>
     </div>
   </v-snackbar>
@@ -33,10 +29,10 @@ export default {
   computed: {
     className: () => 'app-snackbar',
     show: {
-      get () {
+      get() {
         return this.$store.state.snackbar.show
       },
-      set (value) {
+      set(value) {
         if (!value) {
           this.$store.commit('snackbar/resetOptions', value)
         }
@@ -44,13 +40,13 @@ export default {
         this.$store.commit('snackbar/changeState', value)
       }
     },
-    message () {
+    message() {
       return this.$store.state.snackbar.message
     },
-    color () {
+    color() {
       return this.$store.state.snackbar.color
     },
-    timeout () {
+    timeout() {
       return this.$store.state.snackbar.timeout
     }
   }
@@ -59,8 +55,8 @@ export default {
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import "../assets/styles/themes/adamant/_mixins.scss";
-@import "../assets/styles/settings/_colors.scss";
+@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '../assets/styles/settings/_colors.scss';
 
 .app-snackbar {
   :deep(.v-snackbar__wrapper) {
@@ -92,7 +88,7 @@ export default {
 .v-theme--light.app-snackbar {
   :deep(.v-snackbar__wrapper) {
     background-color: map-get($shades, 'white');
-    color: map-get($adm-colors, 'regular')
+    color: map-get($adm-colors, 'regular');
   }
 }
 

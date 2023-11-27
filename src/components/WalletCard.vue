@@ -1,16 +1,7 @@
 <template>
-  <v-card
-    flat
-    :class="className"
-  >
-    <v-list
-      lines="two"
-      :class="`${className}__list`"
-    >
-      <v-list-item
-        :class="`${className}__tile`"
-        @click="showShareURIDialog = true"
-      >
+  <v-card flat :class="className">
+    <v-list lines="two" :class="`${className}__list`">
+      <v-list-item :class="`${className}__tile`" @click="showShareURIDialog = true">
         <v-list-item-title :class="`${className}__title`">
           {{ $t('home.wallet_crypto', { crypto: cryptoName }) }}
         </v-list-item-title>
@@ -19,17 +10,8 @@
         </v-list-item-subtitle>
 
         <template #append>
-          <v-btn
-            icon
-            ripple
-            variant="text"
-            :class="`${className}__action`"
-          >
-            <v-icon
-              :class="`${className}__icon`"
-              icon="mdi-share-variant"
-              size="small"
-            />
+          <v-btn icon ripple variant="text" :class="`${className}__action`">
+            <v-icon :class="`${className}__icon`" icon="mdi-share-variant" size="small" />
           </v-btn>
         </template>
       </v-list-item>
@@ -39,34 +21,21 @@
           {{ $t('home.balance') }}
         </v-list-item-title>
         <v-list-item-subtitle :class="`${className}__subtitle`">
-          {{ currency(balance, crypto, true) }} <span
-            v-if="$store.state.rate.isLoaded"
-            class="a-text-regular"
-          >~{{ rate }} {{ currentCurrency }}</span>
+          {{ currency(balance, crypto, true) }}
+          <span v-if="$store.state.rate.isLoaded" class="a-text-regular"
+            >~{{ rate }} {{ currentCurrency }}</span
+          >
         </v-list-item-subtitle>
 
         <template #append>
-          <v-btn
-            icon
-            ripple
-            variant="text"
-            :class="`${className}__action`"
-          >
-            <v-icon
-              :class="`${className}__icon`"
-              icon="mdi-chevron-right"
-              size="small"
-            />
+          <v-btn icon ripple variant="text" :class="`${className}__action`">
+            <v-icon :class="`${className}__icon`" icon="mdi-chevron-right" size="small" />
           </v-btn>
         </template>
       </v-list-item>
     </v-list>
 
-    <WalletCardListActions
-      :class="`${className}__list`"
-      :crypto="crypto"
-      :is-a-d-m="isADM"
-    />
+    <WalletCardListActions :class="`${className}__list`" :crypto="crypto" :is-a-d-m="isADM" />
 
     <ShareURIDialog
       v-model="showShareURIDialog"
@@ -117,10 +86,10 @@ export default {
   emits: ['click:balance'],
   data: () => ({ showShareURIDialog: false }),
   computed: {
-    className () {
+    className() {
       return 'wallet-card'
     },
-    isADM () {
+    isADM() {
       return this.crypto === Cryptos.ADM
     }
   },
@@ -188,7 +157,7 @@ export default {
       color: map-get($shades, 'white');
     }
     &__subtitle {
-      color: rgba(map-get($shades, 'white'), 70%)
+      color: rgba(map-get($shades, 'white'), 70%);
     }
   }
 }

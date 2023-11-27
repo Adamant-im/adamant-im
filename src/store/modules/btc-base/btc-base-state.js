@@ -4,7 +4,7 @@ export default () => ({
   address: '',
   balance: 0,
   balanceStatus: FetchStatus.Loading,
-  transactions: { },
+  transactions: {},
   areTransactionsLoading: false,
   areRecentLoading: false,
   areOlderLoading: false,

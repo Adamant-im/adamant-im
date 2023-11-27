@@ -1,21 +1,9 @@
 <template>
   <div :class="className">
-    <app-toolbar-centered
-      app
-      :title="$t('options.nodes_list')"
-      :show-back="true"
-      flat
-      fixed
-    />
+    <app-toolbar-centered app :title="$t('options.nodes_list')" :show-back="true" flat fixed />
 
-    <v-container
-      fluid
-      class="px-0 container--with-app-toolbar"
-    >
-      <v-row
-        justify="center"
-        no-gutters
-      >
+    <v-container fluid class="px-0 container--with-app-toolbar">
+      <v-row justify="center" no-gutters>
         <container padding>
           <NodesTable />
 
@@ -49,7 +37,7 @@
           />
           <!-- eslint-enable vue/no-v-html -->
 
-          <div>&nbsp;<br>&nbsp;</div>
+          <div>&nbsp;<br />&nbsp;</div>
         </container>
       </v-row>
     </v-container>
@@ -74,10 +62,10 @@ export default {
   computed: {
     className: () => 'nodes-view',
     useSocketConnection: {
-      get () {
+      get() {
         return this.$store.state.options.useSocketConnection
       },
-      set (value) {
+      set(value) {
         this.$store.commit('options/updateOption', {
           key: 'useSocketConnection',
           value
@@ -85,21 +73,21 @@ export default {
       }
     },
     preferFastestNodeOption: {
-      get () {
+      get() {
         return this.$store.state.nodes.useFastest
       },
-      set (value) {
+      set(value) {
         this.$store.dispatch('nodes/setUseFastest', value)
       }
     }
   },
-  mounted () {
+  mounted() {
     this.$store.dispatch('nodes/updateStatus')
     this.timer = setInterval(() => {
       this.$store.dispatch('nodes/updateStatus')
     }, 10000)
   },
-  beforeUnmount () {
+  beforeUnmount() {
     clearInterval(this.timer)
   }
 }

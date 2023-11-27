@@ -17,7 +17,7 @@ export default {
     AppNavigation
   },
   computed: {
-    showNavigation () {
+    showNavigation() {
       return this.$route.meta.showNavigation || false
     }
   }

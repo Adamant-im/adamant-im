@@ -10,15 +10,11 @@ import store from '@/store'
  *
  * @param {function} next Resolves the hook (redirect to Chats)
  */
-export function navigateByURI (next) {
+export function navigateByURI(next) {
   const contact = parseURIasAIP()
 
   if (contact.address) {
-    _navigateByContact(
-      contact.params.message,
-      contact.address,
-      contact.params.label
-    )
+    _navigateByContact(contact.params.message, contact.address, contact.params.label)
   } else {
     if (next) {
       next({ name: 'Chats' })
@@ -33,10 +29,7 @@ export default {
     const chat = store.state.chat.chats[to.params.partnerId]
 
     // is valid ADM address or is Adamant Chat
-    if (
-      validateAddress('ADM', to.params.partnerId) ||
-      (chat && chat.readOnly)
-    ) {
+    if (validateAddress('ADM', to.params.partnerId) || (chat && chat.readOnly)) {
       return next()
     }
 
@@ -63,14 +56,17 @@ export default {
  * @param {string} partnerId Partner address to open chat with
  * @param {string} partnerName Predefined partner name from label
  */
-function _navigateByContact (messageText, partnerId, partnerName) {
+function _navigateByContact(messageText, partnerId, partnerName) {
   if (validateAddress(Cryptos.ADM, partnerId)) {
-    store.dispatch('chat/createChat', { partnerId, partnerName })
-      .then(() => router.push({
-        name: 'Chat',
-        params: { messageText, partnerId }
-      }))
-      .catch(x => {
+    store
+      .dispatch('chat/createChat', { partnerId, partnerName })
+      .then(() =>
+        router.push({
+          name: 'Chat',
+          params: { messageText, partnerId }
+        })
+      )
+      .catch((x) => {
         router.push({
           name: 'Chats',
           params: { partnerId, showNewContact: true }

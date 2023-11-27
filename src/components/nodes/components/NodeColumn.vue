@@ -31,7 +31,7 @@ export default defineComponent({
       type: Boolean
     },
     align: {
-      type: String as PropType<'left' | 'right' | 'center'>,
+      type: String as PropType<'left' | 'right' | 'center'>
     }
   },
   setup() {

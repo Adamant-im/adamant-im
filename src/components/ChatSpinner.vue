@@ -23,7 +23,7 @@ export default defineComponent({
       required: true
     }
   },
-  setup () {
+  setup() {
     const className = 'chat-spinner'
 
     return {
@@ -34,7 +34,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-
 $chat-spinner-size: 150px !default;
 
 .chat-spinner {

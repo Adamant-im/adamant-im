@@ -31,7 +31,7 @@
         {{ actionText }}
       </div>
     </div>
-    <slot/>
+    <slot />
   </div>
 </template>
 
@@ -91,7 +91,7 @@ export default defineComponent({
   position: relative;
 
   &--transition {
-    transition: all .6s;
+    transition: all 0.6s;
   }
 
   &__loader-container {

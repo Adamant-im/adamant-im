@@ -13,11 +13,7 @@
     </template>
 
     <v-list>
-      <v-list-item
-        v-for="(language, code) in languages"
-        :key="code"
-        @click="onSelect(code)"
-      >
+      <v-list-item v-for="(language, code) in languages" :key="code" @click="onSelect(code)">
         <v-list-item-title>{{ language.title }}</v-list-item-title>
       </v-list-item>
     </v-list>
@@ -37,27 +33,26 @@ export default {
     }
   },
   computed: {
-    languages () {
+    languages() {
       return this.$i18n.messages
     },
     currentLocale: {
-      get () {
+      get() {
         return this.$store.state.language.currentLocale
       },
-      set (value) {
+      set(value) {
         this.$store.dispatch('language/changeLocale', value)
         this.$i18n.locale = value
       }
     },
-    currentLanguageName () {
-      const locale = Object.keys(this.languages)
-        .find(code => code === this.currentLocale)
+    currentLanguageName() {
+      const locale = Object.keys(this.languages).find((code) => code === this.currentLocale)
 
       return this.languages[locale].title
     }
   },
   methods: {
-    onSelect (locale) {
+    onSelect(locale) {
       this.currentLocale = locale
     }
   }
@@ -80,7 +75,7 @@ export default {
     }
   }
 
-  &[aria-expanded="true"] {
+  &[aria-expanded='true'] {
     :deep(.v-icon) {
       transform: rotate(90deg);
     }

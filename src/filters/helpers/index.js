@@ -6,7 +6,7 @@ import adamant from '@/lib/adamant'
  * @param {Date} someDate Instance of Date
  * @returns {boolean}
  */
-export const isToday = someDate => {
+export const isToday = (someDate) => {
   const today = new Date()
 
   return (
@@ -22,7 +22,7 @@ export const isToday = someDate => {
  * @param {Date} someDate Instance of Date
  * @returns {boolean}
  */
-export const isYesterday = someDate => {
+export const isYesterday = (someDate) => {
   const today = new Date()
   const yesterday = new Date(today.setDate(today.getDate() - 1))
 
@@ -39,7 +39,7 @@ export const isYesterday = someDate => {
  * @param {Date} someDate Instance of Date
  * @returns {boolean}
  */
-export const isCurrentWeek = someDate => {
+export const isCurrentWeek = (someDate) => {
   const today = new Date()
 
   for (let i = 1; i <= 7; i++) {

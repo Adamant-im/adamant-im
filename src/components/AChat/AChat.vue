@@ -16,10 +16,7 @@
           />
         </div>
 
-        <div
-          ref="messages"
-          class="a-chat__body-messages"
-        >
+        <div ref="messages" class="a-chat__body-messages">
           <template v-for="message in messages" :key="message.id">
             <slot
               name="message"
@@ -86,7 +83,7 @@ export default {
     currentScrollTop: 0,
     currentClientHeight: 0
   }),
-  mounted () {
+  mounted() {
     this.attachScrollListener()
 
     this.currentClientHeight = this.$refs.messages.clientHeight
@@ -111,20 +108,20 @@ export default {
     this.resizeObserver = new ResizeObserver(resizeHandler)
     this.resizeObserver.observe(this.$refs.messages)
   },
-  beforeUnmount () {
+  beforeUnmount() {
     this.destroyScrollListener()
     this.resizeObserver?.unobserve(this.$refs.messages)
   },
   methods: {
-    attachScrollListener () {
+    attachScrollListener() {
       this.$refs.messages.addEventListener('scroll', this.onScroll)
     },
 
-    destroyScrollListener () {
+    destroyScrollListener() {
       this.$refs.messages.removeEventListener('scroll', this.onScroll)
     },
 
-    onScroll () {
+    onScroll() {
       const scrollHeight = this.$refs.messages.scrollHeight
       const scrollTop = Math.ceil(this.$refs.messages.scrollTop)
       const clientHeight = this.$refs.messages.clientHeight
@@ -132,7 +129,8 @@ export default {
       // Scrolled to Bottom
       if (scrollHeight - scrollTop === clientHeight) {
         this.$emit('scroll:bottom')
-      } else if (scrollTop === 0) { // Scrolled to Top
+      } else if (scrollTop === 0) {
+        // Scrolled to Top
         // Save current `scrollHeight` to maintain scroll
         // position when unshift new messages
         this.currentScrollHeight = scrollHeight
@@ -150,25 +148,25 @@ export default {
 
     // Fix scroll position after unshift new messages.
     // Called from parent component.
-    maintainScrollPosition () {
+    maintainScrollPosition() {
       this.$refs.messages.scrollTop =
         this.$refs.messages.scrollHeight - this.currentScrollHeight + this.currentScrollTop
     },
 
     // Scroll to Bottom when new message.
     // Called from parent component.
-    scrollToBottom () {
+    scrollToBottom() {
       this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
     },
 
-    scrollTo (position) {
+    scrollTo(position) {
       this.$refs.messages.scrollTop = position
     },
 
     /**
      * Scroll to message by index, starting with the last.
      */
-    scrollToMessage (index) {
+    scrollToMessage(index) {
       const elements = this.$refs.messages.children
 
       if (!elements) return
@@ -212,7 +210,7 @@ export default {
               to: top,
               duration: SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION,
               onUpdate: (top) => styler.set('scrollTop', top),
-              onComplete: () => resolve(true),
+              onComplete: () => resolve(true)
             })
           },
           block: 'center'
@@ -220,7 +218,7 @@ export default {
       })
     },
 
-    isScrolledToBottom () {
+    isScrolledToBottom() {
       const scrollOffset =
         this.$refs.messages.scrollHeight -
         Math.ceil(this.$refs.messages.scrollTop) -
@@ -234,8 +232,8 @@ export default {
      * @param {string} senderId Sender address
      * @returns {{ id: string, name: string }}
      */
-    getSenderMeta (senderId) {
-      return this.partners.find(partner => isStringEqualCI(partner.id, senderId))
+    getSenderMeta(senderId) {
+      return this.partners.find((partner) => isStringEqualCI(partner.id, senderId))
     }
   }
 }

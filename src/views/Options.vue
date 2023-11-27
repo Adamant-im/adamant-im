@@ -1,66 +1,32 @@
 <template>
   <div :class="className">
-    <app-toolbar-centered
-      app
-      :title="$t('options.page_title')"
-      :show-back="true"
-      flat
-      fixed
-    />
+    <app-toolbar-centered app :title="$t('options.page_title')" :show-back="true" flat fixed />
 
-    <v-container
-      fluid
-      class="px-0 container--with-app-toolbar"
-    >
-      <v-row
-        justify="center"
-        no-gutters
-      >
+    <v-container fluid class="px-0 container--with-app-toolbar">
+      <v-row justify="center" no-gutters>
         <container padding>
           <!-- General -->
-          <h3
-            :class="`${className}__title a-text-caption`"
-            class="mt-4 mb-4"
-          >
+          <h3 :class="`${className}__title a-text-caption`" class="mt-4 mb-4">
             {{ $t('options.general_title') }}
           </h3>
-          <v-row
-            align="center"
-            no-gutters
-          >
+          <v-row align="center" no-gutters>
             <v-col cols="6">
-              <v-list-subheader
-                :class="`${className}__label`"
-              >
+              <v-list-subheader :class="`${className}__label`">
                 {{ $t('options.language_label') }}
               </v-list-subheader>
             </v-col>
-            <v-col
-              cols="6"
-              class="text-right"
-            >
-              <language-switcher
-                append-icon="mdi-chevron-down"
-              />
+            <v-col cols="6" class="text-right">
+              <language-switcher append-icon="mdi-chevron-down" />
             </v-col>
             <v-col cols="6">
-              <v-list-subheader
-                :class="`${className}__label`"
-              >
+              <v-list-subheader :class="`${className}__label`">
                 {{ $t('options.currency_label') }}
               </v-list-subheader>
             </v-col>
-            <v-col
-              cols="6"
-              class="text-right"
-            >
-              <currency-switcher
-                append-icon="mdi-chevron-down"
-              />
+            <v-col cols="6" class="text-right">
+              <currency-switcher append-icon="mdi-chevron-down" />
             </v-col>
-            <v-col
-              cols="12"
-            >
+            <v-col cols="12">
               <v-checkbox
                 v-model="darkTheme"
                 :label="$t('options.dark_theme')"
@@ -72,20 +38,11 @@
           </v-row>
 
           <!-- Security -->
-          <h3
-            :class="`${className}__title a-text-caption`"
-            class="mt-6 mb-6"
-          >
+          <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
             {{ $t('options.security_title') }}
           </h3>
-          <v-row
-            align="center"
-            no-gutters
-          >
-            <v-col
-              cols="12"
-              a-text-regular-enlarged
-            >
+          <v-row align="center" no-gutters>
+            <v-col cols="12" a-text-regular-enlarged>
               <v-checkbox
                 :label="$t('options.stay_logged_in')"
                 color="grey darken-1"
@@ -99,24 +56,15 @@
                 {{ $t('options.stay_logged_in_tooltip') }}
               </div>
 
-              <password-set-dialog
-                v-model="passwordDialog"
-                @password="onSetPassword"
-              />
+              <password-set-dialog v-model="passwordDialog" @password="onSetPassword" />
             </v-col>
           </v-row>
 
           <!-- Chats -->
-          <h3
-            :class="`${className}__title a-text-caption`"
-            class="mt-6 mb-6"
-          >
+          <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
             {{ $t('options.chats_title') }}
           </h3>
-          <v-row
-            align="center"
-            no-gutters
-          >
+          <v-row align="center" no-gutters>
             <v-col cols="12">
               <v-checkbox
                 v-model="sendMessageOnEnter"
@@ -131,10 +79,7 @@
               </div>
             </v-col>
 
-            <v-col
-              cols="12"
-              class="mt-6"
-            >
+            <v-col cols="12" class="mt-6">
               <v-checkbox
                 v-model="formatMessages"
                 :label="$t('options.format_messages')"
@@ -148,10 +93,7 @@
               </div>
             </v-col>
 
-            <v-col
-              cols="12"
-              class="mt-6"
-            >
+            <v-col cols="12" class="mt-6">
               <v-checkbox
                 v-model="useFullDate"
                 :label="$t('options.use_full_date')"
@@ -167,16 +109,10 @@
           </v-row>
 
           <!-- Notifications -->
-          <h3
-            :class="`${className}__title a-text-caption`"
-            class="mt-6 mb-6"
-          >
+          <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
             {{ $t('options.notification_title') }}
           </h3>
-          <v-row
-            align="center"
-            no-gutters
-          >
+          <v-row align="center" no-gutters>
             <v-col cols="12">
               <v-checkbox
                 v-model="allowSoundNotifications"
@@ -190,10 +126,7 @@
                 {{ $t('options.enable_sound_tooltip') }}
               </div>
             </v-col>
-            <v-col
-              cols="12"
-              class="mt-6"
-            >
+            <v-col cols="12" class="mt-6">
               <v-checkbox
                 v-model="allowTabNotifications"
                 :label="$t('options.enable_bar')"
@@ -206,10 +139,7 @@
                 {{ $t('options.enable_bar_tooltip') }}
               </div>
             </v-col>
-            <v-col
-              cols="12"
-              class="mt-6"
-            >
+            <v-col cols="12" class="mt-6">
               <v-checkbox
                 v-model="allowPushNotifications"
                 :label="$t('options.enable_push')"
@@ -225,10 +155,7 @@
           </v-row>
 
           <!-- Actions -->
-          <h3
-            :class="`${className}__title a-text-caption`"
-            class="mt-6 mb-6"
-          >
+          <h3 :class="`${className}__title a-text-caption`" class="mt-6 mb-6">
             {{ $t('options.actions') }}
           </h3>
           <v-row no-gutters>
@@ -263,9 +190,7 @@
             </v-col>
           </v-row>
           <v-row no-gutters>
-            <div
-              :class="`${className}__version_info ml-auto`"
-            >
+            <div :class="`${className}__version_info ml-auto`">
               {{ $t('options.version') }} {{ $root.appVersion }}
             </div>
           </v-row>
@@ -296,14 +221,14 @@ export default {
   }),
   computed: {
     className: () => 'settings-view',
-    stayLoggedIn () {
+    stayLoggedIn() {
       return this.$store.state.options.stayLoggedIn
     },
     sendMessageOnEnter: {
-      get () {
+      get() {
         return this.$store.state.options.sendMessageOnEnter
       },
-      set (value) {
+      set(value) {
         this.$store.commit('options/updateOption', {
           key: 'sendMessageOnEnter',
           value
@@ -311,10 +236,10 @@ export default {
       }
     },
     formatMessages: {
-      get () {
+      get() {
         return this.$store.state.options.formatMessages
       },
-      set (value) {
+      set(value) {
         this.$store.commit('options/updateOption', {
           key: 'formatMessages',
           value
@@ -322,10 +247,10 @@ export default {
       }
     },
     useFullDate: {
-      get () {
+      get() {
         return this.$store.state.options.useFullDate
       },
-      set (value) {
+      set(value) {
         this.$store.commit('options/updateOption', {
           key: 'useFullDate',
           value
@@ -333,10 +258,10 @@ export default {
       }
     },
     allowSoundNotifications: {
-      get () {
+      get() {
         return this.$store.state.options.allowSoundNotifications
       },
-      set (value) {
+      set(value) {
         this.$store.commit('options/updateOption', {
           key: 'allowSoundNotifications',
           value
@@ -344,10 +269,10 @@ export default {
       }
     },
     allowTabNotifications: {
-      get () {
+      get() {
         return this.$store.state.options.allowTabNotifications
       },
-      set (value) {
+      set(value) {
         this.$store.commit('options/updateOption', {
           key: 'allowTabNotifications',
           value
@@ -355,10 +280,10 @@ export default {
       }
     },
     allowPushNotifications: {
-      get () {
+      get() {
         return this.$store.state.options.allowPushNotifications
       },
-      set (value) {
+      set(value) {
         this.$store.commit('options/updateOption', {
           key: 'allowPushNotifications',
           value
@@ -366,10 +291,10 @@ export default {
       }
     },
     darkTheme: {
-      get () {
+      get() {
         return this.$store.state.options.darkTheme
       },
-      set (isDarkTheme) {
+      set(isDarkTheme) {
         this.$store.commit('options/updateOption', {
           key: 'darkTheme',
           value: isDarkTheme
@@ -378,18 +303,18 @@ export default {
         this.$vuetify.theme.global.name = isDarkTheme ? 'dark' : 'light'
       }
     },
-    isLoginViaPassword () {
+    isLoginViaPassword() {
       return this.$store.getters['options/isLoginViaPassword']
     }
   },
   methods: {
-    onSetPassword () {
+    onSetPassword() {
       this.$store.commit('options/updateOption', {
         key: 'stayLoggedIn',
         value: true
       })
     },
-    onCheckStayLoggedIn () {
+    onCheckStayLoggedIn() {
       if (!this.stayLoggedIn) {
         isIDBSupported
           .then(() => {
@@ -412,13 +337,13 @@ export default {
         })
       }
     },
-    logout () {
+    logout() {
       this.$store.dispatch('stopInterval')
       this.$store.dispatch('logout')
 
       if (this.isLoginViaPassword) {
         return clearDb()
-          .catch(err => {
+          .catch((err) => {
             console.error(err)
           })
           .finally(() => {
@@ -467,7 +392,9 @@ export default {
   :deep(.v-input--selection-controls) {
     margin-top: 0;
   }
-  :deep(.v-label), &__label, &__list__title {
+  :deep(.v-label),
+  &__label,
+  &__list__title {
     @include a-text-regular-enlarged();
   }
   :deep(.v-list) {

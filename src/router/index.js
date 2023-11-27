@@ -152,9 +152,12 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: process.env.VUE_APP_ELECTRON_MODE === 'production' ? createWebHashHistory() : createWebHistory(),
+  history:
+    process.env.VUE_APP_ELECTRON_MODE === 'production'
+      ? createWebHashHistory()
+      : createWebHistory(),
   routes,
-  scrollBehavior (to, from, savedPosition) {
+  scrollBehavior(to, from, savedPosition) {
     if (to.params.txId) {
       // Don't restore scroll for Transaction details screen
       return { x: 0, y: 0 }

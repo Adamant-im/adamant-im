@@ -1,4 +1,8 @@
-import { Cryptos, TransactionStatus as TS, TransactionAdditionalStatus as TAS } from '@/lib/constants'
+import {
+  Cryptos,
+  TransactionStatus as TS,
+  TransactionAdditionalStatus as TAS
+} from '@/lib/constants'
 import { verifyTransactionDetails } from '@/lib/txVerify'
 
 export default {
@@ -8,7 +12,7 @@ export default {
      * @param {{ id: string, type: string, hash: string }} admSpecialMessage
      * @param {string} partnerId Partner ADM address
      */
-    fetchTransactionStatus (admSpecialMessage, partnerId) {
+    fetchTransactionStatus(admSpecialMessage, partnerId) {
       if (!admSpecialMessage || !partnerId) return
 
       const { type, hash, senderId, recipientId } = admSpecialMessage
@@ -27,7 +31,7 @@ export default {
      * @param {string} hash Transaction hash
      * @param {number} timestamp ADAMANT special message timestamp. If coin Tx is not known yet, set its timestamp to ADM rich message timestamp. Later it will be updated
      */
-    fetchTransaction (type, hash, timestamp) {
+    fetchTransaction(type, hash, timestamp) {
       const cryptoModule = type.toLowerCase()
       return this.$store.dispatch(`${cryptoModule}/getTransaction`, { hash, timestamp })
     },
@@ -37,10 +41,10 @@ export default {
      * @param {string} type Transaction type
      * @param {string} hash Transaction hash
      */
-    getTransaction (type, hash) {
+    getTransaction(type, hash) {
       let transaction
       if (type === 'ADM') {
-        transaction = this.$store.state.adm.transactions[hash] || { }
+        transaction = this.$store.state.adm.transactions[hash] || {}
       } else if (!Cryptos[type]) {
         transaction = {}
       } else {
@@ -56,7 +60,7 @@ export default {
      * @param senderId
      * @returns {Promise}
      */
-    fetchCryptoAddresses (type, recipientId, senderId) {
+    fetchCryptoAddresses(type, recipientId, senderId) {
       const recipientCryptoAddress = this.$store.dispatch('partners/fetchAddress', {
         crypto: type,
         partner: recipientId
@@ -75,7 +79,7 @@ export default {
      * @param {object} coinTx in case it's not in-chat coin transfer, we have all the data already
      * @returns {object}
      */
-    getTransactionStatus (admSpecialMessage, coinTx) {
+    getTransactionStatus(admSpecialMessage, coinTx) {
       const status = {
         status: TS.PENDING,
         virtualStatus: TS.PENDING,
@@ -85,7 +89,10 @@ export default {
       }
 
       // if no hash, it is an empty object
-      admSpecialMessage = admSpecialMessage && (admSpecialMessage.hash || admSpecialMessage.id) ? admSpecialMessage : undefined
+      admSpecialMessage =
+        admSpecialMessage && (admSpecialMessage.hash || admSpecialMessage.id)
+          ? admSpecialMessage
+          : undefined
 
       if (!admSpecialMessage && !coinTx) return status
       status.status = admSpecialMessage ? admSpecialMessage.status : coinTx.status
@@ -134,7 +141,10 @@ export default {
         status.status = (coinTx && coinTx.status) || TS.PENDING
         status.virtualStatus = status.status
 
-        const recipientCryptoAddress = this.$store.getters['partners/cryptoAddress'](recipientId, type)
+        const recipientCryptoAddress = this.$store.getters['partners/cryptoAddress'](
+          recipientId,
+          type
+        )
         const senderCryptoAddress = this.$store.getters['partners/cryptoAddress'](senderId, type)
 
         // do not update status until cryptoAddresses and transaction are received
@@ -147,7 +157,10 @@ export default {
         // check if Tx is not a fake
         // we are unable to check status.status === TS.REGISTERED txs, as their timestamps are Date.now()
         if (status.status === TS.CONFIRMED) {
-          const txVerify = verifyTransactionDetails(coinTx, admSpecialMessage, { recipientCryptoAddress, senderCryptoAddress })
+          const txVerify = verifyTransactionDetails(coinTx, admSpecialMessage, {
+            recipientCryptoAddress,
+            senderCryptoAddress
+          })
           if (!txVerify.isTxConsistent) {
             status.status = TS.INVALID
             status.virtualStatus = status.status

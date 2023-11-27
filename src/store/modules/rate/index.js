@@ -11,18 +11,18 @@ export let interval
 
 const UPDATE_RATES_INTERVAL = 90000
 const mutations = {
-  setRates (state, rates) {
+  setRates(state, rates) {
     state.rates = rates
   },
-  setHistoryRates (state, historyRates) {
+  setHistoryRates(state, historyRates) {
     state.historyRates[historyRates.name] = historyRates.value
   },
-  loadRates (state) {
+  loadRates(state) {
     state.isLoaded = true
   }
 }
 const actions = {
-  getAllRates ({ commit }) {
+  getAllRates({ commit }) {
     const url = getRandomServiceUrl('adm', 'infoService')
     return new Promise((resolve, reject) => {
       axios
@@ -38,7 +38,7 @@ const actions = {
         })
     })
   },
-  getHistoryRates ({ state, commit }, { timestamp }) {
+  getHistoryRates({ state, commit }, { timestamp }) {
     if (!timestamp) return
     const url = getRandomServiceUrl('adm', 'infoService')
     if (state.historyRates[timestamp] !== undefined) {
@@ -60,10 +60,10 @@ const actions = {
   },
   startInterval: {
     root: true,
-    handler ({ dispatch }) {
-      function repeat () {
+    handler({ dispatch }) {
+      function repeat() {
         dispatch('getAllRates')
-          .catch(err => console.error(err))
+          .catch((err) => console.error(err))
           .then(() => {
             interval = setTimeout(repeat, UPDATE_RATES_INTERVAL)
           })
@@ -74,7 +74,7 @@ const actions = {
   },
   stopInterval: {
     root: true,
-    handler () {
+    handler() {
       clearTimeout(interval)
     }
   }
@@ -85,7 +85,9 @@ const getters = {
     const currentCurrency = rootState.options.currentRate
     const store = state.historyRates[timestamp]
     if (store) {
-      historyRate = `${(store[`${crypto}/${currentCurrency}`] * amount).toFixed(2)} ${currentCurrency}`
+      historyRate = `${(store[`${crypto}/${currentCurrency}`] * amount).toFixed(
+        2
+      )} ${currentCurrency}`
     } else {
       historyRate = '�'
     }

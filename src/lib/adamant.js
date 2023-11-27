@@ -387,7 +387,11 @@ adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
  * @returns {{message: string, nonce: string}} encoded value and nonce (both as HEX-strings)
  */
 adamant.encodeValue = function (value, privateKey) {
-  const randomString = () => Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, Math.ceil(Math.random() * 10))
+  const randomString = () =>
+    Math.random()
+      .toString(36)
+      .replace(/[^a-z]+/g, '')
+      .substr(0, Math.ceil(Math.random() * 10))
 
   const nonce = Buffer.allocUnsafe(24)
   sodium.randombytes(nonce)

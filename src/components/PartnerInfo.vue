@@ -1,26 +1,11 @@
 <template>
-  <v-dialog
-    v-model="show"
-    max-width="360"
-  >
+  <v-dialog v-model="show" max-width="360">
     <v-card>
-      <v-card-title
-        :class="`${className}__dialog-title`"
-        class="a-text-header"
-      >
+      <v-card-title :class="`${className}__dialog-title`" class="a-text-header">
         {{ isMe ? $t('chats.my_qr_code') : $t('chats.partner_info') }}
         <v-spacer />
-        <v-btn
-          variant="text"
-          icon
-          class="close-icon"
-          :size="36"
-          @click="show = false"
-        >
-          <v-icon
-            icon="mdi-close"
-            :size="24"
-          />
+        <v-btn variant="text" icon class="close-icon" :size="36" @click="show = false">
+          <v-icon icon="mdi-close" :size="24" />
         </v-btn>
       </v-card-title>
       <v-divider class="a-divider" />
@@ -28,35 +13,19 @@
         <v-list-item>
           <template #prepend>
             <icon-box>
-              <ChatAvatar
-                :user-id="address"
-                use-public-key
-              />
+              <ChatAvatar :user-id="address" use-public-key />
             </icon-box>
           </template>
-          <v-list-item-title
-            :class="`${className}__address`"
-          >
+          <v-list-item-title :class="`${className}__address`">
             {{ address }}
           </v-list-item-title>
-          <v-list-item-subtitle
-            :class="`${className}__username`"
-          >
+          <v-list-item-subtitle :class="`${className}__username`">
             {{ isMe ? $t('chats.me') : name }}
           </v-list-item-subtitle>
         </v-list-item>
       </v-list>
-      <v-row
-        align="center"
-        justify="center"
-        class="pb-6"
-        no-gutters
-      >
-        <QrcodeRenderer
-          :logo="logo"
-          :opts="opts"
-          :text="text"
-        />
+      <v-row align="center" justify="center" class="pb-6" no-gutters>
+        <QrcodeRenderer :logo="logo" :opts="opts" :text="text" />
       </v-row>
     </v-card>
   </v-dialog>
@@ -81,7 +50,7 @@ export default {
     address: {
       type: String,
       required: true,
-      validator: v => validateAddress('ADM', v)
+      validator: (v) => validateAddress('ADM', v)
     },
     name: {
       type: String,
@@ -94,11 +63,11 @@ export default {
     ownerAddress: {
       type: String,
       required: true,
-      validator: v => validateAddress('ADM', v)
+      validator: (v) => validateAddress('ADM', v)
     }
   },
   emits: ['update:modelValue'],
-  data () {
+  data() {
     return {
       className: 'partner-info-dialog',
       logo: '/img/adm-qr-invert.png',
@@ -109,19 +78,19 @@ export default {
   },
   computed: {
     show: {
-      get () {
+      get() {
         return this.modelValue
       },
-      set (value) {
+      set(value) {
         this.$emit('update:modelValue', value)
       }
     },
-    text () {
+    text() {
       return this.isMe
         ? generateURI(Cryptos.ADM, this.ownerAddress)
         : generateURI(Cryptos.ADM, this.address, this.name)
     },
-    isMe () {
+    isMe() {
       return isStringEqualCI(this.address, this.ownerAddress)
     }
   }

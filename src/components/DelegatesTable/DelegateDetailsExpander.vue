@@ -30,7 +30,7 @@
 import { computed, defineComponent, toRefs } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { getExplorerDelegateUrl } from "@/config/utils";
+import { getExplorerDelegateUrl } from '@/config/utils'
 import numberFormat from '@/filters/numberFormat'
 
 export default defineComponent({

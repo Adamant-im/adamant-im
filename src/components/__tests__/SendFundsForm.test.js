@@ -6,7 +6,7 @@ import Vuetify from 'vuetify'
 import sinon from 'sinon'
 
 import { Cryptos, Rates } from '@/lib/constants'
-import { rateStateMock } from '@/components/__tests__/__mocks__/store/modules/rate';
+import { rateStateMock } from '@/components/__tests__/__mocks__/store/modules/rate'
 import SendFundsForm from '@/components/SendFundsForm'
 import mockupI18n from './__mocks__/plugins/i18n'
 
@@ -17,15 +17,20 @@ Vue.use(Vuetify)
 // Because Node.js is not supporting Promise.finally.
 // In the future, polyfill can be added.
 // eslint-disable-next-line
-Promise.prototype.finally = Promise.prototype.finally || {
-  finally (fn) {
-    const onFinally = cb => Promise.resolve(fn()).then(cb)
-    return this.then(
-      result => onFinally(() => result),
-      reason => onFinally(() => { throw reason })
-    )
-  }
-}.finally
+Promise.prototype.finally =
+  Promise.prototype.finally ||
+  {
+    finally(fn) {
+      const onFinally = (cb) => Promise.resolve(fn()).then(cb)
+      return this.then(
+        (result) => onFinally(() => result),
+        (reason) =>
+          onFinally(() => {
+            throw reason
+          })
+      )
+    }
+  }.finally
 
 // Mock console.error
 global.console = {
@@ -34,9 +39,9 @@ global.console = {
 }
 
 /** Mockup store helper **/
-function mockupStore () {
+function mockupStore() {
   // mockup sendTokens action
-  function sendTokens ({ admAddress }) {
+  function sendTokens({ admAddress }) {
     return new Promise((resolve, reject) => {
       if (admAddress === 'U111111') {
         return resolve('1') // transactionId
@@ -68,7 +73,7 @@ function mockupStore () {
   const ethModule = () => ({
     state: {
       balance: 100,
-      address: '0x0000000000000000000000000000000000000000',
+      address: '0x0000000000000000000000000000000000000000'
     },
     getters: {
       fee: () => () => 1
@@ -94,14 +99,14 @@ function mockupStore () {
 
   const partnersModule = () => ({
     getters: {
-      cryptoAddress: state => (userId, cryptoCurrency) => {
+      cryptoAddress: (state) => (userId, cryptoCurrency) => {
         if (cryptoCurrency === 'ETH') {
           return 'ETH123456'
         } else if (cryptoCurrency === 'BNB') {
           return 'BNB123456'
         }
       },
-      displayName: state => partnerId => {
+      displayName: (state) => (partnerId) => {
         if (partnerId === 'U111111') {
           return 'Rick'
         } else if (partnerId === 'U222222') {
@@ -110,7 +115,7 @@ function mockupStore () {
       }
     },
     actions: {
-      fetchAddress () {
+      fetchAddress() {
         return new Promise((resolve) => {
           resolve('0x111111111111111111')
         })
@@ -121,7 +126,7 @@ function mockupStore () {
 
   const chatModule = () => ({
     getters: {
-      isPartnerInChatList: state => partnerId => {
+      isPartnerInChatList: (state) => (partnerId) => {
         if (partnerId === 'U111111') {
           return true
         }
@@ -398,7 +403,12 @@ describe('SendFundsForm', () => {
       await nextTick()
 
       expect(wrapper.vm.confirmMessage).toBe(
-        i18n.global.t('transfer.confirm_message_with_name', { amount: 1, name: 'Rick', address: 'U111111', crypto: 'ADM' })
+        i18n.global.t('transfer.confirm_message_with_name', {
+          amount: 1,
+          name: 'Rick',
+          address: 'U111111',
+          crypto: 'ADM'
+        })
       )
     })
   })
@@ -450,9 +460,7 @@ describe('SendFundsForm', () => {
 
       await wrapper.vm.submit()
 
-      expect(wrapper.vm.pushTransactionToChat.args).toEqual([
-        [transactionId, 'U111111']
-      ])
+      expect(wrapper.vm.pushTransactionToChat.args).toEqual([[transactionId, 'U111111']])
     })
 
     it('Direct Transfer: should sendFunds', async () => {

@@ -86,7 +86,7 @@ function createActions(options) {
 
           throw err
         }
-      },
+      }
     },
 
     storeAddress({ state }) {
@@ -95,13 +95,16 @@ function createActions(options) {
 
     updateStatus(context) {
       if (!api) return
-      api.getBalance().then((balance) => {
-        context.commit('status', { balance })
-        context.commit('setBalanceStatus', FetchStatus.Success)
-      }).catch(err => {
-        context.commit('setBalanceStatus', FetchStatus.Error)
-        throw err
-      })
+      api
+        .getBalance()
+        .then((balance) => {
+          context.commit('status', { balance })
+          context.commit('setBalanceStatus', FetchStatus.Success)
+        })
+        .catch((err) => {
+          context.commit('setBalanceStatus', FetchStatus.Error)
+          throw err
+        })
     },
 
     sendTokens(context, { amount, admAddress, address, comments, fee, replyToId }) {
@@ -189,7 +192,9 @@ function createActions(options) {
       let tx = null
       try {
         tx = await api.getTransaction(payload.hash)
-      } catch (e) { /* empty */ }
+      } catch (e) {
+        /* empty */
+      }
 
       let retry = false
       let retryTimeout = 0

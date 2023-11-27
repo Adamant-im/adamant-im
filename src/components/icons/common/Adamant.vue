@@ -1,10 +1,6 @@
 <template>
   <g>
-    <path
-      id="path0"
-      fill-rule="evenodd"
-      d="M256,206.3l-46.1,79.9h92.2L256,206.3z"
-    />
+    <path id="path0" fill-rule="evenodd" d="M256,206.3l-46.1,79.9h92.2L256,206.3z" />
     <path
       id="path1"
       fill-rule="evenodd"

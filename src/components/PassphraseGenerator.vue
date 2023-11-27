@@ -4,21 +4,13 @@
       <h3 class="a-text-regular">
         {{ $t('login.create_address_label') }}
       </h3>
-      <v-btn
-        class="a-btn-link mt-2"
-        variant="text"
-        size="small"
-        @click="generatePassphrase"
-      >
+      <v-btn class="a-btn-link mt-2" variant="text" size="small" @click="generatePassphrase">
         {{ $t('login.new_button') }}
       </v-btn>
     </div>
 
     <transition name="slide-fade">
-      <div
-        v-if="showPassphrase"
-        :class="`${className}__box`"
-      >
+      <div v-if="showPassphrase" :class="`${className}__box`">
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <div
           ref="el"
@@ -78,10 +70,7 @@
       </div>
     </transition>
 
-    <QrcodeRendererDialog
-      v-model="showQrcodeRendererDialog"
-      :text="passphrase"
-    />
+    <QrcodeRendererDialog v-model="showQrcodeRendererDialog" :text="passphrase" />
   </div>
 </template>
 
@@ -111,19 +100,19 @@ export default {
     showQrcodeRendererDialog: false
   }),
   computed: {
-    className () {
+    className() {
       return 'passphrase-generator'
     }
   },
   methods: {
-    copyToClipboard () {
+    copyToClipboard() {
       copyToClipboard(this.passphrase)
 
       this.selectText()
 
       this.$emit('copy')
     },
-    saveFile () {
+    saveFile() {
       const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
       if (!iOS) {
         downloadFile(
@@ -135,12 +124,10 @@ export default {
 
       this.$emit('save')
     },
-    selectText () {
-      this.$refs.textarea.$el
-        .querySelector('textarea')
-        .select()
+    selectText() {
+      this.$refs.textarea.$el.querySelector('textarea').select()
     },
-    generatePassphrase () {
+    generatePassphrase() {
       this.passphrase = bip39.generateMnemonic()
 
       this.showPassphrase = true
@@ -182,7 +169,8 @@ export default {
       mask-image: unset;
     }
     :deep(.v-textarea) {
-      .v-input__slot:before, .v-input__slot:after {
+      .v-input__slot:before,
+      .v-input__slot:after {
         border-width: 0;
       }
     }

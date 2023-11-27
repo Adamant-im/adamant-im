@@ -11,16 +11,18 @@ const SCHEME = 'app'
 let appWindow
 
 // Standard scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([{
-  scheme: SCHEME,
-  privileges: {
-    standard: true,
-    secure: true,
-    supportFetchAPI: true,
-    bypassCSP: true,
-    allowServiceWorkers: true
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: SCHEME,
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      bypassCSP: true,
+      allowServiceWorkers: true
+    }
   }
-}])
+])
 
 // @source: https://github.com/nklayman/vue-cli-plugin-electron-builder/blob/master/lib/createProtocol.js
 function createProtocol(scheme, customProtocol) {

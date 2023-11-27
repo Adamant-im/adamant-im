@@ -1,8 +1,5 @@
 <template>
-  <pull-down
-    @action="updateBalances"
-    :action-text="$t('chats.pull_down_actions.update_balances')"
-  >
+  <pull-down @action="updateBalances" :action-text="$t('chats.pull_down_actions.update_balances')">
     <v-row justify="center" no-gutters :class="className">
       <container>
         <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
@@ -40,8 +37,8 @@
                   //
                   // Note: Don't remove this function and leave it empty.
                 }
-              }
-             ">
+              }"
+            >
               <v-window-item
                 v-for="wallet in wallets"
                 :key="wallet.cryptoCurrency"
@@ -121,7 +118,7 @@ export default {
         const currentRate = state.rate.rates[`${crypto}/${this.currentCurrency}`]
         const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0
 
-        const cryptoName =  CryptosInfo[crypto].nameShort ||  CryptosInfo[crypto].name
+        const cryptoName = CryptosInfo[crypto].nameShort || CryptosInfo[crypto].name
 
         return {
           address,

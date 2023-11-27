@@ -13,7 +13,7 @@
                 size="small"
                 variant="text"
               />
-              <v-spacer/>
+              <v-spacer />
               <v-btn
                 :class="`${className}__item`"
                 @click="showChatStartDialog = true"

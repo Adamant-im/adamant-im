@@ -1,17 +1,13 @@
 <template>
-  <crypto-icon
-    :class="classes.cryptoIcon"
-    :crypto="wallet.cryptoCurrency"
-    size="medium"
-  />
+  <crypto-icon :class="classes.cryptoIcon" :crypto="wallet.cryptoCurrency" size="medium" />
 
   <div>
     <div v-if="isBalanceLoading" :class="classes.balanceLoading">
-      <v-icon icon="mdi-dots-horizontal" size="18"/>
+      <v-icon icon="mdi-dots-horizontal" size="18" />
     </div>
     <div v-else-if="fetchBalanceSucceeded">{{ numberFormat(wallet.balance, 4) }}</div>
     <div v-else :class="classes.balanceError">
-      <v-icon icon="mdi-help-circle-outline" size="18"/>
+      <v-icon icon="mdi-help-circle-outline" size="18" />
     </div>
 
     <div>
@@ -21,18 +17,15 @@
       </span>
     </div>
 
-    <div
-      v-if="isRateLoaded"
-      :class="['a-text-explanation', classes.rates]"
-    >
+    <div v-if="isRateLoaded" :class="['a-text-explanation', classes.rates]">
       {{ wallet.rate }} {{ fiatCurrency }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
-import { useStore } from 'vuex';
+import { computed, defineComponent } from 'vue'
+import { useStore } from 'vuex'
 import type { PropType } from 'vue'
 
 import { Cryptos, FetchStatus } from '@/lib/constants'
@@ -54,7 +47,7 @@ type Wallet = {
   cryptoName: string
   erc20: boolean
   rate: number
-  cryptoCurrency: string,
+  cryptoCurrency: string
   isBalanceLoading: boolean
   hasBalanceLoaded: boolean
 }
@@ -73,7 +66,7 @@ export default defineComponent({
       required: true
     }
   },
-  setup (props) {
+  setup(props) {
     const store = useStore()
 
     const isRateLoaded = computed(() => store.state.rate.isLoaded && props.wallet.rate)

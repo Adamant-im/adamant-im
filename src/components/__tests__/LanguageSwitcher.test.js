@@ -5,7 +5,7 @@ import { createStore } from 'vuex'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import en from '@/locales/en'
 import ru from '@/locales/ru'
-import mockupI18n from "@/components/__tests__/__mocks__/plugins/i18n";
+import mockupI18n from '@/components/__tests__/__mocks__/plugins/i18n'
 
 /**
  * Mockup store helper.

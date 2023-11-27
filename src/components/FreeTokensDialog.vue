@@ -1,49 +1,29 @@
 <template>
-  <v-dialog
-    v-model="show"
-    width="500"
-    :class="className"
-    @keydown.enter="onEnter"
-  >
+  <v-dialog v-model="show" width="500" :class="className" @keydown.enter="onEnter">
     <v-card>
       <v-card-title class="a-text-header">
-        {{ $t("chats.free_adm_title") }}
+        {{ $t('chats.free_adm_title') }}
       </v-card-title>
 
       <v-divider class="a-divider" />
 
       <v-card-text :class="`${className}__card-text`">
         <div :class="`${className}__disclaimer a-text-regular-enlarged`">
-          {{ $t("chats.free_adm_disclaimer") }}
+          {{ $t('chats.free_adm_disclaimer') }}
         </div>
       </v-card-text>
 
-      <v-col
-        cols="12"
-        class="text-center pa-0"
-      >
-        <v-btn
-          :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
-          @click="getFreeTokens()"
-        >
-          <v-icon
-            :class="`${className}__btn-icon`"
-            icon="mdi-gift"
-          />
+      <v-col cols="12" class="text-center pa-0">
+        <v-btn :class="[`${className}__btn-free-tokens`, 'a-btn-primary']" @click="getFreeTokens()">
+          <v-icon :class="`${className}__btn-icon`" icon="mdi-gift" />
           <div :class="`${className}__btn-text`">
             {{ $t('home.free_adm_btn') }}
           </div>
         </v-btn>
       </v-col>
 
-      <v-col
-        cols="12"
-        :class="`${className}__btn-show-article`"
-      >
-        <a
-          class="a-text-active"
-          @click="showArticle()"
-        >
+      <v-col cols="12" :class="`${className}__btn-show-article`">
+        <a class="a-text-active" @click="showArticle()">
           {{ $t('chats.how_to_use_messenger') }}
         </a>
       </v-col>
@@ -65,25 +45,27 @@ export default {
   computed: {
     className: () => 'free-tokens-dialog',
     show: {
-      get () {
+      get() {
         return this.modelValue
       },
-      set (value) {
+      set(value) {
         this.$emit('update:modelValue', value)
       }
     }
   },
   methods: {
-    getFreeTokens () {
-      const link = websiteUriToOnion(this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address)
+    getFreeTokens() {
+      const link = websiteUriToOnion(
+        this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address
+      )
       window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
       this.show = false
     },
-    showArticle () {
+    showArticle() {
       const link = this.$t('chats.how_to_use_messenger_link')
       window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
     },
-    onEnter () {
+    onEnter() {
       if (this.show) {
         this.getFreeTokens()
       }

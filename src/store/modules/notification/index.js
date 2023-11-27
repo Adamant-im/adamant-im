@@ -7,7 +7,7 @@ const mutations = {
    * Increase activation button click count of desktop notification
    * @param {object} state State
    */
-  increaseDesktopActivateClickCount (state) {
+  increaseDesktopActivateClickCount(state) {
     state.desktopActivateClickCount++
   }
 }

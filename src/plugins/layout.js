@@ -4,7 +4,7 @@ import Chat from '@/layouts/chat'
 import NoContainer from '@/layouts/no-container'
 import Container from '@/components/Container'
 
-export function registerGlobalComponents (app) {
+export function registerGlobalComponents(app) {
   app.component('Default', Default)
   app.component('Toolbar', Toolbar)
   app.component('Chat', Chat)
