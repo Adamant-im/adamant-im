@@ -1,6 +1,6 @@
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { i18n } from '@/i18n'
-import { CryptosInfo, isErc20 } from '@/lib/constants'
+import { CryptosInfo } from '@/lib/constants'
 
 const AllowAmountErrorPercent = 0.3
 
@@ -15,6 +15,47 @@ const TransactionInconsistentReason = {
   WRONG_TIMESTAMP: 'wrong_timestamp',
   SENDER_CRYPTO_ADDRESS_MISMATCH: 'sender_crypto_address_mismatch',
   RECIPIENT_CRYPTO_ADDRESS_MISMATCH: 'recipient_crypto_address_mismatch'
+}
+
+export async function checkNonce(api, context) {
+  const fetchInfo = CryptosInfo[context.state.crypto].txFetchInfo
+  const TX_LOCK_TIME = fetchInfo.newPendingAttempts * fetchInfo.newPendingInterval
+
+  const nonce = await api.getClient().getTransactionCount(context.state.address)
+  const currentNonce = context.rootGetters.getNonce(context.state.crypto)
+
+  const expiration = Date.now()
+  const estimatedExpiration = expiration + TX_LOCK_TIME
+
+  // if crypto has nonce, we should check it
+  if (nonce) {
+    if (
+      currentNonce &&
+      nonce.toString() === currentNonce.nonce &&
+      expiration < currentNonce.expiration
+    ) {
+      throw new Error('The same nonce already exists')
+    }
+
+    context.dispatch(
+      'setNonce',
+      { [context.state.crypto]: { nonce: nonce.toString(), expiration: estimatedExpiration } },
+      { root: true }
+    )
+  } else {
+    // otherwise just increase expiration time
+    if (currentNonce && expiration < currentNonce.expiration) {
+      throw new Error('The same nonce already exists')
+    }
+
+    context.dispatch(
+      'setNonce',
+      { [context.state.crypto]: { expiration: estimatedExpiration } },
+      { root: true }
+    )
+  }
+
+  return nonce || null
 }
 
 export function verifyTransactionDetails(

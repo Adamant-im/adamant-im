@@ -665,7 +665,7 @@ export default {
             message = this.$t('transfer.recipient_minimum_balance')
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
-          } else if (/Unable to get Tx hash/i.test(message)) {
+          } else if (/The same nonce already exists/i.test(message)) {
             message = this.$t('transfer.tooFast', { coin: this.currency })
           }
           this.$emit('error', message)

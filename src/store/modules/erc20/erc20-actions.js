@@ -1,13 +1,10 @@
 import * as ethUtils from '../../../lib/eth-utils'
-import {
-  FetchStatus,
-  INCREASE_FEE_MULTIPLIER,
-  DEFAULT_ERC20_TRANSFER_GAS_LIMIT
-} from '@/lib/constants'
+import { FetchStatus, DEFAULT_ERC20_TRANSFER_GAS_LIMIT } from '@/lib/constants'
 import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
 import { AbiDecoder } from '@/lib/abi/abi-decoder'
+import { checkNonce } from '@/lib/txVerify'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -20,7 +17,7 @@ const abiDecoder = new AbiDecoder(Erc20)
 const initTransaction = async (api, context, ethAddress, amount, increaseFee) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
 
-  const nonce = await api.getClient().getTransactionCount(context.state.address)
+  const nonce = await checkNonce(api, context)
   const gasPrice = await api.getClient().getGasPrice()
 
   const transaction = {
