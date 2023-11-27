@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getRandomNodeUrl, getRandomServiceUrl } from '@/config/utils'
+import { getRandomServiceUrl } from '@/config/utils'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import * as transactions from '@liskhq/lisk-transactions'
@@ -23,7 +23,7 @@ export default class LskBaseApi {
    * Constructor
    * @abstract
    */
-  constructor(crypto, passphrase) {
+  constructor(crypto, _passphrase) {
     this._clients = {}
     this._crypto = crypto
     this._network = undefined
@@ -146,7 +146,7 @@ export default class LskBaseApi {
    * @param {string} data transaction data field
    * @returns {Promise<{hex: string, txid: string}>}
    */
-  createTransaction(address = '', amount = 0, fee, nonce, data) {
+  createTransaction(_address = '', _amount = 0, _fee, _nonce, _data) {
     return Promise.resolve({ hex: undefined, txid: undefined })
   }
 
@@ -155,7 +155,7 @@ export default class LskBaseApi {
    * @abstract
    * @param {string} txHex raw transaction as a HEX literal
    */
-  sendTransaction(txHex) {
+  sendTransaction(_txHex) {
     return Promise.resolve('')
   }
 
@@ -165,7 +165,7 @@ export default class LskBaseApi {
    * @param {*} txid transaction ID
    * @returns {Promise<object>}
    */
-  getTransaction(txid) {
+  getTransaction(_txid) {
     return Promise.resolve(null)
   }
 
@@ -175,7 +175,7 @@ export default class LskBaseApi {
    * @param {any} options crypto-specific options
    * @returns {Promise<{hasMore: boolean, items: Array}>}
    */
-  getTransactions(options) {
+  getTransactions(_options) {
     return Promise.resolve({ hasMore: false, items: [] })
   }
 

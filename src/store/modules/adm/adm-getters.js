@@ -30,5 +30,5 @@ export default {
    */
   partnerTransactions: state => partner => Object.values(state.transactions).filter(tx => isStringEqualCI(tx.partner, partner)),
 
-  fee: state => amount => Fees.ADM_TRANSFER
+  fee: () => (_amount) => Fees.ADM_TRANSFER
 }

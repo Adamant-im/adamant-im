@@ -66,7 +66,7 @@ export default {
 function _navigateByContact (messageText, partnerId, partnerName) {
   if (validateAddress(Cryptos.ADM, partnerId)) {
     store.dispatch('chat/createChat', { partnerId, partnerName })
-      .then(key => router.push({
+      .then(() => router.push({
         name: 'Chat',
         params: { messageText, partnerId }
       }))

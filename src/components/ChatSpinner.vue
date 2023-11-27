@@ -23,7 +23,7 @@ export default defineComponent({
       required: true
     }
   },
-  setup (props) {
+  setup () {
     const className = 'chat-spinner'
 
     return {

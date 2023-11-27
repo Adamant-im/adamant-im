@@ -35,7 +35,6 @@
 <script>
 import { Cryptos, CryptosOrder } from '@/lib/constants'
 import ChatDialog from '@/components/Chat/ChatDialog'
-import Icon from '@/components/icons/BaseIcon'
 import CryptoIcon from '@/components/icons/CryptoIcon'
 import IconBox from '@/components/icons/IconBox'
 
@@ -43,7 +42,6 @@ export default {
   components: {
     IconBox,
     ChatDialog,
-    Icon,
     CryptoIcon
   },
   props: {

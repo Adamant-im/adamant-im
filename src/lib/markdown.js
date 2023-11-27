@@ -10,7 +10,7 @@ marked.setOptions({
 
 const renderer = new marked.Renderer()
 
-renderer.image = function (href, title, text) {
+renderer.image = function (_href, _title, _text) {
   return ''
 }
 

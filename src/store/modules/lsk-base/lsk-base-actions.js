@@ -70,7 +70,7 @@ function createActions(options) {
 
     sendTokens(
       context,
-      { amount, admAddress, address, comments, fee, increaseFee, textData, replyToId }
+      { amount, admAddress, address, comments, fee, textData, replyToId }
     ) {
       if (!api) return
       address = address.trim()

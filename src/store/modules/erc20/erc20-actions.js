@@ -1,7 +1,6 @@
 import * as ethUtils from '../../../lib/eth-utils'
 import {
   FetchStatus,
-  INCREASE_FEE_MULTIPLIER,
   DEFAULT_ERC20_TRANSFER_GAS_LIMIT
 } from '@/lib/constants'
 import EthContract from 'web3-eth-contract'

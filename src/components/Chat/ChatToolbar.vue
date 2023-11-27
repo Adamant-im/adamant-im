@@ -41,14 +41,10 @@
 </template>
 
 <script>
-import ChatAvatar from '@/components/Chat/ChatAvatar'
 import partnerName from '@/mixins/partnerName'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 
 export default {
-  components: {
-    ChatAvatar
-  },
   mixins: [partnerName],
   props: {
     partnerId: {
