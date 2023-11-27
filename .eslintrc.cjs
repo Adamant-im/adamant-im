@@ -6,7 +6,7 @@ module.exports = {
   env: {
     browser: true,
     node: true,
-    es2020: true
+    es2022: true
   },
   extends: [
     'plugin:vue/vue3-essential',
@@ -17,6 +17,7 @@ module.exports = {
   ],
   parser: 'vue-eslint-parser',
   parserOptions: {
+    ecmaVersion: 13,
     parser: {
       // Script parser for `<script>`
       js: 'espree',
