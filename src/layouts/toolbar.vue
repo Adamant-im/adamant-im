@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import AppSnackbar from '@/components/AppSnackbar'
-import AppNavigation from '@/components/AppNavigation'
+import AppSnackbar from '@/components/AppSnackbar.vue'
+import AppNavigation from '@/components/AppNavigation.vue'
 
 export default {
   components: {

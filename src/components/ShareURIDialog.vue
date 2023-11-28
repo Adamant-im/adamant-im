@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
+import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
 import copyToClipboard from 'copy-to-clipboard'
 import { generateURI } from '@/lib/uri'
 

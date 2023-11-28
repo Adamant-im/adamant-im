@@ -17,8 +17,8 @@
   </div>
 </template>
 <script>
-import AppToolbarCentered from '@/components/AppToolbarCentered'
-import ExportKeysForm from '@/components/ExportKeysForm'
+import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+import ExportKeysForm from '@/components/ExportKeysForm.vue'
 
 export default {
   components: {

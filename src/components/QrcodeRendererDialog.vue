@@ -18,7 +18,7 @@
 import b64toBlob from 'b64-to-blob'
 import FileSaver from 'file-saver'
 
-import QrcodeRenderer from '@/components/QrcodeRenderer'
+import QrcodeRenderer from '@/components/QrcodeRenderer.vue'
 
 export default {
   components: {

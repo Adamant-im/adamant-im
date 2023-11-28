@@ -67,9 +67,9 @@
 </template>
 
 <script>
-import WalletCard from '@/components/WalletCard'
-import WalletTab from '@/components/WalletTab'
-import CryptoIcon from '@/components/icons/CryptoIcon'
+import WalletCard from '@/components/WalletCard.vue'
+import WalletTab from '@/components/WalletTab.vue'
+import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import numberFormat from '@/filters/numberFormat'
 
 import { PullDown } from '@/components/common/PullDown'

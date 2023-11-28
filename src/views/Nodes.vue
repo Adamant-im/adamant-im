@@ -45,8 +45,8 @@
 </template>
 
 <script>
-import AppToolbarCentered from '@/components/AppToolbarCentered'
-import NodesTable from '@/components/nodes/NodesTable'
+import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+import NodesTable from '@/components/nodes/NodesTable.vue'
 
 export default {
   components: {

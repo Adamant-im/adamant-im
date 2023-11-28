@@ -32,13 +32,13 @@
 </template>
 
 <script>
-import ChatAvatar from '@/components/Chat/ChatAvatar'
-import QrcodeRenderer from '@/components/QrcodeRenderer'
+import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
+import QrcodeRenderer from '@/components/QrcodeRenderer.vue'
 import { Cryptos } from '@/lib/constants'
 import { generateURI } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import IconBox from '@/components/icons/IconBox'
+import IconBox from '@/components/icons/IconBox.vue'
 
 export default {
   components: {

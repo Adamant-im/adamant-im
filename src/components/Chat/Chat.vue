@@ -281,17 +281,17 @@ import {
   AChatActionsOverlay,
   AChatReactionSelect
 } from '@/components/AChat'
-import ChatToolbar from '@/components/Chat/ChatToolbar'
-import ChatAvatar from '@/components/Chat/ChatAvatar'
-import ChatMenu from '@/components/Chat/ChatMenu'
+import ChatToolbar from '@/components/Chat/ChatToolbar.vue'
+import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
+import ChatMenu from '@/components/Chat/ChatMenu.vue'
 import transaction from '@/mixins/transaction'
 import partnerName from '@/mixins/partnerName'
 import formatDate from '@/filters/date'
-import CryptoIcon from '@/components/icons/CryptoIcon'
-import FreeTokensDialog from '@/components/FreeTokensDialog'
+import CryptoIcon from '@/components/icons/CryptoIcon.vue'
+import FreeTokensDialog from '@/components/FreeTokensDialog.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { isWelcomeChat, isWelcomeMessage } from '@/lib/chat/meta/utils'
-import ProgressIndicator from '@/components/ProgressIndicator'
+import ProgressIndicator from '@/components/ProgressIndicator.vue'
 
 /**
  * Returns user meta by userId.

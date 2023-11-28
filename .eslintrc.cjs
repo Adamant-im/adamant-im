@@ -14,7 +14,9 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    '@vue/eslint-config-prettier/skip-formatting'
+    '@vue/eslint-config-prettier/skip-formatting',
+    'plugin:import/recommended',
+    'plugin:import/typescript'
   ],
   parser: 'vue-eslint-parser',
   parserOptions: {
@@ -32,10 +34,22 @@ module.exports = {
       '<template>': 'espree'
     }
   },
+  ignorePatterns: ['src/components/icons/cryptos/*.vue'],
   plugins: ['vue', '@typescript-eslint'],
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '_' }],
-    'vue/multi-word-component-names': 'off'
+    'vue/multi-word-component-names': 'off',
+
+    'import/no-unresolved': 'error',
+    'import/named': 'off',
+    'import/no-named-as-default': 'off',
+    'import/no-named-as-default-member': 'off'
+  },
+  settings: {
+    'import/resolver': {
+      typescript: true,
+      node: true
+    }
   }
 }
