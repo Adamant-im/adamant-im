@@ -6,7 +6,7 @@
  * @param {number} precision
  * @returns {function}
  */
-export function formatNumber (precision = 8) {
+export function formatNumber(precision = 8) {
   const intl = new Intl.NumberFormat('en-US', {
     maximumFractionDigits: precision,
     minimumFractionDigits: 0,
@@ -21,7 +21,7 @@ export function formatNumber (precision = 8) {
  * @param {any} abstract Number or string-number.
  * @returns {boolean}
  */
-export function isNumeric (abstract) {
+export function isNumeric(abstract) {
   return !isNaN(parseFloat(abstract)) && isFinite(abstract)
 }
 
@@ -30,8 +30,8 @@ export function isNumeric (abstract) {
  * @param {number} value Number to validate
  * @return {boolean}
  */
-export function isNumber (value) {
-  if (typeof (value) !== 'number' || isNaN(value) || !Number.isFinite(value)) {
+export function isNumber(value) {
+  if (typeof value !== 'number' || isNaN(value) || !Number.isFinite(value)) {
     return false
   } else {
     return true
@@ -43,7 +43,7 @@ export function isNumber (value) {
  * @param {number} value Number to validate
  * @return {boolean}
  */
-export function isPositiveNumber (value) {
+export function isPositiveNumber(value) {
   if (!isNumber(value) || value <= 0) {
     return false
   } else {

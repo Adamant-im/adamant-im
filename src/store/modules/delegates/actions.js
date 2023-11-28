@@ -153,6 +153,7 @@ export default {
               // Awaiting status or unprocessed
               status.code = 5
               // For delegates which not forged a single block yet (statuses 0,3,5 not apply here)
+              // eslint-disable-next-line no-dupe-else-if -- Require refactoring
             } else if (!status.blockAt && status.updatedAt) {
               if (!isRoundDelegate && delegate.missedblocks === 1) {
                 // Missed block in current round

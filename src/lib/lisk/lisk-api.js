@@ -18,9 +18,15 @@ export const LiskHashSettings = {
 
 export const TX_CHUNK_SIZE = 25
 
-export function getAccount (crypto, passphrase) {
+export function getAccount(crypto, passphrase) {
   const network = networks[crypto]
-  const liskSeed = pbkdf2.pbkdf2Sync(passphrase, LiskHashSettings.SALT, LiskHashSettings.ITERATIONS, LiskHashSettings.KEYLEN, LiskHashSettings.DIGEST)
+  const liskSeed = pbkdf2.pbkdf2Sync(
+    passphrase,
+    LiskHashSettings.SALT,
+    LiskHashSettings.ITERATIONS,
+    LiskHashSettings.KEYLEN,
+    LiskHashSettings.DIGEST
+  )
   const keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
   const addressHexBinary = cryptography.getAddressFromPublicKey(keyPair.publicKey)
   const addressHex = bytesToHex(addressHexBinary)
@@ -40,7 +46,7 @@ export function getAccount (crypto, passphrase) {
 }
 
 export default class LiskApi extends LskBaseApi {
-  constructor (passphrase) {
+  constructor(passphrase) {
     super(Cryptos.LSK, passphrase)
     const account = getAccount(Cryptos.LSK, passphrase)
     this._network = account.network
@@ -55,7 +61,7 @@ export default class LiskApi extends LskBaseApi {
    * Get asset Id
    * @override
    */
-  get assetId () {
+  get assetId() {
     return 0
   }
 
@@ -63,7 +69,7 @@ export default class LiskApi extends LskBaseApi {
    * Get asset schema
    * @override
    */
-  get assetSchema () {
+  get assetSchema() {
     return {
       $id: 'lisk/transfer-asset',
       title: 'Transfer transaction asset',
@@ -91,26 +97,24 @@ export default class LiskApi extends LskBaseApi {
   }
 
   /** @override */
-  getAccount () {
-    return this._get(`/api/accounts/${this.addressHex}`, {}).then(
-      data => {
-        const account = { }
-        if (data && data.data && data.data.token && data.data.token.balance) {
-          account.balance = (data.data.token.balance) / this.multiplier
-        }
-        if (data && data.data && data.data.sequence && data.data.sequence.nonce) {
-          account.nonce = data.data.sequence.nonce
-        }
-        return account
-      })
+  getAccount() {
+    return this._get(`/api/accounts/${this.addressHex}`, {}).then((data) => {
+      const account = {}
+      if (data && data.data && data.data.token && data.data.token.balance) {
+        account.balance = data.data.token.balance / this.multiplier
+      }
+      if (data && data.data && data.data.sequence && data.data.sequence.nonce) {
+        account.nonce = data.data.sequence.nonce
+      }
+      return account
+    })
   }
 
   /** @override */
-  getHeight () {
-    return this._get('/api/node/info').then(
-      data => {
-        return Number(data.data.height) || 0
-      })
+  getHeight() {
+    return this._get('/api/node/info').then((data) => {
+      return Number(data.data.height) || 0
+    })
   }
 
   /**
@@ -124,13 +128,16 @@ export default class LiskApi extends LskBaseApi {
    * @param {string} data transaction data field
    * @returns {Promise<{hex: string, txid: string}>}
    */
-  createTransaction (address = '', amount = 0, fee, nonce, data = '') {
+  createTransaction(address = '', amount = 0, fee, nonce, data = '') {
     const liskTx = this._buildTransaction(address, amount, fee, nonce, data).liskTx
 
     // To use transactions.signTransaction, passPhrase is necessary
     // So we'll use cryptography.signDataWithPrivateKey
     const liskTxBytes = transactions.getSigningBytes(this.assetSchema, liskTx)
-    const txSignature = cryptography.signDataWithPrivateKey(Buffer.concat([this.networkIdentifier, liskTxBytes]), this._keyPair.secretKey)
+    const txSignature = cryptography.signDataWithPrivateKey(
+      Buffer.concat([this.networkIdentifier, liskTxBytes]),
+      this._keyPair.secretKey
+    )
 
     liskTx.signatures[0] = txSignature
     const txid = bytesToHex(cryptography.hash(transactions.getBytes(this.assetSchema, liskTx)))
@@ -147,15 +154,18 @@ export default class LiskApi extends LskBaseApi {
   }
 
   /** @override */
-  sendTransaction (signedTx) {
-    return lsk.getClient().post('/api/transactions', signedTx).then(response => {
-      return response.data.data.transactionId
-    })
+  sendTransaction(signedTx) {
+    return lsk
+      .getClient()
+      .post('/api/transactions', signedTx)
+      .then((response) => {
+        return response.data.data.transactionId
+      })
   }
 
   /** @override */
-  getTransaction (txid) {
-    return this._getService('/api/v2/transactions/', { transactionId: txid }).then(data => {
+  getTransaction(txid) {
+    return this._getService('/api/v2/transactions/', { transactionId: txid }).then((data) => {
       if (data && data.data[0]) {
         return this._mapTransaction(data.data[0])
       }
@@ -163,7 +173,7 @@ export default class LiskApi extends LskBaseApi {
   }
 
   /** @override */
-  getTransactions (options = {}) {
+  getTransactions(options = {}) {
     const url = '/api/v2/transactions/'
     options.moduleAssetId = `${this.moduleId}:${this.assetId}`
     options.limit = TX_CHUNK_SIZE
@@ -172,25 +182,32 @@ export default class LiskApi extends LskBaseApi {
     if (options.toTimestamp || options.fromTimestamp) {
       options.toTimestamp = options.toTimestamp || Date.now()
       options.fromTimestamp = options.fromTimestamp || 0
-      options.timestamp = `${getLiskTimestamp(options.fromTimestamp) + 1}:${getLiskTimestamp(options.toTimestamp) - 1}`
+      options.timestamp = `${getLiskTimestamp(options.fromTimestamp) + 1}:${
+        getLiskTimestamp(options.toTimestamp) - 1
+      }`
     }
     delete options.toTimestamp
     delete options.fromTimestamp
     // additional options: offset, height, and others
 
-    return this._getService(url, options).then(transactions => {
-      if (transactions && transactions.data) {
-        const mappedTxs = transactions.data.map(tx => this._mapTransaction(tx))
-        return mappedTxs
-      }
-    })
-      // Unfortunately, Lisk Service returns 404 for empty results
-      // https://github.com/LiskHQ/lisk-service/issues/698
-      .catch(() => { return [] })
+    return (
+      this._getService(url, options)
+        .then((transactions) => {
+          if (transactions && transactions.data) {
+            const mappedTxs = transactions.data.map((tx) => this._mapTransaction(tx))
+            return mappedTxs
+          }
+        })
+        // Unfortunately, Lisk Service returns 404 for empty results
+        // https://github.com/LiskHQ/lisk-service/issues/698
+        .catch(() => {
+          return []
+        })
+    )
   }
 
   /** @override */
-  _mapTransaction (tx) {
+  _mapTransaction(tx) {
     const mapped = super._mapTransaction({
       ...tx
     })
@@ -203,12 +220,17 @@ export default class LiskApi extends LskBaseApi {
   }
 
   /** Executes a GET request to the node's core API */
-  _get (url, params) {
-    return lsk.getClient().get(url, { params }).then(response => response.data)
+  _get(url, params) {
+    return lsk
+      .getClient()
+      .get(url, { params })
+      .then((response) => response.data)
   }
 
   /** Executes a GET request to the Lisk Service API */
-  _getService (url, params) {
-    return this._getServiceClient().get(url, { params }).then(response => response.data)
+  _getService(url, params) {
+    return this._getServiceClient()
+      .get(url, { params })
+      .then((response) => response.data)
   }
 }

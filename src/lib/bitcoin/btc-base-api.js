@@ -91,7 +91,7 @@ export default class BtcBaseApi {
    * @abstract
    * @param {string} txHex raw transaction as a HEX literal
    */
-  sendTransaction(txHex) {
+  sendTransaction(_txHex) {
     return Promise.resolve('')
   }
 
@@ -101,11 +101,11 @@ export default class BtcBaseApi {
    * @param {*} txid transaction ID
    * @returns {Promise<object>}
    */
-  getTransaction(txid) {
+  getTransaction(_txid) {
     return Promise.resolve(null)
   }
 
-  getTransactionHex(txid) {
+  getTransactionHex(_txid) {
     return Promise.resolve(null)
   }
 
@@ -115,7 +115,7 @@ export default class BtcBaseApi {
    * @param {any} options crypto-specific options
    * @returns {Promise<{hasMore: boolean, items: Array}>}
    */
-  getTransactions(options) {
+  getTransactions(_options) {
     return Promise.resolve({ hasMore: false, items: [] })
   }
 

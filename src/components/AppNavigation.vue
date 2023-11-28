@@ -7,19 +7,13 @@
     :elevation="0"
   >
     <!-- Wallet -->
-    <v-btn
-      to="/home"
-    >
-      <v-icon
-        icon="mdi-wallet"
-      />
+    <v-btn to="/home">
+      <v-icon icon="mdi-wallet" />
       <span>{{ $t('bottom.wallet_button') }}</span>
     </v-btn>
 
     <!-- Chat -->
-    <v-btn
-      to="/chats"
-    >
+    <v-btn to="/chats">
       <v-badge
         v-if="numOfNewMessages > 0"
         :value="numOfNewMessages"
@@ -27,25 +21,16 @@
         color="primary"
         :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
       >
-        <v-icon
-          icon="mdi-forum"
-        />
+        <v-icon icon="mdi-forum" />
       </v-badge>
-      <v-icon
-        v-else
-        icon="mdi-forum"
-      />
+      <v-icon v-else icon="mdi-forum" />
 
       <span>{{ $t('bottom.chats_button') }}</span>
     </v-btn>
 
     <!-- Settings -->
-    <v-btn
-      to="/options"
-    >
-      <v-icon
-        icon="mdi-cog"
-      />
+    <v-btn to="/options">
+      <v-icon icon="mdi-cog" />
       <span>{{ $t('bottom.settings_button') }}</span>
     </v-btn>
   </v-bottom-navigation>
@@ -56,7 +41,7 @@ import { useRoute } from 'vue-router'
 import { watch, onMounted, defineComponent, ref, computed } from 'vue'
 
 export default defineComponent({
-  setup () {
+  setup() {
     const pages = [
       {
         title: 'wallet',
@@ -78,7 +63,7 @@ export default defineComponent({
     const store = useStore()
     const route = useRoute()
     const getCurrentPageIndex = () => {
-      const currentPage = pages.find(page => {
+      const currentPage = pages.find((page) => {
         const pattern = new RegExp(`^${page.link}`)
 
         return route.path.match(pattern)
@@ -105,7 +90,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 /**
  * 1. Navigation Button.
@@ -117,13 +102,13 @@ export default defineComponent({
     transform: unset !important;
     overflow: visible;
   }
-  &.v-bottom-navigation .v-btn  {
+  &.v-bottom-navigation .v-btn {
     font-weight: 300;
     flex-grow: 1;
     flex-shrink: 1;
     flex-basis: 0;
   }
-  :deep(.v-btn.v-btn--active)  {
+  :deep(.v-btn.v-btn--active) {
     font-size: unset;
 
     > .v-btn__overlay {
@@ -135,7 +120,7 @@ export default defineComponent({
       font-size: 14px;
     }
   }
-  :deep(.v-btn:not(.v-btn--active))  {
+  :deep(.v-btn:not(.v-btn--active)) {
     filter: unset;
   }
   :deep(.v-badge__badge) {
@@ -153,10 +138,10 @@ export default defineComponent({
     &.v-bottom-navigation {
       background-color: map-get($shades, 'white');
     }
-    :deep(.v-btn.v-btn--active)  {
+    :deep(.v-btn.v-btn--active) {
       color: map-get($adm-colors, 'regular');
     }
-    :deep(.v-btn:not(.v-btn--active))  {
+    :deep(.v-btn:not(.v-btn--active)) {
       color: map-get($adm-colors, 'muted') !important;
     }
     :deep(.v-bottom-navigation__content) {

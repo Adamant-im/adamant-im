@@ -21,26 +21,15 @@
         "hasIndex": true
       }
     ],
-    "doge": [
-      { "url": "https://dogenode1.adamant.im/" }
-    ],
-    "dash": [
-      { "url": "https://dashnode1.adamant.im" }
-    ],
-    "btc": [
-      { "url": "https://btcnode2.adamant.im" }
-    ],
-    "lsk": [
-      { "url": "https://lisknode3.adamant.im" },
-      { "url": "https://lisknode4.adamant.im" }
-    ],
+    "doge": [{ "url": "https://dogenode1.adamant.im/" }],
+    "dash": [{ "url": "https://dashnode1.adamant.im" }],
+    "btc": [{ "url": "https://btcnode2.adamant.im" }],
+    "lsk": [{ "url": "https://lisknode3.adamant.im" }, { "url": "https://lisknode4.adamant.im" }],
     "lskservice": [
       { "url": "https://liskservice3.adamant.im" },
       { "url": "https://liskservice4.adamant.im" }
     ],
-    "infoservice": [
-      { "url": "https://info.adamant.im" }
-    ]
+    "infoservice": [{ "url": "https://info.adamant.im" }]
   },
   "env": "test"
 }

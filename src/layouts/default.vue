@@ -1,10 +1,6 @@
 <template>
   <v-main>
-    <v-container
-      class="pa-4"
-      fluid
-      fill-height
-    >
+    <v-container class="pa-4" fluid fill-height>
       <slot />
     </v-container>
 
@@ -13,7 +9,7 @@
 </template>
 
 <script>
-import AppSnackbar from '@/components/AppSnackbar'
+import AppSnackbar from '@/components/AppSnackbar.vue'
 
 export default {
   components: {

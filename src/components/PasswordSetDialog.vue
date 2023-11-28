@@ -119,7 +119,7 @@ export default {
 
           return encodedPassword
         })
-        .then((encodedPassword) => {
+        .then(() => {
           return saveState(this.$store)
         })
         .catch((err) => {

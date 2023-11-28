@@ -4,7 +4,7 @@ import LskApi from '../../../lib/lisk/lisk-api'
 
 const TX_FETCH_INTERVAL = 10 * 1000
 
-const customActions = getApi => ({
+const customActions = (getApi) => ({
   updateBalance: {
     root: true,
     async handler({ commit }, payload = {}) {
@@ -29,22 +29,25 @@ const customActions = getApi => ({
     }
   },
 
-  updateStatus (context) {
+  updateStatus(context) {
     const api = getApi()
 
     if (!api) return
-    api.getAccount().then(account => {
-      if (account) {
-        context.commit('status', { balance: account.balance, nonce: account.nonce })
-        context.commit('setBalanceStatus', FetchStatus.Success)
-      } else {
+    api
+      .getAccount()
+      .then((account) => {
+        if (account) {
+          context.commit('status', { balance: account.balance, nonce: account.nonce })
+          context.commit('setBalanceStatus', FetchStatus.Success)
+        } else {
+          context.commit('setBalanceStatus', FetchStatus.Error)
+        }
+      })
+      .catch((err) => {
         context.commit('setBalanceStatus', FetchStatus.Error)
-      }
-    }).catch(err => {
-      context.commit('setBalanceStatus', FetchStatus.Error)
 
-      throw err
-    })
+        throw err
+      })
 
     // Not needed
     // api.getFeeRate().then(rate => context.commit('feeRate', rate))
@@ -53,10 +56,10 @@ const customActions = getApi => ({
     context.dispatch('updateHeight')
   },
 
-  updateHeight ({ commit }) {
+  updateHeight({ commit }) {
     const api = getApi()
     if (!api) return
-    api.getHeight().then(height => {
+    api.getHeight().then((height) => {
       if (height) {
         commit('height', height)
       }
@@ -68,7 +71,7 @@ const customActions = getApi => ({
    * @param {{ dispatch: function, getters: object }} param0 Vuex context
    * @param {{hash: string}} payload action payload
    */
-  updateTransaction ({ dispatch, getters }, payload) {
+  updateTransaction({ dispatch, getters }, payload) {
     const tx = getters.transaction(payload.hash)
 
     if (tx && (tx.status === 'CONFIRMED' || tx.status === 'REJECTED')) {
@@ -77,7 +80,11 @@ const customActions = getApi => ({
       return dispatch('updateHeight')
     } else {
       // Otherwise fetch the transaction details
-      return dispatch('getTransaction', { ...payload, force: payload.force, updateOnly: payload.updateOnly })
+      return dispatch('getTransaction', {
+        ...payload,
+        force: payload.force,
+        updateOnly: payload.updateOnly
+      })
     }
   }
 })

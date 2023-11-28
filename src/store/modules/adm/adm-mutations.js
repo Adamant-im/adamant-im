@@ -4,17 +4,17 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   /** Resets module state */
-  reset (state) {
+  reset(state) {
     resetState(state, getInitialState())
   },
 
   /** Sets current ADM address */
-  address (state, address) {
+  address(state, address) {
     state.address = address
   },
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
-  bottom (state, value) {
+  bottom(state, value) {
     state.bottomReached = value
   },
 
@@ -23,7 +23,7 @@ export default {
    * @param {{transactions: object, minHeight: number, maxHeight: number}} state current state
    * @param {Array<{id: string, height: number}>} transactions transactions list
    */
-  transactions (state, transactions) {
+  transactions(state, transactions) {
     const updateTimestamps = transactions.updateTimestamps
     if (updateTimestamps) {
       transactions = transactions.transactions
@@ -32,18 +32,15 @@ export default {
     let maxHeight = -1
 
     const address = state.address
-    transactions.forEach(tx => {
+    transactions.forEach((tx) => {
       if (!tx) return
 
       state.transactions[tx.id] = {
         ...tx,
         direction: isStringEqualCI(tx.recipientId, address) ? 'to' : 'from',
         partner: isStringEqualCI(tx.recipientId, address) ? tx.senderId : tx.recipientId,
-        status: tx.height || tx.confirmations > 0
-          ? 'CONFIRMED'
-          : tx.status
-            ? tx.status
-            : 'REGISTERED'
+        status:
+          tx.height || tx.confirmations > 0 ? 'CONFIRMED' : tx.status ? tx.status : 'REGISTERED'
       }
 
       if (tx.height && updateTimestamps) {
@@ -54,7 +51,8 @@ export default {
 
     // Magic here helps to refresh Tx list when browser deletes it
     const txCount = Object.keys(state.transactions).length
-    if (state.transactionsCount < txCount) { // We don't delete transactions, so they can't become in short
+    if (state.transactionsCount < txCount) {
+      // We don't delete transactions, so they can't become in short
       state.transactionsCount = txCount
     }
 
@@ -71,13 +69,13 @@ export default {
    * @param {{areTransactionsLoading: boolean}} state module state
    * @param {boolean} value flag value
    */
-  areOlderLoading (state, areLoading) {
+  areOlderLoading(state, areLoading) {
     state.areOlderLoading = areLoading
   },
-  areRecentLoading (state, areLoading) {
+  areRecentLoading(state, areLoading) {
     state.areRecentLoading = areLoading
   },
-  areTransactionsLoading (state, areLoading) {
+  areTransactionsLoading(state, areLoading) {
     state.areTransactionsLoading = areLoading
   }
 }

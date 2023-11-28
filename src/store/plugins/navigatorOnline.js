@@ -1,10 +1,10 @@
 import { i18n } from '@/i18n'
 
-export default store => {
+export default (store) => {
   window.addEventListener('online', handleEvent)
   window.addEventListener('offline', handleEvent)
 
-  function handleEvent (event) {
+  function handleEvent(event) {
     store.dispatch('snackbar/show', {
       message: i18n.global.t(`connection.${event.type}`),
       timeout: 3000

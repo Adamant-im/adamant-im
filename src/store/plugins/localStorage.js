@@ -17,7 +17,8 @@ const vuexPersistence = new VuexPersistence({
         formatMessages: state.options.formatMessages,
         useFullDate: state.options.useFullDate,
         useSocketConnection: state.options.useSocketConnection,
-        suppressWarningOnAddressesNotification: state.options.suppressWarningOnAddressesNotification,
+        suppressWarningOnAddressesNotification:
+          state.options.suppressWarningOnAddressesNotification,
         currentRate: state.options.currentRate
       }
     }

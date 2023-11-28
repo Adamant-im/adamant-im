@@ -1,39 +1,15 @@
 <template>
-  <v-container
-    :class="[classes, className]"
-    fluid
-  >
-    <v-row
-      justify="center"
-      no-gutters
-    >
+  <v-container :class="[classes, className]" fluid>
+    <v-row justify="center" no-gutters>
       <container>
-        <v-toolbar
-          ref="toolbar"
-          :flat="flat"
-          :height="height"
-        >
-          <v-btn
-            v-if="showBack"
-            icon
-            size="small"
-            @click="goBack"
-          >
-            <v-icon
-              icon="mdi-arrow-left"
-              size="x-large"
-            />
+        <v-toolbar ref="toolbar" :flat="flat" :height="height">
+          <v-btn v-if="showBack" icon size="small" @click="goBack">
+            <v-icon icon="mdi-arrow-left" size="x-large" />
           </v-btn>
 
-          <v-toolbar-title
-            v-if="title"
-            class="a-text-regular-enlarged"
-          >
+          <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
             <div>{{ title }}</div>
-            <div
-              v-if="subtitle"
-              class="body-1"
-            >
+            <div v-if="subtitle" class="body-1">
               {{ subtitle }}
             </div>
           </v-toolbar-title>
@@ -76,7 +52,7 @@ export default {
     }
   },
   computed: {
-    classes () {
+    classes() {
       return {
         'v-toolbar--fixed': this.app,
         'app-toolbar--fixed': this.fixed
@@ -85,7 +61,7 @@ export default {
     className: () => 'app-toolbar-centered'
   },
   methods: {
-    goBack () {
+    goBack() {
       // there are no pages in history to go back
       if (history.length === 1) {
         this.$router.replace('/')
@@ -100,13 +76,13 @@ export default {
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .app-toolbar-centered {
   padding: 0;
 
   :deep(.v-toolbar-title) {
-    letter-spacing: .02em;
+    letter-spacing: 0.02em;
   }
 
   :deep(.v-toolbar-title:not(:first-child)) {
@@ -133,7 +109,7 @@ export default {
 .v-theme--light {
   .app-toolbar-centered {
     .v-toolbar {
-      background-color: map-get($adm-colors, 'secondary2')
+      background-color: map-get($adm-colors, 'secondary2');
     }
   }
 }

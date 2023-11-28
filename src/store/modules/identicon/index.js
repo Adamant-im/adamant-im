@@ -9,18 +9,16 @@ const state = () => ({
 })
 
 const getters = {
-  avatar: state => userId => {
-    const avatar = state.avatars.find(
-      avatar => avatar.userId === userId
-    )
+  avatar: (state) => (userId) => {
+    const avatar = state.avatars.find((avatar) => avatar.userId === userId)
 
     return (avatar && avatar.Base64) || null
   },
-  isAvatarCached: (state, getters) => userId => !!getters.avatar(userId)
+  isAvatarCached: (state, getters) => (userId) => !!getters.avatar(userId)
 }
 
 const mutations = {
-  setAvatar (state, { userId, Base64 }) {
+  setAvatar(state, { userId, Base64 }) {
     state.avatars.push({
       userId,
       Base64
@@ -29,7 +27,7 @@ const mutations = {
 }
 
 const actions = {
-  saveAvatar ({ commit, getters }, { userId, Base64 }) {
+  saveAvatar({ commit, getters }, { userId, Base64 }) {
     if (!getters.isAvatarCached(userId)) {
       commit('setAvatar', { userId, Base64 })
     }
