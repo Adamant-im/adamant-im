@@ -21,9 +21,9 @@
 </template>
 
 <script>
-import Chat from '@/components/Chat/Chat'
-import PartnerInfo from '@/components/PartnerInfo'
-import ProgressIndicator from '@/components/ProgressIndicator'
+import Chat from '@/components/Chat/Chat.vue'
+import PartnerInfo from '@/components/PartnerInfo.vue'
+import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import partnerName from '@/mixins/partnerName'
 
 export default {

@@ -63,9 +63,9 @@
 </template>
 
 <script>
-import ChatPreview from '@/components/ChatPreview'
-import ChatStartDialog from '@/components/ChatStartDialog'
-import ChatSpinner from '@/components/ChatSpinner'
+import ChatPreview from '@/components/ChatPreview.vue'
+import ChatStartDialog from '@/components/ChatStartDialog.vue'
+import ChatSpinner from '@/components/ChatSpinner.vue'
 import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 

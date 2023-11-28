@@ -84,9 +84,9 @@
 </template>
 
 <script>
-import AppToolbarCentered from '@/components/AppToolbarCentered'
-import Pagination from '@/components/Pagination'
-import DelegatesTable from '@/components/DelegatesTable/DelegatesTable'
+import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+import Pagination from '@/components/Pagination.vue'
+import DelegatesTable from '@/components/DelegatesTable/DelegatesTable.vue'
 import { computed, onMounted, ref, reactive, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'

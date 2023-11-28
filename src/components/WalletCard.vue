@@ -47,8 +47,8 @@
 </template>
 
 <script>
-import ShareURIDialog from '@/components/ShareURIDialog'
-import WalletCardListActions from '@/components/WalletCardListActions'
+import ShareURIDialog from '@/components/ShareURIDialog.vue'
+import WalletCardListActions from '@/components/WalletCardListActions.vue'
 import { Cryptos } from '@/lib/constants'
 import currency from '@/filters/currencyAmountWithSymbol'
 

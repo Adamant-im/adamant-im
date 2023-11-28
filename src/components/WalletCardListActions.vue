@@ -36,7 +36,7 @@
 
 <script>
 import { Cryptos } from '@/lib/constants'
-import BuyTokensDialog from '@/components/BuyTokensDialog'
+import BuyTokensDialog from '@/components/BuyTokensDialog.vue'
 import { websiteUriToOnion } from '@/lib/uri'
 
 export default {

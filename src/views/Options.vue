@@ -201,10 +201,10 @@
 </template>
 
 <script>
-import LanguageSwitcher from '@/components/LanguageSwitcher'
-import CurrencySwitcher from '@/components/CurrencySwitcher'
-import AppToolbarCentered from '@/components/AppToolbarCentered'
-import PasswordSetDialog from '@/components/PasswordSetDialog'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
+import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
+import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import scrollPosition from '@/mixins/scrollPosition'
 

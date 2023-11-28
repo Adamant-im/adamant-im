@@ -70,9 +70,9 @@ import { nextTick } from 'vue'
 import { Cryptos } from '@/lib/constants'
 import { generateURI, parseURIasAIP } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
-import QrcodeCapture from '@/components/QrcodeCapture'
-import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
-import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
+import QrcodeCapture from '@/components/QrcodeCapture.vue'
+import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
+import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
 import partnerName from '@/mixins/partnerName'
 
 export default {

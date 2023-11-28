@@ -79,11 +79,11 @@ import * as bip39 from 'bip39'
 import copyToClipboard from 'copy-to-clipboard'
 
 import { downloadFile } from '@/lib/textHelpers'
-import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
-import Icon from '@/components/icons/BaseIcon'
-import CopyIcon from '@/components/icons/common/Copy'
-import SaveIcon from '@/components/icons/common/Save'
-import QrCodeIcon from '@/components/icons/common/QrCode'
+import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
+import Icon from '@/components/icons/BaseIcon.vue'
+import CopyIcon from '@/components/icons/common/Copy.vue'
+import SaveIcon from '@/components/icons/common/Save.vue'
+import QrCodeIcon from '@/components/icons/common/QrCode.vue'
 
 export default {
   components: {

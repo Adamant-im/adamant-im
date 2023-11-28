@@ -32,8 +32,8 @@
 import { computed, reactive } from 'vue'
 import { useStore } from 'vuex'
 
-import DelegateVoteCheckbox from '@/components/DelegatesTable/DelegateVoteCheckbox'
-import DelegateDetailsExpander from '@/components/DelegatesTable/DelegateDetailsExpander'
+import DelegateVoteCheckbox from '@/components/DelegatesTable/DelegateVoteCheckbox.vue'
+import DelegateDetailsExpander from '@/components/DelegatesTable/DelegateDetailsExpander.vue'
 
 const emits = {
   updateDetailsExpanded: 'update:detailsExpanded'

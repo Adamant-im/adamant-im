@@ -34,9 +34,9 @@
 
 <script>
 import { Cryptos, CryptosOrder } from '@/lib/constants'
-import ChatDialog from '@/components/Chat/ChatDialog'
-import CryptoIcon from '@/components/icons/CryptoIcon'
-import IconBox from '@/components/icons/IconBox'
+import ChatDialog from '@/components/Chat/ChatDialog.vue'
+import CryptoIcon from '@/components/icons/CryptoIcon.vue'
+import IconBox from '@/components/icons/IconBox.vue'
 
 export default {
   components: {
