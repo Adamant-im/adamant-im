@@ -19,12 +19,14 @@ const TransactionInconsistentReason = {
 
 export async function checkTxInProcess(api, context, withoutNonce = true, externalNonce = null) {
   const fetchInfo = CryptosInfo[context.state.crypto].txFetchInfo
-  const TX_LOCK_TIME = fetchInfo.newPendingAttempts * fetchInfo.newPendingInterval
+  const pendingAttempts = fetchInfo?.newPendingAttempts || 20
+  const pendingInterval = fetchInfo?.newPendingInterval || 5000
+  const TX_LOCK_TIME = pendingAttempts * pendingInterval
 
   const currentNonce = context.rootGetters.getTransactionInProcess(context.state.crypto)
 
-  const expiration = Date.now()
-  const estimatedExpiration = expiration + TX_LOCK_TIME
+  const currentTimestamp = Date.now()
+  const estimatedExpiration = currentTimestamp + TX_LOCK_TIME
 
   function dispatchTxInProcess(nonce = null) {
     context.dispatch(
@@ -36,7 +38,7 @@ export async function checkTxInProcess(api, context, withoutNonce = true, extern
 
   // For coins like BTC
   if (withoutNonce) {
-    if (currentNonce && expiration < currentNonce.expiration) {
+    if (currentNonce && currentTimestamp < currentNonce.expiration) {
       throw new Error('The tx with a same nonce already exists')
     }
 
@@ -53,14 +55,14 @@ export async function checkTxInProcess(api, context, withoutNonce = true, extern
     if (
       currentNonce &&
       nonce.toString() === currentNonce.nonce &&
-      expiration < currentNonce.expiration
+      currentTimestamp < currentNonce.expiration
     ) {
       throw new Error('The same nonce already exists')
     }
     dispatchTxInProcess(nonce)
   } else {
     // otherwise just increase expiration time
-    if (currentNonce && expiration < currentNonce.expiration) {
+    if (currentNonce && currentTimestamp < currentNonce.expiration) {
       throw new Error('The same nonce already exists')
     }
 
