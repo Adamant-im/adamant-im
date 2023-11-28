@@ -35,9 +35,9 @@ export function getAccount(crypto, passphrase) {
     LiskHashSettings.DIGEST
   )
   const keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
-  const addressHexBinary = cryptography.getAddressFromPublicKey(keyPair.publicKey)
+  const addressHexBinary = cryptography.address.getAddressFromPublicKey(keyPair.publicKey)
   const addressHex = bytesToHex(addressHexBinary)
-  const address = cryptography.getBase32AddressFromPublicKey(keyPair.publicKey)
+  const address = cryptography.address.getLisk32AddressFromPublicKey(keyPair.publicKey)
   // Don't work currently https://github.com/LiskHQ/lisk-sdk/issues/6651
   // const addressLegacy = cryptography.getLegacyAddressFromPublicKey(keyPair.publicKey)
   // const addressLegacy = cryptography.getLegacyAddressFromPrivateKey(keyPair.secretKey)
