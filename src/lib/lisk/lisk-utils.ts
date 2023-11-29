@@ -2,13 +2,18 @@
  * Additional coin-based functions here
  */
 
+import { TRANSACTION_PARAMS_SCHEMA, TRANSACTION_SCHEMA } from '@/lib/lisk/lisk-schemas'
+import * as codec from '@liskhq/lisk-codec'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import networks from '@/lib/lisk/networks'
+import { getLisk32AddressFromPublicKey } from '@liskhq/lisk-cryptography/dist-node/address'
 import * as transactions from '@liskhq/lisk-transactions'
+import { Buffer } from 'buffer'
 import pbkdf2 from 'pbkdf2'
 import sodium from 'sodium-browserify-tweetnacl'
 import { LiskHashSettings } from './lisk-constants'
 import { bytesToHex } from '@/lib/hex'
+import * as validator from '@liskhq/lisk-validator'
 
 /**
  * Returns Millis timestamp by LSK UNIX timestamp (sec)
@@ -53,9 +58,31 @@ export function getAccount(crypto, passphrase) {
   }
 }
 
-// @todo derivate publicKey from address
-export function createUnsignedTransaction(address: string, publicKey, amount, fee, nonce, data = '') {
+/**
+ * Creates unsigned LSK transaction.
+ *
+ * @param recipientAddress Recipient address (Lisk32 string hex format)
+ * @param senderPublicKey Sender public key (string hex)
+ * @param amount Amount of LSK to send
+ * @param fee Transaction fee
+ * @param nonce Last nonce
+ * @param data A.k.a note
+ */
+export function createUnsignedTransaction(
+  recipientAddress: string,
+  senderPublicKey: string,
+  amount: number | string,
+  fee: number | string,
+  nonce: number | string,
+  data = ''
+) {
   const decimals = 8
+
+  console.log('address', recipientAddress)
+  console.log('publicKeyHex', senderPublicKey)
+  console.log('nonce', nonce)
+
+  // throw new Error('stop')
 
   const amountString = transactions.convertLSKToBeddows((+amount).toFixed(decimals))
   const feeString = transactions.convertLSKToBeddows((+fee).toFixed(decimals))
@@ -67,16 +94,18 @@ export function createUnsignedTransaction(address: string, publicKey, amount, fe
     command: 'transfer',
     fee: BigInt(feeString),
     nonce: BigInt(nonceString),
-    senderPublicKey: Buffer.from(publicKey, 'hex'),
+    senderPublicKey: Buffer.from(senderPublicKey, 'hex'),
     params: Buffer.alloc(0),
     signatures: []
   }
+
+  validator.validator.validate(TRANSACTION_SCHEMA, unsignedTransaction)
 
   // Create the asset for the Token Transfer transaction
   const transferParams = {
     tokenID: Buffer.from('0000000100000000', 'hex'),
     amount: BigInt(amountString),
-    recipientAddress: cryptography.address.getAddressFromLisk32Address(address),
+    recipientAddress: cryptography.address.getAddressFromLisk32Address(recipientAddress),
     data
   }
 
@@ -86,9 +115,23 @@ export function createUnsignedTransaction(address: string, publicKey, amount, fe
   // @todo remove
   // const minFee = Number(transactions.computeMinFee(this.assetSchema, liskTx)) / this.multiplier
 
+  // only tx.params will be validated
+  transactions.validateTransaction(unsignedTransaction, TRANSACTION_PARAMS_SCHEMA)
+
+  // throw new Error('stop')
+
   return unsignedTransaction
 }
 
-export function createOfflineTransaction() {
+/**
+ * Encode transaction for later broadcasting to a node.
+ */
+export function encodeTransaction(signedTransaction: Record<string, unknown>) {
+  const transaction = codec.codec.toJSON(TRANSACTION_SCHEMA, signedTransaction)
+  const params = codec.codec.toJSON(TRANSACTION_PARAMS_SCHEMA, signedTransaction.params as object)
 
+  return {
+    ...transaction,
+    params
+  }
 }
