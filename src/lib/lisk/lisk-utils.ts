@@ -55,8 +55,10 @@ export function getAccount(crypto, passphrase) {
 
 // @todo derivate publicKey from address
 export function createUnsignedTransaction(address: string, publicKey, amount, fee, nonce, data = '') {
-  const amountString = transactions.convertLSKToBeddows((+amount).toFixed(this.decimals))
-  const feeString = transactions.convertLSKToBeddows((+fee).toFixed(this.decimals))
+  const decimals = 8
+
+  const amountString = transactions.convertLSKToBeddows((+amount).toFixed(decimals))
+  const feeString = transactions.convertLSKToBeddows((+fee).toFixed(decimals))
   const nonceString = nonce.toString()
 
   // Adjust the values of the unsigned transaction manually
@@ -85,4 +87,8 @@ export function createUnsignedTransaction(address: string, publicKey, amount, fe
   // const minFee = Number(transactions.computeMinFee(this.assetSchema, liskTx)) / this.multiplier
 
   return unsignedTransaction
+}
+
+export function createOfflineTransaction() {
+
 }

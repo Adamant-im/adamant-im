@@ -4,7 +4,7 @@ import { getMillisTimestamp, getLiskTimestamp, createUnsignedTransaction } from 
 import { bytesToHex } from '@/lib/hex'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import * as transactions from '@liskhq/lisk-transactions'
-// import { lsk } from '@/lib/nodes/lsk'
+import { lsk } from '@/lib/nodes/lsk'
 import { getAccount } from './lisk-utils'
 
 export const TX_CHUNK_SIZE = 25
@@ -112,10 +112,17 @@ export default class LiskApi extends LskBaseApi {
 
     const liskTxBytes = transactions.getSigningBytes(unsignedTransaction, this.assetSchema)
     console.log('liskTxBytes', liskTxBytes)
-    const txSignature = cryptography.signDataWithPrivateKey(
-      Buffer.concat([this.networkIdentifier, liskTxBytes]),
-      this._keyPair.secretKey
+
+    const chainID = Buffer.from('00000000', 'hex')
+    const signedTransaction = transactions.signTransaction(
+      unsignedTransaction,
+      this.networkIdentifier, // @todo or chainID?
+      this._keyPair.secretKey,
+      this.assetSchema
     )
+    console.log('signedTransaction', signedTransaction)
+
+    // const json = toTransactionJSON(signedTransaction)
 
     // console.log('chainId', Buffer.from(this.chainId, 'hex'))
     // const networkIdTestnet = '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c';
@@ -126,7 +133,26 @@ export default class LiskApi extends LskBaseApi {
     // )
     // console.log('passed', signedTransaction)
 
-    // const txid = signedTransaction.id
+    const txid = bytesToHex(signedTransaction.id)
+
+    const signeTransactionHex = {
+      ...signedTransaction,
+      id: txid,
+      nonce: Number(signedTransaction.nonce).toString(),
+      fee: Number(signedTransaction.fee).toString(),
+      params: {
+        ...signedTransaction.params,
+        amount: Number(signedTransaction.params.amount).toString(),
+        recipientAddress: Buffer.from(signedTransaction.params.recipientAddress).toString('hex'),
+        tokenID: Buffer.from(signedTransaction.params.tokenID).toString('hex')
+      },
+      senderPublicKey: Buffer.from(signedTransaction.senderPublicKey).toString('hex'),
+      signatures: signedTransaction.signatures.map((signature) =>
+        Buffer.from(signature).toString('hex')
+      )
+    }
+
+    console.log('txid', txid)
 
     // To send Tx to node's core API, we should change data types
     // liskTx.senderPublicKey = bytesToHex(liskTx.senderPublicKey)
@@ -136,7 +162,7 @@ export default class LiskApi extends LskBaseApi {
     // liskTx.asset.recipientAddress = bytesToHex(liskTx.asset.recipientAddress)
     // liskTx.signatures[0] = bytesToHex(txSignature)
 
-    return Promise.resolve({ hex: signedTransaction, txid })
+    return Promise.resolve({ hex: signeTransactionHex, txid })
   }
 
   /** @override */
