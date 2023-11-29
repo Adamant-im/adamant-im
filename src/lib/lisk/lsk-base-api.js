@@ -1,3 +1,4 @@
+import { bytesToHex } from '@/lib/hex'
 import axios from 'axios'
 import { getRandomServiceUrl } from '@/config/utils'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -47,6 +48,10 @@ export default class LskBaseApi {
     return 2
   }
 
+  get chainId() {
+    return '00000001'
+  }
+
   /**
    * Get asset Id
    * @abstract
@@ -77,6 +82,7 @@ export default class LskBaseApi {
     // Testnet: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c'
     // Mainnet: '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99'
     const networkIdentifier = '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99'
+    console.log('chainID', bytesToHex(Buffer.from('00000001', 'hex')))
     return Buffer.from(networkIdentifier, 'hex')
   }
 
@@ -123,7 +129,7 @@ export default class LskBaseApi {
       fee: BigInt(feeString),
       asset: {
         amount: BigInt(amountString),
-        recipientAddress: cryptography.getAddressFromBase32Address(address),
+        recipientAddress: cryptography.address.getAddressFromLisk32Address(address),
         data
         // data: 'Sent with ADAMANT Messenger'
       },

@@ -1,0 +1,50 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`lisk-api > createTransaction 1`] = `
+{
+  "hex": {
+    "asset": {
+      "amount": "100000000",
+      "data": "",
+      "recipientAddress": "a721205101325db197296c291ac08778a5fc7ff1",
+    },
+    "assetID": 0,
+    "fee": "141000",
+    "moduleID": 2,
+    "nonce": "3",
+    "senderPublicKey": "32eb8aff28d635ba03b2bb6cc785072c0c01123a24f56e580ff9c7320611f11d",
+    "signatures": [
+      "da4c262f70ad97e62c8e6209a65af08b095a450ff9cc0100cbd039777070ce3fe7fbdfc267e5db28a8e66c46642fe515ace88a31da9eebf79432e0d5f7f0e30d",
+    ],
+  },
+  "txid": "437654f398820a7c01c2231dd5752e8198b2a613b7423e8eba034fcbf2aa8de2",
+}
+`;
+
+exports[`lisk-api > lisk.cryptography.getAddressFromBase32Address 1`] = `
+{
+  "data": [
+    167,
+    33,
+    32,
+    81,
+    1,
+    50,
+    93,
+    177,
+    151,
+    41,
+    108,
+    41,
+    26,
+    192,
+    135,
+    120,
+    165,
+    252,
+    127,
+    241,
+  ],
+  "type": "Buffer",
+}
+`;

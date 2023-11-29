@@ -4,6 +4,7 @@
 
 import * as cryptography from '@liskhq/lisk-cryptography'
 import networks from '@/lib/lisk/networks'
+import * as transactions from '@liskhq/lisk-transactions'
 import pbkdf2 from 'pbkdf2'
 import sodium from 'sodium-browserify-tweetnacl'
 import { LiskHashSettings } from './lisk-constants'
@@ -50,4 +51,38 @@ export function getAccount(crypto, passphrase) {
     addressHex,
     addressLegacy
   }
+}
+
+// @todo derivate publicKey from address
+export function createUnsignedTransaction(address: string, publicKey, amount, fee, nonce, data = '') {
+  const amountString = transactions.convertLSKToBeddows((+amount).toFixed(this.decimals))
+  const feeString = transactions.convertLSKToBeddows((+fee).toFixed(this.decimals))
+  const nonceString = nonce.toString()
+
+  // Adjust the values of the unsigned transaction manually
+  const unsignedTransaction = {
+    module: 'token',
+    command: 'transfer',
+    fee: BigInt(feeString),
+    nonce: BigInt(nonceString),
+    senderPublicKey: Buffer.from(publicKey, 'hex'),
+    params: Buffer.alloc(0),
+    signatures: []
+  }
+
+  // Create the asset for the Token Transfer transaction
+  const transferParams = {
+    tokenID: Buffer.from('0000000100000000', 'hex'),
+    amount: BigInt(amountString),
+    recipientAddress: cryptography.address.getAddressFromLisk32Address(address),
+    data
+  }
+
+  // Add the transaction params to the transaction object
+  unsignedTransaction.params = transferParams
+
+  // @todo remove
+  // const minFee = Number(transactions.computeMinFee(this.assetSchema, liskTx)) / this.multiplier
+
+  return unsignedTransaction
 }
