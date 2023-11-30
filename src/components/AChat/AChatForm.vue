@@ -7,7 +7,7 @@
     <v-textarea
       ref="messageTextarea"
       v-model="message"
-      @input="newLetter"
+      @input="onInput"
       :placeholder="label"
       hide-details
       single-line
@@ -129,7 +129,7 @@ export default {
     }
   },
   methods: {
-    newLetter: function () {
+    onInput: function () {
       this.$store.commit('draftMessage/saveMessage', {
         message: this.message,
         partnerId: this.partnerId

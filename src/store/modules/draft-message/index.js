@@ -26,33 +26,33 @@ const mutations = {
   deleteMessage(state, partnerId) {
     state.drafts[partnerId] = ''
   },
-  deleteAllSaveMessage(state) {
+  reset(state) {
     state.drafts = {}
   }
 }
 const getters = {
   draftMessage: (state) => (partnerId) => {
     const objMessage = state.drafts[partnerId]
-    if (objMessage === undefined) {
-      return ''
-    } else {
+    if (objMessage) {
       return objMessage.message
+    } else {
+      return ''
     }
   },
 
   draftReplyTold: (state) => (partnerId) => {
     const objMessage = state.drafts[partnerId]
-    if (objMessage === undefined) {
-      return ''
-    } else {
+    if (objMessage) {
       return objMessage.replyToId
+    } else {
+      return ''
     }
   }
 }
 
 const actions = {
   resetState(context) {
-    context.commit('deleteAllSaveMessage')
+    context.commit('reset')
   }
 }
 export default {
