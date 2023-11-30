@@ -50,7 +50,6 @@ const store = {
     balance: 0,
     balanceStatus: FetchStatus.Loading,
     IDBReady: false, // set `true` when state has been saved in IDB
-    transactionsInProcess: {},
     passphrase: '',
     password: '',
     publicKeys: {}
@@ -59,7 +58,6 @@ const store = {
     isLogged: (state) => state.passphrase.length > 0,
     getPassPhrase: (state) => state.passphrase, // compatibility getter for ERC20 modules
     publicKey: (state) => (adamantAddress) => state.publicKeys[adamantAddress],
-    getTransactionInProcess: (state) => (key) => state.transactionsInProcess[key],
     isAccountNew: (state) =>
       function () {
         /*
@@ -77,9 +75,6 @@ const store = {
       }
   },
   mutations: {
-    deleteTransactionInProcess(state, payload) {
-      delete state.transactionsInProcess[payload]
-    },
     setAddress(state, address) {
       state.address = address
     },
@@ -101,9 +96,6 @@ const store = {
     setIDBReady(state, value) {
       state.IDBReady = value
     },
-    setTransactionInProcess(state, payload) {
-      state.transactionsInProcess = { ...state.transactionsInProcess, ...payload }
-    },
     reset(state) {
       state.address = ''
       state.balance = 0
@@ -111,7 +103,6 @@ const store = {
       state.password = ''
       state.IDBReady = false
       state.publicKeys = {}
-      state.transactionsInProcess = {}
       cache.resetCachedSeed()
     },
     setPublicKey(state, { adamantAddress, publicKey }) {
@@ -119,9 +110,6 @@ const store = {
     }
   },
   actions: {
-    deleteTransactionInProcess({ commit }, payload) {
-      commit('deleteTransactionInProcess', payload)
-    },
     login({ commit, dispatch }, passphrase) {
       // First, clear previous account data, if it exists. Calls resetState(state, getInitialState()) also
       dispatch('reset')
@@ -145,9 +133,6 @@ const store = {
     },
     logout({ dispatch }) {
       dispatch('reset')
-    },
-    setTransactionInProcess({ commit }, payload) {
-      commit('setTransactionInProcess', payload)
     },
     unlock({ state, dispatch }) {
       // user updated an app, F5 or something

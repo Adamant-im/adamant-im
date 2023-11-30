@@ -28,6 +28,7 @@ import { isNumeric } from '@/lib/numericHelpers'
 
 import AppToolbarCentered from '@/components/AppToolbarCentered'
 import SendFundsForm from '@/components/SendFundsForm'
+import { removeFromSessionStorage } from '@/lib/sessionStorage'
 
 export default {
   components: {
@@ -71,7 +72,8 @@ export default {
     onSend(transactionId, crypto) {
       const userComeFrom = this.$route.query.from
 
-      this.$store.dispatch('deleteTransactionInProcess', this.cryptoCurrency, { root: true })
+      removeFromSessionStorage('transactionsInProcess', this.cryptoCurrency)
+
       if (userComeFrom) {
         this.$router.replace(userComeFrom)
       } else {

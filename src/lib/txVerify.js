@@ -1,6 +1,8 @@
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { i18n } from '@/i18n'
 import { CryptosInfo } from '@/lib/constants'
+import isEmpty from 'lodash/isEmpty'
+import { getFromSessionStorage, setToSessionStorage } from '@/lib/sessionStorage'
 
 const AllowAmountErrorPercent = 0.3
 
@@ -17,59 +19,35 @@ const TransactionInconsistentReason = {
   RECIPIENT_CRYPTO_ADDRESS_MISMATCH: 'recipient_crypto_address_mismatch'
 }
 
-export async function checkTxInProcess(api, context, withoutNonce = true, externalNonce = null) {
-  const fetchInfo = CryptosInfo[context.state.crypto].txFetchInfo
+export function checkIsTxInProcess(coin, nonce = null) {
+  const fetchInfo = CryptosInfo[coin].txFetchInfo
   const pendingAttempts = fetchInfo?.newPendingAttempts || 20
   const pendingInterval = fetchInfo?.newPendingInterval || 5000
   const TX_LOCK_TIME = pendingAttempts * pendingInterval
 
-  const currentNonce = context.rootGetters.getTransactionInProcess(context.state.crypto)
-
   const currentTimestamp = Date.now()
   const estimatedExpiration = currentTimestamp + TX_LOCK_TIME
 
-  function dispatchTxInProcess(nonce = null) {
-    context.dispatch(
-      'setTransactionInProcess',
-      { [context.state.crypto]: { nonce: nonce?.toString(), expiration: estimatedExpiration } },
-      { root: true }
-    )
+  if (!('transactionsInProcess' in sessionStorage)) {
+    setToSessionStorage('transactionsInProcess', {})
   }
 
-  // For coins like BTC
-  if (withoutNonce) {
-    if (currentNonce && currentTimestamp < currentNonce.expiration) {
-      throw new Error('The tx with a same nonce already exists')
+  const sessionStorageTxInProcess = getFromSessionStorage('transactionsInProcess')
+
+  if (isEmpty(sessionStorageTxInProcess[coin])) {
+    sessionStorageTxInProcess[coin] = {
+      expiration: estimatedExpiration,
+      nonce: nonce?.toString()
     }
+    setToSessionStorage('transactionsInProcess', sessionStorageTxInProcess)
 
-    dispatchTxInProcess()
-
-    return null
+    return false
   }
 
-  const nonce =
-    externalNonce || (await api.getClient().getTransactionCount(context.state.address)) || null
-
-  // if crypto may has nonce, we should check it
-  if (nonce) {
-    if (
-      currentNonce &&
-      nonce.toString() === currentNonce.nonce &&
-      currentTimestamp < currentNonce.expiration
-    ) {
-      throw new Error('The same nonce already exists')
-    }
-    dispatchTxInProcess(nonce)
-  } else {
-    // otherwise just increase expiration time
-    if (currentNonce && currentTimestamp < currentNonce.expiration) {
-      throw new Error('The same nonce already exists')
-    }
-
-    dispatchTxInProcess()
-  }
-
-  return nonce || null
+  return (
+    currentTimestamp < sessionStorageTxInProcess[coin].expiration ||
+    nonce?.toString() === sessionStorageTxInProcess[coin]?.nonce
+  )
 }
 
 export function verifyTransactionDetails(

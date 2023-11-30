@@ -219,6 +219,7 @@ import partnerName from '@/mixins/partnerName'
 import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
+import { DuplicatedNonceError } from '@/lib/errors'
 
 /**
  * @returns {string | boolean}
@@ -665,7 +666,7 @@ export default {
             message = this.$t('transfer.recipient_minimum_balance')
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
-          } else if (/The same nonce already exists/i.test(message)) {
+          } else if (error instanceof DuplicatedNonceError) {
             message = this.$t('transfer.tooFast', { coin: this.currency })
           }
           this.$emit('error', message)

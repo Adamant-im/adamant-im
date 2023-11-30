@@ -2,7 +2,8 @@ import BigNumber from '@/lib/bignumber'
 import LskBaseApi from '../../../lib/lisk/lsk-base-api'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
-import { checkTxInProcess } from '../../../lib/txVerify'
+import { checkIsTxInProcess } from '@/lib/txVerify'
+import { DuplicatedNonceError, ErrorCodes } from '@/lib/errors'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 
@@ -77,59 +78,68 @@ function createActions(options) {
       address = address.trim()
 
       const crypto = context.state.crypto
+      const nonce = context.state.nonce
 
-      return checkTxInProcess(api, context, false, context.state.nonce).then((nonce) => {
-        return api
-          .createTransaction(address, amount, fee, nonce, textData)
-          .then((tx) => {
-            if (!admAddress) return tx.hex
-
-            const msgPayload = {
-              address: admAddress,
-              amount: BigNumber(amount).toFixed(),
-              comments,
-              crypto,
-              hash: tx.txid,
-              replyToId
-            }
-
-            // Send a special message to indicate that we're performing a crypto transfer
-            return context
-              .dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
-              .then((success) => (success ? tx.hex : Promise.reject(new Error('adm_message'))))
-          })
-          .then((rawTx) =>
-            api.sendTransaction(rawTx).then(
-              (hash) => ({ hash }),
-              (error) => ({ error })
-            )
+      if (checkIsTxInProcess(crypto, nonce)) {
+        return Promise.reject(
+          new DuplicatedNonceError(
+            `The tx with a same nonce already exists`,
+            crypto,
+            ErrorCodes.TX_ALREADY_IN_PROCESS
           )
-          .then(({ hash, error }) => {
-            if (error) {
-              context.commit('transactions', [{ hash, status: 'REJECTED' }])
-              throw error
-            } else {
-              console.log(`${crypto} transaction has been sent: ${hash}`)
+        )
+      }
 
-              context.commit('transactions', [
-                {
-                  hash,
-                  senderId: context.state.address,
-                  recipientId: address,
-                  amount,
-                  fee,
-                  status: 'PENDING',
-                  timestamp: Date.now(),
-                  data: textData
-                }
-              ])
+      return api
+        .createTransaction(address, amount, fee, nonce, textData)
+        .then((tx) => {
+          if (!admAddress) return tx.hex
 
-              context.dispatch('getTransaction', { hash, force: true })
+          const msgPayload = {
+            address: admAddress,
+            amount: BigNumber(amount).toFixed(),
+            comments,
+            crypto,
+            hash: tx.txid,
+            replyToId
+          }
 
-              return hash
-            }
-          })
-      })
+          // Send a special message to indicate that we're performing a crypto transfer
+          return context
+            .dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
+            .then((success) => (success ? tx.hex : Promise.reject(new Error('adm_message'))))
+        })
+        .then((rawTx) =>
+          api.sendTransaction(rawTx).then(
+            (hash) => ({ hash }),
+            (error) => ({ error })
+          )
+        )
+        .then(({ hash, error }) => {
+          if (error) {
+            context.commit('transactions', [{ hash, status: 'REJECTED' }])
+            throw error
+          } else {
+            console.log(`${crypto} transaction has been sent: ${hash}`)
+
+            context.commit('transactions', [
+              {
+                hash,
+                senderId: context.state.address,
+                recipientId: address,
+                amount,
+                fee,
+                status: 'PENDING',
+                timestamp: Date.now(),
+                data: textData
+              }
+            ])
+
+            context.dispatch('getTransaction', { hash, force: true })
+
+            return hash
+          }
+        })
     },
 
     /**

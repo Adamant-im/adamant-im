@@ -6,6 +6,8 @@ import * as tf from '../../../lib/transactionsFetching'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { signTransaction, TransactionFactory } from 'web3-eth-accounts'
 import api from '@/lib/nodes/eth'
+import { checkIsTxInProcess } from '@/lib/txVerify'
+import { DuplicatedNonceError, ErrorCodes } from '@/lib/errors'
 
 /** Interval between attempts to fetch the registered tx details */
 const RETRY_TIMEOUT = 20 * 1000
@@ -59,6 +61,16 @@ export default function createActions(config) {
     sendTokens(context, { amount, admAddress, address, comments, increaseFee, replyToId }) {
       address = address.trim()
       const crypto = context.state.crypto
+
+      if (checkIsTxInProcess(crypto)) {
+        return Promise.reject(
+          new DuplicatedNonceError(
+            `The tx with a same nonce already exists`,
+            crypto,
+            ErrorCodes.TX_ALREADY_IN_PROCESS
+          )
+        )
+      }
 
       return initTransaction(api, context, address, amount, increaseFee)
         .then((ethTx) => {
