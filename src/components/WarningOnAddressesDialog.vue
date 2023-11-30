@@ -1,10 +1,5 @@
 <template>
-  <v-dialog
-    v-model="show"
-    width="500"
-    :class="className"
-    @keydown.enter="onEnter"
-  >
+  <v-dialog v-model="show" width="500" :class="className" @keydown.enter="onEnter">
     <v-card>
       <v-card-title class="a-text-header">
         {{ header }}
@@ -14,39 +9,21 @@
 
       <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
       <v-card-text>
-        <div
-          :class="`${className}__disclaimer a-text-regular-enlarged`"
-          v-html="content"
-        />
+        <div :class="`${className}__disclaimer a-text-regular-enlarged`" v-html="content" />
       </v-card-text>
       <!-- eslint-enable vue/no-v-html -->
 
-      <v-col
-        cols="12"
-        class="text-center"
-      >
-        <v-btn
-          :class="[`${className}__btn-hide`, 'a-btn-primary']"
-          @click="hide()"
-        >
-          <v-icon
-            :class="`${className}__btn-icon`"
-            icon="mdi-alert"
-          />
+      <v-col cols="12" class="text-center">
+        <v-btn :class="[`${className}__btn-hide`, 'a-btn-primary']" @click="hide()">
+          <v-icon :class="`${className}__btn-icon`" icon="mdi-alert" />
           <div :class="`${className}__btn-text`">
             {{ $t('warning_on_addresses.hide_button') }}
           </div>
         </v-btn>
       </v-col>
 
-      <v-col
-        cols="12"
-        :class="`${className}__btn-forget`"
-      >
-        <a
-          class="a-text-active"
-          @click="forget()"
-        >
+      <v-col cols="12" :class="`${className}__btn-forget`">
+        <a class="a-text-active" @click="forget()">
           {{ $t('warning_on_addresses.forget_button') }}
         </a>
       </v-col>
@@ -73,34 +50,57 @@ export default {
   computed: {
     className: () => 'warning-on-addresses-dialog',
     show: {
-      get () {
+      get() {
         return this.modelValue
       },
-      set (value) {
+      set(value) {
         this.$emit('update:modelValue', value)
       }
     }
   },
-  created () {
+  created() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const dialog = this
     vueBus.on('warningOnAddressDialog', function (validateSummary) {
       if (!validateSummary.isAllRight) {
-        dialog.header = dialog.$t('warning_on_addresses.warning') + ': ' + dialog.$t('warning_on_addresses.headline')
+        dialog.header =
+          dialog.$t('warning_on_addresses.warning') +
+          ': ' +
+          dialog.$t('warning_on_addresses.headline')
         let contents = '<p>' + dialog.$t('warning_on_addresses.about') + '</p>'
 
         if (validateSummary.isWrongAddress) {
-          contents += '<p class="a-text-attention">' + dialog.$t('warning_on_addresses.specifics_wrong_addresses', { crypto: validateSummary.wrongCoin, storedAddress: validateSummary.storedAddress, correctAddress: validateSummary.correctAddress })
+          contents +=
+            '<p class="a-text-attention">' +
+            dialog.$t('warning_on_addresses.specifics_wrong_addresses', {
+              crypto: validateSummary.wrongCoin,
+              storedAddress: validateSummary.storedAddress,
+              correctAddress: validateSummary.correctAddress
+            })
           if (validateSummary.wrongCoins.length > 1) {
             const wrongCoins = validateSummary.wrongCoins.join(', ')
-            contents += ' ' + dialog.$t('warning_on_addresses.full_list_wrong_addresses', { crypto_list: wrongCoins })
+            contents +=
+              ' ' +
+              dialog.$t('warning_on_addresses.full_list_wrong_addresses', {
+                crypto_list: wrongCoins
+              })
           }
           contents += '</p>'
         } else if (validateSummary.isManyAddresses) {
           const manyAddresses = validateSummary.manyAddresses.join(', ')
-          contents += '<p class="a-text-attention">' + dialog.$t('warning_on_addresses.specifics_many_addresses', { crypto: validateSummary.manyAddressesCoin, manyAddresses: manyAddresses })
+          contents +=
+            '<p class="a-text-attention">' +
+            dialog.$t('warning_on_addresses.specifics_many_addresses', {
+              crypto: validateSummary.manyAddressesCoin,
+              manyAddresses: manyAddresses
+            })
           if (validateSummary.manyAddressesCoins.length > 1) {
             const wrongCoins = validateSummary.manyAddressesCoins.join(', ')
-            contents += ' ' + dialog.$t('warning_on_addresses.full_list_many_addresses', { crypto_list: wrongCoins })
+            contents +=
+              ' ' +
+              dialog.$t('warning_on_addresses.full_list_many_addresses', {
+                crypto_list: wrongCoins
+              })
           }
           contents += '</p>'
         }
@@ -114,17 +114,17 @@ export default {
     })
   },
   methods: {
-    hide () {
+    hide() {
       this.show = false
     },
-    forget () {
+    forget() {
       this.$store.commit('options/updateOption', {
         key: 'suppressWarningOnAddressesNotification',
         value: true
       })
       this.hide()
     },
-    onEnter () {
+    onEnter() {
       if (this.show) {
         this.hide()
       }

@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import Icon from './BaseIcon'
-import UnknownCryptoFillIcon from './UnknownCryptoFill'
+import Icon from './BaseIcon.vue'
+import UnknownCryptoFillIcon from './UnknownCryptoFill.vue'
 
 import { Cryptos } from '@/lib/constants'
 import { strictCapitalize } from '@/lib/textHelpers'

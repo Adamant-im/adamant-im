@@ -3,7 +3,7 @@ import { Directive } from 'vue'
 export const LONG_PRESS_TIMEOUT = 500
 
 export const longPressDirective: Directive = {
-  created: (el: HTMLElement, { value }, vNode) => {
+  created: (el: HTMLElement, { value }) => {
     if (typeof value !== 'function') {
       console.warn(`Expect a function, got ${value}`)
       return

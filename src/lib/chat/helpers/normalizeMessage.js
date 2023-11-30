@@ -22,8 +22,8 @@ export function normalizeMessage(abstract) {
     abstract.height || abstract.confirmations > 0
       ? TS.CONFIRMED
       : abstract.status
-      ? abstract.status
-      : TS.REGISTERED
+        ? abstract.status
+        : TS.REGISTERED
   transaction.i18n = !!abstract.i18n
   transaction.amount = abstract.amount ? abstract.amount : 0
   transaction.message = ''

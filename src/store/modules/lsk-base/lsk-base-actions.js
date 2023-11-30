@@ -70,10 +70,7 @@ function createActions(options) {
       api.getBalance().then((balance) => context.commit('status', { balance }))
     },
 
-    sendTokens(
-      context,
-      { amount, admAddress, address, comments, fee, increaseFee, textData, replyToId }
-    ) {
+    sendTokens(context, { amount, admAddress, address, comments, fee, textData, replyToId }) {
       if (!api) return
       address = address.trim()
 
@@ -181,7 +178,9 @@ function createActions(options) {
       let tx = null
       try {
         tx = await api.getTransaction(payload.hash)
-      } catch (e) {}
+      } catch (e) {
+        /* empty */
+      }
 
       let retry = false
       let retryTimeout = 0

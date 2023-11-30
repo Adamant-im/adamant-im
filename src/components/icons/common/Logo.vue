@@ -10,20 +10,8 @@
     xml:space="preserve"
   >
     <g id="grad__x28_grey_x29_">
-      <path
-        fill="none"
-        stroke="#CCCBCB"
-        stroke-width="0.5"
-        stroke-miterlimit="10"
-        d="M47.9,94.4"
-      />
-      <path
-        fill="none"
-        stroke="#CCCBCB"
-        stroke-width="0.5"
-        stroke-miterlimit="10"
-        d="M47.6,93.5"
-      />
+      <path fill="none" stroke="#CCCBCB" stroke-width="0.5" stroke-miterlimit="10" d="M47.9,94.4" />
+      <path fill="none" stroke="#CCCBCB" stroke-width="0.5" stroke-miterlimit="10" d="M47.6,93.5" />
       <linearGradient
         id="SVGID_1_"
         gradientUnits="userSpaceOnUse"
@@ -33,14 +21,8 @@
         y2="100.1478"
         gradientTransform="matrix(-1 0 0 1 254.7937 0)"
       >
-        <stop
-          offset="0"
-          style="stop-color:#DDDDDD"
-        />
-        <stop
-          offset="1"
-          style="stop-color:#DDDDDD"
-        />
+        <stop offset="0" style="stop-color: #dddddd" />
+        <stop offset="1" style="stop-color: #dddddd" />
       </linearGradient>
       <polygon
         fill="url(#SVGID_1_)"
@@ -54,14 +36,8 @@
         x2="60.2225"
         y2="23.4123"
       >
-        <stop
-          offset="0"
-          style="stop-color:#444444"
-        />
-        <stop
-          offset="1"
-          style="stop-color:#DDDDDD"
-        />
+        <stop offset="0" style="stop-color: #444444" />
+        <stop offset="1" style="stop-color: #dddddd" />
       </linearGradient>
       <polygon
         fill="url(#SVGID_2_)"
@@ -75,14 +51,8 @@
         x2="98.0397"
         y2="59.6345"
       >
-        <stop
-          offset="0"
-          style="stop-color:#444444"
-        />
-        <stop
-          offset="1"
-          style="stop-color:#DDDDDD"
-        />
+        <stop offset="0" style="stop-color: #444444" />
+        <stop offset="1" style="stop-color: #dddddd" />
       </linearGradient>
       <polygon
         fill="url(#SVGID_3_)"
@@ -96,14 +66,8 @@
         x2="39.9857"
         y2="40.6083"
       >
-        <stop
-          offset="0"
-          style="stop-color:#DDDDDD"
-        />
-        <stop
-          offset="1"
-          style="stop-color:#FFFFFF"
-        />
+        <stop offset="0" style="stop-color: #dddddd" />
+        <stop offset="1" style="stop-color: #ffffff" />
       </linearGradient>
       <polygon
         fill="url(#SVGID_4_)"
@@ -117,14 +81,8 @@
         x2="26.771"
         y2="73.299"
       >
-        <stop
-          offset="0"
-          style="stop-color:#DDDDDD"
-        />
-        <stop
-          offset="1"
-          style="stop-color:#EEEEEE"
-        />
+        <stop offset="0" style="stop-color: #dddddd" />
+        <stop offset="1" style="stop-color: #eeeeee" />
       </linearGradient>
       <polygon
         fill="url(#SVGID_5_)"
@@ -138,19 +96,10 @@
         x2="71.3354"
         y2="73.2909"
       >
-        <stop
-          offset="0"
-          style="stop-color:#DDDDDD"
-        />
-        <stop
-          offset="1"
-          style="stop-color:#FFFFFF"
-        />
+        <stop offset="0" style="stop-color: #dddddd" />
+        <stop offset="1" style="stop-color: #ffffff" />
       </linearGradient>
-      <polyline
-        fill="url(#SVGID_6_)"
-        points="36.1,53.1 47.6,93.5 71.3,73.5   "
-      />
+      <polyline fill="url(#SVGID_6_)" points="36.1,53.1 47.6,93.5 71.3,73.5   " />
       <linearGradient
         id="SVGID_7_"
         gradientUnits="userSpaceOnUse"
@@ -159,14 +108,8 @@
         x2="44.9368"
         y2="47.9029"
       >
-        <stop
-          offset="0"
-          style="stop-color:#444444"
-        />
-        <stop
-          offset="1"
-          style="stop-color:#DDDDDD"
-        />
+        <stop offset="0" style="stop-color: #444444" />
+        <stop offset="1" style="stop-color: #dddddd" />
       </linearGradient>
       <polygon
         fill="url(#SVGID_7_)"
@@ -180,19 +123,10 @@
         x2="47.0794"
         y2="73.1388"
       >
-        <stop
-          offset="5.128205e-03"
-          style="stop-color:#DDDDDD"
-        />
-        <stop
-          offset="1"
-          style="stop-color:#FFFFFF"
-        />
+        <stop offset="5.128205e-03" style="stop-color: #dddddd" />
+        <stop offset="1" style="stop-color: #ffffff" />
       </linearGradient>
-      <polyline
-        fill="url(#SVGID_8_)"
-        points="35.9,53.5 24,73.1 47.1,92.8   "
-      />
+      <polyline fill="url(#SVGID_8_)" points="35.9,53.5 24,73.1 47.1,92.8   " />
     </g>
     <g id="mono_mini">
       <g id="_x32_">
@@ -351,19 +285,61 @@
 <style lang="scss" scoped>
 @import 'vuetify/settings';
 
-.st0{fill:url(#SVGID_1_);}
-.st1{fill:url(#SVGID_2_);}
-.st2{fill:url(#SVGID_3_);}
-.st3{fill:url(#SVGID_4_);}
-.st4{fill:url(#SVGID_5_);}
-.st5{fill:url(#SVGID_6_);}
-.st6{fill:url(#SVGID_7_);}
-.st7{fill:url(#SVGID_8_);}
-.st8{fill:url(#SVGID_9_);}
-.st9{fill:#CBCACA;stroke:#CDCCCC;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-.st10{fill:#6794CE;stroke:#CDCCCC;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-.st11{fill:#CBCACA;stroke:#CDCCCC;stroke-width:0.5;stroke-miterlimit:10;}
-.st12{fill:none;stroke:#CDCCCC;stroke-width:0.5;stroke-miterlimit:10;}
+.st0 {
+  fill: url(#SVGID_1_);
+}
+.st1 {
+  fill: url(#SVGID_2_);
+}
+.st2 {
+  fill: url(#SVGID_3_);
+}
+.st3 {
+  fill: url(#SVGID_4_);
+}
+.st4 {
+  fill: url(#SVGID_5_);
+}
+.st5 {
+  fill: url(#SVGID_6_);
+}
+.st6 {
+  fill: url(#SVGID_7_);
+}
+.st7 {
+  fill: url(#SVGID_8_);
+}
+.st8 {
+  fill: url(#SVGID_9_);
+}
+.st9 {
+  fill: #cbcaca;
+  stroke: #cdcccc;
+  stroke-width: 0.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+}
+.st10 {
+  fill: #6794ce;
+  stroke: #cdcccc;
+  stroke-width: 0.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+}
+.st11 {
+  fill: #cbcaca;
+  stroke: #cdcccc;
+  stroke-width: 0.5;
+  stroke-miterlimit: 10;
+}
+.st12 {
+  fill: none;
+  stroke: #cdcccc;
+  stroke-width: 0.5;
+  stroke-miterlimit: 10;
+}
 
 .logo {
   width: 213px;
@@ -372,11 +348,11 @@
   border-radius: 50% !important;
   background-color: map-get($shades, 'white');
   .st9 {
-    stroke: rgba(103, 148, 206, .2);
+    stroke: rgba(103, 148, 206, 0.2);
   }
 
   #sidestroke {
-    stroke: rgba(103, 148, 206, .8);
+    stroke: rgba(103, 148, 206, 0.8);
   }
 }
 @media #{map-get($display-breakpoints, 'sm-and-up')} {

@@ -8,7 +8,7 @@ First import the `BaseIcon.vue`. All icons are stored here `components/icons`. I
 <template>
   <div>
     <icon>
-      <qrcode-icon/>
+      <qrcode-icon />
     </icon>
   </div>
 </template>

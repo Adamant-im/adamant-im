@@ -233,6 +233,7 @@ export default function createActions(config) {
                 }
               ])
               // Fetch receipt details: status and actual gas consumption
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const { attempt, ...receiptPayload } = payload
               context.dispatch('getTransactionReceipt', receiptPayload)
               // Now we know that the transaction has been registered by the ETH network.
@@ -340,7 +341,7 @@ export default function createActions(config) {
       })
     },
 
-    getNewTransactions(context, payload) {
+    getNewTransactions(context) {
       // Magic here helps to refresh Tx list when browser deletes it
       if (Object.keys(context.state.transactions).length < context.state.transactionsCount) {
         context.state.transactionsCount = 0

@@ -8,8 +8,8 @@ const state = () => ({
 })
 
 const mutations = {
-  changeLocale (state, locale) {
-    const newLocale = locales.find(value => value === locale)
+  changeLocale(state, locale) {
+    const newLocale = locales.find((value) => value === locale)
 
     if (newLocale) {
       state.currentLocale = newLocale
@@ -20,7 +20,7 @@ const mutations = {
 }
 
 const actions = {
-  changeLocale ({ commit }, locale) {
+  changeLocale({ commit }, locale) {
     commit('changeLocale', locale)
   }
 }

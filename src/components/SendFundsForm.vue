@@ -152,9 +152,8 @@
 
         <v-divider class="a-divider" />
 
-        <!-- eslint-disable vue/no-v-html -- Safe internal content -->
+        <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -- Safe internal content -->
         <v-card-text class="a-text-regular-enlarged pa-4" v-html="confirmMessage" />
-        <!-- eslint-enable vue/no-v-html -->
 
         <v-card-actions class="pa-4">
           <v-spacer />
@@ -188,8 +187,8 @@
 <script>
 import { nextTick } from 'vue'
 
-import QrcodeCapture from '@/components/QrcodeCapture'
-import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
+import QrcodeCapture from '@/components/QrcodeCapture.vue'
+import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
 
@@ -216,7 +215,7 @@ import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
 
-import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog'
+import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
 import { DuplicatedNonceError } from '@/lib/errors'
@@ -476,10 +475,10 @@ export default {
         ],
         amount: [
           (v) => v > 0 || this.$t('transfer.error_incorrect_amount'),
-          (v) => this.amount <= this.maxToTransfer || this.$t('transfer.error_not_enough'),
+          () => this.amount <= this.maxToTransfer || this.$t('transfer.error_not_enough'),
           (v) => this.validateMinAmount(v, this.currency) || this.$t('transfer.error_dust_amount'),
           (v) => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_precision'),
-          (v) =>
+          () =>
             isErc20(this.currency)
               ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
               : true

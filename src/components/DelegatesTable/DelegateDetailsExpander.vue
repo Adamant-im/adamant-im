@@ -30,7 +30,7 @@
 import { computed, defineComponent, toRefs } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { getExplorerDelegateUrl } from "@/config/utils";
+import { getExplorerDelegateUrl } from '@/config/utils'
 import numberFormat from '@/filters/numberFormat'
 
 export default defineComponent({
@@ -82,8 +82,8 @@ export default defineComponent({
 
 <style lang="scss">
 @import 'vuetify/settings';
-@import '../../assets/styles/themes/adamant/_mixins.scss';
-@import '../../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .delegate-details-expander {
   margin: 10px 26px;

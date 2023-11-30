@@ -26,8 +26,8 @@ import { Cryptos } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { isNumeric } from '@/lib/numericHelpers'
 
-import AppToolbarCentered from '@/components/AppToolbarCentered'
-import SendFundsForm from '@/components/SendFundsForm'
+import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+import SendFundsForm from '@/components/SendFundsForm.vue'
 import { removeFromSessionStorage } from '@/lib/sessionStorage'
 
 export default {
