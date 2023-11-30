@@ -126,9 +126,6 @@ export default {
     if (this.messageText) {
       this.message = this.messageText
       this.focus()
-    } else if (this.$store.getters['draftMessage/draftMessage'](this.partnerId)) {
-      this.message = this.$store.getters['draftMessage/draftMessage'](this.partnerId)
-      this.focus()
     }
   },
   methods: {

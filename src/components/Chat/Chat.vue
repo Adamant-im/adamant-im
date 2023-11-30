@@ -206,7 +206,9 @@
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="chatFormLabel"
-          :message-text="$route.query.messageText"
+          :message-text="
+            $route.query.messageText || $store.getters['draftMessage/draftMessage'](this.partnerId)
+          "
           @message="onMessage"
           @error="onMessageError"
           @esc="replyMessageId = -1"
