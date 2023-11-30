@@ -16,11 +16,11 @@ const state = () => ({
 })
 
 const getters = {
-  isLoginViaPassword: state => state.stayLoggedIn
+  isLoginViaPassword: (state) => state.stayLoggedIn
 }
 
 const mutations = {
-  updateOption (state, { key, value }) {
+  updateOption(state, { key, value }) {
     if (key in state) {
       state[key] = value
     }

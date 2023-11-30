@@ -124,7 +124,7 @@ const store = {
         dispatch('afterLogin', passphrase)
       })
     },
-    loginViaPassword({ commit, dispatch, state }, password) {
+    loginViaPassword({ commit, dispatch }, password) {
       return loginViaPassword(password, this).then((account) => {
         commit('setIDBReady', true)
 

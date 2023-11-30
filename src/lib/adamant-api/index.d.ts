@@ -31,6 +31,8 @@ import {
 } from '@/lib/schema/client/api'
 import { RootState } from '@/store/types'
 
+export declare const TX_CHUNK_SIZE: number
+
 export type UnsignedNewTransaction = Pick<
   BaseTransaction,
   'type' | 'amount' | 'senderId' | 'senderPublicKey'

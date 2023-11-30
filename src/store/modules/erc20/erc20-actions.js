@@ -1,9 +1,8 @@
 import * as ethUtils from '../../../lib/eth-utils'
-import { FetchStatus, INCREASE_FEE_MULTIPLIER } from '@/lib/constants'
+import { FetchStatus, DEFAULT_ERC20_TRANSFER_GAS_LIMIT } from '@/lib/constants'
 import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
-import { getRandomNodeUrl } from '@/config/utils'
 import { AbiDecoder } from '@/lib/abi/abi-decoder'
 
 /** Timestamp of the most recent status update */
@@ -14,26 +13,30 @@ const STATUS_INTERVAL = 25000
 // Setup decoder
 const abiDecoder = new AbiDecoder(Erc20)
 
-const initTransaction = (api, context, ethAddress, amount, increaseFee) => {
+const initTransaction = async (api, context, ethAddress, amount, increaseFee) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
+
+  const nonce = await api.getClient().getTransactionCount(context.state.address)
+  const gasPrice = await api.getClient().getGasPrice()
 
   const transaction = {
     from: context.state.address,
     to: context.state.contractAddress,
     value: '0x0',
-    // gasLimit: api.fromDecimal(DEFAULT_ERC20_TRANSFER_GAS), // Don't take default value, instead calculate with estimateGas(transactionObject)
-    // gasPrice: context.getters.gasPrice, // Set gas price to auto calc. Deprecated after London hardfork
-    // nonce // Let sendTransaction choose it
+    gasPrice,
+    nonce,
     data: contract.methods
       .transfer(ethAddress, ethUtils.toWhole(amount, context.state.decimals))
       .encodeABI()
   }
 
-  return api.estimateGas(transaction).then((gasLimit) => {
-    gasLimit = increaseFee ? gasLimit * INCREASE_FEE_MULTIPLIER : gasLimit
-    transaction.gas = gasLimit
-    return transaction
-  })
+  const gasLimit = await api
+    .getClient()
+    .estimateGas(transaction)
+    .catch(() => BigInt(DEFAULT_ERC20_TRANSFER_GAS_LIMIT))
+  transaction.gasLimit = increaseFee ? ethUtils.increaseFee(gasLimit) : gasLimit
+
+  return transaction
 }
 
 const parseTransaction = (context, tx) => {
@@ -73,8 +76,8 @@ const createSpecificActions = (api) => ({
 
       try {
         const contract = new EthContract(Erc20, state.contractAddress)
-        const endpoint = getRandomNodeUrl('eth')
-        contract.setProvider(endpoint)
+        contract.setProvider(api.getClient().provider)
+
         const rawBalance = await contract.methods.balanceOf(state.address).call()
         const balance = Number(ethUtils.toFraction(rawBalance, state.decimals))
 
@@ -92,8 +95,7 @@ const createSpecificActions = (api) => ({
     if (!context.state.address) return
 
     const contract = new EthContract(Erc20, context.state.contractAddress)
-    const endpoint = getRandomNodeUrl('eth')
-    contract.setProvider(endpoint)
+    contract.setProvider(api.getClient().provider)
 
     contract.methods
       .balanceOf(context.state.address)

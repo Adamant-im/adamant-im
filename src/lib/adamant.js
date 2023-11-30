@@ -235,22 +235,18 @@ adamant.transactionSign = function (trs, keypair) {
 adamant.chatGetBytes = function (trs) {
   let buf
 
-  try {
-    buf = Buffer.from([])
-    const messageBuf = Buffer.from(trs.asset.chat.message, 'hex')
-    buf = Buffer.concat([buf, messageBuf])
+  buf = Buffer.from([])
+  const messageBuf = Buffer.from(trs.asset.chat.message, 'hex')
+  buf = Buffer.concat([buf, messageBuf])
 
-    if (trs.asset.chat.own_message) {
-      const ownMessageBuf = Buffer.from(trs.asset.chat.own_message, 'hex')
-      buf = Buffer.concat([buf, ownMessageBuf])
-    }
-    const bb = new ByteBuffer(4 + 4, true)
-    bb.writeInt(trs.asset.chat.type)
-    bb.flip()
-    buf = Buffer.concat([buf, Buffer.from(bb.toBuffer())])
-  } catch (e) {
-    throw e
+  if (trs.asset.chat.own_message) {
+    const ownMessageBuf = Buffer.from(trs.asset.chat.own_message, 'hex')
+    buf = Buffer.concat([buf, ownMessageBuf])
   }
+  const bb = new ByteBuffer(4 + 4, true)
+  bb.writeInt(trs.asset.chat.type)
+  bb.flip()
+  buf = Buffer.concat([buf, Buffer.from(bb.toBuffer())])
 
   return buf
 }
@@ -261,11 +257,8 @@ adamant.delegateGetBytes = function (trs) {
   }
   let buf
 
-  try {
-    buf = Buffer.from(trs.asset.delegate.username, 'utf8')
-  } catch (e) {
-    throw e
-  }
+  buf = Buffer.from(trs.asset.delegate.username, 'utf8')
+
   return buf
 }
 
@@ -274,13 +267,10 @@ adamant.voteGetBytes = function (trs) {
     return null
   }
   let buf
-  try {
-    buf = Buffer.from([])
-    for (const i in trs.asset.votes) {
-      buf = Buffer.concat([buf, Buffer.from(trs.asset.votes[i], 'utf8')])
-    }
-  } catch (e) {
-    throw e
+
+  buf = Buffer.from([])
+  for (const i in trs.asset.votes) {
+    buf = Buffer.concat([buf, Buffer.from(trs.asset.votes[i], 'utf8')])
   }
   return buf
 }
@@ -291,24 +281,20 @@ adamant.stateGetBytes = function (trs) {
   }
   let buf
 
-  try {
-    buf = Buffer.from([])
-    const stateBuf = Buffer.from(trs.asset.state.value)
-    buf = Buffer.concat([buf, stateBuf])
+  buf = Buffer.from([])
+  const stateBuf = Buffer.from(trs.asset.state.value)
+  buf = Buffer.concat([buf, stateBuf])
 
-    if (trs.asset.state.key) {
-      const keyBuf = Buffer.from(trs.asset.state.key)
-      buf = Buffer.concat([buf, keyBuf])
-    }
-
-    const bb = new ByteBuffer(4 + 4, true)
-    bb.writeInt(trs.asset.state.type)
-    bb.flip()
-
-    buf = Buffer.concat([buf, Buffer.from(bb.toBuffer())])
-  } catch (e) {
-    throw e
+  if (trs.asset.state.key) {
+    const keyBuf = Buffer.from(trs.asset.state.key)
+    buf = Buffer.concat([buf, keyBuf])
   }
+
+  const bb = new ByteBuffer(4 + 4, true)
+  bb.writeInt(trs.asset.state.type)
+  bb.flip()
+
+  buf = Buffer.concat([buf, Buffer.from(bb.toBuffer())])
 
   return buf
 }
@@ -401,7 +387,11 @@ adamant.decodeMessage = function (msg, senderPublicKey, privateKey, nonce) {
  * @returns {{message: string, nonce: string}} encoded value and nonce (both as HEX-strings)
  */
 adamant.encodeValue = function (value, privateKey) {
-  const randomString = () => Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, Math.ceil(Math.random() * 10))
+  const randomString = () =>
+    Math.random()
+      .toString(36)
+      .replace(/[^a-z]+/g, '')
+      .substr(0, Math.ceil(Math.random() * 10))
 
   const nonce = Buffer.allocUnsafe(24)
   sodium.randombytes(nonce)

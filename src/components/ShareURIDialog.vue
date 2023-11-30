@@ -1,54 +1,36 @@
 <template>
-  <v-dialog
-    v-model="show"
-    eager
-    width="320"
-    :class="className"
-  >
+  <v-dialog v-model="show" eager width="320" :class="className">
     <v-card>
-      <v-card-title
-        :class="`${className}__dialog-title`"
-        class="a-text-header"
-      >
+      <v-card-title :class="`${className}__dialog-title`" class="a-text-header">
         {{ $t('home.share_uri', { crypto }) }}
       </v-card-title>
       <v-divider class="a-divider" />
       <v-card-text class="pa-0">
         <v-list>
           <v-list-item @click="copyAddress">
-            <v-list-item-title
-              :class="`${className}__list-item-title`"
-              v-text="$t('home.copy_address')"
-            />
+            <v-list-item-title :class="`${className}__list-item-title`">
+              {{ $t('home.copy_address') }}
+            </v-list-item-title>
           </v-list-item>
-          <v-list-item
-            v-if="isADM"
-            @click="copyURI"
-          >
-            <v-list-item-title
-              :class="`${className}__list-item-title`"
-              v-text="$t('home.copy_uri')"
-            />
+          <v-list-item v-if="isADM" @click="copyURI">
+            <v-list-item-title :class="`${className}__list-item-title`">
+              {{ $t('home.copy_uri') }}
+            </v-list-item-title>
           </v-list-item>
           <v-list-item @click="openQRCodeRenderer">
-            <v-list-item-title
-              :class="`${className}__list-item-title`"
-              v-text="$t('home.show_qr_code')"
-            />
+            <v-list-item-title :class="`${className}__list-item-title`">
+              {{ $t('home.show_qr_code') }}
+            </v-list-item-title>
           </v-list-item>
         </v-list>
       </v-card-text>
     </v-card>
-    <QrcodeRendererDialog
-      v-model="showQrcodeRendererDialog"
-      :logo="isADM"
-      :text="uri"
-    />
+    <QrcodeRendererDialog v-model="showQrcodeRendererDialog" :logo="isADM" :text="uri" />
   </v-dialog>
 </template>
 
 <script>
-import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
+import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
 import copyToClipboard from 'copy-to-clipboard'
 import { generateURI } from '@/lib/uri'
 
@@ -79,25 +61,29 @@ export default {
   }),
   computed: {
     show: {
-      get () { return this.modelValue },
-      set (value) { this.$emit('update:modelValue', value) }
+      get() {
+        return this.modelValue
+      },
+      set(value) {
+        this.$emit('update:modelValue', value)
+      }
     },
-    uri () {
+    uri() {
       return generateURI(this.crypto, this.address)
     }
   },
   methods: {
-    copyAddress () {
+    copyAddress() {
       copyToClipboard(this.address)
       this.$store.dispatch('snackbar/show', { message: this.$t('home.copied') })
       this.show = false
     },
-    copyURI () {
+    copyURI() {
       copyToClipboard(this.uri)
       this.$store.dispatch('snackbar/show', { message: this.$t('home.copied') })
       this.show = false
     },
-    openQRCodeRenderer () {
+    openQRCodeRenderer() {
       this.showQrcodeRendererDialog = true
       this.show = false
     }

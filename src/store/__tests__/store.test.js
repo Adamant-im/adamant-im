@@ -88,10 +88,12 @@ describe('store', () => {
     const { address, balance, passphrase } = fakeData
 
     // mock & replace `loginOrRegister` dependency
-    storeModule.__Rewire__('loginOrRegister', (passphrase) => Promise.resolve({
-      address,
-      balance
-    }))
+    storeModule.__Rewire__('loginOrRegister', (passphrase) =>
+      Promise.resolve({
+        address,
+        balance
+      })
+    )
 
     const commit = sinon.spy()
     const dispatch = sinon.spy()
@@ -103,10 +105,7 @@ describe('store', () => {
       ['setBalance', balance],
       ['setPassphrase', passphrase]
     ])
-    expect(dispatch.args).toEqual([
-      ['reset'],
-      ['afterLogin', passphrase]
-    ])
+    expect(dispatch.args).toEqual([['reset'], ['afterLogin', passphrase]])
   })
 
   it('should reset state when logout', () => {

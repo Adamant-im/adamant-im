@@ -33,8 +33,8 @@
             'a-text-regular-enlarged-bold': true,
             [`${className}__title`]: true
           }"
-          v-text="isAdamantChat(contactId) ? $t(contactName) : contactName"
-        />
+          >{{ isAdamantChat(contactId) ? $t(contactName) : contactName }}</v-list-item-title
+        >
         <div v-if="!isMessageReadonly" :class="`${className}__date`">
           {{ formatDate(createdAt) }}
         </div>
@@ -83,16 +83,15 @@ import { removeFormats } from '@/lib/markdown'
 
 import transaction from '@/mixins/transaction'
 import formatDate from '@/filters/dateBrief'
-import ChatAvatar from '@/components/Chat/ChatAvatar'
-import Icon from '@/components/icons/BaseIcon'
-import AdmFillIcon from '@/components/icons/AdmFill'
+import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
+import Icon from '@/components/icons/BaseIcon.vue'
+import AdmFillIcon from '@/components/icons/AdmFill.vue'
 import partnerName from '@/mixins/partnerName'
-import { tsIcon } from '@/lib/constants'
+import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
 import currency from '@/filters/currencyAmountWithSymbol'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
-import { TransactionStatus as TS } from '@/lib/constants'
 
 export default {
   components: {
@@ -240,8 +239,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/styles/themes/adamant/_mixins.scss';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 @keyframes movement {
   from {

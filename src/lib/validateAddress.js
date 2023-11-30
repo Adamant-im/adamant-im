@@ -1,9 +1,7 @@
 import { isAddress as isEthAddress, isHexStrict } from 'web3-utils'
 import { isValidAddress as isValidBtcAddress } from './bitcoin/bitcoin-utils'
 import { validateBase32Address as isLskAddress } from '@liskhq/lisk-cryptography'
-import {
-  Cryptos, CryptosInfo, isEthBased
-} from './constants'
+import { Cryptos, CryptosInfo, isEthBased } from './constants'
 
 /**
  * Checks if `address` is a valid address for the specified `crypto`.
@@ -12,7 +10,7 @@ import {
  * @param {string} address value to check
  * @returns {boolean} `true` if address is valid, `false` otherwise
  */
-export default function validateAddress (crypto, address) {
+export default function validateAddress(crypto, address) {
   if (isEthBased(crypto)) {
     return isHexStrict(address) && isEthAddress(address)
   }

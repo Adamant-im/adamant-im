@@ -23,9 +23,7 @@ export const isNew = (timestamp, crypto) => {
 
   const attempts = txFetchInfo?.newPendingAttempts || DEFAULT_TX_FETCH_ATTEMPTS
 
-  return (
-    Date.now() - timestamp < getTxUpdateInterval(crypto) * attempts
-  )
+  return Date.now() - timestamp < getTxUpdateInterval(crypto) * attempts
 }
 
 /**

@@ -3,16 +3,16 @@
 */
 
 export type Message = {
-  id: number,
-  hash?: string, // transactionId for third-party cryptos
-  senderId: string,
-  recipientId: string,
-  message: string,
-  timestamp: number,
-  admTimestamp: number,
-  amount: number,
-  i18n: boolean,
-  status: MessageStatus,
+  id: number
+  hash?: string // transactionId for third-party cryptos
+  senderId: string
+  recipientId: string
+  message: string
+  timestamp: number
+  admTimestamp: number
+  amount: number
+  i18n: boolean
+  status: MessageStatus
   type: MessageType
 }
 
@@ -33,6 +33,6 @@ export enum MessageStatus {
 }
 
 export type User = {
-  id: string,
+  id: string
   name?: string
 }

@@ -14,7 +14,7 @@ export default defineComponent({
       default: false
     }
   },
-  setup (props) {
+  setup(props) {
     const classes = computed(() => {
       return {
         'a-container': true,

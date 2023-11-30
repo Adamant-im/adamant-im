@@ -1,4 +1,4 @@
-export default function login (context, passphrase) {
+export default function login(context, passphrase) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (passphrase === 'correct passphrase') {

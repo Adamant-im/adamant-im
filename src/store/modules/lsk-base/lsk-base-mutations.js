@@ -2,15 +2,15 @@ import { resetState } from '../../../lib/reset-state'
 
 export default (initialState) => ({
   /** Resets module state */
-  reset (state) {
+  reset(state) {
     resetState(state, initialState())
   },
 
-  address (state, address) {
+  address(state, address) {
     state.address = address
   },
 
-  status (state, { balance, nonce }) {
+  status(state, { balance, nonce }) {
     if (balance) {
       state.balance = balance
       state.lastStatusUpdate = Date.now()
@@ -30,7 +30,7 @@ export default (initialState) => ({
   },
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
-  bottom (state, value) {
+  bottom(state, value) {
     state.bottomReached = value
   },
 
@@ -39,7 +39,7 @@ export default (initialState) => ({
    * @param {{transactions: object, minTimestamp: number, maxTimestamp: number}} state current state
    * @param {Array<{hash: string, time: number}>} transactions transactions list
    */
-  transactions (state, transactions) {
+  transactions(state, transactions) {
     const updateTimestamps = transactions.updateTimestamps
     if (updateTimestamps) {
       transactions = transactions.transactions
@@ -48,16 +48,12 @@ export default (initialState) => ({
     let minTimestamp = Infinity
     let maxTimestamp = -1
 
-    transactions.forEach(tx => {
+    transactions.forEach((tx) => {
       if (!tx) return
 
-      Object.keys(tx).forEach(key => tx[key] === undefined && delete tx[key])
+      Object.keys(tx).forEach((key) => tx[key] === undefined && delete tx[key])
 
-      const newTx = Object.assign(
-        { },
-        state.transactions[tx.hash],
-        tx
-      )
+      const newTx = Object.assign({}, state.transactions[tx.hash], tx)
 
       state.transactions[tx.hash] = newTx
 
@@ -69,7 +65,8 @@ export default (initialState) => ({
 
     // Magic here helps to refresh Tx list when browser deletes it
     const txCount = Object.keys(state.transactions).length
-    if (state.transactionsCount < txCount) { // We don't delete transactions, so they can't become in short
+    if (state.transactionsCount < txCount) {
+      // We don't delete transactions, so they can't become in short
       state.transactionsCount = txCount
     }
 
@@ -81,13 +78,13 @@ export default (initialState) => ({
     }
   },
 
-  areOlderLoading (state, areLoading) {
+  areOlderLoading(state, areLoading) {
     state.areOlderLoading = areLoading
   },
-  areRecentLoading (state, areLoading) {
+  areRecentLoading(state, areLoading) {
     state.areRecentLoading = areLoading
   },
-  areTransactionsLoading (state, areLoading) {
+  areTransactionsLoading(state, areLoading) {
     state.areTransactionsLoading = areLoading
   }
 })

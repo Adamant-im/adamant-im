@@ -10,7 +10,7 @@ export class EventEmitter {
   /**
    * @param {Events} events
    */
-  constructor (events) {
+  constructor(events) {
     this.events = events || {}
   }
 
@@ -18,8 +18,8 @@ export class EventEmitter {
    * @param {string} event
    * @param {Function} cb
    */
-  subscribe (event, cb) {
-    (this.events[event] || (this.events[event] = [])).push(cb)
+  subscribe(event, cb) {
+    ;(this.events[event] || (this.events[event] = [])).push(cb)
 
     return {
       unsubscribe: () =>
@@ -31,8 +31,8 @@ export class EventEmitter {
    * @param {string} event
    * @param {any[]} args
    */
-  emit (event, ...args) {
-    (this.events[event] || []).forEach(fn => fn(...args))
+  emit(event, ...args) {
+    ;(this.events[event] || []).forEach((fn) => fn(...args))
   }
 }
 
@@ -76,10 +76,8 @@ export class SocketClient extends EventEmitter {
    * Get random socket address.
    * @returns {string}
    */
-  get socketNode () {
-    const node = this.useFastest
-      ? this.fastestNode
-      : this.randomNode
+  get socketNode() {
+    const node = this.useFastest ? this.fastestNode : this.randomNode
 
     let socketUrl = node.wsProtocol + '//' + node.hostname
     if (node.wsPortNeeded) {
@@ -90,52 +88,53 @@ export class SocketClient extends EventEmitter {
     return node
   }
 
-  get fastestNode () {
+  get fastestNode() {
     return this.nodes.reduce((fastest, current) => {
       if (!current.online || !current.active || current.outOfSync) {
         return fastest
       }
-      return (!fastest || fastest.ping > current.ping) ? current : fastest
+      return !fastest || fastest.ping > current.ping ? current : fastest
     })
   }
 
-  get randomNode () {
-    const activeNodes = this.nodes.filter(n => n.online && n.active && !n.outOfSync && n.socketSupport)
+  get randomNode() {
+    const activeNodes = this.nodes.filter(
+      (n) => n.online && n.active && !n.outOfSync && n.socketSupport
+    )
     return activeNodes[random(activeNodes.length - 1)]
   }
 
-  get hasActiveNodes () {
-    return Object.values(this.nodes)
-      .some(n => n.online && n.active && !n.outOfSync && n.socketSupport)
+  get hasActiveNodes() {
+    return Object.values(this.nodes).some(
+      (n) => n.online && n.active && !n.outOfSync && n.socketSupport
+    )
   }
 
-  get isOnline () {
+  get isOnline() {
     return this.connection && this.connection.connected
   }
 
-  get isCurrentNodeActive () {
-    return this.nodes.some(
-      node => node.hostname === this.currentNode.hostname && node.active
-    )
+  get isCurrentNodeActive() {
+    return this.nodes.some((node) => node.hostname === this.currentNode.hostname && node.active)
   }
 
   /**
    * Update nodes statuses.
    * @param nodes
    */
-  setNodes (nodes) {
+  setNodes(nodes) {
     this.nodes = nodes
   }
 
-  setAdamantAddress (address) {
+  setAdamantAddress(address) {
     this.adamantAddress = address
   }
 
-  setSocketReady (value) {
+  setSocketReady(value) {
     this.isSocketReady = value
   }
 
-  setSocketEnabled (value) {
+  setSocketEnabled(value) {
     this.isSocketEnabled = value
     if (!value) this.disconnect()
   }
@@ -143,16 +142,16 @@ export class SocketClient extends EventEmitter {
   /**
    * @param {boolean} value
    */
-  setUseFastest (value) {
+  setUseFastest(value) {
     this.useFastest = value
   }
 
   /**
    * Subscribe to socket events.
    */
-  subscribeToEvents () {
+  subscribeToEvents() {
     if (this.connection) {
-      this.connection.on('newTrans', transaction => {
+      this.connection.on('newTrans', (transaction) => {
         if (transaction.type === 0 || transaction.type === 8) this.emit('newMessage', transaction)
       })
     }
@@ -161,29 +160,31 @@ export class SocketClient extends EventEmitter {
   /**
    * @param address ADAMANT address
    */
-  init (address) {
+  init(address) {
     this.setAdamantAddress(address)
     this.setSocketReady(true)
     this.interval = setInterval(() => this.reviseConnection(), this.REVISE_CONNECTION_TIMEOUT)
   }
 
-  destroy () {
+  destroy() {
     clearInterval(this.interval)
     this.setSocketReady(false)
     this.disconnect()
   }
 
-  connect (node) {
+  connect(node) {
     console.log(`[Socket] Connecting to ${node.socketAddress}..`)
     this.connection = io(`${node.socketAddress}`, { reconnection: false, timeout: 5000 })
 
     this.connection.on('connect', () => {
       this.currentNode = node
-      console.log(`[Socket] Connected to ${node.socketAddress} and subscribed to transactions of ${this.adamantAddress}`)
+      console.log(
+        `[Socket] Connected to ${node.socketAddress} and subscribed to transactions of ${this.adamantAddress}`
+      )
       this.connection.emit('address', this.adamantAddress)
     })
 
-    this.connection.on('disconnect', reason => {
+    this.connection.on('disconnect', (reason) => {
       // if (reason === 'ping timeout' || reason === 'io server disconnect') {
       // if (reason != 'io client disconnect') {
       console.warn('[Socket] Disconnected. Reason:', reason)
@@ -195,11 +196,11 @@ export class SocketClient extends EventEmitter {
     })
   }
 
-  disconnect () {
+  disconnect() {
     this.connection && this.connection.close()
   }
 
-  reviseConnection () {
+  reviseConnection() {
     if (!this.isSocketReady) return
     if (!this.isSocketEnabled) return
     if (!this.hasActiveNodes) {
@@ -210,7 +211,11 @@ export class SocketClient extends EventEmitter {
 
     const node = this.socketNode
 
-    if ((this.isOnline && this.useFastest && this.currentNode.hostname !== node.hostname) || !this.isOnline || !this.isCurrentNodeActive) {
+    if (
+      (this.isOnline && this.useFastest && this.currentNode.hostname !== node.hostname) ||
+      !this.isOnline ||
+      !this.isCurrentNodeActive
+    ) {
       this.disconnect()
       this.connect(node)
       this.subscribeToEvents()

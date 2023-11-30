@@ -1,35 +1,11 @@
 import axios from 'axios'
-import { getRandomNodeUrl, getRandomServiceUrl } from '@/config/utils'
+import { getRandomServiceUrl } from '@/config/utils'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import * as transactions from '@liskhq/lisk-transactions'
 import { CryptosInfo } from '../constants'
 
 export const TX_DEFAULT_FEE = 0.0016
-
-const createClient = (url) => {
-  const client = axios.create({ baseURL: url })
-  client.interceptors.response.use(null, (error) => {
-    if (error.response && Number(error.response.status) >= 500) {
-      console.error(`Request to ${url} failed.`, error)
-    }
-    // Lisk is spamming with 404 in console, when there is no LSK account
-    // There is no way to disable 404 logging for Chrome
-    if (error.response && Number(error.response.status) === 404) {
-      if (
-        error.response.data &&
-        error.response.data.errors &&
-        error.response.data.errors[0] &&
-        error.response.data.errors[0].message &&
-        error.response.data.errors[0].message.includes('was not found')
-      ) {
-        return error.response
-      }
-    }
-    return Promise.reject(error)
-  })
-  return client
-}
 
 const createServiceClient = (url) => {
   const client = axios.create({ baseURL: url })
@@ -47,7 +23,7 @@ export default class LskBaseApi {
    * Constructor
    * @abstract
    */
-  constructor(crypto, passphrase) {
+  constructor(crypto, _passphrase) {
     this._clients = {}
     this._crypto = crypto
     this._network = undefined
@@ -170,7 +146,7 @@ export default class LskBaseApi {
    * @param {string} data transaction data field
    * @returns {Promise<{hex: string, txid: string}>}
    */
-  createTransaction(address = '', amount = 0, fee, nonce, data) {
+  createTransaction(_address = '', _amount = 0, _fee, _nonce, _data) {
     return Promise.resolve({ hex: undefined, txid: undefined })
   }
 
@@ -179,7 +155,7 @@ export default class LskBaseApi {
    * @abstract
    * @param {string} txHex raw transaction as a HEX literal
    */
-  sendTransaction(txHex) {
+  sendTransaction(_txHex) {
     return Promise.resolve('')
   }
 
@@ -189,7 +165,7 @@ export default class LskBaseApi {
    * @param {*} txid transaction ID
    * @returns {Promise<object>}
    */
-  getTransaction(txid) {
+  getTransaction(_txid) {
     return Promise.resolve(null)
   }
 
@@ -199,17 +175,8 @@ export default class LskBaseApi {
    * @param {any} options crypto-specific options
    * @returns {Promise<{hasMore: boolean, items: Array}>}
    */
-  getTransactions(options) {
+  getTransactions(_options) {
     return Promise.resolve({ hasMore: false, items: [] })
-  }
-
-  /** Picks a LSK node's (core) client for a random API endpoint */
-  _getClient() {
-    const url = getRandomNodeUrl(this._crypto.toLowerCase())
-    if (!this._clients[url]) {
-      this._clients[url] = createClient(url)
-    }
-    return this._clients[url]
   }
 
   /** Picks a Lisk Service client for a random API endpoint */

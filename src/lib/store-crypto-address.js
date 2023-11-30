@@ -4,27 +4,27 @@ import { Cryptos, isErc20, RE_LSK_ADDRESS_LEGACY } from './constants'
 import { vueBus } from '@/lib/vueBus'
 import { uniqueCaseInsensitiveArray, isStringEqualCI } from '@/lib/textHelpers'
 
-let queue = { }
+let queue = {}
 let stored = []
 
 // Clear this on logout to store new values after re-login
-export function resetKVSAddresses () {
-  queue = { }
+export function resetKVSAddresses() {
+  queue = {}
   stored = []
 }
 
-export function storeCryptoAddress (crypto, address) {
+export function storeCryptoAddress(crypto, address) {
   if (!queue[crypto] && !stored.includes(crypto)) {
     queue[crypto] = address
   }
 }
 
-export function flushCryptoAddresses () {
+export function flushCryptoAddresses() {
   if (!admApi.isReady()) return
 
-  Object.keys(queue).forEach(crypto => {
+  Object.keys(queue).forEach((crypto) => {
     const address = queue[crypto]
-    admApi.storeCryptoAddress(crypto, address).then(success => {
+    admApi.storeCryptoAddress(crypto, address).then((success) => {
       if (success) {
         delete queue[crypto]
         stored.push(crypto)
@@ -37,15 +37,17 @@ export function flushCryptoAddresses () {
  * Parses KVS transactions for crypto addresses
  * @returns object for stored addresses
  */
-export function parseCryptoAddressesKVStxs (txs, crypto) {
+export function parseCryptoAddressesKVStxs(txs, crypto) {
   if (!txs || !txs.length || !txs[0].asset || !txs[0].asset.state || !txs[0].asset) return null
-  const addresses = { }
+  const addresses = {}
   // validateInfo.storedAddresses = [...new Set(txs.map(tx => tx.asset.state.value))]
-  addresses.storedAddresses = uniqueCaseInsensitiveArray(txs.map(tx => tx.asset.state.value))
+  addresses.storedAddresses = uniqueCaseInsensitiveArray(txs.map((tx) => tx.asset.state.value))
   // Lisk has updated their address format, and both may be stored
   // Remove legacy addresses
   if (crypto === Cryptos.LSK) {
-    addresses.storedAddresses = addresses.storedAddresses.filter(address => !RE_LSK_ADDRESS_LEGACY.test(address))
+    addresses.storedAddresses = addresses.storedAddresses.filter(
+      (address) => !RE_LSK_ADDRESS_LEGACY.test(address)
+    )
     if (addresses.storedAddresses.length === 0) {
       addresses.onlyLegacyLiskAddress = true
     }
@@ -59,20 +61,21 @@ export function parseCryptoAddressesKVStxs (txs, crypto) {
  * Validates if crypto addresses, stored in KVS are consistent; emits warningOnAddressDialog if they're not consistent
  * @returns nothing
  */
-export function validateStoredCryptoAddresses () {
-  if (!admApi.isReady() || store.state.adm.addressesValidated || store.getters.isAccountNew()) return
+export function validateStoredCryptoAddresses() {
+  if (!admApi.isReady() || store.state.adm.addressesValidated || store.getters.isAccountNew())
+    return
 
-  function skip (crypto) {
+  function skip(crypto) {
     return isErc20(crypto) || crypto === 'ADM'
   }
 
-  Object.keys(Cryptos).forEach(crypto => {
+  Object.keys(Cryptos).forEach((crypto) => {
     if (skip(crypto)) return
     const address = store.state[crypto.toLowerCase()].address
     if (address) {
       if (!store.state.adm.validatedCryptos[crypto]) {
         const key = `${crypto.toLowerCase()}:address`
-        admApi.getStored(key, store.state.address, 20).then(txs => {
+        admApi.getStored(key, store.state.address, 20).then((txs) => {
           // It may be empty array: no addresses stored yet for this crypto
           if (txs) {
             let validateInfo = parseCryptoAddressesKVStxs(txs, crypto)
@@ -94,7 +97,7 @@ export function validateStoredCryptoAddresses () {
   })
 
   let isAllValidated = true
-  const validateSummary = { }
+  const validateSummary = {}
   validateSummary.isAllRight = true
   validateSummary.wrongCoins = []
   validateSummary.manyAddressesCoins = []

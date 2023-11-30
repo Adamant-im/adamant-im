@@ -5,8 +5,10 @@ import validateAddress from '@/lib/validateAddress'
 export default {
   ...baseGetters,
 
-  fee: state => (amount, recipientAddress, data) => {
-    recipientAddress = validateAddress(state.crypto, recipientAddress) ? recipientAddress : state.address
+  fee: (state) => (amount, recipientAddress, data) => {
+    recipientAddress = validateAddress(state.crypto, recipientAddress)
+      ? recipientAddress
+      : state.address
     return lskActions.calculateFee(null, {
       address: recipientAddress,
       amount,
@@ -15,7 +17,7 @@ export default {
     })
   },
 
-  height (state) {
+  height(state) {
     return state.height
   }
 }
