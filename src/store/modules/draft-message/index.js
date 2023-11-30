@@ -3,8 +3,24 @@ const state = () => ({
 })
 
 const mutations = {
+  saveReplyToId(state, payload) {
+    if (state.drafts[payload.partnerId]) {
+      state.drafts[payload.partnerId].replyToId = payload.replyToId
+    } else {
+      state.drafts[payload.partnerId] = {
+        replyToId: payload.replyToId
+      }
+    }
+  },
+
   saveMessage(state, payload) {
-    state.drafts[payload.partnerId] = payload.message
+    if (state.drafts[payload.partnerId]) {
+      state.drafts[payload.partnerId].message = payload.message
+    } else {
+      state.drafts[payload.partnerId] = {
+        message: payload.message
+      }
+    }
   },
 
   deleteMessage(state, partnerId) {
@@ -16,7 +32,21 @@ const mutations = {
 }
 const getters = {
   draftMessage: (state) => (partnerId) => {
-    return state.drafts[partnerId]
+    const objMessage = state.drafts[partnerId]
+    if (objMessage === undefined) {
+      return ''
+    } else {
+      return objMessage.message
+    }
+  },
+
+  draftReplyTold: (state) => (partnerId) => {
+    const objMessage = state.drafts[partnerId]
+    if (objMessage === undefined) {
+      return ''
+    } else {
+      return objMessage.replyToId
+    }
   }
 }
 

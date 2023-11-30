@@ -253,7 +253,6 @@
         </v-badge>
       </template>
     </a-chat>
-
     <ProgressIndicator :show="replyLoadingChatHistory" />
   </v-card>
 </template>
@@ -485,7 +484,9 @@ export default {
         'Windows 10': this.$t('chats.message_windows_10')
       }[detect().os] || this.$t('chats.message')
 
-    if (this.$route.query.replyToId) {
+    if (this.$store.getters['draftMessage/draftReplyTold'](this.partnerId)) {
+      this.replyMessageId = this.$store.getters['draftMessage/draftReplyTold'](this.partnerId)
+    } else if (this.$route.query.replyToId) {
       this.replyMessageId = this.$route.query.replyToId
     }
   },
@@ -512,6 +513,7 @@ export default {
       }
     },
     sendMessage(message) {
+      this.$store.commit('draftMessage/deleteMessage', this.partnerId)
       const replyToId = this.replyMessageId > -1 ? this.replyMessageId : undefined
 
       return this.$store
@@ -668,6 +670,10 @@ export default {
 
       this.replyMessageId = message.id
       this.$refs.chatForm.focus()
+      this.$store.commit('draftMessage/saveReplyToId', {
+        replyToId: message.id,
+        partnerId: this.partnerId
+      })
     },
     copyMessageToClipboard({ message }) {
       this.closeActionsMenu()
