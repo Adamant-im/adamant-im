@@ -4,8 +4,8 @@ import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
 import { AbiDecoder } from '@/lib/abi/abi-decoder'
-import { checkIsTxInProcess } from '@/lib/txVerify'
-import { DuplicatedNonceError, ErrorCodes } from '../../../lib/errors'
+import { checkIsTxInProcess } from '@/lib/checkIsTxInProcess'
+import { DuplicatedNonceError, ErrorCodes } from '@/lib/errors'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0

@@ -3,7 +3,7 @@ import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
 import { FetchStatus } from '@/lib/constants'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
-import { checkIsTxInProcess } from '@/lib/txVerify'
+import { checkIsTxInProcess } from '@/lib/checkIsTxInProcess'
 import { DuplicatedNonceError, ErrorCodes } from '@/lib/errors'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})

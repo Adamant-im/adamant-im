@@ -28,7 +28,8 @@ import { isNumeric } from '@/lib/numericHelpers'
 
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import SendFundsForm from '@/components/SendFundsForm.vue'
-import { removeFromSessionStorage } from '@/lib/sessionStorage'
+// eslint-disable-next-line import/namespace
+import { removeTransactionInProcess } from '@/lib/checkIsTxInProcess'
 
 export default {
   components: {
@@ -72,7 +73,7 @@ export default {
     onSend(transactionId, crypto) {
       const userComeFrom = this.$route.query.from
 
-      removeFromSessionStorage('transactionsInProcess', this.cryptoCurrency)
+      removeTransactionInProcess(this.cryptoCurrency)
 
       if (userComeFrom) {
         this.$router.replace(userComeFrom)

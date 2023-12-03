@@ -2,7 +2,7 @@ import BigNumber from '@/lib/bignumber'
 import LskBaseApi from '../../../lib/lisk/lsk-base-api'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
-import { checkIsTxInProcess } from '@/lib/txVerify'
+import { checkIsTxInProcess } from '@/lib/checkIsTxInProcess'
 import { DuplicatedNonceError, ErrorCodes } from '@/lib/errors'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})

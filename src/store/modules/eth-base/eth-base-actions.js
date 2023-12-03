@@ -6,7 +6,7 @@ import * as tf from '../../../lib/transactionsFetching'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { signTransaction, TransactionFactory } from 'web3-eth-accounts'
 import api from '@/lib/nodes/eth'
-import { checkIsTxInProcess } from '@/lib/txVerify'
+import { checkIsTxInProcess } from '@/lib/checkIsTxInProcess'
 import { DuplicatedNonceError, ErrorCodes } from '@/lib/errors'
 
 /** Interval between attempts to fetch the registered tx details */
