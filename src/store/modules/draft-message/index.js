@@ -30,6 +30,7 @@ const mutations = {
     state.drafts = {}
   }
 }
+
 const getters = {
   draftMessage: (state) => (partnerId) => {
     const objMessage = state.drafts[partnerId]
@@ -55,6 +56,7 @@ const actions = {
     context.commit('reset')
   }
 }
+
 export default {
   state,
   mutations,
