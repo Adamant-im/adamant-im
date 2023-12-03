@@ -1,8 +1,6 @@
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { i18n } from '@/i18n'
 import { CryptosInfo } from '@/lib/constants'
-import isEmpty from 'lodash/isEmpty'
-import { getFromSessionStorage, setToSessionStorage } from '@/lib/sessionStorage'
 
 const AllowAmountErrorPercent = 0.3
 
@@ -17,37 +15,6 @@ const TransactionInconsistentReason = {
   WRONG_TIMESTAMP: 'wrong_timestamp',
   SENDER_CRYPTO_ADDRESS_MISMATCH: 'sender_crypto_address_mismatch',
   RECIPIENT_CRYPTO_ADDRESS_MISMATCH: 'recipient_crypto_address_mismatch'
-}
-
-export function checkIsTxInProcess(coin, nonce = null) {
-  const fetchInfo = CryptosInfo[coin].txFetchInfo
-  const pendingAttempts = fetchInfo?.newPendingAttempts || 20
-  const pendingInterval = fetchInfo?.newPendingInterval || 5000
-  const TX_LOCK_TIME = pendingAttempts * pendingInterval
-
-  const currentTimestamp = Date.now()
-  const estimatedExpiration = currentTimestamp + TX_LOCK_TIME
-
-  if (!('transactionsInProcess' in sessionStorage)) {
-    setToSessionStorage('transactionsInProcess', {})
-  }
-
-  const sessionStorageTxInProcess = getFromSessionStorage('transactionsInProcess')
-
-  if (isEmpty(sessionStorageTxInProcess[coin])) {
-    sessionStorageTxInProcess[coin] = {
-      expiration: estimatedExpiration,
-      nonce: nonce?.toString()
-    }
-    setToSessionStorage('transactionsInProcess', sessionStorageTxInProcess)
-
-    return false
-  }
-
-  return (
-    currentTimestamp < sessionStorageTxInProcess[coin].expiration ||
-    nonce?.toString() === sessionStorageTxInProcess[coin]?.nonce
-  )
 }
 
 export function verifyTransactionDetails(

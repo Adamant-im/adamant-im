@@ -4,7 +4,7 @@ import {
   removeFromSessionStorage,
   setToSessionStorage
 } from '@/lib/sessionStorage.ts'
-import isEmpty from 'lodash/isEmpty'
+import { isEmpty } from 'lodash'
 
 type CoinSymbols = keyof typeof CryptosInfo
 type Expiration = number
