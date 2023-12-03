@@ -107,6 +107,7 @@
     "@types/dompurify": "^3.0.5",
     "@types/emoji-mart": "^3.0.12",
     "@types/eslint": "^8.44.7",
+    "@types/lodash": "^4.14.202",
     "@types/marked": "^5.0.2",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
