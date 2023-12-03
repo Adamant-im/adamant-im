@@ -4,7 +4,7 @@ import { FetchStatus } from '@/lib/constants'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
 import { checkIsTxInProcess } from '@/lib/checkIsTxInProcess'
-import { DuplicatedNonceError, ErrorCodes } from '@/lib/errors'
+import { DuplicatedNonceError } from '@/lib/errors'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 
@@ -116,13 +116,7 @@ function createActions(options) {
       const crypto = context.state.crypto
 
       if (checkIsTxInProcess(crypto)) {
-        return Promise.reject(
-          new DuplicatedNonceError(
-            `The tx with a same nonce already exists`,
-            crypto,
-            ErrorCodes.TX_ALREADY_IN_PROCESS
-          )
-        )
+        return Promise.reject(new DuplicatedNonceError())
       }
 
       return api

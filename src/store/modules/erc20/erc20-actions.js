@@ -5,7 +5,7 @@ import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
 import { AbiDecoder } from '@/lib/abi/abi-decoder'
 import { checkIsTxInProcess } from '@/lib/checkIsTxInProcess'
-import { DuplicatedNonceError, ErrorCodes } from '@/lib/errors'
+import { DuplicatedNonceError } from '@/lib/errors'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -20,13 +20,7 @@ const initTransaction = async (api, context, ethAddress, amount, increaseFee) =>
 
   const nonce = await api.getClient().getTransactionCount(context.state.address)
   if (checkIsTxInProcess(crypto, nonce)) {
-    return Promise.reject(
-      new DuplicatedNonceError(
-        `The tx with a same nonce already exists`,
-        crypto,
-        ErrorCodes.TX_ALREADY_IN_PROCESS
-      )
-    )
+    return Promise.reject(new DuplicatedNonceError())
   }
   const gasPrice = await api.getClient().getGasPrice()
 

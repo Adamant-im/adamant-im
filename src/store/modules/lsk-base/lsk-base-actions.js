@@ -3,7 +3,7 @@ import LskBaseApi from '../../../lib/lisk/lsk-base-api'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
 import { checkIsTxInProcess } from '@/lib/checkIsTxInProcess'
-import { DuplicatedNonceError, ErrorCodes } from '@/lib/errors'
+import { DuplicatedNonceError } from '@/lib/errors'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 
@@ -78,13 +78,7 @@ function createActions(options) {
       const nonce = context.state.nonce
 
       if (checkIsTxInProcess(crypto, nonce)) {
-        return Promise.reject(
-          new DuplicatedNonceError(
-            `The tx with a same nonce already exists`,
-            crypto,
-            ErrorCodes.TX_ALREADY_IN_PROCESS
-          )
-        )
+        return Promise.reject(new DuplicatedNonceError())
       }
 
       return api
