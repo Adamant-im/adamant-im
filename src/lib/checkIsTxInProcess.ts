@@ -1,57 +1,34 @@
-import { CryptosInfo } from '@/lib/constants'
+import { CryptosInfo, CryptoSymbol } from '@/lib/constants'
 import {
   getFromSessionStorage,
   removeFromSessionStorage,
   setToSessionStorage
-} from '@/lib/sessionStorage.ts'
-import { isEmpty } from 'lodash'
+} from '@/lib/sessionStorage'
 
-type CoinSymbols = keyof typeof CryptosInfo
-type Expiration = number
-type Nonce = number | string | undefined
-type TransactionInProcess = { expiration: Expiration; nonce: Nonce }
-const STORAGE_KEY = 'transactionsInProcess'
+const STORAGE_KEY = 'TRANSACTIONS_IN_PROCESS'
 
-type TransactionsInProcess = Record<CoinSymbols, TransactionInProcess>
+type StateItem = { expiration: number; nonce?: number | string }
+type State = Partial<Record<CryptoSymbol, StateItem>>
 
-const getTransactionInProcess = (coin: CoinSymbols): TransactionInProcess => {
-  const transactionsInProcess = getFromSessionStorage(
-    STORAGE_KEY,
-    {}
-  ) as unknown as TransactionsInProcess
-  return transactionsInProcess[coin]
+const getTransactionInProcess = (coin: CryptoSymbol) => {
+  const state = getFromSessionStorage<string, State>(STORAGE_KEY, {})
+
+  return state[coin]
 }
 
-const initTransactionsInProcess = (): void => {
-  if (!(STORAGE_KEY in sessionStorage)) {
-    setToSessionStorage(STORAGE_KEY, {})
-  }
-}
-
-export const removeTransactionInProcess = (coin: CoinSymbols): void => {
+export const removeTransactionInProcess = (coin: CryptoSymbol): void => {
   removeFromSessionStorage(STORAGE_KEY, coin)
 }
 
-const setTransactionInProcess = (coin: CoinSymbols, value: TransactionInProcess): void => {
-  const transactionsInProcess = getFromSessionStorage(
-    STORAGE_KEY,
-    {}
-  ) as unknown as TransactionsInProcess
+const setTransactionInProcess = (coin: CryptoSymbol, value: StateItem): void => {
+  const state = getFromSessionStorage<string, State>(STORAGE_KEY, {})
+  state[coin] = value
 
-  transactionsInProcess[coin] = value
-  setToSessionStorage(STORAGE_KEY, transactionsInProcess)
+  setToSessionStorage(STORAGE_KEY, state)
 }
 
-export function checkIsTxInProcess(
-  coin: CoinSymbols,
-  nonce: number | string | null = null
-): boolean {
-  type FetchInfo = {
-    newPendingAttempts: number
-    newPendingInterval: number
-  }
-
-  const fetchInfo = (CryptosInfo[coin] as { txFetchInfo?: FetchInfo }).txFetchInfo
+export function checkIsTxInProcess(coin: CryptoSymbol, nonce?: number | string): boolean {
+  const fetchInfo = CryptosInfo[coin].txFetchInfo
   const pendingAttempts = fetchInfo?.newPendingAttempts || 20
   const pendingInterval = fetchInfo?.newPendingInterval || 5000
   const TX_LOCK_TIME = pendingAttempts * pendingInterval
@@ -59,17 +36,13 @@ export function checkIsTxInProcess(
   const currentTimestamp = Date.now()
   const estimatedExpiration = currentTimestamp + TX_LOCK_TIME
 
-  initTransactionsInProcess()
-
   const currentTransactionInProcess = getTransactionInProcess(coin)
 
-  if (isEmpty(currentTransactionInProcess)) {
-    const transactionInProcess = {
+  if (!currentTransactionInProcess) {
+    setTransactionInProcess(coin, {
       expiration: estimatedExpiration,
       nonce: nonce?.toString()
-    }
-
-    setTransactionInProcess(coin, transactionInProcess)
+    })
 
     return false
   }
