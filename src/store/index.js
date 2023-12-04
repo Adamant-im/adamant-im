@@ -36,9 +36,11 @@ import notification from './modules/notification'
 import cache from '@/store/cache'
 import rate from './modules/rate'
 import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant-api/asset'
+import { removeFromSessionStorage } from '@/lib/sessionStorage'
 
 export let interval
 
+const TRANSACTIONS_IN_PROGRESS_STORAGE_KEY = 'transactionsInProcess'
 const UPDATE_BALANCE_INTERVAL = 10000
 
 /**
@@ -166,6 +168,7 @@ const store = {
     },
     reset({ commit }) {
       commit('reset', null, { root: true })
+      removeFromSessionStorage(TRANSACTIONS_IN_PROGRESS_STORAGE_KEY)
     },
     setPassword({ commit }, password) {
       return encryptPassword(password).then((encryptedPassword) => {

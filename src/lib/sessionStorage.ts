@@ -21,9 +21,11 @@ export function removeFromSessionStorage<K extends string>(key: K, subkey?: K): 
       delete sessionStorageItem[subkey]
     }
     setToSessionStorage(key, sessionStorageItem)
+  } else {
+    window.sessionStorage.removeItem(key)
   }
 }
 
 export function setToSessionStorage<K extends string, S = unknown>(key: K, value: S): void {
-  sessionStorage.setItem(key, JSON.stringify(value))
+  window.sessionStorage.setItem(key, JSON.stringify(value))
 }
