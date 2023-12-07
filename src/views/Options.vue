@@ -168,6 +168,12 @@
                 />
 
                 <v-list-item
+                  :title="$t('options.wallets_list')"
+                  append-icon="mdi-chevron-right"
+                  @click="$router.push('/options/wallets')"
+                />
+
+                <v-list-item
                   :title="$t('options.export_keys.title')"
                   append-icon="mdi-chevron-right"
                   @click="$router.push('/options/export-keys')"

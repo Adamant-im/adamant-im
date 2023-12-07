@@ -4,17 +4,18 @@ import navigationGuard from '@/router/navigationGuard'
 import IsLogged from '@/middlewares/isLogged'
 import AuthMiddleware from '@/middlewares/auth'
 import DocumentTitle from '@/middlewares/title'
-import Chats from '@/views/Chats.vue'
 import Chat from '@/views/Chat.vue'
+import Chats from '@/views/Chats.vue'
+import ExportKeys from '@/views/ExportKeys.vue'
+import Home from '@/views/Home.vue'
+import Login from '@/views/Login.vue'
+import Nodes from '@/views/Nodes.vue'
+import Options from '@/views/Options.vue'
 import SendFunds from '@/views/SendFunds.vue'
 import Transaction from '@/views/transactions/Transaction.vue'
 import Transactions from '@/views/Transactions.vue'
-import Options from '@/views/Options.vue'
-import Home from '@/views/Home.vue'
 import Votes from '@/views/Votes.vue'
-import Nodes from '@/views/Nodes.vue'
-import Login from '@/views/Login.vue'
-import ExportKeys from '@/views/ExportKeys.vue'
+import Wallets from '@/views/Wallets.vue'
 
 /**
  * @type {Readonly<import("vue-router").RouteRecordRaw[]>}
@@ -40,6 +41,19 @@ const routes = [
     meta: {
       requiresAuth: true,
       layout: 'no-container'
+    }
+  },
+  {
+    path: '/options/wallets',
+    name: 'Wallets',
+    component: Wallets,
+    meta: {
+      requiresAuth: true,
+      layout: 'no-container',
+      scrollPosition: {
+        x: 0,
+        y: 0
+      }
     }
   },
   {
