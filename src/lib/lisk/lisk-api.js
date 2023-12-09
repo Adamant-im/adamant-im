@@ -1,18 +1,18 @@
-import { TRANSACTION_PARAMS_SCHEMA, TRANSACTION_SCHEMA } from '@/lib/lisk/lisk-schemas'
+import { LSK_CHAIN_ID } from './lisk-constants'
+import { TRANSACTION_PARAMS_SCHEMA } from './lisk-schemas'
+import { Buffer } from 'buffer'
 import LskBaseApi from './lsk-base-api'
 import { Cryptos } from '../constants'
 import {
   getMillisTimestamp,
   getLiskTimestamp,
   createUnsignedTransaction,
-  encodeTransaction
+  encodeTransaction,
+  getAccount
 } from './lisk-utils'
 import { bytesToHex } from '@/lib/hex'
-import * as cryptography from '@liskhq/lisk-cryptography'
-import * as codec from '@liskhq/lisk-codec'
 import * as transactions from '@liskhq/lisk-transactions'
 import { lsk } from '@/lib/nodes/lsk'
-import { getAccount } from './lisk-utils'
 
 export const TX_CHUNK_SIZE = 25
 
@@ -101,9 +101,6 @@ export default class LiskApi extends LskBaseApi {
    * @returns {Promise<{hex: string, txid: string}>}
    */
   createTransaction(address = '', amount = 0, fee, nonce, data = '') {
-    console.log(address, amount, fee, nonce, data)
-    // throw new Error('stop2')
-    // const unsignedTransaction = this._buildTransaction(address, amount, fee, nonce, data).liskTx // unsignedTx
     const unsignedTransaction = createUnsignedTransaction(
       address,
       Buffer.from(this._keyPair.publicKey).toString('hex'),
@@ -113,65 +110,14 @@ export default class LiskApi extends LskBaseApi {
       data
     )
 
-    // To use transactions.signTransaction, passPhrase is necessary
-    // So we'll use cryptography.signDataWithPrivateKey
-    console.log('liskTx', unsignedTransaction)
-
-    const liskTxBytes = transactions.getSigningBytes(unsignedTransaction, TRANSACTION_PARAMS_SCHEMA)
-    console.log('liskTxBytes', liskTxBytes)
-
     const signedTransaction = transactions.signTransaction(
       unsignedTransaction,
-      this.networkIdentifier, // @todo or chainID?
+      Buffer.from(LSK_CHAIN_ID, 'hex'),
       this._keyPair.secretKey,
       TRANSACTION_PARAMS_SCHEMA
     )
-    console.log('signedTransaction', signedTransaction)
-
-    // const json = toTransactionJSON(signedTransaction)
-
-    // console.log('chainId', Buffer.from(this.chainId, 'hex'))
-    // const networkIdTestnet = '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c';
-    // const signedTransaction = transactions.signTransaction(
-    //   unsignedTransaction,
-    //   Buffer.from(networkIdTestnet, 'hex'),
-    //   this._keyPair.secretKey
-    // )
-    // console.log('passed', signedTransaction)
 
     const txid = bytesToHex(signedTransaction.id)
-
-    const signeTransactionHex = {
-      ...signedTransaction,
-      id: txid,
-      nonce: Number(signedTransaction.nonce).toString(),
-      fee: Number(signedTransaction.fee).toString(),
-      params: {
-        ...signedTransaction.params,
-        amount: Number(signedTransaction.params.amount).toString(),
-        recipientAddress: Buffer.from(signedTransaction.params.recipientAddress).toString('hex'),
-        tokenID: Buffer.from(signedTransaction.params.tokenID).toString('hex')
-      },
-      senderPublicKey: Buffer.from(signedTransaction.senderPublicKey).toString('hex'),
-      signatures: signedTransaction.signatures.map((signature) =>
-        Buffer.from(signature).toString('hex')
-      )
-    }
-
-    console.log('txid', txid)
-
-    console.log('signeTransactionHex', signeTransactionHex)
-    console.log('encodeTransaction', encodeTransaction(signedTransaction))
-
-    // throw new Error('stop')
-
-    // To send Tx to node's core API, we should change data types
-    // liskTx.senderPublicKey = bytesToHex(liskTx.senderPublicKey)
-    // liskTx.nonce = nonce.toString()
-    // liskTx.fee = transactions.convertLSKToBeddows((+fee).toFixed(this.decimals))
-    // liskTx.asset.amount = transactions.convertLSKToBeddows((+amount).toFixed(this.decimals))
-    // liskTx.asset.recipientAddress = bytesToHex(liskTx.asset.recipientAddress)
-    // liskTx.signatures[0] = bytesToHex(txSignature)
 
     return Promise.resolve({ hex: encodeTransaction(signedTransaction), txid })
   }

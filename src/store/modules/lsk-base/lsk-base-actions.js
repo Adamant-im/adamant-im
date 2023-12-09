@@ -1,7 +1,9 @@
 import BigNumber from '@/lib/bignumber'
+import { LiskAccount } from '../../../lib/lisk'
 import LskBaseApi from '../../../lib/lisk/lsk-base-api'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
+import { lsk } from '../../../lib/nodes/lsk'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 
@@ -22,15 +24,18 @@ function createActions(options) {
   const Api = options.apiCtor || LskBaseApi
   const { customActions = DEFAULT_CUSTOM_ACTIONS, fetchRetryTimeout } = options
 
-  /** @type {LskBaseApi} */
+  /** @type {LiskAccount | null} */
   let api = null
+  let account = null
 
   return {
     afterLogin: {
       root: true,
       handler(context, passphrase) {
         api = new Api(passphrase)
-        context.commit('address', api.address)
+        account = new LiskAccount(passphrase)
+
+        context.commit('address', account.getLisk32Address())
         context.dispatch('updateStatus')
         context.dispatch('storeAddress')
       }
@@ -41,6 +46,7 @@ function createActions(options) {
       root: true,
       handler(context) {
         api = null
+        account = null
         context.commit('reset')
       }
     },
@@ -52,7 +58,9 @@ function createActions(options) {
         const passphrase = context.rootGetters.getPassPhrase
         if (passphrase) {
           api = new Api(passphrase)
-          context.commit('address', api.address)
+
+          account = new LiskAccount(passphrase)
+          context.commit('address', account.getLisk32Address())
           context.dispatch('updateStatus')
           context.dispatch('storeAddress')
         }
@@ -63,18 +71,13 @@ function createActions(options) {
       storeCryptoAddress(state.crypto, state.address)
     },
 
-    updateStatus(context) {
-      if (!api) return
-      api.getBalance().then((balance) => context.commit('status', { balance }))
-    },
-
     sendTokens(context, { amount, admAddress, address, comments, fee, textData, replyToId }) {
-      if (!api) return
+      if (!account) return
       address = address.trim()
 
       const crypto = context.state.crypto
 
-      return api
+      return account
         .createTransaction(address, amount, fee, context.state.nonce, textData)
         .then((tx) => {
           if (!admAddress) return tx.hex
@@ -94,7 +97,7 @@ function createActions(options) {
             .then((success) => (success ? tx.hex : Promise.reject(new Error('adm_message'))))
         })
         .then((rawTx) =>
-          api.sendTransaction(rawTx).then(
+          lsk.sendTransaction(rawTx).then(
             (hash) => ({ hash }),
             (error) => ({ error })
           )
@@ -124,16 +127,6 @@ function createActions(options) {
             return hash
           }
         })
-    },
-
-    /**
-     * Calculates fee for a Tx
-     * @param {object} context Vuex action context
-     * @
-     */
-    calculateFee(context, payload) {
-      if (!api) return
-      return api.getFee(payload.address, payload.amount, payload.nonce, payload.data)
     },
 
     /**
@@ -308,7 +301,7 @@ function createActions(options) {
       )
     },
 
-    ...customActions(() => api)
+    ...customActions(() => account)
   }
 }
 

@@ -2,16 +2,18 @@
  * Additional coin-based functions here
  */
 
+import { CryptoSymbol } from '@/lib/constants/cryptos'
 import { TRANSACTION_PARAMS_SCHEMA, TRANSACTION_SCHEMA } from '@/lib/lisk/lisk-schemas'
-import * as codec from '@liskhq/lisk-codec'
+import { DecodedTransaction, Transaction } from './types/lisk'
+import { codec } from '@liskhq/lisk-codec'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import networks from '@/lib/lisk/networks'
-import { getLisk32AddressFromPublicKey } from '@liskhq/lisk-cryptography/dist-node/address'
+import { convertBeddowsToLSK } from '@liskhq/lisk-transactions'
 import * as transactions from '@liskhq/lisk-transactions'
 import { Buffer } from 'buffer'
 import pbkdf2 from 'pbkdf2'
 import sodium from 'sodium-browserify-tweetnacl'
-import { LiskHashSettings } from './lisk-constants'
+import { LiskHashSettings, LSK_CHAIN_ID, LSK_DECIMALS, LSK_TOKEN_ID } from './lisk-constants'
 import { bytesToHex } from '@/lib/hex'
 import * as validator from '@liskhq/lisk-validator'
 
@@ -20,7 +22,7 @@ import * as validator from '@liskhq/lisk-validator'
  * @param {number} liskTimestamp
  */
 export function getMillisTimestamp(liskTimestamp: number) {
-  return parseInt(liskTimestamp) * 1000
+  return parseInt(liskTimestamp.toString()) * 1000
 }
 
 /**
@@ -28,10 +30,10 @@ export function getMillisTimestamp(liskTimestamp: number) {
  * @param {number} millisTimestamp
  */
 export function getLiskTimestamp(millisTimestamp: number) {
-  return Math.round(parseInt(millisTimestamp) / 1000) // may be a mistake (use Math.floor instead)
+  return Math.round(parseInt(millisTimestamp.toString()) / 1000) // may be a mistake (use Math.floor instead)
 }
 
-export function getAccount(crypto, passphrase) {
+export function getAccount(crypto: CryptoSymbol, passphrase: string) {
   const network = networks[crypto]
   const liskSeed = pbkdf2.pbkdf2Sync(
     passphrase,
@@ -58,6 +60,69 @@ export function getAccount(crypto, passphrase) {
   }
 }
 
+export function seedLskAccount(passphrase: string) {
+  const liskSeed = pbkdf2.pbkdf2Sync(
+    passphrase,
+    LiskHashSettings.SALT,
+    LiskHashSettings.ITERATIONS,
+    LiskHashSettings.KEYLEN,
+    LiskHashSettings.DIGEST
+  )
+  const keyPair: { publicKey: Buffer; secretKey: Buffer } =
+    sodium.crypto_sign_seed_keypair(liskSeed)
+
+  const address = cryptography.address.getLisk32AddressFromPublicKey(keyPair.publicKey)
+  const addressHexBinary = cryptography.address.getAddressFromPublicKey(keyPair.publicKey)
+  const addressHex = bytesToHex(addressHexBinary)
+
+  return {
+    keyPair,
+    address,
+    addressHexBinary,
+    addressHex
+  }
+}
+
+/**
+ * Create and sign a transfer transaction.
+ * Transaction `hex` result is ready for broadcasting to blockchain network.
+ *
+ * @param keyPair Sender's `publicKey` and `privateKey`
+ * @param address Receiver address in Lisk32 format
+ * @param amount Amount to transfer (LSK, not Beddows)
+ * @param fee Transaction fee (LSK, not Beddows)
+ * @param nonce Transaction nonce
+ * @param data Transaction data field
+ */
+export function createTransaction(
+  keyPair: { publicKey: Buffer; secretKey: Buffer },
+  address: string,
+  amount: number | string,
+  fee: number | string,
+  nonce: number | string,
+  data = ''
+) {
+  const unsignedTransaction = createUnsignedTransaction(
+    address,
+    Buffer.from(keyPair.publicKey).toString('hex'),
+    amount,
+    fee,
+    nonce,
+    data
+  )
+
+  const signedTransaction = transactions.signTransaction(
+    unsignedTransaction,
+    Buffer.from(LSK_CHAIN_ID, 'hex'),
+    keyPair.secretKey,
+    TRANSACTION_PARAMS_SCHEMA
+  ) as unknown as Transaction
+
+  const id = bytesToHex(signedTransaction.id)
+
+  return { hex: encodeTransaction(signedTransaction), id }
+}
+
 /**
  * Creates unsigned LSK transaction.
  *
@@ -76,16 +141,8 @@ export function createUnsignedTransaction(
   nonce: number | string,
   data = ''
 ) {
-  const decimals = 8
-
-  console.log('address', recipientAddress)
-  console.log('publicKeyHex', senderPublicKey)
-  console.log('nonce', nonce)
-
-  // throw new Error('stop')
-
-  const amountString = transactions.convertLSKToBeddows((+amount).toFixed(decimals))
-  const feeString = transactions.convertLSKToBeddows((+fee).toFixed(decimals))
+  const amountString = transactions.convertLSKToBeddows((+amount).toFixed(LSK_DECIMALS))
+  const feeString = transactions.convertLSKToBeddows((+fee).toFixed(LSK_DECIMALS))
   const nonceString = nonce.toString()
 
   // Adjust the values of the unsigned transaction manually
@@ -95,7 +152,7 @@ export function createUnsignedTransaction(
     fee: BigInt(feeString),
     nonce: BigInt(nonceString),
     senderPublicKey: Buffer.from(senderPublicKey, 'hex'),
-    params: Buffer.alloc(0),
+    params: Buffer.alloc(0) as unknown, // @todo fix type
     signatures: []
   }
 
@@ -103,7 +160,7 @@ export function createUnsignedTransaction(
 
   // Create the asset for the Token Transfer transaction
   const transferParams = {
-    tokenID: Buffer.from('0000000100000000', 'hex'),
+    tokenID: Buffer.from(LSK_TOKEN_ID, 'hex'),
     amount: BigInt(amountString),
     recipientAddress: cryptography.address.getAddressFromLisk32Address(recipientAddress),
     data
@@ -112,13 +169,8 @@ export function createUnsignedTransaction(
   // Add the transaction params to the transaction object
   unsignedTransaction.params = transferParams
 
-  // @todo remove
-  // const minFee = Number(transactions.computeMinFee(this.assetSchema, liskTx)) / this.multiplier
-
-  // only tx.params will be validated
+  // Only `transaction.params` will be validated
   transactions.validateTransaction(unsignedTransaction, TRANSACTION_PARAMS_SCHEMA)
-
-  // throw new Error('stop')
 
   return unsignedTransaction
 }
@@ -126,12 +178,22 @@ export function createUnsignedTransaction(
 /**
  * Encode transaction for later broadcasting to a node.
  */
-export function encodeTransaction(signedTransaction: Record<string, unknown>) {
-  const transaction = codec.codec.toJSON(TRANSACTION_SCHEMA, signedTransaction)
-  const params = codec.codec.toJSON(TRANSACTION_PARAMS_SCHEMA, signedTransaction.params as object)
-
-  return {
-    ...transaction,
-    params
+export function encodeTransaction(transaction: DecodedTransaction | Transaction) {
+  let encodedParams
+  if (!Buffer.isBuffer(transaction.params)) {
+    encodedParams = codec.encode(TRANSACTION_PARAMS_SCHEMA, transaction.params)
+  } else {
+    encodedParams = transaction.params
   }
+
+  const encodedTransaction = codec.encode(TRANSACTION_SCHEMA, {
+    ...transaction,
+    params: encodedParams
+  })
+
+  return encodedTransaction.toString('hex')
+}
+
+export function estimateFee() {
+  return convertBeddowsToLSK('164000')
 }

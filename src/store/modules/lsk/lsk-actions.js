@@ -1,27 +1,24 @@
 import { FetchStatus } from '@/lib/constants'
 import baseActions from '../lsk-base/lsk-base-actions'
 import LskApi from '../../../lib/lisk/lisk-api'
+import { lsk } from '../../../lib/nodes/lsk'
 
 const TX_FETCH_INTERVAL = 10 * 1000
 
-const customActions = (getApi) => ({
+const customActions = (getAccount) => ({
   updateBalance: {
     root: true,
-    async handler({ commit }, payload = {}) {
+    async handler({ commit, state }, payload = {}) {
       if (payload.requestedByUser) {
         commit('setBalanceStatus', FetchStatus.Loading)
       }
 
       try {
-        const api = getApi()
-        const account = await api.getAccount()
+        const balance = await lsk.getBalance(state.address)
+        const nonce = await lsk.getNonce(state.address)
 
-        if (account) {
-          commit('status', { balance: account.balance, nonce: account.nonce })
-          commit('setBalanceStatus', FetchStatus.Success)
-        } else {
-          commit('setBalanceStatus', FetchStatus.Error)
-        }
+        commit('status', { balance, nonce })
+        commit('setBalanceStatus', FetchStatus.Success)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
         console.log(err)
@@ -29,41 +26,32 @@ const customActions = (getApi) => ({
     }
   },
 
-  updateStatus(context) {
-    const api = getApi()
+  async updateStatus({ commit, dispatch }) {
+    const account = getAccount()
+    if (!account) return
 
-    if (!api) return
-    api
-      .getAccount()
-      .then((account) => {
-        if (account) {
-          context.commit('status', { balance: account.balance, nonce: account.nonce })
-          context.commit('setBalanceStatus', FetchStatus.Success)
-        } else {
-          context.commit('setBalanceStatus', FetchStatus.Error)
-        }
-      })
-      .catch((err) => {
-        context.commit('setBalanceStatus', FetchStatus.Error)
+    const address = account.getLisk32Address()
 
-        throw err
-      })
+    try {
+      const balance = await lsk.getBalance(address)
+      const nonce = await lsk.getNonce(address)
 
-    // Not needed
-    // api.getFeeRate().then(rate => context.commit('feeRate', rate))
+      commit('status', { balance, nonce })
+      commit('setBalanceStatus', FetchStatus.Success)
+    } catch (err) {
+      commit('setBalanceStatus', FetchStatus.Error)
+
+      throw err
+    }
 
     // Last block height
-    context.dispatch('updateHeight')
+    dispatch('updateHeight')
   },
 
-  updateHeight({ commit }) {
-    const api = getApi()
-    if (!api) return
-    api.getHeight().then((height) => {
-      if (height) {
-        commit('height', height)
-      }
-    })
+  async updateHeight({ commit }) {
+    const height = await lsk.getHeight()
+
+    commit('height', height)
   },
 
   /**
