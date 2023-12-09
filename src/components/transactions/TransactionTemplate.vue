@@ -134,12 +134,19 @@
         <v-list-item @click="copyToClipboard(sender)">
           <template #prepend>
             <v-list-item-title :class="`${className}__title`">
-              {{ $t('transaction.sender') }}
-            </v-list-item-title>
+              {{ $t('transaction.sender') }}</v-list-item-title
+            >
           </template>
 
-          <div :class="`${className}__value`">
-            {{ senderFormatted || placeholder }}
+          <div v-if="senderFormatted" :class="`${className}__value`">
+            <div :class="`${className}__address`">
+              <div :class="`${className}__left`">{{ senderLeft }}</div>
+              <div :class="`${className}__right`">{{ senderRight }}</div>
+            </div>
+          </div>
+
+          <div v-else :class="`${className}__value`">
+            {{ placeholder }}
           </div>
         </v-list-item>
 
@@ -151,9 +158,14 @@
               {{ $t('transaction.recipient') }}
             </v-list-item-title>
           </template>
-
-          <div :class="`${className}__value`">
-            {{ recipientFormatted || placeholder }}
+          <div v-if="recipientFormatted" :class="`${className}__value`">
+            <div :class="`${className}__address`">
+              <div :class="`${className}__left`">{{ recipientLeft }}</div>
+              <div :class="`${className}__right`">{{ recipientRight }}</div>
+            </div>
+          </div>
+          <div v-else :class="`${className}__value`">
+            {{ placeholder }}
           </div>
         </v-list-item>
 
@@ -325,6 +337,18 @@ export default {
     },
     rate() {
       return this.$store.getters['rate/rate'](this.amountNumber, this.crypto)
+    },
+    senderLeft() {
+      return this.senderFormatted.substring(0, this.senderFormatted.length - 10)
+    },
+    senderRight() {
+      return this.senderFormatted.substring(this.senderFormatted.length - 10)
+    },
+    recipientLeft() {
+      return this.recipientFormatted.substring(0, this.recipientFormatted.length - 10)
+    },
+    recipientRight() {
+      return this.recipientFormatted.substring(this.recipientFormatted.length - 10)
     }
   },
   watch: {
@@ -393,6 +417,7 @@ export default {
 
 .transaction-view {
   &__title {
+    margin-right: 16px;
     font-weight: 300;
   }
   &__titlecontent {
@@ -406,6 +431,19 @@ export default {
     overflow: hidden;
     max-width: 100%;
     width: 100%;
+  }
+  &__address {
+    display: flex;
+    justify-content: flex-end;
+  }
+  &__left {
+    display: inline-block;
+    white-space: nowrap; /* Запрещаем перенос строк */
+    overflow: hidden; /* Обрезаем все, что не помещается в область */
+    text-overflow: ellipsis;
+  }
+  &__right {
+    display: inline-block;
   }
   &__toolbar {
     :deep(.v-toolbar__title) div {
