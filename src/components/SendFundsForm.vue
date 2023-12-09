@@ -136,6 +136,7 @@
         :label="$t('transfer.increase_fee')"
         color="grey darken-1"
       />
+      <v-checkbox v-if="debug" v-model="dryRun" label="Dry run" color="grey darken-1" />
 
       <div class="text-center">
         <v-btn :class="`${className}__button`" class="a-btn-primary" @click="confirm">
@@ -301,7 +302,11 @@ export default {
     fetchAddress: null, // fn throttle
     increaseFee: false,
     showWarningOnPartnerAddressDialog: false,
-    warningOnPartnerInfo: {}
+    warningOnPartnerInfo: {},
+
+    // Debugging section
+    dryRun: false,
+    debug: !!localStorage.getItem('DEBUG')
   }),
   computed: {
     className: () => 'send-funds-form',
@@ -711,7 +716,8 @@ export default {
           fee: this.transferFee,
           increaseFee: this.increaseFee,
           textData: this.textData,
-          replyToId: this.replyToId
+          replyToId: this.replyToId,
+          dryRun: this.dryRun
         })
       }
     },

@@ -71,7 +71,10 @@ function createActions(options) {
       storeCryptoAddress(state.crypto, state.address)
     },
 
-    sendTokens(context, { amount, admAddress, address, comments, fee, textData, replyToId }) {
+    sendTokens(
+      context,
+      { amount, admAddress, address, comments, fee, textData, replyToId, dryRun }
+    ) {
       if (!account) return
       address = address.trim()
 
@@ -80,7 +83,7 @@ function createActions(options) {
       return account
         .createTransaction(address, amount, fee, context.state.nonce, textData)
         .then((tx) => {
-          if (!admAddress) return tx.hex
+          if (!admAddress || dryRun) return tx.hex
 
           const msgPayload = {
             address: admAddress,
@@ -97,7 +100,7 @@ function createActions(options) {
             .then((success) => (success ? tx.hex : Promise.reject(new Error('adm_message'))))
         })
         .then((rawTx) =>
-          lsk.sendTransaction(rawTx).then(
+          lsk.sendTransaction(rawTx, dryRun).then(
             (hash) => ({ hash }),
             (error) => ({ error })
           )
