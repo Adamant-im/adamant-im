@@ -438,8 +438,8 @@ export default {
   }
   &__left {
     display: inline-block;
-    white-space: nowrap; /* Запрещаем перенос строк */
-    overflow: hidden; /* Обрезаем все, что не помещается в область */
+    white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
   }
   &__right {
