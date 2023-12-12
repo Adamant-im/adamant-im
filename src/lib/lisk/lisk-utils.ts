@@ -68,8 +68,7 @@ export function seedLskAccount(passphrase: string) {
     LiskHashSettings.KEYLEN,
     LiskHashSettings.DIGEST
   )
-  const keyPair: { publicKey: Buffer; secretKey: Buffer } =
-    sodium.crypto_sign_seed_keypair(liskSeed)
+  const keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
 
   const address = cryptography.address.getLisk32AddressFromPublicKey(keyPair.publicKey)
   const addressHexBinary = cryptography.address.getAddressFromPublicKey(keyPair.publicKey)
