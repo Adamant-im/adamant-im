@@ -21,7 +21,7 @@ import * as validator from '@liskhq/lisk-validator'
  * Returns Millis timestamp by LSK UNIX timestamp (sec)
  * @param {number} liskTimestamp
  */
-export function getMillisTimestamp(liskTimestamp: number) {
+export function getMillisTimestamp(liskTimestamp: number | string) {
   return parseInt(liskTimestamp.toString()) * 1000
 }
 
@@ -29,7 +29,7 @@ export function getMillisTimestamp(liskTimestamp: number) {
  * Returns LSK timestamp (UNIX in sec) by Millis timestamp
  * @param {number} millisTimestamp
  */
-export function getLiskTimestamp(millisTimestamp: number) {
+export function getLiskTimestamp(millisTimestamp: number | string) {
   return Math.round(parseInt(millisTimestamp.toString()) / 1000) // may be a mistake (use Math.floor instead)
 }
 
