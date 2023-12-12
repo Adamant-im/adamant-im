@@ -92,7 +92,7 @@ function createActions(options) {
             amount: BigNumber(amount).toFixed(),
             comments,
             crypto,
-            hash: tx.txid,
+            hash: tx.id,
             replyToId
           }
 

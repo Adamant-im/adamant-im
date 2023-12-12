@@ -65,9 +65,7 @@ export class LskClient extends Client<LskNode> {
 
       console.debug(`txpool_dryRunTransaction: Dry run transaction`, transaction, result)
 
-      return {
-        transactionId: 'debug_tx_id'
-      }
+      return 'debug_tx_id' // transactionId
     }
 
     const { transactionId } = await this.invoke('txpool_postTransaction', { transaction })
