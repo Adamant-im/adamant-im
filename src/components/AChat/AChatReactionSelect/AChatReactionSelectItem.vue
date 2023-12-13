@@ -47,7 +47,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '../../../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .a-chat-reaction-select-item {
   width: 36px;

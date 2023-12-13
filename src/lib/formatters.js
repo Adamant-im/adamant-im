@@ -1,6 +1,6 @@
 import { EPOCH } from './constants'
 
-function getTime (date) {
+function getTime(date) {
   const hours = date.getHours()
   let time = ''
   if (hours < 10) {
@@ -18,7 +18,7 @@ function getTime (date) {
   return time
 }
 
-function formatDate (timestamp) {
+function formatDate(timestamp) {
   timestamp = parseInt(timestamp)
   // That's for the ADM timestamps, which use EPOCH as a base.
   // Other cryptos use normal timestamps
@@ -40,7 +40,7 @@ function formatDate (timestamp) {
   }
 
   let options = { weekday: 'short' }
-  if ((Date.now() - timestamp) > (4 * 3600 * 24 * 1000)) {
+  if (Date.now() - timestamp > 4 * 3600 * 24 * 1000) {
     options = { day: 'numeric', month: 'short' }
   }
 
@@ -52,7 +52,7 @@ function formatDate (timestamp) {
 }
 
 const plugin = {
-  install (app) {
+  install(app) {
     app.config.globalProperties.$formatDate = formatDate
   }
 }

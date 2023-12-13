@@ -14,7 +14,7 @@ const NONCE = Buffer.allocUnsafe(24)
  * @param {string|number|Object} data
  * @returns {Buffer}
  */
-export function encrypt (data) {
+export function encrypt(data) {
   const stringified = JSON.stringify(data)
   const secretKey = ed2curve.convertSecretKey(store.state.password)
 
@@ -25,14 +25,14 @@ export function encrypt (data) {
  * @param {Buffer} encryptedData
  * @returns {string|number|Object}
  */
-export function decrypt (encryptedData) {
+export function decrypt(encryptedData) {
   const secretKey = ed2curve.convertSecretKey(store.state.password)
   const decoded = decode(nacl.secretbox.open(encryptedData, NONCE, secretKey))
 
   return JSON.parse(decoded)
 }
 
-export function encryptPassword (password) {
+export function encryptPassword(password) {
   return new Promise((resolve, reject) => {
     pbkdf2.pbkdf2(
       password,

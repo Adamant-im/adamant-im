@@ -26,6 +26,11 @@ export default defineConfig({
   css: {
     postcss: {
       plugins: [autoprefixer()]
+    },
+    preprocessorOptions: {
+      scss: {
+        includePaths: ['./src']
+      }
     }
   },
   resolve: {

@@ -62,10 +62,10 @@
 
 <script>
 import validateAddress from '@/lib/validateAddress'
-import Icon from '@/components/icons/BaseIcon'
-import AdamantIcon from '@/components/icons/common/Adamant'
-import AzbitIcon from '@/components/icons/common/Azbit'
-import ExchangerIcon from '@/components/icons/common/Exchanger'
+import Icon from '@/components/icons/BaseIcon.vue'
+import AdamantIcon from '@/components/icons/common/Adamant.vue'
+import AzbitIcon from '@/components/icons/common/Azbit.vue'
+import ExchangerIcon from '@/components/icons/common/Exchanger.vue'
 import StakeCubeIcon from '@/components/icons/common/StakeCube.vue'
 import CoinstoreIcon from '@/components/icons/common/Coinstore.vue'
 import { websiteUriToOnion } from '@/lib/uri'

@@ -16,7 +16,7 @@ const singleChatMutations = ['pushMessage', 'markAsRead', 'updateMessage']
  * @param {string} mutation
  * @returns {boolean}
  */
-function isModuleMutation (mutation) {
+function isModuleMutation(mutation) {
   const split = mutation.split('/')
 
   if (split.length < 2) {
@@ -32,7 +32,7 @@ function isModuleMutation (mutation) {
   return isModuleInIDB || isChatModuleMutation
 }
 
-function isChatMutation (mutation) {
+function isChatMutation(mutation) {
   const split = mutation.split('/')
 
   if (split.length < 2) {
@@ -46,35 +46,47 @@ function isChatMutation (mutation) {
  * Create throttle wrapper for every module.
  * @returns {Array<{[key]: Function}>}
  */
-function createThrottles () {
+function createThrottles() {
   const interval = 30000
   const throttles = {}
 
   // throttle modules
-  modules.forEach(module => {
-    throttles[module] = throttle(({ name, value }) => {
-      const clonedValue = { ...value }
+  modules.forEach((module) => {
+    throttles[module] = throttle(
+      ({ name, value }) => {
+        const clonedValue = { ...value }
 
-      if (Cryptos[name.toUpperCase()]) {
-        clonedValue.transactions = {}
-      }
+        if (Cryptos[name.toUpperCase()]) {
+          clonedValue.transactions = {}
+        }
 
-      return Modules.set({ name, value: clonedValue })
-    }, 1, interval)
+        return Modules.set({ name, value: clonedValue })
+      },
+      1,
+      interval
+    )
   })
 
   // throttle chat module
-  throttles.chat = throttle(({ name, value }) => {
-    const chat = cloneDeep(value)
-    delete chat.chats
+  throttles.chat = throttle(
+    ({ name, value }) => {
+      const chat = cloneDeep(value)
+      delete chat.chats
 
-    return Modules.set({ name, value: chat })
-  }, 1, interval)
+      return Modules.set({ name, value: chat })
+    },
+    1,
+    interval
+  )
 
   // throttle security keys
-  throttles.security = throttle(({ name, value }) => {
-    return Security.set({ name, value })
-  }, 1, interval)
+  throttles.security = throttle(
+    ({ name, value }) => {
+      return Security.set({ name, value })
+    },
+    1,
+    interval
+  )
 
   return throttles
 }
@@ -86,20 +98,24 @@ const throttles = createThrottles()
  */
 const chatThrottles = {}
 
-function chatThrottle (chatId) {
+function chatThrottle(chatId) {
   const interval = 10000
 
   // create throttle wrapper if does not exists
   if (!chatThrottles[chatId]) {
-    chatThrottles[chatId] = throttle(({ name, value }) => {
-      return Chats.set({ name, value })
-    }, 1, interval)
+    chatThrottles[chatId] = throttle(
+      ({ name, value }) => {
+        return Chats.set({ name, value })
+      },
+      1,
+      interval
+    )
   }
 
   return chatThrottles[chatId]
 }
 
-export default store => {
+export default (store) => {
   if (store.getters['options/isLoginViaPassword']) {
     if (store.state.password) {
       restoreState(store)
@@ -117,7 +133,9 @@ export default store => {
           store.dispatch('startInterval')
         })
         .catch(() => {
-          console.error('Can not decode IDB with current password. Fallback to Login via Passphrase.')
+          console.error(
+            'Can not decode IDB with current password. Fallback to Login via Passphrase.'
+          )
 
           clearDb()
             .then(() => {
@@ -127,7 +145,7 @@ export default store => {
               })
               store.commit('reset')
             })
-            .catch(err => {
+            .catch((err) => {
               console.error(err)
             })
             .finally(() => {
@@ -135,11 +153,11 @@ export default store => {
             })
         })
     }
-  } else if (store.getters.isLogged) { // is logged with passphrase
+  } else if (store.getters.isLogged) {
+    // is logged with passphrase
     store.dispatch('unlock')
     store.commit('chat/createAdamantChats')
-    store.dispatch('chat/loadChats')
-      .then(() => store.dispatch('startInterval'))
+    store.dispatch('chat/loadChats').then(() => store.dispatch('startInterval'))
 
     store.dispatch('afterLogin', Base64.decode(store.state.passphrase))
   }
@@ -162,7 +180,7 @@ export default store => {
           const chats = []
           const keys = Object.keys(state.chat.chats)
 
-          keys.forEach(key => {
+          keys.forEach((key) => {
             chats.push({
               name: key,
               value: state.chat.chats[key]
@@ -170,7 +188,8 @@ export default store => {
           })
 
           Chats.saveAll(chats)
-        } else if (singleChatMutations.includes(mutationName)) { // mutation affected single chat
+        } else if (singleChatMutations.includes(mutationName)) {
+          // mutation affected single chat
           let chatId = ''
 
           switch (mutationName) {
@@ -179,9 +198,11 @@ export default store => {
                 ? mutation.payload.message.recipientId
                 : mutation.payload.message.senderId
               break
-            case 'markAsRead': chatId = mutation.payload
+            case 'markAsRead':
+              chatId = mutation.payload
               break
-            case 'updateMessage': chatId = mutation.payload.partnerId
+            case 'updateMessage':
+              chatId = mutation.payload.partnerId
               break
           }
 

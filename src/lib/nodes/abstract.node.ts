@@ -1,5 +1,6 @@
 import { TNodeLabel } from './constants'
 import { NodeStatus } from './types'
+import { nodesStorage } from './storage'
 
 type HealthcheckResult = {
   height: number
@@ -108,21 +109,27 @@ export abstract class Node<C = unknown> {
     this.minNodeVersion = minNodeVersion
     this.version = version
     this.hasSupportedProtocol = !(this.protocol === 'http:' && appProtocol === 'https:')
+    this.active = nodesStorage.isActive(url)
   }
 
   async startHealthcheck() {
     clearInterval(this.timer)
-    try {
-      const health = await this.checkHealth()
 
-      this.height = health.height
-      this.ping = health.ping
-      this.online = true
-    } catch (err) {
-      this.online = false
+    // Check health only for enabled nodes
+    if (this.active) {
+      try {
+        const health = await this.checkHealth()
+
+        this.height = health.height
+        this.ping = health.ping
+        this.online = true
+      } catch (err) {
+        this.online = false
+      }
+
+      this.fireStatusChange()
     }
 
-    this.fireStatusChange()
     this.timer = setTimeout(() => this.startHealthcheck(), REVISE_CONNECTION_TIMEOUT)
   }
 
@@ -158,10 +165,10 @@ export abstract class Node<C = unknown> {
   }
 
   getNodeStatus(): NodeStatus {
-    if (!this.hasMinNodeVersion() || !this.hasSupportedProtocol) {
-      return 'unsupported_version'
-    } else if (!this.active) {
+    if (!this.active) {
       return 'disabled'
+    } else if (!this.hasMinNodeVersion() || !this.hasSupportedProtocol) {
+      return 'unsupported_version'
     } else if (!this.online) {
       return 'offline'
     } else if (this.outOfSync) {
@@ -181,6 +188,17 @@ export abstract class Node<C = unknown> {
   }
 
   protected abstract checkHealth(): Promise<HealthcheckResult>
+
+  /**
+   * Enables/disables a node.
+   */
+  toggleNode(active: boolean) {
+    this.active = active
+
+    nodesStorage.saveActive(this.url, active)
+
+    return this.getStatus()
+  }
 }
 
 export type NodeStatusResult = ReturnType<Node['getStatus']>

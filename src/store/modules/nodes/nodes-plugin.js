@@ -9,14 +9,21 @@ export default (store) => {
       store.commit('nodes/status', { status, nodeType })
     })
   }
+  store.commit('nodes/useFastest', nodes.adm.useFastest)
 
   store.subscribe((mutation) => {
-    if (mutation.type === 'nodes/useFastest') {
-      nodes.adm.useFastest = !!mutation.payload
+    const { type, payload } = mutation
+
+    if (type === 'nodes/useFastest') {
+      nodes.adm.setUseFastest(!!mutation.payload)
     }
 
-    if (mutation.type === 'nodes/toggle') {
-      nodes.adm.toggleNode(mutation.payload.url, mutation.payload.active)
+    if (type === 'nodes/toggle') {
+      const newStatus = nodes.adm.toggleNode(payload.url, payload.active)
+
+      if (newStatus) {
+        store.commit('nodes/status', { status: newStatus, nodeType: 'adm' })
+      }
     }
   })
 }

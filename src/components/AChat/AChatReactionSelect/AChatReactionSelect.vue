@@ -97,7 +97,7 @@ export default defineComponent({
 
 <style lang="scss">
 @import 'vuetify/settings';
-@import '../../../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .a-chat-reaction-select {
   border-radius: 16px;

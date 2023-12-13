@@ -1,21 +1,21 @@
 /** Resets module state */
 export default {
-  delegate_info (state, payload) {
+  delegate_info(state, payload) {
     state.delegates[payload.address] = payload
   },
-  reset (state) {
+  reset(state) {
     state.delegates = {}
   },
-  update_delegate (state, payload) {
+  update_delegate(state, payload) {
     for (const key in payload.params) {
       const delegate = state.delegates[payload.address]
       delegate[key] = payload.params[key]
     }
   },
-  set_last_transaction_status (state, payload) {
+  set_last_transaction_status(state, payload) {
     state.lastTransactionConfirmed = payload
   },
-  upVote (state, delegateId) {
+  upVote(state, delegateId) {
     const delegate = state.delegates[delegateId]
 
     if (delegate) {
@@ -24,7 +24,7 @@ export default {
       delegate._voted = true
     }
   },
-  downVote (state, delegateId) {
+  downVote(state, delegateId) {
     const delegate = state.delegates[delegateId]
 
     if (delegate) {

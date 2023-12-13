@@ -39,9 +39,9 @@
 </template>
 
 <script>
-import AppToolbarCentered from '@/components/AppToolbarCentered'
-import InlineSpinner from '@/components/InlineSpinner'
-import TransactionListItem from '@/components/TransactionListItem'
+import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+import InlineSpinner from '@/components/InlineSpinner.vue'
+import TransactionListItem from '@/components/TransactionListItem.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {

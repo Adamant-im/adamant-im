@@ -1,8 +1,5 @@
 <template>
-  <v-row
-    justify="center"
-    no-gutters
-  >
+  <v-row justify="center" no-gutters>
     <container>
       <chat
         :message-text="messageText"
@@ -24,9 +21,9 @@
 </template>
 
 <script>
-import Chat from '@/components/Chat/Chat'
-import PartnerInfo from '@/components/PartnerInfo'
-import ProgressIndicator from '@/components/ProgressIndicator'
+import Chat from '@/components/Chat/Chat.vue'
+import PartnerInfo from '@/components/PartnerInfo.vue'
+import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import partnerName from '@/mixins/partnerName'
 
 export default {
@@ -52,10 +49,10 @@ export default {
     contactName: ''
   }),
   computed: {
-    address () {
+    address() {
       return this.$store.state.address
     },
-    isFulfilled () {
+    isFulfilled() {
       return this.$store.state.chat.isFulfilled
     }
   },
@@ -63,7 +60,7 @@ export default {
     /**
      * @param {string} address ADAMANT address
      */
-    onClickChatAvatar (address) {
+    onClickChatAvatar(address) {
       this.contactAddress = address
       this.contactName = this.getPartnerName(address)
       this.show = true

@@ -94,7 +94,8 @@ export default class DashApi extends BtcBaseApi {
    * @returns {Promise<any>} method result
    */
   _invoke(method, params) {
-    return dash.getClient()
+    return dash
+      .getClient()
       .post('/', { method, params })
       .then(({ data }) => {
         if (data.error) throw new DashApiError(method, data.error)
@@ -103,7 +104,8 @@ export default class DashApi extends BtcBaseApi {
   }
 
   _invokeMany(calls) {
-    return dash.getClient()
+    return dash
+      .getClient()
       .post('/', calls)
       .then((response) => response.data)
   }

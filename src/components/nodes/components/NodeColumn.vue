@@ -31,7 +31,7 @@ export default defineComponent({
       type: Boolean
     },
     align: {
-      type: String as PropType<'left' | 'right' | 'center'>,
+      type: String as PropType<'left' | 'right' | 'center'>
     }
   },
   setup() {
@@ -44,7 +44,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import '../../../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .node-column {
   font-size: 14px;

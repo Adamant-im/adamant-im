@@ -4,7 +4,7 @@ const DB_NAME = 'adm'
 const DB_VERSION = 1
 
 const dbPromise = openDB(DB_NAME, DB_VERSION, {
-  upgrade (db, oldVersion, newVersion, transaction) {
+  upgrade(db) {
     if (!db.objectStoreNames.contains('security')) {
       db.createObjectStore('security', { keyPath: 'name', autoIncrement: true })
     }

@@ -220,6 +220,12 @@ const getters = {
     return senderIds.reduce((acc, senderId) => state.chats[senderId].numOfNewMessages + acc, 0)
   },
 
+  numWithoutTheCurrentChat: (state, getters) => (senderId) => {
+    const totalNumOfNewMessages = getters.totalNumOfNewMessages
+    const numOfNewMessages = getters.numOfNewMessages(senderId)
+    return totalNumOfNewMessages - numOfNewMessages
+  },
+
   /**
    * Get unread messages from all chats.
    * @returns {Message[]}

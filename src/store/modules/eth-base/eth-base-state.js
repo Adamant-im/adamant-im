@@ -8,7 +8,7 @@ export default () => ({
   privateKey: null,
   areOlderLoading: false,
   areRecentLoading: false,
-  transactions: { },
+  transactions: {},
   transactionsCount: 0, // browser stores ints, but fails with objects and arrays
   areTransactionsLoading: false,
   minHeight: Infinity,

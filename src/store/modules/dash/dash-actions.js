@@ -14,12 +14,12 @@ const getNewTransactions = (api, context) => {
 
   context.commit('areRecentLoading', true)
   return api.getTransactions({ excludes }).then(
-    result => {
+    (result) => {
       context.commit('areRecentLoading', false)
       context.commit('transactions', result.items)
       context.commit('bottom', true)
     },
-    error => {
+    (error) => {
       context.commit('areRecentLoading', false)
       return Promise.reject(error)
     }
@@ -34,12 +34,12 @@ const getOldTransactions = (api, context) => {
 
   context.commit('areOlderLoading', true)
   return api.getTransactions({ excludes }).then(
-    result => {
+    (result) => {
       context.commit('areOlderLoading', false)
       context.commit('transactions', result.items)
       context.commit('bottom', true)
     },
-    error => {
+    (error) => {
       context.commit('areOlderLoading', false)
       return Promise.reject(error)
     }

@@ -1,9 +1,5 @@
 <template>
-  <v-dialog
-    v-model="show"
-    :class="className"
-    width="500"
-  >
+  <v-dialog v-model="show" :class="className" width="500">
     <v-card :class="className">
       <!-- Camera Waiting -->
       <v-row
@@ -16,36 +12,18 @@
         <div class="a-text-header">
           {{ $t('scan.waiting_camera') }}
         </div>
-        <v-progress-circular
-          indeterminate
-          color="primary"
-          size="32"
-          class="ml-4"
-        />
+        <v-progress-circular indeterminate color="primary" size="32" class="ml-4" />
       </v-row>
 
       <!-- Camera Active -->
-      <v-row
-        v-show="cameraStatus === 'active'"
-        no-gutters
-      >
+      <v-row v-show="cameraStatus === 'active'" no-gutters>
         <v-col cols="12">
           <div :class="`${className}__camera`">
             <video ref="camera" />
-            <v-menu
-              v-if="cameras.length > 1"
-              offset-y
-              :class="`${className}__camera-select`"
-            >
+            <v-menu v-if="cameras.length > 1" offset-y :class="`${className}__camera-select`">
               <template #activator>
-                <v-btn
-                  variant="text"
-                  color="white"
-                >
-                  <v-icon
-                    size="x-large"
-                    icon="mdi-camera"
-                  />
+                <v-btn variant="text" color="white">
+                  <v-icon size="x-large" icon="mdi-camera" />
                 </v-btn>
               </template>
               <v-list>
@@ -60,13 +38,8 @@
             </v-menu>
           </div>
         </v-col>
-        <v-col
-          cols="12"
-          class="pa-6"
-        >
-          <h3
-            class="a-text-regular text-center"
-          >
+        <v-col cols="12" class="pa-6">
+          <h3 class="a-text-regular text-center">
             {{ $t('scan.hold_your_device') }}
           </h3>
         </v-col>
@@ -94,11 +67,7 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn
-          variant="text"
-          class="a-btn-regular"
-          @click="show = false"
-        >
+        <v-btn variant="text" class="a-btn-regular" @click="show = false">
           {{ $t('scan.close_button') }}
         </v-btn>
       </v-card-actions>
@@ -126,16 +95,16 @@ export default {
   computed: {
     className: () => 'qrcode-scanner-dialog',
     show: {
-      get () {
+      get() {
         return this.modelValue
       },
-      set (value) {
+      set(value) {
         this.$emit('update:modelValue', value)
       }
     }
   },
   watch: {
-    cameras (cameras) {
+    cameras(cameras) {
       if (cameras.length > 0) {
         const cameraKey = cameras.length === 2 ? 1 : 0
         this.currentCamera = this.cameras[cameraKey].deviceId
@@ -145,24 +114,23 @@ export default {
         this.cameraStatus = 'nocamera'
       }
     },
-    currentCamera () {
-      this.scanner.start(this.currentCamera)
-        .then(content => this.onScan(content))
+    currentCamera() {
+      this.scanner.start(this.currentCamera).then((content) => this.onScan(content))
     }
   },
-  mounted () {
+  mounted() {
     this.init()
   },
-  beforeUnmount () {
+  beforeUnmount() {
     this.destroyScanner()
   },
   methods: {
-    init () {
+    init() {
       return this.initScanner()
         .then(() => {
           return this.getCameras()
         })
-        .catch(err => {
+        .catch((err) => {
           this.cameraStatus = 'nocamera'
           this.$store.dispatch('snackbar/show', {
             message: this.$t('scan.something_wrong')
@@ -170,23 +138,23 @@ export default {
           console.error(err)
         })
     },
-    async initScanner () {
+    async initScanner() {
       this.scanner = new Scanner({
         videoElement: this.$refs.camera
       })
 
       return this.scanner.init()
     },
-    destroyScanner () {
+    destroyScanner() {
       // First check if the scanner was initialized.
       // Needed when an unexpected error occurred,
       // or when the dialog closes before initialization.
       return this.scanner && this.scanner.stop()
     },
-    async getCameras () {
+    async getCameras() {
       this.cameras = await this.scanner.getCameras()
     },
-    onScan (content) {
+    onScan(content) {
       this.$emit('scan', content)
       this.destroyScanner()
       this.show = false

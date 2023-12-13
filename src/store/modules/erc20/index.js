@@ -9,7 +9,7 @@ import mutations from './erc20-mutations'
  * @param {*} contractAddress ERC20 contract address
  * @param {*} decimals number of decimals for the amounts
  */
-export default function erc20Module (crypto, contractAddress, decimals) {
+export default function erc20Module(crypto, contractAddress, decimals) {
   return {
     namespaced: true,
     state: initialState(crypto, contractAddress, decimals),

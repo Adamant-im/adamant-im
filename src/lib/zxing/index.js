@@ -1,9 +1,9 @@
 export class Scanner {
-  constructor ({ videoElement }) {
+  constructor({ videoElement }) {
     this.videoElement = videoElement
   }
 
-  async init () {
+  async init() {
     const { BrowserQRCodeReader } = await import(
       /* webpackChunkName: "zxing" */
       '@zxing/library'
@@ -12,18 +12,19 @@ export class Scanner {
     this.codeReader = new BrowserQRCodeReader()
   }
 
-  start (deviceId) {
-    return this.codeReader.decodeFromInputVideoDevice(deviceId, this.videoElement)
+  start(deviceId) {
+    return this.codeReader
+      .decodeFromInputVideoDevice(deviceId, this.videoElement)
       .then((result) => {
         return result.text
       })
   }
 
-  stop () {
+  stop() {
     this.codeReader.reset()
   }
 
-  getCameras () {
+  getCameras() {
     return this.codeReader.getVideoInputDevices()
   }
 }

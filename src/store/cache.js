@@ -11,12 +11,12 @@ export default {
    * @param {string} passphrase
    * @return {string} seed
    */
-  mnemonicToSeedSync (passphrase) {
+  mnemonicToSeedSync(passphrase) {
     const passphraseHash = crypto.createHash('sha256').update(passphrase).digest('hex')
     cachedSeed[passphraseHash] = cachedSeed[passphraseHash] || bip39.mnemonicToSeedSync(passphrase)
     return cachedSeed[passphraseHash]
   },
-  resetCachedSeed () {
+  resetCachedSeed() {
     cachedSeed = []
   }
 }
