@@ -1,5 +1,5 @@
 import { bytesToHex } from '@/lib/hex'
-import { createTransaction } from '@/lib/lisk/lisk-utils.ts'
+import { createTransaction, estimateFee } from '@/lib/lisk/lisk-utils.ts'
 import { LiskHashSettings } from './lisk-constants'
 import { address as liskAddress } from '@liskhq/lisk-cryptography'
 import pbkdf2 from 'pbkdf2'
@@ -55,5 +55,23 @@ export class LiskAccount {
     )
 
     return encodedTransaction
+  }
+
+  /**
+   * Estimate transaction fee by LSK amount.
+   *
+   * @param amount LSK amount
+   * @param data Transaction data field
+   */
+  estimateFee(amount?: string, data?: string) {
+    return estimateFee({
+      amount,
+      keyPair: {
+        publicKey: this.publicKey.toString('hex'),
+        secretKey: this.secretKey.toString('hex')
+      },
+      recipientAddress: this.address.toString('hex'),
+      data
+    })
   }
 }

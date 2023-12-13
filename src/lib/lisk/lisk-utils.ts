@@ -8,12 +8,19 @@ import { DecodedTransaction, Transaction } from './types/lisk'
 import { codec } from '@liskhq/lisk-codec'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import networks from '@/lib/lisk/networks'
-import { convertBeddowsToLSK } from '@liskhq/lisk-transactions'
+import { computeMinFee, convertBeddowsToLSK, convertLSKToBeddows } from '@liskhq/lisk-transactions'
 import * as transactions from '@liskhq/lisk-transactions'
 import { Buffer } from 'buffer'
 import pbkdf2 from 'pbkdf2'
 import sodium from 'sodium-browserify-tweetnacl'
-import { LiskHashSettings, LSK_CHAIN_ID, LSK_DECIMALS, LSK_TOKEN_ID } from './lisk-constants'
+import {
+  LiskHashSettings,
+  LSK_CHAIN_ID,
+  LSK_DECIMALS,
+  LSK_DEMO_ACCOUNT,
+  LSK_MIN_REQUIRED_FEE,
+  LSK_TOKEN_ID
+} from './lisk-constants'
 import { bytesToHex } from '@/lib/hex'
 import * as validator from '@liskhq/lisk-validator'
 
@@ -193,6 +200,62 @@ export function encodeTransaction(transaction: DecodedTransaction | Transaction)
   return encodedTransaction.toString('hex')
 }
 
-export function estimateFee() {
-  return convertBeddowsToLSK('164000')
+type EstimateFeeParams = {
+  /**
+   * LSK amount
+   */
+  amount?: string
+  /**
+   * Sender's `publicKey` and `privateKey`
+   */
+  keyPair?: { publicKey: string; secretKey: string }
+  /**
+   * Recipient address in Lisk32 format
+   */
+  recipientAddress?: string
+  /**
+   * Transaction data field
+   */
+  data?: string
+}
+
+/**
+ * Estimate transaction fee by LSK amount.
+ *
+ * @param params Transaction params
+ */
+export function estimateFee(params?: EstimateFeeParams) {
+  const {
+    amount = '1',
+    keyPair = LSK_DEMO_ACCOUNT.keyPair,
+    recipientAddress = LSK_DEMO_ACCOUNT.address,
+    data = ''
+  } = params || {}
+
+  const unsignedTransaction = {
+    module: 'token',
+    command: 'transfer',
+    fee: BigInt(0),
+    nonce: BigInt(0),
+    senderPublicKey: Buffer.from(keyPair.publicKey, 'hex'),
+    params: {
+      tokenID: Buffer.from(LSK_TOKEN_ID, 'hex'),
+      amount: BigInt(convertLSKToBeddows(amount)),
+      recipientAddress: cryptography.address.getAddressFromLisk32Address(recipientAddress),
+      data
+    },
+    signatures: []
+  }
+
+  const signedTransaction = transactions.signTransaction(
+    unsignedTransaction,
+    Buffer.from(LSK_CHAIN_ID, 'hex'),
+    Buffer.from(keyPair.secretKey, 'hex'),
+    TRANSACTION_PARAMS_SCHEMA
+  )
+
+  const minFee = computeMinFee(signedTransaction, TRANSACTION_PARAMS_SCHEMA)
+  const fee = minFee < LSK_MIN_REQUIRED_FEE ? LSK_MIN_REQUIRED_FEE : minFee
+
+  return convertBeddowsToLSK(fee.toString())
 }
