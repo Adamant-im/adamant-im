@@ -46,7 +46,7 @@ export class LskClient extends Client<LskNode> {
       address
     })
 
-    return convertBeddowsToLSK(availableBalance)
+    return Number(convertBeddowsToLSK(availableBalance))
   }
 
   async getHeight() {
