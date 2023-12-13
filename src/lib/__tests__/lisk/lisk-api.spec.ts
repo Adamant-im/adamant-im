@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from 'vitest'
 import * as cryptography from '@liskhq/lisk-cryptography'
-import LiskApi, { getAccount } from '@/lib/lisk/lisk-api'
+import LiskApi from '@/lib/lisk/lisk-api'
 
 describe('lisk-api', () => {
   const passphrase = 'joy mouse injury soft decade bid rough about alarm wreck season sting'
