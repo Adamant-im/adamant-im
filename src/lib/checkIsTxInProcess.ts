@@ -1,9 +1,6 @@
 import { CryptosInfo, CryptoSymbol } from '@/lib/constants'
-import {
-  getFromSessionStorage,
-  removeFromSessionStorage,
-  setToSessionStorage
-} from '@/lib/sessionStorage'
+import { getFromSessionStorage, setToSessionStorage } from '@/lib/sessionStorage'
+import { DEFAULT_TX_FETCH_ATTEMPTS, DEFAULT_TX_FETCH_INTERVAL } from '@/lib/transactionsFetching'
 
 const STORAGE_KEY = 'TRANSACTIONS_IN_PROCESS'
 
@@ -16,10 +13,6 @@ const getTransactionInProcess = (coin: CryptoSymbol) => {
   return state[coin]
 }
 
-export const removeTransactionInProcess = (coin: CryptoSymbol): void => {
-  removeFromSessionStorage(STORAGE_KEY, coin)
-}
-
 const setTransactionInProcess = (coin: CryptoSymbol, value: StateItem): void => {
   const state = getFromSessionStorage<string, State>(STORAGE_KEY, {})
   state[coin] = value
@@ -27,10 +20,16 @@ const setTransactionInProcess = (coin: CryptoSymbol, value: StateItem): void => 
   setToSessionStorage(STORAGE_KEY, state)
 }
 
-export function checkIsTxInProcess(coin: CryptoSymbol, nonce?: number | string): boolean {
+/**
+ * Check if there is a transaction in process for the given `coin` and `nonce`.
+ * If there is no transaction in process, set it.
+ * @param coin
+ * @param nonce
+ */
+export function checkIsTxInProcess(coin: CryptoSymbol, nonce: number | string): boolean {
   const fetchInfo = CryptosInfo[coin].txFetchInfo
-  const pendingAttempts = fetchInfo?.newPendingAttempts || 20
-  const pendingInterval = fetchInfo?.newPendingInterval || 5000
+  const pendingAttempts = fetchInfo?.newPendingAttempts || DEFAULT_TX_FETCH_ATTEMPTS
+  const pendingInterval = fetchInfo?.newPendingInterval || DEFAULT_TX_FETCH_INTERVAL
   const TX_LOCK_TIME = pendingAttempts * pendingInterval
 
   const currentTimestamp = Date.now()
@@ -38,17 +37,19 @@ export function checkIsTxInProcess(coin: CryptoSymbol, nonce?: number | string):
 
   const currentTransactionInProcess = getTransactionInProcess(coin)
 
-  if (!currentTransactionInProcess) {
+  // Compare `nonce` with a fallback to expiration time
+  if (
+    !currentTransactionInProcess ||
+    currentTransactionInProcess.nonce !== nonce.toString() ||
+    currentTimestamp > currentTransactionInProcess.expiration
+  ) {
     setTransactionInProcess(coin, {
       expiration: estimatedExpiration,
-      nonce: nonce?.toString()
+      nonce: nonce.toString()
     })
 
     return false
   }
 
-  return (
-    currentTimestamp < currentTransactionInProcess.expiration ||
-    nonce?.toString() === currentTransactionInProcess?.nonce
-  )
+  return true
 }

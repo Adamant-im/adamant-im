@@ -78,7 +78,7 @@ function createActions(options) {
       const nonce = context.state.nonce
 
       if (checkIsTxInProcess(crypto, nonce)) {
-        return Promise.reject(new DuplicatedNonceError())
+        throw new DuplicatedNonceError()
       }
 
       return api

@@ -3,8 +3,6 @@ import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
 import { FetchStatus } from '@/lib/constants'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
-import { checkIsTxInProcess } from '@/lib/checkIsTxInProcess'
-import { DuplicatedNonceError } from '@/lib/errors'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 
@@ -114,10 +112,6 @@ function createActions(options) {
 
       address = address.trim()
       const crypto = context.state.crypto
-
-      if (checkIsTxInProcess(crypto)) {
-        return Promise.reject(new DuplicatedNonceError())
-      }
 
       return api
         .createTransaction(address, amount, fee)

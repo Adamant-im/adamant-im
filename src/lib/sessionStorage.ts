@@ -12,19 +12,6 @@ export function getFromSessionStorage<K extends string, S = unknown>(key: K, def
     return defaultValue
   }
 }
-export function removeFromSessionStorage<K extends string>(key: K, subkey?: K): void {
-  if (subkey) {
-    const sessionStorageItem: unknown = getFromSessionStorage(key, {})
-    if (!!sessionStorageItem && typeof sessionStorageItem === 'object') {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-expect-error
-      delete sessionStorageItem[subkey]
-    }
-    setToSessionStorage(key, sessionStorageItem)
-  } else {
-    window.sessionStorage.removeItem(key)
-  }
-}
 
 export function setToSessionStorage<K extends string, S = unknown>(key: K, value: S): void {
   window.sessionStorage.setItem(key, JSON.stringify(value))

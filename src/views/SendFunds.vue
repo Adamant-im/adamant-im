@@ -28,8 +28,6 @@ import { isNumeric } from '@/lib/numericHelpers'
 
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import SendFundsForm from '@/components/SendFundsForm.vue'
-// eslint-disable-next-line import/namespace
-import { removeTransactionInProcess } from '@/lib/checkIsTxInProcess'
 
 export default {
   components: {
@@ -72,8 +70,6 @@ export default {
     },
     onSend(transactionId, crypto) {
       const userComeFrom = this.$route.query.from
-
-      removeTransactionInProcess(this.cryptoCurrency)
 
       if (userComeFrom) {
         this.$router.replace(userComeFrom)

@@ -58,12 +58,13 @@ export default function createActions(config) {
       }
     },
 
-    sendTokens(context, { amount, admAddress, address, comments, increaseFee, replyToId }) {
+    async sendTokens(context, { amount, admAddress, address, comments, increaseFee, replyToId }) {
       address = address.trim()
       const crypto = context.state.crypto
 
-      if (checkIsTxInProcess(crypto)) {
-        return Promise.reject(new DuplicatedNonceError())
+      const nonce = await api.getClient().getTransactionCount(context.state.address)
+      if (checkIsTxInProcess(crypto, nonce)) {
+        throw new DuplicatedNonceError()
       }
 
       return initTransaction(api, context, address, amount, increaseFee)
