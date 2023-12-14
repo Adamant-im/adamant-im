@@ -18,8 +18,7 @@ export class LiskAccount {
       LiskHashSettings.KEYLEN,
       LiskHashSettings.DIGEST
     )
-    const keyPair: { publicKey: Buffer; secretKey: Buffer } =
-      sodium.crypto_sign_seed_keypair(liskSeed)
+    const keyPair = sodium.crypto_sign_seed_keypair(liskSeed)
 
     this.publicKey = keyPair.publicKey
     this.secretKey = keyPair.secretKey
