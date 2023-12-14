@@ -1,7 +1,6 @@
 import BigNumber from '@/lib/bignumber'
 import { LiskAccount, LSK_TXS_PER_PAGE } from '../../../lib/lisk'
 import { getLiskTimestamp } from '../../../lib/lisk/lisk-utils'
-import LskBaseApi from '../../../lib/lisk/lsk-base-api'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
 import { lsk } from '../../../lib/nodes/lsk'
@@ -11,7 +10,6 @@ const DEFAULT_CUSTOM_ACTIONS = () => ({})
 
 /**
  * @typedef {Object} Options
- * @property {function} apiCtor class to use for interaction with the crypto API
  * @property {function(LskBaseApi, object): Promise} getNewTransactions function to get the new transactions list (second arg is a Vuex context)
  * @property {function(LskBaseApi, object): Promise} getOldTransactions function to get the old transactions list (second arg is a Vuex context)
  * @property {function(function(): LskBaseApi): object} customActions function to create custom actions for the current crypto (optional)
@@ -23,18 +21,15 @@ const DEFAULT_CUSTOM_ACTIONS = () => ({})
  * @param {Options} options config options
  */
 function createActions(options) {
-  const Api = options.apiCtor || LskBaseApi
   const { customActions = DEFAULT_CUSTOM_ACTIONS, fetchRetryTimeout } = options
 
   /** @type {LiskAccount | null} */
-  let api = null
   let account = null
 
   return {
     afterLogin: {
       root: true,
       handler(context, passphrase) {
-        api = new Api(passphrase)
         account = new LiskAccount(passphrase)
 
         context.commit('address', account.getLisk32Address())
@@ -47,7 +42,6 @@ function createActions(options) {
     reset: {
       root: true,
       handler(context) {
-        api = null
         account = null
         context.commit('reset')
       }
@@ -59,9 +53,8 @@ function createActions(options) {
       handler(context) {
         const passphrase = context.rootGetters.getPassPhrase
         if (passphrase) {
-          api = new Api(passphrase)
-
           account = new LiskAccount(passphrase)
+
           context.commit('address', account.getLisk32Address())
           context.dispatch('updateStatus')
           context.dispatch('storeAddress')
@@ -140,7 +133,6 @@ function createActions(options) {
      * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
      */
     async getTransaction(context, payload) {
-      if (!api) return
       if (!payload.hash) return
 
       let existing = context.state.transactions[payload.hash]

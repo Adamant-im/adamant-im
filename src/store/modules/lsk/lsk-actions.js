@@ -1,6 +1,5 @@
 import { FetchStatus } from '@/lib/constants'
 import baseActions from '../lsk-base/lsk-base-actions'
-import LskApi from '../../../lib/lisk/lisk-api'
 import { lsk } from '../../../lib/nodes/lsk'
 
 const TX_FETCH_INTERVAL = 10 * 1000
@@ -79,7 +78,6 @@ const customActions = (getAccount) => ({
 
 export default {
   ...baseActions({
-    apiCtor: LskApi,
     customActions,
     fetchRetryTimeout: TX_FETCH_INTERVAL
   })
