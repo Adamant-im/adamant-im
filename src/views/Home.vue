@@ -73,7 +73,7 @@ import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import numberFormat from '@/filters/numberFormat'
 
 import { PullDown } from '@/components/common/PullDown'
-import { Cryptos, CryptosInfo, CryptosOrder, isErc20 } from '@/lib/constants'
+import { Cryptos, CryptosInfo, isErc20 } from '@/lib/constants'
 
 /**
  * Center VTab element on click.
@@ -108,17 +108,21 @@ export default {
   },
   computed: {
     className: () => 'account-view',
+    orderedVisibleWalletSymbols() {
+      return this.$store.getters.getVisibleOrderedWalletSymbols
+    },
     wallets() {
-      return CryptosOrder.map((crypto) => {
-        const state = this.$store.state
-        const key = crypto.toLowerCase()
-        const address = crypto === Cryptos.ADM ? state.address : state[key].address
-        const balance = crypto === Cryptos.ADM ? state.balance : state[key].balance
-        const erc20 = isErc20(crypto.toUpperCase())
-        const currentRate = state.rate.rates[`${crypto}/${this.currentCurrency}`]
+      const state = this.$store.state
+
+      return this.orderedVisibleWalletSymbols.map((crypto) => {
+        const key = crypto.symbol.toLowerCase()
+        const address = crypto.symbol === Cryptos.ADM ? state.address : state[key].address
+        const balance = crypto.symbol === Cryptos.ADM ? state.balance : state[key].balance
+        const erc20 = isErc20(crypto.symbol.toUpperCase())
+        const currentRate = state.rate.rates[`${crypto.symbol}/${this.currentCurrency}`]
         const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0
 
-        const cryptoName = CryptosInfo[crypto].nameShort || CryptosInfo[crypto].name
+        const cryptoName = CryptosInfo[crypto.symbol].nameShort || CryptosInfo[crypto.symbol].name
 
         return {
           address,
@@ -126,7 +130,7 @@ export default {
           cryptoName,
           erc20,
           rate,
-          cryptoCurrency: crypto
+          cryptoCurrency: crypto.symbol
         }
       })
     },

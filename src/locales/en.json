@@ -81,6 +81,10 @@
     "you_removed_reaction": "Removed reaction",
     "partner_removed_reaction": "Removed reaction"
   },
+  "common": {
+    "no": "No",
+    "yes": "Yes"
+  },
   "connection": {
     "offline": "Offline—No connection",
     "online": "Online—Connection is set"
@@ -379,6 +383,8 @@
     "waiting_confirmations": "Transaction is running, be patient…"
   },
   "wallets": {
-
+    "reset": "Reset",
+    "reset_message": "Do you really want to return the list to its default state?",
+    "search": "Search"
   }
 }

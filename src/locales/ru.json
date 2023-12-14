@@ -81,6 +81,10 @@
     "you_removed_reaction": "Убрали реакцию",
     "partner_removed_reaction": "Убрал реакцию"
   },
+  "common": {
+    "no": "Нет",
+    "yes": "Да"
+  },
   "connection": {
     "offline": "Нет подключения к Интернету",
     "online": "Подключение восстановлено"
@@ -379,5 +383,10 @@
     "vote_request_limit": "Лимит голосов: {limit}",
     "voting_cost": "Стоимость голосования",
     "waiting_confirmations": "Транзакция подтверждается, подождите…"
+  },
+  "wallets": {
+    "reset": "Сбросить",
+    "reset_message": "Вы действительно хотите вернуть список к изначальному состоянию?",
+    "search": "Поиск"
   }
 }

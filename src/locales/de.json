@@ -64,6 +64,10 @@
     "you_removed_reaction": "Removed reaction",
     "partner_removed_reaction": "Removed reaction"
   },
+  "common": {
+    "no": "Nein",
+    "yes": "Ja"
+  },
   "error": "Error",
   "home": {
     "balance": "Balance",
@@ -266,5 +270,10 @@
     "vote_request_limit": "Vote request limit: {limit}",
     "voting_cost": "Voting cost",
     "waiting_confirmations": "Waiting for confirmations"
+  },
+  "wallets": {
+    "reset": "Zurücksetzen",
+    "reset_message": "Möchten Sie die Liste wirklich in ihren ursprünglichen Zustand zurückversetzen?",
+    "search": "Suchen"
   }
 }

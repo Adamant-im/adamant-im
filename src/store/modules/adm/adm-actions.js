@@ -7,6 +7,7 @@ export default {
     handler(context) {
       const address = context.rootState.address
       context.commit('address', address)
+      context.dispatch('initWalletsTemplates', null, { root: true })
     }
   },
 

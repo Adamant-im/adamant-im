@@ -5,49 +5,24 @@
     <v-container fluid class="px-0 container--with-app-toolbar">
       <v-row justify="center" no-gutters>
         <container padding>
+          <WalletsSearchInput @change="searchChanged"></WalletsSearchInput>
           <v-list lines="two">
             <draggable
               class="list-group"
-              :component-data="{
-                tag: 'ul',
-                type: 'transition-group',
-                name: !isDragging ? 'flip-list' : null
-              }"
-              v-model="wallets"
+              v-model="filteredWallets"
               v-bind="dragOptions"
+              handle=".handle"
               @start="isDragging = true"
               @end="isDragging = false"
               item-key="cryptoName"
             >
               <template #item="{ element }">
-                <v-list-item :title="element.cryptoName">
-                  <v-list-item-subtitle>
-                    <p>
-                      {{ element.type }} <b>{{ element.symbol }}</b>
-                    </p>
-                  </v-list-item-subtitle>
-                  <template v-slot:prepend>
-                    <v-avatar>
-                      <crypto-icon
-                        :class="classes.cryptoIcon"
-                        :crypto="element.cryptoCurrency"
-                        size="medium"
-                      />
-                    </v-avatar>
-                  </template>
-
-                  <template v-slot:append>
-                    <v-checkbox hide-details></v-checkbox>
-                    <v-btn
-                      color="grey-lighten-1"
-                      class="handle"
-                      icon="mdi-menu"
-                      variant="text"
-                    ></v-btn>
-                  </template>
-                </v-list-item>
+                <WalletsListItem :wallet="element"></WalletsListItem>
               </template>
             </draggable>
+            <v-list-item>
+              <WalletResetDialog></WalletResetDialog>
+            </v-list-item>
           </v-list>
         </container>
       </v-row>
@@ -58,55 +33,37 @@
 <script lang="ts">
 import draggable from 'vuedraggable'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
-import { computed, defineComponent, reactive, ref } from 'vue'
-import { CryptosInfo, CryptosOrder, isErc20 } from '@/lib/constants'
-import CryptoIcon from '@/components/icons/CryptoIcon.vue'
+import { computed, defineComponent, ref, watch } from 'vue'
+import { Cryptos, CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
+import { useStore } from 'vuex'
+import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
+import WalletsListItem from '@/components/wallets/WalletsListItem.vue'
+import WalletResetDialog from '@/components/wallets/WalletResetDialog.vue'
 
 const className = 'wallets-view'
 const classes = {
-  root: className,
-  cryptoIcon: `${className}__crypto-icon`
+  root: className
 }
 
-// TODO
-type Wallet = {
-  address?: string
-  balance?: number
-  cryptoCurrency: string
-  cryptoName: string
-  erc20: boolean
-  hasBalanceLoaded?: boolean
-  isBalanceLoading?: boolean
-  rate?: number
-  symbol: string
-  type: string
+type OrderedWalletSymbol = {
+  isVisible: boolean
+  symbol: CryptoSymbol
 }
 
 export default defineComponent({
   components: {
+    WalletResetDialog,
+    WalletsListItem,
+    WalletsSearchInput,
     AppToolbarCentered,
-    CryptoIcon,
     draggable
   },
-  beforeMount() {
-    this.wallets = CryptosOrder.map((crypto) => {
-      const erc20 = isErc20(crypto.toUpperCase())
-      const cryptoName = CryptosInfo[crypto].nameShort || CryptosInfo[crypto].name
-      const symbol = CryptosInfo[crypto].symbol
-      const type = CryptosInfo[crypto].type ?? 'Blockchain'
-
-      return {
-        cryptoName,
-        erc20,
-        cryptoCurrency: crypto,
-        symbol,
-        type
-      }
-    })
-  },
   setup() {
+    const store = useStore()
+
     const isDragging = ref(false)
-    const wallets = reactive<Array<Wallet>>([])
+    const search = ref('')
+    const wallets = ref([])
     const dragOptions = computed(() => {
       return {
         animation: 200,
@@ -116,56 +73,106 @@ export default defineComponent({
       }
     })
 
+    const currentFiatCurrency = computed({
+      get() {
+        return store.state.options.currentRate
+      },
+      set(value) {
+        store.commit('options/updateOption', {
+          key: 'currentRate',
+          value
+        })
+      }
+    })
+
+    const orderedAllWalletSymbols = computed(() => {
+      return store.getters.getAllOrderedWalletSymbols
+    })
+
+    const searchChanged = (value: string | Event) => {
+      if (value instanceof Event) return
+      search.value = value
+    }
+
+    const filteredWallets = computed({
+      get() {
+        return wallets.value.filter((wallet) => {
+          return (
+            wallet.cryptoName.toLowerCase().includes(search.value.toLowerCase()) ||
+            wallet.symbol.toLowerCase().includes(search.value.toLowerCase())
+          )
+        })
+      },
+      set(value) {
+        wallets.value = value
+      }
+    })
+
+    const mapWallets = () => {
+      wallets.value = orderedAllWalletSymbols.value.map((crypto: OrderedWalletSymbol) => {
+        const symbol = crypto.symbol
+        const key = symbol.toLowerCase()
+        const balance =
+          symbol === Cryptos.ADM
+            ? store.state.balance
+            : store.state[key]
+              ? store.state[key].balance
+              : 0
+        const erc20 = isErc20(symbol)
+        const cryptoName = CryptosInfo[symbol].nameShort || CryptosInfo[symbol].name
+        const currentRate = store.state.rate.rates[`${symbol}/${currentFiatCurrency.value}`]
+        const isVisible = crypto.isVisible
+        const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0
+
+        const type = CryptosInfo[symbol].type ?? 'Blockchain'
+
+        return {
+          balance,
+          cryptoName,
+          erc20,
+          isVisible,
+          rate,
+          symbol,
+          type
+        }
+      })
+    }
+
+    mapWallets()
+
+    watch(
+      () => wallets.value,
+      (newValue) => {
+        const newOrder = newValue.map((wallet: OrderedWalletSymbol) => {
+          const isVisible = wallet.isVisible
+          const symbol = wallet.symbol
+
+          return { isVisible, symbol }
+        })
+
+        store.dispatch('setWalletsTemplates', newOrder, { root: true })
+      },
+      { deep: true }
+    )
+
+    watch(
+      () => orderedAllWalletSymbols.value,
+      () => mapWallets(),
+      { deep: true }
+    )
+
     return {
       classes,
       dragOptions,
+      filteredWallets,
       isDragging,
+      search,
+      searchChanged,
+      orderedAllWalletSymbols,
       wallets
     }
   }
 })
 </script>
 
-<style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
-@import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
-
-.wallets-view {
-  &__info {
-    :deep(a) {
-      text-decoration-line: none;
-      &:hover {
-        text-decoration-line: underline;
-      }
-    }
-  }
-  :deep(.v-input--selection-controls:not(.v-input--hide-details)) .v-input__slot {
-    margin-bottom: 0;
-  }
-
-  :deep(.v-checkbox) {
-    margin-left: -8px;
-  }
-
-  :deep(.sortable-chosen) {
-    background: #2e7eed; //TODO: temp style
-  }
-}
-
-/** Themes **/
-.v-theme--light {
-  .wallets-view {
-    &__checkbox {
-      :deep(.v-label) {
-        color: map-get($adm-colors, 'regular');
-      }
-      :deep(.v-input--selection-controls__ripple),
-      :deep(.v-input--selection-controls__input) i {
-        color: map-get($adm-colors, 'regular') !important;
-        caret-color: map-get($adm-colors, 'regular') !important;
-      }
-    }
-  }
-}
-</style>
+<style lang="scss" scoped></style>

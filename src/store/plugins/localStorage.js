@@ -20,7 +20,8 @@ const vuexPersistence = new VuexPersistence({
         suppressWarningOnAddressesNotification:
           state.options.suppressWarningOnAddressesNotification,
         currentRate: state.options.currentRate
-      }
+      },
+      wallets: state.wallets
     }
   }
 })

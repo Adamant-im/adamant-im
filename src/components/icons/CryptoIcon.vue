@@ -8,7 +8,7 @@
 import Icon from './BaseIcon.vue'
 import UnknownCryptoFillIcon from './UnknownCryptoFill.vue'
 
-import { Cryptos } from '@/lib/constants'
+import { AllCryptos } from '@/lib/constants/cryptos'
 import { strictCapitalize } from '@/lib/textHelpers'
 
 const SMALL_SIZE = 36
@@ -29,7 +29,7 @@ export default {
       type: String,
       required: true,
       validator: (value) => {
-        return value in Cryptos || value === 'UNKNOWN_CRYPTO'
+        return value in AllCryptos || value === 'UNKNOWN_CRYPTO'
       }
     },
     /** Icon size: can be either 'small' (36x36), 'medium' (48x48) or 'large' (125x125) or undefined */

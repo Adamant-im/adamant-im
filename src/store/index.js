@@ -8,7 +8,7 @@ import {
   sendSpecialMessage,
   getCurrentAccount
 } from '@/lib/adamant-api'
-import { Fees, FetchStatus } from '@/lib/constants'
+import { CryptosInfo, Fees, FetchStatus } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import { registerCryptoModules } from './utils/registerCryptoModules'
@@ -36,6 +36,7 @@ import notification from './modules/notification'
 import cache from '@/store/cache'
 import rate from './modules/rate'
 import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant-api/asset'
+import { AllCryptosOrder } from '@/lib/constants/cryptos'
 
 export let interval
 
@@ -46,16 +47,19 @@ const UPDATE_BALANCE_INTERVAL = 10000
  */
 const store = {
   state: () => ({
+    IDBReady: false, // set `true` when state has been saved in IDB
     address: '',
     balance: 0,
     balanceStatus: FetchStatus.Loading,
     passphrase: '',
     password: '',
-    IDBReady: false, // set `true` when state has been saved in IDB
-    publicKeys: {}
+    publicKeys: {},
+    wallets: []
   }),
   getters: {
     isLogged: (state) => state.passphrase.length > 0,
+    getAllOrderedWalletSymbols: (state) => state.wallets,
+    getVisibleOrderedWalletSymbols: (state) => state.wallets.filter((wallet) => wallet.isVisible),
     getPassPhrase: (state) => state.passphrase, // compatibility getter for ERC20 modules
     publicKey: (state) => (adamantAddress) => state.publicKeys[adamantAddress],
     isAccountNew: (state) =>
@@ -96,6 +100,9 @@ const store = {
     setIDBReady(state, value) {
       state.IDBReady = value
     },
+    setWalletsTemplates(state, value) {
+      state.wallets = value
+    },
     reset(state) {
       state.address = ''
       state.balance = 0
@@ -110,6 +117,18 @@ const store = {
     }
   },
   actions: {
+    initWalletsTemplates({ dispatch }) {
+      const wallets = AllCryptosOrder.map((crypto) => {
+        const isVisible = !!CryptosInfo[crypto].defaultVisibility
+        const symbol = CryptosInfo[crypto].symbol
+
+        return {
+          isVisible,
+          symbol
+        }
+      })
+      dispatch('setWalletsTemplates', wallets, { root: true })
+    },
     login({ commit, dispatch }, passphrase) {
       // First, clear previous account data, if it exists. Calls resetState(state, getInitialState()) also
       dispatch('reset')
@@ -164,7 +183,8 @@ const store = {
         return result.success
       })
     },
-    reset({ commit }) {
+    reset({ commit, dispatch }) {
+      dispatch('initWalletsTemplates', null, { root: true })
       commit('reset', null, { root: true })
     },
     setPassword({ commit }, password) {
@@ -173,6 +193,9 @@ const store = {
 
         return encryptedPassword
       })
+    },
+    setWalletsTemplates({ commit }, wallets) {
+      commit('setWalletsTemplates', wallets, { root: true })
     },
     removePassword({ commit }) {
       commit('resetPassword')
