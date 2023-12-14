@@ -50,6 +50,18 @@ type OrderedWalletSymbol = {
   symbol: CryptoSymbol
 }
 
+type Wallet = {
+  erc20: boolean
+  balance: number
+  cryptoName: string
+  currentRate: number
+  isVisible: boolean
+  key: string
+  rate: number
+  symbol: string
+  type: string
+}
+
 export default defineComponent({
   components: {
     WalletResetDialog,
@@ -96,7 +108,7 @@ export default defineComponent({
 
     const filteredWallets = computed({
       get() {
-        return wallets.value.filter((wallet) => {
+        return wallets.value.filter((wallet: Wallet) => {
           return (
             wallet.cryptoName.toLowerCase().includes(search.value.toLowerCase()) ||
             wallet.symbol.toLowerCase().includes(search.value.toLowerCase())
