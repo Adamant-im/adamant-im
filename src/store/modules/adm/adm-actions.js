@@ -1,4 +1,5 @@
 import * as admApi from '@/lib/adamant-api'
+import { getFromLocalStorage } from '../../../lib/localStorage'
 
 export default {
   /** Starts background sync after login */
@@ -7,7 +8,10 @@ export default {
     handler(context) {
       const address = context.rootState.address
       context.commit('address', address)
-      context.dispatch('initWalletsTemplates', null, { root: true })
+      const predefinedWallets = getFromLocalStorage('adm-wallets', {})
+      if (predefinedWallets.wallets.length === 0) {
+        context.dispatch('initWalletsTemplates', null, { root: true })
+      }
     }
   },
 

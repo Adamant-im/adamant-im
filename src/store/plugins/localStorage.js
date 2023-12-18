@@ -20,10 +20,19 @@ const vuexPersistence = new VuexPersistence({
         suppressWarningOnAddressesNotification:
           state.options.suppressWarningOnAddressesNotification,
         currentRate: state.options.currentRate
-      },
-      wallets: state.wallets
+      }
     }
   }
 })
+
+export const walletsPersistencePlugin = new VuexPersistence({
+  key: 'adm-wallets',
+  storage: window.localStorage,
+  reducer: (state) => {
+    return {
+      wallets: state.wallets
+    }
+  }
+}).plugin
 
 export default vuexPersistence.plugin

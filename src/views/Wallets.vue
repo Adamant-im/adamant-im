@@ -6,7 +6,7 @@
       <v-row justify="center" no-gutters>
         <container padding>
           <WalletsSearchInput @change="searchChanged"></WalletsSearchInput>
-          <v-list lines="two">
+          <v-list lines="one">
             <draggable
               class="list-group"
               v-model="filteredWallets"
@@ -33,7 +33,7 @@
 <script lang="ts">
 import draggable from 'vuedraggable'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
-import { computed, defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent, ref, toRef, watch } from 'vue'
 import { Cryptos, CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { useStore } from 'vuex'
 import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
@@ -73,6 +73,8 @@ export default defineComponent({
   setup() {
     const store = useStore()
 
+    const orderedAllWalletSymbols = toRef(store.getters, 'getAllOrderedWalletSymbols')
+
     const isDragging = ref(false)
     const search = ref('')
     const wallets = ref([])
@@ -85,20 +87,8 @@ export default defineComponent({
       }
     })
 
-    const currentFiatCurrency = computed({
-      get() {
-        return store.state.options.currentRate
-      },
-      set(value) {
-        store.commit('options/updateOption', {
-          key: 'currentRate',
-          value
-        })
-      }
-    })
-
-    const orderedAllWalletSymbols = computed(() => {
-      return store.getters.getAllOrderedWalletSymbols
+    const currentFiatCurrency = computed(() => {
+      return store.state.options.currentRate
     })
 
     const searchChanged = (value: string | Event) => {
@@ -167,12 +157,6 @@ export default defineComponent({
       { deep: true }
     )
 
-    watch(
-      () => orderedAllWalletSymbols.value,
-      () => mapWallets(),
-      { deep: true }
-    )
-
     return {
       classes,
       dragOptions,
@@ -180,7 +164,6 @@ export default defineComponent({
       isDragging,
       search,
       searchChanged,
-      orderedAllWalletSymbols,
       wallets
     }
   }

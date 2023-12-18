@@ -14,7 +14,7 @@ import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store
 import { registerCryptoModules } from './utils/registerCryptoModules'
 import { registerVuexPlugins } from './utils/registerVuexPlugins'
 import sessionStoragePlugin from './plugins/sessionStorage'
-import localStoragePlugin from './plugins/localStorage'
+import localStoragePlugin, { walletsPersistencePlugin } from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
 import navigatorOnline from './plugins/navigatorOnline'
 import socketsPlugin from './plugins/socketsPlugin'
@@ -152,6 +152,7 @@ const store = {
     },
     logout({ dispatch }) {
       dispatch('reset')
+      dispatch('initWalletsTemplates', null, { root: true })
     },
     unlock({ state, dispatch }) {
       // user updated an app, F5 or something
@@ -183,8 +184,7 @@ const store = {
         return result.success
       })
     },
-    reset({ commit, dispatch }) {
-      dispatch('initWalletsTemplates', null, { root: true })
+    reset({ commit }) {
       commit('reset', null, { root: true })
     },
     setPassword({ commit }, password) {
@@ -270,7 +270,8 @@ registerVuexPlugins(storeInstance, [
   localStoragePlugin,
   indexedDbPlugin,
   navigatorOnline,
-  socketsPlugin
+  socketsPlugin,
+  walletsPersistencePlugin
 ])
 
 export { store } // for tests

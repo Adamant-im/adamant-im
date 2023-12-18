@@ -75,16 +75,8 @@ export default defineComponent({
     const store = useStore()
     const localWallet = toRef(props, 'wallet')
 
-    const currentFiatCurrency = computed({
-      get() {
-        return store.state.options.currentRate
-      },
-      set(value) {
-        store.commit('options/updateOption', {
-          key: 'currentRate',
-          value
-        })
-      }
+    const currentFiatCurrency = computed(() => {
+      return store.state.options.currentRate
     })
 
     return {
@@ -120,13 +112,13 @@ export default defineComponent({
 
   :deep(.sortable-chosen) {
     -webkit-box-shadow:
-      0px 8px 9px -5px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
-      0px 15px 22px 2px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
-      0px 6px 28px 5px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12)) !important;
+      0 8px 9px -5px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
+      0 15px 22px 2px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
+      0 6px 28px 5px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12)) !important;
     box-shadow:
-      0px 8px 9px -5px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
-      0px 15px 22px 2px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
-      0px 6px 28px 5px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12)) !important;
+      0 8px 9px -5px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
+      0 15px 22px 2px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
+      0 6px 28px 5px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12)) !important;
   }
 }
 /** Themes **/

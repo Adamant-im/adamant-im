@@ -4,7 +4,7 @@
       {{ balance ? `~${mathRound(Number(balance), 8)}` : 0 }}
     </p>
 
-    <p v-if="balance && currentFiatCurrency" :class="classes.statusText" class="text-end">
+    <p v-if="!!balance && !!currentFiatCurrency" :class="classes.statusText" class="text-end">
       {{ currentFiatCurrency }} {{ rate }}
     </p>
   </div>

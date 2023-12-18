@@ -1,7 +1,7 @@
 <template>
   <v-text-field
     v-model.trim="computedSearch"
-    :label="$t('wallets.search')"
+    :label="t('wallets.search')"
     :clearable="true"
     class="a-input"
     color="primary"
@@ -15,9 +15,12 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 export default defineComponent({
   setup() {
+    const { t } = useI18n()
+
     // it is cannot be just a ref cause of vuetify bug: https://github.com/vuetifyjs/vuetify/issues/4144
     const search = ref<string>('')
 
@@ -30,7 +33,8 @@ export default defineComponent({
       }
     })
     return {
-      computedSearch
+      computedSearch,
+      t
     }
   }
 })
