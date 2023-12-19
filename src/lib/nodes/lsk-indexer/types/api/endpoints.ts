@@ -1,3 +1,5 @@
+import { AccountExistsRequest } from './token/account-exists.request'
+import { AccountExistsResponse } from './token/account-exists.response'
 import { IndexStatus } from './index-status/index-status'
 import { TransactionParams } from './transactions/transaction-params'
 import { Pagination } from './common/pagination'
@@ -20,5 +22,12 @@ export type Endpoints = {
   'GET /index/status': {
     params: undefined
     result: IndexStatus
+  }
+  /**
+   * @see https://lisk.com/documentation/api/lisk-service-http.html#/Token/get_token_account_exists
+   */
+  'GET /token/account/exists': {
+    params: AccountExistsRequest
+    result: AccountExistsResponse
   }
 }

@@ -1,3 +1,5 @@
+import { LSK_TOKEN_ID } from '@/lib/lisk'
+import { AxiosRequestConfig } from 'axios'
 import { normalizeTransaction } from './utils'
 import { TransactionParams } from './types/api/transactions/transaction-params'
 import { Endpoints } from './types/api/endpoints'
@@ -15,7 +17,8 @@ export class LskIndexerClient extends Client<LskIndexer> {
 
   private async request<E extends keyof Endpoints>(
     endpoint: E,
-    params?: Endpoints[E]['params']
+    params?: Endpoints[E]['params'],
+    axiosRequestConfig?: AxiosRequestConfig
   ): Promise<Endpoints[E]['result']> {
     const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
     if (!node) {
@@ -25,7 +28,7 @@ export class LskIndexerClient extends Client<LskIndexer> {
       throw new Error('No online nodes at the moment')
     }
 
-    return node.request(endpoint, params)
+    return node.request(endpoint, params, axiosRequestConfig)
   }
 
   /**
@@ -61,5 +64,23 @@ export class LskIndexerClient extends Client<LskIndexer> {
     }
 
     return normalizeTransaction(transaction, address)
+  }
+
+  /**
+   * Checks if an account exists
+   * @param address
+   * @param axiosRequestConfig
+   */
+  async checkAccountExists(address: string, axiosRequestConfig?: AxiosRequestConfig) {
+    const { data } = await this.request(
+      'GET /token/account/exists',
+      {
+        address,
+        tokenID: LSK_TOKEN_ID
+      },
+      axiosRequestConfig
+    )
+
+    return data.isExists
   }
 }

@@ -20,7 +20,6 @@ export default function validateAddress(crypto, address) {
     try {
       return lskCryptography.address.validateLisk32Address(address)
     } catch (e) {
-      console.log(e)
       return false
     }
   }

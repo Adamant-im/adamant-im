@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios'
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { Endpoints } from './types/api/endpoints'
@@ -29,12 +29,14 @@ export class LskIndexer extends Node {
    */
   async request<E extends keyof Endpoints>(
     endpoint: E,
-    params?: Endpoints[E]['params']
+    params?: Endpoints[E]['params'],
+    requestConfig?: AxiosRequestConfig
   ): Promise<Endpoints[E]['result']> {
     const [method, path] = endpoint.split(' ')
 
     return this.client
       .request({
+        ...requestConfig,
         url: path,
         method,
         params: method === 'GET' ? params : undefined,

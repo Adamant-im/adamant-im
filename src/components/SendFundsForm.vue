@@ -186,6 +186,8 @@
 </template>
 
 <script>
+import lskIndexer from '@/lib/nodes/lsk-indexer'
+import axios from 'axios'
 import { nextTick } from 'vue'
 
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
@@ -303,6 +305,14 @@ export default {
     increaseFee: false,
     showWarningOnPartnerAddressDialog: false,
     warningOnPartnerInfo: {},
+
+    // Account exists check
+    // Currently works only with LSK
+    account: {
+      isNew: false,
+      abortController: new AbortController(),
+      loading: false
+    },
 
     // Debugging section
     dryRun: false,
@@ -534,6 +544,9 @@ export default {
       } else {
         this.amount = 0
       }
+    },
+    cryptoAddress(cryptoAddress) {
+      this.checkIsNewAccount(cryptoAddress)
     }
   },
   created() {
@@ -550,6 +563,44 @@ export default {
     this.fetchUserCryptoAddress()
   },
   methods: {
+    checkIsNewAccount(cryptoAddress) {
+      this.account.isNew = false
+
+      if (!validateAddress(this.currency, cryptoAddress)) {
+        return
+      }
+
+      // Cancel the previous fetch request
+      this.account.abortController.abort()
+
+      // Create a new AbortController for the current request
+      this.account.abortController = new AbortController()
+
+      switch (this.currency) {
+        case Cryptos.LSK:
+          this.account.loading = true
+          lskIndexer
+            .checkAccountExists(cryptoAddress, {
+              signal: this.account.abortController.signal
+            })
+            .catch((err) => {
+              if (axios.isCancel(err)) {
+                // Request canceled
+                return
+              }
+
+              throw err
+            })
+            .then((exists) => {
+              this.account.isNew = !exists
+            })
+            .finally(() => {
+              this.account.loading = false
+            })
+
+          break
+      }
+    },
     confirm() {
       const abstract = validateForm.call(this)
 
@@ -796,7 +847,8 @@ export default {
         this.$store.getters[`${this.currency.toLowerCase()}/fee`](
           amount || this.balance,
           this.cryptoAddress,
-          this.textData
+          this.textData,
+          this.account.isNew
         )
       )
     }

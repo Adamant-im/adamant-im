@@ -16,6 +16,7 @@ import sodium from 'sodium-browserify-tweetnacl'
 import {
   LiskHashSettings,
   LSK_CHAIN_ID,
+  LSK_COMMAND_FEE,
   LSK_DECIMALS,
   LSK_DEMO_ACCOUNT,
   LSK_MIN_REQUIRED_FEE,
@@ -217,6 +218,7 @@ type EstimateFeeParams = {
    * Transaction data field
    */
   data?: string
+  isNewAccount?: boolean
 }
 
 /**
@@ -229,7 +231,8 @@ export function estimateFee(params?: EstimateFeeParams) {
     amount = '1',
     keyPair = LSK_DEMO_ACCOUNT.keyPair,
     recipientAddress = LSK_DEMO_ACCOUNT.address,
-    data = ''
+    data = '',
+    isNewAccount
   } = params || {}
 
   const unsignedTransaction = {
@@ -256,6 +259,9 @@ export function estimateFee(params?: EstimateFeeParams) {
 
   const minFee = computeMinFee(signedTransaction, TRANSACTION_PARAMS_SCHEMA)
   const fee = minFee < LSK_MIN_REQUIRED_FEE ? LSK_MIN_REQUIRED_FEE : minFee
+  const commandFee = isNewAccount ? LSK_COMMAND_FEE : BigInt(0)
 
-  return convertBeddowsToLSK(fee.toString())
+  const totalFee = fee + commandFee
+
+  return convertBeddowsToLSK(totalFee.toString())
 }
