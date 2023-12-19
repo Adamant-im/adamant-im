@@ -204,7 +204,7 @@ type EstimateFeeParams = {
   /**
    * LSK amount
    */
-  amount?: string
+  amount?: string | number
   /**
    * Sender's `publicKey` and `privateKey`
    */
@@ -240,7 +240,7 @@ export function estimateFee(params?: EstimateFeeParams) {
     senderPublicKey: Buffer.from(keyPair.publicKey, 'hex'),
     params: {
       tokenID: Buffer.from(LSK_TOKEN_ID, 'hex'),
-      amount: BigInt(convertLSKToBeddows(amount)),
+      amount: BigInt(convertLSKToBeddows(amount.toString())),
       recipientAddress: cryptography.address.getAddressFromLisk32Address(recipientAddress),
       data
     },
