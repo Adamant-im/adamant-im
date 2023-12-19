@@ -583,6 +583,9 @@ export default {
             .checkAccountExists(cryptoAddress, {
               signal: this.account.abortController.signal
             })
+            .then((exists) => {
+              this.account.isNew = !exists
+            })
             .catch((err) => {
               if (axios.isCancel(err)) {
                 // Request canceled
@@ -590,9 +593,6 @@ export default {
               }
 
               throw err
-            })
-            .then((exists) => {
-              this.account.isNew = !exists
             })
             .finally(() => {
               this.account.loading = false
