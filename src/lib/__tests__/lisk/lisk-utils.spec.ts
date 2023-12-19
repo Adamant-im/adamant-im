@@ -33,7 +33,7 @@ describe('lisk-utils', () => {
 
     it('should calculate fee including `data`', () => {
       const data = 'hello'
-      const messageFee = data.length * 1000
+      const messageFee = BigInt(data.length) * BigInt(1000)
       const expectedFee = LSK_MIN_REQUIRED_FEE + messageFee
 
       expect(estimateFee({ data })).toBe(convertBeddowsToLSK(expectedFee.toString()))
