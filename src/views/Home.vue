@@ -109,7 +109,7 @@ export default {
   computed: {
     className: () => 'account-view',
     orderedVisibleWalletSymbols() {
-      return this.$store.getters.getVisibleOrderedWalletSymbols
+      return this.$store.getters['wallets/getVisibleOrderedWalletSymbols']
     },
     wallets() {
       const state = this.$store.state

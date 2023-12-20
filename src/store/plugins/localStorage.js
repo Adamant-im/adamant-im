@@ -25,14 +25,4 @@ const vuexPersistence = new VuexPersistence({
   }
 })
 
-export const walletsPersistencePlugin = new VuexPersistence({
-  key: 'adm-wallets',
-  storage: window.localStorage,
-  reducer: (state) => {
-    return {
-      wallets: state.wallets
-    }
-  }
-}).plugin
-
 export default vuexPersistence.plugin

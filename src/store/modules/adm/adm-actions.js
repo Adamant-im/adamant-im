@@ -9,8 +9,8 @@ export default {
       const address = context.rootState.address
       context.commit('address', address)
       const predefinedWallets = getFromLocalStorage('adm-wallets', {})
-      if (predefinedWallets.wallets.length === 0) {
-        context.dispatch('initWalletsTemplates', null, { root: true })
+      if (!('symbols' in predefinedWallets) || predefinedWallets.symbols?.length === 0) {
+        this.dispatch('wallets/initWalletsSymbolsTemplates', null)
       }
     }
   },

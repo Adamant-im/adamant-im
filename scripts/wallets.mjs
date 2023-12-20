@@ -118,14 +118,12 @@ async function copyIcons(coins, coinDirNames) {
   await mkdir(CRYPTOS_ICONS_DIR_PATH)
 
   for (const [name, coin] of Object.entries(coins)) {
-    if (coin.defaultVisibility) {
-      const iconComponentName = `${_.capitalize(coin.symbol)}Icon.vue`
+    const iconComponentName = `${_.capitalize(coin.symbol)}Icon.vue`
 
-      await copyFile(
-        join(GENERAL_ASSETS_PATH, coinDirNames[name], 'images', 'icon.vue'),
-        join(CRYPTOS_ICONS_DIR_PATH, iconComponentName)
-      )
-    }
+    await copyFile(
+      join(GENERAL_ASSETS_PATH, coinDirNames[name], 'images', 'icon.vue'),
+      join(CRYPTOS_ICONS_DIR_PATH, iconComponentName)
+    )
   }
 }
 

@@ -19,7 +19,16 @@
           rate: localWallet.rate
         }"
       ></WalletBalance>
-      <v-checkbox hide-details v-model="localWallet.isVisible"></v-checkbox>
+      <v-checkbox
+        hide-details
+        :model-value="store.getters['wallets/getVisibility'](localWallet.symbol)"
+        @update:model-value="
+          store.commit('wallets/updateVisibility', {
+            symbol: localWallet.symbol,
+            value: $event
+          })
+        "
+      ></v-checkbox>
       <v-btn
         color="grey-lighten-1"
         class="handle"
@@ -82,7 +91,8 @@ export default defineComponent({
     return {
       classes,
       currentFiatCurrency,
-      localWallet
+      localWallet,
+      store
     }
   }
 })

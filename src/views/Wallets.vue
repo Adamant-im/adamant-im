@@ -33,7 +33,7 @@
 <script lang="ts">
 import draggable from 'vuedraggable'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
-import { computed, defineComponent, ref, toRef, watch } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { Cryptos, CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { useStore } from 'vuex'
 import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
@@ -45,21 +45,28 @@ const classes = {
   root: className
 }
 
+const dragOptions = {
+  animation: 200,
+  disabled: false,
+  ghostClass: 'ghost',
+  group: 'description'
+}
+
 type OrderedWalletSymbol = {
   isVisible: boolean
   symbol: CryptoSymbol
 }
 
 type Wallet = {
-  erc20: boolean
-  balance: number
-  cryptoName: string
-  currentRate: number
+  erc20?: boolean
+  balance?: number
+  cryptoName?: string
+  currentRate?: number
   isVisible: boolean
-  key: string
-  rate: number
+  key?: string
+  rate?: number
   symbol: string
-  type: string
+  type?: string
 }
 
 export default defineComponent({
@@ -73,45 +80,19 @@ export default defineComponent({
   setup() {
     const store = useStore()
 
-    const orderedAllWalletSymbols = toRef(store.getters, 'getAllOrderedWalletSymbols')
-
     const isDragging = ref(false)
     const search = ref('')
-    const wallets = ref([])
-    const dragOptions = computed(() => {
-      return {
-        animation: 200,
-        disabled: false,
-        ghostClass: 'ghost',
-        group: 'description'
-      }
-    })
 
     const currentFiatCurrency = computed(() => {
       return store.state.options.currentRate
     })
 
-    const searchChanged = (value: string | Event) => {
-      if (value instanceof Event) return
-      search.value = value
-    }
-
-    const filteredWallets = computed({
-      get() {
-        return wallets.value.filter((wallet: Wallet) => {
-          return (
-            wallet.cryptoName.toLowerCase().includes(search.value.toLowerCase()) ||
-            wallet.symbol.toLowerCase().includes(search.value.toLowerCase())
-          )
-        })
-      },
-      set(value) {
-        wallets.value = value
-      }
+    const orderedAllWalletSymbols = computed(() => {
+      return [...store.getters['wallets/getAllOrderedWalletSymbols']]
     })
 
-    const mapWallets = () => {
-      wallets.value = orderedAllWalletSymbols.value.map((crypto: OrderedWalletSymbol) => {
+    const wallets = computed(() => {
+      return orderedAllWalletSymbols.value.map((crypto: OrderedWalletSymbol) => {
         const symbol = crypto.symbol
         const key = symbol.toLowerCase()
         const balance =
@@ -138,24 +119,26 @@ export default defineComponent({
           type
         }
       })
+    })
+
+    const searchChanged = (value: string | Event) => {
+      if (value instanceof Event) return
+      search.value = value
     }
 
-    mapWallets()
-
-    watch(
-      () => wallets.value,
-      (newValue) => {
-        const newOrder = newValue.map((wallet: OrderedWalletSymbol) => {
-          const isVisible = wallet.isVisible
-          const symbol = wallet.symbol
-
-          return { isVisible, symbol }
+    const filteredWallets = computed({
+      get() {
+        return wallets.value.filter((wallet: Wallet) => {
+          return (
+            wallet.cryptoName?.toLowerCase().includes(search.value.toLowerCase()) ||
+            wallet.symbol.toLowerCase().includes(search.value.toLowerCase())
+          )
         })
-
-        store.dispatch('setWalletsTemplates', newOrder, { root: true })
       },
-      { deep: true }
-    )
+      set(value) {
+        store.dispatch('wallets/setWalletSymbolsTemplates', value)
+      }
+    })
 
     return {
       classes,

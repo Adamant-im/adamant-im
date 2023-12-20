@@ -8,25 +8,27 @@ import {
   sendSpecialMessage,
   getCurrentAccount
 } from '@/lib/adamant-api'
-import { CryptosInfo, Fees, FetchStatus } from '@/lib/constants'
+import { Fees, FetchStatus } from '@/lib/constants'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { flushCryptoAddresses, validateStoredCryptoAddresses } from '@/lib/store-crypto-address'
 import { registerCryptoModules } from './utils/registerCryptoModules'
 import { registerVuexPlugins } from './utils/registerVuexPlugins'
 import sessionStoragePlugin from './plugins/sessionStorage'
-import localStoragePlugin, { walletsPersistencePlugin } from './plugins/localStorage'
+import localStoragePlugin from './plugins/localStorage'
 import indexedDbPlugin from './plugins/indexedDb'
 import navigatorOnline from './plugins/navigatorOnline'
 import socketsPlugin from './plugins/socketsPlugin'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
+import bitcoinModule from './modules/btc'
+import dashModule from './modules/dash'
+import delegatesModule from './modules/delegates'
 import dogeModule from './modules/doge'
 import lskModule from './modules/lsk'
-import dashModule from './modules/dash'
-import bitcoinModule from './modules/btc'
 import nodesModule from './modules/nodes'
-import delegatesModule from './modules/delegates'
+import walletsModule from './modules/wallets'
 import nodesPlugin from './modules/nodes/nodes-plugin'
+import walletsPersistencePlugin from './modules/wallets/wallets-plugin'
 import snackbar from './modules/snackbar'
 import language from './modules/language'
 import chat from './modules/chat'
@@ -36,7 +38,6 @@ import notification from './modules/notification'
 import cache from '@/store/cache'
 import rate from './modules/rate'
 import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant-api/asset'
-import { AllCryptosOrder } from '@/lib/constants/cryptos'
 
 export let interval
 
@@ -53,13 +54,10 @@ const store = {
     balanceStatus: FetchStatus.Loading,
     passphrase: '',
     password: '',
-    publicKeys: {},
-    wallets: []
+    publicKeys: {}
   }),
   getters: {
     isLogged: (state) => state.passphrase.length > 0,
-    getAllOrderedWalletSymbols: (state) => state.wallets,
-    getVisibleOrderedWalletSymbols: (state) => state.wallets.filter((wallet) => wallet.isVisible),
     getPassPhrase: (state) => state.passphrase, // compatibility getter for ERC20 modules
     publicKey: (state) => (adamantAddress) => state.publicKeys[adamantAddress],
     isAccountNew: (state) =>
@@ -100,9 +98,6 @@ const store = {
     setIDBReady(state, value) {
       state.IDBReady = value
     },
-    setWalletsTemplates(state, value) {
-      state.wallets = value
-    },
     reset(state) {
       state.address = ''
       state.balance = 0
@@ -117,18 +112,6 @@ const store = {
     }
   },
   actions: {
-    initWalletsTemplates({ dispatch }) {
-      const wallets = AllCryptosOrder.map((crypto) => {
-        const isVisible = !!CryptosInfo[crypto].defaultVisibility
-        const symbol = CryptosInfo[crypto].symbol
-
-        return {
-          isVisible,
-          symbol
-        }
-      })
-      dispatch('setWalletsTemplates', wallets, { root: true })
-    },
     login({ commit, dispatch }, passphrase) {
       // First, clear previous account data, if it exists. Calls resetState(state, getInitialState()) also
       dispatch('reset')
@@ -152,7 +135,7 @@ const store = {
     },
     logout({ dispatch }) {
       dispatch('reset')
-      dispatch('initWalletsTemplates', null, { root: true })
+      dispatch('wallets/initWalletsSymbolsTemplates', null)
     },
     unlock({ state, dispatch }) {
       // user updated an app, F5 or something
@@ -193,9 +176,6 @@ const store = {
 
         return encryptedPassword
       })
-    },
-    setWalletsTemplates({ commit }, wallets) {
-      commit('setWalletsTemplates', wallets, { root: true })
     },
     removePassword({ commit }) {
       commit('resetPassword')
@@ -256,7 +236,8 @@ const store = {
     options,
     identicon,
     notification,
-    rate
+    rate,
+    wallets: walletsModule // Wallets order and visibility
   }
 }
 
