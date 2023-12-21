@@ -136,7 +136,14 @@ export default defineComponent({
         })
       },
       set(value) {
-        store.dispatch('wallets/setWalletSymbolsTemplates', value)
+        const mappedValue = value.map((item) => {
+          return {
+            symbol: item.symbol,
+            isVisible: item.isVisible
+          }
+        })
+
+        store.dispatch('wallets/setWalletSymbolsTemplates', mappedValue)
       }
     })
 
