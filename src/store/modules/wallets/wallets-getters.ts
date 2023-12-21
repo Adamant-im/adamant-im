@@ -1,10 +1,10 @@
-import { Store } from 'vuex'
 import { CoinSymbol, WalletsState } from '@/store/modules/wallets/types.ts'
+import { CryptoSymbol } from '@/lib/constants'
 
 export default {
-  getAllOrderedWalletSymbols: (state: Store<WalletsState>) => state.symbols,
-  getVisibleOrderedWalletSymbols: (state: Store<WalletsState>) =>
+  getAllOrderedWalletSymbols: (state: WalletsState) => state.symbols,
+  getVisibleOrderedWalletSymbols: (state: WalletsState) =>
     state.symbols.filter((walletSymbol: CoinSymbol) => walletSymbol.isVisible),
-  getVisibility: (state: Store<WalletsState>) => (symbol: CoinSymbol) =>
-    state.symbols.find((item: CoinSymbol) => item.symbol === symbol).isVisible
+  getVisibility: (state: WalletsState) => (symbol: CryptoSymbol) =>
+    state.symbols.find((item: CoinSymbol) => item.symbol === symbol)?.isVisible
 }

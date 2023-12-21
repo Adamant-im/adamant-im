@@ -16,7 +16,7 @@ export const AllCryptos = Object.values(CryptosInfo).reduce(
   {} as Record<CryptoSymbol, CryptoSymbol>
 )
 
-export const AllCryptosOrder = Object.values(AllCryptos)
+export const AllCryptosOrder: CryptoSymbol[] = Object.values(AllCryptos)
   .map((crypto) => CryptosInfo[crypto])
   .sort((a, b) => {
     if (a.defaultVisibility === undefined && b.defaultVisibility === undefined) {
@@ -32,7 +32,7 @@ export const AllCryptosOrder = Object.values(AllCryptos)
 
     return a.defaultOrdinalLevel - b.defaultOrdinalLevel
   })
-  .map((crypto) => crypto.symbol)
+  .map((crypto) => crypto.symbol as CryptoSymbol)
 
 // Enum of supported cryptos
 export const Cryptos = Object.values(CryptosInfo).reduce(
