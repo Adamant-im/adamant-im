@@ -14,6 +14,8 @@ import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
+import { getFromLocalStorage } from '@/lib/localStorage.ts'
+import { CoinSymbol, WalletsState } from '@/store/modules/wallets/types.ts'
 
 export default defineComponent({
   components: {
@@ -43,6 +45,13 @@ export default defineComponent({
   mounted() {
     this.notifications = new Notifications(this)
     this.notifications.start()
+
+    const predefinedWallets: WalletsState = getFromLocalStorage('adm-wallets', {
+      symbols: [] as CoinSymbol[]
+    })
+    if (!('symbols' in predefinedWallets) || predefinedWallets.symbols.length === 0) {
+      this.$store.dispatch('wallets/initWalletsSymbolsTemplates', null)
+    }
   },
   beforeUnmount() {
     this.notifications?.stop()

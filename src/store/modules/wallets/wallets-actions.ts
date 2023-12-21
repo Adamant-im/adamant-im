@@ -1,11 +1,12 @@
 import { AllCryptosOrder, CryptosInfo, CryptoSymbol } from '@/lib/constants/cryptos'
-import { Commit, Dispatch } from 'vuex'
-import { CoinSymbol } from '@/store/modules/wallets/types.ts'
+import { ActionTree } from 'vuex'
+import { CoinSymbol, WalletsState } from '@/store/modules/wallets/types'
+import { RootState } from '@/store/types'
 
-export default {
-  initWalletsSymbolsTemplates({ dispatch }: { dispatch: Dispatch }): void {
+export const actions: ActionTree<WalletsState, RootState> = {
+  initWalletsSymbolsTemplates({ dispatch }): void {
     const walletSymbols: CoinSymbol[] = AllCryptosOrder.map((crypto: CryptoSymbol) => {
-      const isVisible = !!CryptosInfo[crypto].defaultVisibility
+      const isVisible: boolean = !!CryptosInfo[crypto].defaultVisibility
       const symbol: CryptoSymbol = CryptosInfo[crypto].symbol as CryptoSymbol
 
       return {
@@ -16,7 +17,7 @@ export default {
     dispatch('setWalletSymbolsTemplates', walletSymbols)
   },
 
-  setWalletSymbolsTemplates({ commit }: { commit: Commit }, symbols: CoinSymbol[]): void {
+  setWalletSymbolsTemplates({ commit }, symbols: CoinSymbol[]): void {
     commit('setWalletSymbolsTemplates', symbols)
   }
 }

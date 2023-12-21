@@ -1,5 +1,5 @@
-import { CoinSymbol } from '@/store/modules/wallets/types'
+import { CoinSymbol, WalletsState } from '@/store/modules/wallets/types'
 
-export default {
+export const state: WalletsState = {
   symbols: [] as CoinSymbol[]
 }

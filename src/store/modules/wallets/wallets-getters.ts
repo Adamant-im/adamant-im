@@ -1,10 +1,12 @@
-import { CoinSymbol, WalletsState } from '@/store/modules/wallets/types.ts'
+import { CoinSymbol, WalletsState } from '@/store/modules/wallets/types'
 import { CryptoSymbol } from '@/lib/constants'
+import { GetterTree } from 'vuex'
+import { RootState } from '@/store/types'
 
-export default {
-  getAllOrderedWalletSymbols: (state: WalletsState) => state.symbols,
-  getVisibleOrderedWalletSymbols: (state: WalletsState) =>
+export const getters: GetterTree<WalletsState, RootState> = {
+  getAllOrderedWalletSymbols: (state) => state.symbols,
+  getVisibleOrderedWalletSymbols: (state) =>
     state.symbols.filter((walletSymbol: CoinSymbol) => walletSymbol.isVisible),
-  getVisibility: (state: WalletsState) => (symbol: CryptoSymbol) =>
+  getVisibility: (state) => (symbol: CryptoSymbol) =>
     state.symbols.find((item: CoinSymbol) => item.symbol === symbol)?.isVisible
 }

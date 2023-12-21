@@ -1,12 +1,17 @@
-import actions from './wallets-actions'
-import mutations from './wallets-mutations'
-import state from './wallets-state'
-import getters from './wallets-getters'
+import { actions } from './wallets-actions'
+import { mutations } from './wallets-mutations'
+import { state } from './wallets-state'
+import { getters } from './wallets-getters'
+import { Module } from 'vuex'
+import { WalletsState } from '@/store/modules/wallets/types.ts'
+import { RootState } from '@/store/types.ts'
 
-export default {
+const walletsModule: Module<WalletsState, RootState> = {
   namespaced: true,
   state,
-  actions,
   mutations,
+  actions,
   getters
 }
+
+export default walletsModule
