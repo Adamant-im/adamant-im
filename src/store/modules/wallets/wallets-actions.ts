@@ -1,7 +1,8 @@
-import { AllCryptosOrder, CryptosInfo } from '../../../lib/constants/cryptos'
+import { AllCryptosOrder, CryptosInfo } from '@/lib/constants/cryptos'
+import { Commit, Dispatch } from 'vuex'
 
 export default {
-  initWalletsSymbolsTemplates({ dispatch }) {
+  initWalletsSymbolsTemplates({ dispatch }: { dispatch: Dispatch }): void {
     const walletSymbols = AllCryptosOrder.map((crypto) => {
       const isVisible = !!CryptosInfo[crypto].defaultVisibility
       const symbol = CryptosInfo[crypto].symbol
@@ -14,7 +15,7 @@ export default {
     dispatch('setWalletSymbolsTemplates', walletSymbols)
   },
 
-  setWalletSymbolsTemplates({ commit }, symbols) {
+  setWalletSymbolsTemplates({ commit }: { commit: Commit }, symbols): void {
     commit('setWalletSymbolsTemplates', symbols)
   }
 }

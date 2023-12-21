@@ -25,7 +25,7 @@
         @update:model-value="
           store.commit('wallets/updateVisibility', {
             symbol: localWallet.symbol,
-            value: $event
+            isVisible: $event
           })
         "
       ></v-checkbox>
