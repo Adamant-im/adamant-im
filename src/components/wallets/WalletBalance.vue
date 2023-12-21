@@ -4,7 +4,7 @@
       {{ balance ? `~${mathRound(Number(balance), 8)}` : 0 }}
     </p>
 
-    <p v-if="!!balance" :class="classes.statusText" class="text-end">
+    <p v-if="Number(balance) !== 0" :class="classes.statusText" class="text-end">
       {{ currentFiatCurrency }} {{ rate }}
     </p>
   </div>
@@ -20,7 +20,7 @@ const classes = {
 }
 
 type WalletBalance = {
-  balance: number
+  balance: number | string
   currentFiatCurrency: string
   rate: number
 }
