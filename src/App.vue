@@ -51,6 +51,8 @@ export default defineComponent({
     })
     if (!('symbols' in predefinedWallets) || predefinedWallets.symbols.length === 0) {
       this.$store.dispatch('wallets/initWalletsSymbolsTemplates', null)
+    } else {
+      this.$store.dispatch('wallets/setWalletSymbolsTemplates', predefinedWallets.symbols)
     }
   },
   beforeUnmount() {
