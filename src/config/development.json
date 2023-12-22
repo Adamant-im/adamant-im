@@ -1,7 +1,7 @@
 {
   "adm": {
     "explorerTx": "https://explorer.adamant.im/tx/${ID}",
-    "minNodeVersion": "0.7.0",
+    "minNodeVersion": "0.8.0",
     "nodes": [
       {
         "url": "https://clown.adamant.im"
@@ -33,17 +33,21 @@
         "url": "http://184.94.215.92:45555"
       },
       {
-        "url": "https://node1.adamant.business"
+        "url": "https://node1.adamant.business",
+        "alt_ip": "http://194.233.75.29:45555"
       },
       {
         "url": "https://node2.blockchain2fa.io"
+      },
+      {
+        "url": "https://sunshine.adamant.im"
       }
     ],
     "services": {
       "infoService": [
         {
           "url": "https://info.adamant.im",
-          "alt_ip": "http://88.198.156.44:80"
+          "alt_ip": "http://88.198.156.44:44099"
         }
       ]
     },
@@ -69,7 +73,12 @@
     "explorerTx": "https://dashblockexplorer.com/tx/${ID}",
     "nodes": [
       {
-        "url": "https://dashnode1.adamant.im"
+        "url": "https://dashnode1.adamant.im",
+        "alt_ip": "http://45.85.147.224:44099"
+      },
+      {
+        "url": "https://dashnode2.adamant.im",
+        "alt_ip": "http://207.180.210.95:44099"
       }
     ],
     "explorer": "https://dashblockexplorer.com",
@@ -79,7 +88,8 @@
     "explorerTx": "https://dogechain.info/tx/${ID}",
     "nodes": [
       {
-        "url": "https://dogenode1.adamant.im"
+        "url": "https://dogenode1.adamant.im",
+        "alt_ip": "http://5.9.99.62:44099"
       },
       {
         "url": "https://dogenode2.adamant.im",
@@ -110,19 +120,15 @@
     "explorerTx": "https://liskscan.com/transaction/${ID}",
     "nodes": [
       {
-        "url": "https://lisknode3.adamant.im"
-      },
-      {
-        "url": "https://lisknode4.adamant.im"
+        "url": "https://lisknode5.adamant.im",
+        "alt_ip": "http://38.242.243.29:44099"
       }
     ],
     "services": {
       "lskService": [
         {
-          "url": "https://liskservice3.adamant.im"
-        },
-        {
-          "url": "https://liskservice4.adamant.im"
+          "url": "https://liskservice5.adamant.im",
+          "alt_ip": "http://38.242.243.29:44098"
         }
       ]
     },

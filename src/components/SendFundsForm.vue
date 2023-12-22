@@ -136,6 +136,7 @@
         :label="$t('transfer.increase_fee')"
         color="grey darken-1"
       />
+      <v-checkbox v-if="debug" v-model="dryRun" label="Dry run" color="grey darken-1" />
 
       <div class="text-center">
         <v-btn :class="`${className}__button`" class="a-btn-primary" @click="confirm">
@@ -185,6 +186,8 @@
 </template>
 
 <script>
+import lskIndexer from '@/lib/nodes/lsk-indexer'
+import axios from 'axios'
 import { nextTick } from 'vue'
 
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
@@ -301,7 +304,19 @@ export default {
     fetchAddress: null, // fn throttle
     increaseFee: false,
     showWarningOnPartnerAddressDialog: false,
-    warningOnPartnerInfo: {}
+    warningOnPartnerInfo: {},
+
+    // Account exists check
+    // Currently works only with LSK
+    account: {
+      isNew: false,
+      abortController: new AbortController(),
+      loading: false
+    },
+
+    // Debugging section
+    dryRun: false,
+    debug: !!localStorage.getItem('DEBUG')
   }),
   computed: {
     className: () => 'send-funds-form',
@@ -529,6 +544,9 @@ export default {
       } else {
         this.amount = 0
       }
+    },
+    cryptoAddress(cryptoAddress) {
+      this.checkIsNewAccount(cryptoAddress)
     }
   },
   created() {
@@ -545,6 +563,44 @@ export default {
     this.fetchUserCryptoAddress()
   },
   methods: {
+    checkIsNewAccount(cryptoAddress) {
+      this.account.isNew = false
+
+      if (!validateAddress(this.currency, cryptoAddress)) {
+        return
+      }
+
+      // Cancel the previous fetch request
+      this.account.abortController.abort()
+
+      // Create a new AbortController for the current request
+      this.account.abortController = new AbortController()
+
+      switch (this.currency) {
+        case Cryptos.LSK:
+          this.account.loading = true
+          lskIndexer
+            .checkAccountExists(cryptoAddress, {
+              signal: this.account.abortController.signal
+            })
+            .then((exists) => {
+              this.account.isNew = !exists
+            })
+            .catch((err) => {
+              if (axios.isCancel(err)) {
+                // Request canceled
+                return
+              }
+
+              throw err
+            })
+            .finally(() => {
+              this.account.loading = false
+            })
+
+          break
+      }
+    },
     confirm() {
       const abstract = validateForm.call(this)
 
@@ -711,7 +767,8 @@ export default {
           fee: this.transferFee,
           increaseFee: this.increaseFee,
           textData: this.textData,
-          replyToId: this.replyToId
+          replyToId: this.replyToId,
+          dryRun: this.dryRun
         })
       }
     },
@@ -790,7 +847,8 @@ export default {
         this.$store.getters[`${this.currency.toLowerCase()}/fee`](
           amount || this.balance,
           this.cryptoAddress,
-          this.textData
+          this.textData,
+          this.account.isNew
         )
       )
     }
