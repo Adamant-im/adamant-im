@@ -24,8 +24,8 @@
               @click:transaction="goToTransaction"
               @click:icon="goToChat"
             />
-            <v-list-item v-if="isOlderLoading">
-              <InlineSpinner />
+            <v-list-item>
+              <InlineSpinner v-if="isOlderLoading" />
             </v-list-item>
           </v-list>
 

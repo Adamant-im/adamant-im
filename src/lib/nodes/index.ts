@@ -4,6 +4,7 @@ import { dash } from './dash'
 import { doge } from './doge'
 import { eth } from './eth'
 import { lsk } from './lsk'
+import { lskIndexer } from './lsk-indexer'
 
 export const nodes = {
   adm,
@@ -12,4 +13,8 @@ export const nodes = {
   doge,
   eth,
   lsk
+}
+
+export const services = {
+  lskIndexer
 }

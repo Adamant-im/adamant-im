@@ -1,13 +1,15 @@
 import BigNumber from '@/lib/bignumber'
-import LskBaseApi from '../../../lib/lisk/lsk-base-api'
+import { LiskAccount, LSK_TXS_PER_PAGE } from '../../../lib/lisk'
+import { getLiskTimestamp } from '../../../lib/lisk/lisk-utils'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
+import { lsk } from '../../../lib/nodes/lsk'
+import lskIndexer from '../../../lib/nodes/lsk-indexer'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 
 /**
  * @typedef {Object} Options
- * @property {function} apiCtor class to use for interaction with the crypto API
  * @property {function(LskBaseApi, object): Promise} getNewTransactions function to get the new transactions list (second arg is a Vuex context)
  * @property {function(LskBaseApi, object): Promise} getOldTransactions function to get the old transactions list (second arg is a Vuex context)
  * @property {function(function(): LskBaseApi): object} customActions function to create custom actions for the current crypto (optional)
@@ -19,18 +21,18 @@ const DEFAULT_CUSTOM_ACTIONS = () => ({})
  * @param {Options} options config options
  */
 function createActions(options) {
-  const Api = options.apiCtor || LskBaseApi
   const { customActions = DEFAULT_CUSTOM_ACTIONS, fetchRetryTimeout } = options
 
-  /** @type {LskBaseApi} */
-  let api = null
+  /** @type {LiskAccount | null} */
+  let account = null
 
   return {
     afterLogin: {
       root: true,
       handler(context, passphrase) {
-        api = new Api(passphrase)
-        context.commit('address', api.address)
+        account = new LiskAccount(passphrase)
+
+        context.commit('address', account.getLisk32Address())
         context.dispatch('updateStatus')
         context.dispatch('storeAddress')
       }
@@ -40,7 +42,7 @@ function createActions(options) {
     reset: {
       root: true,
       handler(context) {
-        api = null
+        account = null
         context.commit('reset')
       }
     },
@@ -51,8 +53,9 @@ function createActions(options) {
       handler(context) {
         const passphrase = context.rootGetters.getPassPhrase
         if (passphrase) {
-          api = new Api(passphrase)
-          context.commit('address', api.address)
+          account = new LiskAccount(passphrase)
+
+          context.commit('address', account.getLisk32Address())
           context.dispatch('updateStatus')
           context.dispatch('storeAddress')
         }
@@ -63,28 +66,26 @@ function createActions(options) {
       storeCryptoAddress(state.crypto, state.address)
     },
 
-    updateStatus(context) {
-      if (!api) return
-      api.getBalance().then((balance) => context.commit('status', { balance }))
-    },
-
-    sendTokens(context, { amount, admAddress, address, comments, fee, textData, replyToId }) {
-      if (!api) return
+    sendTokens(
+      context,
+      { amount, admAddress, address, comments, fee, textData, replyToId, dryRun }
+    ) {
+      if (!account) return
       address = address.trim()
 
       const crypto = context.state.crypto
 
-      return api
+      return account
         .createTransaction(address, amount, fee, context.state.nonce, textData)
         .then((tx) => {
-          if (!admAddress) return tx.hex
+          if (!admAddress || dryRun) return tx.hex
 
           const msgPayload = {
             address: admAddress,
             amount: BigNumber(amount).toFixed(),
             comments,
             crypto,
-            hash: tx.txid,
+            hash: tx.id,
             replyToId
           }
 
@@ -94,7 +95,7 @@ function createActions(options) {
             .then((success) => (success ? tx.hex : Promise.reject(new Error('adm_message'))))
         })
         .then((rawTx) =>
-          api.sendTransaction(rawTx).then(
+          lsk.sendTransaction(rawTx, dryRun).then(
             (hash) => ({ hash }),
             (error) => ({ error })
           )
@@ -127,22 +128,11 @@ function createActions(options) {
     },
 
     /**
-     * Calculates fee for a Tx
-     * @param {object} context Vuex action context
-     * @
-     */
-    calculateFee(context, payload) {
-      if (!api) return
-      return api.getFee(payload.address, payload.amount, payload.nonce, payload.data)
-    },
-
-    /**
      * Retrieves transaction details
      * @param {object} context Vuex action context
      * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
      */
     async getTransaction(context, payload) {
-      if (!api) return
       if (!payload.hash) return
 
       let existing = context.state.transactions[payload.hash]
@@ -164,7 +154,7 @@ function createActions(options) {
 
       let tx = null
       try {
-        tx = await api.getTransaction(payload.hash)
+        tx = await lskIndexer.getTransaction(payload.hash, context.state.address)
       } catch (e) {
         /* empty */
       }
@@ -233,82 +223,80 @@ function createActions(options) {
      * Retrieves new transactions: those that follow the most recently retrieved one.
      * @param {any} context Vuex action context
      */
-    async getNewTransactions(context) {
-      if (!api) return
-      const options = {}
+    async getNewTransactions({ state, commit, dispatch }) {
       // Magic here helps to refresh Tx list when browser deletes it
-      if (Object.keys(context.state.transactions).length < context.state.transactionsCount) {
-        context.state.transactionsCount = 0
-        context.state.maxTimestamp = -1
-        context.state.minTimestamp = Infinity
-        context.commit('bottom', false)
-      }
-      if (context.state.maxTimestamp > 0) {
-        options.fromTimestamp = context.state.maxTimestamp
-        options.sort = 'timestamp:asc'
-      } else {
-        // First time we fetch txs — get newest
-        options.sort = 'timestamp:desc'
+      if (Object.keys(state.transactions).length < state.transactionsCount) {
+        state.transactionsCount = 0
+        state.maxTimestamp = -1
+        state.minTimestamp = Infinity
+        commit('bottom', false)
       }
 
-      context.commit('areRecentLoading', true)
-      return api.getTransactions(options).then(
-        (transactions) => {
-          context.commit('areRecentLoading', false)
-          if (transactions && transactions.length > 0) {
-            context.commit('transactions', { transactions, updateTimestamps: true })
-            // get new transactions until we fetch the newest one
-            if (options.fromTimestamp && transactions.length === api.TX_CHUNK_SIZE) {
-              this.dispatch(`${context.state.crypto.toLowerCase()}/getNewTransactions`)
-            }
+      commit('areRecentLoading', true)
+      try {
+        const timestamp = state.maxTimestamp
+          ? `${getLiskTimestamp(state.maxTimestamp)}:`
+          : undefined
+
+        const transactions = await lskIndexer.getTransactions({
+          address: state.address,
+          // First time we fetch txs — get newest first
+          sort: state.maxTimestamp > 0 ? 'timestamp:asc' : 'timestamp:desc',
+          timestamp,
+          limit: LSK_TXS_PER_PAGE
+        })
+        commit('areRecentLoading', false)
+
+        if (transactions.length > 0) {
+          commit('transactions', { transactions, updateTimestamps: true })
+
+          if (timestamp && transactions.length === LSK_TXS_PER_PAGE) {
+            dispatch(`${state.crypto.toLowerCase()}/getNewTransactions`)
           }
-        },
-        (error) => {
-          context.commit('areRecentLoading', false)
-          return Promise.reject(error)
         }
-      )
+      } catch (err) {
+        commit('areRecentLoading', false)
+        throw err
+      }
     },
 
     /**
      * Retrieves old transactions: those that preceded the oldest among the retrieved ones.
      * @param {any} context Vuex action context
      */
-    async getOldTransactions(context) {
-      if (!api) return
+    async getOldTransactions({ state, commit }) {
       // If we already have the most old transaction for this address, no need to request anything
-      if (context.state.bottomReached) return Promise.resolve()
+      if (state.bottomReached) return
 
-      const options = {}
-      if (context.state.minTimestamp < Infinity) {
-        options.toTimestamp = context.state.minTimestamp
-      }
-      options.sort = 'timestamp:desc'
+      commit('areOlderLoading', true)
+      try {
+        const timestamp =
+          state.minTimestamp < Infinity ? `:${getLiskTimestamp(state.minTimestamp)}` : undefined
 
-      context.commit('areOlderLoading', true)
+        const transactions = await lskIndexer.getTransactions({
+          address: state.address,
+          sort: 'timestamp:desc',
+          timestamp,
+          limit: LSK_TXS_PER_PAGE
+        })
+        commit('areOlderLoading', false)
 
-      return api.getTransactions(options).then(
-        (transactions) => {
-          context.commit('areOlderLoading', false)
-
-          if (transactions && transactions.length > 0) {
-            context.commit('transactions', { transactions, updateTimestamps: true })
-          }
-
-          // Successful but empty response means, that the oldest transaction for the current
-          // address has been received already
-          if (transactions && transactions.length === 0) {
-            context.commit('bottom', true)
-          }
-        },
-        (error) => {
-          context.commit('areOlderLoading', false)
-          return Promise.reject(error)
+        if (transactions.length > 0) {
+          commit('transactions', { transactions, updateTimestamps: true })
         }
-      )
+
+        // Successful but empty response means, that the oldest transaction for the current
+        // address has been received already
+        if (transactions.length === 0) {
+          commit('bottom', true)
+        }
+      } catch (err) {
+        commit('areOlderLoading', false)
+        throw err
+      }
     },
 
-    ...customActions(() => api)
+    ...customActions(() => account)
   }
 }
 
