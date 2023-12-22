@@ -44,7 +44,7 @@ export class LskNode extends Node {
         const { error, result } = res.data
 
         if (error) {
-          throw new Error(error.message, { cause: error.code }) // @todo lisk api error
+          throw new Error(error.message, { cause: error.code })
         }
 
         return result!

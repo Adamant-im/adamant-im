@@ -34,7 +34,7 @@ export type RpcResults = {
     }
     result: {
       availableBalance: string
-      lockedBalances: [] // @todo array of string?
+      lockedBalances: [] // not sure about type, it may be an array of string
     }
   }
   txpool_postTransaction: {

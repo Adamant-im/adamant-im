@@ -159,7 +159,7 @@ export function createUnsignedTransaction(
     fee: BigInt(feeString),
     nonce: BigInt(nonceString),
     senderPublicKey: Buffer.from(senderPublicKey, 'hex'),
-    params: Buffer.alloc(0) as unknown, // @todo fix type
+    params: Buffer.alloc(0) as unknown, // must be Buffer when passing to `validator.validate()` and then overridden with an object
     signatures: []
   }
 
