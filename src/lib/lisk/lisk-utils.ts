@@ -219,6 +219,10 @@ type EstimateFeeParams = {
    */
   data?: string
   isNewAccount?: boolean
+  /**
+   * Current nonce
+   */
+  nonce: number | string
 }
 
 /**
@@ -232,6 +236,7 @@ export function estimateFee(params?: EstimateFeeParams) {
     keyPair = LSK_DEMO_ACCOUNT.keyPair,
     recipientAddress = LSK_DEMO_ACCOUNT.address,
     data = '',
+    nonce = 0,
     isNewAccount
   } = params || {}
 
@@ -239,7 +244,7 @@ export function estimateFee(params?: EstimateFeeParams) {
     module: 'token',
     command: 'transfer',
     fee: BigInt(0),
-    nonce: BigInt(0),
+    nonce: BigInt(nonce),
     senderPublicKey: Buffer.from(keyPair.publicKey, 'hex'),
     params: {
       tokenID: Buffer.from(LSK_TOKEN_ID, 'hex'),
