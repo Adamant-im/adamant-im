@@ -222,7 +222,7 @@ type EstimateFeeParams = {
   /**
    * Current nonce
    */
-  nonce: number | string
+  nonce?: number | string
 }
 
 /**
