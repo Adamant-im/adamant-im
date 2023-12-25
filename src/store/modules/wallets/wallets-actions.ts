@@ -12,7 +12,7 @@ export const actions: ActionTree<WalletsState, RootState> = {
       return {
         isVisible,
         symbol
-      } as CoinSymbol
+      }
     })
     dispatch('setWalletSymbolsTemplates', walletSymbols)
   },
