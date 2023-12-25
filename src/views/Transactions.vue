@@ -123,7 +123,7 @@ export default {
       const count = addresses.length
       return addresses.includes(this.$store.state[this.crypto.toLowerCase()].address)
         ? `${this.$tc('transaction.me_and_addresses', count - 1)}`
-        : this.$tc('transaction.addresses', count)
+        : addresses[0] + ' ' + this.$tc('transaction.addresses', count - 1)
     },
     goToTransaction(transactionId) {
       this.$router.push({
