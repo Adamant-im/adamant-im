@@ -135,7 +135,7 @@ const store = {
     },
     logout({ dispatch }) {
       dispatch('reset')
-      dispatch('wallets/initWalletsSymbolsTemplates', null)
+      dispatch('wallets/initWalletsSymbolsTemplates')
     },
     unlock({ state, dispatch }) {
       // user updated an app, F5 or something
