@@ -12,7 +12,7 @@ const state = () => ({
 })
 
 const mutations = {
-  show (state, { message = '', timeout = SNACKBAR_TIMEOUT, color = '' }) {
+  show(state, { message = '', timeout = SNACKBAR_TIMEOUT, color = '' }) {
     if (message) {
       state.message = message
       state.color = color
@@ -21,10 +21,10 @@ const mutations = {
       state.show = true
     }
   },
-  changeState (state, value) {
+  changeState(state, value) {
     state.show = value
   },
-  resetOptions (state) {
+  resetOptions(state) {
     state.message = initialState.message
     state.timeout = initialState.timeout
     state.color = initialState.color
@@ -32,7 +32,7 @@ const mutations = {
 }
 
 const actions = {
-  show ({ commit }, options) {
+  show({ commit }, options) {
     commit('show', options)
   }
 }

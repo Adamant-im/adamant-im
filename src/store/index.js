@@ -123,7 +123,7 @@ const store = {
         dispatch('afterLogin', passphrase)
       })
     },
-    loginViaPassword({ commit, dispatch, state }, password) {
+    loginViaPassword({ commit, dispatch }, password) {
       return loginViaPassword(password, this).then((account) => {
         commit('setIDBReady', true)
 
@@ -184,16 +184,18 @@ const store = {
         commit('setBalanceStatus', FetchStatus.Loading)
       }
 
-      return getCurrentAccount().then((account) => {
-        commit('setBalance', account.balance)
-        commit('setBalanceStatus', FetchStatus.Success)
-        if (account.balance > Fees.KVS) {
-          flushCryptoAddresses()
-        }
-      }).catch(err => {
-        commit('setBalanceStatus', FetchStatus.Error)
-        throw err
-      })
+      return getCurrentAccount()
+        .then((account) => {
+          commit('setBalance', account.balance)
+          commit('setBalanceStatus', FetchStatus.Success)
+          if (account.balance > Fees.KVS) {
+            flushCryptoAddresses()
+          }
+        })
+        .catch((err) => {
+          commit('setBalanceStatus', FetchStatus.Error)
+          throw err
+        })
     },
 
     startInterval: {

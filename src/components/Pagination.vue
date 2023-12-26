@@ -1,17 +1,7 @@
 <template>
   <div>
-    <v-btn
-      icon="mdi-chevron-left"
-      :disabled="page <= 1"
-      variant="text"
-      @click="page--"
-    />
-    <v-btn
-      icon="mdi-chevron-right"
-      :disabled="page >= pages"
-      variant="text"
-      @click="page++"
-    />
+    <v-btn icon="mdi-chevron-left" :disabled="page <= 1" variant="text" @click="page--" />
+    <v-btn icon="mdi-chevron-right" :disabled="page >= pages" variant="text" @click="page++" />
   </div>
 </template>
 
@@ -30,10 +20,10 @@ export default {
   emits: ['update:modelValue'],
   computed: {
     page: {
-      get () {
+      get() {
         return this.modelValue
       },
-      set (value) {
+      set(value) {
         if (value > this.pages || value < 1) {
           return
         }

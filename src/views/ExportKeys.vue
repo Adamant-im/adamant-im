@@ -7,15 +7,8 @@
       flat
       fixed
     />
-    <v-container
-      fluid
-      class="px-0 container--with-app-toolbar"
-    >
-      <v-row
-        justify="center"
-        no-gutters
-        class="mt-6"
-      >
+    <v-container fluid class="px-0 container--with-app-toolbar">
+      <v-row justify="center" no-gutters class="mt-6">
         <container padding>
           <export-keys-form />
         </container>
@@ -24,8 +17,8 @@
   </div>
 </template>
 <script>
-import AppToolbarCentered from '@/components/AppToolbarCentered'
-import ExportKeysForm from '@/components/ExportKeysForm'
+import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+import ExportKeysForm from '@/components/ExportKeysForm.vue'
 
 export default {
   components: {

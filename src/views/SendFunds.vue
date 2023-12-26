@@ -1,20 +1,9 @@
 <template>
   <div>
-    <app-toolbar-centered
-      app
-      :title="$t('home.send_btn')"
-      flat
-      fixed
-    />
+    <app-toolbar-centered app :title="$t('home.send_btn')" flat fixed />
 
-    <v-container
-      fluid
-      class="px-0 container--with-app-toolbar"
-    >
-      <v-row
-        justify="center"
-        no-gutters
-      >
+    <v-container fluid class="px-0 container--with-app-toolbar">
+      <v-row justify="center" no-gutters>
         <container padding>
           <send-funds-form
             class="pt-5"
@@ -37,8 +26,8 @@ import { Cryptos } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { isNumeric } from '@/lib/numericHelpers'
 
-import AppToolbarCentered from '@/components/AppToolbarCentered'
-import SendFundsForm from '@/components/SendFundsForm'
+import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+import SendFundsForm from '@/components/SendFundsForm.vue'
 
 export default {
   components: {
@@ -51,17 +40,17 @@ export default {
     amountToSend: undefined
   }),
   computed: {
-    comeFromChat () {
+    comeFromChat() {
       return this.recipientAddress.length > 0
     }
   },
-  created () {
+  created() {
     this.validateCryptoCurrency()
     this.validateRecipientAddress()
     this.validateAmountToSend()
   },
   methods: {
-    validateCryptoCurrency () {
+    validateCryptoCurrency() {
       if (
         this.$route.params.cryptoCurrency &&
         Object.keys(Cryptos).includes(this.$route.params.cryptoCurrency)
@@ -69,17 +58,17 @@ export default {
         this.cryptoCurrency = this.$route.params.cryptoCurrency
       }
     },
-    validateRecipientAddress () {
+    validateRecipientAddress() {
       if (validateAddress('ADM', this.$route.params.recipientAddress)) {
         this.recipientAddress = this.$route.params.recipientAddress
       }
     },
-    validateAmountToSend () {
+    validateAmountToSend() {
       if (isNumeric(this.$route.params.amountToSend)) {
         this.amountToSend = parseFloat(this.$route.params.amountToSend)
       }
     },
-    onSend (transactionId, crypto) {
+    onSend(transactionId, crypto) {
       const userComeFrom = this.$route.query.from
 
       if (userComeFrom) {
@@ -88,7 +77,7 @@ export default {
         this.$router.replace(`/transactions/${crypto}/${transactionId}`)
       }
     },
-    onError (message) {
+    onError(message) {
       this.$store.dispatch('snackbar/show', {
         message,
         color: '#ED5270',

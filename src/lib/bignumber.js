@@ -20,11 +20,11 @@ BigNumber.fromBuffer = function (buf, opts) {
 
   const endian = { 1: 'big', '-1': 'little' }[opts.endian] || opts.endian || 'big'
 
-  const size = opts.size === 'auto' ? Math.ceil(buf.length) : (opts.size || 1)
+  const size = opts.size === 'auto' ? Math.ceil(buf.length) : opts.size || 1
 
   if (buf.length % size !== 0) {
-    throw new RangeError('Buffer length (' + buf.length + ')' +
-      ' must be a multiple of size (' + size + ')'
+    throw new RangeError(
+      'Buffer length (' + buf.length + ')' + ' must be a multiple of size (' + size + ')'
     )
   }
 
@@ -32,14 +32,15 @@ BigNumber.fromBuffer = function (buf, opts) {
   for (let i = 0; i < buf.length; i += size) {
     const chunk = []
     for (let j = 0; j < size; j++) {
-      chunk.push(buf[i + (endian === 'big' ? j : (size - j - 1))])
+      chunk.push(buf[i + (endian === 'big' ? j : size - j - 1)])
     }
 
-    hex.push(chunk
-      .map(function (c) {
-        return (c < 16 ? '0' : '') + c.toString(16)
-      })
-      .join('')
+    hex.push(
+      chunk
+        .map(function (c) {
+          return (c < 16 ? '0' : '') + c.toString(16)
+        })
+        .join('')
     )
   }
 
@@ -89,12 +90,10 @@ BigNumber.prototype.toBuffer = function (opts) {
 
   let hex = this.toString(16)
   if (hex.charAt(0) === '-') {
-    throw new Error(
-      'Converting negative numbers to Buffers not supported yet'
-    )
+    throw new Error('Converting negative numbers to Buffers not supported yet')
   }
 
-  const size = opts.size === 'auto' ? Math.ceil(hex.length / 2) : (opts.size || 1)
+  const size = opts.size === 'auto' ? Math.ceil(hex.length / 2) : opts.size || 1
 
   len = Math.ceil(hex.length / (2 * size)) * size
   buf = Buffer.alloc(len)
@@ -102,9 +101,9 @@ BigNumber.prototype.toBuffer = function (opts) {
   // Zero-pad the hex string so the chunks are all `size` long
   while (hex.length < 2 * len) hex = '0' + hex
 
-  const hx = hex
-    .split(new RegExp('(.{' + (2 * size) + '})'))
-    .filter(function (s) { return s.length > 0 })
+  const hx = hex.split(new RegExp('(.{' + 2 * size + '})')).filter(function (s) {
+    return s.length > 0
+  })
 
   hx.forEach(function (chunk, i) {
     for (let j = 0; j < size; j++) {

@@ -1,46 +1,132 @@
 {
-  "minApiVersion": "0.5.2",
-  "server": {
-    "adm": [
+  "adm": {
+    "minNodeVersion": "0.7.0",
+    "nodes": [
       {
-        "url": "http://163.172.161.218:36667"
+        "url": "https://clown.adamant.im"
       },
       {
-        "url": "http://23.226.231.225:36666/"
+        "url": "https://lake.adamant.im"
       },
       {
-        "url": "http://78.47.205.206:36666/"
+        "url": "https://endless.adamant.im",
+        "alt_ip": "http://149.102.157.15:36666"
       },
       {
-        "url": "http://5.161.53.74:36666/"
+        "url": "https://bid.adamant.im"
+      },
+      {
+        "url": "https://unusual.adamant.im"
+      },
+      {
+        "url": "https://debate.adamant.im",
+        "alt_ip": "http://95.216.161.113:36666"
+      },
+      {
+        "url": "http://78.47.205.206:36666"
+      },
+      {
+        "url": "http://5.161.53.74:36666"
+      },
+      {
+        "url": "http://184.94.215.92:45555"
+      },
+      {
+        "url": "https://node1.adamant.business"
+      },
+      {
+        "url": "https://node2.blockchain2fa.io"
       }
     ],
-    "eth": [
+    "services": {
+      "infoService": [
+        {
+          "url": "https://info.adamant.im",
+          "alt_ip": "http://88.198.156.44:80"
+        }
+      ]
+    },
+    "explorerTx": "https://explorer.adamant.im/tx/${ID}",
+    "explorer": "https://explorer.adamant.im",
+    "explorerAddress": "https://explorer.adamant.im/address/${ID}"
+  },
+  "btc": {
+    "nodes": [
+      {
+        "url": "https://btcnode1.adamant.im",
+        "alt_ip": "http://176.9.38.204:44099"
+      },
+      {
+        "url": "https://btcnode2.adamant.im",
+        "alt_ip": "http://176.9.32.126:44099"
+      }
+    ],
+    "explorerTx": "https://explorer.btc.com/btc/transaction/${ID}",
+    "explorer": "https://explorer.btc.com",
+    "explorerAddress": "https://explorer.btc.com/btc/address/${ID}"
+  },
+  "dash": {
+    "nodes": [
+      {
+        "url": "https://dashnode1.adamant.im"
+      }
+    ],
+    "explorerTx": "https://dashblockexplorer.com/tx/${ID}",
+    "explorer": "https://dashblockexplorer.com",
+    "explorerAddress": "https://dashblockexplorer.com/address/${ID}"
+  },
+  "doge": {
+    "nodes": [
+      {
+        "url": "https://dogenode1.adamant.im"
+      },
+      {
+        "url": "https://dogenode2.adamant.im",
+        "alt_ip": "http://176.9.32.126:44098"
+      }
+    ],
+    "explorerTx": "https://dogechain.info/tx/${ID}",
+    "explorer": "https://dogechain.info",
+    "explorerAddress": "https://dogechain.info/address/${ID}"
+  },
+  "eth": {
+    "nodes": [
       {
         "url": "https://ethnode1.adamant.im",
+        "alt_ip": "http://95.216.41.106:44099",
+        "hasIndex": true
+      },
+      {
+        "url": "https://ethnode2.adamant.im",
+        "alt_ip": "http://95.216.114.252:44099",
         "hasIndex": true
       }
     ],
-    "doge": [
-      { "url": "https://dogenode1.adamant.im/" }
-    ],
-    "dash": [
-      { "url": "https://dashnode1.adamant.im" }
-    ],
-    "btc": [
-      { "url": "https://btcnode2.adamant.im" }
-    ],
-    "lsk": [
-      { "url": "https://lisknode3.adamant.im" },
-      { "url": "https://lisknode4.adamant.im" }
-    ],
-    "lskservice": [
-      { "url": "https://liskservice3.adamant.im" },
-      { "url": "https://liskservice4.adamant.im" }
-    ],
-    "infoservice": [
-      { "url": "https://info.adamant.im" }
-    ]
+    "explorerTx": "https://etherscan.io/tx/${ID}",
+    "explorer": "https://etherscan.io",
+    "explorerAddress": "https://etherscan.io/address/${ID}"
   },
-  "env": "test"
+  "lsk": {
+    "nodes": [
+      {
+        "url": "https://lisknode3.adamant.im"
+      },
+      {
+        "url": "https://lisknode4.adamant.im"
+      }
+    ],
+    "explorerTx": "https://liskscan.com/transaction/${ID}",
+    "services": {
+      "lskService": [
+        {
+          "url": "https://liskservice3.adamant.im"
+        },
+        {
+          "url": "https://liskservice4.adamant.im"
+        }
+      ]
+    },
+    "explorer": "https://liskscan.com",
+    "explorerAddress": "https://liskscan.com/account/${ID}"
+  }
 }

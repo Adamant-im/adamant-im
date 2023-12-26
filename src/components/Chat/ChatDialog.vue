@@ -1,8 +1,5 @@
 <template>
-  <v-dialog
-    v-model="show"
-    width="500"
-  >
+  <v-dialog v-model="show" width="500">
     <v-card>
       <v-card-title class="headline">
         {{ title }}
@@ -13,10 +10,7 @@
       <v-card-actions>
         <v-spacer />
 
-        <v-btn
-          variant="text"
-          @click="show = false"
-        >
+        <v-btn variant="text" @click="show = false">
           {{ $t('chats.ok') }}
         </v-btn>
       </v-card-actions>
@@ -43,10 +37,10 @@ export default {
   emits: ['update:modelValue'],
   computed: {
     show: {
-      get () {
+      get() {
         return this.modelValue
       },
-      set (value) {
+      set(value) {
         this.$emit('update:modelValue', value)
       }
     }

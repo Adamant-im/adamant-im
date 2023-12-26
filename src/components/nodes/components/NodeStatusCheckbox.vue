@@ -34,7 +34,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import '../../../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .node-toggle-status-checkbox {
   font-size: 16px;

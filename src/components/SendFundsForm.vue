@@ -136,6 +136,7 @@
         :label="$t('transfer.increase_fee')"
         color="grey darken-1"
       />
+      <v-checkbox v-if="debug" v-model="dryRun" label="Dry run" color="grey darken-1" />
 
       <div class="text-center">
         <v-btn :class="`${className}__button`" class="a-btn-primary" @click="confirm">
@@ -152,9 +153,8 @@
 
         <v-divider class="a-divider" />
 
-        <!-- eslint-disable vue/no-v-html -- Safe internal content -->
+        <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -- Safe internal content -->
         <v-card-text class="a-text-regular-enlarged pa-4" v-html="confirmMessage" />
-        <!-- eslint-enable vue/no-v-html -->
 
         <v-card-actions class="pa-4">
           <v-spacer />
@@ -186,10 +186,12 @@
 </template>
 
 <script>
+import lskIndexer from '@/lib/nodes/lsk-indexer'
+import axios from 'axios'
 import { nextTick } from 'vue'
 
-import QrcodeCapture from '@/components/QrcodeCapture'
-import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
+import QrcodeCapture from '@/components/QrcodeCapture.vue'
+import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
 
@@ -216,7 +218,7 @@ import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
 
-import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog'
+import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
 
@@ -302,7 +304,19 @@ export default {
     fetchAddress: null, // fn throttle
     increaseFee: false,
     showWarningOnPartnerAddressDialog: false,
-    warningOnPartnerInfo: {}
+    warningOnPartnerInfo: {},
+
+    // Account exists check
+    // Currently works only with LSK
+    account: {
+      isNew: false,
+      abortController: new AbortController(),
+      loading: false
+    },
+
+    // Debugging section
+    dryRun: false,
+    debug: !!localStorage.getItem('DEBUG')
   }),
   computed: {
     className: () => 'send-funds-form',
@@ -475,10 +489,10 @@ export default {
         ],
         amount: [
           (v) => v > 0 || this.$t('transfer.error_incorrect_amount'),
-          (v) => this.amount <= this.maxToTransfer || this.$t('transfer.error_not_enough'),
+          () => this.amount <= this.maxToTransfer || this.$t('transfer.error_not_enough'),
           (v) => this.validateMinAmount(v, this.currency) || this.$t('transfer.error_dust_amount'),
           (v) => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_precision'),
-          (v) =>
+          () =>
             isErc20(this.currency)
               ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
               : true
@@ -530,6 +544,9 @@ export default {
       } else {
         this.amount = 0
       }
+    },
+    cryptoAddress(cryptoAddress) {
+      this.checkIsNewAccount(cryptoAddress)
     }
   },
   created() {
@@ -546,6 +563,44 @@ export default {
     this.fetchUserCryptoAddress()
   },
   methods: {
+    checkIsNewAccount(cryptoAddress) {
+      this.account.isNew = false
+
+      if (!validateAddress(this.currency, cryptoAddress)) {
+        return
+      }
+
+      // Cancel the previous fetch request
+      this.account.abortController.abort()
+
+      // Create a new AbortController for the current request
+      this.account.abortController = new AbortController()
+
+      switch (this.currency) {
+        case Cryptos.LSK:
+          this.account.loading = true
+          lskIndexer
+            .checkAccountExists(cryptoAddress, {
+              signal: this.account.abortController.signal
+            })
+            .then((exists) => {
+              this.account.isNew = !exists
+            })
+            .catch((err) => {
+              if (axios.isCancel(err)) {
+                // Request canceled
+                return
+              }
+
+              throw err
+            })
+            .finally(() => {
+              this.account.loading = false
+            })
+
+          break
+      }
+    },
     confirm() {
       const abstract = validateForm.call(this)
 
@@ -712,7 +767,8 @@ export default {
           fee: this.transferFee,
           increaseFee: this.increaseFee,
           textData: this.textData,
-          replyToId: this.replyToId
+          replyToId: this.replyToId,
+          dryRun: this.dryRun
         })
       }
     },
@@ -791,7 +847,8 @@ export default {
         this.$store.getters[`${this.currency.toLowerCase()}/fee`](
           amount || this.balance,
           this.cryptoAddress,
-          this.textData
+          this.textData,
+          this.account.isNew
         )
       )
     }

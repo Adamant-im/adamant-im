@@ -12,8 +12,8 @@ export default (timestamp) => {
   } else if (isCurrentWeek(new Date(timestamp))) {
     return date.format('ddd')
   } else {
-    const currentYear = (new Date()).getFullYear()
-    const messageYear = (new Date(timestamp)).getFullYear()
+    const currentYear = new Date().getFullYear()
+    const messageYear = new Date(timestamp).getFullYear()
 
     if (currentYear === messageYear) {
       return date.format('MMM DD')

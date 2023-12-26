@@ -1,30 +1,12 @@
 <template>
-  <v-dialog
-    v-model="show"
-    width="250"
-  >
+  <v-dialog v-model="show" width="250">
     <v-card>
-      <v-row
-        justify="center"
-        class="py-3"
-        no-gutters
-      >
-        <div
-          :style="{ cursor: 'pointer' }"
-          @click="saveQrcode"
-        >
-          <QrcodeRenderer
-            ref="qrcode"
-            :text="text"
-            :logo="logoURL"
-            :opts="opts"
-          />
+      <v-row justify="center" class="py-3" no-gutters>
+        <div :style="{ cursor: 'pointer' }" @click="saveQrcode">
+          <QrcodeRenderer ref="qrcode" :text="text" :logo="logoURL" :opts="opts" />
         </div>
 
-        <v-btn
-          class="a-btn-primary mt-4 mb-2"
-          @click="saveQrcode"
-        >
+        <v-btn class="a-btn-primary mt-4 mb-2" @click="saveQrcode">
           {{ $t('login.save_qr_code_to_images') }}
         </v-btn>
       </v-row>
@@ -36,7 +18,7 @@
 import b64toBlob from 'b64-to-blob'
 import FileSaver from 'file-saver'
 
-import QrcodeRenderer from '@/components/QrcodeRenderer'
+import QrcodeRenderer from '@/components/QrcodeRenderer.vue'
 
 export default {
   components: {
@@ -64,19 +46,19 @@ export default {
   }),
   computed: {
     show: {
-      get () {
+      get() {
         return this.modelValue
       },
-      set (value) {
+      set(value) {
         this.$emit('update:modelValue', value)
       }
     },
-    logoURL () {
+    logoURL() {
       return this.logo ? '/img/adm-qr-invert.png' : ''
     }
   },
   methods: {
-    saveQrcode () {
+    saveQrcode() {
       const imgUrl = this.$refs.qrcode.$el.src
       const base64Data = imgUrl.slice(22, imgUrl.length)
       const byteCharacters = b64toBlob(base64Data)

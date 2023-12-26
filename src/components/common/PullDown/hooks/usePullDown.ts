@@ -36,7 +36,7 @@ export function usePullDown(onAction: () => void): UsePullDownResult {
   const pullActionActivated = ref(false)
 
   const progressPercentage = computed(() => {
-    return Math.min(elementTopOffset.value * 100 / PULL_ACTIVATION_OFFSET, 100)
+    return Math.min((elementTopOffset.value * 100) / PULL_ACTIVATION_OFFSET, 100)
   })
   const pullDownActivated = computed(() => progressPercentage.value === 100)
   const pullDownReleased = computed(() => elementTopOffset.value === 0)

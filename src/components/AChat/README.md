@@ -17,6 +17,7 @@ npm i --save file:packages/chat
 ```
 
 ## Usage
+
 ```vue
 <template>
   <v-card class="chat">
@@ -25,37 +26,31 @@ npm i --save file:packages/chat
       :partners="partners"
       :user-id="userId"
       :loading="loading"
-
       @scroll:top="onScrollTop"
       @scroll:bottom="onScrollBottom"
-
       ref="chat"
     >
       <v-toolbar flat slot="header" class="toolbar hidden-sm-and-down">
         <v-toolbar-title>Adamant Chat</v-toolbar-title>
 
-        <v-spacer/>
+        <v-spacer />
 
         <v-btn @click="pushNewMessage" color="primary">Push Message</v-btn>
         <v-btn @click="shuffle" color="secondary">Shuffle</v-btn>
       </v-toolbar>
-      
-      <template slot="message" slot-scope="props">
 
+      <template slot="message" slot-scope="props">
         <a-chat-message
           :key="props.message.timestamp"
-          
           :id="props.message.id"
           :message="props.message.message"
           :timestamp="props.message.timestamp"
           :status="props.message.status"
           :sender="props.sender"
-
           :show-avatar="true"
         >
-          <img src="assets/avatar.png" slot="avatar"/>
+          <img src="assets/avatar.png" slot="avatar" />
         </a-chat-message>
-
       </template>
 
       <a-chat-form
@@ -71,16 +66,19 @@ npm i --save file:packages/chat
 <script>
 import { nextTick } from 'vue'
 
-import { createRandomMessages, createOneMessage } from '~/components/__tests__/__mocks__/chatMessages'
+import {
+  createRandomMessages,
+  createOneMessage
+} from '~/components/__tests__/__mocks__/chatMessages'
 import { AChat, AChatMessage, AChatForm } from '@adamant/chat'
 
 export default {
-  mounted () {
+  mounted() {
     this.loading = true
-    
+
     this.fetchMessages(25)
-      .then(messages => this.messages.unshift(...messages))
-      .catch(err => console.error(err))
+      .then((messages) => this.messages.unshift(...messages))
+      .catch((err) => console.error(err))
       .finally(() => {
         this.loading = false
       })
@@ -101,41 +99,41 @@ export default {
     loading: false
   }),
   methods: {
-    onMessage (message) {
+    onMessage(message) {
       let oneMessage = createOneMessage()
       oneMessage.senderId = this.userId
-      oneMessage.timestamp = (new Date()).getTime()
+      oneMessage.timestamp = new Date().getTime()
       oneMessage.message = message
-      
+
       this.messages.push(oneMessage)
-      
+
       nextTick(() => this.$refs.chat.scrollToBottom())
     },
-    onScrollTop () {
+    onScrollTop() {
       this.loading = true
-      
+
       this.fetchMessages(10)
-        .then(messages => this.messages.unshift(...messages))
-        .catch(err => console.error(err))
+        .then((messages) => this.messages.unshift(...messages))
+        .catch((err) => console.error(err))
         .finally(() => {
           this.loading = false
           this.$refs.chat.maintainScrollPosition()
         })
     },
-    onScrollBottom () {
+    onScrollBottom() {
       //
     },
-    fetchMessages (count) {
+    fetchMessages(count) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve(createRandomMessages(count))
         }, 2000)
       })
     },
-    pushNewMessage () {
+    pushNewMessage() {
       const messages = createRandomMessages(1)
       this.messages.push(...messages)
-      
+
       nextTick(() => this.$refs.chat.scrollToBottom())
     }
   },
@@ -149,16 +147,17 @@ export default {
 ```
 
 ## Types
+
 ```ts
 export type Message = {
-  id: number,
-  senderId: string,
-  message: string,
-  timestamp: number,
-  admTimestamp: number,
-  amount: number,
-  i18n: boolean,
-  status: MessageStatus,
+  id: number
+  senderId: string
+  message: string
+  timestamp: number
+  admTimestamp: number
+  amount: number
+  i18n: boolean
+  status: MessageStatus
   type: MessageType
 }
 
@@ -175,112 +174,110 @@ export enum MessageStatus {
 }
 
 export type User = {
-  id: string,
+  id: string
   name?: string
 }
-
 ```
 
 ## AChat.vue
 
 ### Props
 
-|Name|Type|Default|Description|
-|:--:|:--:|:-----:|:----------|
-|**[`messages`](#)**|`Message[]`|`[]`|Array of messages|
-|**[`partners`](#)**|`User[]`|`[]`|Array of users who participate in chat (including owner)|
-|**[`user-id`](#)**|`string`|`undefined`|Owner ID|
-|**[`loading`](#)**|`boolean`|`false`|Show spinner|
-|**[`locale`](#)**|`string`|`'en'`|Moment.js locale|
+|        Name         |    Type     |   Default   | Description                                              |
+| :-----------------: | :---------: | :---------: | :------------------------------------------------------- |
+| **[`messages`](#)** | `Message[]` |    `[]`     | Array of messages                                        |
+| **[`partners`](#)** |  `User[]`   |    `[]`     | Array of users who participate in chat (including owner) |
+| **[`user-id`](#)**  |  `string`   | `undefined` | Owner ID                                                 |
+| **[`loading`](#)**  |  `boolean`  |   `false`   | Show spinner                                             |
+|  **[`locale`](#)**  |  `string`   |   `'en'`    | Moment.js locale                                         |
 
 ### Events
 
-|Name|Arguments|Description|
-|:--:|:----:|:-------------|
-|**[`@scroll:top`](#)**||When user scrolled top of messages. Use this event to fetch messages from history|
-|**[`@scroll:bottom`](#)**||When scrolled bottom of messages|
+|           Name            | Arguments | Description                                                                       |
+| :-----------------------: | :-------: | :-------------------------------------------------------------------------------- |
+|  **[`@scroll:top`](#)**   |           | When user scrolled top of messages. Use this event to fetch messages from history |
+| **[`@scroll:bottom`](#)** |           | When scrolled bottom of messages                                                  |
 
 ### Slots
 
-|Name|Props|Description|
-|:--:|:---:|:----------|
-|**[`messages`](#)**|`{ messages: Message[] }`||
-|**[`message`](#)**|`{ message: Message, sender: User, userId: string], locale: string }`||
-|**[`header`](#)**||Chat toolbar||
-|**[`form`](#)**||Input message form||
+|        Name         |                                 Props                                 | Description        |
+| :-----------------: | :-------------------------------------------------------------------: | :----------------- | --- |
+| **[`messages`](#)** |                       `{ messages: Message[] }`                       |                    |
+| **[`message`](#)**  | `{ message: Message, sender: User, userId: string], locale: string }` |                    |
+|  **[`header`](#)**  |                                                                       | Chat toolbar       |     |
+|   **[`form`](#)**   |                                                                       | Input message form |     |
 
 ### Methods
 
-|Name|Params|Description|
-|:--:|:---:|:-----------|
-|**[`@scrollToBottom`](#)**||Move scrollbar-thumb to the bottom. Use this after push new message.|
-|**[`@maintainScrollPosition`](#)**||Fix scroll position after unshift new messages|
-
+|                Name                | Params | Description                                                          |
+| :--------------------------------: | :----: | :------------------------------------------------------------------- |
+|     **[`@scrollToBottom`](#)**     |        | Move scrollbar-thumb to the bottom. Use this after push new message. |
+| **[`@maintainScrollPosition`](#)** |        | Fix scroll position after unshift new messages                       |
 
 ## AChatMessage.vue
 
 ### Props
 
-|Name|Type|Default|Description|
-|:--:|:--:|:-----:|:----------|
-|**[`id`](#)**|`{string\|number}`|`undefined`|Message ID|
-|**[`message`](#)**|`string`|`''`|Message text|
-|**[`timestamp`](#)**|`number`|`0`|Message timestamp|
-|**[`status`](#)**|`MessageStatus`|`'confirmed'`|Message status. Can be 'sent', 'CONFIRMED', 'REJECTED'.|
-|**[`user-id`](#)**|`string`|`''`|Chat owner|
-|**[`sender`](#)**|`User`|`undefined`|Can be accessed from `props.message.sender` of `AChat.vue`|
-|**[`show-avatar`](#)**|`boolean`|`true`|Display user avatars in chat|
-|**[`locale`](#)**|`string`|`'en'`|Moment.js locale|
-|**[`html`](#)**|`boolean`|`false`|Uses `v-html` or `v-text` to display message|
+|          Name          |        Type        |    Default    | Description                                                |
+| :--------------------: | :----------------: | :-----------: | :--------------------------------------------------------- |
+|     **[`id`](#)**      | `{string\|number}` |  `undefined`  | Message ID                                                 |
+|   **[`message`](#)**   |      `string`      |     `''`      | Message text                                               |
+|  **[`timestamp`](#)**  |      `number`      |      `0`      | Message timestamp                                          |
+|   **[`status`](#)**    |  `MessageStatus`   | `'confirmed'` | Message status. Can be 'sent', 'CONFIRMED', 'REJECTED'.    |
+|   **[`user-id`](#)**   |      `string`      |     `''`      | Chat owner                                                 |
+|   **[`sender`](#)**    |       `User`       |  `undefined`  | Can be accessed from `props.message.sender` of `AChat.vue` |
+| **[`show-avatar`](#)** |     `boolean`      |    `true`     | Display user avatars in chat                               |
+|   **[`locale`](#)**    |      `string`      |    `'en'`     | Moment.js locale                                           |
+|    **[`html`](#)**     |     `boolean`      |    `false`    | Uses `v-html` or `v-text` to display message               |
 
 ### Events
 
-|Name|Arguments|Description|
-|:--:|:----:|:-------------|
-|**[`@resend`](#)**||When user clicked on the resend icon|
+|        Name        | Arguments | Description                          |
+| :----------------: | :-------: | :----------------------------------- |
+| **[`@resend`](#)** |           | When user clicked on the resend icon |
 
 ### Slots
-|Name|Props|Description|
-|:--:|:---:|:----------|
-|**[`avatar`](#)**||Custom avatar|
 
+|       Name        | Props | Description   |
+| :---------------: | :---: | :------------ |
+| **[`avatar`](#)** |       | Custom avatar |
 
 ## AChatTransaction.vue
 
 ### Props
 
-|Name|Type|Default|Description|
-|:--:|:--:|:-----:|:----------|
-|**[`id`](#)**|`{string\|number}`|`undefined`|Transaction ID|
-|**[`message`](#)**|`string`|`''`|Transaction text|
-|**[`timestamp`](#)**|`number`|`0`|Transaction timestamp|
-|**[`user-id`](#)**|`string`|`''`|Chat owner|
-|**[`sender`](#)**|`User`|`undefined`|Can be accessed from `props.message.sender` of `AChat.vue`|
-|**[`amount`](#)**|`number`|0|Crypto amount|
-|**[`currency`](#)**|`string`|'ADM'|Crypto currency|
-|**[`i18n`](#)**|`{ [key: string]: string }`|{ sent: 'Sent', received: 'Received' }|Transaction localization|
-|**[`locale`](#)**|`string`|`'en'`|Moment.js locale|
+|         Name         |            Type             |                Default                 | Description                                                |
+| :------------------: | :-------------------------: | :------------------------------------: | :--------------------------------------------------------- |
+|    **[`id`](#)**     |     `{string\|number}`      |              `undefined`               | Transaction ID                                             |
+|  **[`message`](#)**  |          `string`           |                  `''`                  | Transaction text                                           |
+| **[`timestamp`](#)** |          `number`           |                  `0`                   | Transaction timestamp                                      |
+|  **[`user-id`](#)**  |          `string`           |                  `''`                  | Chat owner                                                 |
+|  **[`sender`](#)**   |           `User`            |              `undefined`               | Can be accessed from `props.message.sender` of `AChat.vue` |
+|  **[`amount`](#)**   |          `number`           |                   0                    | Crypto amount                                              |
+| **[`currency`](#)**  |          `string`           |                 'ADM'                  | Crypto currency                                            |
+|   **[`i18n`](#)**    | `{ [key: string]: string }` | { sent: 'Sent', received: 'Received' } | Transaction localization                                   |
+|  **[`locale`](#)**   |          `string`           |                 `'en'`                 | Moment.js locale                                           |
 
 ### Events
 
-|Name|Arguments|Description|
-|:--:|:----:|:-------------|
-|**[`@click:transaction`](#)**|`(transactionId: string)`|On click transaction icon|
-|**[`@mount`](#)**||Emit mount when mounted|
+|             Name              |         Arguments         | Description               |
+| :---------------------------: | :-----------------------: | :------------------------ |
+| **[`@click:transaction`](#)** | `(transactionId: string)` | On click transaction icon |
+|       **[`@mount`](#)**       |                           | Emit mount when mounted   |
 
 ## AChatForm.vue
 
 ### Props
 
-|Name|Type|Default|Description|
-|:--:|:--:|:-----:|:----------|
-|**[`showSendButton`](#)**|`boolean`|`true`|Show send button|
-|**[`showDivider`](#)**|`boolean`|`false`|Show divider on top of the form|
-|**[`sendOnEnter`](#)**|`boolean`|`true`|Send message on enter|
-|**[`label`](#)**|`string`|`Type a message`|Input message placeholder|
+|           Name            |   Type    |     Default      | Description                     |
+| :-----------------------: | :-------: | :--------------: | :------------------------------ |
+| **[`showSendButton`](#)** | `boolean` |      `true`      | Show send button                |
+|  **[`showDivider`](#)**   | `boolean` |     `false`      | Show divider on top of the form |
+|  **[`sendOnEnter`](#)**   | `boolean` |      `true`      | Send message on enter           |
+|     **[`label`](#)**      | `string`  | `Type a message` | Input message placeholder       |
 
 ### Events
 
-|Name|Arguments|Description|
-|:--:|:----:|:-------------|
-|**[`@message`](#)**|`(message: string)`|Called when sending a message|
+|        Name         |      Arguments      | Description                   |
+| :-----------------: | :-----------------: | :---------------------------- |
+| **[`@message`](#)** | `(message: string)` | Called when sending a message |

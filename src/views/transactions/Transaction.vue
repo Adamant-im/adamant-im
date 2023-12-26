@@ -1,9 +1,5 @@
 <template>
-  <component
-    :is="transactionComponent"
-    :id="txId"
-    :crypto="crypto"
-  />
+  <component :is="transactionComponent" :id="txId" :crypto="crypto" />
 </template>
 
 <script>
@@ -35,13 +31,13 @@ export default {
       type: String
     }
   },
-  data () {
+  data() {
     return {
       timer: null
     }
   },
   computed: {
-    transactionComponent () {
+    transactionComponent() {
       if (this.crypto === Cryptos.ETH) return 'eth-transaction'
       if (isErc20(this.crypto)) return 'erc20-transaction'
       if (isBtcBased(this.crypto)) return 'btc-transaction'
@@ -49,18 +45,22 @@ export default {
       return 'adm-transaction'
     }
   },
-  mounted () {
+  mounted() {
     this.update()
     window.clearInterval(this.timer)
     this.timer = window.setInterval(() => this.update(), getTxUpdateInterval(this.crypto))
   },
-  beforeUnmount () {
+  beforeUnmount() {
     window.clearInterval(this.timer)
   },
   methods: {
-    update () {
+    update() {
       // Regularly update Tx details with confirmations count, do force — fetch details for existing Tx also
-      this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', { hash: this.txId, force: true, updateOnly: true })
+      this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', {
+        hash: this.txId,
+        force: true,
+        updateOnly: true
+      })
     }
   }
 }

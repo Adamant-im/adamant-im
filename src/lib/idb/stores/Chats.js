@@ -5,7 +5,7 @@ import { bytesToHex, hexToBytes } from '@/lib/hex'
 const storeName = 'chatList'
 
 export default {
-  async getAll () {
+  async getAll() {
     try {
       const db = await dbPromise
       const chats = await db.transaction(storeName).objectStore(storeName).getAll()
@@ -21,7 +21,7 @@ export default {
     }
   },
 
-  async set ({ name, value }) {
+  async set({ name, value }) {
     try {
       const db = await dbPromise
       const tx = db.transaction(storeName, 'readwrite')
@@ -37,7 +37,7 @@ export default {
     }
   },
 
-  async saveAll (chats) {
+  async saveAll(chats) {
     try {
       const db = await dbPromise
       const tx = db.transaction(storeName, 'readwrite')
@@ -57,7 +57,7 @@ export default {
     }
   },
 
-  async clear () {
+  async clear() {
     const db = await dbPromise
     const tx = db.transaction(storeName, 'readwrite')
 

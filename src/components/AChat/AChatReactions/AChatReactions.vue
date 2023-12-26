@@ -22,9 +22,8 @@
 <script lang="ts">
 import { usePartnerId } from '@/components/AChat/hooks/usePartnerId.ts'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
-import { isEmptyReaction } from '@/lib/chat/helpers'
+import { isEmptyReaction, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { computed, defineComponent, PropType } from 'vue'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { useStore } from 'vuex'
 import AChatReaction from './AChatReaction.vue'
 
@@ -82,7 +81,7 @@ export default defineComponent({
 
 <style lang="scss">
 @import 'vuetify/settings';
-@import '../../../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .a-chat-reactions {
   position: absolute;
