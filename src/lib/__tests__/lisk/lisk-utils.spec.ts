@@ -1,7 +1,7 @@
 // @vitest-environment node
 // Some crypto libs throw errors when using `jsdom` environment
 
-import { LSK_MIN_REQUIRED_FEE } from '@/lib/lisk'
+import { LSK_MIN_FEE_PER_BYTE } from '@/lib/lisk'
 import { convertBeddowsToLSK } from '@liskhq/lisk-transactions'
 import { describe, it, expect } from 'vitest'
 import { Cryptos } from '@/lib/constants'
@@ -17,24 +17,11 @@ describe('lisk-utils', () => {
   })
 
   describe('estimateFee', () => {
-    const MIN_FEE = convertBeddowsToLSK(LSK_MIN_REQUIRED_FEE.toString())
-
-    it('should return default fee', () => {
-      expect(estimateFee()).toBe(MIN_FEE)
-    })
-
-    it('should meet minimum required fee', () => {
-      expect(
-        estimateFee({
-          amount: '0.01'
-        })
-      ).toBe(MIN_FEE)
-    })
-
     it('should calculate fee including `data`', () => {
       const data = 'hello'
-      const messageFee = BigInt(data.length) * BigInt(1000)
-      const expectedFee = LSK_MIN_REQUIRED_FEE + messageFee
+      const minimalFee = BigInt(165000)
+      const messageFee = BigInt(data.length) * BigInt(LSK_MIN_FEE_PER_BYTE)
+      const expectedFee = minimalFee + messageFee
 
       expect(estimateFee({ data })).toBe(convertBeddowsToLSK(expectedFee.toString()))
     })

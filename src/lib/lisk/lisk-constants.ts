@@ -10,7 +10,8 @@ export const LiskHashSettings = {
 export const LSK_CHAIN_ID = '00000000'
 export const LSK_TOKEN_ID = '0000000000000000'
 export const LSK_DECIMALS = CryptosInfo.LSK.decimals
-export const LSK_MIN_REQUIRED_FEE = BigInt(CryptosInfo.LSK.defaultFee * 10 ** LSK_DECIMALS) // in beddows
+export const LSK_DEFAULT_FEE = BigInt(CryptosInfo.LSK.defaultFee * 10 ** LSK_DECIMALS) // in beddows
+export const LSK_MIN_FEE_PER_BYTE = BigInt(1000) // in beddows
 export const LSK_TRANSFER_TO_NEW_ACCOUNT_FEE = BigInt(5000000) // additional fee when sending to new accounts (@see https://lisk.com/documentation/understand-blockchain/blocks-txs.html#command-fee)
 export const LSK_TXS_PER_PAGE = 25 // transactions per page
 

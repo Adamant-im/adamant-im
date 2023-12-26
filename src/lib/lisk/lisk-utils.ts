@@ -8,7 +8,7 @@ import { DecodedTransaction, Transaction } from './types/lisk'
 import { codec } from '@liskhq/lisk-codec'
 import * as cryptography from '@liskhq/lisk-cryptography'
 import networks from '@/lib/lisk/networks'
-import { computeMinFee, convertBeddowsToLSK, convertLSKToBeddows } from '@liskhq/lisk-transactions'
+import { convertBeddowsToLSK } from '@liskhq/lisk-transactions'
 import * as transactions from '@liskhq/lisk-transactions'
 import { Buffer } from 'buffer'
 import pbkdf2 from 'pbkdf2'
@@ -19,10 +19,10 @@ import {
   LSK_TRANSFER_TO_NEW_ACCOUNT_FEE,
   LSK_DECIMALS,
   LSK_DEMO_ACCOUNT,
-  LSK_MIN_REQUIRED_FEE,
-  LSK_TOKEN_ID
+  LSK_TOKEN_ID,
+  LSK_MIN_FEE_PER_BYTE
 } from './lisk-constants'
-import { bytesToHex } from '@/lib/hex'
+import { bytesToHex, hexToBytes } from '@/lib/hex'
 import * as validator from '@liskhq/lisk-validator'
 
 /**
@@ -227,6 +227,7 @@ type EstimateFeeParams = {
 
 /**
  * Estimate transaction fee by LSK amount.
+ * https://lisk.com/documentation/understand-blockchain/blocks-txs.html#transaction-fees
  *
  * @param params Transaction params
  */
@@ -240,30 +241,20 @@ export function estimateFee(params?: EstimateFeeParams) {
     isNewAccount
   } = params || {}
 
-  const unsignedTransaction = {
-    module: 'token',
-    command: 'transfer',
-    fee: BigInt(0),
-    nonce: BigInt(nonce),
-    senderPublicKey: Buffer.from(keyPair.publicKey, 'hex'),
-    params: {
-      tokenID: Buffer.from(LSK_TOKEN_ID, 'hex'),
-      amount: BigInt(convertLSKToBeddows(amount.toString())),
-      recipientAddress: cryptography.address.getAddressFromLisk32Address(recipientAddress),
-      data
+  const transaction = createTransaction(
+    {
+      publicKey: Buffer.from(keyPair.publicKey, 'hex'),
+      secretKey: Buffer.from(keyPair.secretKey, 'hex')
     },
-    signatures: []
-  }
-
-  const signedTransaction = transactions.signTransaction(
-    unsignedTransaction,
-    Buffer.from(LSK_CHAIN_ID, 'hex'),
-    Buffer.from(keyPair.secretKey, 'hex'),
-    TRANSACTION_PARAMS_SCHEMA
+    recipientAddress,
+    amount,
+    1,
+    nonce,
+    data
   )
+  const transactionBytes = hexToBytes(transaction.hex)
 
-  const minFee = computeMinFee(signedTransaction, TRANSACTION_PARAMS_SCHEMA)
-  const fee = minFee < LSK_MIN_REQUIRED_FEE ? LSK_MIN_REQUIRED_FEE : minFee
+  const fee = BigInt(transactionBytes.length) * LSK_MIN_FEE_PER_BYTE
   const transferToNewAccountFee = isNewAccount ? LSK_TRANSFER_TO_NEW_ACCOUNT_FEE : BigInt(0)
 
   const totalFee = fee + transferToNewAccountFee
