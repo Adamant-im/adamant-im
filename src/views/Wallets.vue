@@ -65,7 +65,7 @@ type Wallet = {
   isVisible: boolean
   key?: string
   rate?: number
-  symbol: string
+  symbol: CryptoSymbol
   type?: string
 }
 
@@ -88,7 +88,7 @@ export default defineComponent({
     })
 
     const orderedAllWalletSymbols = computed(() => {
-      return [...store.getters['wallets/getAllOrderedWalletSymbols']]
+      return store.getters['wallets/getAllOrderedWalletSymbols']
     })
 
     const wallets = computed(() => {
@@ -136,7 +136,7 @@ export default defineComponent({
         })
       },
       set(value) {
-        const mappedValue = value.map((item) => {
+        const mappedValue = value.map((item: Wallet) => {
           return {
             symbol: item.symbol,
             isVisible: item.isVisible

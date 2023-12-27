@@ -1,12 +1,12 @@
 import VuexPersistence from 'vuex-persist'
-import { CoinSymbol, PluginWalletsState } from '@/store/modules/wallets/types'
+import { RootState } from '@/store/types.ts'
 
 const walletsPersistencePlugin = new VuexPersistence({
   key: 'adm-wallets',
   storage: window.localStorage,
-  reducer: (state: PluginWalletsState) => {
+  reducer: (state: RootState) => {
     return {
-      symbols: state.wallets.symbols as CoinSymbol[]
+      symbols: state.wallets.symbols
     }
   }
 })

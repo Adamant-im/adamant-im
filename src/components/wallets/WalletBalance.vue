@@ -1,7 +1,7 @@
 <template>
   <div class="px-5">
     <p :class="classes.statusTitle">
-      {{ balance ? `~${mathRound(Number(balance), 8)}` : 0 }}
+      {{ calculatedBalance }}
     </p>
 
     <p v-if="Number(balance) !== 0" :class="classes.statusText" class="text-end">
@@ -12,6 +12,8 @@
 
 <script lang="ts">
 import { defineComponent, PropType, toRefs } from 'vue'
+import currencyAmount from '@/filters/currencyAmount.js'
+import { CryptoSymbol } from '@/lib/constants'
 
 const className = 'wallet-balance'
 const classes = {
@@ -23,6 +25,7 @@ type WalletBalance = {
   balance: number | string
   currentFiatCurrency: string
   rate: number
+  symbol: CryptoSymbol
 }
 
 export default defineComponent({
@@ -35,20 +38,15 @@ export default defineComponent({
   setup(props) {
     const { walletBalance } = toRefs(props)
 
-    const mathRound = (num: number, decimalPlaces: number) => {
-      const p = Math.pow(10, decimalPlaces || 0)
-      const n = num * p * (1 + Number.EPSILON)
-      return Math.round(n) / p
-    }
-
-    const { balance, currentFiatCurrency, rate } = walletBalance.value
+    const { balance, currentFiatCurrency, rate, symbol } = walletBalance.value
+    const calculatedBalance = balance ? `~${currencyAmount(Number(balance), symbol)}` : 0
 
     return {
       balance,
+      classes,
+      calculatedBalance,
       currentFiatCurrency,
-      mathRound,
-      rate,
-      classes
+      rate
     }
   }
 })
