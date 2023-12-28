@@ -17,7 +17,7 @@
               item-key="cryptoName"
             >
               <template #item="{ element }">
-                <WalletsListItem :wallet="element"></WalletsListItem>
+                <WalletsListItem :wallet="element" :search="search"></WalletsListItem>
               </template>
             </draggable>
             <v-list-item>
