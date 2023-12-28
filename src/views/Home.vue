@@ -275,8 +275,15 @@ export default {
       }
       :deep(.v-tabs .v-slide-group__prev .v-icon),
       :deep(.v-tabs .v-slide-group__next .v-icon) {
-        color: map-get($adm-colors, 'primary2');
-        pointer-events: none;
+        z-index: 1;
+        color: map-get($adm-colors, 'primary');
+      }
+      :deep(.v-tabs .v-slide-group__prev),
+      :deep(.v-tabs .v-slide-group__next) {
+        .v-icon:hover {
+          border-radius: 50%;
+          background-color: transparentize(map-get($adm-colors, 'primary2'), 0.3);
+        }
       }
       :deep(:not(.v-tab--selected)) {
         .svg-icon {
@@ -304,8 +311,15 @@ export default {
       }
       :deep(.v-tabs .v-slide-group__prev .v-icon),
       :deep(.v-tabs .v-slide-group__next .v-icon) {
-        color: map-get($adm-colors, 'primary2');
-        pointer-events: none;
+        z-index: 1;
+        color: map-get($adm-colors, 'primary');
+      }
+      :deep(.v-tabs .v-slide-group__prev),
+      :deep(.v-tabs .v-slide-group__next) {
+        .v-icon:hover {
+          border-radius: 50%;
+          background-color: transparentize(map-get($adm-colors, 'primary2'), 0.3);
+        }
       }
       :deep(.v-tabs-items) {
         background-color: unset;
