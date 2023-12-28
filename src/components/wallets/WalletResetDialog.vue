@@ -1,6 +1,8 @@
 <template>
-  <div class="text-center">
-    <v-btn color="primary" @click="isDialogVisible = true"> {{ t('wallets.reset') }} </v-btn>
+  <div class="text-right">
+    <v-btn class="a-btn-primary ma-2" color="primary" @click="isDialogVisible = true">
+      {{ t('wallets.reset') }}
+    </v-btn>
 
     <v-dialog v-model="isDialogVisible" width="500" scroll-strategy="reposition">
       <v-card>
