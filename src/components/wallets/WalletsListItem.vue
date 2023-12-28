@@ -16,6 +16,7 @@
       <v-checkbox
         hide-details
         :model-value="store.getters['wallets/getVisibility'](localWallet.symbol)"
+        :disabled="localWallet.symbol === 'ADM'"
         @update:model-value="
           store.commit('wallets/updateVisibility', {
             symbol: localWallet.symbol,
