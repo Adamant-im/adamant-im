@@ -6,6 +6,10 @@ export const mutations: MutationTree<WalletsState> = {
     state.symbols = value
   },
 
+  setWalletTemplatesVersion(state, value: string): void {
+    state.version = value
+  },
+
   updateVisibility(state, value: CoinSymbol): void {
     const symbol = state.symbols.find((item: CoinSymbol) => item.symbol === value.symbol)
     if (symbol) {

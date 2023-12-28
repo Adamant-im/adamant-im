@@ -6,7 +6,8 @@ const walletsPersistencePlugin = new VuexPersistence({
   storage: window.localStorage,
   reducer: (state: RootState) => {
     return {
-      symbols: state.wallets.symbols
+      symbols: state.wallets.symbols,
+      version: state.wallets.version
     }
   }
 })

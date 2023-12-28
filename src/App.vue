@@ -15,7 +15,8 @@ import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
 import { getFromLocalStorage } from '@/lib/localStorage.ts'
-import { CoinSymbol, WalletsState } from '@/store/modules/wallets/types.ts'
+import { WalletsState } from '@/store/modules/wallets/types.ts'
+import { version } from '../adamant-wallets/package.json'
 
 export default defineComponent({
   components: {
@@ -46,13 +47,18 @@ export default defineComponent({
     this.notifications = new Notifications(this)
     this.notifications.start()
 
-    const predefinedWallets: WalletsState = getFromLocalStorage('adm-wallets', {
-      symbols: [] as CoinSymbol[]
+    const predefinedWalletsTemplate: WalletsState = getFromLocalStorage('adm-wallets', {
+      symbols: [],
+      version
     })
-    if (!('symbols' in predefinedWallets) || predefinedWallets.symbols.length === 0) {
+    if (
+      !('symbols' in predefinedWalletsTemplate) ||
+      predefinedWalletsTemplate.symbols.length === 0 ||
+      predefinedWalletsTemplate.version !== version
+    ) {
       this.$store.dispatch('wallets/initWalletsSymbolsTemplates', null)
     } else {
-      this.$store.dispatch('wallets/setWalletSymbolsTemplates', predefinedWallets.symbols)
+      this.$store.dispatch('wallets/setWalletSymbolsTemplates', predefinedWalletsTemplate.symbols)
     }
   },
   beforeUnmount() {
