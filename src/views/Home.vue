@@ -277,11 +277,12 @@ export default {
       :deep(.v-tabs .v-slide-group__next .v-icon) {
         z-index: 1;
         color: map-get($adm-colors, 'primary');
+        border-radius: 50%;
+        background-color: transparentize(map-get($adm-colors, 'primary2'), 0.1);
       }
       :deep(.v-tabs .v-slide-group__prev),
       :deep(.v-tabs .v-slide-group__next) {
         .v-icon:hover {
-          border-radius: 50%;
           background-color: transparentize(map-get($adm-colors, 'primary2'), 0.3);
         }
       }
@@ -313,11 +314,12 @@ export default {
       :deep(.v-tabs .v-slide-group__next .v-icon) {
         z-index: 1;
         color: map-get($adm-colors, 'primary');
+        border-radius: 50%;
+        background-color: transparentize(map-get($adm-colors, 'primary2'), 0.1);
       }
       :deep(.v-tabs .v-slide-group__prev),
       :deep(.v-tabs .v-slide-group__next) {
         .v-icon:hover {
-          border-radius: 50%;
           background-color: transparentize(map-get($adm-colors, 'primary2'), 0.3);
         }
       }
