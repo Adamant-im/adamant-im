@@ -7,7 +7,7 @@
     </v-list-item-subtitle>
     <template v-slot:prepend>
       <v-avatar>
-        <crypto-icon :class="classes.cryptoIcon" :crypto="localWallet.symbol" size="medium" />
+        <crypto-icon :class="classes.cryptoIcon" :crypto="localWallet.symbol" size="small" />
       </v-avatar>
     </template>
 
