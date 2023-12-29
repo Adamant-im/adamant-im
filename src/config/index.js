@@ -6,7 +6,7 @@ import torConfig from './tor.json'
 const configMap = {
   development: devConfig,
   production: prodConfig,
-  testing: testingConfig,
+  test: testingConfig,
   tor: torConfig
 }
 
