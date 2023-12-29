@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import * as utils from '../../../lib/eth-utils'
-import { getTransactions } from '../../../lib/eth-index'
+import ethIndexer from '../../../lib/nodes/eth-indexer'
 import * as tf from '../../../lib/transactionsFetching'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { signTransaction, TransactionFactory } from 'web3-eth-accounts'
@@ -351,16 +351,17 @@ export default function createActions(config) {
 
       context.commit('areRecentLoading', true)
 
-      return getTransactions(options).then(
-        (result) => {
+      return ethIndexer
+        .getTransactions(options)
+        .then((transactions) => {
+          console.log('new', transactions)
           context.commit('areRecentLoading', false)
-          context.commit('transactions', { transactions: result.items, updateTimestamps: true })
-        },
-        (error) => {
+          context.commit('transactions', { transactions, updateTimestamps: true })
+        })
+        .catch((err) => {
           context.commit('areRecentLoading', false)
-          return Promise.reject(error)
-        }
-      )
+          return Promise.reject(err)
+        })
     },
 
     getOldTransactions(context) {
@@ -381,20 +382,20 @@ export default function createActions(config) {
 
       context.commit('areOlderLoading', true)
 
-      return getTransactions(options).then(
-        (result) => {
+      return ethIndexer
+        .getTransactions(options)
+        .then((transactions) => {
           context.commit('areOlderLoading', false)
-          context.commit('transactions', { transactions: result.items, updateTimestamps: true })
+          context.commit('transactions', { transactions, updateTimestamps: true })
 
-          if (!result.items.length) {
+          if (transactions.length === 0) {
             context.commit('bottom', true)
           }
-        },
-        (error) => {
+        })
+        .catch((err) => {
           context.commit('areOlderLoading', false)
-          return Promise.reject(error)
-        }
-      )
+          return Promise.reject(err)
+        })
     }
   }
 }

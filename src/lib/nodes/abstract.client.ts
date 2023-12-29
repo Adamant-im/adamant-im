@@ -116,6 +116,18 @@ export abstract class Client<N extends Node> {
     })
   }
 
+  protected getNode() {
+    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
+    if (!node) {
+      // All nodes seem to be offline: let's refresh the statuses
+      this.checkHealth()
+      // But there's nothing we can do right now
+      throw new Error('No online nodes at the moment')
+    }
+
+    return node
+  }
+
   /**
    * Updates `outOfSync` status of the nodes.
    *
