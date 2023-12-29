@@ -1,6 +1,6 @@
 <template>
   <div class="px-5">
-    <p :class="classes.statusTitle">
+    <p :class="[classes.statusTitle, balance === 0 && 'a-text-explanation']">
       {{ calculatedBalance }}
     </p>
 
