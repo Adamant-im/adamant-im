@@ -178,7 +178,7 @@ export default {
           e.preventDefault()
           this.getInfoFromURI(data)
         } else {
-          this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: 'ADM' }))
+          this.$emit('error', this.$t('chats.incorrect_address'))
         }
       })
     },
