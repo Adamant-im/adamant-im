@@ -22,7 +22,7 @@ export type Transaction = {
     tokenID: string
     data: string
   }
-  executionStatus: string
+  executionStatus: 'successful' | 'pending' | 'failed'
   index: number
   meta: {
     recipient: {
