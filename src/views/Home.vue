@@ -315,7 +315,7 @@ export default {
         z-index: 1;
         color: map-get($adm-colors, 'primary');
         border-radius: 50%;
-        background-color: transparentize(map-get($adm-colors, 'primary2'), 0.1);
+        background-color: transparentize(map-get($adm-colors, 'primary2'), 0.7);
       }
       :deep(.v-tabs .v-slide-group__prev),
       :deep(.v-tabs .v-slide-group__next) {
