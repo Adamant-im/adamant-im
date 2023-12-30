@@ -11,9 +11,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, toRefs } from 'vue'
+import { computed, defineComponent, toRefs } from 'vue'
 import currencyAmount from '@/filters/currencyAmount.js'
-import { CryptoSymbol } from '@/lib/constants'
+import { Cryptos } from '@/lib/constants'
+import { useStore } from 'vuex'
 
 const className = 'wallet-balance'
 const classes = {
@@ -21,25 +22,40 @@ const classes = {
   statusText: `${className}__status-text`
 }
 
-type WalletBalance = {
-  balance: number | string
-  currentFiatCurrency: string
-  rate: number
-  symbol: CryptoSymbol
-}
-
 export default defineComponent({
   props: {
-    walletBalance: {
-      type: Object as PropType<WalletBalance>,
+    symbol: {
+      type: String,
       required: true
     }
   },
   setup(props) {
-    const { walletBalance } = toRefs(props)
+    const store = useStore()
+    const { symbol } = toRefs(props)
+    const key = symbol.value.toLowerCase()
 
-    const { balance, currentFiatCurrency, rate, symbol } = walletBalance.value
-    const calculatedBalance = balance ? `~${currencyAmount(Number(balance), symbol)}` : 0
+    const balance = computed(() => {
+      return symbol.value === Cryptos.ADM
+        ? store.state.balance
+        : store.state[key]
+          ? store.state[key].balance
+          : 0
+    })
+
+    const calculatedBalance = computed(() => {
+      return balance.value ? `~${currencyAmount(Number(balance.value), symbol.value, true)}` : 0
+    })
+    const currentFiatCurrency = computed(() => {
+      return store.state.options.currentRate
+    })
+    const currentRate = computed(() => {
+      return store.state.rate.rates[`${symbol.value}/${currentFiatCurrency.value}`]
+    })
+    const rate = computed(() => {
+      return currentRate.value !== undefined
+        ? Number((balance.value * currentRate.value).toFixed(2))
+        : 0
+    })
 
     return {
       balance,

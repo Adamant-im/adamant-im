@@ -12,7 +12,7 @@
     </template>
 
     <template v-slot:append>
-      <WalletBalance :wallet-balance="localBalance"></WalletBalance>
+      <WalletBalance :symbol="localWallet.symbol"></WalletBalance>
       <v-checkbox
         hide-details
         :model-value="store.getters['wallets/getVisibility'](localWallet.symbol)"
@@ -38,18 +38,14 @@
 <script lang="ts">
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import WalletBalance from '@/components/wallets/WalletBalance.vue'
-import { computed, defineComponent, PropType, toRef } from 'vue'
+import { defineComponent, PropType, toRef } from 'vue'
 import { useStore } from 'vuex'
 import { CryptoSymbol } from '@/lib/constants'
 
 type Wallet = {
   erc20: boolean
-  balance: number
   cryptoName: string
-  currentRate: number
   isVisible: boolean
-  key: string
-  rate: number
   symbol: CryptoSymbol
   type: string
 }
@@ -80,20 +76,8 @@ export default defineComponent({
     const store = useStore()
     const localWallet = toRef(props, 'wallet')
 
-    const currentFiatCurrency = computed(() => {
-      return store.state.options.currentRate
-    })
-
-    const localBalance = {
-      balance: localWallet.value.balance,
-      currentFiatCurrency: currentFiatCurrency.value,
-      rate: localWallet.value.rate,
-      symbol: localWallet.value.symbol
-    }
-
     return {
       classes,
-      localBalance,
       localWallet,
       store
     }

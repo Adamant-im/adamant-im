@@ -33,12 +33,15 @@
 <script lang="ts">
 import draggable from 'vuedraggable'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
-import { computed, defineComponent, ref } from 'vue'
-import { Cryptos, CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
+import { computed, defineComponent, onBeforeUnmount, ref } from 'vue'
+import { CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { useStore } from 'vuex'
 import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
 import WalletsListItem from '@/components/wallets/WalletsListItem.vue'
 import WalletResetDialog from '@/components/wallets/WalletResetDialog.vue'
+import { Timer } from 'web3-utils'
+
+const BALANCE_UPDATE_INTERVAL_MS = 30000
 
 const className = 'wallets-view'
 const classes = {
@@ -83,10 +86,6 @@ export default defineComponent({
     const isDragging = ref(false)
     const search = ref('')
 
-    const currentFiatCurrency = computed(() => {
-      return store.state.options.currentRate
-    })
-
     const orderedAllWalletSymbols = computed(() => {
       return store.getters['wallets/getAllOrderedWalletSymbols']
     })
@@ -94,27 +93,15 @@ export default defineComponent({
     const wallets = computed(() => {
       return orderedAllWalletSymbols.value.map((crypto: OrderedWalletSymbol) => {
         const symbol = crypto.symbol
-        const key = symbol.toLowerCase()
-        const balance =
-          symbol === Cryptos.ADM
-            ? store.state.balance
-            : store.state[key]
-              ? store.state[key].balance
-              : 0
-        const erc20 = isErc20(symbol)
         const cryptoName = CryptosInfo[symbol].nameShort || CryptosInfo[symbol].name
-        const currentRate = store.state.rate.rates[`${symbol}/${currentFiatCurrency.value}`]
+        const erc20 = isErc20(symbol)
         const isVisible = crypto.isVisible
-        const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0
-
         const type = CryptosInfo[symbol].type ?? 'Blockchain'
 
         return {
-          balance,
           cryptoName,
           erc20,
           isVisible,
-          rate,
           symbol,
           type
         }
@@ -145,6 +132,18 @@ export default defineComponent({
 
         store.dispatch('wallets/setWalletSymbolsTemplates', mappedValue)
       }
+    })
+
+    const timer = ref<Timer>(setInterval(() => updateBalances(), BALANCE_UPDATE_INTERVAL_MS))
+
+    const updateBalances = () => {
+      store.dispatch('updateBalance', {
+        requestedByUser: true
+      })
+    }
+
+    onBeforeUnmount(() => {
+      clearInterval(timer.value)
     })
 
     return {
