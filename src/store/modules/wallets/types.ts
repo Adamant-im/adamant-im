@@ -7,5 +7,4 @@ export type CoinSymbol = {
 
 export interface WalletsState {
   symbols: CoinSymbol[]
-  version: string
 }

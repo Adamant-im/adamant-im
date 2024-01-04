@@ -16,7 +16,7 @@ import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
 import { getFromLocalStorage } from '@/lib/localStorage.ts'
 import { WalletsState } from '@/store/modules/wallets/types.ts'
-import { version } from '../adamant-wallets/package.json'
+import { mapWallets } from '@/lib/mapWallets.ts'
 
 export default defineComponent({
   components: {
@@ -48,17 +48,26 @@ export default defineComponent({
     this.notifications.start()
 
     const predefinedWalletsTemplate: WalletsState = getFromLocalStorage('adm-wallets', {
-      symbols: [],
-      version
+      symbols: []
     })
     if (
       !('symbols' in predefinedWalletsTemplate) ||
-      predefinedWalletsTemplate.symbols.length === 0 ||
-      predefinedWalletsTemplate.version !== version
+      predefinedWalletsTemplate.symbols.length === 0
     ) {
       this.$store.dispatch('wallets/initWalletsSymbolsTemplates', null)
     } else {
-      this.$store.dispatch('wallets/setWalletSymbolsTemplates', predefinedWalletsTemplate.symbols)
+      const initialTemplate = mapWallets()
+
+      const hasDifference = !!initialTemplate.filter(
+        ({ symbol: symbol1 }) =>
+          !predefinedWalletsTemplate.symbols.some(({ symbol: symbol2 }) => symbol2 === symbol1)
+      ).length
+
+      if (hasDifference) {
+        this.$store.dispatch('wallets/initWalletsSymbolsTemplates', null)
+      } else {
+        this.$store.dispatch('wallets/setWalletSymbolsTemplates', predefinedWalletsTemplate.symbols)
+      }
     }
   },
   beforeUnmount() {
