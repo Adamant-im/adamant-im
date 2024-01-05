@@ -18,7 +18,7 @@
         <v-icon color="warning"></v-icon>
       </template>
     </v-btn>
-    <v-btn class="btn" append-icon="mdi-play"
+    <v-btn @click="vibrate.long()" class="btn" append-icon="mdi-play"
       >Long
       <template v-slot:append>
         <v-icon color="warning"></v-icon>
@@ -49,7 +49,7 @@ import { vibrate } from '@/lib/vibrate.js'
 export default {
   methods: {
     veryShort() {
-      return vibrate.long()
+      return vibrate.veryShort()
     }
   }
 }
