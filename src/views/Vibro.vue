@@ -36,7 +36,7 @@
         <v-icon color="warning"></v-icon>
       </template>
     </v-btn>
-    <v-btn class="btn" append-icon="mdi-play"
+    <v-btn @click="doubleVeryShort" class="btn" append-icon="mdi-play"
       >Double-Short
       <template v-slot:append>
         <v-icon color="warning"></v-icon>
@@ -65,6 +65,9 @@ export default {
     },
     tripleVeryShort() {
       return vibrate.tripleVeryShort()
+    },
+    doubleShort() {
+      return vibrate.doubleShort()
     }
   }
 }

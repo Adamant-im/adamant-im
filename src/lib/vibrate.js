@@ -1,10 +1,11 @@
 const VIBRATION_PATTERN = {
-  VERY_SHORT: [25],
-  SHORT: [50],
-  MEDIUM: [80],
+  VERY_SHORT: [40],
+  SHORT: [80],
+  MEDIUM: [160],
   LONG: [300],
-  DOUBLE_VERY_SHORT: [25, 25],
-  TRIPLE_VERY_SHORT: [25, 25, 25]
+  DOUBLE_VERY_SHORT: [40, 40],
+  TRIPLE_VERY_SHORT: [40, 40, 40],
+  DOUBLE_SHORT: [80, 80]
 }
 
 function checkVibrateIsSupported() {
@@ -30,5 +31,6 @@ export const vibrate = {
   medium: createVibrationPattern(VIBRATION_PATTERN.MEDIUM),
   long: createVibrationPattern(VIBRATION_PATTERN.LONG),
   doubleVeryShort: createVibrationPattern(VIBRATION_PATTERN.DOUBLE_VERY_SHORT),
-  tripleVeryShort: createVibrationPattern(VIBRATION_PATTERN.TRIPLE_VERY_SHORT)
+  tripleVeryShort: createVibrationPattern(VIBRATION_PATTERN.TRIPLE_VERY_SHORT),
+  doubleShort: createVibrationPattern(VIBRATION_PATTERN.DOUBLE_SHORT)
 }
