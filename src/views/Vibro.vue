@@ -6,31 +6,31 @@
         <v-icon color="warning"></v-icon>
       </template>
     </v-btn>
-    <v-btn class="btn" append-icon="mdi-play"
+    <v-btn @click="short" class="btn" append-icon="mdi-play"
       >Short
       <template v-slot:append>
         <v-icon color="warning"></v-icon>
       </template>
     </v-btn>
-    <v-btn class="btn" append-icon="mdi-play"
+    <v-btn @click="medium" class="btn" append-icon="mdi-play"
       >Medium
       <template v-slot:append>
         <v-icon color="warning"></v-icon>
       </template>
     </v-btn>
-    <v-btn @click="vibrate.long()" class="btn" append-icon="mdi-play"
+    <v-btn @click="long" class="btn" append-icon="mdi-play"
       >Long
       <template v-slot:append>
         <v-icon color="warning"></v-icon>
       </template>
     </v-btn>
-    <v-btn class="btn" append-icon="mdi-play"
+    <v-btn @click="doubleVeryShort" class="btn" append-icon="mdi-play"
       >Double-v-Short
       <template v-slot:append>
         <v-icon color="warning"></v-icon>
       </template>
     </v-btn>
-    <v-btn class="btn" append-icon="mdi-play"
+    <v-btn @click="tripleVeryShort" class="btn" append-icon="mdi-play"
       >Triple-v-Short
       <template v-slot:append>
         <v-icon color="warning"></v-icon>
@@ -50,6 +50,21 @@ export default {
   methods: {
     veryShort() {
       return vibrate.veryShort()
+    },
+    short() {
+      return vibrate.short()
+    },
+    medium() {
+      return vibrate.medium()
+    },
+    long() {
+      return vibrate.long()
+    },
+    doubleVeryShort() {
+      return vibrate.doubleVeryShort()
+    },
+    tripleVeryShort() {
+      return vibrate.tripleVeryShort()
     }
   }
 }
