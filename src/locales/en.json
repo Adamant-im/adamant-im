@@ -245,7 +245,7 @@
   },
   "title": "English",
   "transaction": {
-    "addresses": "no address | {n} address | {n} addresses",
+    "addresses": " no address | and {n} more address | and {n} more addresses",
     "amount": "Amount",
     "currentVal": "Current value",
     "valueTimeTxn": "Value at Time of Txn",
