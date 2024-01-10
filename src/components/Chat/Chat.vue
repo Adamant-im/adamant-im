@@ -520,7 +520,7 @@ export default {
       })
     },
     sendMessage(message) {
-      this.$store.dispatch('draftMessage/deleteWhenSend', { partnerId: this.partnerId })
+      this.$store.dispatch('draftMessage/deleteDraft', { partnerId: this.partnerId })
       const replyToId = this.replyMessageId > -1 ? this.replyMessageId : undefined
 
       return this.$store

@@ -64,11 +64,7 @@ const getters: GetterTree<DraftState, RootState> = {
 }
 
 const actions: ActionTree<DraftState, RootState> = {
-  resetState(context) {
-    context.commit('reset')
-  },
-
-  deleteWhenSend(context, payload: { partnerId: string }) {
+  deleteDraft(context, payload: { partnerId: string }) {
     context.commit('deleteReplyTold', payload)
     context.commit('deleteMessage', payload)
   }

@@ -1,4 +1,5 @@
 import { DraftState } from '@/store/modules/draft-message'
+
 export interface RootState {
   address: string
   balance: number
