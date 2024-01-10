@@ -3,12 +3,14 @@ import { createI18n } from 'vue-i18n'
 import de from './locales/de'
 import en from './locales/en'
 import ru from './locales/ru'
+import zh from './locales/zh'
 
 function loadLocaleMessages() {
   return {
     de,
     en,
-    ru
+    ru,
+    zh
   }
 }
 
