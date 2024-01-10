@@ -486,8 +486,9 @@ export default {
         'Windows 10': this.$t('chats.message_windows_10')
       }[detect().os] || this.$t('chats.message')
 
-    if (this.$store.getters['draftMessage/draftReplyTold'](this.partnerId)) {
-      this.replyMessageId = this.$store.getters['draftMessage/draftReplyTold'](this.partnerId)
+   const draftMessage = this.$store.getters['draftMessage/draftReplyTold'](this.partnerId)
+    if (draftMessage) {
+      this.replyMessageId = draftMessage
     }
   },
   methods: {
