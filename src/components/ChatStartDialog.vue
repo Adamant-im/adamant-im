@@ -226,11 +226,6 @@ export default {
 @import '@/assets/styles/settings/_colors.scss';
 
 .chat-start-dialog {
-  &__btn-scan {
-    margin-left: 5px !important;
-    margin-right: -5px !important;
-  }
-
   &__btn-start-chat {
     margin-top: 15px;
   }
@@ -239,14 +234,6 @@ export default {
     margin-top: 15px;
     margin-bottom: 15px;
     text-align: center;
-  }
-}
-
-.v-theme--light {
-  .chat-start-dialog {
-    :deep(__btn-scan) {
-      color: map-get($adm-colors, 'regular');
-    }
   }
 }
 </style>
