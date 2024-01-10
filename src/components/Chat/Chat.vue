@@ -226,7 +226,7 @@
             <a-chat-reply-preview
               :partner-id="partnerId"
               :message="replyMessage"
-              @cancel="replyMessageId = -1"
+              @cancel="cancelReplyMessage"
             />
           </template>
         </a-chat-form>
@@ -488,8 +488,6 @@ export default {
 
     if (this.$store.getters['draftMessage/draftReplyTold'](this.partnerId)) {
       this.replyMessageId = this.$store.getters['draftMessage/draftReplyTold'](this.partnerId)
-    } else if (this.$route.query.replyToId) {
-      this.replyMessageId = this.$route.query.replyToId
     }
   },
   methods: {
@@ -514,8 +512,15 @@ export default {
           return
       }
     },
+    cancelReplyMessage() {
+      this.replyMessageId = -1
+      this.$store.commit('draftMessage/deleteReplyTold', {
+        replyToId: this.replyMessageId,
+        partnerId: this.partnerId
+      })
+    },
     sendMessage(message) {
-      this.$store.commit('draftMessage/deleteMessage', this.partnerId)
+      this.$store.dispatch('draftMessage/deleteWhenSend', { partnerId: this.partnerId })
       const replyToId = this.replyMessageId > -1 ? this.replyMessageId : undefined
 
       return this.$store

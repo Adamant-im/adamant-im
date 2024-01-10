@@ -140,7 +140,10 @@ export default {
       if (error === false) {
         this.$emit('message', this.message)
         this.message = ''
-        this.$store.commit('draftMessage/deleteMessage', this.partnerId)
+        this.$store.commit('draftMessage/deleteMessage', {
+          message: this.message,
+          partnerId: this.partnerId
+        })
       } else {
         this.$emit('error', error)
       }
