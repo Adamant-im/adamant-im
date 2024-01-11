@@ -1,6 +1,6 @@
 {
   "adm": {
-    "minNodeVersion": "0.7.0",
+    "minNodeVersion": "0.8.0",
     "nodes": [
       {
         "url": "http://37g5to2z6bdoeegun4hms2hvkfbdxh4rcon4e3p267wtfkh4ji2ns6id.onion"
@@ -46,6 +46,9 @@
     "nodes": [
       {
         "url": "http://ldod53womnlwjmd4noq5yuq26xx3mmbrr4uogkfymuakhofjcuqeygad.onion"
+      },
+      {
+        "url": "http://eq2blda45h4kakbuq3g4stcgatiwqaefgmxzfsfuiahpdbt2pvbbepad.onion"
       }
     ],
     "explorerTx": "https://dashblockexplorer.com/tx/${ID}",
@@ -83,20 +86,14 @@
   "lsk": {
     "nodes": [
       {
-        "url": "http://nl2c4vcsdrd6je3ebt4236yst55mbso72ojmksrmlyoikapgnu647tid.onion"
-      },
-      {
-        "url": "http://qpjxvkathebm7oso3dk5hb4cggbeecqvcpcthuxlpovtn66plr6f4wyd.onion"
+        "url": "http://4bsg7dijnpkiu6wylaad5fiom4iep73oz3o2rojkwnuteaawd2w3o2ad.onion"
       }
     ],
     "explorerTx": "https://liskscan.com/transaction/${ID}",
     "services": {
       "lskService": [
         {
-          "url": "http://xqrymra5go2nb3cslb3c3iv4weeuicybcxpjee4ay2indk2hgo7rw4qd.onion"
-        },
-        {
-          "url": "http://s2q6phc22icy73zjccjq66555gwtvyuyrodmadwhjdhmvyehb3qrcsid.onion"
+          "url": "http://cf6vf6xylvhza3t3ewffa7cmr2bqgaus5jwghiktjleids5ovdhoazad.onion"
         }
       ]
     },

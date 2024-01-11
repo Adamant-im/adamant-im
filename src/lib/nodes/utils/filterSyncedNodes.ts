@@ -22,7 +22,10 @@ type GroupNodes<N extends Node> = {
  */
 export function filterSyncedNodes<N extends Node>(nodes: N[]): GroupNodes<N> {
   if (nodes.length === 0) {
-    throw new Error('filterSyncedNodes: No nodes provided')
+    return {
+      height: 0,
+      nodes: []
+    }
   }
 
   // For each node we take its height and list of nodes that have the same height ± epsilon

@@ -80,18 +80,14 @@ export default {
       return getExplorerTxUrl(Cryptos.LSK, this.id)
     },
     confirmations() {
-      const { height, confirmations } = this.transaction
+      const { height } = this.transaction
+      const currentHeight = this.$store.getters[`${this.cryptoKey}/height`]
 
-      let result = confirmations
-      if (height) {
-        // Calculate actual confirmations count based on the tx block height and the last block height.
-        const c = this.$store.getters[`${this.cryptoKey}/height`] - height + 1
-        if (c > 0 && (c > result || !result)) {
-          result = c
-        }
+      if (height === undefined || currentHeight === 0) {
+        return 0
       }
 
-      return result
+      return currentHeight - height + 1
     },
     admTx() {
       const admTx = {}
