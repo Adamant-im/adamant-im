@@ -315,7 +315,7 @@
     "error_precision": "精度过高--设置小数位数较少",
     "error_erc20_fee": "您需要｛费｝来支付转会费",
     "error_field_is_required": "字段是必需的",
-    "error_incorrect_address": "crypto｝钱包地址不正确",
+    "error_incorrect_address": "{crypto｝钱包地址不正确",
     "error_incorrect_amount": "金额不正确",
     "error_no_address": "输入收件人钱包地址",
     "error_no_amount": "输入要发送的金额",
