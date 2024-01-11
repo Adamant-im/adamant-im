@@ -134,6 +134,7 @@ const store = {
     },
     logout({ dispatch }) {
       dispatch('reset')
+      dispatch('draftMessage/resetState', null, { root: true })
     },
     unlock({ state, dispatch }) {
       // user updated an app, F5 or something
