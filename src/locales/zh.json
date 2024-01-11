@@ -174,7 +174,7 @@
     "socket": "套接字",
     "unsupported": "不受欢迎",
     "unsupported_reason_protocol": "不允许HTTP",
-    "unsupported_reason_api_version": "api版本过期",
+    "unsupported_reason_api_version": "API版本过期",
     "use_socket_connection": "使用套接字连接",
     "use_socket_connection_tooltip": "WebSockets允许像P2P信使一样立即获取新消息"
   },
