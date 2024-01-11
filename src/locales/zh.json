@@ -303,7 +303,7 @@
     "commission_estimate_label": "预计转会费",
     "confirm_approve": "确认",
     "confirm_cancel": "取消",
-    "confirm_message": "确认将<b>amount｝｛crypto｝</b>转移到地址<span class=\"address-in-confirm\">{address}</span>.",
+    "confirm_message": "确认将<b> {amount｝｛crypto｝</b>转移到地址<span class=\"address-in-confirm\">{address}</span>.",
     "confirm_message_with_name": "确认将<b>｛amount｝｛crypto｝</b>传输到｛name｝<span class=\"a-text-explanation-enlarged\">({address})</span>.",
     "confirm_title": "转账确认",
     "crypto": "加密货币",
