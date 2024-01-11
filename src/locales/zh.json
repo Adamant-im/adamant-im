@@ -160,7 +160,7 @@
     "fastest_title": "选择最快的节点",
     "fastest_tooltip": "将使用最快的节点处理请求",
     "tabs": {
-      "adm_nodes": "adm节点",
+      "adm_nodes": "ADM节点",
       "coin_nodes": "硬币节点"
     },
     "label": "类型",
