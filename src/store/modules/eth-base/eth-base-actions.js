@@ -354,7 +354,6 @@ export default function createActions(config) {
       return ethIndexer
         .getTransactions(options)
         .then((transactions) => {
-          console.log('new', transactions)
           context.commit('areRecentLoading', false)
           context.commit('transactions', { transactions, updateTimestamps: true })
         })
