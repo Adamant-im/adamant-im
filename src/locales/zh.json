@@ -213,7 +213,7 @@
     "push_not_supported": "此浏览器不支持推送通知",
     "security_title": "安全和登录",
     "send_on_enter": "按enter键发送",
-    "send_on_enter_tooltip": "用enter发送消息，用Ctrl+enter换行",
+    "send_on_enter_tooltip": "用Enter发送消息，用Ctrl+Enter换行",
     "upvote_for_label": "投票给：",
     "version": "应用程序版本：",
     "vote_for_delegates_button": "为代表投票",
