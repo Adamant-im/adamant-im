@@ -1,5 +1,6 @@
 import { EthNode } from './EthNode'
 import { Client } from '../abstract.client'
+import { normalizeTransaction } from './utils'
 
 /**
  * Provides methods for calling the ADAMANT API.
@@ -15,5 +16,13 @@ export class EthClient extends Client<EthNode> {
     this.minNodeVersion = minNodeVersion
 
     void this.watchNodeStatusChange()
+  }
+
+  async getTransaction(hash: string) {
+    const node = this.getNode()
+
+    const transaction = await node.client.getTransaction(hash)
+
+    return normalizeTransaction(transaction)
   }
 }

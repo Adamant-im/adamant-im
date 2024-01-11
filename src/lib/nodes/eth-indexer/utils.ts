@@ -29,7 +29,7 @@ export function normalizeTransaction(
     hash: hash,
     fee: Number(utils.calculateFee(transaction.gas, transaction.gasprice)),
     status: TransactionStatus.CONFIRMED,
-    time: transaction.time, // block timestamp in seconds
+    // time: transaction.time, // block timestamp in seconds
     timestamp: transaction.time * 1000, // block timestamp in ms
     direction,
     senderId,
