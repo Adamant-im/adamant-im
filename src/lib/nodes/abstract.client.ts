@@ -53,7 +53,10 @@ export abstract class Client<N extends Node> {
     const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
 
     if (!node) {
-      throw new Error('No available nodes at the moment')
+      console.warn(`${this.type}: No online nodes at the moment`)
+
+      // Return a random one from the full list hopefully is online
+      return this.nodes[Math.floor(Math.random() * this.nodes.length)].client
     }
 
     return node.client

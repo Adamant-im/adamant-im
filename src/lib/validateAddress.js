@@ -1,6 +1,6 @@
 import { isAddress as isEthAddress, isHexStrict } from 'web3-utils'
 import { isValidAddress as isValidBtcAddress } from './bitcoin/bitcoin-utils'
-import { validateBase32Address as isLskAddress } from '@liskhq/lisk-cryptography'
+import * as lskCryptography from '@liskhq/lisk-cryptography'
 import { Cryptos, CryptosInfo, isEthBased } from './constants'
 
 /**
@@ -18,7 +18,7 @@ export default function validateAddress(crypto, address) {
   if (crypto === Cryptos.LSK) {
     // We need to use try-catch https://github.com/LiskHQ/lisk-sdk/issues/6652
     try {
-      return isLskAddress(address)
+      return lskCryptography.address.validateLisk32Address(address)
     } catch (e) {
       return false
     }

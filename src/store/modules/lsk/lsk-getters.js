@@ -1,19 +1,15 @@
+import { estimateFee } from '../../../lib/lisk/lisk-utils'
 import baseGetters from '../lsk-base/lsk-base-getters'
-import lskActions from './lsk-actions'
-import validateAddress from '@/lib/validateAddress'
 
 export default {
   ...baseGetters,
 
-  fee: (state) => (amount, recipientAddress, data) => {
-    recipientAddress = validateAddress(state.crypto, recipientAddress)
-      ? recipientAddress
-      : state.address
-    return lskActions.calculateFee(null, {
-      address: recipientAddress,
+  fee: (state) => (amount, recipientAddress, data, isNewAccount) => {
+    return estimateFee({
       amount,
-      nonce: state.nonce,
-      data: data || ''
+      data,
+      isNewAccount,
+      nonce: state.nonce
     })
   },
 
