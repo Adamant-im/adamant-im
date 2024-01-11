@@ -330,7 +330,7 @@
     "invalid_qr_code": "二维码不包含地址或无法识别",
     "no_address_text": "此用户还没有公共｛crypto｝钱包。他们必须登录Messenger，余额超过0.001 ADM",
     "no_address_title": "R收件人还没有{crypto}钱包",
-    "legacy_address_text": "此用户有一个旧的｛crypto｝钱包。他们必须登录Messenger，余额超过0.001 ADM才能更新｛crupto｝的钱包地址",
+    "legacy_address_text": "此用户有一个旧的｛crypto｝钱包。他们必须登录Messenger，余额超过0.001 ADM才能更新｛crypto｝的钱包地址",
     "legacy_address_title": "收件人还有一个旧的{crypto}钱包",
     "send_button": "发送",
     "to_address_label": "收件人",
