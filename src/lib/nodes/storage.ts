@@ -1,3 +1,4 @@
+import { TypedStorage } from '@/lib/typed-storage'
 import type { NodeType } from './types'
 
 type URL = string
@@ -14,30 +15,7 @@ type Options = Record<
 const NODES_STATE_STORAGE_KEY = 'NODES_STATE_STORAGE' // for storing active/inactive state
 const NODES_OPTIONS_STORAGE_KEY = 'NODES_OPTIONS_STORAGE' // for storing common options
 
-function getItem<K extends string, S = unknown>(key: K, defaultValue: S): S {
-  const rawData = window.localStorage.getItem(key)
-  if (rawData === null) {
-    return defaultValue
-  }
-
-  try {
-    return JSON.parse(rawData) ?? defaultValue
-  } catch (err) {
-    window.localStorage.removeItem(key)
-
-    return defaultValue
-  }
-}
-
-function getState(): State {
-  return getItem(NODES_STATE_STORAGE_KEY, {})
-}
-
-function saveState(newState: State) {
-  const rawData = JSON.stringify(newState)
-
-  window.localStorage.setItem(NODES_STATE_STORAGE_KEY, rawData)
-}
+const stateStorage = new TypedStorage(NODES_STATE_STORAGE_KEY, {} as State, window.localStorage)
 
 const defaultOptions: Options = {
   adm: { useFastest: false },
@@ -48,37 +26,33 @@ const defaultOptions: Options = {
   lsk: { useFastest: false }
 }
 
-function getOptions() {
-  return getItem(NODES_OPTIONS_STORAGE_KEY, defaultOptions)
-}
-
-function saveOptions(newOptions: Options) {
-  const rawData = JSON.stringify(newOptions)
-
-  window.localStorage.setItem(NODES_OPTIONS_STORAGE_KEY, rawData)
-}
+const optionsStorage = new TypedStorage(
+  NODES_OPTIONS_STORAGE_KEY,
+  defaultOptions,
+  window.localStorage
+)
 
 export const nodesStorage = {
   isActive(url: string): boolean {
-    const state = getState()
+    const state = stateStorage.getItem()
 
     return state[url] ?? true
   },
   saveActive(url: string, enabled: boolean) {
-    const state = getState()
+    const state = stateStorage.getItem()
     state[url] = enabled
 
-    saveState(state)
+    stateStorage.setItem(state)
   },
   getUseFastest(node: NodeType) {
-    const options = getOptions()
+    const options = optionsStorage.getItem()
 
     return options[node].useFastest
   },
   setUseFastest(value: boolean, node: NodeType) {
-    const options = getOptions()
+    const options = optionsStorage.getItem()
     options[node].useFastest = value
 
-    saveOptions(options)
+    optionsStorage.setItem(options)
   }
 }
