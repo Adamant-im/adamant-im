@@ -14,9 +14,6 @@ import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
-import { getFromLocalStorage } from '@/lib/localStorage.ts'
-import { WalletsState } from '@/store/modules/wallets/types.ts'
-import { mapWallets } from '@/lib/mapWallets.ts'
 
 export default defineComponent({
   components: {
@@ -46,29 +43,7 @@ export default defineComponent({
   mounted() {
     this.notifications = new Notifications(this)
     this.notifications.start()
-
-    const predefinedWalletsTemplate: WalletsState = getFromLocalStorage('adm-wallets', {
-      symbols: []
-    })
-    if (
-      !('symbols' in predefinedWalletsTemplate) ||
-      predefinedWalletsTemplate.symbols.length === 0
-    ) {
-      this.$store.dispatch('wallets/initWalletsSymbolsTemplates', null)
-    } else {
-      const initialTemplate = mapWallets()
-
-      const hasDifference = !!initialTemplate.filter(
-        ({ symbol: symbol1 }) =>
-          !predefinedWalletsTemplate.symbols.some(({ symbol: symbol2 }) => symbol2 === symbol1)
-      ).length
-
-      if (hasDifference) {
-        this.$store.dispatch('wallets/initWalletsSymbolsTemplates', null)
-      } else {
-        this.$store.dispatch('wallets/setWalletSymbolsTemplates', predefinedWalletsTemplate.symbols)
-      }
-    }
+    this.$store.dispatch('wallets/checkWalletsOrderBeforeInit')
   },
   beforeUnmount() {
     this.notifications?.stop()

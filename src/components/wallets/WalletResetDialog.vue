@@ -32,7 +32,7 @@ export default defineComponent({
     const isDialogVisible = ref(false)
 
     const reset = () => {
-      store.dispatch('wallets/initWalletsSymbolsTemplates', null)
+      store.dispatch('wallets/initWalletsSymbolsTemplates')
       isDialogVisible.value = false
     }
 
