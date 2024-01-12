@@ -1,5 +1,7 @@
 <template>
   <div>
+    <input :b class="input" placeholder=" Write PATTERN" />
+    <v-btn class="btnPlay"> play</v-btn>
     <v-btn @click="veryShort" class="btn" append-icon="mdi-play"
       >Very short
       <template v-slot:append>
@@ -47,6 +49,9 @@
 <script>
 import { vibrate } from '@/lib/vibrate.js'
 export default {
+  data: () => ({
+    vibro: []
+  }),
   methods: {
     veryShort() {
       return vibrate.veryShort()
@@ -75,6 +80,14 @@ export default {
 <style lang="scss" scoped>
 @import 'vuetify/settings';
 @import '@/assets/styles/settings/_colors.scss';
+.input {
+  border: 2px solid orange;
+  margin-right: 16px;
+}
+.btnPlay {
+  background-color: rgba(205, 144, 31, 0.93);
+  height: 32px;
+}
 .btn {
   display: flex;
   margin-top: 12px;
