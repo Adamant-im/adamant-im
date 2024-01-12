@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { i18n } from '@/i18n'
 
-const locales = ['de', 'en', 'ru']
+const locales = ['de', 'en', 'ru', 'zh']
 
 const state = () => ({
   currentLocale: 'en'
