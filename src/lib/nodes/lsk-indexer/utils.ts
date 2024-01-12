@@ -1,7 +1,8 @@
 import { getMillisTimestamp } from '@/lib/lisk/lisk-utils'
 import { convertBeddowsToLSK } from '@liskhq/lisk-transactions'
+import { TransactionStatus, TransactionStatusType } from '@/lib/constants'
 import { Transaction } from './types/api/transactions/transaction'
-import { NormalizedTransaction } from './types/api/transactions/normalized-transaction'
+import { LskTransaction } from '@/lib/nodes/types/transaction'
 
 /**
  * @param transaction
@@ -10,14 +11,14 @@ import { NormalizedTransaction } from './types/api/transactions/normalized-trans
 export function normalizeTransaction(
   transaction: Transaction,
   ownerAddress: string
-): NormalizedTransaction {
+): LskTransaction {
   const direction = transaction.sender.address === ownerAddress ? 'from' : 'to'
 
   return {
     id: transaction.id,
     hash: transaction.id,
     fee: Number(convertBeddowsToLSK(transaction.fee)),
-    status: 'CONFIRMED',
+    status: mapStatus(transaction.executionStatus),
     data: transaction.params.data,
     timestamp: getMillisTimestamp(transaction.block.timestamp), // block timestamp
     direction,
@@ -28,5 +29,22 @@ export function normalizeTransaction(
     nonce: transaction.nonce,
     module: 'token',
     command: 'transfer'
+  }
+}
+
+/**
+ * Map LSK transaction execution status to our internal status
+ * @param status
+ */
+function mapStatus(status: Transaction['executionStatus']): TransactionStatusType {
+  switch (status) {
+    case 'successful':
+      return TransactionStatus.CONFIRMED
+    case 'pending':
+      return TransactionStatus.PENDING
+    case 'failed':
+      return TransactionStatus.REJECTED
+    default:
+      throw new Error(`LskIndexer: Unknown status: ${status}`)
   }
 }

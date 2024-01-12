@@ -22,6 +22,14 @@ export type CoinTransaction = {
   confirmations?: number
 }
 
+export type LskTransaction = CoinTransaction & {
+  data: string
+  height: number
+  nonce: string
+  module: 'token'
+  command: 'transfer'
+}
+
 export type EthTransaction = CoinTransaction & {
   blockNumber: number
   time: number // timestamp in seconds

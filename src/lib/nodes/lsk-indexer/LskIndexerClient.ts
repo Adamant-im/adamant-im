@@ -1,4 +1,5 @@
 import { LSK_TOKEN_ID } from '@/lib/lisk'
+import { TransactionNotFound } from '@/lib/nodes/utils/errors'
 import { AxiosRequestConfig } from 'axios'
 import { normalizeTransaction } from './utils'
 import { TransactionParams } from './types/api/transactions/transaction-params'
@@ -60,7 +61,7 @@ export class LskIndexerClient extends Client<LskIndexer> {
     const transaction = transactions[0]
 
     if (!transaction) {
-      throw new Error(`LskIndexer: Transaction ID:${transactionID} not found`)
+      throw new TransactionNotFound(transactionID, this.type)
     }
 
     return normalizeTransaction(transaction, address)

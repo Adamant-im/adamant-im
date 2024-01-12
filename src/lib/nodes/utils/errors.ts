@@ -16,3 +16,12 @@ export class NodeOfflineError extends Error {
 export function isNodeOfflineError(error: Error): error is NodeOfflineError {
   return (error as NodeOfflineError).code === 'NODE_OFFLINE'
 }
+
+/**
+ * Unified error class for all nodes. Must be used in `node.getTransaction()` method.
+ */
+export class TransactionNotFound extends Error {
+  constructor(hash: string, chain: string) {
+    super(`${chain}: Transaction ${hash} not found`)
+  }
+}

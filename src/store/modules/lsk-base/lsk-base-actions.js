@@ -1,6 +1,11 @@
 import BigNumber from '@/lib/bignumber'
 import { LiskAccount, LSK_TXS_PER_PAGE } from '../../../lib/lisk'
 import { getLiskTimestamp } from '../../../lib/lisk/lisk-utils'
+import {
+  assertNoPendingTransaction,
+  createPendingTransaction,
+  PendingTxStore
+} from '../../../lib/pending-transactions'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
 import { lsk } from '../../../lib/nodes/lsk'
@@ -35,6 +40,12 @@ function createActions(options) {
         context.commit('address', account.getLisk32Address())
         context.dispatch('updateStatus')
         context.dispatch('storeAddress')
+
+        // restore pending transaction
+        const pendingTransaction = PendingTxStore.get(context.state.crypto)
+        if (pendingTransaction) {
+          context.commit('transactions', [pendingTransaction])
+        }
       }
     },
 
@@ -66,7 +77,7 @@ function createActions(options) {
       storeCryptoAddress(state.crypto, state.address)
     },
 
-    sendTokens(
+    async sendTokens(
       context,
       { amount, admAddress, address, comments, fee, textData, replyToId, dryRun }
     ) {
@@ -75,56 +86,79 @@ function createActions(options) {
 
       const crypto = context.state.crypto
 
-      return account
-        .createTransaction(address, amount, fee, context.state.nonce, textData)
-        .then((tx) => {
-          if (!admAddress || dryRun) return tx.hex
+      // 1. Sign transaction offline
+      const signedTransaction = await account.createTransaction(
+        address,
+        amount,
+        fee,
+        context.state.nonce,
+        textData
+      )
 
-          const msgPayload = {
-            address: admAddress,
-            amount: BigNumber(amount).toFixed(),
-            comments,
-            crypto,
-            hash: tx.id,
-            replyToId
+      // 2. Ensure there is no pending transaction
+      await assertNoPendingTransaction(
+        context.state.crypto,
+        (hashLocal) => lskIndexer.getTransaction(hashLocal, context.state.address),
+        context.state.nonce
+      )
+
+      // 3. Send crypto transfer message to ADM blockchain (if ADM address provided)
+      if (admAddress && !dryRun) {
+        const msgPayload = {
+          address: admAddress,
+          amount: BigNumber(amount).toFixed(),
+          comments,
+          crypto,
+          hash: signedTransaction.id,
+          replyToId
+        }
+
+        // Send a special message to indicate that we're performing a crypto transfer
+        const success = context.dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
+        if (!success) {
+          throw new Error('adm_message')
+        }
+      }
+
+      // 4. Save pending transaction
+      const pendingTransaction = createPendingTransaction({
+        hash: signedTransaction.id,
+        senderId: context.state.address,
+        recipientId: address,
+        amount,
+        fee: 0,
+        timestamp: Date.now(),
+        nonce: context.state.nonce // convert BigInt to Number
+      })
+      await PendingTxStore.save(context.state.crypto, pendingTransaction)
+      context.commit('transactions', [pendingTransaction])
+
+      // 5. Send signed transaction to ETH blockchain
+      try {
+        const hash = await lsk.sendTransaction(signedTransaction.hex, dryRun)
+
+        console.log(`${crypto} transaction has been sent: ${hash}`)
+
+        context.commit('transactions', [
+          {
+            hash,
+            senderId: context.state.address,
+            recipientId: address,
+            amount,
+            fee,
+            status: 'PENDING',
+            timestamp: Date.now(),
+            data: textData
           }
+        ])
 
-          // Send a special message to indicate that we're performing a crypto transfer
-          return context
-            .dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
-            .then((success) => (success ? tx.hex : Promise.reject(new Error('adm_message'))))
-        })
-        .then((rawTx) =>
-          lsk.sendTransaction(rawTx, dryRun).then(
-            (hash) => ({ hash }),
-            (error) => ({ error })
-          )
-        )
-        .then(({ hash, error }) => {
-          if (error) {
-            context.commit('transactions', [{ hash, status: 'REJECTED' }])
-            throw error
-          } else {
-            console.log(`${crypto} transaction has been sent: ${hash}`)
+        context.dispatch('getTransaction', { hash, force: true })
 
-            context.commit('transactions', [
-              {
-                hash,
-                senderId: context.state.address,
-                recipientId: address,
-                amount,
-                fee,
-                status: 'PENDING',
-                timestamp: Date.now(),
-                data: textData
-              }
-            ])
-
-            context.dispatch('getTransaction', { hash, force: true })
-
-            return hash
-          }
-        })
+        return hash
+      } catch (err) {
+        context.commit('transactions', [{ hash: signedTransaction.id, status: 'REJECTED' }])
+        throw err
+      }
     },
 
     /**

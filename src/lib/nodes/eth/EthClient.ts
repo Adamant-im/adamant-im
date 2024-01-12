@@ -1,3 +1,6 @@
+import { Web3Eth } from 'web3-eth'
+import { TransactionNotFound as Web3TransactionNotFound } from 'web3-errors'
+import { TransactionNotFound } from '@/lib/nodes/utils/errors'
 import { EthNode } from './EthNode'
 import { Client } from '../abstract.client'
 import { normalizeTransaction } from './utils'
@@ -21,8 +24,20 @@ export class EthClient extends Client<EthNode> {
   async getTransaction(hash: string) {
     const node = this.getNode()
 
-    const transaction = await node.client.getTransaction(hash)
+    try {
+      const transaction = await node.client.getTransaction(hash)
 
-    return normalizeTransaction(transaction)
+      return normalizeTransaction(transaction)
+    } catch (err) {
+      if (err instanceof Web3TransactionNotFound) {
+        throw new TransactionNotFound(hash, this.type)
+      }
+
+      throw err
+    }
+  }
+
+  sendSignedTransaction(...args: Parameters<Web3Eth['sendSignedTransaction']>) {
+    return this.getNode().client.sendSignedTransaction(...args)
   }
 }

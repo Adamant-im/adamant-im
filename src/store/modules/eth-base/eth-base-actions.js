@@ -2,8 +2,12 @@ import BigNumber from 'bignumber.js'
 
 import * as utils from '../../../lib/eth-utils'
 import ethIndexer from '../../../lib/nodes/eth-indexer'
+import {
+  assertNoPendingTransaction,
+  createPendingTransaction,
+  PendingTxStore
+} from '../../../lib/pending-transactions'
 import * as tf from '../../../lib/transactionsFetching'
-import { isStringEqualCI } from '@/lib/textHelpers'
 import { signTransaction, TransactionFactory } from 'web3-eth-accounts'
 import api from '@/lib/nodes/eth'
 
@@ -26,6 +30,12 @@ export default function createActions(config) {
         const account = utils.getAccountFromPassphrase(passphrase, api)
         context.commit('account', account)
         context.dispatch('updateStatus')
+
+        // restore pending transaction
+        const pendingTransaction = PendingTxStore.get(context.state.crypto)
+        if (pendingTransaction) {
+          context.commit('transactions', [pendingTransaction])
+        }
 
         onInit(context)
       }
@@ -56,107 +66,88 @@ export default function createActions(config) {
       }
     },
 
-    sendTokens(context, { amount, admAddress, address, comments, increaseFee, replyToId }) {
+    async sendTokens(context, { amount, admAddress, address, comments, increaseFee, replyToId }) {
       address = address.trim()
       const crypto = context.state.crypto
 
-      return initTransaction(api, context, address, amount, increaseFee)
-        .then((ethTx) => {
-          const tx = TransactionFactory.fromTxData(ethTx)
+      // 1. Sign transaction offline
+      const unsignedTransaction = await initTransaction(api, context, address, amount, increaseFee)
+      const signedTransaction = await signTransaction(
+        TransactionFactory.fromTxData(unsignedTransaction),
+        context.state.privateKey
+      )
 
-          return signTransaction(tx, context.state.privateKey).then((signedTx) => {
-            const txInfo = {
-              signedTx,
-              ethTx
-            }
+      // 2. Ensure there is no pending transaction
+      await assertNoPendingTransaction(
+        context.state.crypto,
+        (hashLocal) => api.getTransaction(hashLocal),
+        unsignedTransaction.nonce
+      )
 
-            if (!admAddress) {
-              return txInfo
-            }
-            const msgPayload = {
-              address: admAddress,
-              amount,
-              comments,
-              crypto,
-              hash: signedTx.transactionHash,
-              replyToId
-            }
-            // Send a rich ADM message to indicate that we're performing an ETH transfer
-            return context
-              .dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
-              .then((success) => (success ? txInfo : Promise.reject(new Error('adm_message'))))
-          })
+      // 3. Send crypto transfer message to ADM blockchain (if ADM address provided)
+      if (admAddress) {
+        const msgPayload = {
+          address: admAddress,
+          amount,
+          comments,
+          crypto,
+          hash: signedTransaction.transactionHash,
+          replyToId
+        }
+        // Send a rich ADM message to indicate that we're performing an ETH transfer
+        const success = await context.dispatch('sendCryptoTransferMessage', msgPayload, {
+          root: true
         })
-        .then((txInfo) => {
-          return api
-            .getClient()
-            .sendSignedTransaction(txInfo.signedTx.rawTransaction)
-            .then(
-              (hash) => ({ txInfo, hash }),
-              (error) => {
-                // Known bug that after Tx sent successfully, this error occurred anyway https://github.com/ethereum/web3.js/issues/3145
-                if (!error.toString().includes('Failed to check for transaction receipt')) {
-                  return { txInfo, error }
-                } else {
-                  return { txInfo, hash: txInfo.signedTx.transactionHash }
-                }
-              }
-            )
-        })
-        .then((sentTxInfo) => {
-          // Since London OpenEthereum (or web3?) update v3.3.0-rc.4, hash is an object, not a hex string
-          // Object is a Tx receipt with fields: blockHash, blockNumber, contractAddress, cumulativeGasUsed, effectiveGasPrice,
-          // ..from, gasUsed, logs, logsBloom, **status**: true or false, to, transactionHash, transactionIndex
-          // Though docs say "The callback will return the 32 bytes transaction hash"
-          // https://web3js.readthedocs.io/en/v3.0.0-rc.5/web3-eth.html?highlight=sendSignedTransaction#sendsignedtransaction
-          // We suppose result format may change in future, so expect both variants
-          if (typeof sentTxInfo.hash === 'object') {
-            // Before London hardfork, ethTx included gasPrice
-            // But after it, it include fields: from, gas (limit), to, value (hex),
-            // ..type: undefined, which interprets as 0 (Legacy)
-            // We should take gasPrice from Tx receipt object = effectiveGasPrice
-            sentTxInfo.txInfo.ethTx.gasPrice = sentTxInfo.hash.effectiveGasPrice
-            sentTxInfo.hash = sentTxInfo.hash.transactionHash
-          }
+        if (!success) {
+          throw new Error('adm_message')
+        }
+      }
 
-          if (sentTxInfo.error) {
-            console.error(`Failed to send ${crypto} transaction`, sentTxInfo.error)
-            context.commit('transactions', [
-              { hash: sentTxInfo.txInfo.signedTx.transactionHash, status: 'REJECTED' }
-            ])
-            throw sentTxInfo.error
-          } else {
-            if (!isStringEqualCI(sentTxInfo.hash, sentTxInfo.txInfo.signedTx.transactionHash)) {
-              console.warn(
-                `Something wrong with sent ETH tx, computed hash and sent tx differs: ${sentTxInfo.txInfo.signedTx.transactionHash} and ${sentTxInfo.hash}`
-              )
-            }
+      // 4. Save pending transaction
+      const pendingTransaction = createPendingTransaction({
+        hash: signedTransaction.transactionHash,
+        senderId: context.state.address,
+        recipientId: address,
+        amount,
+        fee: utils.calculateFee(unsignedTransaction.gasLimit, unsignedTransaction.gasPrice),
+        timestamp: Date.now(),
+        nonce: Number(unsignedTransaction.nonce) // convert BigInt to Number
+      })
+      await PendingTxStore.save(context.state.crypto, pendingTransaction)
+      context.commit('transactions', [pendingTransaction])
 
-            context.commit('transactions', [
-              {
-                hash: sentTxInfo.hash,
-                senderId: sentTxInfo.txInfo.ethTx.from,
-                recipientId: address,
-                amount,
-                fee: utils.calculateFee(
-                  sentTxInfo.txInfo.ethTx.gasLimit,
-                  sentTxInfo.txInfo.ethTx.gasPrice
-                ),
-                status: 'PENDING',
-                timestamp: Date.now(),
-                gasPrice: sentTxInfo.txInfo.ethTx.gasPrice
-              }
-            ])
-            context.dispatch('getTransaction', {
-              hash: sentTxInfo.hash,
-              isNew: true,
-              direction: 'from',
-              force: true
-            })
+      // 5. Send signed transaction to ETH blockchain
+      /**
+       * @type {import('web3-types').TransactionReceipt}
+       */
+      const sentTransaction = await api.sendSignedTransaction(signedTransaction.rawTransaction)
 
-            return sentTxInfo.hash
-          }
-        })
+      if (sentTransaction.transactionHash !== signedTransaction.transactionHash) {
+        console.warn(
+          `Something wrong with sent ETH tx, computed hash and sent tx differs: ${signedTransaction.transactionHash} and ${sentTransaction.transactionHash}`
+        )
+      }
+
+      context.commit('transactions', [
+        {
+          hash: sentTransaction.transactionHash,
+          senderId: unsignedTransaction.from,
+          recipientId: address,
+          amount,
+          fee: utils.calculateFee(unsignedTransaction.gasLimit, sentTransaction.effectiveGasPrice),
+          status: 'PENDING',
+          timestamp: Date.now(),
+          gasPrice: sentTransaction.effectiveGasPrice
+        }
+      ])
+      context.dispatch('getTransaction', {
+        hash: sentTransaction.transactionHash,
+        isNew: true,
+        direction: 'from',
+        force: true
+      })
+
+      return sentTransaction.transactionHash
     },
 
     /**
