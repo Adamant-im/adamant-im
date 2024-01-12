@@ -1,8 +1,8 @@
 import { ActionTree } from 'vuex'
 import { CoinSymbol, WalletsState } from '@/store/modules/wallets/types'
 import { RootState } from '@/store/types'
-import { mapWallets } from '@/lib/mapWallets.ts'
-import { getFromLocalStorage } from '@/lib/localStorage.ts'
+import { mapWallets } from '@/lib/mapWallets'
+import { getFromLocalStorage } from '@/lib/localStorage'
 
 export const actions: ActionTree<WalletsState, RootState> = {
   checkWalletsOrderBeforeInit({ dispatch }): void {

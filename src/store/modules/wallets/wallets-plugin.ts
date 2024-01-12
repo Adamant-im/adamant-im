@@ -1,5 +1,5 @@
 import VuexPersistence from 'vuex-persist'
-import { RootState } from '@/store/types.ts'
+import { RootState } from '@/store/types'
 
 const walletsPersistencePlugin = new VuexPersistence({
   key: 'adm-wallets',

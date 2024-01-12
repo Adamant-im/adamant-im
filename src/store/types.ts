@@ -1,4 +1,4 @@
-import { WalletsState } from '@/store/modules/wallets/types.ts'
+import { WalletsState } from '@/store/modules/wallets/types'
 
 export interface RootState {
   address: string
