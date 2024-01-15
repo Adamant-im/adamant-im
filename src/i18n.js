@@ -14,9 +14,12 @@ function loadLocaleMessages() {
   }
 }
 
+export const DEFAULT_LOCALE = import.meta.env.VITE_I18N_LOCALE || 'en'
+export const FALLBACK_LOCALE = import.meta.env.VUE_APP_I18N_FALLBACK_LOCALE || 'en'
+
 export const i18n = createI18n({
-  locale: import.meta.env.VUE_APP_I18N_LOCALE || 'en',
-  fallbackLocale: import.meta.env.VUE_APP_I18N_FALLBACK_LOCALE || 'en',
+  locale: DEFAULT_LOCALE,
+  fallbackLocale: FALLBACK_LOCALE,
   messages: loadLocaleMessages(),
   fallbackRoot: true,
   pluralizationRules: {
