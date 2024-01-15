@@ -1,3 +1,5 @@
+import { DraftState } from '@/store/modules/draft-message'
+
 export interface RootState {
   address: string
   balance: number
@@ -25,4 +27,5 @@ export interface RootState {
   identicon: any
   notification: any
   rate: any
+  draftMessage: DraftState
 }
