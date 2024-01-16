@@ -26,8 +26,13 @@ export class EthClient extends Client<EthNode> {
 
     try {
       const transaction = await node.client.getTransaction(hash)
+      const includedInBlock = transaction.blockNumber !== undefined
 
-      return normalizeTransaction(transaction)
+      const blockTimestamp = includedInBlock
+        ? await node.client.getBlock(transaction.blockNumber).then((block) => block.timestamp)
+        : undefined
+
+      return normalizeTransaction(transaction, blockTimestamp)
     } catch (err) {
       if (err instanceof Web3TransactionNotFound) {
         throw new TransactionNotFound(hash, this.type)

@@ -30,7 +30,8 @@ export type LskTransaction = CoinTransaction & {
   command: 'transfer'
 }
 
-export type EthTransaction = CoinTransaction & {
-  blockNumber: number
-  time: number // timestamp in seconds
+export type EthTransaction = Omit<CoinTransaction, 'timestamp'> & {
+  blockNumber?: number
+  time?: number // timestamp in seconds
+  timestamp?: number // timestamp in milliseconds
 }
