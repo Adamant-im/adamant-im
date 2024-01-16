@@ -126,7 +126,7 @@ function createActions(options) {
         senderId: context.state.address,
         recipientId: address,
         amount,
-        fee: 0,
+        fee,
         timestamp: Date.now(),
         nonce: context.state.nonce // convert BigInt to Number
       })
