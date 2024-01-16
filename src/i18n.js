@@ -3,18 +3,23 @@ import { createI18n } from 'vue-i18n'
 import de from './locales/de'
 import en from './locales/en'
 import ru from './locales/ru'
+import zh from './locales/zh'
 
 function loadLocaleMessages() {
   return {
     de,
     en,
-    ru
+    ru,
+    zh
   }
 }
 
+export const DEFAULT_LOCALE = import.meta.env.VITE_I18N_LOCALE || 'en'
+export const FALLBACK_LOCALE = import.meta.env.VUE_APP_I18N_FALLBACK_LOCALE || 'en'
+
 export const i18n = createI18n({
-  locale: import.meta.env.VUE_APP_I18N_LOCALE || 'en',
-  fallbackLocale: import.meta.env.VUE_APP_I18N_FALLBACK_LOCALE || 'en',
+  locale: DEFAULT_LOCALE,
+  fallbackLocale: FALLBACK_LOCALE,
   messages: loadLocaleMessages(),
   fallbackRoot: true,
   pluralizationRules: {

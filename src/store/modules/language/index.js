@@ -1,10 +1,10 @@
 import dayjs from 'dayjs'
-import { i18n } from '@/i18n'
+import { i18n, DEFAULT_LOCALE } from '@/i18n'
 
-const locales = ['de', 'en', 'ru']
+const locales = ['de', 'en', 'ru', 'zh']
 
 const state = () => ({
-  currentLocale: 'en'
+  currentLocale: DEFAULT_LOCALE
 })
 
 const mutations = {

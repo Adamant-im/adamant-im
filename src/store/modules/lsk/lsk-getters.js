@@ -4,8 +4,13 @@ import baseGetters from '../lsk-base/lsk-base-getters'
 export default {
   ...baseGetters,
 
-  fee: () => (amount, _recipientAddress, data, isNewAccount) => {
-    return estimateFee({ amount, data, isNewAccount })
+  fee: (state) => (amount, recipientAddress, data, isNewAccount) => {
+    return estimateFee({
+      amount,
+      data,
+      isNewAccount,
+      nonce: state.nonce
+    })
   },
 
   height(state) {
