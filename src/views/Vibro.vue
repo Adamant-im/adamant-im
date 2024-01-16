@@ -1,7 +1,7 @@
 <template>
   <div>
-    <input :b class="input" placeholder=" Write PATTERN" />
-    <v-btn class="btnPlay"> play</v-btn>
+    <input v-model="vibro" class="input" placeholder="Example 30,20,30" />
+    <v-btn @click="vibration" class="btnPlay"> play</v-btn>
     <v-btn @click="veryShort" class="btn" append-icon="mdi-play"
       >Very short
       <template v-slot:append>
@@ -50,9 +50,14 @@
 import { vibrate } from '@/lib/vibrate.js'
 export default {
   data: () => ({
-    vibro: []
+    vibro: undefined
   }),
+
   methods: {
+    vibration() {
+      let num = this.vibro.split(',').map((i) => Number(i))
+      return navigator.vibrate(num)
+    },
     veryShort() {
       return vibrate.veryShort()
     },
