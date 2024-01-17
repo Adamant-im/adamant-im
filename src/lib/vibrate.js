@@ -3,9 +3,9 @@ const VIBRATION_PATTERN = {
   SHORT: [80],
   MEDIUM: [160],
   LONG: [300],
-  DOUBLE_VERY_SHORT: [40, 20, 40],
-  TRIPLE_VERY_SHORT: [40, 20, 40, 20, 40],
-  DOUBLE_SHORT: [80, 40, 80]
+  DOUBLE_VERY_SHORT: [40, 60, 40],
+  TRIPLE_VERY_SHORT: [40, 60, 40, 60, 40],
+  DOUBLE_SHORT: [80, 60, 80]
 }
 
 function checkVibrateIsSupported() {
