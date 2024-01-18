@@ -1,5 +1,5 @@
 import { AllCryptosOrder, CryptosInfo, CryptoSymbol } from '@/lib/constants/cryptos'
-import { CoinSymbol } from '@/store/modules/wallets/types.ts'
+import { CoinSymbol } from '@/store/modules/wallets/types'
 
 export function mapWallets(): CoinSymbol[] {
   return AllCryptosOrder.map((crypto: CryptoSymbol) => {

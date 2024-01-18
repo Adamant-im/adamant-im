@@ -13,7 +13,7 @@ export const actions: ActionTree<WalletsState, RootState> = {
       !('symbols' in predefinedWalletsTemplate) ||
       predefinedWalletsTemplate.symbols.length === 0
     ) {
-      dispatch('initWalletsSymbolsTemplates')
+      dispatch('initWalletsSymbols')
     } else {
       const initialTemplate = mapWallets()
 
@@ -23,19 +23,19 @@ export const actions: ActionTree<WalletsState, RootState> = {
       ).length
 
       if (hasDifference) {
-        dispatch('initWalletsSymbolsTemplates')
+        dispatch('initWalletsSymbols')
       } else {
-        dispatch('setWalletSymbolsTemplates', predefinedWalletsTemplate.symbols)
+        dispatch('setWalletSymbols', predefinedWalletsTemplate.symbols)
       }
     }
   },
 
-  initWalletsSymbolsTemplates({ dispatch }): void {
+  initWalletsSymbols({ dispatch }): void {
     const walletSymbols: CoinSymbol[] = mapWallets()
-    dispatch('setWalletSymbolsTemplates', walletSymbols)
+    dispatch('setWalletSymbols', walletSymbols)
   },
 
-  setWalletSymbolsTemplates({ commit }, symbols: CoinSymbol[]): void {
-    commit('setWalletSymbolsTemplates', symbols)
+  setWalletSymbols({ commit }, symbols: CoinSymbol[]): void {
+    commit('setWalletSymbols', symbols)
   }
 }

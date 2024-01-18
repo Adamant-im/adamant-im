@@ -2,7 +2,7 @@ import { CoinSymbol, WalletsState } from '@/store/modules/wallets/types'
 import { MutationTree } from 'vuex'
 
 export const mutations: MutationTree<WalletsState> = {
-  setWalletSymbolsTemplates(state, value: CoinSymbol[]): void {
+  setWalletSymbols(state, value: CoinSymbol[]): void {
     state.symbols = value
   },
 

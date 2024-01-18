@@ -130,7 +130,7 @@ export default defineComponent({
           }
         })
 
-        store.dispatch('wallets/setWalletSymbolsTemplates', mappedValue)
+        store.dispatch('wallets/setWalletSymbols', mappedValue)
       }
     })
 
