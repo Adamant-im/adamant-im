@@ -206,11 +206,14 @@
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
           :label="chatFormLabel"
-          :message-text="$route.query.messageText"
+          :message-text="
+            $route.query.messageText || $store.getters['draftMessage/draftMessage'](this.partnerId)
+          "
           @message="onMessage"
           @error="onMessageError"
           @esc="replyMessageId = -1"
           :validator="messageValidator.bind(this)"
+          :partner-id="partnerId"
         >
           <template #prepend>
             <chat-menu
@@ -223,7 +226,7 @@
             <a-chat-reply-preview
               :partner-id="partnerId"
               :message="replyMessage"
-              @cancel="replyMessageId = -1"
+              @cancel="cancelReplyMessage"
             />
           </template>
         </a-chat-form>
@@ -252,7 +255,6 @@
         </v-badge>
       </template>
     </a-chat>
-
     <ProgressIndicator :show="replyLoadingChatHistory" />
   </v-card>
 </template>
@@ -484,8 +486,9 @@ export default {
         'Windows 10': this.$t('chats.message_windows_10')
       }[detect().os] || this.$t('chats.message')
 
-    if (this.$route.query.replyToId) {
-      this.replyMessageId = this.$route.query.replyToId
+   const draftMessage = this.$store.getters['draftMessage/draftReplyTold'](this.partnerId)
+    if (draftMessage) {
+      this.replyMessageId = draftMessage
     }
   },
   methods: {
@@ -510,7 +513,15 @@ export default {
           return
       }
     },
+    cancelReplyMessage() {
+      this.replyMessageId = -1
+      this.$store.commit('draftMessage/deleteReplyTold', {
+        replyToId: this.replyMessageId,
+        partnerId: this.partnerId
+      })
+    },
     sendMessage(message) {
+      this.$store.dispatch('draftMessage/deleteDraft', { partnerId: this.partnerId })
       const replyToId = this.replyMessageId > -1 ? this.replyMessageId : undefined
 
       return this.$store
@@ -667,6 +678,10 @@ export default {
 
       this.replyMessageId = message.id
       this.$refs.chatForm.focus()
+      this.$store.commit('draftMessage/saveReplyToId', {
+        replyToId: message.id,
+        partnerId: this.partnerId
+      })
     },
     copyMessageToClipboard({ message }) {
       this.closeActionsMenu()

@@ -29,6 +29,7 @@ import nodesModule from './modules/nodes'
 import walletsModule from './modules/wallets'
 import nodesPlugin from './modules/nodes/nodes-plugin'
 import walletsPersistencePlugin from './modules/wallets/wallets-plugin'
+import draftMessage from '@/store/modules/draft-message'
 import snackbar from './modules/snackbar'
 import language from './modules/language'
 import chat from './modules/chat'
@@ -136,6 +137,7 @@ const store = {
     logout({ dispatch }) {
       dispatch('reset')
       dispatch('wallets/initWalletsSymbols')
+      dispatch('draftMessage/resetState', null, { root: true })
     },
     unlock({ state, dispatch }) {
       // user updated an app, F5 or something
@@ -231,6 +233,7 @@ const store = {
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes
     snackbar,
+    draftMessage,
     language,
     chat,
     options,

@@ -1,3 +1,4 @@
+import { DraftState } from '@/store/modules/draft-message'
 import { WalletsState } from '@/store/modules/wallets/types'
 
 export interface RootState {
@@ -27,5 +28,6 @@ export interface RootState {
   identicon: any
   notification: any
   rate: any
+  draftMessage: DraftState
   wallets: WalletsState
 }
