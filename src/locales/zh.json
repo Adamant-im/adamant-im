@@ -376,5 +376,11 @@
     "vote_request_limit": "投票请求限制：{limit}",
     "voting_cost": "投票成本",
     "waiting_confirmations": "事务正在运行，请耐心等待…"
+  },
+  "wallets": {
+    "reset": "重置",
+    "reset_message": "您真的想将列表恢复到默认状态吗？",
+    "search": "搜索",
+    "summary_title": "重置钱包顺序和可见性"
   }
 }

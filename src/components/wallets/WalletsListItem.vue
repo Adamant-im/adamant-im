@@ -16,7 +16,7 @@
       <v-checkbox
         hide-details
         :model-value="store.getters['wallets/getVisibility'](localWallet.symbol)"
-        :disabled="localWallet.symbol === 'ADM'"
+        :disabled="checkboxDisabled"
         @update:model-value="
           store.commit('wallets/updateVisibility', {
             symbol: localWallet.symbol,
@@ -38,7 +38,7 @@
 <script lang="ts">
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import WalletBalance from '@/components/wallets/WalletBalance.vue'
-import { defineComponent, PropType, toRef } from 'vue'
+import { computed, defineComponent, PropType, toRef } from 'vue'
 import { useStore } from 'vuex'
 import { CryptoSymbol } from '@/lib/constants'
 
@@ -76,7 +76,12 @@ export default defineComponent({
     const store = useStore()
     const localWallet = toRef(props, 'wallet')
 
+    const checkboxDisabled = computed(() => {
+      return localWallet.value.isVisible && store.getters['wallets/getIsLastSymbolVisible'] < 2
+    })
+
     return {
+      checkboxDisabled,
       classes,
       localWallet,
       store
@@ -91,6 +96,9 @@ export default defineComponent({
 @import '@/assets/styles/settings/_colors.scss';
 
 .wallets-view {
+  &__crypto-icon {
+    padding-top: 3px;
+  }
   &__info {
     :deep(a) {
       text-decoration-line: none;

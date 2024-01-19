@@ -4,7 +4,7 @@
 
     <v-container fluid class="px-0 container--with-app-toolbar">
       <v-row justify="center" no-gutters>
-        <container padding>
+        <container>
           <WalletsSearchInput @change="searchChanged"></WalletsSearchInput>
           <v-list lines="one">
             <draggable
@@ -20,10 +20,16 @@
                 <WalletsListItem :wallet="element" :search="search"></WalletsListItem>
               </template>
             </draggable>
-            <v-list-item>
-              <WalletResetDialog></WalletResetDialog>
-            </v-list-item>
           </v-list>
+          <v-row
+            :class="`${classes.root}__review`"
+            align="center"
+            justify="space-between"
+            no-gutters
+          >
+            <v-spacer></v-spacer>
+            <WalletResetDialog></WalletResetDialog
+          ></v-row>
         </container>
       </v-row>
     </v-container>
@@ -33,7 +39,7 @@
 <script lang="ts">
 import draggable from 'vuedraggable'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
-import { computed, defineComponent, onBeforeUnmount, ref } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { useStore } from 'vuex'
 import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
@@ -146,6 +152,10 @@ export default defineComponent({
       clearInterval(timer.value)
     })
 
+    onMounted(() => {
+      window.scrollTo(0, 0)
+    })
+
     return {
       classes,
       dragOptions,
@@ -153,10 +163,18 @@ export default defineComponent({
       isDragging,
       search,
       searchChanged,
+      toolbar,
       wallets
     }
   }
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.wallets-view {
+  &__review {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+  }
+}
+</style>

@@ -6,13 +6,24 @@
 
     <v-dialog v-model="isDialogVisible" width="500" scroll-strategy="reposition">
       <v-card>
-        <v-card-text>
-          {{ t('wallets.reset_message') }}
-        </v-card-text>
+        <v-card-title :class="`${classes.root}__dialog-title`">
+          {{ t('wallets.summary_title') }}
+        </v-card-title>
+
+        <v-divider :class="`${classes.root}__divider`" />
+
+        <v-row no-gutters class="pa-4">
+          <div :class="`${classes.root}__dialog-summary`">
+            {{ t('wallets.reset_message') }}
+          </div>
+        </v-row>
+
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn @click="isDialogVisible = false">{{ t('common.no') }}</v-btn>
-          <v-btn color="primary" @click="reset">{{ t('common.yes') }}</v-btn>
+          <v-btn variant="text" class="a-btn-regular" @click="isDialogVisible = false">
+            {{ t('common.no') }}
+          </v-btn>
+          <v-btn variant="text" class="a-btn-regular" @click="reset">{{ t('common.yes') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -23,6 +34,11 @@
 import { defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+
+const className = 'wallets-view'
+const classes = {
+  root: className
+}
 
 export default defineComponent({
   setup() {
@@ -37,6 +53,7 @@ export default defineComponent({
     }
 
     return {
+      classes,
       isDialogVisible,
       reset,
       t
@@ -45,4 +62,32 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+@import 'vuetify/settings';
+@import '@/assets/styles/settings/_colors.scss';
+
+.wallets-view {
+  &__dialog-summary {
+    @include a-text-regular-enlarged();
+  }
+  &__dialog-title {
+    @include a-text-header();
+  }
+}
+
+/** Themes **/
+.v-theme--light {
+  .wallets-view {
+    &__dialog-summary {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__dialog-title {
+      color: map-get($adm-colors, 'regular');
+    }
+    &__divider {
+      border-color: map-get($adm-colors, 'regular');
+    }
+  }
+}
+</style>

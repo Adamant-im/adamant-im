@@ -274,6 +274,7 @@
   "wallets": {
     "reset": "Zurücksetzen",
     "reset_message": "Möchten Sie die Liste wirklich in ihren ursprünglichen Zustand zurückversetzen?",
-    "search": "Suchen"
+    "search": "Suchen",
+    "summary_title": "Einstellungen zurücksetzen"
   }
 }

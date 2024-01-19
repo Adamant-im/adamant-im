@@ -385,6 +385,7 @@
   "wallets": {
     "reset": "Reset",
     "reset_message": "Do you really want to return the list to its default state?",
-    "search": "Search"
+    "search": "Search",
+    "summary_title": "Reset wallets settings"
   }
 }

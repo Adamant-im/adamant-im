@@ -5,6 +5,7 @@ import { RootState } from '@/store/types'
 
 export const getters: GetterTree<WalletsState, RootState> = {
   getAllOrderedWalletSymbols: (state) => state.symbols,
+  getIsLastSymbolVisible: (state) => state.symbols.filter((symbol) => symbol.isVisible).length,
   getVisibleOrderedWalletSymbols: (state) =>
     state.symbols.filter((walletSymbol: CoinSymbol) => walletSymbol.isVisible),
   getVisibility: (state) => (symbol: CryptoSymbol) =>
