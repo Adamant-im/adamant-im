@@ -139,7 +139,7 @@
     "swagger-typescript-api": "^13.0.3",
     "typescript": "^5.3.3",
     "uuid": "^9.0.1",
-    "vite": "^5.0.11",
+    "vite": "^5.0.12",
     "vite-plugin-electron": "^0.28.0",
     "vite-plugin-pwa": "^0.17.4",
     "vite-plugin-top-level-await": "^1.4.1",
