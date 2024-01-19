@@ -1,4 +1,5 @@
 import * as admApi from '@/lib/adamant-api'
+import adm from '../../../lib/nodes/adm'
 
 export default {
   /** Starts background sync after login */
@@ -137,6 +138,8 @@ export default {
    * @returns {Promise<{nodeTimestamp: number, success: boolean, transactionId: string}>}
    */
   async sendTokens(context, options) {
+    await adm.assertAnyNodeOnline()
+
     const result = await admApi.sendTokens(options.address, options.amount)
 
     context.commit('transactions', [
