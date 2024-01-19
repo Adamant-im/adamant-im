@@ -1,4 +1,5 @@
 import type { NodeType } from '@/lib/nodes/types'
+import { AllNodesOfflineError } from './utils/errors'
 import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
 import { nodesStorage } from './storage'
@@ -126,6 +127,17 @@ export abstract class Client<N extends Node> {
     }
 
     return node
+  }
+
+  /**
+   * Throws an error if all the nodes are offline.
+   */
+  assertAnyNodeOnline() {
+    const onlineNodes = this.nodes.filter((x) => x.online && x.active && !x.outOfSync)
+
+    if (onlineNodes.length === 0) {
+      throw new AllNodesOfflineError(this.type)
+    }
   }
 
   /**

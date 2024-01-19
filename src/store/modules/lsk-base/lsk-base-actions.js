@@ -1,6 +1,7 @@
 import BigNumber from '@/lib/bignumber'
 import { LiskAccount, LSK_TXS_PER_PAGE } from '../../../lib/lisk'
 import { getLiskTimestamp } from '../../../lib/lisk/lisk-utils'
+import adm from '../../../lib/nodes/adm'
 import {
   assertNoPendingTransaction,
   createPendingTransaction,
@@ -86,7 +87,13 @@ function createActions(options) {
 
       const crypto = context.state.crypto
 
-      // 1. Sign transaction offline
+      // 1. Check nodes availability
+      if (admAddress) {
+        await adm.assertAnyNodeOnline()
+      }
+      await lsk.assertAnyNodeOnline()
+
+      // 2. Sign transaction offline
       const signedTransaction = await account.createTransaction(
         address,
         amount,
@@ -95,14 +102,14 @@ function createActions(options) {
         textData
       )
 
-      // 2. Ensure there is no pending transaction
+      // 3. Ensure there is no pending transaction
       await assertNoPendingTransaction(
         context.state.crypto,
         (hashLocal) => lskIndexer.getTransaction(hashLocal, context.state.address),
         context.state.nonce
       )
 
-      // 3. Send crypto transfer message to ADM blockchain (if ADM address provided)
+      // 4. Send crypto transfer message to ADM blockchain (if ADM address provided)
       if (admAddress && !dryRun) {
         const msgPayload = {
           address: admAddress,
@@ -120,7 +127,7 @@ function createActions(options) {
         }
       }
 
-      // 4. Save pending transaction
+      // 5. Save pending transaction
       const pendingTransaction = createPendingTransaction({
         hash: signedTransaction.id,
         senderId: context.state.address,
@@ -133,7 +140,7 @@ function createActions(options) {
       await PendingTxStore.save(context.state.crypto, pendingTransaction)
       context.commit('transactions', [pendingTransaction])
 
-      // 5. Send signed transaction to ETH blockchain
+      // 6. Send signed transaction to ETH blockchain
       try {
         const hash = await lsk.sendTransaction(signedTransaction.hex, dryRun)
 

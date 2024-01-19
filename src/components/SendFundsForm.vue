@@ -187,6 +187,7 @@
 
 <script>
 import lskIndexer from '@/lib/nodes/lsk-indexer'
+import { AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import axios from 'axios'
 import { nextTick } from 'vue'
 
@@ -742,6 +743,10 @@ export default {
             message = this.$t('transfer.recipient_minimum_balance')
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
+          } else if (error instanceof AllNodesOfflineError) {
+            message = this.$t('transfer.error_all_nodes_offline', {
+              crypto: error.nodeLabel.toUpperCase()
+            })
           }
           this.$emit('error', message)
         })

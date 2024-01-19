@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import * as utils from '../../../lib/eth-utils'
+import adm from '../../../lib/nodes/adm'
 import ethIndexer from '../../../lib/nodes/eth-indexer'
 import {
   assertNoPendingTransaction,
@@ -70,21 +71,27 @@ export default function createActions(config) {
       address = address.trim()
       const crypto = context.state.crypto
 
-      // 1. Sign transaction offline
+      // 1. Check nodes availability
+      if (admAddress) {
+        await adm.assertAnyNodeOnline()
+      }
+      await api.assertAnyNodeOnline()
+
+      // 2. Sign transaction offline
       const unsignedTransaction = await initTransaction(api, context, address, amount, increaseFee)
       const signedTransaction = await signTransaction(
         TransactionFactory.fromTxData(unsignedTransaction),
         context.state.privateKey
       )
 
-      // 2. Ensure there is no pending transaction
+      // 3. Ensure there is no pending transaction
       await assertNoPendingTransaction(
         context.state.crypto,
         (hashLocal) => api.getTransaction(hashLocal),
         unsignedTransaction.nonce
       )
 
-      // 3. Send crypto transfer message to ADM blockchain (if ADM address provided)
+      // 4. Send crypto transfer message to ADM blockchain (if ADM address provided)
       if (admAddress) {
         const msgPayload = {
           address: admAddress,
@@ -103,7 +110,7 @@ export default function createActions(config) {
         }
       }
 
-      // 4. Save pending transaction
+      // 5. Save pending transaction
       const pendingTransaction = createPendingTransaction({
         hash: signedTransaction.transactionHash,
         senderId: context.state.address,
@@ -116,7 +123,7 @@ export default function createActions(config) {
       await PendingTxStore.save(context.state.crypto, pendingTransaction)
       context.commit('transactions', [pendingTransaction])
 
-      // 5. Send signed transaction to ETH blockchain
+      // 6. Send signed transaction to ETH blockchain
       /**
        * @type {import('web3-types').TransactionReceipt}
        */
