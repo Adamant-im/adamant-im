@@ -96,10 +96,10 @@ export default defineComponent({
       const startIndex = (page.value - 1) * perPage.value
       const endIndex = startIndex + perPage.value
 
-      const delegatesOnCurrentPage = delegates.value.slice(startIndex, endIndex)
-      const filteredDelegates = [...delegatesOnCurrentPage]
+      const filteredDelegates = [...delegates.value]
         .sort(sortDelegatesByColumnCompareFn(sortBy.value))
         .filter(filterDelegatesFn(searchQuery.value))
+        .slice(startIndex, endIndex)
 
       return reactive(filteredDelegates)
     })

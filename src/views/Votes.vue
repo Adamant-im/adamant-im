@@ -87,7 +87,7 @@
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import Pagination from '@/components/Pagination.vue'
 import DelegatesTable from '@/components/DelegatesTable/DelegatesTable.vue'
-import { computed, onMounted, ref, reactive, defineComponent } from 'vue'
+import { computed, onMounted, ref, reactive, defineComponent, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
@@ -134,6 +134,12 @@ export default defineComponent({
 
       return Math.ceil(delegates.value.length / pagination.rowsPerPage)
     })
+    watch(search, (newValue) => {
+      if (newValue.length > 0) {
+        pagination.page = 1
+      }
+    })
+
     const showPagination = computed(() => search.value.length === 0)
     const reviewButtonDisabled = computed(() => {
       return numOfUpvotes.value + numOfDownvotes.value === 0
