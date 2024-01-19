@@ -117,7 +117,6 @@ export default function createActions(config) {
         recipientId: address,
         amount,
         fee: utils.calculateFee(unsignedTransaction.gasLimit, unsignedTransaction.gasPrice),
-        timestamp: Date.now(),
         nonce: Number(unsignedTransaction.nonce) // convert BigInt to Number
       })
       await PendingTxStore.save(context.state.crypto, pendingTransaction)
@@ -143,7 +142,6 @@ export default function createActions(config) {
           amount,
           fee: utils.calculateFee(unsignedTransaction.gasLimit, sentTransaction.effectiveGasPrice),
           status: 'PENDING',
-          timestamp: Date.now(),
           gasPrice: sentTransaction.effectiveGasPrice
         }
       ])

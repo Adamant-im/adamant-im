@@ -6,14 +6,13 @@ type CreatePendingTransactionParams = {
   recipientId: string
   amount: number
   fee: number | string
-  timestamp: number
   nonce: number
 }
 
 export function createPendingTransaction(
   params: CreatePendingTransactionParams
 ): PendingTransaction {
-  const { hash, senderId, recipientId, amount, fee, timestamp, nonce } = params
+  const { hash, senderId, recipientId, amount, fee, nonce } = params
 
   return {
     id: hash,
@@ -23,7 +22,6 @@ export function createPendingTransaction(
     amount,
     fee: Number(fee),
     status: 'PENDING',
-    timestamp,
     direction: 'from',
     nonce
   }

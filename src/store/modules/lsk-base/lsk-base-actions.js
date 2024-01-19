@@ -134,7 +134,6 @@ function createActions(options) {
         recipientId: address,
         amount,
         fee,
-        timestamp: Date.now(),
         nonce: context.state.nonce // convert BigInt to Number
       })
       await PendingTxStore.save(context.state.crypto, pendingTransaction)
