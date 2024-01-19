@@ -2,6 +2,7 @@ import BigNumber from '@/lib/bignumber'
 import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
 import { FetchStatus } from '@/lib/constants'
 import { nodes } from '../../../lib/nodes'
+import { createPendingTransaction, PendingTxStore } from '../../../lib/pending-transactions'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
 
@@ -40,6 +41,12 @@ function createActions(options) {
         context.commit('address', api.address)
         context.dispatch('updateStatus')
         context.dispatch('storeAddress')
+
+        // restore pending transaction
+        const pendingTransaction = PendingTxStore.get(context.state.crypto)
+        if (pendingTransaction) {
+          context.commit('transactions', [pendingTransaction])
+        }
       }
     },
 
@@ -145,7 +152,16 @@ function createActions(options) {
         }
       }
 
-      // 5. Save pending transaction (skipped)
+      // 5. Save pending transaction
+      const pendingTransaction = createPendingTransaction({
+        hash: signedTransaction.txid,
+        senderId: context.state.address,
+        recipientId: address,
+        amount,
+        fee
+      })
+      await PendingTxStore.save(context.state.crypto, pendingTransaction)
+      context.commit('transactions', [pendingTransaction])
 
       // 6. Send signed transaction to the blockchain
       try {
@@ -161,8 +177,7 @@ function createActions(options) {
             recipientId: address,
             amount,
             fee,
-            status: 'PENDING',
-            timestamp: Date.now()
+            status: 'PENDING'
           }
         ])
 

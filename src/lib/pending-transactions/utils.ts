@@ -6,7 +6,7 @@ type CreatePendingTransactionParams = {
   recipientId: string
   amount: number
   fee: number | string
-  nonce: number
+  nonce?: number
 }
 
 export function createPendingTransaction(
