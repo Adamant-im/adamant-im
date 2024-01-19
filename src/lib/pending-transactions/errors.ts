@@ -2,9 +2,9 @@ import { PendingTransaction } from './types'
 
 export class PendingTransactionError extends Error {
   pendingTransaction: PendingTransaction
-  crypto: 'ETH' | 'LSK'
+  crypto: string // e.g. 'ETH' | 'LSK'
 
-  constructor(pendingTransaction: PendingTransaction, crypto: 'ETH' | 'LSK') {
+  constructor(pendingTransaction: PendingTransaction, crypto: string) {
     super(
       `There is a pending transaction ${pendingTransaction.hash}. Please wait until it is confirmed.`
     )

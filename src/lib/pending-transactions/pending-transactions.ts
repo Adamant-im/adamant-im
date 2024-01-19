@@ -58,6 +58,6 @@ export async function assertNoPendingTransaction(
       return
     }
 
-    throw new PendingTransactionError(pendingTransaction)
+    throw new PendingTransactionError(pendingTransaction, crypto)
   }
 }
