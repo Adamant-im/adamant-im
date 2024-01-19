@@ -113,12 +113,13 @@ function createActions(options) {
       address = address.trim()
 
       const crypto = context.state.crypto
+      const nodeName = crypto.toLowerCase()
 
       // 1. Check nodes availability
       if (admAddress) {
         await nodes.adm.assertAnyNodeOnline()
       }
-      await nodes[crypto].assertAnyNodeOnline()
+      await nodes[nodeName].assertAnyNodeOnline()
 
       // 2. Sign transaction offline
       const signedTransaction = await api.createTransaction(address, amount, fee)
