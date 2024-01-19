@@ -123,36 +123,47 @@ export default function createActions(config) {
       context.commit('transactions', [pendingTransaction])
 
       // 6. Send signed transaction to ETH blockchain
-      /**
-       * @type {import('web3-types').TransactionReceipt}
-       */
-      const sentTransaction = await api.sendSignedTransaction(signedTransaction.rawTransaction)
+      try {
+        /**
+         * @type {import('web3-types').TransactionReceipt}
+         */
+        const sentTransaction = await api.sendSignedTransaction(signedTransaction.rawTransaction)
 
-      if (sentTransaction.transactionHash !== signedTransaction.transactionHash) {
-        console.warn(
-          `Something wrong with sent ETH tx, computed hash and sent tx differs: ${signedTransaction.transactionHash} and ${sentTransaction.transactionHash}`
-        )
-      }
-
-      context.commit('transactions', [
-        {
-          hash: sentTransaction.transactionHash,
-          senderId: unsignedTransaction.from,
-          recipientId: address,
-          amount,
-          fee: utils.calculateFee(unsignedTransaction.gasLimit, sentTransaction.effectiveGasPrice),
-          status: 'PENDING',
-          gasPrice: sentTransaction.effectiveGasPrice
+        if (sentTransaction.transactionHash !== signedTransaction.transactionHash) {
+          console.warn(
+            `Something wrong with sent ETH tx, computed hash and sent tx differs: ${signedTransaction.transactionHash} and ${sentTransaction.transactionHash}`
+          )
         }
-      ])
-      context.dispatch('getTransaction', {
-        hash: sentTransaction.transactionHash,
-        isNew: true,
-        direction: 'from',
-        force: true
-      })
 
-      return sentTransaction.transactionHash
+        context.commit('transactions', [
+          {
+            hash: sentTransaction.transactionHash,
+            senderId: unsignedTransaction.from,
+            recipientId: address,
+            amount,
+            fee: utils.calculateFee(
+              unsignedTransaction.gasLimit,
+              sentTransaction.effectiveGasPrice
+            ),
+            status: 'PENDING',
+            gasPrice: sentTransaction.effectiveGasPrice
+          }
+        ])
+        context.dispatch('getTransaction', {
+          hash: sentTransaction.transactionHash,
+          isNew: true,
+          direction: 'from',
+          force: true
+        })
+
+        return sentTransaction.transactionHash
+      } catch (err) {
+        context.commit('transactions', [
+          { hash: signedTransaction.transactionHash, status: 'REJECTED' }
+        ])
+        PendingTxStore.remove(context.state.crypto)
+        throw err
+      }
     },
 
     /**

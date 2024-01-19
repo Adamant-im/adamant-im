@@ -186,6 +186,7 @@ function createActions(options) {
         return hash
       } catch (error) {
         context.commit('transactions', [{ hash: signedTransaction.txid, status: 'REJECTED' }])
+        PendingTxStore.remove(context.state.crypto)
         throw error
       }
     },

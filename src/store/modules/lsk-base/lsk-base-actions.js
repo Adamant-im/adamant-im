@@ -163,6 +163,7 @@ function createActions(options) {
         return hash
       } catch (err) {
         context.commit('transactions', [{ hash: signedTransaction.id, status: 'REJECTED' }])
+        PendingTxStore.remove(context.state.crypto)
         throw err
       }
     },
