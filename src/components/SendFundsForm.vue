@@ -207,7 +207,8 @@ import {
   CryptosInfo,
   CryptosOrder,
   isTextDataAllowed,
-  MessageType
+  MessageType,
+  Fees
 } from '@/lib/constants'
 
 import { parseURIasAIP } from '@/lib/uri'
@@ -405,6 +406,14 @@ export default {
         : this.$store.state[this.currency.toLowerCase()].balance
     },
 
+    /**
+     * Return ADM balance
+     * @returns {number}
+     */
+    admBalance() {
+      return this.$store.state.balance
+    },
+
     ethBalance() {
       return this.$store.state.eth.balance
     },
@@ -489,6 +498,19 @@ export default {
         ],
         amount: [
           (v) => v > 0 || this.$t('transfer.error_incorrect_amount'),
+          () => {
+            const isAdmTransfer = this.currency === Cryptos.ADM
+            const isDirectTransfer = !this.address
+
+            if (isAdmTransfer || isDirectTransfer) {
+              return true // skips validation
+            }
+
+            return (
+              this.admBalance >= Fees.NOT_ADM_TRANSFER ||
+              this.$t('transfer.error_not_enough_adm_fee')
+            )
+          },
           () => this.amount <= this.maxToTransfer || this.$t('transfer.error_not_enough'),
           (v) => this.validateMinAmount(v, this.currency) || this.$t('transfer.error_dust_amount'),
           (v) => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_precision'),

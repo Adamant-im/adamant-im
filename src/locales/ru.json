@@ -321,6 +321,7 @@
     "error_no_address": "Введите адрес кошелька получателя",
     "error_no_amount": "Введите сумму перевода",
     "error_not_enough": "Недостаточно токенов",
+    "error_not_enough_adm_fee": "Недостаточно ADM для оплаты комиссии",
     "error_not_enough_eth_fee": "Недостаточно ETH для оплаты комиссии",
     "error_same_recipient": "Не отправляйте токены самому себе",
     "error_transfer_send": "Ошибка при отправке транзакции",

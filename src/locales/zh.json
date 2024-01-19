@@ -320,6 +320,7 @@
     "error_no_address": "输入收件人钱包地址",
     "error_no_amount": "输入要发送的金额",
     "error_not_enough": "令牌不足",
+    "error_not_enough_adm_fee": "Not enough ADM to pay the transaction fee",
     "error_not_enough_eth_fee": "没有足够的ETH支付转账费",
     "error_same_recipient": "不要向自己发送令牌",
     "error_transfer_send": "完成事务时出错",

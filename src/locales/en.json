@@ -320,6 +320,7 @@
     "error_no_address": "Enter recipient wallet address",
     "error_no_amount": "Enter amount to send",
     "error_not_enough": "Not enough tokens",
+    "error_not_enough_adm_fee": "Not enough ADM to pay the transaction fee",
     "error_not_enough_eth_fee": "Not enough ETH to pay a transfer fee",
     "error_same_recipient": "Don't send tokens to yourself",
     "error_transfer_send": "Error while completing a transaction",
