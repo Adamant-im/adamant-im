@@ -188,6 +188,7 @@
 <script>
 import lskIndexer from '@/lib/nodes/lsk-indexer'
 import { AllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { PendingTransactionError } from '@/lib/pending-transactions'
 import axios from 'axios'
 import { nextTick } from 'vue'
 
@@ -746,6 +747,10 @@ export default {
           } else if (error instanceof AllNodesOfflineError) {
             message = this.$t('transfer.error_all_nodes_offline', {
               crypto: error.nodeLabel.toUpperCase()
+            })
+          } else if (error instanceof PendingTransactionError) {
+            message = this.$t('transfer.error_pending_transaction', {
+              crypto: error.crypto
             })
           }
           this.$emit('error', message)
