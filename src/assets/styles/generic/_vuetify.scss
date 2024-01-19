@@ -1,8 +1,8 @@
 @import 'vuetify/settings';
 @import '../settings/_colors.scss';
 
-$font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-  Arial, sans-serif;
+$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial,
+  sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
 
 html {
   font-family: $font-family;
