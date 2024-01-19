@@ -28,8 +28,8 @@ describe('sortTransactionsFn', () => {
     expect(transactions[2].timestamp).toBe(2)
   })
 
-  it('should return 0 when both transactions are null', () => {
-    const result = sortTransactionsFn(null, null)
+  it('should return 0 when both transactions are not defined', () => {
+    const result = sortTransactionsFn(undefined, undefined)
 
     expect(result).toBe(0)
   })

@@ -1,4 +1,4 @@
-import { StoreTransaction } from '@/store/types/transaction.ts'
+import { StoreTransaction } from '@/store/types/transaction'
 
 /**
  * Sort transactions by timestamp, from newest to oldest.
@@ -8,7 +8,7 @@ import { StoreTransaction } from '@/store/types/transaction.ts'
  * @param left
  * @param right
  */
-export function sortTransactionsFn(left: StoreTransaction, right: StoreTransaction) {
+export function sortTransactionsFn(left?: StoreTransaction, right?: StoreTransaction) {
   if (!left || !right) {
     return 0
   }
