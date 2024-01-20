@@ -206,7 +206,7 @@
     "idb_not_supported": "浏览器不支持IndexedDB，也处于私有浏览模式",
     "language_label": "语言",
     "currency_label": "主货币",
-    "nodes_list": "节点列表",
+    "nodes_list": "节点和服务",
     "notification_title": "通知",
     "page_title": "设置",
     "push_denied": "推送通知在浏览器设置中被拒绝",

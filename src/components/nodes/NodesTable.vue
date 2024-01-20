@@ -1,6 +1,6 @@
 <template>
   <div :class="classes.root">
-    <v-tabs v-model="tab" bg-color="secondary">
+    <v-tabs v-model="tab" bg-color="transparent">
       <v-tab value="adm">{{ $t('nodes.tabs.adm_nodes') }}</v-tab>
       <v-tab value="coins">{{ $t('nodes.tabs.coin_nodes') }}</v-tab>
     </v-tabs>

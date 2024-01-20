@@ -206,7 +206,7 @@
     "idb_not_supported": "Browser does not support IndexedDB and in Private Browsing mode too",
     "language_label": "Language",
     "currency_label": "Main currency",
-    "nodes_list": "Nodes list",
+    "nodes_list": "Nodes and services",
     "notification_title": "Notifications",
     "page_title": "Settings",
     "push_denied": "Push notifications have been denied in browser settings",

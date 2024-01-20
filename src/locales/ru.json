@@ -207,7 +207,7 @@
     "idb_not_supported": "Браузер не поддерживает IndexedDB или открыт в режиме приватного просмотра",
     "language_label": "Язык",
     "currency_label": "Основная валюта",
-    "nodes_list": "Список узлов",
+    "nodes_list": "Узлы и сервисы",
     "notification_title": "Уведомления",
     "page_title": "Настройки",
     "push_denied": "Push-уведомления запрещены в настройках браузера",

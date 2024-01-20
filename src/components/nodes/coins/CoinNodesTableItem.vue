@@ -1,11 +1,13 @@
 <template>
   <tr :class="classes.root">
-    <NodeColumn align="right">
+    <NodeColumn align="left">
       <NodeLabel :label="label" />
     </NodeColumn>
 
     <NodeColumn>
-      {{ url }}
+      <span class="protocol">{{ getProtocol }}</span>
+      <span class="nodeName">{{ getNodeName }}</span>
+      <span class="domain">{{ getDomain }}</span>
       <NodeVersion v-if="node.version" :node="node" />
     </NodeColumn>
 
@@ -65,18 +67,44 @@ export default {
       store.dispatch('nodes/updateStatus')
     }
 
+    const getProtocol = computed(() => {
+      const protocol = url.value.match(/^https:\/\//)
+      return protocol ? protocol[0] : ''
+    })
+
+    const getNodeName = computed(() => {
+      const nodeName = url.value.replace(/^https:\/\/|\.adamant\.im$/g, '')
+      return nodeName
+    })
+    const getDomain = computed(() => {
+      const domain = url.value.match(/\.adamant\.im/)
+      return domain ? domain[0] : ''
+    })
+
     return {
       classes,
       url,
       active,
       isUnsupported,
-      toggleActiveStatus
+      toggleActiveStatus,
+      getProtocol,
+      getNodeName,
+      getDomain
     }
   }
 }
 </script>
 
 <style lang="scss">
+@import '@/assets/styles/settings/_colors.scss';
 .nodes-table-item {
+}
+
+.protocol,
+.domain {
+  color: map-get($adm-colors, 'grey-transparent');
+  font-size: 12px;
+}
+.nodeName {
 }
 </style>

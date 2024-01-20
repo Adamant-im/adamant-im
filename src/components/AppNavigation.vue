@@ -156,7 +156,7 @@ export default defineComponent({
       background-color: map-get($adm-colors, 'black');
     }
     :deep(.v-btn.v-btn--active) {
-      color: map-get($shades, 'white');
+      color: map-get($adm-colors, 'secondary');
     }
     :deep(.v-btn:not(.v-btn--active)) {
       color: map-get($adm-colors, 'grey-transparent');
