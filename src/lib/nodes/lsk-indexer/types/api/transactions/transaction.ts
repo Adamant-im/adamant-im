@@ -1,16 +1,19 @@
-export type Transaction = {
+type Block = {
+  id: string
+  height: number
+  timestamp: number
+  isFinal: boolean
+}
+
+type TransactionStatus = 'successful' | 'pending' | 'failed'
+
+type BaseTransaction<Status extends TransactionStatus> = {
   id: string
   moduleCommand: string
   nonce: string
   fee: string
   minFee: string
   size: number
-  block: {
-    id: string
-    height: number
-    timestamp: number
-    isFinal: boolean
-  }
   sender: {
     address: string
     publicKey: string
@@ -22,13 +25,27 @@ export type Transaction = {
     tokenID: string
     data: string
   }
-  executionStatus: 'successful' | 'pending' | 'failed'
+  executionStatus: Status
   index: number
   meta: {
     recipient: {
       address: string
-      publicKey: string
-      name: string
+      publicKey: string | null
+      name: string | null
     }
   }
 }
+
+export type PendingTransaction = BaseTransaction<'pending'>
+
+export type SuccessfulTransaction = BaseTransaction<'successful'> & {
+  index: number
+  block: Block
+}
+
+export type FailedTransaction = BaseTransaction<'failed'> & {
+  index: number
+  block: Block
+}
+
+export type Transaction = PendingTransaction | SuccessfulTransaction | FailedTransaction

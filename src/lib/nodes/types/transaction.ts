@@ -5,7 +5,7 @@ export type CoinTransaction = {
   hash: string
   fee: number
   status: TransactionStatusType
-  timestamp: number
+  timestamp?: number
   direction: 'from' | 'to'
   /**
    * Sender coin address
@@ -24,7 +24,7 @@ export type CoinTransaction = {
 
 export type LskTransaction = CoinTransaction & {
   data: string
-  height: number
+  height?: number
   nonce: string
   module: 'token'
   command: 'transfer'

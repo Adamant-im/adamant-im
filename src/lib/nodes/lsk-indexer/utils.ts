@@ -13,6 +13,8 @@ export function normalizeTransaction(
   ownerAddress: string
 ): LskTransaction {
   const direction = transaction.sender.address === ownerAddress ? 'from' : 'to'
+  const isFinalized =
+    transaction.executionStatus === 'successful' || transaction.executionStatus === 'failed'
 
   return {
     id: transaction.id,
@@ -20,12 +22,12 @@ export function normalizeTransaction(
     fee: Number(convertBeddowsToLSK(transaction.fee)),
     status: mapStatus(transaction.executionStatus),
     data: transaction.params.data,
-    timestamp: getMillisTimestamp(transaction.block.timestamp), // block timestamp
+    timestamp: isFinalized ? getMillisTimestamp(transaction.block.timestamp) : undefined, // block timestamp
     direction,
     senderId: transaction.sender.address,
     recipientId: transaction.params.recipientAddress,
     amount: Number(convertBeddowsToLSK(transaction.params.amount)),
-    height: transaction.block.height,
+    height: isFinalized ? transaction.block.height : undefined,
     nonce: transaction.nonce,
     module: 'token',
     command: 'transfer'
