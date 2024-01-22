@@ -4,6 +4,7 @@ import { TransactionNotFound } from '@/lib/nodes/utils/errors'
 import { EthNode } from './EthNode'
 import { Client } from '../abstract.client'
 import { normalizeTransaction } from './utils'
+import { bytesToHex } from '@/lib/hex'
 
 /**
  * Provides methods for calling the ADAMANT API.
@@ -42,7 +43,18 @@ export class EthClient extends Client<EthNode> {
     }
   }
 
-  sendSignedTransaction(...args: Parameters<Web3Eth['sendSignedTransaction']>) {
-    return this.getNode().client.sendSignedTransaction(...args)
+  sendSignedTransaction(...args: Parameters<Web3Eth['sendSignedTransaction']>): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.getNode()
+        .client.sendSignedTransaction(...args)
+        .on('transactionHash', (hash) => {
+          if (typeof hash === 'string') {
+            return hash
+          }
+
+          return bytesToHex(hash)
+        })
+        .on('error', reject)
+    })
   }
 }

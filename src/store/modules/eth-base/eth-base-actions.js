@@ -127,36 +127,35 @@ export default function createActions(config) {
         /**
          * @type {import('web3-types').TransactionReceipt}
          */
-        const sentTransaction = await api.sendSignedTransaction(signedTransaction.rawTransaction)
+        const sentTransactionHash = await api.sendSignedTransaction(
+          signedTransaction.rawTransaction
+        )
 
-        if (sentTransaction.transactionHash !== signedTransaction.transactionHash) {
+        if (sentTransactionHash !== signedTransaction.transactionHash) {
           console.warn(
-            `Something wrong with sent ETH tx, computed hash and sent tx differs: ${signedTransaction.transactionHash} and ${sentTransaction.transactionHash}`
+            `Something wrong with sent ETH tx, computed hash and sent tx differs: ${signedTransaction.transactionHash} and ${sentTransactionHash}`
           )
         }
 
         context.commit('transactions', [
           {
-            hash: sentTransaction.transactionHash,
+            hash: sentTransactionHash,
             senderId: unsignedTransaction.from,
             recipientId: address,
             amount,
-            fee: utils.calculateFee(
-              unsignedTransaction.gasLimit,
-              sentTransaction.effectiveGasPrice
-            ),
+            fee: undefined,
             status: 'PENDING',
-            gasPrice: sentTransaction.effectiveGasPrice
+            gasPrice: undefined
           }
         ])
         context.dispatch('getTransaction', {
-          hash: sentTransaction.transactionHash,
+          hash: sentTransactionHash,
           isNew: true,
           direction: 'from',
           force: true
         })
 
-        return sentTransaction.transactionHash
+        return sentTransactionHash
       } catch (err) {
         context.commit('transactions', [
           { hash: signedTransaction.transactionHash, status: 'REJECTED' }
