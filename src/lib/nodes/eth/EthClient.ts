@@ -49,10 +49,10 @@ export class EthClient extends Client<EthNode> {
         .client.sendSignedTransaction(...args)
         .on('transactionHash', (hash) => {
           if (typeof hash === 'string') {
-            return hash
+            resolve(hash)
+          } else {
+            resolve(bytesToHex(hash))
           }
-
-          return bytesToHex(hash)
         })
         .on('error', reject)
     })
