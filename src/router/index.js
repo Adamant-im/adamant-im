@@ -16,6 +16,7 @@ import Transaction from '@/views/transactions/Transaction.vue'
 import Transactions from '@/views/Transactions.vue'
 import Votes from '@/views/Votes.vue'
 import Wallets from '@/views/Wallets.vue'
+import Vibro from '@/views/Vibro.vue'
 
 /**
  * @type {Readonly<import("vue-router").RouteRecordRaw[]>}
@@ -162,6 +163,11 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     redirect: '/'
+  },
+  {
+    path: '/vibro',
+    name: 'Vibro',
+    component: Vibro
   }
 ]
 
