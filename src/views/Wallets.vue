@@ -6,7 +6,10 @@
       <v-row justify="center" no-gutters>
         <container>
           <WalletsSearchInput @change="searchChanged"></WalletsSearchInput>
-          <div class="v-list v-theme--dark v-list--density-default v-list--one-line">
+          <div
+            class="v-list v-list--density-default v-list--one-line"
+            :class="[isDarkTheme ? 'v-theme--dark' : 'v-theme--light']"
+          >
             <draggable
               class="list-group"
               v-model="filteredWallets"
@@ -28,8 +31,8 @@
             no-gutters
           >
             <v-spacer></v-spacer>
-            <WalletResetDialog></WalletResetDialog
-          ></v-row>
+            <WalletResetDialog></WalletResetDialog>
+          </v-row>
         </container>
       </v-row>
     </v-container>
@@ -47,6 +50,7 @@ import WalletsListItem from '@/components/wallets/WalletsListItem.vue'
 import WalletResetDialog from '@/components/wallets/WalletResetDialog.vue'
 import { Timer } from 'web3-utils'
 import { CoinSymbol } from '@/store/modules/wallets/types.ts'
+import { useTheme } from '@/hooks/useTheme'
 
 const BALANCE_UPDATE_INTERVAL_MS = 30000
 
@@ -84,6 +88,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore()
+    const { isDarkTheme } = useTheme()
 
     const isDragging = ref(false)
     const search = ref('')
@@ -149,7 +154,7 @@ export default defineComponent({
     })
 
     // TODO: probably it can be refactored later
-    onMounted(async () => {
+    onMounted(() => {
       window.scrollTo(0, 0)
     })
 
@@ -157,6 +162,7 @@ export default defineComponent({
       classes,
       dragOptions,
       filteredWallets,
+      isDarkTheme,
       isDragging,
       search,
       searchChanged,
