@@ -15,12 +15,12 @@ export default (store) => {
     const { type, payload } = mutation
 
     if (type === 'nodes/useFastest') {
-      const selectedNodeType = payload.type()
+      const selectedNodeType = payload.type
       nodes[selectedNodeType].setUseFastest(!!mutation.payload)
     }
 
     if (type === 'nodes/toggle') {
-      const selectedNodeType = payload.type()
+      const selectedNodeType = payload.type
       const newStatus = nodes[selectedNodeType].toggleNode(payload.url, payload.active)
 
       if (newStatus) {

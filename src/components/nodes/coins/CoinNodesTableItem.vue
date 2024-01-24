@@ -64,11 +64,11 @@ export default {
     const url = computed(() => props.node.url)
     const active = computed(() => props.node.active)
     const isUnsupported = computed(() => props.node.status === 'unsupported_version')
-    const type = () => props.node.type
+    const type = computed(() => props.node.type)
 
     const toggleActiveStatus = () => {
       store.dispatch('nodes/toggle', {
-        type,
+        type: type.value,
         url: url.value,
         active: !active.value
       })

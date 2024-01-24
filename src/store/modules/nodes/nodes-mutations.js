@@ -4,7 +4,7 @@ export default {
   },
 
   toggle(state, payload) {
-    const node = [payload.type][payload.url]
+    const node = state[payload.type][payload.url]
     if (node) {
       node.active = payload.active
     }
