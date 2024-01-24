@@ -82,6 +82,8 @@ export default {
     }
   },
   mounted() {
+    // TODO: probably it can be refactored later
+    window.scrollTo(0, 0)
     this.$store.dispatch('nodes/updateStatus')
     this.timer = setInterval(() => {
       this.$store.dispatch('nodes/updateStatus')

@@ -6,7 +6,7 @@
       <v-row justify="center" no-gutters>
         <container>
           <WalletsSearchInput @change="searchChanged"></WalletsSearchInput>
-          <v-list lines="one">
+          <div class="v-list v-theme--dark v-list--density-default v-list--one-line">
             <draggable
               class="list-group"
               v-model="filteredWallets"
@@ -20,7 +20,7 @@
                 <WalletsListItem :wallet="element" :search="search"></WalletsListItem>
               </template>
             </draggable>
-          </v-list>
+          </div>
           <v-row
             :class="`${classes.root}__review`"
             align="center"
@@ -152,7 +152,8 @@ export default defineComponent({
       clearInterval(timer.value)
     })
 
-    onMounted(() => {
+    // TODO: probably it can be refactored later
+    onMounted(async () => {
       window.scrollTo(0, 0)
     })
 
