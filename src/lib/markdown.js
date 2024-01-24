@@ -57,7 +57,7 @@ export function renderMarkdown(text = '') {
  */
 export function removeFormats(text = '') {
   const node = document.createElement('div')
-  const textWithSumbol = text.replace(/\n/g, '↵')
+  const textWithSumbol = text.replace(/\n/g, '↵ ')
   node.innerHTML = marked(DOMPurify.sanitize(textWithSumbol), { renderer })
 
   return node.textContent || node.innerText || ''
