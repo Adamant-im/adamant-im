@@ -58,11 +58,12 @@ export default {
     const active = computed(() => props.node.active)
     const socketSupport = computed(() => props.node.socketSupport)
     const isUnsupported = computed(() => props.node.status === 'unsupported_version')
-
+    const type = () => props.node.type
     const showSocketColumn = computed(() => active.value && !isUnsupported.value)
 
     const toggleActiveStatus = () => {
       store.dispatch('nodes/toggle', {
+        type,
         url: url.value,
         active: !active.value
       })

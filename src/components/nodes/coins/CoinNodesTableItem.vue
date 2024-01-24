@@ -1,5 +1,9 @@
 <template>
   <tr :class="classes.root">
+    <NodeColumn checkbox>
+      <NodeStatusCheckbox :value="active" @change="toggleActiveStatus" />
+    </NodeColumn>
+
     <NodeColumn align="left">
       <NodeLabel :label="label" />
     </NodeColumn>
@@ -26,6 +30,7 @@ import NodeColumn from '@/components/nodes/components/NodeColumn.vue'
 import NodeLabel from '@/components/nodes/components/NodeLabel.vue'
 import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
 import NodeVersion from '@/components/nodes/components/NodeVersion.vue'
+import NodeStatusCheckbox from '@/components/nodes/components/NodeStatusCheckbox.vue'
 
 const className = 'nodes-table-item'
 const classes = {
@@ -40,7 +45,8 @@ export default {
     NodeColumn,
     NodeStatus,
     NodeVersion,
-    NodeLabel
+    NodeLabel,
+    NodeStatusCheckbox
   },
   props: {
     node: {
@@ -58,9 +64,11 @@ export default {
     const url = computed(() => props.node.url)
     const active = computed(() => props.node.active)
     const isUnsupported = computed(() => props.node.status === 'unsupported_version')
+    const type = () => props.node.type
 
     const toggleActiveStatus = () => {
       store.dispatch('nodes/toggle', {
+        type,
         url: url.value,
         active: !active.value
       })

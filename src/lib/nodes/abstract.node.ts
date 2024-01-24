@@ -1,5 +1,5 @@
 import { TNodeLabel } from './constants'
-import { NodeStatus } from './types'
+import { NodeStatus, NodeType } from './types'
 import { nodesStorage } from './storage'
 
 type HealthcheckResult = {
@@ -93,6 +93,7 @@ export abstract class Node<C = unknown> {
    * Will be updated after `GET /api/node/status`
    */
   socketSupport = false
+  type: NodeType
   label: TNodeLabel
 
   onStatusChangeCallback?: (nodeStatus: ReturnType<typeof this.getStatus>) => void
@@ -100,8 +101,9 @@ export abstract class Node<C = unknown> {
   timer?: NodeJS.Timeout
   abstract client: C
 
-  constructor(url: string, label: TNodeLabel, version = '', minNodeVersion = '') {
+  constructor(url: string, type: NodeType, label: TNodeLabel, version = '', minNodeVersion = '') {
     this.url = url
+    this.type = type
     this.label = label
     this.protocol = new URL(url).protocol as HttpProtocol
     this.port = new URL(url).port
@@ -160,6 +162,7 @@ export abstract class Node<C = unknown> {
       socketSupport: this.socketSupport,
       height: this.height,
       status: this.getNodeStatus(),
+      type: this.type,
       label: this.label
     }
   }

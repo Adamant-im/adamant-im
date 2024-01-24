@@ -15,7 +15,7 @@ export class EthNode extends Node {
   client: Web3Eth
 
   constructor(url: string) {
-    super(url, NODE_LABELS.EthNode)
+    super(url, 'eth', NODE_LABELS.EthNode)
 
     this.provider = new HttpProvider(this.url)
     this.client = new Web3Eth(this.provider)
