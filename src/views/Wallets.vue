@@ -46,6 +46,7 @@ import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
 import WalletsListItem from '@/components/wallets/WalletsListItem.vue'
 import WalletResetDialog from '@/components/wallets/WalletResetDialog.vue'
 import { Timer } from 'web3-utils'
+import { CoinSymbol } from '@/store/modules/wallets/types.ts'
 
 const BALANCE_UPDATE_INTERVAL_MS = 30000
 
@@ -59,11 +60,6 @@ const dragOptions = {
   disabled: false,
   ghostClass: 'ghost',
   group: 'description'
-}
-
-type OrderedWalletSymbol = {
-  isVisible: boolean
-  symbol: CryptoSymbol
 }
 
 type Wallet = {
@@ -92,12 +88,12 @@ export default defineComponent({
     const isDragging = ref(false)
     const search = ref('')
 
-    const orderedAllWalletSymbols = computed(() => {
+    const orderedAllWalletSymbols = computed<CoinSymbol[]>(() => {
       return store.getters['wallets/getAllOrderedWalletSymbols']
     })
 
     const wallets = computed(() => {
-      return orderedAllWalletSymbols.value.map((crypto: OrderedWalletSymbol) => {
+      return orderedAllWalletSymbols.value.map((crypto: CoinSymbol) => {
         const symbol = crypto.symbol
         const cryptoName = CryptosInfo[symbol].nameShort || CryptosInfo[symbol].name
         const erc20 = isErc20(symbol)
