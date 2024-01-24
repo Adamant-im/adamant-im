@@ -1,7 +1,8 @@
 @import 'vuetify/settings';
 @import '../settings/_colors.scss';
 
-$font-family: 'Exo 2', sans-serif;
+$font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+  Arial, sans-serif;
 
 html {
   font-family: $font-family;
