@@ -332,6 +332,13 @@ export default function createActions(config) {
             setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), RETRY_TIMEOUT)
           }
         })
+        .catch((err) => {
+          if (err instanceof TransactionNotFound) {
+            return
+          }
+
+          throw err
+        })
     },
 
     /**
