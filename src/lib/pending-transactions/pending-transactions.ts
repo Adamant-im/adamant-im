@@ -34,11 +34,9 @@ export async function assertNoPendingTransaction(
   const pendingTransaction = await hasPendingTransaction(crypto, checkTransactionFinalized)
 
   if (pendingTransaction) {
-    console.log('currentNonce', nonce, 'pendingTransactionNonce', pendingTransaction.nonce)
     // Technically we can send the second transaction by incrementing the nonce manually
     // without waiting for the first transaction to be confirmed
     if (pendingTransaction.nonce && nonce && Number(nonce) > Number(pendingTransaction.nonce)) {
-      console.log('Current nonce is higher than pendingTransaction nonce, sending the transaction')
       return
     }
 
