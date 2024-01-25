@@ -16,7 +16,6 @@
       <v-checkbox
         hide-details
         :model-value="store.getters['wallets/getVisibility'](localWallet.symbol)"
-        :disabled="checkboxDisabled"
         @update:model-value="
           store.commit('wallets/updateVisibility', {
             symbol: localWallet.symbol,
@@ -76,12 +75,7 @@ export default defineComponent({
     const store = useStore()
     const localWallet = toRef(props, 'wallet')
 
-    const checkboxDisabled = computed(() => {
-      return localWallet.value.isVisible && store.getters['wallets/getIsLastSymbolVisible'] < 2
-    })
-
     return {
-      checkboxDisabled,
       classes,
       localWallet,
       store

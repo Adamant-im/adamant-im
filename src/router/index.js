@@ -17,6 +17,7 @@ import Transactions from '@/views/Transactions.vue'
 import Votes from '@/views/Votes.vue'
 import Wallets from '@/views/Wallets.vue'
 import Vibro from '@/views/Vibro.vue'
+import WalletGuard from '@/middlewares/walletGuard'
 
 /**
  * @type {Readonly<import("vue-router").RouteRecordRaw[]>}
@@ -150,10 +151,12 @@ const routes = [
     component: Home,
     meta: {
       requiresAuth: true,
+      requiresWallets: true,
       layout: 'toolbar',
       showNavigation: true,
       containerNoPadding: true
-    }
+    },
+    beforeEnter: WalletGuard
   },
   {
     path: '/',
