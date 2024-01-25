@@ -30,6 +30,7 @@
             ></v-list-item>
           </div>
           <v-row
+            v-if="filteredWallets.length"
             :class="`${classes.root}__review`"
             align="center"
             justify="space-between"
