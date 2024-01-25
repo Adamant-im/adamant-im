@@ -37,7 +37,7 @@
 <script lang="ts">
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import WalletBalance from '@/components/wallets/WalletBalance.vue'
-import { computed, defineComponent, PropType, toRef } from 'vue'
+import { defineComponent, PropType, toRef } from 'vue'
 import { useStore } from 'vuex'
 import { CryptoSymbol } from '@/lib/constants'
 
