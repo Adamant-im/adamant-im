@@ -23,6 +23,7 @@ export function createPendingTransaction(
     fee: Number(fee),
     status: 'PENDING',
     direction: 'from',
-    nonce
+    nonce,
+    timestamp: Date.now()
   }
 }

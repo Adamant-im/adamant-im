@@ -39,7 +39,7 @@
       </v-list-item-title>
 
       <v-list-item-subtitle :class="`${className}__date`" class="a-text-explanation-small">
-        <span v-if="!isNaN(createdAt)">{{ formatDate(createdAt) }}</span>
+        <span v-if="!isPendingTransaction">{{ formatDate(createdAt) }}</span>
         <span v-else-if="status" :class="`${className}__status`">{{
           $t(`transaction.statuses.${status}`)
         }}</span>
@@ -64,7 +64,7 @@
 
 <script>
 import formatDate from '@/filters/date'
-import { EPOCH, Cryptos } from '@/lib/constants'
+import { EPOCH, Cryptos, TransactionStatus } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyAmount from '@/filters/currencyAmount'
@@ -187,6 +187,11 @@ export default {
           amount,
           this.crypto
         )
+      )
+    },
+    isPendingTransaction() {
+      return (
+        this.status === TransactionStatus.PENDING || this.status === TransactionStatus.REGISTERED
       )
     }
   },

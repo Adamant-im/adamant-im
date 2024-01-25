@@ -5,4 +5,5 @@ export type PendingTransaction = Pick<
   'id' | 'hash' | 'senderId' | 'recipientId' | 'amount' | 'fee' | 'status' | 'direction'
 > & {
   nonce?: number
+  timestamp: number
 }
