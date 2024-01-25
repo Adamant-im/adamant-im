@@ -272,6 +272,7 @@
     "waiting_confirmations": "Waiting for confirmations"
   },
   "wallets": {
+    "coins_not_found_title": "Keine Kryptowährungen gefunden",
     "reset": "Zurücksetzen",
     "reset_message": "Möchten Sie die Liste wirklich in ihren ursprünglichen Zustand zurückversetzen?",
     "search": "Suchen",

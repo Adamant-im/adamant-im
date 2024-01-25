@@ -23,6 +23,11 @@
                 <WalletsListItem :wallet="element" :search="search"></WalletsListItem>
               </template>
             </draggable>
+            <v-list-item
+              v-if="!filteredWallets.length"
+              :title="$t('wallets.coins_not_found_title')"
+              class="text-center"
+            ></v-list-item>
           </div>
           <v-row
             :class="`${classes.root}__review`"

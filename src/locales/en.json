@@ -383,6 +383,7 @@
     "waiting_confirmations": "Transaction is running, be patient…"
   },
   "wallets": {
+    "coins_not_found_title": "No coins found",
     "reset": "Reset",
     "reset_message": "Do you really want to return the list to its default state?",
     "search": "Search",
