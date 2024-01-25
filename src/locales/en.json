@@ -266,7 +266,7 @@
     "statuses": {
       "REJECTED": "Error",
       "PENDING": "Pending",
-      "REGISTERED": "Pending, waiting for confirmations",
+      "REGISTERED": "Pending",
       "CONFIRMED": "Success",
       "INVALID": "Inconsistent",
       "UNKNOWN": "Unknown"
