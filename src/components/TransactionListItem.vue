@@ -23,7 +23,7 @@
         <span :class="`${className}__amount ${directionClass}`">{{
           currency(amount, crypto)
         }}</span>
-        <span :class="`${className}__rates`"> {{ historyRate }}</span>
+        <span :class="`${className}__rates`">{{ historyRate }}</span>
         <span v-if="comment" class="a-text-regular-enlarged-bold" style="font-style: italic">
           "</span
         >
@@ -257,6 +257,7 @@ export default {
     color: hsla(0, 0%, 100%, 0.7);
     font-style: italic;
     @include a-text-regular();
+    margin-left: 4px;
   }
   &__amount {
     @include a-text-regular-enlarged-bold();
