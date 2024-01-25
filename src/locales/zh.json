@@ -46,7 +46,7 @@
     "how_to_use_messenger_link": "https://medium.com/adamant-im/how-to-start-with-a-blockchain-messenger-54d1eb9704e6",
     "transaction_statuses": {
       "CONFIRMED": "在区块链中确认",
-      "REGISTERED": "尚未确认。正在获取…",
+      "REGISTERED": "传递到节点",
       "INVALID": "信息不正确。请仔细检查区块链浏览器中的Tx",
       "PENDING": "尚未确认。正在获取…",
       "REJECTED": "无法获取Tx信息。它可能被取消或不被接受。请在区块链资源管理器中检查Tx",
