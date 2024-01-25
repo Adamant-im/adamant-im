@@ -105,7 +105,7 @@ function createActions(options) {
       // 3. Ensure there is no pending transaction
       await assertNoPendingTransaction(
         context.state.crypto,
-        (hashLocal) => lskIndexer.getTransaction(hashLocal, context.state.address),
+        (hashLocal) => lskIndexer.isTransactionFinalized(hashLocal, context.state.address),
         context.state.nonce
       )
 

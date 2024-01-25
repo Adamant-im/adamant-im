@@ -1,53 +1,37 @@
-import { TransactionNotFound } from '@/lib/nodes/utils/errors'
 import { PendingTransactionError } from './errors'
 import { PendingTxStore } from './storage'
 
-type TxFetcher = (hash: string) => Promise<unknown>
+type TxFinalizeChecker = (hash: string) => Promise<boolean>
 
 /**
  * Returns `true` if there is a pending transaction for the given crypto
  * @param crypto e.g. 'ETH' | 'LSK'
- * @param txFetcher Must throw `TransactionNotFound` error if transaction is not found. Must resolve if transaction is registered in the blockchain.
+ * @param checkTransactionFinalized Must return `true` if transaction was written to blockchain.
  */
-async function hasPendingTransaction(crypto: string, txFetcher: TxFetcher) {
+async function hasPendingTransaction(crypto: string, checkTransactionFinalized: TxFinalizeChecker) {
   const pendingTransaction = PendingTxStore.get(crypto)
   if (!pendingTransaction) {
     return false // there is no pending transaction
   }
 
-  try {
-    await txFetcher(pendingTransaction.hash)
+  const isFinalized = await checkTransactionFinalized(pendingTransaction.hash)
 
-    return false // if node returns success response, then it is not a pending transaction anymore
-  } catch (err) {
-    if (err instanceof TransactionNotFound) {
-      console.debug(
-        `Transaction ${pendingTransaction.hash} not registered yet in the blockchain`,
-        err,
-        pendingTransaction
-      )
-
-      // Transaction not yet registered in the blockchain. This means that it is still in pending state.
-      return pendingTransaction
-    }
-
-    throw err
-  }
+  return isFinalized ? false : pendingTransaction
 }
 
 /**
  * Asserts that there is no pending transaction for the given crypto
  *
  * @param crypto e.g. 'ETH' | 'LSK'
- * @param txFetcher Must throw `TransactionNotFound` error if transaction is not found. Must resolve if transaction is registered in the blockchain.
+ * @param checkTransactionFinalized Must return `true` if transaction was written to blockchain.
  * @param nonce Current nonce
  */
 export async function assertNoPendingTransaction(
   crypto: string,
-  txFetcher: TxFetcher,
+  checkTransactionFinalized: TxFinalizeChecker,
   nonce: string | number | bigint
 ) {
-  const pendingTransaction = await hasPendingTransaction(crypto, txFetcher)
+  const pendingTransaction = await hasPendingTransaction(crypto, checkTransactionFinalized)
 
   if (pendingTransaction) {
     console.log('currentNonce', nonce, 'pendingTransactionNonce', pendingTransaction.nonce)

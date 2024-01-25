@@ -87,7 +87,7 @@ export default function createActions(config) {
       // 3. Ensure there is no pending transaction
       await assertNoPendingTransaction(
         context.state.crypto,
-        (hashLocal) => api.getTransaction(hashLocal),
+        (hashLocal) => api.isTransactionFinalized(hashLocal),
         unsignedTransaction.nonce
       )
 

@@ -22,14 +22,27 @@ export class EthClient extends Client<EthNode> {
     void this.watchNodeStatusChange()
   }
 
+  async isTransactionFinalized(hash: string): Promise<boolean> {
+    const node = this.getNode()
+
+    try {
+      const transaction = await node.client.getTransaction(hash)
+      const isFinalized = !!transaction.blockNumber
+
+      return isFinalized
+    } catch (err) {
+      return false
+    }
+  }
+
   async getTransaction(hash: string) {
     const node = this.getNode()
 
     try {
       const transaction = await node.client.getTransaction(hash)
-      const includedInBlock = transaction.blockNumber !== undefined
+      const isFinalized = transaction.blockNumber !== undefined
 
-      const blockTimestamp = includedInBlock
+      const blockTimestamp = isFinalized
         ? await node.client.getBlock(transaction.blockNumber).then((block) => block.timestamp)
         : undefined
 

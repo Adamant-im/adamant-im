@@ -47,6 +47,23 @@ export class LskIndexerClient extends Client<LskIndexer> {
     return transactions.map((transaction) => normalizeTransaction(transaction, address))
   }
 
+  async isTransactionFinalized(transactionID: string): Promise<boolean> {
+    const { data: transactions } = await this.request('GET /transactions', {
+      transactionID
+    })
+
+    const transaction = transactions[0]
+
+    if (!transaction) {
+      return false
+    }
+
+    const isFinalized =
+      transaction.executionStatus === 'successful' || transaction.executionStatus === 'failed'
+
+    return isFinalized
+  }
+
   /**
    * Returns a single transaction by ID
    *
