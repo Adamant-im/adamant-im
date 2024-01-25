@@ -3,8 +3,10 @@
     v-model.trim="computedSearch"
     :label="t('wallets.search')"
     :clearable="true"
+    :class="`${classes.root}__search`"
     class="a-input"
     color="primary"
+    :single-line="true"
     type="text"
     variant="underlined"
     @input="$emit('change', computedSearch)"
@@ -16,6 +18,11 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+
+const className = 'wallets-view'
+const classes = {
+  root: className
+}
 
 export default defineComponent({
   setup() {
@@ -33,6 +40,7 @@ export default defineComponent({
       }
     })
     return {
+      classes,
       computedSearch,
       t
     }
@@ -40,4 +48,13 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="scss"></style>
+<style lang="scss" scoped>
+.wallets-view {
+  &__search {
+    :deep(.v-field) {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
+}
+</style>
