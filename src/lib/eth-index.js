@@ -105,7 +105,7 @@ function getTotalFromRange(range = '') {
 }
 
 function getUrl() {
-  const nodes = config.eth.nodes.filter((x) => x.hasIndex).map((x) => x.url)
+  const nodes = config.eth.nodes.list.filter((x) => x.hasIndex).map((x) => x.url)
   const index = Math.floor(Math.random() * nodes.length)
   return nodes[index] + '/ethtxs'
 }

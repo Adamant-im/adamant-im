@@ -92,14 +92,42 @@ export interface TokenGeneral {
   }
   /** Time in ms when difference between in-chat transfer and Tx timestamp considered as acceptable */
   txConsistencyMaxTime?: number
-  /**
-   * Minimal node API version
-   * @example "0.8.0"
-   */
-  minNodeVersion?: string
-  /** Node links for API */
-  nodes?: NodeInfo[]
-  services?: Record<string, Service>
+  nodes?: {
+    /** Node links for API */
+    list: NodeInfo[]
+    healthCheck: {
+      /** Regular node status update interval in ms */
+      normalUpdateInterval: number
+      /** Node status update interval when there are no active nodes, in ms */
+      crucialUpdateInterval: number
+      /** On the node screen, the status update interval in ms */
+      onScreenUpdateInterval: number
+      /** Permissible height difference between nodes */
+      threshold: number
+    }
+    /**
+     * Minimal node API version
+     * @example "0.8.0"
+     */
+    minVersion?: string
+  }
+  services?: {
+    /** Service node links for API */
+    list: Record<string, Service>
+    healthCheck: {
+      /** Regular service status update interval in ms */
+      normalUpdateInterval: number
+      /** Service status update interval when there are no active services, in ms */
+      crucialUpdateInterval: number
+      /** On the node screen, the status update interval in ms */
+      onScreenUpdateInterval: number
+    }
+    /**
+     * Minimal service node API version
+     * @example "1.0.0"
+     */
+    minVersion?: string
+  }
   /** Additional project links */
   links?: ProjectLink[]
   tor?: {
@@ -111,9 +139,42 @@ export interface TokenGeneral {
     explorerTx?: string
     /** URL to get address info (Tor) */
     explorerAddress?: string
-    /** Node links for API (Tor) */
-    nodes?: NodeInfo[]
-    services?: Record<string, Service>
+    nodes?: {
+      /** Node links for API */
+      list: NodeInfo[]
+      healthCheck: {
+        /** Regular node status update interval in ms */
+        normalUpdateInterval: number
+        /** Node status update interval when there are no active nodes, in ms */
+        crucialUpdateInterval: number
+        /** On the node screen, the status update interval in ms */
+        onScreenUpdateInterval: number
+        /** Permissible height difference between nodes */
+        threshold: number
+      }
+      /**
+       * Minimal node API version
+       * @example "0.8.0"
+       */
+      minVersion?: string
+    }
+    services?: {
+      /** Service node links for API */
+      list: Record<string, Service>
+      healthCheck?: {
+        /** Regular service status update interval in ms */
+        normalUpdateInterval: number
+        /** Service status update interval when there are no active services, in ms */
+        crucialUpdateInterval: number
+        /** On the node screen, the status update interval in ms */
+        onScreenUpdateInterval: number
+      }
+      /**
+       * Minimal service node API version
+       * @example "1.0.0"
+       */
+      minVersion?: string
+    }
     /** Additional project links (Tor) */
     links?: ProjectLink[]
   }
