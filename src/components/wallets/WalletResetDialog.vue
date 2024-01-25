@@ -21,9 +21,11 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn variant="text" class="a-btn-regular" @click="isDialogVisible = false">
-            {{ t('common.no') }}
+            {{ t('common.cancel') }}
           </v-btn>
-          <v-btn variant="text" class="a-btn-regular" @click="reset">{{ t('common.yes') }}</v-btn>
+          <v-btn variant="text" class="a-btn-regular" @click="reset">{{
+            t('common.confirm')
+          }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

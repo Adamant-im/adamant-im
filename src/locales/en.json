@@ -82,6 +82,8 @@
     "partner_removed_reaction": "Removed reaction"
   },
   "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
     "no": "No",
     "yes": "Yes"
   },
@@ -385,8 +387,8 @@
   "wallets": {
     "coins_not_found_title": "No coins found",
     "reset": "Reset",
-    "reset_message": "Do you really want to return the list to its default state?",
+    "reset_message": "Do you want to make the Wallet list default?",
     "search": "Search",
-    "summary_title": "Reset wallets settings"
+    "summary_title": "Reset Wallet list"
   }
 }

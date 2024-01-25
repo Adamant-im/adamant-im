@@ -65,6 +65,8 @@
     "partner_removed_reaction": "Removed reaction"
   },
   "common": {
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigt",
     "no": "Nein",
     "yes": "Ja"
   },

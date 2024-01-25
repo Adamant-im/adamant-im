@@ -81,6 +81,12 @@
     "you_removed_reaction": "已删除反应",
     "partner_removed_reaction": "已删除的反应"
   },
+  "common": {
+    "cancel": "取消",
+    "confirm": "确认",
+    "no": "没有",
+    "yes": "是的"
+  },
   "connection": {
     "offline": "Offline—无连接",
     "online": "联机--已设置连接"
