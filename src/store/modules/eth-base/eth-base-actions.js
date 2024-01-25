@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { TransactionNotFound } from 'web3-errors'
 
 import * as utils from '../../../lib/eth-utils'
 import adm from '../../../lib/nodes/adm'
@@ -269,6 +270,13 @@ export default function createActions(config) {
 
             setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
           }
+        })
+        .catch((err) => {
+          if (err instanceof TransactionNotFound) {
+            return
+          }
+
+          throw err
         })
     },
 
