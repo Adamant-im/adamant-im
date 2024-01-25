@@ -36,6 +36,10 @@ export default function createActions(config) {
         const pendingTransaction = PendingTxStore.get(context.state.crypto)
         if (pendingTransaction) {
           context.commit('transactions', [pendingTransaction])
+          context.dispatch('getTransaction', {
+            hash: pendingTransaction.hash,
+            force: true
+          })
         }
 
         onInit(context)
