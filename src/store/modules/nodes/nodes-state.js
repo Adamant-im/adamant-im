@@ -5,5 +5,6 @@ export default {
   doge: {},
   dash: {},
   lsk: {},
-  useFastest: false
+  useFastestAdmNode: false,
+  useFastestCoinNode: false
 }

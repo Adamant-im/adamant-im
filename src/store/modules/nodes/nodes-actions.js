@@ -11,7 +11,10 @@ export default {
     context.commit('toggle', payload)
   },
 
-  setUseFastest(context, payload) {
-    context.commit('useFastest', payload)
+  setUseFastestAdmNode(context, payload) {
+    context.commit('useFastestAdmNode', payload)
+  },
+  setUseFastestCoinNode(context, payload) {
+    context.commit('useFastestCoinNode', payload)
   }
 }

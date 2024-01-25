@@ -1,6 +1,9 @@
 export default {
-  useFastest(state, value) {
-    state.useFastest = value
+  useFastestAdmNode(state, value) {
+    state.useFastestAdmNode = value
+  },
+  useFastestCoinNode(state, value) {
+    state.useFastestCoinNode = value
   },
 
   toggle(state, payload) {

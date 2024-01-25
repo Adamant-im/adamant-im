@@ -9,15 +9,17 @@ export default (store) => {
       store.commit('nodes/status', { status, nodeType })
     })
   }
-  store.commit('nodes/useFastest', nodes.adm.useFastest)
+  store.commit('nodes/useFastestAdmNode', nodes.adm.useFastest)
+  // todo: useFaster for coin nodes
 
   store.subscribe((mutation) => {
     const { type, payload } = mutation
 
-    if (type === 'nodes/useFastest') {
-      const selectedNodeType = payload.type
-      nodes[selectedNodeType].setUseFastest(!!mutation.payload)
+    if (type === 'nodes/useFastestAdmNode') {
+      nodes.adm.setUseFastest(!!payload)
     }
+
+    // todo mutation for coin nodes
 
     if (type === 'nodes/toggle') {
       const selectedNodeType = payload.type
