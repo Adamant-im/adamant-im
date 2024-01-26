@@ -82,8 +82,8 @@
     "partner_removed_reaction": "Убрал реакцию"
   },
   "common": {
-    "cancel": "Cancel",
-    "confirm": "Confirm",
+    "cancel": "Отменить",
+    "confirm": "Подтверждаю",
     "no": "Нет",
     "yes": "Да"
   },
