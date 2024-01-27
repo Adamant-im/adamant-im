@@ -112,6 +112,7 @@ export default {
 .domain {
   color: map-get($adm-colors, 'grey-transparent');
   font-size: 12px;
+  display: inline-block;
 }
 .nodeName {
 }

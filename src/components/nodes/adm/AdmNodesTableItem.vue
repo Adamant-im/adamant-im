@@ -5,7 +5,11 @@
     </NodeColumn>
 
     <NodeColumn>
-      {{ url }}
+      <span class="protocol">{{ protocol }}//</span>
+      <span v-if="result === false" class="nodeName">{{ nodeName }}</span>
+      <span v-if="result === false" class="domain">.{{ domain }}</span>
+      <span v-else-if="result" class="nodeName">{{ hostname }}</span>
+      <span v-if="port" class="domain">:{{ port }}</span>
       <NodeVersion v-if="node.version" :node="node" />
     </NodeColumn>
 
@@ -70,6 +74,25 @@ export default {
       store.dispatch('nodes/updateStatus')
     }
 
+    const baseUrl = new URL(url.value)
+    const protocol = baseUrl.protocol
+    const hostname = baseUrl.hostname
+    const port = baseUrl.port
+    const result = /^[\d.]+$/.test(hostname)
+
+    let nodeName: string | null = null
+    let domain: string | null = null
+
+    if (result === false) {
+      const regex = /([^.]*)\.(.*)/
+      const parts = hostname.match(regex)
+
+      if (parts !== null) {
+        nodeName = parts[1]
+        domain = parts[2]
+      }
+    }
+
     return {
       classes,
       url,
@@ -77,13 +100,28 @@ export default {
       socketSupport,
       isUnsupported,
       showSocketColumn,
-      toggleActiveStatus
+      toggleActiveStatus,
+      protocol,
+      hostname,
+      nodeName,
+      domain,
+      result,
+      port
     }
   }
 }
 </script>
 
 <style lang="scss">
+@import '@/assets/styles/settings/_colors.scss';
 .amd-nodes-table-item {
+  line-height: 14px;
+}
+.protocol,
+.domain,
+.port {
+  color: map-get($adm-colors, 'grey-transparent');
+  font-size: 12px;
+  display: inline-block;
 }
 </style>
