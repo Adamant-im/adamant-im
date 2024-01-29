@@ -1,7 +1,14 @@
 <template>
   <div class="px-5">
     <p :class="[classes.statusTitle, balance === 0 && 'a-text-explanation']">
-      {{ calculatedBalance }}
+      {{ xs ? calculatedBalance : calculatedFullBalance }}
+      <v-tooltip
+        v-if="xs && calculatedFullBalance.toString().length > SIGNIFICANT_DIGITS"
+        activator="parent"
+        location="top"
+      >
+        {{ calculatedFullBalance }}
+      </v-tooltip>
     </p>
 
     <p v-if="Number(balance) !== 0" :class="classes.statusText" class="text-end">
@@ -12,11 +19,15 @@
 
 <script lang="ts">
 import { computed, defineComponent, toRefs } from 'vue'
-import currencyAmount from '@/filters/currencyAmount.js'
+import currencyAmount from '@/filters/currencyAmount'
 import { Cryptos } from '@/lib/constants'
 import { useStore } from 'vuex'
+import truncateString from '@/lib/truncateString'
+import { useDisplay } from 'vuetify'
 
+const SIGNIFICANT_DIGITS = 7
 const className = 'wallet-balance'
+
 const classes = {
   statusTitle: `${className}__status-title`,
   statusText: `${className}__status-text`
@@ -31,6 +42,7 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore()
+    const { xs } = useDisplay()
     const { symbol } = toRefs(props)
     const key = symbol.value.toLowerCase()
 
@@ -43,14 +55,25 @@ export default defineComponent({
     })
 
     const calculatedBalance = computed(() => {
-      return balance.value ? `~${currencyAmount(Number(balance.value), symbol.value, true)}` : 0
+      const preparedBalance = balance.value
+        ? currencyAmount(Number(balance.value), symbol.value, true)
+        : 0
+
+      return truncateString(preparedBalance, 3)
     })
+
+    const calculatedFullBalance = computed(() => {
+      return balance.value ? currencyAmount(Number(balance.value), symbol.value, true) : 0
+    })
+
     const currentFiatCurrency = computed(() => {
       return store.state.options.currentRate
     })
+
     const currentRate = computed(() => {
       return store.state.rate.rates[`${symbol.value}/${currentFiatCurrency.value}`]
     })
+
     const rate = computed(() => {
       return currentRate.value !== undefined
         ? Number((balance.value * currentRate.value).toFixed(2))
@@ -58,11 +81,14 @@ export default defineComponent({
     })
 
     return {
+      SIGNIFICANT_DIGITS,
       balance,
       classes,
       calculatedBalance,
+      calculatedFullBalance,
       currentFiatCurrency,
-      rate
+      rate,
+      xs
     }
   }
 })
