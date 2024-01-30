@@ -1,4 +1,4 @@
-import type { NodeType } from '@/lib/nodes/types'
+import type { HealthcheckInterval, NodeType } from '@/lib/nodes/types'
 import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
 import { nodesStorage } from './storage'
@@ -46,6 +46,12 @@ export abstract class Client<N extends Node> {
   checkHealth() {
     for (const node of this.nodes) {
       void node.startHealthcheck()
+    }
+  }
+
+  updateHealthCheckInterval(interval: HealthcheckInterval) {
+    for (const node of this.nodes) {
+      void node.updateHealthCheckInterval(interval)
     }
   }
 

@@ -1,5 +1,5 @@
-import config from '@/config'
 import { NodeType } from '@/lib/nodes/types'
+import { getNodeHealthcheckConfig } from './getHealthcheckConfig'
 
 /**
  * Allowed height delta for the nodes.
@@ -8,7 +8,9 @@ import { NodeType } from '@/lib/nodes/types'
  * they are considered to be in sync with each other.
  */
 function getHeightEpsilon(nodeType: NodeType): number {
-  return config[nodeType].nodes.healthCheck.threshold
+  const config = getNodeHealthcheckConfig(nodeType)
+
+  return config.threshold
 }
 
 interface Node {
