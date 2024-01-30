@@ -15,6 +15,7 @@ import Votes from '@/views/Votes.vue'
 import Nodes from '@/views/Nodes.vue'
 import Login from '@/views/Login.vue'
 import ExportKeys from '@/views/ExportKeys.vue'
+import Vibro from '@/views/Vibro.vue'
 
 /**
  * @type {Readonly<import("vue-router").RouteRecordRaw[]>}
@@ -148,6 +149,11 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     redirect: '/'
+  },
+  {
+    path: '/vibro',
+    name: 'Vibro',
+    component: Vibro
   }
 ]
 
