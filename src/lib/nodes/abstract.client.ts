@@ -126,7 +126,7 @@ export abstract class Client<N extends Node> {
   protected updateSyncStatuses() {
     const nodes = this.nodes.filter((x) => x.online && x.active)
 
-    const nodesInSync = filterSyncedNodes(nodes)
+    const nodesInSync = filterSyncedNodes(nodes, this.type)
 
     // Finally, all the nodes from the winner list are considered to be in sync, all the
     // others are not
