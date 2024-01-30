@@ -110,6 +110,9 @@ export default {
     }
   },
   emits: ['click:transaction', 'click:icon'],
+  data: () => ({
+    virtualTimestamp: Date.now()
+  }),
   computed: {
     // Own crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     userId() {
@@ -183,7 +186,7 @@ export default {
       return (
         '~' +
         this.$store.getters['rate/historyRate'](
-          timestampInSec(this.crypto, this.timestamp),
+          timestampInSec(this.crypto, this.timestamp || this.virtualTimestamp),
           amount,
           this.crypto
         )
@@ -251,7 +254,7 @@ export default {
     },
     getHistoryRates() {
       this.$store.dispatch('rate/getHistoryRates', {
-        timestamp: timestampInSec(this.crypto, this.timestamp)
+        timestamp: timestampInSec(this.crypto, this.timestamp || this.virtualTimestamp)
       })
     },
     currency,
