@@ -15,6 +15,26 @@ export interface NodeInfo {
   hasIndex?: boolean
 }
 
+export interface NodeHealthcheck {
+  /** Regular node status update interval in ms */
+  normalUpdateInterval: number
+  /** Node status update interval when there are no active nodes, in ms */
+  crucialUpdateInterval: number
+  /** On the node screen, the status update interval in ms */
+  onScreenUpdateInterval: number
+  /** Permissible height difference between nodes */
+  threshold: number
+}
+
+export interface ServiceHealthcheck {
+  /** Regular node status update interval in ms */
+  normalUpdateInterval: number
+  /** Node status update interval when there are no active nodes, in ms */
+  crucialUpdateInterval: number
+  /** On the node screen, the status update interval in ms */
+  onScreenUpdateInterval: number
+}
+
 export interface ProjectLink {
   name: string
   url: string
@@ -95,16 +115,7 @@ export interface TokenGeneral {
   nodes?: {
     /** Node links for API */
     list: NodeInfo[]
-    healthCheck: {
-      /** Regular node status update interval in ms */
-      normalUpdateInterval: number
-      /** Node status update interval when there are no active nodes, in ms */
-      crucialUpdateInterval: number
-      /** On the node screen, the status update interval in ms */
-      onScreenUpdateInterval: number
-      /** Permissible height difference between nodes */
-      threshold: number
-    }
+    healthCheck: NodeHealthcheck
     /**
      * Minimal node API version
      * @example "0.8.0"
@@ -114,14 +125,7 @@ export interface TokenGeneral {
   services?: {
     /** Service node links for API */
     list: Record<string, Service>
-    healthCheck: {
-      /** Regular service status update interval in ms */
-      normalUpdateInterval: number
-      /** Service status update interval when there are no active services, in ms */
-      crucialUpdateInterval: number
-      /** On the node screen, the status update interval in ms */
-      onScreenUpdateInterval: number
-    }
+    healthCheck: ServiceHealthcheck
     /**
      * Minimal service node API version
      * @example "1.0.0"
@@ -142,16 +146,7 @@ export interface TokenGeneral {
     nodes?: {
       /** Node links for API */
       list: NodeInfo[]
-      healthCheck: {
-        /** Regular node status update interval in ms */
-        normalUpdateInterval: number
-        /** Node status update interval when there are no active nodes, in ms */
-        crucialUpdateInterval: number
-        /** On the node screen, the status update interval in ms */
-        onScreenUpdateInterval: number
-        /** Permissible height difference between nodes */
-        threshold: number
-      }
+      healthCheck: NodeHealthcheck
       /**
        * Minimal node API version
        * @example "0.8.0"
@@ -161,14 +156,7 @@ export interface TokenGeneral {
     services?: {
       /** Service node links for API */
       list: Record<string, Service>
-      healthCheck?: {
-        /** Regular service status update interval in ms */
-        normalUpdateInterval: number
-        /** Service status update interval when there are no active services, in ms */
-        crucialUpdateInterval: number
-        /** On the node screen, the status update interval in ms */
-        onScreenUpdateInterval: number
-      }
+      healthCheck?: ServiceHealthcheck
       /**
        * Minimal service node API version
        * @example "1.0.0"
