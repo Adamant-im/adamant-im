@@ -426,6 +426,21 @@
     "type": "ERC20",
     "fees": "ethereum"
   },
+  "GT": {
+    "symbol": "GT",
+    "name": "Gate",
+    "decimals": 8,
+    "contractId": "0xe66747a101bff2dba3697199dcce5b743b454759",
+    "createCoin": false,
+    "cryptoTransferDecimals": 6,
+    "defaultVisibility": true,
+    "defaultGasLimit": 58000,
+    "defaultOrdinalLevel": 100,
+    "status": "active",
+    "mainCoin": "ETH",
+    "type": "ERC20",
+    "fees": "ethereum"
+  },
   "SKL": {
     "symbol": "SKL",
     "name": "SKALE",
