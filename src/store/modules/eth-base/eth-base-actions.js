@@ -14,7 +14,6 @@ import { signTransaction, TransactionFactory } from 'web3-eth-accounts'
 import api from '@/lib/nodes/eth'
 
 /** Interval between attempts to fetch the registered tx details */
-const RETRY_TIMEOUT = 20 * 1000
 const CHUNK_SIZE = 25
 
 export default function createActions(config) {
@@ -217,11 +216,24 @@ export default function createActions(config) {
         ])
       }
 
+      const attempt = payload.attempt || 0
+      const retryCount = tf.getPendingTxRetryCount(
+        payload.timestamp || existing?.timestamp,
+        context.state.crypto
+      )
+      const retry = attempt < retryCount
+      const retryTimeout = tf.getPendingTxRetryTimeout(
+        payload.timestamp || existing?.timestamp,
+        context.state.crypto
+      )
+
       void api
         .getClient()
         .getTransaction(payload.hash)
         .then((tx) => {
-          if (tx?.input) {
+          const isFinalized = tx.blockNumber !== undefined
+
+          if (tx?.input && isFinalized) {
             const transaction = parseTransaction(context, tx)
             const status = existing ? existing.status : 'REGISTERED'
             if (transaction) {
@@ -240,17 +252,6 @@ export default function createActions(config) {
               return
             }
           }
-
-          const attempt = payload.attempt || 0
-          const retryCount = tf.getPendingTxRetryCount(
-            payload.timestamp || existing?.timestamp,
-            context.state.crypto
-          )
-          const retry = attempt < retryCount
-          const retryTimeout = tf.getPendingTxRetryTimeout(
-            payload.timestamp || existing?.timestamp,
-            context.state.crypto
-          )
 
           if (!retry) {
             // Give up, if transaction could not be found after so many attempts
@@ -272,7 +273,17 @@ export default function createActions(config) {
           }
         })
         .catch((err) => {
-          if (err instanceof TransactionNotFound) {
+          if (retry && err instanceof TransactionNotFound) {
+            const newPayload = {
+              ...payload,
+              attempt: attempt + 1,
+              force: true,
+              updateOnly: false,
+              dropStatus: false
+            }
+
+            setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
+
             return
           }
 
@@ -290,6 +301,17 @@ export default function createActions(config) {
       if (!transaction) return
 
       const gasPrice = transaction.gasPrice
+
+      const attempt = payload.attempt || 0
+      const retryCount = tf.getPendingTxRetryCount(
+        transaction.timestamp || Date.now(),
+        context.state.crypto
+      )
+      const retry = attempt < retryCount
+      const retryTimeout = tf.getPendingTxRetryTimeout(
+        transaction.timestamp || Date.now(),
+        context.state.crypto
+      )
 
       void api
         .getClient()
@@ -325,15 +347,18 @@ export default function createActions(config) {
             replay = !update.status
           }
 
-          if (replay) {
+          if (replay && retry) {
             // In case of an error or a pending transaction fetch its receipt once again later
             // Increment attempt counter, if no transaction was found so far
             const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
-            setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), RETRY_TIMEOUT)
+            setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), retryTimeout)
           }
         })
         .catch((err) => {
-          if (err instanceof TransactionNotFound) {
+          if (retry && err instanceof TransactionNotFound) {
+            const newPayload = { ...payload, attempt: 1 + (payload.attempt || 0) }
+            setTimeout(() => context.dispatch('getTransactionReceipt', newPayload), retryTimeout)
+
             return
           }
 
