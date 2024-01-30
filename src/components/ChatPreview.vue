@@ -71,7 +71,7 @@
             <v-icon v-else :icon="statusIcon" size="15" />
           </template>
 
-          {{ lastMessageTextNoFormats }}
+          <span v-html="lastMessageTextNoFormats"></span>
         </v-list-item-subtitle>
       </template>
     </div>
@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { removeFormats } from '@/lib/markdown'
+import { formatMessage } from '@/lib/markdown'
 
 import transaction from '@/mixins/transaction'
 import formatDate from '@/filters/dateBrief'
@@ -183,7 +183,7 @@ export default {
     },
     lastMessageTextNoFormats() {
       if (this.isAdamantChat(this.contactId) || this.$store.state.options.formatMessages) {
-        return removeFormats(this.lastMessageTextLocalized)
+        return formatMessage(this.lastMessageTextLocalized)
       }
 
       return this.lastMessageTextLocalized

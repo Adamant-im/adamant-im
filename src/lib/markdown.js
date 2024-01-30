@@ -62,3 +62,16 @@ export function removeFormats(text = '') {
 
   return node.textContent || node.innerText || ''
 }
+
+export function formatMessage(text = '') {
+  const node = document.createElement('div')
+  const textWithSumbol = text.replace(/\n/g, '↵ ')
+  node.innerHTML = marked(DOMPurify.sanitize(textWithSumbol), { renderer })
+
+  const textWithoutHtml = node.textContent || node.innerText || ''
+  const styledText = textWithoutHtml.replace(
+    /↵/g,
+    '<span style="color:rgba(255, 255, 255, 0.5)">↵</span>'
+  )
+  return styledText
+}
