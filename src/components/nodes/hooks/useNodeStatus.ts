@@ -15,7 +15,7 @@ type NodeStatusDetail = {
 
 function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation) {
   const i18n: Record<NodeStatus, string> = {
-    online: node.ping + ' ' + t('nodes.ms'),
+    online: node.ping + ' ',
     offline: 'nodes.offline',
     disabled: 'nodes.inactive',
     sync: 'nodes.sync',

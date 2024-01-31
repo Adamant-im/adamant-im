@@ -1,6 +1,8 @@
 <template>
   <div :class="classes.statusTitle">
-    {{ nodeStatusTitle }}
+    <span>
+      {{ nodeStatusTitle }}<span :class="classes.textMs">{{ $t('nodes.ms') }}</span></span
+    >
 
     <v-icon
       :class="{
@@ -18,17 +20,18 @@
 
   <span v-if="nodeStatusDetail" :class="classes.statusText">
     <v-icon v-if="nodeStatusDetail.icon" :icon="nodeStatusDetail.icon" :size="12" />
-    {{ nodeStatusDetail.text }}
+    {{ formattedNumber }}
   </span>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, toRefs } from 'vue'
+import { defineComponent, PropType, toRefs, computed } from 'vue'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useNodeStatus } from '@/components/nodes/hooks'
 
 const className = 'node-status'
 const classes = {
+  textMs: `${className}__text-ms`,
   statusTitle: `${className}__status-title`,
   statusText: `${className}__status-text`,
   icon: `${className}__icon`,
@@ -50,7 +53,12 @@ export default defineComponent({
 
     const { nodeStatusTitle, nodeStatusDetail, nodeStatusColor } = useNodeStatus(node)
 
+    const formattedNumber = computed(() => {
+      return nodeStatusDetail.value.text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    })
+
     return {
+      formattedNumber,
       nodeStatusTitle,
       nodeStatusDetail,
       nodeStatusColor,
@@ -63,9 +71,12 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import 'vuetify/settings';
 @import '@/assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
 
 .node-status {
   &__status-title {
+    width: 76px;
+    max-width: 80px;
     line-height: 17px;
     display: flex;
   }
@@ -77,6 +88,9 @@ export default defineComponent({
 
   &__icon {
     margin-inline-start: 4px;
+  }
+  &__text-ms {
+    @include a-text-explanation-small();
   }
 }
 
