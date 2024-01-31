@@ -26,6 +26,6 @@ export default defineComponent({
 .blockchain-label {
   --v-chip-height: 18px;
   padding: 0 4px;
-  margin-left: 12px;
+  margin-left: 0px;
 }
 </style>

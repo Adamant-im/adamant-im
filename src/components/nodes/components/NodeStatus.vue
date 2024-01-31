@@ -1,7 +1,10 @@
 <template>
   <div :class="classes.statusTitle">
     <span>
-      {{ nodeStatusTitle }}<span :class="classes.textMs">{{ $t('nodes.ms') }}</span></span
+      {{ nodeStatusTitle
+      }}<span v-if="nodeStatusDetail?.icon" :class="classes.textMs">{{
+        $t('nodes.ms')
+      }}</span></span
     >
 
     <v-icon
@@ -72,7 +75,6 @@ export default defineComponent({
   &__status-title {
     width: 76px;
     max-width: 80px;
-    line-height: 17px;
     display: flex;
   }
 
@@ -93,6 +95,9 @@ export default defineComponent({
   .node-status {
     &__status-text {
       color: map-get($adm-colors, 'regular');
+    }
+    &__text-ms {
+      color: map-get($adm-colors, 'muted');
     }
 
     &__icon {
@@ -117,6 +122,9 @@ export default defineComponent({
     &__status-text {
       color: map-get($shades, 'white');
       opacity: 0.7;
+    }
+    &__text-ms {
+      color: map-get($adm-colors, 'grey-transparent');
     }
     &__icon {
       &--green {

@@ -9,9 +9,7 @@
     </NodeColumn>
 
     <NodeColumn>
-      <span class="protocol">{{ getCoinLink.protocol }}</span>
-      <span class="nodeName">{{ getCoinLink.nodeName }}</span>
-      <span class="domain">{{ getCoinLink.domain }}</span>
+      <NodeUrl :node="node" />
       <NodeVersion v-if="node.version" :node="node" />
     </NodeColumn>
 
@@ -26,6 +24,7 @@ import { computed, PropType } from 'vue'
 import { useStore } from 'vuex'
 import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import type { TNodeLabel } from '@/lib/nodes/constants'
+import NodeUrl from '@/components/nodes/components/NodeUrl.vue'
 import NodeColumn from '@/components/nodes/components/NodeColumn.vue'
 import NodeLabel from '@/components/nodes/components/NodeLabel.vue'
 import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
@@ -46,6 +45,7 @@ export default {
     NodeStatus,
     NodeVersion,
     NodeLabel,
+    NodeUrl,
     NodeStatusCheckbox
   },
   props: {
@@ -75,41 +75,21 @@ export default {
       store.dispatch('nodes/updateStatus')
     }
 
-    const getCoinLink = computed(() => {
-      const regex = url.value.match(/^(https:\/\/)?(.*?)\.adamant\.im$/)
-      if (regex) {
-        const protocol = regex[1] || ''
-        const nodeName = regex[2] || ''
-        const domain = '.adamant.im'
-        return { protocol, nodeName, domain }
-      } else {
-        return { protocol: '', nodeName: '', domain: '' }
-      }
-    })
-
     return {
       classes,
       url,
       active,
       isUnsupported,
-      toggleActiveStatus,
-      getCoinLink
+      toggleActiveStatus
     }
   }
 }
 </script>
 
 <style lang="scss">
-@import '@/assets/styles/settings/_colors.scss';
 .nodes-table-item {
 }
 
-.protocol,
-.domain {
-  color: map-get($adm-colors, 'grey-transparent');
-  font-size: 12px;
-  display: inline-block;
-}
 .nodeName {
 }
 </style>

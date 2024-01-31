@@ -5,15 +5,7 @@
     </NodeColumn>
 
     <NodeColumn>
-      <span class="protocol">{{ computedResult.protocol }}//</span>
-      <span v-if="computedResult.result === false" class="nodeName">{{
-        computedResult.nodeName
-      }}</span>
-      <span v-if="computedResult.result === false" class="domain"
-        >.{{ computedResult.domain }}</span
-      >
-      <span v-else-if="computedResult.result" class="nodeName">{{ computedResult.hostname }}</span>
-      <span v-if="computedResult.port" class="domain">:{{ computedResult.port }}</span>
+      <NodeUrl :node="node" />
       <NodeVersion v-if="node.version" :node="node" />
     </NodeColumn>
 
@@ -31,6 +23,7 @@
 import { computed, PropType } from 'vue'
 import { useStore } from 'vuex'
 import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import NodeUrl from '@/components/nodes/components/NodeUrl.vue'
 import NodeColumn from '@/components/nodes/components/NodeColumn.vue'
 import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
 import NodeVersion from '@/components/nodes/components/NodeVersion.vue'
@@ -51,7 +44,8 @@ export default {
     NodeColumn,
     NodeStatus,
     NodeVersion,
-    SocketSupport
+    SocketSupport,
+    NodeUrl
   },
   props: {
     node: {
@@ -122,15 +116,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/assets/styles/settings/_colors.scss';
 .amd-nodes-table-item {
   line-height: 14px;
-}
-.protocol,
-.domain,
-.port {
-  color: map-get($adm-colors, 'grey-transparent');
-  font-size: 12px;
-  display: inline-block;
 }
 </style>
