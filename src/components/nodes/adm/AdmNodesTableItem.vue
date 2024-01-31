@@ -5,11 +5,15 @@
     </NodeColumn>
 
     <NodeColumn>
-      <span class="protocol">{{ protocol }}//</span>
-      <span v-if="result === false" class="nodeName">{{ nodeName }}</span>
-      <span v-if="result === false" class="domain">.{{ domain }}</span>
-      <span v-else-if="result" class="nodeName">{{ hostname }}</span>
-      <span v-if="port" class="domain">:{{ port }}</span>
+      <span class="protocol">{{ computedResult.protocol }}//</span>
+      <span v-if="computedResult.result === false" class="nodeName">{{
+        computedResult.nodeName
+      }}</span>
+      <span v-if="computedResult.result === false" class="domain"
+        >.{{ computedResult.domain }}</span
+      >
+      <span v-else-if="computedResult.result" class="nodeName">{{ computedResult.hostname }}</span>
+      <span v-if="computedResult.port" class="domain">:{{ computedResult.port }}</span>
       <NodeVersion v-if="node.version" :node="node" />
     </NodeColumn>
 
@@ -74,24 +78,34 @@ export default {
       store.dispatch('nodes/updateStatus')
     }
 
-    const baseUrl = new URL(url.value)
-    const protocol = baseUrl.protocol
-    const hostname = baseUrl.hostname
-    const port = baseUrl.port
-    const result = /^[\d.]+$/.test(hostname)
+    const computedResult = computed(() => {
+      const baseUrl = new URL(url.value)
+      const protocol = baseUrl.protocol
+      const hostname = baseUrl.hostname
+      const port = baseUrl.port
+      const result = /^[\d.]+$/.test(hostname)
 
-    let nodeName: string | null = null
-    let domain: string | null = null
+      let nodeName = null
+      let domain = null
 
-    if (result === false) {
-      const regex = /([^.]*)\.(.*)/
-      const parts = hostname.match(regex)
-
-      if (parts !== null) {
-        nodeName = parts[1]
-        domain = parts[2]
+      if (result === false) {
+        const regex = /([^.]*)\.(.*)/
+        const parts = hostname.match(regex)
+        if (parts !== null) {
+          nodeName = parts[1]
+          domain = parts[2]
+        }
       }
-    }
+
+      return {
+        protocol,
+        hostname,
+        nodeName,
+        domain,
+        result,
+        port
+      }
+    })
 
     return {
       classes,
@@ -101,12 +115,7 @@ export default {
       isUnsupported,
       showSocketColumn,
       toggleActiveStatus,
-      protocol,
-      hostname,
-      nodeName,
-      domain,
-      result,
-      port
+      computedResult
     }
   }
 }

@@ -9,9 +9,9 @@
     </NodeColumn>
 
     <NodeColumn>
-      <span class="protocol">{{ getProtocol }}</span>
-      <span class="nodeName">{{ getNodeName }}</span>
-      <span class="domain">{{ getDomain }}</span>
+      <span class="protocol">{{ getCoinLink.protocol }}</span>
+      <span class="nodeName">{{ getCoinLink.nodeName }}</span>
+      <span class="domain">{{ getCoinLink.domain }}</span>
       <NodeVersion v-if="node.version" :node="node" />
     </NodeColumn>
 
@@ -75,18 +75,16 @@ export default {
       store.dispatch('nodes/updateStatus')
     }
 
-    const getProtocol = computed(() => {
-      const protocol = url.value.match(/^https:\/\//)
-      return protocol ? protocol[0] : ''
-    })
-
-    const getNodeName = computed(() => {
-      const nodeName = url.value.replace(/^https:\/\/|\.adamant\.im$/g, '')
-      return nodeName
-    })
-    const getDomain = computed(() => {
-      const domain = url.value.match(/\.adamant\.im/)
-      return domain ? domain[0] : ''
+    const getCoinLink = computed(() => {
+      const regex = url.value.match(/^(https:\/\/)?(.*?)\.adamant\.im$/)
+      if (regex) {
+        const protocol = regex[1] || ''
+        const nodeName = regex[2] || ''
+        const domain = '.adamant.im'
+        return { protocol, nodeName, domain }
+      } else {
+        return { protocol: '', nodeName: '', domain: '' }
+      }
     })
 
     return {
@@ -95,9 +93,7 @@ export default {
       active,
       isUnsupported,
       toggleActiveStatus,
-      getProtocol,
-      getNodeName,
-      getDomain
+      getCoinLink
     }
   }
 }
