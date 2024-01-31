@@ -1,15 +1,14 @@
 <template>
-  <span :class="classes.protocol">{{ computedResult.protocol }}//</span>
-  <span v-if="computedResult.result === false" :class="classes.nodeName">{{
-    computedResult.nodeName
-  }}</span>
-  <span v-if="computedResult.result === false" :class="classes.domain"
-    >.{{ computedResult.domain }}</span
-  >
-  <span v-else-if="computedResult.result" :class="classes.nodeName">{{
-    computedResult.hostname
-  }}</span>
-  <span v-if="computedResult.port" :class="classes.port">:{{ computedResult.port }}</span>
+  <span :class="classes.protocol">{{ protocol }}//</span>
+
+  <span v-if="isIP" :class="classes.nodeName">{{ hostname }}</span>
+
+  <template v-else>
+    <span :class="classes.nodeName">{{ nodeHost.name }}</span>
+    <span :class="classes.domain">.{{ nodeHost.domain }}</span>
+  </template>
+
+  <span v-if="port" :class="classes.port">:{{ port }}</span>
 </template>
 <script lang="ts">
 import { computed, PropType } from 'vue'
@@ -32,41 +31,39 @@ export default {
     }
   },
   setup(props) {
-    const url = computed(() => props.node.url)
+    const url = computed(() => new URL(props.node.url))
+    const protocol = computed(() => url.value.protocol)
+    const hostname = computed(() => url.value.hostname)
+    const port = computed(() => url.value.port)
 
-    const computedResult = computed(() => {
-      const baseUrl = new URL(url.value)
-      const protocol = baseUrl.protocol
-      const hostname = baseUrl.hostname
-      const port = baseUrl.port
-      const result = /^[\d.]+$/.test(hostname)
+    const isIP = computed(() => /^[\d.]+$/.test(hostname.value))
 
-      let nodeName = null
+    const nodeHost = computed(() => {
+      let name = null
       let domain = null
 
-      if (result === false) {
+      if (!isIP.value) {
         const regex = /([^.]*)\.(.*)/
-        const parts = hostname.match(regex)
+        const parts = hostname.value.match(regex)
         if (parts !== null) {
-          nodeName = parts[1]
+          name = parts[1]
           domain = parts[2]
         }
       }
 
       return {
-        protocol,
-        hostname,
-        nodeName,
-        domain,
-        result,
-        port
+        name,
+        domain
       }
     })
 
     return {
       classes,
-      url,
-      computedResult
+      protocol,
+      hostname,
+      port,
+      isIP,
+      nodeHost
     }
   }
 }
