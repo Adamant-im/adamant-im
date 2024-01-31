@@ -88,6 +88,14 @@ const createSpecificActions = (api) => ({
   updateStatus(context) {
     if (!context.state.address) return
 
+    const coin = context.state.crypto
+
+    if (!shouldUpdate(() => context.rootGetters['wallets/getVisibility'](coin))) {
+      console.log(`%cDO NOT UPDATE GAS FOR ${coin}`, 'background: #444; color: #f00')
+      return
+    }
+    console.log(`%cUPDATE GAS FOR ${coin}`, 'background: #444; color: #0f0')
+
     // Balance
     void api
       .getClient()
