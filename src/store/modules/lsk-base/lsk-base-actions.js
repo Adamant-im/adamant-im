@@ -98,11 +98,13 @@ function createActions(options) {
       await lsk.assertAnyNodeOnline()
 
       // 2. Sign transaction offline
+      await context.dispatch('updateStatus') // fetch the most recent nonce
+      const nonce = context.state.nonce
       const signedTransaction = await account.createTransaction(
         address,
         amount,
         fee,
-        context.state.nonce,
+        nonce,
         textData
       )
 
@@ -110,7 +112,7 @@ function createActions(options) {
       await assertNoPendingTransaction(
         context.state.crypto,
         (hashLocal) => lskIndexer.isTransactionFinalized(hashLocal, context.state.address),
-        context.state.nonce
+        nonce
       )
 
       // 4. Send crypto transfer message to ADM blockchain (if ADM address provided)
@@ -138,7 +140,7 @@ function createActions(options) {
         recipientId: address,
         amount,
         fee,
-        nonce: context.state.nonce // convert BigInt to Number
+        nonce // convert BigInt to Number
       })
       await PendingTxStore.save(context.state.crypto, pendingTransaction)
       context.commit('transactions', [pendingTransaction])
