@@ -3,6 +3,7 @@ import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
 import { FetchStatus } from '@/lib/constants'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
+import shouldUpdate from '../../utils/coinUpdatesGuard'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 
@@ -71,7 +72,15 @@ function createActions(options) {
      */
     updateBalance: {
       root: true,
-      async handler({ commit }, payload = {}) {
+      async handler({ commit, rootGetters, state }, payload = {}) {
+        const coin = state.crypto
+
+        if (!shouldUpdate(() => rootGetters['wallets/getVisibility'](coin))) {
+          console.log(`%cDO NOT UPDATE BALANCE FOR ${coin}`, 'background: #444; color: #f00')
+          return
+        }
+        console.log(`%cUPDATE BALANCE FOR ${coin}`, 'background: #444; color: #0f0')
+
         if (payload.requestedByUser) {
           commit('setBalanceStatus', FetchStatus.Loading)
         }

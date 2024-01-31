@@ -4,6 +4,7 @@ import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
 import { AbiDecoder } from '@/lib/abi/abi-decoder'
+import shouldUpdate from '../../utils/coinUpdatesGuard'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -69,7 +70,15 @@ const parseTransaction = (context, tx) => {
 const createSpecificActions = (api) => ({
   updateBalance: {
     root: true,
-    async handler({ state, commit }, payload = {}) {
+    async handler({ commit, rootGetters, state }, payload = {}) {
+      const coin = state.crypto
+
+      if (!shouldUpdate(() => rootGetters['wallets/getVisibility'](coin))) {
+        console.log(`%cDO NOT UPDATE BALANCE FOR ${coin}`, 'background: #444; color: #f00')
+        return
+      }
+      console.log(`%cUPDATE BALANCE FOR ${coin}`, 'background: #444; color: #0f0')
+
       if (payload.requestedByUser) {
         commit('setBalanceStatus', FetchStatus.Loading)
       }
