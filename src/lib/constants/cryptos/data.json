@@ -429,7 +429,7 @@
   "GT": {
     "symbol": "GT",
     "name": "Gate",
-    "decimals": 8,
+    "decimals": 18,
     "contractId": "0xe66747a101bff2dba3697199dcce5b743b454759",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
