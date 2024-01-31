@@ -20,12 +20,12 @@
 
   <span v-if="nodeStatusDetail" :class="classes.statusText">
     <v-icon v-if="nodeStatusDetail.icon" :icon="nodeStatusDetail.icon" :size="12" />
-    {{ formattedNumber }}
+    {{ nodeStatusDetail.text }}
   </span>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, toRefs, computed } from 'vue'
+import { defineComponent, PropType, toRefs } from 'vue'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useNodeStatus } from '@/components/nodes/hooks'
 
@@ -53,12 +53,7 @@ export default defineComponent({
 
     const { nodeStatusTitle, nodeStatusDetail, nodeStatusColor } = useNodeStatus(node)
 
-    const formattedNumber = computed(() => {
-      return nodeStatusDetail.value.text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-    })
-
     return {
-      formattedNumber,
       nodeStatusTitle,
       nodeStatusDetail,
       nodeStatusColor,

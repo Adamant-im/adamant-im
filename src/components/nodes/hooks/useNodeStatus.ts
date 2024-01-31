@@ -44,7 +44,7 @@ function getNodeStatusDetail(
     }
   } else if (node.online) {
     return {
-      text: node.height,
+      text: node.height.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','),
       icon: 'mdi-cube-outline'
     }
   }
