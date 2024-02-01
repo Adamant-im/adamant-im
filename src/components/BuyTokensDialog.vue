@@ -57,13 +57,15 @@
 
           <v-list-item
             avatar
-            @click="openLink('https://nonkyc.io/market/ADM_USDT?ref=655b4df9eb13acde84677358')"
+            @click="
+              openLink('https://www.fameex.com/en-US/trade/adm-usdt/commissiondispense?code=MKKAWV')
+            "
           >
             <template #prepend>
-              <icon><nonkyc-icon /></icon>
+              <icon><fameex-icon /></icon>
             </template>
 
-            <v-list-item-title>NonKYC</v-list-item-title>
+            <v-list-item-title>FameEX</v-list-item-title>
           </v-list-item>
 
           <v-list-item
@@ -79,15 +81,13 @@
 
           <v-list-item
             avatar
-            @click="
-              openLink('https://www.fameex.com/en-US/trade/adm-usdt/commissiondispense?code=MKKAWV')
-            "
+            @click="openLink('https://nonkyc.io/market/ADM_USDT?ref=655b4df9eb13acde84677358')"
           >
             <template #prepend>
-              <icon><fameex-icon /></icon>
+              <icon><nonkyc-icon /></icon>
             </template>
 
-            <v-list-item-title>FameEX</v-list-item-title>
+            <v-list-item-title>NonKYC</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-card-text>
