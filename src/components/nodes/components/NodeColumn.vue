@@ -2,6 +2,7 @@
   <td
     :class="{
       [classes.root]: true,
+      [classes.ping]: ping,
       [classes.checkbox]: checkbox,
       [classes.alignRight]: align === 'right',
       [classes.alignCenter]: align === 'center'
@@ -17,6 +18,7 @@ import { defineComponent, PropType } from 'vue'
 const className = 'node-column'
 const classes = {
   root: className,
+  ping: `${className}--ping`,
   checkbox: `${className}--checkbox`,
   alignRight: `${className}--align-right`,
   alignCenter: `${className}--align-center`
@@ -28,6 +30,9 @@ export default defineComponent({
      * Indicates that the column is used to display a checkbox component
      */
     checkbox: {
+      type: Boolean
+    },
+    ping: {
       type: Boolean
     },
     align: {
@@ -49,12 +54,15 @@ export default defineComponent({
 .node-column {
   font-size: 14px;
   padding-left: 0 !important;
-  padding-right: 8px !important;
+  padding-right: 24px !important;
 
   &--checkbox {
     width: 64px;
     max-width: 64px;
     padding-right: 0 !important;
+  }
+  &--ping {
+    padding-right: 8px !important;
   }
 
   &--align-right {

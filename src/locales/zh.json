@@ -170,6 +170,7 @@
     "ms": "ms",
     "nodeLabelDescription": "支持去中心化并提高隐私级别--<a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">运行您自己的ADAMANT节点</a>。若要将节点添加到列表中，您需要<a target=\"_blank\"href=\"https://github.com/Adamant-im/adamant-im/\">在单独的域上部署web应用程序</a>。此限制指的是内容安全策略（CSP）。",
     "offline": "脱机",
+    "coin": "硬币",
     "ping": "Ping",
     "socket": "套接字",
     "unsupported": "不受欢迎",

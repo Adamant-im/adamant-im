@@ -13,7 +13,7 @@
       <NodeVersion v-if="node.version" :node="node" />
     </NodeColumn>
 
-    <NodeColumn :colspan="isUnsupported ? 2 : 1">
+    <NodeColumn ping :colspan="isUnsupported ? 2 : 1">
       <NodeStatus :node="node" />
     </NodeColumn>
   </tr>
