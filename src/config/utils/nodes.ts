@@ -3,7 +3,7 @@ import { BlockchainSymbol } from './types'
 import config from '../index'
 
 export function getNodes(blockchain: BlockchainSymbol): NodeInfo[] {
-  const nodes = config[blockchain]['nodes']
+  const nodes = config[blockchain]['nodes']['list']
 
   return nodes
 }

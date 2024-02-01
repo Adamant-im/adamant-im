@@ -47,6 +47,7 @@
 <script>
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import NodesTable from '@/components/nodes/NodesTable.vue'
+import { nodesManager } from '@/lib/nodes'
 
 export default {
   components: {
@@ -83,12 +84,11 @@ export default {
   },
   mounted() {
     this.$store.dispatch('nodes/updateStatus')
-    this.timer = setInterval(() => {
-      this.$store.dispatch('nodes/updateStatus')
-    }, 10000)
+
+    nodesManager.updateHealthcheckInterval('onScreen')
   },
   beforeUnmount() {
-    clearInterval(this.timer)
+    nodesManager.updateHealthcheckInterval('normal')
   }
 }
 </script>

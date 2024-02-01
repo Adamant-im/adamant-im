@@ -1,10 +1,17 @@
+import { NodeType } from '@/lib/nodes/types'
+import { getNodeHealthcheckConfig } from './getHealthcheckConfig'
+
 /**
  * Allowed height delta for the nodes.
  *
  * If two nodes' heights differ by no more than this value,
  * they are considered to be in sync with each other.
  */
-const HEIGHT_EPSILON = 10
+function getHeightEpsilon(nodeType: NodeType): number {
+  const config = getNodeHealthcheckConfig(nodeType)
+
+  return config.threshold
+}
 
 interface Node {
   height: number
@@ -20,7 +27,7 @@ type GroupNodes<N extends Node> = {
  * height (considering HEIGHT_EPSILON). These nodes are considered to be in sync with the network,
  * all the others are not.
  */
-export function filterSyncedNodes<N extends Node>(nodes: N[]): GroupNodes<N> {
+export function filterSyncedNodes<N extends Node>(nodes: N[], type: NodeType): GroupNodes<N> {
   if (nodes.length === 0) {
     return {
       height: 0,
@@ -28,13 +35,15 @@ export function filterSyncedNodes<N extends Node>(nodes: N[]): GroupNodes<N> {
     }
   }
 
+  const heightEpsilon = getHeightEpsilon(type)
+
   // For each node we take its height and list of nodes that have the same height ± epsilon
   const groups = nodes.map((node) => {
     return {
       /** In case of "win" this height will be considered to be real height of the network */
       height: node.height,
       /** List of nodes with the same (or close) height, including current one */
-      nodes: nodes.filter((x) => Math.abs(node.height - x.height) <= HEIGHT_EPSILON)
+      nodes: nodes.filter((x) => Math.abs(node.height - x.height) <= heightEpsilon)
     }
   })
 
