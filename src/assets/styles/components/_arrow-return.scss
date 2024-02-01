@@ -1,16 +1,16 @@
 @import '../themes/adamant/_mixins.scss';
 
-.arrowReturn {
+.arrow-return {
   @include a-text-explanation();
 }
 
 .v-theme--light {
-  .arrowReturn {
+  .arrow-return {
     opacity: 0.7;
   }
 }
 .v-theme--dark {
-  .arrowReturn {
+  .arrow-return {
     opacity: 0.6;
   }
 }
