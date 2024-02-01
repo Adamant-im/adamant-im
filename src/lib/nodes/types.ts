@@ -6,3 +6,6 @@ export type NodeStatus =
   | 'unsupported_version' // node version is too low
 
 export type NodeType = 'adm' | 'eth' | 'btc' | 'doge' | 'dash' | 'lsk'
+export type NodeKind = 'node' | 'service'
+
+export type HealthcheckInterval = 'normal' | 'crucial' | 'onScreen'

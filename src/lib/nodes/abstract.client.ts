@@ -1,4 +1,4 @@
-import type { NodeType } from '@/lib/nodes/types'
+import type { HealthcheckInterval, NodeType } from '@/lib/nodes/types'
 import { AllNodesOfflineError } from './utils/errors'
 import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
@@ -47,6 +47,12 @@ export abstract class Client<N extends Node> {
   checkHealth() {
     for (const node of this.nodes) {
       void node.startHealthcheck()
+    }
+  }
+
+  updateHealthCheckInterval(interval: HealthcheckInterval) {
+    for (const node of this.nodes) {
+      void node.updateHealthCheckInterval(interval)
     }
   }
 
@@ -150,7 +156,7 @@ export abstract class Client<N extends Node> {
   protected updateSyncStatuses() {
     const nodes = this.nodes.filter((x) => x.online && x.active)
 
-    const nodesInSync = filterSyncedNodes(nodes)
+    const nodesInSync = filterSyncedNodes(nodes, this.type)
 
     // Finally, all the nodes from the winner list are considered to be in sync, all the
     // others are not

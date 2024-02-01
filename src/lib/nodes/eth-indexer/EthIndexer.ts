@@ -11,7 +11,7 @@ export class EthIndexer extends Node {
   client: AxiosInstance
 
   constructor(url: string) {
-    super(url, NODE_LABELS.EthIndexer)
+    super(url, 'eth', 'service', NODE_LABELS.EthIndexer)
 
     this.client = axios.create({ baseURL: url })
 
