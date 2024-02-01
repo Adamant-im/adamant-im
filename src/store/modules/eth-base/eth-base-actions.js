@@ -6,6 +6,7 @@ import adm from '../../../lib/nodes/adm'
 import ethIndexer from '../../../lib/nodes/eth-indexer'
 import {
   assertNoPendingTransaction,
+  invalidatePendingTransaction,
   createPendingTransaction,
   PendingTxStore
 } from '../../../lib/pending-transactions'
@@ -81,21 +82,30 @@ export default function createActions(config) {
       }
       await api.assertAnyNodeOnline()
 
-      // 2. Sign transaction offline
-      const unsignedTransaction = await initTransaction(api, context, address, amount, increaseFee)
+      // 2. Invalidate previous pending transaction if finalized
+      await invalidatePendingTransaction(context.state.crypto, (hashLocal) =>
+        api.isTransactionFinalized(hashLocal)
+      )
+
+      // 3. Ensure there is no pending transaction
+      const nonce = await api.getNonce(context.state.address)
+      await assertNoPendingTransaction(context.state.crypto, nonce)
+
+      // 4. Sign transaction offline
+      const unsignedTransaction = await initTransaction(
+        api,
+        context,
+        address,
+        amount,
+        nonce,
+        increaseFee
+      )
       const signedTransaction = await signTransaction(
         TransactionFactory.fromTxData(unsignedTransaction),
         context.state.privateKey
       )
 
-      // 3. Ensure there is no pending transaction
-      await assertNoPendingTransaction(
-        context.state.crypto,
-        (hashLocal) => api.isTransactionFinalized(hashLocal),
-        unsignedTransaction.nonce
-      )
-
-      // 4. Send crypto transfer message to ADM blockchain (if ADM address provided)
+      // 5. Send crypto transfer message to ADM blockchain (if ADM address provided)
       if (admAddress) {
         const msgPayload = {
           address: admAddress,
@@ -114,7 +124,7 @@ export default function createActions(config) {
         }
       }
 
-      // 5. Save pending transaction
+      // 6. Save pending transaction
       const pendingTransaction = createPendingTransaction({
         hash: signedTransaction.transactionHash,
         senderId: context.state.address,
@@ -126,7 +136,7 @@ export default function createActions(config) {
       await PendingTxStore.save(context.state.crypto, pendingTransaction)
       context.commit('transactions', [pendingTransaction])
 
-      // 6. Send signed transaction to ETH blockchain
+      // 7. Send signed transaction to ETH blockchain
       try {
         /**
          * @type {import('web3-types').TransactionReceipt}

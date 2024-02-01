@@ -5,6 +5,7 @@ import adm from '../../../lib/nodes/adm'
 import {
   assertNoPendingTransaction,
   createPendingTransaction,
+  invalidatePendingTransaction,
   PendingTxStore
 } from '../../../lib/pending-transactions'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
@@ -97,9 +98,17 @@ function createActions(options) {
       }
       await lsk.assertAnyNodeOnline()
 
-      // 2. Sign transaction offline
+      // 2. Invalidate previous pending transaction if finalized
+      await invalidatePendingTransaction(context.state.crypto, (hashLocal) =>
+        lskIndexer.isTransactionFinalized(hashLocal, context.state.address)
+      )
+
+      // 3. Ensure there is no pending transaction
       await context.dispatch('updateStatus') // fetch the most recent nonce
       const nonce = context.state.nonce
+      await assertNoPendingTransaction(context.state.crypto, nonce)
+
+      // 4. Sign transaction offline
       const signedTransaction = await account.createTransaction(
         address,
         amount,
@@ -108,14 +117,7 @@ function createActions(options) {
         textData
       )
 
-      // 3. Ensure there is no pending transaction
-      await assertNoPendingTransaction(
-        context.state.crypto,
-        (hashLocal) => lskIndexer.isTransactionFinalized(hashLocal, context.state.address),
-        nonce
-      )
-
-      // 4. Send crypto transfer message to ADM blockchain (if ADM address provided)
+      // 5. Send crypto transfer message to ADM blockchain (if ADM address provided)
       if (admAddress && !dryRun) {
         const msgPayload = {
           address: admAddress,
@@ -133,7 +135,7 @@ function createActions(options) {
         }
       }
 
-      // 5. Save pending transaction
+      // 6. Save pending transaction
       const pendingTransaction = createPendingTransaction({
         hash: signedTransaction.id,
         senderId: context.state.address,
@@ -145,7 +147,7 @@ function createActions(options) {
       await PendingTxStore.save(context.state.crypto, pendingTransaction)
       context.commit('transactions', [pendingTransaction])
 
-      // 6. Send signed transaction to ETH blockchain
+      // 7. Send signed transaction to ETH blockchain
       try {
         const hash = await lsk.sendTransaction(signedTransaction.hex, dryRun)
 

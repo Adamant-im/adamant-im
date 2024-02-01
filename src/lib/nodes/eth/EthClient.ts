@@ -70,4 +70,8 @@ export class EthClient extends Client<EthNode> {
         .on('error', reject)
     })
   }
+
+  getNonce(address: string) {
+    return this.getNode().client.getTransactionCount(address)
+  }
 }
