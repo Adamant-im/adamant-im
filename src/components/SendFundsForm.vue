@@ -186,6 +186,7 @@
 </template>
 
 <script>
+import { adm } from '@/lib/nodes'
 import lskIndexer from '@/lib/nodes/lsk-indexer'
 import { AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { PendingTransactionError } from '@/lib/pending-transactions'
@@ -761,7 +762,7 @@ export default {
           this.dialog = false
         })
     },
-    sendFunds() {
+    async sendFunds() {
       if (this.currency === Cryptos.ADM) {
         let promise
         // 1. if come from Chat then sendMessage
@@ -777,6 +778,7 @@ export default {
               })
             : this.comment
 
+          adm.assertAnyNodeOnline()
           promise = sendMessage({
             amount: this.amount,
             message: asset,
