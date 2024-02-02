@@ -67,8 +67,13 @@
           :class="['a-text-explanation-enlarged-bold', `${className}__subtitle`]"
         >
           <template v-if="isOutgoingTransaction">
-            <v-icon v-if="transaction.isReply && isConfirmed" icon="mdi-arrow-left-top" size="15" />
-            <v-icon v-else :icon="statusIcon" size="15" />
+            <v-icon
+              v-if="transaction.isReply && isConfirmed"
+              icon="mdi-arrow-left-top"
+              size="15"
+              class="mr-1"
+            />
+            <v-icon v-else :icon="statusIcon" size="15" class="mr-1" />
           </template>
 
           <span v-html="lastMessageTextNoFormats"></span>

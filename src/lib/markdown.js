@@ -57,16 +57,16 @@ export function renderMarkdown(text = '') {
  */
 export function removeFormats(text = '') {
   const node = document.createElement('div')
-  const textWithSumbol = text.replace(/\n/g, '↵ ')
-  node.innerHTML = marked(DOMPurify.sanitize(textWithSumbol), { renderer })
+  const textWithSymbol = text.replace(/\n/g, '↵ ')
+  node.innerHTML = marked(DOMPurify.sanitize(textWithSymbol), { renderer })
 
   return node.textContent || node.innerText || ''
 }
 
 export function formatMessage(text = '') {
   const node = document.createElement('div')
-  const textWithSumbol = text.replace(/\n/g, '↵ ')
-  node.innerHTML = marked(DOMPurify.sanitize(textWithSumbol), { renderer })
+  const textWithSymbol = text.replace(/\n/g, '↵ ')
+  node.innerHTML = marked(DOMPurify.sanitize(textWithSymbol), { renderer })
 
   const textWithoutHtml = node.textContent || node.innerText || ''
   const styledText = textWithoutHtml.replace(/↵/g, '<span class="arrow-return">↵</span>')
