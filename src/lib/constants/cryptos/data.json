@@ -471,7 +471,7 @@
     "cryptoTransferDecimals": 6,
     "defaultVisibility": true,
     "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 100,
+    "defaultOrdinalLevel": 97,
     "status": "active",
     "mainCoin": "ETH",
     "type": "ERC20",
