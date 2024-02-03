@@ -164,7 +164,6 @@ async function updateConfig(configs, configName) {
     configFile[configKey].explorer = config.explorer
     configFile[configKey].explorerTx = config.explorerTx
     configFile[configKey].explorerAddress = config.explorerAddress
-    configFile[configKey].minNodeVersion = config.minNodeVersion
     configFile[configKey].nodes = config.nodes
     configFile[configKey].services = config.services
   }
