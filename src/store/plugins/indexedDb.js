@@ -162,8 +162,6 @@ export default (store) => {
     store.dispatch('afterLogin', Base64.decode(store.state.passphrase))
   }
 
-  store.dispatch('wallets/checkWalletsOrderBeforeInit')
-
   store.subscribe((mutation, state) => {
     // start sync if state has been saved to IDB
     if (state.IDBReady && store.getters['options/isLoginViaPassword']) {
