@@ -6,7 +6,7 @@
 
     <NodeColumn>
       <NodeUrl :node="node" />
-      <NodeVersion v-if="node.version" :node="node" />
+      <NodeVersion v-if="node.version && active" :node="node" />
     </NodeColumn>
 
     <NodeColumn :colspan="!showSocketColumn ? 2 : 1">

@@ -54,7 +54,7 @@ export default defineComponent({
 .node-column {
   font-size: 14px;
   padding-left: 0 !important;
-  padding-right: 24px !important;
+  padding-right: 8px !important;
 
   &--checkbox {
     width: 64px;

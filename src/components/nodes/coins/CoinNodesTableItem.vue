@@ -10,7 +10,7 @@
 
     <NodeColumn>
       <NodeUrl :node="node" />
-      <NodeVersion v-if="node.version" :node="node" />
+      <NodeVersion v-if="node.version && active" :node="node" />
     </NodeColumn>
 
     <NodeColumn ping :colspan="isUnsupported ? 2 : 1">
