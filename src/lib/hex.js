@@ -3,7 +3,7 @@
  * @param {string} hexString hex string
  * @returns {Uint8Array}
  */
-export function hexToBytes (hexString = '') {
+export function hexToBytes(hexString = '') {
   const bytes = []
 
   for (let c = 0; c < hexString.length; c += 2) {
@@ -18,12 +18,12 @@ export function hexToBytes (hexString = '') {
  * @param {Array<number>|Uint8Array} bytes bytes array
  * @returns {string}
  */
-export function bytesToHex (bytes = []) {
+export function bytesToHex(bytes = []) {
   const hex = []
 
-  bytes.forEach(b => {
+  bytes.forEach((b) => {
     hex.push((b >>> 4).toString(16))
-    hex.push((b & 0xF).toString(16))
+    hex.push((b & 0xf).toString(16))
   })
 
   return hex.join('')

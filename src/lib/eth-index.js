@@ -3,7 +3,7 @@ import axios from 'axios'
 import config from '../config'
 import * as utils from './eth-utils'
 
-const cache = { }
+const cache = {}
 
 /**
  * @typedef {Object} EthTx
@@ -36,7 +36,7 @@ const cache = { }
  * @param {Request} options request options
  * @returns {Promise<{total: number, items: Array<EthTx>}>}
  */
-export function getTransactions (options) {
+export function getTransactions(options) {
   const { address, contract, from, to, limit, decimals } = options
 
   const filters = []
@@ -47,10 +47,7 @@ export function getTransactions (options) {
       `or(txfrom.eq.${address},contract_to.eq.000000000000000000000000${address.replace('0x', '')})`
     )
   } else {
-    filters.push(
-      'contract_to.eq.',
-      `or(txfrom.eq.${address},txto.eq.${address})`
-    )
+    filters.push('contract_to.eq.', `or(txfrom.eq.${address},txto.eq.${address})`)
   }
 
   if (from) {
@@ -85,10 +82,10 @@ export function getTransactions (options) {
 
         return {
           total,
-          items: data.map(x => parseTxFromIndex(x, decimals))
+          items: data.map((x) => parseTxFromIndex(x, decimals))
         }
       },
-      error => {
+      (error) => {
         delete cache[filterString]
         return Promise.reject(error)
       }
@@ -102,13 +99,13 @@ export function getTransactions (options) {
  * Parses the content range to extract the total count of records
  * @param {string} range range to parse
  */
-function getTotalFromRange (range = '') {
+function getTotalFromRange(range = '') {
   const index = range.indexOf('/')
-  return (index >= 0) ? Number(range.substr(index + 1)) : NaN
+  return index >= 0 ? Number(range.substr(index + 1)) : NaN
 }
 
-function getUrl () {
-  const nodes = config.eth.nodes.filter(x => x.hasIndex).map(x => x.url)
+function getUrl() {
+  const nodes = config.eth.nodes.list.filter((x) => x.hasIndex).map((x) => x.url)
   const index = Math.floor(Math.random() * nodes.length)
   return nodes[index] + '/ethtxs'
 }
@@ -117,16 +114,12 @@ function getUrl () {
  * Parses ETH index entry.
  * @param {EthTx} tx entry
  */
-function parseTxFromIndex (tx, decimals) {
+function parseTxFromIndex(tx, decimals) {
   const hash = tx.txhash.replace(/^.*x/, '0x').toLowerCase()
 
-  const recipientId = tx.contract_to
-    ? '0x' + tx.contract_to.substr(-40)
-    : tx.txto.toLowerCase()
+  const recipientId = tx.contract_to ? '0x' + tx.contract_to.substr(-40) : tx.txto.toLowerCase()
 
-  const value = tx.contract_value
-    ? parseInt(tx.contract_value, 16)
-    : tx.value
+  const value = tx.contract_value ? parseInt(tx.contract_value, 16) : tx.value
 
   return {
     id: hash,

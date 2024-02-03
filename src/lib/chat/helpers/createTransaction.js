@@ -1,3 +1,5 @@
+import { TransactionStatus as TS } from '@/lib/constants'
+
 /**
  * Create a transaction object with uniq ID.
  * @param {number} transactionId

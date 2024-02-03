@@ -4,7 +4,7 @@
 import { describe, it, expect } from 'vitest'
 import Web3Eth from 'web3-eth'
 
-import { toEther, toWei, getAccountFromPassphrase } from '@/lib/eth-utils'
+import { toEther, toWei, getAccountFromPassphrase, increaseFee } from '@/lib/eth-utils'
 
 describe('eth-utils', () => {
   describe('toEther', () => {
@@ -50,6 +50,20 @@ describe('eth-utils', () => {
       expect(getAccountFromPassphrase(passphrase)).toEqual({
         privateKey: '0x344854fa2184c252bdcc09daf8fe7fbcc960aed8f4da68de793f9fbc50b5a686'
       })
+    })
+  })
+
+  describe('increaseFee', () => {
+    it('should multiply `gasLimit` as a number', () => {
+      expect(increaseFee(21000, 2)).toBe(BigInt(42000))
+    })
+
+    it('should multiply `gasLimit` as a bigint', () => {
+      expect(increaseFee(BigInt(21000), 2)).toBe(BigInt(42000))
+    })
+
+    it('should round the result before converting to bigint', () => {
+      expect(increaseFee(BigInt(21001), 1.5)).toBe(BigInt(31502))
     })
   })
 })

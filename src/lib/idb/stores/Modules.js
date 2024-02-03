@@ -4,7 +4,7 @@ import { encrypt, decrypt } from '../crypto'
 const storeName = 'common'
 
 export default {
-  async getAll () {
+  async getAll() {
     try {
       const db = await dbPromise
       const rows = await db.transaction(storeName).objectStore(storeName).getAll()
@@ -20,7 +20,7 @@ export default {
     }
   },
 
-  async set ({ name, value }) {
+  async set({ name, value }) {
     try {
       const db = await dbPromise
       const tx = db.transaction(storeName, 'readwrite')
@@ -36,7 +36,7 @@ export default {
     }
   },
 
-  async saveAll (modules) {
+  async saveAll(modules) {
     try {
       const db = await dbPromise
       const tx = db.transaction(storeName, 'readwrite')
@@ -54,7 +54,7 @@ export default {
     }
   },
 
-  async clear () {
+  async clear() {
     const db = await dbPromise
     const tx = db.transaction(storeName, 'readwrite')
 

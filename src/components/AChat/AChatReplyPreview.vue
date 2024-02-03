@@ -92,8 +92,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../../assets/styles/settings/_colors.scss';
-@import '../../assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
 
 $message-max-lines: 2;
 

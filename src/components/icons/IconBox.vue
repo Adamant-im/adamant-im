@@ -11,7 +11,7 @@
 import { ref } from 'vue'
 
 export default {
-  setup () {
+  setup() {
     const className = ref('icon-box')
 
     return {

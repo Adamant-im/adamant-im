@@ -1,6 +1,14 @@
 <template>
   <v-toolbar flat height="56" :class="`${className}`" color="transparent">
     <v-btn icon @click="goBack">
+      <v-badge
+        v-if="numOfNewMessages > 0"
+        :value="numOfNewMessages"
+        color="primary"
+        :class="`${className}__messages-counter`"
+        :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
+      >
+      </v-badge>
       <v-icon icon="mdi-arrow-left" />
     </v-btn>
     <div v-if="!isWelcomeChat(partnerId)">
@@ -33,14 +41,10 @@
 </template>
 
 <script>
-import ChatAvatar from '@/components/Chat/ChatAvatar'
 import partnerName from '@/mixins/partnerName'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 
 export default {
-  components: {
-    ChatAvatar
-  },
   mixins: [partnerName],
   props: {
     partnerId: {
@@ -61,6 +65,9 @@ export default {
           displayName: value
         })
       }
+    },
+    numOfNewMessages() {
+      return this.$store.getters['chat/numWithoutTheCurrentChat'](this.partnerId)
     }
   },
   data: () => ({
@@ -87,14 +94,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
 @import 'vuetify/settings';
-@import '../../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .chat-toolbar {
   flex-grow: 0;
   flex-shrink: 0;
 
+  &__messages-counter {
+    position: relative;
+    top: -14px;
+    left: -2px;
+  }
   &__textfield-container {
     width: 100%;
   }

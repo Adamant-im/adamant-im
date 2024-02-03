@@ -1,22 +1,29 @@
-import apiClient from '../../../lib/adamant-api-client'
+import { nodes } from '@/lib/nodes'
 
-export default store => {
+export default (store) => {
   // initial nodes state
-  apiClient.getNodes().forEach(node => store.commit('nodes/status', node))
+  for (const [nodeType, client] of Object.entries(nodes)) {
+    client.getNodes().forEach((status) => store.commit('nodes/status', { status, nodeType }))
 
-  apiClient.updateStatus()
+    client.onStatusUpdate((status) => {
+      store.commit('nodes/status', { status, nodeType })
+    })
+  }
+  store.commit('nodes/useFastest', nodes.adm.useFastest)
 
-  store.subscribe(mutation => {
-    if (mutation.type === 'nodes/useFastest') {
-      apiClient.useFastest = !!mutation.payload
+  store.subscribe((mutation) => {
+    const { type, payload } = mutation
+
+    if (type === 'nodes/useFastest') {
+      nodes.adm.setUseFastest(!!mutation.payload)
     }
 
-    if (mutation.type === 'nodes/toggle') {
-      apiClient.toggleNode(mutation.payload.url, mutation.payload.active)
-    }
-  })
+    if (type === 'nodes/toggle') {
+      const newStatus = nodes.adm.toggleNode(payload.url, payload.active)
 
-  apiClient.onStatusUpdate(status => {
-    store.commit('nodes/status', status)
+      if (newStatus) {
+        store.commit('nodes/status', { status: newStatus, nodeType: 'adm' })
+      }
+    }
   })
 }

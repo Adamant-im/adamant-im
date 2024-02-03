@@ -10,14 +10,14 @@ const updateRouteScrollPosition = throttle(function () {
 }, 500)
 
 export default {
-  created () {
+  created() {
     window.addEventListener('scroll', this.$_handleScroll)
   },
-  beforeUnmount () {
+  beforeUnmount() {
     window.removeEventListener('scroll', this.$_handleScroll)
   },
   methods: {
-    $_handleScroll () {
+    $_handleScroll() {
       updateRouteScrollPosition.call(this)
     }
   }

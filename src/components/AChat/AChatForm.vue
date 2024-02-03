@@ -7,6 +7,7 @@
     <v-textarea
       ref="messageTextarea"
       v-model="message"
+      @input="onInput"
       :placeholder="label"
       hide-details
       single-line
@@ -43,6 +44,10 @@ import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 export default {
   components: { ChatEmojis },
   props: {
+    partnerId: {
+      default: '',
+      type: String
+    },
     messageText: {
       default: '',
       type: String
@@ -133,6 +138,12 @@ export default {
     }
   },
   methods: {
+    onInput: function () {
+      this.$store.commit('draftMessage/saveMessage', {
+        message: this.message,
+        partnerId: this.partnerId
+      })
+    },
     emojiPicture(emoji) {
       const caretPosition = this.$refs.messageTextarea.selectionStart
 
@@ -159,6 +170,10 @@ export default {
       if (error === false) {
         this.$emit('message', this.message)
         this.message = ''
+        this.$store.commit('draftMessage/deleteMessage', {
+          message: this.message,
+          partnerId: this.partnerId
+        })
       } else {
         this.$emit('error', error)
       }
@@ -182,7 +197,7 @@ export default {
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import '../../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 /**
  * 1. Limit height of message form.

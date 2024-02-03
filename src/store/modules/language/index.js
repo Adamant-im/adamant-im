@@ -1,15 +1,15 @@
 import dayjs from 'dayjs'
-import { i18n } from '@/i18n'
+import { i18n, DEFAULT_LOCALE } from '@/i18n'
 
-const locales = ['de', 'en', 'ru']
+const locales = ['de', 'en', 'ru', 'zh']
 
 const state = () => ({
-  currentLocale: 'en'
+  currentLocale: DEFAULT_LOCALE
 })
 
 const mutations = {
-  changeLocale (state, locale) {
-    const newLocale = locales.find(value => value === locale)
+  changeLocale(state, locale) {
+    const newLocale = locales.find((value) => value === locale)
 
     if (newLocale) {
       state.currentLocale = newLocale
@@ -20,7 +20,7 @@ const mutations = {
 }
 
 const actions = {
-  changeLocale ({ commit }, locale) {
+  changeLocale({ commit }, locale) {
     commit('changeLocale', locale)
   }
 }

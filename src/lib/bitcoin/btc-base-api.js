@@ -1,8 +1,6 @@
 import * as bitcoin from 'bitcoinjs-lib'
-import axios from 'axios'
 
 import networks from './networks'
-import { getRandomNodeUrl } from '@/config/utils'
 import BigNumber from '../bignumber'
 import { isPositiveNumber } from '@/lib/numericHelpers'
 import { CryptosInfo } from '../constants'
@@ -18,17 +16,6 @@ const getUnique = (values) => {
     return m
   }, {})
   return Object.keys(map)
-}
-
-const createClient = (url) => {
-  const client = axios.create({ baseURL: url })
-  client.interceptors.response.use(null, (error) => {
-    if (error.response && Number(error.response.status) >= 500) {
-      console.error('Request failed', error)
-    }
-    return Promise.reject(error)
-  })
-  return client
 }
 
 export function getAccount(crypto, passphrase) {
@@ -50,7 +37,6 @@ export default class BtcBaseApi {
     this._network = account.network
     this._keyPair = account.keyPair
     this._address = account.address
-    this._clients = {}
     this._crypto = crypto
   }
 
@@ -91,7 +77,7 @@ export default class BtcBaseApi {
       unspent.txHex = await this.getTransactionHex(unspent.txid)
     }
 
-    const hex = this._buildTransaction(address, amount, unspents, fee)
+    const hex = await this.buildTransaction(address, amount, unspents, fee)
 
     let txid = bitcoin.crypto.sha256(Buffer.from(hex, 'hex'))
     txid = bitcoin.crypto.sha256(Buffer.from(txid))
@@ -105,7 +91,7 @@ export default class BtcBaseApi {
    * @abstract
    * @param {string} txHex raw transaction as a HEX literal
    */
-  sendTransaction(txHex) {
+  sendTransaction(_txHex) {
     return Promise.resolve('')
   }
 
@@ -115,11 +101,11 @@ export default class BtcBaseApi {
    * @param {*} txid transaction ID
    * @returns {Promise<object>}
    */
-  getTransaction(txid) {
+  getTransaction(_txid) {
     return Promise.resolve(null)
   }
 
-  getTransactionHex(txid) {
+  getTransactionHex(_txid) {
     return Promise.resolve(null)
   }
 
@@ -129,7 +115,7 @@ export default class BtcBaseApi {
    * @param {any} options crypto-specific options
    * @returns {Promise<{hasMore: boolean, items: Array}>}
    */
-  getTransactions(options) {
+  getTransactions(_options) {
     return Promise.resolve({ hasMore: false, items: [] })
   }
 
@@ -150,7 +136,7 @@ export default class BtcBaseApi {
    * @param {number} fee transaction fee in primary units (BTC, DOGE, DASH, etc)
    * @returns {string}
    */
-  _buildTransaction(address, amount, unspents, fee) {
+  buildTransaction(address, amount, unspents, fee) {
     amount = new BigNumber(amount).times(this.multiplier).toNumber()
     amount = Math.floor(amount)
 
@@ -198,15 +184,6 @@ export default class BtcBaseApi {
     const tx = txb.extractTransaction()
 
     return tx.toHex()
-  }
-
-  /** Picks a client for a random API endpoint */
-  _getClient() {
-    const url = getRandomNodeUrl(this._crypto.toLowerCase())
-    if (!this._clients[url]) {
-      this._clients[url] = createClient(url)
-    }
-    return this._clients[url]
   }
 
   _mapTransaction(tx) {

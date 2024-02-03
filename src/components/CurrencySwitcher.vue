@@ -13,11 +13,7 @@
     </template>
 
     <v-list>
-      <v-list-item
-        v-for="(currency, idx) in currencies"
-        :key="idx"
-        @click="onSelect(idx)"
-      >
+      <v-list-item v-for="(currency, idx) in currencies" :key="idx" @click="onSelect(idx)">
         <v-list-item-title>{{ currency }}</v-list-item-title>
       </v-list-item>
     </v-list>
@@ -40,15 +36,15 @@ export default defineComponent({
       default: ''
     }
   },
-  setup () {
+  setup() {
     const store = useStore()
     const currencies = RatesNames
 
     const currentCurrency = computed({
-      get () {
+      get() {
         return store.state.options.currentRate
       },
-      set (value) {
+      set(value) {
         store.commit('options/updateOption', {
           key: 'currentRate',
           value
@@ -71,7 +67,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .btn {
   text-transform: capitalize;
@@ -85,7 +81,7 @@ export default defineComponent({
     }
   }
 
-  &[aria-expanded="true"] {
+  &[aria-expanded='true'] {
     :deep(.v-icon) {
       transform: rotate(90deg);
     }

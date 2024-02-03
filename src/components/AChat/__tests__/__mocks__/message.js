@@ -13,15 +13,15 @@ const partner = {
   pic: '/images/morty.png'
 }
 
-function randomDate (start, end) {
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+function randomDate(start, end) {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
 }
 
-function randomTimestamp (startDate) {
+function randomTimestamp(startDate) {
   return randomDate(startDate, new Date()).getTime()
 }
 
-function randomMessage () {
+function randomMessage() {
   return loremIpsum({
     count: 1,
     units: 'sentences',
@@ -34,15 +34,15 @@ function randomMessage () {
   })
 }
 
-function randomInt (min, max) {
+function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-function randomAmountADM (min, max) {
+function randomAmountADM(min, max) {
   return randomInt(min * 100000000, max * 100000000)
 }
 
-function createOneMessage () {
+function createOneMessage() {
   return {
     id: uuidv4(),
     type: 'message',
@@ -52,7 +52,7 @@ function createOneMessage () {
   }
 }
 
-function createOneTransaction () {
+function createOneTransaction() {
   return {
     id: uuidv4(),
     type: 'transaction',
@@ -64,7 +64,7 @@ function createOneTransaction () {
   }
 }
 
-function createRandomMessages (count) {
+function createRandomMessages(count) {
   let messages = []
   let abstract = null
 
@@ -83,9 +83,4 @@ function createRandomMessages (count) {
 
 const messages = createRandomMessages(100)
 
-export {
-  createRandomMessages,
-  createOneMessage,
-  messages,
-  user
-}
+export { createRandomMessages, createOneMessage, messages, user }

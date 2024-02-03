@@ -1,5 +1,6 @@
 import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
+import { dash } from '@/lib/nodes/dash'
 
 class DashApiError extends Error {
   constructor(method, error) {
@@ -93,7 +94,8 @@ export default class DashApi extends BtcBaseApi {
    * @returns {Promise<any>} method result
    */
   _invoke(method, params) {
-    return this._getClient()
+    return dash
+      .getClient()
       .post('/', { method, params })
       .then(({ data }) => {
         if (data.error) throw new DashApiError(method, data.error)
@@ -102,7 +104,8 @@ export default class DashApi extends BtcBaseApi {
   }
 
   _invokeMany(calls) {
-    return this._getClient()
+    return dash
+      .getClient()
       .post('/', calls)
       .then((response) => response.data)
   }

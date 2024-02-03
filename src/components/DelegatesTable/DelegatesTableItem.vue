@@ -32,8 +32,8 @@
 import { computed, reactive } from 'vue'
 import { useStore } from 'vuex'
 
-import DelegateVoteCheckbox from '@/components/DelegatesTable/DelegateVoteCheckbox'
-import DelegateDetailsExpander from '@/components/DelegatesTable/DelegateDetailsExpander'
+import DelegateVoteCheckbox from '@/components/DelegatesTable/DelegateVoteCheckbox.vue'
+import DelegateDetailsExpander from '@/components/DelegatesTable/DelegateDetailsExpander.vue'
 
 const emits = {
   updateDetailsExpanded: 'update:detailsExpanded'
@@ -99,8 +99,8 @@ export default {
 
 <style lang="scss">
 @import 'vuetify/settings';
-@import '../../assets/styles/settings/_colors.scss';
-@import '../../assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
 
 .delegates-table-item {
   &__td {

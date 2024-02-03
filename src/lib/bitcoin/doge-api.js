@@ -8,6 +8,7 @@ import { isPositiveNumber } from '../numericHelpers'
 import { ECPairFactory } from 'ecpair'
 import * as tinysecp from 'tiny-secp256k1'
 import { convertToSmallestUnit } from './bitcoin-utils'
+import { doge } from '@/lib/nodes/doge'
 
 const ECPairAPI = ECPairFactory(tinysecp)
 
@@ -42,7 +43,7 @@ export default class DogeApi extends BtcBaseApi {
   }
 
   /** @override */
-  async _buildTransaction(address, amount, unspents, fee) {
+  async buildTransaction(address, amount, unspents, fee) {
     const localAmount = convertToSmallestUnit(amount, this.multiplier)
     const heldFee = convertToSmallestUnit(fee, this.multiplier)
 
@@ -149,14 +150,16 @@ export default class DogeApi extends BtcBaseApi {
 
   /** Executes a GET request to the DOGE API */
   _get(url, params) {
-    return this._getClient()
+    return doge
+      .getClient()
       .get(url, { params })
       .then((response) => response.data)
   }
 
   /** Executes a POST request to the DOGE API */
   _post(url, data) {
-    return this._getClient()
+    return doge
+      .getClient()
       .post(url, qs.stringify(data), POST_CONFIG)
       .then((response) => response.data)
   }

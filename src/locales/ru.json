@@ -160,6 +160,11 @@
     "active": "Активная",
     "fastest_title": "Подключаться к самому быстрому узлу",
     "fastest_tooltip": "Запросы будут обрабатываться самым быстрым узлом",
+    "tabs": {
+      "adm_nodes": "ADM ноды",
+      "coin_nodes": "Coin ноды"
+    },
+    "label": "Тип",
     "host": "Хост",
     "inactive": "Неактивная",
     "sync": "Синхронизируется",
@@ -169,6 +174,8 @@
     "ping": "Пинг",
     "socket": "Сокеты",
     "unsupported": "Не поддерживается",
+    "unsupported_reason_protocol": "HTTP не поддерживается",
+    "unsupported_reason_api_version": "API версия устарела",
     "use_socket_connection": "Использовать сокет-подключения",
     "use_socket_connection_tooltip": "Сокеты позволяют получать новые сообщения мгновенно, как классические P2P-мессенджеры"
   },
@@ -239,7 +246,7 @@
   },
   "title": "Русский",
   "transaction": {
-    "addresses": "| {n} адрес | {n} адреса | {n} адресов",
+    "addresses": " и еще {n} адресов | и еще {n} адрес | и еще {n} адреса | и еще {n} адресов",
     "amount": "Количество",
     "currentVal": "Текущая стоимость",
     "valueTimeTxn": "Cтоимость во время Txn",
@@ -249,7 +256,7 @@
     "date": "Дата",
     "explorer": "Посмотреть в Explorer'е",
     "me": "Я",
-    "me_and_addresses": "| Я и еще {n} адрес | Я и еще {n} адреса | Я и еще {n} адресов",
+    "me_and_addresses": "Я и еще {n} адресов | Я и еще {n} адрес | Я и еще {n} адреса | Я и еще {n} адресов",
     "no_transactions": "Транзакций еще не было",
     "recipient": "Получатель",
     "sender": "Отправитель",

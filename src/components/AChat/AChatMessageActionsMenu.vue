@@ -52,7 +52,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '../../assets/styles/components/_chat.scss';
+@import '@/assets/styles/components/_chat.scss';
 
 $padding-x: 16px;
 

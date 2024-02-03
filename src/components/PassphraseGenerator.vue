@@ -4,21 +4,13 @@
       <h3 class="a-text-regular">
         {{ $t('login.create_address_label') }}
       </h3>
-      <v-btn
-        class="a-btn-link mt-2"
-        variant="text"
-        size="small"
-        @click="generatePassphrase"
-      >
+      <v-btn class="a-btn-link mt-2" variant="text" size="small" @click="generatePassphrase">
         {{ $t('login.new_button') }}
       </v-btn>
     </div>
 
     <transition name="slide-fade">
-      <div
-        v-if="showPassphrase"
-        :class="`${className}__box`"
-      >
+      <div v-if="showPassphrase" :class="`${className}__box`">
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <div
           ref="el"
@@ -78,10 +70,7 @@
       </div>
     </transition>
 
-    <QrcodeRendererDialog
-      v-model="showQrcodeRendererDialog"
-      :text="passphrase"
-    />
+    <QrcodeRendererDialog v-model="showQrcodeRendererDialog" :text="passphrase" />
   </div>
 </template>
 
@@ -90,11 +79,11 @@ import * as bip39 from 'bip39'
 import copyToClipboard from 'copy-to-clipboard'
 
 import { downloadFile } from '@/lib/textHelpers'
-import QrcodeRendererDialog from '@/components/QrcodeRendererDialog'
-import Icon from '@/components/icons/BaseIcon'
-import CopyIcon from '@/components/icons/common/Copy'
-import SaveIcon from '@/components/icons/common/Save'
-import QrCodeIcon from '@/components/icons/common/QrCode'
+import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
+import Icon from '@/components/icons/BaseIcon.vue'
+import CopyIcon from '@/components/icons/common/Copy.vue'
+import SaveIcon from '@/components/icons/common/Save.vue'
+import QrCodeIcon from '@/components/icons/common/QrCode.vue'
 
 export default {
   components: {
@@ -111,19 +100,19 @@ export default {
     showQrcodeRendererDialog: false
   }),
   computed: {
-    className () {
+    className() {
       return 'passphrase-generator'
     }
   },
   methods: {
-    copyToClipboard () {
+    copyToClipboard() {
       copyToClipboard(this.passphrase)
 
       this.selectText()
 
       this.$emit('copy')
     },
-    saveFile () {
+    saveFile() {
       const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
       if (!iOS) {
         downloadFile(
@@ -135,12 +124,10 @@ export default {
 
       this.$emit('save')
     },
-    selectText () {
-      this.$refs.textarea.$el
-        .querySelector('textarea')
-        .select()
+    selectText() {
+      this.$refs.textarea.$el.querySelector('textarea').select()
     },
-    generatePassphrase () {
+    generatePassphrase() {
       this.passphrase = bip39.generateMnemonic()
 
       this.showPassphrase = true
@@ -161,9 +148,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
 @import 'vuetify/settings';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 /**
  * 1. Change color icons when focus textarea.
@@ -182,7 +169,8 @@ export default {
       mask-image: unset;
     }
     :deep(.v-textarea) {
-      .v-input__slot:before, .v-input__slot:after {
+      .v-input__slot:before,
+      .v-input__slot:after {
         border-width: 0;
       }
     }

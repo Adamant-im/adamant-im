@@ -1,23 +1,11 @@
 <template>
   <div :class="className">
-    <app-toolbar-centered
-      app
-      :title="$t('options.nodes_list')"
-      :show-back="true"
-      flat
-      fixed
-    />
+    <app-toolbar-centered app :title="$t('options.nodes_list')" :show-back="true" flat fixed />
 
-    <v-container
-      fluid
-      class="px-0 container--with-app-toolbar"
-    >
-      <v-row
-        justify="center"
-        no-gutters
-      >
+    <v-container fluid class="px-0 container--with-app-toolbar">
+      <v-row justify="center" no-gutters>
         <container padding>
-          <nodes-table :class="`${className}__table`" />
+          <NodesTable />
 
           <v-checkbox
             v-model="preferFastestNodeOption"
@@ -49,7 +37,7 @@
           />
           <!-- eslint-enable vue/no-v-html -->
 
-          <div>&nbsp;<br>&nbsp;</div>
+          <div>&nbsp;<br />&nbsp;</div>
         </container>
       </v-row>
     </v-container>
@@ -57,8 +45,9 @@
 </template>
 
 <script>
-import AppToolbarCentered from '@/components/AppToolbarCentered'
-import NodesTable from '@/components/NodesTable/NodesTable'
+import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+import NodesTable from '@/components/nodes/NodesTable.vue'
+import { nodesManager } from '@/lib/nodes'
 
 export default {
   components: {
@@ -74,10 +63,10 @@ export default {
   computed: {
     className: () => 'nodes-view',
     useSocketConnection: {
-      get () {
+      get() {
         return this.$store.state.options.useSocketConnection
       },
-      set (value) {
+      set(value) {
         this.$store.commit('options/updateOption', {
           key: 'useSocketConnection',
           value
@@ -85,31 +74,29 @@ export default {
       }
     },
     preferFastestNodeOption: {
-      get () {
+      get() {
         return this.$store.state.nodes.useFastest
       },
-      set (value) {
+      set(value) {
         this.$store.dispatch('nodes/setUseFastest', value)
       }
     }
   },
-  mounted () {
-    this.$store.dispatch('nodes/restore')
+  mounted() {
+    this.$store.dispatch('nodes/updateStatus')
 
-    this.timer = setInterval(() => {
-      this.$store.dispatch('nodes/updateStatus')
-    }, 10000)
+    nodesManager.updateHealthcheckInterval('onScreen')
   },
-  beforeUnmount () {
-    clearInterval(this.timer)
+  beforeUnmount() {
+    nodesManager.updateHealthcheckInterval('normal')
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
 @import 'vuetify/settings';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .nodes-view {
   &__info {

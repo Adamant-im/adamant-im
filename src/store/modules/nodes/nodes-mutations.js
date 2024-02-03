@@ -1,16 +1,16 @@
 export default {
-  useFastest (state, value) {
+  useFastest(state, value) {
     state.useFastest = value
   },
 
-  toggle (state, payload) {
-    const node = state.list[payload.url]
+  toggle(state, payload) {
+    const node = state.adm[payload.url]
     if (node) {
       node.active = payload.active
     }
   },
 
-  status (state, status) {
-    state.list[status.url] = status
+  status(state, { status, nodeType }) {
+    state[nodeType][status.url] = status
   }
 }

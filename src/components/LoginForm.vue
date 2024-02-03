@@ -97,7 +97,8 @@ export default defineComponent({
         .then(() => {
           emit('login')
         })
-        .catch(() => {
+        .catch((err) => {
+          console.log(err)
           emit('error', 'login.invalid_passphrase')
         })
         .finally(() => {
