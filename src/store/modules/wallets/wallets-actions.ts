@@ -31,11 +31,13 @@ export const actions: ActionTree<WalletsState, RootState> = {
   },
 
   initWalletsSymbols({ dispatch }): void {
+    console.log('initWalletsSymbols')
     const walletSymbols: CoinSymbol[] = mapWallets()
     dispatch('setWalletSymbols', walletSymbols)
   },
 
   setWalletSymbols({ commit }, symbols: CoinSymbol[]): void {
+    console.log('setWalletsSymbols')
     commit('setWalletSymbols', symbols)
   }
 }

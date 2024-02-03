@@ -157,7 +157,7 @@ export default (store) => {
     // is logged with passphrase
     store.dispatch('unlock')
     store.commit('chat/createAdamantChats')
-    store.dispatch('wallets/checkWalletsOrderBeforeInit')
+    // store.dispatch('wallets/checkWalletsOrderBeforeInit')
     store.dispatch('chat/loadChats').then(() => store.dispatch('startInterval'))
 
     store.dispatch('afterLogin', Base64.decode(store.state.passphrase))

@@ -43,6 +43,7 @@ export default defineComponent({
   mounted() {
     this.notifications = new Notifications(this)
     this.notifications.start()
+    // this.$store.dispatch('wallets/checkWalletsOrderBeforeInit')
   },
   beforeUnmount() {
     this.notifications?.stop()
