@@ -31,7 +31,7 @@ export abstract class Node<C = unknown> {
    * Indicates whether node is out of sync (i.e. its block height is
    * either too big or too small compared to the other nodes)
    */
-  outOfSync = false
+  outOfSync = true
 
   /**
    * Default `wsPort`. Will be updated after `GET /api/node/status`

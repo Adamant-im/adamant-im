@@ -2,7 +2,7 @@
   <div :class="classes.statusTitle">
     <span>
       {{ nodeStatusTitle
-      }}<span v-if="nodeStatusDetail?.icon" :class="classes.textMs">{{
+      }}<span v-if="node.status === 'online'" :class="classes.textMs">{{
         $t('nodes.ms')
       }}</span></span
     >
@@ -21,7 +21,7 @@
     />
   </div>
 
-  <span v-if="nodeStatusDetail" :class="classes.statusText">
+  <span v-if="nodeStatusDetail && node.status !== 'sync'" :class="classes.statusText">
     <v-icon v-if="nodeStatusDetail.icon" :icon="nodeStatusDetail.icon" :size="12" />
     {{ nodeStatusDetail.text }}
   </span>
