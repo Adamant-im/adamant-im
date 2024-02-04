@@ -136,8 +136,16 @@ export default {
       this.message = this.messageText
       this.focus()
     }
+    window.addEventListener('keydown', (event) => {
+      if (event.ctrlKey && event.key === 'a') {
+        this.openElement()
+      }
+    })
   },
   methods: {
+    openElement() {
+      this.emojiPickerOpen = true
+    },
     onInput: function () {
       this.$store.commit('draftMessage/saveMessage', {
         message: this.message,

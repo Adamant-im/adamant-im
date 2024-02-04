@@ -36,6 +36,7 @@ export default defineComponent({
 
       picker.value = new Picker({
         data,
+        autoFocus: true,
         dynamicWidth: true,
         navPosition: 'none',
         previewPosition: 'none',

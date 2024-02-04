@@ -1,5 +1,10 @@
 <template>
-  <v-menu :model-value="open" @update:model-value="toggleMenu" :close-on-content-click="false" transition="slide-y-reverse-transition">
+  <v-menu
+    :model-value="open"
+    @update:model-value="toggleMenu"
+    :close-on-content-click="false"
+    transition="slide-y-reverse-transition"
+  >
     <template #activator="{ props }">
       <v-icon class="chat-emojis__icon" icon="mdi-emoticon-outline" size="28" v-bind="props" />
     </template>
@@ -13,7 +18,7 @@ export default {
   props: {
     open: {
       type: Boolean,
-      required: true,
+      required: true
     }
   },
   emits: ['onChange'],
