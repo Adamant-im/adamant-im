@@ -6,5 +6,5 @@ export default {
   dash: {},
   lsk: {},
   useFastestAdmNode: false,
-  useFastestCoinNode: false
+  useFastestCoinNode: true
 }
