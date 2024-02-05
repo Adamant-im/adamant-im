@@ -11,7 +11,7 @@ export class BtcNode extends Node {
   client: AxiosInstance
 
   constructor(url: string) {
-    super(url, 'btc', NODE_LABELS.BtcNode)
+    super(url, 'btc', 'node', NODE_LABELS.BtcNode)
 
     this.client = createBtcLikeClient(url)
 

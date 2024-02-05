@@ -13,7 +13,7 @@ export class LskNode extends Node {
   client: AxiosInstance
 
   constructor(url: string) {
-    super(url, 'lsk', NODE_LABELS.LskNode)
+    super(url, 'lsk', 'node', NODE_LABELS.LskNode)
 
     this.client = axios.create({ baseURL: url })
 

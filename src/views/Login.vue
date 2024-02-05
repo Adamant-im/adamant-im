@@ -196,14 +196,16 @@ export default defineComponent({
   height: 100%;
 
   &__title {
-    font-family: 'Exo 2';
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+      Arial, sans-serif;
     font-weight: 100;
     font-size: 40px;
     line-height: 40px;
     text-transform: uppercase;
   }
   &__subtitle {
-    font-family: 'Exo 2';
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+      Arial, sans-serif;
     font-weight: 100;
     font-size: 18px;
   }

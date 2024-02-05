@@ -11,7 +11,7 @@ export class DashNode extends Node {
   client: AxiosInstance
 
   constructor(url: string) {
-    super(url, 'dash', NODE_LABELS.DashNode)
+    super(url, 'dash', 'node', NODE_LABELS.DashNode)
 
     this.client = createBtcLikeClient(url)
 

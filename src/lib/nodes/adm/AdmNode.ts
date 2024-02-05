@@ -31,7 +31,7 @@ export class AdmNode extends Node {
   client: AxiosInstance
 
   constructor(url: string, minNodeVersion = '0.0.0') {
-    super(url, 'adm', NODE_LABELS.AdmNode, minNodeVersion, minNodeVersion)
+    super(url, 'adm', 'node', NODE_LABELS.AdmNode, minNodeVersion, minNodeVersion)
 
     this.wsPort = '36668' // default wsPort
     this.wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:'

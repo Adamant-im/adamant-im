@@ -11,7 +11,7 @@ export class LskIndexer extends Node {
   client: AxiosInstance
 
   constructor(url: string) {
-    super(url, 'lsk', NODE_LABELS.LskIndexer)
+    super(url, 'lsk', 'service', NODE_LABELS.LskIndexer)
 
     this.client = axios.create({ baseURL: `${url}/api/v3` })
 

@@ -1,5 +1,6 @@
+import { getHealthCheckInterval } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
-import { NodeStatus, NodeType } from './types'
+import { HealthcheckInterval, NodeKind, NodeStatus, NodeType } from './types'
 import { nodesStorage } from './storage'
 
 type HealthcheckResult = {
@@ -14,11 +15,6 @@ type WsProtocol = 'ws:' | 'wss:'
  * Protocol on host where app is running, f. e., http: or https:
  */
 const appProtocol = location.protocol
-
-/**
- * Interval how often to update node statuses
- */
-const REVISE_CONNECTION_TIMEOUT = 60000
 
 export abstract class Node<C = unknown> {
   /**
@@ -93,18 +89,29 @@ export abstract class Node<C = unknown> {
    * Will be updated after `GET /api/node/status`
    */
   socketSupport = false
+
   type: NodeType
+  kind: NodeKind
   label: TNodeLabel
 
   onStatusChangeCallback?: (nodeStatus: ReturnType<typeof this.getStatus>) => void
 
   timer?: NodeJS.Timeout
+  healthCheckInterval: HealthcheckInterval = 'normal'
   abstract client: C
 
-  constructor(url: string, type: NodeType, label: TNodeLabel, version = '', minNodeVersion = '') {
+  constructor(
+    url: string,
+    type: NodeType,
+    kind: NodeKind,
+    label: TNodeLabel,
+    version = '',
+    minNodeVersion = ''
+  ) {
     this.url = url
     this.type = type
     this.label = label
+    this.kind = kind
     this.protocol = new URL(url).protocol as HttpProtocol
     this.port = new URL(url).port
     this.hostname = new URL(url).hostname
@@ -132,7 +139,18 @@ export abstract class Node<C = unknown> {
       this.fireStatusChange()
     }
 
-    this.timer = setTimeout(() => this.startHealthcheck(), REVISE_CONNECTION_TIMEOUT)
+    this.timer = setTimeout(
+      () => this.startHealthcheck(),
+      getHealthCheckInterval(
+        this.type,
+        this.kind,
+        this.online ? this.healthCheckInterval : 'crucial'
+      )
+    )
+  }
+
+  updateHealthCheckInterval(interval: HealthcheckInterval) {
+    this.healthCheckInterval = interval
   }
 
   private fireStatusChange() {
