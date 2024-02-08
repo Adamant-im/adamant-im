@@ -27,6 +27,7 @@
         <div class="a-text-explanation-enlarged">
           {{ $t('nodes.fastest_tooltip') }}
         </div>
+        <div>&nbsp;<br />&nbsp;</div>
       </div>
       <div v-if="tab === 'adm'">
         <v-checkbox
