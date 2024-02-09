@@ -57,7 +57,18 @@ export function renderMarkdown(text = '') {
  */
 export function removeFormats(text = '') {
   const node = document.createElement('div')
-  node.innerHTML = marked(DOMPurify.sanitize(text), { renderer })
+  const textWithSymbol = text.replace(/\n/g, '↵ ')
+  node.innerHTML = marked(DOMPurify.sanitize(textWithSymbol), { renderer })
 
   return node.textContent || node.innerText || ''
+}
+
+export function formatMessage(text = '') {
+  const node = document.createElement('div')
+  const textWithSymbol = text.replace(/\n/g, '↵ ')
+  node.innerHTML = marked(DOMPurify.sanitize(textWithSymbol), { renderer })
+
+  const textWithoutHtml = node.textContent || node.innerText || ''
+  const styledText = textWithoutHtml.replace(/↵/g, '<span class="arrow-return">↵</span>')
+  return styledText
 }
