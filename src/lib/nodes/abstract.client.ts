@@ -56,17 +56,29 @@ export abstract class Client<N extends Node> {
     }
   }
 
+  // Use with caution:
+  // This method can throw an error if there are no online nodes.
+  // Better use "useClient()" method.
   getClient(): N['client'] {
-    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
-
-    if (!node) {
-      console.warn(`${this.type}: No online nodes at the moment`)
-
-      // Return a random one from the full list hopefully is online
-      return this.nodes[Math.floor(Math.random() * this.nodes.length)].client
-    }
+    const node = this.getNode()
 
     return node.client
+  }
+
+  /**
+   * Invokes a client method.
+   *
+   * eth
+   *   .useClient((client) => client.getTransactionCount(this.$store.state.eth.address))
+   *   .then(res => console.log("res", res))
+   *   .catch(err => console.log("err", err))
+   *
+   * @param cb
+   */
+  async useClient<T>(cb: (client: N['client']) => T) {
+    const node = this.getNode()
+
+    return cb(node.client)
   }
 
   /**
