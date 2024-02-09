@@ -129,7 +129,7 @@ export abstract class Client<N extends Node> {
       // All nodes seem to be offline: let's refresh the statuses
       this.checkHealth()
       // But there's nothing we can do right now
-      throw new Error('No online nodes at the moment')
+      throw new AllNodesOfflineError(this.type)
     }
 
     return node

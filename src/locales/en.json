@@ -86,6 +86,10 @@
     "online": "Online—Connection is set"
   },
   "error": "Error",
+  "errors": {
+    "something_went_wrong": "Something went wrong. Check the console for details",
+    "all_nodes_offline": "All {crypto} nodes are offline. Try again later"
+  },
   "home": {
     "balance": "Balance",
     "buy_tokens_anonymously": "Anonymously on website",
@@ -312,7 +316,6 @@
     "error_chat_fee": "To send {crypto} via chat, you need 0.001 ADM",
     "error_dust_amount": "Dust amount—Send more tokens",
     "recipient_minimum_balance": "Recipient must have at least 0.05 LSK—Send more tokens",
-    "error_all_nodes_offline": "All {crypto} nodes are offline. Try again later",
     "error_precision": "Too high precision—Set less decimal places",
     "error_erc20_fee": "You need a {fee} to pay a transfer fee",
     "error_field_is_required": "Field is required",

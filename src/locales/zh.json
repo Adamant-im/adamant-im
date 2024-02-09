@@ -86,6 +86,10 @@
     "online": "联机--已设置连接"
   },
   "error": "错误",
+  "errors": {
+    "something_went_wrong": "Something went wrong. Check the console for details",
+    "all_nodes_offline": "All {crypto} nodes are offline. Try again later"
+  },
   "home": {
     "balance": "余额",
     "buy_tokens_anonymously": "在网站上匿名",
@@ -312,7 +316,6 @@
     "error_chat_fee": "要通过聊天发送 {crypto}，您需要 0.001 ADM",
     "error_dust_amount": "无存量--发送更多代币",
     "recipient_minimum_balance": "收件人必须至少有 0.05 LSK--发送更多令牌",
-    "error_all_nodes_offline": "All {crypto} nodes are offline. Try again later",
     "error_precision": "精度过高--设置小数位数较少",
     "error_erc20_fee": "您需要｛费｝来支付转会费",
     "error_field_is_required": "字段是必需的",
