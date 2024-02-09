@@ -1,4 +1,4 @@
-const sortFunc = (a, b) => ((b && b.timestamp) || 0) - ((a && a.timestamp) || 0)
+import { sortTransactionsFn } from '@/store/utils/sortTransactionsFn'
 
 export default {
   transaction: (state) => (id) => state.transactions[id],
@@ -9,7 +9,7 @@ export default {
    * @returns {Array}
    */
   sortedTransactions(state) {
-    return Object.values(state.transactions).sort(sortFunc)
+    return Object.values(state.transactions).sort(sortTransactionsFn)
   },
 
   areTransactionsLoading(state) {

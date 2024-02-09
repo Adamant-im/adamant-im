@@ -13,10 +13,9 @@ const STATUS_INTERVAL = 25000
 // Setup decoder
 const abiDecoder = new AbiDecoder(Erc20)
 
-const initTransaction = async (api, context, ethAddress, amount, increaseFee) => {
+const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
 
-  const nonce = await api.getClient().getTransactionCount(context.state.address)
   const gasPrice = await api.getClient().getGasPrice()
 
   const transaction = {

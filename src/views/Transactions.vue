@@ -19,6 +19,7 @@
               :timestamp="transaction.timestamp || NaN"
               :amount="transaction.amount"
               :crypto="crypto"
+              :status="transaction.status"
               :text-data="transaction.data"
               @click:transaction="goToTransaction"
               @click:icon="goToChat"

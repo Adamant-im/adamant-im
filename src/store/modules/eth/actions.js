@@ -17,8 +17,7 @@ function storeEthAddress(context) {
   storeCryptoAddress(context.state.crypto, context.state.address)
 }
 
-const initTransaction = async (api, context, ethAddress, amount, increaseFee) => {
-  const nonce = await api.getClient().getTransactionCount(context.state.address)
+const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
   const gasPrice = await api.getClient().getGasPrice()
 
   const transaction = {
