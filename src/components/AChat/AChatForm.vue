@@ -18,7 +18,7 @@
       density="compact"
       color="primary"
       v-on="listeners"
-      autofocus="true"
+      autofocus
     >
       <template #prepend-inner>
         <chat-emojis
@@ -137,7 +137,7 @@ export default {
       this.focus()
     }
     window.addEventListener('keydown', (event) => {
-      if (event.ctrlKey && event.key === 'a') {
+      if (event.ctrlKey && event.altKey && event.key === 'a') {
         this.openElement()
       }
     })
@@ -155,16 +155,28 @@ export default {
     emojiPicture(emoji) {
       const caretPosition = this.$refs.messageTextarea.selectionStart
 
-      const before = this.message.slice(0, caretPosition)
+      let before = this.message.slice(0, caretPosition)
       const after = this.message.slice(caretPosition)
+
+      if (
+        before.length > 0 &&
+        !/\s|[[{(\n]/.test(before.slice(-1)) && // Check for a space, newline or parentheses before the emoji
+        !before
+          .slice(-2)
+          .match(/[\p{Emoji_Presentation}\p{Emoji}\p{Emoji_Modifier_Base}\p{Emoji_Component}]/gu)
+      ) {
+        before += ' '
+      }
       this.message = before + emoji + after
+      this.emojiPickerOpen = false
 
       // Set the cursor position to after the newly inserted text
-      const newCaretPosition = caretPosition + emoji.length
+      const newCaretPosition = caretPosition + emoji.length + 1
       this.focus()
       this.$nextTick(() => {
         this.$refs.messageTextarea.setSelectionRange(newCaretPosition, newCaretPosition)
       })
+      this.onInput()
     },
 
     onToggleEmojiPicker(state) {

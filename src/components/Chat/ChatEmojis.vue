@@ -21,7 +21,7 @@ export default {
       required: true
     }
   },
-  emits: ['onChange'],
+  emits: ['onChange', 'get-emoji-picture'],
   methods: {
     getEmoji(emoji) {
       this.$emit('get-emoji-picture', emoji)
