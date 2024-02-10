@@ -79,7 +79,12 @@
     "you_reacted": "Reacted",
     "partner_reacted": "Reacted",
     "you_removed_reaction": "Removed reaction",
-    "partner_removed_reaction": "Removed reaction"
+    "partner_removed_reaction": "Removed reaction",
+    "nodes_offline_dialog": {
+      "title": "Nodes are offline",
+      "text": "All {coin} nodes appear to be offline or possibly disabled. To continue use the Messenger please review the <strong>Nodes list</strong> and enable any nodes that are found to be disabled.",
+      "open_nodes_button": "Open Nodes page"
+    }
   },
   "connection": {
     "offline": "Offline—No connection",

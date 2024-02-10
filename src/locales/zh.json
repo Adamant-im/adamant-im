@@ -79,7 +79,12 @@
     "you_reacted": "Reacted",
     "partner_reacted": "已反应",
     "you_removed_reaction": "已删除反应",
-    "partner_removed_reaction": "已删除的反应"
+    "partner_removed_reaction": "已删除的反应",
+    "nodes_offline_dialog": {
+      "title": "Nodes are offline",
+      "text": "All {coin} nodes appear to be offline or possibly disabled. To continue use the Messenger please review the <strong>Nodes list</strong> and enable any nodes that are found to be disabled.",
+      "open_nodes_button": "Open Nodes page"
+    }
   },
   "connection": {
     "offline": "Offline—无连接",
