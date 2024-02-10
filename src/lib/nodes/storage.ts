@@ -41,11 +41,11 @@ function saveState(newState: State) {
 
 const defaultOptions: Options = {
   adm: { useFastest: false },
-  btc: { useFastest: false },
-  doge: { useFastest: false },
-  dash: { useFastest: false },
-  eth: { useFastest: false },
-  lsk: { useFastest: false }
+  btc: { useFastest: true },
+  doge: { useFastest: true },
+  dash: { useFastest: true },
+  eth: { useFastest: true },
+  lsk: { useFastest: true }
 }
 
 function getOptions() {
