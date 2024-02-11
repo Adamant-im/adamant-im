@@ -137,7 +137,7 @@ export default {
       this.focus()
     }
     window.addEventListener('keydown', (event) => {
-      if (event.ctrlKey && event.altKey && event.key === 'a') {
+      if (event.ctrlKey && event.shiftKey && event.code === 'KeyE') {
         this.openElement()
       }
     })
@@ -159,11 +159,14 @@ export default {
       const after = this.message.slice(caretPosition)
 
       if (
-        before.length > 0 &&
-        !/\s|[[{(\n]/.test(before.slice(-1)) && // Check for a space, newline or parentheses before the emoji
-        !before
-          .slice(-2)
-          .match(/[\p{Emoji_Presentation}\p{Emoji}\p{Emoji_Modifier_Base}\p{Emoji_Component}]/gu)
+        (before.length > 0 &&
+          !/\s|[[{(\n]/.test(before.slice(-1)) && // Check for a space, newline or parentheses before the emoji
+          !before
+            .slice(-2)
+            .match(
+              /[\p{Emoji_Presentation}\p{Emoji}\p{Emoji_Modifier_Base}\p{Emoji_Component}]/gu
+            )) ||
+        /[\d]/.test(before.slice(-1))
       ) {
         before += ' '
       }
@@ -171,7 +174,7 @@ export default {
       this.emojiPickerOpen = false
 
       // Set the cursor position to after the newly inserted text
-      const newCaretPosition = caretPosition + emoji.length + 1
+      const newCaretPosition = caretPosition + emoji.length
       this.focus()
       this.$nextTick(() => {
         this.$refs.messageTextarea.setSelectionRange(newCaretPosition, newCaretPosition)

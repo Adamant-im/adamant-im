@@ -205,7 +205,7 @@
           :show-send-button="true"
           :send-on-enter="sendMessageOnEnter"
           :show-divider="true"
-          :label="chatFormLabel"
+          :label="$t('chats.message')"
           :message-text="
             $route.query.messageText || $store.getters['draftMessage/draftMessage'](this.partnerId)
           "
@@ -266,7 +266,6 @@ import AChatReactions from '@/components/AChat/AChatReactions/AChatReactions.vue
 import { emojiWeight } from '@/lib/chat/emoji-weight/emojiWeight'
 import { vibrate } from '@/lib/vibrate'
 import { nextTick } from 'vue'
-import { detect } from 'detect-browser'
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
 
@@ -293,6 +292,7 @@ import formatDate from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import FreeTokensDialog from '@/components/FreeTokensDialog.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { isMobile } from '@/lib/display-mobile'
 import { isWelcomeChat, isWelcomeMessage } from '@/lib/chat/meta/utils'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
 
@@ -378,7 +378,6 @@ export default {
   },
   emits: ['click:chat-avatar'],
   data: () => ({
-    chatFormLabel: '',
     loading: false,
     replyLoadingChatHistory: false,
     noMoreMessages: false,
@@ -481,11 +480,6 @@ export default {
     this.visibilityId = Visibility.change((event, state) => {
       if (state === 'visible' && this.isScrolledToBottom) this.markAsRead()
     })
-    this.chatFormLabel =
-      {
-        'Mac OS': this.$t('chats.message_mac_os'),
-        'Windows 10': this.$t('chats.message_windows_10')
-      }[detect().os] || this.$t('chats.message')
 
     const draftMessage = this.$store.getters['draftMessage/draftReplyTold'](this.partnerId)
     if (draftMessage) {
@@ -665,9 +659,7 @@ export default {
       }
     },
     handleClickReactions(transaction) {
-      const isMobile = window.innerWidth < 600
-
-      if (isMobile) {
+      if (isMobile()) {
         this.openActionsMenu(transaction)
       } else {
         this.toggleActionsDropdown(true, transaction)

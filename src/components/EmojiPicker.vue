@@ -14,6 +14,8 @@ import { useTheme } from '@/hooks/useTheme'
 import axios from 'axios'
 import { defineComponent, onMounted, ref } from 'vue'
 import { Picker } from 'emoji-mart'
+import { isMobile } from '@/lib/display-mobile'
+
 const className = 'emoji-picker'
 const classes = {
   root: className
@@ -36,7 +38,7 @@ export default defineComponent({
 
       picker.value = new Picker({
         data,
-        autoFocus: true,
+        autoFocus: !isMobile(), // disable autofocus on mobile devices
         dynamicWidth: true,
         navPosition: 'none',
         previewPosition: 'none',
