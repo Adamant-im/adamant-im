@@ -136,13 +136,23 @@ export default {
       this.message = this.messageText
       this.focus()
     }
-    window.addEventListener('keydown', (event) => {
+    this.attachKeyCommandListener()
+  },
+  beforeUnmount() {
+    this.destroyKeyCommandListener()
+  },
+  methods: {
+    attachKeyCommandListener() {
+      window.addEventListener('keydown', this.onKeyCommand)
+    },
+    destroyKeyCommandListener() {
+      window.removeEventListener('keydown', this.onKeyCommand)
+    },
+    onKeyCommand: function (event) {
       if (event.ctrlKey && event.shiftKey && event.code === 'KeyE') {
         this.openElement()
       }
-    })
-  },
-  methods: {
+    },
     openElement() {
       this.emojiPickerOpen = true
     },
