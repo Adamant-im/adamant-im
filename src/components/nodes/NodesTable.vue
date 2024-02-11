@@ -29,7 +29,7 @@
         </div>
         <div>&nbsp;<br />&nbsp;</div>
       </div>
-      <div v-if="tab === 'adm'">
+      <div v-else-if="tab === 'adm'">
         <v-checkbox
           v-model="preferFastestAdmNodeOption"
           :label="$t('nodes.fastest_title')"
@@ -77,7 +77,7 @@ const className = 'nodes-table'
 const classes = {
   root: className,
   info: `${className}__info`,
-  checkbox: `${className}__checkbox `
+  checkbox: `${className}__checkbox`
 }
 
 type Tab = 'adm' | 'coins'
