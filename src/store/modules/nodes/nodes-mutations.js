@@ -1,10 +1,13 @@
 export default {
-  useFastest(state, value) {
-    state.useFastest = value
+  useFastestAdmNode(state, value) {
+    state.useFastestAdmNode = value
+  },
+  useFastestCoinNode(state, value) {
+    state.useFastestCoinNode = value
   },
 
   toggle(state, payload) {
-    const node = state.adm[payload.url]
+    const node = state[payload.type][payload.url]
     if (node) {
       node.active = payload.active
     }

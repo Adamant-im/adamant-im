@@ -1,6 +1,11 @@
 <template>
   <div :class="classes.statusTitle">
-    {{ nodeStatusTitle }}
+    <span>
+      {{ nodeStatusTitle
+      }}<span v-if="node.status === 'online'" :class="classes.textMs">{{
+        $t('nodes.ms')
+      }}</span></span
+    >
 
     <v-icon
       :class="{
@@ -16,7 +21,7 @@
     />
   </div>
 
-  <span v-if="nodeStatusDetail" :class="classes.statusText">
+  <span v-if="nodeStatusDetail && node.status !== 'sync'" :class="classes.statusText">
     <v-icon v-if="nodeStatusDetail.icon" :icon="nodeStatusDetail.icon" :size="12" />
     {{ nodeStatusDetail.text }}
   </span>
@@ -29,6 +34,7 @@ import { useNodeStatus } from '@/components/nodes/hooks'
 
 const className = 'node-status'
 const classes = {
+  textMs: `${className}__text-ms`,
   statusTitle: `${className}__status-title`,
   statusText: `${className}__status-text`,
   icon: `${className}__icon`,
@@ -63,10 +69,12 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import 'vuetify/settings';
 @import '@/assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
 
 .node-status {
   &__status-title {
-    line-height: 17px;
+    width: 76px;
+    max-width: 80px;
     display: flex;
   }
 
@@ -78,12 +86,18 @@ export default defineComponent({
   &__icon {
     margin-inline-start: 4px;
   }
+  &__text-ms {
+    @include a-text-explanation-small();
+  }
 }
 
 .v-theme--light {
   .node-status {
     &__status-text {
       color: map-get($adm-colors, 'regular');
+    }
+    &__text-ms {
+      color: map-get($adm-colors, 'muted');
     }
 
     &__icon {
@@ -108,6 +122,9 @@ export default defineComponent({
     &__status-text {
       color: map-get($shades, 'white');
       opacity: 0.7;
+    }
+    &__text-ms {
+      color: map-get($adm-colors, 'grey-transparent');
     }
     &__icon {
       &--green {
