@@ -6,7 +6,8 @@
       </div>
 
       <div :class="classes.message">
-        {{ isCryptoTransfer ? cryptoTransferLabel : messageLabel }}
+        <span v-if="!isCryptoTransfer" v-html="messageLabel"></span>
+        <span v-else>{{ cryptoTransferLabel }}</span>
       </div>
 
       <v-btn
@@ -28,7 +29,7 @@ import { useStore } from 'vuex'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
-import { removeFormats } from '@/lib/markdown'
+import { formatMessage } from '@/lib/markdown'
 
 const className = 'a-chat-reply-preview'
 const classes = {
@@ -77,7 +78,7 @@ export default defineComponent({
 
     const messageLabel = computed(() => {
       return store.state.options.formatMessages
-        ? removeFormats(props.message.message)
+        ? formatMessage(props.message.message)
         : props.message.message
     })
 

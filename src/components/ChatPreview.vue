@@ -67,11 +67,16 @@
           :class="['a-text-explanation-enlarged-bold', `${className}__subtitle`]"
         >
           <template v-if="isOutgoingTransaction">
-            <v-icon v-if="transaction.isReply && isConfirmed" icon="mdi-arrow-left-top" size="15" />
-            <v-icon v-else :icon="statusIcon" size="15" />
+            <v-icon
+              v-if="transaction.isReply && isConfirmed"
+              icon="mdi-arrow-left-top"
+              size="15"
+              class="mr-1"
+            />
+            <v-icon v-else :icon="statusIcon" size="15" class="mr-1" />
           </template>
 
-          {{ lastMessageTextNoFormats }}
+          <span v-html="lastMessageTextNoFormats"></span>
         </v-list-item-subtitle>
       </template>
     </div>
@@ -79,7 +84,7 @@
 </template>
 
 <script>
-import { removeFormats } from '@/lib/markdown'
+import { formatMessage } from '@/lib/markdown'
 
 import transaction from '@/mixins/transaction'
 import formatDate from '@/filters/dateBrief'
@@ -183,7 +188,7 @@ export default {
     },
     lastMessageTextNoFormats() {
       if (this.isAdamantChat(this.contactId) || this.$store.state.options.formatMessages) {
-        return removeFormats(this.lastMessageTextLocalized)
+        return formatMessage(this.lastMessageTextLocalized)
       }
 
       return this.lastMessageTextLocalized

@@ -54,6 +54,41 @@
 
             <v-list-item-title>Coinstore</v-list-item-title>
           </v-list-item>
+
+          <v-list-item
+            avatar
+            @click="
+              openLink('https://www.fameex.com/en-US/trade/adm-usdt/commissiondispense?code=MKKAWV')
+            "
+          >
+            <template #prepend>
+              <icon><fameex-icon /></icon>
+            </template>
+
+            <v-list-item-title>FameEX</v-list-item-title>
+          </v-list-item>
+
+          <v-list-item
+            avatar
+            @click="openLink('https://xeggex.com/market/ADM_USDT?ref=656846d209bbed85b91aba4d')"
+          >
+            <template #prepend>
+              <icon><xeggex-icon /></icon>
+            </template>
+
+            <v-list-item-title>XeggeX</v-list-item-title>
+          </v-list-item>
+
+          <v-list-item
+            avatar
+            @click="openLink('https://nonkyc.io/market/ADM_USDT?ref=655b4df9eb13acde84677358')"
+          >
+            <template #prepend>
+              <icon><nonkyc-icon /></icon>
+            </template>
+
+            <v-list-item-title>NonKYC</v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-card-text>
     </v-card>
@@ -68,6 +103,9 @@ import AzbitIcon from '@/components/icons/common/Azbit.vue'
 import ExchangerIcon from '@/components/icons/common/Exchanger.vue'
 import StakeCubeIcon from '@/components/icons/common/StakeCube.vue'
 import CoinstoreIcon from '@/components/icons/common/Coinstore.vue'
+import NonkycIcon from '@/components/icons/common/Nonkyc.vue'
+import FameexIcon from '@/components/icons/common/Fameex.vue'
+import XeggexIcon from '@/components/icons/common/Xeggex.vue'
 import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
@@ -77,7 +115,10 @@ export default {
     AzbitIcon,
     ExchangerIcon,
     StakeCubeIcon,
-    CoinstoreIcon
+    CoinstoreIcon,
+    NonkycIcon,
+    FameexIcon,
+    XeggexIcon
   },
   props: {
     modelValue: {

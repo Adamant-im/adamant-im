@@ -1,4 +1,5 @@
 import { LSK_TOKEN_ID } from '@/lib/lisk'
+import { TransactionNotFound } from '@/lib/nodes/utils/errors'
 import { AxiosRequestConfig } from 'axios'
 import { normalizeTransaction } from './utils'
 import { TransactionParams } from './types/api/transactions/transaction-params'
@@ -46,6 +47,23 @@ export class LskIndexerClient extends Client<LskIndexer> {
     return transactions.map((transaction) => normalizeTransaction(transaction, address))
   }
 
+  async isTransactionFinalized(transactionID: string): Promise<boolean> {
+    const { data: transactions } = await this.request('GET /transactions', {
+      transactionID
+    })
+
+    const transaction = transactions[0]
+
+    if (!transaction) {
+      return false
+    }
+
+    const isFinalized =
+      transaction.executionStatus === 'successful' || transaction.executionStatus === 'failed'
+
+    return isFinalized
+  }
+
   /**
    * Returns a single transaction by ID
    *
@@ -60,7 +78,7 @@ export class LskIndexerClient extends Client<LskIndexer> {
     const transaction = transactions[0]
 
     if (!transaction) {
-      throw new Error(`LskIndexer: Transaction ID:${transactionID} not found`)
+      throw new TransactionNotFound(transactionID, this.type)
     }
 
     return normalizeTransaction(transaction, address)

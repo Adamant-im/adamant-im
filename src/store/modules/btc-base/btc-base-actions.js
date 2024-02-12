@@ -1,6 +1,8 @@
 import BigNumber from '@/lib/bignumber'
 import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
 import { FetchStatus } from '@/lib/constants'
+import { nodes } from '../../../lib/nodes'
+import { createPendingTransaction, PendingTxStore } from '../../../lib/pending-transactions'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
@@ -40,6 +42,16 @@ function createActions(options) {
         context.commit('address', api.address)
         context.dispatch('updateStatus')
         context.dispatch('storeAddress')
+
+        // restore pending transaction
+        const pendingTransaction = PendingTxStore.get(context.state.crypto)
+        if (pendingTransaction) {
+          context.commit('transactions', [pendingTransaction])
+          context.dispatch('getTransaction', {
+            hash: pendingTransaction.hash,
+            force: true
+          })
+        }
       }
     },
 
@@ -116,61 +128,80 @@ function createActions(options) {
         })
     },
 
-    sendTokens(context, { amount, admAddress, address, comments, fee, replyToId }) {
+    async sendTokens(context, { amount, admAddress, address, comments, fee, replyToId }) {
       if (!api) return
       address = address.trim()
 
       const crypto = context.state.crypto
+      const nodeName = crypto.toLowerCase()
 
-      return api
-        .createTransaction(address, amount, fee)
-        .then((tx) => {
-          if (!admAddress) return tx.hex
+      // 1. Check nodes availability
+      if (admAddress) {
+        await nodes.adm.assertAnyNodeOnline()
+      }
+      await nodes[nodeName].assertAnyNodeOnline()
 
-          const msgPayload = {
-            address: admAddress,
-            amount: BigNumber(amount).toFixed(),
-            comments,
-            crypto,
-            hash: tx.txid,
-            replyToId
-          }
+      // 2. Sign transaction offline
+      const signedTransaction = await api.createTransaction(address, amount, fee)
 
-          // Send a special message to indicate that we're performing a crypto transfer
-          return context
-            .dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
-            .then((success) => (success ? tx.hex : Promise.reject(new Error('adm_message'))))
+      // 3. Ensure there is no pending transaction (skipped, no nonce in BTC like cryptos)
+
+      // 4. Send crypto transfer message to ADM blockchain (if ADM address provided)
+      if (admAddress) {
+        const msgPayload = {
+          address: admAddress,
+          amount: BigNumber(amount).toFixed(),
+          comments,
+          crypto,
+          hash: signedTransaction.txid,
+          replyToId
+        }
+        // Send a special message to indicate that we're performing a crypto transfer
+        const success = await context.dispatch('sendCryptoTransferMessage', msgPayload, {
+          root: true
         })
-        .then((rawTx) =>
-          api.sendTransaction(rawTx).then(
-            (hash) => ({ hash }),
-            (error) => ({ error })
-          )
+        if (!success) {
+          throw new Error('adm_message')
+        }
+      }
+
+      // 5. Save pending transaction
+      const pendingTransaction = createPendingTransaction({
+        hash: signedTransaction.txid,
+        senderId: context.state.address,
+        recipientId: address,
+        amount,
+        fee
+      })
+      await PendingTxStore.save(context.state.crypto, pendingTransaction)
+      context.commit('transactions', [pendingTransaction])
+
+      // 6. Send signed transaction to the blockchain
+      try {
+        const hash = await api.sendTransaction(signedTransaction.hex)
+        console.log(
+          `${crypto} transaction has been sent: localHash: ${signedTransaction.txid}, responseHash: ${hash}`
         )
-        .then(({ hash, error }) => {
-          if (error) {
-            context.commit('transactions', [{ hash, status: 'REJECTED' }])
-            throw error
-          } else {
-            console.log(`${crypto} transaction has been sent: ${hash}`)
 
-            context.commit('transactions', [
-              {
-                hash,
-                senderId: context.state.address,
-                recipientId: address,
-                amount,
-                fee,
-                status: 'PENDING',
-                timestamp: Date.now()
-              }
-            ])
-
-            context.dispatch('getTransaction', { hash, force: true })
-
-            return hash
+        context.commit('transactions', [
+          {
+            hash,
+            senderId: context.state.address,
+            recipientId: address,
+            amount,
+            fee,
+            status: 'PENDING'
           }
-        })
+        ])
+
+        context.dispatch('getTransaction', { hash, force: true })
+
+        return hash
+      } catch (error) {
+        context.commit('transactions', [{ hash: signedTransaction.txid, status: 'REJECTED' }])
+        PendingTxStore.remove(context.state.crypto)
+        throw error
+      }
     },
 
     /**

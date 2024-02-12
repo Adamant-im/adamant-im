@@ -1,4 +1,5 @@
 import type { HealthcheckInterval, NodeType } from '@/lib/nodes/types'
+import { AllNodesOfflineError } from './utils/errors'
 import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
 import { nodesStorage } from './storage'
@@ -120,6 +121,29 @@ export abstract class Client<N extends Node> {
       }
       return !fastest || fastest.ping > current.ping ? current : fastest
     })
+  }
+
+  protected getNode() {
+    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
+    if (!node) {
+      // All nodes seem to be offline: let's refresh the statuses
+      this.checkHealth()
+      // But there's nothing we can do right now
+      throw new Error('No online nodes at the moment')
+    }
+
+    return node
+  }
+
+  /**
+   * Throws an error if all the nodes are offline.
+   */
+  assertAnyNodeOnline() {
+    const onlineNodes = this.nodes.filter((x) => x.online && x.active && !x.outOfSync)
+
+    if (onlineNodes.length === 0) {
+      throw new AllNodesOfflineError(this.type)
+    }
   }
 
   /**

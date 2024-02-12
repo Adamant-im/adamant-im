@@ -186,7 +186,10 @@
 </template>
 
 <script>
+import { adm } from '@/lib/nodes'
 import lskIndexer from '@/lib/nodes/lsk-indexer'
+import { AllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { PendingTransactionError } from '@/lib/pending-transactions'
 import axios from 'axios'
 import { nextTick } from 'vue'
 
@@ -206,7 +209,8 @@ import {
   isSelfTxAllowed,
   CryptosInfo,
   isTextDataAllowed,
-  MessageType
+  MessageType,
+  Fees
 } from '@/lib/constants'
 
 import { parseURIasAIP } from '@/lib/uri'
@@ -405,6 +409,14 @@ export default {
         : this.$store.state[this.currency.toLowerCase()].balance
     },
 
+    /**
+     * Return ADM balance
+     * @returns {number}
+     */
+    admBalance() {
+      return this.$store.state.balance
+    },
+
     ethBalance() {
       return this.$store.state.eth.balance
     },
@@ -494,6 +506,19 @@ export default {
         ],
         amount: [
           (v) => v > 0 || this.$t('transfer.error_incorrect_amount'),
+          () => {
+            const isAdmTransfer = this.currency === Cryptos.ADM
+            const isDirectTransfer = !this.address
+
+            if (isAdmTransfer || isDirectTransfer) {
+              return true // skips validation
+            }
+
+            return (
+              this.admBalance >= Fees.NOT_ADM_TRANSFER ||
+              this.$t('transfer.error_not_enough_adm_fee')
+            )
+          },
           () => this.amount <= this.maxToTransfer || this.$t('transfer.error_not_enough'),
           (v) => this.validateMinAmount(v, this.currency) || this.$t('transfer.error_dust_amount'),
           (v) => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_precision'),
@@ -725,6 +750,14 @@ export default {
             message = this.$t('transfer.recipient_minimum_balance')
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
+          } else if (error instanceof AllNodesOfflineError) {
+            message = this.$t('transfer.error_all_nodes_offline', {
+              crypto: error.nodeLabel.toUpperCase()
+            })
+          } else if (error instanceof PendingTransactionError) {
+            message = this.$t('transfer.error_pending_transaction', {
+              crypto: error.crypto
+            })
           }
           this.$emit('error', message)
         })
@@ -734,7 +767,7 @@ export default {
           this.dialog = false
         })
     },
-    sendFunds() {
+    async sendFunds() {
       if (this.currency === Cryptos.ADM) {
         let promise
         // 1. if come from Chat then sendMessage
@@ -750,6 +783,7 @@ export default {
               })
             : this.comment
 
+          adm.assertAnyNodeOnline()
           promise = sendMessage({
             amount: this.amount,
             message: asset,

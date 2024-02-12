@@ -39,6 +39,7 @@ import notification from './modules/notification'
 import cache from '@/store/cache'
 import rate from './modules/rate'
 import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant-api/asset'
+import { PendingTxStore } from '@/lib/pending-transactions'
 
 export let interval
 
@@ -138,6 +139,7 @@ const store = {
       dispatch('reset')
       dispatch('wallets/initWalletsSymbols')
       dispatch('draftMessage/resetState', null, { root: true })
+      PendingTxStore.clear()
     },
     unlock({ state, dispatch }) {
       // user updated an app, F5 or something
