@@ -22,6 +22,7 @@
     >
       <template #prepend-inner>
         <chat-emojis
+          @keydown.capture.esc="closeElement"
           :open="emojiPickerOpen"
           @onChange="onToggleEmojiPicker"
           @get-emoji-picture="emojiPicture"
@@ -149,12 +150,15 @@ export default {
       window.removeEventListener('keydown', this.onKeyCommand)
     },
     onKeyCommand: function (event) {
-      if (event.ctrlKey && event.shiftKey && event.code === 'KeyE') {
+      if (event.ctrlKey && event.shiftKey && event.code === 'Digit1') {
         this.openElement()
       }
     },
     openElement() {
       this.emojiPickerOpen = true
+    },
+    closeElement() {
+      this.emojiPickerOpen = false
     },
     onInput: function () {
       this.$store.commit('draftMessage/saveMessage', {
@@ -181,7 +185,7 @@ export default {
         before += ' '
       }
       this.message = before + emoji + after
-      this.emojiPickerOpen = false
+      this.closeElement()
 
       // Set the cursor position to after the newly inserted text
       const newCaretPosition = caretPosition + emoji.length
