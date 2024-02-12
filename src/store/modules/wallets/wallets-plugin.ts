@@ -1,13 +1,12 @@
 import VuexPersistence from 'vuex-persist'
-import { RootState } from '@/store/types'
-import { mapWallets } from '@/store/modules/wallets/utils.ts'
+import { mapWallets } from '@/store/modules/wallets/utils'
 import { getFromLocalStorage } from '@/lib/localStorage'
+import { WalletsState } from '@/store/modules/wallets/types'
 
 function initWallets() {
   const predefinedWalletsTemplate: WalletsState = getFromLocalStorage('adm-wallets', {
     symbols: []
   })
-  console.log('predefinedWallets', predefinedWalletsTemplate)
 
   if (!('symbols' in predefinedWalletsTemplate) || predefinedWalletsTemplate.symbols.length === 0) {
     localStorage.setItem(
@@ -26,15 +25,12 @@ function initWallets() {
     ).length
 
     if (hasDifference) {
-      console.log('has diff', mapWallets())
       localStorage.setItem(
         'adm-wallets',
         JSON.stringify({
           symbols: mapWallets()
         })
       )
-    } else {
-      // dispatch('setWalletSymbols', predefinedWalletsTemplate.symbols)
     }
   }
 }
@@ -44,14 +40,21 @@ const walletsPersistencePlugin = new VuexPersistence({
   key: 'adm-wallets',
   storage: window.localStorage,
   restoreState: (key, storage) => {
-    const wallets = JSON.parse(storage.getItem(key))
-    console.log('restore state')
+    let wallets = {}
+    if (storage) {
+      const item = storage.getItem(key)
+      if (item) {
+        wallets = JSON.parse(item)
+      }
+    }
+
     return {
       wallets
     }
   },
-  saveState: (key, state, storage) => {
-    console.log('save state', state.wallets.symbols)
+  saveState: (key, state: Record<string, WalletsState>, storage) => {
+    if (!storage) throw new Error('Storage is undefined in wallets plugin')
+
     storage.setItem(
       key,
       JSON.stringify({
