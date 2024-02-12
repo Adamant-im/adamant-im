@@ -12,10 +12,8 @@ const customActions = (getAccount) => ({
       const coin = state.crypto
 
       if (!shouldUpdate(() => rootGetters['wallets/getVisibility'](coin))) {
-        console.log(`%cDO NOT UPDATE BALANCE FOR ${coin}`, 'background: #444; color: #f00')
         return
       }
-      console.log(`%cUPDATE BALANCE FOR ${coin}`, 'background: #444; color: #0f0')
 
       if (payload.requestedByUser) {
         commit('setBalanceStatus', FetchStatus.Loading)

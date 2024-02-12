@@ -15,7 +15,6 @@ function initWallets() {
         symbols: mapWallets()
       })
     )
-    // dispatch('initWalletsSymbols')
   } else {
     const initialTemplate = mapWallets()
 

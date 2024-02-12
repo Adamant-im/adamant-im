@@ -58,10 +58,8 @@ const createSpecificActions = (api) => ({
       const coin = state.crypto
 
       if (!shouldUpdate(() => rootGetters['wallets/getVisibility'](coin))) {
-        console.log(`%cDO NOT UPDATE BALANCE FOR ${coin}`, 'background: #444; color: #f00')
         return
       }
-      console.log(`%cUPDATE BALANCE FOR ${coin}`, 'background: #444; color: #0f0')
 
       if (payload.requestedByUser) {
         commit('setBalanceStatus', FetchStatus.Loading)
@@ -90,10 +88,8 @@ const createSpecificActions = (api) => ({
     const coin = context.state.crypto
 
     if (!shouldUpdate(() => context.rootGetters['wallets/getVisibility'](coin))) {
-      console.log(`%cDO NOT UPDATE GAS FOR ${coin}`, 'background: #444; color: #f00')
       return
     }
-    console.log(`%cUPDATE GAS FOR ${coin}`, 'background: #444; color: #0f0')
 
     // Balance
     void api
