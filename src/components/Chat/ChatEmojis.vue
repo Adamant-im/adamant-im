@@ -13,7 +13,7 @@
   </v-menu>
 </template>
 <script>
-import emojiPicker from '@/components/EmojiPicker.vue'
+import EmojiPicker from '@/components/EmojiPicker.vue'
 export default {
   props: {
     open: {
@@ -31,7 +31,7 @@ export default {
     }
   },
   components: {
-    emojiPicker
+    EmojiPicker
   }
 }
 </script>
