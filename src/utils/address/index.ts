@@ -1,3 +1,3 @@
 export * from './formatADMAddress'
-export * from './formatBTCAddress'
+export * from './formatCryptoAddress'
 export * from './formatMultipleBTCAddresses'

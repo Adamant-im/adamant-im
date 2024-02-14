@@ -27,7 +27,7 @@ import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { useFindAdmAddress } from '@/hooks/address/useFindAdmAddress'
 import { usePartnerCryptoAddress } from '@/hooks/address/usePartnerCryptoAddress'
 import { useTransactionStatus } from '@/hooks/useTransactionStatus'
-import { formatBTCAddress, formatMultipleBTCAddresses } from '@/utils/address'
+import { formatCryptoAddress, formatMultipleBTCAddresses } from '@/utils/address'
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { CryptosInfo } from '@/lib/constants'
@@ -101,7 +101,7 @@ export default defineComponent({
       const { senders, senderId } = transaction.value
       const onlySender = senderId && (!senders || senders.length === 1)
       if (onlySender) {
-        return formatBTCAddress(
+        return formatCryptoAddress(
           senderId,
           cryptoAddress.value,
           t,
@@ -119,7 +119,7 @@ export default defineComponent({
       const { recipientId, recipients } = transaction.value
       const onlyRecipient = recipientId && (!recipients || recipients.length === 1)
       if (onlyRecipient) {
-        return formatBTCAddress(
+        return formatCryptoAddress(
           recipientId,
           cryptoAddress.value,
           t,

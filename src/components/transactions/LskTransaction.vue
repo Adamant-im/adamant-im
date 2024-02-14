@@ -29,7 +29,7 @@ import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { useFindAdmAddress } from '@/hooks/address/useFindAdmAddress'
 import { usePartnerCryptoAddress } from '@/hooks/address/usePartnerCryptoAddress'
 import { useTransactionStatus } from '@/hooks/useTransactionStatus'
-import { formatBTCAddress } from '@/utils/address'
+import { formatCryptoAddress } from '@/utils/address'
 import currency from '@/filters/currencyAmountWithSymbol'
 
 export default defineComponent({
@@ -69,7 +69,7 @@ export default defineComponent({
     const recipientName = useChatName(recipientAdmAddress)
 
     const senderFormatted = computed(() => {
-      return formatBTCAddress(
+      return formatCryptoAddress(
         transaction.value.senderId,
         cryptoAddress.value,
         t,
@@ -78,7 +78,7 @@ export default defineComponent({
       )
     })
     const recipientFormatted = computed(() => {
-      return formatBTCAddress(
+      return formatCryptoAddress(
         transaction.value.recipientId,
         cryptoAddress.value,
         t,

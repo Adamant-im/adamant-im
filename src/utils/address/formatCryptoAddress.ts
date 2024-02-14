@@ -1,24 +1,24 @@
 import { isStringEqualCI } from '@/lib/textHelpers'
 
 /**
- * Formats BTC address.
+ * Formats a crypto address
  *
- * @param btcAddress BTC address
- * @param ownBtcAddress BTC address of the current account
+ * @param cryptoAddress Crypto address to format
+ * @param ownCryptoAddress Crypto address of the current account
  * @param t TFunction from `vue-i18n`
  * @param admAddress ADM address
  * @param partnerName Chat name
  */
-export function formatBTCAddress(
-  btcAddress: string,
-  ownBtcAddress: string,
+export function formatCryptoAddress(
+  cryptoAddress: string,
+  ownCryptoAddress: string,
   t: (key: string) => string,
   admAddress = '',
   partnerName = ''
 ) {
   let name = ''
 
-  const isMineAddress = isStringEqualCI(btcAddress, ownBtcAddress)
+  const isMineAddress = isStringEqualCI(cryptoAddress, ownCryptoAddress)
 
   if (isMineAddress) {
     name = t('transaction.me')
@@ -28,9 +28,9 @@ export function formatBTCAddress(
 
   let result = ''
   if (name !== '' && name !== undefined) {
-    result = name + ' (' + btcAddress + ')'
+    result = name + ' (' + cryptoAddress + ')'
   } else {
-    result = btcAddress
+    result = cryptoAddress
     if (admAddress) {
       result += ' (' + admAddress + ')'
     }
