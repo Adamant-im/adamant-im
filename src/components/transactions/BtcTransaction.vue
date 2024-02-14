@@ -31,6 +31,7 @@ import { formatCryptoAddress, formatMultipleBTCAddresses } from '@/utils/address
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { CryptosInfo } from '@/lib/constants'
+import { useFindAdmTransaction } from '@/hooks/address'
 
 import currency from '@/filters/currencyAmountWithSymbol'
 
@@ -150,21 +151,7 @@ export default defineComponent({
       return result
     })
 
-    const admTx = computed(() => {
-      const admTx = {}
-      // Bad news, everyone: we'll have to scan the messages
-      Object.values(store.state.chat.chats).some((chat) => {
-        Object.values(chat.messages).some((msg) => {
-          if (msg.hash && msg.hash === props.id) {
-            Object.assign(admTx, msg)
-          }
-          return !!admTx.id
-        })
-        return !!admTx.id
-      })
-
-      return admTx
-    })
+    const admTx = useFindAdmTransaction(props.id)
 
     const status = useTransactionStatus(admTx, transaction)
 

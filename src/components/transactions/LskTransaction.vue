@@ -31,6 +31,7 @@ import { usePartnerCryptoAddress } from '@/hooks/address/usePartnerCryptoAddress
 import { useTransactionStatus } from '@/hooks/useTransactionStatus'
 import { formatCryptoAddress } from '@/utils/address'
 import currency from '@/filters/currencyAmountWithSymbol'
+import { useFindAdmTransaction } from '@/hooks/address'
 
 export default defineComponent({
   components: {
@@ -106,20 +107,7 @@ export default defineComponent({
       return currentHeight - height + 1
     })
 
-    const admTx = computed(() => {
-      const admTx = {}
-      // Bad news, everyone: we'll have to scan the messages
-      Object.values(store.state.chat.chats).some((chat) => {
-        Object.values(chat.messages).some((msg) => {
-          if (msg.hash && msg.hash === props.id) {
-            Object.assign(admTx, msg)
-          }
-          return !!admTx.id
-        })
-        return !!admTx.id
-      })
-      return admTx
-    })
+    const admTx = useFindAdmTransaction(props.id)
 
     const status = useTransactionStatus(admTx, transaction)
 
