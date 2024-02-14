@@ -50,7 +50,9 @@
               {{ $t('transaction.status') }}
               <v-icon
                 v-if="statusUpdatable"
-                ref="updateButton"
+                :class="{
+                  [`${className}__update-status-icon--rotate`]: rotateAnimation
+                }"
                 icon="mdi-refresh"
                 size="20"
                 @click="updateStatus()"
@@ -218,20 +220,21 @@
 </template>
 
 <script>
-import { nextTick } from 'vue'
-import copyToClipboard from 'copy-to-clipboard'
-
+import { computed, defineComponent, nextTick, onMounted, ref, watch } from 'vue'
 import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
-import transaction from '@/mixins/transaction'
 import { timestampInSec } from '@/filters/helpers'
+import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+import { useTransactionStatus } from '@/hooks/useTransactionStatus'
 
-export default {
-  name: 'TransactionTemplate',
+const className = 'transaction-view'
+
+export default defineComponent({
   components: {
     AppToolbarCentered
   },
-  mixins: [transaction],
   props: {
     amount: {
       required: true,
@@ -294,98 +297,124 @@ export default {
       type: String
     }
   },
-  computed: {
-    className: () => 'transaction-view',
-    hasMessages: function () {
-      const chat = this.$store.state.chat.chats[this.partner]
+  setup(props) {
+    const store = useStore()
+    const router = useRouter()
+    const route = useRoute()
+    const { t } = useI18n()
+
+    const hasMessages = computed(() => {
+      const chat = store.state.chat.chats[props.partner]
       return chat && chat.messages && Object.keys(chat.messages).length > 0
-    },
-    placeholder() {
-      if (!this.status.status) return Symbols.CLOCK
-      return this.status.status === 'REJECTED' ? Symbols.CROSS : Symbols.HOURGLASS
-    },
-    ifComeFromChat() {
-      return Object.prototype.hasOwnProperty.call(this.$route.query, 'fromChat')
-    },
-    comment() {
-      return this.admTx && this.admTx.message ? this.admTx.message : false
-    },
-    statusUpdatable() {
-      return tsUpdatable(this.status.virtualStatus, this.crypto)
-    },
-    amountNumber() {
-      return this.amount.replace(/[^\d.-]/g, '')
-    },
-    historyRate() {
-      return this.$store.getters['rate/historyRate'](
-        timestampInSec(this.crypto, this.timestamp),
-        this.amountNumber,
-        this.crypto
+    })
+
+    const placeholder = computed(() => {
+      if (!props.status.status) return Symbols.CLOCK
+      return props.status.status === 'REJECTED' ? Symbols.CROSS : Symbols.HOURGLASS
+    })
+
+    const ifComeFromChat = computed(() =>
+      Object.prototype.hasOwnProperty.call(route.query, 'fromChat')
+    )
+
+    const comment = computed(() =>
+      props.admTx && props.admTx.message ? props.admTx.message : false
+    )
+
+    const statusUpdatable = computed(() => tsUpdatable(props.status.virtualStatus, props.crypto))
+    const amountNumber = computed(() => props.amount.replace(/[^\d.-]/g, ''))
+    const historyRate = computed(() =>
+      store.getters['rate/historyRate'](
+        timestampInSec(props.crypto, props.timestamp),
+        amountNumber.value,
+        props.crypto
       )
-    },
-    rate() {
-      return this.$store.getters['rate/rate'](this.amountNumber, this.crypto)
-    }
-  },
-  watch: {
-    // fetch Tx status when we get admTx
-    admTx() {
-      this.fetchTransactionStatus(this.admTx, this.partner)
-    },
-    timestamp() {
-      nextTick(() => {
-        this.getHistoryRates()
-      })
-    }
-  },
-  mounted() {
-    if (this.admTx) {
-      this.fetchTransactionStatus(this.admTx, this.partner)
-    }
-    if (!isNaN(this.timestamp)) {
-      this.getHistoryRates()
-    }
-  },
-  methods: {
-    copyToClipboard: function (key) {
+    )
+    const rate = computed(() => store.getters['rate/rate'](amountNumber.value, props.crypto))
+    const { fetchTransactionStatus } = useTransactionStatus()
+
+    onMounted(() => {
+      if (props.admTx) {
+        fetchTransactionStatus(props.admTx, props.partner)
+      }
+      if (!isNaN(props.timestamp)) {
+        getHistoryRates()
+      }
+    })
+
+    watch(
+      () => props.admTx,
+      () => {
+        fetchTransactionStatus(props.admTx, props.partner)
+      }
+    )
+
+    watch(
+      () => props.timestamp,
+      () => {
+        nextTick(() => {
+          getHistoryRates()
+        })
+      }
+    )
+
+    const copyToClipboard = (key) => {
       if (key) {
         copyToClipboard(key)
-        this.$store.dispatch('snackbar/show', {
-          message: this.$t('home.copied'),
+        store.dispatch('snackbar/show', {
+          message: t('home.copied'),
           timeout: 2000
         })
       }
-    },
-    openInExplorer: function () {
-      if (this.explorerLink) {
-        window.open(this.explorerLink, '_blank', 'resizable,scrollbars,status,noopener')
+    }
+    const openInExplorer = () => {
+      if (props.explorerLink) {
+        window.open(props.explorerLink, '_blank', 'resizable,scrollbars,status,noopener')
       }
-    },
-    openChat: function () {
-      this.$router.push('/chats/' + this.partner + '/')
-    },
-    updateStatus() {
-      const el = this.$refs.updateButton.$el
-      el.rotate = (el.rotate || 0) + 400
-      el.style.transform = `rotate(${el.rotate}grad)`
-      el.style['transition-duration'] = '1s'
+    }
+    const openChat = () => {
+      router.push('/chats/' + props.partner + '/')
+    }
 
-      if (this.crypto && this.statusUpdatable) {
-        this.$store.dispatch(this.crypto.toLowerCase() + '/updateTransaction', {
-          hash: this.id,
+    const rotateAnimation = ref(false)
+    const updateStatus = () => {
+      rotateAnimation.value = true
+      setTimeout(() => (rotateAnimation.value = false), 1000)
+
+      if (props.crypto && statusUpdatable.value) {
+        store.dispatch(props.crypto.toLowerCase() + '/updateTransaction', {
+          hash: props.id,
           force: true,
           updateOnly: false,
           dropStatus: true
         })
       }
-    },
-    getHistoryRates() {
-      this.$store.dispatch('rate/getHistoryRates', {
-        timestamp: timestampInSec(this.crypto, this.timestamp)
+    }
+
+    const getHistoryRates = () => {
+      store.dispatch('rate/getHistoryRates', {
+        timestamp: timestampInSec(props.crypto, props.timestamp)
       })
     }
+
+    return {
+      className,
+      copyToClipboard,
+      openInExplorer,
+      openChat,
+      updateStatus,
+      rotateAnimation,
+      hasMessages,
+      placeholder,
+      ifComeFromChat,
+      comment,
+      statusUpdatable,
+      amountNumber,
+      historyRate,
+      rate
+    }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -412,6 +441,12 @@ export default {
       text-overflow: ellipsis;
       max-width: 100%;
       overflow: hidden;
+    }
+  }
+  &__update-status-icon {
+    &--rotate {
+      transform: rotate(400grad);
+      transition-duration: 1s;
     }
   }
 }

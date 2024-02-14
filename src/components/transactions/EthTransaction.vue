@@ -100,7 +100,7 @@ export default defineComponent({
     })
     const admTx = useFindAdmTransaction(props.id)
 
-    const status = useTransactionStatus(admTx, transaction)
+    const { status } = useTransactionStatus(admTx, transaction)
 
     return {
       sender,

@@ -60,7 +60,7 @@ export default defineComponent({
     })
     const explorerLink = computed(() => getExplorerTxUrl(Cryptos.ADM, props.id))
 
-    const status = useTransactionStatus(admTx, undefined)
+    const { status } = useTransactionStatus(admTx, undefined)
 
     return {
       transaction,

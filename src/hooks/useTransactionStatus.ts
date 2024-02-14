@@ -14,7 +14,7 @@ export function useTransactionStatus(admTxRef: ComputedRef<any>, coinTxRef: Comp
   const store = useStore()
 
   onMounted(() => {
-    if (!admTxRef.value) return
+    if (!admTxRef || !admTxRef.value) return
 
     const { status, type, timestamp } = admTxRef.value
     const hash = admTxRef.value.hash || admTxRef.value.id
@@ -139,5 +139,40 @@ export function useTransactionStatus(admTxRef: ComputedRef<any>, coinTxRef: Comp
     return status
   })
 
-  return computedStatus
+  const fetchTransactionStatus = () => {
+    if (!admTxRef || !admTxRef.value) return
+
+    const { type, hash, senderId, recipientId, timestamp } = admTxRef.value
+    if (type in Cryptos) {
+      // Don't need to fetch coin addresses for ADM txs
+      if (type !== Cryptos.ADM) fetchCryptoAddresses(type, recipientId, senderId)
+      // Update status, including ADM direct transfers and in-chat transfers
+      // Message txs are not processed here
+      fetchTransaction(type, hash, timestamp)
+    }
+  }
+
+  const fetchCryptoAddresses = (type: string, recipientId: string, senderId: string) => {
+    const recipientCryptoAddress = store.dispatch('partners/fetchAddress', {
+      crypto: type,
+      partner: recipientId
+    })
+    const senderCryptoAddress = store.dispatch('partners/fetchAddress', {
+      crypto: type,
+      partner: senderId
+    })
+
+    return Promise.all([recipientCryptoAddress, senderCryptoAddress])
+  }
+
+  const fetchTransaction = (type: string, hash: string, timestamp: number) => {
+    const cryptoModule = type.toLowerCase()
+
+    return store.dispatch(`${cryptoModule}/getTransaction`, { hash, timestamp })
+  }
+
+  return {
+    status: computedStatus,
+    fetchTransactionStatus
+  }
 }
