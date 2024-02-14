@@ -24,13 +24,11 @@ import { useStore } from 'vuex'
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { Cryptos } from '../../lib/constants'
-import partnerName from '@/mixins/partnerName'
 import { useTransactionStatus } from '@/hooks/useTransactionStatus'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { useFindAdmAddress } from '@/hooks/address/useFindAdmAddress'
 import { usePartnerCryptoAddress } from '@/hooks/address/usePartnerCryptoAddress'
 import { formatCryptoAddress } from '@/utils/address'
-import transaction from '@/mixins/transaction'
 import currency from '@/filters/currencyAmountWithSymbol'
 import { useFindAdmTransaction } from '@/hooks/address'
 
@@ -39,7 +37,6 @@ export default defineComponent({
   components: {
     TransactionTemplate
   },
-  mixins: [transaction, partnerName],
   props: {
     crypto: {
       required: true,
