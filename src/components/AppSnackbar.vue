@@ -4,7 +4,7 @@
     :timeout="timeout"
     :color="color"
     :class="className"
-    variant="elevated"
+    :variant="variant"
     location="bottom"
     width="100%"
     :multi-line="message.length > 50"
@@ -12,7 +12,7 @@
     <div :class="`${className}__container`">
       {{ message }}
       <v-btn
-        v-if="timeout === 0 || timeout > 2000"
+        v-if="timeout === 0 || timeout > 2000 || timeout === -1"
         size="x-small"
         variant="text"
         fab
@@ -48,6 +48,9 @@ export default {
     },
     timeout() {
       return this.$store.state.snackbar.timeout
+    },
+    variant() {
+      return this.$store.state.snackbar.variant
     }
   }
 }

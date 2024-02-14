@@ -80,8 +80,9 @@ export default {
     onError(message) {
       this.$store.dispatch('snackbar/show', {
         message,
+        timeout: -1,
         color: '#ED5270',
-        timeout: 5000
+        variant: 'outlined'
       })
     }
   }
