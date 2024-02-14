@@ -5,34 +5,33 @@
     :timestamp="transaction.timestamp || NaN"
     :fee="currency(transaction.fee)"
     :confirmations="transaction.confirmations || NaN"
-    :sender="sender || ''"
-    :recipient="recipient || ''"
+    :sender="sender"
+    :recipient="recipient"
     :sender-formatted="senderFormatted || ''"
     :recipient-formatted="recipientFormatted || ''"
     :explorer-link="explorerLink"
     :partner="transaction.partner || ''"
-    :status="getTransactionStatus(admTx)"
+    :status="status"
     :adm-tx="admTx"
     :crypto="crypto"
   />
 </template>
 
 <script>
+import { useFormatADMAddress } from '@/hooks/address/useFormatADMAddress'
+import { useTransactionStatus } from '@/hooks/useTransactionStatus'
+import { computed, defineComponent } from 'vue'
+import { useStore } from 'vuex'
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { Cryptos } from '@/lib/constants'
 
-import transaction from '@/mixins/transaction'
-import partnerName from '@/mixins/partnerName'
-import { isStringEqualCI } from '@/lib/textHelpers'
 import currency from '@/filters/currencyAmountWithSymbol'
 
-export default {
-  name: 'AdmTransaction',
+export default defineComponent({
   components: {
     TransactionTemplate
   },
-  mixins: [transaction, partnerName],
   props: {
     id: {
       required: true,
@@ -43,54 +42,37 @@ export default {
       type: String
     }
   },
-  computed: {
-    transaction() {
-      return this.$store.state.adm.transactions[this.id] || {}
-    },
-    sender() {
-      return this.transaction.senderId || ''
-    },
-    recipient() {
-      return this.transaction.recipientId || ''
-    },
-    senderFormatted() {
-      return this.formatAddress(this.transaction.senderId) || ''
-    },
-    recipientFormatted() {
-      return this.formatAddress(this.transaction.recipientId) || ''
-    },
-    admTx() {
-      return (
-        this.$store.getters['chat/messageById'](this.id) ||
-        this.$store.state.adm.transactions[this.id] ||
-        {}
-      )
-    },
-    explorerLink() {
-      return getExplorerTxUrl(Cryptos.ADM, this.id)
-    },
-    status() {
-      return this.transaction.status || ''
-    }
-  },
-  methods: {
-    formatAddress(address) {
-      let name = ''
-      if (isStringEqualCI(address, this.$store.state.address)) {
-        name = this.$t('transaction.me')
-      } else {
-        name = this.getPartnerName(address)
-      }
+  setup(props) {
+    const store = useStore()
 
-      let result = ''
-      if (name !== '' && name !== undefined) {
-        result = name + ' (' + address + ')'
-      } else {
-        result = address
-      }
-      return result
-    },
-    currency
+    const transaction = computed(() => store.state.adm.transactions[props.id] || {})
+
+    const sender = computed(() => transaction.value.senderId || '')
+    const recipient = computed(() => transaction.value.recipientId || '')
+
+    const senderFormatted = useFormatADMAddress(transaction.value.senderId)
+    const recipientFormatted = useFormatADMAddress(transaction.value.recipientId)
+
+    const admTx = computed(() => {
+      return (
+        store.getters['chat/messageById'](props.id) || store.state.adm.transactions[props.id] || {}
+      )
+    })
+    const explorerLink = computed(() => getExplorerTxUrl(Cryptos.ADM, props.id))
+
+    const status = useTransactionStatus(admTx, undefined)
+
+    return {
+      transaction,
+      sender,
+      recipient,
+      senderFormatted,
+      recipientFormatted,
+      admTx,
+      explorerLink,
+      currency,
+      status
+    }
   }
-}
+})
 </script>
