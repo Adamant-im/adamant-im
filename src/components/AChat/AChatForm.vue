@@ -159,6 +159,7 @@ export default {
     },
     closeElement() {
       this.emojiPickerOpen = false
+      this.focus()
     },
     onInput: function () {
       this.$store.commit('draftMessage/saveMessage', {
@@ -171,6 +172,7 @@ export default {
 
       let before = this.message.slice(0, caretPosition)
       const after = this.message.slice(caretPosition)
+      let emojiLength = emoji.length
 
       if (
         (before.length > 0 &&
@@ -183,12 +185,13 @@ export default {
         /[\d]/.test(before.slice(-1))
       ) {
         before += ' '
+        emojiLength += 1
       }
       this.message = before + emoji + after
       this.closeElement()
 
       // Set the cursor position to after the newly inserted text
-      const newCaretPosition = caretPosition + emoji.length
+      const newCaretPosition = caretPosition + emojiLength
       this.focus()
       this.$nextTick(() => {
         this.$refs.messageTextarea.setSelectionRange(newCaretPosition, newCaretPosition)
