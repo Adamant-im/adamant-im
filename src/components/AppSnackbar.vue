@@ -3,7 +3,7 @@
     v-model="show"
     :timeout="timeout"
     :color="color"
-    :class="className"
+    :class="[className, { outlined: variant === 'outlined' }]"
     :variant="variant"
     location="bottom"
     width="100%"
@@ -68,6 +68,7 @@ export default {
     margin: 0 auto;
     border-radius: 0;
     max-width: 300px;
+    border: 2px solid transparent;
   }
 
   :deep(.v-snackbar__content) {
@@ -85,6 +86,12 @@ export default {
     min-width: unset;
     padding: 0;
     width: 36px;
+  }
+
+  &.outlined {
+    :deep(.v-snackbar__wrapper) {
+      border-color: map-get($adm-colors, 'danger');
+    }
   }
 }
 

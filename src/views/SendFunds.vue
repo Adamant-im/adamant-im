@@ -81,7 +81,6 @@ export default {
       this.$store.dispatch('snackbar/show', {
         message,
         timeout: -1,
-        color: '#ED5270',
         variant: 'outlined'
       })
     }
