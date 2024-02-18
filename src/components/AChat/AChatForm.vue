@@ -159,7 +159,7 @@ export default {
     },
     closeElement() {
       this.emojiPickerOpen = false
-      this.focus()
+      setTimeout(() => this.focus(), 0)
     },
     onInput: function () {
       this.$store.commit('draftMessage/saveMessage', {
@@ -229,6 +229,7 @@ export default {
       this.message += '\n'
     },
     focus() {
+      console.log('focus', this.$refs.messageTextarea)
       this.$refs.messageTextarea.focus()
     }
   }
