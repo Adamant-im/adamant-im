@@ -1,6 +1,8 @@
-export function isMobile() {
-  const displayMobile =
-    window.innerWidth < 450 ||
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-  return displayMobile
+import { detect } from 'detect-browser'
+
+export function isMobile(): boolean {
+  const browser = detect()
+  const isMobileDevice: boolean =
+    browser && browser.os ? ['android', 'ios'].includes(browser.os.toLowerCase()) : false
+  return isMobileDevice || window.innerWidth < 450
 }
