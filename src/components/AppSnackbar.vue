@@ -8,6 +8,7 @@
     location="bottom"
     width="100%"
     :multi-line="message.length > 50"
+    @click:outside="show = false"
   >
     <div :class="`${className}__container`">
       {{ message }}
