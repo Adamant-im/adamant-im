@@ -22,7 +22,7 @@ import { computed, defineComponent, toRefs } from 'vue'
 import currencyAmount from '@/filters/currencyAmount'
 import { Cryptos } from '@/lib/constants'
 import { useStore } from 'vuex'
-import truncateString from '@/lib/truncateString'
+import smartNumber from '@/lib/smartNumber.ts'
 import { useDisplay } from 'vuetify'
 
 const SIGNIFICANT_DIGITS = 7
@@ -59,7 +59,7 @@ export default defineComponent({
         ? currencyAmount(Number(balance.value), symbol.value, true)
         : 0
 
-      return truncateString(preparedBalance, 3)
+      return smartNumber(preparedBalance)
     })
 
     const calculatedFullBalance = computed(() => {
