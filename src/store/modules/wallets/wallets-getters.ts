@@ -8,6 +8,7 @@ export const getters: GetterTree<WalletsState, RootState> = {
   getVisibleSymbolsCount: (state) => state.symbols.filter((symbol) => symbol.isVisible).length,
   getVisibleOrderedWalletSymbols: (state) =>
     state.symbols.filter((walletSymbol: CoinSymbol) => walletSymbol.isVisible),
-  getVisibility: (state) => (symbol: CryptoSymbol) =>
-    state.symbols.find((item: CoinSymbol) => item.symbol === symbol)?.isVisible
+  getVisibility: (state) => (symbol: CryptoSymbol) => {
+    return state.symbols.find((item: CoinSymbol) => item.symbol === symbol)?.isVisible
+  }
 }
