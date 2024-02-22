@@ -20,6 +20,10 @@ export class EthNode extends Node {
     this.provider = new HttpProvider(this.url)
     this.client = new Web3Eth(this.provider)
 
+    if (this.active) {
+      void this.fetchNodeVersion()
+    }
+
     void this.startHealthcheck()
   }
 
@@ -30,6 +34,18 @@ export class EthNode extends Node {
     return {
       height: Number(blockNumber),
       ping: Date.now() - time
+    }
+  }
+
+  private async fetchNodeVersion(): Promise<void> {
+    try {
+      const parts = (await this.client.getNodeInfo()).split('/')
+      const clientName = parts.length > 0 ? parts[0] : ''
+      const fullVersion = parts.length > 1 ? parts[1]: ''
+      const simplifiedVersion = fullVersion.split('-')[0]
+      this.version = `${clientName}/${simplifiedVersion}`
+    } catch (e) {
+      console.error(e)
     }
   }
 }

@@ -53,7 +53,7 @@ export class LskNode extends Node {
 
   private async fetchNodeInfo(): Promise<{ version: string; height: number }> {
     const { version, height } = await this.invoke('system_getNodeInfo')
-    this.version = version
+    this.version = 'v' + version
     this.height = height
 
     return {

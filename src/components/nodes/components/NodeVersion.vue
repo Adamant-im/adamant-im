@@ -1,6 +1,6 @@
 <template>
   <div v-if="version" :class="classes.version">
-    {{ 'v' + version }}
+    {{ version }}
   </div>
 </template>
 

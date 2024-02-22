@@ -99,7 +99,7 @@ export class AdmNode extends Node {
       const socketSupport = response.wsClient ? response.wsClient.enabled : false
       const wsPort = response.wsClient ? String(response.wsClient.port) : ''
 
-      this.version = version
+      this.version = 'v' + version
       this.height = height
       this.socketSupport = socketSupport
       this.wsPort = wsPort

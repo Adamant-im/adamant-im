@@ -2,6 +2,13 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import type { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { formatBtcVersion } from '@/lib/nodes/utils/formatBtcVersion.ts'
+
+type FetchBtcNodeInfoResult = {
+  info: {
+    version: number
+  }
+}
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -15,6 +22,10 @@ export class DogeNode extends Node {
 
     this.client = createBtcLikeClient(url)
 
+    if (this.active) {
+      void this.fetchNodeVersion()
+    }
+
     void this.startHealthcheck()
   }
 
@@ -27,6 +38,18 @@ export class DogeNode extends Node {
     return {
       height,
       ping: Date.now() - time
+    }
+  }
+
+  private async fetchNodeVersion(): Promise<void> {
+    try {
+      const response = await this.client.get<FetchBtcNodeInfoResult>('/api/status')
+      console.log(response)
+      if (response?.data?.info.version) {
+        this.version = 'v' + formatBtcVersion(response?.data?.info.version)
+      }
+    } catch (e) {
+      console.error(e)
     }
   }
 }
