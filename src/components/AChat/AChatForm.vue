@@ -126,6 +126,8 @@ export default {
     if (this.messageText) {
       this.message = this.messageText
       this.focus()
+    } else if (!this.$isMobile) {
+      this.focus()
     }
   },
   methods: {
