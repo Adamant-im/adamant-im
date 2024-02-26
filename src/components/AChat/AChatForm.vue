@@ -18,7 +18,7 @@
       density="compact"
       color="primary"
       v-on="listeners"
-      autofocus
+      :autofocus="isDesktopDevice"
     >
       <template #prepend-inner>
         <chat-emojis
@@ -41,6 +41,7 @@
 <script>
 import { nextTick } from 'vue'
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
+import { isMobile } from '@/lib/display-mobile'
 
 export default {
   components: { ChatEmojis },
@@ -83,6 +84,7 @@ export default {
     emojiPickerOpen: false
   }),
   computed: {
+    isDesktopDevice: () => !isMobile(),
     className: () => 'a-chat',
     classes() {
       return [
@@ -135,8 +137,6 @@ export default {
   mounted() {
     if (this.messageText) {
       this.message = this.messageText
-      this.focus()
-    } else if (!this.$isMobile) {
       this.focus()
     }
     this.attachKeyCommandListener()

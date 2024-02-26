@@ -20,16 +20,6 @@ import 'dayjs/locale/ru'
 const app = createApp(App)
 
 app.config.globalProperties.appVersion = packageJSON.version
-const isTouchable =  'ontouchstart' in window || navigator.maxTouchPoints > 0;
-const isMobileUserAgent =  navigator.userAgent.match(/Android/i)
-  || navigator.userAgent.match(/webOS/i)
-  || navigator.userAgent.match(/iPhone/i)
-  || navigator.userAgent.match(/iPad/i)
-  || navigator.userAgent.match(/iPod/i)
-  || navigator.userAgent.match(/BlackBerry/i)
-  || navigator.userAgent.match(/Windows Phone/i)
-
-app.config.globalProperties.$isMobile = isTouchable && isMobileUserAgent
 
 app.use(router)
 app.use(store)
