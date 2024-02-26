@@ -229,7 +229,6 @@ export default {
       this.message += '\n'
     },
     focus() {
-      console.log('focus', this.$refs.messageTextarea)
       this.$refs.messageTextarea.focus()
     }
   }
