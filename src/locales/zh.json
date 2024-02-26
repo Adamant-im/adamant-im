@@ -18,8 +18,6 @@
     "unable_to_retrieve_no_public_key": "`无法解密消息：没有合作伙伴的公钥`",
     "me": "我",
     "message": "键入消息",
-    "message_mac_os": "键入消息。Cmd+Ctrl+Space for表情符号选取器",
-    "message_windows_10": "为表情符号选取器键入消息.Win+.",
     "my_qr_code": "我的二维码",
     "new_chat": "开始新的聊天",
     "no_connection": "没有Internet连接",
