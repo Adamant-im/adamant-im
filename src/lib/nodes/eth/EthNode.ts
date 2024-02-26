@@ -2,6 +2,7 @@ import Web3Eth from 'web3-eth'
 import { HttpProvider } from 'web3-providers-http'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { formatEthVersion } from '@/lib/nodes/utils/nodeVersionFormatters.ts'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -38,14 +39,6 @@ export class EthNode extends Node {
   }
 
   private async fetchNodeVersion(): Promise<void> {
-    try {
-      const parts = (await this.client.getNodeInfo()).split('/')
-      const clientName = parts.length > 0 ? parts[0] : ''
-      const fullVersion = parts.length > 1 ? parts[1]: ''
-      const simplifiedVersion = fullVersion.split('-')[0]
-      this.version = `${clientName}/${simplifiedVersion}`
-    } catch (e) {
-      console.error(e)
-    }
+    this.version = formatEthVersion(await this.client.getNodeInfo())
   }
 }

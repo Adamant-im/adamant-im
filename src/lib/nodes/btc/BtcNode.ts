@@ -2,7 +2,7 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import type { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { formatBtcVersion } from '@/lib/nodes/utils/formatBtcVersion.ts'
+import { formatBtcVersion } from '@/lib/nodes/utils/nodeVersionFormatters.ts'
 
 type FetchBtcNodeInfoResult = {
   error: string
@@ -43,16 +43,15 @@ export class BtcNode extends Node {
   }
 
   private async fetchNodeVersion(): Promise<void> {
-    try {
-      const { data } = await this.client.post<FetchBtcNodeInfoResult>('/bitcoind', {"jsonrpc":"1.0","id":"adm","method":"getnetworkinfo","params":[]})
-      const v =  data?.result?.version
-      if (v) {
-        this.version = 'v' + formatBtcVersion(v)
-      } else {
-        console.error(data.error)
-      }
-    } catch (e) {
-      console.error(e)
+    const { data } = await this.client.post<FetchBtcNodeInfoResult>('/bitcoind', {
+      jsonrpc: '1.0',
+      id: 'adm',
+      method: 'getnetworkinfo',
+      params: []
+    })
+    const version = data.result.version
+    if (version) {
+      this.version = formatBtcVersion(version)
     }
   }
 }

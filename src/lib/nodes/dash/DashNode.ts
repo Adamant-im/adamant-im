@@ -44,15 +44,11 @@ export class DashNode extends Node {
   }
 
   private async fetchNodeVersion(): Promise<void> {
-    try {
-      const { data } = await this.client.post<FetchNodeVersionResponse>('/', {method:'getnetworkinfo'})
-      if (data?.result.buildversion) {
-        this.version = data.result.buildversion
-      } else {
-        console.error(data.error)
-      }
-    } catch (e) {
-      console.error(e)
+    const { data } = await this.client.post<FetchNodeVersionResponse>('/', {
+      method: 'getnetworkinfo'
+    })
+    if (data.result.buildversion) {
+      this.version = data.result.buildversion
     }
   }
 }
