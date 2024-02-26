@@ -29,7 +29,7 @@ export default defineComponent({
     const { t } = useI18n()
 
     // it is cannot be just a ref cause of vuetify bug: https://github.com/vuetifyjs/vuetify/issues/4144
-    const search = ref<string>('')
+    const search = ref('')
 
     const computedSearch = computed({
       get() {
