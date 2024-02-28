@@ -11,21 +11,18 @@ const stateStorage = new TypedStorage<typeof WALLETS_STATE_STORAGE_KEY, WalletsS
   window.localStorage
 )
 function initWallets() {
-  let state = stateStorage.getItem()
+  const state = stateStorage.getItem()
+  const defaultState = { symbols: mapWallets() }
 
   if (!state) {
-    state = { symbols: mapWallets() }
-    stateStorage.setItem(state)
+    stateStorage.setItem(defaultState)
   } else {
-    const initialTemplate = mapWallets()
-
     const hasDifference = !!initialTemplate.filter(
       ({ symbol: symbol1 }) => !state!.symbols.some(({ symbol: symbol2 }) => symbol2 === symbol1)
     ).length
 
     if (hasDifference) {
-      state.symbols = mapWallets()
-      stateStorage.setItem(state)
+      stateStorage.setItem(defaultState)
     }
   }
 }
