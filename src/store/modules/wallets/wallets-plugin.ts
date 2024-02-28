@@ -17,7 +17,7 @@ function initWallets() {
   if (!state) {
     stateStorage.setItem(defaultState)
   } else {
-    const hasDifference = !!initialTemplate.filter(
+    const hasDifference = !!defaultState.symbols.filter(
       ({ symbol: symbol1 }) => !state!.symbols.some(({ symbol: symbol2 }) => symbol2 === symbol1)
     ).length
 
