@@ -1,6 +1,6 @@
 <template>
-  <div class="px-5">
-    <p :class="[classes.statusTitle, balance === 0 && 'a-text-explanation']">
+  <div class="px-0">
+    <p :class="[classes.statusTitle, balance === 0 && 'a-text-explanation']" class="text-end">
       {{ xs ? calculatedBalance : calculatedFullBalance }}
       <v-tooltip
         v-if="xs && calculatedFullBalance.toString().length > SIGNIFICANT_DIGITS"
@@ -11,7 +11,7 @@
       </v-tooltip>
     </p>
 
-    <p v-if="Number(balance) !== 0" :class="classes.statusText" class="text-end">
+    <p v-if="Number(balance) !== 0" :class="classes.statusText" class="text-end pt-1">
       {{ currentFiatCurrency }} {{ rate }}
     </p>
   </div>

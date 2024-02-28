@@ -32,11 +32,16 @@ export default {
         return value in AllCryptos || value === 'UNKNOWN_CRYPTO'
       }
     },
+    /** Icon custom size: for cases when icon should be a bit larger or smaller than small/medium/large */
+    customSize: {
+      type: Number
+    },
     /** Icon size: can be either 'small' (36x36), 'medium' (48x48) or 'large' (125x125) or undefined */
     size: {
       type: String,
       validator: (value) => ['small', 'medium', 'large'].indexOf(value) >= 0
     },
+
     /** Fill color, e.g. '#BDBDBD' */
     fill: {
       type: String,
@@ -50,6 +55,9 @@ export default {
   },
   computed: {
     sizePx() {
+      if (this.customSize) {
+        return this.customSize
+      }
       if (this.size === 'small') {
         return SMALL_SIZE
       } else if (this.size === 'medium') {

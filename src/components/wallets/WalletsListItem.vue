@@ -1,13 +1,18 @@
 <template>
   <v-list-item :title="localWallet.cryptoName">
     <v-list-item-subtitle>
-      <p>
-        {{ localWallet.type }} <b>{{ localWallet.symbol }}</b>
+      <p :class="classes.cryptoSubtitle">
+        {{ localWallet.type }}
+        <span :class="classes.cryptoSubtitleBold">{{ localWallet.symbol }}</span>
       </p>
     </v-list-item-subtitle>
     <template v-slot:prepend>
       <v-avatar>
-        <crypto-icon :class="classes.cryptoIcon" :crypto="localWallet.symbol" size="small" />
+        <crypto-icon
+          :class="classes.cryptoIcon"
+          :crypto="localWallet.symbol"
+          :customSize="iconSize"
+        />
       </v-avatar>
     </template>
 
@@ -52,8 +57,11 @@ type Wallet = {
 const className = 'wallets-view'
 const classes = {
   root: className,
-  cryptoIcon: `${className}__crypto-icon`
+  cryptoIcon: `${className}__crypto-icon`,
+  cryptoSubtitle: `${className}__crypto-subtitle`,
+  cryptoSubtitleBold: `${className}__crypto-subtitle-bold`
 }
+const iconSize = 32
 
 export default defineComponent({
   components: {
@@ -77,6 +85,7 @@ export default defineComponent({
 
     return {
       classes,
+      iconSize,
       localWallet,
       store
     }
@@ -92,6 +101,12 @@ export default defineComponent({
 .wallets-view {
   &__crypto-icon {
     padding-top: 3px;
+  }
+  &__crypto-subtitle {
+    font-weight: 300;
+  }
+  &__crypto-subtitle-bold {
+    font-weight: 600;
   }
   &__info {
     :deep(a) {
@@ -110,10 +125,6 @@ export default defineComponent({
   }
 
   :deep(.sortable-chosen) {
-    -webkit-box-shadow:
-      0 8px 9px -5px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
-      0 15px 22px 2px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
-      0 6px 28px 5px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12)) !important;
     box-shadow:
       0 8px 9px -5px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
       0 15px 22px 2px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
