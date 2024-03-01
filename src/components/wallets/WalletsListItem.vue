@@ -19,6 +19,8 @@
     <template v-slot:append>
       <WalletBalance :symbol="localWallet.symbol"></WalletBalance>
       <v-checkbox
+        class="pa-1"
+        density="comfortable"
         hide-details
         :model-value="store.getters['wallets/getVisibility'](localWallet.symbol)"
         @update:model-value="
@@ -31,6 +33,7 @@
       <v-btn
         color="grey-lighten-1"
         class="handle"
+        density="comfortable"
         icon="mdi-menu"
         :disabled="!localWallet.isVisible || !!search"
         variant="text"

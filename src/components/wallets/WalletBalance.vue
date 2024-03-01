@@ -1,5 +1,5 @@
 <template>
-  <div class="px-0">
+  <div class="px-0" :class="classes.root">
     <p :class="[classes.statusTitle, balance === 0 && 'a-text-explanation']" class="text-end">
       {{ xs ? calculatedBalance : calculatedFullBalance }}
       <v-tooltip
@@ -11,7 +11,7 @@
       </v-tooltip>
     </p>
 
-    <p v-if="Number(balance) !== 0" :class="classes.statusText" class="text-end pt-1">
+    <p v-if="Number(balance) !== 0" :class="classes.statusText" class="text-end">
       {{ currentFiatCurrency }} {{ rate }}
     </p>
   </div>
@@ -29,6 +29,7 @@ const SIGNIFICANT_DIGITS = 7
 const className = 'wallet-balance'
 
 const classes = {
+  root: className,
   statusTitle: `${className}__status-title`,
   statusText: `${className}__status-text`
 }
@@ -99,6 +100,11 @@ export default defineComponent({
 @import '@/assets/styles/settings/_colors.scss';
 
 .wallet-balance {
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+
   &__status-title {
     line-height: 17px;
   }
@@ -106,6 +112,7 @@ export default defineComponent({
   &__status-text {
     font-size: 12px;
     font-weight: 300;
+    line-height: 12px;
   }
 }
 
