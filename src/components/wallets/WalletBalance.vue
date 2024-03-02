@@ -56,11 +56,7 @@ export default defineComponent({
     })
 
     const calculatedBalance = computed(() => {
-      const preparedBalance = balance.value
-        ? currencyAmount(Number(balance.value), symbol.value, true)
-        : 0
-
-      return smartNumber(preparedBalance)
+      return smartNumber(calculatedFullBalance.value)
     })
 
     const calculatedFullBalance = computed(() => {

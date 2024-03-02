@@ -3,8 +3,8 @@ import { CoinSymbol } from '@/store/modules/wallets/types'
 
 export function mapWallets(): CoinSymbol[] {
   return AllCryptosOrder.map((crypto: CryptoSymbol) => {
-    const isVisible: boolean = !!CryptosInfo[crypto].defaultVisibility
-    const symbol: CryptoSymbol = CryptosInfo[crypto].symbol as CryptoSymbol
+    const isVisible = !!CryptosInfo[crypto].defaultVisibility
+    const symbol = CryptosInfo[crypto].symbol as CryptoSymbol
 
     return {
       isVisible,

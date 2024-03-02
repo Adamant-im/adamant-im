@@ -126,12 +126,16 @@ export default defineComponent({
       search.value = value
     }
 
+    const lowerCasedSearch = computed(() => {
+      return search.value.toLowerCase()
+    })
+
     const filteredWallets = computed({
       get() {
         return wallets.value.filter((wallet: Wallet) => {
           return (
-            wallet.cryptoName?.toLowerCase().includes(search.value.toLowerCase()) ||
-            wallet.symbol.toLowerCase().includes(search.value.toLowerCase())
+            wallet.cryptoName?.toLowerCase().includes(lowerCasedSearch.value) ||
+            wallet.symbol.toLowerCase().includes(lowerCasedSearch.value)
           )
         })
       },

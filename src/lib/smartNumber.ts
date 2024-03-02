@@ -16,7 +16,7 @@ const toSmallPrecision = (value: number | bignumber | string, significantDigits 
 
 const maximumBeforeCompact = 9999999
 const significantDigits = 5
-const minimumValue = toSmallPrecision(Math.pow(10, -(significantDigits - 1)))
+const minimumValue = toSmallPrecision(Math.pow(10, 1 - significantDigits))
 
 export default function smartNumber(num: string | number, locale: string = 'en-US') {
   //smart numbers
@@ -42,7 +42,7 @@ export default function smartNumber(num: string | number, locale: string = 'en-U
 
   // All other cases
   const maximumDecimalDigits = significantDigits - integerPartCount
-  const visibleDecimals = decimalPart ? decimalPart?.substring(0, maximumDecimalDigits) : ''
+  const visibleDecimals = decimalPart?.substring(0, maximumDecimalDigits) || ''
 
   return (
     toLocalCurrency(integerPart, locale, decimalOptions) +

@@ -7,11 +7,8 @@ export const CryptosInfo = data as unknown as Record<CryptoSymbol, TokenGeneral>
 
 // Enum of all cryptos
 export const AllCryptos = Object.values(CryptosInfo).reduce(
-  (cryptos, crypto) => {
-    const symbol = crypto.symbol as CryptoSymbol
-    cryptos[symbol] = symbol
-
-    return cryptos
+  (cryptos, { symbol }) => {
+    return { symbol, ...cryptos }
   },
   {} as Record<CryptoSymbol, CryptoSymbol>
 )

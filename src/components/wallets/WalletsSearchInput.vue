@@ -36,7 +36,7 @@ export default defineComponent({
         return search.value
       },
       set(newValue: string) {
-        search.value = newValue ? newValue : ''
+        search.value = newValue || ''
       }
     })
     return {
