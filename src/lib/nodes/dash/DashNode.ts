@@ -14,19 +14,13 @@ type FetchNodeVersionResponse = {
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
-export class DashNode extends Node {
-  client: AxiosInstance
-
+export class DashNode extends Node<AxiosInstance> {
   constructor(url: string) {
     super(url, 'dash', 'node', NODE_LABELS.DashNode)
+  }
 
-    this.client = createBtcLikeClient(url)
-
-    if (this.active) {
-      void this.fetchNodeVersion()
-    }
-
-    void this.startHealthcheck()
+  protected buildClient(): AxiosInstance {
+    return createBtcLikeClient(this.url)
   }
 
   protected async checkHealth() {
@@ -43,12 +37,13 @@ export class DashNode extends Node {
     }
   }
 
-  private async fetchNodeVersion(): Promise<void> {
+  protected async fetchNodeVersion(): Promise<void> {
     const { data } = await this.client.post<FetchNodeVersionResponse>('/', {
       method: 'getnetworkinfo'
     })
-    if (data.result.buildversion) {
-      this.version = data.result.buildversion
+    const { buildversion } = data.result
+    if (buildversion) {
+      this.version = buildversion.replace('v', '')
     }
   }
 }

@@ -9,19 +9,13 @@ import { v4 as uuid } from 'uuid'
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
-export class LskNode extends Node {
-  client: AxiosInstance
-
+export class LskNode extends Node<AxiosInstance> {
   constructor(url: string) {
     super(url, 'lsk', 'node', NODE_LABELS.LskNode)
+  }
 
-    this.client = axios.create({ baseURL: url })
-
-    // Don't fetch node info if user disabled it
-    if (this.active) {
-      void this.fetchNodeInfo()
-    }
-    void this.startHealthcheck()
+  protected buildClient(): AxiosInstance {
+    return axios.create({ baseURL: this.url })
   }
 
   /**
@@ -51,20 +45,10 @@ export class LskNode extends Node {
       })
   }
 
-  private async fetchNodeInfo(): Promise<{ version: string; height: number }> {
-    const { version, height } = await this.invoke('system_getNodeInfo')
-    this.version = 'v' + version
-    this.height = height
-
-    return {
-      version,
-      height
-    }
-  }
-
   protected async checkHealth() {
     const time = Date.now()
-    const { height } = await this.invoke('system_getNodeInfo')
+    const { height, version } = await this.invoke('system_getNodeInfo')
+    this.version = version
 
     return {
       height,

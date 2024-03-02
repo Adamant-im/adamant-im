@@ -15,19 +15,13 @@ type FetchBtcNodeInfoResult = {
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
-export class BtcNode extends Node {
-  client: AxiosInstance
-
+export class BtcNode extends Node<AxiosInstance> {
   constructor(url: string) {
     super(url, 'btc', 'node', NODE_LABELS.BtcNode)
+  }
 
-    this.client = createBtcLikeClient(url)
-
-    if (this.active) {
-      void this.fetchNodeVersion()
-    }
-
-    void this.startHealthcheck()
+  protected buildClient(): AxiosInstance {
+    return createBtcLikeClient(this.url)
   }
 
   protected async checkHealth() {
@@ -42,14 +36,14 @@ export class BtcNode extends Node {
     }
   }
 
-  private async fetchNodeVersion(): Promise<void> {
+  protected async fetchNodeVersion(): Promise<void> {
     const { data } = await this.client.post<FetchBtcNodeInfoResult>('/bitcoind', {
       jsonrpc: '1.0',
       id: 'adm',
       method: 'getnetworkinfo',
       params: []
     })
-    const version = data.result.version
+    const { version } = data.result
     if (version) {
       this.version = formatBtcVersion(version)
     }

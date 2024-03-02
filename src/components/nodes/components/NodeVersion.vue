@@ -21,7 +21,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const version = computed(() => props.node.version)
+    const version = computed(() => props.node.displayVersion)
 
     return {
       version,

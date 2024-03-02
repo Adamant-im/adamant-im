@@ -1,25 +1,22 @@
 export const formatBtcVersion = (version: number) => {
-  const parts = getBtcVersionParts(version)
-  if (parts.length < 3) return ''
-  if (parts[0] === 0) {
-    return `v${parts[0]}.${parts[1]}.${parts[2]}`
+  const [major, minor, patch] = getBtcVersionParts(version)
+  if (major === 0) {
+    return `${major}.${minor}.${patch}`
   } else {
-    return `v${parts[0]}.${parts[1]}`
+    return `${major}.${minor}`
   }
 }
 
 export const formatDogeVersion = (version: number) => {
-  const parts = getBtcVersionParts(version)
-  if (parts.length < 3) return ''
-  return `v${parts[0]}.${parts[1]}.${parts[2]}`
+  const [major, minor, patch] = getBtcVersionParts(version)
+  return `${major}.${minor}.${patch}`
 }
 
 export const formatEthVersion = (version: string) => {
   const parts = version.split('/')
-  const clientName = parts.length > 0 ? parts[0] : ''
-  const fullVersion = parts.length > 1 ? parts[1] : ''
-  const simplifiedVersion = fullVersion.split('-')[0]
-  return `${clientName}/${simplifiedVersion}`
+  const [clientName = '', fullVersion = ''] = parts
+  const [simplifiedVersion = ''] = fullVersion.split('-')
+  return { clientName, simplifiedVersion }
 }
 
 export const getBtcVersionParts = (version: number) =>
@@ -27,4 +24,4 @@ export const getBtcVersionParts = (version: number) =>
     .toString()
     .padStart(8, '0')
     .match(/.{1,2}/g)
-    ?.map((item) => +item) || []
+    ?.map(Number) || []
