@@ -89,25 +89,21 @@ export class SocketClient extends EventEmitter {
   }
 
   get fastestNode() {
-    return this.nodes.reduce((fastest, current) => {
-      if (!current.online || !current.active || current.outOfSync) {
-        return fastest
-      }
-      return !fastest || fastest.ping > current.ping ? current : fastest
-    })
+    const onlineNodes = this.nodes.filter(this.isActiveSocketNode)
+    if (onlineNodes.length === 0) return undefined
+    return onlineNodes.reduce((fastest, current) =>
+      !fastest || fastest.ping > current.ping ? current : fastest
+    )
   }
 
   get randomNode() {
-    const activeNodes = this.nodes.filter(
-      (n) => n.online && n.active && !n.outOfSync && n.socketSupport
-    )
-    return activeNodes[random(activeNodes.length - 1)]
+    const onlineNodes = this.nodes.filter(this.isActiveSocketNode)
+    if (onlineNodes.length === 0) return undefined
+    return onlineNodes[random(onlineNodes.length - 1)]
   }
 
   get hasActiveNodes() {
-    return Object.values(this.nodes).some(
-      (n) => n.online && n.active && !n.outOfSync && n.socketSupport
-    )
+    return Object.values(this.nodes).some(this.isActiveSocketNode)
   }
 
   get isOnline() {
@@ -115,7 +111,18 @@ export class SocketClient extends EventEmitter {
   }
 
   get isCurrentNodeActive() {
-    return this.nodes.some((node) => node.hostname === this.currentNode.hostname && node.active)
+    return this.nodes.some(
+      (node) => node.hostname === this.currentNode.hostname && this.isActiveSocketNode(node)
+    )
+  }
+
+  /**
+   * @param {Node} node
+   */
+  isActiveSocketNode(node) {
+    return (
+      node.online && node.active && !node.outOfSync && node.socketSupport && node.hasMinNodeVersion
+    )
   }
 
   /**

@@ -57,16 +57,7 @@ export abstract class Client<N extends Node> {
   }
 
   getClient(): N['client'] {
-    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
-
-    if (!node) {
-      console.warn(`${this.type}: No online nodes at the moment`)
-
-      // Return a random one from the full list hopefully is online
-      return this.nodes[Math.floor(Math.random() * this.nodes.length)].client
-    }
-
-    return node.client
+    return this.getNode().client
   }
 
   /**
@@ -106,21 +97,20 @@ export abstract class Client<N extends Node> {
    * @returns {ApiNode}
    */
   protected getRandomNode() {
-    const onlineNodes = this.nodes.filter((x) => x.online && x.active && !x.outOfSync)
-    const node = onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
-    return node
+    const onlineNodes = this.nodes.filter(this.isActiveNode)
+    if (onlineNodes.length === 0) return undefined
+    return onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
   }
 
   /**
    * Returns the fastest node.
    */
   protected getFastestNode() {
-    return this.nodes.reduce((fastest, current) => {
-      if (!current.online || !current.active || current.outOfSync) {
-        return fastest
-      }
-      return !fastest || fastest.ping > current.ping ? current : fastest
-    })
+    const onlineNodes = this.nodes.filter(this.isActiveNode)
+    if (onlineNodes.length === 0) return undefined
+    return onlineNodes.reduce((fastest, current) =>
+      !fastest || fastest.ping > current.ping ? current : fastest
+    )
   }
 
   protected getNode() {
@@ -139,8 +129,7 @@ export abstract class Client<N extends Node> {
    * Throws an error if all the nodes are offline.
    */
   assertAnyNodeOnline() {
-    const onlineNodes = this.nodes.filter((x) => x.online && x.active && !x.outOfSync)
-
+    const onlineNodes = this.nodes.filter(this.isActiveNode)
     if (onlineNodes.length === 0) {
       throw new AllNodesOfflineError(this.type)
     }
@@ -163,5 +152,9 @@ export abstract class Client<N extends Node> {
     for (const node of nodes) {
       node.outOfSync = !nodesInSync.nodes.includes(node)
     }
+  }
+
+  protected isActiveNode(node: Node) {
+    return node.online && node.active && !node.outOfSync && node.hasMinNodeVersion()
   }
 }
