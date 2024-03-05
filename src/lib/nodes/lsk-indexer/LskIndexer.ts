@@ -7,19 +7,13 @@ import { Endpoints } from './types/api/endpoints'
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
-export class LskIndexer extends Node {
-  client: AxiosInstance
-
+export class LskIndexer extends Node<AxiosInstance> {
   constructor(url: string) {
     super(url, 'lsk', 'service', NODE_LABELS.LskIndexer)
+  }
 
-    this.client = axios.create({ baseURL: `${url}/api/v3` })
-
-    // Don't fetch node info if user disabled it
-    if (this.active) {
-      void this.fetchServiceInfo()
-    }
-    void this.startHealthcheck()
+  protected buildClient(): AxiosInstance {
+    return axios.create({ baseURL: `${this.url}/api/v3` })
   }
 
   /**

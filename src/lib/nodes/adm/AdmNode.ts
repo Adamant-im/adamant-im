@@ -27,25 +27,19 @@ export type RequestConfig<P extends Payload> = {
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
-export class AdmNode extends Node {
-  client: AxiosInstance
-
+export class AdmNode extends Node<AxiosInstance> {
   constructor(url: string, minNodeVersion = '0.0.0') {
-    super(url, 'adm', 'node', NODE_LABELS.AdmNode, minNodeVersion, minNodeVersion)
+    super(url, 'adm', 'node', NODE_LABELS.AdmNode, '', minNodeVersion)
 
     this.wsPort = '36668' // default wsPort
     this.wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:'
     this.wsPortNeeded = this.wsProtocol === 'ws:' && !this.hostname.includes('.onion')
+  }
 
-    this.client = axios.create({
+  protected buildClient(): AxiosInstance {
+    return axios.create({
       baseURL: this.url
     })
-
-    // Don't fetch node info if user disabled it
-    if (this.active) {
-      void this.fetchNodeInfo()
-    }
-    void this.startHealthcheck()
   }
 
   /**
@@ -91,21 +85,24 @@ export class AdmNode extends Node {
    * @returns {Promise<{version: string, height: number, ping: number}>}
    */
   private async fetchNodeInfo(): Promise<FetchNodeInfoResult> {
-    const response: GetNodeStatusResponseDto = await this.request({ url: '/api/node/status' })
+    const { success, version, network, wsClient } = await this.request<
+      Payload,
+      GetNodeStatusResponseDto
+    >({ url: '/api/node/status' })
 
-    if (response.success) {
-      const version = response.version.version
-      const height = Number(response.network.height)
-      const socketSupport = response.wsClient ? response.wsClient.enabled : false
-      const wsPort = response.wsClient ? String(response.wsClient.port) : ''
+    if (success) {
+      const readableVersion = version.version
+      const height = Number(network.height)
+      const socketSupport = wsClient ? wsClient.enabled : false
+      const wsPort = wsClient ? String(wsClient.port) : ''
 
-      this.version = version
+      this.version = readableVersion
       this.height = height
       this.socketSupport = socketSupport
       this.wsPort = wsPort
 
       return {
-        version,
+        version: readableVersion,
         height,
         socketSupport,
         wsPort
@@ -117,10 +114,10 @@ export class AdmNode extends Node {
 
   protected async checkHealth() {
     const time = Date.now()
-    const nodeInfo = await this.fetchNodeInfo()
+    const { height } = await this.fetchNodeInfo()
 
     return {
-      height: nodeInfo.height,
+      height,
       ping: Date.now() - time
     }
   }
