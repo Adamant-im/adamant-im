@@ -98,7 +98,6 @@ export abstract class Client<N extends Node> {
    */
   protected getRandomNode() {
     const onlineNodes = this.nodes.filter(this.isActiveNode)
-    if (onlineNodes.length === 0) return undefined
     return onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
   }
 
@@ -109,7 +108,7 @@ export abstract class Client<N extends Node> {
     const onlineNodes = this.nodes.filter(this.isActiveNode)
     if (onlineNodes.length === 0) return undefined
     return onlineNodes.reduce((fastest, current) =>
-      !fastest || fastest.ping > current.ping ? current : fastest
+      current.ping < fastest.ping ? current : fastest
     )
   }
 

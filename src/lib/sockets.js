@@ -92,13 +92,12 @@ export class SocketClient extends EventEmitter {
     const onlineNodes = this.nodes.filter(this.isActiveSocketNode)
     if (onlineNodes.length === 0) return undefined
     return onlineNodes.reduce((fastest, current) =>
-      !fastest || fastest.ping > current.ping ? current : fastest
+      current.ping < fastest.ping ? current : fastest
     )
   }
 
   get randomNode() {
     const onlineNodes = this.nodes.filter(this.isActiveSocketNode)
-    if (onlineNodes.length === 0) return undefined
     return onlineNodes[random(onlineNodes.length - 1)]
   }
 
