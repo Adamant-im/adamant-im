@@ -10,7 +10,7 @@
       <v-icon class="chat-emojis__icon" icon="mdi-emoticon-outline" size="28" v-bind="props" />
     </template>
 
-    <emoji-picker @emoji:select="getEmoji" :elevation="true"></emoji-picker>
+    <emoji-picker @emoji:select="getEmoji"></emoji-picker>
   </v-menu>
 </template>
 <script>

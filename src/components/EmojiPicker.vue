@@ -1,6 +1,7 @@
 <template>
   <div
     :class="{
+      'is-dark': $vuetify.theme.current.dark,
       [classes.root]: true,
       'elevation-9': elevation
     }"
@@ -64,6 +65,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+.emoji-picker.is-dark {
+  em-emoji-picker {
+    border-color: #3c3c3c;
+  }
+}
 .emoji-picker {
   border-radius: 8px;
 
@@ -71,6 +77,9 @@ export default defineComponent({
     width: 264px;
     height: 264px;
     border-radius: 8px;
+    border-color: #d7d7d7;
+    border-width: 1px;
+    border-style: solid;
 
     #root {
       border-top-left-radius: 0;
