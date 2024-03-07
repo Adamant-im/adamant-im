@@ -1,6 +1,15 @@
 <template>
-  <div class="px-0" :class="[classes.root, balance === 0 && 'justify-center']">
-    <p :class="[classes.statusTitle, balance === 0 && 'a-text-explanation']" class="text-end">
+  <div
+    class="px-0"
+    :class="{
+      [classes.root]: true,
+      'justify-center': balance === 0
+    }"
+  >
+    <p
+      :class="{ [classes.statusTitle]: true, 'a-text-explanation': balance === 0 }"
+      class="text-end"
+    >
       {{ xs ? calculatedBalance : calculatedFullBalance }}
       <v-tooltip
         v-if="xs && calculatedFullBalance.toString().length > SIGNIFICANT_DIGITS"
