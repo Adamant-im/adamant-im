@@ -1,7 +1,6 @@
 <template>
   <div
     :class="{
-      'is-dark': $vuetify.theme.current.dark,
       [classes.root]: true,
       'elevation-9': elevation
     }"
@@ -65,11 +64,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.emoji-picker.is-dark {
-  em-emoji-picker {
-    border-color: #3c3c3c;
-  }
-}
+@import 'vuetify/settings';
+@import '../assets/styles/settings/_colors.scss';
 .emoji-picker {
   border-radius: 8px;
 
@@ -77,7 +73,7 @@ export default defineComponent({
     width: 264px;
     height: 264px;
     border-radius: 8px;
-    border-color: #d7d7d7;
+    border-color: map-get($adm-colors, 'light-theme-border');
     border-width: 1px;
     border-style: solid;
 
@@ -85,6 +81,11 @@ export default defineComponent({
       border-top-left-radius: 0;
       border-top-right-radius: 0;
     }
+  }
+}
+.v-theme--dark {
+  em-emoji-picker {
+    border-color: map-get($adm-colors, 'dark-theme-border');
   }
 }
 </style>
