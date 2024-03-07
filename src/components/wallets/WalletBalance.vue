@@ -1,5 +1,5 @@
 <template>
-  <div class="px-0" :class="classes.root">
+  <div class="px-0" :class="[classes.root, balance === 0 && 'justify-center']">
     <p :class="[classes.statusTitle, balance === 0 && 'a-text-explanation']" class="text-end">
       {{ xs ? calculatedBalance : calculatedFullBalance }}
       <v-tooltip
@@ -98,17 +98,18 @@ export default defineComponent({
 .wallet-balance {
   height: 40px;
   display: flex;
+  line-height: 1;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
 
   &__status-title {
-    line-height: 17px;
+    line-height: 1;
   }
 
   &__status-text {
     font-size: 12px;
     font-weight: 300;
-    line-height: 12px;
+    line-height: 1;
   }
 }
 

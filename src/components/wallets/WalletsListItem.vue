@@ -1,18 +1,21 @@
 <template>
-  <v-list-item :title="localWallet.cryptoName">
-    <v-list-item-subtitle>
-      <p :class="classes.cryptoSubtitle">
-        {{ localWallet.type }}
-        <span :class="classes.cryptoSubtitleBold">{{ localWallet.symbol }}</span>
-      </p>
-    </v-list-item-subtitle>
+  <v-list-item>
+    <template v-slot:default>
+      <div :class="classes.cryptoContent">
+        <v-list-item-title :class="classes.cryptoTitle">{{
+          localWallet.cryptoName
+        }}</v-list-item-title>
+        <v-list-item-subtitle>
+          <p :class="classes.cryptoSubtitle">
+            {{ localWallet.type }}
+            <span :class="classes.cryptoSubtitleBold">{{ localWallet.symbol }}</span>
+          </p>
+        </v-list-item-subtitle>
+      </div>
+    </template>
     <template v-slot:prepend>
       <v-avatar>
-        <crypto-icon
-          :class="classes.cryptoIcon"
-          :crypto="localWallet.symbol"
-          :customSize="iconSize"
-        />
+        <crypto-icon :crypto="localWallet.symbol" :customSize="iconSize" />
       </v-avatar>
     </template>
 
@@ -60,9 +63,10 @@ type Wallet = {
 const className = 'wallets-view'
 const classes = {
   root: className,
-  cryptoIcon: `${className}__crypto-icon`,
+  cryptoContent: `${className}__crypto-content`,
   cryptoSubtitle: `${className}__crypto-subtitle`,
-  cryptoSubtitleBold: `${className}__crypto-subtitle-bold`
+  cryptoSubtitleBold: `${className}__crypto-subtitle-bold`,
+  cryptoTitle: `${className}__crypto-title`
 }
 const iconSize = 32
 
@@ -102,14 +106,22 @@ export default defineComponent({
 @import '@/assets/styles/settings/_colors.scss';
 
 .wallets-view {
-  &__crypto-icon {
-    padding-top: 3px;
+  &__crypto-content {
+    height: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    line-height: 1;
   }
   &__crypto-subtitle {
     font-weight: 300;
+    line-height: 1;
   }
   &__crypto-subtitle-bold {
     font-weight: 600;
+  }
+  &__crypto-title {
+    line-height: 1;
   }
   &__info {
     :deep(a) {
