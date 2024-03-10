@@ -1,4 +1,5 @@
 import { DraftState } from '@/store/modules/draft-message'
+import { WalletsState } from '@/store/modules/wallets/types'
 
 export interface RootState {
   address: string
@@ -28,4 +29,5 @@ export interface RootState {
   notification: any
   rate: any
   draftMessage: DraftState
+  wallets: WalletsState
 }

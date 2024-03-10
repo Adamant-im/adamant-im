@@ -7,7 +7,7 @@
 
       <v-list class="chat-menu__list">
         <!-- Cryptos -->
-        <v-list-item v-for="c in cryptos" :key="c" @click="sendFunds(c)">
+        <v-list-item v-for="c in wallets" :key="c" @click="sendFunds(c)">
           <template #prepend>
             <crypto-icon :crypto="c" box-centered />
           </template>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { Cryptos, CryptosOrder } from '@/lib/constants'
+import { Cryptos } from '@/lib/constants'
 import ChatDialog from '@/components/Chat/ChatDialog.vue'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import IconBox from '@/components/icons/IconBox.vue'
@@ -54,7 +54,6 @@ export default {
     }
   },
   data: () => ({
-    cryptos: CryptosOrder,
     menuItems: [
       {
         type: 'action',
@@ -74,6 +73,16 @@ export default {
     dialogText: '',
     crypto: ''
   }),
+  computed: {
+    orderedVisibleWalletSymbols() {
+      return this.$store.getters['wallets/getVisibleOrderedWalletSymbols']
+    },
+    wallets() {
+      return this.orderedVisibleWalletSymbols.map((crypto) => {
+        return crypto.symbol
+      })
+    }
+  },
   methods: {
     sendFunds(crypto) {
       // check if user has crypto wallet
