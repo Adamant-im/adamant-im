@@ -20,6 +20,7 @@ import navigatorOnline from './plugins/navigatorOnline'
 import socketsPlugin from './plugins/socketsPlugin'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
+import bodCommandsModule from './modules/bot-commands'
 import dogeModule from './modules/doge'
 import lskModule from './modules/lsk'
 import dashModule from './modules/dash'
@@ -27,6 +28,7 @@ import bitcoinModule from './modules/btc'
 import nodesModule from './modules/nodes'
 import delegatesModule from './modules/delegates'
 import nodesPlugin from './modules/nodes/nodes-plugin'
+import botCommandsPlugin from './modules/bot-commands/bot-commands-plugin'
 import draftMessage from '@/store/modules/draft-message'
 import snackbar from './modules/snackbar'
 import language from './modules/language'
@@ -231,6 +233,7 @@ const store = {
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes
+    botCommands: bodCommandsModule,
     snackbar,
     draftMessage,
     language,
@@ -252,7 +255,8 @@ registerVuexPlugins(storeInstance, [
   localStoragePlugin,
   indexedDbPlugin,
   navigatorOnline,
-  socketsPlugin
+  socketsPlugin,
+  botCommandsPlugin
 ])
 
 export { store } // for tests
