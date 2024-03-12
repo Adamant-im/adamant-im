@@ -208,7 +208,6 @@ import {
   getMinAmount,
   isSelfTxAllowed,
   CryptosInfo,
-  CryptosOrder,
   isTextDataAllowed,
   MessageType,
   Fees
@@ -225,6 +224,7 @@ import partnerName from '@/mixins/partnerName'
 import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
+import { AllCryptos } from '@/lib/constants/cryptos'
 
 /**
  * @returns {string | boolean}
@@ -255,7 +255,7 @@ export default {
     cryptoCurrency: {
       type: String,
       default: 'ADM',
-      validator: (value) => value in Cryptos
+      validator: (value) => value in AllCryptos
     },
     recipientAddress: {
       type: String,
@@ -371,7 +371,7 @@ export default {
      * @returns {string}
      */
     transferFeeCurrency() {
-      return isErc20(this.currency) ? Cryptos.ETH : this.currency
+      return isErc20(this.currency) ? AllCryptos.ETH : this.currency
     },
 
     /**
@@ -471,8 +471,13 @@ export default {
     exponent() {
       return CryptosInfo[this.currency].cryptoTransferDecimals
     },
+    orderedVisibleWalletSymbols() {
+      return this.$store.getters['wallets/getVisibleOrderedWalletSymbols']
+    },
     cryptoList() {
-      return CryptosOrder
+      return this.orderedVisibleWalletSymbols.map((crypto) => {
+        return crypto.symbol
+      })
     },
     confirmMessage() {
       const msgType =

@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { Cryptos } from '@/lib/constants'
+import { AllCryptos } from '@/lib/constants/cryptos'
 import BuyTokensDialog from '@/components/BuyTokensDialog.vue'
 import { websiteUriToOnion } from '@/lib/uri'
 
@@ -46,8 +46,8 @@ export default {
   props: {
     crypto: {
       type: String,
-      default: Cryptos.ADM,
-      validator: (v) => v in Cryptos
+      default: AllCryptos.ADM,
+      validator: (v) => v in AllCryptos
     },
     isADM: {
       required: true,
