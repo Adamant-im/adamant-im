@@ -66,9 +66,6 @@ export default defineComponent({
 <style lang="scss">
 @import 'vuetify/settings';
 
-$dark-theme-border-color: rgba(map-get($shades, 'white'), var(--v-border-opacity));
-$light-theme-border-color: rgba(map-get($shades, 'black'), var(--v-border-opacity));
-
 .emoji-picker {
   border-radius: 8px;
 
@@ -76,7 +73,6 @@ $light-theme-border-color: rgba(map-get($shades, 'black'), var(--v-border-opacit
     width: 264px;
     height: 264px;
     border-radius: 8px;
-    border-color: $light-theme-border-color;
     border-width: 1px;
     border-style: solid;
 
@@ -86,9 +82,14 @@ $light-theme-border-color: rgba(map-get($shades, 'black'), var(--v-border-opacit
     }
   }
 }
+.v-theme--light {
+  em-emoji-picker {
+    border-color: rgba(map-get($shades, 'black'), var(--v-border-opacity));
+  }
+}
 .v-theme--dark {
   em-emoji-picker {
-    border-color: $dark-theme-border-color;
+    border-color: rgba(map-get($shades, 'white'), var(--v-border-opacity));
   }
 }
 </style>
