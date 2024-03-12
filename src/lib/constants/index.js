@@ -1,4 +1,4 @@
-import { Cryptos, CryptosInfo, CryptosOrder } from './cryptos'
+import { AllCryptos, AllCryptosOrder, Cryptos, CryptosInfo, CryptosOrder } from './cryptos'
 
 export const EPOCH = Date.UTC(2017, 8, 2, 17, 0, 0, 0)
 
@@ -109,7 +109,7 @@ export const DEFAULT_ERC20_TRANSFER_GAS_LIMIT = DEFAULT_ETH_TRANSFER_GAS_LIMIT *
 /** Increase fee multiplier. Used as a checkbox on SendFundsForm */
 export const INCREASE_FEE_MULTIPLIER = 1.5
 
-export { Cryptos, CryptosInfo, CryptosOrder }
+export { AllCryptos, AllCryptosOrder, Cryptos, CryptosInfo, CryptosOrder }
 
 export default {
   EPOCH,

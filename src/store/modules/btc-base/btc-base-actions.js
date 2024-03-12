@@ -5,6 +5,7 @@ import { nodes } from '../../../lib/nodes'
 import { createPendingTransaction, PendingTxStore } from '../../../lib/pending-transactions'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import * as tf from '../../../lib/transactionsFetching'
+import shouldUpdate from '../../utils/coinUpdatesGuard'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 
@@ -83,7 +84,13 @@ function createActions(options) {
      */
     updateBalance: {
       root: true,
-      async handler({ commit }, payload = {}) {
+      async handler({ commit, rootGetters, state }, payload = {}) {
+        const coin = state.crypto
+
+        if (!shouldUpdate(() => rootGetters['wallets/getVisibility'](coin))) {
+          return
+        }
+
         if (payload.requestedByUser) {
           commit('setBalanceStatus', FetchStatus.Loading)
         }
