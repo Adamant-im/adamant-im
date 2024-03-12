@@ -20,7 +20,7 @@ import navigatorOnline from './plugins/navigatorOnline'
 import socketsPlugin from './plugins/socketsPlugin'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
-import bodCommandsModule from './modules/bot-commands'
+import botCommandsModule from './modules/bot-commands'
 import bitcoinModule from './modules/btc'
 import dashModule from './modules/dash'
 import delegatesModule from './modules/delegates'
@@ -236,7 +236,7 @@ const store = {
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes
-    botCommands: bodCommandsModule,
+    botCommands: botCommandsModule,
     snackbar,
     draftMessage,
     language,

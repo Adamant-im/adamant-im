@@ -42,7 +42,6 @@
 import { nextTick } from 'vue'
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
-import { isSingleSymbol } from '@/lib/chat/helpers/isSingleSymbol'
 
 export default {
   components: { ChatEmojis },
@@ -157,11 +156,10 @@ export default {
     onKeyCommand: function (event) {
       if (event.ctrlKey && event.shiftKey && event.code === 'Digit1') {
         this.openElement()
-      }
-      if (event.code === 'ArrowUp' || event.code === 'ArrowDown') {
+      } else if (event.code === 'ArrowUp' || event.code === 'ArrowDown') {
         this.selectCommand(event.code)
         event.preventDefault()
-      } else if (isSingleSymbol(event.key)) {
+      } else if (event.key.length === 1) {
         this.botCommandSelectionMode = false
         this.botCommandIndex = null
       }
@@ -253,23 +251,29 @@ export default {
       if (!this.message) {
         this.botCommandSelectionMode = true
       }
-      if (this.botCommandSelectionMode) {
-        const commands = this.$store.getters['botCommands/getCommandsHistory'](this.partnerId)
-        const maxIndex = commands.length > 0 ? commands.length - 1 : 0
-        if (this.botCommandIndex === null) {
-          if (direction === 'ArrowUp') {
-            this.botCommandIndex = maxIndex
-          }
-        } else {
-          if (direction === 'ArrowUp') {
-            if (this.botCommandIndex > 0) {
-              this.botCommandIndex--
-            }
-          } else if (this.botCommandIndex < maxIndex) {
-            this.botCommandIndex++
-          }
+      if (!this.botCommandSelectionMode) {
+        return
+      }
+      const commands = this.$store.getters['botCommands/getCommandsHistory'](this.partnerId)
+      const maxIndex = commands.length > 0 ? commands.length - 1 : 0
+      if (this.botCommandIndex === null) {
+        if (direction === 'ArrowUp') {
+          this.botCommandIndex = maxIndex
+          this.message = commands[this.botCommandIndex] || ''
         }
+        return
+      }
 
+      if (direction === 'ArrowUp') {
+        if (this.botCommandIndex > 0) {
+          this.botCommandIndex--
+          this.message = commands[this.botCommandIndex] || ''
+        }
+        return
+      }
+
+      if (this.botCommandIndex < maxIndex) {
+        this.botCommandIndex++
         this.message = commands[this.botCommandIndex] || ''
       }
     }
