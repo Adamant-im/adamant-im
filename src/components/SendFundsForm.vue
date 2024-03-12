@@ -12,6 +12,7 @@
         variant="underlined"
         :items="cryptoList"
         :disabled="addressReadonly"
+        :menu-icon="addressReadonly ? '' : 'mdi-menu-down'"
       />
 
       <v-text-field
