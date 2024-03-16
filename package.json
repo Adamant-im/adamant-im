@@ -1,6 +1,6 @@
 {
   "name": "adamant-im",
-  "version": "4.5.3",
+  "version": "4.6.0",
   "author": "ADAMANT Foundation <devs@adamant.im>",
   "license": "GPLv3",
   "description": "Decentralized Messenger",
@@ -23,6 +23,9 @@
     "https": "vite preview --https",
     "test": "vitest",
     "coverage": "vitest run --coverage",
+    "bump-patch": "npm version patch",
+    "bump-minor": "npm version minor",
+    "bump-major": "npm version major",
     "postinstall": "electron-builder install-app-deps && npm run schema:generate"
   },
   "dependencies": {

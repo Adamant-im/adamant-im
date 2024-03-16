@@ -47,8 +47,10 @@ export function filterSyncedNodes<N extends Node>(nodes: N[], type: NodeType): G
     }
   })
 
-  // A group with the longest same-height nodes list wins.
-  // If two groups have the same number of nodes, the one with the biggest height wins.
+  /** A group with the longest same-height nodes list wins.
+   * If two groups have the same number of nodes,
+   * the one with the biggest height wins.
+   * */
   const winner = groups.reduce((acc, curr) => {
     if (curr.height > acc.height || curr.nodes.length > acc.nodes.length) {
       return curr
