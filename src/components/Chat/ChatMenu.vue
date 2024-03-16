@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-menu>
+    <v-menu eager>
       <template #activator="{ props }">
         <v-icon class="chat-menu__icon" v-bind="props" icon="mdi-plus-circle-outline" size="28" />
       </template>
