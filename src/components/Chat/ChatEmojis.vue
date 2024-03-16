@@ -1,6 +1,7 @@
 <template>
   <v-menu
     :model-value="open"
+    :eager="true"
     @update:model-value="toggleMenu"
     :close-on-content-click="false"
     transition="slide-y-reverse-transition"
