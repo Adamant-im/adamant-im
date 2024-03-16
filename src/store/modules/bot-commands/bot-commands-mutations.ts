@@ -4,12 +4,11 @@ import { BotCommand, BotCommandsState } from '@/store/modules/bot-commands/types
 export const mutations: MutationTree<BotCommandsState> = {
   addCommand(state, botCommand: BotCommand): void {
     const commandValue = botCommand.command.trim()
-    if (!state.commands[botCommand.partnerId]) {
+    const botCommands = state.commands[botCommand.partnerId]
+    if (!botCommands) {
       state.commands[botCommand.partnerId] = [commandValue]
-    } else {
-      if (!state.commands[botCommand.partnerId].includes(commandValue)) {
-        state.commands[botCommand.partnerId].push(commandValue)
-      }
+    } else if (!botCommands.includes(commandValue)) {
+      botCommands.push(commandValue)
     }
   }
 }
