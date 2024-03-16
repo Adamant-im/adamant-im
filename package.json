@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "serve": "vite preview --config vite-pwa.config.ts",
-    "dev": "vite --config vite-pwa.config.ts",
+    "dev": "vite --host 0.0.0.0 --config vite-pwa.config.ts",
     "serve:test": "cross-env ADM_CONFIG_FILE=test vue-cli-service serve",
     "wallets:generate": "npm run wallets:data:generate && npm run wallets:types:generate",
     "wallets:data:generate": "node scripts/wallets.mjs",

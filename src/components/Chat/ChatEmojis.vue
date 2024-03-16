@@ -2,6 +2,7 @@
   <v-menu
     :model-value="open"
     :eager="true"
+    location="top"
     @update:model-value="toggleMenu"
     :close-on-content-click="false"
     transition="slide-y-reverse-transition"

@@ -68,6 +68,8 @@ export default defineComponent({
 
 .emoji-picker {
   border-radius: 8px;
+  position: absolute;
+  bottom: 0;
 
   em-emoji-picker {
     width: 264px;
