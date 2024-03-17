@@ -52,6 +52,7 @@
               v-if="showEmojiPicker"
               @emoji:select="(emoji) => onEmojiSelect(actionMessage.id, emoji)"
               elevation
+              position="absolute"
             />
 
             <AChatReactionSelect
@@ -119,6 +120,7 @@
                   v-if="showEmojiPicker"
                   @emoji:select="(emoji) => onEmojiSelect(message.id, emoji)"
                   elevation
+                  position="absolute"
                 />
 
                 <AChatReactionSelect
@@ -175,6 +177,7 @@
                   v-if="showEmojiPicker"
                   @emoji:select="(emoji) => onEmojiSelect(message.id, emoji)"
                   elevation
+                  position="absolute"
                 />
 
                 <AChatReactionSelect
