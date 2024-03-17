@@ -144,6 +144,7 @@ export default {
 .chat-menu {
   &__list {
     min-width: 200px;
+    max-height: 100vh;
 
     :deep(.v-list-item-title) {
       font-weight: 400;

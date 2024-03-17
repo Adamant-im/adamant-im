@@ -66,6 +66,7 @@ export default defineComponent({
 <style lang="scss">
 @import 'vuetify/settings';
 
+//Fix for Chrome on iOS. Don't touch it
 .emoji-picker {
   border-radius: 8px;
   position: absolute;
