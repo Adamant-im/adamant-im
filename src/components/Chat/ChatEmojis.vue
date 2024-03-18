@@ -2,6 +2,7 @@
   <v-menu
     :model-value="open"
     :eager="true"
+    location="top"
     @update:model-value="toggleMenu"
     :close-on-content-click="false"
     transition="slide-y-reverse-transition"
@@ -10,7 +11,7 @@
       <v-icon class="chat-emojis__icon" icon="mdi-emoticon-outline" size="28" v-bind="props" />
     </template>
 
-    <emoji-picker @emoji:select="getEmoji"></emoji-picker>
+    <emoji-picker @emoji:select="getEmoji" position="absolute"></emoji-picker>
   </v-menu>
 </template>
 <script>

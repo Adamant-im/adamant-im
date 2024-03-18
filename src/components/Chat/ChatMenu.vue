@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-menu>
+    <v-menu eager>
       <template #activator="{ props }">
         <v-icon class="chat-menu__icon" v-bind="props" icon="mdi-plus-circle-outline" size="28" />
       </template>
@@ -144,6 +144,7 @@ export default {
 .chat-menu {
   &__list {
     min-width: 200px;
+    max-height: 100vh;
 
     :deep(.v-list-item-title) {
       font-weight: 400;

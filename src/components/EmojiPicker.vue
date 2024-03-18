@@ -2,6 +2,7 @@
   <div
     :class="{
       [classes.root]: true,
+      [classes.positionAbsolute]: position === 'absolute',
       'elevation-9': elevation
     }"
   >
@@ -12,19 +13,23 @@
 <script lang="ts">
 import { useTheme } from '@/hooks/useTheme'
 import axios from 'axios'
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, onMounted, PropType, ref } from 'vue'
 import { Picker } from 'emoji-mart'
 import { isMobile } from '@/lib/display-mobile'
 
 const className = 'emoji-picker'
 const classes = {
-  root: className
+  root: className,
+  positionAbsolute: `${className}--position-absolute`
 }
 
 export default defineComponent({
   props: {
     elevation: {
       type: Boolean
+    },
+    position: {
+      type: String as PropType<'absolute'>
     }
   },
   emits: ['emoji:select'],
@@ -68,6 +73,12 @@ export default defineComponent({
 
 .emoji-picker {
   border-radius: 8px;
+
+  &--position-absolute {
+    // Fix for Chrome on iOS. Don't touch it
+    position: absolute;
+    bottom: 0;
+  }
 
   em-emoji-picker {
     width: 264px;
