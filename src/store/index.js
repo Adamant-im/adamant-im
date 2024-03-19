@@ -20,6 +20,7 @@ import navigatorOnline from './plugins/navigatorOnline'
 import socketsPlugin from './plugins/socketsPlugin'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
+import botCommandsModule from './modules/bot-commands'
 import bitcoinModule from './modules/btc'
 import dashModule from './modules/dash'
 import delegatesModule from './modules/delegates'
@@ -29,6 +30,7 @@ import nodesModule from './modules/nodes'
 import walletsModule from './modules/wallets'
 import nodesPlugin from './modules/nodes/nodes-plugin'
 import walletsPersistencePlugin from './modules/wallets/wallets-plugin'
+import botCommandsPlugin from './modules/bot-commands/bot-commands-plugin'
 import draftMessage from '@/store/modules/draft-message'
 import snackbar from './modules/snackbar'
 import language from './modules/language'
@@ -234,6 +236,7 @@ const store = {
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes
+    botCommands: botCommandsModule,
     snackbar,
     draftMessage,
     language,
@@ -257,6 +260,7 @@ registerVuexPlugins(storeInstance, [
   indexedDbPlugin,
   navigatorOnline,
   socketsPlugin,
+  botCommandsPlugin,
   walletsPersistencePlugin
 ])
 

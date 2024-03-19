@@ -81,7 +81,9 @@ export default {
   emits: ['message', 'esc', 'error'],
   data: () => ({
     message: '',
-    emojiPickerOpen: false
+    emojiPickerOpen: false,
+    botCommandIndex: null,
+    botCommandSelectionMode: false
   }),
   computed: {
     isDesktopDevice: () => !isMobile(),
@@ -154,6 +156,12 @@ export default {
     onKeyCommand: function (event) {
       if (event.ctrlKey && event.shiftKey && event.code === 'Digit1') {
         this.openElement()
+      } else if (event.code === 'ArrowUp' || event.code === 'ArrowDown') {
+        this.selectCommand(event.code)
+        event.preventDefault()
+      } else if (event.key.length === 1) {
+        this.botCommandSelectionMode = false
+        this.botCommandIndex = null
       }
     },
     openElement() {
@@ -210,6 +218,12 @@ export default {
     submitMessage() {
       const error = this.validator(this.message)
       if (error === false) {
+        if (this.message.startsWith('/')) {
+          this.$store.commit('botCommands/addCommand', {
+            partnerId: this.partnerId,
+            command: this.message
+          })
+        }
         this.$emit('message', this.message)
         this.message = ''
         this.$store.commit('draftMessage/deleteMessage', {
@@ -232,6 +246,36 @@ export default {
     },
     focus() {
       this.$refs.messageTextarea.focus()
+    },
+    selectCommand(direction) {
+      if (!this.message) {
+        this.botCommandSelectionMode = true
+      }
+      if (!this.botCommandSelectionMode) {
+        return
+      }
+      const commands = this.$store.getters['botCommands/getCommandsHistory'](this.partnerId)
+      const maxIndex = commands.length > 0 ? commands.length - 1 : 0
+      if (this.botCommandIndex === null) {
+        if (direction === 'ArrowUp') {
+          this.botCommandIndex = maxIndex
+          this.message = commands[this.botCommandIndex] || ''
+        }
+        return
+      }
+
+      if (direction === 'ArrowUp') {
+        if (this.botCommandIndex > 0) {
+          this.botCommandIndex--
+          this.message = commands[this.botCommandIndex] || ''
+        }
+        return
+      }
+
+      if (this.botCommandIndex < maxIndex) {
+        this.botCommandIndex++
+        this.message = commands[this.botCommandIndex] || ''
+      }
     }
   }
 }
