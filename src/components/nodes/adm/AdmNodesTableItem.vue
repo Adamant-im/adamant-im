@@ -5,8 +5,8 @@
     </NodeColumn>
 
     <NodeColumn>
-      {{ url }}
-      <NodeVersion v-if="node.version" :node="node" />
+      <NodeUrl :node="node" />
+      <NodeVersion v-if="node.version && active" :node="node" />
     </NodeColumn>
 
     <NodeColumn :colspan="!showSocketColumn ? 2 : 1">
@@ -23,6 +23,7 @@
 import { computed, PropType } from 'vue'
 import { useStore } from 'vuex'
 import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import NodeUrl from '@/components/nodes/components/NodeUrl.vue'
 import NodeColumn from '@/components/nodes/components/NodeColumn.vue'
 import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
 import NodeVersion from '@/components/nodes/components/NodeVersion.vue'
@@ -43,7 +44,8 @@ export default {
     NodeColumn,
     NodeStatus,
     NodeVersion,
-    SocketSupport
+    SocketSupport,
+    NodeUrl
   },
   props: {
     node: {
@@ -58,16 +60,46 @@ export default {
     const active = computed(() => props.node.active)
     const socketSupport = computed(() => props.node.socketSupport)
     const isUnsupported = computed(() => props.node.status === 'unsupported_version')
-
+    const type = computed(() => props.node.type)
     const showSocketColumn = computed(() => active.value && !isUnsupported.value)
 
     const toggleActiveStatus = () => {
       store.dispatch('nodes/toggle', {
+        type: type.value,
         url: url.value,
         active: !active.value
       })
       store.dispatch('nodes/updateStatus')
     }
+
+    const computedResult = computed(() => {
+      const baseUrl = new URL(url.value)
+      const protocol = baseUrl.protocol
+      const hostname = baseUrl.hostname
+      const port = baseUrl.port
+      const result = /^[\d.]+$/.test(hostname)
+
+      let nodeName = null
+      let domain = null
+
+      if (result === false) {
+        const regex = /([^.]*)\.(.*)/
+        const parts = hostname.match(regex)
+        if (parts !== null) {
+          nodeName = parts[1]
+          domain = parts[2]
+        }
+      }
+
+      return {
+        protocol,
+        hostname,
+        nodeName,
+        domain,
+        result,
+        port
+      }
+    })
 
     return {
       classes,
@@ -76,7 +108,8 @@ export default {
       socketSupport,
       isUnsupported,
       showSocketColumn,
-      toggleActiveStatus
+      toggleActiveStatus,
+      computedResult
     }
   }
 }
@@ -84,5 +117,6 @@ export default {
 
 <style lang="scss">
 .amd-nodes-table-item {
+  line-height: 14px;
 }
 </style>

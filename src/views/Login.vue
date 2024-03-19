@@ -219,6 +219,7 @@ export default defineComponent({
     position: absolute;
     right: 0;
     margin-right: 8px;
+    color: map-get($adm-colors, 'grey-transparent');
   }
 }
 

@@ -4,6 +4,7 @@ import validateAddress from '@/lib/validateAddress'
 import { i18n } from '@/i18n'
 import { router } from '@/router'
 import store from '@/store'
+import { AllCryptos } from '@/lib/constants/cryptos'
 
 /**
  * Navigate by contact info from URI or redirect to chats
@@ -43,7 +44,7 @@ export default {
       }
     }
     const crypto = (to.params.crypto || '').toUpperCase()
-    if (crypto in Cryptos) {
+    if (crypto in AllCryptos) {
       next()
     } else next('/home')
   }

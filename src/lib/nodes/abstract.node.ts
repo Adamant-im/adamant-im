@@ -1,5 +1,6 @@
+import { getHealthCheckInterval } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
-import { NodeStatus } from './types'
+import { HealthcheckInterval, NodeKind, NodeStatus, NodeType } from './types'
 import { nodesStorage } from './storage'
 
 type HealthcheckResult = {
@@ -14,11 +15,6 @@ type WsProtocol = 'ws:' | 'wss:'
  * Protocol on host where app is running, f. e., http: or https:
  */
 const appProtocol = location.protocol
-
-/**
- * Interval how often to update node statuses
- */
-const REVISE_CONNECTION_TIMEOUT = 60000
 
 export abstract class Node<C = unknown> {
   /**
@@ -93,16 +89,29 @@ export abstract class Node<C = unknown> {
    * Will be updated after `GET /api/node/status`
    */
   socketSupport = false
+
+  type: NodeType
+  kind: NodeKind
   label: TNodeLabel
 
   onStatusChangeCallback?: (nodeStatus: ReturnType<typeof this.getStatus>) => void
 
   timer?: NodeJS.Timeout
-  abstract client: C
+  healthCheckInterval: HealthcheckInterval = 'normal'
+  client: C
 
-  constructor(url: string, label: TNodeLabel, version = '', minNodeVersion = '') {
+  constructor(
+    url: string,
+    type: NodeType,
+    kind: NodeKind,
+    label: TNodeLabel,
+    version = '',
+    minNodeVersion = ''
+  ) {
     this.url = url
+    this.type = type
     this.label = label
+    this.kind = kind
     this.protocol = new URL(url).protocol as HttpProtocol
     this.port = new URL(url).port
     this.hostname = new URL(url).hostname
@@ -110,6 +119,14 @@ export abstract class Node<C = unknown> {
     this.version = version
     this.hasSupportedProtocol = !(this.protocol === 'http:' && appProtocol === 'https:')
     this.active = nodesStorage.isActive(url)
+
+    this.client = this.buildClient()
+
+    if (this.active) {
+      void this.fetchNodeVersion()
+    }
+
+    void this.startHealthcheck()
   }
 
   async startHealthcheck() {
@@ -130,7 +147,18 @@ export abstract class Node<C = unknown> {
       this.fireStatusChange()
     }
 
-    this.timer = setTimeout(() => this.startHealthcheck(), REVISE_CONNECTION_TIMEOUT)
+    this.timer = setTimeout(
+      () => this.startHealthcheck(),
+      getHealthCheckInterval(
+        this.type,
+        this.kind,
+        this.online ? this.healthCheckInterval : 'crucial'
+      )
+    )
+  }
+
+  updateHealthCheckInterval(interval: HealthcheckInterval) {
+    this.healthCheckInterval = interval
   }
 
   private fireStatusChange() {
@@ -156,10 +184,12 @@ export abstract class Node<C = unknown> {
       active: this.active,
       outOfSync: this.outOfSync,
       hasMinNodeVersion: this.hasMinNodeVersion(),
+      displayVersion: this.displayVersion(),
       hasSupportedProtocol: this.hasSupportedProtocol,
       socketSupport: this.socketSupport,
       height: this.height,
       status: this.getNodeStatus(),
+      type: this.type,
       label: this.label
     }
   }
@@ -188,6 +218,7 @@ export abstract class Node<C = unknown> {
   }
 
   protected abstract checkHealth(): Promise<HealthcheckResult>
+  protected abstract buildClient(): C
 
   /**
    * Enables/disables a node.
@@ -198,6 +229,16 @@ export abstract class Node<C = unknown> {
     nodesStorage.saveActive(this.url, active)
 
     return this.getStatus()
+  }
+
+  displayVersion() {
+    return this.version ? `v${this.version}` : ''
+  }
+
+  // This method is not abstract because Not all nodes need version checking (For example: indexers) or some nodes receive version information from healthcheck requests.
+  // Therefore, it is overridden only in the case when a separate request is needed to obtain the version.
+  protected fetchNodeVersion() {
+    return Promise.resolve()
   }
 }
 

@@ -23,7 +23,7 @@
         <span :class="`${className}__amount ${directionClass}`">{{
           currency(amount, crypto)
         }}</span>
-        <span :class="`${className}__rates`"> {{ historyRate }}</span>
+        <span :class="`${className}__rates`">{{ historyRate }}</span>
         <span v-if="comment" class="a-text-regular-enlarged-bold" style="font-style: italic">
           "</span
         >
@@ -39,7 +39,10 @@
       </v-list-item-title>
 
       <v-list-item-subtitle :class="`${className}__date`" class="a-text-explanation-small">
-        {{ formatDate(createdAt) }}
+        <span v-if="!isPendingTransaction">{{ formatDate(createdAt) }}</span>
+        <span v-else-if="status" :class="`${className}__status`">{{
+          $t(`transaction.statuses.${status}`)
+        }}</span>
       </v-list-item-subtitle>
 
       <template #append>
@@ -61,7 +64,7 @@
 
 <script>
 import formatDate from '@/filters/date'
-import { EPOCH, Cryptos } from '@/lib/constants'
+import { EPOCH, Cryptos, TransactionStatus } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyAmount from '@/filters/currencyAmount'
@@ -77,6 +80,10 @@ export default {
     },
     // Crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     senderId: {
+      type: String,
+      required: true
+    },
+    status: {
       type: String,
       required: true
     },
@@ -103,6 +110,9 @@ export default {
     }
   },
   emits: ['click:transaction', 'click:icon'],
+  data: () => ({
+    virtualTimestamp: Date.now()
+  }),
   computed: {
     // Own crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     userId() {
@@ -176,15 +186,27 @@ export default {
       return (
         '~' +
         this.$store.getters['rate/historyRate'](
-          timestampInSec(this.crypto, this.timestamp),
+          timestampInSec(this.crypto, this.timestamp || this.virtualTimestamp),
           amount,
           this.crypto
         )
+      )
+    },
+    isPendingTransaction() {
+      return (
+        this.status === TransactionStatus.PENDING || this.status === TransactionStatus.REGISTERED
       )
     }
   },
   mounted() {
     this.getHistoryRates()
+
+    if (this.isPendingTransaction) {
+      this.$store.dispatch(`${this.crypto.toLowerCase()}/getTransaction`, {
+        hash: this.id,
+        force: true
+      })
+    }
   },
   methods: {
     isStringEqualCI(string1, string2) {
@@ -232,7 +254,7 @@ export default {
     },
     getHistoryRates() {
       this.$store.dispatch('rate/getHistoryRates', {
-        timestamp: timestampInSec(this.crypto, this.timestamp)
+        timestamp: timestampInSec(this.crypto, this.timestamp || this.virtualTimestamp)
       })
     },
     currency,
@@ -250,6 +272,7 @@ export default {
     color: hsla(0, 0%, 100%, 0.7);
     font-style: italic;
     @include a-text-regular();
+    margin-left: 4px;
   }
   &__amount {
     @include a-text-regular-enlarged-bold();
@@ -267,6 +290,9 @@ export default {
   }
   &__action {
     min-width: 36px;
+  }
+  &__status {
+    color: map-get($adm-colors, 'attention');
   }
   // Do not break computed length of v-divider
   /*&__tile*/

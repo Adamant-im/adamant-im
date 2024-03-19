@@ -6,38 +6,6 @@
       <v-row justify="center" no-gutters>
         <container padding>
           <NodesTable />
-
-          <v-checkbox
-            v-model="preferFastestNodeOption"
-            :label="$t('nodes.fastest_title')"
-            :class="`${className}__checkbox mt-4`"
-            color="grey darken-1"
-            hide-details
-          />
-          <div class="a-text-explanation-enlarged">
-            {{ $t('nodes.fastest_tooltip') }}
-          </div>
-
-          <v-checkbox
-            v-model="useSocketConnection"
-            :label="$t('nodes.use_socket_connection')"
-            :class="`${className}__checkbox mt-4`"
-            color="grey darken-1"
-            hide-details
-          />
-          <div class="a-text-explanation-enlarged">
-            {{ $t('nodes.use_socket_connection_tooltip') }}
-          </div>
-
-          <!-- eslint-disable vue/no-v-html -- Safe internal content -->
-          <div
-            :class="`${className}__info a-text-regular-enlarged`"
-            class="mt-6"
-            v-html="$t('nodes.nodeLabelDescription')"
-          />
-          <!-- eslint-enable vue/no-v-html -->
-
-          <div>&nbsp;<br />&nbsp;</div>
         </container>
       </v-row>
     </v-container>
@@ -47,6 +15,7 @@
 <script>
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import NodesTable from '@/components/nodes/NodesTable.vue'
+import { nodesManager } from '@/lib/nodes'
 
 export default {
   components: {
@@ -60,75 +29,28 @@ export default {
     timer: null
   }),
   computed: {
-    className: () => 'nodes-view',
-    useSocketConnection: {
-      get() {
-        return this.$store.state.options.useSocketConnection
-      },
-      set(value) {
-        this.$store.commit('options/updateOption', {
-          key: 'useSocketConnection',
-          value
-        })
-      }
-    },
-    preferFastestNodeOption: {
-      get() {
-        return this.$store.state.nodes.useFastest
-      },
-      set(value) {
-        this.$store.dispatch('nodes/setUseFastest', value)
-      }
-    }
+    className: () => 'nodes-view'
   },
   mounted() {
+    // TODO: probably it can be refactored later
+    window.scrollTo(0, 0)
     this.$store.dispatch('nodes/updateStatus')
-    this.timer = setInterval(() => {
-      this.$store.dispatch('nodes/updateStatus')
-    }, 10000)
+
+    nodesManager.updateHealthcheckInterval('onScreen')
   },
   beforeUnmount() {
-    clearInterval(this.timer)
+    nodesManager.updateHealthcheckInterval('normal')
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/themes/adamant/_mixins.scss';
 @import 'vuetify/settings';
-@import '@/assets/styles/settings/_colors.scss';
 
 .nodes-view {
-  &__info {
-    :deep(a) {
-      text-decoration-line: none;
-      &:hover {
-        text-decoration-line: underline;
-      }
-    }
-  }
-  :deep(.v-input--selection-controls:not(.v-input--hide-details)) .v-input__slot {
-    margin-bottom: 0;
-  }
-
-  :deep(.v-checkbox) {
-    margin-left: -8px;
-  }
 }
 
 /** Themes **/
 .v-theme--light {
-  .nodes-view {
-    &__checkbox {
-      :deep(.v-label) {
-        color: map-get($adm-colors, 'regular');
-      }
-      :deep(.v-input--selection-controls__ripple),
-      :deep(.v-input--selection-controls__input) i {
-        color: map-get($adm-colors, 'regular') !important;
-        caret-color: map-get($adm-colors, 'regular') !important;
-      }
-    }
-  }
 }
 </style>

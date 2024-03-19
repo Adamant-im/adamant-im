@@ -22,12 +22,12 @@
 </template>
 
 <script>
-import { Cryptos } from '@/lib/constants'
 import validateAddress from '@/lib/validateAddress'
 import { isNumeric } from '@/lib/numericHelpers'
 
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import SendFundsForm from '@/components/SendFundsForm.vue'
+import { AllCryptos } from '@/lib/constants/cryptos'
 
 export default {
   components: {
@@ -35,7 +35,7 @@ export default {
     SendFundsForm
   },
   data: () => ({
-    cryptoCurrency: Cryptos.ADM,
+    cryptoCurrency: AllCryptos.ADM,
     recipientAddress: '',
     amountToSend: undefined
   }),
@@ -53,7 +53,7 @@ export default {
     validateCryptoCurrency() {
       if (
         this.$route.params.cryptoCurrency &&
-        Object.keys(Cryptos).includes(this.$route.params.cryptoCurrency)
+        Object.keys(AllCryptos).includes(this.$route.params.cryptoCurrency)
       ) {
         this.cryptoCurrency = this.$route.params.cryptoCurrency
       }
@@ -80,8 +80,8 @@ export default {
     onError(message) {
       this.$store.dispatch('snackbar/show', {
         message,
-        color: '#ED5270',
-        timeout: 5000
+        timeout: -1,
+        variant: 'outlined'
       })
     }
   }

@@ -25,6 +25,7 @@ export default defineComponent({
 @import 'vuetify/settings';
 
 .nodes-table-container {
+  line-height: 14px;
 }
 
 .v-theme--dark {

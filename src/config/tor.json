@@ -1,101 +1,179 @@
 {
   "adm": {
-    "minNodeVersion": "0.8.0",
-    "nodes": [
-      {
-        "url": "http://37g5to2z6bdoeegun4hms2hvkfbdxh4rcon4e3p267wtfkh4ji2ns6id.onion"
-      },
-      {
-        "url": "http://fqjcvsibnbwhlwxndzqzziapiwoidgn24avfiauu4wo2fc3yyiy2qcid.onion"
-      },
-      {
-        "url": "http://omhrhpc45njpgzp4fggtndazaodwuwvb5in6hsn3k7tvaqennmfaa2qd.onion"
-      },
-      {
-        "url": "http://uxu6vnnrrnl7tmo7i657yvs4jbgdz734xvufryoi326az5dzufuwboad.onion"
-      },
-      {
-        "url": "http://rukehjd2yalzgny7mdjqtzown2mazsaeh4zr7zjdg4l5afkgc3z2kgqd.onion"
-      }
-    ],
-    "services": {
-      "infoService": [
+    "nodes": {
+      "list": [
         {
-          "url": "http://czjsawp2crjmnkliw2h2kpk7wwd3a36zvvnvqgvzmi4t4vc2yzm7j2qd.onion"
+          "url": "http://37g5to2z6bdoeegun4hms2hvkfbdxh4rcon4e3p267wtfkh4ji2ns6id.onion"
+        },
+        {
+          "url": "http://fqjcvsibnbwhlwxndzqzziapiwoidgn24avfiauu4wo2fc3yyiy2qcid.onion"
+        },
+        {
+          "url": "http://omhrhpc45njpgzp4fggtndazaodwuwvb5in6hsn3k7tvaqennmfaa2qd.onion"
+        },
+        {
+          "url": "http://uxu6vnnrrnl7tmo7i657yvs4jbgdz734xvufryoi326az5dzufuwboad.onion"
+        },
+        {
+          "url": "http://rukehjd2yalzgny7mdjqtzown2mazsaeh4zr7zjdg4l5afkgc3z2kgqd.onion"
         }
-      ]
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 10
+      },
+      "minVersion": "0.8.0"
+    },
+    "services": {
+      "list": {
+        "infoService": [
+          {
+            "url": "http://czjsawp2crjmnkliw2h2kpk7wwd3a36zvvnvqgvzmi4t4vc2yzm7j2qd.onion"
+          }
+        ]
+      },
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 300000,
+        "onScreenUpdateInterval": 300000
+      }
     },
     "explorerTx": "http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion/tx/${ID}",
     "explorer": "http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion",
     "explorerAddress": "http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion/address/${ID}"
   },
   "btc": {
-    "nodes": [
-      {
-        "url": "http://cc6ibzkfeseuwnmtjc6hlsd44bzg2sr3shbv7n35nj2rk2vm6dmtlnqd.onion"
-      },
-      {
-        "url": "http://mgplh7en3d6ywsec5h6q3tc6mirsleb5cmlyn6nmp25qrb6gy35nypad.onion"
+    "nodes": {
+      "list": [
+        {
+          "url": "http://cc6ibzkfeseuwnmtjc6hlsd44bzg2sr3shbv7n35nj2rk2vm6dmtlnqd.onion"
+        },
+        {
+          "url": "http://mgplh7en3d6ywsec5h6q3tc6mirsleb5cmlyn6nmp25qrb6gy35nypad.onion"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 360000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 2
       }
-    ],
+    },
     "explorerTx": "https://explorer.btc.com/btc/transaction/${ID}",
     "explorer": "https://explorer.btc.com",
     "explorerAddress": "https://explorer.btc.com/btc/address/${ID}"
   },
   "dash": {
-    "nodes": [
-      {
-        "url": "http://ldod53womnlwjmd4noq5yuq26xx3mmbrr4uogkfymuakhofjcuqeygad.onion"
-      },
-      {
-        "url": "http://eq2blda45h4kakbuq3g4stcgatiwqaefgmxzfsfuiahpdbt2pvbbepad.onion"
+    "nodes": {
+      "list": [
+        {
+          "url": "http://ldod53womnlwjmd4noq5yuq26xx3mmbrr4uogkfymuakhofjcuqeygad.onion"
+        },
+        {
+          "url": "http://eq2blda45h4kakbuq3g4stcgatiwqaefgmxzfsfuiahpdbt2pvbbepad.onion"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 210000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 3
       }
-    ],
+    },
     "explorerTx": "https://dashblockexplorer.com/tx/${ID}",
     "explorer": "https://dashblockexplorer.com",
     "explorerAddress": "https://dashblockexplorer.com/address/${ID}"
   },
   "doge": {
-    "nodes": [
-      {
-        "url": "http://mtg4mq43p67cbj6qwcqgppjv7uzm7ximjlzapsbnbh5ls6zqkjsq26ad.onion"
-      },
-      {
-        "url": "http://bfu3iiofsagyhi22zijfilbkzlzbalpylhhfcluqmezx2avdwcxut7yd.onion"
+    "nodes": {
+      "list": [
+        {
+          "url": "http://mtg4mq43p67cbj6qwcqgppjv7uzm7ximjlzapsbnbh5ls6zqkjsq26ad.onion"
+        },
+        {
+          "url": "http://bfu3iiofsagyhi22zijfilbkzlzbalpylhhfcluqmezx2avdwcxut7yd.onion"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 390000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 3
       }
-    ],
+    },
     "explorerTx": "https://dogechain.info/tx/${ID}",
     "explorer": "https://dogechain.info",
     "explorerAddress": "https://dogechain.info/address/${ID}"
   },
   "eth": {
-    "nodes": [
-      {
-        "url": "http://vj3qid4h2d4cj2gexivjuuybah3mjzenpdyr5bj6z4hctp52jn6qsgid.onion",
-        "hasIndex": true
-      },
-      {
-        "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
-        "hasIndex": true
+    "nodes": {
+      "list": [
+        {
+          "url": "http://vj3qid4h2d4cj2gexivjuuybah3mjzenpdyr5bj6z4hctp52jn6qsgid.onion",
+          "hasIndex": true
+        },
+        {
+          "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
+          "hasIndex": true
+        },
+        {
+          "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion",
+          "hasIndex": true
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 300000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
       }
-    ],
+    },
     "explorerTx": "https://etherscan.io/tx/${ID}",
     "explorer": "https://etherscan.io",
     "explorerAddress": "https://etherscan.io/address/${ID}"
   },
   "lsk": {
-    "nodes": [
-      {
-        "url": "http://4bsg7dijnpkiu6wylaad5fiom4iep73oz3o2rojkwnuteaawd2w3o2ad.onion"
+    "nodes": {
+      "list": [
+        {
+          "url": "http://nl2c4vcsdrd6je3ebt4236yst55mbso72ojmksrmlyoikapgnu647tid.onion"
+        },
+        {
+          "url": "http://qpjxvkathebm7oso3dk5hb4cggbeecqvcpcthuxlpovtn66plr6f4wyd.onion"
+        },
+        {
+          "url": "http://4bsg7dijnpkiu6wylaad5fiom4iep73oz3o2rojkwnuteaawd2w3o2ad.onion"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 270000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
       }
-    ],
+    },
     "explorerTx": "https://liskscan.com/transaction/${ID}",
     "services": {
-      "lskService": [
-        {
-          "url": "http://cf6vf6xylvhza3t3ewffa7cmr2bqgaus5jwghiktjleids5ovdhoazad.onion"
-        }
-      ]
+      "list": {
+        "lskService": [
+          {
+            "url": "http://xqrymra5go2nb3cslb3c3iv4weeuicybcxpjee4ay2indk2hgo7rw4qd.onion"
+          },
+          {
+            "url": "http://s2q6phc22icy73zjccjq66555gwtvyuyrodmadwhjdhmvyehb3qrcsid.onion"
+          },
+          {
+            "url": "http://cf6vf6xylvhza3t3ewffa7cmr2bqgaus5jwghiktjleids5ovdhoazad.onion"
+          }
+        ]
+      },
+      "healthCheck": {
+        "normalUpdateInterval": 330000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000
+      }
     },
     "explorer": "https://liskscan.com",
     "explorerAddress": "https://liskscan.com/account/${ID}"

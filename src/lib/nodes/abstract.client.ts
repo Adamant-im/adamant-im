@@ -1,4 +1,5 @@
-import type { NodeType } from '@/lib/nodes/types'
+import type { HealthcheckInterval, NodeType } from '@/lib/nodes/types'
+import { AllNodesOfflineError } from './utils/errors'
 import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
 import { nodesStorage } from './storage'
@@ -46,6 +47,12 @@ export abstract class Client<N extends Node> {
   checkHealth() {
     for (const node of this.nodes) {
       void node.startHealthcheck()
+    }
+  }
+
+  updateHealthCheckInterval(interval: HealthcheckInterval) {
+    for (const node of this.nodes) {
+      void node.updateHealthCheckInterval(interval)
     }
   }
 
@@ -100,8 +107,7 @@ export abstract class Client<N extends Node> {
    */
   protected getRandomNode() {
     const onlineNodes = this.nodes.filter((x) => x.online && x.active && !x.outOfSync)
-    const node = onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
-    return node
+    return onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
   }
 
   /**
@@ -116,6 +122,29 @@ export abstract class Client<N extends Node> {
     })
   }
 
+  protected getNode() {
+    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
+    if (!node) {
+      // All nodes seem to be offline: let's refresh the statuses
+      this.checkHealth()
+      // But there's nothing we can do right now
+      throw new Error('No online nodes at the moment')
+    }
+
+    return node
+  }
+
+  /**
+   * Throws an error if all the nodes are offline.
+   */
+  assertAnyNodeOnline() {
+    const onlineNodes = this.nodes.filter((x) => x.online && x.active && !x.outOfSync)
+
+    if (onlineNodes.length === 0) {
+      throw new AllNodesOfflineError(this.type)
+    }
+  }
+
   /**
    * Updates `outOfSync` status of the nodes.
    *
@@ -126,7 +155,7 @@ export abstract class Client<N extends Node> {
   protected updateSyncStatuses() {
     const nodes = this.nodes.filter((x) => x.online && x.active)
 
-    const nodesInSync = filterSyncedNodes(nodes)
+    const nodesInSync = filterSyncedNodes(nodes, this.type)
 
     // Finally, all the nodes from the winner list are considered to be in sync, all the
     // others are not

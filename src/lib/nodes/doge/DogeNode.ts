@@ -2,20 +2,25 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import type { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters.ts'
+
+type FetchBtcNodeInfoResult = {
+  info: {
+    version: number
+  }
+}
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
-export class DogeNode extends Node {
-  client: AxiosInstance
-
+export class DogeNode extends Node<AxiosInstance> {
   constructor(url: string) {
-    super(url, NODE_LABELS.DogeNode)
+    super(url, 'doge', 'node', NODE_LABELS.DogeNode)
+  }
 
-    this.client = createBtcLikeClient(url)
-
-    void this.startHealthcheck()
+  protected buildClient(): AxiosInstance {
+    return createBtcLikeClient(this.url)
   }
 
   protected async checkHealth() {
@@ -27,6 +32,14 @@ export class DogeNode extends Node {
     return {
       height,
       ping: Date.now() - time
+    }
+  }
+
+  protected async fetchNodeVersion(): Promise<void> {
+    const { data } = await this.client.get<FetchBtcNodeInfoResult>('/api/status')
+    const { version } = data.info
+    if (version) {
+      this.version = formatDogeVersion(version)
     }
   }
 }

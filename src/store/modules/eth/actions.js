@@ -3,6 +3,7 @@ import createActions from '../eth-base/eth-base-actions'
 
 import { DEFAULT_ETH_TRANSFER_GAS_LIMIT, FetchStatus } from '@/lib/constants'
 import { storeCryptoAddress } from '@/lib/store-crypto-address'
+import shouldUpdate from '../../utils/coinUpdatesGuard'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
@@ -17,8 +18,7 @@ function storeEthAddress(context) {
   storeCryptoAddress(context.state.crypto, context.state.address)
 }
 
-const initTransaction = async (api, context, ethAddress, amount, increaseFee) => {
-  const nonce = await api.getClient().getTransactionCount(context.state.address)
+const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
   const gasPrice = await api.getClient().getGasPrice()
 
   const transaction = {
@@ -54,7 +54,13 @@ const parseTransaction = (context, tx) => {
 const createSpecificActions = (api) => ({
   updateBalance: {
     root: true,
-    async handler({ state, commit }, payload = {}) {
+    async handler({ commit, rootGetters, state }, payload = {}) {
+      const coin = state.crypto
+
+      if (!shouldUpdate(() => rootGetters['wallets/getVisibility'](coin))) {
+        return
+      }
+
       if (payload.requestedByUser) {
         commit('setBalanceStatus', FetchStatus.Loading)
       }
@@ -78,6 +84,12 @@ const createSpecificActions = (api) => ({
    */
   updateStatus(context) {
     if (!context.state.address) return
+
+    const coin = context.state.crypto
+
+    if (!shouldUpdate(() => context.rootGetters['wallets/getVisibility'](coin))) {
+      return
+    }
 
     // Balance
     void api

@@ -12,6 +12,7 @@
         variant="underlined"
         :items="cryptoList"
         :disabled="addressReadonly"
+        :menu-icon="addressReadonly ? '' : 'mdi-menu-down'"
       />
 
       <v-text-field
@@ -186,7 +187,10 @@
 </template>
 
 <script>
+import { adm } from '@/lib/nodes'
 import lskIndexer from '@/lib/nodes/lsk-indexer'
+import { AllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { PendingTransactionError } from '@/lib/pending-transactions'
 import axios from 'axios'
 import { nextTick } from 'vue'
 
@@ -205,9 +209,9 @@ import {
   getMinAmount,
   isSelfTxAllowed,
   CryptosInfo,
-  CryptosOrder,
   isTextDataAllowed,
-  MessageType
+  MessageType,
+  Fees
 } from '@/lib/constants'
 
 import { parseURIasAIP } from '@/lib/uri'
@@ -221,6 +225,7 @@ import partnerName from '@/mixins/partnerName'
 import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
+import { AllCryptos } from '@/lib/constants/cryptos'
 
 /**
  * @returns {string | boolean}
@@ -251,7 +256,7 @@ export default {
     cryptoCurrency: {
       type: String,
       default: 'ADM',
-      validator: (value) => value in Cryptos
+      validator: (value) => value in AllCryptos
     },
     recipientAddress: {
       type: String,
@@ -367,7 +372,7 @@ export default {
      * @returns {string}
      */
     transferFeeCurrency() {
-      return isErc20(this.currency) ? Cryptos.ETH : this.currency
+      return isErc20(this.currency) ? AllCryptos.ETH : this.currency
     },
 
     /**
@@ -403,6 +408,14 @@ export default {
       return this.currency === Cryptos.ADM
         ? this.$store.state.balance
         : this.$store.state[this.currency.toLowerCase()].balance
+    },
+
+    /**
+     * Return ADM balance
+     * @returns {number}
+     */
+    admBalance() {
+      return this.$store.state.balance
     },
 
     ethBalance() {
@@ -459,8 +472,13 @@ export default {
     exponent() {
       return CryptosInfo[this.currency].cryptoTransferDecimals
     },
+    orderedVisibleWalletSymbols() {
+      return this.$store.getters['wallets/getVisibleOrderedWalletSymbols']
+    },
     cryptoList() {
-      return CryptosOrder
+      return this.orderedVisibleWalletSymbols.map((crypto) => {
+        return crypto.symbol
+      })
     },
     confirmMessage() {
       const msgType =
@@ -489,6 +507,19 @@ export default {
         ],
         amount: [
           (v) => v > 0 || this.$t('transfer.error_incorrect_amount'),
+          () => {
+            const isAdmTransfer = this.currency === Cryptos.ADM
+            const isDirectTransfer = !this.address
+
+            if (isAdmTransfer || isDirectTransfer) {
+              return true // skips validation
+            }
+
+            return (
+              this.admBalance >= Fees.NOT_ADM_TRANSFER ||
+              this.$t('transfer.error_not_enough_adm_fee')
+            )
+          },
           () => this.amount <= this.maxToTransfer || this.$t('transfer.error_not_enough'),
           (v) => this.validateMinAmount(v, this.currency) || this.$t('transfer.error_dust_amount'),
           (v) => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_precision'),
@@ -720,6 +751,14 @@ export default {
             message = this.$t('transfer.recipient_minimum_balance')
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
+          } else if (error instanceof AllNodesOfflineError) {
+            message = this.$t('transfer.error_all_nodes_offline', {
+              crypto: error.nodeLabel.toUpperCase()
+            })
+          } else if (error instanceof PendingTransactionError) {
+            message = this.$t('transfer.error_pending_transaction', {
+              crypto: error.crypto
+            })
           }
           this.$emit('error', message)
         })
@@ -729,7 +768,7 @@ export default {
           this.dialog = false
         })
     },
-    sendFunds() {
+    async sendFunds() {
       if (this.currency === Cryptos.ADM) {
         let promise
         // 1. if come from Chat then sendMessage
@@ -745,6 +784,7 @@ export default {
               })
             : this.comment
 
+          adm.assertAnyNodeOnline()
           promise = sendMessage({
             amount: this.amount,
             message: asset,
