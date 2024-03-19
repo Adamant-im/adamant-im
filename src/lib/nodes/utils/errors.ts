@@ -1,10 +1,15 @@
 import { NodeType } from '@/lib/nodes/types'
 
+const CODES = {
+  NODE_OFFLINE: 'NODE_OFFLINE',
+  ALL_NODES_OFFLINE: 'ALL_NODES_OFFLINE'
+} as const
+
 /**
  * Custom error to indicate that the endpoint is not available
  */
 export class NodeOfflineError extends Error {
-  code = 'NODE_OFFLINE'
+  code = CODES.NODE_OFFLINE
 
   constructor() {
     super('Node is offline')
@@ -16,7 +21,7 @@ export class NodeOfflineError extends Error {
 }
 
 export function isNodeOfflineError(error: Error): error is NodeOfflineError {
-  return (error as NodeOfflineError).code === 'NODE_OFFLINE'
+  return (error as NodeOfflineError).code === CODES.NODE_OFFLINE
 }
 
 /**
@@ -29,6 +34,7 @@ export class TransactionNotFound extends Error {
 }
 
 export class AllNodesOfflineError extends Error {
+  code = CODES.ALL_NODES_OFFLINE
   nodeLabel: NodeType // to distinct eth-node from eth-indexer it may be better to use TNodeLabel
 
   constructor(label: NodeType) {
@@ -36,4 +42,8 @@ export class AllNodesOfflineError extends Error {
 
     this.nodeLabel = label
   }
+}
+
+export function isAllNodesOfflineError(error: Error): error is AllNodesOfflineError {
+  return (error as AllNodesOfflineError).code === CODES.ALL_NODES_OFFLINE
 }

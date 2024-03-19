@@ -189,8 +189,7 @@ export default function createActions(config) {
       if (!transaction) return
 
       void api
-        .getClient()
-        .getBlock(payload.blockNumber)
+        .useClient((client) => client.getBlock(payload.blockNumber))
         .then((block) => {
           // Converting from BigInt into Number must be safe
           const timestamp = BigNumber(block.timestamp.toString()).multipliedBy(1000).toNumber()
@@ -238,8 +237,7 @@ export default function createActions(config) {
       )
 
       void api
-        .getClient()
-        .getTransaction(payload.hash)
+        .useClient((client) => client.getTransaction(payload.hash))
         .then((tx) => {
           const isFinalized = tx.blockNumber !== undefined
 
@@ -324,8 +322,7 @@ export default function createActions(config) {
       )
 
       void api
-        .getClient()
-        .getTransactionReceipt(payload.hash)
+        .useClient((client) => client.getTransactionReceipt(payload.hash))
         .then((tx) => {
           let replay = true
 

@@ -21,13 +21,7 @@ export class LskIndexerClient extends Client<LskIndexer> {
     params?: Endpoints[E]['params'],
     axiosRequestConfig?: AxiosRequestConfig
   ): Promise<Endpoints[E]['result']> {
-    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
-    if (!node) {
-      // All nodes seem to be offline: let's refresh the statuses
-      this.checkHealth()
-      // But there's nothing we can do right now
-      throw new Error('No online nodes at the moment')
-    }
+    const node = this.getNode()
 
     return node.request(endpoint, params, axiosRequestConfig)
   }
