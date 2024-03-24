@@ -6,7 +6,7 @@
           {{ $t('home.wallet_crypto', { crypto: cryptoName }) }}
         </v-list-item-title>
         <v-list-item-subtitle :class="`${className}__subtitle`">
-          {{ address }}
+          <TextTrimmer :text="address"></TextTrimmer>
         </v-list-item-subtitle>
 
         <template #append>
@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import TextTrimmer from './TextTrimmer.vue'
 import ShareURIDialog from '@/components/ShareURIDialog.vue'
 import WalletCardListActions from '@/components/WalletCardListActions.vue'
 import { Cryptos } from '@/lib/constants'
@@ -54,6 +55,7 @@ import currency from '@/filters/currencyAmountWithSymbol'
 
 export default {
   components: {
+    TextTrimmer,
     ShareURIDialog,
     WalletCardListActions
   },
@@ -91,6 +93,12 @@ export default {
     },
     isADM() {
       return this.crypto === Cryptos.ADM
+    },
+    addressLeft() {
+      return this.address.substring(0, this.address.length - 10)
+    },
+    addressRight() {
+      return this.address.substring(this.address.length - 10)
     }
   },
   methods: {
@@ -112,7 +120,7 @@ export default {
     @include a-text-regular-enlarged();
     line-height: 24px;
     word-break: break-word;
-    display: block;
+    display: flex;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -120,6 +128,15 @@ export default {
       font-style: italic;
       color: inherit;
     }
+  }
+  &__addressLeft {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &__addressRight {
+    display: inline-block;
   }
   &__list {
     padding: 8px 0 0;
