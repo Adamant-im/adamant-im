@@ -6,8 +6,7 @@
           {{ $t('home.wallet_crypto', { crypto: cryptoName }) }}
         </v-list-item-title>
         <v-list-item-subtitle :class="`${className}__subtitle`">
-          <div :class="`${className}__addressLeft`">{{ addressLeft }}</div>
-          <div :class="`${className}__addressRight`">{{ addressRight }}</div>
+          <TextTrimmer :text="address"></TextTrimmer>
         </v-list-item-subtitle>
 
         <template #append>
@@ -48,6 +47,7 @@
 </template>
 
 <script>
+import TextTrimmer from './TextTrimmer.vue'
 import ShareURIDialog from '@/components/ShareURIDialog.vue'
 import WalletCardListActions from '@/components/WalletCardListActions.vue'
 import { Cryptos } from '@/lib/constants'
@@ -55,6 +55,7 @@ import currency from '@/filters/currencyAmountWithSymbol'
 
 export default {
   components: {
+    TextTrimmer,
     ShareURIDialog,
     WalletCardListActions
   },
