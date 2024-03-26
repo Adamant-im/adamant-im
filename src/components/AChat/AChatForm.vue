@@ -230,6 +230,8 @@ export default {
           message: this.message,
           partnerId: this.partnerId
         })
+        this.botCommandIndex = null
+        this.botCommandSelectionMode = false
       } else {
         this.$emit('error', error)
       }
