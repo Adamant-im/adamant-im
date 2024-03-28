@@ -1,6 +1,6 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead hide-checkbox hide-socket />
+    <NodesTableHead hide-socket />
 
     <tbody>
       <CoinNodesTableItem v-for="node in nodes" :key="node.url" :label="node.label" :node="node" />

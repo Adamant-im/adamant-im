@@ -74,7 +74,7 @@ export declare const DEFAULT_ETH_TRANSFER_GAS_LIMIT: number
 export declare const DEFAULT_ERC20_TRANSFER_GAS_LIMIT: number
 export declare const INCREASE_FEE_MULTIPLIER: number
 
-export { Cryptos, CryptosInfo, CryptosOrder }
+export { Cryptos, CryptosInfo, CryptosOrder, CryptoSymbol }
 export default {
   EPOCH,
   Transactions

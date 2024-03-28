@@ -119,8 +119,7 @@ export abstract class Client<N extends Node> {
    */
   protected getRandomNode() {
     const onlineNodes = this.nodes.filter((x) => x.online && x.active && !x.outOfSync)
-    const node = onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
-    return node
+    return onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
   }
 
   /**

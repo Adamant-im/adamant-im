@@ -1,13 +1,20 @@
 import { FetchStatus } from '@/lib/constants'
 import baseActions from '../lsk-base/lsk-base-actions'
 import { lsk } from '../../../lib/nodes/lsk'
+import shouldUpdate from '../../utils/coinUpdatesGuard'
 
 const TX_FETCH_INTERVAL = 10 * 1000
 
 const customActions = (getAccount) => ({
   updateBalance: {
     root: true,
-    async handler({ commit, state }, payload = {}) {
+    async handler({ commit, rootGetters, state }, payload = {}) {
+      const coin = state.crypto
+
+      if (!shouldUpdate(() => rootGetters['wallets/getVisibility'](coin))) {
+        return
+      }
+
       if (payload.requestedByUser) {
         commit('setBalanceStatus', FetchStatus.Loading)
       }
