@@ -223,7 +223,12 @@
               class="chat-menu"
               :partner-id="partnerId"
               :reply-to-id="replyMessageId > -1 ? replyMessageId : undefined"
+              @image-selected="handleImageSelected"
             />
+          </template>
+
+          <template #preview-file>
+            <a-chat-preview-file @cancel="cancelPreviewFile" :file="selectedImage" />
           </template>
 
           <template #reply-preview v-if="replyMessage">
@@ -284,7 +289,8 @@ import {
   AChatMessageActionsMenu,
   AChatMessageActionsDropdown,
   AChatActionsOverlay,
-  AChatReactionSelect
+  AChatReactionSelect,
+  AChatPreviewFile
 } from '@/components/AChat'
 import ChatToolbar from '@/components/Chat/ChatToolbar.vue'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
@@ -370,7 +376,8 @@ export default {
     AChatMessageActionsDropdown,
     AChatActionsOverlay,
     AChatReactionSelect,
-    EmojiPicker
+    EmojiPicker,
+    AChatPreviewFile
   },
   mixins: [transaction, partnerName],
   props: {
@@ -381,6 +388,7 @@ export default {
   },
   emits: ['click:chat-avatar'],
   data: () => ({
+    selectedImage: null,
     loading: false,
     replyLoadingChatHistory: false,
     noMoreMessages: false,
@@ -495,6 +503,12 @@ export default {
       this.sendMessage(message)
       nextTick(() => this.$refs.chat.scrollToBottom())
       this.replyMessageId = -1
+    },
+    handleImageSelected(imageData) {
+      this.selectedImage = imageData
+    },
+    cancelPreviewFile() {
+      this.selectedImage = null
     },
     onMessageError(error) {
       switch (error) {

@@ -6,17 +6,9 @@
       </template>
 
       <v-list class="chat-menu__list">
-        <!-- Cryptos -->
-        <v-list-item v-for="c in wallets" :key="c" @click="sendFunds(c)">
-          <template #prepend>
-            <crypto-icon :crypto="c" box-centered />
-          </template>
-
-          <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
-        </v-list-item>
-
+        <input style="display: none" multiple ref="fileInput" type="file" @change="uploadFile" />
         <!-- Actions -->
-        <v-list-item v-for="item in menuItems" :key="item.title" :disabled="item.disabled">
+        <v-list-item @click="$refs.fileInput.click()" v-for="item in menuItems" :key="item.title">
           <template #prepend>
             <icon-box>
               <v-icon :icon="item.icon" />
@@ -24,6 +16,15 @@
           </template>
 
           <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+        </v-list-item>
+
+        <!-- Cryptos -->
+        <v-list-item v-for="c in wallets" :key="c" @click="sendFunds(c)">
+          <template #prepend>
+            <crypto-icon :crypto="c" box-centered />
+          </template>
+
+          <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -58,14 +59,12 @@ export default {
       {
         type: 'action',
         title: 'chats.attach_image',
-        icon: 'mdi-image',
-        disabled: true
+        icon: 'mdi-image'
       },
       {
         type: 'action',
         title: 'chats.attach_file',
-        icon: 'mdi-file',
-        disabled: true
+        icon: 'mdi-file'
       }
     ],
     dialog: false,
@@ -84,6 +83,29 @@ export default {
     }
   },
   methods: {
+    uploadFile(event) {
+      const selectedFiles = event.target.files
+      const maxFiles = 10
+      if (selectedFiles.length > maxFiles) {
+        alert(`Можна вибрати максимум ${maxFiles} файлів`)
+        return
+      }
+      if (selectedFiles.length > 0) {
+        const imageData = []
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const file = selectedFiles[i]
+          const reader = new FileReader()
+          reader.onload = (e) => {
+            imageData.push({ name: file.name, content: e.target.result })
+
+            if (imageData.length === selectedFiles.length) {
+              this.$emit('image-selected', imageData)
+            }
+          }
+          reader.readAsDataURL(file)
+        }
+      }
+    },
     sendFunds(crypto) {
       // check if user has crypto wallet
       // otherwise show dialog
