@@ -85,22 +85,19 @@ export default {
   methods: {
     uploadFile(event) {
       const selectedFiles = event.target.files
-      const maxFiles = 10
-      if (selectedFiles.length > maxFiles) {
-        alert(`Можна вибрати максимум ${maxFiles} файлів`)
-        return
-      }
+
       if (selectedFiles.length > 0) {
-        const imageData = []
         for (let i = 0; i < selectedFiles.length; i++) {
           const file = selectedFiles[i]
           const reader = new FileReader()
           reader.onload = (e) => {
-            imageData.push({ name: file.name, content: e.target.result })
-
-            if (imageData.length === selectedFiles.length) {
-              this.$emit('image-selected', imageData)
+            const imageData = {
+              name: file.name,
+              type: file.type,
+              content: e.target.result,
+              isImage: file.type.includes('image/')
             }
+            this.$emit('image-selected', imageData)
           }
           reader.readAsDataURL(file)
         }

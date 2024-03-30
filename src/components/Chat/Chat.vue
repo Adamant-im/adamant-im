@@ -228,7 +228,11 @@
           </template>
 
           <template #preview-file>
-            <a-chat-preview-file @cancel="cancelPreviewFile" :file="selectedImage" />
+            <a-chat-preview-file
+              @cancel="cancelPreviewFile"
+              @remove-item="removeItem"
+              :file="selectedImage"
+            />
           </template>
 
           <template #reply-preview v-if="replyMessage">
@@ -388,7 +392,7 @@ export default {
   },
   emits: ['click:chat-avatar'],
   data: () => ({
-    selectedImage: null,
+    selectedImage: [],
     loading: false,
     replyLoadingChatHistory: false,
     noMoreMessages: false,
@@ -505,10 +509,17 @@ export default {
       this.replyMessageId = -1
     },
     handleImageSelected(imageData) {
-      this.selectedImage = imageData
+      if (this.selectedImage.length < 10) {
+        this.selectedImage.push(imageData)
+      } else {
+        alert('можно загрузить только 10 файлов')
+      }
+    },
+    removeItem(index) {
+      this.selectedImage.splice(index, 1)
     },
     cancelPreviewFile() {
-      this.selectedImage = null
+      this.selectedImage = []
     },
     onMessageError(error) {
       switch (error) {
