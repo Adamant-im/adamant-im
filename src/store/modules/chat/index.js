@@ -558,6 +558,20 @@ const actions = {
       .then(({ messages, lastOffset }) => {
         dispatch('unshiftMessages', messages)
 
+        if (messages && offset === 0) {
+          dispatch(
+            'botCommands/initBotCommands',
+            {
+              partnerId: contactId,
+              commands: messages
+                .filter((item) => item.message.startsWith('/'))
+                .map((item) => item.message.trim())
+                .reverse()
+            },
+            { root: true }
+          )
+        }
+
         if (messages.length <= 0) {
           commit('setChatOffset', { contactId, offset: -1 }) // no more messages
         } else {
