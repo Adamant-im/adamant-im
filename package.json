@@ -144,7 +144,7 @@
     "swagger-typescript-api": "^13.0.3",
     "typescript": "^5.4.2",
     "uuid": "^9.0.1",
-    "vite": "^5.1.6",
+    "vite": "^5.1.7",
     "vite-plugin-electron": "^0.28.4",
     "vite-plugin-pwa": "^0.19.4",
     "vite-plugin-top-level-await": "^1.4.1",
