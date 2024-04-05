@@ -564,7 +564,7 @@ const actions = {
             {
               partnerId: contactId,
               commands: messages
-                .filter((item) => item.message.startsWith('/'))
+                .filter((item) => item.message?.startsWith('/'))
                 .map((item) => item.message.trim())
                 .reverse()
             },
