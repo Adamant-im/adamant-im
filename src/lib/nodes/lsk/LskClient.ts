@@ -17,9 +17,7 @@ export class LskClient extends Client<LskNode> {
     method: M,
     params?: RpcResults[M]['params']
   ): Promise<RpcResults[M]['result']> {
-    const node = this.getNode()
-
-    return node.invoke(method, params)
+    return this.getNode().invoke(method, params)
   }
 
   /**

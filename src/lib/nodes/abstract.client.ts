@@ -60,9 +60,7 @@ export abstract class Client<N extends Node> {
   // This method can throw an error if there are no online nodes.
   // Better use "useClient()" method.
   getClient(): N['client'] {
-    const node = this.getNode()
-
-    return node.client
+    return this.getNode().client
   }
 
   /**
@@ -118,7 +116,7 @@ export abstract class Client<N extends Node> {
    * @returns {ApiNode}
    */
   protected getRandomNode() {
-    const onlineNodes = this.nodes.filter((x) => x.online && x.active && !x.outOfSync)
+    const onlineNodes = this.nodes.filter(this.isActiveNode)
     return onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
   }
 
@@ -126,12 +124,11 @@ export abstract class Client<N extends Node> {
    * Returns the fastest node.
    */
   protected getFastestNode() {
-    return this.nodes.reduce((fastest, current) => {
-      if (!current.online || !current.active || current.outOfSync) {
-        return fastest
-      }
-      return !fastest || fastest.ping > current.ping ? current : fastest
-    })
+    const onlineNodes = this.nodes.filter(this.isActiveNode)
+    if (onlineNodes.length === 0) return undefined
+    return onlineNodes.reduce((fastest, current) =>
+      current.ping < fastest.ping ? current : fastest
+    )
   }
 
   protected getNode() {
@@ -150,7 +147,7 @@ export abstract class Client<N extends Node> {
    * Throws an error if all the nodes are offline.
    */
   assertAnyNodeOnline() {
-    const onlineNodes = this.nodes.filter((x) => x.online && x.active && !x.outOfSync)
+    const onlineNodes = this.nodes.filter(this.isActiveNode)
 
     if (onlineNodes.length === 0) {
       throw new AllNodesOfflineError(this.type)
@@ -174,5 +171,15 @@ export abstract class Client<N extends Node> {
     for (const node of nodes) {
       node.outOfSync = !nodesInSync.nodes.includes(node)
     }
+  }
+
+  protected isActiveNode(node: Node) {
+    return (
+      node.online &&
+      node.active &&
+      !node.outOfSync &&
+      node.hasMinNodeVersion() &&
+      node.hasSupportedProtocol
+    )
   }
 }

@@ -58,10 +58,12 @@ const store = {
     balanceStatus: FetchStatus.Loading,
     passphrase: '',
     password: '',
-    publicKeys: {}
+    publicKeys: {},
+    isOnline: true
   }),
   getters: {
     isLogged: (state) => state.passphrase.length > 0,
+    isOnline: (state) => state.isOnline,
     getPassPhrase: (state) => state.passphrase, // compatibility getter for ERC20 modules
     publicKey: (state) => (adamantAddress) => state.publicKeys[adamantAddress],
     isAccountNew: (state) =>
@@ -113,6 +115,9 @@ const store = {
     },
     setPublicKey(state, { adamantAddress, publicKey }) {
       state.publicKeys[adamantAddress] = publicKey
+    },
+    setIsOnline(state, value) {
+      state.isOnline = value
     }
   },
   actions: {

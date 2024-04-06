@@ -48,18 +48,40 @@ export default {
     const showDialog = ref(false)
 
     const nodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
-    const allNodesOffline = computed(() => {
-      return nodes.value.every((node) => !node.online)
+    const isOnline = computed<boolean>(() => store.getters['isOnline'])
+
+    const offlineNodesStatus = computed(() => {
+      return {
+        allOffline: nodes.value.every(
+          (node) =>
+            !(
+              node.online &&
+              node.active &&
+              !node.outOfSync &&
+              node.hasMinNodeVersion &&
+              node.hasSupportedProtocol
+            )
+        ),
+        hasDisabled: nodes.value.some((node) => !node.active)
+      }
     })
 
-    watch(allNodesOffline, (isOffline) => {
-      showDialog.value = isOffline
-    })
+    watch(
+      offlineNodesStatus,
+      (value) => {
+        showDialog.value = value.allOffline && value.hasDisabled && isOnline.value
+      },
+      {
+        deep: true,
+        immediate: true
+      }
+    )
 
     return {
       t,
+      nodes,
       classes,
-      allNodesOffline,
+      offlineNodesStatus,
       showDialog
     }
   }

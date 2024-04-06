@@ -21,9 +21,7 @@ export class LskIndexerClient extends Client<LskIndexer> {
     params?: Endpoints[E]['params'],
     axiosRequestConfig?: AxiosRequestConfig
   ): Promise<Endpoints[E]['result']> {
-    const node = this.getNode()
-
-    return node.request(endpoint, params, axiosRequestConfig)
+    return this.getNode().request(endpoint, params, axiosRequestConfig)
   }
 
   /**
