@@ -32,6 +32,7 @@
           <slot name="fab" />
         </div>
       </div>
+      <AChatFile :img="file"></AChatFile>
 
       <slot name="form" />
     </div>
@@ -43,6 +44,7 @@
 </template>
 
 <script>
+import AChatFile from './AChatFile.vue'
 import throttle from 'lodash/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
@@ -57,6 +59,10 @@ const emitScroll = throttle(function () {
 
 export default {
   props: {
+    file: {
+      type: [Array, null],
+      required: true
+    },
     messages: {
       type: Array,
       default: () => []
@@ -83,6 +89,9 @@ export default {
     currentScrollTop: 0,
     currentClientHeight: 0
   }),
+  components: {
+    AChatFile
+  },
   mounted() {
     this.attachScrollListener()
 

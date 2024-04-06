@@ -3,6 +3,7 @@
     <free-tokens-dialog v-model="showFreeTokensDialog" />
     <a-chat
       ref="chat"
+      :file="selectedImage"
       :messages="messages"
       :partners="partners"
       :user-id="userId"

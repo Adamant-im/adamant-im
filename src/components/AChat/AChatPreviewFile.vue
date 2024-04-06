@@ -3,22 +3,23 @@
     <div :class="classes.container">
       <div :class="classes.containerScrollbar">
         <div :class="classes.containerWithElement" v-for="(imageUrl, index) in file" :key="index">
-          <img
-            v-if="imageUrl.isImage"
-            :class="classes.img"
-            :src="imageUrl.content"
-            alt="Selected Image"
-          />
-          <v-icon
-            v-else
-            size="50"
-            :class="classes.file"
-            icon="mdi-file"
-            style="position: relative"
-          />
-          <v-icon size="15" icon="mdi-close" @click="removeItem(index)" :class="classes.close" />
-
-          <!-- <p :class="classes.fileName">{{ shortenFileName(imageUrl.name) }}</p> -->
+          <div style="position: relative; display: inline-block; height: 60px">
+            <img
+              v-if="imageUrl.isImage"
+              :class="classes.img"
+              :src="imageUrl.content"
+              alt="Selected Image"
+            />
+            <v-icon
+              v-else
+              size="50"
+              :class="classes.file"
+              icon="mdi-file"
+              style="position: relative"
+            />
+            <v-icon size="18" icon="mdi-close" @click="removeItem(index)" :class="classes.close" />
+          </div>
+          <p :class="classes.fileName">{{ shortenFileName(imageUrl.name) }}</p>
         </div>
       </div>
 
@@ -63,11 +64,11 @@ export default defineComponent({
     }
 
     const shortenFileName = (fileName) => {
-      if (fileName.length <= 20) {
+      if (fileName.length <= 12) {
         return fileName
       } else {
-        const firstPart = fileName.substring(0, 10)
-        const lastPart = fileName.substring(fileName.length - 10)
+        const firstPart = fileName.substring(0, 6)
+        const lastPart = fileName.substring(fileName.length - 5)
         const shortenedName = `${firstPart}...${lastPart}`
         return shortenedName.replace(/\s+/g, '')
       }
@@ -104,21 +105,22 @@ export default defineComponent({
     padding: 0 !important;
   }
   &__containerWithElement {
-    position: relative;
-    display: inline-block;
-    height: 50px;
+    width: 110px;
+    height: 110px;
     padding: 0;
   }
 
   &__img {
-    margin-left: 4px;
-    margin-right: 4px;
-    width: 50px;
-    height: 50px;
+    margin-left: 8px;
+    margin-right: 8px;
+    width: 80px;
+    height: 80px;
   }
   &__fileName {
     display: inline;
-    margin-right: 16px;
+    margin-right: 8px;
+    margin-left: 8px;
+    font-size: small;
   }
   &__file {
     display: inline;
@@ -133,6 +135,7 @@ export default defineComponent({
     right: 0;
     background-color: rgb(148, 148, 148);
     color: white;
+    border-radius: 50%;
   }
 
   &__close-button {
