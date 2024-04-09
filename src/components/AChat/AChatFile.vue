@@ -2,6 +2,7 @@
   <div v-if="img.length" :class="classes.container">
     <div :class="classes.containerWithElement">
       <v-img
+        :cover="false"
         @click="openModal(index)"
         v-for="(imageUrl, index) in img"
         :key="index"
@@ -83,27 +84,33 @@ export default defineComponent({
   margin: 8px;
 
   &__container {
-    max-height: 300px;
-    max-width: 260px;
+    max-width: 230px;
     padding: 8px 16px;
-
     background-color: rgb(16, 16, 16);
     border-radius: 8px;
   }
 
   &__containerWithElement {
-    max-height: 250px;
-    max-width: 220px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-    gap: 10px;
+    gap: 2px;
+    grid-template-columns: repeat(2, minmax(50px, 1fr));
+    grid-template-rows: auto;
+    max-height: 400px;
   }
 
   &__img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    margin: 2px;
+
+    :deep(.v-img__img) {
+      object-fit: fill;
+    }
+  }
+
+  @if length(img) % 2 != 0 {
+    &__img:nth-last-child(1):nth-child(odd) {
+      grid-column: span 2;
+    }
   }
 }
 

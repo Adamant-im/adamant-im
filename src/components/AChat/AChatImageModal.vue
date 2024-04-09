@@ -2,12 +2,12 @@
   <div>
     <v-dialog class="modal-wrapper" v-model="show">
       <div class="container">
-        <div>
-          <v-btn icon="mdi-close-thick" class="button" @click="closeModal"></v-btn>
-        </div>
-        <v-carousel class="carousel" hide-delimiters>
+        <v-btn icon="mdi-arrow-collapse-down" class="buttonSave"></v-btn>
+        <v-btn icon="mdi-window-close" class="button" @click="closeModal"></v-btn>
+        <p class="ok">{{ slide + 1 }} of {{ images.length }}</p>
+        <v-carousel v-model="slide" class="carousel" hide-delimiters>
           <v-carousel-item v-for="(item, i) in images" :key="i">
-            <v-img class="modalImg" :src="item.content" alt="Image" @click="openModal(i)" />
+            <v-img class="modalImg" :src="item.content" alt="Image" />
           </v-carousel-item>
         </v-carousel>
       </div>
@@ -23,14 +23,18 @@ export default {
     modal: Boolean
   },
   emits: ['close', 'update:modal'],
-  data: () => ({}),
+  data: () => ({
+    slide: null
+  }),
+  mounted() {
+    this.slide = this.index
+  },
   computed: {
     show: {
       get() {
         return this.modal
       },
       set(value) {
-        console.log('set', value)
         this.$emit('update:modal', value)
       }
     }
@@ -50,7 +54,7 @@ export default {
 }
 .container {
   position: relative;
-  background-color: rgba(0, 0, 0, 0.739);
+  background-color: rgba(0, 0, 0, 0.54);
   width: 100%;
   margin: auto;
 }
@@ -61,11 +65,22 @@ export default {
   margin: 4px;
   background-color: transparent;
 }
+.buttonSave {
+  position: absolute;
+  right: 0px;
+  bottom: 0;
+  margin: 4px;
+  background-color: transparent;
+}
 .carousel {
   margin-top: 40px;
   margin-bottom: 40px;
 }
-
+.ok {
+  text-align: center;
+  line-height: 50px;
+  height: 50px;
+}
 .modalImg {
   height: 100%;
   width: 100%;
