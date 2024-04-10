@@ -10,13 +10,16 @@
               :src="imageUrl.content"
               alt="Selected Image"
             />
-            <v-icon
-              v-else
-              size="50"
+
+            <IconFile
               :class="classes.file"
-              icon="mdi-file"
               style="position: relative"
-            />
+              :text="formatText(imageUrl.name)"
+              :height="80"
+              :width="80"
+              v-else
+            ></IconFile>
+
             <v-icon size="18" icon="mdi-close" @click="removeItem(index)" :class="classes.close" />
           </div>
           <p :class="classes.fileName">{{ shortenFileName(imageUrl.name) }}</p>
@@ -35,6 +38,7 @@
 </template>
 
 <script>
+import IconFile from '../icons/common/IconFile.vue'
 import { defineComponent } from 'vue'
 
 const className = 'a-chat-preview-file'
@@ -51,6 +55,9 @@ const classes = {
 }
 
 export default defineComponent({
+  components: {
+    IconFile
+  },
   emits: ['cancel', 'remove-item'],
   props: {
     file: {
@@ -59,6 +66,13 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
+    const formatText = (fileName) => {
+      const regex = /[^.]+$/
+      const result = fileName.match(regex)[0]
+
+      return result
+    }
+
     const removeItem = (index) => {
       emit('remove-item', index)
     }
@@ -76,7 +90,8 @@ export default defineComponent({
     return {
       classes,
       shortenFileName,
-      removeItem
+      removeItem,
+      formatText
     }
   }
 })
@@ -126,8 +141,6 @@ export default defineComponent({
     display: inline;
     margin-left: 4px;
     margin-right: 4px;
-    width: 50px;
-    height: 50px;
   }
   &__close {
     position: absolute;
