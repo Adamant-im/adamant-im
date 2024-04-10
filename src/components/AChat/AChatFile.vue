@@ -36,7 +36,7 @@ const className = 'a-chat-file'
 const classes = {
   root: className,
   container: `${className}__container`,
-  containerWithElement: `${className}__containerWithElement`,
+  containerWithElement: `${className}__container-with-element`,
   img: `${className}__img`
 }
 
@@ -90,7 +90,7 @@ export default defineComponent({
     border-radius: 8px;
   }
 
-  &__containerWithElement {
+  &__container-with-element {
     display: grid;
     gap: 2px;
     grid-template-columns: repeat(2, minmax(50px, 1fr));

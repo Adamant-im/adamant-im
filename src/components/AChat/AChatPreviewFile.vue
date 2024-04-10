@@ -3,7 +3,7 @@
     <div :class="classes.container">
       <div :class="classes.containerScrollbar">
         <div :class="classes.containerWithElement" v-for="(imageUrl, index) in file" :key="index">
-          <div style="position: relative; display: inline-block; height: 60px">
+          <div :class="classes.positionClose">
             <img
               v-if="imageUrl.isImage"
               :class="classes.img"
@@ -13,7 +13,6 @@
 
             <IconFile
               :class="classes.file"
-              style="position: relative"
               :text="formatText(imageUrl.name)"
               :height="80"
               :width="80"
@@ -45,11 +44,12 @@ const className = 'a-chat-preview-file'
 const classes = {
   root: className,
   container: `${className}__container`,
-  containerScrollbar: `${className}__containerScrollbar`,
-  containerWithElement: `${className}__containerWithElement`,
+  containerScrollbar: `${className}__container-scrollbar`,
+  containerWithElement: `${className}__container-with-element`,
   file: `${className}__file`,
-  fileName: `${className}__fileName`,
+  fileName: `${className}__file-name`,
   img: `${className}__img`,
+  positionClose: `${className}__position-close`,
   close: `${className}__close`,
   closeButton: `${className}__close-button`
 }
@@ -111,18 +111,22 @@ export default defineComponent({
     position: relative;
     display: flex;
   }
-  &__containerScrollbar {
+  &__container-scrollbar {
     display: flex;
     overflow-x: auto;
   }
-  &__containerScrollbar::-webkit-scrollbar {
+  &__container-scrollbar::-webkit-scrollbar {
     width: 0;
     padding: 0 !important;
   }
-  &__containerWithElement {
+  &__container-with-element {
     width: 110px;
     height: 110px;
     padding: 0;
+  }
+  &__position-close {
+    position: relative;
+    display: inline-block;
   }
 
   &__img {
@@ -131,7 +135,7 @@ export default defineComponent({
     width: 80px;
     height: 80px;
   }
-  &__fileName {
+  &__file-name {
     display: inline;
     margin-right: 8px;
     margin-left: 8px;
@@ -139,6 +143,7 @@ export default defineComponent({
   }
   &__file {
     display: inline;
+    position: relative;
     margin-left: 4px;
     margin-right: 4px;
   }
