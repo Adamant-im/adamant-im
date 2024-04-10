@@ -15,6 +15,7 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
 
 import { generateAdamantChats } from './utils/generateAdamantChats'
+import { extractCommandsFromMessages } from '../bot-commands/utils/extractCommandsFromMessages'
 
 export let interval
 
@@ -558,20 +559,6 @@ const actions = {
       .then(({ messages, lastOffset }) => {
         dispatch('unshiftMessages', messages)
 
-        if (messages && offset === 0) {
-          dispatch(
-            'botCommands/initBotCommands',
-            {
-              partnerId: contactId,
-              commands: messages
-                .filter((item) => item.message?.startsWith('/'))
-                .map((item) => item.message.trim())
-                .reverse()
-            },
-            { root: true }
-          )
-        }
-
         if (messages.length <= 0) {
           commit('setChatOffset', { contactId, offset: -1 }) // no more messages
         } else {
@@ -587,7 +574,8 @@ const actions = {
    * Push array of messages and sort by senderId.
    * @param {Message[]} messages Array of messages
    */
-  pushMessages({ commit, rootState }, messages) {
+  pushMessages({ commit, rootState, dispatch }, messages) {
+    dispatch('reInitCommands', messages)
     messages.forEach((message) => {
       commit('pushMessage', {
         message: normalizeMessage(message),
@@ -596,7 +584,8 @@ const actions = {
     })
   },
 
-  unshiftMessages({ commit, rootState }, messages) {
+  unshiftMessages({ commit, rootState, dispatch }, messages) {
+    dispatch('reInitCommands', messages)
     messages.forEach((message) => {
       commit('pushMessage', {
         message: normalizeMessage(message),
@@ -605,6 +594,28 @@ const actions = {
         unshift: true
       })
     })
+  },
+
+  reInitCommands({ dispatch }, messages) {
+    if (messages && messages.length > 0) {
+      const chats = Object.groupBy(messages, ({ recipientId }) => recipientId)
+      for (const recipientId in chats) {
+        const chatMessages = chats[recipientId]
+        if (Array.isArray(chatMessages)) {
+          const commands = extractCommandsFromMessages(recipientId, chatMessages)
+          if (commands.length > 0) {
+            dispatch(
+              'botCommands/initBotCommands',
+              {
+                partnerId: recipientId,
+                commands
+              },
+              { root: true }
+            )
+          }
+        }
+      }
+    }
   },
 
   /**

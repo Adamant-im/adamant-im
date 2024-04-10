@@ -221,7 +221,8 @@ export default {
         if (this.message.startsWith('/')) {
           this.$store.commit('botCommands/addCommand', {
             partnerId: this.partnerId,
-            command: this.message
+            command: this.message.trim(),
+            timestamp: Date.now()
           })
         }
         this.$emit('message', this.message)
@@ -261,7 +262,7 @@ export default {
       if (this.botCommandIndex === null) {
         if (direction === 'ArrowUp') {
           this.botCommandIndex = maxIndex
-          this.message = commands[this.botCommandIndex] || ''
+          this.message = commands[this.botCommandIndex]?.command || ''
         }
         return
       }
@@ -269,14 +270,14 @@ export default {
       if (direction === 'ArrowUp') {
         if (this.botCommandIndex > 0) {
           this.botCommandIndex--
-          this.message = commands[this.botCommandIndex] || ''
+          this.message = commands[this.botCommandIndex]?.command || ''
         }
         return
       }
 
       if (this.botCommandIndex < maxIndex) {
         this.botCommandIndex++
-        this.message = commands[this.botCommandIndex] || ''
+        this.message = commands[this.botCommandIndex]?.command || ''
       }
     }
   }
