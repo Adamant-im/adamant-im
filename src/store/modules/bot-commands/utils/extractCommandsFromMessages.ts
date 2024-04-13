@@ -12,9 +12,12 @@ export function extractCommandsFromMessages(
   messages: NormalizedChatMessageTransaction[]
 ): BotCommand[] {
   return messages
-    .filter((item) => item.recipientId === recipientId)
-    .filter((item) => typeof item.message === 'string')
-    .filter((item) => item.message?.startsWith('/'))
+    .filter(
+      (item) =>
+        item.recipientId === recipientId &&
+        typeof item.message === 'string' &&
+        item.message?.startsWith('/')
+    )
     .map((item) => ({
       command: item.message.trim(),
       timestamp: item.timestamp
