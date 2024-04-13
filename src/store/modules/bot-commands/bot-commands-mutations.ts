@@ -1,6 +1,6 @@
 import { MutationTree } from 'vuex'
-import { BotCommand, BotCommandsState } from '@/store/modules/bot-commands/types.ts'
-import { uniqCommand } from '@/store/modules/bot-commands/utils/uniqCommand.ts'
+import { BotCommand, BotCommandsState } from '@/store/modules/bot-commands/types'
+import { uniqCommand } from '@/store/modules/bot-commands/utils/uniqCommand'
 
 export const mutations: MutationTree<BotCommandsState> = {
   addCommand(state, botCommand: BotCommand & { partnerId: string }): void {

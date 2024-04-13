@@ -1,5 +1,11 @@
-import { BotCommand } from '@/store/modules/bot-commands/types.ts'
+import { BotCommand } from '@/store/modules/bot-commands/types'
 
+/**
+ * The function returns an array of unique bot commands.
+ * If a duplicate is detected, the function gives preference to the one with the larger timestamp.
+ * @param {BotCommand[]} commands Bot commands array
+ * @return {BotCommand[]} An array of unique bot commands
+ * */
 export function uniqCommand(commands: BotCommand[]) {
   const result: BotCommand[] = []
   for (const currentCommand of commands) {

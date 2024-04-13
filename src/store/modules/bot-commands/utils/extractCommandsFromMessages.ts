@@ -1,9 +1,15 @@
-import { getRealTimestamp } from '@/lib/chat/helpers/utils/getRealTimestamp'
-import { BotCommand } from '@/store/modules/bot-commands/types.ts'
+import { BotCommand } from '@/store/modules/bot-commands/types'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 
+/**
+ * The function retrieves all bot commands from the message array
+ * @param {string} recipientId  Message recipient address
+ * @param {NormalizedChatMessageTransaction[]} messages Array of normalized messages
+ * @return {BotCommand[]} Bot commands array
+ * */
 export function extractCommandsFromMessages(
   recipientId: string,
-  messages: { message: any; timestamp: number; recipientId: string }[]
+  messages: NormalizedChatMessageTransaction[]
 ): BotCommand[] {
   return messages
     .filter((item) => item.recipientId === recipientId)
@@ -11,6 +17,6 @@ export function extractCommandsFromMessages(
     .filter((item) => item.message?.startsWith('/'))
     .map((item) => ({
       command: item.message.trim(),
-      timestamp: getRealTimestamp(item.timestamp)
+      timestamp: item.timestamp
     }))
 }

@@ -15,7 +15,6 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
 
 import { generateAdamantChats } from './utils/generateAdamantChats'
-import { extractCommandsFromMessages } from '../bot-commands/utils/extractCommandsFromMessages'
 
 export let interval
 
@@ -575,47 +574,27 @@ const actions = {
    * @param {Message[]} messages Array of messages
    */
   pushMessages({ commit, rootState, dispatch }, messages) {
-    dispatch('reInitCommands', messages)
-    messages.forEach((message) => {
+    const normalizedMessages = messages.map(normalizeMessage)
+    dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
+    normalizedMessages.forEach((message) => {
       commit('pushMessage', {
-        message: normalizeMessage(message),
+        message: message,
         userId: rootState.address
       })
     })
   },
 
   unshiftMessages({ commit, rootState, dispatch }, messages) {
-    dispatch('reInitCommands', messages)
-    messages.forEach((message) => {
+    const normalizedMessages = messages.map(normalizeMessage)
+    dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
+    normalizedMessages.forEach((message) => {
       commit('pushMessage', {
-        message: normalizeMessage(message),
+        message: message,
         userId: rootState.address,
 
         unshift: true
       })
     })
-  },
-
-  reInitCommands({ dispatch }, messages) {
-    if (messages && messages.length > 0) {
-      const chats = Object.groupBy(messages, ({ recipientId }) => recipientId)
-      for (const recipientId in chats) {
-        const chatMessages = chats[recipientId]
-        if (Array.isArray(chatMessages)) {
-          const commands = extractCommandsFromMessages(recipientId, chatMessages)
-          if (commands.length > 0) {
-            dispatch(
-              'botCommands/initBotCommands',
-              {
-                partnerId: recipientId,
-                commands
-              },
-              { root: true }
-            )
-          }
-        }
-      }
-    }
   },
 
   /**
