@@ -3,9 +3,9 @@ import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 
 /**
  * The function retrieves all bot commands from the message array
- * @param {string} recipientId  Message recipient address
- * @param {NormalizedChatMessageTransaction[]} messages Array of normalized messages
- * @return {BotCommand[]} Bot commands array
+ * @param recipientId  Message recipient address
+ * @param messages Array of normalized messages
+ * @return Bot commands array
  * */
 export function extractCommandsFromMessages(
   recipientId: string,
