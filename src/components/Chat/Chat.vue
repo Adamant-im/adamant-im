@@ -3,7 +3,7 @@
     <free-tokens-dialog v-model="showFreeTokensDialog" />
     <a-chat
       ref="chat"
-      :file="selectedImage"
+      :files="files"
       :messages="messages"
       :partners="partners"
       :user-id="userId"
@@ -224,7 +224,7 @@
               class="chat-menu"
               :partner-id="partnerId"
               :reply-to-id="replyMessageId > -1 ? replyMessageId : undefined"
-              @image-selected="handleImageSelected"
+              @files="handleFiles"
             />
           </template>
 
@@ -232,7 +232,7 @@
             <a-chat-preview-file
               @cancel="cancelPreviewFile"
               @remove-item="removeItem"
-              :file="selectedImage"
+              :files="files"
             />
           </template>
 
@@ -393,7 +393,7 @@ export default {
   },
   emits: ['click:chat-avatar'],
   data: () => ({
-    selectedImage: [],
+    files: [],
     loading: false,
     replyLoadingChatHistory: false,
     noMoreMessages: false,
@@ -509,18 +509,14 @@ export default {
       nextTick(() => this.$refs.chat.scrollToBottom())
       this.replyMessageId = -1
     },
-    handleImageSelected(imageData) {
-      if (this.selectedImage.length < 10) {
-        this.selectedImage.push(imageData)
-      } else {
-        alert('можно загрузить только 10 файлов')
-      }
+    handleFiles(filesList) {
+      this.files = filesList
     },
     removeItem(index) {
-      this.selectedImage.splice(index, 1)
+      this.files.splice(index, 1)
     },
     cancelPreviewFile() {
-      this.selectedImage = []
+      this.files.length = 0
     },
     onMessageError(error) {
       switch (error) {

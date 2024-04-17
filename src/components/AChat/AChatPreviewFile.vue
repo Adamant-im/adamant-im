@@ -1,8 +1,8 @@
 <template>
-  <div v-if="file.length" :class="classes.root">
+  <div v-if="files.length" :class="classes.root">
     <div :class="classes.container">
       <div :class="classes.containerScrollbar">
-        <div :class="classes.containerWithElement" v-for="(imageUrl, index) in file" :key="index">
+        <div :class="classes.containerWithElement" v-for="(imageUrl, index) in files" :key="index">
           <div :class="classes.positionClose">
             <img
               v-if="imageUrl.isImage"
@@ -60,8 +60,8 @@ export default defineComponent({
   },
   emits: ['cancel', 'remove-item'],
   props: {
-    file: {
-      type: [Array, null],
+    files: {
+      type: Array,
       required: true
     }
   },

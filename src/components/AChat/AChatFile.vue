@@ -43,7 +43,7 @@ const classes = {
 export default defineComponent({
   props: {
     img: {
-      type: [Array, null],
+      type: Array,
       required: true
     }
   },

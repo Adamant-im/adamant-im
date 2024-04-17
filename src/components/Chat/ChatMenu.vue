@@ -4,11 +4,14 @@
       <template #activator="{ props }">
         <v-icon class="chat-menu__icon" v-bind="props" icon="mdi-plus-circle-outline" size="28" />
       </template>
-
+      <UploadFile @image-selected="handleImageSelected" ref="UploadFileRef"></UploadFile>
       <v-list class="chat-menu__list">
-        <input style="display: none" multiple ref="fileInput" type="file" @change="uploadFile" />
         <!-- Actions -->
-        <v-list-item @click="$refs.fileInput.click()" v-for="item in menuItems" :key="item.title">
+        <v-list-item
+          @click="$refs.UploadFileRef.$refs.fileInput.click()"
+          v-for="item in menuItems"
+          :key="item.title"
+        >
           <template #prepend>
             <icon-box>
               <v-icon :icon="item.icon" />
@@ -34,17 +37,20 @@
 </template>
 
 <script>
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, UPLOAD_MAX_FILE_COUNT } from '@/lib/constants'
 import ChatDialog from '@/components/Chat/ChatDialog.vue'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import IconBox from '@/components/icons/IconBox.vue'
+import UploadFile from '../UploadFile.vue'
 
 export default {
   components: {
     IconBox,
     ChatDialog,
-    CryptoIcon
+    CryptoIcon,
+    UploadFile
   },
+  emits: ['files'],
   props: {
     partnerId: {
       type: String,
@@ -70,7 +76,8 @@ export default {
     dialog: false,
     dialogTitle: '',
     dialogText: '',
-    crypto: ''
+    crypto: '',
+    filesList: []
   }),
   computed: {
     orderedVisibleWalletSymbols() {
@@ -83,25 +90,15 @@ export default {
     }
   },
   methods: {
-    uploadFile(event) {
-      const selectedFiles = event.target.files
-
-      if (selectedFiles.length > 0) {
-        for (let i = 0; i < selectedFiles.length; i++) {
-          const file = selectedFiles[i]
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            const imageData = {
-              name: file.name,
-              type: file.type,
-              content: e.target.result,
-              isImage: file.type.includes('image/')
-            }
-            this.$emit('image-selected', imageData)
-          }
-          reader.readAsDataURL(file)
-        }
+    handleImageSelected(imageData) {
+      if (this.filesList.length < UPLOAD_MAX_FILE_COUNT) {
+        this.filesList.push(imageData)
+      } else {
+        this.$store.dispatch('snackbar/show', {
+          message: this.$t('chats.max_files')
+        })
       }
+      this.$emit('files', this.filesList)
     },
     sendFunds(crypto) {
       // check if user has crypto wallet

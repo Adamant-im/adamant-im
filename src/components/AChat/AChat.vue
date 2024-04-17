@@ -32,7 +32,7 @@
           <slot name="fab" />
         </div>
       </div>
-      <AChatFile :img="file"></AChatFile>
+      <AChatFile :img="files"></AChatFile>
 
       <slot name="form" />
     </div>
@@ -59,8 +59,8 @@ const emitScroll = throttle(function () {
 
 export default {
   props: {
-    file: {
-      type: [Array, null],
+    files: {
+      type: Array,
       required: true
     },
     messages: {
