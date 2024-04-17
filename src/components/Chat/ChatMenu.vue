@@ -4,21 +4,35 @@
       <template #activator="{ props }">
         <v-icon class="chat-menu__icon" v-bind="props" icon="mdi-plus-circle-outline" size="28" />
       </template>
-      <UploadFile @image-selected="handleImageSelected" ref="UploadFileRef"></UploadFile>
+      <UploadFile
+        :accept="acceptImage"
+        @image-selected="handleImageSelected"
+        ref="UploadImageRef"
+      ></UploadFile>
+      <UploadFile
+        :accept="acceptFile"
+        @image-selected="handleImageSelected"
+        ref="UploadFileRef"
+      ></UploadFile>
       <v-list class="chat-menu__list">
-        <!-- Actions -->
-        <v-list-item
-          @click="$refs.UploadFileRef.$refs.fileInput.click()"
-          v-for="item in menuItems"
-          :key="item.title"
-        >
+        <!-- Attach Image -->
+        <v-list-item @click="$refs.UploadImageRef.$refs.fileInput.click()">
           <template #prepend>
             <icon-box>
-              <v-icon :icon="item.icon" />
+              <v-icon icon="mdi-image" />
             </icon-box>
           </template>
+          <v-list-item-title>{{ $t('chats.attach_image') }}</v-list-item-title>
+        </v-list-item>
 
-          <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+        <!-- Attach File -->
+        <v-list-item @click="$refs.UploadFileRef.$refs.fileInput.click()">
+          <template #prepend>
+            <icon-box>
+              <v-icon icon="mdi-file" />
+            </icon-box>
+          </template>
+          <v-list-item-title>{{ $t('chats.attach_file') }}</v-list-item-title>
         </v-list-item>
 
         <!-- Cryptos -->
@@ -61,23 +75,13 @@ export default {
     }
   },
   data: () => ({
-    menuItems: [
-      {
-        type: 'action',
-        title: 'chats.attach_image',
-        icon: 'mdi-image'
-      },
-      {
-        type: 'action',
-        title: 'chats.attach_file',
-        icon: 'mdi-file'
-      }
-    ],
     dialog: false,
     dialogTitle: '',
     dialogText: '',
     crypto: '',
-    filesList: []
+    filesList: [],
+    acceptImage: 'image/* , video/*',
+    acceptFile: 'application/* ,text/*, audio/*'
   }),
   computed: {
     orderedVisibleWalletSymbols() {

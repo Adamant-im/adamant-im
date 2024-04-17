@@ -1,8 +1,18 @@
 <template>
-  <input ref="fileInput" style="display: none" multiple type="file" @change="uploadFile" />
+  <input
+    :accept="accept"
+    ref="fileInput"
+    style="display: none"
+    multiple
+    type="file"
+    @change="uploadFile"
+  />
 </template>
 <script>
 export default {
+  props: {
+    accept: String
+  },
   emits: ['image-selected'],
   methods: {
     uploadFile(event) {
