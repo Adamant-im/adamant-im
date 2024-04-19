@@ -143,6 +143,13 @@
             </AChatMessageActionsDropdown>
           </template>
         </a-chat-message>
+
+        <a-chat-attachment v-else-if="message.type === 'attachment'" :transaction="message">
+          <template #avatar>
+            <ChatAvatar :user-id="partnerId" use-public-key @click="onClickAvatar(partnerId)" />
+          </template>
+        </a-chat-attachment>
+
         <a-chat-transaction
           v-else-if="isTransaction(message.type)"
           :transaction="message"
@@ -309,6 +316,7 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { isMobile } from '@/lib/display-mobile'
 import { isWelcomeChat, isWelcomeMessage } from '@/lib/chat/meta/utils'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
+import AChatAttachment from '@/components/AChat/AChatAttachment.vue'
 
 /**
  * Returns user meta by userId.
@@ -364,6 +372,7 @@ function validateMessage(message) {
 
 export default {
   components: {
+    AChatAttachment,
     AChatMessageActionsList,
     AChatReactions,
     AChatReplyPreview,

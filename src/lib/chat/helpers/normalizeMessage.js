@@ -90,6 +90,10 @@ export function normalizeMessage(abstract) {
       transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
       transaction.status = TS.UNKNOWN
     }
+  } else if (abstract.message?.files) {
+    transaction.hash = abstract.id
+    transaction.message = abstract.message || ''
+    transaction.type = 'attachment'
   } else {
     // ADM transaction or Message
     transaction.message = abstract.message || ''
