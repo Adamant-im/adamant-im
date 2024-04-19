@@ -51,6 +51,11 @@ export function normalizeMessage(abstract) {
       } else {
         transaction.type = 'message'
       }
+    } else if (abstract.message.reply_message.files) {
+      transaction.asset = abstract.message
+      transaction.message = abstract.message.reply_message || ''
+      transaction.hash = abstract.id
+      transaction.type = 'attachment'
     } else {
       // reply with a crypto transfer
       transaction.asset = abstract.message
