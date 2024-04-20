@@ -51,6 +51,11 @@ export function normalizeMessage(abstract) {
       } else {
         transaction.type = 'message'
       }
+    } else if (abstract.message.reply_message.files) {
+      transaction.asset = abstract.message
+      transaction.message = abstract.message.reply_message || ''
+      transaction.hash = abstract.id
+      transaction.type = 'attachment'
     } else {
       // reply with a crypto transfer
       transaction.asset = abstract.message
@@ -90,6 +95,10 @@ export function normalizeMessage(abstract) {
       transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
       transaction.status = TS.UNKNOWN
     }
+  } else if (abstract.message?.files) {
+    transaction.hash = abstract.id
+    transaction.message = abstract.message || ''
+    transaction.type = 'attachment'
   } else {
     // ADM transaction or Message
     transaction.message = abstract.message || ''

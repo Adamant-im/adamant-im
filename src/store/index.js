@@ -20,6 +20,7 @@ import navigatorOnline from './plugins/navigatorOnline'
 import socketsPlugin from './plugins/socketsPlugin'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
+import attachmentModule from './modules/attachment'
 import botCommandsModule from './modules/bot-commands'
 import bitcoinModule from './modules/btc'
 import dashModule from './modules/dash'
@@ -229,6 +230,7 @@ const store = {
   },
   modules: {
     adm: admModule, // ADM transfers
+    attachment: attachmentModule, // Files and photos attachments
     doge: dogeModule,
     lsk: lskModule,
     dash: dashModule,
