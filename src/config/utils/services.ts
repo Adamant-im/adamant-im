@@ -14,12 +14,9 @@ export function getService<B extends BlockchainSymbol, S extends ServiceNames<B>
 ): Service[] {
   const blockchainConfig = config[blockchain]
 
-  console.log(blockchainConfig)
   if ('services' in blockchainConfig) {
     const services = blockchainConfig['services']['list']
     const service = services[serviceName]
-
-    console.log(service)
 
     if (service) {
       return service
