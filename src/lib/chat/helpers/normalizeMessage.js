@@ -52,8 +52,11 @@ export function normalizeMessage(abstract) {
         transaction.type = 'message'
       }
     } else if (abstract.message.reply_message.files) {
-      transaction.asset = abstract.message
-      transaction.message = abstract.message.reply_message || ''
+      transaction.asset = {
+        ...abstract.message.reply_message,
+        replyto_id: abstract.message.replyto_id
+      }
+      transaction.message = abstract.message.reply_message.comment || ''
       transaction.hash = abstract.id
       transaction.type = 'attachment'
     } else {
@@ -96,8 +99,9 @@ export function normalizeMessage(abstract) {
       transaction.status = TS.UNKNOWN
     }
   } else if (abstract.message?.files) {
+    transaction.asset = abstract.message
     transaction.hash = abstract.id
-    transaction.message = abstract.message || ''
+    transaction.message = abstract.message.comment || ''
     transaction.type = 'attachment'
   } else {
     // ADM transaction or Message
