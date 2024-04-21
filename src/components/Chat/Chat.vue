@@ -144,7 +144,18 @@
           </template>
         </a-chat-message>
 
-        <a-chat-attachment v-else-if="message.type === 'attachment'" :transaction="message">
+        <a-chat-attachment
+          v-if="message.type === 'attachment'"
+          :transaction="message"
+          :status="getTransactionStatus(message)"
+          :html="true"
+          :flashing="flashingMessageId === message.id"
+          :data-id="message.id"
+          @resend="resendMessage(partnerId, message.id)"
+          @click:quoted-message="onQuotedMessageClick"
+          @swipe:left="onSwipeLeft(message)"
+          @longpress="onMessageLongPress(message)"
+        >
           <template #avatar>
             <ChatAvatar :user-id="partnerId" use-public-key @click="onClickAvatar(partnerId)" />
           </template>
