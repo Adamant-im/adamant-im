@@ -15,16 +15,16 @@
       {{ '{ ' + $t('chats.message_not_found') + ' }' }}
     </div>
 
-    <div v-if="transaction" :class="classes.message">
-      <template v-if="transferType === 'crypto'">
-        <span>{{ cryptoTransferLabel }}</span>
-      </template>
-      <template v-else-if="transferType === 'image' || transferType === 'attachment'">
-        <span>{{ transaction }}</span>
-      </template>
-      <template v-else-if="transferType === 'text'">
+    <div v-else-if="transaction" :class="classes.message">
+      <span v-if="isCryptoTransfer">
+        {{ cryptoTransferLabel }}
+      </span>
+      <span v-else-if="isAttachment">
+        {{ transaction.message }}
+      </span>
+      <span v-else>
         <span v-html="messageLabel"></span>
-      </template>
+      </span>
     </div>
   </div>
 </template>
@@ -34,7 +34,7 @@ import { computed, defineComponent, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
-import { getTransaction, decodeChat, DecodedChatMessageTransaction } from '@/lib/adamant-api'
+import { getTransaction, decodeChat } from '@/lib/adamant-api'
 import { NormalizedChatMessageTransaction, normalizeMessage } from '@/lib/chat/helpers'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
@@ -52,13 +52,15 @@ const classes = {
 
 const ErrorCodes = {
   INVALID_MESSAGE: 'INVALID_MESSAGE',
-  MESSAGE_NOT_FOUND: 'MESSAGE_NOT_FOUND',
-  PUBLIC_KEY_NOT_FOUND: 'PUBLIC_KEY_NOT_FOUND'
-}
+  MESSAGE_NOT_FOUND: 'MESSAGE_NOT_FOUND'
+} as const
+
+type TErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes]
 
 class ValidationError extends Error {
-  private errorCode: string
-  constructor(message: string, errorCode: (typeof ErrorCodes)[keyof typeof ErrorCodes]) {
+  public errorCode: TErrorCode
+
+  constructor(message: string, errorCode: TErrorCode) {
     super(message)
 
     this.name = 'ValidationError'
@@ -67,7 +69,7 @@ class ValidationError extends Error {
 }
 
 async function fetchTransaction(transactionId: string, address: string) {
-  const rawTx = await getTransaction(transactionId, 1)
+  const rawTx = (await getTransaction(transactionId, 1)) as ChatMessageTransaction | null
 
   if (!rawTx) {
     throw new ValidationError(
@@ -76,18 +78,8 @@ async function fetchTransaction(transactionId: string, address: string) {
     )
   }
 
-  let publicKey
-  if ('recipientPublicKey' in rawTx) {
-    publicKey = rawTx.senderId === address ? rawTx.recipientPublicKey : rawTx.senderPublicKey
-  }
-  if (!publicKey) {
-    throw new ValidationError(
-      `QuotedMessage: Cannot find public key: txId: ${transactionId}`,
-      ErrorCodes.PUBLIC_KEY_NOT_FOUND
-    )
-  }
-  const decodedTransaction =
-    rawTx.type === 0 ? rawTx : decodeChat(rawTx as ChatMessageTransaction, publicKey)
+  const publicKey = rawTx.senderId === address ? rawTx.recipientPublicKey : rawTx.senderPublicKey
+  const decodedTransaction = rawTx.type === 0 ? rawTx : decodeChat(rawTx, publicKey)
 
   if (!('message' in decodedTransaction)) {
     throw new ValidationError(
@@ -96,7 +88,7 @@ async function fetchTransaction(transactionId: string, address: string) {
     )
   }
 
-  return normalizeMessage(decodedTransaction as DecodedChatMessageTransaction)
+  return normalizeMessage(decodedTransaction)
 }
 
 export default defineComponent({
@@ -114,31 +106,18 @@ export default defineComponent({
 
     const loading = ref(false)
     const store = useStore()
-    const errorCode = ref<(typeof ErrorCodes)[keyof typeof ErrorCodes] | null>(null)
+    const errorCode = ref<TErrorCode | null>(null)
 
     const stateTransaction = ref<NormalizedChatMessageTransaction | null>(null)
     const cachedTransaction = computed(() => store.getters['chat/messageById'](props.messageId))
     const transaction = computed(() => stateTransaction.value || cachedTransaction.value)
 
     const address = computed(() => store.state.address)
-    const transferTypes = ['attachment', 'crypto', 'image', 'text'] as const
-
-    const transferType = computed((): (typeof transferTypes)[number] => {
-      if (!transaction.value) return 'text'
-
+    const isCryptoTransfer = computed(() => {
       const validCryptos = Object.keys(Cryptos)
-      const imageExtensions = ['png', 'jpg', 'jpeg', 'bmp', 'gif']
-
-      if (!transaction.value?.type && validCryptos.includes(transaction.value.type)) {
-        return 'crypto'
-      } else if (transaction.value.message.files && transaction.value.message.files.length > 0) {
-        if (transaction.value.message.files[0].file_type.toLowerCase() === typeof imageExtensions) {
-          return 'image'
-        } else {
-          return 'attachment'
-        }
-      } else return 'text'
+      return transaction.value ? validCryptos.includes(transaction.value.type) : false
     })
+    const isAttachment = computed(() => transaction.value?.type === 'attachment')
 
     const cryptoTransferLabel = computed(() => {
       const direction =
@@ -163,12 +142,9 @@ export default defineComponent({
         loading.value = true
 
         try {
-          const tx = await fetchTransaction(props.messageId, address.value)
-          if (tx) {
-            stateTransaction.value = tx
-          }
-        } catch (err: typeof Error | any) {
-          if (err.errorCode) {
+          stateTransaction.value = await fetchTransaction(props.messageId, address.value)
+        } catch (err: ValidationError | Error | unknown) {
+          if (err instanceof ValidationError) {
             errorCode.value = err.errorCode
           }
 
@@ -183,7 +159,8 @@ export default defineComponent({
       classes,
       loading,
       transaction,
-      transferType,
+      isCryptoTransfer,
+      isAttachment,
       address,
       currencyFormatter,
       errorCode,
