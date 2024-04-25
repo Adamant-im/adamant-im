@@ -70,9 +70,8 @@
             class="a-chat__message-text a-text-regular-enlarged"
             v-text="formattedMessage"
           />
-
           <pre>
-            {{ JSON.stringify(transaction, null, 2) }}
+            {{ JSON.stringify(transaction.id, null, 2) }}
           </pre>
         </div>
       </div>

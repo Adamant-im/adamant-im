@@ -85,9 +85,6 @@ export default defineComponent({
 
   &__container {
     max-width: 230px;
-    padding: 8px 16px;
-    background-color: rgb(16, 16, 16);
-    border-radius: 8px;
   }
 
   &__container-with-element {

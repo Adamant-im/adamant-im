@@ -19,9 +19,14 @@
       <span v-if="isCryptoTransfer">
         {{ cryptoTransferLabel }}
       </span>
+
       <span v-else-if="isAttachment">
+        <span v-if="transaction.asset.files.length > 0">
+          [{{ transaction.asset.files.length }} {{ $t('chats.files') }}]:
+        </span>
         {{ transaction.message }}
       </span>
+
       <span v-else>
         <span v-html="messageLabel"></span>
       </span>
