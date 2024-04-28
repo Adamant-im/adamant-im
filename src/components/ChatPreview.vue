@@ -53,7 +53,12 @@
           <v-icon v-if="isIncomingTransaction" :icon="statusIcon" size="15" />
         </v-list-item-subtitle>
       </template>
-
+      <!-- Attachment -->
+      <template v-else-if="isAttachment">
+        <v-list-item-subtitle :class="`${className}__subtitle`">
+          [{{ transaction.asset.files.length }} {{ $t('chats.files') }}]: {{ transaction.message }}
+        </v-list-item-subtitle>
+      </template>
       <!-- Reaction -->
       <template v-else-if="isReaction">
         <v-list-item-subtitle :class="`${className}__subtitle`">
@@ -147,7 +152,14 @@ export default {
     },
 
     isTransferType() {
-      return this.transaction.type !== 'message' && this.transaction.type !== 'reaction'
+      return (
+        this.transaction.type !== 'message' &&
+        this.transaction.type !== 'reaction' &&
+        this.transaction.type !== 'attachment'
+      )
+    },
+    isAttachment() {
+      return this.transaction.type === 'attachment'
     },
     isReaction() {
       return this.transaction.type === 'reaction'

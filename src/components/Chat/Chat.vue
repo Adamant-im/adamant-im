@@ -3,6 +3,7 @@
     <free-tokens-dialog v-model="showFreeTokensDialog" />
     <a-chat
       ref="chat"
+      :files="files"
       :messages="messages"
       :partners="partners"
       :user-id="userId"
@@ -142,6 +143,24 @@
             </AChatMessageActionsDropdown>
           </template>
         </a-chat-message>
+
+        <a-chat-attachment
+          v-if="message.type === 'attachment'"
+          :transaction="message"
+          :status="getTransactionStatus(message)"
+          :html="true"
+          :flashing="flashingMessageId === message.id"
+          :data-id="message.id"
+          @resend="resendMessage(partnerId, message.id)"
+          @click:quoted-message="onQuotedMessageClick"
+          @swipe:left="onSwipeLeft(message)"
+          @longpress="onMessageLongPress(message)"
+        >
+          <template #avatar>
+            <ChatAvatar :user-id="partnerId" use-public-key @click="onClickAvatar(partnerId)" />
+          </template>
+        </a-chat-attachment>
+
         <a-chat-transaction
           v-else-if="isTransaction(message.type)"
           :transaction="message"
@@ -223,6 +242,15 @@
               class="chat-menu"
               :partner-id="partnerId"
               :reply-to-id="replyMessageId > -1 ? replyMessageId : undefined"
+              @files="handleFiles"
+            />
+          </template>
+
+          <template #preview-file>
+            <a-chat-preview-file
+              @cancel="cancelPreviewFile"
+              @remove-item="removeItem"
+              :files="files"
             />
           </template>
 
@@ -284,7 +312,8 @@ import {
   AChatMessageActionsMenu,
   AChatMessageActionsDropdown,
   AChatActionsOverlay,
-  AChatReactionSelect
+  AChatReactionSelect,
+  AChatPreviewFile
 } from '@/components/AChat'
 import ChatToolbar from '@/components/Chat/ChatToolbar.vue'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
@@ -298,6 +327,7 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { isMobile } from '@/lib/display-mobile'
 import { isWelcomeChat, isWelcomeMessage } from '@/lib/chat/meta/utils'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
+import AChatAttachment from '@/components/AChat/AChatAttachment.vue'
 
 /**
  * Returns user meta by userId.
@@ -353,6 +383,7 @@ function validateMessage(message) {
 
 export default {
   components: {
+    AChatAttachment,
     AChatMessageActionsList,
     AChatReactions,
     AChatReplyPreview,
@@ -370,7 +401,8 @@ export default {
     AChatMessageActionsDropdown,
     AChatActionsOverlay,
     AChatReactionSelect,
-    EmojiPicker
+    EmojiPicker,
+    AChatPreviewFile
   },
   mixins: [transaction, partnerName],
   props: {
@@ -381,6 +413,7 @@ export default {
   },
   emits: ['click:chat-avatar'],
   data: () => ({
+    files: [],
     loading: false,
     replyLoadingChatHistory: false,
     noMoreMessages: false,
@@ -495,6 +528,15 @@ export default {
       this.sendMessage(message)
       nextTick(() => this.$refs.chat.scrollToBottom())
       this.replyMessageId = -1
+    },
+    handleFiles(filesList) {
+      this.files = filesList
+    },
+    removeItem(index) {
+      this.files.splice(index, 1)
+    },
+    cancelPreviewFile() {
+      this.files.length = 0
     },
     onMessageError(error) {
       switch (error) {

@@ -1,5 +1,6 @@
 import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
 import { TransactionStatusType } from '@/lib/constants'
+import { ChatMessageTransaction } from '@/lib/schema/client'
 
 export type NormalizedChatMessageTransaction = Pick<
   DecodedChatMessageTransaction,
@@ -19,5 +20,5 @@ export type NormalizedChatMessageTransaction = Pick<
 }
 
 export function normalizeMessage(
-  transaction: DecodedChatMessageTransaction
+  transaction: ChatMessageTransaction | DecodedChatMessageTransaction
 ): NormalizedChatMessageTransaction
