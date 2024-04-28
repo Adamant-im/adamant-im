@@ -165,7 +165,8 @@
     "fastest_tooltip": "将使用最快的节点处理请求",
     "tabs": {
       "adm_nodes": "ADM节点",
-      "coin_nodes": "硬币节点"
+      "coin_nodes": "硬币节点",
+      "ipfs_nodes": "IPFS节点"
     },
     "label": "类型",
     "host": "主机",

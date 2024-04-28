@@ -166,7 +166,8 @@
     "fastest_tooltip": "Запросы будут обрабатываться самым быстрым узлом",
     "tabs": {
       "adm_nodes": "ADM ноды",
-      "coin_nodes": "Coin ноды"
+      "coin_nodes": "Coin ноды",
+      "ipfs_nodes": "IPFS ноды"
     },
     "label": "Тип",
     "host": "Хост",

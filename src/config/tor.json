@@ -32,6 +32,20 @@
           {
             "url": "http://czjsawp2crjmnkliw2h2kpk7wwd3a36zvvnvqgvzmi4t4vc2yzm7j2qd.onion"
           }
+        ],
+        "ipfsService": [
+          {
+            "url": "https://ipfs1test.adamant.im",
+            "alt_ip": "http://194.163.154.252:4000"
+          },
+          {
+            "url": "https://ipfs2test.adamant.im",
+            "alt_ip": "http://154.26.159.245:4000"
+          },
+          {
+            "url": "https://ipfs3test.adamant.im",
+            "alt_ip": "http://109.123.240.102:4000"
+          }
         ]
       },
       "healthCheck": {

@@ -1,6 +1,6 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead hide-label />
+    <NodesTableHead hide-label hide-socket />
 
     <tbody>
       <IpfsNodesTableItem v-for="node in ipfsNodes" :key="node.url" blockchain="adm" :node="node" />

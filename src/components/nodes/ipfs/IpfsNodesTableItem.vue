@@ -12,10 +12,6 @@
     <NodeColumn :colspan="!showSocketColumn ? 2 : 1">
       <NodeStatus :node="node" />
     </NodeColumn>
-
-    <NodeColumn v-if="showSocketColumn">
-      <SocketSupport :node="node" />
-    </NodeColumn>
   </tr>
 </template>
 
@@ -27,7 +23,6 @@ import NodeUrl from '@/components/nodes/components/NodeUrl.vue'
 import NodeColumn from '@/components/nodes/components/NodeColumn.vue'
 import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
 import NodeVersion from '@/components/nodes/components/NodeVersion.vue'
-import SocketSupport from '@/components/nodes/components/SocketSupport.vue'
 import NodeStatusCheckbox from '@/components/nodes/components/NodeStatusCheckbox.vue'
 
 const className = 'adm-nodes-table-item'
@@ -44,7 +39,6 @@ export default {
     NodeColumn,
     NodeStatus,
     NodeVersion,
-    SocketSupport,
     NodeUrl
   },
   props: {
