@@ -7,12 +7,22 @@ import _ from 'lodash'
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
 const GENERAL_ASSETS_PATH = resolve('adamant-wallets/assets/general')
+const BRANCH = process.argv[2]
 
-run()
+void run(BRANCH)
 
-async function run() {
+/**
+ *
+ * @param {string} branch The branch to pull from. E.g.: dev, master
+ * @return {Promise<void>}
+ */
+async function run(branch = 'master') {
   // update adamant-wallets repo
-  await $`git submodule foreach git pull origin master`
+  await $`git submodule init`
+  await $`git submodule update`
+  await $`git submodule foreach git pull origin ${branch}`
+
+  console.log('Updating coins data from `adamant-wallets`. Using branch:', branch)
 
   const { coins, config, coinDirNames, coinSymbols } = await initCoins()
   await applyBlockchains(coins, coinSymbols)
@@ -24,6 +34,8 @@ async function run() {
   await updateProductionConfig(config)
   await updateDevelopmentConfig(config)
   await updateTorConfig(config)
+
+  console.log('Coins updated successfully')
 }
 
 async function initCoins() {
