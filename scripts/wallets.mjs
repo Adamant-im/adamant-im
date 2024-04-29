@@ -132,10 +132,12 @@ async function copyIcons(coins, coinDirNames) {
   for (const [name, coin] of Object.entries(coins)) {
     const iconComponentName = `${_.capitalize(coin.symbol)}Icon.vue`
 
+    const iconPathDestination = join(CRYPTOS_ICONS_DIR_PATH, iconComponentName)
     await copyFile(
       join(GENERAL_ASSETS_PATH, coinDirNames[name], 'images', 'icon.vue'),
-      join(CRYPTOS_ICONS_DIR_PATH, iconComponentName)
+      iconPathDestination
     )
+    await $`git add ${iconPathDestination}` // git track newly added icon
   }
 }
 
