@@ -87,8 +87,11 @@ async function initCoins() {
     }
   })
 
+  // Sort by key (coin symbol)
+  const sortedCoins = _.chain(coins).toPairs().sortBy(0).fromPairs().value()
+
   return {
-    coins,
+    coins: sortedCoins,
     config,
     coinDirNames,
     coinSymbols
