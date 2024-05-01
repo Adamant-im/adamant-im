@@ -187,7 +187,7 @@ const router = createRouter({
     } else if (savedPosition) {
       return savedPosition
     } else if (to.meta.scrollPosition) {
-      return to.meta.scrollPosition
+      return window.scrollTo(to.meta.scrollPosition.x, to.meta.scrollPosition.y)
     }
   }
 })
