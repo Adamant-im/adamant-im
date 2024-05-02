@@ -56,6 +56,8 @@ export function normalizeMessage(abstract) {
         ...abstract.message.reply_message,
         replyto_id: abstract.message.replyto_id
       }
+      transaction.recipientPublicKey = abstract.recipientPublicKey
+      transaction.senderPublicKey = abstract.senderPublicKey
       transaction.message = abstract.message.reply_message.comment || ''
       transaction.hash = abstract.id
       transaction.type = 'attachment'
@@ -99,6 +101,8 @@ export function normalizeMessage(abstract) {
       transaction.status = TS.UNKNOWN
     }
   } else if (abstract.message?.files) {
+    transaction.recipientPublicKey = abstract.recipientPublicKey
+    transaction.senderPublicKey = abstract.senderPublicKey
     transaction.asset = abstract.message
     transaction.hash = abstract.id
     transaction.message = abstract.message.comment || ''

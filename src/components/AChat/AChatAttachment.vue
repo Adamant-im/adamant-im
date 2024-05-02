@@ -70,6 +70,7 @@
             class="a-chat__message-text a-text-regular-enlarged"
             v-text="formattedMessage"
           />
+          <v-btn @click="getFileFromStorage()">CLICK ME</v-btn>
           <pre>
             {{ JSON.stringify(transaction.id, null, 2) }}
           </pre>
@@ -89,7 +90,7 @@ import { useFormatMessage } from './hooks/useFormatMessage'
 import { usePartnerId } from './hooks/usePartnerId'
 import { useTransactionTime } from './hooks/useTransactionTime'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { isStringEqualCI } from '@/lib/textHelpers'
+import { downloadFile, isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
 import QuotedMessage from './QuotedMessage.vue'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
@@ -97,6 +98,7 @@ import formatDate from '@/filters/date'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
 
 export default defineComponent({
+  methods: { downloadFile },
   components: {
     QuotedMessage
   },
@@ -140,6 +142,25 @@ export default defineComponent({
     const userId = computed(() => store.state.address)
     const partnerId = usePartnerId(props.transaction)
 
+    const getFileFromStorage = async () => {
+      //TODO: refactor for each file
+      const cid = props.transaction.asset.files[0].file_id
+      const fileName = props.transaction.asset.files[0].file_name
+      const fileType = props.transaction.asset.files[0].file_type
+      const nonce = props.transaction.asset.files[0].nonce
+      const myAddress = store.state.address
+
+      const publicKey =
+        props.transaction.senderId === myAddress
+          ? props.transaction.recipientPublicKey
+          : props.transaction.senderPublicKey
+      const data = await store.dispatch('attachment/getAttachment', { cid, publicKey, nonce })
+      if (!!data && !!fileName && !!fileType) {
+        // TODO: resolve MIME-type
+        downloadFile(data, fileName, '')
+      }
+    }
+
     const showAvatar = computed(() => !isWelcomeChat(partnerId.value))
 
     const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
@@ -162,6 +183,7 @@ export default defineComponent({
       statusIcon,
       isOutgoingMessage,
       formattedMessage,
+      getFileFromStorage,
       showAvatar,
       onMove,
       onSwipeEnd,

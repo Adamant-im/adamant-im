@@ -31,9 +31,10 @@ export class IpfsClient extends Client<IpfsNode> {
    * Performs a POST API request.
    * @param {String} url relative API url
    * @param {any} payload request payload (an object) or a function that accepts `ApiNode` and returns the request payload
+   * @param {Record<string, string>} headers request headers
    */
-  post<P extends Payload = Payload>(url: string, payload: P) {
-    return this.request({ method: 'post', url, payload })
+  post<P extends Payload = Payload>(url: string, payload: P, headers: Record<string, string>) {
+    return this.request({ method: 'post', url, payload, headers })
   }
 
   /**

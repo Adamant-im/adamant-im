@@ -9,7 +9,6 @@ type FetchNodeInfoResult = {
   socketSupport: boolean
   version: string
   height: number
-  wsPort?: string
 }
 
 export type Payload =
@@ -19,6 +18,7 @@ export type Payload =
     }
 export type RequestConfig<P extends Payload> = {
   url: string
+  headers?: Record<string, string>
   method?: string
   payload?: P
 }
@@ -30,15 +30,12 @@ export type RequestConfig<P extends Payload> = {
 export class IpfsNode extends Node<AxiosInstance> {
   constructor(url: string, minNodeVersion = '0.0.0') {
     super(url, 'ipfs', 'node', NODE_LABELS.IpfsNode, '', minNodeVersion)
-
-    this.wsPort = '36668' // default wsPort
-    this.wsProtocol = this.protocol === 'https:' ? 'wss:' : 'ws:'
-    this.wsPortNeeded = this.wsProtocol === 'ws:' && !this.hostname.includes('.onion')
   }
 
   protected buildClient(): AxiosInstance {
     return axios.create({
-      baseURL: this.url
+      baseURL: this.url,
+      timeout: 60 * 10 * 1000
     })
   }
 
@@ -49,11 +46,13 @@ export class IpfsNode extends Node<AxiosInstance> {
    * accepts `ApiNode` as a first argument and returns an object.
    */
   request<P extends Payload = Payload, R = any>(cfg: RequestConfig<P>): Promise<R> {
-    const { url, method = 'get', payload } = cfg
+    const { url, headers, method = 'get', payload } = cfg
 
     const config: AxiosRequestConfig = {
       url,
       method: method.toLowerCase(),
+      headers,
+      responseType: 'arraybuffer',
       [method === 'get' ? 'params' : 'data']:
         typeof payload === 'function' ? payload(this) : payload
     }
@@ -94,18 +93,15 @@ export class IpfsNode extends Node<AxiosInstance> {
       const readableVersion = version.version
       const height = Number(network.height)
       const socketSupport = wsClient ? wsClient.enabled : false
-      const wsPort = wsClient ? String(wsClient.port) : ''
 
       this.version = readableVersion
       this.height = height
       this.socketSupport = socketSupport
-      this.wsPort = wsPort
 
       return {
         version: readableVersion,
         height,
-        socketSupport,
-        wsPort
+        socketSupport
       }
     }
 
