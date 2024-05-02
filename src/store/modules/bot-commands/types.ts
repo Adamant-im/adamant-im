@@ -1,5 +1,5 @@
 export interface BotCommandsState {
-  commands: Record<string, string[]>
+  commands: Record<string, BotCommand[]>
 }
 
-export type BotCommand = { partnerId: string; command: string }
+export type BotCommand = { command: string; timestamp: number }
