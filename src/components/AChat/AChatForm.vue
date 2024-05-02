@@ -16,6 +16,7 @@
       max-rows="10"
       variant="underlined"
       density="compact"
+      base-color="primary"
       color="primary"
       v-on="listeners"
       :autofocus="isDesktopDevice"
