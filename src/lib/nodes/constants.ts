@@ -7,6 +7,7 @@ export type TNodeLabel =
   | 'doge-node'
   | 'doge-indexer'
   | 'dash-node'
+  | 'ipfs-node'
   | 'lsk-node'
   | 'lsk-indexer'
   | 'rates-info'
@@ -36,6 +37,7 @@ export const NODE_LABELS: NodeLabels = {
   DogeNode: 'doge-node',
   DogeIndexer: 'doge-indexer',
   DashNode: 'dash-node',
+  IpfsNode: 'ipfs-node',
   LskNode: 'lsk-node',
   LskIndexer: 'lsk-indexer',
   RatesInfo: 'rates-info'

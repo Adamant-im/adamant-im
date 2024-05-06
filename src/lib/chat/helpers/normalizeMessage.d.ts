@@ -16,6 +16,8 @@ export type NormalizedChatMessageTransaction = Pick<
   hash: string
   isReply?: boolean
   isReaction?: boolean
+  recipientPublicKey?: string
+  senderPublicKey?: string
   asset: any // @todo types
 }
 

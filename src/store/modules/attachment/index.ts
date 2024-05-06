@@ -1,8 +1,7 @@
 import { MutationTree, GetterTree, ActionTree } from 'vuex'
 import { RootState } from '@/store/types'
-import axios from 'axios'
-import { getRandomServiceUrl } from '@/config/utils'
 import { AttachmentsState } from '@/store/modules/attachment/types.ts'
+import { AttachmentApi } from '@/lib/attachment-api'
 
 const state = (): AttachmentsState => ({
   attachments: {}
@@ -28,21 +27,25 @@ const getters: GetterTree<AttachmentsState, RootState> = {
   }
 }
 
+let attachmentApi: AttachmentApi | null = null
 const actions: ActionTree<AttachmentsState, RootState> = {
-  getAttachment({ commit }, cid: string) {
-    const url = getRandomServiceUrl('adm', 'attachmentService')
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`${url}/file/${cid}`)
-        .then((res) => {
-          const responce = res.data
-          commit('setAttachments', responce)
-          resolve(res)
-        })
-        .catch((err) => {
-          reject(err)
-        })
-    })
+  afterLogin: {
+    root: true,
+    handler(context, passphrase) {
+      attachmentApi = new AttachmentApi(passphrase)
+    }
+  },
+  getAttachment(
+    state,
+    { cid, publicKey, nonce }: { cid: string; publicKey: Uint8Array; nonce: string }
+  ) {
+    return attachmentApi?.getFile(cid, nonce, publicKey)
+  },
+  uploadAttachment(
+    state,
+    { cid, publicKey, nonce }: { cid: string; publicKey: Uint8Array; nonce: string }
+  ) {
+    return attachmentApi?.getFile(cid, nonce, publicKey)
   },
   resetState(context) {
     context.commit('reset')

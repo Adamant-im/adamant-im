@@ -23,6 +23,7 @@ const defaultOptions: Options = {
   doge: { useFastest: true },
   dash: { useFastest: true },
   eth: { useFastest: true },
+  ipfs: { useFastest: true },
   lsk: { useFastest: true }
 }
 

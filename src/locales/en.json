@@ -167,7 +167,8 @@
     "fastest_tooltip": "Requests will be processed with a fastest node",
     "tabs": {
       "adm_nodes": "ADM nodes",
-      "coin_nodes": "Coin nodes"
+      "coin_nodes": "Coin nodes",
+      "ipfs_nodes": "IPFS nodes"
     },
     "label": "Type",
     "host": "Host",
