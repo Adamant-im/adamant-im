@@ -40,7 +40,20 @@
           "url": "https://node2.blockchain2fa.io"
         },
         {
-          "url": "https://sunshine.adamant.im"
+          "url": "https://phecda.adm.im",
+          "alt_ip": "http://46.250.234.248:36666"
+        },
+        {
+          "url": "https://tegmine.adm.im",
+          "alt_ip": "http://5.104.87.219:36666"
+        },
+        {
+          "url": "https://tauri.adm.im",
+          "alt_ip": "http://154.26.159.245:36666"
+        },
+        {
+          "url": "https://dschubba.adm.im",
+          "alt_ip": "http://85.239.234.17:36666"
         }
       ],
       "healthCheck": {
@@ -156,11 +169,6 @@
     "explorerTx": "https://etherscan.io/tx/${ID}",
     "nodes": {
       "list": [
-        {
-          "url": "https://ethnode1.adamant.im",
-          "alt_ip": "http://95.216.41.106:44099",
-          "hasIndex": true
-        },
         {
           "url": "https://ethnode2.adamant.im",
           "alt_ip": "http://95.216.114.252:44099",
