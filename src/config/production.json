@@ -71,7 +71,7 @@
             "alt_ip": "http://88.198.156.44:44099"
           }
         ],
-        "ipfsService": [
+        "ipfs": [
           {
             "url": "https://ipfs1test.adamant.im",
             "alt_ip": "http://194.163.154.252:4000"
