@@ -31,8 +31,8 @@ const routes = [
       requiresAuth: false,
       layout: 'no-container',
       scrollPosition: {
-        x: 0,
-        y: 0
+        left: 0,
+        top: 0
       }
     }
   },
@@ -53,8 +53,8 @@ const routes = [
       requiresAuth: true,
       layout: 'no-container',
       scrollPosition: {
-        x: 0,
-        y: 0
+        left: 0,
+        top: 0
       }
     }
   },
@@ -103,8 +103,8 @@ const routes = [
       layout: 'no-container',
       showNavigation: true,
       scrollPosition: {
-        x: 0,
-        y: 0
+        left: 0,
+        top: 0
       }
     }
   },
@@ -130,8 +130,8 @@ const routes = [
       containerNoPadding: true,
       showNavigation: true,
       scrollPosition: {
-        x: 0,
-        y: 0
+        left: 0,
+        top: 0
       }
     }
   },
@@ -183,11 +183,11 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     if (to.params.txId) {
       // Don't restore scroll for Transaction details screen
-      return { x: 0, y: 0 }
+      return { left: 0, top: 0 }
     } else if (savedPosition) {
       return savedPosition
     } else if (to.meta.scrollPosition) {
-      return window.scrollTo(to.meta.scrollPosition.x, to.meta.scrollPosition.y)
+      return to.meta.scrollPosition
     }
   }
 })
