@@ -1,14 +1,16 @@
 import utils from '@/lib/adamant'
 import { NodeOfflineError } from '@/lib/nodes/utils/errors'
-import { GetNodeStatusResponseDto } from '@/lib/schema/client'
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 
 type FetchNodeInfoResult = {
-  socketSupport: boolean
+  availableSizeInMb: number
+  blockstoreSizeMb: number
+  datastoreSizeMb: number
+  heliaStatus: string
+  timestamp: number
   version: string
-  height: number
 }
 
 export type Payload =
@@ -52,7 +54,7 @@ export class IpfsNode extends Node<AxiosInstance> {
       url,
       method: method.toLowerCase(),
       headers,
-      responseType: 'arraybuffer',
+      responseType: url.includes('file') ? 'arraybuffer' : 'json',
       [method === 'get' ? 'params' : 'data']:
         typeof payload === 'function' ? payload(this) : payload
     }
@@ -84,36 +86,36 @@ export class IpfsNode extends Node<AxiosInstance> {
    * @returns {Promise<{version: string, height: number, ping: number}>}
    */
   private async fetchNodeInfo(): Promise<FetchNodeInfoResult> {
-    const { success, version, network, wsClient } = await this.request<
-      Payload,
-      GetNodeStatusResponseDto
-    >({ url: '/api/node/status' })
+    const {
+      availableSizeInMb,
+      blockstoreSizeMb,
+      datastoreSizeMb,
+      heliaStatus,
+      timestamp,
+      version
+    } = await this.request<Payload, FetchNodeInfoResult>({
+      url: '/api/node/info'
+    })
 
-    if (success) {
-      const readableVersion = version.version
-      const height = Number(network.height)
-      const socketSupport = wsClient ? wsClient.enabled : false
+    this.version = version
+    this.height = timestamp
 
-      this.version = readableVersion
-      this.height = height
-      this.socketSupport = socketSupport
-
-      return {
-        version: readableVersion,
-        height,
-        socketSupport
-      }
+    return {
+      availableSizeInMb,
+      blockstoreSizeMb,
+      datastoreSizeMb,
+      heliaStatus,
+      timestamp,
+      version
     }
-
-    throw new Error('Request to /api/node/status was unsuccessful')
   }
 
   protected async checkHealth() {
     const time = Date.now()
-    const { height } = await this.fetchNodeInfo()
+    const { timestamp } = await this.fetchNodeInfo()
 
     return {
-      height,
+      height: timestamp,
       ping: Date.now() - time
     }
   }

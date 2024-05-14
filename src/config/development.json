@@ -89,9 +89,11 @@
       },
       "healthCheck": {
         "normalUpdateInterval": 300000,
-        "crucialUpdateInterval": 300000,
-        "onScreenUpdateInterval": 300000
-      }
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 100
+      },
+      "minVersion": "0.0.1"
     },
     "explorer": "https://explorer.adamant.im",
     "explorerAddress": "https://explorer.adamant.im/address/${ID}"

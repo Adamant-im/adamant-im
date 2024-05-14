@@ -10,7 +10,7 @@ export class AttachmentApi {
   }
 
   async getFile(cid: string, nonce: string, publicKey: Uint8Array) {
-    const file = await ipfs.get(`/file/${cid}`, {})
+    const file = await ipfs.get(`api/file/${cid}`, {})
     return utils.decodeBinary(new Uint8Array(file), publicKey, this.myKeypair.privateKey, nonce)
   }
 
@@ -19,7 +19,7 @@ export class AttachmentApi {
     const { binary, nonce } = utils.encodeBinary(file, publicKey, this.myKeypair.privateKey)
     formData.append('file', binary)
 
-    const { cids } = await ipfs.post(`/file/upload`, formData, {
+    const { cids } = await ipfs.post(`api/file/upload`, formData, {
       'Content-Type': 'multipart/form-data'
     })
     return { cids, nonce }

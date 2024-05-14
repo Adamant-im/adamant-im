@@ -4,7 +4,7 @@ import type { NodeHealthcheck, ServiceHealthcheck } from '@/types/wallets'
 
 export function getNodeHealthcheckConfig(nodeType: NodeType): NodeHealthcheck {
   if (nodeType === 'ipfs') {
-    return config.adm.nodes.healthCheck // Workaround: there is no separate configuration for IPFS nodes
+    return config.adm.services.healthCheck
   }
 
   return config[nodeType].nodes.healthCheck
