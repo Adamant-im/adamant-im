@@ -7,7 +7,9 @@ export function useIsMobile() {
   function isMobileCheck() {
     const browser = detect()
     const isMobileDevice =
-      browser && browser.os ? ['android', 'ios'].includes(browser.os.toLowerCase()) : false
+      browser && browser.os
+        ? ['android', 'ios', 'blackberry', 'windows mobile'].includes(browser.os.toLowerCase())
+        : false
     return isMobileDevice || window.innerWidth < 450
   }
 
