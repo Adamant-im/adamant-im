@@ -72,7 +72,7 @@
           />
           <v-btn @click="getFileFromStorage()">CLICK ME</v-btn>
           <pre>
-            {{ JSON.stringify(transaction.id, null, 2) }}
+            {{ JSON.stringify(transaction, null, 2) }}
           </pre>
         </div>
       </div>
@@ -144,9 +144,9 @@ export default defineComponent({
 
     const getFileFromStorage = async () => {
       //TODO: refactor for each file
-      const cid = props.transaction.asset.files[0].file_id
-      const fileName = props.transaction.asset.files[0].file_name
-      const fileType = props.transaction.asset.files[0].file_type
+      const cid = props.transaction.asset.files[0].id
+      const fileName = props.transaction.asset.files[0].name
+      const fileType = props.transaction.asset.files[0].type
       const nonce = props.transaction.asset.files[0].nonce
       const myAddress = store.state.address
 
