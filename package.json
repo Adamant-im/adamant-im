@@ -22,7 +22,7 @@
     "electron:dev": "vite dev --config electron-vite.config.ts",
     "electron:serve": "vite preview --config electron-vite.config.ts",
     "android:run": "cap sync && cap run android",
-    "android:preview": "cap sync && cap open android",
+    "android:open": "cap sync && cap open android",
     "android:build": "node scripts/capacitor/build-android.mjs",
     "android:generate-assets": "npx @capacitor/assets generate --android --assetPath capacitor/assets --iconBackgroundColor '#FFF' --iconBackgroundColorDark '#000' --splashBackgroundColor '#FFF' --splashBackgroundColorDark '#000'",
     "https": "vite preview --https",

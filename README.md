@@ -88,13 +88,19 @@ APPLE_NOTARIZE=true npm run electron:build
 npm run electron:serve
 ```
 
-### Run Android app in the emulator
+### Opening the Android project in Android Studio
 
 ```shell
-$ npm run android:preview
+$ npm run android:open
 ```
 
-Note: **Java 17** and **Android Studio** is required.
+### Running Android app
+
+```shell
+$ npm run android:run
+```
+
+> Note: You must have an Android emulator or a connected device to run the app.
 
 ### Build and sign Android app
 
