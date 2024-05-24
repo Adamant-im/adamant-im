@@ -5,7 +5,7 @@ dotenv.config({
   path: 'capacitor.env'
 })
 
-run()
+void run()
 
 async function run() {
   const $$ = $({ shell: true, stdout: 'inherit' })
