@@ -1,22 +1,38 @@
-import apiClient from '../../../lib/adamant-api-client'
+import { nodes } from '@/lib/nodes'
 
-export default store => {
-  // initial nodes state
-  apiClient.getNodes().forEach(node => store.commit('nodes/status', node))
+export default (store) => {
+  for (const [nodeType, client] of Object.entries(nodes)) {
+    client.getNodes().forEach((status) => store.commit('nodes/status', { status, nodeType }))
 
-  apiClient.updateStatus()
+    client.onStatusUpdate((status) => {
+      store.commit('nodes/status', { status, nodeType })
+    })
+  }
+  store.commit('nodes/useFastestAdmNode', nodes.adm.useFastest)
+  store.commit('nodes/useFastestCoinNode', nodes.btc.useFastest)
 
-  store.subscribe(mutation => {
-    if (mutation.type === 'nodes/useFastest') {
-      apiClient.useFastest = !!mutation.payload
+  store.subscribe((mutation) => {
+    const { type, payload } = mutation
+
+    if (type === 'nodes/useFastestAdmNode') {
+      nodes.adm.setUseFastest(!!payload)
     }
 
-    if (mutation.type === 'nodes/toggle') {
-      apiClient.toggleNode(mutation.payload.url, mutation.payload.active)
+    if (type === 'nodes/useFastestCoinNode') {
+      nodes.btc.setUseFastest(!!payload)
+      nodes.dash.setUseFastest(!!payload)
+      nodes.doge.setUseFastest(!!payload)
+      nodes.eth.setUseFastest(!!payload)
+      nodes.lsk.setUseFastest(!!payload)
     }
-  })
 
-  apiClient.onStatusUpdate(status => {
-    store.commit('nodes/status', status)
+    if (type === 'nodes/toggle') {
+      const selectedNodeType = payload.type
+      const newStatus = nodes[selectedNodeType].toggleNode(payload.url, payload.active)
+
+      if (newStatus) {
+        store.commit('nodes/status', { status: newStatus, nodeType: selectedNodeType })
+      }
+    }
   })
 }

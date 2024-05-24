@@ -1,6 +1,6 @@
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { i18n } from '@/i18n'
-import { CryptosInfo, isErc20 } from '@/lib/constants'
+import { CryptosInfo } from '@/lib/constants'
 
 const AllowAmountErrorPercent = 0.3
 

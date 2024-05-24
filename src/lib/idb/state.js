@@ -13,11 +13,11 @@ const modules = ['adm', 'eth', 'doge', 'lsk', 'bnb', 'dash', 'usds', 'res', 'par
  * @param state
  * @returns {Array<{ name: string, value: string }>}
  */
-function cloneModules (state) {
+function cloneModules(state) {
   const modulesToStore = []
 
   // clone all modules
-  modules.forEach(moduleName => {
+  modules.forEach((moduleName) => {
     if (state[moduleName]) {
       const module = { ...state[moduleName] }
 
@@ -51,13 +51,13 @@ function cloneModules (state) {
  * @param state
  * @returns {Array<{ name: string, value: string }>}
  */
-function cloneChats (state) {
+function cloneChats(state) {
   const chats = []
 
   if (state.chat) {
     const keys = Object.keys(state.chat.chats)
 
-    keys.forEach(key => {
+    keys.forEach((key) => {
       chats.push({
         name: key,
         value: state.chat.chats[key]
@@ -73,7 +73,7 @@ function cloneChats (state) {
  * @param state
  * @returns {Array<{ name: string, value: string }>}
  */
-function cloneSecurity (state) {
+function cloneSecurity(state) {
   const security = []
 
   security.push({
@@ -104,7 +104,7 @@ function cloneSecurity (state) {
  * @param store
  * @returns {Promise}
  */
-function saveState (store) {
+function saveState(store) {
   const modules = cloneModules(store.state)
   const chats = cloneChats(store.state)
   const security = cloneSecurity(store.state)
@@ -124,14 +124,10 @@ function saveState (store) {
  * @param store
  * @returns {Promise}
  */
-function restoreState (store) {
+function restoreState(store) {
   const restoredState = {}
 
-  const promises = Promise.all([
-    Modules.getAll(),
-    Chats.getAll(),
-    Security.getAll()
-  ])
+  const promises = Promise.all([Modules.getAll(), Chats.getAll(), Security.getAll()])
 
   return promises.then(([modules, chats, security]) => {
     // restore modules
@@ -150,15 +146,15 @@ function restoreState (store) {
       restoredState[name] = value
     })
 
-    store.replaceState(merge(store.state, restoredState, {
-      arrayMerge: function (destinationArray, sourceArray) { return sourceArray },
-      clone: true
-    }))
+    store.replaceState(
+      merge(store.state, restoredState, {
+        arrayMerge: function (destinationArray, sourceArray) {
+          return sourceArray
+        },
+        clone: true
+      })
+    )
   })
 }
 
-export {
-  modules,
-  saveState,
-  restoreState
-}
+export { modules, saveState, restoreState }

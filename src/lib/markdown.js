@@ -10,7 +10,7 @@ marked.setOptions({
 
 const renderer = new marked.Renderer()
 
-renderer.image = function (href, title, text) {
+renderer.image = function (_href, _title, _text) {
   return ''
 }
 
@@ -36,7 +36,7 @@ renderer.heading = function (text) {
  * @param {string} text text to sanitize
  * @returns {string} sanitized HTML
  */
-export function sanitizeHTML (text = '') {
+export function sanitizeHTML(text = '') {
   return DOMPurify.sanitize(text)
 }
 
@@ -45,7 +45,7 @@ export function sanitizeHTML (text = '') {
  * @param {string} text text to render
  * @returns {string} resulting sanitized HTML
  */
-export function renderMarkdown (text = '') {
+export function renderMarkdown(text = '') {
   return marked(DOMPurify.sanitize(text), { renderer })
 }
 
@@ -55,12 +55,20 @@ export function renderMarkdown (text = '') {
  * @param {string} text text to process
  * @returns {string} resulting clear text of the first line
  */
-export function removeFormats (text = '') {
-  // get first line
-  const line = /^([^\n]*)\n?/.exec(text)[1]
-
+export function removeFormats(text = '') {
   const node = document.createElement('div')
-  node.innerHTML = marked(DOMPurify.sanitize(line), { renderer })
+  const textWithSymbol = text.replace(/\n/g, '↵ ')
+  node.innerHTML = marked(DOMPurify.sanitize(textWithSymbol), { renderer })
 
   return node.textContent || node.innerText || ''
+}
+
+export function formatMessage(text = '') {
+  const node = document.createElement('div')
+  const textWithSymbol = text.replace(/\n/g, '↵ ')
+  node.innerHTML = marked(DOMPurify.sanitize(textWithSymbol), { renderer })
+
+  const textWithoutHtml = node.textContent || node.innerText || ''
+  const styledText = textWithoutHtml.replace(/↵/g, '<span class="arrow-return">↵</span>')
+  return styledText
 }

@@ -2,7 +2,7 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
   /** Set ETH balance */
-  balance (state, balance) {
+  balance(state, balance) {
     state.balance = balance
   },
 
@@ -15,7 +15,7 @@ export default {
   },
 
   /** Set ETH account */
-  account (state, account) {
+  account(state, account) {
     state.address = account.address
     state.publicKey = account.publicKey
     state.privateKey = account.privateKey
@@ -23,7 +23,7 @@ export default {
   },
 
   /** Sets a flag, indicating that the oldest transaction has been retrieved for this account */
-  bottom (state, value) {
+  bottom(state, value) {
     state.bottomReached = value
   },
 
@@ -32,7 +32,7 @@ export default {
    * @param {{transactions: object, minHeight: number, maxHeight: number}} state current state
    * @param {Array<{hash: string, time: number}>} transactions transactions list
    */
-  transactions (state, transactions) {
+  transactions(state, transactions) {
     const updateTimestamps = transactions.updateTimestamps
     if (updateTimestamps) {
       transactions = transactions.transactions
@@ -42,17 +42,13 @@ export default {
 
     const address = state.address
 
-    transactions.forEach(tx => {
+    transactions.forEach((tx) => {
       if (!tx) return
 
-      Object.keys(tx).forEach(key => tx[key] === undefined && delete tx[key])
+      Object.keys(tx).forEach((key) => tx[key] === undefined && delete tx[key])
 
       const direction = isStringEqualCI(tx.recipientId, address) ? 'to' : 'from'
-      const newTx = Object.assign(
-        { direction, id: tx.hash },
-        state.transactions[tx.hash],
-        tx
-      )
+      const newTx = Object.assign({ direction, id: tx.hash }, state.transactions[tx.hash], tx)
 
       state.transactions[tx.hash] = newTx
 
@@ -64,7 +60,8 @@ export default {
 
     // Magic here helps to refresh Tx list when browser deletes it
     const txCount = Object.keys(state.transactions).length
-    if (state.transactionsCount < txCount) { // We don't delete transactions, so they can't become in short
+    if (state.transactionsCount < txCount) {
+      // We don't delete transactions, so they can't become in short
       state.transactionsCount = txCount
     }
 
@@ -76,13 +73,13 @@ export default {
       state.maxHeight = maxHeight
     }
   },
-  areOlderLoading (state, areLoading) {
+  areOlderLoading(state, areLoading) {
     state.areOlderLoading = areLoading
   },
-  areRecentLoading (state, areLoading) {
+  areRecentLoading(state, areLoading) {
     state.areRecentLoading = areLoading
   },
-  areTransactionsLoading (state, areLoading) {
+  areTransactionsLoading(state, areLoading) {
     state.areTransactionsLoading = areLoading
   }
 }

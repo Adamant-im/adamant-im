@@ -1,8 +1,5 @@
 <template>
-  <v-dialog
-    v-model="show"
-    width="500"
-  >
+  <v-dialog v-model="show" width="500">
     <v-card>
       <v-card-title class="a-text-header">
         {{ $t('login_via_password.popup_title') }}
@@ -17,26 +14,36 @@
           autofocus
           autocomplete="new-password"
           class="a-input"
-          type="password"
+          :type="showPassword ? 'text' : 'password'"
           variant="underlined"
           :label="$t('login_via_password.enter_password')"
           :name="Date.now()"
           @keyup.enter="submit"
-        />
+        >
+          <template #append-inner>
+            <v-btn
+              @click="togglePasswordVisibility"
+              icon
+              :ripple="false"
+              :size="28"
+              variant="plain"
+            >
+              <v-icon :icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" :size="24" />
+            </v-btn>
+          </template>
+        </v-text-field>
 
         <div class="a-text-regular-enlarged">
-          {{ $t('login_via_password.article_hint') }} <a @click="openLink(userPasswordAgreementLink)">{{ $t('login_via_password.article') }}</a>.
+          {{ $t('login_via_password.article_hint') }}
+          <a @click="openLink(userPasswordAgreementLink)">{{ $t('login_via_password.article') }}</a
+          >.
         </div>
       </v-card-text>
 
       <v-card-actions class="pa-3">
         <v-spacer />
 
-        <v-btn
-          variant="text"
-          class="a-btn-regular"
-          @click="show = false"
-        >
+        <v-btn variant="text" class="a-btn-regular" @click="show = false">
           {{ $t('transfer.confirm_cancel') }}
         </v-btn>
 
@@ -76,44 +83,46 @@ export default {
     password: '',
     showSpinner: false,
     disabledButton: false,
-    userPasswordAgreementLink: UserPasswordArticleLink
+    userPasswordAgreementLink: UserPasswordArticleLink,
+    showPassword: false
   }),
   computed: {
     show: {
-      get () {
+      get() {
         return this.modelValue
       },
-      set (value) {
+      set(value) {
         this.$emit('update:modelValue', value)
       }
     },
-    isValidForm () {
+    isValidForm() {
       return this.password.length > 0
     }
   },
   methods: {
-    openLink (link) {
+    openLink(link) {
       window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
     },
-    submit () {
+    submit() {
       if (!this.isValidForm) {
         return
       }
       this.disabledButton = true
       this.showSpinner = true
 
-      this.$store.dispatch('setPassword', this.password)
-        .then(encodedPassword => {
+      this.$store
+        .dispatch('setPassword', this.password)
+        .then((encodedPassword) => {
           this.password = ''
 
           this.$emit('password', encodedPassword)
 
           return encodedPassword
         })
-        .then(encodedPassword => {
+        .then(() => {
           return saveState(this.$store)
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err)
         })
         .finally(() => {
@@ -121,6 +130,9 @@ export default {
           this.showSpinner = false
           this.show = false
         })
+    },
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword
     }
   }
 }

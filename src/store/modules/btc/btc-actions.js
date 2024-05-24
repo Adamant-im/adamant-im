@@ -5,33 +5,36 @@ import BtcApi from '../../../lib/bitcoin/bitcoin-api'
 const TX_CHUNK_SIZE = 25
 const TX_FETCH_INTERVAL = 60 * 1000
 
-const customActions = getApi => ({
-  updateStatus (context) {
+const customActions = (getApi) => ({
+  updateStatus(context) {
     const api = getApi()
 
     if (!api) return
-    api.getBalance().then(balance => {
-      context.commit('status', { balance })
-      context.commit('setBalanceStatus', FetchStatus.Success)
-    }).catch(err => {
-      context.commit('setBalanceStatus', FetchStatus.Error)
-      throw err
-    })
+    api
+      .getBalance()
+      .then((balance) => {
+        context.commit('status', { balance })
+        context.commit('setBalanceStatus', FetchStatus.Success)
+      })
+      .catch((err) => {
+        context.commit('setBalanceStatus', FetchStatus.Error)
+        throw err
+      })
 
     // The unspent transactions are needed to estimate the fee
-    api.getUnspents().then(utxo => context.commit('utxo', utxo))
+    api.getUnspents().then((utxo) => context.commit('utxo', utxo))
 
     // The estimated fee rate is also needed
-    api.getFeeRate().then(rate => context.commit('feeRate', rate))
+    api.getFeeRate().then((rate) => context.commit('feeRate', rate))
 
     // Last block height
     context.dispatch('updateHeight')
   },
 
-  updateHeight ({ commit }) {
+  updateHeight({ commit }) {
     const api = getApi()
     if (!api) return
-    api.getHeight().then(height => commit('height', height))
+    api.getHeight().then((height) => commit('height', height))
   },
 
   /**
@@ -39,7 +42,7 @@ const customActions = getApi => ({
    * @param {{ dispatch: function, getters: object }} param0 Vuex context
    * @param {{hash: string}} payload action payload
    */
-  updateTransaction ({ dispatch, getters }, payload) {
+  updateTransaction({ dispatch, getters }, payload) {
     const tx = getters.transaction(payload.hash)
 
     if (tx && (tx.status === 'CONFIRMED' || tx.status === 'REJECTED')) {
@@ -48,7 +51,11 @@ const customActions = getApi => ({
       return dispatch('updateHeight')
     } else {
       // Otherwise fetch the transaction details
-      return dispatch('getTransaction', { ...payload, force: payload.force, updateOnly: payload.updateOnly })
+      return dispatch('getTransaction', {
+        ...payload,
+        force: payload.force,
+        updateOnly: payload.updateOnly
+      })
     }
   }
 })
@@ -57,7 +64,7 @@ const retrieveNewTransactions = async (api, context, latestTxId, toTx) => {
   const transactions = await api.getTransactions({ toTx })
   context.commit('transactions', transactions)
 
-  if (latestTxId && !transactions.some(x => x.txid === latestTxId)) {
+  if (latestTxId && !transactions.some((x) => x.txid === latestTxId)) {
     const oldest = transactions[transactions.length - 1]
     await getNewTransactions(api, context, latestTxId, oldest && oldest.txid)
   }

@@ -17,8 +17,6 @@
     "estimate_fee": "Voraussichtliche Gebühr",
     "incorrect_address": "Fehlerhafte Empfängeradresse",
     "message": "Gib deine Nachricht ein",
-    "message_mac_os": "Type a message. Cmd + Ctrl + Space for Emoji picker",
-    "message_windows_10": "Type a message. Win + . for Emoji picker",
     "new_chat": "Starte neuen Chat",
     "new_chat_tooltip": "Klicke hier um eine neue Konversation zu starten",
     "no_address": "Bitte gib die Empfängeradresse an",
@@ -58,7 +56,17 @@
     },
     "pull_down_actions": {
       "update_balances": "Update balances"
-    }
+    },
+    "you_reacted": "Reacted",
+    "partner_reacted": "Reacted",
+    "you_removed_reaction": "Removed reaction",
+    "partner_removed_reaction": "Removed reaction"
+  },
+  "common": {
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigt",
+    "no": "Nein",
+    "yes": "Ja"
   },
   "error": "Error",
   "home": {
@@ -126,6 +134,7 @@
   },
   "options": {
     "chats_title": "Chats",
+    "currency_label": "Hauptwährung",
     "dark_theme": "Enable dark theme",
     "delegates_title": "Delegates",
     "downvote_for_label": "Downvote for:",
@@ -138,8 +147,7 @@
     "general_title": "Allgemein",
     "idb_not_supported": "Your browser does not support IndexedDB or in Private Browsing mode",
     "language_label": "Sprache",
-    "currency_label": "Hauptwährung",
-    "nodes_list": "Nodes list",
+    "nodes_list": "Liste der Knoten",
     "notification_title": "Benachrichtigungen",
     "other": "Other",
     "page_title": "Settings",
@@ -150,7 +158,8 @@
     "send_on_enter_tooltip": "Nachricht senden bei ENTER",
     "upvote_for_label": "Vote for:",
     "version": "App Version: ",
-    "vote_for_delegates_button": "Vote for delegates"
+    "vote_for_delegates_button": "Vote for delegates",
+    "wallets_list": "Liste der Geldbörsen"
   },
   "region": "de-GER",
   "rows_per_page": "Rows per page",
@@ -261,5 +270,12 @@
     "vote_request_limit": "Vote request limit: {limit}",
     "voting_cost": "Voting cost",
     "waiting_confirmations": "Waiting for confirmations"
+  },
+  "wallets": {
+    "coins_not_found_title": "Keine Kryptowährungen gefunden",
+    "reset": "Zurücksetzen",
+    "reset_message": "Möchten Sie die Liste wirklich in ihren ursprünglichen Zustand zurückversetzen?",
+    "search": "Suchen",
+    "summary_title": "Einstellungen zurücksetzen"
   }
 }

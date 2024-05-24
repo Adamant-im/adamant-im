@@ -1,14 +1,12 @@
 <template>
   <div :class="className">
-    <v-list-item
-      avatar
-      :class="`${className}__tile`"
-      @click="onClickTransaction"
-    >
+    <v-list-item avatar :class="`${className}__tile`" @click="onClickTransaction">
       <template #prepend>
         <v-icon
           :class="`${className}__prepend-icon`"
-          :icon="isStringEqualCI(senderId, userId) ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing'"
+          :icon="
+            isStringEqualCI(senderId, userId) ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing'
+          "
           size="small"
         />
       </template>
@@ -22,51 +20,34 @@
       </v-list-item-title>
 
       <v-list-item-title>
-        <span :class="`${className}__amount ${directionClass}`">{{ currency(amount, crypto) }}</span>
-        <span
-          :class="`${className}__rates`"
-        > {{ historyRate }}</span>
-        <span
-          v-if="comment"
-          class="a-text-regular-enlarged-bold"
-          style="font-style: italic;"
-        > "</span>
-        <span
-          v-if="comment"
-          class="a-text-explanation"
-          style="font-weight: 100;"
-        >{{ comment }}</span>
-        <span
-          v-if="textData"
-          class="a-text-regular-enlarged-bold"
-          style="font-style: italic;"
-        > #</span>
-        <span
-          v-if="textData"
-          class="a-text-explanation"
-          style="font-weight: 100;"
-        >{{ textData }}</span>
+        <span :class="`${className}__amount ${directionClass}`">{{
+          currency(amount, crypto)
+        }}</span>
+        <span :class="`${className}__rates`">{{ historyRate }}</span>
+        <span v-if="comment" class="a-text-regular-enlarged-bold" style="font-style: italic">
+          "</span
+        >
+        <span v-if="comment" class="a-text-explanation" style="font-weight: 100">{{
+          comment
+        }}</span>
+        <span v-if="textData" class="a-text-regular-enlarged-bold" style="font-style: italic">
+          #</span
+        >
+        <span v-if="textData" class="a-text-explanation" style="font-weight: 100">{{
+          textData
+        }}</span>
       </v-list-item-title>
 
-      <v-list-item-subtitle
-        :class="`${className}__date`"
-        class="a-text-explanation-small"
-      >
-        {{ formatDate(createdAt) }}
+      <v-list-item-subtitle :class="`${className}__date`" class="a-text-explanation-small">
+        <span v-if="!isPendingTransaction">{{ formatDate(createdAt) }}</span>
+        <span v-else-if="status" :class="`${className}__status`">{{
+          $t(`transaction.statuses.${status}`)
+        }}</span>
       </v-list-item-subtitle>
 
       <template #append>
-        <v-list-item-action
-          v-if="isClickIcon"
-          :class="`${className}__action`"
-          end
-        >
-          <v-btn
-            icon
-            ripple
-            variant="plain"
-            @click.stop="onClickIcon"
-          >
+        <v-list-item-action v-if="isClickIcon" :class="`${className}__action`" end>
+          <v-btn icon ripple variant="plain" @click.stop="onClickIcon">
             <v-icon
               :class="`${className}__icon`"
               :icon="isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline'"
@@ -77,16 +58,13 @@
       </template>
     </v-list-item>
 
-    <v-divider
-      :inset="true"
-      class="a-divider"
-    />
+    <v-divider :inset="true" class="a-divider" />
   </div>
 </template>
 
 <script>
 import formatDate from '@/filters/date'
-import { EPOCH, Cryptos } from '@/lib/constants'
+import { EPOCH, Cryptos, TransactionStatus } from '@/lib/constants'
 import partnerName from '@/mixins/partnerName'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyAmount from '@/filters/currencyAmount'
@@ -102,6 +80,10 @@ export default {
     },
     // Crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     senderId: {
+      type: String,
+      required: true
+    },
+    status: {
       type: String,
       required: true
     },
@@ -124,13 +106,16 @@ export default {
     crypto: {
       type: String,
       default: 'ADM',
-      validator: v => v in Cryptos
+      validator: (v) => v in Cryptos
     }
   },
   emits: ['click:transaction', 'click:icon'],
+  data: () => ({
+    virtualTimestamp: Date.now()
+  }),
   computed: {
     // Own crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
-    userId () {
+    userId() {
       if (this.crypto === Cryptos.ADM) {
         return this.$store.state.address
       } else {
@@ -139,16 +124,18 @@ export default {
       }
     },
     // Crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
-    partnerId () {
+    partnerId() {
       return isStringEqualCI(this.senderId, this.userId) ? this.recipientId : this.senderId
     },
     // Partner's ADM address, if found. Else, returns 'undefined'
-    partnerAdmId () {
+    partnerAdmId() {
       const admTx = this.getAdmTx
-      return isStringEqualCI(admTx.senderId, this.$store.state.address) ? admTx.recipientId : admTx.senderId
+      return isStringEqualCI(admTx.senderId, this.$store.state.address)
+        ? admTx.recipientId
+        : admTx.senderId
     },
     // Partner's name from KVS, if partnerAdmId found
-    partnerName () {
+    partnerName() {
       if (isStringEqualCI(this.partnerId, this.userId)) {
         return this.$t('transaction.me')
       }
@@ -159,27 +146,30 @@ export default {
         return name || this.partnerAdmId || ''
       }
     },
-    createdAt () {
+    createdAt() {
       if (this.crypto === 'ADM') {
         return this.timestamp * 1000 + EPOCH
       }
       return this.timestamp
     },
-    isPartnerInChatList () {
+    isPartnerInChatList() {
       return this.$store.getters['chat/isPartnerInChatList'](this.partnerAdmId)
     },
-    className () {
+    className() {
       return 'transaction-item'
     },
-    isClickIcon () {
-      const hasPartnerAddress = this.partnerAdmId && (this.partnerAdmId !== undefined)
+    isClickIcon() {
+      const hasPartnerAddress = this.partnerAdmId && this.partnerAdmId !== undefined
       return this.isCryptoADM() || hasPartnerAddress
     },
-    getAdmTx () {
+    getAdmTx() {
       return this.admTx()
     },
-    directionClass () {
-      if (isStringEqualCI(this.senderId, this.userId) && isStringEqualCI(this.recipientId, this.userId)) {
+    directionClass() {
+      if (
+        isStringEqualCI(this.senderId, this.userId) &&
+        isStringEqualCI(this.recipientId, this.userId)
+      ) {
         return `${this.className}__amount--is-itself`
       } else if (isStringEqualCI(this.senderId, this.userId)) {
         return `${this.className}__amount--is-outgoing`
@@ -187,50 +177,72 @@ export default {
         return `${this.className}__amount--is-incoming`
       }
     },
-    comment () {
+    comment() {
       const admTx = this.getAdmTx
       return admTx.message
     },
-    historyRate () {
+    historyRate() {
       const amount = currencyAmount(this.amount, this.crypto)
-      return '~' + this.$store.getters['rate/historyRate'](timestampInSec(this.crypto, this.timestamp), amount, this.crypto)
+      return (
+        '~' +
+        this.$store.getters['rate/historyRate'](
+          timestampInSec(this.crypto, this.timestamp || this.virtualTimestamp),
+          amount,
+          this.crypto
+        )
+      )
+    },
+    isPendingTransaction() {
+      return (
+        this.status === TransactionStatus.PENDING || this.status === TransactionStatus.REGISTERED
+      )
     }
   },
-  mounted () {
+  mounted() {
     this.getHistoryRates()
+
+    if (this.isPendingTransaction) {
+      this.$store.dispatch(`${this.crypto.toLowerCase()}/getTransaction`, {
+        hash: this.id,
+        force: true
+      })
+    }
   },
   methods: {
-    isStringEqualCI (string1, string2) {
+    isStringEqualCI(string1, string2) {
       return isStringEqualCI(string1, string2)
     },
-    isCryptoADM () {
+    isCryptoADM() {
       return this.crypto === Cryptos.ADM
     },
-    onClickTransaction () {
+    onClickTransaction() {
       this.$emit('click:transaction', this.id)
     },
-    onClickIcon () {
+    onClickIcon() {
       this.$emit('click:icon', this.partnerAdmId)
     },
-    admTx () {
+    admTx() {
       // Note: because to Chatrooms API, we store only fetched messages, not all of them
       // So, we'll search through only stored messages
 
       if (this.isCryptoADM()) {
         const chatWithPartner = this.$store.state.chat.chats[this.partnerId]
-        const msg = chatWithPartner && chatWithPartner.messages ? chatWithPartner.messages.find(message => message.id === this.id) : undefined
+        const msg =
+          chatWithPartner && chatWithPartner.messages
+            ? chatWithPartner.messages.find((message) => message.id === this.id)
+            : undefined
         return (
           // this.$store.getters['chat/partnerMessageById'](this.partnerId, this.id) || // unable to use getter, as it causes "You may have an infinite update loop in a component render function"
           msg || // first, try to get message with comment
           this.$store.state.adm.transactions[this.id] || // next, try to get direct transaction
-          { } // finally, return empty object
+          {} // finally, return empty object
         )
       }
 
       // If crytpo is not ADM: we have to scan all the messages
-      const admTx = { }
-      Object.values(this.$store.state.chat.chats).some(chat => {
-        Object.values(chat.messages).some(msg => {
+      const admTx = {}
+      Object.values(this.$store.state.chat.chats).some((chat) => {
+        Object.values(chat.messages).some((msg) => {
           if (msg.hash && msg.hash === this.id) {
             Object.assign(admTx, msg)
           }
@@ -240,9 +252,9 @@ export default {
       })
       return admTx
     },
-    getHistoryRates () {
+    getHistoryRates() {
       this.$store.dispatch('rate/getHistoryRates', {
-        timestamp: timestampInSec(this.crypto, this.timestamp)
+        timestamp: timestampInSec(this.crypto, this.timestamp || this.virtualTimestamp)
       })
     },
     currency,
@@ -252,14 +264,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/styles/themes/adamant/_mixins.scss';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .transaction-item {
   &__rates {
     color: hsla(0, 0%, 100%, 0.7);
     font-style: italic;
     @include a-text-regular();
+    margin-left: 4px;
   }
   &__amount {
     @include a-text-regular-enlarged-bold();
@@ -277,6 +290,9 @@ export default {
   }
   &__action {
     min-width: 36px;
+  }
+  &__status {
+    color: map-get($adm-colors, 'attention');
   }
   // Do not break computed length of v-divider
   /*&__tile*/

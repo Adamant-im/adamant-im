@@ -1,13 +1,8 @@
 <template>
   <v-list :class="className">
-    <v-list-item
-      @click="sendFunds"
-    >
+    <v-list-item @click="sendFunds">
       <template #prepend>
-        <v-icon
-          :class="`${className}__icon`"
-          icon="mdi-bank-transfer-out"
-        />
+        <v-icon :class="`${className}__icon`" icon="mdi-bank-transfer-out" />
       </template>
 
       <v-list-item-title :class="`${className}__title`">
@@ -15,15 +10,9 @@
       </v-list-item-title>
     </v-list-item>
 
-    <v-list-item
-      v-if="isADM"
-      @click="buyTokens"
-    >
+    <v-list-item v-if="isADM" @click="buyTokens">
       <template #prepend>
-        <v-icon
-          :class="`${className}__icon`"
-          icon="mdi-finance"
-        />
+        <v-icon :class="`${className}__icon`" icon="mdi-finance" />
       </template>
 
       <v-list-item-title :class="`${className}__title`">
@@ -31,15 +20,9 @@
       </v-list-item-title>
     </v-list-item>
 
-    <v-list-item
-      v-if="isADM && !hasAdmTokens"
-      @click="getFreeTokens"
-    >
+    <v-list-item v-if="isADM && !hasAdmTokens" @click="getFreeTokens">
       <template #prepend>
-        <v-icon
-          :class="`${className}__icon`"
-          icon="mdi-gift"
-        />
+        <v-icon :class="`${className}__icon`" icon="mdi-gift" />
       </template>
 
       <v-list-item-title :class="`${className}__title`">
@@ -47,16 +30,13 @@
       </v-list-item-title>
     </v-list-item>
 
-    <buy-tokens-dialog
-      v-model="showBuyTokensDialog"
-      :adamant-address="$store.state.address"
-    />
+    <buy-tokens-dialog v-model="showBuyTokensDialog" :adamant-address="$store.state.address" />
   </v-list>
 </template>
 
 <script>
-import { Cryptos } from '@/lib/constants'
-import BuyTokensDialog from '@/components/BuyTokensDialog'
+import { AllCryptos } from '@/lib/constants/cryptos'
+import BuyTokensDialog from '@/components/BuyTokensDialog.vue'
 import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
@@ -66,8 +46,8 @@ export default {
   props: {
     crypto: {
       type: String,
-      default: Cryptos.ADM,
-      validator: v => v in Cryptos
+      default: AllCryptos.ADM,
+      validator: (v) => v in AllCryptos
     },
     isADM: {
       required: true,
@@ -79,12 +59,12 @@ export default {
   }),
   computed: {
     className: () => 'wallet-actions',
-    hasAdmTokens () {
+    hasAdmTokens() {
       return this.$store.state.balance > 0
     }
   },
   methods: {
-    sendFunds () {
+    sendFunds() {
       this.$router.push({
         name: 'SendFunds',
         params: {
@@ -92,11 +72,13 @@ export default {
         }
       })
     },
-    buyTokens () {
+    buyTokens() {
       this.showBuyTokensDialog = true
     },
-    getFreeTokens () {
-      const link = websiteUriToOnion(this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address)
+    getFreeTokens() {
+      const link = websiteUriToOnion(
+        this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address
+      )
       window.open(link, '_blank', 'resizable,scrollbars,status,noopener')
     }
   }
@@ -105,8 +87,8 @@ export default {
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import '../assets/styles/themes/adamant/_mixins.scss';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .wallet-actions {
   &__title {
@@ -135,7 +117,8 @@ export default {
 /** Themes **/
 .v-theme--light {
   .wallet-actions {
-    &__title, &__icon {
+    &__title,
+    &__icon {
       color: map-get($adm-colors, 'regular');
     }
   }
@@ -143,7 +126,8 @@ export default {
 
 .v-theme--dark {
   .wallet-actions {
-    &__title, &__icon {
+    &__title,
+    &__icon {
       color: map-get($shades, 'white');
     }
   }

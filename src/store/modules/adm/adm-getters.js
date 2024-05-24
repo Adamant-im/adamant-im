@@ -1,16 +1,15 @@
 import { Fees } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
-
-const sortFunc = (a, b) => ((b && b.timestamp) || 0) - ((a && a.timestamp) || 0)
+import { sortTransactionsFn } from '@/store/utils/sortTransactionsFn'
 
 export default {
-  areTransactionsLoading (state) {
+  areTransactionsLoading(state) {
     return state.areTransactionsLoading || state.areRecentLoading || state.areOlderLoading
   },
-  areRecentLoading (state) {
+  areRecentLoading(state) {
     return state.areRecentLoading
   },
-  areOlderLoading (state) {
+  areOlderLoading(state) {
     return state.areOlderLoading
   },
 
@@ -19,8 +18,8 @@ export default {
    * @param {{transactions: Object.<string, object>}} state module state
    * @returns {Array}
    */
-  sortedTransactions (state) {
-    return Object.values(state.transactions).sort(sortFunc)
+  sortedTransactions(state) {
+    return Object.values(state.transactions).sort(sortTransactionsFn)
   },
 
   /**
@@ -28,7 +27,8 @@ export default {
    * This getter was added to support transactions display in chats and supposed to be removed
    * as soon as we add an endpoint to fetch transactions for chats.
    */
-  partnerTransactions: state => partner => Object.values(state.transactions).filter(tx => isStringEqualCI(tx.partner, partner)),
+  partnerTransactions: (state) => (partner) =>
+    Object.values(state.transactions).filter((tx) => isStringEqualCI(tx.partner, partner)),
 
-  fee: state => amount => Fees.ADM_TRANSFER
+  fee: () => (_amount) => Fees.ADM_TRANSFER
 }

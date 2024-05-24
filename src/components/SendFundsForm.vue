@@ -12,6 +12,7 @@
         variant="underlined"
         :items="cryptoList"
         :disabled="addressReadonly"
+        :menu-icon="addressReadonly ? '' : 'mdi-menu-down'"
       />
 
       <v-text-field
@@ -136,6 +137,7 @@
         :label="$t('transfer.increase_fee')"
         color="grey darken-1"
       />
+      <v-checkbox v-if="debug" v-model="dryRun" label="Dry run" color="grey darken-1" />
 
       <div class="text-center">
         <v-btn :class="`${className}__button`" class="a-btn-primary" @click="confirm">
@@ -152,9 +154,8 @@
 
         <v-divider class="a-divider" />
 
-        <!-- eslint-disable vue/no-v-html -- Safe internal content -->
+        <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -- Safe internal content -->
         <v-card-text class="a-text-regular-enlarged pa-4" v-html="confirmMessage" />
-        <!-- eslint-enable vue/no-v-html -->
 
         <v-card-actions class="pa-4">
           <v-spacer />
@@ -186,10 +187,15 @@
 </template>
 
 <script>
+import { adm } from '@/lib/nodes'
+import lskIndexer from '@/lib/nodes/lsk-indexer'
+import { AllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { PendingTransactionError } from '@/lib/pending-transactions'
+import axios from 'axios'
 import { nextTick } from 'vue'
 
-import QrcodeCapture from '@/components/QrcodeCapture'
-import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
+import QrcodeCapture from '@/components/QrcodeCapture.vue'
+import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
 
@@ -203,9 +209,9 @@ import {
   getMinAmount,
   isSelfTxAllowed,
   CryptosInfo,
-  CryptosOrder,
   isTextDataAllowed,
-  MessageType
+  MessageType,
+  Fees
 } from '@/lib/constants'
 
 import { parseURIasAIP } from '@/lib/uri'
@@ -216,9 +222,10 @@ import validateAddress from '@/lib/validateAddress'
 import { formatNumber, isNumeric } from '@/lib/numericHelpers'
 import partnerName from '@/mixins/partnerName'
 
-import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog'
+import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressDialog.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
+import { AllCryptos } from '@/lib/constants/cryptos'
 
 /**
  * @returns {string | boolean}
@@ -249,7 +256,7 @@ export default {
     cryptoCurrency: {
       type: String,
       default: 'ADM',
-      validator: (value) => value in Cryptos
+      validator: (value) => value in AllCryptos
     },
     recipientAddress: {
       type: String,
@@ -302,7 +309,19 @@ export default {
     fetchAddress: null, // fn throttle
     increaseFee: false,
     showWarningOnPartnerAddressDialog: false,
-    warningOnPartnerInfo: {}
+    warningOnPartnerInfo: {},
+
+    // Account exists check
+    // Currently works only with LSK
+    account: {
+      isNew: false,
+      abortController: new AbortController(),
+      loading: false
+    },
+
+    // Debugging section
+    dryRun: false,
+    debug: !!localStorage.getItem('DEBUG')
   }),
   computed: {
     className: () => 'send-funds-form',
@@ -353,7 +372,7 @@ export default {
      * @returns {string}
      */
     transferFeeCurrency() {
-      return isErc20(this.currency) ? Cryptos.ETH : this.currency
+      return isErc20(this.currency) ? AllCryptos.ETH : this.currency
     },
 
     /**
@@ -389,6 +408,14 @@ export default {
       return this.currency === Cryptos.ADM
         ? this.$store.state.balance
         : this.$store.state[this.currency.toLowerCase()].balance
+    },
+
+    /**
+     * Return ADM balance
+     * @returns {number}
+     */
+    admBalance() {
+      return this.$store.state.balance
     },
 
     ethBalance() {
@@ -445,8 +472,13 @@ export default {
     exponent() {
       return CryptosInfo[this.currency].cryptoTransferDecimals
     },
+    orderedVisibleWalletSymbols() {
+      return this.$store.getters['wallets/getVisibleOrderedWalletSymbols']
+    },
     cryptoList() {
-      return CryptosOrder
+      return this.orderedVisibleWalletSymbols.map((crypto) => {
+        return crypto.symbol
+      })
     },
     confirmMessage() {
       const msgType =
@@ -475,10 +507,23 @@ export default {
         ],
         amount: [
           (v) => v > 0 || this.$t('transfer.error_incorrect_amount'),
-          (v) => this.amount <= this.maxToTransfer || this.$t('transfer.error_not_enough'),
+          () => {
+            const isAdmTransfer = this.currency === Cryptos.ADM
+            const isDirectTransfer = !this.address
+
+            if (isAdmTransfer || isDirectTransfer) {
+              return true // skips validation
+            }
+
+            return (
+              this.admBalance >= Fees.NOT_ADM_TRANSFER ||
+              this.$t('transfer.error_not_enough_adm_fee')
+            )
+          },
+          () => this.amount <= this.maxToTransfer || this.$t('transfer.error_not_enough'),
           (v) => this.validateMinAmount(v, this.currency) || this.$t('transfer.error_dust_amount'),
           (v) => this.validateNaturalUnits(v, this.currency) || this.$t('transfer.error_precision'),
-          (v) =>
+          () =>
             isErc20(this.currency)
               ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
               : true
@@ -530,6 +575,9 @@ export default {
       } else {
         this.amount = 0
       }
+    },
+    cryptoAddress(cryptoAddress) {
+      this.checkIsNewAccount(cryptoAddress)
     }
   },
   created() {
@@ -546,6 +594,44 @@ export default {
     this.fetchUserCryptoAddress()
   },
   methods: {
+    checkIsNewAccount(cryptoAddress) {
+      this.account.isNew = false
+
+      if (!validateAddress(this.currency, cryptoAddress)) {
+        return
+      }
+
+      // Cancel the previous fetch request
+      this.account.abortController.abort()
+
+      // Create a new AbortController for the current request
+      this.account.abortController = new AbortController()
+
+      switch (this.currency) {
+        case Cryptos.LSK:
+          this.account.loading = true
+          lskIndexer
+            .checkAccountExists(cryptoAddress, {
+              signal: this.account.abortController.signal
+            })
+            .then((exists) => {
+              this.account.isNew = !exists
+            })
+            .catch((err) => {
+              if (axios.isCancel(err)) {
+                // Request canceled
+                return
+              }
+
+              throw err
+            })
+            .finally(() => {
+              this.account.loading = false
+            })
+
+          break
+      }
+    },
     confirm() {
       const abstract = validateForm.call(this)
 
@@ -665,6 +751,14 @@ export default {
             message = this.$t('transfer.recipient_minimum_balance')
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
+          } else if (error instanceof AllNodesOfflineError) {
+            message = this.$t('transfer.error_all_nodes_offline', {
+              crypto: error.nodeLabel.toUpperCase()
+            })
+          } else if (error instanceof PendingTransactionError) {
+            message = this.$t('transfer.error_pending_transaction', {
+              crypto: error.crypto
+            })
           }
           this.$emit('error', message)
         })
@@ -674,7 +768,7 @@ export default {
           this.dialog = false
         })
     },
-    sendFunds() {
+    async sendFunds() {
       if (this.currency === Cryptos.ADM) {
         let promise
         // 1. if come from Chat then sendMessage
@@ -690,6 +784,7 @@ export default {
               })
             : this.comment
 
+          adm.assertAnyNodeOnline()
           promise = sendMessage({
             amount: this.amount,
             message: asset,
@@ -712,7 +807,8 @@ export default {
           fee: this.transferFee,
           increaseFee: this.increaseFee,
           textData: this.textData,
-          replyToId: this.replyToId
+          replyToId: this.replyToId,
+          dryRun: this.dryRun
         })
       }
     },
@@ -791,7 +887,8 @@ export default {
         this.$store.getters[`${this.currency.toLowerCase()}/fee`](
           amount || this.balance,
           this.cryptoAddress,
-          this.textData
+          this.textData,
+          this.account.isNew
         )
       )
     }

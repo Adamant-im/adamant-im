@@ -4,15 +4,15 @@ import state from './btc-state'
 export default {
   ...baseMutations(state),
 
-  utxo (state, utxo = []) {
+  utxo(state, utxo = []) {
     state.utxo = utxo
   },
 
-  feeRate (state, feeRate = 0) {
+  feeRate(state, feeRate = 0) {
     state.feeRate = feeRate
   },
 
-  height (state, height) {
+  height(state, height) {
     state.height = height
   }
 }

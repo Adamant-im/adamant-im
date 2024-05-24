@@ -1,25 +1,11 @@
 <template>
   <div :class="className">
-    <app-toolbar-centered
-      app
-      :title="t('votes.page_title')"
-      flat
-      fixed
-    />
+    <app-toolbar-centered app :title="t('votes.page_title')" flat fixed />
 
-    <v-container
-      fluid
-      class="px-0 container--with-app-toolbar"
-    >
-      <v-row
-        justify="center"
-        no-gutters
-      >
+    <v-container fluid class="px-0 container--with-app-toolbar">
+      <v-row justify="center" no-gutters>
         <container>
-          <v-card
-            flat
-            color="transparent"
-          >
+          <v-card flat color="transparent">
             <v-text-field
               v-model="search"
               append-inner-icon="mdi-magnify"
@@ -44,11 +30,7 @@
               justify="space-between"
               no-gutters
             >
-              <pagination
-                v-if="showPagination"
-                v-model="pagination.page"
-                :pages="pages"
-              />
+              <pagination v-if="showPagination" v-model="pagination.page" :pages="pages" />
 
               <v-btn
                 :disabled="reviewButtonDisabled"
@@ -63,53 +45,36 @@
       </v-row>
     </v-container>
 
-    <v-dialog
-      v-model="dialog"
-      width="500"
-    >
+    <v-dialog v-model="dialog" width="500">
       <v-card>
-        <v-card-title
-          :class="`${className}__dialog-title`"
-        >
+        <v-card-title :class="`${className}__dialog-title`">
           {{ t('votes.summary_title') }}
         </v-card-title>
 
         <v-divider :class="`${className}__divider`" />
 
-        <v-row
-          no-gutters
-          class="pa-4"
-        >
+        <v-row no-gutters class="pa-4">
           <div :class="`${className}__dialog-summary`">
-            {{ t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong>,&nbsp;
-            {{ t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong>,&nbsp;
-            {{ t('votes.total_new_votes') }}: <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ VOTE_REQUEST_LIMIT }}</strong>,&nbsp;
-            {{ t('votes.total_votes') }}: <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
+            {{ t('votes.upvotes') }}: <strong>{{ numOfUpvotes }}</strong
+            >,&nbsp; {{ t('votes.downvotes') }}: <strong>{{ numOfDownvotes }}</strong
+            >,&nbsp; {{ t('votes.total_new_votes') }}:
+            <strong>{{ numOfUpvotes + numOfDownvotes }} / {{ VOTE_REQUEST_LIMIT }}</strong
+            >,&nbsp; {{ t('votes.total_votes') }}:
+            <strong>{{ totalVotes }} / {{ delegates.length }}</strong>
           </div>
           <!-- eslint-disable vue/no-v-html -- Safe internal content -->
-          <div
-            :class="`${className}__dialog-info`"
-            v-html="t('votes.summary_info')"
-          />
+          <div :class="`${className}__dialog-info`" v-html="t('votes.summary_info')" />
           <!-- eslint-enable vue/no-v-html -->
         </v-row>
 
         <v-card-actions>
           <v-spacer />
 
-          <v-btn
-            variant="text"
-            class="a-btn-regular"
-            @click="dialog = false"
-          >
+          <v-btn variant="text" class="a-btn-regular" @click="dialog = false">
             {{ t('transfer.confirm_cancel') }}
           </v-btn>
 
-          <v-btn
-            variant="text"
-            class="a-btn-regular"
-            @click="sendVotes"
-          >
+          <v-btn variant="text" class="a-btn-regular" @click="sendVotes">
             {{ t('votes.vote_button_text') }}
           </v-btn>
         </v-card-actions>
@@ -119,12 +84,11 @@
 </template>
 
 <script>
-import AppToolbarCentered from '@/components/AppToolbarCentered'
-import Pagination from '@/components/Pagination'
-import { explorerUriToOnion } from '@/lib/uri'
-import DelegatesTable from '@/components/DelegatesTable/DelegatesTable'
-import { computed, onMounted, ref, reactive, defineComponent } from "vue"
-import { useStore } from "vuex"
+import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+import Pagination from '@/components/Pagination.vue'
+import DelegatesTable from '@/components/DelegatesTable/DelegatesTable.vue'
+import { computed, onMounted, ref, reactive, defineComponent, watch } from 'vue'
+import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
 const VOTE_REQUEST_LIMIT = 30
@@ -135,7 +99,7 @@ export default defineComponent({
     AppToolbarCentered,
     Pagination
   },
-  setup () {
+  setup() {
     const store = useStore()
     const { t } = useI18n()
     const search = ref('')
@@ -155,17 +119,13 @@ export default defineComponent({
       return Object.values(delegates)
     })
     const numOfUpvotes = computed(() => {
-      return delegates.value
-          .filter(delegate => delegate.upvoted && !delegate.voted)
-          .length
+      return delegates.value.filter((delegate) => delegate.upvoted && !delegate.voted).length
     })
     const numOfDownvotes = computed(() => {
-      return delegates.value
-          .filter(delegate => delegate.downvoted && delegate.voted)
-          .length
+      return delegates.value.filter((delegate) => delegate.downvoted && delegate.voted).length
     })
-    const totalVotes = computed (() => {
-      return delegates.value.filter(delegate => delegate._voted).length
+    const totalVotes = computed(() => {
+      return delegates.value.filter((delegate) => delegate._voted).length
     })
     const pages = computed(() => {
       if (delegates.value.length <= 0) {
@@ -174,9 +134,15 @@ export default defineComponent({
 
       return Math.ceil(delegates.value.length / pagination.rowsPerPage)
     })
+    watch(search, (newValue) => {
+      if (newValue.length > 0) {
+        pagination.page = 1
+      }
+    })
+
     const showPagination = computed(() => search.value.length === 0)
     const reviewButtonDisabled = computed(() => {
-      return (numOfUpvotes.value + numOfDownvotes.value) === 0
+      return numOfUpvotes.value + numOfDownvotes.value === 0
     })
 
     onMounted(() => {
@@ -185,7 +151,6 @@ export default defineComponent({
       })
     })
 
-    const getExplorerUrl = () => explorerUriToOnion('https://explorer.adamant.im/delegate/')
     const upVote = (id) => {
       store.commit('delegates/upVote', id)
     }
@@ -216,11 +181,11 @@ export default defineComponent({
       }
 
       const upVotes = delegates.value
-          .filter(delegate => delegate.upvoted && !delegate.voted)
-          .map(delegate => `+${delegate.publicKey}`)
+        .filter((delegate) => delegate.upvoted && !delegate.voted)
+        .map((delegate) => `+${delegate.publicKey}`)
       const downVotes = delegates.value
-          .filter(delegate => delegate.downvoted && delegate.voted)
-          .map(delegate => `-${delegate.publicKey}`)
+        .filter((delegate) => delegate.downvoted && delegate.voted)
+        .map((delegate) => `-${delegate.publicKey}`)
       const allVotes = [...upVotes, ...downVotes]
 
       if (allVotes.length <= 0) {
@@ -262,7 +227,6 @@ export default defineComponent({
       pages,
       showPagination,
       reviewButtonDisabled,
-      getExplorerUrl,
       upVote,
       downVote,
       sendVotes,
@@ -275,9 +239,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
 @import 'vuetify/settings';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 .delegates-view {
   &__body {
@@ -295,7 +259,8 @@ export default defineComponent({
     @include a-text-regular-enlarged();
     margin-top: 16px;
     :deep(a) {
-      text-decoration-line: none;&:hover {
+      text-decoration-line: none;
+      &:hover {
         text-decoration-line: underline;
       }
     }
@@ -335,7 +300,9 @@ export default defineComponent({
       border-color: map-get($adm-colors, 'regular');
     }
     :deep(.v-table) tbody tr:not(:last-child) {
-      border-bottom: 1px solid, map-get($adm-colors, 'secondary2');
+      border-bottom:
+        1px solid,
+        map-get($adm-colors, 'secondary2');
     }
   }
 }

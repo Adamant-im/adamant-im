@@ -3,16 +3,23 @@ import { createI18n } from 'vue-i18n'
 import de from './locales/de'
 import en from './locales/en'
 import ru from './locales/ru'
+import zh from './locales/zh'
 
-function loadLocaleMessages () {
+function loadLocaleMessages() {
   return {
-    de, en, ru
+    de,
+    en,
+    ru,
+    zh
   }
 }
 
+export const DEFAULT_LOCALE = import.meta.env.VITE_I18N_LOCALE || 'en'
+export const FALLBACK_LOCALE = import.meta.env.VUE_APP_I18N_FALLBACK_LOCALE || 'en'
+
 export const i18n = createI18n({
-  locale: import.meta.env.VUE_APP_I18N_LOCALE || 'en',
-  fallbackLocale: import.meta.env.VUE_APP_I18N_FALLBACK_LOCALE || 'en',
+  locale: DEFAULT_LOCALE,
+  fallbackLocale: FALLBACK_LOCALE,
   messages: loadLocaleMessages(),
   fallbackRoot: true,
   pluralizationRules: {
@@ -30,7 +37,7 @@ export const i18n = createI18n({
       const teen = choice > 10 && choice < 20
       const endsWithOne = choice % 10 === 1
       if (choicesLength < 4) {
-        return (!teen && endsWithOne) ? 1 : 2
+        return !teen && endsWithOne ? 1 : 2
       }
       if (!teen && endsWithOne) {
         return 1
@@ -38,7 +45,7 @@ export const i18n = createI18n({
       if (!teen && choice % 10 >= 2 && choice % 10 <= 4) {
         return 2
       }
-      return (choicesLength < 4) ? 2 : 3
+      return choicesLength < 4 ? 2 : 3
     }
   },
   silentTranslationWarn: true,

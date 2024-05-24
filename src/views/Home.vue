@@ -1,8 +1,5 @@
 <template>
-  <pull-down
-    @action="updateBalances"
-    :action-text="$t('chats.pull_down_actions.update_balances')"
-  >
+  <pull-down @action="updateBalances" :action-text="$t('chats.pull_down_actions.update_balances')">
     <v-row justify="center" no-gutters :class="className">
       <container>
         <v-sheet class="white--text" color="transparent" :class="`${className}__card`">
@@ -40,8 +37,8 @@
                   //
                   // Note: Don't remove this function and leave it empty.
                 }
-              }
-             ">
+              }"
+            >
               <v-window-item
                 v-for="wallet in wallets"
                 :key="wallet.cryptoCurrency"
@@ -70,13 +67,13 @@
 </template>
 
 <script>
-import WalletCard from '@/components/WalletCard'
-import WalletTab from '@/components/WalletTab'
-import CryptoIcon from '@/components/icons/CryptoIcon'
+import WalletCard from '@/components/WalletCard.vue'
+import WalletTab from '@/components/WalletTab.vue'
+import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import numberFormat from '@/filters/numberFormat'
 
 import { PullDown } from '@/components/common/PullDown'
-import { Cryptos, CryptosInfo, CryptosOrder, isErc20 } from '@/lib/constants'
+import { Cryptos, CryptosInfo, isErc20 } from '@/lib/constants'
 
 /**
  * Center VTab element on click.
@@ -111,17 +108,21 @@ export default {
   },
   computed: {
     className: () => 'account-view',
+    orderedVisibleWalletSymbols() {
+      return this.$store.getters['wallets/getVisibleOrderedWalletSymbols']
+    },
     wallets() {
-      return CryptosOrder.map((crypto) => {
-        const state = this.$store.state
-        const key = crypto.toLowerCase()
-        const address = crypto === Cryptos.ADM ? state.address : state[key].address
-        const balance = crypto === Cryptos.ADM ? state.balance : state[key].balance
-        const erc20 = isErc20(crypto.toUpperCase())
-        const currentRate = state.rate.rates[`${crypto}/${this.currentCurrency}`]
+      const state = this.$store.state
+
+      return this.orderedVisibleWalletSymbols.map((crypto) => {
+        const key = crypto.symbol.toLowerCase()
+        const address = crypto.symbol === Cryptos.ADM ? state.address : state[key].address
+        const balance = crypto.symbol === Cryptos.ADM ? state.balance : state[key].balance
+        const erc20 = isErc20(crypto.symbol.toUpperCase())
+        const currentRate = state.rate.rates[`${crypto.symbol}/${this.currentCurrency}`]
         const rate = currentRate !== undefined ? Number((balance * currentRate).toFixed(2)) : 0
 
-        const cryptoName =  CryptosInfo[crypto].nameShort ||  CryptosInfo[crypto].name
+        const cryptoName = CryptosInfo[crypto.symbol].nameShort || CryptosInfo[crypto.symbol].name
 
         return {
           address,
@@ -129,7 +130,7 @@ export default {
           cryptoName,
           erc20,
           rate,
-          cryptoCurrency: crypto
+          cryptoCurrency: crypto.symbol
         }
       })
     },
@@ -191,7 +192,7 @@ export default {
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 /**
  * 1. Reset VTabs container fixed height.
@@ -278,8 +279,16 @@ export default {
       }
       :deep(.v-tabs .v-slide-group__prev .v-icon),
       :deep(.v-tabs .v-slide-group__next .v-icon) {
-        color: map-get($adm-colors, 'primary2');
-        pointer-events: none;
+        z-index: 1;
+        color: map-get($adm-colors, 'primary');
+        border-radius: 50%;
+        background-color: transparentize(map-get($adm-colors, 'primary2'), 0.7);
+      }
+      :deep(.v-tabs .v-slide-group__prev),
+      :deep(.v-tabs .v-slide-group__next) {
+        .v-icon:hover {
+          background-color: transparentize(map-get($adm-colors, 'primary2'), 0.3);
+        }
       }
       :deep(:not(.v-tab--selected)) {
         .svg-icon {
@@ -307,8 +316,16 @@ export default {
       }
       :deep(.v-tabs .v-slide-group__prev .v-icon),
       :deep(.v-tabs .v-slide-group__next .v-icon) {
-        color: map-get($adm-colors, 'primary2');
-        pointer-events: none;
+        z-index: 1;
+        color: map-get($adm-colors, 'primary');
+        border-radius: 50%;
+        background-color: transparentize(map-get($adm-colors, 'primary2'), 0.7);
+      }
+      :deep(.v-tabs .v-slide-group__prev),
+      :deep(.v-tabs .v-slide-group__next) {
+        .v-icon:hover {
+          background-color: transparentize(map-get($adm-colors, 'primary2'), 0.3);
+        }
       }
       :deep(.v-tabs-items) {
         background-color: unset;

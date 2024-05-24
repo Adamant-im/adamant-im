@@ -80,3 +80,16 @@ export function replyWithCryptoTransferAsset(
   replyToId: string,
   transferPayload: CryptoTransferPayload
 ): ReplyWithCryptoTransferAsset
+
+export interface ReactionAsset {
+  /**
+   * ADM transaction ID of the message to which the user is reacting
+   */
+  reactto_id: string
+  /**
+   * Represents the emoji-based reaction
+   */
+  react_message: string
+}
+
+export function reactionAsset(reactToId: string, reactMessage: string): ReactionAsset

@@ -1,20 +1,18 @@
 import { isAddress as isEthAddress, isHexStrict } from 'web3-utils'
 import { validateBase32Address as isLskAddress } from '@liskhq/lisk-cryptography'
-import {
-  Cryptos, CryptosInfo,
-} from './constants'
+import { Cryptos, CryptosInfo } from './constants'
 
 /**
  * Get an ADAMANT URI from the address bar or argv[]
  * Complies with AIP-2, AIP-8, AIP-9
  * @returns {string}
  */
-export function getAddressBarURI () {
+export function getAddressBarURI() {
   let aip2 = ''
 
   if (process.env.IS_ELECTRON) {
     const args = process.argv
-    aip2 = args.find(v => /^adm:U[0-9]{6,}/.test(v)) || ''
+    aip2 = args.find((v) => /^adm:U[0-9]{6,}/.test(v)) || ''
   }
 
   return aip2 || document.URL
@@ -34,7 +32,7 @@ export function getAddressBarURI () {
  *   }
  * }
  */
-export function parseURIasAIP (uri = getAddressBarURI()) {
+export function parseURIasAIP(uri = getAddressBarURI()) {
   const [origin, query = ''] = uri.split('?')
   let address = ''
   let crypto = ''
@@ -56,12 +54,13 @@ export function parseURIasAIP (uri = getAddressBarURI()) {
   }
 
   if (origin.includes(':')) {
-    [protocol, address] = origin.split(':')
+    ;[protocol, address] = origin.split(':')
     if (protocol === 'ethereum') {
       crypto = Cryptos.ETH
     } else if (/^https?$/.test(protocol) || /^app$/.test(protocol)) {
       crypto = Cryptos.ADM
-      address = params.address; delete params.address
+      address = params.address
+      delete params.address
     } else if (Object.prototype.hasOwnProperty.call(Cryptos, protocol.toUpperCase())) {
       crypto = protocol.toUpperCase()
     }
@@ -100,7 +99,7 @@ export function parseURIasAIP (uri = getAddressBarURI()) {
  * @param {string} name ADAMANT contact name
  * @returns {string}
  */
-export function generateURI (crypto = Cryptos.ADM, address, name) {
+export function generateURI(crypto = Cryptos.ADM, address, name) {
   if (crypto === Cryptos.ADM) {
     const label = name ? '&label=' + window.encodeURIComponent(name) : ''
     let hostname = window.location.origin
@@ -123,24 +122,13 @@ export function generateURI (crypto = Cryptos.ADM, address, name) {
  * @param {string} str String, that may contain https://adamant.im URI
  * @returns {string}
  */
-export function websiteUriToOnion (str) {
+export function websiteUriToOnion(str) {
   const hostname = window.location.origin
   if (hostname.includes('.onion')) {
-    str = str.replace('https://adamant.im', 'http://adamantim24okpwfr4wxjgsh6vtw4odoiabhsfaqaktnfqzrjrspjuid.onion')
-  }
-
-  return str
-}
-
-/**
- * Replaces https://explorer.adamant.im URI to tor-explorer if host is .onion
- * @param {string} str String, that may contain https://explorer.adamant.im URI
- * @returns {string}
- */
-export function explorerUriToOnion (str) {
-  const hostname = window.location.origin
-  if (hostname.includes('.onion')) {
-    str = str.replace('https://explorer.adamant.im', 'http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion')
+    str = str.replace(
+      'https://adamant.im',
+      'http://adamantim24okpwfr4wxjgsh6vtw4odoiabhsfaqaktnfqzrjrspjuid.onion'
+    )
   }
 
   return str

@@ -1,13 +1,7 @@
 <template>
   <v-form @submit.prevent="revealKeys">
-    <div
-      v-if="keys.length"
-      :class="`${className}__keys`"
-    >
-      <div
-        v-for="key in keys"
-        :key="key.crypto"
-      >
+    <div v-if="keys.length" :class="`${className}__keys`">
+      <div v-for="key in keys" :key="key.crypto">
         <v-text-field
           v-model="key.key"
           :readonly="true"
@@ -29,11 +23,7 @@
               :class="`${className}__btn-copy`"
               @click="copyKey(key.key)"
             >
-              <v-icon
-                :class="`${className}__icon`"
-                icon="mdi-content-copy"
-                size="20"
-              />
+              <v-icon :class="`${className}__icon`" icon="mdi-content-copy" size="20" />
             </v-btn>
           </template>
         </v-text-field>
@@ -53,7 +43,7 @@
     </div>
 
     <div :class="`${className}__disclaimer a-text-regular-enlarged`">
-      {{ t("options.export_keys.disclaimer") }}
+      {{ t('options.export_keys.disclaimer') }}
     </div>
 
     <v-text-field
@@ -61,7 +51,7 @@
       class="a-input"
       variant="underlined"
       color="primary"
-      type="text"
+      :type="showPassphrase ? 'text' : 'password'"
     >
       <template #label>
         <span class="font-weight-medium">
@@ -69,17 +59,15 @@
         </span>
       </template>
       <template #append-inner>
-        <v-menu
-          :offset-overflow="true"
-          :offset-y="false"
-          left
-          eager
-        >
+        <v-btn @click="togglePassphraseVisibility" icon :ripple="false" :size="28" variant="plain">
+          <v-icon :icon="showPassphrase ? 'mdi-eye' : 'mdi-eye-off'" :size="24" />
+        </v-btn>
+
+        <v-menu :offset-overflow="true" :offset-y="false" left eager>
           <template #activator="{ props }">
-            <v-icon
-              v-bind="props"
-              icon="mdi-dots-vertical"
-            />
+            <v-btn v-bind="props" icon variant="plain" :size="28" :ripple="false">
+              <v-icon icon="mdi-dots-vertical" :size="24" />
+            </v-btn>
           </template>
           <v-list>
             <v-list-item @click="showQrcodeScanner = true">
@@ -87,10 +75,7 @@
             </v-list-item>
             <v-list-item link>
               <v-list-item-title>
-                <qrcode-capture
-                  @detect="onDetectQrcode"
-                  @error="onDetectQrcodeError"
-                >
+                <qrcode-capture @detect="onDetectQrcode" @error="onDetectQrcodeError">
                   <span>{{ t('transfer.decode_from_image') }}</span>
                 </qrcode-capture>
               </v-list-item-title>
@@ -101,11 +86,7 @@
     </v-text-field>
 
     <div class="text-center">
-      <v-btn
-        :class="`${className}__export_keys_button`"
-        class="a-btn-primary"
-        @click="revealKeys"
-      >
+      <v-btn :class="`${className}__export_keys_button`" class="a-btn-primary" @click="revealKeys">
         {{ t('options.export_keys.button') }}
       </v-btn>
     </div>
@@ -122,19 +103,17 @@ import { validateMnemonic } from 'bip39'
 import copyToClipboard from 'copy-to-clipboard'
 import { getAccountFromPassphrase as getEthAccount } from '@/lib/eth-utils'
 import { getAccount as getBtcAccount } from '@/lib/bitcoin/btc-base-api'
-import { getAccount as getLskAccount } from '@/lib/lisk/lisk-api'
+import { getAccount as getLskAccount } from '@/lib/lisk/lisk-utils'
 import { Cryptos, CryptosInfo } from '@/lib/constants'
-import QrcodeCapture from '@/components/QrcodeCapture'
-import QrcodeScannerDialog from '@/components/QrcodeScannerDialog'
+import QrcodeCapture from '@/components/QrcodeCapture.vue'
+import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import { ref, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
-function getBtcKey (crypto, passphrase, asWif) {
+function getBtcKey(crypto, passphrase, asWif) {
   const keyPair = getBtcAccount(crypto, passphrase).keyPair
-  const key = asWif
-    ? keyPair.toWIF()
-    : keyPair.privateKey.toString('hex')
+  const key = asWif ? keyPair.toWIF() : keyPair.privateKey.toString('hex')
 
   return {
     crypto: crypto,
@@ -143,7 +122,7 @@ function getBtcKey (crypto, passphrase, asWif) {
   }
 }
 
-function getLskKey (crypto, passphrase) {
+function getLskKey(crypto, passphrase) {
   const keyPair = getLskAccount(crypto, passphrase).keyPair
   const key = keyPair.secretKey.toString('hex')
 
@@ -160,7 +139,7 @@ export default defineComponent({
     QrcodeScannerDialog
   },
 
-  setup () {
+  setup() {
     const passphrase = ref('')
     const showQrcodeScanner = ref(false)
     const store = useStore()
@@ -218,8 +197,13 @@ export default defineComponent({
       })
     }
     const copyAll = () => {
-      const allKeys = keys.value.map(k => `${k.cryptoName}\r\n${k.key}`).join('\r\n\r\n')
+      const allKeys = keys.value.map((k) => `${k.cryptoName}\r\n${k.key}`).join('\r\n\r\n')
       copyKey(allKeys)
+    }
+
+    const showPassphrase = ref(false)
+    const togglePassphraseVisibility = () => {
+      showPassphrase.value = !showPassphrase.value
     }
 
     return {
@@ -233,7 +217,9 @@ export default defineComponent({
       onScanQrcode,
       revealKeys,
       copyKey,
-      copyAll
+      copyAll,
+      showPassphrase,
+      togglePassphraseVisibility
     }
   }
 })

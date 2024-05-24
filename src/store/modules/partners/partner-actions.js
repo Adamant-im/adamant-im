@@ -14,7 +14,7 @@ export default {
   /** Resets module state */
   reset: {
     root: true,
-    handler (context) {
+    handler(context) {
       context.dispatch('saveContactsList')
       context.commit('reset')
       clearInterval(bgTimer)
@@ -24,7 +24,7 @@ export default {
   /** Starts background sync after login */
   afterLogin: {
     root: true,
-    handler (context) {
+    handler(context) {
       context.dispatch('startSync')
     }
   },
@@ -32,7 +32,7 @@ export default {
   /** Starts background sync after page reloads */
   rehydrate: {
     root: true,
-    handler (context) {
+    handler(context) {
       const passphrase = context.rootGetters.getPassPhrase
       if (passphrase) {
         context.dispatch('startSync')
@@ -47,7 +47,7 @@ export default {
    * @param {{ crypto: string, partner: string }} payload partner address and the desired crypto, number of addresses to return (default: 1)
    * @returns {Promise<string>}
    */
-  fetchAddress (context, payload) {
+  fetchAddress(context, payload) {
     if (!payload.records) payload.records = 1
     const crypto = isErc20(payload.crypto) ? Cryptos.ETH : payload.crypto
 
@@ -56,7 +56,11 @@ export default {
     const addressVerifyTimestamp = existingPartner && existingPartner[crypto + '_verifyTimestamp']
 
     // If we have already an address for `crypto` for `partner`, and it is fresh
-    if (existingAddress && addressVerifyTimestamp && Date.now() - addressVerifyTimestamp < ADDRESS_VALID_TIMEOUT) {
+    if (
+      existingAddress &&
+      addressVerifyTimestamp &&
+      Date.now() - addressVerifyTimestamp < ADDRESS_VALID_TIMEOUT
+    ) {
       if (payload.records > 1) {
         if (existingPartner[crypto + '_inconsistency']) {
           return Promise.resolve(existingPartner[crypto + '_inconsistency'])
@@ -70,14 +74,18 @@ export default {
 
     const key = `${crypto}:address`.toLowerCase()
     return admApi.getStored(key, payload.partner, MAXIMUM_ADDRESSES).then(
-      txs => {
+      (txs) => {
         if (txs.length > 0) {
           const addresses = parseCryptoAddressesKVStxs(txs, crypto)
           if (addresses && !addresses.onlyLegacyLiskAddress) {
             // Some address(es) is stored
             context.commit('address', { ...payload, crypto, address: addresses.mainAddress })
             if (addresses.addressesCount > 1) {
-              context.commit('addresses_inconsistency', { ...payload, crypto, addresses: addresses.storedAddresses })
+              context.commit('addresses_inconsistency', {
+                ...payload,
+                crypto,
+                addresses: addresses.storedAddresses
+              })
             }
             if (payload.records > 1) {
               return addresses.storedAddresses
@@ -95,8 +103,12 @@ export default {
           return false // user has no address stored in KVS yet
         }
       },
-      error => {
-        console.error(`Failed to fetch ${crypto} address from KVS. Nothing saved in state.list[payload.partner]`, payload, error)
+      (error) => {
+        console.error(
+          `Failed to fetch ${crypto} address from KVS. Nothing saved in state.list[payload.partner]`,
+          payload,
+          error
+        )
         return false
       }
     )
@@ -106,26 +118,27 @@ export default {
    * Retrieves contact list from the KVS
    * @param {any} context Vuex action context
    */
-  fetchContactsList (context) {
+  fetchContactsList(context) {
     const lastUpdate = context.state.lastUpdate
 
     // Check if it's time to update
-    if ((Date.now() - lastUpdate) < UPDATE_TIMEOUT) return
+    if (Date.now() - lastUpdate < UPDATE_TIMEOUT) return
 
-    return admApi.getStored(CONTACT_LIST_KEY)
-      .then(cl => context.commit('contactList', cl))
-      .catch(err => console.warn('Failed to fetch contact list', err))
+    return admApi
+      .getStored(CONTACT_LIST_KEY)
+      .then((cl) => context.commit('contactList', cl))
+      .catch((err) => console.warn('Failed to fetch contact list', err))
   },
 
   /**
    * Saves contacts list to KVS
    * @param {any} context Vuex action context
    */
-  saveContactsList (context) {
+  saveContactsList(context) {
     const lastChange = context.state.lastChange
 
     // Check if it's time to save (and there are changes to save)
-    if (!lastChange || (Date.now() - lastChange) < SAVE_TIMEOUT) return
+    if (!lastChange || Date.now() - lastChange < SAVE_TIMEOUT) return
     // Setting `lastChange` to 0 guards against redundant call while save transaction is being processed
     context.state.lastChange = 0
 
@@ -133,15 +146,16 @@ export default {
       const item = context.state.list[uid]
       map[uid] = { ...item }
       return map
-    }, { })
+    }, {})
 
-    return admApi.storeValue(CONTACT_LIST_KEY, contacts, true)
-      .then(response => {
+    return admApi
+      .storeValue(CONTACT_LIST_KEY, contacts, true)
+      .then((response) => {
         if (!response.success) {
           console.warn('Contacts list save was rejected')
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.warn('Failed to save contact list', err)
         // Re-mark state as dirty to save on the next tick
         context.state.lastChange = lastChange
@@ -152,7 +166,7 @@ export default {
    * Starts contact list sync.
    * @param {any} context Vuex action context
    */
-  startSync (context) {
+  startSync(context) {
     context.dispatch('fetchContactsList')
 
     clearInterval(bgTimer)

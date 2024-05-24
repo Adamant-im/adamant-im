@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import InlineSpinner from '@/components/InlineSpinner'
+import InlineSpinner from '@/components/InlineSpinner.vue'
 import QRCode from 'qrcode'
 
 export default {

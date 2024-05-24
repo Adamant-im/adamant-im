@@ -1,34 +1,15 @@
 <template>
   <div id="txListElement">
-    <app-toolbar-centered
-      app
-      :title="$t('transaction.transactions')"
-      flat
-      fixed
-    />
+    <app-toolbar-centered app :title="$t('transaction.transactions')" flat fixed />
 
-    <v-container
-      fluid
-      class="px-0 container--with-app-toolbar"
-    >
-      <v-row
-        justify="center"
-        no-gutters
-        style="position: relative;"
-      >
-        <v-list-item
-          v-if="isRecentLoading"
-          style="position: absolute; top: 20px;"
-        >
+    <v-container fluid class="px-0 container--with-app-toolbar">
+      <v-row justify="center" no-gutters style="position: relative">
+        <v-list-item v-if="isRecentLoading" style="position: absolute; top: 20px">
           <InlineSpinner />
         </v-list-item>
 
         <container v-if="isFulfilled">
-          <v-list
-            v-if="hasTransactions"
-            lines="three"
-            bg-color="transparent"
-          >
+          <v-list v-if="hasTransactions" lines="three" bg-color="transparent">
             <transaction-list-item
               v-for="(transaction, i) in transactions"
               :id="transaction.id"
@@ -38,19 +19,17 @@
               :timestamp="transaction.timestamp || NaN"
               :amount="transaction.amount"
               :crypto="crypto"
+              :status="transaction.status"
               :text-data="transaction.data"
               @click:transaction="goToTransaction"
               @click:icon="goToChat"
             />
-            <v-list-item v-if="isOlderLoading">
-              <InlineSpinner />
+            <v-list-item>
+              <InlineSpinner v-if="isOlderLoading" />
             </v-list-item>
           </v-list>
 
-          <h3
-            v-else
-            class="a-text-caption text-center mt-6"
-          >
+          <h3 v-else class="a-text-caption text-center mt-6">
             {{ $t('transaction.no_transactions') }}
           </h3>
         </container>
@@ -60,9 +39,9 @@
 </template>
 
 <script>
-import AppToolbarCentered from '@/components/AppToolbarCentered'
-import InlineSpinner from '@/components/InlineSpinner'
-import TransactionListItem from '@/components/TransactionListItem'
+import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+import InlineSpinner from '@/components/InlineSpinner.vue'
+import TransactionListItem from '@/components/TransactionListItem.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
 export default {
@@ -83,38 +62,39 @@ export default {
     isUpdating: false
   }),
   computed: {
-    transactions () {
+    transactions() {
       const transactions = this.$store.getters[`${this.cryptoModule}/sortedTransactions`]
       const address = this.$store.state[this.crypto.toLowerCase()].address
-      return transactions.filter(tx => {
+      return transactions.filter((tx) => {
         // Filter invalid "fake" transactions (from chat rich message)
-        return Object.prototype.hasOwnProperty.call(tx, 'amount') && (
-          isStringEqualCI(tx.recipientId, address) || isStringEqualCI(tx.senderId, address)
+        return (
+          Object.prototype.hasOwnProperty.call(tx, 'amount') &&
+          (isStringEqualCI(tx.recipientId, address) || isStringEqualCI(tx.senderId, address))
         )
       })
     },
-    hasTransactions () {
+    hasTransactions() {
       return this.transactions && this.transactions.length > 0
     },
-    isOlderLoading () {
+    isOlderLoading() {
       return this.$store.getters[`${this.cryptoModule}/areOlderLoading`]
     },
-    isRecentLoading () {
+    isRecentLoading() {
       return this.$store.getters[`${this.cryptoModule}/areRecentLoading`]
     },
-    cryptoModule () {
+    cryptoModule() {
       return this.crypto.toLowerCase()
     }
   },
   watch: {
-    '$store.state.IDBReady' () {
+    '$store.state.IDBReady'() {
       if (this.$store.state.IDBReady) this.getNewTransactions()
     }
   },
-  beforeUnmount () {
+  beforeUnmount() {
     window.removeEventListener('scroll', this.onScroll)
   },
-  mounted () {
+  mounted() {
     if (!this.$store.getters['options/isLoginViaPassword'] || this.$store.state.IDBReady) {
       this.getNewTransactions()
     }
@@ -122,7 +102,7 @@ export default {
   },
   // mixins: [scrollPosition],
   methods: {
-    sender (transaction) {
+    sender(transaction) {
       const { senders, senderId } = transaction
       const onlySender = senderId && (!senders || senders.length === 1)
       if (onlySender) {
@@ -131,7 +111,7 @@ export default {
         return this.formatAddresses(senders)
       }
     },
-    recipient (transaction) {
+    recipient(transaction) {
       const { recipientId, recipients } = transaction
       const onlyRecipient = recipientId && (!recipients || recipients.length === 1)
       if (onlyRecipient) {
@@ -140,13 +120,19 @@ export default {
         return this.formatAddresses(recipients)
       }
     },
-    formatAddresses (addresses) {
+    formatAddresses(addresses) {
       const count = addresses.length
       return addresses.includes(this.$store.state[this.crypto.toLowerCase()].address)
-        ? `${this.$tc('transaction.me_and_addresses', count - 1)}`
-        : this.$tc('transaction.addresses', count)
+        ? `${
+            this.$tc('transaction.me') +
+            ' (' +
+            this.$store.state[this.cryptoModule].address +
+            ') ' +
+            this.$tc('transaction.addresses', count - 1)
+          }`
+        : addresses[0] + ' ' + this.$tc('transaction.addresses', count - 1)
     },
-    goToTransaction (transactionId) {
+    goToTransaction(transactionId) {
       this.$router.push({
         name: 'Transaction',
         params: {
@@ -155,19 +141,19 @@ export default {
         }
       })
     },
-    goToChat (partnerId) {
+    goToChat(partnerId) {
       this.$router.push({
         name: 'Chat',
         params: { partnerId }
       })
     },
-    onScroll () {
+    onScroll() {
       const height = document.getElementById('txListElement').offsetHeight
       const windowHeight = window.innerHeight
       const scrollPosition = Math.ceil(
         window.scrollY ||
-        window.pageYOffset ||
-        document.body.scrollTop + (document.documentElement.scrollTop || 0)
+          window.pageYOffset ||
+          document.body.scrollTop + (document.documentElement.scrollTop || 0)
       )
       // If we've scrolled to the very bottom, fetch the older transactions from server
       if (!this.isOlderLoading && windowHeight + scrollPosition >= height) {
@@ -178,20 +164,24 @@ export default {
         this.getNewTransactions()
       }
     },
-    getNewTransactions () {
+    getNewTransactions() {
       // If we came from Transactions details sreen, do not update transaction list
-      const doNotUpdate = this.$route.meta.previousRoute.params.txId && !this.isFulfilled &&
+      const doNotUpdate =
+        this.$route.meta.previousRoute.params.txId &&
+        !this.isFulfilled &&
         // If we don't just refresh Tx details screen
-        this.$route.meta.previousPreviousRoute && this.$route.meta.previousPreviousRoute.name
+        this.$route.meta.previousPreviousRoute &&
+        this.$route.meta.previousPreviousRoute.name
 
       if (doNotUpdate) {
         this.isFulfilled = true
       } else {
-        this.$store.dispatch(`${this.cryptoModule}/getNewTransactions`)
+        this.$store
+          .dispatch(`${this.cryptoModule}/getNewTransactions`)
           .then(() => {
             this.isFulfilled = true
           })
-          .catch(err => {
+          .catch((err) => {
             this.isRejected = true
             this.$store.dispatch('snackbar/show', {
               message: err.message

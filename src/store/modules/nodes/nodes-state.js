@@ -1,4 +1,10 @@
 export default {
-  list: { },
-  useFastest: false
+  adm: {},
+  eth: {},
+  btc: {},
+  doge: {},
+  dash: {},
+  lsk: {},
+  useFastestAdmNode: false,
+  useFastestCoinNode: true
 }

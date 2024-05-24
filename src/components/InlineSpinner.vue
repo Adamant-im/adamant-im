@@ -1,8 +1,5 @@
 <template>
-  <v-row
-    justify="center"
-    no-gutters
-  >
+  <v-row justify="center" no-gutters>
     <v-progress-circular
       :size="spinnerSize"
       :stroke="1"
@@ -23,7 +20,7 @@ export default defineComponent({
       type: Number
     }
   },
-  setup (props) {
+  setup(props) {
     const { size: spinnerSize } = toRefs(props)
 
     return {

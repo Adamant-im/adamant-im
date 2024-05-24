@@ -25,10 +25,10 @@
 <script>
 import { computed, defineComponent, reactive, ref, toRefs } from 'vue'
 import { useStore } from 'vuex'
-import DelegatesTableItem from '@/components/DelegatesTable/DelegatesTableItem'
-import DelegatesTableHead from '@/components/DelegatesTable/DelegatesTableHead'
-import DelegatesNotFound from '@/components/DelegatesTable/DelegatesNotFound'
-import DelegatesLoader from '@/components/DelegatesTable/DelegatesLoader'
+import DelegatesTableItem from './DelegatesTableItem.vue'
+import DelegatesTableHead from './DelegatesTableHead.vue'
+import DelegatesNotFound from './DelegatesNotFound.vue'
+import DelegatesLoader from './DelegatesLoader.vue'
 
 /**
  * Generate sorting function passed to `Array.prototype.sort`

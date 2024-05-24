@@ -4,5 +4,5 @@ import { Cryptos, CryptosInfo } from '@/lib/constants'
 export default {
   ...baseGetters,
 
-  fee: state => amount => CryptosInfo[Cryptos.DASH].fixedFee
+  fee: () => (_amount) => CryptosInfo[Cryptos.DASH].fixedFee
 }

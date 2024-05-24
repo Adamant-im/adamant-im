@@ -8,7 +8,7 @@
 import md5 from 'js-md5'
 
 export default class Identicon {
-  constructor () {
+  constructor() {
     this.MAX_INT32 = Math.pow(2, 31) - 1 // 32-bit signed integer
     this.colors = [
       [
@@ -51,15 +51,15 @@ export default class Identicon {
     }
   }
 
-  Hexa16 (key, size) {
+  Hexa16(key, size) {
     const fringeSize = size / 6
     const distance = this.distanceTo3rdPoint(fringeSize)
     const lines = size / fringeSize
     const offset = ((fringeSize - distance) * lines) / 2
     const fillTriangle = this.triangleColors(0, key, Math.trunc(lines))
     const transparent = 'rgba(0, 0, 0, 0)'
-    const isLeft = v => v % 2 === 0
-    const isRight = v => v % 2 !== 0
+    const isLeft = (v) => v % 2 === 0
+    const isRight = (v) => v % 2 !== 0
     const L = Math.trunc(lines)
     const hL = L / 2
     let xL = 0
@@ -144,7 +144,7 @@ export default class Identicon {
     }
   }
 
-  Polygon (xs, ys, color) {
+  Polygon(xs, ys, color) {
     this.cache.beginPath()
     for (let i = 0; i < xs.length; i++) {
       const x = xs[i]
@@ -159,15 +159,15 @@ export default class Identicon {
     this.cache.fill()
   }
 
-  distanceTo3rdPoint (AC) {
+  distanceTo3rdPoint(AC) {
     // distance from center of vector to third point of equilateral triangles
     // ABC triangle, O is the center of AB vector
     // OC = SQRT(AC^2 - AO^2)
-    return Math.ceil(Math.sqrt((AC * AC) - (AC / 2 * AC / 2)))
+    return Math.ceil(Math.sqrt(AC * AC - ((AC / 2) * AC) / 2))
   }
 
   // right1stTriangle computes a right oriented triangle '>'
-  right1stTriangle (xL, yL, fringeSize, distance) {
+  right1stTriangle(xL, yL, fringeSize, distance) {
     const x1 = xL * distance
     const x2 = xL * distance + distance
     const x3 = x1
@@ -178,7 +178,7 @@ export default class Identicon {
   }
 
   // left1stTriangle computes the coordinates of a left oriented triangle '<'
-  left1stTriangle (xL, yL, fringeSize, distance) {
+  left1stTriangle(xL, yL, fringeSize, distance) {
     const x1 = xL * distance + distance
     const x2 = xL * distance
     const x3 = x1
@@ -189,7 +189,7 @@ export default class Identicon {
   }
 
   // left2ndTriangle computes the coordinates of a left oriented triangle '<'
-  left2ndTriangle (xL, yL, fringeSize, distance) {
+  left2ndTriangle(xL, yL, fringeSize, distance) {
     const x1 = xL * distance + distance
     const x2 = xL * distance
     const x3 = x1
@@ -200,7 +200,7 @@ export default class Identicon {
   }
 
   // right2ndTriangle computes the coordinates of a right oriented triangle '>'
-  right2ndTriangle (xL, yL, fringeSize, distance) {
+  right2ndTriangle(xL, yL, fringeSize, distance) {
     const x1 = xL * distance
     const x2 = xL * distance + distance
     const x3 = x1
@@ -210,15 +210,15 @@ export default class Identicon {
     return { x1, y1, x2, y2, x3, y3 }
   }
 
-  mirrorCoordinates (xs, lines, fringeSize, offset) {
+  mirrorCoordinates(xs, lines, fringeSize, offset) {
     const xsMirror = []
     for (let i = 0; i < xs.length; i++) {
-      xsMirror.push((lines * fringeSize) - xs[i] + offset)
+      xsMirror.push(lines * fringeSize - xs[i] + offset)
     }
     return xsMirror
   }
 
-  triangleColors (id, key, lines) {
+  triangleColors(id, key, lines) {
     const keyHash = md5(key)
     /* if (keyHash.length !== 32) {
       throw new Error('AdamantIdenticon: Wrong md5 hash')
@@ -242,29 +242,29 @@ export default class Identicon {
       const t = Triangle.triangles[id][i]
       const x = t.x
       const y = t.y
-      const index = x + 3 * y + lines + seed % this.getValue(keyHash, keyArray[i + 1])
+      const index = x + 3 * y + lines + (seed % this.getValue(keyHash, keyArray[i + 1]))
       const color = this.PickColor(keyHash, colorsSet, index)
       tColors.push(color)
     }
     return tColors
   }
 
-  scramble (seed) {
-    const multiplier = 0x5DEEC
+  scramble(seed) {
+    const multiplier = 0x5deec
     const mask = (1 << 30) - 1
     return (seed ^ multiplier) & mask
   }
 
-  getValue (string, index) {
+  getValue(string, index) {
     const s = String(string[index % string.length])
     return s.charCodeAt()
   }
 
-  isOutsideHexagon (xL, yL, lines) {
+  isOutsideHexagon(xL, yL, lines) {
     return !this.isFill1InHexagon(xL, yL, lines) && !this.isFill2InHexagon(xL, yL, lines)
   }
 
-  isFill1InHexagon (xL, yL, lines) {
+  isFill1InHexagon(xL, yL, lines) {
     const half = lines / 2
     const start = half / 2
     if (xL < start + 1) {
@@ -280,7 +280,7 @@ export default class Identicon {
     return false
   }
 
-  isFill2InHexagon (xL, yL, lines) {
+  isFill2InHexagon(xL, yL, lines) {
     const half = lines / 2
     const start = half / 2
     if (xL < start) {
@@ -306,7 +306,7 @@ export default class Identicon {
   // index: is an index from the key string.
   // Algorithm: PickColor converts the key[index] value to a decimal value.
   // We pick the ith colors that respects the equality value%numberOfColors == i.
-  PickColor (key, colors, index) {
+  PickColor(key, colors, index) {
     const n = colors.length
     const i = this.PickIndex(key, n, index)
     return colors[i]
@@ -318,7 +318,7 @@ export default class Identicon {
   // index: is an index from the key string.
   // Algorithm: PickIndex converts the key[index] value to a decimal value.
   // We pick the ith index that respects the equality value%sizeOfArray == i.
-  PickIndex (key, n, index) {
+  PickIndex(key, n, index) {
     const r = this.getValue(key, index)
     for (let i = 0; i < n; i++) {
       if (r % n === i) {
@@ -330,7 +330,7 @@ export default class Identicon {
 
   // canFill returns a fill svg string given position. the fill is computed to be a rotation of the
   // triangle 0 with the 'fills' array given as param.
-  canFill (x, y, fills, isLeft, isRight) {
+  canFill(x, y, fills, isLeft, isRight) {
     const l = new Triangle(x, y, 'left')
     const r = new Triangle(x, y, 'right')
     if (isLeft(x) && l.isInTriangle()) {
@@ -345,20 +345,20 @@ export default class Identicon {
 }
 
 class Triangle {
-  constructor (x, y, direction) {
+  constructor(x, y, direction) {
     this.x = x
     this.y = y
     this.direction = { left: 0, right: 1 }[direction]
   }
 
-  isInTriangle () {
+  isInTriangle() {
     return this.triangleID() !== -1
   }
 
   // triangleID returns the triangle id (from 0 to 5)
   // that has a match with the position given as param.
   // returns -1 if a match is not found.
-  triangleID () {
+  triangleID() {
     for (let i = 0; i < Triangle.triangles.length; i++) {
       const t = Triangle.triangles[i]
       for (let i2 = 0; i2 < t.length; i2++) {
@@ -374,7 +374,7 @@ class Triangle {
   // subTriangleID returns the sub triangle id (from 0 to 8)
   // that has a match with the position given as param.
   // returns -1 if a match is not found.
-  subTriangleID () {
+  subTriangleID() {
     for (let i = 0; i < Triangle.triangles.length; i++) {
       const t = Triangle.triangles[i]
       for (let i2 = 0; i2 < t.length; i2++) {
@@ -387,7 +387,7 @@ class Triangle {
     return -1
   }
 
-  subTriangleRotations (lookforSubTriangleID) {
+  subTriangleRotations(lookforSubTriangleID) {
     const m = {
       0: [0, 6, 8, 8, 2, 0],
       1: [1, 2, 5, 7, 6, 3],
@@ -404,7 +404,7 @@ class Triangle {
 
   // rotationId returns the original sub triangle id
   // if the current triangle was rotated to position 0.
-  rotationID () {
+  rotationID() {
     const currentTID = this.triangleID()
     const currentSTID = this.subTriangleID()
     const numberOfSubTriangles = 9

@@ -1,21 +1,20 @@
-import apiClient from '../../../lib/adamant-api-client'
+import { nodes } from '@/lib/nodes'
 
 export default {
-  restore ({ state }) {
-    const nodes = Object.values(state.list)
-
-    nodes.forEach(node => apiClient.toggleNode(node.url, node.active))
+  updateStatus() {
+    for (const [, client] of Object.entries(nodes)) {
+      client.checkHealth()
+    }
   },
 
-  updateStatus () {
-    apiClient.updateStatus()
-  },
-
-  toggle (context, payload) {
+  toggle(context, payload) {
     context.commit('toggle', payload)
   },
 
-  setUseFastest (context, payload) {
-    context.commit('useFastest', payload)
+  setUseFastestAdmNode(context, payload) {
+    context.commit('useFastestAdmNode', payload)
+  },
+  setUseFastestCoinNode(context, payload) {
+    context.commit('useFastestCoinNode', payload)
   }
 }

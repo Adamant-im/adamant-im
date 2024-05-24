@@ -1,10 +1,6 @@
 <template>
-  <v-list-item
-    v-if="isLoadingSeparator"
-  >
-    <div
-      class="d-flex justify-center"
-    >
+  <v-list-item v-if="isLoadingSeparator">
+    <div class="d-flex justify-center">
       <v-icon
         ref="loadingDots"
         :class="{ kmove: isLoadingSeparatorActive }"
@@ -12,28 +8,13 @@
       />
     </div>
   </v-list-item>
-  <v-list-item
-    v-else
-    lines="two"
-    :class="className"
-    @click="$emit('click')"
-  >
+  <v-list-item v-else lines="two" :class="className" @click="$emit('click')">
     <template #prepend>
-      <icon
-        v-if="isWelcomeChat(contactId)"
-        :class="`${className}__icon`"
-      >
+      <icon v-if="isWelcomeChat(contactId)" :class="`${className}__icon`">
         <adm-fill-icon />
       </icon>
-      <div
-        v-else
-        :class="`${className}__chat-avatar`"
-      >
-        <chat-avatar
-          :size="40"
-          :user-id="contactId"
-          use-public-key
-        />
+      <div v-else :class="`${className}__chat-avatar`">
+        <chat-avatar :size="40" :user-id="contactId" use-public-key />
       </div>
 
       <v-badge
@@ -46,13 +27,18 @@
     </template>
 
     <div>
-      <v-list-item-title
-        :class="{
-          'a-text-regular-enlarged-bold': true,
-          [`${className}__title`]: true
-        }"
-        v-text="isAdamantChat(contactId) ? $t(contactName) : contactName"
-      />
+      <div :class="`${className}__heading`">
+        <v-list-item-title
+          :class="{
+            'a-text-regular-enlarged-bold': true,
+            [`${className}__title`]: true
+          }"
+          >{{ isAdamantChat(contactId) ? $t(contactName) : contactName }}</v-list-item-title
+        >
+        <div v-if="!isMessageReadonly" :class="`${className}__date`">
+          {{ formatDate(createdAt) }}
+        </div>
+      </div>
 
       <!-- New chat (no messages yet) -->
       <template v-if="isNewChat">
@@ -61,73 +47,56 @@
 
       <!-- Transaction -->
       <template v-else-if="isTransferType">
-        <v-list-item-subtitle
-          :class="`${className}__subtitle`"
-        >
-          <v-icon
-            v-if="!isIncomingTransaction"
-            size="15"
-            :icon="statusIcon"
-          />
+        <v-list-item-subtitle :class="`${className}__subtitle`">
+          <v-icon v-if="!isIncomingTransaction" size="15" :icon="statusIcon" />
           {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
-          <v-icon
-            v-if="isIncomingTransaction"
-            :icon="statusIcon"
-            size="15"
-          />
+          <v-icon v-if="isIncomingTransaction" :icon="statusIcon" size="15" />
+        </v-list-item-subtitle>
+      </template>
+
+      <!-- Reaction -->
+      <template v-else-if="isReaction">
+        <v-list-item-subtitle :class="`${className}__subtitle`">
+          {{ reactedText }}
         </v-list-item-subtitle>
       </template>
 
       <!-- Message -->
       <template v-else>
         <v-list-item-subtitle
-          :class="[
-            'a-text-explanation-enlarged-bold',
-            `${className}__subtitle`
-          ]"
+          :class="['a-text-explanation-enlarged-bold', `${className}__subtitle`]"
         >
           <template v-if="isOutgoingTransaction">
             <v-icon
               v-if="transaction.isReply && isConfirmed"
               icon="mdi-arrow-left-top"
               size="15"
+              class="mr-1"
             />
-            <v-icon
-              v-else
-              :icon="statusIcon"
-              size="15"
-            />
+            <v-icon v-else :icon="statusIcon" size="15" class="mr-1" />
           </template>
 
-          {{ lastMessageTextNoFormats }}
+          <span v-html="lastMessageTextNoFormats"></span>
         </v-list-item-subtitle>
       </template>
-    </div>
-
-    <div
-      v-if="!isMessageReadonly"
-      :class="`${className}__date`"
-    >
-      {{ formatDate(createdAt) }}
     </div>
   </v-list-item>
 </template>
 
 <script>
-import { removeFormats } from '@/lib/markdown'
+import { formatMessage } from '@/lib/markdown'
 
 import transaction from '@/mixins/transaction'
 import formatDate from '@/filters/dateBrief'
-import ChatAvatar from '@/components/Chat/ChatAvatar'
-import Icon from '@/components/icons/BaseIcon'
-import AdmFillIcon from '@/components/icons/AdmFill'
+import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
+import Icon from '@/components/icons/BaseIcon.vue'
+import AdmFillIcon from '@/components/icons/AdmFill.vue'
 import partnerName from '@/mixins/partnerName'
-import { tsIcon } from '@/lib/constants'
+import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
 import currency from '@/filters/currencyAmountWithSymbol'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
-import { TransactionStatus as TS } from '@/lib/constants'
 
 export default {
   components: {
@@ -170,81 +139,96 @@ export default {
     }
   },
   emits: ['click'],
-  data: () => ({
-  }),
+  data: () => ({}),
   computed: {
     className: () => 'chat-brief',
-    contactName () {
+    contactName() {
       return this.getPartnerName(this.contactId) || this.contactId
     },
 
-    isTransferType () {
-      return this.transaction.type !== 'message'
+    isTransferType() {
+      return this.transaction.type !== 'message' && this.transaction.type !== 'reaction'
     },
-    isNewChat () {
+    isReaction() {
+      return this.transaction.type === 'reaction'
+    },
+    reactedText() {
+      const reaction = this.transaction.asset.react_message
+      const isRemoveReaction = !reaction
+
+      if (isRemoveReaction) {
+        const label = this.isOutgoingTransaction
+          ? `${this.$t('chats.you')}: ${this.$t('chats.you_removed_reaction')}`
+          : this.$t('chats.partner_removed_reaction')
+
+        return label
+      } else {
+        const label = this.isOutgoingTransaction
+          ? `${this.$t('chats.you')}: ${this.$t('chats.you_reacted')}`
+          : this.$t('chats.partner_reacted')
+
+        return `${label} ${reaction}`
+      }
+    },
+    isNewChat() {
       return !this.transaction.type
     },
 
-    lastMessage () {
+    lastMessage() {
       return this.transaction
     },
-    isMessageI18n () {
+    isMessageI18n() {
       return this.transaction.i18n
     },
-    lastMessageText () {
+    lastMessageText() {
       return this.transaction.message || ''
     },
-    lastMessageTextLocalized () {
-      return this.isMessageI18n
-        ? this.$t(this.lastMessageText)
-        : this.lastMessageText
+    lastMessageTextLocalized() {
+      return this.isMessageI18n ? this.$t(this.lastMessageText) : this.lastMessageText
     },
-    lastMessageTextNoFormats () {
-      if (
-        this.isAdamantChat(this.contactId) ||
-        this.$store.state.options.formatMessages
-      ) {
-        return removeFormats(this.lastMessageTextLocalized)
+    lastMessageTextNoFormats() {
+      if (this.isAdamantChat(this.contactId) || this.$store.state.options.formatMessages) {
+        return formatMessage(this.lastMessageTextLocalized)
       }
 
       return this.lastMessageTextLocalized
     },
-    transactionDirection () {
+    transactionDirection() {
       const direction = isStringEqualCI(this.userId, this.transaction.senderId)
         ? this.$t('chats.sent_label')
         : this.$t('chats.received_label')
 
       return direction
     },
-    isIncomingTransaction () {
+    isIncomingTransaction() {
       return !isStringEqualCI(this.userId, this.transaction.senderId)
     },
-    isOutgoingTransaction () {
+    isOutgoingTransaction() {
       return !this.isIncomingTransaction
     },
-    numOfNewMessages () {
+    numOfNewMessages() {
       return this.$store.getters['chat/numOfNewMessages'](this.contactId)
     },
-    createdAt () {
+    createdAt() {
       return this.transaction.timestamp
     },
-    status () {
+    status() {
       return this.getTransactionStatus(this.transaction)
     },
-    statusIcon () {
+    statusIcon() {
       return tsIcon(this.status.virtualStatus)
     },
-    isConfirmed () {
+    isConfirmed() {
       return this.status.virtualStatus === TS.CONFIRMED
     }
   },
   watch: {
     // fetch status when new message received
-    transaction () {
+    transaction() {
       this.fetchTransactionStatus(this.transaction, this.contactId)
     }
   },
-  mounted () {
+  mounted() {
     // fetch status if transaction is transfer
     if (this.isTransferType) {
       this.fetchTransactionStatus(this.transaction, this.contactId)
@@ -260,12 +244,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/styles/themes/adamant/_mixins.scss';
-@import '../assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
 @keyframes movement {
-  from { left: -50px }
-  to { left: 50px }
+  from {
+    left: -50px;
+  }
+  to {
+    left: 50px;
+  }
 }
 
 .kmove {
@@ -292,6 +280,12 @@ export default {
     margin-right: 16px;
   }
 
+  &__heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   &__title {
     line-height: 24px;
     margin-bottom: 0;
@@ -307,9 +301,8 @@ export default {
 
   &__date {
     @include a-text-explanation-small();
-    position: absolute;
-    top: 16px;
-    right: 16px;
+    margin-left: 16px;
+    white-space: nowrap;
   }
 
   &__badge {
@@ -321,7 +314,7 @@ export default {
     }
   }
 
-  :deep(.v-list-item-subtitle)  {
+  :deep(.v-list-item-subtitle) {
     @include a-text-explanation-enlarged-bold();
   }
 }
@@ -336,17 +329,17 @@ export default {
     }
 
     &__icon {
-      fill: #BDBDBD;
+      fill: #bdbdbd;
     }
 
-    :deep(.v-list-item-subtitle)  {
+    :deep(.v-list-item-subtitle) {
       color: map-get($adm-colors, 'muted');
     }
   }
 }
 .v-theme--dark {
   .chat-brief {
-    :deep(.v-list-item-subtitle)  {
+    :deep(.v-list-item-subtitle) {
       color: map-get($adm-colors, 'grey-transparent');
     }
   }

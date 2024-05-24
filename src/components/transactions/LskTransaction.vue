@@ -1,26 +1,26 @@
 <template>
   <transaction-template
-    :id="transaction.hash || '' "
+    :id="transaction.hash || ''"
     :amount="currency(transaction.amount, crypto)"
     :timestamp="transaction.timestamp || NaN"
     :fee="currency(transaction.fee, 'LSK')"
     :confirmations="confirmations || NaN"
-    :sender="sender || '' "
-    :recipient="recipient || '' "
-    :sender-formatted="senderFormatted || '' "
-    :recipient-formatted="recipientFormatted|| '' "
+    :sender="sender || ''"
+    :recipient="recipient || ''"
+    :sender-formatted="senderFormatted || ''"
+    :recipient-formatted="recipientFormatted || ''"
     :explorer-link="explorerLink"
-    :partner="partner || '' "
+    :partner="partner || ''"
     :status="getTransactionStatus(admTx, transaction)"
     :adm-tx="admTx"
     :crypto="crypto"
-    :text-data="transaction.data || '' "
+    :text-data="transaction.data || ''"
   />
 </template>
 
 <script>
 import TransactionTemplate from './TransactionTemplate.vue'
-import getExplorerUrl from '../../lib/getExplorerUrl'
+import { getExplorerTxUrl } from '@/config/utils'
 import { Cryptos } from '../../lib/constants'
 import partnerName from '@/mixins/partnerName'
 
@@ -44,31 +44,31 @@ export default {
       type: String
     }
   },
-  data () {
+  data() {
     return {
       inconsistent_reason: ''
     }
   },
   computed: {
-    cryptoKey () {
+    cryptoKey() {
       return this.crypto.toLowerCase()
     },
-    transaction () {
-      return this.$store.getters[`${this.cryptoKey}/transaction`](this.id) || { }
+    transaction() {
+      return this.$store.getters[`${this.cryptoKey}/transaction`](this.id) || {}
     },
-    sender () {
+    sender() {
       return this.transaction.senderId || ''
     },
-    recipient () {
+    recipient() {
       return this.transaction.recipientId || ''
     },
-    senderFormatted () {
+    senderFormatted() {
       return this.transaction.senderId ? this.formatAddress(this.transaction.senderId) : ''
     },
-    recipientFormatted () {
+    recipientFormatted() {
       return this.transaction.recipientId ? this.formatAddress(this.transaction.recipientId) : ''
     },
-    partner () {
+    partner() {
       if (this.transaction.partner) return this.transaction.partner
 
       const id = !isStringEqualCI(this.transaction.senderId, this.$store.state.lsk.address)
@@ -76,28 +76,24 @@ export default {
         : this.transaction.recipientId
       return this.getAdmAddress(id)
     },
-    explorerLink () {
-      return getExplorerUrl(Cryptos.LSK, this.id)
+    explorerLink() {
+      return getExplorerTxUrl(Cryptos.LSK, this.id)
     },
-    confirmations () {
-      const { height, confirmations } = this.transaction
+    confirmations() {
+      const { height } = this.transaction
+      const currentHeight = this.$store.getters[`${this.cryptoKey}/height`]
 
-      let result = confirmations
-      if (height) {
-        // Calculate actual confirmations count based on the tx block height and the last block height.
-        const c = this.$store.getters[`${this.cryptoKey}/height`] - height + 1
-        if (c > 0 && (c > result || !result)) {
-          result = c
-        }
+      if (height === undefined || currentHeight === 0) {
+        return 0
       }
 
-      return result
+      return currentHeight - height + 1
     },
-    admTx () {
+    admTx() {
       const admTx = {}
       // Bad news, everyone: we'll have to scan the messages
-      Object.values(this.$store.state.chat.chats).some(chat => {
-        Object.values(chat.messages).some(msg => {
+      Object.values(this.$store.state.chat.chats).some((chat) => {
+        Object.values(chat.messages).some((msg) => {
           if (msg.hash && msg.hash === this.id) {
             Object.assign(admTx, msg)
           }
@@ -109,12 +105,12 @@ export default {
     }
   },
   methods: {
-    getAdmAddress (address) {
+    getAdmAddress(address) {
       let admAddress = ''
 
       // First, check the known partners
       const partners = this.$store.state.partners.list
-      Object.keys(partners).some(uid => {
+      Object.keys(partners).some((uid) => {
         const partner = partners[uid]
         if (isStringEqualCI(partner[Cryptos.LSK], address)) {
           admAddress = uid
@@ -124,10 +120,12 @@ export default {
 
       if (!admAddress) {
         // Bad news, everyone: we'll have to scan the messages
-        Object.values(this.$store.state.chat.chats).some(chat => {
-          Object.values(chat.messages).some(msg => {
+        Object.values(this.$store.state.chat.chats).some((chat) => {
+          Object.values(chat.messages).some((msg) => {
             if (msg.hash && msg.hash === this.id) {
-              admAddress = isStringEqualCI(msg.senderId, this.$store.state.address) ? msg.recipientId : msg.senderId
+              admAddress = isStringEqualCI(msg.senderId, this.$store.state.address)
+                ? msg.recipientId
+                : msg.senderId
             }
             return !!admAddress
           })
@@ -138,7 +136,7 @@ export default {
       return admAddress
     },
 
-    formatAddress (address) {
+    formatAddress(address) {
       const admAddress = this.getAdmAddress(address)
       let name = ''
 
@@ -150,11 +148,11 @@ export default {
 
       let result = ''
       if (name !== '' && name !== undefined) {
-        result = name + ' (' + (address) + ')'
+        result = name + ' (' + address + ')'
       } else {
         result = address
         if (admAddress) {
-          result += ' (' + (admAddress) + ')'
+          result += ' (' + admAddress + ')'
         }
       }
 

@@ -1,5 +1,5 @@
 import BigNumber from '@/lib/bignumber'
-import { Cryptos } from '@/lib/constants'
+import { AllCryptos } from '@/lib/constants'
 
 /**
  * Format currency amount to a fancy string without symbol
@@ -8,12 +8,9 @@ import { Cryptos } from '@/lib/constants'
  * @param {boolean} isAdmBalance - Amount is ADM balance
  * @returns {string}
  */
-export default (amount, symbol = Cryptos.ADM, isAdmBalance) => {
+export default (amount, symbol = AllCryptos.ADM, isAdmBalance = false) => {
   if (amount !== undefined) {
-    const formatted = BigNumber(
-      !isAdmBalance && symbol === Cryptos.ADM ? amount / 1e8 : amount
-    ).toFixed()
-    return formatted
+    return BigNumber(!isAdmBalance && symbol === AllCryptos.ADM ? amount / 1e8 : amount).toFixed()
   } else {
     return ''
   }

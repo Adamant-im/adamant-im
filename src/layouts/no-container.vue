@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import AppSnackbar from '@/components/AppSnackbar'
-import AppNavigation from '@/components/AppNavigation'
+import AppSnackbar from '@/components/AppSnackbar.vue'
+import AppNavigation from '@/components/AppNavigation.vue'
 
 export default {
   components: {
@@ -17,7 +17,7 @@ export default {
     AppNavigation
   },
   computed: {
-    showNavigation () {
+    showNavigation() {
       return this.$route.meta.showNavigation || false
     }
   }

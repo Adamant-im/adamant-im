@@ -1,9 +1,5 @@
 <template>
-  <v-form
-    ref="form"
-    class="login-form"
-    @submit.prevent="submit"
-  >
+  <v-form ref="form" class="login-form" @submit.prevent="submit">
     <v-row no-gutters>
       <v-text-field
         ref="passwordField"
@@ -18,18 +14,10 @@
       />
     </v-row>
 
-    <v-row
-      align="center"
-      justify="center"
-      class="mt-2"
-      no-gutters
-    >
+    <v-row align="center" justify="center" class="mt-2" no-gutters>
       <v-col cols="12">
         <slot name="button">
-          <v-btn
-            class="login-form__button a-btn-primary"
-            @click="submit"
-          >
+          <v-btn class="login-form__button a-btn-primary" @click="submit">
             <v-progress-circular
               v-show="showSpinner"
               indeterminate
@@ -41,19 +29,11 @@
           </v-btn>
         </slot>
       </v-col>
-      <v-col
-        cols="12"
-        class="a-text-regular mt-8"
-      >
+      <v-col cols="12" class="a-text-regular mt-8">
         {{ $t('login_via_password.remove_password_hint') }}
       </v-col>
       <v-col cols="12">
-        <v-btn
-          class="a-btn-link"
-          variant="text"
-          size="small"
-          @click="removePassword"
-        >
+        <v-btn class="a-btn-link" variant="text" size="small" @click="removePassword">
           {{ $t('login_via_password.remove_password') }}
         </v-btn>
       </v-col>
@@ -74,16 +54,16 @@ export default defineComponent({
     }
   },
   emits: ['login', 'error', 'update:modelValue'],
-  setup (props, { emit } ) {
+  setup(props, { emit }) {
     const store = useStore()
     const passwordField = ref(null)
     const showSpinner = ref(false)
 
     const password = computed({
-      get () {
+      get() {
         return props.modelValue
       },
-      set (value) {
+      set(value) {
         emit('update:modelValue', value)
       }
     })
@@ -91,7 +71,8 @@ export default defineComponent({
     const submit = () => {
       showSpinner.value = true
 
-      return store.dispatch('loginViaPassword', password.value)
+      return store
+        .dispatch('loginViaPassword', password.value)
         .then(() => {
           emit('login')
         })

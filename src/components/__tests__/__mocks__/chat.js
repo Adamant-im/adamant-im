@@ -5,11 +5,11 @@ const userId = 'U9203183357885757380'
 const partnerId = 'U15677078342684640219'
 const partnerName = 'Uasya'
 
-function randomDate (start, end) {
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+function randomDate(start, end) {
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
 }
 
-function createOneMessage () {
+function createOneMessage() {
   return {
     type: Math.random() > 0.9 ? 'transaction' : 'message',
     userId,
@@ -30,7 +30,7 @@ function createOneMessage () {
   }
 }
 
-function createRandomMessages (count) {
+function createRandomMessages(count) {
   let messages = []
 
   for (let i = 0; i < count; i++) {
@@ -42,9 +42,4 @@ function createRandomMessages (count) {
 
 const messages = createRandomMessages(100)
 
-export {
-  userId,
-  partnerId,
-  partnerName,
-  messages
-}
+export { userId, partnerId, partnerName, messages }

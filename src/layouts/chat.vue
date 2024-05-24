@@ -1,9 +1,6 @@
 <template>
   <v-main>
-    <v-container
-      fluid
-      class="pa-0"
-    >
+    <v-container fluid class="pa-0">
       <slot />
     </v-container>
 
@@ -12,7 +9,7 @@
 </template>
 
 <script>
-import AppSnackbar from '@/components/AppSnackbar'
+import AppSnackbar from '@/components/AppSnackbar.vue'
 
 export default {
   components: {

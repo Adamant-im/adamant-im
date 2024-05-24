@@ -7,26 +7,40 @@ import _ from 'lodash'
 const CRYPTOS_DATA_FILE_PATH = resolve('src/lib/constants/cryptos/data.json')
 const CRYPTOS_ICONS_DIR_PATH = resolve('src/components/icons/cryptos')
 const GENERAL_ASSETS_PATH = resolve('adamant-wallets/assets/general')
+const BRANCH = process.argv[2]
 
-run()
+void run(BRANCH)
 
-async function run() {
+/**
+ *
+ * @param {string} branch The branch to pull from. E.g.: dev, master
+ * @return {Promise<void>}
+ */
+async function run(branch = 'master') {
   // update adamant-wallets repo
-  await $`git submodule foreach git pull origin master`
+  await $`git submodule init`
+  await $`git submodule update`
+  await $`git submodule foreach git pull origin ${branch}`
 
-  const [coins, nodes, { coinDirNames, coinSymbols }] = await initCoins()
+  console.log('Updating coins data from `adamant-wallets`. Using branch:', branch)
+
+  const { coins, config, coinDirNames, coinSymbols } = await initCoins()
   await applyBlockchains(coins, coinSymbols)
 
   await copyIcons(coins, coinDirNames)
 
   await writeFile(CRYPTOS_DATA_FILE_PATH, JSON.stringify(coins, null, 2))
 
-  await updateConfig(nodes)
+  await updateProductionConfig(config)
+  await updateDevelopmentConfig(config)
+  await updateTorConfig(config)
+
+  console.log('Coins updated successfully')
 }
 
 async function initCoins() {
+  const config = {}
   const coins = {}
-  const nodes = {}
 
   const coinDirNames = {}
   const coinSymbols = {}
@@ -69,18 +83,19 @@ async function initCoins() {
 
     if (coin.createCoin) {
       const nodeName = coin.symbol.toLowerCase()
-
-      if (coin.nodes) {
-        nodes[nodeName] = coin.nodes
-      }
-
-      if (coin.serviceNodes) {
-        nodes[`${nodeName}service`] = coin.serviceNodes
-      }
+      config[nodeName] = coin
     }
   })
 
-  return [coins, nodes, { coinDirNames, coinSymbols }]
+  // Sort by key (coin symbol)
+  const sortedCoins = _.chain(coins).toPairs().sortBy(0).fromPairs().value()
+
+  return {
+    coins: sortedCoins,
+    config,
+    coinDirNames,
+    coinSymbols
+  }
 }
 
 async function applyBlockchains(coins, coinSymbols) {
@@ -118,30 +133,59 @@ async function copyIcons(coins, coinDirNames) {
   await mkdir(CRYPTOS_ICONS_DIR_PATH)
 
   for (const [name, coin] of Object.entries(coins)) {
-    if (coin.defaultVisibility) {
-      const iconComponentName = `${_.capitalize(coin.symbol)}Icon.vue`
+    const iconComponentName = `${_.capitalize(coin.symbol)}Icon.vue`
 
-      await copyFile(
-        join(GENERAL_ASSETS_PATH, coinDirNames[name], 'images', 'icon.vue'),
-        join(CRYPTOS_ICONS_DIR_PATH, iconComponentName)
-      )
-    }
+    const iconPathDestination = join(CRYPTOS_ICONS_DIR_PATH, iconComponentName)
+    await copyFile(
+      join(GENERAL_ASSETS_PATH, coinDirNames[name], 'images', 'icon.vue'),
+      iconPathDestination
+    )
+    await $`git add ${iconPathDestination}` // git track newly added icon
   }
 }
 
-/**
- * Updates the production config inside src/config
- */
-async function updateConfig(nodes) {
-  const configPath = resolve('src/config/production.json')
-  const config = await parseJsonFile(configPath)
+function updateProductionConfig(configs) {
+  return updateConfig(configs, 'production')
+}
 
-  config.server = {
-    ...config.server, // to keep `infoservice`
-    ...nodes
+function updateDevelopmentConfig(configs) {
+  return updateConfig(configs, 'development')
+}
+
+function updateTorConfig(configs) {
+  const torConfigs = _.mapValues(configs, (config) => {
+    const torConfig = _.mergeWith(config, config.tor, (value, srcValue) => {
+      // customizer overrides `nodes`, `services` and `links`
+      // instead of merging them
+      if (_.isArray(srcValue)) {
+        return srcValue
+      }
+    })
+
+    return torConfig
+  })
+
+  return updateConfig(torConfigs, 'tor')
+}
+
+/**
+ * Updates the config inside src/config
+ */
+async function updateConfig(configs, configName) {
+  const configPath = resolve(`src/config/${configName}.json`)
+  const configFile = await parseJsonFile(configPath)
+
+  for (const configKey in configs) {
+    const config = configs[configKey]
+
+    configFile[configKey].explorer = config.explorer
+    configFile[configKey].explorerTx = config.explorerTx
+    configFile[configKey].explorerAddress = config.explorerAddress
+    configFile[configKey].nodes = config.nodes
+    configFile[configKey].services = config.services
   }
 
-  await writeFile(configPath, JSON.stringify(config, null, 2))
+  await writeFile(configPath, JSON.stringify(configFile, null, 2))
 }
 
 async function forEachDir(path, callback) {

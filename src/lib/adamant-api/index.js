@@ -3,7 +3,7 @@ import { Base64 } from 'js-base64'
 
 import { Transactions, Delegates, MessageType } from '@/lib/constants'
 import utils from '@/lib/adamant'
-import client from '@/lib/adamant-api-client'
+import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
 import { restoreState } from '@/lib/idb/state'
 import { i18n } from '@/i18n'
@@ -17,11 +17,11 @@ Queue.configure(Promise)
 const queue = new Queue(1, Infinity)
 
 /** @type {{privateKey: Buffer, publicKey: Buffer}} */
-let myKeypair = { }
+let myKeypair = {}
 let myAddress = null
 
 /** Lists cryptos for which addresses are currently being stored to the KVS */
-const pendingAddresses = { }
+const pendingAddresses = {}
 export const TX_CHUNK_SIZE = 25
 
 /**
@@ -29,7 +29,7 @@ export const TX_CHUNK_SIZE = 25
  * @param {number} type transaction type
  * @returns {{type: number, senderId: string, senderPublicKey: string, timestamp: number}}
  */
-function newTransaction (type) {
+function newTransaction(type) {
   return {
     type,
     amount: 0,
@@ -44,7 +44,7 @@ function newTransaction (type) {
  * @param {number} timeDelta server endpoint time delta
  * @returns {object}
  */
-function signTransaction (transaction, timeDelta) {
+function signTransaction(transaction, timeDelta) {
   if (transaction.signature) {
     delete transaction.signature
   }
@@ -55,7 +55,7 @@ function signTransaction (transaction, timeDelta) {
   return transaction
 }
 
-export function unlock (passphrase) {
+export function unlock(passphrase) {
   const hash = utils.createPassphraseHash(passphrase)
   myKeypair = utils.makeKeypair(hash)
   myAddress = utils.getAddressFromPublicKey(myKeypair.publicKey)
@@ -66,16 +66,17 @@ export function unlock (passphrase) {
  * Retrieves current account details, creating it if necessary.
  * @returns {Promise<any>}
  */
-export function getCurrentAccount () {
+export function getCurrentAccount() {
   const publicKey = myKeypair.publicKey.toString('hex')
 
-  return client.get('/api/accounts', { publicKey })
-    .then(response => {
+  return client
+    .get('/api/accounts', { publicKey })
+    .then((response) => {
       if (response.success) {
         return response.account
       } else if (response.error === 'Account not found') {
         // Create account if it does not yet exist
-        return client.post('/api/accounts/new', { publicKey }).then(response => {
+        return client.post('/api/accounts/new', { publicKey }).then((response) => {
           if (response.error) throw new Error(response.error)
           response.account.isNew = true
           return response.account
@@ -84,7 +85,7 @@ export function getCurrentAccount () {
 
       throw new Error(response.error)
     })
-    .then(account => {
+    .then((account) => {
       account.balance = utils.toAdm(account.balance)
       account.unconfirmedBalance = utils.toAdm(account.unconfirmedBalance)
       account.publicKey = myKeypair.publicKey
@@ -96,7 +97,7 @@ export function getCurrentAccount () {
  * Returns `true` if API client is unlocked and ready to process requests. *
  * @returns {Boolean}
  */
-export function isReady () {
+export function isReady() {
   return Boolean(myAddress && myKeypair)
 }
 
@@ -105,28 +106,27 @@ export function isReady () {
  * @param {string} address ADM address
  * @returns {Promise<string>}
  */
-export function getPublicKey (address = '') {
+export function getPublicKey(address = '') {
   const publicKeyCached = store.getters.publicKey(address)
 
   if (publicKeyCached) {
     return Promise.resolve(publicKeyCached)
   }
 
-  return client.get('/api/accounts/getPublicKey', { address })
-    .then(response => {
-      const publicKey = response.publicKey
+  return client.get('/api/accounts/getPublicKey', { address }).then((response) => {
+    const publicKey = response.publicKey
 
-      if (publicKey) {
-        store.commit('setPublicKey', {
-          adamantAddress: address,
-          publicKey
-        })
+    if (publicKey) {
+      store.commit('setPublicKey', {
+        adamantAddress: address,
+        publicKey
+      })
 
-        return publicKey
-      }
+      return publicKey
+    }
 
-      throw new Error(i18n.global.t('chats.no_public_key'))
-    })
+    throw new Error(i18n.global.t('chats.no_public_key'))
+  })
 }
 
 /**
@@ -147,12 +147,11 @@ export function getPublicKey (address = '') {
  * }} params
  * @returns {Promise<{success: boolean, transactionId: string}>}
  */
-export function sendMessage (params) {
+export function sendMessage(params) {
   return getPublicKey(params.to)
-    .then(publicKey => {
-      const text = typeof params.message === 'string'
-        ? params.message
-        : JSON.stringify(params.message)
+    .then((publicKey) => {
+      const text =
+        typeof params.message === 'string' ? params.message : JSON.stringify(params.message)
       const encoded = utils.encodeMessage(text, publicKey, myKeypair.privateKey)
       const chat = {
         message: encoded.message,
@@ -168,7 +167,8 @@ export function sendMessage (params) {
       return client.post('/api/chats/process', (endpoint) => {
         return { transaction: signTransaction(transaction, endpoint.timeDelta) }
       })
-    }).catch(reason => {
+    })
+    .catch((reason) => {
       return reason
     })
 }
@@ -178,7 +178,7 @@ export function sendMessage (params) {
  * @param {string} to recipient address
  * @param {object} payload message payload
  */
-export function sendSpecialMessage (to, payload) {
+export function sendSpecialMessage(to, payload) {
   return sendMessage({ to, message: payload, type: MessageType.RICH_CONTENT_MESSAGE })
 }
 
@@ -188,7 +188,7 @@ export function sendSpecialMessage (to, payload) {
  * @param {any} value value to store
  * @returns {Promise<{success: boolean}>}
  */
-export function storeValue (key, value, encode = false) {
+export function storeValue(key, value, encode = false) {
   if (encode) {
     const encoded = utils.encodeValue(value, myKeypair.privateKey)
     value = JSON.stringify(encoded)
@@ -201,7 +201,7 @@ export function storeValue (key, value, encode = false) {
   })
 }
 
-function tryDecodeStoredValue (value) {
+function tryDecodeStoredValue(value) {
   let json = null
   try {
     json = JSON.parse(value)
@@ -229,7 +229,7 @@ function tryDecodeStoredValue (value) {
  * @param {number} records if > 1, returns array of KVS transactions
  * @returns {Promise<any>}
  */
-export function getStored (key, ownerAddress, records = 1) {
+export function getStored(key, ownerAddress, records = 1) {
   if (!ownerAddress) {
     ownerAddress = myAddress
   }
@@ -241,7 +241,7 @@ export function getStored (key, ownerAddress, records = 1) {
     limit: records
   }
 
-  return client.get('/api/states/get', params).then(response => {
+  return client.get('/api/states/get', params).then((response) => {
     let value = null
 
     if (response.success && Array.isArray(response.transactions)) {
@@ -266,7 +266,7 @@ export function getStored (key, ownerAddress, records = 1) {
  * @param {number} amount amount of ADM to send
  * @returns {Promise<{success: boolean, transactionId: string}>}
  */
-export function sendTokens (to, amount) {
+export function sendTokens(to, amount) {
   const transaction = newTransaction(Transactions.SEND)
   transaction.amount = utils.prepareAmount(amount)
   transaction.recipientId = to
@@ -276,42 +276,49 @@ export function sendTokens (to, amount) {
   })
 }
 
-export function getDelegates (limit, offset) {
+export function getDelegates(limit, offset) {
   return client.get('/api/delegates', { limit, offset })
 }
 
-export function getDelegatesWithVotes (address) {
+export function getDelegatesWithVotes(address) {
   return client.get('/api/accounts/delegates', { address })
 }
 
-export function getDelegatesCount () {
+export function getDelegatesCount() {
   return client.get('/api/delegates/count')
 }
 
-export function checkUnconfirmedTransactions () {
+export function checkUnconfirmedTransactions() {
   return client.get('/api/transactions/unconfirmed')
 }
 
-export function voteForDelegates (votes) {
+export function voteForDelegates(votes) {
   let transaction = newTransaction(Transactions.VOTE)
-  transaction = Object.assign({
-    asset: { votes: votes },
-    recipientId: myAddress,
-    amount: 0
-  }, transaction)
-  return client.post('/api/accounts/delegates', (endpoint) => signTransaction(transaction, endpoint.timeDelta))
+  transaction = Object.assign(
+    {
+      asset: { votes: votes },
+      recipientId: myAddress,
+      amount: 0
+    },
+    transaction
+  )
+  return client.post('/api/accounts/delegates', (endpoint) =>
+    signTransaction(transaction, endpoint.timeDelta)
+  )
 }
 
-export function getNextForgers () {
+export function getNextForgers() {
   return client.get('/api/delegates/getNextForgers', { limit: Delegates.ACTIVE_DELEGATES })
 }
 
-export function getBlocks () {
+export function getBlocks() {
   return client.get('/api/blocks?orderBy=height:desc&limit=100')
 }
 
-export function getForgedByAccount (accountPublicKey) {
-  return client.get('/api/delegates/forging/getForgedByAccount', { generatorPublicKey: accountPublicKey })
+export function getForgedByAccount(accountPublicKey) {
+  return client.get('/api/delegates/forging/getForgedByAccount', {
+    generatorPublicKey: accountPublicKey
+  })
 }
 
 /**
@@ -322,7 +329,7 @@ export function getForgedByAccount (accountPublicKey) {
  * @param {*} address user address for `crypto`
  * @returns {Promise<boolean>}
  */
-export function storeCryptoAddress (crypto, address) {
+export function storeCryptoAddress(crypto, address) {
   const canProceed = crypto && address && isReady() && !pendingAddresses[crypto]
   if (!canProceed) return Promise.resolve(false)
 
@@ -331,22 +338,21 @@ export function storeCryptoAddress (crypto, address) {
 
   // Don't store crypto address twice, check it first in KVS
   return getStored(key, myAddress, 20)
-    .then(stored => {
+    .then((stored) => {
       // It may be empty array: no addresses stored yet for this crypto
       if (stored) {
         stored = parseCryptoAddressesKVStxs(stored, crypto)
       }
-      return (stored && stored.mainAddress)
+      return stored && stored.mainAddress
         ? true
-        : storeValue(key, address).then(response => response.success)
-    }
-    )
+        : storeValue(key, address).then((response) => response.success)
+    })
     .then(
-      success => {
+      (success) => {
         delete pendingAddresses[crypto]
         return success
       },
-      error => {
+      (error) => {
         console.warn(`Failed to store crypto address for ${key}`, error)
         delete pendingAddresses[crypto]
         return false
@@ -359,7 +365,7 @@ export function storeCryptoAddress (crypto, address) {
  * @param {{type: number, from: number, to: number}} options specifies height range
  * @returns {Promise<{success: boolean, transactions: Array}>}
  */
-export function getTransactions (options = { }) {
+export function getTransactions(options = {}) {
   const query = {
     inId: myAddress,
     limit: TX_CHUNK_SIZE
@@ -390,14 +396,15 @@ export function getTransactions (options = { }) {
  * @param {number} returnAsset 1 - Populate `asset` property; 0 - Leave `asset` empty
  * @returns {Promise<{id: string, height: number, amount: number}>}
  */
-export function getTransaction (id, returnAsset = 0) {
+export function getTransaction(id, returnAsset = 0) {
   const query = { id, returnAsset }
-  return client.get('/api/transactions/get', query)
-    .then(response => {
+  return client
+    .get('/api/transactions/get', query)
+    .then((response) => {
       if (response.success) return response
       return client.get('/api/transactions/unconfirmed/get', query)
     })
-    .then(response => response.transaction || null)
+    .then((response) => response.transaction || null)
 }
 
 /**
@@ -407,7 +414,7 @@ export function getTransaction (id, returnAsset = 0) {
  * @param {string} orderBy Can be: `asc` || `desc`
  * @returns {Promise<{count: number, transactions: Array}>}
  */
-export function getChats (from = 0, offset = 0, orderBy = 'desc') {
+export function getChats(from = 0, offset = 0, orderBy = 'desc') {
   const params = {
     // returnAsset: 1,
     // types: '0,8',
@@ -426,27 +433,29 @@ export function getChats (from = 0, offset = 0, orderBy = 'desc') {
 
   // Doesn't return ADM direct transfer transactions, only messages and in-chat transfers
   // https://github.com/Adamant-im/adamant/wiki/API-Specification#get-chat-transactions
-  return client.get('/api/chats/get/', params).then(response => {
+  return client.get('/api/chats/get/', params).then((response) => {
     const { count, transactions } = response
 
-    const promises = transactions.map(transaction => {
-      const promise = (isStringEqualCI(transaction.recipientId, myAddress))
+    const promises = transactions.map((transaction) => {
+      const promise = isStringEqualCI(transaction.recipientId, myAddress)
         ? Promise.resolve(transaction.senderPublicKey)
         : queue.add(() => getPublicKey(transaction.recipientId))
 
       return promise
-        .then(key => {
+        .then((key) => {
           if (key) return decodeChat(transaction, key)
 
-          console.warn(`Cannot decode tx ${transaction.id}: no public key for account ${transaction.recipientId}`)
+          console.warn(
+            `Cannot decode tx ${transaction.id}: no public key for account ${transaction.recipientId}`
+          )
           return null
         })
-        .catch(err => console.warn('Failed to parse chat message', { transaction, err }))
+        .catch((err) => console.warn('Failed to parse chat message', { transaction, err }))
     })
 
-    return Promise.all(promises).then(decoded => ({
+    return Promise.all(promises).then((decoded) => ({
       count,
-      transactions: decoded.filter(v => v)
+      transactions: decoded.filter((v) => v)
     }))
   })
 }
@@ -458,7 +467,7 @@ export function getChats (from = 0, offset = 0, orderBy = 'desc') {
  * @param {Buffer} key sender public key
  * @returns {{senderId: string, asset: object, message: any, isI18n: boolean}}
  */
-export function decodeChat (transaction, key) {
+export function decodeChat(transaction, key) {
   const chat = transaction.asset.chat
 
   // The user may not have a public key, so the message cannot be decoded.
@@ -466,7 +475,7 @@ export function decodeChat (transaction, key) {
   if (!key) {
     transaction.message = 'chats.unable_to_retrieve_no_public_key'
     transaction.i18n = true
-    console.warn('Error while retrieving a message (no partner\'s public key) for Tx', transaction)
+    console.warn("Error while retrieving a message (no partner's public key) for Tx", transaction)
 
     return transaction
   }
@@ -501,7 +510,7 @@ export function decodeChat (transaction, key) {
  * @param {string} senderId message sender address
  * @returns {string}
  */
-function getI18nMessage (message, senderId) {
+function getI18nMessage(message, senderId) {
   // At the beginning of the project we used to send auto-generated welcome messages to the new users.
   // These messages have i18n codes as their content and known senders listed below.
   // P.S. I hate this function, but there's no way to get rid of it now.
@@ -524,7 +533,7 @@ function getI18nMessage (message, senderId) {
  * @param {string} Passphrase
  * @return Promise<string> User address
  */
-export function loginOrRegister (passphrase) {
+export function loginOrRegister(passphrase) {
   try {
     unlock(passphrase)
   } catch (e) {
@@ -540,9 +549,9 @@ export function loginOrRegister (passphrase) {
  * @param {any} store
  * @returns {Promise} Encrypted password
  */
-export function loginViaPassword (password, store) {
+export function loginViaPassword(password, store) {
   return encryptPassword(password)
-    .then(encryptedPassword => {
+    .then((encryptedPassword) => {
       store.commit('setPassword', encryptedPassword)
 
       return restoreState(store)
@@ -556,11 +565,10 @@ export function loginViaPassword (password, store) {
         return Promise.reject(e)
       }
 
-      return getCurrentAccount()
-        .then(account => ({
-          ...account,
-          passphrase
-        }))
+      return getCurrentAccount().then((account) => ({
+        ...account,
+        passphrase
+      }))
     })
 }
 
@@ -571,7 +579,7 @@ export function loginViaPassword (password, store) {
  * @param {any} params
  * @returns {Promise}
  */
-export async function getChatRooms (address, params) {
+export async function getChatRooms(address, params) {
   const defaultParams = {
     orderBy: 'timestamp:desc',
     limit: 25,
@@ -583,10 +591,17 @@ export async function getChatRooms (address, params) {
     ...params
   })
 
-  const messages = chats.flatMap(chat => {
-    const partner = chat.lastTransaction.senderId === address
-      ? { publicKey: chat.lastTransaction.recipientPublicKey, address: chat.lastTransaction.recipientId }
-      : { publicKey: chat.lastTransaction.senderPublicKey, address: chat.lastTransaction.senderId }
+  const messages = chats.flatMap((chat) => {
+    const partner =
+      chat.lastTransaction.senderId === address
+        ? {
+            publicKey: chat.lastTransaction.recipientPublicKey,
+            address: chat.lastTransaction.recipientId
+          }
+        : {
+            publicKey: chat.lastTransaction.senderPublicKey,
+            address: chat.lastTransaction.senderId
+          }
 
     if (partner.address && partner.publicKey) {
       store.commit('setPublicKey', {
@@ -624,37 +639,74 @@ export async function getChatRooms (address, params) {
  * @param {any} params
  * @returns {Promise}
  */
-export async function getChatRoomMessages (address1, address2, params) {
+export async function getChatRoomMessages(address1, address2, paramsArg, recursive = false) {
   const defaultParams = {
     orderBy: 'timestamp:desc',
     limit: 25
   }
 
-  const { count, participants, messages } = await client.get(`/api/chatrooms/${address1}/${address2}`, {
+  const params = {
     ...defaultParams,
-    ...params
-  })
-
-  const decodedMessages = messages.flatMap(message => {
-    const publicKey = message.senderId === address1
-      ? message.recipientPublicKey
-      : message.senderPublicKey
-
-    try {
-      if (message.type === 0) {
-        return [message]
-      }
-
-      return [decodeChat(message, publicKey)]
-    } catch (err) {
-      console.warn('Failed to parse chat message', { message, err })
-      return []
-    }
-  })
-
-  return {
-    count,
-    participants,
-    messages: decodedMessages
+    ...paramsArg
   }
+
+  let allDecodedMessages = []
+  let lastOffset = params.offset
+  const limit = params.limit
+
+  const loadMessages = async (offset) => {
+    const { participants, messages } = await client.get(`/api/chatrooms/${address1}/${address2}`, {
+      ...defaultParams,
+      offset,
+      limit
+    })
+    lastOffset += messages.length
+
+    if (messages.length === 0) {
+      return {
+        participants,
+        messages: allDecodedMessages,
+        lastOffset
+      }
+    }
+
+    const decodedMessages = messages.flatMap((message) => {
+      const publicKey =
+        message.senderId === address1 ? message.recipientPublicKey : message.senderPublicKey
+
+      try {
+        if (message.type === 0) {
+          return [message]
+        }
+
+        return [decodeChat(message, publicKey)]
+      } catch (err) {
+        console.warn('Failed to parse chat message', { message, err })
+        return []
+      }
+    })
+    allDecodedMessages = [...allDecodedMessages, ...decodedMessages]
+
+    if (recursive) {
+      const countMessages = allDecodedMessages.reduce((acc, curr) => {
+        if (typeof curr.message === 'object' && curr.message.reactto_id) {
+          return acc
+        }
+
+        return acc + 1
+      }, 0) // reactions are excluded
+
+      if (countMessages <= limit) {
+        return loadMessages(lastOffset)
+      }
+    }
+
+    return {
+      participants,
+      messages: allDecodedMessages,
+      lastOffset
+    }
+  }
+
+  return loadMessages(lastOffset)
 }

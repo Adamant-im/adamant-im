@@ -1,4 +1,4 @@
-import { MessageType } from '@/lib/constants';
+import { MessageType } from '@/lib/constants'
 
 export function cryptoTransferAsset({ cryptoSymbol, amount, hash, comments, text_fallback }) {
   const asset = {
@@ -26,5 +26,12 @@ export function replyWithCryptoTransferAsset(replyToId, transferPayload) {
   return {
     replyto_id: replyToId,
     reply_message: cryptoTransferAsset(transferPayload)
+  }
+}
+
+export function reactionAsset(reactToId, reactMessage) {
+  return {
+    reactto_id: reactToId,
+    react_message: reactMessage
   }
 }

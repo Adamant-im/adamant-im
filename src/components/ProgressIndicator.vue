@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="show"
-    class="progress-fog"
-  >
+  <div v-if="show" class="progress-fog">
     <v-progress-circular
       :size="150"
       :stroke="1"
@@ -25,12 +22,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.progress-circular  {
+.progress-circular {
   left: 50%;
   margin: 0px -75px;
   position: fixed;
 }
-.progress-fog  {
+.progress-fog {
   background: rgba(0, 0, 0, 0.3);
   height: 100%;
   left: 0;

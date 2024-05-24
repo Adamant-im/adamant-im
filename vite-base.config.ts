@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import wasm from 'vite-plugin-wasm'
+import topLevelAwait from 'vite-plugin-top-level-await'
 import path from 'path'
 import autoprefixer from 'autoprefixer'
 import inject from '@rollup/plugin-inject'
@@ -11,6 +13,8 @@ import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlist
 
 export default defineConfig({
   plugins: [
+    wasm(),
+    topLevelAwait(),
     vue(),
     commonjs(),
     inject({
@@ -22,6 +26,11 @@ export default defineConfig({
   css: {
     postcss: {
       plugins: [autoprefixer()]
+    },
+    preprocessorOptions: {
+      scss: {
+        includePaths: ['./src']
+      }
     }
   },
   resolve: {
