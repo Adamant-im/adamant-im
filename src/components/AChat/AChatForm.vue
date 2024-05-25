@@ -16,9 +16,12 @@
       max-rows="10"
       variant="underlined"
       density="compact"
+      base-color="primary"
       color="primary"
       v-on="listeners"
       :autofocus="isDesktopDevice"
+      @focusin="isInputFocused = true"
+      @focusout="isInputFocused = false"
     >
       <template #prepend-inner>
         <chat-emojis
@@ -83,7 +86,8 @@ export default {
     message: '',
     emojiPickerOpen: false,
     botCommandIndex: null,
-    botCommandSelectionMode: false
+    botCommandSelectionMode: false,
+    isInputFocused: false
   }),
   computed: {
     isDesktopDevice: () => !isMobile(),
@@ -156,7 +160,7 @@ export default {
     onKeyCommand: function (event) {
       if (event.ctrlKey && event.shiftKey && event.code === 'Digit1') {
         this.openElement()
-      } else if (event.code === 'ArrowUp' || event.code === 'ArrowDown') {
+      } else if (this.isInputFocused && (event.code === 'ArrowUp' || event.code === 'ArrowDown')) {
         this.selectCommand(event.code)
         event.preventDefault()
       } else if (event.key.length === 1) {
@@ -221,7 +225,8 @@ export default {
         if (this.message.startsWith('/')) {
           this.$store.commit('botCommands/addCommand', {
             partnerId: this.partnerId,
-            command: this.message
+            command: this.message.trim(),
+            timestamp: Date.now()
           })
         }
         this.$emit('message', this.message)
@@ -230,6 +235,8 @@ export default {
           message: this.message,
           partnerId: this.partnerId
         })
+        this.botCommandIndex = null
+        this.botCommandSelectionMode = false
       } else {
         this.$emit('error', error)
       }
@@ -259,7 +266,7 @@ export default {
       if (this.botCommandIndex === null) {
         if (direction === 'ArrowUp') {
           this.botCommandIndex = maxIndex
-          this.message = commands[this.botCommandIndex] || ''
+          this.message = commands[this.botCommandIndex]?.command || ''
         }
         return
       }
@@ -267,14 +274,14 @@ export default {
       if (direction === 'ArrowUp') {
         if (this.botCommandIndex > 0) {
           this.botCommandIndex--
-          this.message = commands[this.botCommandIndex] || ''
+          this.message = commands[this.botCommandIndex]?.command || ''
         }
         return
       }
 
       if (this.botCommandIndex < maxIndex) {
         this.botCommandIndex++
-        this.message = commands[this.botCommandIndex] || ''
+        this.message = commands[this.botCommandIndex]?.command || ''
       }
     }
   }

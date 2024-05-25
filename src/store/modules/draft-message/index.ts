@@ -31,11 +31,17 @@ const mutations: MutationTree<DraftState> = {
   },
 
   deleteReplyTold(state, payload: { partnerId: string; replyToId: string }) {
-    delete state.drafts[payload.partnerId].replyToId
+    const draft = state.drafts[payload.partnerId]
+    if (draft) {
+      delete draft.replyToId
+    }
   },
 
   deleteMessage(state, payload: { partnerId: string; message: string }) {
-    delete state.drafts[payload.partnerId].message
+    const draft = state.drafts[payload.partnerId]
+    if (draft) {
+      delete draft.message
+    }
   },
 
   reset(state) {

@@ -114,6 +114,7 @@
     "@types/dompurify": "^3.0.5",
     "@types/emoji-mart": "^3.0.14",
     "@types/eslint": "^8.56.6",
+    "@types/lodash": "^4.17.0",
     "@types/pbkdf2": "^3.1.2",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
