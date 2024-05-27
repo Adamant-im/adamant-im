@@ -1,13 +1,11 @@
 <template>
-  <div v-if="img.length" :class="classes.container">
+  <div :class="classes.container">
     <div :class="classes.containerWithElement">
       <v-img
+        v-if="imageUrl"
         :cover="false"
-        @click="openModal(index)"
-        v-for="(imageUrl, index) in img"
-        :key="index"
         :class="classes.img"
-        :src="imageUrl.content"
+        :src="imageUrl"
         alt="Selected Image"
       >
         <template v-slot:placeholder>
@@ -18,19 +16,12 @@
       </v-img>
     </div>
   </div>
-  <AChatImageModal
-    :images="img"
-    :index="currentIndex"
-    :modal="isModalOpen"
-    v-if="isModalOpen"
-    @close="closeModal"
-    @update:modal="closeModal"
-  />
 </template>
 
-<script>
-import AChatImageModal from './AChatImageModal.vue'
-import { defineComponent, ref } from 'vue'
+<script lang="ts">
+import { defineComponent, ref, PropType, onMounted } from 'vue'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { useStore } from 'vuex'
 
 const className = 'a-chat-file'
 const classes = {
@@ -42,33 +33,50 @@ const classes = {
 
 export default defineComponent({
   props: {
-    img: {
-      type: Array,
+    transaction: {
+      type: Object as PropType<NormalizedChatMessageTransaction>,
       required: true
+    },
+    img: {
+      type: Object
     }
   },
-  components: {
-    AChatImageModal
-  },
-  setup() {
-    const currentIndex = ref(0)
-    const isModalOpen = ref(false)
+  components: {},
+  setup(props) {
+    const store = useStore()
+    const imageUrl = ref('')
 
-    const openModal = (index) => {
-      currentIndex.value = index
-      isModalOpen.value = true
+    const getFileFromStorage = async () => {
+      const myAddress = store.state.address
+
+      const cid = props.img?.id
+      const fileName = props.img?.name
+      const fileType = props.img?.type
+      const nonce = props.img?.nonce
+
+      const publicKey =
+        props.transaction.senderId === myAddress
+          ? props.transaction.recipientPublicKey
+          : props.transaction.senderPublicKey
+      imageUrl.value = await store.dispatch('attachment/getAttachmentUrl', {
+        cid,
+        publicKey,
+        nonce
+      })
+      if (!!fileName && !!fileType) {
+        // TODO: resolve MIME-type
+        // downloadFile(data, fileName, '')
+      }
     }
 
-    const closeModal = () => {
-      isModalOpen.value = false
-    }
+    onMounted(() => {
+      getFileFromStorage()
+    })
 
     return {
       classes,
-      currentIndex,
-      isModalOpen,
-      openModal,
-      closeModal
+      getFileFromStorage,
+      imageUrl
     }
   }
 })

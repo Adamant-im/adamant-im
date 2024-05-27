@@ -8,10 +8,10 @@
           :class="`${className}__btn-close`"
           @click="closeModal"
         ></v-btn>
-        <p :class="`${className}__number-of-img`">{{ slide + 1 }} of {{ images.length }}</p>
+        <p :class="`${className}__number-of-img`">{{ slide + 1 }} of {{ files.length }}</p>
         <v-carousel v-model="slide" :class="`${className}__carousel`" hide-delimiters>
-          <v-carousel-item v-for="(item, i) in images" :key="i">
-            <v-img :class="`${className}__modal-img`" :src="item.content" alt="Image" />
+          <v-carousel-item v-for="(item, i) in files" :key="i">
+            <AChatImageModalItem :transaction="transaction" :file="item" />
           </v-carousel-item>
         </v-carousel>
       </div>
@@ -19,34 +19,58 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { ref, computed, onMounted, PropType } from 'vue'
+import AChatImageModalItem from './AChatImageModalItem.vue'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+
 export default {
   props: {
-    images: Array,
-    index: Number,
+    transaction: {
+      type: Object as PropType<NormalizedChatMessageTransaction>,
+      required: true
+    },
+    files: {
+      type: Object,
+      required: true
+    },
+    index: {
+      type: Number,
+      required: true
+    },
     modal: Boolean
   },
-  emits: ['close', 'update:modal'],
-  data: () => ({
-    slide: null
-  }),
-  mounted() {
-    this.slide = this.index
+  components: {
+    AChatImageModalItem
   },
-  computed: {
-    className: () => 'modal',
-    show: {
+  emits: ['close', 'update:modal'],
+  setup(props, { emit }) {
+    const slide = ref(0)
+
+    onMounted(() => {
+      slide.value = props.index
+    })
+
+    const className = computed(() => 'modal')
+
+    const show = computed({
       get() {
-        return this.modal
+        return props.modal
       },
       set(value) {
-        this.$emit('update:modal', value)
+        emit('update:modal', value)
       }
+    })
+
+    const closeModal = () => {
+      emit('close')
     }
-  },
-  methods: {
-    closeModal() {
-      this.$emit('close')
+
+    return {
+      slide,
+      className,
+      show,
+      closeModal
     }
   }
 }

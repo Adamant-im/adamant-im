@@ -2,6 +2,7 @@ import { MutationTree, GetterTree, ActionTree } from 'vuex'
 import { RootState } from '@/store/types'
 import { AttachmentsState } from '@/store/modules/attachment/types.ts'
 import { AttachmentApi } from '@/lib/attachment-api'
+import { store } from '@/store'
 
 const state = (): AttachmentsState => ({
   attachments: {}
@@ -11,6 +12,11 @@ const mutations: MutationTree<AttachmentsState> = {
   setAttachments(state, attachments) {
     // TODO: Poor realization
     state.attachments = attachments
+  },
+
+  setAttachment(state, { сid, url }) {
+    state.attachments = { ...state.attachments, [сid]: url }
+    console.log(state.attachments)
   },
 
   reset(state) {
@@ -36,16 +42,39 @@ const actions: ActionTree<AttachmentsState, RootState> = {
     }
   },
   getAttachment(
-    state,
+    _context,
     { cid, publicKey, nonce }: { cid: string; publicKey: Uint8Array; nonce: string }
   ) {
     return attachmentApi?.getFile(cid, nonce, publicKey)
   },
-  uploadAttachment(
+  async getAttachmentUrl(
     state,
     { cid, publicKey, nonce }: { cid: string; publicKey: Uint8Array; nonce: string }
   ) {
-    return attachmentApi?.getFile(cid, nonce, publicKey)
+    console.log(state.state)
+    if (state.state.attachments[cid]) {
+      return state.state.attachments[cid]
+    } else {
+      try {
+        const fileData = await attachmentApi?.getFile(cid, nonce, publicKey)
+        if (!fileData) {
+          throw new Error('Failed to fetch image')
+        }
+
+        const blob = new Blob([fileData], { type: 'application/octet-stream' })
+        const url = URL.createObjectURL(blob)
+        if (fileData !== undefined) {
+          store.commit('setAttachment', { cid, url })
+        }
+        return url
+      } catch (error) {
+        console.error('Error fetching image:', error)
+        throw error
+      }
+    }
+  },
+  async uploadAttachment(state, { file, publicKey }: { file: Uint8Array; publicKey: Uint8Array }) {
+    return attachmentApi?.uploadFile(file, publicKey)
   },
   resetState(context) {
     context.commit('reset')

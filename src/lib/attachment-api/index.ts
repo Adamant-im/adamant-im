@@ -22,6 +22,9 @@ export class AttachmentApi {
     const { cids } = await ipfs.post(`api/file/upload`, formData, {
       'Content-Type': 'multipart/form-data'
     })
+
+    console.log('File:', file)
+    console.log('Public key:', publicKey)
     return { cids, nonce }
   }
 }

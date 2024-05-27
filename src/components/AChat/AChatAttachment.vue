@@ -70,10 +70,28 @@
             class="a-chat__message-text a-text-regular-enlarged"
             v-text="formattedMessage"
           />
-          <v-btn @click="getFileFromStorage()">CLICK ME</v-btn>
-          <pre>
-            {{ JSON.stringify(transaction, null, 2) }}
-          </pre>
+          <div class="a-chat_file-container">
+            <div class="a-chat_fileContainerWithElement">
+              <AChatFile
+                class="a-chat_file-img"
+                v-for="(img, index) in transaction.asset.files"
+                :key="index"
+                @click="openModal(index)"
+                :transaction="transaction"
+                :img="img"
+                >{{ img }}</AChatFile
+              >
+            </div>
+          </div>
+          <AChatImageModal
+            :files="transaction.asset.files"
+            :transaction="transaction"
+            :index="currentIndex"
+            :modal="isModalOpen"
+            v-if="isModalOpen"
+            @close="closeModal"
+            @update:modal="closeModal"
+          />
         </div>
       </div>
     </div>
@@ -83,7 +101,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+import { ref, computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 
 import { useFormatMessage } from './hooks/useFormatMessage'
@@ -96,11 +114,15 @@ import QuotedMessage from './QuotedMessage.vue'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import formatDate from '@/filters/date'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
+import AChatFile from './AChatFile.vue'
+import AChatImageModal from './AChatImageModal.vue'
 
 export default defineComponent({
   methods: { downloadFile },
   components: {
-    QuotedMessage
+    QuotedMessage,
+    AChatFile,
+    AChatImageModal
   },
   props: {
     transaction: {
@@ -141,26 +163,17 @@ export default defineComponent({
 
     const userId = computed(() => store.state.address)
     const partnerId = usePartnerId(props.transaction)
+    const currentIndex = ref(0)
+    const isModalOpen = ref(false)
 
-    const getFileFromStorage = async () => {
-      //TODO: refactor for each file
-      const cid = props.transaction.asset.files[0].id
-      const fileName = props.transaction.asset.files[0].name
-      const fileType = props.transaction.asset.files[0].type
-      const nonce = props.transaction.asset.files[0].nonce
-      const myAddress = store.state.address
-
-      const publicKey =
-        props.transaction.senderId === myAddress
-          ? props.transaction.recipientPublicKey
-          : props.transaction.senderPublicKey
-      const data = await store.dispatch('attachment/getAttachment', { cid, publicKey, nonce })
-      if (!!data && !!fileName && !!fileType) {
-        // TODO: resolve MIME-type
-        downloadFile(data, fileName, '')
-      }
+    const openModal = (index: number) => {
+      currentIndex.value = index
+      isModalOpen.value = true
     }
 
+    const closeModal = () => {
+      isModalOpen.value = false
+    }
     const showAvatar = computed(() => !isWelcomeChat(partnerId.value))
 
     const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
@@ -183,7 +196,6 @@ export default defineComponent({
       statusIcon,
       isOutgoingMessage,
       formattedMessage,
-      getFileFromStorage,
       showAvatar,
       onMove,
       onSwipeEnd,
@@ -191,8 +203,49 @@ export default defineComponent({
       isStringEqualCI,
       onLongPress,
       formatDate,
-      time
+      time,
+      currentIndex,
+      isModalOpen,
+      openModal,
+      closeModal
     }
   }
 })
 </script>
+<style lang="scss" scoped>
+@import '@/assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+
+.a-chat_file-container {
+  max-width: 230px;
+}
+
+.a-chat_fileContainerWithElement {
+  display: grid;
+  gap: 2px;
+  width: 80vw;
+  max-width: 200px;
+  grid-template-columns: repeat(auto-fit, minmax(98px, 1fr));
+}
+
+.a-chat_file-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.v-theme--light {
+  .a-chat-file {
+    background-color: map-get($adm-colors, 'secondary');
+    color: map-get($adm-colors, 'regular');
+  }
+}
+
+.v-theme--dark {
+  .a-chat-file {
+    background-color: rgba(245, 245, 245, 0.1); // @todo const
+    color: #fff;
+  }
+}
+</style>

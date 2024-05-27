@@ -5,6 +5,7 @@
         <v-icon class="chat-menu__icon" v-bind="props" icon="mdi-plus-circle-outline" size="28" />
       </template>
       <UploadFile
+        :partnerId="partnerId"
         :accept="acceptImage"
         @image-selected="handleImageSelected"
         ref="UploadImageRef"
