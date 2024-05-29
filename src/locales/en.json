@@ -163,10 +163,6 @@
     "active": "Active",
     "fastest_title": "Choose the fastest node",
     "fastest_tooltip": "Requests will be processed with a fastest node",
-    "tabs": {
-      "adm_nodes": "ADM nodes",
-      "coin_nodes": "Coin nodes"
-    },
     "label": "Type",
     "host": "Host",
     "inactive": "Inactive",
@@ -176,7 +172,13 @@
     "offline": "Offline",
     "coin": "Coin",
     "ping": "Ping",
+    "service": "Service",
     "socket": "Socket",
+    "tabs": {
+      "adm_nodes": "ADM nodes",
+      "coin_nodes": "Coin nodes",
+      "service_nodes": "Service nodes"
+    },
     "unsupported": "Unsupported",
     "unsupported_reason_protocol": "HTTP is not allowed",
     "unsupported_reason_api_version": "Outdated API version",

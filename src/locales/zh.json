@@ -163,10 +163,6 @@
     "active": "活动",
     "fastest_title": "选择最快的节点",
     "fastest_tooltip": "将使用最快的节点处理请求",
-    "tabs": {
-      "adm_nodes": "ADM节点",
-      "coin_nodes": "硬币节点"
-    },
     "label": "类型",
     "host": "主机",
     "inactive": "Inactive",
@@ -176,7 +172,13 @@
     "offline": "脱机",
     "coin": "硬币",
     "ping": "嗨",
+    "service": "服务",
     "socket": "套接字",
+    "tabs": {
+      "adm_nodes": "ADM节点",
+      "coin_nodes": "硬币节点",
+      "service_nodes": "服务节点"
+    },
     "unsupported": "不受欢迎",
     "unsupported_reason_protocol": "不允许HTTP",
     "unsupported_reason_api_version": "API版本过期",

@@ -1,0 +1,92 @@
+<template>
+  <tr :class="classes.root">
+    <NodeColumn checkbox>
+      <NodeStatusCheckbox :value="active" @change="toggleActiveStatus" />
+    </NodeColumn>
+
+    <NodeColumn align="left">
+      <NodeLabel :label="label" />
+    </NodeColumn>
+
+    <NodeColumn>
+      <NodeUrl :node="node" />
+    </NodeColumn>
+
+    <NodeColumn ping :colspan="isUnsupported ? 2 : 1">
+      <NodeStatus :node="node" />
+    </NodeColumn>
+  </tr>
+</template>
+
+<script lang="ts">
+import { computed, PropType } from 'vue'
+import { useStore } from 'vuex'
+import type { NodeStatusResult } from '@/lib/nodes/abstract.node.ts'
+import type { TNodeLabel } from '@/lib/nodes/constants.ts'
+import NodeUrl from '@/components/nodes/components/NodeUrl.vue'
+import NodeColumn from '@/components/nodes/components/NodeColumn.vue'
+import NodeLabel from '@/components/nodes/components/NodeLabel.vue'
+import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
+import NodeStatusCheckbox from '@/components/nodes/components/NodeStatusCheckbox.vue'
+
+const className = 'nodes-table-item'
+const classes = {
+  root: className,
+  column: `${className}__column`,
+  columnCheckbox: `${className}__column--checkbox`,
+  checkbox: `${className}__checkbox`
+}
+
+export default {
+  components: {
+    NodeColumn,
+    NodeStatus,
+    NodeLabel,
+    NodeUrl,
+    NodeStatusCheckbox
+  },
+  props: {
+    node: {
+      type: Object as PropType<NodeStatusResult>,
+      required: true
+    },
+    label: {
+      type: String as PropType<TNodeLabel>,
+      required: true
+    }
+  },
+  setup(props) {
+    const store = useStore()
+
+    const url = computed(() => props.node.url)
+    const active = computed(() => props.node.active)
+    const isUnsupported = computed(() => props.node.status === 'unsupported_version')
+    const type = computed(() => props.node.label)
+
+    const toggleActiveStatus = () => {
+      store.dispatch('servicesModule/toggle', {
+        type: type.value,
+        url: url.value,
+        active: !active.value
+      })
+      store.dispatch('servicesModule/updateStatus')
+    }
+
+    return {
+      classes,
+      url,
+      active,
+      isUnsupported,
+      toggleActiveStatus
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.nodes-table-item {
+}
+
+.nodeName {
+}
+</style>

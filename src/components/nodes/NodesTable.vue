@@ -2,6 +2,7 @@
   <div :class="classes.root">
     <v-tabs v-model="tab" bg-color="transparent">
       <v-tab value="adm">{{ $t('nodes.tabs.adm_nodes') }}</v-tab>
+      <v-tab value="services">{{ $t('nodes.tabs.service_nodes') }}</v-tab>
       <v-tab value="coins">{{ $t('nodes.tabs.coin_nodes') }}</v-tab>
     </v-tabs>
 
@@ -9,13 +10,29 @@
       <v-window-item value="adm">
         <AdmNodesTable />
       </v-window-item>
-
+      <v-window-item value="services">
+        <ServiceNodesTable />
+      </v-window-item>
       <v-window-item value="coins">
         <CoinNodesTable />
       </v-window-item>
     </v-window>
     <div class="ml-6">
       <div v-if="tab === 'coins'">
+        <v-checkbox
+          v-model="preferFastestCoinNodeOption"
+          :label="$t('nodes.fastest_title')"
+          :class="classes.checkbox"
+          class="mt-4"
+          color="grey darken-1"
+          hide-details
+        />
+        <div class="a-text-explanation-enlarged">
+          {{ $t('nodes.fastest_tooltip') }}
+        </div>
+        <div>&nbsp;<br />&nbsp;</div>
+      </div>
+      <div v-else-if="tab === 'services'">
         <v-checkbox
           v-model="preferFastestCoinNodeOption"
           :label="$t('nodes.fastest_title')"
@@ -72,6 +89,7 @@ import { defineComponent, ref, computed } from 'vue'
 import { AdmNodesTable } from './adm'
 import { CoinNodesTable } from './coins'
 import { useStore } from 'vuex'
+import ServiceNodesTable from '@/components/nodes/services/ServiceNodesTable.vue'
 
 const className = 'nodes-table'
 const classes = {
@@ -80,10 +98,11 @@ const classes = {
   checkbox: `${className}__checkbox`
 }
 
-type Tab = 'adm' | 'coins'
+type Tab = 'adm' | 'coins' | 'services'
 
 export default defineComponent({
   components: {
+    ServiceNodesTable,
     AdmNodesTable,
     CoinNodesTable
   },

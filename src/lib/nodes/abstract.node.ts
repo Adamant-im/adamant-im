@@ -1,12 +1,7 @@
 import { getHealthCheckInterval } from './utils/getHealthcheckConfig'
 import { TNodeLabel } from './constants'
-import { HealthcheckInterval, NodeKind, NodeStatus, NodeType } from './types'
+import { HealthcheckInterval, HealthcheckResult, NodeKind, NodeStatus, NodeType } from './types'
 import { nodesStorage } from './storage'
-
-type HealthcheckResult = {
-  height: number
-  ping: number
-}
 
 type HttpProtocol = 'http:' | 'https:'
 type WsProtocol = 'ws:' | 'wss:'

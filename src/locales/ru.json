@@ -164,10 +164,6 @@
     "active": "Активная",
     "fastest_title": "Подключаться к самому быстрому узлу",
     "fastest_tooltip": "Запросы будут обрабатываться самым быстрым узлом",
-    "tabs": {
-      "adm_nodes": "ADM ноды",
-      "coin_nodes": "Coin ноды"
-    },
     "label": "Тип",
     "host": "Хост",
     "inactive": "Неактивная",
@@ -177,7 +173,13 @@
     "offline": "Недоступна",
     "coin": "Coin",
     "ping": "Пинг",
+    "service": "Сервис",
     "socket": "Сокеты",
+    "tabs": {
+      "adm_nodes": "ADM ноды",
+      "coin_nodes": "Coin ноды",
+      "service_nodes": "Сервис ноды"
+    },
     "unsupported": "Не поддерживается",
     "unsupported_reason_protocol": "HTTP не поддерживается",
     "unsupported_reason_api_version": "API версия устарела",
