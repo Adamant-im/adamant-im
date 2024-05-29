@@ -9,7 +9,7 @@ export type TNodeLabel =
   | 'dash-node'
   | 'lsk-node'
   | 'lsk-indexer'
-  | 'rates-info'
+  | 'rate'
 
 type KebabToCamelCase<S extends string> = S extends `${infer T}-${infer U}`
   ? `${T}${Capitalize<KebabToCamelCase<U>>}`
@@ -38,5 +38,5 @@ export const NODE_LABELS: NodeLabels = {
   DashNode: 'dash-node',
   LskNode: 'lsk-node',
   LskIndexer: 'lsk-indexer',
-  RatesInfo: 'rates-info'
+  Rate: 'rate'
 }

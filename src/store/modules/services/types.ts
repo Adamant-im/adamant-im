@@ -3,4 +3,4 @@ export type ServicesState = {
   useFastestService: true
 }
 
-export type AvailableService = 'rates-info'
+export type AvailableService = 'rate'
