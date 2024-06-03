@@ -573,19 +573,23 @@ const actions = {
    * Push array of messages and sort by senderId.
    * @param {Message[]} messages Array of messages
    */
-  pushMessages({ commit, rootState }, messages) {
-    messages.forEach((message) => {
+  pushMessages({ commit, rootState, dispatch }, messages) {
+    const normalizedMessages = messages.map(normalizeMessage)
+    dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
+    normalizedMessages.forEach((message) => {
       commit('pushMessage', {
-        message: normalizeMessage(message),
+        message: message,
         userId: rootState.address
       })
     })
   },
 
-  unshiftMessages({ commit, rootState }, messages) {
-    messages.forEach((message) => {
+  unshiftMessages({ commit, rootState, dispatch }, messages) {
+    const normalizedMessages = messages.map(normalizeMessage)
+    dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
+    normalizedMessages.forEach((message) => {
       commit('pushMessage', {
-        message: normalizeMessage(message),
+        message: message,
         userId: rootState.address,
 
         unshift: true

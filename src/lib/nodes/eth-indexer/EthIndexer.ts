@@ -7,19 +7,13 @@ import { NODE_LABELS } from '@/lib/nodes/constants'
  * ETH Indexer API
  * https://github.com/Adamant-im/ETH-transactions-storage
  */
-export class EthIndexer extends Node {
-  client: AxiosInstance
-
+export class EthIndexer extends Node<AxiosInstance> {
   constructor(url: string) {
     super(url, 'eth', 'service', NODE_LABELS.EthIndexer)
+  }
 
-    this.client = axios.create({ baseURL: url })
-
-    // Don't fetch node info if user disabled it
-    if (this.active) {
-      void this.fetchServiceInfo()
-    }
-    void this.startHealthcheck()
+  protected buildClient(): AxiosInstance {
+    return axios.create({ baseURL: this.url })
   }
 
   /**

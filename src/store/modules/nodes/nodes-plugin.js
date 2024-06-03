@@ -1,7 +1,6 @@
 import { nodes } from '@/lib/nodes'
 
 export default (store) => {
-  // initial nodes state
   for (const [nodeType, client] of Object.entries(nodes)) {
     client.getNodes().forEach((status) => store.commit('nodes/status', { status, nodeType }))
 
@@ -9,20 +8,30 @@ export default (store) => {
       store.commit('nodes/status', { status, nodeType })
     })
   }
-  store.commit('nodes/useFastest', nodes.adm.useFastest)
+  store.commit('nodes/useFastestAdmNode', nodes.adm.useFastest)
+  store.commit('nodes/useFastestCoinNode', nodes.btc.useFastest)
 
   store.subscribe((mutation) => {
     const { type, payload } = mutation
 
-    if (type === 'nodes/useFastest') {
-      nodes.adm.setUseFastest(!!mutation.payload)
+    if (type === 'nodes/useFastestAdmNode') {
+      nodes.adm.setUseFastest(!!payload)
+    }
+
+    if (type === 'nodes/useFastestCoinNode') {
+      nodes.btc.setUseFastest(!!payload)
+      nodes.dash.setUseFastest(!!payload)
+      nodes.doge.setUseFastest(!!payload)
+      nodes.eth.setUseFastest(!!payload)
+      nodes.lsk.setUseFastest(!!payload)
     }
 
     if (type === 'nodes/toggle') {
-      const newStatus = nodes.adm.toggleNode(payload.url, payload.active)
+      const selectedNodeType = payload.type
+      const newStatus = nodes[selectedNodeType].toggleNode(payload.url, payload.active)
 
       if (newStatus) {
-        store.commit('nodes/status', { status: newStatus, nodeType: 'adm' })
+        store.commit('nodes/status', { status: newStatus, nodeType: selectedNodeType })
       }
     }
   })

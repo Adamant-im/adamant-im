@@ -20,13 +20,17 @@ import navigatorOnline from './plugins/navigatorOnline'
 import socketsPlugin from './plugins/socketsPlugin'
 import partnersModule from './modules/partners'
 import admModule from './modules/adm'
+import botCommandsModule from './modules/bot-commands'
+import bitcoinModule from './modules/btc'
+import dashModule from './modules/dash'
+import delegatesModule from './modules/delegates'
 import dogeModule from './modules/doge'
 import lskModule from './modules/lsk'
-import dashModule from './modules/dash'
-import bitcoinModule from './modules/btc'
 import nodesModule from './modules/nodes'
-import delegatesModule from './modules/delegates'
+import walletsModule from './modules/wallets'
 import nodesPlugin from './modules/nodes/nodes-plugin'
+import walletsPersistencePlugin from './modules/wallets/wallets-plugin'
+import botCommandsPlugin from './modules/bot-commands/bot-commands-plugin'
 import draftMessage from '@/store/modules/draft-message'
 import snackbar from './modules/snackbar'
 import language from './modules/language'
@@ -48,12 +52,12 @@ const UPDATE_BALANCE_INTERVAL = 10000
  */
 const store = {
   state: () => ({
+    IDBReady: false, // set `true` when state has been saved in IDB
     address: '',
     balance: 0,
     balanceStatus: FetchStatus.Loading,
     passphrase: '',
     password: '',
-    IDBReady: false, // set `true` when state has been saved in IDB
     publicKeys: {}
   }),
   getters: {
@@ -135,6 +139,7 @@ const store = {
     },
     logout({ dispatch }) {
       dispatch('reset')
+      dispatch('wallets/initWalletsSymbols')
       dispatch('draftMessage/resetState', null, { root: true })
       PendingTxStore.clear()
     },
@@ -231,6 +236,7 @@ const store = {
     partners: partnersModule, // Partners: display names, crypto addresses and so on
     delegates: delegatesModule, // Voting for delegates screen
     nodes: nodesModule, // ADAMANT nodes
+    botCommands: botCommandsModule,
     snackbar,
     draftMessage,
     language,
@@ -238,7 +244,8 @@ const store = {
     options,
     identicon,
     notification,
-    rate
+    rate,
+    wallets: walletsModule // Wallets order and visibility
   }
 }
 
@@ -252,7 +259,9 @@ registerVuexPlugins(storeInstance, [
   localStoragePlugin,
   indexedDbPlugin,
   navigatorOnline,
-  socketsPlugin
+  socketsPlugin,
+  botCommandsPlugin,
+  walletsPersistencePlugin
 ])
 
 export { store } // for tests

@@ -7,7 +7,7 @@
     :elevation="0"
   >
     <!-- Wallet -->
-    <v-btn to="/home">
+    <v-btn v-if="walletShouldBeVisible" to="/home">
       <v-icon icon="mdi-wallet" />
       <span>{{ $t('bottom.wallet_button') }}</span>
     </v-btn>
@@ -72,6 +72,11 @@ export default defineComponent({
       return pages.indexOf(currentPage)
     }
     const numOfNewMessages = computed(() => store.getters['chat/totalNumOfNewMessages'])
+
+    const walletShouldBeVisible = computed(() => {
+      return !!store.getters['wallets/getVisibleSymbolsCount']
+    })
+
     watch(route, () => {
       currentPageIndex.value = getCurrentPageIndex()
     })
@@ -83,7 +88,8 @@ export default defineComponent({
       pages,
       currentPageIndex,
       getCurrentPageIndex,
-      numOfNewMessages
+      numOfNewMessages,
+      walletShouldBeVisible
     }
   }
 })

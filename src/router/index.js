@@ -4,18 +4,20 @@ import navigationGuard from '@/router/navigationGuard'
 import IsLogged from '@/middlewares/isLogged'
 import AuthMiddleware from '@/middlewares/auth'
 import DocumentTitle from '@/middlewares/title'
-import Chats from '@/views/Chats.vue'
 import Chat from '@/views/Chat.vue'
+import Chats from '@/views/Chats.vue'
+import ExportKeys from '@/views/ExportKeys.vue'
+import Home from '@/views/Home.vue'
+import Login from '@/views/Login.vue'
+import Nodes from '@/views/Nodes.vue'
+import Options from '@/views/Options.vue'
 import SendFunds from '@/views/SendFunds.vue'
 import Transaction from '@/views/transactions/Transaction.vue'
 import Transactions from '@/views/Transactions.vue'
-import Options from '@/views/Options.vue'
-import Home from '@/views/Home.vue'
 import Votes from '@/views/Votes.vue'
-import Nodes from '@/views/Nodes.vue'
-import Login from '@/views/Login.vue'
-import ExportKeys from '@/views/ExportKeys.vue'
+import Wallets from '@/views/Wallets.vue'
 import Vibro from '@/views/Vibro.vue'
+import WalletGuard from '@/middlewares/walletGuard'
 
 /**
  * @type {Readonly<import("vue-router").RouteRecordRaw[]>}
@@ -29,8 +31,8 @@ const routes = [
       requiresAuth: false,
       layout: 'no-container',
       scrollPosition: {
-        x: 0,
-        y: 0
+        left: 0,
+        top: 0
       }
     }
   },
@@ -41,6 +43,19 @@ const routes = [
     meta: {
       requiresAuth: true,
       layout: 'no-container'
+    }
+  },
+  {
+    path: '/options/wallets',
+    name: 'Wallets',
+    component: Wallets,
+    meta: {
+      requiresAuth: true,
+      layout: 'no-container',
+      scrollPosition: {
+        left: 0,
+        top: 0
+      }
     }
   },
   {
@@ -88,8 +103,8 @@ const routes = [
       layout: 'no-container',
       showNavigation: true,
       scrollPosition: {
-        x: 0,
-        y: 0
+        left: 0,
+        top: 0
       }
     }
   },
@@ -115,8 +130,8 @@ const routes = [
       containerNoPadding: true,
       showNavigation: true,
       scrollPosition: {
-        x: 0,
-        y: 0
+        left: 0,
+        top: 0
       }
     }
   },
@@ -136,10 +151,12 @@ const routes = [
     component: Home,
     meta: {
       requiresAuth: true,
+      requiresWallets: true,
       layout: 'toolbar',
       showNavigation: true,
       containerNoPadding: true
-    }
+    },
+    beforeEnter: WalletGuard
   },
   {
     path: '/',
@@ -166,7 +183,7 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     if (to.params.txId) {
       // Don't restore scroll for Transaction details screen
-      return { x: 0, y: 0 }
+      return { left: 0, top: 0 }
     } else if (savedPosition) {
       return savedPosition
     } else if (to.meta.scrollPosition) {

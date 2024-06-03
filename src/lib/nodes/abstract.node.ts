@@ -98,7 +98,7 @@ export abstract class Node<C = unknown> {
 
   timer?: NodeJS.Timeout
   healthCheckInterval: HealthcheckInterval = 'normal'
-  abstract client: C
+  client: C
 
   constructor(
     url: string,
@@ -119,6 +119,14 @@ export abstract class Node<C = unknown> {
     this.version = version
     this.hasSupportedProtocol = !(this.protocol === 'http:' && appProtocol === 'https:')
     this.active = nodesStorage.isActive(url)
+
+    this.client = this.buildClient()
+
+    if (this.active) {
+      void this.fetchNodeVersion()
+    }
+
+    void this.startHealthcheck()
   }
 
   async startHealthcheck() {
@@ -176,10 +184,12 @@ export abstract class Node<C = unknown> {
       active: this.active,
       outOfSync: this.outOfSync,
       hasMinNodeVersion: this.hasMinNodeVersion(),
+      displayVersion: this.displayVersion(),
       hasSupportedProtocol: this.hasSupportedProtocol,
       socketSupport: this.socketSupport,
       height: this.height,
       status: this.getNodeStatus(),
+      type: this.type,
       label: this.label
     }
   }
@@ -208,6 +218,7 @@ export abstract class Node<C = unknown> {
   }
 
   protected abstract checkHealth(): Promise<HealthcheckResult>
+  protected abstract buildClient(): C
 
   /**
    * Enables/disables a node.
@@ -218,6 +229,16 @@ export abstract class Node<C = unknown> {
     nodesStorage.saveActive(this.url, active)
 
     return this.getStatus()
+  }
+
+  displayVersion() {
+    return this.version ? `v${this.version}` : ''
+  }
+
+  // This method is not abstract because Not all nodes need version checking (For example: indexers) or some nodes receive version information from healthcheck requests.
+  // Therefore, it is overridden only in the case when a separate request is needed to obtain the version.
+  protected fetchNodeVersion() {
+    return Promise.resolve()
   }
 }
 
