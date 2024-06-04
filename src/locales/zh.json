@@ -77,7 +77,8 @@
     "you_reacted": "反应",
     "partner_reacted": "已反应",
     "you_removed_reaction": "已删除反应",
-    "partner_removed_reaction": "已删除的反应"
+    "partner_removed_reaction": "已删除的反应",
+    "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
   },
   "common": {
     "cancel": "取消",

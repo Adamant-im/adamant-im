@@ -77,7 +77,8 @@
     "you_reacted": "Отреагировали",
     "partner_reacted": "Отреагировал",
     "you_removed_reaction": "Убрали реакцию",
-    "partner_removed_reaction": "Убрал реакцию"
+    "partner_removed_reaction": "Убрал реакцию",
+    "unsupported_transaction_type": "Данный тип транзакции не поддерживается. Пожалуйста, обновите страницу, либо установите последнюю версию приложения."
   },
   "common": {
     "cancel": "Отменить",
