@@ -4,21 +4,23 @@ import { ref, onMounted, onUnmounted } from 'vue'
 export function useIsMobile() {
   const isMobile = ref(false)
 
-  function isMobileCheck() {
+  const checkIsMobile = () => {
     const browser = detect()
     const isMobileDevice =
       browser && browser.os
-        ? ['android', 'ios', 'blackberry', 'windows mobile'].includes(browser.os.toLowerCase())
+        ? ['android os', 'ios', 'blackberry os', 'windows mobile'].includes(
+            browser.os.toLowerCase()
+          )
         : false
     return isMobileDevice || window.innerWidth < 450
   }
 
-  function handleResize() {
-    isMobile.value = isMobileCheck()
+  const handleResize = () => {
+    isMobile.value = checkIsMobile()
   }
 
   onMounted(() => {
-    isMobile.value = isMobileCheck()
+    isMobile.value = checkIsMobile()
     window.addEventListener('resize', handleResize)
   })
 
