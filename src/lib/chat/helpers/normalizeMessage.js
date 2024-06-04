@@ -90,12 +90,18 @@ export function normalizeMessage(abstract) {
       transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
       transaction.status = TS.UNKNOWN
     }
-  } else {
+  } else if (typeof abstract.message === 'string') {
     // ADM transaction or Message
     transaction.message = abstract.message || ''
     transaction.hash = abstract.id // adm transaction id (hash)
 
     abstract.amount > 0 ? (transaction.type = 'ADM') : (transaction.type = 'message')
+  } else {
+    // Unsupported transaction type. May require updating the PWA version.
+    transaction.message = 'chats.unsupported_transaction_type'
+    transaction.i18n = true
+    transaction.hash = abstract.id // adm transaction id (hash)
+    transaction.type = 'message'
   }
 
   return transaction
