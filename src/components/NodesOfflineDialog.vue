@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="showDialog" width="500">
+  <v-dialog v-model="showDialog" width="500" :class="className">
     <v-card>
       <v-card-title class="a-text-header">
         {{ t('chats.nodes_offline_dialog.title') }}
@@ -7,16 +7,25 @@
 
       <v-divider class="a-divider" />
 
-      <v-card-text>
-        <span v-html="t('chats.nodes_offline_dialog.text', { coin: nodeType.toUpperCase() })" />
+      <v-card-text :class="`${className}__card-text`">
+        <div
+          :class="`${className}__disclaimer a-text-regular-enlarged`"
+          v-html="t('chats.nodes_offline_dialog.text', { coin: nodeType.toUpperCase() })"
+        ></div>
       </v-card-text>
 
-      <v-card-actions>
-        <v-spacer />
-        <v-btn to="/options/nodes" variant="text" prepend-icon="mdi-open-in-new">{{
-          t('chats.nodes_offline_dialog.open_nodes_button')
-        }}</v-btn>
-      </v-card-actions>
+      <v-col cols="12" :class="[`${className}__btn-block`, 'text-center']">
+        <v-btn
+          :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
+          to="/options/nodes"
+          variant="text"
+          prepend-icon="mdi-open-in-new"
+        >
+          <div :class="`${className}__btn-text`">
+            {{ t('chats.nodes_offline_dialog.open_nodes_button') }}
+          </div>
+        </v-btn>
+      </v-col>
     </v-card>
   </v-dialog>
 </template>
@@ -49,6 +58,7 @@ export default {
 
     const nodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
     const isOnline = computed<boolean>(() => store.getters['isOnline'])
+    const className = 'nodes-offline-dialog'
 
     const offlineNodesStatus = computed(() => {
       return {
@@ -82,8 +92,41 @@ export default {
       nodes,
       classes,
       offlineNodesStatus,
-      showDialog
+      showDialog,
+      className
     }
   }
 }
 </script>
+<style lang="scss" scoped>
+@import 'vuetify/_settings.scss';
+@import '@/assets/styles/settings/_colors.scss';
+
+.nodes-offline-dialog {
+  &__card-text {
+    padding: 16px !important;
+  }
+  &__disclaimer {
+    margin-top: 10px;
+  }
+  &__btn {
+    margin-top: 15px;
+    margin-bottom: 20px;
+  }
+  &__btn-icon {
+    margin-right: 8px;
+  }
+  &__btn-block {
+    padding: 0 0 30px 0;
+    text-align: center;
+  }
+}
+
+.v-theme--dark {
+  .nodes-offline-dialog {
+    &__disclaimer {
+      color: map-get($shades, 'white');
+    }
+  }
+}
+</style>
