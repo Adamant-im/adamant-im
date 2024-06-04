@@ -78,7 +78,7 @@
     "partner_reacted": "Reacted",
     "you_removed_reaction": "Removed reaction",
     "partner_removed_reaction": "Removed reaction",
-    "unsupported_transaction_type": "This type of transaction is not supported. Please update the app to the latest version."
+    "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
   },
   "common": {
     "cancel": "Cancel",
