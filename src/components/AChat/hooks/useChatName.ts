@@ -4,7 +4,14 @@ import { useStore } from 'vuex'
 
 import { isAdamantChat } from '@/lib/chat/meta/utils'
 
-export function useChatName(address: MaybeRef<string>) {
+/**
+ * Returns the chat name of the partner.
+ * If no name is assigned, returns an empty string.
+ *
+ * @param address - The address of the partner.
+ * @param fallbackToAddress - If true, fallback to address if no name was assigned.
+ */
+export function useChatName(address: MaybeRef<string>, fallbackToAddress = false) {
   const store = useStore()
   const { t } = useI18n()
 
@@ -15,7 +22,17 @@ export function useChatName(address: MaybeRef<string>) {
   })
 
   const name = computed(() => {
-    return isAdamantChat(address) ? t(chatName.value) : chatName.value
+    const addressValue = unref(address)
+
+    if (isAdamantChat(addressValue)) {
+      return t(chatName.value)
+    }
+
+    if (fallbackToAddress) {
+      return chatName.value || addressValue
+    }
+
+    return chatName.value
   })
 
   return name
