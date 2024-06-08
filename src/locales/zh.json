@@ -82,7 +82,8 @@
       "title": "Nodes are offline",
       "text": "All {coin} nodes appear to be offline or possibly disabled. To continue use the Messenger please review the <strong>Nodes list</strong> and enable any nodes that are found to be disabled.",
       "open_nodes_button": "Open Nodes page"
-    }
+    },
+    "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
   },
   "common": {
     "cancel": "取消",

@@ -161,8 +161,7 @@ export default {
       if (event.ctrlKey && event.shiftKey && event.code === 'Digit1') {
         this.openElement()
       } else if (this.isInputFocused && (event.code === 'ArrowUp' || event.code === 'ArrowDown')) {
-        this.selectCommand(event.code)
-        event.preventDefault()
+        this.selectCommand(event)
       } else if (event.key.length === 1) {
         this.botCommandSelectionMode = false
         this.botCommandIndex = null
@@ -254,13 +253,15 @@ export default {
     focus() {
       this.$refs.messageTextarea.focus()
     },
-    selectCommand(direction) {
+    selectCommand(event) {
+      const direction = event.code
       if (!this.message) {
         this.botCommandSelectionMode = true
       }
       if (!this.botCommandSelectionMode) {
         return
       }
+      event.preventDefault()
       const commands = this.$store.getters['botCommands/getCommandsHistory'](this.partnerId)
       const maxIndex = commands.length > 0 ? commands.length - 1 : 0
       if (this.botCommandIndex === null) {
