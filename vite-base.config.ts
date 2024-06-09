@@ -22,7 +22,7 @@ export default defineConfig({
       Buffer: ['buffer', 'Buffer']
     }),
     deferScripsPlugin(),
-    preloadCSSPlugin()
+    preloadCSSPlugin(),
     excludeScreenshotsPlugin()
   ],
   css: {
