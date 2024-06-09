@@ -10,6 +10,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
 import { excludeBip39Wordlists } from './vite-config/rollup/excludeBip39Wordlists'
+import { excludeScreenshotsPlugin} from './vite-config/plugins/excludeScreenshotsPlugin'
 
 export default defineConfig({
   plugins: [
@@ -22,6 +23,7 @@ export default defineConfig({
     }),
     deferScripsPlugin(),
     preloadCSSPlugin()
+    excludeScreenshotsPlugin()
   ],
   css: {
     postcss: {
