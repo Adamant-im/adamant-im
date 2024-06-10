@@ -5,7 +5,6 @@ files:
   - "!**/node_modules/**"
   - "dist-electron"
   - "package.json"
-  - "!dist-electron/screenshots/**/*"
 
 directories:
   output: './release-electron'

@@ -7,9 +7,6 @@ import path from 'path'
 export function excludeScreenshotsPlugin () {
   return {
     name: 'exclude-screenshots-plugin',
-    resolveId (source) {
-      return source === 'virtual-module' ? source : null
-    },
     writeBundle (outputOptions, inputOptions) {
       const outDir = outputOptions.dir;
       const screenshotsDir = path.resolve(outDir, 'screenshots');
