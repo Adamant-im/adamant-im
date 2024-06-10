@@ -41,6 +41,10 @@ yarn-error.log*
 # Vercel
 .vercel
 
+# Capacitor
+capacitor.env
+capacitor/app.keystore
+
 # adamant-schema
 src/lib/schema/*
 !src/lib/schema/schema.json

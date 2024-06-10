@@ -21,6 +21,10 @@
     "electron:build": "vue-tsc && vite build --config electron-vite.config.ts && electron-builder",
     "electron:dev": "vite dev --config electron-vite.config.ts",
     "electron:serve": "vite preview --config electron-vite.config.ts",
+    "android:run": "cap sync && cap run android",
+    "android:open": "cap sync && cap open android",
+    "android:build": "node scripts/capacitor/build-android.mjs",
+    "android:generate-assets": "npx @capacitor/assets generate --android --assetPath capacitor/assets --iconBackgroundColor '#FFF' --iconBackgroundColorDark '#000' --splashBackgroundColor '#FFF' --splashBackgroundColorDark '#000'",
     "https": "vite preview --https",
     "test": "vitest",
     "coverage": "vitest run --coverage",
@@ -30,6 +34,8 @@
     "postinstall": "electron-builder install-app-deps && npm run schema:generate"
   },
   "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
     "@emoji-mart/data": "^1.1.2",
     "@liskhq/lisk-codec": "^0.5.0",
     "@liskhq/lisk-cryptography": "4.1.0",
@@ -103,6 +109,8 @@
     "web3-utils": "^4.2.1"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.0.0",
     "@commitlint/cli": "^19.2.1",
     "@commitlint/config-conventional": "^19.1.0",
     "@electron/notarize": "^2.2.0",
@@ -124,6 +132,7 @@
     "@vue/test-utils": "^2.4.5",
     "autoprefixer": "^10.4.18",
     "cross-env": "^7.0.3",
+    "dotenv": "^16.3.1",
     "electron": "^28.1.2",
     "electron-builder": "^24.9.1",
     "electron-devtools-installer": "^3.2.0",
