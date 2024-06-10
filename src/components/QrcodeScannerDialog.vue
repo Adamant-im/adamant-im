@@ -106,7 +106,7 @@ export default {
   watch: {
     cameras(cameras) {
       if (cameras.length > 0) {
-        const cameraKey = cameras.length === 2 ? 1 : 0
+        const cameraKey = cameras.length >= 2 ? 1 : 0
         this.currentCamera = this.cameras[cameraKey].deviceId
 
         this.cameraStatus = 'active'
