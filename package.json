@@ -34,8 +34,8 @@
     "postinstall": "electron-builder install-app-deps && npm run schema:generate"
   },
   "dependencies": {
-    "@capacitor/android": "^6.0.0",
-    "@capacitor/core": "^6.0.0",
+    "@capacitor/android": "^6.1.0",
+    "@capacitor/core": "^6.1.0",
     "@emoji-mart/data": "^1.1.2",
     "@liskhq/lisk-codec": "^0.5.0",
     "@liskhq/lisk-cryptography": "4.1.0",
@@ -110,7 +110,7 @@
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
-    "@capacitor/cli": "^6.0.0",
+    "@capacitor/cli": "^6.1.0",
     "@commitlint/cli": "^19.2.1",
     "@commitlint/config-conventional": "^19.1.0",
     "@electron/notarize": "^2.3.2",
