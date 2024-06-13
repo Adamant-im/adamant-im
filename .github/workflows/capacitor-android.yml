@@ -14,21 +14,15 @@ env:
   ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
   ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
   ANDROID_KEYSTORE_ALIAS_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
-  ANDROID_RELEASE_TYPE: 'APK' # or AAB
+  ANDROID_RELEASE_TYPE: 'AAB' # or AAB
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: androidsdk/android-24
 
     steps:
       - name: Checkout repository 🛎️
         uses: actions/checkout@v3
-
-      - name: Setup Java ☕
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
 
       - name: Setup Node version 🍀
         uses: actions/setup-node@v3
