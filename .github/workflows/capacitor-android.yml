@@ -54,6 +54,9 @@ jobs:
           base64 -d android/keystore.base64 > android/app.keystore
           rm android/keystore.base64
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./android/gradlew
+
       - name: Build and Sign Android App 🛠️
         run: |
           npx cap sync
