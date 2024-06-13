@@ -30,11 +30,6 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          cmdline-tools-version: 8512546 # Android 7.0
-
       - name: Setup Node version 🍀
         uses: actions/setup-node@v3
         with:
@@ -62,8 +57,7 @@ jobs:
             --keystorepass $ANDROID_KEYSTORE_PASSWORD \
             --keystorealias $ANDROID_KEYSTORE_ALIAS \
             --keystorealiaspass $ANDROID_KEYSTORE_ALIAS_PASSWORD \
-            --androidreleasetype $ANDROID_RELEASE_TYPE \
-            --signing-type apksigner
+            --androidreleasetype $ANDROID_RELEASE_TYPE
 
       - name: Save artifacts 💾
         uses: actions/upload-artifact@v3
