@@ -67,7 +67,7 @@ jobs:
         with:
           name: android-release-app
           path: |
-            android/app/build/outputs/apk/release/*
+            android/app/build/outputs/bundle/release/*
 
       - name: Clean Keystore file 🧹
         run: |
