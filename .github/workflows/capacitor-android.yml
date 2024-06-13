@@ -29,6 +29,9 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Setup Node version 🍀
         uses: actions/setup-node@v3
         with:
