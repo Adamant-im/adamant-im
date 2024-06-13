@@ -18,7 +18,8 @@ env:
 
 jobs:
   release:
-    runs-on: androidsdk/android-24
+    runs-on: ubuntu-latest
+    container: androidsdk/android-24
 
     steps:
       - name: Checkout repository 🛎️
