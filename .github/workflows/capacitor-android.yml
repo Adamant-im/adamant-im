@@ -14,7 +14,7 @@ env:
   ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
   ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
   ANDROID_KEYSTORE_ALIAS_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
-  ANDROID_RELEASE_TYPE: 'APK' # APK or AAB
+  ANDROID_RELEASE_TYPE: 'AAB' # APK or AAB
 
 jobs:
   release:
@@ -60,8 +60,7 @@ jobs:
             --keystorepass $ANDROID_KEYSTORE_PASSWORD \
             --keystorealias $ANDROID_KEYSTORE_ALIAS \
             --keystorealiaspass $ANDROID_KEYSTORE_ALIAS_PASSWORD \
-            --androidreleasetype $ANDROID_RELEASE_TYPE \
-            --signing-type apksigner
+            --androidreleasetype $ANDROID_RELEASE_TYPE
 
       - name: Save artifacts 💾
         uses: actions/upload-artifact@v3
