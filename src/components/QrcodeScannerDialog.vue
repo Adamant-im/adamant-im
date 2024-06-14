@@ -21,8 +21,8 @@
           <div :class="classes.camera">
             <video ref="videoElement" />
             <v-menu v-if="cameras.length > 1" offset-y :class="classes.cameraSelect">
-              <template #activator>
-                <v-btn variant="text" color="white">
+              <template #activator="{ props }">
+                <v-btn variant="text" color="white" v-bind="props">
                   <v-icon size="x-large" icon="mdi-camera" />
                 </v-btn>
               </template>
@@ -110,7 +110,6 @@ export default defineComponent({
     const currentCamera = ref<string | null>(null)
     const scannerControls = ref<IScannerControls | null>(null)
 
-    // computed
     const show = computed<boolean>({
       get() {
         return props.modelValue
@@ -120,7 +119,6 @@ export default defineComponent({
       }
     })
 
-    // methods
     const init = async () => {
       return initScanner()
         .then(() => {
@@ -160,7 +158,6 @@ export default defineComponent({
       show.value = false
     }
 
-    // watchers
     watch(cameras, (cameras: MediaDeviceInfo[]) => {
       if (cameras.length > 0) {
         const cameraKey = cameras.length >= 2 ? 1 : 0
@@ -177,12 +174,11 @@ export default defineComponent({
         scanner.value &&
         (await scanner.value.start(currentCamera.value as string, (result: Result) => {
           if (result) {
-            onScan(result.getText())
+            onScan(result.getText()) // text is private field for zxing/browser
           }
         }))
     })
 
-    // lifecycle components
     onMounted(() => {
       init()
     })
@@ -196,6 +192,7 @@ export default defineComponent({
       cameraStatus,
       classes,
       currentCamera,
+      props,
       show,
       videoElement
     }
