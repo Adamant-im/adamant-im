@@ -1,6 +1,6 @@
 <template>
-  <v-dialog v-model="show" :class="className" width="500">
-    <v-card :class="className">
+  <v-dialog v-model="show" :class="classes.root" width="500">
+    <v-card :class="classes.root">
       <!-- Camera Waiting -->
       <v-row
         v-if="cameraStatus === 'waiting'"
@@ -18,9 +18,9 @@
       <!-- Camera Active -->
       <v-row v-show="cameraStatus === 'active'" no-gutters>
         <v-col cols="12">
-          <div :class="`${className}__camera`">
-            <video ref="camera" />
-            <v-menu v-if="cameras.length > 1" offset-y :class="`${className}__camera-select`">
+          <div :class="classes.camera">
+            <video ref="videoElement" />
+            <v-menu v-if="cameras.length > 1" offset-y :class="classes.cameraSelect">
               <template #activator>
                 <v-btn variant="text" color="white">
                   <v-icon size="x-large" icon="mdi-camera" />
@@ -75,10 +75,23 @@
   </v-dialog>
 </template>
 
-<script>
-import { Scanner } from '@/lib/zxing'
+<script lang="ts">
+import { computed, defineComponent, onMounted, onBeforeUnmount, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useStore } from 'vuex'
+import { Result } from '@zxing/library'
+import { IScannerControls } from '@zxing/browser'
 
-export default {
+import { Scanner } from '@/lib/zxing/index'
+
+const className = 'qrcode-scanner-dialog'
+const classes = {
+  root: className,
+  camera: `${className}__camera`,
+  cameraSelect: `${className}__camera-select`
+}
+
+export default defineComponent({
   props: {
     modelValue: {
       type: Boolean,
@@ -86,81 +99,108 @@ export default {
     }
   },
   emits: ['scan', 'update:modelValue'],
-  data: () => ({
-    cameraStatus: 'waiting', // can be: waiting, active, nocamera
-    scanner: null,
-    currentCamera: null,
-    cameras: []
-  }),
-  computed: {
-    className: () => 'qrcode-scanner-dialog',
-    show: {
+  setup(props, { emit }) {
+    const store = useStore()
+    const { t } = useI18n()
+
+    const videoElement = ref<HTMLVideoElement | null>(null)
+    const cameraStatus = ref('waiting') // can be: waiting, active, nocamera
+    const scanner = ref<Scanner | null>(null)
+    const cameras = ref<MediaDeviceInfo[]>([])
+    const currentCamera = ref<string | null>(null)
+    const scannerControls = ref<IScannerControls | null>(null)
+
+    // computed
+    const show = computed<boolean>({
       get() {
-        return this.modelValue
+        return props.modelValue
       },
       set(value) {
-        this.$emit('update:modelValue', value)
+        emit('update:modelValue', value)
       }
-    }
-  },
-  watch: {
-    cameras(cameras) {
-      if (cameras.length > 0) {
-        const cameraKey = cameras.length >= 2 ? 1 : 0
-        this.currentCamera = this.cameras[cameraKey].deviceId
+    })
 
-        this.cameraStatus = 'active'
-      } else {
-        this.cameraStatus = 'nocamera'
-      }
-    },
-    currentCamera() {
-      this.scanner.start(this.currentCamera).then((content) => this.onScan(content))
-    }
-  },
-  mounted() {
-    this.init()
-  },
-  beforeUnmount() {
-    this.destroyScanner()
-  },
-  methods: {
-    init() {
-      return this.initScanner()
+    // methods
+    const init = async () => {
+      return initScanner()
         .then(() => {
-          return this.getCameras()
+          return getCameras()
         })
         .catch((err) => {
-          this.cameraStatus = 'nocamera'
-          this.$store.dispatch('snackbar/show', {
-            message: this.$t('scan.something_wrong')
+          cameraStatus.value = 'nocamera'
+          store.dispatch('snackbar/show', {
+            message: t('scan.something_wrong')
           })
           console.error(err)
         })
-    },
-    async initScanner() {
-      this.scanner = new Scanner({
-        videoElement: this.$refs.camera
+    }
+
+    const initScanner = async () => {
+      scanner.value = new Scanner({
+        videoElement: videoElement.value as HTMLVideoElement
       })
 
-      return this.scanner.init()
-    },
-    destroyScanner() {
-      // First check if the scanner was initialized.
+      return scanner.value.init()
+    }
+
+    const getCameras = async () => {
+      cameras.value = await (scanner.value as Scanner).getCameras()
+    }
+
+    const destroyScanner = () => {
+      // First check if the scanner controls was initialized.
       // Needed when an unexpected error occurred,
       // or when the dialog closes before initialization.
-      return this.scanner && this.scanner.stop()
-    },
-    async getCameras() {
-      this.cameras = await this.scanner.getCameras()
-    },
-    onScan(content) {
-      this.$emit('scan', content)
-      this.destroyScanner()
-      this.show = false
+      return scannerControls.value && scannerControls.value.stop()
+    }
+
+    const onScan = (content: string) => {
+      emit('scan', content)
+      destroyScanner()
+      show.value = false
+    }
+
+    // watchers
+    watch(cameras, (cameras: MediaDeviceInfo[]) => {
+      if (cameras.length > 0) {
+        const cameraKey = cameras.length >= 2 ? 1 : 0
+        currentCamera.value = cameras[cameraKey].deviceId
+
+        cameraStatus.value = 'active'
+      } else {
+        cameraStatus.value = 'nocamera'
+      }
+    })
+
+    watch(currentCamera, async () => {
+      scannerControls.value =
+        scanner.value &&
+        (await scanner.value.start(currentCamera.value as string, (result: Result) => {
+          if (result) {
+            onScan(result.getText())
+          }
+        }))
+    })
+
+    // lifecycle components
+    onMounted(() => {
+      init()
+    })
+
+    onBeforeUnmount(() => {
+      destroyScanner()
+    })
+
+    return {
+      cameras,
+      cameraStatus,
+      classes,
+      currentCamera,
+      show,
+      videoElement
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
