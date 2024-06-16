@@ -1,6 +1,6 @@
 import { getRealTimestamp } from './utils/getRealTimestamp'
 import { isNumeric } from '@/lib/numericHelpers'
-import { TransactionStatus as TS } from '@/lib/constants'
+import { TransactionStatus as TS, Transactions } from '@/lib/constants'
 import { KnownCryptos, UnsupportedCryptos } from './constants'
 
 /**
@@ -96,7 +96,7 @@ export function normalizeMessage(abstract) {
       transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
       transaction.status = TS.UNKNOWN
     }
-  } else if (typeof abstract.message === 'string') {
+  } else if (typeof abstract.message === 'string' || abstract.type === Transactions.SEND) {
     // ADM transaction or Message
     transaction.message = abstract.message || ''
     transaction.hash = abstract.id // adm transaction id (hash)
