@@ -91,6 +91,8 @@ const classes = {
   cameraSelect: `${className}__camera-select`
 }
 
+type CameraStatus = 'waiting' | 'active' | 'nocamera'
+
 export default defineComponent({
   props: {
     modelValue: {
@@ -104,7 +106,7 @@ export default defineComponent({
     const { t } = useI18n()
 
     const videoElement = ref<HTMLVideoElement | null>(null)
-    const cameraStatus = ref('waiting') // can be: waiting, active, nocamera
+    const cameraStatus = ref<CameraStatus>('waiting')
     const scanner = ref<Scanner | null>(null)
     const cameras = ref<MediaDeviceInfo[]>([])
     const currentCamera = ref<string | null>(null)
@@ -120,29 +122,21 @@ export default defineComponent({
     })
 
     const init = async () => {
-      return initScanner()
-        .then(() => {
-          return getCameras()
+      try {
+        scanner.value = new Scanner({
+          videoElement: videoElement.value as HTMLVideoElement
         })
-        .catch((err) => {
-          cameraStatus.value = 'nocamera'
-          store.dispatch('snackbar/show', {
-            message: t('scan.something_wrong')
-          })
-          console.error(err)
+
+        scanner.value.init().then((camerasValue: MediaDeviceInfo[]) => {
+          cameras.value = camerasValue
         })
-    }
-
-    const initScanner = async () => {
-      scanner.value = new Scanner({
-        videoElement: videoElement.value as HTMLVideoElement
-      })
-
-      return scanner.value.init()
-    }
-
-    const getCameras = async () => {
-      cameras.value = await (scanner.value as Scanner).getCameras()
+      } catch (error) {
+        cameraStatus.value = 'nocamera'
+        store.dispatch('snackbar/show', {
+          message: t('scan.something_wrong')
+        })
+        console.error(error)
+      }
     }
 
     const destroyScanner = () => {
@@ -172,7 +166,7 @@ export default defineComponent({
     watch(currentCamera, async () => {
       scannerControls.value =
         scanner.value &&
-        (await scanner.value.start(currentCamera.value as string, (result: Result) => {
+        (await scanner.value.start(currentCamera.value as string, (result?: Result) => {
           if (result) {
             onScan(result.getText()) // text is private field for zxing/browser
           }
