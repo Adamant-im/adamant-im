@@ -14,9 +14,7 @@ export class Scanner {
 
     this.codeReader = new BrowserQRCodeReader()
 
-    const cameras = await new (BrowserCodeReader.listVideoInputDevices as any)()
-
-    return cameras
+    return new (BrowserCodeReader.listVideoInputDevices as any)()
   }
 
   async start(deviceId: string, decodeCallback: DecodeContinuouslyCallback) {
