@@ -79,10 +79,9 @@
 import { computed, defineComponent, onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
-import { Result } from '@zxing/library'
 import { IScannerControls } from '@zxing/browser'
 
-import { Scanner } from '@/lib/zxing/index'
+import { Scanner } from '@/lib/zxing'
 
 const className = 'qrcode-scanner-dialog'
 const classes = {
@@ -124,12 +123,11 @@ export default defineComponent({
     const init = async () => {
       try {
         scanner.value = new Scanner({
-          videoElement: videoElement.value as HTMLVideoElement
+          videoElement: videoElement.value!
         })
 
-        scanner.value.init().then((camerasValue: MediaDeviceInfo[]) => {
-          cameras.value = camerasValue
-        })
+        await scanner.value.init()
+        cameras.value = await scanner.value.getCameras()
       } catch (error) {
         cameraStatus.value = 'nocamera'
         store.dispatch('snackbar/show', {
@@ -140,10 +138,7 @@ export default defineComponent({
     }
 
     const destroyScanner = () => {
-      // First check if the scanner controls was initialized.
-      // Needed when an unexpected error occurred,
-      // or when the dialog closes before initialization.
-      return scannerControls.value && scannerControls.value.stop()
+      return scannerControls.value?.stop()
     }
 
     const onScan = (content: string) => {
@@ -152,7 +147,7 @@ export default defineComponent({
       show.value = false
     }
 
-    watch(cameras, (cameras: MediaDeviceInfo[]) => {
+    watch(cameras, (cameras) => {
       if (cameras.length > 0) {
         const cameraKey = cameras.length >= 2 ? 1 : 0
         currentCamera.value = cameras[cameraKey].deviceId
@@ -163,14 +158,14 @@ export default defineComponent({
       }
     })
 
-    watch(currentCamera, async () => {
-      scannerControls.value =
-        scanner.value &&
-        (await scanner.value.start(currentCamera.value as string, (result?: Result) => {
-          if (result) {
-            onScan(result.getText()) // text is private field for zxing/browser
-          }
-        }))
+    watch(currentCamera, () => {
+      if (!currentCamera.value) return
+
+      void scanner.value?.start(currentCamera.value, result => {
+        if (result) {
+          onScan(result.getText()) // text is private field for zxing/browser
+        }
+      })
     })
 
     onMounted(() => {

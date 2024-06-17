@@ -1,6 +1,7 @@
-import { BrowserQRCodeReader, IScannerControls } from '@zxing/browser'
-import { DecodeContinuouslyCallback } from '@zxing/browser/esm/common/DecodeContinuouslyCallback'
+import type { BrowserQRCodeReader, IScannerControls } from '@zxing/browser'
+import { Result } from '@zxing/library'
 
+type DecodeContinuouslyCallback = (result?: Result) => void
 export class Scanner {
   codeReader!: BrowserQRCodeReader
   videoElement: HTMLVideoElement
@@ -19,6 +20,11 @@ export class Scanner {
 
   async start(deviceId: string, decodeCallback: DecodeContinuouslyCallback) {
     return this.codeReader.decodeFromVideoDevice(deviceId, this.videoElement, decodeCallback)
+  }
+
+  async getCameras() {
+    const { BrowserCodeReader } = await import('@zxing/browser')
+    return BrowserCodeReader.listVideoInputDevices()
   }
 
   stop(controls: IScannerControls) {
