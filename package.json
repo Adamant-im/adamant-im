@@ -44,6 +44,7 @@
     "@mdi/font": "^7.4.47",
     "@stablelib/utf8": "^1.0.2",
     "@zxing/browser": "^0.1.5",
+    "@zxing/library": "^0.21.0",
     "assert": "^2.1.0",
     "axios": "^1.6.8",
     "b64-to-blob": "^1.2.19",

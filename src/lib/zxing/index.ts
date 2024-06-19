@@ -1,5 +1,5 @@
 import type { BrowserQRCodeReader, IScannerControls } from '@zxing/browser'
-import { Result } from '@zxing/library'
+import type { Result } from '@zxing/library'
 
 type DecodeContinuouslyCallback = (result?: Result) => void
 export class Scanner {
@@ -11,11 +11,8 @@ export class Scanner {
   }
 
   async init() {
-    const { BrowserCodeReader, BrowserQRCodeReader } = await import('@zxing/browser')
-
+    const { BrowserQRCodeReader } = await import('@zxing/browser')
     this.codeReader = new BrowserQRCodeReader()
-
-    return new (BrowserCodeReader.listVideoInputDevices as any)()
   }
 
   async start(deviceId: string, decodeCallback: DecodeContinuouslyCallback) {
