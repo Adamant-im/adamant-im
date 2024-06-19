@@ -21,7 +21,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node version 🍀
         uses: actions/setup-node@v4
