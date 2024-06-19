@@ -5,7 +5,6 @@ on:
     branches:
       - master
       - dev
-      - fix/capacitor
 
 env:
   GH_TOKEN: ${{ secrets.github_token }}
