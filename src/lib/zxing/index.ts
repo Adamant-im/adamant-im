@@ -21,7 +21,9 @@ export class Scanner {
 
   async getCameras() {
     const { BrowserCodeReader } = await import('@zxing/browser')
-    return BrowserCodeReader.listVideoInputDevices()
+    // wait for camera stream and only after that request a list of input devices
+    const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true })
+    return cameraStream ? BrowserCodeReader.listVideoInputDevices() : []
   }
 
   stop(controls: IScannerControls) {
