@@ -1,8 +1,13 @@
 import type { BrowserQRCodeReader, IScannerControls } from '@zxing/browser'
-import type { Result } from '@zxing/library'
+import type { Exception, Result } from '@zxing/library'
 
-type DecodeContinuouslyCallback = (result?: Result) => void
+type DecodeContinuouslyCallback = (
+  result?: Result,
+  error?: Exception,
+  controls?: IScannerControls
+) => void
 export class Scanner {
+  cameraStream!: MediaStream
   codeReader!: BrowserQRCodeReader
   videoElement: HTMLVideoElement
 
@@ -21,12 +26,14 @@ export class Scanner {
 
   async getCameras() {
     const { BrowserCodeReader } = await import('@zxing/browser')
-    // wait for camera stream and only after that request a list of input devices
-    const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true })
-    return cameraStream ? BrowserCodeReader.listVideoInputDevices() : []
+    // Wait for camera stream and only after that request a list of input devices
+    this.cameraStream = await navigator.mediaDevices.getUserMedia({ video: true })
+    return this.cameraStream ? BrowserCodeReader.listVideoInputDevices() : []
   }
 
   stop(controls: IScannerControls) {
+    // Stop all tracks from the requested media stream before controls stopping
+    this.cameraStream.getVideoTracks().forEach((track) => track.stop())
     controls.stop()
   }
 }

@@ -138,7 +138,8 @@ export default defineComponent({
     }
 
     const destroyScanner = () => {
-      return scannerControls.value?.stop()
+      if (!scannerControls.value) return
+      return scanner.value?.stop(scannerControls.value)
     }
 
     const onScan = (content: string) => {
@@ -161,9 +162,13 @@ export default defineComponent({
     watch(currentCamera, () => {
       if (!currentCamera.value) return
 
-      void scanner.value?.start(currentCamera.value, result => {
+      void scanner.value?.start(currentCamera.value, (result, _, controls) => {
         if (result) {
           onScan(result.getText()) // text is private field for zxing/browser
+        }
+
+        if (controls) {
+          scannerControls.value = controls
         }
       })
     })
