@@ -318,7 +318,7 @@
     "decode_from_image": "从图像中读取QR",
     "error_chat_fee": "要通过聊天发送 {crypto}，您需要 0.001 ADM",
     "error_dust_amount": "无存量--发送更多代币",
-    "recipient_minimum_balance": "收件人必须至少有 0.05 LSK--发送更多令牌",
+    "recipient_minimum_balance": "收件人必须至少有 0.05 KLY--发送更多令牌",
     "error_all_nodes_offline": "所有 {crypto} 节点都已离线，请稍后重试。",
     "error_precision": "精度过高--设置小数位数较少",
     "error_erc20_fee": "您需要｛费｝来支付转会费",

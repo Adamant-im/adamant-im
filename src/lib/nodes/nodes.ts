@@ -3,7 +3,7 @@ import { btc } from './btc'
 import { dash } from './dash'
 import { doge } from './doge'
 import { eth } from './eth'
-import { lsk } from './lsk'
+import { kly } from './kly'
 
 export const nodes = {
   adm,
@@ -11,5 +11,5 @@ export const nodes = {
   dash,
   doge,
   eth,
-  lsk
+  kly
 }

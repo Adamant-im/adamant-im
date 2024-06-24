@@ -22,7 +22,7 @@ export type CoinTransaction = {
   confirmations?: number
 }
 
-export type LskTransaction = CoinTransaction & {
+export type KlyTransaction = CoinTransaction & {
   data: string
   height?: number
   nonce: string

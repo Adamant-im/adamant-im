@@ -433,50 +433,6 @@
     "type": "ERC20",
     "fees": "ethereum"
   },
-  "LSK": {
-    "symbol": "LSK",
-    "name": "Lisk",
-    "qrPrefix": "lisk",
-    "minBalance": 0.05,
-    "regexAddress": "^lsk[a-z2-9]{38}$",
-    "decimals": 8,
-    "nodes": {
-      "list": [
-        {
-          "url": "https://lisknode3.adamant.im",
-          "alt_ip": "http://157.90.229.236:44099"
-        },
-        {
-          "url": "https://lisknode4.adamant.im",
-          "alt_ip": "http://78.47.205.206:44099"
-        },
-        {
-          "url": "https://lisknode5.adamant.im",
-          "alt_ip": "http://38.242.243.29:44099"
-        }
-      ],
-      "healthCheck": {
-        "normalUpdateInterval": 270000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000,
-        "threshold": 5
-      }
-    },
-    "createCoin": true,
-    "cryptoTransferDecimals": 8,
-    "defaultFee": 0.00164,
-    "defaultVisibility": true,
-    "txFetchInfo": {
-      "newPendingInterval": 3000,
-      "oldPendingInterval": 3000,
-      "registeredInterval": 5000,
-      "newPendingAttempts": 15,
-      "oldPendingAttempts": 4
-    },
-    "txConsistencyMaxTime": 60000,
-    "defaultOrdinalLevel": 60,
-    "explorerTx": "https://liskscan.com/transaction/${ID}"
-  },
   "MANA": {
     "symbol": "MANA",
     "name": "Decentraland",

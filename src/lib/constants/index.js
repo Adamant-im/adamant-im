@@ -70,12 +70,12 @@ export const WelcomeMessage = {
 
 export const BTC_BASED = Object.freeze([Cryptos.DOGE, Cryptos.DASH, Cryptos.BTC])
 
-export const LSK_BASED = Object.freeze([Cryptos.LSK])
+export const KLY_BASED = Object.freeze([Cryptos.KLY])
 
 export const INSTANT_SEND = Object.freeze([Cryptos.DASH])
 
 // Some cryptos allows to save public data with a Tx
-export const ALLOW_TEXT_DATA = Object.freeze([Cryptos.LSK])
+export const ALLOW_TEXT_DATA = Object.freeze([Cryptos.KLY])
 
 export const isErc20 = (crypto) => CryptosInfo[crypto].type === 'ERC20'
 
@@ -85,15 +85,15 @@ export const isFeeEstimate = (crypto) => isEthBased(crypto)
 
 export const isBtcBased = (crypto) => BTC_BASED.includes(crypto)
 
-export const isLskBased = (crypto) => LSK_BASED.includes(crypto)
+export const isKlyBased = (crypto) => KLY_BASED.includes(crypto)
 
-export const isSelfTxAllowed = (crypto) => LSK_BASED.includes(crypto) || crypto === Cryptos.ADM
+export const isSelfTxAllowed = (crypto) => KLY_BASED.includes(crypto) || crypto === Cryptos.ADM
 
 export const isInstantSendPossible = (crypto) => INSTANT_SEND.includes(crypto)
 
 export const isTextDataAllowed = (crypto) => ALLOW_TEXT_DATA.includes(crypto)
 
-export const RE_LSK_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
+export const RE_KLY_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
 
 /**
  * These gas limit values are used only for estimate fees for ETH & ERC-20 transfers in the Send tokens form,

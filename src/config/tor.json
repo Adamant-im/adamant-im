@@ -199,7 +199,7 @@
     },
     "services": {
       "list": {
-        "lskService": [
+        "klyService": [
           {
             "url": "https://testnet-service.klayr.xyz"
           }

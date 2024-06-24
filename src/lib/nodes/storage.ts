@@ -23,7 +23,7 @@ const defaultOptions: Options = {
   doge: { useFastest: true },
   dash: { useFastest: true },
   eth: { useFastest: true },
-  lsk: { useFastest: true }
+  kly: { useFastest: true }
 }
 
 const optionsStorage = new TypedStorage(

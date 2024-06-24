@@ -55,7 +55,7 @@ export declare const WelcomeMessage: {
 export declare const test: keyof Cryptos
 
 export declare const BTC_BASED: ReadonlyArray<CryptoSymbol>
-export declare const LSK_BASED: ReadonlyArray<CryptoSymbol>
+export declare const KLY_BASED: ReadonlyArray<CryptoSymbol>
 export declare const INSTANT_SEND: ReadonlyArray<CryptoSymbol>
 export declare const ALLOW_TEXT_DATA: ReadonlyArray<CryptoSymbol>
 
@@ -63,12 +63,12 @@ export declare const isErc20: (crypto: CryptoSymbol) => boolean
 export declare const isEthBased: (crypto: CryptoSymbol) => boolean
 export declare const isFeeEstimate: (crypto: CryptoSymbol) => boolean
 export declare const isBtcBased: (crypto: CryptoSymbol) => boolean
-export declare const isLskBased: (crypto: CryptoSymbol) => boolean
+export declare const isKlyBased: (crypto: CryptoSymbol) => boolean
 export declare const isSelfTxAllowed: (crypto: CryptoSymbol) => boolean
 export declare const isInstantSendPossible: (crypto: CryptoSymbol) => boolean
 export declare const isTextDataAllowed: (crypto: CryptoSymbol) => boolean
 
-export declare const RE_LSK_ADDRESS_LEGACY: RegExp
+export declare const RE_KLY_ADDRESS_LEGACY: RegExp
 
 export declare const DEFAULT_ETH_TRANSFER_GAS_LIMIT: number
 export declare const DEFAULT_ERC20_TRANSFER_GAS_LIMIT: number
