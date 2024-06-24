@@ -16,6 +16,12 @@
         },
         {
           "url": "http://rukehjd2yalzgny7mdjqtzown2mazsaeh4zr7zjdg4l5afkgc3z2kgqd.onion"
+        },
+        {
+          "url": "http://osd7qoluu6akud6b2brxxi3bhidrbx54yqm5swr3rjwjz2cvposigiqd.onion"
+        },
+        {
+          "url": "http://nkacjpsif6wpc6x7qvavyr2vnvqolwnxxl5qciolhqdkzmgy5mgoajyd.onion"
         }
       ],
       "healthCheck": {
@@ -51,7 +57,7 @@
           "url": "http://cc6ibzkfeseuwnmtjc6hlsd44bzg2sr3shbv7n35nj2rk2vm6dmtlnqd.onion"
         },
         {
-          "url": "http://mgplh7en3d6ywsec5h6q3tc6mirsleb5cmlyn6nmp25qrb6gy35nypad.onion"
+          "url": "http://grnpvgtlrfws3424l726td5lctsod3hq2at4lhiasmedpxygbo5u2bqd.onion"
         }
       ],
       "healthCheck": {
@@ -173,5 +179,37 @@
     },
     "explorer": "https://liskscan.com",
     "explorerAddress": "https://liskscan.com/account/${ID}"
+  },
+  "kly": {
+    "explorer": "https://testnet-explorer.klayr.xyz",
+    "explorerTx": "https://testnet-explorer.klayr.xyz/transaction/${ID}",
+    "explorerAddress": "https://testnet-explorer.klayr.xyz/account/${ID}",
+    "nodes": {
+      "list": [
+        {
+          "url": "http://localhost:7000"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 270000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "services": {
+      "list": {
+        "lskService": [
+          {
+            "url": "https://testnet-service.klayr.xyz"
+          }
+        ]
+      },
+      "healthCheck": {
+        "normalUpdateInterval": 330000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000
+      }
+    }
   }
 }

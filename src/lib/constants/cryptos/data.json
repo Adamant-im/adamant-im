@@ -49,16 +49,14 @@
           "alt_ip": "http://46.250.234.248:36666"
         },
         {
-          "url": "https://tegmine.adm.im",
-          "alt_ip": "http://5.104.87.219:36666"
+          "url": "https://tegmine.adm.im"
         },
         {
           "url": "https://tauri.adm.im",
           "alt_ip": "http://154.26.159.245:36666"
         },
         {
-          "url": "https://dschubba.adm.im",
-          "alt_ip": "http://85.239.234.17:36666"
+          "url": "https://dschubba.adm.im"
         }
       ],
       "healthCheck": {
@@ -109,8 +107,8 @@
           "alt_ip": "http://176.9.38.204:44099"
         },
         {
-          "url": "https://btcnode2.adamant.im",
-          "alt_ip": "http://176.9.32.126:44099"
+          "url": "https://btcnode3.adamant.im",
+          "alt_ip": "http://195.201.242.108:44099"
         }
       ],
       "healthCheck": {
@@ -386,6 +384,41 @@
     "mainCoin": "ETH",
     "type": "ERC20",
     "fees": "ethereum"
+  },
+  "KLY": {
+    "symbol": "KLY",
+    "name": "Klayr",
+    "qrPrefix": "klayr",
+    "minBalance": 0.05,
+    "regexAddress": "^kly[a-z2-9]{38}$",
+    "decimals": 8,
+    "nodes": {
+      "list": [
+        {
+          "url": "http://localhost:7000"
+        }
+      ],
+      "healthCheck": {
+        "normalUpdateInterval": 270000,
+        "crucialUpdateInterval": 30000,
+        "onScreenUpdateInterval": 10000,
+        "threshold": 5
+      }
+    },
+    "createCoin": true,
+    "cryptoTransferDecimals": 8,
+    "defaultFee": 0.00164,
+    "defaultVisibility": true,
+    "txFetchInfo": {
+      "newPendingInterval": 3000,
+      "oldPendingInterval": 3000,
+      "registeredInterval": 5000,
+      "newPendingAttempts": 15,
+      "oldPendingAttempts": 4
+    },
+    "txConsistencyMaxTime": 60000,
+    "defaultOrdinalLevel": 60,
+    "explorerTx": "https://testnet-explorer.klayr.xyz/transaction/${ID}"
   },
   "LINK": {
     "symbol": "LINK",
