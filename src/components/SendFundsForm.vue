@@ -188,7 +188,7 @@
 
 <script>
 import { adm } from '@/lib/nodes'
-import lskIndexer from '@/lib/nodes/lsk-indexer'
+import klyIndexer from '@/lib/nodes/kly-indexer'
 import { AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { PendingTransactionError } from '@/lib/pending-transactions'
 import axios from 'axios'
@@ -312,7 +312,7 @@ export default {
     warningOnPartnerInfo: {},
 
     // Account exists check
-    // Currently works only with LSK
+    // Currently works only with KLY
     account: {
       isNew: false,
       abortController: new AbortController(),
@@ -608,9 +608,9 @@ export default {
       this.account.abortController = new AbortController()
 
       switch (this.currency) {
-        case Cryptos.LSK:
+        case Cryptos.KLY:
           this.account.loading = true
-          lskIndexer
+          klyIndexer
             .checkAccountExists(cryptoAddress, {
               signal: this.account.abortController.signal
             })
