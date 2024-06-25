@@ -37,7 +37,7 @@ mac:
   gatekeeperAssess: false
   notarize: false
 
-afterSign: 'scripts/electron/notarize.cjs'
+afterPack: 'scripts/electron/notarize.cjs'
 
 # Config for OSX dmg
 dmg:
