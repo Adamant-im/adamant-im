@@ -5,9 +5,7 @@
 
   <template v-else>
     <span :class="classes.nodeName">{{ nodeHost.name }}</span>
-    <span v-if="nodeHost.domain && nodeHost.domain.length > 0" :class="classes.domain"
-      >.{{ nodeHost.domain }}</span
-    >
+    <span v-if="nodeHost.domain" :class="classes.domain">.{{ nodeHost.domain }}</span>
   </template>
 
   <span v-if="port" :class="classes.port">:{{ port }}</span>
