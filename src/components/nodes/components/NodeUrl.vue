@@ -5,7 +5,9 @@
 
   <template v-else>
     <span :class="classes.nodeName">{{ nodeHost.name }}</span>
-    <span :class="classes.domain">.{{ nodeHost.domain }}</span>
+    <span v-if="nodeHost.domain && nodeHost.domain.length > 0" :class="classes.domain"
+      >.{{ nodeHost.domain }}</span
+    >
   </template>
 
   <span v-if="port" :class="classes.port">:{{ port }}</span>
@@ -43,7 +45,7 @@ export default {
       let domain = null
 
       if (!isIP.value) {
-        const regex = /([^.]*)\.(.*)/
+        const regex = /([^.]*)\.?(.*)/
         const parts = hostname.value.match(regex)
         if (parts !== null) {
           name = parts[1]
