@@ -136,58 +136,17 @@
     "explorer": "https://etherscan.io",
     "explorerAddress": "https://etherscan.io/address/${ID}"
   },
-  "lsk": {
-    "nodes": {
-      "list": [
-        {
-          "url": "http://nl2c4vcsdrd6je3ebt4236yst55mbso72ojmksrmlyoikapgnu647tid.onion"
-        },
-        {
-          "url": "http://qpjxvkathebm7oso3dk5hb4cggbeecqvcpcthuxlpovtn66plr6f4wyd.onion"
-        },
-        {
-          "url": "http://4bsg7dijnpkiu6wylaad5fiom4iep73oz3o2rojkwnuteaawd2w3o2ad.onion"
-        }
-      ],
-      "healthCheck": {
-        "normalUpdateInterval": 270000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000,
-        "threshold": 5
-      }
-    },
-    "explorerTx": "https://liskscan.com/transaction/${ID}",
-    "services": {
-      "list": {
-        "lskService": [
-          {
-            "url": "http://xqrymra5go2nb3cslb3c3iv4weeuicybcxpjee4ay2indk2hgo7rw4qd.onion"
-          },
-          {
-            "url": "http://s2q6phc22icy73zjccjq66555gwtvyuyrodmadwhjdhmvyehb3qrcsid.onion"
-          },
-          {
-            "url": "http://cf6vf6xylvhza3t3ewffa7cmr2bqgaus5jwghiktjleids5ovdhoazad.onion"
-          }
-        ]
-      },
-      "healthCheck": {
-        "normalUpdateInterval": 330000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000
-      }
-    },
-    "explorer": "https://liskscan.com",
-    "explorerAddress": "https://liskscan.com/account/${ID}"
-  },
   "kly": {
-    "explorer": "https://testnet-explorer.klayr.xyz",
-    "explorerTx": "https://testnet-explorer.klayr.xyz/transaction/${ID}",
-    "explorerAddress": "https://testnet-explorer.klayr.xyz/account/${ID}",
+    "explorer": "https://explorer.klayr.xyz",
+    "explorerTx": "https://explorer.klayr.xyz/transaction/${ID}",
+    "explorerAddress": "https://explorer.klayr.xyz/account/${ID}",
     "nodes": {
       "list": [
         {
-          "url": "http://localhost:7000"
+          "url": "http://7kmdhr3x3hpy7kg3gojxznypgzcya7yxpte4zz42wtljhulg5mrzkpad.onion"
+        },
+        {
+          "url": "http://5fr7uybpxecid5gikrm65hstsfhve2772keyqdvxirsiywlyo6zap6yd.onion"
         }
       ],
       "healthCheck": {
@@ -201,7 +160,10 @@
       "list": {
         "klyService": [
           {
-            "url": "https://testnet-service.klayr.xyz"
+            "url": "http://673swmi7y4cdsqw7rhl52mypuixfh5tryxjt4vzhaoy7my572ldidfad.onion"
+          },
+          {
+            "url": "http://3om4mobnbppxuexwufprp4cle4fivstooqqap6yoll5qk3kikesmqgad.onion"
           }
         ]
       },

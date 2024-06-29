@@ -174,64 +174,19 @@
     "explorer": "https://etherscan.io",
     "explorerAddress": "https://etherscan.io/address/${ID}"
   },
-  "lsk": {
-    "nodes": {
-      "list": [
-        {
-          "url": "https://lisknode3.adamant.im",
-          "alt_ip": "http://157.90.229.236:44099"
-        },
-        {
-          "url": "https://lisknode4.adamant.im",
-          "alt_ip": "http://78.47.205.206:44099"
-        },
-        {
-          "url": "https://lisknode5.adamant.im",
-          "alt_ip": "http://38.242.243.29:44099"
-        }
-      ],
-      "healthCheck": {
-        "normalUpdateInterval": 270000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000,
-        "threshold": 5
-      }
-    },
-    "explorerTx": "https://liskscan.com/transaction/${ID}",
-    "services": {
-      "list": {
-        "lskService": [
-          {
-            "url": "https://liskservice3.adamant.im",
-            "alt_ip": "http://157.90.229.236:44098"
-          },
-          {
-            "url": "https://liskservice4.adamant.im",
-            "alt_ip": "http://78.47.205.206:44098"
-          },
-          {
-            "url": "https://liskservice5.adamant.im",
-            "alt_ip": "http://38.242.243.29:44098"
-          }
-        ]
-      },
-      "healthCheck": {
-        "normalUpdateInterval": 330000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000
-      }
-    },
-    "explorer": "https://liskscan.com",
-    "explorerAddress": "https://liskscan.com/account/${ID}"
-  },
   "kly": {
-    "explorer": "https://testnet-explorer.klayr.xyz",
-    "explorerTx": "https://testnet-explorer.klayr.xyz/transaction/${ID}",
-    "explorerAddress": "https://testnet-explorer.klayr.xyz/account/${ID}",
+    "explorer": "https://explorer.klayr.xyz",
+    "explorerTx": "https://explorer.klayr.xyz/transaction/${ID}",
+    "explorerAddress": "https://explorer.klayr.xyz/account/${ID}",
     "nodes": {
       "list": [
         {
-          "url": "http://localhost:7000"
+          "url": "https://klynode1.adamant.im",
+          "alt_ip": "http://195.26.255.137:44099"
+        },
+        {
+          "url": "https://klynode2.adamant.im",
+          "alt_ip": "http://109.176.199.130:44099"
         }
       ],
       "healthCheck": {
@@ -245,7 +200,15 @@
       "list": {
         "klyService": [
           {
-            "url": "https://testnet-service.klayr.xyz"
+            "url": "https://klyservice1.adamant.im",
+            "alt_ip": "http://195.26.255.137:44098"
+          },
+          {
+            "url": "https://klyservice2.adamant.im",
+            "alt_ip": "http://109.176.199.130:44098"
+          },
+          {
+            "url": "https://service.klayr.xyz"
           }
         ]
       },
