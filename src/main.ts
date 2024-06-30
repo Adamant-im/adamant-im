@@ -1,3 +1,5 @@
+import 'core-js/actual/map/group-by'
+
 import { createApp } from 'vue'
 
 import App from './App.vue'
