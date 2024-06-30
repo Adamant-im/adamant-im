@@ -77,7 +77,8 @@
     "you_reacted": "Reacted",
     "partner_reacted": "Reacted",
     "you_removed_reaction": "Removed reaction",
-    "partner_removed_reaction": "Removed reaction"
+    "partner_removed_reaction": "Removed reaction",
+    "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
   },
   "common": {
     "cancel": "Cancel",
@@ -317,7 +318,7 @@
     "decode_from_image": "Read QR from image",
     "error_chat_fee": "To send {crypto} via chat, you need 0.001 ADM",
     "error_dust_amount": "Dust amount—Send more tokens",
-    "recipient_minimum_balance": "Recipient must have at least 0.05 LSK—Send more tokens",
+    "recipient_minimum_balance": "Recipient must have at least 0.05 KLY—Send more tokens",
     "error_all_nodes_offline": "All {crypto} nodes are offline. Try again later",
     "error_precision": "Too high precision—Set less decimal places",
     "error_erc20_fee": "You need a {fee} to pay a transfer fee",

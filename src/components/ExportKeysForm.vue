@@ -103,7 +103,7 @@ import { validateMnemonic } from 'bip39'
 import copyToClipboard from 'copy-to-clipboard'
 import { getAccountFromPassphrase as getEthAccount } from '@/lib/eth-utils'
 import { getAccount as getBtcAccount } from '@/lib/bitcoin/btc-base-api'
-import { getAccount as getLskAccount } from '@/lib/lisk/lisk-utils'
+import { getAccount as getKlyAccount } from '@/lib/klayr/klayr-utils'
 import { Cryptos, CryptosInfo } from '@/lib/constants'
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
@@ -122,8 +122,8 @@ function getBtcKey(crypto, passphrase, asWif) {
   }
 }
 
-function getLskKey(crypto, passphrase) {
-  const keyPair = getLskAccount(crypto, passphrase).keyPair
+function getKlyKey(crypto, passphrase) {
+  const keyPair = getKlyAccount(crypto, passphrase).keyPair
   const key = keyPair.secretKey.toString('hex')
 
   return {
@@ -184,9 +184,9 @@ export default defineComponent({
         const dash = getBtcKey(Cryptos.DASH, passphrase.value, false)
         const doge = getBtcKey(Cryptos.DOGE, passphrase.value, true)
 
-        const lsk = getLskKey(Cryptos.LSK, passphrase.value)
+        const kly = getKlyKey(Cryptos.KLY, passphrase.value)
 
-        keys.value = [bitcoin, eth, doge, dash, lsk]
+        keys.value = [bitcoin, eth, doge, dash, kly]
       }, 0)
     }
     const copyKey = (key) => {

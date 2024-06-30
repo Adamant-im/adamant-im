@@ -123,6 +123,10 @@ export default defineComponent({
     })
 
     const messageLabel = computed(() => {
+      if (transaction.value.i18n) {
+        return t(transaction.value.message)
+      }
+
       return store.state.options.formatMessages
         ? formatMessage(transaction.value.message)
         : transaction.value.message

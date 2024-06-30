@@ -16,6 +16,12 @@
         },
         {
           "url": "http://rukehjd2yalzgny7mdjqtzown2mazsaeh4zr7zjdg4l5afkgc3z2kgqd.onion"
+        },
+        {
+          "url": "http://osd7qoluu6akud6b2brxxi3bhidrbx54yqm5swr3rjwjz2cvposigiqd.onion"
+        },
+        {
+          "url": "http://nkacjpsif6wpc6x7qvavyr2vnvqolwnxxl5qciolhqdkzmgy5mgoajyd.onion"
         }
       ],
       "healthCheck": {
@@ -51,7 +57,7 @@
           "url": "http://cc6ibzkfeseuwnmtjc6hlsd44bzg2sr3shbv7n35nj2rk2vm6dmtlnqd.onion"
         },
         {
-          "url": "http://mgplh7en3d6ywsec5h6q3tc6mirsleb5cmlyn6nmp25qrb6gy35nypad.onion"
+          "url": "http://grnpvgtlrfws3424l726td5lctsod3hq2at4lhiasmedpxygbo5u2bqd.onion"
         }
       ],
       "healthCheck": {
@@ -111,10 +117,6 @@
     "nodes": {
       "list": [
         {
-          "url": "http://vj3qid4h2d4cj2gexivjuuybah3mjzenpdyr5bj6z4hctp52jn6qsgid.onion",
-          "hasIndex": true
-        },
-        {
           "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion",
           "hasIndex": true
         },
@@ -134,17 +136,17 @@
     "explorer": "https://etherscan.io",
     "explorerAddress": "https://etherscan.io/address/${ID}"
   },
-  "lsk": {
+  "kly": {
+    "explorer": "https://explorer.klayr.xyz",
+    "explorerTx": "https://explorer.klayr.xyz/transaction/${ID}",
+    "explorerAddress": "https://explorer.klayr.xyz/account/${ID}",
     "nodes": {
       "list": [
         {
-          "url": "http://nl2c4vcsdrd6je3ebt4236yst55mbso72ojmksrmlyoikapgnu647tid.onion"
+          "url": "http://7kmdhr3x3hpy7kg3gojxznypgzcya7yxpte4zz42wtljhulg5mrzkpad.onion"
         },
         {
-          "url": "http://qpjxvkathebm7oso3dk5hb4cggbeecqvcpcthuxlpovtn66plr6f4wyd.onion"
-        },
-        {
-          "url": "http://4bsg7dijnpkiu6wylaad5fiom4iep73oz3o2rojkwnuteaawd2w3o2ad.onion"
+          "url": "http://5fr7uybpxecid5gikrm65hstsfhve2772keyqdvxirsiywlyo6zap6yd.onion"
         }
       ],
       "healthCheck": {
@@ -154,18 +156,14 @@
         "threshold": 5
       }
     },
-    "explorerTx": "https://liskscan.com/transaction/${ID}",
     "services": {
       "list": {
-        "lskService": [
+        "klyService": [
           {
-            "url": "http://xqrymra5go2nb3cslb3c3iv4weeuicybcxpjee4ay2indk2hgo7rw4qd.onion"
+            "url": "http://673swmi7y4cdsqw7rhl52mypuixfh5tryxjt4vzhaoy7my572ldidfad.onion"
           },
           {
-            "url": "http://s2q6phc22icy73zjccjq66555gwtvyuyrodmadwhjdhmvyehb3qrcsid.onion"
-          },
-          {
-            "url": "http://cf6vf6xylvhza3t3ewffa7cmr2bqgaus5jwghiktjleids5ovdhoazad.onion"
+            "url": "http://3om4mobnbppxuexwufprp4cle4fivstooqqap6yoll5qk3kikesmqgad.onion"
           }
         ]
       },
@@ -174,8 +172,6 @@
         "crucialUpdateInterval": 30000,
         "onScreenUpdateInterval": 10000
       }
-    },
-    "explorer": "https://liskscan.com",
-    "explorerAddress": "https://liskscan.com/account/${ID}"
+    }
   }
 }

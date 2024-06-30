@@ -1,6 +1,6 @@
 import { getRealTimestamp } from './utils/getRealTimestamp'
 import { isNumeric } from '@/lib/numericHelpers'
-import { TransactionStatus as TS } from '@/lib/constants'
+import { TransactionStatus as TS, Transactions } from '@/lib/constants'
 import { KnownCryptos, UnsupportedCryptos } from './constants'
 
 /**
@@ -51,7 +51,7 @@ export function normalizeMessage(abstract) {
       } else {
         transaction.type = 'message'
       }
-    } else {
+    } else if (abstract.message.reply_message.type) {
       // reply with a crypto transfer
       transaction.asset = abstract.message
       transaction.message = abstract.message.reply_message.comments || ''
@@ -70,6 +70,12 @@ export function normalizeMessage(abstract) {
         transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
         transaction.status = TS.UNKNOWN
       }
+    } else {
+      // Unsupported transaction type. May require updating the PWA version.
+      transaction.message = 'chats.unsupported_transaction_type'
+      transaction.i18n = true
+      transaction.hash = abstract.id // adm transaction id (hash)
+      transaction.type = 'message'
     }
 
     transaction.isReply = true
@@ -90,12 +96,18 @@ export function normalizeMessage(abstract) {
       transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
       transaction.status = TS.UNKNOWN
     }
-  } else {
+  } else if (typeof abstract.message === 'string' || abstract.type === Transactions.SEND) {
     // ADM transaction or Message
     transaction.message = abstract.message || ''
     transaction.hash = abstract.id // adm transaction id (hash)
 
     abstract.amount > 0 ? (transaction.type = 'ADM') : (transaction.type = 'message')
+  } else {
+    // Unsupported transaction type. May require updating the PWA version.
+    transaction.message = 'chats.unsupported_transaction_type'
+    transaction.i18n = true
+    transaction.hash = abstract.id // adm transaction id (hash)
+    transaction.type = 'message'
   }
 
   return transaction
