@@ -6,6 +6,7 @@ import path from 'path'
 import autoprefixer from 'autoprefixer'
 import inject from '@rollup/plugin-inject'
 import commonjs from '@rollup/plugin-commonjs'
+import legacy from '@vitejs/plugin-legacy'
 
 import { deferScripsPlugin } from './vite-config/plugins/deferScriptsPlugin'
 import { preloadCSSPlugin } from './vite-config/plugins/preloadCSSPlugin'
@@ -19,6 +20,10 @@ export default defineConfig({
     commonjs(),
     inject({
       Buffer: ['buffer', 'Buffer']
+    }),
+    legacy({
+      targets: ['defaults', 'not IE 11'],
+      polyfills: ['es.map.group-by']
     }),
     deferScripsPlugin(),
     preloadCSSPlugin()
