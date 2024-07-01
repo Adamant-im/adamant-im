@@ -38,7 +38,7 @@ export class Scanner {
   async getCameras() {
     // Get only first two video devices. First - front camera, second (if available) - back camera
     return (await navigator.mediaDevices.enumerateDevices())
-      .filter((device: MediaDeviceInfo) => device.kind === 'videoinput')
+      .filter((device) => device.kind === 'videoinput')
       .slice(0, 2)
   }
 

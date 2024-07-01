@@ -1,4 +1,4 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   appId: 'im.adamant.adamantmessengerpwa',
@@ -9,9 +9,9 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      androidScaleType: "CENTER_CROP", // fix logo stretching
+      androidScaleType: 'CENTER_CROP' // fix logo stretching
     }
   }
-};
+}
 
-export default config;
+export default config

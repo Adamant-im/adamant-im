@@ -178,6 +178,10 @@ async function updateConfig(configs, configName) {
   for (const configKey in configs) {
     const config = configs[configKey]
 
+    if (!configFile[configKey]) {
+      configFile[configKey] = {}
+    }
+
     configFile[configKey].explorer = config.explorer
     configFile[configKey].explorerTx = config.explorerTx
     configFile[configKey].explorerAddress = config.explorerAddress

@@ -35,6 +35,7 @@ mac:
   entitlementsInherit: './build/osx/entitlements.mac.plist'
   hardenedRuntime: true
   gatekeeperAssess: false
+  notarize: false
 
 afterSign: 'scripts/electron/notarize.cjs'
 

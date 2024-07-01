@@ -13,7 +13,7 @@ env:
   ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
   ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
   ANDROID_KEYSTORE_ALIAS_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
-  ANDROID_RELEASE_TYPE: 'APK' # or AAB
+  ANDROID_RELEASE_TYPE: 'AAB' # APK or AAB
 
 jobs:
   release:
@@ -21,18 +21,21 @@ jobs:
 
     steps:
       - name: Checkout repository 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Java ☕
-        uses: actions/setup-java@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
           java-version: '17'
+          distribution: 'zulu'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Setup Node version 🍀
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 20
 
       - name: Install dependencies ⚙️
         run: npm ci
@@ -59,11 +62,11 @@ jobs:
             --androidreleasetype $ANDROID_RELEASE_TYPE
 
       - name: Save artifacts 💾
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: android-release-app
           path: |
-            android/app/build/outputs/apk/release/*
+            android/app/build/outputs/bundle/release/*
 
       - name: Clean Keystore file 🧹
         run: |

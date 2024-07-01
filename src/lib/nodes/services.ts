@@ -1,7 +1,7 @@
-import { lskIndexer } from './lsk-indexer'
+import { klyIndexer } from './kly-indexer'
 import { ethIndexer } from './eth-indexer'
 
 export const services = {
-  lskIndexer,
+  klyIndexer,
   ethIndexer
 }

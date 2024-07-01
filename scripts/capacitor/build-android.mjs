@@ -18,7 +18,8 @@ async function run() {
     '--keystorepass $ANDROID_KEYSTORE_PASSWORD',
     '--keystorealias $ANDROID_KEYSTORE_ALIAS',
     '--keystorealiaspass $ANDROID_KEYSTORE_ALIAS_PASSWORD',
-    '--androidreleasetype $ANDROID_RELEASE_TYPE'
+    '--androidreleasetype $ANDROID_RELEASE_TYPE',
+    '--signing-type jarsigner'
   ]
   await $$`cap build android ${buildArgs}`
 }

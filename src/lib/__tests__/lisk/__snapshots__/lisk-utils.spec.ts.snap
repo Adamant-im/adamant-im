@@ -1,8 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`lisk-utils > getAccount > should generate account from passphrase 1`] = `
+exports[`klayr-utils > getAccount > should generate account from passphrase 1`] = `
 {
-  "address": "lskkjurzk3xb47scma49ukyqupn8vrg2ggyuehk5j",
+  "address": "klykjurzk3xb47scma49ukyqupn8vrg2ggyuehk5j",
   "addressHex": "a721205101325db197296c291ac08778a5fc7ff1",
   "addressHexBinary": {
     "data": [
@@ -139,9 +139,9 @@ exports[`lisk-utils > getAccount > should generate account from passphrase 1`] =
     },
   },
   "network": {
-    "name": "Lisk",
+    "name": "Klayr",
     "port": 8000,
-    "unit": "LSK",
+    "unit": "KLY",
     "wsPort": 8001,
   },
 }
