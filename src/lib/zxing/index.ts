@@ -20,20 +20,35 @@ export class Scanner {
     this.codeReader = new BrowserQRCodeReader()
   }
 
-  async start(deviceId: string, decodeCallback: DecodeContinuouslyCallback) {
-    return this.codeReader.decodeFromVideoDevice(deviceId, this.videoElement, decodeCallback)
+  async start(currentCamera: number | null, decodeCallback: DecodeContinuouslyCallback) {
+    // Stop all tracks from media stream before camera changing
+    if (this.cameraStream) this.stopVideoTracks()
+
+    // Request new media stream and attach to video element as source object
+    const facingMode = currentCamera === 1 ? 'environment' : 'user'
+    this.cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode },
+      audio: false
+    })
+    this.videoElement.srcObject = this.cameraStream
+
+    return this.codeReader.decodeFromVideoElement(this.videoElement, decodeCallback)
   }
 
   async getCameras() {
-    const { BrowserCodeReader } = await import('@zxing/browser')
-    // Wait for camera stream and only after that request a list of input devices
-    this.cameraStream = await navigator.mediaDevices.getUserMedia({ video: true })
-    return this.cameraStream ? BrowserCodeReader.listVideoInputDevices() : []
+    // Get only first two video devices. First - front camera, second (if available) - back camera
+    return (await navigator.mediaDevices.enumerateDevices())
+      .filter((device: MediaDeviceInfo) => device.kind === 'videoinput')
+      .slice(0, 2)
   }
 
   stop(controls: IScannerControls) {
     // Stop all tracks from the requested media stream before controls stopping
-    this.cameraStream.getVideoTracks().forEach((track) => track.stop())
+    this.stopVideoTracks()
     controls.stop()
+  }
+
+  private stopVideoTracks() {
+    this.cameraStream.getVideoTracks().forEach((track) => track.stop())
   }
 }

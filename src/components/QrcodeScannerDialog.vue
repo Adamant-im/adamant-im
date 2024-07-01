@@ -28,9 +28,10 @@
               </template>
               <v-list>
                 <v-list-item
-                  v-for="camera in cameras"
-                  :key="camera.deviceId"
-                  @click="currentCamera = camera.deviceId"
+                  v-for="(camera, index) in cameras"
+                  :key="index"
+                  @click="currentCamera = index"
+                  :disabled="currentCamera === index"
                 >
                   <v-list-item-title>{{ camera.label }}</v-list-item-title>
                 </v-list-item>
@@ -108,7 +109,7 @@ export default defineComponent({
     const cameraStatus = ref<CameraStatus>('waiting')
     const scanner = ref<Scanner | null>(null)
     const cameras = ref<MediaDeviceInfo[]>([])
-    const currentCamera = ref<string | null>(null)
+    const currentCamera = ref<number | null>(null)
     const scannerControls = ref<IScannerControls | null>(null)
 
     const show = computed<boolean>({
@@ -150,8 +151,7 @@ export default defineComponent({
 
     watch(cameras, (cameras) => {
       if (cameras.length > 0) {
-        const cameraKey = cameras.length >= 2 ? 1 : 0
-        currentCamera.value = cameras[cameraKey].deviceId
+        currentCamera.value = cameras.length >= 2 ? 1 : 0
 
         cameraStatus.value = 'active'
       } else {
@@ -160,8 +160,6 @@ export default defineComponent({
     })
 
     watch(currentCamera, () => {
-      if (!currentCamera.value) return
-
       void scanner.value?.start(currentCamera.value, (result, _, controls) => {
         if (result) {
           onScan(result.getText()) // text is private field for zxing/browser
