@@ -96,7 +96,11 @@ export function normalizeMessage(abstract) {
       transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
       transaction.status = TS.UNKNOWN
     }
-  } else if (typeof abstract.message === 'string' || abstract.type === Transactions.SEND) {
+  } else if (
+    typeof abstract.message === 'string' ||
+    abstract.type === Transactions.SEND ||
+    abstract.amount > 0
+  ) {
     // ADM transaction or Message
     transaction.message = abstract.message || ''
     transaction.hash = abstract.id // adm transaction id (hash)
