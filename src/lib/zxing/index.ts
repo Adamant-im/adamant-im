@@ -36,10 +36,32 @@ export class Scanner {
   }
 
   async getCameras() {
-    // Get only first two video devices. First - front camera, second (if available) - back camera
-    return (await navigator.mediaDevices.enumerateDevices())
-      .filter((device) => device.kind === 'videoinput')
-      .slice(0, 2)
+    const deviceCameras = (await navigator.mediaDevices.enumerateDevices()).filter(
+      (device) => device.kind === 'videoinput'
+    )
+
+    // Change only two video devices. First - front camera, second (is available) - back camera
+    const cameras: MediaDeviceInfo[] = []
+    if (deviceCameras.length > 0) {
+      cameras.push(deviceCameras[0])
+
+      if (deviceCameras.length > 1) {
+        let backCamera: MediaDeviceInfo | undefined
+        if (navigator.userAgent.includes('iPhone')) {
+          // On iOS devices the device name can be localized
+          // But the second camera is back
+          backCamera = deviceCameras[1]
+        } else {
+          // Devices with other mobile os may have two front cameras
+          // So let's take first back camera
+          backCamera = deviceCameras.slice(1).find((device) => device.label.includes('back'))
+        }
+
+        if (backCamera) cameras.push(backCamera)
+      }
+    }
+
+    return cameras
   }
 
   stop(controls: IScannerControls) {
