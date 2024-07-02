@@ -38,10 +38,9 @@ mac:
   notarize: false
   target:
     target: 'default'
-    arch: [
-      'x64',
-      'arm64'
-    ]
+    arch: 
+      - x64
+      - arm64
 
 afterSign: 'scripts/electron/notarize.cjs'
 
