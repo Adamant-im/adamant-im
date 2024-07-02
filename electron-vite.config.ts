@@ -7,7 +7,8 @@ export default mergeConfig(
   viteBaseConfig,
   defineConfig({
     build: {
-      outDir: './dist-electron'
+      outDir: './dist-electron',
+      minify: true
     },
     plugins: [
       electron({
