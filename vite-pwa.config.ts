@@ -8,6 +8,7 @@ export default mergeConfig(
   viteBaseConfig,
   defineConfig({
     plugins: [
+      // trigger build
       VitePWA({
         registerType: 'autoUpdate',
         srcDir: 'src',
