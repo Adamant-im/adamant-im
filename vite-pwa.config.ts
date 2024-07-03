@@ -18,7 +18,14 @@ export default mergeConfig(
         manifest: manifest,
         manifestFilename: 'manifest.json',
         workbox: {
-          maximumFileSizeToCacheInBytes: 5000000 // 5 MiB
+          maximumFileSizeToCacheInBytes: 5000000, // 5 MiB
+          globPatterns: [
+            '**/*.{js,css,html}',
+            '**/*.{json,xml,txt}',
+            '**/*.{ttf,eot,woff,woff2}', // fonts and icons
+            '**/*.{png,jpg,svg,ico}', // images
+            '**/*.{mp3,wasm}' // other
+          ]
         }
       })
     ]
