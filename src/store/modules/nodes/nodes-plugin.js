@@ -23,7 +23,7 @@ export default (store) => {
       nodes.dash.setUseFastest(!!payload)
       nodes.doge.setUseFastest(!!payload)
       nodes.eth.setUseFastest(!!payload)
-      nodes.lsk.setUseFastest(!!payload)
+      nodes.kly.setUseFastest(!!payload)
     }
 
     if (type === 'nodes/toggle') {

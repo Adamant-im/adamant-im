@@ -318,7 +318,7 @@
     "decode_from_image": "Read QR from image",
     "error_chat_fee": "To send {crypto} via chat, you need 0.001 ADM",
     "error_dust_amount": "Dust amount—Send more tokens",
-    "recipient_minimum_balance": "Recipient must have at least 0.05 LSK—Send more tokens",
+    "recipient_minimum_balance": "Recipient must have at least 0.05 KLY—Send more tokens",
     "error_all_nodes_offline": "All {crypto} nodes are offline. Try again later",
     "error_precision": "Too high precision—Set less decimal places",
     "error_erc20_fee": "You need a {fee} to pay a transfer fee",
