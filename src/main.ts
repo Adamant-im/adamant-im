@@ -1,3 +1,5 @@
+import { registerSW } from 'virtual:pwa-register'
+
 import 'core-js/actual/object/group-by'
 
 import { createApp } from 'vue'
@@ -37,3 +39,10 @@ app.mount('#app')
 window.ep = app
 
 document.title = i18n.global.t('app_title')
+
+registerSW({
+  immediate: true,
+  onNeedRefresh: () => {
+    console.log('Refresh needed')
+  }
+})
