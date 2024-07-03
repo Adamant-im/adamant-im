@@ -22,7 +22,6 @@ export default mergeConfig(
           globPatterns: [
             '**/*.{js,css,html}',
             '**/*.{json,xml,txt}',
-            '**/*.{ttf,eot,woff,woff2}', // fonts and icons
             '**/*.{png,jpg,svg,ico}', // images
             '**/*.{mp3,wasm}' // other
           ]
