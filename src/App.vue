@@ -38,6 +38,7 @@ export default defineComponent({
     }
   },
   created() {
+    console.log('trigger build')
     this.setLocale()
   },
   mounted() {
