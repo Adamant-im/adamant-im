@@ -8,6 +8,8 @@ export default mergeConfig(
   viteBaseConfig,
   defineConfig({
     plugins: [
+      // https://msg-adamant-pr-646.surge.sh/assets/secp256k1-2IQOMy_D.wasm
+      // #3816
       // trigger build
       VitePWA({
         registerType: 'autoUpdate',
