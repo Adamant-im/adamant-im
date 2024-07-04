@@ -43,6 +43,7 @@
     "@klayr/validator": "^0.8.2",
     "@mdi/font": "^7.4.47",
     "@stablelib/utf8": "^1.0.2",
+    "@tanstack/vue-query": "^5.49.1",
     "@zxing/browser": "^0.1.4",
     "@zxing/library": "^0.20.0",
     "assert": "^2.1.0",
