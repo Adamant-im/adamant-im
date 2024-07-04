@@ -18,6 +18,7 @@
     "unable_to_retrieve_no_public_key": "`无法解密消息：没有合作伙伴的公钥`",
     "me": "我",
     "message": "键入消息",
+    "message_rejected": "消息被拒绝",
     "my_qr_code": "我的二维码",
     "new_chat": "开始新的聊天",
     "no_connection": "没有Internet连接",

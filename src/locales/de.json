@@ -17,6 +17,7 @@
     "estimate_fee": "Voraussichtliche Gebühr",
     "incorrect_address": "Fehlerhafte Empfängeradresse",
     "message": "Gib deine Nachricht ein",
+    "message_rejected": "Nachricht zurückgewiesen",
     "new_chat": "Starte neuen Chat",
     "new_chat_tooltip": "Klicke hier um eine neue Konversation zu starten",
     "no_address": "Bitte gib die Empfängeradresse an",

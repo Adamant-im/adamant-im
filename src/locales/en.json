@@ -18,6 +18,7 @@
     "unable_to_retrieve_no_public_key": "`Unable to decrypt message: no partner's public key`",
     "me": "Me",
     "message": "Type a message",
+    "message_rejected": "Message rejected",
     "my_qr_code": "My QR code",
     "new_chat": "Start a new chat",
     "no_connection": "No Internet connection",
