@@ -119,7 +119,7 @@
 
         <v-divider />
 
-        <v-list-item @click="copyToClipboard(id)">
+        <v-list-item @click="handleCopyToClipboard(id)">
           <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.txid') }}
@@ -133,7 +133,7 @@
 
         <v-divider />
 
-        <v-list-item @click="copyToClipboard(sender)">
+        <v-list-item @click="handleCopyToClipboard(sender)">
           <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.sender') }}
@@ -147,7 +147,7 @@
 
         <v-divider />
 
-        <v-list-item @click="copyToClipboard(recipient)">
+        <v-list-item @click="handleCopyToClipboard(recipient)">
           <template #prepend>
             <v-list-item-title :class="`${className}__title`">
               {{ $t('transaction.recipient') }}
@@ -221,6 +221,7 @@
 
 <script>
 import { computed, defineComponent, nextTick, onMounted, ref, watch } from 'vue'
+import copyToClipboard from 'copy-to-clipboard'
 import { Symbols, tsUpdatable } from '@/lib/constants'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import { timestampInSec } from '@/filters/helpers'
@@ -358,7 +359,7 @@ export default defineComponent({
       }
     )
 
-    const copyToClipboard = (key) => {
+    const handleCopyToClipboard = (key) => {
       if (key) {
         copyToClipboard(key)
         store.dispatch('snackbar/show', {
@@ -399,7 +400,7 @@ export default defineComponent({
 
     return {
       className,
-      copyToClipboard,
+      handleCopyToClipboard,
       openInExplorer,
       openChat,
       updateStatus,
