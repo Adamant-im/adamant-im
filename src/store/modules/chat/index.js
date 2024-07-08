@@ -9,6 +9,7 @@ import {
   createReaction,
   normalizeMessage
 } from '@/lib/chat/helpers'
+import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
 import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -696,7 +697,7 @@ const actions = {
       .then((res) => {
         // @todo this check must be performed on the server
         if (!res.success) {
-          throw new Error('Message rejected')
+          throw new Error(i18n.global.t('chats.message_rejected'))
         }
 
         // update `message.status` to 'REGISTERED'
@@ -753,7 +754,7 @@ const actions = {
       return queueMessage(messageAsset, recipientId, type)
         .then((res) => {
           if (!res.success) {
-            throw new Error('Message rejected')
+            throw new Error(i18n.global.t('chats.message_rejected'))
           }
 
           commit('updateMessage', {
@@ -806,7 +807,7 @@ const actions = {
       .then((res) => {
         // @todo this check must be performed on the server
         if (!res.success) {
-          throw new Error('Message rejected')
+          throw new Error(i18n.global.t('chats.message_rejected'))
         }
 
         // update `message.status` to 'REGISTERED'

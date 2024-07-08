@@ -55,6 +55,8 @@
 import { validateMnemonic } from 'bip39'
 import { computed, ref, defineComponent } from 'vue'
 import { useStore } from 'vuex'
+import { isAxiosError } from 'axios'
+import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 export default defineComponent({
   props: {
@@ -98,8 +100,14 @@ export default defineComponent({
           emit('login')
         })
         .catch((err) => {
+          if (isAxiosError(err)) {
+            emit('error', 'login.invalid_passphrase')
+          } else if (isAllNodesOfflineError(err)) {
+            emit('error', 'errors.all_nodes_offline')
+          } else {
+            emit('error', 'errors.something_went_wrong')
+          }
           console.log(err)
-          emit('error', 'login.invalid_passphrase')
         })
         .finally(() => {
           antiFreeze()

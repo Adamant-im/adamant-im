@@ -1,6 +1,6 @@
 <template>
-  <v-dialog v-model="show" :class="className" width="500">
-    <v-card :class="className">
+  <v-dialog v-model="show" :class="classes.root" width="500">
+    <v-card :class="classes.root">
       <!-- Camera Waiting -->
       <v-row
         v-if="cameraStatus === 'waiting'"
@@ -18,19 +18,20 @@
       <!-- Camera Active -->
       <v-row v-show="cameraStatus === 'active'" no-gutters>
         <v-col cols="12">
-          <div :class="`${className}__camera`">
-            <video ref="camera" />
-            <v-menu v-if="cameras.length > 1" offset-y :class="`${className}__camera-select`">
-              <template #activator>
-                <v-btn variant="text" color="white">
+          <div :class="classes.camera">
+            <video ref="videoElement" />
+            <v-menu v-if="cameras.length > 1" offset-y :class="classes.cameraSelect">
+              <template #activator="{ props }">
+                <v-btn variant="text" color="white" v-bind="props">
                   <v-icon size="x-large" icon="mdi-camera" />
                 </v-btn>
               </template>
               <v-list>
                 <v-list-item
-                  v-for="camera in cameras"
-                  :key="camera.deviceId"
-                  @click="currentCamera = camera.deviceId"
+                  v-for="(camera, index) in cameras"
+                  :key="index"
+                  @click="currentCamera = index"
+                  :disabled="currentCamera === index"
                 >
                   <v-list-item-title>{{ camera.label }}</v-list-item-title>
                 </v-list-item>
@@ -75,10 +76,24 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang="ts">
+import { computed, defineComponent, onMounted, onBeforeUnmount, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useStore } from 'vuex'
+import type { IScannerControls } from '@zxing/browser'
+
 import { Scanner } from '@/lib/zxing'
 
-export default {
+const className = 'qrcode-scanner-dialog'
+const classes = {
+  root: className,
+  camera: `${className}__camera`,
+  cameraSelect: `${className}__camera-select`
+}
+
+type CameraStatus = 'waiting' | 'active' | 'nocamera'
+
+export default defineComponent({
   props: {
     modelValue: {
       type: Boolean,
@@ -86,81 +101,95 @@ export default {
     }
   },
   emits: ['scan', 'update:modelValue'],
-  data: () => ({
-    cameraStatus: 'waiting', // can be: waiting, active, nocamera
-    scanner: null,
-    currentCamera: null,
-    cameras: []
-  }),
-  computed: {
-    className: () => 'qrcode-scanner-dialog',
-    show: {
+  setup(props, { emit }) {
+    const store = useStore()
+    const { t } = useI18n()
+
+    const videoElement = ref<HTMLVideoElement | null>(null)
+    const cameraStatus = ref<CameraStatus>('waiting')
+    const scanner = ref<Scanner | null>(null)
+    const cameras = ref<MediaDeviceInfo[]>([])
+    const currentCamera = ref<number | null>(null)
+    const scannerControls = ref<IScannerControls | null>(null)
+
+    const show = computed<boolean>({
       get() {
-        return this.modelValue
+        return props.modelValue
       },
       set(value) {
-        this.$emit('update:modelValue', value)
+        emit('update:modelValue', value)
+      }
+    })
+
+    const init = async () => {
+      try {
+        scanner.value = new Scanner({
+          videoElement: videoElement.value!
+        })
+
+        await scanner.value.init()
+        cameras.value = await scanner.value.getCameras()
+      } catch (error) {
+        cameraStatus.value = 'nocamera'
+        store.dispatch('snackbar/show', {
+          message: t('scan.something_wrong')
+        })
+        console.error(error)
       }
     }
-  },
-  watch: {
-    cameras(cameras) {
+
+    const destroyScanner = () => {
+      if (!scannerControls.value) return
+      return scanner.value?.stop(scannerControls.value)
+    }
+
+    const onScan = (content: string) => {
+      emit('scan', content)
+      destroyScanner()
+      show.value = false
+    }
+
+    watch(cameras, (cameras) => {
       if (cameras.length > 0) {
-        const cameraKey = cameras.length === 2 ? 1 : 0
-        this.currentCamera = this.cameras[cameraKey].deviceId
+        currentCamera.value = cameras.length >= 2 ? 1 : 0
 
-        this.cameraStatus = 'active'
+        cameraStatus.value = 'active'
       } else {
-        this.cameraStatus = 'nocamera'
+        cameraStatus.value = 'nocamera'
       }
-    },
-    currentCamera() {
-      this.scanner.start(this.currentCamera).then((content) => this.onScan(content))
-    }
-  },
-  mounted() {
-    this.init()
-  },
-  beforeUnmount() {
-    this.destroyScanner()
-  },
-  methods: {
-    init() {
-      return this.initScanner()
-        .then(() => {
-          return this.getCameras()
-        })
-        .catch((err) => {
-          this.cameraStatus = 'nocamera'
-          this.$store.dispatch('snackbar/show', {
-            message: this.$t('scan.something_wrong')
-          })
-          console.error(err)
-        })
-    },
-    async initScanner() {
-      this.scanner = new Scanner({
-        videoElement: this.$refs.camera
-      })
+    })
 
-      return this.scanner.init()
-    },
-    destroyScanner() {
-      // First check if the scanner was initialized.
-      // Needed when an unexpected error occurred,
-      // or when the dialog closes before initialization.
-      return this.scanner && this.scanner.stop()
-    },
-    async getCameras() {
-      this.cameras = await this.scanner.getCameras()
-    },
-    onScan(content) {
-      this.$emit('scan', content)
-      this.destroyScanner()
-      this.show = false
+    watch(currentCamera, () => {
+      void scanner.value?.start(currentCamera.value, (result, _, controls) => {
+        if (result) {
+          onScan(result.getText()) // text is private field for zxing/browser
+        }
+
+        if (controls) {
+          scannerControls.value = controls
+        }
+      })
+    })
+
+    onMounted(() => {
+      init()
+    })
+
+    onBeforeUnmount(() => {
+      destroyScanner()
+    })
+
+    return {
+      cameras,
+      cameraStatus,
+      classes,
+      currentCamera,
+      props,
+      show,
+      videoElement
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
