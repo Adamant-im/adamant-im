@@ -2,6 +2,8 @@ import { isNodeOfflineError } from '@/lib/nodes/utils/errors'
 import { AdmNode, Payload, RequestConfig } from './AdmNode'
 import { Client } from '../abstract.client'
 
+const CHECK_ONLINE_NODE_INTERVAL = 10000
+
 /**
  * Provides methods for calling the ADAMANT API.
  *
@@ -41,13 +43,7 @@ export class AdmClient extends Client<AdmNode> {
    * @param {RequestConfig} config request config
    */
   async request<P extends Payload = Payload, R = any>(config: RequestConfig<P>): Promise<R> {
-    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
-    if (!node) {
-      // All nodes seem to be offline: let's refresh the statuses
-      this.checkHealth()
-      // But there's nothing we can do right now
-      return Promise.reject(new Error('No online nodes at the moment'))
-    }
+    const node = await this.fetchAvailableNode()
 
     return node.request(config).catch((error) => {
       if (isNodeOfflineError(error)) {
@@ -57,6 +53,28 @@ export class AdmClient extends Client<AdmNode> {
         return this.request(config)
       }
       throw error
+    })
+  }
+
+  async fetchAvailableNode() {
+    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
+    if (node) {
+      return node
+    }
+
+    return await new Promise<AdmNode>((resolve) => {
+      const ticker = setInterval(() => {
+        let node
+        try {
+          node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
+          if (node) {
+            clearInterval(ticker)
+            resolve(node)
+          }
+        } catch (e) {
+          console.error(e)
+        }
+      }, CHECK_ONLINE_NODE_INTERVAL)
     })
   }
 }

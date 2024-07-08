@@ -79,6 +79,11 @@
     "partner_reacted": "Reacted",
     "you_removed_reaction": "Removed reaction",
     "partner_removed_reaction": "Removed reaction",
+    "nodes_offline_dialog": {
+      "title": "Nodes are offline",
+      "text": "All {coin} nodes appear to be offline or possibly disabled. To continue use the Messenger please review the <strong>Nodes list</strong> and enable any nodes that are found to be disabled.",
+      "open_nodes_button": "Open Nodes page"
+    },
     "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
   },
   "common": {
@@ -92,6 +97,10 @@
     "online": "Online—Connection is set"
   },
   "error": "Error",
+  "errors": {
+    "something_went_wrong": "Something went wrong. Check the console for details",
+    "all_nodes_offline": "All {crypto} nodes are offline. Try again later"
+  },
   "home": {
     "balance": "Balance",
     "buy_tokens_anonymously": "Anonymously on website",
