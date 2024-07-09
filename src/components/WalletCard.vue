@@ -21,10 +21,19 @@
           {{ $t('home.balance') }}
         </v-list-item-title>
         <v-list-item-subtitle :class="classes.walletCardSubtitle">
-          {{ xs ? calculatedBalance : calculatedFullBalance }} {{ crypto }}
-          <span v-if="$store.state.rate.isLoaded" class="a-text-regular"
-            >~{{ rate }} {{ currentCurrency }}</span
-          >
+          <p>
+            {{ xs ? calculatedBalance : calculatedFullBalance }} {{ crypto }}
+            <span v-if="$store.state.rate.isLoaded" class="a-text-regular">
+              ~{{ rate }} {{ currentCurrency }}
+            </span>
+            <v-tooltip
+              v-if="xs && calculatedFullBalance.toString().length > SIGNIFICANT_DIGITS"
+              activator="parent"
+              location="top left"
+            >
+              {{ calculatedFullBalance }}
+            </v-tooltip>
+          </p>
         </v-list-item-subtitle>
 
         <template #append>
@@ -56,6 +65,7 @@ import smartNumber from '@/lib/smartNumber'
 import currencyAmount from '@/filters/currencyAmount'
 import { useStore } from 'vuex'
 
+const SIGNIFICANT_DIGITS = 7
 const className = 'wallet-card'
 
 const classes = {
@@ -122,6 +132,7 @@ export default defineComponent({
     })
 
     return {
+      SIGNIFICANT_DIGITS,
       classes,
       calculatedBalance,
       calculatedFullBalance,
