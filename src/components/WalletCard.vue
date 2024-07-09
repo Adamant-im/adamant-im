@@ -1,41 +1,41 @@
 <template>
-  <v-card flat :class="className">
-    <v-list lines="two" :class="`${className}__list`">
-      <v-list-item :class="`${className}__tile`" @click="showShareURIDialog = true">
-        <v-list-item-title :class="`${className}__title`">
+  <v-card flat :class="classes.root">
+    <v-list lines="two" :class="classes.walletCardList">
+      <v-list-item :class="classes.walletCardTile" @click="showShareURIDialog = true">
+        <v-list-item-title :class="classes.walletCardTitle">
           {{ $t('home.wallet_crypto', { crypto: cryptoName }) }}
         </v-list-item-title>
-        <v-list-item-subtitle :class="`${className}__subtitle`">
+        <v-list-item-subtitle :class="classes.walletCardSubtitle">
           {{ address }}
         </v-list-item-subtitle>
 
         <template #append>
-          <v-btn icon ripple variant="text" :class="`${className}__action`">
-            <v-icon :class="`${className}__icon`" icon="mdi-share-variant" size="small" />
+          <v-btn icon ripple variant="text" :class="classes.walletCardAction">
+            <v-icon :class="classes.walletCardIcon" icon="mdi-share-variant" size="small" />
           </v-btn>
         </template>
       </v-list-item>
 
       <v-list-item @click="$emit('click:balance', crypto)">
-        <v-list-item-title :class="`${className}__title`">
+        <v-list-item-title :class="classes.walletCardTitle">
           {{ $t('home.balance') }}
         </v-list-item-title>
-        <v-list-item-subtitle :class="`${className}__subtitle`">
-          {{ currency(balance, crypto, true) }}
+        <v-list-item-subtitle :class="classes.walletCardSubtitle">
+          {{ xs ? calculatedBalance : calculatedFullBalance }} {{ crypto }}
           <span v-if="$store.state.rate.isLoaded" class="a-text-regular"
             >~{{ rate }} {{ currentCurrency }}</span
           >
         </v-list-item-subtitle>
 
         <template #append>
-          <v-btn icon ripple variant="text" :class="`${className}__action`">
-            <v-icon :class="`${className}__icon`" icon="mdi-chevron-right" size="small" />
+          <v-btn icon ripple variant="text" :class="classes.walletCardAction">
+            <v-icon :class="classes.walletCardIcon" icon="mdi-chevron-right" size="small" />
           </v-btn>
         </template>
       </v-list-item>
     </v-list>
 
-    <WalletCardListActions :class="`${className}__list`" :crypto="crypto" :is-a-d-m="isADM" />
+    <WalletCardListActions :class="classes.walletCardList" :crypto="crypto" :is-a-d-m="isADM" />
 
     <ShareURIDialog
       v-model="showShareURIDialog"
@@ -46,28 +46,32 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
+import { computed, defineComponent, ref } from 'vue'
 import ShareURIDialog from '@/components/ShareURIDialog.vue'
 import WalletCardListActions from '@/components/WalletCardListActions.vue'
 import { Cryptos } from '@/lib/constants'
-import currency from '@/filters/currencyAmountWithSymbol'
+import { useDisplay } from 'vuetify'
+import smartNumber from '@/lib/smartNumber'
+import currencyAmount from '@/filters/currencyAmount'
+import { useStore } from 'vuex'
 
-export default {
-  components: {
-    ShareURIDialog,
-    WalletCardListActions
-  },
+const className = 'wallet-card'
+
+const classes = {
+  root: className,
+  walletCardAction: `${className}__action`,
+  walletCardIcon: `${className}__icon`,
+  walletCardList: `${className}__list`,
+  walletCardSubtitle: `${className}__subtitle`,
+  walletCardTile: `${className}__tile`,
+  walletCardTitle: `${className}__title`
+}
+
+export default defineComponent({
   props: {
     address: {
       type: String,
-      required: true
-    },
-    balance: {
-      type: Number,
-      required: true
-    },
-    rate: {
-      type: Number,
       required: true
     },
     crypto: {
@@ -81,22 +85,52 @@ export default {
     currentCurrency: {
       type: String,
       default: 'USD'
-    }
-  },
-  emits: ['click:balance'],
-  data: () => ({ showShareURIDialog: false }),
-  computed: {
-    className() {
-      return 'wallet-card'
     },
-    isADM() {
-      return this.crypto === Cryptos.ADM
+    rate: {
+      type: Number,
+      required: true
     }
   },
-  methods: {
-    currency
+  components: {
+    ShareURIDialog,
+    WalletCardListActions
+  },
+  setup(props) {
+    const store = useStore()
+    const { xs } = useDisplay()
+    const key = props.crypto.toLowerCase()
+    const showShareURIDialog = ref(false)
+
+    const balance = computed(() => {
+      return props.crypto === Cryptos.ADM
+        ? store.state.balance
+        : store.state[key]
+          ? store.state[key].balance
+          : 0
+    })
+
+    const calculatedBalance = computed(() => {
+      return smartNumber(calculatedFullBalance.value)
+    })
+
+    const calculatedFullBalance = computed(() => {
+      return balance.value ? currencyAmount(Number(balance.value), props.crypto, true) : 0
+    })
+
+    const isADM = computed(() => {
+      return props.crypto === Cryptos.ADM
+    })
+
+    return {
+      classes,
+      calculatedBalance,
+      calculatedFullBalance,
+      isADM,
+      showShareURIDialog,
+      xs
+    }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -123,9 +157,6 @@ export default {
   }
   &__list {
     padding: 8px 0 0;
-  }
-  &__tile {
-    // height: 60px // too small height
   }
 }
 
