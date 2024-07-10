@@ -12,11 +12,14 @@
       </template>
 
       <v-list-item-title v-if="partnerName">
-        <span class="a-text-regular-enlarged">{{ partnerName }}</span>
-        <span class="a-text-explanation-enlarged"> ({{ partnerId }})</span>
+        <span class="a-text-regular-enlarged-name">{{ partnerName }}</span>
+        <span class="a-text-explanation-enlarged">({{ address }})</span>
       </v-list-item-title>
       <v-list-item-title v-else>
-        <span class="a-text-regular-enlarged">{{ partnerId }}</span>
+        <span class="a-text-regular-enlarged">
+          <span class="addressLeft">{{ addressLeft }}</span>
+          <span class="addressRight">{{ addressRight }}</span>
+        </span>
       </v-list-item-title>
 
       <v-list-item-title>
@@ -126,6 +129,17 @@ export default {
     // Crypto address, like 1F9bMGsui6GbcFaGSNao5YcjnEk38eXXg7 or U3716604363012166999
     partnerId() {
       return isStringEqualCI(this.senderId, this.userId) ? this.recipientId : this.senderId
+    },
+    addressLeft() {
+      return this.partnerId.substring(0, this.partnerId.length - 10)
+    },
+    addressRight() {
+      return this.partnerId.substring(this.partnerId.length - 10)
+    },
+    address() {
+      return this.partnerId.length > 20
+        ? this.partnerId.slice(0, 16) + '...' + this.addressRight
+        : this.partnerId
     },
     // Partner's ADM address, if found. Else, returns 'undefined'
     partnerAdmId() {
@@ -267,6 +281,18 @@ export default {
 @import '@/assets/styles/themes/adamant/_mixins.scss';
 @import '@/assets/styles/settings/_colors.scss';
 
+.addressLeft {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.addressRight {
+  display: inline-block;
+}
+.a-text-regular-enlarged {
+  display: flex;
+}
 .transaction-item {
   &__rates {
     color: hsla(0, 0%, 100%, 0.7);
