@@ -45,7 +45,8 @@ const state = () => ({
   chats: {},
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
-  offset: 0 // for loading chat list with pagination. -1 if all of chats loaded
+  offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
+  animateLastReactions: false // // will animate the last reaction if the value is `true`
 })
 
 const getters = {
@@ -90,6 +91,13 @@ const getters = {
     if (reactions.length === 0) return null
 
     return reactions[reactions.length - 1]
+  },
+
+  isLastReaction: (state, getters) => (transactionId, partnerId) => {
+    const messages = getters.messages(partnerId)
+    const index = messages.findIndex((message) => message.id === transactionId)
+
+    return index === messages.length - 1
   },
 
   /**
@@ -486,6 +494,10 @@ const mutations = {
     }
   },
 
+  updateAnimateLastReaction(state, value) {
+    state.animateLastReaction = value
+  },
+
   reset(state) {
     state.chats = {}
     state.lastMessageHeight = 0
@@ -789,13 +801,15 @@ const actions = {
    * @param {string} reactMessage Emoji
    * @returns {Promise}
    */
-  sendReaction({ commit, rootState }, { recipientId, reactToId, reactMessage }) {
+  sendReaction({ dispatch, commit, rootState }, { recipientId, reactToId, reactMessage }) {
     const messageObject = createReaction({
       recipientId,
       senderId: rootState.address,
       reactToId,
       reactMessage
     })
+
+    dispatch('animateReaction', messageObject.id)
 
     commit('pushMessage', {
       message: messageObject,
@@ -831,6 +845,13 @@ const actions = {
 
         throw err // call the error again so that it can be processed inside view
       })
+  },
+
+  animateReaction({ commit }) {
+    commit('updateAnimateLastReaction', true)
+    setTimeout(() => {
+      commit('updateAnimateLastReaction', false)
+    }, 1500)
   },
 
   /**
