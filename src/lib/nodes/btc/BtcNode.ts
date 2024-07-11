@@ -1,8 +1,8 @@
+import { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { createBtcLikeClient } from '../utils/createBtcLikeClient'
-import type { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { formatBtcVersion } from '@/lib/nodes/utils/nodeVersionFormatters.ts'
+import { formatBtcVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
 
 type FetchBtcNodeInfoResult = {
   error: string
@@ -47,5 +47,25 @@ export class BtcNode extends Node<AxiosInstance> {
     if (version) {
       this.version = formatBtcVersion(version)
     }
+  }
+
+  /**
+   * Performs a request to the Bitcoin node.
+   */
+  async request<Response = any, Params = any>(
+    method: 'GET' | 'POST',
+    path: string,
+    params?: Params,
+    requestConfig?: AxiosRequestConfig
+  ): Promise<Response> {
+    return this.client
+      .request({
+        ...requestConfig,
+        url: path,
+        method,
+        params: method === 'GET' ? params : undefined,
+        data: method === 'POST' ? params : undefined
+      })
+      .then((res) => res.data)
   }
 }

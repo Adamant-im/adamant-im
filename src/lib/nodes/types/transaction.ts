@@ -35,3 +35,11 @@ export type EthTransaction = Omit<CoinTransaction, 'timestamp'> & {
   time?: number // timestamp in seconds
   timestamp?: number // timestamp in milliseconds
 }
+
+export type BtcTransaction = Omit<CoinTransaction, 'confirmations'> & {
+  time: number // in seconds
+  confirmations: number
+  senders: string[]
+  recipients: string[]
+  height: number
+}
