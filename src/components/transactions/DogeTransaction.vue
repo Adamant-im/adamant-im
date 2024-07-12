@@ -33,7 +33,7 @@ import TransactionTemplateLoading from './TransactionTemplateLoading.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { CryptosInfo, CryptoSymbol, TransactionStatus } from '@/lib/constants'
 import { useFindAdmTransaction } from '@/hooks/address'
-import { useBtcTransferQuery } from '@/hooks/queries/useBtcTransferQuery'
+import { useDogeTransferQuery } from '@/hooks/queries/useDogeTransferQuery'
 
 import currency from '@/filters/currencyAmountWithSymbol'
 
@@ -63,7 +63,7 @@ export default defineComponent({
       isError,
       isSuccess,
       data: transaction
-    } = useBtcTransferQuery(props.id, props.crypto)
+    } = useDogeTransferQuery(props.id, props.crypto)
     const status = computed(() => {
       if (isFetching.value) return TransactionStatus.PENDING
       if (isError.value) return TransactionStatus.REJECTED
@@ -72,7 +72,7 @@ export default defineComponent({
       return TransactionStatus.PENDING
     })
 
-    const cryptoAddress = computed(() => store.state.btc.address)
+    const cryptoAddress = computed(() => store.state.doge.address)
     const partnerCryptoAddress = usePartnerCryptoAddress(
       cryptoAddress,
       transaction.value.senderId,
@@ -158,21 +158,7 @@ export default defineComponent({
     })
 
     const explorerLink = computed(() => getExplorerTxUrl(props.crypto, props.id))
-    const confirmations = computed(() => {
-      const { height, confirmations } = transaction.value
-
-      let result = confirmations
-      if (height) {
-        // Calculate confirmations count based on the tx block height and the last block height.
-        // That's for BTC only as it does not return the confirmations for the transaction.
-        const c = store.getters[`${cryptoKey.value}/height`] - height + 1
-        if (c > 0 && (c > result || !result)) {
-          result = c
-        }
-      }
-
-      return result
-    })
+    const confirmations = computed(() => transaction.value.confirmations)
 
     const admTx = useFindAdmTransaction(props.id)
 
