@@ -57,13 +57,14 @@ export default defineComponent({
     const { t } = useI18n()
 
     const cryptoKey = computed(() => props.crypto.toLowerCase())
+    const cryptoAddress = computed(() => store.state.btc.address)
 
     const {
       isFetching,
       isError,
       isSuccess,
       data: transaction
-    } = useBtcTransferQuery(props.id, props.crypto)
+    } = useBtcTransferQuery(props.id, cryptoAddress)
     const status = computed(() => {
       if (isFetching.value) return TransactionStatus.PENDING
       if (isError.value) return TransactionStatus.REJECTED
@@ -72,7 +73,6 @@ export default defineComponent({
       return TransactionStatus.PENDING
     })
 
-    const cryptoAddress = computed(() => store.state.btc.address)
     const partnerCryptoAddress = usePartnerCryptoAddress(
       cryptoAddress,
       transaction.value.senderId,
