@@ -3,7 +3,7 @@
     <tr>
       <th :class="classes.checkbox" v-if="!hideCheckbox" />
       <th :class="classes.label" class="pl-0 pr-2" v-if="!hideLabel">
-        {{ customLabelCode ? t(customLabelCode) : t('nodes.coin') }}
+        {{ label }}
       </th>
       <th :class="classes.th" class="pl-0 pr-2" v-if="!hideHost">
         {{ t('nodes.host') }}
@@ -38,7 +38,7 @@ export default {
     hideSocket: {
       type: Boolean
     },
-    customLabelCode: {
+    label: {
       type: String
     }
   },

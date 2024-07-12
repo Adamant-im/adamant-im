@@ -1,6 +1,6 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead hide-socket custom-label-code="nodes.service" />
+    <NodesTableHead hide-socket :label="$t('nodes.service')" />
 
     <tbody>
       <ServiceNodesTableItem
