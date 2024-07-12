@@ -37,7 +37,7 @@ export default defineComponent({
     const store = useStore()
 
     const nodes = computed<NodeStatusResult[]>(() => {
-      const arr = store.getters['servicesModule/services']
+      const arr = store.getters['services/services']
 
       return [...arr].sort(sortNodesFn)
     })

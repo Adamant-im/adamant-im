@@ -64,12 +64,12 @@ export default {
     const type = computed(() => props.node.label)
 
     const toggleActiveStatus = () => {
-      store.dispatch('servicesModule/toggle', {
+      store.dispatch('services/toggle', {
         type: type.value,
         url: url.value,
         active: !active.value
       })
-      store.dispatch('servicesModule/updateStatus')
+      store.dispatch('services/updateStatus')
     }
 
     return {

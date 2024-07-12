@@ -5,5 +5,5 @@ import { rateInfoClient } from './rate-info-service'
 export const services = {
   klyIndexer,
   ethIndexer,
-  rate: rateInfoClient
+  'rates-info': rateInfoClient
 }

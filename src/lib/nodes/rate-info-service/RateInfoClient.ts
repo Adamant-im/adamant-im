@@ -3,7 +3,7 @@ import { RateInfoResponse, RateInfoService } from '@/lib/nodes/rate-info-service
 
 export class RateInfoClient extends Client<RateInfoService> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
-    super('adm')
+    super('adm', 'service')
     this.nodes = endpoints.map((endpoint) => new RateInfoService(endpoint))
     this.minNodeVersion = minNodeVersion
 

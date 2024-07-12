@@ -34,7 +34,7 @@
       </div>
       <div v-else-if="tab === 'services'">
         <v-checkbox
-          v-model="preferFastestCoinNodeOption"
+          v-model="preferFasterServiceNodeOption"
           :label="$t('nodes.fastest_title')"
           :class="classes.checkbox"
           class="mt-4"
@@ -89,7 +89,7 @@ import { defineComponent, ref, computed } from 'vue'
 import { AdmNodesTable } from './adm'
 import { CoinNodesTable } from './coins'
 import { useStore } from 'vuex'
-import ServiceNodesTable from '@/components/nodes/services/ServiceNodesTable.vue'
+import ServiceNodesTable from './services/ServiceNodesTable.vue'
 
 const className = 'nodes-table'
 const classes = {
@@ -139,12 +139,22 @@ export default defineComponent({
       }
     })
 
+    const preferFasterServiceNodeOption = computed<boolean>({
+      get() {
+        return store.state.services.useFastestService
+      },
+      set(value) {
+        store.dispatch('services/useFastestService', value)
+      }
+    })
+
     return {
       tab,
       classes,
       useSocketConnection,
       preferFastestAdmNodeOption,
-      preferFastestCoinNodeOption
+      preferFastestCoinNodeOption,
+      preferFasterServiceNodeOption
     }
   }
 })

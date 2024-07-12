@@ -4,29 +4,27 @@ import { AvailableService, ServicesState } from '@/store/modules/services/types.
 
 export default (store: Store<ServicesState>) => {
   for (const [serviceType, client] of Object.entries(services)) {
-    client
-      .getNodes()
-      .forEach((status) => store.commit('servicesModule/status', { status, serviceType }))
+    client.getNodes().forEach((status) => store.commit('services/status', { status, serviceType }))
 
     client.onStatusUpdate((status) => {
-      store.commit('servicesModule/status', { status, serviceType })
+      store.commit('services/status', { status, serviceType })
     })
   }
-  store.commit('servicesModule/useFastestService', services.rate.useFastest)
+  store.commit('services/useFastestService', services['rates-info'].useFastest)
 
   store.subscribe((mutation) => {
     const { type, payload } = mutation
 
-    if (type === 'servicesModule/useFastestService') {
-      services.rate.setUseFastest(!!payload)
+    if (type === 'services/useFastestService') {
+      services['rates-info'].setUseFastest(!!payload)
     }
 
-    if (type === 'servicesModule/toggle') {
+    if (type === 'services/toggle') {
       const selectedNodeType = payload.type as AvailableService
       const newStatus = services[selectedNodeType].toggleNode(payload.url, payload.active)
 
       if (newStatus) {
-        store.commit('servicesModule/status', { status: newStatus, serviceType: selectedNodeType })
+        store.commit('services/status', { status: newStatus, serviceType: selectedNodeType })
       }
     }
   })

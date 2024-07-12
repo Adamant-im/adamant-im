@@ -252,7 +252,7 @@ const store = {
     identicon,
     notification,
     rate,
-    servicesModule,
+    services: servicesModule,
     wallets: walletsModule // Wallets order and visibility
   }
 }
