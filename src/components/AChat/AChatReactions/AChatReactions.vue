@@ -74,7 +74,10 @@ export default defineComponent({
     const shouldAnimate = (reaction: NormalizedChatMessageTransaction) => {
       const isLastReaction = store.getters['chat/isLastReaction'](reaction.id, partnerId.value)
 
-      return isLastReaction && store.state.chat.animateLastReaction
+      return (
+        isLastReaction &&
+        (store.state.chat.animateIncomingReaction || store.state.chat.animateOutgoingReaction)
+      )
     }
 
     return {

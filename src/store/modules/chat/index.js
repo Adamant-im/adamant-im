@@ -11,13 +11,21 @@ import {
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
-import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
+import {
+  Cryptos,
+  TransactionStatus as TS,
+  MessageType,
+  AnimationReactionType as ART
+} from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
+// import { vibrate } from '@/lib/vibrate'
 
 import { generateAdamantChats } from './utils/generateAdamantChats'
 
 export let interval
+
+export let timeouts = []
 
 const SOCKET_ENABLED_TIMEOUT = 10000
 const SOCKET_DISABLED_TIMEOUT = 3000
@@ -46,7 +54,8 @@ const state = () => ({
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
-  animateLastReactions: false // // will animate the last reaction if the value is `true`
+  animateIncomingReaction: false, // `true` - animate incoming last reaction
+  animateOutgoingReaction: false // `true` - animate outgoing last reaction
 })
 
 const getters = {
@@ -494,8 +503,12 @@ const mutations = {
     }
   },
 
-  updateAnimateLastReaction(state, value) {
-    state.animateLastReaction = value
+  updateAnimateOutgoingReaction(state, value) {
+    state.animateOutgoingReaction = value
+  },
+
+  updateAnimateIncomingReaction(state, value) {
+    state.animateIncomingReaction = value
   },
 
   reset(state) {
@@ -624,6 +637,10 @@ const actions = {
       const { messages, lastMessageHeight } = result
 
       dispatch('pushMessages', messages)
+
+      if (messages.length > 0) {
+        dispatch('animateLastReaction', ART.Incoming)
+      }
 
       if (lastMessageHeight > 0) {
         commit('setHeight', lastMessageHeight)
@@ -809,7 +826,7 @@ const actions = {
       reactMessage
     })
 
-    dispatch('animateReaction', messageObject.id)
+    dispatch('animateLastReaction', ART.Outgoing)
 
     commit('pushMessage', {
       message: messageObject,
@@ -847,11 +864,21 @@ const actions = {
       })
   },
 
-  animateReaction({ commit }) {
-    commit('updateAnimateLastReaction', true)
-    setTimeout(() => {
-      commit('updateAnimateLastReaction', false)
-    }, 1500)
+  /**
+   * Animation of last reaction with vibro
+   * @param {ART} type - animation reaction type - incomingg or outgoing
+   */
+
+  animateLastReaction({ commit }, type) {
+    const updateFn =
+      type === ART.Incoming ? 'updateAnimateIncomingReaction' : 'updateAnimateOutgoingReaction'
+
+    // navigator.userAgentData.mobile && vibrate.doubleVeryShort()
+
+    commit(updateFn, true)
+    const timeout = setTimeout(() => commit(updateFn, false), 1500)
+
+    timeouts.push(timeout)
   },
 
   /**
@@ -926,6 +953,13 @@ const actions = {
     root: true,
     handler() {
       clearTimeout(interval)
+    }
+  },
+
+  clearAnimationTimeouts: {
+    root: true,
+    handler() {
+      timeouts.forEach((timeout) => clearTimeout(timeout))
     }
   },
 

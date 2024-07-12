@@ -81,19 +81,19 @@ export default defineComponent({
     transform-origin: center center;
     transition-timing-function: ease-out;
   }
-  10% {
-    transform: scale(1.17);
+  20% {
+    transform: scale(1.32);
     transition-timing-function: ease-in;
   }
-  17% {
-    transform: scale(1.24);
+  40% {
+    transform: scale(1);
     transition-timing-function: ease-out;
   }
-  33% {
-    transform: scale(1.11);
+  60% {
+    transform: scale(1.21);
     transition-timing-function: ease-in;
   }
-  45% {
+  80% {
     transform: scale(1);
     transition-timing-function: ease-out;
   }
