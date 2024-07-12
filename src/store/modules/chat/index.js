@@ -19,7 +19,7 @@ import {
 } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
-// import { vibrate } from '@/lib/vibrate'
+import { vibrate } from '@/lib/vibrate'
 
 import { generateAdamantChats } from './utils/generateAdamantChats'
 
@@ -873,7 +873,7 @@ const actions = {
     const updateFn =
       type === ART.Incoming ? 'updateAnimateIncomingReaction' : 'updateAnimateOutgoingReaction'
 
-    // navigator.userAgentData.mobile && vibrate.doubleVeryShort()
+    navigator.userAgentData.mobile && vibrate.doubleVeryShort()
 
     commit(updateFn, true)
     const timeout = setTimeout(() => commit(updateFn, false), 1500)
