@@ -2,7 +2,7 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import type { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters.ts'
+import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
 
 type FetchBtcNodeInfoResult = {
   info: {
