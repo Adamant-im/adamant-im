@@ -45,3 +45,4 @@ export type BtcTransaction = Omit<CoinTransaction, 'confirmations'> & {
 }
 
 export type DogeTransaction = Omit<BtcTransaction, 'height'>
+export type DashTransaction = BtcTransaction

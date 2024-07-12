@@ -1,7 +1,8 @@
+import { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { createBtcLikeClient } from '../utils/createBtcLikeClient'
-import type { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { RpcRequest, RpcResponse } from './types/api/common'
 
 type FetchNodeVersionResponse = {
   error: string
@@ -45,5 +46,44 @@ export class DashNode extends Node<AxiosInstance> {
     if (buildversion) {
       this.version = buildversion.replace('v', '')
     }
+  }
+
+  /**
+   * Performs an RPC request to the Dash node.
+   */
+  async invoke<Result = any, Request extends RpcRequest = RpcRequest>(
+    params: Request,
+    requestConfig?: AxiosRequestConfig
+  ): Promise<Result> {
+    return this.client
+      .request<RpcResponse<Result>>({
+        ...requestConfig,
+        url: '/',
+        method: 'POST',
+        data: params
+      })
+      .then((res) => res.data)
+      .then(({ result, error }) => {
+        if (error) throw new Error(error.message)
+
+        return result
+      })
+  }
+
+  /**
+   * Performs many RPC requests to the Dash node.
+   */
+  async invokeMany<Result = any, Request extends RpcRequest = RpcRequest>(
+    params: Request[],
+    requestConfig?: AxiosRequestConfig
+  ): Promise<RpcResponse<Result>[]> {
+    return this.client
+      .request<RpcResponse<Result>[]>({
+        ...requestConfig,
+        url: '/',
+        method: 'POST',
+        data: params
+      })
+      .then((res) => res.data)
   }
 }
