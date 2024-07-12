@@ -13,7 +13,7 @@ export const actions: ActionTree<RateState, RootState> = {
     if (success) {
       commit('setRates', result)
     }
-    commit('loadRates')
+    commit('setLoaded')
   },
   async getHistoryRates({ state, commit }, { timestamp }) {
     if (!timestamp) return

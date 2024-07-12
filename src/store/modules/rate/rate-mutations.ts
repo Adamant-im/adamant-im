@@ -8,7 +8,7 @@ export const mutations: MutationTree<RateState> = {
   setHistoryRates(state, historyRates: { name: number; value: Rates }) {
     state.historyRates[historyRates.name] = historyRates.value
   },
-  loadRates(state) {
+  setLoaded(state) {
     state.isLoaded = true
   }
 }
