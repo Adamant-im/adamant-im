@@ -21,7 +21,7 @@ export type RateHistoryInfoResponse = {
 
 export class RateInfoService extends Node<AxiosInstance> {
   constructor(url: string) {
-    super(url, 'adm', 'service', NODE_LABELS.Rate)
+    super(url, 'adm', 'service', NODE_LABELS.RatesInfo)
   }
   protected buildClient(): AxiosInstance {
     return axios.create({
