@@ -24,7 +24,7 @@ export class BtcClient extends Client<BtcNode> {
     void this.watchNodeStatusChange()
   }
 
-  async request<Params = any, Response = any>(
+  async request<Response = any, Params = any>(
     method: 'GET' | 'POST',
     path: string,
     params?: Params,
@@ -40,9 +40,7 @@ export class BtcClient extends Client<BtcNode> {
    * @param address Owner BTC address
    */
   async getTransaction(transactionId: string, address: string) {
-    const node = this.getNode()
-
-    const transaction = await node.request<Transaction>('GET', `/tx/${transactionId}`, {
+    const transaction = await this.request<Transaction>('GET', `/tx/${transactionId}`, {
       transactionId
     })
 
@@ -56,11 +54,9 @@ export class BtcClient extends Client<BtcNode> {
    * @param toTx Until transaction ID. For pagination.
    */
   async getTransactions(address: string, toTx?: string) {
-    const node = this.getNode()
-
     const endpoint = toTx ? `/address/${address}/txs/chain/${toTx}` : `/address/${address}/txs`
 
-    const transactions = await node.request<Transaction[]>('GET', endpoint)
+    const transactions = await this.request<Transaction[]>('GET', endpoint)
 
     return transactions.map((transaction) => normalizeTransaction(transaction, address))
   }
@@ -70,29 +66,21 @@ export class BtcClient extends Client<BtcNode> {
    * @param address BTC address
    */
   async getUnspents(address: string) {
-    const node = this.getNode()
-
-    return node.request<UTXO[], GetUnspentsParams>('GET', `/address/${address}/utxo`)
+    return this.request<UTXO[], GetUnspentsParams>('GET', `/address/${address}/utxo`)
   }
 
   async getFeeRate() {
-    const node = this.getNode()
-
-    return node.request<Record<string, number>>('GET', '/fee-estimates')
+    return this.request<Record<string, number>>('GET', '/fee-estimates')
   }
 
   async getHeight() {
-    const node = this.getNode()
-
-    const height = node.request<string>('GET', '/blocks/tip/height')
+    const height = this.request<string>('GET', '/blocks/tip/height')
 
     return Number(height)
   }
 
   async getAddress(address: string) {
-    const node = this.getNode()
-
-    return node.request<GetAddressResult, GetAddressParams>('GET', `/address/${address}`)
+    return this.request<GetAddressResult, GetAddressParams>('GET', `/address/${address}`)
   }
 
   async getBalance(address: string) {
