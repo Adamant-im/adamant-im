@@ -43,3 +43,5 @@ export type BtcTransaction = Omit<CoinTransaction, 'confirmations'> & {
   recipients: string[]
   height: number
 }
+
+export type DogeTransaction = Omit<BtcTransaction, 'height'>
