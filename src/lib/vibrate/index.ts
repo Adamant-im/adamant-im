@@ -1,4 +1,4 @@
-const VIBRATION_PATTERN = {
+export const VIBRATION_PATTERN: Record<string, number[]> = {
   VERY_SHORT: [40],
   SHORT: [80],
   MEDIUM: [160],
@@ -17,7 +17,7 @@ function checkVibrateIsSupported() {
   return false
 }
 
-function createVibrationPattern(pattern) {
+export function createVibrationPattern(pattern: number[]) {
   return () => {
     if (!checkVibrateIsSupported()) return
 
