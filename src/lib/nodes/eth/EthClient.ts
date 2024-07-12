@@ -58,20 +58,24 @@ export class EthClient extends Client<EthNode> {
 
   sendSignedTransaction(...args: Parameters<Web3Eth['sendSignedTransaction']>): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.getNode()
-        .client.sendSignedTransaction(...args)
-        .on('transactionHash', (hash) => {
-          if (typeof hash === 'string') {
-            resolve(hash)
-          } else {
-            resolve(bytesToHex(hash))
-          }
-        })
-        .on('error', reject)
+      try {
+        this.getNode()
+          .client.sendSignedTransaction(...args)
+          .on('transactionHash', (hash) => {
+            if (typeof hash === 'string') {
+              resolve(hash)
+            } else {
+              resolve(bytesToHex(hash))
+            }
+          })
+          .on('error', reject)
+      } catch (err) {
+        reject(err)
+      }
     })
   }
 
-  getNonce(address: string) {
+  async getNonce(address: string) {
     return this.getNode().client.getTransactionCount(address)
   }
 }

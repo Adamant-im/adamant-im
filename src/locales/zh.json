@@ -18,6 +18,7 @@
     "unable_to_retrieve_no_public_key": "`无法解密消息：没有合作伙伴的公钥`",
     "me": "我",
     "message": "键入消息",
+    "message_rejected": "消息被拒绝",
     "my_qr_code": "我的二维码",
     "new_chat": "开始新的聊天",
     "no_connection": "没有Internet连接",
@@ -77,7 +78,13 @@
     "you_reacted": "反应",
     "partner_reacted": "已反应",
     "you_removed_reaction": "已删除反应",
-    "partner_removed_reaction": "已删除的反应"
+    "partner_removed_reaction": "已删除的反应",
+    "nodes_offline_dialog": {
+      "title": "Nodes are offline",
+      "text": "All {coin} nodes appear to be offline or possibly disabled. To continue use the Messenger please review the <strong>Nodes list</strong> and enable any nodes that are found to be disabled.",
+      "open_nodes_button": "Open Nodes page"
+    },
+    "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
   },
   "common": {
     "cancel": "取消",
@@ -90,6 +97,10 @@
     "online": "联机--已设置连接"
   },
   "error": "错误",
+  "errors": {
+    "something_went_wrong": "Something went wrong. Check the console for details",
+    "all_nodes_offline": "All {crypto} nodes are offline. Try again later"
+  },
   "home": {
     "balance": "余额",
     "buy_tokens_anonymously": "在网站上匿名",
@@ -319,7 +330,7 @@
     "decode_from_image": "从图像中读取QR",
     "error_chat_fee": "要通过聊天发送 {crypto}，您需要 0.001 ADM",
     "error_dust_amount": "无存量--发送更多代币",
-    "recipient_minimum_balance": "收件人必须至少有 0.05 LSK--发送更多令牌",
+    "recipient_minimum_balance": "收件人必须至少有 0.05 KLY--发送更多令牌",
     "error_all_nodes_offline": "所有 {crypto} 节点都已离线，请稍后重试。",
     "error_precision": "精度过高--设置小数位数较少",
     "error_erc20_fee": "您需要｛费｝来支付转会费",

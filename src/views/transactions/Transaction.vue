@@ -7,9 +7,9 @@ import AdmTransaction from '../../components/transactions/AdmTransaction.vue'
 import EthTransaction from '../../components/transactions/EthTransaction.vue'
 import Erc20Transaction from '../../components/transactions/Erc20Transaction.vue'
 import BtcTransaction from '../../components/transactions/BtcTransaction.vue'
-import LskTransaction from '../../components/transactions/LskTransaction.vue'
+import KlyTransaction from '../../components/transactions/KlyTransaction.vue'
 
-import { Cryptos, isErc20, isBtcBased, isLskBased } from '../../lib/constants'
+import { Cryptos, isErc20, isBtcBased, isKlyBased } from '../../lib/constants'
 import { getTxUpdateInterval } from '../../lib/transactionsFetching'
 
 export default {
@@ -19,7 +19,7 @@ export default {
     EthTransaction,
     Erc20Transaction,
     BtcTransaction,
-    LskTransaction
+    KlyTransaction
   },
   props: {
     crypto: {
@@ -41,7 +41,7 @@ export default {
       if (this.crypto === Cryptos.ETH) return 'eth-transaction'
       if (isErc20(this.crypto)) return 'erc20-transaction'
       if (isBtcBased(this.crypto)) return 'btc-transaction'
-      if (isLskBased(this.crypto)) return 'lsk-transaction'
+      if (isKlyBased(this.crypto)) return 'kly-transaction'
       return 'adm-transaction'
     }
   },

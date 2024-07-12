@@ -1,9 +1,9 @@
-import { lskIndexer } from './lsk-indexer'
+import { klyIndexer } from './kly-indexer'
 import { ethIndexer } from './eth-indexer'
 import { rateInfoClient } from './rate-info-service'
 
 export const services = {
-  lskIndexer,
+  klyIndexer,
   ethIndexer,
   rate: rateInfoClient
 }

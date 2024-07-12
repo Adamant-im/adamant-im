@@ -17,7 +17,7 @@ export type StoreTransaction = {
    */
   gasPrice?: number | string
   /**
-   * LSK specific
+   * KLY specific
    */
   data?: string
 }

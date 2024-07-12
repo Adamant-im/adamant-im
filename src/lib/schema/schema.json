@@ -3444,7 +3444,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Lisk of blocks",
+            "description": "List of blocks",
             "content": {
               "application/json": {
                 "schema": {
