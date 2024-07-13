@@ -8,12 +8,8 @@ type State = Record<URL, Enabled>
 type Options = Record<
   NodeType,
   {
-    node: {
-      useFastest: boolean
-    }
-    service?: {
-      useFastest: boolean
-    }
+    node: { useFastest: boolean }
+    service: { useFastest: boolean }
   }
 >
 
@@ -22,16 +18,17 @@ const NODES_OPTIONS_STORAGE_KEY = 'NODES_OPTIONS_STORAGE' // for storing common 
 
 const stateStorage = new TypedStorage(NODES_STATE_STORAGE_KEY, {} as State, window.localStorage)
 
+const defaultConfig = {
+  node: { useFastest: false },
+  service: { useFastest: false }
+}
 const defaultOptions: Options = {
-  adm: {
-    node: { useFastest: false },
-    service: { useFastest: true }
-  },
-  btc: { node: { useFastest: false } },
-  doge: { node: { useFastest: false } },
-  dash: { node: { useFastest: false } },
-  eth: { node: { useFastest: false } },
-  kly: { node: { useFastest: false }, service: { useFastest: true } }
+  adm: defaultConfig,
+  btc: defaultConfig,
+  doge: defaultConfig,
+  dash: defaultConfig,
+  eth: defaultConfig,
+  kly: defaultConfig
 }
 
 const optionsStorage = new TypedStorage(
