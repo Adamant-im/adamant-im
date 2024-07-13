@@ -88,8 +88,8 @@
 import { defineComponent, ref, computed } from 'vue'
 import { AdmNodesTable } from './adm'
 import { CoinNodesTable } from './coins'
+import { ServiceNodesTable } from './services'
 import { useStore } from 'vuex'
-import ServiceNodesTable from './services/ServiceNodesTable.vue'
 
 const className = 'nodes-table'
 const classes = {
