@@ -86,10 +86,11 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
+import { useStore } from 'vuex'
+
 import { AdmNodesTable } from './adm'
 import { CoinNodesTable } from './coins'
 import { ServiceNodesTable } from './services'
-import { useStore } from 'vuex'
 
 const className = 'nodes-table'
 const classes = {
