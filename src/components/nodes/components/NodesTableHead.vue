@@ -2,7 +2,7 @@
   <thead :class="classes.root">
     <tr>
       <th :class="classes.checkbox" v-if="!hideCheckbox" />
-      <th :class="classes.label" class="pl-0 pr-2" v-if="!hideLabel">
+      <th :class="classes.label" class="pl-0 pr-2" v-if="label">
         {{ label }}
       </th>
       <th :class="classes.th" class="pl-0 pr-2" v-if="!hideHost">
@@ -24,9 +24,6 @@ import { useI18n } from 'vue-i18n'
 export default {
   props: {
     hideCheckbox: {
-      type: Boolean
-    },
-    hideLabel: {
       type: Boolean
     },
     hideHost: {

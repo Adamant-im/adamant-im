@@ -1,6 +1,6 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead hide-label />
+    <NodesTableHead />
 
     <tbody>
       <AdmNodesTableItem v-for="node in admNodes" :key="node.url" blockchain="adm" :node="node" />
