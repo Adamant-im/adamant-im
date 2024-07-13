@@ -36,6 +36,10 @@ export type EthTransaction = Omit<CoinTransaction, 'timestamp'> & {
   timestamp?: number // timestamp in milliseconds
 }
 
+export type Erc20Transaction = EthTransaction & {
+  gasPrice: number
+}
+
 export type BtcTransaction = Omit<CoinTransaction, 'confirmations'> & {
   time: number // in seconds
   confirmations: number
@@ -46,3 +50,10 @@ export type BtcTransaction = Omit<CoinTransaction, 'confirmations'> & {
 
 export type DogeTransaction = Omit<BtcTransaction, 'height'>
 export type DashTransaction = BtcTransaction
+
+export type AnyCoinTransaction =
+  | BtcTransaction
+  | DogeTransaction
+  | DashTransaction
+  | EthTransaction
+  | KlyTransaction

@@ -1,10 +1,11 @@
 import { Web3Eth } from 'web3-eth'
 import { TransactionNotFound as Web3TransactionNotFound } from 'web3-errors'
 import { TransactionNotFound } from '@/lib/nodes/utils/errors'
+import { CryptoSymbol } from '@/lib/constants'
+import { bytesToHex } from '@/lib/hex'
 import { EthNode } from './EthNode'
 import { Client } from '../abstract.client'
-import { normalizeTransaction } from './utils'
-import { bytesToHex } from '@/lib/hex'
+import { normalizeEthTransaction, normalizeErc20Transaction } from './utils'
 
 /**
  * Provides methods for calling the ADAMANT API.
@@ -35,7 +36,7 @@ export class EthClient extends Client<EthNode> {
     }
   }
 
-  async getTransaction(hash: string) {
+  async getEthTransaction(hash: string) {
     const node = this.getNode()
 
     try {
@@ -46,7 +47,28 @@ export class EthClient extends Client<EthNode> {
         ? await node.client.getBlock(transaction.blockNumber).then((block) => block.timestamp)
         : undefined
 
-      return normalizeTransaction(transaction, blockTimestamp)
+      return normalizeEthTransaction(transaction, blockTimestamp)
+    } catch (err) {
+      if (err instanceof Web3TransactionNotFound) {
+        throw new TransactionNotFound(hash, this.type)
+      }
+
+      throw err
+    }
+  }
+
+  async getErc20Transaction(hash: string, crypto: CryptoSymbol) {
+    const node = this.getNode()
+
+    try {
+      const transaction = await node.client.getTransaction(hash)
+      const isFinalized = transaction.blockNumber !== undefined
+
+      const blockTimestamp = isFinalized
+        ? await node.client.getBlock(transaction.blockNumber).then((block) => block.timestamp)
+        : undefined
+
+      return normalizeErc20Transaction(transaction, crypto, blockTimestamp)
     } catch (err) {
       if (err instanceof Web3TransactionNotFound) {
         throw new TransactionNotFound(hash, this.type)
