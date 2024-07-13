@@ -67,7 +67,7 @@ export const nodesStorage = {
       options[node][kind] = { useFastest: false }
     }
 
-    options[node][kind] = { useFastest: value }
+    options[node][kind].useFastest = value
 
     optionsStorage.setItem(options)
   }
