@@ -4,7 +4,7 @@ import { ServicesState } from '@/store/modules/services/types.ts'
 
 export const getters: GetterTree<ServicesState, RootState> = {
   rate(state) {
-    return Object.values(state['rates-info'])
+    return Object.values(state.ratesInfo)
   },
   services(state, getters) {
     return [...getters.rate]

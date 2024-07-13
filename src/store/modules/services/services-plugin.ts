@@ -10,13 +10,13 @@ export default (store: Store<ServicesState>) => {
       store.commit('services/status', { status, serviceType })
     })
   }
-  store.commit('services/useFastestService', services['rates-info'].useFastest)
+  store.commit('services/useFastestService', services.ratesInfo.useFastest)
 
   store.subscribe((mutation) => {
     const { type, payload } = mutation
 
     if (type === 'services/useFastestService') {
-      services['rates-info'].setUseFastest(!!payload)
+      services.ratesInfo.setUseFastest(!!payload)
     }
 
     if (type === 'services/toggle') {
