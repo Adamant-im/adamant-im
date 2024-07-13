@@ -55,15 +55,21 @@ export const nodesStorage = {
   getUseFastest(node: NodeType, kind: NodeKind = 'node') {
     const options = optionsStorage.getItem()
 
-    return !!options[node][kind]?.useFastest
+    return !!options[node]?.[kind]?.useFastest
   },
   setUseFastest(value: boolean, node: NodeType, kind: NodeKind = 'node') {
     const options = optionsStorage.getItem()
 
     if (!options[node]) {
-      options[node] = { node: { useFastest: false } }
-      options[node][kind] = { useFastest: value }
+      options[node] = {
+        node: { useFastest: false },
+        service: { useFastest: true }
+      }
     }
+    if (!options[node][kind]) {
+      options[node][kind] = { useFastest: false }
+    }
+
     options[node][kind] = { useFastest: value }
 
     optionsStorage.setItem(options)
