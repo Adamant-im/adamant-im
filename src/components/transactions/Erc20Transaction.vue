@@ -1,47 +1,36 @@
 <template>
-  <transaction-template
-    v-if="transaction"
-    :id="transaction.hash"
-    :amount="currency(transaction.amount, crypto)"
-    :timestamp="transaction.timestamp"
-    :fee="currency(transaction.fee, 'ETH')"
-    :confirmations="confirmations"
-    :sender="sender"
-    :recipient="recipient"
-    :sender-formatted="senderFormatted"
-    :recipient-formatted="recipientFormatted"
+  <transaction
+    :transaction="transaction"
+    :fee="fee"
+    :confirmations="confirmations || NaN"
+    :sender-formatted="senderFormatted || ''"
+    :recipient-formatted="recipientFormatted || ''"
     :explorer-link="explorerLink"
-    :partner="partnerAdmAddress"
+    :partner="partnerAdmAddress || ''"
     :status="{ status, virtualStatus: status }"
     :adm-tx="admTx"
     :crypto="crypto"
+    @refetch-status="refetch"
   />
-
-  <TransactionTemplateLoading v-else :explorer-link="explorerLink" :crypto="crypto" />
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue'
-import { computed, defineComponent } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
-import TransactionTemplate from './TransactionTemplate.vue'
+import Transaction from './Transaction.vue'
 import { getExplorerTxUrl } from '@/config/utils'
-import { Cryptos, CryptoSymbol, TransactionStatus } from '@/lib/constants'
-import { useChatName } from '@/components/AChat/hooks/useChatName'
-import { useFindAdmAddress } from '@/hooks/address/useFindAdmAddress'
-import { usePartnerCryptoAddress } from '@/hooks/address/usePartnerCryptoAddress'
-import { formatCryptoAddress } from '@/utils/address'
-import currency from '@/filters/currencyAmountWithSymbol'
-import { useFindAdmTransaction } from '@/hooks/address'
-import TransactionTemplateLoading from './TransactionTemplateLoading.vue'
+import { Cryptos, CryptoSymbol } from '@/lib/constants'
+import { useCryptoAddressPretty } from './hooks/address'
+import { useTransactionStatus } from './hooks/useTransactionStatus'
+import { useInconsistentStatus } from './hooks/useInconsistentStatus'
+import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
 import { useErc20TransferQuery } from '@/hooks/queries/useErc20TransferQuery'
+import { getPartnerAddress } from './utils/getPartnerAddress'
 
 export default defineComponent({
   name: 'Erc20Transaction',
   components: {
-    TransactionTemplateLoading,
-    TransactionTemplate
+    Transaction
   },
   props: {
     crypto: {
@@ -55,58 +44,39 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore()
-    const { t } = useI18n()
 
-    const ethKey = computed(() => 'eth')
     const cryptoAddress = computed(() => store.state.eth.address)
 
     const {
+      status: fetchStatus,
       isFetching,
-      isError,
-      isSuccess,
-      data: transaction
+      data: transaction,
+      refetch
     } = useErc20TransferQuery(props.id, props.crypto)
-    const status = computed(() => {
-      if (isFetching.value) return TransactionStatus.PENDING
-      if (isError.value) return TransactionStatus.REJECTED
-      if (isSuccess.value) return TransactionStatus.CONFIRMED
+    const status = useTransactionStatus(isFetching, fetchStatus)
+    const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
 
-      return TransactionStatus.PENDING
-    })
-
-    const sender = computed(() => transaction.value?.senderId || '')
-    const recipient = computed(() => transaction.value?.recipientId || '')
-
-    const senderAdmAddress = useFindAdmAddress(ethKey, transaction.value?.senderId, props.id)
-    const recipientAdmAddress = useFindAdmAddress(ethKey, transaction.value?.recipientId, props.id)
-    const senderName = useChatName(senderAdmAddress.value)
-    const recipientName = useChatName(recipientAdmAddress.value)
-
-    const senderFormatted = computed(() => {
-      return formatCryptoAddress(
-        transaction.value?.senderId,
-        cryptoAddress.value,
-        t,
-        senderAdmAddress.value,
-        senderName.value
-      )
-    })
-    const recipientFormatted = computed(() => {
-      return formatCryptoAddress(
-        transaction.value?.recipientId,
-        cryptoAddress.value,
-        t,
-        recipientAdmAddress.value,
-        recipientName.value
-      )
-    })
-
-    const partnerCryptoAddress = usePartnerCryptoAddress(
-      cryptoAddress,
-      transaction.value?.senderId,
-      transaction.value?.recipientId
+    const admTx = useFindAdmTransaction(props.id)
+    const senderAdmAddress = computed(() => admTx.value?.senderId || '')
+    const recipientAdmAddress = computed(() => admTx.value?.recipientId || '')
+    const partnerAdmAddress = computed(() =>
+      admTx.value
+        ? getPartnerAddress(admTx.value?.senderId, admTx.value?.recipientId, cryptoAddress.value)
+        : ''
     )
-    const partnerAdmAddress = useFindAdmAddress(ethKey, partnerCryptoAddress, props.id)
+
+    const senderFormatted = useCryptoAddressPretty(
+      transaction,
+      cryptoAddress,
+      senderAdmAddress,
+      'sender'
+    )
+    const recipientFormatted = useCryptoAddressPretty(
+      transaction,
+      cryptoAddress,
+      recipientAdmAddress,
+      'recipient'
+    )
 
     const explorerLink = computed(() => getExplorerTxUrl(Cryptos.ETH, props.id))
     const confirmations = computed(() => {
@@ -114,20 +84,21 @@ export default defineComponent({
 
       return Math.max(0, store.state.eth.blockNumber - transaction.value.blockNumber)
     })
-    const admTx = useFindAdmTransaction(props.id)
+
+    const fee = computed(() => transaction.value?.fee)
 
     return {
-      sender,
-      recipient,
+      refetch,
+      transaction,
+      fee,
       senderFormatted,
       recipientFormatted,
       partnerAdmAddress,
       explorerLink,
       confirmations,
-      transaction,
       admTx,
       status,
-      currency
+      inconsistentStatus
     }
   }
 })

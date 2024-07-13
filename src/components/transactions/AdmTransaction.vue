@@ -1,36 +1,34 @@
 <template>
-  <transaction-template
-    :id="transaction.id || ''"
-    :amount="currency(transaction.amount)"
-    :timestamp="transaction.timestamp || NaN"
-    :fee="currency(transaction.fee)"
-    :confirmations="transaction.confirmations || NaN"
-    :sender="sender"
-    :recipient="recipient"
+  <transaction
+    :transaction="transaction"
+    :fee="fee"
+    :confirmations="confirmations || NaN"
     :sender-formatted="senderFormatted || ''"
     :recipient-formatted="recipientFormatted || ''"
     :explorer-link="explorerLink"
-    :partner="partnerId"
+    :partner="partnerAdmAddress || ''"
     :status="{ status, virtualStatus: status }"
-    :adm-tx="admTx"
     :crypto="crypto"
+    @refetch-status="refetch"
   />
 </template>
 
 <script lang="ts">
-import { useFormatADMAddress } from '@/hooks/address/useFormatADMAddress'
-import { useAdmTransferQuery } from '@/hooks/queries/useAdmTransferQuery'
 import { computed, defineComponent } from 'vue'
 import { useStore } from 'vuex'
-import TransactionTemplate from './TransactionTemplate.vue'
+import { useTransactionStatus } from '@/components/transactions/hooks/useTransactionStatus.ts'
+import { useFormatADMAddress } from '@/hooks/address/useFormatADMAddress'
+import { useAdmTransferQuery } from '@/hooks/queries/useAdmTransferQuery'
+import Transaction from './Transaction.vue'
 import { getExplorerTxUrl } from '@/config/utils'
-import { Cryptos, TransactionStatus } from '@/lib/constants'
+import { Cryptos } from '@/lib/constants'
+import { getPartnerAddress } from './utils/getPartnerAddress'
 
 import currency from '@/filters/currencyAmountWithSymbol'
 
 export default defineComponent({
   components: {
-    TransactionTemplate
+    Transaction
   },
   props: {
     id: {
@@ -44,24 +42,22 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore()
-    const { isFetching, isError, isSuccess, data: transaction } = useAdmTransferQuery(props.id)
+    const {
+      status: fetchStatus,
+      isFetching,
+      data: transaction,
+      refetch
+    } = useAdmTransferQuery(props.id)
+    const status = useTransactionStatus(isFetching, fetchStatus)
 
-    const status = computed(() => {
-      if (isFetching.value) return TransactionStatus.PENDING
-      if (isError.value) return TransactionStatus.REJECTED
-      if (isSuccess.value) return TransactionStatus.CONFIRMED
-
-      return TransactionStatus.PENDING
-    })
-
-    const sender = computed(() => transaction.value?.senderId || '')
-    const recipient = computed(() => transaction.value?.recipientId || '')
-    const partnerId = computed(() => {
-      if (!transaction.value) return ''
-
-      return transaction.value.senderId === store.state.address
-        ? transaction.value.recipientId
-        : transaction.value.senderId
+    const partnerAdmAddress = computed(() => {
+      return transaction.value
+        ? getPartnerAddress(
+            transaction.value.senderId,
+            transaction.value.recipientId,
+            store.state.address
+          )
+        : ''
     })
 
     const senderFormatted = computed(() => {
@@ -72,19 +68,24 @@ export default defineComponent({
       const recipientId = transaction.value?.recipientId
       return recipientId ? useFormatADMAddress(recipientId).value : ''
     })
-
     const explorerLink = computed(() => getExplorerTxUrl(Cryptos.ADM, props.id))
 
+    const confirmations = computed(() => transaction.value?.confirmations || NaN)
+
+    const fee = computed(() => {
+      const fee = transaction.value?.fee
+      return fee ? currency(fee) : ''
+    })
+
     return {
+      refetch,
       transaction,
-      sender,
-      recipient,
-      partnerId,
+      fee,
       senderFormatted,
       recipientFormatted,
-      admTx: transaction,
+      partnerAdmAddress,
       explorerLink,
-      currency,
+      confirmations,
       status
     }
   }

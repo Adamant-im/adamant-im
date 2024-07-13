@@ -1,0 +1,379 @@
+<template>
+  <v-row justify="center" no-gutters :class="className">
+    <app-toolbar-centered
+      app
+      :title="`${transaction?.id}`"
+      flat
+      fixed
+      :class="`${className}__toolbar`"
+    />
+
+    <container class="container--with-app-toolbar">
+      <v-list bg-color="transparent">
+        <TransactionListItem :title="t('transaction.amount')">
+          {{ transaction?.amount || placeholder }} {{ crypto }}
+        </TransactionListItem>
+
+        <v-divider />
+
+        <TransactionListItem
+          :title="t('transaction.currentVal')"
+          :hidden="typeof rate !== 'number'"
+        >
+          {{ rate }}
+        </TransactionListItem>
+
+        <v-divider />
+
+        <TransactionListItem
+          :title="t('transaction.valueTimeTxn')"
+          :hidden="typeof historyRate !== 'number'"
+        >
+          {{ historyRate }}
+        </TransactionListItem>
+
+        <v-divider />
+
+        <TransactionListItem :title="t('transaction.status')">
+          <template #append>
+            <v-icon
+              v-if="statusUpdatable"
+              :class="{
+                [`${className}__update-status-icon--rotate`]: rotateAnimation
+              }"
+              icon="mdi-refresh"
+              size="20"
+              @click="updateStatus()"
+            />
+          </template>
+
+          <div :class="`${className}__value ${className}__value-${status.virtualStatus}`">
+            <v-icon
+              v-if="status.status === 'INVALID'"
+              icon="mdi-alert-outline"
+              size="20"
+              style="color: #f8a061 !important"
+            />
+            {{ $t(`transaction.statuses.${status.virtualStatus}`)
+            }}<span v-if="status.status === 'INVALID'">{{
+              ': ' + $t(`transaction.inconsistent_reasons.${status.inconsistentReason}`, { crypto })
+            }}</span
+            ><span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>
+          </div>
+        </TransactionListItem>
+
+        <v-divider />
+
+        <TransactionListItem :title="t('transaction.date')">
+          {{ transaction?.timestamp ? formatDate(transaction.timestamp) : placeholder }}
+        </TransactionListItem>
+
+        <v-divider />
+
+        <TransactionListItem :title="t('transaction.confirmations')">
+          {{ confirmations || placeholder }}
+        </TransactionListItem>
+
+        <v-divider />
+
+        <TransactionListItem :title="t('transaction.commission')">
+          {{ fee || placeholder }}
+        </TransactionListItem>
+
+        <v-divider />
+
+        <TransactionListItem
+          :title="t('transaction.txid')"
+          @click="handleCopyToClipboard(transaction?.id)"
+        >
+          {{ transaction?.id || placeholder }}
+        </TransactionListItem>
+
+        <v-divider />
+
+        <TransactionListItem
+          :title="t('transaction.sender')"
+          @click="handleCopyToClipboard(sender)"
+        >
+          {{ senderFormatted || placeholder }}
+        </TransactionListItem>
+
+        <v-divider />
+
+        <TransactionListItem
+          :title="t('transaction.recipient')"
+          @click="handleCopyToClipboard(recipient)"
+        >
+          {{ recipientFormatted || placeholder }}
+        </TransactionListItem>
+
+        <v-divider v-if="comment" />
+
+        <TransactionListItem v-if="comment" :title="t('transaction.comment')">
+          {{ comment || placeholder }}
+        </TransactionListItem>
+
+        <v-divider v-if="textData" />
+
+        <TransactionListItem v-if="textData" :title="t('transaction.textData')">
+          {{ textData || placeholder }}
+        </TransactionListItem>
+
+        <v-divider v-if="explorerLink" />
+
+        <TransactionListItem
+          v-if="explorerLink"
+          :title="t('transaction.explorer')"
+          @click="openInExplorer"
+        >
+          <v-icon icon="mdi-chevron-right" size="20" />
+        </TransactionListItem>
+
+        <v-divider v-if="partner && !ifComeFromChat" />
+
+        <TransactionListItem
+          v-if="partner && !ifComeFromChat"
+          :title="hasMessages ? t('transaction.continueChat') : t('transaction.startChat')"
+          @click="openChat"
+        >
+          <v-icon :icon="hasMessages ? 'mdi-comment' : 'mdi-comment-outline'" size="20" />
+        </TransactionListItem>
+      </v-list>
+    </container>
+  </v-row>
+</template>
+
+<script lang="ts">
+import { computed, defineComponent, nextTick, PropType, ref, watch } from 'vue'
+import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
+import copyToClipboard from 'copy-to-clipboard'
+import { CryptoSymbol, Symbols, tsUpdatable } from '@/lib/constants'
+import { AnyCoinTransaction } from '@/lib/nodes/types/transaction'
+import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
+import TransactionListItem from './TransactionListItem.vue'
+import { timestampInSec } from '@/filters/helpers'
+import { formatDate } from '@/lib/formatters'
+
+const className = 'transaction-view'
+
+export default defineComponent({
+  components: {
+    AppToolbarCentered,
+    TransactionListItem
+  },
+  props: {
+    crypto: {
+      type: String as PropType<CryptoSymbol>,
+      required: true
+    },
+    explorerLink: {
+      type: String,
+      required: true
+    },
+    transaction: {
+      type: Object as PropType<AnyCoinTransaction>
+    },
+    /**
+     * ADM address
+     */
+    partner: {
+      type: String
+    },
+    admTx: {
+      type: Object
+    },
+    status: {
+      type: Object
+    },
+    confirmations: {
+      type: Number
+    },
+    fee: {
+      type: Number
+    },
+    textData: {
+      type: String
+    },
+    senders: {
+      type: Array as PropType<string[]>
+    },
+    recipients: {
+      type: Array as PropType<string[]>
+    },
+    senderFormatted: {
+      type: String
+    },
+    recipientFormatted: {
+      type: String
+    }
+  },
+  emits: ['refetch-status'],
+  setup(props, { emit }) {
+    const store = useStore()
+    const router = useRouter()
+    const route = useRoute()
+    const { t } = useI18n()
+
+    const transaction = computed(() => props.transaction)
+    const sender = computed(() => props.senders?.join(',') ?? transaction.value?.senderId)
+    const recipient = computed(() => props.recipients?.join(',') ?? transaction.value?.senderId)
+
+    const hasMessages = computed(() => {
+      const chat = store.state.chat.chats[props.partner]
+      return chat && chat.messages && Object.keys(chat.messages).length > 0
+    })
+
+    const placeholder = computed(() => {
+      if (!props.status?.status) return Symbols.CLOCK
+
+      return props.status.status === 'REJECTED' ? Symbols.CROSS : Symbols.HOURGLASS
+    })
+
+    const ifComeFromChat = computed(() =>
+      Object.prototype.hasOwnProperty.call(route.query, 'fromChat')
+    )
+
+    const comment = computed(() =>
+      props.admTx && props.admTx.message ? props.admTx.message : false
+    )
+
+    const statusUpdatable = computed(() => tsUpdatable(props.status.virtualStatus, props.crypto))
+    const historyRate = computed(() => {
+      if (!transaction.value) return
+
+      return store.getters['rate/historyRate'](
+        timestampInSec(props.crypto, transaction.value.timestamp),
+        transaction.value.amount,
+        props.crypto
+      )
+    })
+    const rate = computed(() => {
+      if (!transaction.value) return
+
+      return store.getters['rate/rate'](transaction.value.amount, props.crypto)
+    })
+
+    watch(
+      () => props.transaction,
+      () => {
+        nextTick(() => getHistoryRates())
+      }
+    )
+
+    const handleCopyToClipboard = (text?: string) => {
+      if (!text) return
+
+      copyToClipboard(text)
+      store.dispatch('snackbar/show', {
+        message: t('home.copied'),
+        timeout: 2000
+      })
+    }
+
+    const openInExplorer = () => {
+      if (props.explorerLink) {
+        window.open(props.explorerLink, '_blank', 'resizable,scrollbars,status,noopener')
+      }
+    }
+
+    const openChat = () => {
+      router.push('/chats/' + props.partner + '/')
+    }
+
+    const rotateAnimation = ref(false)
+    const updateStatus = () => {
+      rotateAnimation.value = true
+      setTimeout(() => (rotateAnimation.value = false), 1000)
+
+      if (statusUpdatable.value) {
+        emit('refetch-status')
+      }
+    }
+
+    const getHistoryRates = () => {
+      if (!transaction.value) return
+
+      store.dispatch('rate/getHistoryRates', {
+        timestamp: timestampInSec(props.crypto, transaction.value.timestamp!)
+      })
+    }
+
+    return {
+      formatDate,
+      t,
+      className,
+      sender,
+      recipient,
+      handleCopyToClipboard,
+      openInExplorer,
+      openChat,
+      updateStatus,
+      rotateAnimation,
+      hasMessages,
+      placeholder,
+      ifComeFromChat,
+      comment,
+      statusUpdatable,
+      historyRate,
+      rate
+    }
+  }
+})
+</script>
+
+<style lang="scss" scoped>
+@import '@/assets/styles/settings/_colors.scss';
+
+.transaction-view {
+  &__titlecontent {
+    flex: 1 0 auto;
+  }
+  &__toolbar {
+    :deep(.v-toolbar__title) div {
+      text-overflow: ellipsis;
+      max-width: 100%;
+      overflow: hidden;
+    }
+  }
+  &__update-status-icon {
+    &--rotate {
+      transform: rotate(400grad);
+      transition-duration: 1s;
+    }
+  }
+}
+
+/** Themes **/
+.v-theme--light {
+  .transaction-view {
+    :deep(.v-divider) {
+      border-color: map-get($adm-colors, 'secondary2');
+    }
+  }
+}
+.v-theme--light,
+.v-theme--dark {
+  .transaction-view {
+    &__value-REJECTED {
+      color: map-get($adm-colors, 'danger') !important;
+    }
+    &__value-PENDING {
+      color: map-get($adm-colors, 'attention') !important;
+    }
+    &__value-REGISTERED {
+      color: map-get($adm-colors, 'attention') !important;
+    }
+    &__value-CONFIRMED {
+      color: map-get($adm-colors, 'good') !important;
+    }
+    &__value-INVALID {
+      color: map-get($adm-colors, 'attention') !important;
+    }
+    &__value-UNKNOWN {
+      color: map-get($adm-colors, 'attention') !important;
+    }
+  }
+}
+</style>
