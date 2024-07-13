@@ -2,19 +2,19 @@
   <div :class="classes.root">
     <v-tabs v-model="tab" bg-color="transparent">
       <v-tab value="adm">{{ $t('nodes.tabs.adm_nodes') }}</v-tab>
-      <v-tab value="services">{{ $t('nodes.tabs.service_nodes') }}</v-tab>
       <v-tab value="coins">{{ $t('nodes.tabs.coin_nodes') }}</v-tab>
+      <v-tab value="services">{{ $t('nodes.tabs.service_nodes') }}</v-tab>
     </v-tabs>
 
     <v-window v-model="tab">
       <v-window-item value="adm">
         <AdmNodesTable />
       </v-window-item>
-      <v-window-item value="services">
-        <ServiceNodesTable />
-      </v-window-item>
       <v-window-item value="coins">
         <CoinNodesTable />
+      </v-window-item>
+      <v-window-item value="services">
+        <ServiceNodesTable />
       </v-window-item>
     </v-window>
     <div class="ml-6">
