@@ -24,8 +24,6 @@ import { getExplorerTxUrl } from '@/config/utils'
 import { Cryptos } from '@/lib/constants'
 import { getPartnerAddress } from './utils/getPartnerAddress'
 
-import currency from '@/filters/currencyAmountWithSymbol'
-
 export default defineComponent({
   components: {
     Transaction
@@ -70,10 +68,7 @@ export default defineComponent({
 
     const confirmations = computed(() => transaction.value?.confirmations || NaN)
 
-    const fee = computed(() => {
-      const fee = transaction.value?.fee
-      return fee ? currency(fee) : ''
-    })
+    const fee = computed(() => transaction.value?.fee)
 
     return {
       refetch,

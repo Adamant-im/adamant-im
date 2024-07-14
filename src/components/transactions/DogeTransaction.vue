@@ -19,7 +19,7 @@ import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 import Transaction from './Transaction.vue'
 import { getExplorerTxUrl } from '@/config/utils'
-import { Cryptos, CryptosInfo, CryptoSymbol } from '@/lib/constants'
+import { CryptoSymbol } from '@/lib/constants'
 import { useBtcAddressPretty } from './hooks/address'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
@@ -81,11 +81,7 @@ export default defineComponent({
 
     const confirmations = computed(() => transaction.value.confirmations)
 
-    const fee = computed(() => {
-      const fee = transaction.value?.fee?.toFixed(CryptosInfo.DOGE.decimals)
-
-      return fee ? `${fee} ${Cryptos.DOGE}` : ''
-    })
+    const fee = computed(() => transaction.value?.fee)
 
     return {
       refetch,

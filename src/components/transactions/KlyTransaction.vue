@@ -93,7 +93,7 @@ export default defineComponent({
       return currentHeight - height + 1
     })
 
-    const fee = computed(() => transaction.value.fee)
+    const fee = computed(() => transaction.value?.fee)
 
     return {
       refetch,

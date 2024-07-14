@@ -11,7 +11,7 @@
     <container class="container--with-app-toolbar">
       <v-list bg-color="transparent">
         <TransactionListItem :title="t('transaction.amount')">
-          {{ transaction?.amount || placeholder }} {{ crypto }}
+          {{ transaction?.amount ? formatAmount(transaction?.amount) : placeholder }} {{ crypto }}
         </TransactionListItem>
 
         <v-divider />
@@ -77,7 +77,7 @@
         <v-divider />
 
         <TransactionListItem :title="t('transaction.commission')">
-          {{ fee || placeholder }}
+          {{ fee ? formatAmount(fee) : placeholder }} {{ crypto }}
         </TransactionListItem>
 
         <v-divider />
@@ -144,12 +144,13 @@
 </template>
 
 <script lang="ts">
+import BigNumber from 'bignumber.js'
 import { computed, defineComponent, nextTick, PropType, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import copyToClipboard from 'copy-to-clipboard'
-import { CryptoSymbol, Symbols, tsUpdatable } from '@/lib/constants'
+import { CryptosInfo, CryptoSymbol, Symbols, tsUpdatable } from '@/lib/constants'
 import { AnyCoinTransaction } from '@/lib/nodes/types/transaction'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import TransactionListItem from './TransactionListItem.vue'
@@ -300,6 +301,12 @@ export default defineComponent({
       })
     }
 
+    const formatAmount = (amount: number) => {
+      return BigNumber(amount)
+        .decimalPlaces(CryptosInfo[props.crypto].decimals, BigNumber.ROUND_DOWN)
+        .toFixed()
+    }
+
     return {
       formatDate,
       t,
@@ -317,7 +324,8 @@ export default defineComponent({
       comment,
       statusUpdatable,
       historyRate,
-      rate
+      rate,
+      formatAmount
     }
   }
 })
