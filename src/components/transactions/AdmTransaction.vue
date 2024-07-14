@@ -7,7 +7,7 @@
     :recipient-formatted="recipientFormatted || ''"
     :explorer-link="explorerLink"
     :partner="partnerAdmAddress || ''"
-    :status="{ status, virtualStatus: status }"
+    :fetch-status="fetchStatus"
     :crypto="crypto"
     @refetch-status="refetch"
   />
@@ -40,13 +40,8 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore()
-    const {
-      status: fetchStatus,
-      isFetching,
-      data: transaction,
-      refetch
-    } = useAdmTransferQuery(props.id)
-    const status = useTransactionStatus(isFetching, fetchStatus)
+    const { status, isFetching, data: transaction, refetch } = useAdmTransferQuery(props.id)
+    const fetchStatus = useTransactionStatus(isFetching, status)
 
     const partnerAdmAddress = computed(() => {
       return transaction.value
@@ -79,7 +74,7 @@ export default defineComponent({
       partnerAdmAddress,
       explorerLink,
       confirmations,
-      status
+      fetchStatus
     }
   }
 })

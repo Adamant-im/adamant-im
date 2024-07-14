@@ -6,7 +6,6 @@ import { CryptosInfo, CryptoSymbol } from '@/lib/constants'
 const AllowAmountErrorPercent = 0.3
 
 const TransactionInconsistentReason = {
-  OK: 'OK',
   UNKNOWN: 'unknown',
   NO_RECIPIENT_CRYPTO_ADDRESS: 'no_recipient_crypto_address',
   NO_SENDER_CRYPTO_ADDRESS: 'no_sender_crypto_address',
@@ -69,7 +68,7 @@ export function getInconsistentStatus(
     return TransactionInconsistentReason.RECIPIENT_CRYPTO_ADDRESS_MISMATCH
   }
 
-  return 'OK'
+  return ''
 }
 
 /**

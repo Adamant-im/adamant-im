@@ -29,7 +29,7 @@ export function useInconsistentStatus(
       !senderCryptoAddress.value ||
       !recipientCryptoAddress.value
     )
-      return 'OK'
+      return ''
 
     return getInconsistentStatus(transaction.value, admTx.value, {
       senderCryptoAddress: senderCryptoAddress.value,

@@ -41,18 +41,18 @@
             />
           </template>
 
-          <div :class="`${className}__value ${className}__value-${status.virtualStatus}`">
+          <div :class="`${className}__value-${fetchStatus}`">
             <v-icon
-              v-if="status.status === 'INVALID'"
+              v-if="inconsistentStatus === 'INVALID'"
               icon="mdi-alert-outline"
               size="20"
               style="color: #f8a061 !important"
             />
-            {{ $t(`transaction.statuses.${status.virtualStatus}`)
-            }}<span v-if="status.status === 'INVALID'">{{
-              ': ' + $t(`transaction.inconsistent_reasons.${status.inconsistentReason}`, { crypto })
-            }}</span
-            ><span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>
+            {{ $t(`transaction.statuses.${fetchStatus}`)
+            }}<span v-if="inconsistentStatus">{{
+              ': ' + $t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
+            }}</span>
+            <!--            <span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>-->
           </div>
         </TransactionListItem>
 
@@ -144,7 +144,14 @@ import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import copyToClipboard from 'copy-to-clipboard'
-import { CryptosInfo, CryptoSymbol, Symbols, tsUpdatable } from '@/lib/constants'
+import {
+  CryptosInfo,
+  CryptoSymbol,
+  Symbols,
+  TransactionStatusType,
+  tsUpdatable
+} from '@/lib/constants'
+import { InconsistentStatus } from './utils/getInconsistentStatus'
 import { AnyCoinTransaction } from '@/lib/nodes/types/transaction'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import TransactionListItem from './TransactionListItem.vue'
@@ -179,8 +186,12 @@ export default defineComponent({
     admTx: {
       type: Object
     },
-    status: {
-      type: Object
+    fetchStatus: {
+      type: String as PropType<TransactionStatusType>,
+      required: true
+    },
+    inconsistentStatus: {
+      type: String as PropType<InconsistentStatus>
     },
     confirmations: {
       type: Number
@@ -221,9 +232,9 @@ export default defineComponent({
     })
 
     const placeholder = computed(() => {
-      if (!props.status?.status) return Symbols.CLOCK
+      if (!props.fetchStatus) return Symbols.CLOCK
 
-      return props.status.status === 'REJECTED' ? Symbols.CROSS : Symbols.HOURGLASS
+      return props.fetchStatus === 'REJECTED' ? Symbols.CROSS : Symbols.HOURGLASS
     })
 
     const ifComeFromChat = computed(() =>
@@ -234,7 +245,7 @@ export default defineComponent({
       props.admTx && props.admTx.message ? props.admTx.message : false
     )
 
-    const statusUpdatable = computed(() => tsUpdatable(props.status.virtualStatus, props.crypto))
+    const statusUpdatable = computed(() => tsUpdatable(props.fetchStatus, props.crypto))
     const historyRate = computed(() => {
       if (!transaction.value) return
 
