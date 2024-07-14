@@ -60,14 +60,12 @@ export default defineComponent({
         : ''
     })
 
-    const senderFormatted = computed(() => {
-      const senderId = transaction.value?.senderId
-      return senderId ? useFormatADMAddress(senderId).value : ''
-    })
-    const recipientFormatted = computed(() => {
-      const recipientId = transaction.value?.recipientId
-      return recipientId ? useFormatADMAddress(recipientId).value : ''
-    })
+    const senderId = computed(() => transaction.value?.senderId)
+    const recipientId = computed(() => transaction.value?.recipientId)
+
+    const senderFormatted = useFormatADMAddress(senderId)
+    const recipientFormatted = useFormatADMAddress(recipientId)
+
     const explorerLink = computed(() => getExplorerTxUrl(Cryptos.ADM, props.id))
 
     const confirmations = computed(() => transaction.value?.confirmations || NaN)
