@@ -10,7 +10,13 @@ const fetchTransaction = async (transactionId: string, currentUserAdmAddress: st
   const rawTransaction = await admApi.getTransaction(transactionId, 1)
   if (!rawTransaction) throw new Error('Transaction not found')
 
-  return decodeTransaction(rawTransaction, currentUserAdmAddress)
+  const transaction = decodeTransaction(rawTransaction, currentUserAdmAddress)
+
+  return {
+    ...transaction,
+    amount: transaction.amount / 1e8,
+    fee: transaction.fee / 1e8
+  }
 }
 
 export function useAdmTransferQuery(transactionId: MaybeRef<string>) {
