@@ -1,6 +1,8 @@
+import { NODE_LABELS } from '@/lib/nodes/constants.ts'
+
 export type ServicesState = {
-  ratesInfo: Record<string, { active: boolean }>
+  [NODE_LABELS.RatesInfo]: Record<string, { active: boolean }>
   useFastestService: true
 }
 
-export type AvailableService = 'ratesInfo'
+export type AvailableService = 'rates-info'

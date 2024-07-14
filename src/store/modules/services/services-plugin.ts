@@ -1,6 +1,7 @@
 import { services } from '@/lib/nodes/services'
 import { Store } from 'vuex'
 import { AvailableService, ServicesState } from '@/store/modules/services/types'
+import { NODE_LABELS } from '@/lib/nodes/constants.ts'
 
 export default (store: Store<ServicesState>) => {
   for (const [serviceType, client] of Object.entries(services)) {
@@ -10,13 +11,13 @@ export default (store: Store<ServicesState>) => {
       store.commit('services/status', { status, serviceType })
     })
   }
-  store.commit('services/useFastestService', services.ratesInfo.useFastest)
+  store.commit('services/useFastestService', services[NODE_LABELS.RatesInfo].useFastest)
 
   store.subscribe((mutation) => {
     const { type, payload } = mutation
 
     if (type === 'services/useFastestService') {
-      services.ratesInfo.setUseFastest(!!payload)
+      services[NODE_LABELS.RatesInfo].setUseFastest(!!payload)
     }
 
     if (type === 'services/toggle') {
