@@ -16,19 +16,13 @@
 
         <v-divider />
 
-        <TransactionListItem
-          :title="t('transaction.currentVal')"
-          :hidden="typeof rate !== 'number'"
-        >
+        <TransactionListItem :title="t('transaction.currentVal')">
           {{ rate }}
         </TransactionListItem>
 
         <v-divider />
 
-        <TransactionListItem
-          :title="t('transaction.valueTimeTxn')"
-          :hidden="typeof historyRate !== 'number'"
-        >
+        <TransactionListItem :title="t('transaction.valueTimeTxn')">
           {{ historyRate }}
         </TransactionListItem>
 
