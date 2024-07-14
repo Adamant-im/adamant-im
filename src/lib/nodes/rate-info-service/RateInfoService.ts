@@ -4,6 +4,7 @@ import { HealthcheckResult } from '@/lib/nodes/types'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { RateInfoResponse } from '@/lib/nodes/rate-info-service/types/RateInfoResponse'
 import { RateHistoryInfoResponse } from '@/lib/nodes/rate-info-service/types/RateHistoryInfoResponse'
+import { GetHistoryParams } from '@/lib/nodes/rate-info-service/types/GetHistoryParams.ts'
 
 export class RateInfoService extends Node<AxiosInstance> {
   constructor(url: string) {
@@ -20,10 +21,10 @@ export class RateInfoService extends Node<AxiosInstance> {
     return response.data
   }
 
-  async getHistory(timestamp: number) {
-    const response = await this.client.get<RateHistoryInfoResponse>(
-      `/getHistory?timestamp=${timestamp}`
-    )
+  async getHistory(options: GetHistoryParams) {
+    const response = await this.client.get<RateHistoryInfoResponse>(`/getHistory`, {
+      params: options
+    })
     return response.data
   }
 

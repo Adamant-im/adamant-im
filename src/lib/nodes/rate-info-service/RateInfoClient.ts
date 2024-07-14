@@ -12,23 +12,12 @@ export class RateInfoClient extends Client<RateInfoService> {
   }
 
   async getAllRates(): Promise<RateInfoResponse> {
-    const node = await this.fetchNode()
+    const node = this.getNode()
     return await node.getAllRates()
   }
 
   async getHistory(timestamp: number) {
-    const node = await this.fetchNode()
-    return await node.getHistory(timestamp)
-  }
-
-  async fetchNode() {
-    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
-    if (!node) {
-      // All nodes seem to be offline: let's refresh the statuses
-      this.checkHealth()
-      // But there's nothing we can do right now
-      return Promise.reject(new Error('No online nodes at the moment'))
-    }
-    return node
+    const node = this.getNode()
+    return await node.getHistory({ timestamp })
   }
 }
