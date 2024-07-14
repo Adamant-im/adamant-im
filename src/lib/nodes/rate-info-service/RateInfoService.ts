@@ -4,7 +4,7 @@ import { HealthcheckResult } from '@/lib/nodes/types'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { RateInfoResponse } from '@/lib/nodes/rate-info-service/types/RateInfoResponse'
 import { RateHistoryInfoResponse } from '@/lib/nodes/rate-info-service/types/RateHistoryInfoResponse'
-import { GetHistoryParams } from '@/lib/nodes/rate-info-service/types/GetHistoryParams.ts'
+import { GetHistoryParams } from '@/lib/nodes/rate-info-service/types/GetHistoryParams'
 
 export class RateInfoService extends Node<AxiosInstance> {
   constructor(url: string) {

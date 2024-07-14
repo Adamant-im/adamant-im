@@ -1,7 +1,7 @@
 import { services } from '@/lib/nodes/services'
 import { Store } from 'vuex'
 import { AvailableService, ServicesState } from '@/store/modules/services/types'
-import { NODE_LABELS } from '@/lib/nodes/constants.ts'
+import { NODE_LABELS } from '@/lib/nodes/constants'
 
 export default (store: Store<ServicesState>) => {
   for (const [serviceType, client] of Object.entries(services)) {
