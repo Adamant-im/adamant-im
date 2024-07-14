@@ -1,6 +1,6 @@
 import { GetterTree } from 'vuex'
 import { RootState } from '@/store/types'
-import { ServicesState } from '@/store/modules/services/types.ts'
+import { ServicesState } from '@/store/modules/services/types'
 
 export const getters: GetterTree<ServicesState, RootState> = {
   rate(state) {

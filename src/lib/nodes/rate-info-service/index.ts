@@ -1,6 +1,6 @@
 import config from '@/config'
 import { NodeInfo } from '@/types/wallets'
-import { RateInfoClient } from '@/lib/nodes/rate-info-service/RateInfoClient.ts'
+import { RateInfoClient } from '@/lib/nodes/rate-info-service/RateInfoClient'
 
 const endpoints = (config.adm.services.list.infoService as NodeInfo[]).map(
   (endpoint) => endpoint.url

@@ -21,8 +21,8 @@
 <script lang="ts">
 import { computed, PropType } from 'vue'
 import { useStore } from 'vuex'
-import type { NodeStatusResult } from '@/lib/nodes/abstract.node.ts'
-import type { TNodeLabel } from '@/lib/nodes/constants.ts'
+import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import type { TNodeLabel } from '@/lib/nodes/constants'
 import NodeUrl from '@/components/nodes/components/NodeUrl.vue'
 import NodeColumn from '@/components/nodes/components/NodeColumn.vue'
 import NodeLabel from '@/components/nodes/components/NodeLabel.vue'

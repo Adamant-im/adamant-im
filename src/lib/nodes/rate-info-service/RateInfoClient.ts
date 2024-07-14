@@ -1,5 +1,6 @@
-import { Client } from '@/lib/nodes/abstract.client.ts'
-import { RateInfoResponse, RateInfoService } from '@/lib/nodes/rate-info-service/RateInfoService.ts'
+import { Client } from '@/lib/nodes/abstract.client'
+import { RateInfoService } from '@/lib/nodes/rate-info-service/RateInfoService'
+import { RateInfoResponse } from '@/lib/nodes/rate-info-service/types/RateInfoResponse'
 
 export class RateInfoClient extends Client<RateInfoService> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {

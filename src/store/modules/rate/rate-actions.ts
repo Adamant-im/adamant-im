@@ -1,7 +1,7 @@
 import { ActionTree } from 'vuex'
 import { RootState } from '@/store/types'
 import rateInfoClient from '@/lib/nodes/rate-info-service'
-import { RateState } from '@/store/modules/rate/types.ts'
+import { RateState } from '@/store/modules/rate/types'
 
 export let interval: NodeJS.Timeout
 

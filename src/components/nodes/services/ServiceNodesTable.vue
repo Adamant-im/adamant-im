@@ -19,8 +19,8 @@ import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
 import ServiceNodesTableItem from './ServiceNodesTableItem.vue'
-import { type NodeStatusResult } from '@/lib/nodes/abstract.node.ts'
-import { sortNodesFn } from '@/components/nodes/utils/sortNodesFn.ts'
+import { type NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { sortNodesFn } from '@/components/nodes/utils/sortNodesFn'
 
 const className = 'nodes-table'
 const classes = {

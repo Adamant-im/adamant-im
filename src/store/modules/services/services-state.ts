@@ -1,4 +1,4 @@
-import { ServicesState } from '@/store/modules/services/types.ts'
+import { ServicesState } from '@/store/modules/services/types'
 
 export const state: ServicesState = {
   ratesInfo: {},

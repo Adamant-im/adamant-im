@@ -1,23 +1,9 @@
 import { Node } from '@/lib/nodes/abstract.node'
 import axios, { AxiosInstance } from 'axios'
-import { HealthcheckResult } from '@/lib/nodes/types.ts'
-import { NODE_LABELS } from '@/lib/nodes/constants.ts'
-
-export type RateInfoResponse = {
-  success: boolean
-  date: number
-  result: Record<string, number>
-}
-
-export type RateHistoryInfoResponse = {
-  success: boolean
-  date: number
-  result: {
-    _id: string
-    date: number
-    tickers: Record<string, number>
-  }[]
-}
+import { HealthcheckResult } from '@/lib/nodes/types'
+import { NODE_LABELS } from '@/lib/nodes/constants'
+import { RateInfoResponse } from '@/lib/nodes/rate-info-service/types/RateInfoResponse'
+import { RateHistoryInfoResponse } from '@/lib/nodes/rate-info-service/types/RateHistoryInfoResponse'
 
 export class RateInfoService extends Node<AxiosInstance> {
   constructor(url: string) {

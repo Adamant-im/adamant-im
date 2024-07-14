@@ -1,5 +1,5 @@
 import { MutationTree } from 'vuex'
-import { Rates, RateState } from '@/store/modules/rate/types.ts'
+import { Rates, RateState } from '@/store/modules/rate/types'
 
 export const mutations: MutationTree<RateState> = {
   setRates(state, rates: Rates) {

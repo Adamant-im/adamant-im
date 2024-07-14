@@ -1,5 +1,5 @@
 import { MutationTree } from 'vuex'
-import { AvailableService, ServicesState } from '@/store/modules/services/types.ts'
+import { AvailableService, ServicesState } from '@/store/modules/services/types'
 
 type StatusPayload = { serviceType: AvailableService; status: { url: string; active: boolean } }
 type TogglePayload = { type: AvailableService; url: string; active: boolean }
