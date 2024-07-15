@@ -7,11 +7,9 @@ import AdmTransaction from '../../components/transactions/AdmTransaction.vue'
 import EthTransaction from '../../components/transactions/EthTransaction.vue'
 import Erc20Transaction from '../../components/transactions/Erc20Transaction.vue'
 import BtcTransaction from '../../components/transactions/BtcTransaction.vue'
-import DogeTransaction from '../../components/transactions/DogeTransaction.vue'
-import DashTransaction from '../../components/transactions/DashTransaction.vue'
 import KlyTransaction from '../../components/transactions/KlyTransaction.vue'
 
-import { Cryptos, isErc20, isKlyBased } from '../../lib/constants'
+import { Cryptos, isErc20, isBtcBased, isKlyBased } from '../../lib/constants'
 import { getTxUpdateInterval } from '../../lib/transactionsFetching'
 
 export default {
@@ -21,8 +19,6 @@ export default {
     EthTransaction,
     Erc20Transaction,
     BtcTransaction,
-    DogeTransaction,
-    DashTransaction,
     KlyTransaction
   },
   props: {
@@ -43,9 +39,7 @@ export default {
   computed: {
     transactionComponent() {
       if (this.crypto === Cryptos.ETH) return 'eth-transaction'
-      if (this.crypto === Cryptos.BTC) return 'btc-transaction'
-      if (this.crypto === Cryptos.DOGE) return 'doge-transaction'
-      if (this.crypto === Cryptos.DASH) return 'dash-transaction'
+      if (isBtcBased(this.crypto)) return 'btc-transaction'
       if (isErc20(this.crypto)) return 'erc20-transaction'
       if (isKlyBased(this.crypto)) return 'kly-transaction'
       return 'adm-transaction'

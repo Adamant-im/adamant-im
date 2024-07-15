@@ -20,13 +20,21 @@ import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 import Transaction from './Transaction.vue'
 import { getExplorerTxUrl } from '@/config/utils'
-import { CryptoSymbol } from '@/lib/constants'
+import { Cryptos, CryptoSymbol } from '@/lib/constants'
 import { useBtcAddressPretty } from './hooks/address'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
 import { useBtcTransferQuery } from '@/hooks/queries/useBtcTransferQuery'
+import { useDashTransferQuery } from '@/hooks/queries/useDashTransferQuery'
+import { useDogeTransferQuery } from '@/hooks/queries/useDogeTransferQuery'
 import { getPartnerAddress } from './utils/getPartnerAddress'
+
+const query = {
+  [Cryptos.BTC]: useBtcTransferQuery,
+  [Cryptos.DASH]: useDashTransferQuery,
+  [Cryptos.DOGE]: useDogeTransferQuery
+} as const
 
 export default defineComponent({
   components: {
@@ -45,14 +53,16 @@ export default defineComponent({
   setup(props) {
     const store = useStore()
 
-    const cryptoAddress = computed(() => store.state.btc.address)
+    const cryptoKey = computed(() => props.crypto.toLowerCase())
+    const cryptoAddress = computed(() => store.state[cryptoKey.value].address)
 
+    const useTransferQuery = query[props.crypto]
     const {
       status,
       isFetching,
       data: transaction,
       refetch
-    } = useBtcTransferQuery(props.id, cryptoAddress)
+    } = useTransferQuery(props.id, cryptoAddress)
     const fetchStatus = useTransactionStatus(isFetching, status)
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
 
@@ -80,12 +90,7 @@ export default defineComponent({
 
     const explorerLink = computed(() => getExplorerTxUrl(props.crypto, props.id))
 
-    const height = computed(() => store.getters[`btc/height`])
-    const confirmations = computed(() => {
-      const { height: transactionHeight } = transaction.value
-
-      return height.value - transactionHeight + 1
-    })
+    const confirmations = computed(() => transaction.value?.confirmations)
 
     const fee = computed(() => transaction.value?.fee)
 
