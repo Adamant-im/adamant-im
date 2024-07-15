@@ -2,11 +2,10 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import type { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { formatBtcVersion } from '@/lib/nodes/utils/nodeVersionFormatters.ts'
+import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
 
 type FetchBtcNodeInfoResult = {
-  error: string
-  result: {
+  info: {
     version: number
   }
 }
@@ -15,9 +14,9 @@ type FetchBtcNodeInfoResult = {
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
-export class BtcNode extends Node<AxiosInstance> {
+export class DogeIndexer extends Node<AxiosInstance> {
   constructor(url: string) {
-    super(url, 'btc', 'node', NODE_LABELS.BtcNode)
+    super(url, 'doge', 'service', NODE_LABELS.DogeIndexer)
   }
 
   protected buildClient(): AxiosInstance {
@@ -26,32 +25,21 @@ export class BtcNode extends Node<AxiosInstance> {
 
   protected async checkHealth() {
     const time = Date.now()
-
-    const { data } = await this.client.post('/bitcoind', {
-      jsonrpc: '1.0',
-      id: 'adm',
-      method: 'getblockchaininfo',
-      params: []
-    })
-
-    const { blocks } = data.result
+    const height = await this.client
+      .get('/api/blocks?limit=0')
+      .then((res) => res.data.blocks[0].height)
 
     return {
-      height: Number(blocks),
+      height,
       ping: Date.now() - time
     }
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { data } = await this.client.post<FetchBtcNodeInfoResult>('/bitcoind', {
-      jsonrpc: '1.0',
-      id: 'adm',
-      method: 'getnetworkinfo',
-      params: []
-    })
-    const { version } = data.result
+    const { data } = await this.client.get<FetchBtcNodeInfoResult>('/api/status')
+    const { version } = data.info
     if (version) {
-      this.version = formatBtcVersion(version)
+      this.version = formatDogeVersion(version)
     }
   }
 }

@@ -2,7 +2,7 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import type { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { formatBtcVersion } from '@/lib/nodes/utils/nodeVersionFormatters.ts'
+import { formatBtcVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
 
 type FetchBtcNodeInfoResult = {
   error: string
@@ -15,9 +15,9 @@ type FetchBtcNodeInfoResult = {
  * Encapsulates a node. Provides methods to send API-requests
  * to the node and verify is status (online/offline, version, ping, etc.)
  */
-export class BtcNode extends Node<AxiosInstance> {
+export class BtcIndexer extends Node<AxiosInstance> {
   constructor(url: string) {
-    super(url, 'btc', 'node', NODE_LABELS.BtcNode)
+    super(url, 'btc', 'service', NODE_LABELS.BtcIndexer)
   }
 
   protected buildClient(): AxiosInstance {
@@ -26,18 +26,12 @@ export class BtcNode extends Node<AxiosInstance> {
 
   protected async checkHealth() {
     const time = Date.now()
-
-    const { data } = await this.client.post('/bitcoind', {
-      jsonrpc: '1.0',
-      id: 'adm',
-      method: 'getblockchaininfo',
-      params: []
+    const blockNumber = await this.client.get('/blocks/tip/height').then((res) => {
+      return Number(res.data) || 0
     })
 
-    const { blocks } = data.result
-
     return {
-      height: Number(blocks),
+      height: Number(blockNumber),
       ping: Date.now() - time
     }
   }
