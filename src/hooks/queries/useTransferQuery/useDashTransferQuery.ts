@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { Cryptos } from '@/lib/constants'
 import { dash } from '@/lib/nodes'
 import { DashTransaction } from '@/lib/nodes/types/transaction'
+import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils'
 
 /**
  * @param transactionId - DASH transaction ID
@@ -12,6 +13,9 @@ export function useDashTransferQuery(transactionId: MaybeRef<string>, address: M
   return useQuery({
     queryKey: ['transaction', Cryptos.DASH, transactionId],
     queryFn: () => dash.getTransaction(unref(transactionId), unref(address)),
-    initialData: {} as DashTransaction
+    initialData: {} as DashTransaction,
+    retry: retryFactory(Cryptos.BTC, unref(transactionId)),
+    retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),
+    refetchInterval: refetchIntervalFactory(Cryptos.BTC)
   })
 }

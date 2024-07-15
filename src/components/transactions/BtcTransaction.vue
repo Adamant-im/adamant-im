@@ -25,9 +25,9 @@ import { useBtcAddressPretty } from './hooks/address'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
-import { useBtcTransferQuery } from '@/hooks/queries/useBtcTransferQuery'
-import { useDashTransferQuery } from '@/hooks/queries/useDashTransferQuery'
-import { useDogeTransferQuery } from '@/hooks/queries/useDogeTransferQuery'
+import { useBtcTransferQuery } from '@/hooks/queries/useTransferQuery/useBtcTransferQuery'
+import { useDashTransferQuery } from '@/hooks/queries/useTransferQuery/useDashTransferQuery'
+import { useDogeTransferQuery } from '@/hooks/queries/useTransferQuery/useDogeTransferQuery'
 import { getPartnerAddress } from './utils/getPartnerAddress'
 
 const query = {

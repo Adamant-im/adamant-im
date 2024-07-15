@@ -93,3 +93,15 @@ export const getTxUpdateInterval = function (crypto) {
 
   return CryptosInfo[mainCoin].txFetchInfo?.newPendingInterval || DEFAULT_TX_FETCH_INTERVAL
 }
+
+export const getTxFetchInfo = (crypto) => {
+  const txFetchInfo = CryptosInfo[crypto].txFetchInfo
+
+  return {
+    newPendingInterval: txFetchInfo.newPendingInterval || DEFAULT_TX_FETCH_INTERVAL,
+    oldPendingInterval: txFetchInfo.oldPendingInterval || DEFAULT_TX_FETCH_INTERVAL,
+    registeredInterval: txFetchInfo.registeredInterval || DEFAULT_TX_FETCH_INTERVAL,
+    newPendingAttempts: txFetchInfo.newPendingAttempts || DEFAULT_TX_FETCH_ATTEMPTS,
+    oldPendingAttempts: txFetchInfo.oldPendingAttempts || DEFAULT_TX_FETCH_ATTEMPTS
+  }
+}

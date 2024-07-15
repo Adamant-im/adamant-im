@@ -25,7 +25,7 @@ import { useCryptoAddressPretty } from './hooks/address'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
-import { useEthTransferQuery } from '@/hooks/queries/useEthTransferQuery'
+import { useEthTransferQuery } from '@/hooks/queries/useTransferQuery/useEthTransferQuery'
 import { getPartnerAddress } from './utils/getPartnerAddress'
 
 export default defineComponent({
