@@ -40,9 +40,7 @@ export class BtcClient extends Client<BtcNode> {
    * @param address Owner BTC address
    */
   async getTransaction(transactionId: string, address: string) {
-    const transaction = await this.request<Transaction>('GET', `/tx/${transactionId}`, {
-      transactionId
-    })
+    const transaction = await this.request<Transaction>('GET', `/tx/${transactionId}`)
 
     const height = await this.getHeight().catch((err) => {
       console.warn('BtcClient: Failed to get current height:', err)
