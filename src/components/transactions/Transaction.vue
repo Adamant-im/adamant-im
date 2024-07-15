@@ -151,6 +151,7 @@ import {
   TransactionStatusType,
   tsUpdatable
 } from '@/lib/constants'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { InconsistentStatus } from './utils/getInconsistentStatus'
 import { AnyCoinTransaction } from '@/lib/nodes/types/transaction'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
@@ -184,7 +185,7 @@ export default defineComponent({
       type: String
     },
     admTx: {
-      type: Object
+      type: Object as PropType<NormalizedChatMessageTransaction>
     },
     fetchStatus: {
       type: String as PropType<TransactionStatusType>,

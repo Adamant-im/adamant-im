@@ -7,13 +7,13 @@ import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
  */
 export function useFindAdmTransaction(
   hash: MaybeRef<string | undefined>
-): ComputedRef<NormalizedChatMessageTransaction | null> {
+): ComputedRef<NormalizedChatMessageTransaction | undefined> {
   const store = useStore()
 
   return computed(() => {
     const hashValue = unref(hash)
 
-    let admTx: NormalizedChatMessageTransaction | null = null as any
+    let admTx: NormalizedChatMessageTransaction | undefined
     // Bad news, everyone: we'll have to scan the messages
     Object.values(store.state.chat.chats).some((chat) => {
       // @ts-expect-error-next-line
