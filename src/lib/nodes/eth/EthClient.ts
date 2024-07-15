@@ -36,7 +36,12 @@ export class EthClient extends Client<EthNode> {
     }
   }
 
-  async getEthTransaction(hash: string) {
+  /**
+   * Fetch a single transaction by ID
+   * @param hash Transaction hash
+   * @param address Owner's ETH address
+   */
+  async getEthTransaction(hash: string, address: string) {
     const node = this.getNode()
 
     try {
@@ -47,7 +52,7 @@ export class EthClient extends Client<EthNode> {
         ? await node.client.getBlock(transaction.blockNumber).then((block) => block.timestamp)
         : undefined
 
-      return normalizeEthTransaction(transaction, blockTimestamp)
+      return normalizeEthTransaction(transaction, address, blockTimestamp)
     } catch (err) {
       if (err instanceof Web3TransactionNotFound) {
         throw new TransactionNotFound(hash, this.type)
@@ -57,7 +62,13 @@ export class EthClient extends Client<EthNode> {
     }
   }
 
-  async getErc20Transaction(hash: string, crypto: CryptoSymbol) {
+  /**
+   * Fetch a single ERC20 transaction by ID
+   * @param hash Transaction hash
+   * @param address Owner's ETH address
+   * @param crypto Crypto symbol
+   */
+  async getErc20Transaction(hash: string, address: string, crypto: CryptoSymbol) {
     const node = this.getNode()
 
     try {
@@ -68,7 +79,7 @@ export class EthClient extends Client<EthNode> {
         ? await node.client.getBlock(transaction.blockNumber).then((block) => block.timestamp)
         : undefined
 
-      return normalizeErc20Transaction(transaction, crypto, blockTimestamp)
+      return normalizeErc20Transaction(crypto, transaction, address, blockTimestamp)
     } catch (err) {
       if (err instanceof Web3TransactionNotFound) {
         throw new TransactionNotFound(hash, this.type)

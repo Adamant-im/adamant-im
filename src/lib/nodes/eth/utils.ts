@@ -10,16 +10,19 @@ const abiDecoder = new AbiDecoder(Erc20 as any)
 
 /**
  * Normalize ETH transaction
- * @param transaction
+ * @param transaction ETH transaction
+ * @param address Owner's ETH address
  * @param blockTimestamp Block timestamp in seconds. Omitted if the transaction is not included in a block yet
  */
 export function normalizeEthTransaction(
   transaction: Awaited<ReturnType<Web3Eth['getTransaction']>>,
+  address: string,
   blockTimestamp?: number | bigint
 ): EthTransaction {
   const gasPrice = 'gasPrice' in transaction ? transaction.gasPrice : '0'
   const fee = utils.calculateFee(transaction.gas, gasPrice.toString())
   const amount = 'value' in transaction ? transaction.value : '0'
+  const direction = transaction.from.toLowerCase() === address.toLowerCase() ? 'from' : 'to'
 
   return {
     id: transaction.hash,
@@ -29,7 +32,7 @@ export function normalizeEthTransaction(
     time: blockTimestamp ? Number(blockTimestamp) : undefined,
     timestamp: blockTimestamp ? Number(blockTimestamp) * 1000 : undefined,
     blockNumber: transaction.blockNumber ? Number(transaction.blockNumber) : undefined,
-    direction: 'from', // @todo: implement direction detection
+    direction,
     senderId: transaction.from,
     recipientId: transaction.to!,
     amount: Number(utils.toEther(amount)),
@@ -37,14 +40,23 @@ export function normalizeEthTransaction(
   }
 }
 
+/**
+ * Normalize ERC20 transaction
+ * @param crypto Crypto symbol
+ * @param transaction ERC20 transaction
+ * @param address Owner's ETH address
+ * @param blockTimestamp Block timestamp in seconds. Omitted if the transaction is not included in a block yet
+ */
 export function normalizeErc20Transaction(
-  transaction: Awaited<ReturnType<Web3Eth['getTransaction']>>,
   crypto: CryptoSymbol,
+  transaction: Awaited<ReturnType<Web3Eth['getTransaction']>>,
+  address: string,
   blockTimestamp?: number | bigint
 ): Erc20Transaction {
   const gasPrice = 'gasPrice' in transaction ? transaction.gasPrice : 0
   const effectiveGasPrice = 'effectiveGasPrice' in transaction ? transaction.effectiveGasPrice : 0
   const fee = utils.calculateFee(transaction.gas, gasPrice.toString())
+  const direction = transaction.from.toLowerCase() === address.toLowerCase() ? 'from' : 'to'
 
   let recipientId = ''
   let amount = '0'
@@ -66,7 +78,7 @@ export function normalizeErc20Transaction(
     time: blockTimestamp ? Number(blockTimestamp) : undefined,
     timestamp: blockTimestamp ? Number(blockTimestamp) * 1000 : undefined,
     blockNumber: transaction.blockNumber ? Number(transaction.blockNumber) : undefined,
-    direction: 'from', // @todo: implement direction detection
+    direction,
     senderId: transaction.from,
     recipientId,
     amount: Number(amount),
