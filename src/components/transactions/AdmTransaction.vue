@@ -14,14 +14,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 import { useTransactionStatus } from '@/components/transactions/hooks/useTransactionStatus.ts'
 import { useFormatADMAddress } from '@/hooks/address/useFormatADMAddress'
 import { useAdmTransferQuery } from '@/hooks/queries/useAdmTransferQuery'
 import Transaction from './Transaction.vue'
 import { getExplorerTxUrl } from '@/config/utils'
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, CryptoSymbol } from '@/lib/constants'
 import { getPartnerAddress } from './utils/getPartnerAddress'
 
 export default defineComponent({
@@ -35,7 +35,7 @@ export default defineComponent({
     },
     crypto: {
       required: true,
-      type: String
+      type: String as PropType<CryptoSymbol>
     }
   },
   setup(props) {

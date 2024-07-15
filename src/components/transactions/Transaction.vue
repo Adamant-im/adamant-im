@@ -151,6 +151,7 @@ import {
   TransactionStatusType,
   tsUpdatable
 } from '@/lib/constants'
+import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { InconsistentStatus } from './utils/getInconsistentStatus'
 import { AnyCoinTransaction } from '@/lib/nodes/types/transaction'
@@ -176,7 +177,7 @@ export default defineComponent({
       required: true
     },
     transaction: {
-      type: Object as PropType<AnyCoinTransaction>
+      type: Object as PropType<AnyCoinTransaction | DecodedChatMessageTransaction>
     },
     /**
      * ADM address
