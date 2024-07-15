@@ -1,5 +1,5 @@
 <template>
-  <transaction
+  <Transaction
     :transaction="transaction"
     :fee="fee"
     :confirmations="confirmations || NaN"
