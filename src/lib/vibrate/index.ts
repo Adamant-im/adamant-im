@@ -1,5 +1,3 @@
-/// <reference types="user-agent-data-types" />
-
 export const VIBRATION_PATTERN: Record<string, number[]> = {
   VERY_SHORT: [40],
   SHORT: [80],
