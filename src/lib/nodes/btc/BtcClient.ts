@@ -74,7 +74,7 @@ export class BtcClient extends Client<BtcNode> {
   }
 
   async getHeight() {
-    const height = this.request<string>('GET', '/blocks/tip/height')
+    const height = await this.request<string>('GET', '/blocks/tip/height')
 
     return Number(height)
   }
