@@ -6,7 +6,7 @@ import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils
 import { Cryptos } from '@/lib/constants'
 import { klyIndexer } from '@/lib/nodes'
 
-export function useKlyTransferQuery(transactionId: MaybeRef<string>) {
+export function useKlyTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
   const klyAddress = computed(() => store.state.kly.address)
 

@@ -9,7 +9,7 @@ import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils
  * @param transactionId - BTC transaction ID
  * @param address - BTC address
  */
-export function useBtcTransferQuery(transactionId: MaybeRef<string>, address: MaybeRef<string>) {
+export function useBtcTransactionQuery(transactionId: MaybeRef<string>, address: MaybeRef<string>) {
   return useQuery({
     queryKey: ['transaction', Cryptos.BTC, transactionId],
     queryFn: () => btc.getTransaction(unref(transactionId), unref(address)),

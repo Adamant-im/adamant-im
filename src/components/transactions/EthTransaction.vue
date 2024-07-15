@@ -25,7 +25,7 @@ import { useCryptoAddressPretty } from './hooks/address'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
-import { useEthTransferQuery } from '@/hooks/queries/useTransferQuery/useEthTransferQuery'
+import { useEthTransactionQuery } from '@/hooks/queries/transaction'
 import { getPartnerAddress } from './utils/getPartnerAddress'
 
 export default defineComponent({
@@ -47,7 +47,7 @@ export default defineComponent({
 
     const cryptoAddress = computed(() => store.state.eth.address)
 
-    const { status, isFetching, data: transaction, refetch } = useEthTransferQuery(props.id)
+    const { status, isFetching, data: transaction, refetch } = useEthTransactionQuery(props.id)
     const fetchStatus = useTransactionStatus(isFetching, status)
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
 

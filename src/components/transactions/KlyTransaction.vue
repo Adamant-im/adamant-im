@@ -25,7 +25,7 @@ import { useCryptoAddressPretty } from './hooks/address'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
-import { useKlyTransferQuery } from '@/hooks/queries/useTransferQuery/useKlyTransferQuery'
+import { useKlyTransactionQuery } from '@/hooks/queries/transaction'
 import { getPartnerAddress } from './utils/getPartnerAddress'
 
 export default defineComponent({
@@ -48,7 +48,7 @@ export default defineComponent({
 
     const cryptoAddress = computed(() => store.state.kly.address)
 
-    const { status, isFetching, data: transaction, refetch } = useKlyTransferQuery(props.id)
+    const { status, isFetching, data: transaction, refetch } = useKlyTransactionQuery(props.id)
     const fetchStatus = useTransactionStatus(isFetching, status)
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
 

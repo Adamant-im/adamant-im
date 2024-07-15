@@ -5,7 +5,7 @@ import { eth } from '@/lib/nodes'
 import { EthTransaction } from '@/lib/nodes/types/transaction'
 import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils'
 
-export function useEthTransferQuery(transactionId: MaybeRef<string>) {
+export function useEthTransactionQuery(transactionId: MaybeRef<string>) {
   return useQuery({
     queryKey: ['transaction', crypto, transactionId],
     queryFn: () => eth.getEthTransaction(unref(transactionId)),

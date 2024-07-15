@@ -20,7 +20,7 @@ const fetchTransaction = async (transactionId: string, currentUserAdmAddress: st
   }
 }
 
-export function useAdmTransferQuery(transactionId: MaybeRef<string>) {
+export function useAdmTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
 
   return useQuery({

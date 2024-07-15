@@ -25,15 +25,17 @@ import { useBtcAddressPretty } from './hooks/address'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
-import { useBtcTransferQuery } from '@/hooks/queries/useTransferQuery/useBtcTransferQuery'
-import { useDashTransferQuery } from '@/hooks/queries/useTransferQuery/useDashTransferQuery'
-import { useDogeTransferQuery } from '@/hooks/queries/useTransferQuery/useDogeTransferQuery'
+import {
+  useBtcTransactionQuery,
+  useDogeTransactionQuery,
+  useDashTransactionQuery
+} from '@/hooks/queries/transaction'
 import { getPartnerAddress } from './utils/getPartnerAddress'
 
 const query = {
-  [Cryptos.BTC]: useBtcTransferQuery,
-  [Cryptos.DASH]: useDashTransferQuery,
-  [Cryptos.DOGE]: useDogeTransferQuery
+  [Cryptos.BTC]: useBtcTransactionQuery,
+  [Cryptos.DASH]: useDashTransactionQuery,
+  [Cryptos.DOGE]: useDogeTransactionQuery
 } as const
 
 export default defineComponent({
@@ -43,7 +45,7 @@ export default defineComponent({
   props: {
     crypto: {
       required: true,
-      type: String as PropType<CryptoSymbol>
+      type: String as PropType<Extract<CryptoSymbol, 'BTC' | 'DOGE' | 'DASH'>>
     },
     id: {
       required: true,
@@ -56,13 +58,13 @@ export default defineComponent({
     const cryptoKey = computed(() => props.crypto.toLowerCase())
     const cryptoAddress = computed(() => store.state[cryptoKey.value].address)
 
-    const useTransferQuery = query[props.crypto]
+    const useTransactionQuery = query[props.crypto]
     const {
       status,
       isFetching,
       data: transaction,
       refetch
-    } = useTransferQuery(props.id, cryptoAddress)
+    } = useTransactionQuery(props.id, cryptoAddress)
     const fetchStatus = useTransactionStatus(isFetching, status)
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
 

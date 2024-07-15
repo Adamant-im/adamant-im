@@ -18,7 +18,7 @@ import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useFormatADMAddress } from '@/hooks/address/useFormatADMAddress'
-import { useAdmTransferQuery } from '@/hooks/queries/useTransferQuery/useAdmTransferQuery'
+import { useAdmTransactionQuery } from '@/hooks/queries/transaction'
 import Transaction from './Transaction.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { Cryptos, CryptoSymbol } from '@/lib/constants'
@@ -40,7 +40,7 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore()
-    const { status, isFetching, data: transaction, refetch } = useAdmTransferQuery(props.id)
+    const { status, isFetching, data: transaction, refetch } = useAdmTransactionQuery(props.id)
     const fetchStatus = useTransactionStatus(isFetching, status)
 
     const partnerAdmAddress = computed(() => {

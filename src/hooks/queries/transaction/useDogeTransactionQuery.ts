@@ -9,7 +9,10 @@ import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils
  * @param transactionId - DOGE transaction ID
  * @param address - DOGE address
  */
-export function useDogeTransferQuery(transactionId: MaybeRef<string>, address: MaybeRef<string>) {
+export function useDogeTransactionQuery(
+  transactionId: MaybeRef<string>,
+  address: MaybeRef<string>
+) {
   return useQuery({
     queryKey: ['transaction', Cryptos.DOGE, transactionId],
     queryFn: () => doge.getTransaction(unref(transactionId), unref(address)),

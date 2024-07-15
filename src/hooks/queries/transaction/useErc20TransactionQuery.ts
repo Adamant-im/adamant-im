@@ -5,7 +5,7 @@ import { Cryptos, CryptoSymbol } from '@/lib/constants'
 import { Erc20Transaction } from '@/lib/nodes/types/transaction'
 import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils'
 
-export function useErc20TransferQuery(transactionId: MaybeRef<string>, crypto: CryptoSymbol) {
+export function useErc20TransactionQuery(transactionId: MaybeRef<string>, crypto: CryptoSymbol) {
   return useQuery({
     queryKey: ['transaction', crypto, transactionId],
     queryFn: () => eth.getErc20Transaction(unref(transactionId), crypto),
