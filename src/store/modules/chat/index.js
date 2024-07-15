@@ -866,14 +866,14 @@ const actions = {
 
   /**
    * Animation of last reaction with vibro
-   * @param {ART} type - animation reaction type - incomingg or outgoing
+   * @param {ART} type - animation reaction type - incoming or outgoing
    */
 
   animateLastReaction({ commit }, type) {
     const updateFn =
       type === ART.Incoming ? 'updateAnimateIncomingReaction' : 'updateAnimateOutgoingReaction'
 
-    navigator.userAgentData.mobile && vibrate.doubleVeryShort()
+    vibrate.veryShort()
 
     commit(updateFn, true)
     const timeout = setTimeout(() => commit(updateFn, false), 1500)

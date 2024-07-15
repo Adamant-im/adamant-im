@@ -157,6 +157,7 @@
     "sinon": "^17.0.1",
     "swagger-typescript-api": "^13.0.3",
     "typescript": "^5.4.2",
+    "user-agent-data-types": "^0.4.2",
     "uuid": "^9.0.1",
     "vite": "^5.1.6",
     "vite-plugin-electron": "^0.28.4",

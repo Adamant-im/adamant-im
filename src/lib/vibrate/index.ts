@@ -1,3 +1,5 @@
+/// <reference types="user-agent-data-types" />
+
 export const VIBRATION_PATTERN: Record<string, number[]> = {
   VERY_SHORT: [40],
   SHORT: [80],
@@ -21,7 +23,7 @@ export function createVibrationPattern(pattern: number[]): () => void {
   return () => {
     if (!checkVibrateIsSupported()) return
 
-    navigator.vibrate(pattern)
+    navigator.userAgentData?.mobile && navigator.vibrate(pattern)
   }
 }
 
