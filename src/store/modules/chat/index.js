@@ -628,7 +628,7 @@ const actions = {
    * This is a temporary solution until the sockets are implemented.
    * @returns {Promise}
    */
-  getNewMessages({ state, commit, dispatch }) {
+  getNewMessages({ state, commit, dispatch, rootState }) {
     if (!state.isFulfilled) {
       return Promise.reject(new Error('Chat is not fulfilled'))
     }
@@ -638,7 +638,7 @@ const actions = {
 
       dispatch('pushMessages', messages)
 
-      if (messages.length > 0) {
+      if (!rootState.options.useSocketConnection && messages.length > 0) {
         dispatch('animateLastReaction', ART.Incoming)
       }
 
@@ -868,7 +868,6 @@ const actions = {
    * Animation of last reaction with vibro
    * @param {ART} type - animation reaction type - incoming or outgoing
    */
-
   animateLastReaction({ commit }, type) {
     const updateFn =
       type === ART.Incoming ? 'updateAnimateIncomingReaction' : 'updateAnimateOutgoingReaction'
