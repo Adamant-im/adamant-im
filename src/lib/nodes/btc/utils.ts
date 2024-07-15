@@ -3,7 +3,11 @@ import { Transaction } from './types/api/common/transaction'
 
 export const MULTIPLIER = 1e8
 
-export function normalizeTransaction(tx: Transaction, ownerAddress: string): BtcTransaction {
+export function normalizeTransaction(
+  tx: Transaction,
+  ownerAddress: string,
+  currentHeight?: number
+): BtcTransaction {
   const senders = tx.vin.map((vin) => vin.prevout.scriptpubkey_address)
   const recipients = tx.vout.map((vout) => vout.scriptpubkey_address)
 
@@ -35,7 +39,11 @@ export function normalizeTransaction(tx: Transaction, ownerAddress: string): Btc
     0
   )
 
-  const confirmations = tx.status.confirmed ? 1 : 0
+  const confirmations = currentHeight
+    ? currentHeight - tx.status.block_height + 1
+    : tx.status.confirmed
+      ? 1
+      : 0
   const timestamp = tx.status.block_time * 1000
 
   let fee = tx.fee
@@ -44,8 +52,6 @@ export function normalizeTransaction(tx: Transaction, ownerAddress: string): Btc
     const totalOut = tx.vout.reduce((sum, x) => sum + (x.value ? +x.value : 0), 0)
     fee = totalIn - totalOut
   }
-
-  const height = tx.status.block_height
 
   return {
     id: tx.txid,
@@ -61,6 +67,6 @@ export function normalizeTransaction(tx: Transaction, ownerAddress: string): Btc
     recipientId,
     amount: amount / MULTIPLIER,
     confirmations,
-    height
+    height: tx.status.block_height
   }
 }

@@ -44,7 +44,12 @@ export class BtcClient extends Client<BtcNode> {
       transactionId
     })
 
-    return normalizeTransaction(transaction, address)
+    const height = await this.getHeight().catch((err) => {
+      console.warn('BtcClient: Failed to get current height:', err)
+      return undefined
+    })
+
+    return normalizeTransaction(transaction, address, height)
   }
 
   /**
