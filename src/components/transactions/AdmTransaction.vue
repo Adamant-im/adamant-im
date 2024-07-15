@@ -16,7 +16,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
-import { useTransactionStatus } from '@/components/transactions/hooks/useTransactionStatus.ts'
+import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useFormatADMAddress } from '@/hooks/address/useFormatADMAddress'
 import { useAdmTransferQuery } from '@/hooks/queries/useAdmTransferQuery'
 import Transaction from './Transaction.vue'
