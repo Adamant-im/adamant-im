@@ -1,4 +1,5 @@
 import { MaybeRef, unref } from 'vue'
+import { useStore } from 'vuex'
 import { useQuery } from '@tanstack/vue-query'
 import { Cryptos } from '@/lib/constants'
 import { doge } from '@/lib/nodes'
@@ -7,15 +8,13 @@ import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils
 
 /**
  * @param transactionId - DOGE transaction ID
- * @param address - DOGE address
  */
-export function useDogeTransactionQuery(
-  transactionId: MaybeRef<string>,
-  address: MaybeRef<string>
-) {
+export function useDogeTransactionQuery(transactionId: MaybeRef<string>) {
+  const store = useStore()
+
   return useQuery({
     queryKey: ['transaction', Cryptos.DOGE, transactionId],
-    queryFn: () => doge.getTransaction(unref(transactionId), unref(address)),
+    queryFn: () => doge.getTransaction(unref(transactionId), store.state.doge.address),
     initialData: {} as DogeTransaction,
     retry: retryFactory(Cryptos.BTC, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),

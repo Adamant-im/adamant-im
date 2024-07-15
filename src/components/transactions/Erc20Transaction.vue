@@ -53,7 +53,7 @@ export default defineComponent({
       isFetching,
       data: transaction,
       refetch
-    } = useErc20TransactionQuery(props.id, props.crypto)
+    } = useErc20TransactionQuery(props.crypto)(props.id)
     const fetchStatus = useTransactionStatus(isFetching, status)
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
 

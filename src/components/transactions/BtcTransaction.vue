@@ -20,7 +20,7 @@ import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 import Transaction from './Transaction.vue'
 import { getExplorerTxUrl } from '@/config/utils'
-import { Cryptos, CryptoSymbol } from '@/lib/constants'
+import { CryptoSymbol } from '@/lib/constants'
 import { useBtcAddressPretty } from './hooks/address'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
@@ -33,9 +33,9 @@ import {
 import { getPartnerAddress } from './utils/getPartnerAddress'
 
 const query = {
-  [Cryptos.BTC]: useBtcTransactionQuery,
-  [Cryptos.DASH]: useDashTransactionQuery,
-  [Cryptos.DOGE]: useDogeTransactionQuery
+  BTC: useBtcTransactionQuery,
+  DASH: useDashTransactionQuery,
+  DOGE: useDogeTransactionQuery
 } as const
 
 export default defineComponent({
@@ -59,12 +59,7 @@ export default defineComponent({
     const cryptoAddress = computed(() => store.state[cryptoKey.value].address)
 
     const useTransactionQuery = query[props.crypto]
-    const {
-      status,
-      isFetching,
-      data: transaction,
-      refetch
-    } = useTransactionQuery(props.id, cryptoAddress)
+    const { status, isFetching, data: transaction, refetch } = useTransactionQuery(props.id)
     const fetchStatus = useTransactionStatus(isFetching, status)
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
 
