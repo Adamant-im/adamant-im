@@ -11,7 +11,7 @@
     <container class="container--with-app-toolbar">
       <v-list bg-color="transparent">
         <TransactionListItem :title="t('transaction.amount')">
-          {{ transaction?.amount ? formatAmount(transaction?.amount) : placeholder }} {{ crypto }}
+          {{ transaction?.amount ? formatAmount(transaction?.amount) + ` ${crypto}` : placeholder }}
         </TransactionListItem>
 
         <v-divider />
@@ -71,7 +71,7 @@
         <v-divider />
 
         <TransactionListItem :title="t('transaction.commission')">
-          {{ fee ? formatAmount(fee) : placeholder }} {{ crypto }}
+          {{ fee ? formatAmount(fee) + ` ${crypto}` : placeholder }}
         </TransactionListItem>
 
         <v-divider />
