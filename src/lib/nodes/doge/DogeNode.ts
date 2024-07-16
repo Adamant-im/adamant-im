@@ -4,8 +4,9 @@ import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
 
-type FetchBtcNodeInfoResult = {
-  info: {
+type FetchDogeNodeInfoResult = {
+  error: string
+  result: {
     version: number
   }
 }
@@ -25,19 +26,30 @@ export class DogeNode extends Node<AxiosInstance> {
 
   protected async checkHealth() {
     const time = Date.now()
-    const height = await this.client
-      .get('/api/blocks?limit=0')
-      .then((res) => res.data.blocks[0].height)
+
+    const { data } = await this.client.post('/', {
+      jsonrpc: '1.0',
+      id: 'adm',
+      method: 'getblockchaininfo',
+      params: []
+    })
+
+    const { blocks } = data.result
 
     return {
-      height,
+      height: Number(blocks),
       ping: Date.now() - time
     }
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { data } = await this.client.get<FetchBtcNodeInfoResult>('/api/status')
-    const { version } = data.info
+    const { data } = await this.client.post<FetchDogeNodeInfoResult>('/', {
+      jsonrpc: '1.0',
+      id: 'adm',
+      method: 'getnetworkinfo',
+      params: []
+    })
+    const { version } = data.result
     if (version) {
       this.version = formatDogeVersion(version)
     }

@@ -1,11 +1,8 @@
 import { MutationTree } from 'vuex'
-import { AvailableService, ServicesState } from '@/store/modules/services/types'
-
-type StatusPayload = { serviceType: AvailableService; status: { url: string; active: boolean } }
-type TogglePayload = { type: AvailableService; url: string; active: boolean }
+import { ServicesState, StatusPayload, TogglePayload } from '@/store/modules/services/types'
 
 export const mutations: MutationTree<ServicesState> = {
-  useFastestService(state, value) {
+  useFastestService(state, value: boolean) {
     state.useFastestService = value
   },
 

@@ -1,9 +1,9 @@
 import { services } from '@/lib/nodes/services'
-import { Store } from 'vuex'
+import { Plugin } from 'vuex'
 import { AvailableService, ServicesState } from '@/store/modules/services/types'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 
-export default (store: Store<ServicesState>) => {
+const servicesPlugin: Plugin<ServicesState> = (store) => {
   for (const [serviceType, client] of Object.entries(services)) {
     client.getNodes().forEach((status) => store.commit('services/status', { status, serviceType }))
 
@@ -30,3 +30,5 @@ export default (store: Store<ServicesState>) => {
     }
   })
 }
+
+export default servicesPlugin
