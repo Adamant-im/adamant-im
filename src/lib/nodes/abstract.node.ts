@@ -154,6 +154,7 @@ export abstract class Node<C = unknown> {
 
   updateHealthCheckInterval(interval: HealthcheckInterval) {
     this.healthCheckInterval = interval
+    this.startHealthcheck().catch(console.error)
   }
 
   private fireStatusChange() {

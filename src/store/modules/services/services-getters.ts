@@ -7,7 +7,25 @@ export const getters: GetterTree<ServicesState, RootState> = {
   rate(state) {
     return Object.values(state[NODE_LABELS.RatesInfo])
   },
+  btcIndexer(state) {
+    return Object.values(state[NODE_LABELS.BtcIndexer])
+  },
+  dogeIndexer(state) {
+    return Object.values(state[NODE_LABELS.DogeIndexer])
+  },
+  ethIndexer(state) {
+    return Object.values(state[NODE_LABELS.EthIndexer])
+  },
+  klyIndexer(state) {
+    return Object.values(state[NODE_LABELS.KlyIndexer])
+  },
   services(state, getters) {
-    return [...getters.rate]
+    return [
+      ...getters.rate,
+      ...getters.btcIndexer,
+      ...getters.dogeIndexer,
+      ...getters.ethIndexer,
+      ...getters.klyIndexer
+    ]
   }
 }
