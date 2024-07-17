@@ -10,7 +10,7 @@ export function useEthTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
 
   return useQuery({
-    queryKey: ['transaction', crypto, transactionId],
+    queryKey: ['transaction', Cryptos.ETH, transactionId],
     queryFn: () => eth.getEthTransaction(unref(transactionId), store.state.eth.address),
     initialData: {} as EthTransaction,
     retry: retryFactory(Cryptos.BTC, unref(transactionId)),
