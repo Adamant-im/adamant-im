@@ -17,9 +17,9 @@ export function useTransactionStatusQuery(
 
   const status = computed<TransactionStatusType>(() => {
     if (isFetching.value) return TransactionStatus.PENDING
-    if (fetchStatus.value === 'error') return TransactionStatus.UNKNOWN
+    if (fetchStatus.value === 'error') return TransactionStatus.INVALID
     if (fetchStatus.value === 'success') {
-      if (inconsistentStatus.value) return TransactionStatus.INVALID
+      if (inconsistentStatus.value) return TransactionStatus.UNKNOWN
 
       return TransactionStatus.CONFIRMED
     }
