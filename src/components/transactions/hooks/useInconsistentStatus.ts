@@ -2,7 +2,7 @@ import { computed, Ref } from 'vue'
 import { useStore } from 'vuex'
 import { useFindAdmTransaction } from './useFindAdmTransaction'
 import { useKVSCryptoAddress } from '@/hooks/queries/useKVSCryptoAddress.ts'
-import { CryptoSymbol } from '@/lib/constants'
+import { CryptoSymbol, isErc20 } from '@/lib/constants'
 import { getInconsistentStatus, InconsistentStatus } from '../utils/getInconsistentStatus'
 import { CoinTransaction } from '@/lib/nodes/types/transaction'
 
@@ -12,7 +12,11 @@ export function useInconsistentStatus(
 ) {
   const store = useStore()
 
-  const mineCryptoAddress = computed(() => store.state[crypto.toLowerCase()].address)
+  const mineCryptoAddress = computed(() => {
+    if (isErc20(crypto)) return store.state.eth.address
+
+    return store.state[crypto.toLowerCase()].address
+  })
   const transactionId = computed(() => transaction.value?.id)
 
   const admTx = useFindAdmTransaction(transactionId)
