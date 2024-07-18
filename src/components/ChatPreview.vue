@@ -47,10 +47,24 @@
 
       <!-- Transaction -->
       <template v-else-if="isTransferType">
-        <v-list-item-subtitle :class="`${className}__subtitle`">
-          <v-icon v-if="!isIncomingTransaction" size="15" :icon="statusIcon" />
+        <v-list-item-subtitle v-if="transaction.type === 'ADM'" :class="`${className}__subtitle`">
+          <v-icon v-if="!isIncomingTransaction" size="15" :icon="admStatusIcon" />
           {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
-          <v-icon v-if="isIncomingTransaction" :icon="statusIcon" size="15" />
+          <v-icon v-if="isIncomingTransaction" size="15" :icon="admStatusIcon" />
+        </v-list-item-subtitle>
+
+        <v-list-item-subtitle v-else :class="`${className}__subtitle`">
+          <TransactionProvider
+            v-if="!isIncomingTransaction"
+            :tx-id="transaction.hash"
+            :crypto="transaction.type"
+          >
+            <template #default="{ status }">
+              <v-icon size="15" :icon="status" />
+              {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
+              <v-icon size="15" :icon="status" />
+            </template>
+          </TransactionProvider>
         </v-list-item-subtitle>
       </template>
 
@@ -73,7 +87,7 @@
               size="15"
               class="mr-1"
             />
-            <v-icon v-else :icon="statusIcon" size="15" class="mr-1" />
+            <v-icon v-else :icon="admStatusIcon" size="15" class="mr-1" />
           </template>
 
           <span v-html="lastMessageTextNoFormats"></span>
@@ -84,7 +98,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, watch } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
@@ -98,12 +112,13 @@ import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
-import { useTransactionStatus } from '@/hooks/useTransactionStatus'
+import TransactionProvider from '@/providers/TransactionProvider.vue'
 
 const className = 'chat-brief'
 
 export default defineComponent({
   components: {
+    TransactionProvider,
     ChatAvatar,
     Icon,
     AdmFillIcon
@@ -152,7 +167,6 @@ export default defineComponent({
     const store = useStore()
     const { t } = useI18n()
 
-    const transaction = computed(() => props.transaction)
     const contactId = computed(() => props.contactId)
     const chatName = useChatName(contactId, true)
 
@@ -207,26 +221,9 @@ export default defineComponent({
     const numOfNewMessages = computed(() => store.getters['chat/numOfNewMessages'](contactId.value))
     const createdAt = computed(() => props.transaction.timestamp)
 
-    const { status, fetchTransactionStatus } = useTransactionStatus(
-      transaction,
-      computed(() => undefined)
-    )
-    const statusIcon = computed(() => tsIcon(status.value.virtualStatus))
-    const isConfirmed = computed(() => status.value.virtualStatus === TS.CONFIRMED)
-
-    watch(
-      () => props.transaction,
-      () => {
-        fetchTransactionStatus()
-      }
-    )
-
-    onMounted(() => {
-      // fetch status if transaction is transfer
-      if (isTransferType.value) {
-        fetchTransactionStatus()
-      }
-    })
+    const status = computed(() => props.transaction.status)
+    const admStatusIcon = computed(() => tsIcon(status.value))
+    const isConfirmed = computed(() => status.value === TS.CONFIRMED)
 
     return {
       className,
@@ -245,8 +242,9 @@ export default defineComponent({
       lastMessageTextNoFormats,
       numOfNewMessages,
       reactedText,
-      statusIcon,
-      transactionDirection
+      admStatusIcon,
+      transactionDirection,
+      tsIcon
     }
   }
 })
