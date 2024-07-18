@@ -4,10 +4,25 @@ import { useFindAdmTransaction } from './useFindAdmTransaction'
 import { useKVSCryptoAddress } from '@/hooks/queries/useKVSCryptoAddress.ts'
 import { CryptoSymbol, isErc20 } from '@/lib/constants'
 import { getInconsistentStatus, InconsistentStatus } from '../utils/getInconsistentStatus'
-import { CoinTransaction } from '@/lib/nodes/types/transaction'
+import {
+  BtcTransaction,
+  DashTransaction,
+  DogeTransaction,
+  Erc20Transaction,
+  EthTransaction,
+  KlyTransaction
+} from '@/lib/nodes/types/transaction'
 
 export function useInconsistentStatus(
-  transaction: Ref<CoinTransaction | null>,
+  transaction: Ref<
+    | BtcTransaction
+    | DogeTransaction
+    | DashTransaction
+    | KlyTransaction
+    | EthTransaction
+    | Erc20Transaction
+    | null
+  >,
   crypto: CryptoSymbol
 ) {
   const store = useStore()
