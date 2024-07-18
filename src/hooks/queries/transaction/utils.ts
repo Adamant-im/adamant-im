@@ -12,7 +12,6 @@ export function retryFactory(crypto: CryptoSymbol, transactionId: string) {
     const attempts = isPendingTransaction
       ? txFetchInfo.newPendingAttempts
       : txFetchInfo.oldPendingAttempts
-    console.log('attempts', attempts, isPendingTransaction)
 
     return failureCount + 1 < attempts
   }
@@ -28,7 +27,6 @@ export function retryDelayFactory(crypto: CryptoSymbol, transactionId: string) {
     const delay = isPendingTransaction
       ? txFetchInfo.newPendingInterval
       : txFetchInfo.oldPendingInterval
-    console.log('delay', delay, isPendingTransaction, pendingTransaction, crypto)
 
     return delay
   }
