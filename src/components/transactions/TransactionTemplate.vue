@@ -11,7 +11,11 @@
     <container class="container--with-app-toolbar">
       <v-list bg-color="transparent">
         <TransactionListItem :title="t('transaction.amount')">
-          {{ transaction?.amount ? formatAmount(transaction?.amount) + ` ${crypto}` : placeholder }}
+          {{
+            typeof transaction?.amount === 'number'
+              ? formatAmount(transaction?.amount) + ` ${crypto}`
+              : placeholder
+          }}
         </TransactionListItem>
 
         <v-divider />
