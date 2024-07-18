@@ -87,9 +87,8 @@ function verifyTimestamp(
 ) {
   const delta = Math.abs(transactionTimestamp - specialMessageTimestamp) / 1000
 
-  // @todo fix adamant-wallets schema
-  const mainCoin = CryptosInfo[coin].mainCoin || coin
-  const { txConsistencyMaxTime } = CryptosInfo[mainCoin]
+  const mainCoin = (CryptosInfo[coin] as any)?.mainCoin || coin // @todo fix type in adamant-wallets schema
+  const { txConsistencyMaxTime } = CryptosInfo[mainCoin as CryptoSymbol]
 
   if (txConsistencyMaxTime) {
     return delta < txConsistencyMaxTime

@@ -229,6 +229,8 @@ export default defineComponent({
     const recipient = computed(() => props.recipients?.join(',') ?? transaction.value?.senderId)
 
     const hasMessages = computed(() => {
+      if (!props.partner) return false
+
       const chat = store.state.chat.chats[props.partner]
       return chat && chat.messages && Object.keys(chat.messages).length > 0
     })
