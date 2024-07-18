@@ -1,6 +1,5 @@
 import { MaybeRef } from 'vue'
 import { CryptoSymbol, isErc20 } from '@/lib/constants'
-import { useAdmTransactionQuery } from './useAdmTransactionQuery'
 import { useBtcTransactionQuery } from './useBtcTransactionQuery'
 import { useDogeTransactionQuery } from './useDogeTransactionQuery'
 import { useDashTransactionQuery } from './useDashTransactionQuery'
@@ -9,7 +8,6 @@ import { useErc20TransactionQuery } from './useErc20TransactionQuery'
 import { useKlyTransactionQuery } from './useKlyTransactionQuery'
 
 const query = {
-  ADM: useAdmTransactionQuery,
   BTC: useBtcTransactionQuery,
   DOGE: useDogeTransactionQuery,
   DASH: useDashTransactionQuery,
@@ -23,7 +21,6 @@ export function useTransactionQuery(transactionId: MaybeRef<string>, crypto: Cry
   }
 
   switch (crypto) {
-    case 'ADM':
     case 'BTC':
     case 'DOGE':
     case 'DASH':
