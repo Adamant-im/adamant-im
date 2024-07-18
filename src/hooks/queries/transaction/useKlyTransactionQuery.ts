@@ -1,3 +1,4 @@
+import { PendingTxStore } from '@/lib/pending-transactions'
 import { useQuery } from '@tanstack/vue-query'
 import { MaybeRef, unref } from 'vue'
 import { useStore } from 'vuex'
@@ -10,12 +11,17 @@ export function useKlyTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
 
   return useQuery({
-    queryKey: ['transaction', Cryptos.KLY, transactionId],
+    queryKey: ['transaction', Cryptos.KLY, unref(transactionId)],
     queryFn: () => klyIndexer.getTransaction(unref(transactionId), store.state.kly.address),
-    initialData: {} as KlyTransaction,
-    retry: retryFactory(Cryptos.BTC, unref(transactionId)),
-    retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),
-    refetchInterval: refetchIntervalFactory(Cryptos.BTC),
+    initialData: () => {
+      const pendingTransaction = PendingTxStore.get(Cryptos.KLY)
+      if (pendingTransaction?.id === transactionId) return pendingTransaction
+
+      return {} as KlyTransaction
+    },
+    retry: retryFactory(Cryptos.KLY, unref(transactionId)),
+    retryDelay: retryDelayFactory(Cryptos.KLY, unref(transactionId)),
+    refetchInterval: refetchIntervalFactory(Cryptos.KLY),
     refetchOnWindowFocus: false
   })
 }

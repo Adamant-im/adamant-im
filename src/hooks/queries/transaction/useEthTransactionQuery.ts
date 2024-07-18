@@ -1,3 +1,4 @@
+import { PendingTxStore } from '@/lib/pending-transactions'
 import { MaybeRef, unref } from 'vue'
 import { useStore } from 'vuex'
 import { useQuery } from '@tanstack/vue-query'
@@ -10,12 +11,17 @@ export function useEthTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
 
   return useQuery({
-    queryKey: ['transaction', Cryptos.ETH, transactionId],
+    queryKey: ['transaction', Cryptos.ETH, unref(transactionId)],
     queryFn: () => eth.getEthTransaction(unref(transactionId), store.state.eth.address),
-    initialData: {} as EthTransaction,
-    retry: retryFactory(Cryptos.BTC, unref(transactionId)),
-    retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),
-    refetchInterval: refetchIntervalFactory(Cryptos.BTC),
+    initialData: () => {
+      const pendingTransaction = PendingTxStore.get(Cryptos.ETH)
+      if (pendingTransaction?.id === transactionId) return pendingTransaction
+
+      return {} as EthTransaction
+    },
+    retry: retryFactory(Cryptos.ETH, unref(transactionId)),
+    retryDelay: retryDelayFactory(Cryptos.ETH, unref(transactionId)),
+    refetchInterval: refetchIntervalFactory(Cryptos.ETH),
     refetchOnWindowFocus: false
   })
 }

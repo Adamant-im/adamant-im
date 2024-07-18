@@ -27,9 +27,9 @@ export function useAdmTransactionQuery(transactionId: MaybeRef<string>) {
     queryKey: ['transaction', Cryptos.ADM, unref(transactionId)],
     queryFn: () => fetchTransaction(unref(transactionId), store.state.address),
     initialData: {} as DecodedChatMessageTransaction,
-    retry: retryFactory(Cryptos.BTC, unref(transactionId)),
-    retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),
-    refetchInterval: refetchIntervalFactory(Cryptos.BTC),
+    retry: retryFactory(Cryptos.ADM, unref(transactionId)),
+    retryDelay: retryDelayFactory(Cryptos.ADM, unref(transactionId)),
+    refetchInterval: refetchIntervalFactory(Cryptos.ADM),
     refetchOnWindowFocus: false
   })
 }

@@ -1,3 +1,4 @@
+import { PendingTxStore } from '@/lib/pending-transactions'
 import { MaybeRef, unref } from 'vue'
 import { useStore } from 'vuex'
 import { useQuery } from '@tanstack/vue-query'
@@ -13,12 +14,17 @@ export function useDogeTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
 
   return useQuery({
-    queryKey: ['transaction', Cryptos.DOGE, transactionId],
+    queryKey: ['transaction', Cryptos.DOGE, unref(transactionId)],
     queryFn: () => doge.getTransaction(unref(transactionId), store.state.doge.address),
-    initialData: {} as DogeTransaction,
-    retry: retryFactory(Cryptos.BTC, unref(transactionId)),
-    retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),
-    refetchInterval: refetchIntervalFactory(Cryptos.BTC),
+    initialData: () => {
+      const pendingTransaction = PendingTxStore.get(Cryptos.DOGE)
+      if (pendingTransaction?.id === transactionId) return pendingTransaction
+
+      return {} as DogeTransaction
+    },
+    retry: retryFactory(Cryptos.DOGE, unref(transactionId)),
+    retryDelay: retryDelayFactory(Cryptos.DOGE, unref(transactionId)),
+    refetchInterval: refetchIntervalFactory(Cryptos.DOGE),
     refetchOnWindowFocus: false
   })
 }

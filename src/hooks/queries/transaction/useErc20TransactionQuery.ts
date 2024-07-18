@@ -1,8 +1,9 @@
+import { PendingTxStore } from '@/lib/pending-transactions'
 import { MaybeRef, unref } from 'vue'
 import { useStore } from 'vuex'
 import { useQuery } from '@tanstack/vue-query'
 import { eth } from '@/lib/nodes'
-import { Cryptos, CryptoSymbol } from '@/lib/constants'
+import { CryptoSymbol } from '@/lib/constants'
 import { Erc20Transaction } from '@/lib/nodes/types/transaction'
 import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils'
 
@@ -11,12 +12,17 @@ export function useErc20TransactionQuery(crypto: CryptoSymbol) {
     const store = useStore()
 
     return useQuery({
-      queryKey: ['transaction', crypto, transactionId],
+      queryKey: ['transaction', crypto, unref(transactionId)],
       queryFn: () => eth.getErc20Transaction(unref(transactionId), store.state.eth.address, crypto),
-      initialData: {} as Erc20Transaction,
-      retry: retryFactory(Cryptos.BTC, unref(transactionId)),
-      retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),
-      refetchInterval: refetchIntervalFactory(Cryptos.BTC),
+      initialData: () => {
+        const pendingTransaction = PendingTxStore.get(crypto)
+        if (pendingTransaction?.id === transactionId) return pendingTransaction
+
+        return {} as Erc20Transaction
+      },
+      retry: retryFactory(crypto, unref(transactionId)),
+      retryDelay: retryDelayFactory(crypto, unref(transactionId)),
+      refetchInterval: refetchIntervalFactory(crypto),
       refetchOnWindowFocus: false
     })
   }
