@@ -1,5 +1,5 @@
 <template>
-  <Transaction
+  <TransactionTemplate
     :transaction="transaction"
     :fee="fee"
     :confirmations="confirmations || NaN"
@@ -18,7 +18,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
-import Transaction from './Transaction.vue'
+import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { CryptoSymbol } from '@/lib/constants'
 import { useBtcAddressPretty } from './hooks/address'
@@ -40,7 +40,7 @@ const query = {
 
 export default defineComponent({
   components: {
-    Transaction
+    TransactionTemplate
   },
   props: {
     crypto: {

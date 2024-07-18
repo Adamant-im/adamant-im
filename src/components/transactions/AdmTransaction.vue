@@ -1,5 +1,5 @@
 <template>
-  <Transaction
+  <TransactionTemplate
     :transaction="transaction"
     :fee="fee"
     :confirmations="confirmations || NaN"
@@ -19,14 +19,14 @@ import { useStore } from 'vuex'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useFormatADMAddress } from '@/hooks/address/useFormatADMAddress'
 import { useAdmTransactionQuery } from '@/hooks/queries/transaction'
-import Transaction from './Transaction.vue'
+import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { Cryptos, CryptoSymbol } from '@/lib/constants'
 import { getPartnerAddress } from './utils/getPartnerAddress'
 
 export default defineComponent({
   components: {
-    Transaction
+    TransactionTemplate
   },
   props: {
     id: {

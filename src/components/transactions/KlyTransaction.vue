@@ -1,5 +1,5 @@
 <template>
-  <Transaction
+  <TransactionTemplate
     :transaction="transaction"
     :fee="fee"
     :confirmations="confirmations || NaN"
@@ -18,7 +18,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
-import Transaction from './Transaction.vue'
+import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { Cryptos, CryptoSymbol } from '@/lib/constants'
 import { useCryptoAddressPretty } from './hooks/address'
@@ -31,7 +31,7 @@ import { getPartnerAddress } from './utils/getPartnerAddress'
 export default defineComponent({
   name: 'KlyTransaction',
   components: {
-    Transaction
+    TransactionTemplate
   },
   props: {
     crypto: {
