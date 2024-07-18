@@ -16,7 +16,8 @@ export function useErc20TransactionQuery(crypto: CryptoSymbol) {
       initialData: {} as Erc20Transaction,
       retry: retryFactory(Cryptos.BTC, unref(transactionId)),
       retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),
-      refetchInterval: refetchIntervalFactory(Cryptos.BTC)
+      refetchInterval: refetchIntervalFactory(Cryptos.BTC),
+      refetchOnWindowFocus: false
     })
   }
 }
