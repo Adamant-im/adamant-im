@@ -24,7 +24,7 @@ export function useAdmTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
 
   return useQuery({
-    queryKey: ['transaction', Cryptos.ADM, transactionId],
+    queryKey: ['transaction', Cryptos.ADM, unref(transactionId)],
     queryFn: () => fetchTransaction(unref(transactionId), store.state.address),
     initialData: {} as DecodedChatMessageTransaction,
     retry: retryFactory(Cryptos.BTC, unref(transactionId)),
