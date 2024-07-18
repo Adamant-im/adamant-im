@@ -24,7 +24,7 @@ export function useDashTransactionQuery(transactionId: MaybeRef<string>) {
     },
     retry: retryFactory(Cryptos.DASH, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.DASH, unref(transactionId)),
-    refetchInterval: refetchIntervalFactory(Cryptos.DASH),
+    refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.DASH, state.data?.status),
     refetchOnWindowFocus: false
   })
 }

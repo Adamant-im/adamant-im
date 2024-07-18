@@ -1,4 +1,4 @@
-import { CryptoSymbol } from '@/lib/constants'
+import { CryptoSymbol, TransactionStatus, TransactionStatusType } from '@/lib/constants'
 import { PendingTxStore } from '@/lib/pending-transactions'
 import { getTxFetchInfo } from '@/lib/transactionsFetching'
 
@@ -34,8 +34,12 @@ export function retryDelayFactory(crypto: CryptoSymbol, transactionId: string) {
   }
 }
 
-export function refetchIntervalFactory(crypto: CryptoSymbol): number {
+export function refetchIntervalFactory(crypto: CryptoSymbol, status?: TransactionStatusType) {
   const txFetchInfo = getTxFetchInfo(crypto)
+
+  if (status === TransactionStatus.CONFIRMED) {
+    return false
+  }
 
   return txFetchInfo.registeredInterval
 }
