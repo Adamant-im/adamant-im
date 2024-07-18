@@ -48,8 +48,8 @@ export default defineComponent({
     const cryptoAddress = computed(() => store.state.eth.address)
 
     const { status, isFetching, data: transaction, refetch } = useEthTransactionQuery(props.id)
-    const fetchStatus = useTransactionStatus(isFetching, status)
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
+    const fetchStatus = useTransactionStatus(isFetching, status, inconsistentStatus)
 
     const admTx = useFindAdmTransaction(props.id)
     const senderAdmAddress = computed(() => admTx.value?.senderId || '')

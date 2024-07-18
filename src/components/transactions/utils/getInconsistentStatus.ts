@@ -27,7 +27,7 @@ export function getInconsistentStatus(
   {
     senderCryptoAddress,
     recipientCryptoAddress
-  }: { senderCryptoAddress: string; recipientCryptoAddress: string }
+  }: { senderCryptoAddress?: string; recipientCryptoAddress?: string }
 ): InconsistentStatus {
   const coin = admTransaction.type as unknown as CryptoSymbol
 

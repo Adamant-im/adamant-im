@@ -75,7 +75,7 @@
         <v-divider />
 
         <TransactionListItem :title="t('transaction.commission')">
-          {{ fee ? formatAmount(fee) + ` ${crypto}` : placeholder }}
+          {{ typeof fee === 'number' ? formatAmount(fee) + ` ${crypto}` : placeholder }}
         </TransactionListItem>
 
         <v-divider />
