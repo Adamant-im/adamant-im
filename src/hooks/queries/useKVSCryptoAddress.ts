@@ -12,16 +12,16 @@ export function useKVSCryptoAddress(
   const fetchCryptoAddress = (): Promise<string> =>
     store.dispatch('partners/fetchAddress', {
       crypto,
-      partner: admAddress
+      partner: admAddress.value
     })
 
   const isEnabled = computed(() => !!admAddress.value)
 
   const { data } = useQuery({
-    queryKey: ['KVS', unref(crypto), admAddress],
+    queryKey: ['KVS', unref(crypto), admAddress.value],
     queryFn: fetchCryptoAddress,
     enabled: isEnabled
   })
 
-  return computed(() => data.value)
+  return data
 }
