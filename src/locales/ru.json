@@ -250,6 +250,7 @@
     "camera_button": "Камера",
     "close_button": "Закрыть",
     "connect_camera": "Подключите камеру и попробуйте снова",
+    "grant_camera_permissions": "Предоставьте разрешения камере в настройках браузера и попробуйте снова",
     "hold_your_device": "Наведите камеру на 2-3 секунды на QR-код",
     "login": {
       "modal_header": "Отсканируйте QR-код с парольной фразой"
@@ -257,7 +258,10 @@
     "new-chat": {
       "modal_header": "Отсканируйте QR-код с адресом АДАМАНТа"
     },
+    "no_camera_access": "Нет доступа к камере",
     "no_camera_found": "Камера не найдена",
+    "no_camera_stream": "Нет видеопотока с камеры",
+    "no_stream_details": "Подробности:<br /><code><small>{ noStreamDetails }</small></code>",
     "something_wrong": "Что-то пошло не так",
     "waiting_camera": "Включаю камеру…"
   },

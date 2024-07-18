@@ -249,6 +249,7 @@
     "camera_button": "Camera",
     "close_button": "Close",
     "connect_camera": "Switch on camera and try again",
+    "grant_camera_permissions": "Grant camera permissions in browser settings and try again",
     "hold_your_device": "Hold your device steady for 2-3 seconds to scan the QR code",
     "login": {
       "modal_header": "Scan the QR code containing a passphrase"
@@ -256,7 +257,10 @@
     "new-chat": {
       "modal_header": "Scan the QR code contain an ADAMANT address"
     },
+    "no_camera_access": "No camera access",
     "no_camera_found": "No camera found",
+    "no_camera_stream": "No camera video stream",
+    "no_stream_details": "Details:<br /><code><small>{ noStreamDetails }</small></code>",
     "something_wrong": "Something went wrong",
     "waiting_camera": "Waiting for camera…"
   },
