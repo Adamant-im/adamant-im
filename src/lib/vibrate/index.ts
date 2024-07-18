@@ -1,4 +1,4 @@
-const VIBRATION_PATTERN = {
+export const VIBRATION_PATTERN: Record<string, number[]> = {
   VERY_SHORT: [40],
   SHORT: [80],
   MEDIUM: [160],
@@ -17,15 +17,15 @@ function checkVibrateIsSupported() {
   return false
 }
 
-function createVibrationPattern(pattern) {
+export function createVibrationPattern(pattern: number[]): () => void {
   return () => {
     if (!checkVibrateIsSupported()) return
 
-    navigator.vibrate(pattern)
+    navigator.userAgentData?.mobile && navigator.vibrate(pattern)
   }
 }
 
-export const vibrate = {
+export const vibrate: Record<string, () => void> = {
   veryShort: createVibrationPattern(VIBRATION_PATTERN.VERY_SHORT),
   short: createVibrationPattern(VIBRATION_PATTERN.SHORT),
   medium: createVibrationPattern(VIBRATION_PATTERN.MEDIUM),
