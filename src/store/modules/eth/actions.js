@@ -19,7 +19,7 @@ function storeEthAddress(context) {
 }
 
 const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
-  const gasPrice = await api.getClient().getGasPrice()
+  const gasPrice = await api.useClient((client) => client.getGasPrice())
 
   const transaction = {
     from: context.state.address,
@@ -30,8 +30,7 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
   }
 
   const gasLimit = await api
-    .getClient()
-    .estimateGas(transaction)
+    .useClient((client) => client.estimateGas(transaction))
     .catch(() => BigInt(DEFAULT_ETH_TRANSFER_GAS_LIMIT))
   transaction.gasLimit = increaseFee ? utils.increaseFee(gasLimit) : gasLimit
 
@@ -66,7 +65,9 @@ const createSpecificActions = (api) => ({
       }
 
       try {
-        const rawBalance = await api.getClient().getBalance(state.address, 'latest')
+        const rawBalance = await api.useClient((client) =>
+          client.getBalance(state.address, 'latest')
+        )
         const balance = Number(utils.toEther(rawBalance.toString()))
 
         commit('balance', balance)
@@ -93,8 +94,7 @@ const createSpecificActions = (api) => ({
 
     // Balance
     void api
-      .getClient()
-      .getBalance(context.state.address, 'latest')
+      .useClient((client) => client.getBalance(context.state.address, 'latest'))
       .then((balance) => {
         context.commit('balance', Number(utils.toEther(balance.toString())))
         context.commit('setBalanceStatus', FetchStatus.Success)
@@ -102,8 +102,7 @@ const createSpecificActions = (api) => ({
 
     // Current gas price
     void api
-      .getClient()
-      .getGasPrice()
+      .useClient((client) => client.getGasPrice())
       .then((price) => {
         context.commit('gasPrice', {
           gasPrice: Number(price),
@@ -113,8 +112,7 @@ const createSpecificActions = (api) => ({
 
     // Current block number
     void api
-      .getClient()
-      .getBlockNumber()
+      .useClient((client) => client.getBlockNumber())
       .then((number) => {
         context.commit('blockNumber', Number(number))
       })

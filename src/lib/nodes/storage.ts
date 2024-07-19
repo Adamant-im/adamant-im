@@ -24,7 +24,7 @@ const defaultOptions: Options = {
   dash: { useFastest: true },
   eth: { useFastest: true },
   ipfs: { useFastest: true },
-  lsk: { useFastest: true }
+  kly: { useFastest: true }
 }
 
 const optionsStorage = new TypedStorage(
@@ -48,17 +48,14 @@ export const nodesStorage = {
   getUseFastest(node: NodeType) {
     const options = optionsStorage.getItem()
 
-    return options[node]?.useFastest
+    return !!options[node]?.useFastest
   },
   setUseFastest(value: boolean, node: NodeType) {
     const options = optionsStorage.getItem()
 
     if (!options[node]) {
-      options[node] = {
-        useFastest: value
-      }
+      options[node] = { useFastest: value }
     }
-
     options[node].useFastest = value
 
     optionsStorage.setItem(options)

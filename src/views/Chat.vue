@@ -17,10 +17,13 @@
 
       <ProgressIndicator :show="!isFulfilled" />
     </container>
+
+    <NodesOfflineDialog node-type="adm" />
   </v-row>
 </template>
 
 <script>
+import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import Chat from '@/components/Chat/Chat.vue'
 import PartnerInfo from '@/components/PartnerInfo.vue'
 import ProgressIndicator from '@/components/ProgressIndicator.vue'
@@ -28,6 +31,7 @@ import partnerName from '@/mixins/partnerName'
 
 export default {
   components: {
+    NodesOfflineDialog,
     ProgressIndicator,
     Chat,
     PartnerInfo

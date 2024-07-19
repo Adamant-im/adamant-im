@@ -9,14 +9,23 @@ import {
   createReaction,
   normalizeMessage
 } from '@/lib/chat/helpers'
+import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
-import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
+import {
+  Cryptos,
+  TransactionStatus as TS,
+  MessageType,
+  AnimationReactionType as ART
+} from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
+import { vibrate } from '@/lib/vibrate'
 
 import { generateAdamantChats } from './utils/generateAdamantChats'
 
 export let interval
+
+export let timeouts = []
 
 const SOCKET_ENABLED_TIMEOUT = 10000
 const SOCKET_DISABLED_TIMEOUT = 3000
@@ -44,7 +53,9 @@ const state = () => ({
   chats: {},
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
-  offset: 0 // for loading chat list with pagination. -1 if all of chats loaded
+  offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
+  animateIncomingReaction: false, // `true` - animate incoming last reaction
+  animateOutgoingReaction: false // `true` - animate outgoing last reaction
 })
 
 const getters = {
@@ -89,6 +100,13 @@ const getters = {
     if (reactions.length === 0) return null
 
     return reactions[reactions.length - 1]
+  },
+
+  isLastReaction: (state, getters) => (transactionId, partnerId) => {
+    const messages = getters.messages(partnerId)
+    const index = messages.findIndex((message) => message.id === transactionId)
+
+    return index === messages.length - 1
   },
 
   /**
@@ -485,6 +503,14 @@ const mutations = {
     }
   },
 
+  updateAnimateOutgoingReaction(state, value) {
+    state.animateOutgoingReaction = value
+  },
+
+  updateAnimateIncomingReaction(state, value) {
+    state.animateIncomingReaction = value
+  },
+
   reset(state) {
     state.chats = {}
     state.lastMessageHeight = 0
@@ -602,7 +628,7 @@ const actions = {
    * This is a temporary solution until the sockets are implemented.
    * @returns {Promise}
    */
-  getNewMessages({ state, commit, dispatch }) {
+  getNewMessages({ state, commit, dispatch, rootState }) {
     if (!state.isFulfilled) {
       return Promise.reject(new Error('Chat is not fulfilled'))
     }
@@ -611,6 +637,10 @@ const actions = {
       const { messages, lastMessageHeight } = result
 
       dispatch('pushMessages', messages)
+
+      if (!rootState.options.useSocketConnection && messages.length > 0) {
+        dispatch('animateLastReaction', ART.Incoming)
+      }
 
       if (lastMessageHeight > 0) {
         commit('setHeight', lastMessageHeight)
@@ -696,7 +726,7 @@ const actions = {
       .then((res) => {
         // @todo this check must be performed on the server
         if (!res.success) {
-          throw new Error('Message rejected')
+          throw new Error(i18n.global.t('chats.message_rejected'))
         }
 
         // update `message.status` to 'REGISTERED'
@@ -753,7 +783,7 @@ const actions = {
       return queueMessage(messageAsset, recipientId, type)
         .then((res) => {
           if (!res.success) {
-            throw new Error('Message rejected')
+            throw new Error(i18n.global.t('chats.message_rejected'))
           }
 
           commit('updateMessage', {
@@ -788,13 +818,15 @@ const actions = {
    * @param {string} reactMessage Emoji
    * @returns {Promise}
    */
-  sendReaction({ commit, rootState }, { recipientId, reactToId, reactMessage }) {
+  sendReaction({ dispatch, commit, rootState }, { recipientId, reactToId, reactMessage }) {
     const messageObject = createReaction({
       recipientId,
       senderId: rootState.address,
       reactToId,
       reactMessage
     })
+
+    dispatch('animateLastReaction', ART.Outgoing)
 
     commit('pushMessage', {
       message: messageObject,
@@ -806,7 +838,7 @@ const actions = {
       .then((res) => {
         // @todo this check must be performed on the server
         if (!res.success) {
-          throw new Error('Message rejected')
+          throw new Error(i18n.global.t('chats.message_rejected'))
         }
 
         // update `message.status` to 'REGISTERED'
@@ -830,6 +862,22 @@ const actions = {
 
         throw err // call the error again so that it can be processed inside view
       })
+  },
+
+  /**
+   * Animation of last reaction with vibro
+   * @param {ART} type - animation reaction type - incoming or outgoing
+   */
+  animateLastReaction({ commit }, type) {
+    const updateFn =
+      type === ART.Incoming ? 'updateAnimateIncomingReaction' : 'updateAnimateOutgoingReaction'
+
+    vibrate.veryShort()
+
+    commit(updateFn, true)
+    const timeout = setTimeout(() => commit(updateFn, false), 1500)
+
+    timeouts.push(timeout)
   },
 
   /**
@@ -904,6 +952,13 @@ const actions = {
     root: true,
     handler() {
       clearTimeout(interval)
+    }
+  },
+
+  clearAnimationTimeouts: {
+    root: true,
+    handler() {
+      timeouts.forEach((timeout) => clearTimeout(timeout))
     }
   },
 
