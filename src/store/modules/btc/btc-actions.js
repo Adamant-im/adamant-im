@@ -4,7 +4,6 @@ import BtcApi from '../../../lib/bitcoin/bitcoin-api'
 import { btc } from '../../../lib/nodes'
 
 const TX_CHUNK_SIZE = 25
-const TX_FETCH_INTERVAL = 60 * 1000
 
 const customActions = (getApi) => ({
   updateStatus(context) {
@@ -36,28 +35,6 @@ const customActions = (getApi) => ({
     const api = getApi()
     if (!api) return
     btc.getHeight().then((height) => commit('height', height))
-  },
-
-  /**
-   * Updates the transaction details
-   * @param {{ dispatch: function, getters: object }} param0 Vuex context
-   * @param {{hash: string}} payload action payload
-   */
-  updateTransaction({ dispatch, getters }, payload) {
-    const tx = getters.transaction(payload.hash)
-
-    if (tx && (tx.status === 'CONFIRMED' || tx.status === 'REJECTED')) {
-      // If transaction is in one of the final statuses (either succeeded or failed),
-      // just update the current height to recalculate its confirmations counter.
-      return dispatch('updateHeight')
-    } else {
-      // Otherwise fetch the transaction details
-      return dispatch('getTransaction', {
-        ...payload,
-        force: payload.force,
-        updateOnly: payload.updateOnly
-      })
-    }
   }
 })
 
@@ -105,7 +82,6 @@ export default {
     apiCtor: BtcApi,
     getOldTransactions,
     getNewTransactions,
-    customActions,
-    fetchRetryTimeout: TX_FETCH_INTERVAL
+    customActions
   })
 }

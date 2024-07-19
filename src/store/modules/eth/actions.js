@@ -37,19 +37,6 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
   return transaction
 }
 
-const parseTransaction = (context, tx) => {
-  return {
-    hash: tx.hash,
-    senderId: tx.from,
-    recipientId: tx.to,
-    amount: utils.toEther(tx.value.toString(10)),
-    fee: utils.calculateFee(tx.gas, (tx.gasPrice || tx.effectiveGasPrice).toString(10)),
-    status: tx.blockNumber ? 'CONFIRMED' : 'PENDING',
-    blockNumber: Number(tx.blockNumber),
-    gasPrice: Number(tx.gasPrice || tx.effectiveGasPrice)
-  }
-}
-
 const createSpecificActions = (api) => ({
   updateBalance: {
     root: true,
@@ -130,6 +117,5 @@ const createSpecificActions = (api) => ({
 export default createActions({
   onInit: storeEthAddress,
   initTransaction,
-  parseTransaction,
   createSpecificActions
 })
