@@ -51,8 +51,9 @@ export class EthClient extends Client<EthNode> {
       const blockTimestamp = isFinalized
         ? await node.client.getBlock(transaction.blockNumber).then((block) => block.timestamp)
         : undefined
+      const receipt = isFinalized ? await node.client.getTransactionReceipt(hash) : undefined
 
-      return normalizeEthTransaction(transaction, address, blockTimestamp)
+      return normalizeEthTransaction({ transaction, receipt }, address, blockTimestamp)
     } catch (err) {
       if (err instanceof Web3TransactionNotFound) {
         throw new TransactionNotFound(hash, this.type)
@@ -78,8 +79,9 @@ export class EthClient extends Client<EthNode> {
       const blockTimestamp = isFinalized
         ? await node.client.getBlock(transaction.blockNumber).then((block) => block.timestamp)
         : undefined
+      const receipt = isFinalized ? await node.client.getTransactionReceipt(hash) : undefined
 
-      return normalizeErc20Transaction(crypto, transaction, address, blockTimestamp)
+      return normalizeErc20Transaction(crypto, { transaction, receipt }, address, blockTimestamp)
     } catch (err) {
       if (err instanceof Web3TransactionNotFound) {
         throw new TransactionNotFound(hash, this.type)

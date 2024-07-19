@@ -158,6 +158,7 @@ import {
 import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { InconsistentStatus } from './utils/getInconsistentStatus'
+import { PendingTransaction } from '@/lib/pending-transactions'
 import { AnyCoinTransaction } from '@/lib/nodes/types/transaction'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import TransactionListItem from './TransactionListItem.vue'
@@ -181,7 +182,9 @@ export default defineComponent({
       required: true
     },
     transaction: {
-      type: Object as PropType<AnyCoinTransaction | DecodedChatMessageTransaction>
+      type: Object as PropType<
+        AnyCoinTransaction | DecodedChatMessageTransaction | PendingTransaction
+      >
     },
     /**
      * ADM address

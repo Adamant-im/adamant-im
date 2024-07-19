@@ -61,7 +61,7 @@ export default defineComponent({
 
     const explorerLink = computed(() => getExplorerTxUrl(Cryptos.ADM, props.id))
 
-    const confirmations = computed(() => transaction.value?.confirmations || NaN)
+    const confirmations = computed(() => transaction.value?.confirmations)
 
     const fee = computed(() => transaction.value?.fee)
 

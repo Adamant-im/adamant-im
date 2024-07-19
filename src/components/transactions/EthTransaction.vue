@@ -74,11 +74,7 @@ export default defineComponent({
     )
 
     const explorerLink = computed(() => getExplorerTxUrl(Cryptos.ETH, props.id))
-    const confirmations = computed(() => {
-      if (!transaction.value.blockNumber || !store.state.eth.blockNumber) return 0
-      return Math.max(0, store.state.eth.blockNumber - transaction.value.blockNumber)
-    })
-
+    const confirmations = computed(() => transaction.value?.confirmations)
     const fee = computed(() => transaction.value?.fee)
 
     return {

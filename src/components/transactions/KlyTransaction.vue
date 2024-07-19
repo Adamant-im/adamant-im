@@ -77,16 +77,18 @@ export default defineComponent({
     const explorerLink = computed(() => getExplorerTxUrl(Cryptos.KLY, props.id))
 
     const confirmations = computed(() => {
-      if (!transaction.value) return 0
+      if ('height' in transaction.value) {
+        const { height } = transaction.value
+        const currentHeight = store.getters['kly/height']
 
-      const { height } = transaction.value
-      const currentHeight = store.getters['kly/height']
+        if (height === undefined || currentHeight === 0) {
+          return 0
+        }
 
-      if (height === undefined || currentHeight === 0) {
-        return 0
+        return currentHeight - height + 1
       }
 
-      return currentHeight - height + 1
+      return 0
     })
 
     const fee = computed(() => transaction.value?.fee)

@@ -2,6 +2,7 @@ import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { formatCryptoAddress, formatMultipleBTCAddresses } from '@/utils/address'
+import { PendingTransaction } from '@/lib/pending-transactions'
 import {
   BtcTransaction,
   CoinTransaction,
@@ -56,7 +57,7 @@ export function useBtcAddress(
  * @param type
  */
 export function useBtcAddressPretty(
-  transaction: Ref<BtcLikeTransaction | undefined>,
+  transaction: Ref<BtcLikeTransaction | PendingTransaction | undefined>,
   cryptoAddress: Ref<string>,
   admAddress: Ref<string>,
   type: 'sender' | 'recipient'

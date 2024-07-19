@@ -1,4 +1,5 @@
 import Web3Eth from 'web3-eth'
+import type { TransactionReceipt } from 'web3-types'
 import { CryptosInfo, CryptoSymbol, TransactionStatus } from '@/lib/constants'
 import * as ethUtils from '@/lib/eth-utils'
 import { EthTransaction, Erc20Transaction } from '@/lib/nodes/types/transaction'
@@ -8,14 +9,19 @@ import { AbiDecoder } from '@/lib/abi/abi-decoder'
 
 const abiDecoder = new AbiDecoder(Erc20 as any)
 
+type Params = {
+  transaction: Awaited<ReturnType<Web3Eth['getTransaction']>>
+  receipt?: TransactionReceipt
+}
+
 /**
  * Normalize ETH transaction
- * @param transaction ETH transaction
+ * @param params ETH transaction
  * @param address Owner's ETH address
  * @param blockTimestamp Block timestamp in seconds. Omitted if the transaction is not included in a block yet
  */
 export function normalizeEthTransaction(
-  transaction: Awaited<ReturnType<Web3Eth['getTransaction']>>,
+  { transaction, receipt }: Params,
   address: string,
   blockTimestamp?: number | bigint
 ): EthTransaction {
@@ -23,12 +29,16 @@ export function normalizeEthTransaction(
   const fee = utils.calculateFee(transaction.gas, gasPrice.toString())
   const amount = 'value' in transaction ? transaction.value : '0'
   const direction = transaction.from.toLowerCase() === address.toLowerCase() ? 'from' : 'to'
+  const confirmations =
+    blockTimestamp && receipt?.blockNumber
+      ? Number(blockTimestamp) - Number(receipt.blockNumber) + 1
+      : 0
 
   return {
     id: transaction.hash,
     hash: transaction.hash,
     fee: Number(fee),
-    status: transaction.blockNumber ? TransactionStatus.CONFIRMED : TransactionStatus.PENDING,
+    status: transaction.blockNumber ? TransactionStatus.CONFIRMED : TransactionStatus.REGISTERED,
     time: blockTimestamp ? Number(blockTimestamp) : undefined,
     timestamp: blockTimestamp ? Number(blockTimestamp) * 1000 : undefined,
     blockNumber: transaction.blockNumber ? Number(transaction.blockNumber) : undefined,
@@ -36,7 +46,7 @@ export function normalizeEthTransaction(
     senderId: transaction.from,
     recipientId: transaction.to!,
     amount: Number(utils.toEther(amount)),
-    confirmations: 0
+    confirmations
   }
 }
 
@@ -49,7 +59,7 @@ export function normalizeEthTransaction(
  */
 export function normalizeErc20Transaction(
   crypto: CryptoSymbol,
-  transaction: Awaited<ReturnType<Web3Eth['getTransaction']>>,
+  { transaction, receipt }: Params,
   address: string,
   blockTimestamp?: number | bigint
 ): Erc20Transaction {
@@ -57,6 +67,10 @@ export function normalizeErc20Transaction(
   const effectiveGasPrice = 'effectiveGasPrice' in transaction ? transaction.effectiveGasPrice : 0
   const fee = utils.calculateFee(transaction.gas, gasPrice.toString())
   const direction = transaction.from.toLowerCase() === address.toLowerCase() ? 'from' : 'to'
+  const confirmations =
+    blockTimestamp && receipt?.blockNumber
+      ? Number(blockTimestamp) - Number(receipt.blockNumber) + 1
+      : 0
 
   let recipientId = ''
   let amount = '0'
@@ -74,7 +88,7 @@ export function normalizeErc20Transaction(
     id: transaction.hash,
     hash: transaction.hash,
     fee: Number(fee),
-    status: transaction.blockNumber ? TransactionStatus.CONFIRMED : TransactionStatus.PENDING,
+    status: transaction.blockNumber ? TransactionStatus.CONFIRMED : TransactionStatus.REGISTERED,
     time: blockTimestamp ? Number(blockTimestamp) : undefined,
     timestamp: blockTimestamp ? Number(blockTimestamp) * 1000 : undefined,
     blockNumber: transaction.blockNumber ? Number(transaction.blockNumber) : undefined,
@@ -82,7 +96,7 @@ export function normalizeErc20Transaction(
     senderId: transaction.from,
     recipientId,
     amount: Number(amount),
-    confirmations: 0,
+    confirmations,
     gasPrice: Number(gasPrice || effectiveGasPrice)
   }
 }
