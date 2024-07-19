@@ -11,7 +11,7 @@ export function useKlyTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
 
   return useQuery({
-    queryKey: ['transaction', Cryptos.KLY, unref(transactionId)],
+    queryKey: ['transaction', Cryptos.KLY, transactionId],
     queryFn: () => klyIndexer.getTransaction(unref(transactionId), store.state.kly.address),
     initialData: () => {
       const pendingTransaction = PendingTxStore.get(Cryptos.KLY)

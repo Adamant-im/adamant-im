@@ -14,7 +14,7 @@ export function useDogeTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
 
   return useQuery({
-    queryKey: ['transaction', Cryptos.DOGE, unref(transactionId)],
+    queryKey: ['transaction', Cryptos.DOGE, transactionId],
     queryFn: () => doge.getTransaction(unref(transactionId), store.state.doge.address),
     initialData: () => {
       const pendingTransaction = PendingTxStore.get(Cryptos.DOGE)

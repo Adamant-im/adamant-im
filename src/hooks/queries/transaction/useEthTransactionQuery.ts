@@ -11,7 +11,7 @@ export function useEthTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
 
   return useQuery({
-    queryKey: ['transaction', Cryptos.ETH, unref(transactionId)],
+    queryKey: ['transaction', Cryptos.ETH, transactionId],
     queryFn: () => eth.getEthTransaction(unref(transactionId), store.state.eth.address),
     initialData: () => {
       const pendingTransaction = PendingTxStore.get(Cryptos.ETH)

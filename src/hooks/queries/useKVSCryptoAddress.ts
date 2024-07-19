@@ -1,4 +1,4 @@
-import { computed, ComputedRef, unref } from 'vue'
+import { computed, ComputedRef } from 'vue'
 import { useStore } from 'vuex'
 import { useQuery } from '@tanstack/vue-query'
 import { CryptoSymbol } from '@/lib/constants'
@@ -18,7 +18,7 @@ export function useKVSCryptoAddress(
   const isEnabled = computed(() => !!admAddress.value)
 
   const { data } = useQuery({
-    queryKey: ['KVS', unref(crypto), admAddress.value],
+    queryKey: ['KVS', crypto, admAddress],
     queryFn: fetchCryptoAddress,
     enabled: isEnabled
   })

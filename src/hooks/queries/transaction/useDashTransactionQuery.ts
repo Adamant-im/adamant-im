@@ -14,7 +14,7 @@ export function useDashTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
 
   return useQuery({
-    queryKey: ['transaction', Cryptos.DASH, unref(transactionId)],
+    queryKey: ['transaction', Cryptos.DASH, transactionId],
     queryFn: () => dash.getTransaction(unref(transactionId), store.state.dash.address),
     initialData: () => {
       const pendingTransaction = PendingTxStore.get(Cryptos.DASH)

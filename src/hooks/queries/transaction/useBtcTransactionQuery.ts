@@ -14,7 +14,7 @@ export function useBtcTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
 
   return useQuery({
-    queryKey: ['transaction', Cryptos.BTC, unref(transactionId)],
+    queryKey: ['transaction', Cryptos.BTC, transactionId],
     queryFn: () => btc.getTransaction(unref(transactionId), store.state.btc.address),
     initialData: () => {
       const pendingTransaction = PendingTxStore.get(Cryptos.BTC)

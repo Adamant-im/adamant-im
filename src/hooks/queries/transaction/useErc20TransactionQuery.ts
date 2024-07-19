@@ -12,7 +12,7 @@ export function useErc20TransactionQuery(crypto: CryptoSymbol) {
     const store = useStore()
 
     return useQuery({
-      queryKey: ['transaction', crypto, unref(transactionId)],
+      queryKey: ['transaction', crypto, transactionId],
       queryFn: () => eth.getErc20Transaction(unref(transactionId), store.state.eth.address, crypto),
       initialData: () => {
         const pendingTransaction = PendingTxStore.get(crypto)
