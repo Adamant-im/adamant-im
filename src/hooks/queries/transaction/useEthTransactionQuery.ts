@@ -21,7 +21,8 @@ export function useEthTransactionQuery(transactionId: MaybeRef<string>) {
     },
     retry: retryFactory(Cryptos.ETH, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.ETH, unref(transactionId)),
-    refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.ETH, state.data?.status),
+    refetchInterval: ({ state }) =>
+      refetchIntervalFactory(Cryptos.ETH, state.status, state.data?.status),
     refetchOnWindowFocus: false
   })
 }

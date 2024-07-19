@@ -24,7 +24,8 @@ export function useBtcTransactionQuery(transactionId: MaybeRef<string>) {
     },
     retry: retryFactory(Cryptos.BTC, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),
-    refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.BTC, state.data?.status),
+    refetchInterval: ({ state }) =>
+      refetchIntervalFactory(Cryptos.BTC, state.status, state.data?.status),
     refetchOnWindowFocus: false
   })
 }

@@ -21,7 +21,8 @@ export function useKlyTransactionQuery(transactionId: MaybeRef<string>) {
     },
     retry: retryFactory(Cryptos.KLY, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.KLY, unref(transactionId)),
-    refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.KLY, state.data?.status),
+    refetchInterval: ({ state }) =>
+      refetchIntervalFactory(Cryptos.KLY, state.status, state.data?.status),
     refetchOnWindowFocus: false
   })
 }

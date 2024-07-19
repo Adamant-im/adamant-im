@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/vue-query'
 import { MaybeRef, unref } from 'vue'
 import { useStore } from 'vuex'
-import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils'
+import { retryDelayFactory, retryFactory } from './utils'
 
 import { DecodedChatMessageTransaction, decodeTransaction } from '@/lib/adamant-api'
 import * as admApi from '@/lib/adamant-api'
@@ -29,7 +29,7 @@ export function useAdmTransactionQuery(transactionId: MaybeRef<string>) {
     initialData: {} as DecodedChatMessageTransaction,
     retry: retryFactory(Cryptos.ADM, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.ADM, unref(transactionId)),
-    refetchInterval: refetchIntervalFactory(Cryptos.ADM),
+    refetchInterval: false,
     refetchOnWindowFocus: false
   })
 }
