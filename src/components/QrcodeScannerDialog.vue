@@ -153,7 +153,7 @@ export default defineComponent({
         cameras.value = await scanner.value.getCameras()
       } catch (error) {
         cameraStatus.value = 'nocamera'
-        onError(error as string)
+        onError(error as Error)
       }
     }
 
@@ -168,7 +168,7 @@ export default defineComponent({
       show.value = false
     }
 
-    const onError = (error: string) => {
+    const onError = (error: Error) => {
       store.dispatch('snackbar/show', {
         message: t('scan.something_wrong')
       })
@@ -198,7 +198,7 @@ export default defineComponent({
             cameraStatus.value = 'noaccess'
           } else {
             cameraStatus.value = 'nostream'
-            noStreamDetails.value = error
+            noStreamDetails.value = `${error.name} ${error.message}`
           }
 
           onError(error)

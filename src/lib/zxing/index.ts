@@ -7,7 +7,7 @@ type DecodeContinuouslyCallback = (
   controls?: IScannerControls
 ) => void
 
-type ModalErrorCallback = (error: any) => void
+type ModalErrorCallback = (error: Error) => void
 
 export class Scanner {
   cameraStream!: MediaStream
@@ -26,7 +26,7 @@ export class Scanner {
   async start(
     currentCamera: number | null,
     decodeCallback: DecodeContinuouslyCallback,
-    modalCallback: ModalErrorCallback,
+    modalCallback: ModalErrorCallback
   ) {
     // Stop all tracks from media stream before camera changing
     if (this.cameraStream) this.stopVideoTracks()
@@ -42,8 +42,8 @@ export class Scanner {
 
       this.codeReader.decodeFromVideoElement(this.videoElement, decodeCallback)
     } catch (error) {
-      // If something went wrong, show the reason in modal window
-      modalCallback(error)
+      // If something went wrong, show the reason in the modal window
+      modalCallback(error as Error)
     }
   }
 
