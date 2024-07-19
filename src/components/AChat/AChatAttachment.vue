@@ -1,0 +1,251 @@
+<template>
+  <v-row
+    class="a-chat__message-container"
+    :class="{
+      'a-chat__message-container--right': isStringEqualCI(transaction.senderId, userId),
+      'a-chat__message-container--transition': elementLeftOffset === 0,
+      'a-chat__message-container--disable-max-width': disableMaxWidth
+    }"
+    v-touch="{
+      move: onMove,
+      end: onSwipeEnd
+    }"
+    :style="{
+      left: swipeDisabled ? '0px' : `${elementLeftOffset}px`
+    }"
+    v-longpress="onLongPress"
+  >
+    <div
+      class="a-chat__message"
+      :class="{
+        'a-chat__message--flashing': flashing,
+        'elevation-9': elevation
+      }"
+      :data-id="dataId"
+    >
+      <div
+        v-if="showAvatar"
+        class="a-chat__message-avatar hidden-xs-only"
+        :class="{ 'a-chat__message-avatar--right': isStringEqualCI(transaction.senderId, userId) }"
+      >
+        <slot name="avatar" />
+      </div>
+      <div class="a-chat__message-card">
+        <div class="a-chat__message-card-header mt-1">
+          <div v-if="status.status === 'CONFIRMED'" class="a-chat__blockchain-status">&#x26AD;</div>
+          <div class="a-chat__timestamp">
+            {{ time }}
+          </div>
+          <div v-if="isOutgoingMessage" class="a-chat__status">
+            <v-icon
+              v-if="status.status === 'REJECTED'"
+              :icon="statusIcon"
+              :title="$t('chats.retry_message')"
+              size="15"
+              color="red"
+              @click="$emit('resend')"
+            />
+            <v-icon v-else :icon="statusIcon" size="13" />
+          </div>
+        </div>
+
+        <div v-if="transaction.isReply" class="a-chat__quoted-message">
+          <quoted-message
+            :message-id="transaction.asset.replyto_id"
+            @click="$emit('click:quotedMessage', transaction.asset.replyto_id)"
+          />
+        </div>
+
+        <div class="a-chat__message-card-body">
+          <!-- eslint-disable vue/no-v-html -- Safe with DOMPurify.sanitize() content -->
+          <!-- AChatMessage :message <- Chat.vue :message="formatMessage(message)" <- formatMessage <- DOMPurify.sanitize() -->
+          <div
+            v-if="html"
+            class="a-chat__message-text a-text-regular-enlarged"
+            v-html="formattedMessage"
+          />
+          <!-- eslint-enable vue/no-v-html -->
+          <div
+            v-else
+            class="a-chat__message-text a-text-regular-enlarged"
+            v-text="formattedMessage"
+          />
+          <div class="a-chat_file-container">
+            <div class="a-chat_fileContainerWithElement">
+              <AChatFile
+                class="a-chat_file-img"
+                v-for="(img, index) in transaction.asset.files"
+                :key="index"
+                @click="openModal(index)"
+                :transaction="transaction"
+                :img="img"
+                >{{ img }}</AChatFile
+              >
+            </div>
+          </div>
+          <AChatImageModal
+            :files="transaction.asset.files"
+            :transaction="transaction"
+            :index="currentIndex"
+            :modal="isModalOpen"
+            v-if="isModalOpen"
+            @close="closeModal"
+            @update:modal="closeModal"
+          />
+        </div>
+      </div>
+    </div>
+
+    <slot name="actions" />
+  </v-row>
+</template>
+
+<script lang="ts">
+import { ref, computed, defineComponent, PropType } from 'vue'
+import { useStore } from 'vuex'
+
+import { useFormatMessage } from './hooks/useFormatMessage'
+import { usePartnerId } from './hooks/usePartnerId'
+import { useTransactionTime } from './hooks/useTransactionTime'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { downloadFile, isStringEqualCI } from '@/lib/textHelpers'
+import { tsIcon } from '@/lib/constants'
+import QuotedMessage from './QuotedMessage.vue'
+import { useSwipeLeft } from '@/hooks/useSwipeLeft'
+import formatDate from '@/filters/date'
+import { isWelcomeChat } from '@/lib/chat/meta/utils'
+import AChatFile from './AChatFile.vue'
+import AChatImageModal from './AChatImageModal.vue'
+
+export default defineComponent({
+  methods: { downloadFile },
+  components: {
+    QuotedMessage,
+    AChatFile,
+    AChatImageModal
+  },
+  props: {
+    transaction: {
+      type: Object as PropType<NormalizedChatMessageTransaction>,
+      required: true
+    },
+    dataId: {
+      type: String
+    },
+    status: {
+      type: Object,
+      required: true
+    },
+    html: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Highlight the message by applying a background flash effect
+     */
+    flashing: {
+      type: Boolean,
+      default: false
+    },
+    disableMaxWidth: {
+      type: Boolean
+    },
+    elevation: {
+      type: Boolean
+    },
+    swipeDisabled: {
+      type: Boolean
+    }
+  },
+  emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress'],
+  setup(props, { emit }) {
+    const store = useStore()
+
+    const userId = computed(() => store.state.address)
+    const partnerId = usePartnerId(props.transaction)
+    const currentIndex = ref(0)
+    const isModalOpen = ref(false)
+
+    const openModal = (index: number) => {
+      currentIndex.value = index
+      isModalOpen.value = true
+    }
+
+    const closeModal = () => {
+      isModalOpen.value = false
+    }
+    const showAvatar = computed(() => !isWelcomeChat(partnerId.value))
+
+    const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
+    const isOutgoingMessage = computed(() =>
+      isStringEqualCI(props.transaction.senderId, userId.value)
+    )
+    const formattedMessage = useFormatMessage(props.transaction)
+    const time = useTransactionTime(props.transaction)
+
+    const { onMove, onSwipeEnd, elementLeftOffset } = useSwipeLeft(() => {
+      emit('swipe:left')
+    })
+
+    const onLongPress = () => {
+      emit('longpress')
+    }
+
+    return {
+      userId,
+      statusIcon,
+      isOutgoingMessage,
+      formattedMessage,
+      showAvatar,
+      onMove,
+      onSwipeEnd,
+      elementLeftOffset,
+      isStringEqualCI,
+      onLongPress,
+      formatDate,
+      time,
+      currentIndex,
+      isModalOpen,
+      openModal,
+      closeModal
+    }
+  }
+})
+</script>
+<style lang="scss" scoped>
+@import '@/assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+
+.a-chat_file-container {
+  max-width: 230px;
+}
+
+.a-chat_fileContainerWithElement {
+  display: grid;
+  gap: 2px;
+  width: 80vw;
+  max-width: 200px;
+  grid-template-columns: repeat(auto-fit, minmax(98px, 1fr));
+}
+
+.a-chat_file-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.v-theme--light {
+  .a-chat-file {
+    background-color: map-get($adm-colors, 'secondary');
+    color: map-get($adm-colors, 'regular');
+  }
+}
+
+.v-theme--dark {
+  .a-chat-file {
+    background-color: rgba(245, 245, 245, 0.1); // @todo const
+    color: #fff;
+  }
+}
+</style>

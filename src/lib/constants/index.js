@@ -40,6 +40,8 @@ export const RatesNames = {
   [Rates.JPY]: 'JPY (¥)' // Japanese Yen
 }
 
+export const UPLOAD_MAX_FILE_COUNT = 6
+
 /** Fees for the misc ADM operations */
 export const Fees = {
   /** Storing a value into the KVS */

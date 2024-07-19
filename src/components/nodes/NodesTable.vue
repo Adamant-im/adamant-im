@@ -3,6 +3,7 @@
     <v-tabs v-model="tab" bg-color="transparent">
       <v-tab value="adm">{{ $t('nodes.tabs.adm_nodes') }}</v-tab>
       <v-tab value="coins">{{ $t('nodes.tabs.coin_nodes') }}</v-tab>
+      <v-tab value="ipfs">{{ $t('nodes.tabs.ipfs_nodes') }}</v-tab>
     </v-tabs>
 
     <v-window v-model="tab">
@@ -13,9 +14,13 @@
       <v-window-item value="coins">
         <CoinNodesTable />
       </v-window-item>
+
+      <v-window-item value="ipfs">
+        <IpfsNodesTable />
+      </v-window-item>
     </v-window>
     <div class="ml-6">
-      <div v-if="tab === 'coins'">
+      <div v-if="tab === 'coins' || tab === 'ipfs'">
         <v-checkbox
           v-model="preferFastestCoinNodeOption"
           :label="$t('nodes.fastest_title')"
@@ -69,9 +74,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
+import { useStore } from 'vuex'
 import { AdmNodesTable } from './adm'
 import { CoinNodesTable } from './coins'
-import { useStore } from 'vuex'
+import { IpfsNodesTable } from './ipfs'
 
 const className = 'nodes-table'
 const classes = {
@@ -80,12 +86,13 @@ const classes = {
   checkbox: `${className}__checkbox`
 }
 
-type Tab = 'adm' | 'coins'
+type Tab = 'adm' | 'coins' | 'ipfs'
 
 export default defineComponent({
   components: {
     AdmNodesTable,
-    CoinNodesTable
+    CoinNodesTable,
+    IpfsNodesTable
   },
   setup() {
     const store = useStore()

@@ -3,9 +3,9 @@ import { BlockchainSymbol, Config } from './types'
 import config from '../index'
 
 type ServiceNames<B extends BlockchainSymbol, S extends string = string> = Config[B] extends {
-  services: Record<S, any>
+  services: { list: Record<S, any> }
 }
-  ? keyof Config[B]['services']
+  ? keyof Config[B]['services']['list']
   : never
 
 export function getService<B extends BlockchainSymbol, S extends ServiceNames<B>>(

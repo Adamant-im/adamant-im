@@ -3,6 +3,10 @@ import { HealthcheckInterval, NodeKind, NodeType } from '@/lib/nodes/types'
 import type { NodeHealthcheck, ServiceHealthcheck } from '@/types/wallets'
 
 export function getNodeHealthcheckConfig(nodeType: NodeType): NodeHealthcheck {
+  if (nodeType === 'ipfs') {
+    return config.adm.services.healthCheck
+  }
+
   return config[nodeType].nodes.healthCheck
 }
 
