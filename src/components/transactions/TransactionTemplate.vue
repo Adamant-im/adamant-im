@@ -2,7 +2,7 @@
   <v-row justify="center" no-gutters :class="className">
     <app-toolbar-centered
       app
-      :title="`${transaction?.id}`"
+      :title="transaction?.id"
       flat
       fixed
       :class="`${className}__toolbar`"
