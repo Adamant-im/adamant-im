@@ -1,4 +1,4 @@
-import { CryptosInfo, isInstantSendPossible } from './constants'
+import { Cryptos, isErc20, CryptosInfo, isInstantSendPossible } from '@/lib/constants'
 
 /** Pending transaction may be not known to blockchain yet */
 
@@ -95,13 +95,14 @@ export const getTxUpdateInterval = function (crypto) {
 }
 
 export const getTxFetchInfo = (crypto) => {
-  const txFetchInfo = CryptosInfo[crypto].txFetchInfo
+  const chain = isErc20(crypto) ? Cryptos.ETH : crypto
+  const txFetchInfo = CryptosInfo[chain].txFetchInfo
 
   return {
-    newPendingInterval: txFetchInfo.newPendingInterval || DEFAULT_TX_FETCH_INTERVAL,
-    oldPendingInterval: txFetchInfo.oldPendingInterval || DEFAULT_TX_FETCH_INTERVAL,
-    registeredInterval: txFetchInfo.registeredInterval || DEFAULT_TX_FETCH_INTERVAL,
-    newPendingAttempts: txFetchInfo.newPendingAttempts || DEFAULT_TX_FETCH_ATTEMPTS,
-    oldPendingAttempts: txFetchInfo.oldPendingAttempts || DEFAULT_TX_FETCH_ATTEMPTS
+    newPendingInterval: txFetchInfo?.newPendingInterval || DEFAULT_TX_FETCH_INTERVAL,
+    oldPendingInterval: txFetchInfo?.oldPendingInterval || DEFAULT_TX_FETCH_INTERVAL,
+    registeredInterval: txFetchInfo?.registeredInterval || DEFAULT_TX_FETCH_INTERVAL,
+    newPendingAttempts: txFetchInfo?.newPendingAttempts || DEFAULT_TX_FETCH_ATTEMPTS,
+    oldPendingAttempts: txFetchInfo?.oldPendingAttempts || DEFAULT_TX_FETCH_ATTEMPTS
   }
 }
