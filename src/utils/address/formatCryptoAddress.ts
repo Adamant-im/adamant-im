@@ -27,8 +27,8 @@ export function formatCryptoAddress(
   }
 
   let result = ''
-  if (name !== '' && name !== undefined) {
-    result = name + ' (' + cryptoAddress + ')'
+  if (name) {
+    result = cryptoAddress ? name + ' (' + cryptoAddress + ')' : name
   } else {
     result = cryptoAddress
     if (admAddress) {
