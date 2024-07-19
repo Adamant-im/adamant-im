@@ -179,10 +179,20 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import 'vuetify/settings';
+@import '@/assets/styles/settings/_colors.scss';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+
 .wallets-view {
   &__review {
     padding-top: 15px !important;
     padding-bottom: 15px !important;
+  }
+}
+
+.v-theme--dark {
+  .v-list {
+    background-color: map-get($adm-colors, 'black2');
   }
 }
 </style>
