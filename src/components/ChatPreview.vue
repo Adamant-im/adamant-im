@@ -60,9 +60,9 @@
             :crypto="transaction.type"
           >
             <template #default="{ status }">
-              <v-icon size="15" :icon="status" />
+              <v-icon v-if="!isIncomingTransaction" size="15" :icon="tsIcon(status)" />
               {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
-              <v-icon size="15" :icon="status" />
+              <v-icon v-if="isIncomingTransaction" size="15" :icon="tsIcon(status)" />
             </template>
           </TransactionProvider>
         </v-list-item-subtitle>
