@@ -45,14 +45,14 @@
             />
           </template>
 
-          <div :class="`${className}__value-${fetchStatus}`">
+          <div :class="`${className}__value-${transactionStatus}`">
             <v-icon
               v-if="inconsistentStatus === 'INVALID'"
               icon="mdi-alert-outline"
               size="20"
               style="color: #f8a061 !important"
             />
-            {{ $t(`transaction.statuses.${fetchStatus}`)
+            {{ $t(`transaction.statuses.${transactionStatus}`)
             }}<span v-if="inconsistentStatus">{{
               ': ' + $t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
             }}</span>
@@ -142,6 +142,7 @@
 </template>
 
 <script lang="ts">
+import type { QueryStatus } from '@tanstack/vue-query'
 import BigNumber from 'bignumber.js'
 import { computed, defineComponent, nextTick, PropType, ref, watch } from 'vue'
 import { useStore } from 'vuex'
@@ -195,7 +196,11 @@ export default defineComponent({
     admTx: {
       type: Object as PropType<NormalizedChatMessageTransaction>
     },
-    fetchStatus: {
+    queryStatus: {
+      type: String as PropType<QueryStatus>,
+      required: true
+    },
+    transactionStatus: {
       type: String as PropType<TransactionStatusType>,
       required: true
     },
@@ -243,9 +248,9 @@ export default defineComponent({
     })
 
     const placeholder = computed(() => {
-      if (!props.fetchStatus) return Symbols.CLOCK
+      if (!props.queryStatus) return Symbols.CLOCK
 
-      return props.fetchStatus === 'REJECTED' ? Symbols.CROSS : Symbols.HOURGLASS
+      return props.transactionStatus === 'REJECTED' ? Symbols.CROSS : Symbols.HOURGLASS
     })
 
     const ifComeFromChat = computed(() =>
@@ -256,7 +261,7 @@ export default defineComponent({
       props.admTx && props.admTx.message ? props.admTx.message : false
     )
 
-    const statusUpdatable = computed(() => tsUpdatable(props.fetchStatus, props.crypto))
+    const statusUpdatable = computed(() => tsUpdatable(props.transactionStatus, props.crypto))
     const historyRate = computed(() => {
       if (!transaction.value) return
 

@@ -7,7 +7,8 @@
     :recipient-formatted="recipientFormatted || ''"
     :explorer-link="explorerLink"
     :partner="partnerAdmAddress || ''"
-    :fetch-status="fetchStatus"
+    :query-status="queryStatus"
+    :transaction-status="transactionStatus"
     :inconsistent-status="inconsistentStatus"
     :adm-tx="admTx"
     :crypto="crypto"
@@ -59,9 +60,14 @@ export default defineComponent({
     const cryptoAddress = computed(() => store.state[cryptoKey.value].address)
 
     const useTransactionQuery = query[props.crypto]
-    const { status, isFetching, data: transaction, refetch } = useTransactionQuery(props.id)
+    const {
+      status: queryStatus,
+      isFetching,
+      data: transaction,
+      refetch
+    } = useTransactionQuery(props.id)
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
-    const fetchStatus = useTransactionStatus(isFetching, status, inconsistentStatus)
+    const transactionStatus = useTransactionStatus(isFetching, queryStatus, inconsistentStatus)
 
     const admTx = useFindAdmTransaction(props.id)
     const senderAdmAddress = computed(() => admTx.value?.senderId || '')
@@ -101,7 +107,8 @@ export default defineComponent({
       explorerLink,
       confirmations,
       admTx,
-      fetchStatus,
+      queryStatus,
+      transactionStatus,
       inconsistentStatus
     }
   }
