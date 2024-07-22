@@ -24,7 +24,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import 'vuetify/settings';
 @import '@/assets/styles/settings/_colors.scss';
-@import '@/assets/styles/themes/adamant/_mixins.scss';
 
 .nodes-table-container {
   line-height: 14px;
