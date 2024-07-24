@@ -47,7 +47,10 @@
 
       <!-- Transaction -->
       <template v-else-if="isTransferType">
-        <v-list-item-subtitle v-if="transaction.type === 'ADM'" :class="`${className}__subtitle`">
+        <v-list-item-subtitle
+          v-if="transaction.type === 'ADM' || transaction.type === 'UNKNOWN_CRYPTO'"
+          :class="`${className}__subtitle`"
+        >
           <v-icon v-if="!isIncomingTransaction" size="15" :icon="admStatusIcon" />
           {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
           <v-icon v-if="isIncomingTransaction" size="15" :icon="admStatusIcon" />
