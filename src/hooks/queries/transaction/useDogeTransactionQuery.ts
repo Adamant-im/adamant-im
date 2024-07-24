@@ -6,11 +6,16 @@ import { doge } from '@/lib/nodes'
 import { DogeTransaction } from '@/lib/nodes/types/transaction'
 import { PendingTransaction, PendingTxStore } from '@/lib/pending-transactions'
 import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFactory } from './utils'
+import { UseTransactionQueryParams } from './types'
 
 /**
  * @param transactionId - DOGE transaction ID
+ * @param params - Hook params
  */
-export function useDogeTransactionQuery(transactionId: MaybeRef<string>) {
+export function useDogeTransactionQuery(
+  transactionId: MaybeRef<string>,
+  params: UseTransactionQueryParams = {}
+) {
   const store = useStore()
 
   return useQuery<DogeTransaction | PendingTransaction>({
@@ -26,6 +31,6 @@ export function useDogeTransactionQuery(transactionId: MaybeRef<string>) {
     retryDelay: retryDelayFactory(Cryptos.DOGE, unref(transactionId)),
     refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.DOGE, state.status, state.data),
     refetchOnWindowFocus: false,
-    refetchOnMount: ({ state }) => refetchOnMountFn(state.data)
+    refetchOnMount: params?.refetchOnMount ?? (({ state }) => refetchOnMountFn(state.data))
   })
 }

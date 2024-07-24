@@ -6,9 +6,10 @@ import { CryptoSymbol } from '@/lib/constants'
 import { Erc20Transaction } from '@/lib/nodes/types/transaction'
 import { PendingTransaction, PendingTxStore } from '@/lib/pending-transactions'
 import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFactory } from './utils'
+import { UseTransactionQueryParams } from './types'
 
 export function useErc20TransactionQuery(crypto: CryptoSymbol) {
-  return (transactionId: MaybeRef<string>) => {
+  return (transactionId: MaybeRef<string>, params: UseTransactionQueryParams = {}) => {
     const store = useStore()
 
     return useQuery<Erc20Transaction | PendingTransaction>({
@@ -24,7 +25,7 @@ export function useErc20TransactionQuery(crypto: CryptoSymbol) {
       retryDelay: retryDelayFactory(crypto, unref(transactionId)),
       refetchInterval: ({ state }) => refetchIntervalFactory(crypto, state.status, state.data),
       refetchOnWindowFocus: false,
-      refetchOnMount: ({ state }) => refetchOnMountFn(state.data)
+      refetchOnMount: params?.refetchOnMount ?? (({ state }) => refetchOnMountFn(state.data))
     })
   }
 }

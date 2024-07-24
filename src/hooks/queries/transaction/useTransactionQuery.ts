@@ -6,6 +6,7 @@ import { useDashTransactionQuery } from './useDashTransactionQuery'
 import { useEthTransactionQuery } from './useEthTransactionQuery'
 import { useErc20TransactionQuery } from './useErc20TransactionQuery'
 import { useKlyTransactionQuery } from './useKlyTransactionQuery'
+import { UseTransactionQueryParams } from './types'
 
 const query = {
   BTC: useBtcTransactionQuery,
@@ -15,9 +16,13 @@ const query = {
   KLY: useKlyTransactionQuery
 } as const
 
-export function useTransactionQuery(transactionId: MaybeRef<string>, crypto: CryptoSymbol) {
+export function useTransactionQuery(
+  transactionId: MaybeRef<string>,
+  crypto: CryptoSymbol,
+  params: UseTransactionQueryParams = {}
+) {
   if (isErc20(crypto)) {
-    return useErc20TransactionQuery(crypto)(transactionId)
+    return useErc20TransactionQuery(crypto)(transactionId, params)
   }
 
   switch (crypto) {
@@ -26,7 +31,7 @@ export function useTransactionQuery(transactionId: MaybeRef<string>, crypto: Cry
     case 'DASH':
     case 'ETH':
     case 'KLY':
-      return query[crypto](transactionId)
+      return query[crypto](transactionId, params)
     default:
       throw new Error(`Unsupported crypto: ${crypto}`)
   }

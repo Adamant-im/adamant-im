@@ -6,11 +6,16 @@ import { btc } from '@/lib/nodes'
 import { BtcTransaction } from '@/lib/nodes/types/transaction'
 import { PendingTransaction, PendingTxStore } from '@/lib/pending-transactions'
 import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFactory } from './utils'
+import { UseTransactionQueryParams } from './types'
 
 /**
  * @param transactionId - BTC transaction ID
+ * @param params - Hook params
  */
-export function useBtcTransactionQuery(transactionId: MaybeRef<string>) {
+export function useBtcTransactionQuery(
+  transactionId: MaybeRef<string>,
+  params: UseTransactionQueryParams = {}
+) {
   const store = useStore()
 
   return useQuery<BtcTransaction | PendingTransaction>({
@@ -26,6 +31,6 @@ export function useBtcTransactionQuery(transactionId: MaybeRef<string>) {
     retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),
     refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.BTC, state.status, state.data),
     refetchOnWindowFocus: false,
-    refetchOnMount: ({ state }) => refetchOnMountFn(state.data)
+    refetchOnMount: params?.refetchOnMount ?? (({ state }) => refetchOnMountFn(state.data))
   })
 }

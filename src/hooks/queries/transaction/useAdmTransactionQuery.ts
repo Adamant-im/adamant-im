@@ -6,6 +6,7 @@ import { retryDelayFactory, retryFactory } from './utils'
 import { DecodedChatMessageTransaction, decodeTransaction } from '@/lib/adamant-api'
 import * as admApi from '@/lib/adamant-api'
 import { Cryptos } from '@/lib/constants'
+import { UseTransactionQueryParams } from './types'
 
 const fetchTransaction = async (transactionId: string, currentUserAdmAddress: string) => {
   const rawTransaction = await admApi.getTransaction(transactionId, 1)
@@ -20,7 +21,10 @@ const fetchTransaction = async (transactionId: string, currentUserAdmAddress: st
   }
 }
 
-export function useAdmTransactionQuery(transactionId: MaybeRef<string>) {
+export function useAdmTransactionQuery(
+  transactionId: MaybeRef<string>,
+  params: UseTransactionQueryParams = {}
+) {
   const store = useStore()
 
   return useQuery({
@@ -31,6 +35,6 @@ export function useAdmTransactionQuery(transactionId: MaybeRef<string>) {
     retryDelay: retryDelayFactory(Cryptos.ADM, unref(transactionId)),
     refetchInterval: false,
     refetchOnWindowFocus: false,
-    refetchOnMount: true
+    refetchOnMount: params?.refetchOnMount
   })
 }

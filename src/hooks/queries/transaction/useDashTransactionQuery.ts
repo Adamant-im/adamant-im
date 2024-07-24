@@ -6,11 +6,16 @@ import { dash } from '@/lib/nodes'
 import { DashTransaction } from '@/lib/nodes/types/transaction'
 import { PendingTransaction, PendingTxStore } from '@/lib/pending-transactions'
 import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFactory } from './utils'
+import { UseTransactionQueryParams } from './types'
 
 /**
  * @param transactionId - DASH transaction ID
+ * @param params - Hook params
  */
-export function useDashTransactionQuery(transactionId: MaybeRef<string>) {
+export function useDashTransactionQuery(
+  transactionId: MaybeRef<string>,
+  params: UseTransactionQueryParams = {}
+) {
   const store = useStore()
 
   return useQuery<DashTransaction | PendingTransaction>({
@@ -26,6 +31,6 @@ export function useDashTransactionQuery(transactionId: MaybeRef<string>) {
     retryDelay: retryDelayFactory(Cryptos.DASH, unref(transactionId)),
     refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.DASH, state.status, state.data),
     refetchOnWindowFocus: false,
-    refetchOnMount: ({ state }) => refetchOnMountFn(state.data)
+    refetchOnMount: params?.refetchOnMount ?? (({ state }) => refetchOnMountFn(state.data))
   })
 }
