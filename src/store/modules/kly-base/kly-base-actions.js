@@ -46,10 +46,6 @@ function createActions(options) {
         const pendingTransaction = PendingTxStore.get(context.state.crypto)
         if (pendingTransaction) {
           context.commit('transactions', [pendingTransaction])
-          context.dispatch('getTransaction', {
-            hash: pendingTransaction.hash,
-            force: true
-          })
         }
       }
     },
@@ -146,7 +142,7 @@ function createActions(options) {
       await PendingTxStore.save(context.state.crypto, pendingTransaction)
       context.commit('transactions', [pendingTransaction])
 
-      // 7. Send signed transaction to ETH blockchain
+      // 7. Send signed transaction to KLY blockchain
       try {
         const hash = await kly.sendTransaction(signedTransaction.hex, dryRun)
 
@@ -164,8 +160,6 @@ function createActions(options) {
             data: textData
           }
         ])
-
-        context.dispatch('getTransaction', { hash, force: true })
 
         return hash
       } catch (err) {
