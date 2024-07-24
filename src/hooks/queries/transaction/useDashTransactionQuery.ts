@@ -1,10 +1,10 @@
-import { PendingTransaction, PendingTxStore } from '@/lib/pending-transactions'
 import { MaybeRef, unref } from 'vue'
 import { useStore } from 'vuex'
 import { useQuery } from '@tanstack/vue-query'
 import { Cryptos } from '@/lib/constants'
 import { dash } from '@/lib/nodes'
 import { DashTransaction } from '@/lib/nodes/types/transaction'
+import { PendingTransaction, PendingTxStore } from '@/lib/pending-transactions'
 import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFactory } from './utils'
 
 /**
@@ -18,9 +18,9 @@ export function useDashTransactionQuery(transactionId: MaybeRef<string>) {
     queryFn: () => dash.getTransaction(unref(transactionId), store.state.dash.address),
     initialData: () => {
       const pendingTransaction = PendingTxStore.get(Cryptos.DASH)
-      if (pendingTransaction?.id === transactionId) return pendingTransaction
-
-      return {} as DashTransaction
+      if (pendingTransaction?.id === unref(transactionId)) {
+        return pendingTransaction
+      }
     },
     retry: retryFactory(Cryptos.DASH, unref(transactionId)),
     retryDelay: retryDelayFactory(Cryptos.DASH, unref(transactionId)),

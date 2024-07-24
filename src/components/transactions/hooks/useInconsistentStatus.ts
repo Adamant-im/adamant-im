@@ -12,6 +12,7 @@ import {
   EthTransaction,
   KlyTransaction
 } from '@/lib/nodes/types/transaction'
+import { PendingTransaction } from '@/lib/pending-transactions'
 
 export function useInconsistentStatus(
   transaction: Ref<
@@ -21,7 +22,8 @@ export function useInconsistentStatus(
     | KlyTransaction
     | EthTransaction
     | Erc20Transaction
-    | null
+    | PendingTransaction
+    | undefined
   >,
   crypto: CryptoSymbol
 ) {

@@ -69,7 +69,7 @@ export function refetchIntervalFactory(
 
 export function refetchOnMountFn(transaction?: { status: TransactionStatusType }) {
   return (
-    transaction?.status === undefined ||
+    !transaction ||
     transaction?.status === TransactionStatus.PENDING ||
     transaction?.status === TransactionStatus.REGISTERED
   )

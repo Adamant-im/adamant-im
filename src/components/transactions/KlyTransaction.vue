@@ -83,7 +83,7 @@ export default defineComponent({
     const explorerLink = computed(() => getExplorerTxUrl(Cryptos.KLY, props.id))
 
     const confirmations = computed(() => {
-      if ('height' in transaction.value) {
+      if (transaction.value && 'height' in transaction.value) {
         const { height } = transaction.value
         const currentHeight = store.getters['kly/height']
 
