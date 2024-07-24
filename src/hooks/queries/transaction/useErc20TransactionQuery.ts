@@ -22,8 +22,7 @@ export function useErc20TransactionQuery(crypto: CryptoSymbol) {
       },
       retry: retryFactory(crypto, unref(transactionId)),
       retryDelay: retryDelayFactory(crypto, unref(transactionId)),
-      refetchInterval: ({ state }) =>
-        refetchIntervalFactory(crypto, state.status, state.data?.status),
+      refetchInterval: ({ state }) => refetchIntervalFactory(crypto, state.status, state.data),
       refetchOnWindowFocus: false,
       refetchOnMount: false
     })

@@ -1,7 +1,16 @@
 import { QueryStatus } from '@tanstack/vue-query'
-import { CryptoSymbol, TransactionStatus, TransactionStatusType } from '@/lib/constants'
+import {
+  CryptoSymbol,
+  isInstantSendPossible,
+  TransactionStatus,
+  TransactionStatusType
+} from '@/lib/constants'
 import { PendingTxStore } from '@/lib/pending-transactions'
-import { getTxFetchInfo } from '@/lib/transactionsFetching'
+import {
+  getTxFetchInfo,
+  INSTANT_SEND_INTERVAL,
+  INSTANT_SEND_TIME
+} from '@/lib/transactionsFetching'
 
 export function retryFactory(crypto: CryptoSymbol, transactionId: string) {
   const txFetchInfo = getTxFetchInfo(crypto)
@@ -36,17 +45,23 @@ export function retryDelayFactory(crypto: CryptoSymbol, transactionId: string) {
 export function refetchIntervalFactory(
   crypto: CryptoSymbol,
   queryStatus: QueryStatus,
-  transactionStatus?: TransactionStatusType
+  transaction?: { status: TransactionStatusType; timestamp?: number }
 ) {
   const txFetchInfo = getTxFetchInfo(crypto)
 
   if (
     queryStatus === 'error' ||
-    transactionStatus === TransactionStatus.CONFIRMED ||
-    transactionStatus === TransactionStatus.REJECTED
+    transaction?.status === TransactionStatus.CONFIRMED ||
+    transaction?.status === TransactionStatus.REJECTED
   ) {
     // Do not refetch if transaction status is considered finalized
     return false
+  }
+
+  if (isInstantSendPossible(crypto) && transaction?.timestamp) {
+    return Date.now() - transaction.timestamp < INSTANT_SEND_TIME
+      ? INSTANT_SEND_INTERVAL
+      : txFetchInfo.registeredInterval
   }
 
   return txFetchInfo.registeredInterval
