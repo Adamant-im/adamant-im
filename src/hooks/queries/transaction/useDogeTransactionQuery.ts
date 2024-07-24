@@ -26,6 +26,7 @@ export function useDogeTransactionQuery(transactionId: MaybeRef<string>) {
     retryDelay: retryDelayFactory(Cryptos.DOGE, unref(transactionId)),
     refetchInterval: ({ state }) =>
       refetchIntervalFactory(Cryptos.DOGE, state.status, state.data?.status),
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    refetchOnMount: false
   })
 }

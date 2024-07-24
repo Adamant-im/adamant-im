@@ -23,6 +23,7 @@ export function useEthTransactionQuery(transactionId: MaybeRef<string>) {
     retryDelay: retryDelayFactory(Cryptos.ETH, unref(transactionId)),
     refetchInterval: ({ state }) =>
       refetchIntervalFactory(Cryptos.ETH, state.status, state.data?.status),
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    refetchOnMount: false
   })
 }
