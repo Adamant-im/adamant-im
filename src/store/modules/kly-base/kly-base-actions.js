@@ -9,7 +9,6 @@ import {
   PendingTxStore
 } from '../../../lib/pending-transactions'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
-import * as tf from '../../../lib/transactionsFetching'
 import { kly } from '../../../lib/nodes/kly'
 import klyIndexer from '../../../lib/nodes/kly-indexer'
 
@@ -28,7 +27,7 @@ const DEFAULT_CUSTOM_ACTIONS = () => ({})
  * @param {Options} options config options
  */
 function createActions(options) {
-  const { customActions = DEFAULT_CUSTOM_ACTIONS, fetchRetryTimeout } = options
+  const { customActions = DEFAULT_CUSTOM_ACTIONS } = options
 
   /** @type {KlayrAccount | null} */
   let account = null
@@ -174,98 +173,6 @@ function createActions(options) {
         PendingTxStore.remove(context.state.crypto)
         throw err
       }
-    },
-
-    /**
-     * Retrieves transaction details
-     * @param {object} context Vuex action context
-     * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
-     */
-    async getTransaction(context, payload) {
-      if (!payload.hash) return
-
-      let existing = context.state.transactions[payload.hash]
-      if (existing && !payload.force) return
-
-      // Set a stub so far, if the transaction is not in the store yet
-      if (!existing || payload.dropStatus) {
-        payload.updateOnly = false
-        context.commit('transactions', [
-          {
-            hash: payload.hash,
-            timestamp: (existing && existing.timestamp) || payload.timestamp || Date.now(),
-            amount: payload.amount,
-            status: 'PENDING'
-          }
-        ])
-        existing = context.state.transactions[payload.hash]
-      }
-
-      let tx = null
-      try {
-        tx = await klyIndexer.getTransaction(payload.hash, context.state.address)
-      } catch (e) {
-        /* empty */
-      }
-
-      let retry = false
-      let retryTimeout = 0
-      const attempt = payload.attempt || 0
-
-      if (tx) {
-        context.commit('transactions', [tx])
-        // The transaction has been confirmed, we're done here
-        if (tx.status === 'CONFIRMED') return
-
-        // If it's not confirmed but is already registered, keep on trying to fetch its details
-        retryTimeout = fetchRetryTimeout
-        retry = true
-      } else if (existing && existing.status === 'REGISTERED') {
-        // We've failed to fetch the details for some reason, but the transaction is known to be
-        // accepted by the network - keep on fetching
-        retryTimeout = fetchRetryTimeout
-        retry = true
-      } else {
-        // The network does not yet know this transaction. We'll make several attempts to retrieve it.
-        retry =
-          attempt <
-          tf.getPendingTxRetryCount(
-            payload.timestamp || (existing && existing.timestamp),
-            context.state.crypto
-          )
-        retryTimeout = tf.getPendingTxRetryTimeout(
-          payload.timestamp || (existing && existing.timestamp),
-          context.state.crypto
-        )
-      }
-
-      if (!retry) {
-        // If we're here, we have abandoned any hope to get the transaction details.
-        context.commit('transactions', [{ hash: payload.hash, status: 'REJECTED' }])
-      } else if (!payload.updateOnly) {
-        // Try to get the details one more time
-        const newPayload = {
-          ...payload,
-          attempt: attempt + 1,
-          force: true,
-          updateOnly: false,
-          dropStatus: false
-        }
-        setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
-      }
-    },
-
-    /**
-     * Updates the transaction details
-     * @param {{ dispatch: function }} param0 Vuex context
-     * @param {{hash: string}} payload action payload
-     */
-    updateTransaction({ dispatch }, payload) {
-      return dispatch('getTransaction', {
-        ...payload,
-        force: payload.force,
-        updateOnly: payload.updateOnly
-      })
     },
 
     /**
