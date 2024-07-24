@@ -35,7 +35,7 @@
         <TransactionListItem :title="t('transaction.status')">
           <template #append>
             <v-icon
-              v-if="statusUpdatable"
+              v-if="statusUpdatable || rotateAnimation"
               :class="{
                 [`${className}__update-status-icon--rotate`]: rotateAnimation
               }"
