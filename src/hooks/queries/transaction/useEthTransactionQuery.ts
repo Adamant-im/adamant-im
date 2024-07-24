@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { eth } from '@/lib/nodes'
 import { Cryptos } from '@/lib/constants'
 import { EthTransaction } from '@/lib/nodes/types/transaction'
-import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils'
+import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFactory } from './utils'
 
 export function useEthTransactionQuery(transactionId: MaybeRef<string>) {
   const store = useStore()
@@ -23,6 +23,6 @@ export function useEthTransactionQuery(transactionId: MaybeRef<string>) {
     retryDelay: retryDelayFactory(Cryptos.ETH, unref(transactionId)),
     refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.ETH, state.status, state.data),
     refetchOnWindowFocus: false,
-    refetchOnMount: false
+    refetchOnMount: ({ state }) => refetchOnMountFn(state.data)
   })
 }

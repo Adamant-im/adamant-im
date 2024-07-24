@@ -31,6 +31,6 @@ export function useAdmTransactionQuery(transactionId: MaybeRef<string>) {
     retryDelay: retryDelayFactory(Cryptos.ADM, unref(transactionId)),
     refetchInterval: false,
     refetchOnWindowFocus: false,
-    refetchOnMount: false
+    refetchOnMount: true
   })
 }

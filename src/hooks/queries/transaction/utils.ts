@@ -66,3 +66,11 @@ export function refetchIntervalFactory(
 
   return txFetchInfo.registeredInterval
 }
+
+export function refetchOnMountFn(transaction?: { status: TransactionStatusType }) {
+  return (
+    transaction?.status === undefined ||
+    transaction?.status === TransactionStatus.PENDING ||
+    transaction?.status === TransactionStatus.REGISTERED
+  )
+}

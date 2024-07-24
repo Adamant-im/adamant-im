@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { Cryptos } from '@/lib/constants'
 import { btc } from '@/lib/nodes'
 import { BtcTransaction } from '@/lib/nodes/types/transaction'
-import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils'
+import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFactory } from './utils'
 
 /**
  * @param transactionId - BTC transaction ID
@@ -26,6 +26,6 @@ export function useBtcTransactionQuery(transactionId: MaybeRef<string>) {
     retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),
     refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.BTC, state.status, state.data),
     refetchOnWindowFocus: false,
-    refetchOnMount: false
+    refetchOnMount: ({ state }) => refetchOnMountFn(state.data)
   })
 }

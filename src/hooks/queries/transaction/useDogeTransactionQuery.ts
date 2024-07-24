@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { Cryptos } from '@/lib/constants'
 import { doge } from '@/lib/nodes'
 import { DogeTransaction } from '@/lib/nodes/types/transaction'
-import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils'
+import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFactory } from './utils'
 
 /**
  * @param transactionId - DOGE transaction ID
@@ -26,6 +26,6 @@ export function useDogeTransactionQuery(transactionId: MaybeRef<string>) {
     retryDelay: retryDelayFactory(Cryptos.DOGE, unref(transactionId)),
     refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.DOGE, state.status, state.data),
     refetchOnWindowFocus: false,
-    refetchOnMount: false
+    refetchOnMount: ({ state }) => refetchOnMountFn(state.data)
   })
 }

@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { eth } from '@/lib/nodes'
 import { CryptoSymbol } from '@/lib/constants'
 import { Erc20Transaction } from '@/lib/nodes/types/transaction'
-import { refetchIntervalFactory, retryDelayFactory, retryFactory } from './utils'
+import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFactory } from './utils'
 
 export function useErc20TransactionQuery(crypto: CryptoSymbol) {
   return (transactionId: MaybeRef<string>) => {
@@ -24,7 +24,7 @@ export function useErc20TransactionQuery(crypto: CryptoSymbol) {
       retryDelay: retryDelayFactory(crypto, unref(transactionId)),
       refetchInterval: ({ state }) => refetchIntervalFactory(crypto, state.status, state.data),
       refetchOnWindowFocus: false,
-      refetchOnMount: false
+      refetchOnMount: ({ state }) => refetchOnMountFn(state.data)
     })
   }
 }
