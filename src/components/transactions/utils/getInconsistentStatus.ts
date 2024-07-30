@@ -5,7 +5,7 @@ import { CryptosInfo, CryptoSymbol } from '@/lib/constants'
 
 const AllowAmountErrorPercent = 0.3
 
-const TransactionInconsistentReason = {
+export const TransactionInconsistentReason = {
   UNKNOWN: 'unknown',
   NO_RECIPIENT_CRYPTO_ADDRESS: 'no_recipient_crypto_address',
   NO_SENDER_CRYPTO_ADDRESS: 'no_sender_crypto_address',
@@ -85,7 +85,7 @@ function verifyTimestamp(
   transactionTimestamp: number,
   specialMessageTimestamp: number
 ) {
-  const delta = Math.abs(transactionTimestamp - specialMessageTimestamp) / 1000
+  const delta = Math.abs(transactionTimestamp - specialMessageTimestamp)
 
   const mainCoin = (CryptosInfo[coin] as any)?.mainCoin || coin // @todo fix type in adamant-wallets schema
   const { txConsistencyMaxTime } = CryptosInfo[mainCoin as CryptoSymbol]
