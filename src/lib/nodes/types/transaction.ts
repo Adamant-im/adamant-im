@@ -1,11 +1,31 @@
 import { TransactionStatusType } from '@/lib/constants'
 
 export type CoinTransaction = {
+  /**
+   * Transaction id, same as `hash`
+   */
   id: string
+  /**
+   * Transaction hash
+   */
   hash: string
+  /**
+   * Transaction fee.
+   * Already divided by coin DECIMALS.
+   */
   fee: number
   status: TransactionStatusType
+  /**
+   * The time when transaction was included in block (in ms)
+   * If `undefined` when transaction is not included in block yet,
+   * so it should in PENDING/REGISTERED status.
+   */
   timestamp?: number
+  /**
+   * Direction of the transaction:
+   * - 'from' - incoming transaction
+   * - 'to' - outgoing transaction
+   */
   direction: 'from' | 'to'
   /**
    * Sender coin address
@@ -19,6 +39,10 @@ export type CoinTransaction = {
    * Amount of coins
    */
   amount: number
+  /**
+   * The difference between the current block height
+   * and the block height in which the transaction was included.
+   */
   confirmations?: number
 }
 
