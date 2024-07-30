@@ -113,4 +113,10 @@ export class EthClient extends Client<EthNode> {
   async getNonce(address: string) {
     return this.getNode().client.getTransactionCount(address)
   }
+
+  async getHeight() {
+    const blockNumber = await this.getNode().client.getBlockNumber()
+
+    return Number(blockNumber)
+  }
 }
