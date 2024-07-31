@@ -17,17 +17,21 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+import { computed, defineComponent, PropType, unref } from 'vue'
 import { useStore } from 'vuex'
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { Cryptos, CryptoSymbol } from '@/lib/constants'
 import { useCryptoAddressPretty } from './hooks/address'
+import { getTxFetchInfo } from '@/lib/transactionsFetching'
+import { useInterval } from '@/hooks/useInterval'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
 import { useKlyTransactionQuery } from '@/hooks/queries/transaction'
 import { getPartnerAddress } from './utils/getPartnerAddress'
+
+const { newPendingInterval } = getTxFetchInfo(Cryptos.KLY)
 
 export default defineComponent({
   name: 'KlyTransaction',
@@ -82,10 +86,15 @@ export default defineComponent({
 
     const explorerLink = computed(() => getExplorerTxUrl(Cryptos.KLY, props.id))
 
+    const blockHeight = computed(() => store.getters['kly/height'])
+    useInterval(() => store.dispatch('kly/updateHeight'), newPendingInterval, {
+      enabled: () => transactionStatus.value === 'CONFIRMED'
+    })
+
     const confirmations = computed(() => {
       if (transaction.value && 'height' in transaction.value) {
         const { height } = transaction.value
-        const currentHeight = store.getters['kly/height']
+        const currentHeight = unref(blockHeight)
 
         if (height === undefined || currentHeight === 0) {
           return 0
