@@ -119,6 +119,7 @@
     "send_crypto": "Отправить {crypto}",
     "share_uri": "Поделиться ссылкой {crypto}",
     "show_qr_code": "Показать QR-код",
+    "stake_and_earn_btn": "Застейкать и заработать",
     "wallet": "кошелек",
     "wallet_crypto": "Кошелек {crypto}"
   },
@@ -384,6 +385,7 @@
     "sec": "сек",
     "select_delegates": "Выберите делегатов",
     "sent": "Голоса отправлены",
+    "stake_info": "Чтобы застейкать ADM и получать вознаграждения, проголосуйте за активный форжинг-пул, которому вы доверяете. Подробнее читайте в <a target=\"_blank\" href=\"https://news.adamant.im/hodl-list-of-adamant-pools-join-in-and-get-rewards-491a98610f4b\">блоге АДАМАНТа</a>.",
     "summary_info": "Стоимость голосования: 50 ADM. <a target=\"_blank\" href=\"https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516\">Читайте о голосовании и форжинге</a>.",
     "summary_title": "Голосование",
     "table_head_name": "Имя",

@@ -118,6 +118,7 @@
     "send_crypto": "Send {crypto}",
     "share_uri": "Share {crypto} address",
     "show_qr_code": "Show QR code",
+    "stake_and_earn_btn": "Stake and earn",
     "wallet": "wallet",
     "wallet_crypto": "{crypto} wallet"
   },
@@ -383,6 +384,7 @@
     "sec": "sec",
     "select_delegates": "Choose delegates",
     "sent": "Votes have been sent",
+    "stake_info": "To stake ADM and get rewards, vote for an active forging pool you trust. Read more in the <a target=\"_blank\" href=\"https://news.adamant.im/hodl-list-of-adamant-pools-join-in-and-get-rewards-491a98610f4b\">ADAMANT blog</a>.",
     "summary_info": "Voting cost: 50 ADM. <a target=\"_blank\" href=\"https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516\">Read about voting and forging</a>.",
     "summary_title": "Review voting",
     "table_head_name": "Name",
