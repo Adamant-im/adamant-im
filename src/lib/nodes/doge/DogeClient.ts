@@ -3,6 +3,7 @@ import { DogeNode } from './DogeNode'
 import { Client } from '../abstract.client'
 import { NB_BLOCKS } from './constants'
 import { normalizeTransaction } from './utils'
+import { NodeStatus } from './types/api/node-status'
 import { Transaction, GetTransactionsParams } from './types/api/transaction'
 import { GetUnspentsParams, UTXO } from './types/api/utxo'
 import { AddressInfo } from './types/api/address'
@@ -70,5 +71,11 @@ export class DogeClient extends Client<DogeNode> {
     const balance = await this.request<Balance>('GET', `/api/addr/${address}/balance`)
 
     return Number(balance)
+  }
+
+  async getHeight() {
+    const { info } = await this.request<NodeStatus>('GET', '/api/status')
+
+    return info.blocks
   }
 }
