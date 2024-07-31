@@ -92,4 +92,12 @@ export class DashClient extends Client<DashNode> {
 
     return Number(result.balance)
   }
+
+  async getHeight() {
+    const result = await this.invoke<number>({
+      method: 'getblockcount'
+    })
+
+    return result
+  }
 }
