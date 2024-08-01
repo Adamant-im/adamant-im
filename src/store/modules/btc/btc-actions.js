@@ -1,7 +1,7 @@
 import { FetchStatus } from '@/lib/constants'
 import baseActions from '../btc-base/btc-base-actions'
 import BtcApi from '../../../lib/bitcoin/bitcoin-api'
-import { btc } from '../../../lib/nodes'
+import { btcIndexer } from '../../../lib/nodes'
 
 const TX_CHUNK_SIZE = 25
 
@@ -10,7 +10,7 @@ const customActions = (getApi) => ({
     const api = getApi()
 
     if (!api) return
-    btc
+    btcIndexer
       .getBalance(context.state.address)
       .then((balance) => {
         context.commit('status', { balance })
@@ -22,10 +22,10 @@ const customActions = (getApi) => ({
       })
 
     // The unspent transactions are needed to estimate the fee
-    btc.getUnspents(context.state.address).then((utxo) => context.commit('utxo', utxo))
+    btcIndexer.getUnspents(context.state.address).then((utxo) => context.commit('utxo', utxo))
 
     // The estimated fee rate is also needed
-    btc.getFeeRate().then((rate) => context.commit('feeRate', rate))
+    btcIndexer.getFeeRate().then((rate) => context.commit('feeRate', rate))
 
     // Last block height
     context.dispatch('updateHeight')
@@ -34,12 +34,12 @@ const customActions = (getApi) => ({
   updateHeight({ commit }) {
     const api = getApi()
     if (!api) return
-    btc.getHeight().then((height) => commit('height', height))
+    btcIndexer.getHeight().then((height) => commit('height', height))
   }
 })
 
 const retrieveNewTransactions = async (api, context, latestTxId, toTx) => {
-  const transactions = await btc.getTransactions(context.state.address, toTx)
+  const transactions = await btcIndexer.getTransactions(context.state.address, toTx)
   context.commit('transactions', transactions)
 
   if (latestTxId && !transactions.some((x) => x.txid === latestTxId)) {
@@ -68,7 +68,7 @@ const getOldTransactions = async (api, context) => {
   const toTx = oldestTx && oldestTx.txid
 
   context.commit('areOlderLoading', true)
-  const chunk = await btc.getTransactions(context.state.address, toTx)
+  const chunk = await btcIndexer.getTransactions(context.state.address, toTx)
   context.commit('transactions', chunk)
   context.commit('areOlderLoading', false)
 

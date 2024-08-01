@@ -3,13 +3,9 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { formatBtcVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
-
-type FetchBtcNodeInfoResult = {
-  error: string
-  result: {
-    version: number
-  }
-}
+import { RpcRequest, RpcResponse } from './types/api/common'
+import { NetworkInfo } from './types/api/network-info'
+import { BlockchainInfo } from './types/api/blockchain-info'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -26,46 +22,46 @@ export class BtcNode extends Node<AxiosInstance> {
 
   protected async checkHealth() {
     const time = Date.now()
-    const blockNumber = await this.client.get('/blocks/tip/height').then((res) => {
-      return Number(res.data) || 0
+
+    const { blocks } = await this.invoke<BlockchainInfo>({
+      method: 'getblockchaininfo'
     })
 
     return {
-      height: Number(blockNumber),
+      height: Number(blocks),
       ping: Date.now() - time
     }
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { data } = await this.client.post<FetchBtcNodeInfoResult>('/bitcoind', {
-      jsonrpc: '1.0',
-      id: 'adm',
-      method: 'getnetworkinfo',
-      params: []
+    const { version } = await this.invoke<NetworkInfo>({
+      method: 'getnetworkinfo'
     })
-    const { version } = data.result
+
     if (version) {
       this.version = formatBtcVersion(version)
     }
   }
 
   /**
-   * Performs a request to the Bitcoin node.
+   * Performs an RPC request to the Bitcoin node.
    */
-  async request<Response = any, Params = any>(
-    method: 'GET' | 'POST',
-    path: string,
+  async invoke<Result = any, Params extends RpcRequest = RpcRequest>(
     params?: Params,
     requestConfig?: AxiosRequestConfig
-  ): Promise<Response> {
+  ): Promise<Result> {
     return this.client
-      .request({
+      .request<RpcResponse<Result>>({
         ...requestConfig,
-        url: path,
-        method,
-        params: method === 'GET' ? params : undefined,
-        data: method === 'POST' ? params : undefined
+        url: '/bitcoind',
+        method: 'POST',
+        data: params
       })
       .then((res) => res.data)
+      .then(({ result, error }) => {
+        if (error) throw new Error(error.message)
+
+        return result
+      })
   }
 }

@@ -3,13 +3,8 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { RpcRequest, RpcResponse } from './types/api/common'
-
-type FetchNodeVersionResponse = {
-  error: string
-  result: {
-    buildversion: string
-  }
-}
+import { NetworkInfo } from './types/api/network-info'
+import { BlockchainInfo } from './types/api/blockchain-info'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -26,23 +21,21 @@ export class DashNode extends Node<AxiosInstance> {
 
   protected async checkHealth() {
     const time = Date.now()
-    const height = await this.client
-      .post('/', {
-        method: 'getblockchaininfo'
-      })
-      .then((res) => res.data.result.blocks)
+    const { blocks } = await this.invoke<BlockchainInfo>({
+      method: 'getblockchaininfo'
+    })
 
     return {
-      height,
+      height: blocks,
       ping: Date.now() - time
     }
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { data } = await this.client.post<FetchNodeVersionResponse>('/', {
+    const { buildversion } = await this.invoke<NetworkInfo>({
       method: 'getnetworkinfo'
     })
-    const { buildversion } = data.result
+
     if (buildversion) {
       this.version = buildversion.replace('v', '')
     }

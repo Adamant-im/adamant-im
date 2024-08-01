@@ -1,4 +1,4 @@
-import type { HealthcheckInterval, NodeType } from '@/lib/nodes/types'
+import type { HealthcheckInterval, NodeKind, NodeType } from '@/lib/nodes/types'
 import { AllNodesOfflineError } from './utils/errors'
 import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
@@ -22,12 +22,17 @@ export abstract class Client<N extends Node> {
    */
   statusUpdateCallback?: (status: ReturnType<Node['getStatus']>) => void
   /**
+   * Node kind
+   */
+  kind: NodeKind
+  /**
    * Node type
    */
   type: NodeType
 
-  constructor(type: NodeType) {
+  constructor(type: NodeType, kind: NodeKind = 'node') {
     this.type = type
+    this.kind = kind
     this.useFastest = nodesStorage.getUseFastest(type)
   }
 
@@ -100,7 +105,7 @@ export abstract class Client<N extends Node> {
   setUseFastest(state: boolean) {
     this.useFastest = state
 
-    nodesStorage.setUseFastest(state, this.type)
+    nodesStorage.setUseFastest(state, this.type, this.kind)
   }
 
   /**
