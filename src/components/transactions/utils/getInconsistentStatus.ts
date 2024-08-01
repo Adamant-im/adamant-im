@@ -9,8 +9,6 @@ export const TransactionInconsistentReason = {
   UNKNOWN: 'unknown',
   NO_RECIPIENT_CRYPTO_ADDRESS: 'no_recipient_crypto_address',
   NO_SENDER_CRYPTO_ADDRESS: 'no_sender_crypto_address',
-  NO_RECIPIENT_ADM_ID: 'no_recipient_adm_id',
-  NO_SENDER_ADM_ID: 'no_sender_adm_id',
   WRONG_TX_HASH: 'wrong_tx_hash',
   WRONG_AMOUNT: 'wrong_amount',
   WRONG_TIMESTAMP: 'wrong_timestamp',
@@ -36,12 +34,6 @@ export function getInconsistentStatus(
   }
   if (!senderCryptoAddress) {
     return TransactionInconsistentReason.NO_SENDER_CRYPTO_ADDRESS
-  }
-  if (!transaction.recipientId) {
-    return TransactionInconsistentReason.NO_RECIPIENT_ADM_ID
-  }
-  if (!transaction.senderId) {
-    return TransactionInconsistentReason.NO_SENDER_ADM_ID
   }
 
   if (!isStringEqualCI(transaction.hash, admTransaction.hash)) {

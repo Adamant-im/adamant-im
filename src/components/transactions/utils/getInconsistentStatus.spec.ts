@@ -130,62 +130,6 @@ describe('getInconsistentStatus', () => {
     })
   })
 
-  describe('NO_SENDER_ADM_ID', () => {
-    test('should pass the validation when the transaction has a sender crypto address', () => {
-      const coinTransaction = createCoinTransaction()
-      const admTransaction = createAdmTransaction()
-
-      expect(
-        getInconsistentStatus(coinTransaction, admTransaction, {
-          senderCryptoAddress: SENDER_CRYPTO_ADDRESS,
-          recipientCryptoAddress: RECIPIENT_CRYPTO_ADDRESS
-        })
-      ).toBe('')
-    })
-
-    test("should return NO_SENDER_ADM_ID when the transaction doesn't contain sender crypto address", () => {
-      const coinTransaction = createCoinTransaction({
-        senderId: ''
-      })
-      const admTransaction = createAdmTransaction()
-
-      expect(
-        getInconsistentStatus(coinTransaction, admTransaction, {
-          senderCryptoAddress: SENDER_CRYPTO_ADDRESS,
-          recipientCryptoAddress: RECIPIENT_CRYPTO_ADDRESS
-        })
-      ).toBe(TransactionInconsistentReason.NO_SENDER_ADM_ID)
-    })
-  })
-
-  describe('NO_RECIPIENT_ADM_ID', () => {
-    test('should pass the validation when the transaction has a recipient crypto address', () => {
-      const coinTransaction = createCoinTransaction()
-      const admTransaction = createAdmTransaction()
-
-      expect(
-        getInconsistentStatus(coinTransaction, admTransaction, {
-          senderCryptoAddress: SENDER_CRYPTO_ADDRESS,
-          recipientCryptoAddress: RECIPIENT_CRYPTO_ADDRESS
-        })
-      ).toBe('')
-    })
-
-    test("should return NO_RECIPIENT_ADM_ID when the transaction doesn't contain sender crypto address", () => {
-      const coinTransaction = createCoinTransaction({
-        recipientId: ''
-      })
-      const admTransaction = createAdmTransaction()
-
-      expect(
-        getInconsistentStatus(coinTransaction, admTransaction, {
-          senderCryptoAddress: SENDER_CRYPTO_ADDRESS,
-          recipientCryptoAddress: RECIPIENT_CRYPTO_ADDRESS
-        })
-      ).toBe(TransactionInconsistentReason.NO_RECIPIENT_ADM_ID)
-    })
-  })
-
   describe('WORNG_TX_HASH', () => {
     test('should pass the validation when the transaction hashes are the same', () => {
       const coinTransaction = createCoinTransaction({ hash: 'af08' })
