@@ -23,6 +23,7 @@ import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { Cryptos, CryptoSymbol } from '@/lib/constants'
 import { useCryptoAddressPretty } from './hooks/address'
+import { useBlockHeight } from '@/hooks/queries/useBlockHeight'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
@@ -81,7 +82,18 @@ export default defineComponent({
     )
 
     const explorerLink = computed(() => getExplorerTxUrl(Cryptos.ETH, props.id))
-    const confirmations = computed(() => transaction.value?.confirmations)
+    const blockHeight = useBlockHeight('ETH', {
+      enabled: () => transactionStatus.value === 'CONFIRMED'
+    })
+    const confirmations = computed(() => {
+      if (!blockHeight.value || !transaction.value) return NaN
+
+      if ('blockNumber' in transaction.value && transaction.value.blockNumber) {
+        return blockHeight.value - transaction.value.blockNumber + 1
+      }
+
+      return transaction.value?.confirmations
+    })
     const fee = computed(() => transaction.value?.fee)
 
     return {

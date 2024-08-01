@@ -2,7 +2,7 @@
   <TransactionTemplate
     :transaction="transaction"
     :fee="fee"
-    :confirmations="confirmations || NaN"
+    :confirmations="confirmations"
     :sender-formatted="senderFormatted || ''"
     :recipient-formatted="recipientFormatted || ''"
     :explorer-link="explorerLink"
@@ -22,6 +22,7 @@ import { useStore } from 'vuex'
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { CryptoSymbol } from '@/lib/constants'
+import { useBlockHeight } from '@/hooks/queries/useBlockHeight'
 import { useBtcAddressPretty } from './hooks/address'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
@@ -93,7 +94,21 @@ export default defineComponent({
 
     const explorerLink = computed(() => getExplorerTxUrl(props.crypto, props.id))
 
-    const confirmations = computed(() => transaction.value?.confirmations)
+    const blockHeight = useBlockHeight(props.crypto, {
+      enabled: () => transactionStatus.value === 'CONFIRMED'
+    })
+    const confirmations = computed(() => {
+      if (!transaction.value || !blockHeight.value) return NaN
+
+      if ('height' in transaction.value) {
+        // BTC and DASH have `height`
+        const height = transaction.value.height as number // workaround: TS doesn't infer the type correctly
+        return blockHeight.value - height + 1
+      } else {
+        // DOGE doesn't have `height`
+        return transaction.value.confirmations
+      }
+    })
 
     const fee = computed(() => transaction.value?.fee)
 

@@ -19,6 +19,7 @@ import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useFormatADMAddress } from '@/hooks/address/useFormatADMAddress'
+import { useBlockHeight } from '@/hooks/queries/useBlockHeight'
 import { useAdmTransactionQuery } from '@/hooks/queries/transaction'
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
@@ -67,7 +68,17 @@ export default defineComponent({
 
     const explorerLink = computed(() => getExplorerTxUrl(Cryptos.ADM, props.id))
 
-    const confirmations = computed(() => transaction.value?.confirmations)
+    const blockHeight = useBlockHeight('ADM', {
+      enabled: () => transactionStatus.value === 'CONFIRMED'
+    })
+    const confirmations = computed(() => {
+      if (!blockHeight.value || !transaction.value) return NaN
+
+      return Math.max(
+        blockHeight.value - transaction.value.height + 1,
+        transaction.value.confirmations
+      )
+    })
 
     const fee = computed(() => transaction.value?.fee)
 
