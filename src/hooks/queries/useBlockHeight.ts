@@ -1,12 +1,14 @@
 import { computed, MaybeRef, unref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { getTxFetchInfo } from '@/lib/transactionsFetching'
-import { btc, dash, doge, eth, kly } from '@/lib/nodes'
+import { adm, btc, dash, doge, eth, kly } from '@/lib/nodes'
 
-type Chain = 'BTC' | 'DOGE' | 'DASH' | 'ETH' | 'KLY'
+type Chain = 'ADM' | 'BTC' | 'DOGE' | 'DASH' | 'ETH' | 'KLY'
 
 const fetchBlockHeight = async (chain: Chain): Promise<number> => {
   switch (chain) {
+    case 'ADM':
+      return adm.getHeight()
     case 'BTC':
       return btc.getHeight()
     case 'DOGE':
