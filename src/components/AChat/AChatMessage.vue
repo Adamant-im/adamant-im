@@ -32,13 +32,15 @@
       </div>
       <div class="a-chat__message-card">
         <div class="a-chat__message-card-header mt-1">
-          <div v-if="status.status === 'CONFIRMED'" class="a-chat__blockchain-status">&#x26AD;</div>
+          <div v-if="transaction.status === 'CONFIRMED'" class="a-chat__blockchain-status">
+            &#x26AD;
+          </div>
           <div class="a-chat__timestamp">
             {{ time }}
           </div>
           <div v-if="isOutgoingMessage" class="a-chat__status">
             <v-icon
-              v-if="status.status === 'REJECTED'"
+              v-if="transaction.status === 'REJECTED'"
               :icon="statusIcon"
               :title="$t('chats.retry_message')"
               size="15"
@@ -105,10 +107,6 @@ export default defineComponent({
     dataId: {
       type: String
     },
-    status: {
-      type: Object,
-      required: true
-    },
     html: {
       type: Boolean,
       default: false
@@ -139,7 +137,7 @@ export default defineComponent({
 
     const showAvatar = computed(() => !isWelcomeChat(partnerId.value))
 
-    const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
+    const statusIcon = computed(() => tsIcon(props.transaction.status))
     const isOutgoingMessage = computed(() =>
       isStringEqualCI(props.transaction.senderId, userId.value)
     )

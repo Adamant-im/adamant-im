@@ -1,208 +1,131 @@
 <template>
-  <div>
-    <transaction-template
-      :id="transaction.hash || ''"
-      :amount="currency(transaction.amount, crypto)"
-      :timestamp="transaction.timestamp || NaN"
-      :fee="fee"
-      :confirmations="confirmations || NaN"
-      :sender="sender || ''"
-      :recipient="recipient || ''"
-      :sender-formatted="senderFormatted || ''"
-      :recipient-formatted="recipientFormatted || ''"
-      :explorer-link="explorerLink"
-      :partner="partner || ''"
-      :status="getTransactionStatus(admTx, transaction)"
-      :adm-tx="admTx"
-      :crypto="crypto"
-    />
-  </div>
+  <TransactionTemplate
+    :transaction="transaction"
+    :fee="fee"
+    :confirmations="confirmations"
+    :sender-formatted="senderFormatted || ''"
+    :recipient-formatted="recipientFormatted || ''"
+    :explorer-link="explorerLink"
+    :partner="partnerAdmAddress || ''"
+    :query-status="queryStatus"
+    :transaction-status="transactionStatus"
+    :inconsistent-status="inconsistentStatus"
+    :adm-tx="admTx"
+    :crypto="crypto"
+    @refetch-status="refetch"
+  />
 </template>
 
-<script>
+<script lang="ts">
+import { computed, defineComponent, PropType } from 'vue'
+import { useStore } from 'vuex'
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
-import partnerName from '@/mixins/partnerName'
-import { CryptosInfo } from '@/lib/constants'
+import { CryptoSymbol } from '@/lib/constants'
+import { useBlockHeight } from '@/hooks/queries/useBlockHeight'
+import { useBtcAddressPretty } from './hooks/address'
+import { useTransactionStatus } from './hooks/useTransactionStatus'
+import { useInconsistentStatus } from './hooks/useInconsistentStatus'
+import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
+import {
+  useBtcTransactionQuery,
+  useDogeTransactionQuery,
+  useDashTransactionQuery
+} from '@/hooks/queries/transaction'
+import { getPartnerAddress } from './utils/getPartnerAddress'
 
-import transaction from '@/mixins/transaction'
-import { isStringEqualCI } from '@/lib/textHelpers'
-import currency from '@/filters/currencyAmountWithSymbol'
+const query = {
+  BTC: useBtcTransactionQuery,
+  DASH: useDashTransactionQuery,
+  DOGE: useDogeTransactionQuery
+} as const
 
-export default {
-  name: 'BtcTransaction',
+export default defineComponent({
   components: {
     TransactionTemplate
   },
-  mixins: [transaction, partnerName],
-  props: ['id', 'crypto'],
-  computed: {
-    fee() {
-      const fee = this.transaction.fee
-      if (!fee) return ''
-      return `${+fee.toFixed(CryptosInfo[this.crypto].decimals)} ${this.crypto.toUpperCase()}`
+  props: {
+    crypto: {
+      required: true,
+      type: String as PropType<Extract<CryptoSymbol, 'BTC' | 'DOGE' | 'DASH'>>
     },
-    cryptoKey() {
-      return this.crypto.toLowerCase()
-    },
-    transaction() {
-      return this.$store.getters[`${this.cryptoKey}/transaction`](this.id) || {}
-    },
-    sender() {
-      const { senders, senderId } = this.transaction
-      const onlySender = senderId && (!senders || senders.length === 1)
-      if (onlySender) {
-        return senderId
-      } else if (senders) {
-        return senders.join(', ')
-      } else {
-        return undefined
-      }
-    },
-    recipient() {
-      const { recipientId, recipients } = this.transaction
-      const onlyRecipient = recipientId && (!recipients || recipients.length === 1)
-      if (onlyRecipient) {
-        return recipientId
-      } else if (recipients) {
-        return recipients.join(', ')
-      } else {
-        return undefined
-      }
-    },
-    senderFormatted() {
-      const { senders, senderId } = this.transaction
-      const onlySender = senderId && (!senders || senders.length === 1)
-      if (onlySender) {
-        return this.formatAddress(senderId)
-      } else if (senders) {
-        return this.formatAddresses(senders)
-      } else {
-        return undefined
-      }
-    },
-    recipientFormatted() {
-      const { recipientId, recipients } = this.transaction
-      const onlyRecipient = recipientId && (!recipients || recipients.length === 1)
-      if (onlyRecipient) {
-        return this.formatAddress(recipientId)
-      } else if (recipients) {
-        return this.formatAddresses(recipients)
-      } else {
-        return undefined
-      }
-    },
-    partner() {
-      if (this.transaction.partner) return this.transaction.partner
-
-      const id = !isStringEqualCI(
-        this.transaction.senderId,
-        this.$store.state[this.cryptoKey].address
-      )
-        ? this.transaction.senderId
-        : this.transaction.recipientId
-      return this.getAdmAddress(id)
-    },
-    explorerLink() {
-      return getExplorerTxUrl(this.crypto, this.id)
-    },
-    confirmations() {
-      const { height, confirmations } = this.transaction
-
-      let result = confirmations
-      if (height) {
-        // Calculate confirmations count based on the tx block height and the last block height.
-        // That's for BTC only as it does not return the confirmations for the transaction.
-        const c = this.$store.getters[`${this.cryptoKey}/height`] - height + 1
-        if (c > 0 && (c > result || !result)) {
-          result = c
-        }
-      }
-
-      return result
-    },
-    admTx() {
-      const admTx = {}
-      // Bad news, everyone: we'll have to scan the messages
-      Object.values(this.$store.state.chat.chats).some((chat) => {
-        Object.values(chat.messages).some((msg) => {
-          if (msg.hash && msg.hash === this.id) {
-            Object.assign(admTx, msg)
-          }
-          return !!admTx.id
-        })
-        return !!admTx.id
-      })
-      return admTx
+    id: {
+      required: true,
+      type: String
     }
   },
-  mounted() {
-    // Not needed, as called from Transaction.vue
-    // this.$store.dispatch(`${this.cryptoKey}/getTransaction`, { hash: this.id })
-  },
-  methods: {
-    getAdmAddress(address) {
-      let admAddress = ''
+  setup(props) {
+    const store = useStore()
 
-      // First, check the known partners
-      const partners = this.$store.state.partners
-      Object.keys(partners).some((uid) => {
-        const partner = partners[uid]
-        if (isStringEqualCI(partner[this.crypto], address)) {
-          admAddress = uid
-        }
-        return !!admAddress
-      })
+    const cryptoKey = computed(() => props.crypto.toLowerCase())
+    const cryptoAddress = computed(() => store.state[cryptoKey.value].address)
 
-      if (!admAddress) {
-        // Bad news, everyone: we'll have to scan the messages
-        Object.values(this.$store.state.chat.chats).some((chat) => {
-          Object.values(chat.messages).some((msg) => {
-            if (msg.hash && msg.hash === this.id) {
-              admAddress = isStringEqualCI(msg.senderId, this.$store.state.address)
-                ? msg.recipientId
-                : msg.senderId
-            }
-            return !!admAddress
-          })
-          return !!admAddress
-        })
-      }
+    const useTransactionQuery = query[props.crypto]
+    const {
+      status: queryStatus,
+      isFetching,
+      data: transaction,
+      refetch
+    } = useTransactionQuery(props.id)
+    const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
+    const transactionStatus = useTransactionStatus(isFetching, queryStatus, inconsistentStatus)
 
-      return admAddress
-    },
+    const admTx = useFindAdmTransaction(props.id)
+    const senderAdmAddress = computed(() => admTx.value?.senderId || '')
+    const recipientAdmAddress = computed(() => admTx.value?.recipientId || '')
+    const partnerAdmAddress = computed(() =>
+      admTx.value
+        ? getPartnerAddress(admTx.value?.senderId, admTx.value?.recipientId, cryptoAddress.value)
+        : ''
+    )
 
-    formatAddress(address) {
-      const admAddress = this.getAdmAddress(address)
-      let name = ''
+    const senderFormatted = useBtcAddressPretty(
+      transaction,
+      cryptoAddress,
+      senderAdmAddress,
+      'sender'
+    )
+    const recipientFormatted = useBtcAddressPretty(
+      transaction,
+      cryptoAddress,
+      recipientAdmAddress,
+      'recipient'
+    )
 
-      if (isStringEqualCI(address, this.$store.state[this.cryptoKey].address)) {
-        name = this.$t('transaction.me')
+    const explorerLink = computed(() => getExplorerTxUrl(props.crypto, props.id))
+
+    const blockHeight = useBlockHeight(props.crypto, {
+      enabled: () => transactionStatus.value === 'CONFIRMED'
+    })
+    const confirmations = computed(() => {
+      if (!transaction.value || !blockHeight.value) return NaN
+
+      if ('height' in transaction.value) {
+        // BTC and DASH have `height`
+        const height = transaction.value.height as number // workaround: TS doesn't infer the type correctly
+        return blockHeight.value - height + 1
       } else {
-        name = this.getPartnerName(admAddress)
+        // DOGE doesn't have `height`
+        return transaction.value.confirmations
       }
+    })
 
-      let result = ''
-      if (name !== '' && name !== undefined) {
-        result = name + ' (' + address + ')'
-      } else {
-        result = address
-        if (admAddress) {
-          result += ' (' + admAddress + ')'
-        }
-      }
+    const fee = computed(() => transaction.value?.fee)
 
-      return result
-    },
-
-    formatAddresses(addresses) {
-      const count = addresses.length
-      return addresses.includes(this.$store.state[this.cryptoKey].address)
-        ? `${this.$tc('transaction.me_and_addresses', count - 1)}`
-        : this.$tc('transaction.addresses', count)
-    },
-
-    currency
+    return {
+      refetch,
+      transaction,
+      fee,
+      senderFormatted,
+      recipientFormatted,
+      partnerAdmAddress,
+      explorerLink,
+      confirmations,
+      admTx,
+      queryStatus,
+      transactionStatus,
+      inconsistentStatus
+    }
   }
-}
+})
 </script>

@@ -1,4 +1,5 @@
 import { isNodeOfflineError } from '@/lib/nodes/utils/errors'
+import { GetHeightResponseDto } from '@/lib/schema/client'
 import { AdmNode, Payload, RequestConfig } from './AdmNode'
 import { Client } from '../abstract.client'
 
@@ -76,5 +77,14 @@ export class AdmClient extends Client<AdmNode> {
         }
       }, CHECK_ONLINE_NODE_INTERVAL)
     })
+  }
+
+  async getHeight() {
+    const result = await this.request<Payload, GetHeightResponseDto>({
+      method: 'get',
+      url: '/api/blocks/getHeight'
+    })
+
+    return result.height
   }
 }

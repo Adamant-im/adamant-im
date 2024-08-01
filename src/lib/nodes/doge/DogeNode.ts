@@ -1,5 +1,5 @@
+import { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { createBtcLikeClient } from '../utils/createBtcLikeClient'
-import type { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
@@ -53,5 +53,25 @@ export class DogeNode extends Node<AxiosInstance> {
     if (version) {
       this.version = formatDogeVersion(version)
     }
+  }
+
+  /**
+   * Performs a request to the Doge node.
+   */
+  async request<Response = any, Params = any>(
+    method: 'GET' | 'POST',
+    path: string,
+    params?: Params,
+    requestConfig?: AxiosRequestConfig
+  ): Promise<Response> {
+    return this.client
+      .request({
+        ...requestConfig,
+        url: path,
+        method,
+        params: method === 'GET' ? params : undefined,
+        data: method === 'POST' ? params : undefined
+      })
+      .then((res) => res.data)
   }
 }

@@ -298,8 +298,6 @@
       "unknown": "无法检查Tx。出现了一些问题",
       "no_recipient_crypto_address": "无法获取收件人的 {crypto} 地址",
       "no_sender_crypto_address": "无法获取发件人的 {crypto} 地址",
-      "no_recipient_adm_id": "无法获取收件人的adm地址",
-      "no_sender_adm_id": "无法获取发件人的ADM地址",
       "wrong_tx_hash": "错误的tx哈希。注意欺诈",
       "wrong_amount": "错误的 {crypto} 金额。注意欺诈",
       "wrong_timestamp": "消息和 {crypto} Tx有不同的时间戳。这是可能的，但要检查两次",
