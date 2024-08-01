@@ -3,13 +3,9 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
-
-type FetchDogeNodeInfoResult = {
-  error: string
-  result: {
-    version: number
-  }
-}
+import { RpcRequest, RpcResponse } from './types/api/common'
+import { NetworkInfo } from './types/api/network-info'
+import { BlockchainInfo } from './types/api/blockchain-info'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -27,14 +23,10 @@ export class DogeNode extends Node<AxiosInstance> {
   protected async checkHealth() {
     const time = Date.now()
 
-    const { data } = await this.client.post('/', {
-      jsonrpc: '1.0',
-      id: 'adm',
+    const { blocks } = await this.invoke<BlockchainInfo>({
       method: 'getblockchaininfo',
       params: []
     })
-
-    const { blocks } = data.result
 
     return {
       height: Number(blocks),
@@ -43,13 +35,11 @@ export class DogeNode extends Node<AxiosInstance> {
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { data } = await this.client.post<FetchDogeNodeInfoResult>('/', {
-      jsonrpc: '1.0',
-      id: 'adm',
+    const { version } = await this.invoke<NetworkInfo>({
       method: 'getnetworkinfo',
       params: []
     })
-    const { version } = data.result
+
     if (version) {
       this.version = formatDogeVersion(version)
     }
@@ -58,20 +48,22 @@ export class DogeNode extends Node<AxiosInstance> {
   /**
    * Performs a request to the Doge node.
    */
-  async request<Response = any, Params = any>(
-    method: 'GET' | 'POST',
-    path: string,
-    params?: Params,
+  async invoke<Response = any, Request extends RpcRequest = RpcRequest>(
+    params?: Request,
     requestConfig?: AxiosRequestConfig
   ): Promise<Response> {
     return this.client
-      .request({
+      .request<RpcResponse<Response>>({
         ...requestConfig,
-        url: path,
-        method,
-        params: method === 'GET' ? params : undefined,
-        data: method === 'POST' ? params : undefined
+        url: '/',
+        method: 'POST',
+        data: params
       })
       .then((res) => res.data)
+      .then(({ result, error }) => {
+        if (error) throw new Error(error.message)
+
+        return result
+      })
   }
 }

@@ -2,7 +2,7 @@ import { MaybeRef, unref } from 'vue'
 import { useStore } from 'vuex'
 import { useQuery } from '@tanstack/vue-query'
 import { Cryptos } from '@/lib/constants'
-import { btc } from '@/lib/nodes'
+import { btcIndexer } from '@/lib/nodes'
 import { BtcTransaction } from '@/lib/nodes/types/transaction'
 import { PendingTransaction, PendingTxStore } from '@/lib/pending-transactions'
 import { refetchIntervalFactory, refetchOnMountFn, retryDelayFactory, retryFactory } from './utils'
@@ -20,7 +20,7 @@ export function useBtcTransactionQuery(
 
   return useQuery<BtcTransaction | PendingTransaction>({
     queryKey: ['transaction', Cryptos.BTC, transactionId],
-    queryFn: () => btc.getTransaction(unref(transactionId), store.state.btc.address),
+    queryFn: () => btcIndexer.getTransaction(unref(transactionId), store.state.btc.address),
     initialData: () => {
       const pendingTransaction = PendingTxStore.get(Cryptos.BTC)
       if (pendingTransaction?.id === unref(transactionId)) {
