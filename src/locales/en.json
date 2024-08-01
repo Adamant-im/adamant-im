@@ -18,6 +18,7 @@
     "unable_to_retrieve_no_public_key": "`Unable to decrypt message: no partner's public key`",
     "me": "Me",
     "message": "Type a message",
+    "message_rejected": "Message rejected",
     "my_qr_code": "My QR code",
     "new_chat": "Start a new chat",
     "no_connection": "No Internet connection",
@@ -77,7 +78,13 @@
     "you_reacted": "Reacted",
     "partner_reacted": "Reacted",
     "you_removed_reaction": "Removed reaction",
-    "partner_removed_reaction": "Removed reaction"
+    "partner_removed_reaction": "Removed reaction",
+    "nodes_offline_dialog": {
+      "title": "Nodes are offline",
+      "text": "All {coin} nodes appear to be offline or possibly disabled. To continue use the Messenger please review the <strong>Nodes list</strong> and enable any nodes that are found to be disabled.",
+      "open_nodes_button": "Open Nodes page"
+    },
+    "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
   },
   "common": {
     "cancel": "Cancel",
@@ -90,6 +97,10 @@
     "online": "Online—Connection is set"
   },
   "error": "Error",
+  "errors": {
+    "something_went_wrong": "Something went wrong. Check the console for details",
+    "all_nodes_offline": "All {crypto} nodes are offline. Try again later"
+  },
   "home": {
     "balance": "Balance",
     "buy_tokens_anonymously": "Anonymously on website",
@@ -163,10 +174,6 @@
     "active": "Active",
     "fastest_title": "Choose the fastest node",
     "fastest_tooltip": "Requests will be processed with a fastest node",
-    "tabs": {
-      "adm_nodes": "ADM nodes",
-      "coin_nodes": "Coin nodes"
-    },
     "label": "Type",
     "host": "Host",
     "inactive": "Inactive",
@@ -176,7 +183,13 @@
     "offline": "Offline",
     "coin": "Coin",
     "ping": "Ping",
+    "service": "Service",
     "socket": "Socket",
+    "tabs": {
+      "adm_nodes": "ADM nodes",
+      "coin_nodes": "Coin nodes",
+      "service_nodes": "Service nodes"
+    },
     "unsupported": "Unsupported",
     "unsupported_reason_protocol": "HTTP is not allowed",
     "unsupported_reason_api_version": "Outdated API version",
@@ -285,8 +298,6 @@
       "unknown": "Failed to check Tx. Somethings went wrong",
       "no_recipient_crypto_address": "Unable to get recipient's {crypto} address",
       "no_sender_crypto_address": "Unable to get sender's {crypto} address",
-      "no_recipient_adm_id": "Unable to get recipient's ADM address",
-      "no_sender_adm_id": "Unable to get sender's ADM address",
       "wrong_tx_hash": "Wrong Tx hash. Be aware of fraud",
       "wrong_amount": "Wrong {crypto} amount. Be aware of fraud",
       "wrong_timestamp": "Message and {crypto} Tx has different timestamps. It is possible, but check twice",
@@ -317,7 +328,7 @@
     "decode_from_image": "Read QR from image",
     "error_chat_fee": "To send {crypto} via chat, you need 0.001 ADM",
     "error_dust_amount": "Dust amount—Send more tokens",
-    "recipient_minimum_balance": "Recipient must have at least 0.05 LSK—Send more tokens",
+    "recipient_minimum_balance": "Recipient must have at least 0.05 KLY—Send more tokens",
     "error_all_nodes_offline": "All {crypto} nodes are offline. Try again later",
     "error_precision": "Too high precision—Set less decimal places",
     "error_erc20_fee": "You need a {fee} to pay a transfer fee",

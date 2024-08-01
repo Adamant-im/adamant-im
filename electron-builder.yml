@@ -36,6 +36,12 @@ mac:
   entitlementsInherit: './build/osx/entitlements.mac.plist'
   hardenedRuntime: true
   gatekeeperAssess: false
+  notarize: false
+  target:
+    target: 'default'
+    arch: 
+      - x64
+      - arm64
 
 afterSign: 'scripts/electron/notarize.cjs'
 
@@ -51,7 +57,7 @@ dmg:
       path: '/Applications'
 
 # Linux configuration
-linux: 
+linux:
   category: 'InstantMessaging'
   desktop:
     Icon: './build/linux/icon.png'

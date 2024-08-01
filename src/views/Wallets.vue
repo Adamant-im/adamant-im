@@ -48,7 +48,7 @@
 <script lang="ts">
 import draggable from 'vuedraggable'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
-import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, ref } from 'vue'
 import { CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { useStore } from 'vuex'
 import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
@@ -161,11 +161,6 @@ export default defineComponent({
 
     onBeforeUnmount(() => {
       clearInterval(timer.value)
-    })
-
-    // TODO: probably it can be refactored later
-    onMounted(() => {
-      window.scrollTo(0, 0)
     })
 
     return {

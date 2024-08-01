@@ -18,6 +18,7 @@
     "unable_to_retrieve_no_public_key": "`无法解密消息：没有合作伙伴的公钥`",
     "me": "我",
     "message": "键入消息",
+    "message_rejected": "消息被拒绝",
     "my_qr_code": "我的二维码",
     "new_chat": "开始新的聊天",
     "no_connection": "没有Internet连接",
@@ -74,10 +75,16 @@
     "pull_down_actions": {
       "update_balances": "更新余额"
     },
-    "you_reacted": "Reacted",
+    "you_reacted": "反应",
     "partner_reacted": "已反应",
     "you_removed_reaction": "已删除反应",
-    "partner_removed_reaction": "已删除的反应"
+    "partner_removed_reaction": "已删除的反应",
+    "nodes_offline_dialog": {
+      "title": "Nodes are offline",
+      "text": "All {coin} nodes appear to be offline or possibly disabled. To continue use the Messenger please review the <strong>Nodes list</strong> and enable any nodes that are found to be disabled.",
+      "open_nodes_button": "Open Nodes page"
+    },
+    "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
   },
   "common": {
     "cancel": "取消",
@@ -90,6 +97,10 @@
     "online": "联机--已设置连接"
   },
   "error": "错误",
+  "errors": {
+    "something_went_wrong": "Something went wrong. Check the console for details",
+    "all_nodes_offline": "All {crypto} nodes are offline. Try again later"
+  },
   "home": {
     "balance": "余额",
     "buy_tokens_anonymously": "在网站上匿名",
@@ -163,10 +174,6 @@
     "active": "活动",
     "fastest_title": "选择最快的节点",
     "fastest_tooltip": "将使用最快的节点处理请求",
-    "tabs": {
-      "adm_nodes": "ADM节点",
-      "coin_nodes": "硬币节点"
-    },
     "label": "类型",
     "host": "主机",
     "inactive": "Inactive",
@@ -175,8 +182,14 @@
     "nodeLabelDescription": "支持去中心化并提高隐私级别--<a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">运行您自己的ADAMANT节点</a>。若要将节点添加到列表中，您需要<a target=\"_blank\"href=\"https://github.com/Adamant-im/adamant-im/\">在单独的域上部署web应用程序</a>。此限制指的是内容安全策略（CSP）。",
     "offline": "脱机",
     "coin": "硬币",
-    "ping": "Ping",
+    "ping": "嗨",
+    "service": "服务",
     "socket": "套接字",
+    "tabs": {
+      "adm_nodes": "ADM节点",
+      "coin_nodes": "硬币节点",
+      "service_nodes": "服务节点"
+    },
     "unsupported": "不受欢迎",
     "unsupported_reason_protocol": "不允许HTTP",
     "unsupported_reason_api_version": "API版本过期",
@@ -203,7 +216,7 @@
     "enable_sound_tooltip": "收到新消息时播放声音",
     "stay_logged_in": "保持登录状态",
     "stay_logged_in_tooltip": "设置密码以更快地登录此设备。您的消息和密码将被加密存储",
-    "format_messages": "Markdown formatting",
+    "format_messages": "Markdown格式",
     "format_messages_tooltip": "建议使用 _italic_、**bold**、`monospace` 等。",
     "use_full_date": "显示完整日期",
     "use_full_date_tooltip": "始终以完整格式显示日期，如 2021-01-17，而不是‘昨天’和‘今天’",
@@ -222,6 +235,7 @@
     "upvote_for_label": "投票给：",
     "version": "应用程序版本：",
     "vote_for_delegates_button": "为代表投票",
+    "wallets_list": "钱包清单",
     "export_keys": {
       "title": "导出私钥",
       "disclaimer": "ADAMANT帐户包括加密钱包。所有这些钱包都与您的密码连接，只有您才能访问这些钱包。您可以导出私钥以在其他应用程序中使用它们。将密钥存储在安全的地方。",
@@ -284,8 +298,6 @@
       "unknown": "无法检查Tx。出现了一些问题",
       "no_recipient_crypto_address": "无法获取收件人的 {crypto} 地址",
       "no_sender_crypto_address": "无法获取发件人的 {crypto} 地址",
-      "no_recipient_adm_id": "无法获取收件人的adm地址",
-      "no_sender_adm_id": "无法获取发件人的ADM地址",
       "wrong_tx_hash": "错误的tx哈希。注意欺诈",
       "wrong_amount": "错误的 {crypto} 金额。注意欺诈",
       "wrong_timestamp": "消息和 {crypto} Tx有不同的时间戳。这是可能的，但要检查两次",
@@ -316,8 +328,8 @@
     "decode_from_image": "从图像中读取QR",
     "error_chat_fee": "要通过聊天发送 {crypto}，您需要 0.001 ADM",
     "error_dust_amount": "无存量--发送更多代币",
-    "recipient_minimum_balance": "收件人必须至少有 0.05 LSK--发送更多令牌",
-    "error_all_nodes_offline": "All {crypto} nodes are offline. Try again later",
+    "recipient_minimum_balance": "收件人必须至少有 0.05 KLY--发送更多令牌",
+    "error_all_nodes_offline": "所有 {crypto} 节点都已离线，请稍后重试。",
     "error_precision": "精度过高--设置小数位数较少",
     "error_erc20_fee": "您需要｛费｝来支付转会费",
     "error_field_is_required": "字段是必需的",
@@ -326,9 +338,9 @@
     "error_no_address": "输入收件人钱包地址",
     "error_no_amount": "输入要发送的金额",
     "error_not_enough": "令牌不足",
-    "error_not_enough_adm_fee": "Not enough ADM to pay the transaction fee",
+    "error_not_enough_adm_fee": "不够的ADM来支付交易费用",
     "error_not_enough_eth_fee": "没有足够的ETH支付转账费",
-    "error_pending_transaction": "It seems you have a pending {crypto} tx. Wait while the blockchain confirms it, and try again.",
+    "error_pending_transaction": "看起来您有一笔待处理的 {crypto} 交易。请等待区块链确认，然后重试。",
     "error_same_recipient": "不要向自己发送令牌",
     "error_transfer_send": "完成事务时出错",
     "error_unknown": "未知错误。弱连接？",

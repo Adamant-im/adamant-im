@@ -1,6 +1,6 @@
 import BtcBaseApi from './btc-base-api'
 import { Cryptos } from '../constants'
-import { btc } from '@/lib/nodes/btc'
+import { btcIndexer } from '../../lib/nodes'
 
 export default class BitcoinApi extends BtcBaseApi {
   constructor(passphrase) {
@@ -28,9 +28,8 @@ export default class BitcoinApi extends BtcBaseApi {
 
   /** @override */
   sendTransaction(txHex) {
-    return btc
-      .getClient()
-      .post('/tx', txHex)
+    return btcIndexer
+      .useClient((client) => client.post('/tx', txHex))
       .then((response) => response.data)
   }
 
@@ -87,9 +86,8 @@ export default class BitcoinApi extends BtcBaseApi {
 
   /** Executes a GET request to the API */
   _get(url, params) {
-    return btc
-      .getClient()
-      .get(url, { params })
+    return btcIndexer
+      .useClient((client) => client.get(url, { params }))
       .then((response) => response.data)
   }
 }

@@ -14,10 +14,10 @@ export default {
   dash(state) {
     return Object.values(state.dash)
   },
-  lsk(state) {
-    return Object.values(state.lsk)
+  kly(state) {
+    return Object.values(state.kly)
   },
   coins(state, getters) {
-    return [...getters.eth, ...getters.btc, ...getters.doge, ...getters.dash, ...getters.lsk]
+    return [...getters.eth, ...getters.btc, ...getters.doge, ...getters.dash, ...getters.kly]
   }
 }

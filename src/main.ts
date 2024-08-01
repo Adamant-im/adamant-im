@@ -1,4 +1,7 @@
+import 'core-js/actual/object/group-by'
+
 import { createApp } from 'vue'
+import { VueQueryPlugin } from '@tanstack/vue-query'
 
 import App from './App.vue'
 import { router } from './router'
@@ -25,6 +28,7 @@ app.use(router)
 app.use(store)
 app.use(i18n)
 app.use(vuetify)
+app.use(VueQueryPlugin)
 app.use(VueFormatters)
 app.directive('longpress', longPressDirective)
 

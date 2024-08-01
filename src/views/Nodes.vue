@@ -32,8 +32,6 @@ export default {
     className: () => 'nodes-view'
   },
   mounted() {
-    // TODO: probably it can be refactored later
-    window.scrollTo(0, 0)
     this.$store.dispatch('nodes/updateStatus')
 
     nodesManager.updateHealthcheckInterval('onScreen')
