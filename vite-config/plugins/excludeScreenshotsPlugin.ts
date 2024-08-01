@@ -8,9 +8,6 @@ import { Plugin } from 'vite'
 export function excludeScreenshotsPlugin(): Plugin {
   return {
     name: 'exclude-screenshots-plugin',
-    resolveId(source) {
-      return source === 'virtual-module' ? source : null
-    },
     writeBundle(outputOptions) {
       const outDir = outputOptions.dir as string
       const screenshotsDir = path.resolve(outDir, 'screenshots')
