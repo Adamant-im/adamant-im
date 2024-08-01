@@ -124,7 +124,9 @@ function createActions(options) {
         }
 
         // Send a special message to indicate that we're performing a crypto transfer
-        const success = context.dispatch('sendCryptoTransferMessage', msgPayload, { root: true })
+        const success = await context.dispatch('sendCryptoTransferMessage', msgPayload, {
+          root: true
+        })
         if (!success) {
           throw new Error('adm_message')
         }
