@@ -55,8 +55,9 @@
 import { validateMnemonic } from 'bip39'
 import { computed, ref, defineComponent } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { isAxiosError } from 'axios'
-import { isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
 
 export default defineComponent({
   props: {
@@ -67,6 +68,7 @@ export default defineComponent({
   },
   emits: ['login', 'error', 'update:modelValue'],
   setup(props, { emit }) {
+    const router = useRouter()
     const store = useStore()
     const showSpinner = ref(false)
 
@@ -104,6 +106,9 @@ export default defineComponent({
             emit('error', 'login.invalid_passphrase')
           } else if (isAllNodesOfflineError(err)) {
             emit('error', 'errors.all_nodes_offline')
+          } else if (isAllNodesDisabledError(err)) {
+            emit('error', 'errors.all_nodes_disabled')
+            router.push({ name: 'Nodes' })
           } else {
             emit('error', 'errors.something_went_wrong')
           }

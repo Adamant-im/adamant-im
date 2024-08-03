@@ -1,5 +1,5 @@
 import type { HealthcheckInterval, NodeKind, NodeType } from '@/lib/nodes/types'
-import { AllNodesOfflineError } from './utils/errors'
+import { AllNodesDisabledError, AllNodesOfflineError } from './utils/errors'
 import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
 import { nodesStorage } from './storage'
@@ -137,6 +137,11 @@ export abstract class Client<N extends Node> {
   }
 
   protected getNode() {
+    const nodes = this.nodes.filter((node) => node.active)
+    if (nodes.length === 0) {
+      throw new AllNodesDisabledError(this.type)
+    }
+
     const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
     if (!node) {
       // All nodes seem to be offline: let's refresh the statuses
