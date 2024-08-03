@@ -42,6 +42,8 @@ export class AdmClient extends Client<AdmNode> {
    * @param {RequestConfig} config request config
    */
   async request<P extends Payload = Payload, R = any>(config: RequestConfig<P>): Promise<R> {
+    await this.ready
+
     return this.getNode()
       .request(config)
       .catch((error) => {

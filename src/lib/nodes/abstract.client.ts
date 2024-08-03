@@ -30,18 +30,39 @@ export abstract class Client<N extends Node> {
    */
   type: NodeType
 
+  /**
+   * Resolves when at least one node is ready to accept requests
+   */
+  ready: Promise<void>
+  resolve = () => {}
+  initialized = false
+
   constructor(type: NodeType, kind: NodeKind = 'node') {
     this.type = type
     this.kind = kind
     this.useFastest = nodesStorage.getUseFastest(type)
+
+    this.ready = new Promise((resolve) => {
+      this.resolve = () => {
+        if (this.initialized) return
+
+        this.initialized = true
+        resolve()
+      }
+    })
   }
 
   protected async watchNodeStatusChange() {
     for (const node of this.nodes) {
-      node.onStatusChange((node) => {
+      node.onStatusChange((nodeStatus) => {
         this.updateSyncStatuses()
 
-        this.statusUpdateCallback?.(node)
+        this.statusUpdateCallback?.(nodeStatus)
+
+        if (this.isActiveNode(node)) {
+          // Resolve when at least one node is ready to accept requests
+          this.resolve()
+        }
       })
     }
   }
