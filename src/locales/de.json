@@ -80,7 +80,7 @@
     "copy_address": "Copy address",
     "copy_uri": "Copy Share link",
     "create_qrcode": "Create QR code",
-    "exchanges_on": "Exchanges on { aggregator }",
+    "exchanges_on": "Exchanges on {aggregator}",
     "free_adm_btn": "Free ADM tokens",
     "free_tokens_link": "https://adamant.im/de-free-adm-tokens/",
     "send_btn": "Send funds",
