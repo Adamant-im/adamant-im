@@ -112,7 +112,7 @@
     "copy_address": "复制地址",
     "copy_uri": "复制共享链接",
     "create_qrcode": "创建二维码",
-    "exchanges_on": "{ aggregator } 上的交易所",
+    "exchanges_on": "{aggregator} 上的交易所",
     "free_adm_btn": "释放ADM令牌",
     "free_tokens_link": "https://adamant.im/free-adm-tokens/",
     "send_btn": "发送资金",
