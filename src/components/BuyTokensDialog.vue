@@ -25,69 +25,30 @@
             <v-list-item-title>{{ $t('home.buy_tokens_anonymously') }}</v-list-item-title>
           </v-list-item>
 
-          <v-list-item avatar @click="openLink('https://azbit.com/?referralCode=9YVWYAF')">
+          <v-list-item
+            avatar
+            @click="openLink('https://coinmarketcap.com/currencies/adamant-messenger/#markets')"
+          >
             <template #prepend>
-              <icon><azbit-icon /></icon>
+              <icon><coinmarketcap-icon /></icon>
             </template>
 
-            <v-list-item-title>Azbit</v-list-item-title>
+            <v-list-item-title>{{
+              $t('home.exchanges_on', { aggregator: 'CoinMarketCap' })
+            }}</v-list-item-title>
           </v-list-item>
 
           <v-list-item
             avatar
-            @click="openLink('https://stakecube.net/app/exchange/adm_usdt?layout=pro&team=adm')"
+            @click="openLink('https://www.coingecko.com/en/coins/adamant-messenger#markets')"
           >
             <template #prepend>
-              <icon><stake-cube-icon /></icon>
+              <icon><coingecko-icon /></icon>
             </template>
 
-            <v-list-item-title>StakeCube</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item
-            avatar
-            @click="openLink('https://h5.coinstore.com/h5/signup?invitCode=o951vZ')"
-          >
-            <template #prepend>
-              <icon><coinstore-icon /></icon>
-            </template>
-
-            <v-list-item-title>Coinstore</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item
-            avatar
-            @click="
-              openLink('https://www.fameex.com/en-US/trade/adm-usdt/commissiondispense?code=MKKAWV')
-            "
-          >
-            <template #prepend>
-              <icon><fameex-icon /></icon>
-            </template>
-
-            <v-list-item-title>FameEX</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item
-            avatar
-            @click="openLink('https://xeggex.com/market/ADM_USDT?ref=656846d209bbed85b91aba4d')"
-          >
-            <template #prepend>
-              <icon><xeggex-icon /></icon>
-            </template>
-
-            <v-list-item-title>XeggeX</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item
-            avatar
-            @click="openLink('https://nonkyc.io/market/ADM_USDT?ref=655b4df9eb13acde84677358')"
-          >
-            <template #prepend>
-              <icon><nonkyc-icon /></icon>
-            </template>
-
-            <v-list-item-title>NonKYC</v-list-item-title>
+            <v-list-item-title>{{
+              $t('home.exchanges_on', { aggregator: 'CoinGecko' })
+            }}</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-card-text>
@@ -97,28 +58,20 @@
 
 <script>
 import validateAddress from '@/lib/validateAddress'
-import Icon from '@/components/icons/BaseIcon.vue'
 import AdamantIcon from '@/components/icons/common/Adamant.vue'
-import AzbitIcon from '@/components/icons/common/Azbit.vue'
+import CoingeckoIcon from '@/components/icons/common/Coingecko.vue'
+import CoinmarketcapIcon from '@/components/icons/common/Coinmarketcap.vue'
 import ExchangerIcon from '@/components/icons/common/Exchanger.vue'
-import StakeCubeIcon from '@/components/icons/common/StakeCube.vue'
-import CoinstoreIcon from '@/components/icons/common/Coinstore.vue'
-import NonkycIcon from '@/components/icons/common/Nonkyc.vue'
-import FameexIcon from '@/components/icons/common/Fameex.vue'
-import XeggexIcon from '@/components/icons/common/Xeggex.vue'
+import Icon from '@/components/icons/BaseIcon.vue'
 import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
   components: {
-    Icon,
     AdamantIcon,
-    AzbitIcon,
+    CoingeckoIcon,
+    CoinmarketcapIcon,
     ExchangerIcon,
-    StakeCubeIcon,
-    CoinstoreIcon,
-    NonkycIcon,
-    FameexIcon,
-    XeggexIcon
+    Icon
   },
   props: {
     modelValue: {

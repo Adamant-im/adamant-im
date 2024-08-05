@@ -6,6 +6,9 @@ type DecodeContinuouslyCallback = (
   error?: Exception,
   controls?: IScannerControls
 ) => void
+
+type ModalErrorCallback = (error: Error) => void
+
 export class Scanner {
   cameraStream!: MediaStream
   codeReader!: BrowserQRCodeReader
@@ -20,19 +23,28 @@ export class Scanner {
     this.codeReader = new BrowserQRCodeReader()
   }
 
-  async start(currentCamera: number | null, decodeCallback: DecodeContinuouslyCallback) {
+  async start(
+    currentCamera: number | null,
+    decodeCallback: DecodeContinuouslyCallback,
+    modalCallback: ModalErrorCallback
+  ) {
     // Stop all tracks from media stream before camera changing
     if (this.cameraStream) this.stopVideoTracks()
 
-    // Request new media stream and attach to video element as source object
-    const facingMode = currentCamera === 1 ? 'environment' : 'user'
-    this.cameraStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode },
-      audio: false
-    })
-    this.videoElement.srcObject = this.cameraStream
+    try {
+      // Request new media stream and attach to video element as source object
+      const facingMode = currentCamera === 1 ? 'environment' : 'user'
+      this.cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode },
+        audio: false
+      })
+      this.videoElement.srcObject = this.cameraStream
 
-    return this.codeReader.decodeFromVideoElement(this.videoElement, decodeCallback)
+      this.codeReader.decodeFromVideoElement(this.videoElement, decodeCallback)
+    } catch (error) {
+      // If something went wrong, show the reason in the modal window
+      modalCallback(error as Error)
+    }
   }
 
   async getCameras() {

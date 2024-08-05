@@ -148,6 +148,11 @@ export function decodeChat(
   key: string
 ): DecodedChatMessageTransaction
 
+export function decodeTransaction(
+  transaction: AnyTransaction | QueuedTransaction,
+  address: string
+): DecodedChatMessageTransaction
+
 export function getI18nMessage(message: string, senderId: string): string
 
 export function loginOrRegister(): Promise<ReturnType<typeof getCurrentAccount>>

@@ -99,26 +99,29 @@
   "error": "Ошибка",
   "errors": {
     "something_went_wrong": "Что-то пошло не так. Детали ошибки в консоли",
-    "all_nodes_offline": "Все {crypto} ноды недоступны. Попробуйте позже"
+    "all_nodes_offline": "Все {crypto} ноды недоступны. Попробуйте позже",
+    "all_nodes_disabled": "Все {crypto} ноды отключены. Пожалуйста, включите хотя бы один узел, чтобы продолжить пользоваться мессенджером"
   },
   "home": {
     "balance": "Баланс",
     "buy_tokens_anonymously": "Анонимно на сайте",
+    "buy_tokens_btn": "Купить или продать монеты",
+    "buy_tokens_btn_link": "https://adamant.im/ru-buy-tokens/",
     "buy_tokens_exchanger": "Обменник в чате",
     "copied": "Скопировал",
     "copy": "Копировать",
     "copy_address": "Копировать адрес",
     "copy_uri": "Копировать ссылку",
     "create_qrcode": "Создать QR-код",
+    "exchanges_on": "Биржи на {aggregator}",
     "free_adm_btn": "Бесплатные токены",
-    "buy_tokens_btn": "Купить или продать токены",
-    "buy_tokens_btn_link": "https://adamant.im/ru-buy-tokens/",
     "free_tokens_link": "https://adamant.im/ru-free-adm-tokens/",
     "send_btn": "Отправить средства",
     "send_btn_tooltip": "Нажмите, чтобы сделать перевод на другой аккуунт или другому пользователю АДАМАНТа",
     "send_crypto": "Отправить {crypto}",
     "share_uri": "Поделиться ссылкой {crypto}",
     "show_qr_code": "Показать QR-код",
+    "stake_and_earn_btn": "Застейкать и заработать",
     "wallet": "кошелек",
     "wallet_crypto": "Кошелек {crypto}"
   },
@@ -175,10 +178,6 @@
     "active": "Активная",
     "fastest_title": "Подключаться к самому быстрому узлу",
     "fastest_tooltip": "Запросы будут обрабатываться самым быстрым узлом",
-    "tabs": {
-      "adm_nodes": "ADM ноды",
-      "coin_nodes": "Coin ноды"
-    },
     "label": "Тип",
     "host": "Хост",
     "inactive": "Неактивная",
@@ -188,7 +187,13 @@
     "offline": "Недоступна",
     "coin": "Coin",
     "ping": "Пинг",
+    "service": "Сервис",
     "socket": "Сокеты",
+    "tabs": {
+      "adm_nodes": "ADM ноды",
+      "coin_nodes": "Coin ноды",
+      "service_nodes": "Сервис ноды"
+    },
     "unsupported": "Не поддерживается",
     "unsupported_reason_protocol": "HTTP не поддерживается",
     "unsupported_reason_api_version": "API версия устарела",
@@ -250,6 +255,7 @@
     "camera_button": "Камера",
     "close_button": "Закрыть",
     "connect_camera": "Подключите камеру и попробуйте снова",
+    "grant_camera_permissions": "Предоставьте разрешения камере в настройках браузера и попробуйте снова",
     "hold_your_device": "Наведите камеру на 2-3 секунды на QR-код",
     "login": {
       "modal_header": "Отсканируйте QR-код с парольной фразой"
@@ -257,7 +263,10 @@
     "new-chat": {
       "modal_header": "Отсканируйте QR-код с адресом АДАМАНТа"
     },
+    "no_camera_access": "Нет доступа к камере",
     "no_camera_found": "Камера не найдена",
+    "no_camera_stream": "Нет видеопотока с камеры",
+    "no_stream_details": "Подробности:<br /><code><small>{ noStreamDetails }</small></code>",
     "something_wrong": "Что-то пошло не так",
     "waiting_camera": "Включаю камеру…"
   },
@@ -297,8 +306,6 @@
       "unknown": "Не удалось проверить транзакцию. Что-то пошло не так",
       "no_recipient_crypto_address": "Нет {crypto}-адреса получателя",
       "no_sender_crypto_address": "Нет {crypto}-адреса отправителя",
-      "no_recipient_adm_id": "Нет ADM-адреса получателя",
-      "no_sender_adm_id": "Нет ADM-адреса отправителя",
       "wrong_tx_hash": "Неверный хэш транзакции. Остерегайтесь мошенников",
       "wrong_amount": "Неверное количество {crypto}. Остерегайтесь мошенников",
       "wrong_timestamp": "Сообщение и {crypto}-транзакция имеют различное время. Это возможно, но лучше перепроверьте",
@@ -384,6 +391,7 @@
     "sec": "сек",
     "select_delegates": "Выберите делегатов",
     "sent": "Голоса отправлены",
+    "stake_info": "Чтобы застейкать ADM и получать вознаграждения, проголосуйте за активный форжинг-пул, которому вы доверяете. Подробнее читайте в <a target=\"_blank\" href=\"https://news.adamant.im/hodl-list-of-adamant-pools-join-in-and-get-rewards-491a98610f4b\">блоге АДАМАНТа</a>.",
     "summary_info": "Стоимость голосования: 50 ADM. <a target=\"_blank\" href=\"https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516\">Читайте о голосовании и форжинге</a>.",
     "summary_title": "Голосование",
     "table_head_name": "Имя",

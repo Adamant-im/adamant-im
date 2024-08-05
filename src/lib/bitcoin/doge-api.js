@@ -8,7 +8,7 @@ import { isPositiveNumber } from '../numericHelpers'
 import { ECPairFactory } from 'ecpair'
 import * as tinysecp from 'tiny-secp256k1'
 import { convertToSmallestUnit } from './bitcoin-utils'
-import { doge } from '@/lib/nodes/doge'
+import { dogeIndexer } from '../../lib/nodes'
 
 const ECPairAPI = ECPairFactory(tinysecp)
 
@@ -150,12 +150,14 @@ export default class DogeApi extends BtcBaseApi {
 
   /** Executes a GET request to the DOGE API */
   _get(url, params) {
-    return doge.useClient((client) => client.get(url, { params })).then((response) => response.data)
+    return dogeIndexer
+      .useClient((client) => client.get(url, { params }))
+      .then((response) => response.data)
   }
 
   /** Executes a POST request to the DOGE API */
   _post(url, data) {
-    return doge
+    return dogeIndexer
       .useClient((client) => client.post(url, qs.stringify(data), POST_CONFIG))
       .then((response) => response.data)
   }

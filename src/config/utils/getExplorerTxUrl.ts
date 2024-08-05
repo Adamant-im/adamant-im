@@ -7,7 +7,7 @@ import config from '../index'
  * @param {string} transactionId ID (hash) of the transaction to explorer
  * @returns {string} URL to the transaction details page
  */
-export function getExplorerTxUrl(crypto: string, transactionId: number): string {
+export function getExplorerTxUrl(crypto: string, transactionId: string): string {
   const explorerUrl = config[crypto.toLowerCase()].explorerTx
 
   if (!explorerUrl) {

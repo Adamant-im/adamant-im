@@ -3,16 +3,12 @@ import { FetchStatus, DEFAULT_ERC20_TRANSFER_GAS_LIMIT } from '@/lib/constants'
 import EthContract from 'web3-eth-contract'
 import Erc20 from './erc20.abi.json'
 import createActions from '../eth-base/eth-base-actions'
-import { AbiDecoder } from '@/lib/abi/abi-decoder'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
 
 /** Timestamp of the most recent status update */
 let lastStatusUpdate = 0
 /** Status update interval is 25 sec: ERC20 balance */
 const STATUS_INTERVAL = 25000
-
-// Setup decoder
-const abiDecoder = new AbiDecoder(Erc20)
 
 const initTransaction = async (api, context, ethAddress, amount, nonce, increaseFee) => {
   const contract = new EthContract(Erc20, context.state.contractAddress)
@@ -36,33 +32,6 @@ const initTransaction = async (api, context, ethAddress, amount, nonce, increase
   transaction.gasLimit = increaseFee ? ethUtils.increaseFee(gasLimit) : gasLimit
 
   return transaction
-}
-
-const parseTransaction = (context, tx) => {
-  let recipientId = null
-  let amount = null
-
-  const decoded = abiDecoder.decodeMethod(tx.input)
-  if (decoded && decoded.name === 'transfer') {
-    decoded.params.forEach((x) => {
-      if (x.name === '_to') recipientId = x.value
-      if (x.name === '_value') amount = ethUtils.toFraction(x.value, context.state.decimals)
-    })
-  }
-
-  if (recipientId) {
-    return {
-      // Why comparing to eth.actions, there is no fee and status?
-      hash: tx.hash,
-      senderId: tx.from,
-      blockNumber: Number(tx.blockNumber),
-      amount,
-      recipientId,
-      gasPrice: Number(tx.gasPrice || tx.effectiveGasPrice)
-    }
-  }
-
-  return null
 }
 
 const createSpecificActions = (api) => ({
@@ -137,6 +106,5 @@ const createSpecificActions = (api) => ({
 
 export default createActions({
   initTransaction,
-  parseTransaction,
   createSpecificActions
 })
