@@ -1,7 +1,7 @@
 <template>
   <slot
     :status="status"
-    :fetch-status="fetchStatus"
+    :query-status="queryStatus"
     :inconsistentStatus="inconsistentStatus"
     :refetch="refetch"
   />
@@ -27,14 +27,14 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const { fetchStatus, status, inconsistentStatus, refetch } = useTransactionStatusQuery(
+    const { queryStatus, status, inconsistentStatus, refetch } = useTransactionStatusQuery(
       props.txId,
       props.crypto
     )
     const statusIcon = computed(() => tsIcon(status.value))
 
     return {
-      fetchStatus,
+      queryStatus,
       status,
       inconsistentStatus,
       statusIcon,

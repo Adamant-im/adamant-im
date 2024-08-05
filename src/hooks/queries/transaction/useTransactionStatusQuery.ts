@@ -1,6 +1,7 @@
-import { computed, MaybeRef, unref } from 'vue'
+import { MaybeRef, unref } from 'vue'
 import { useInconsistentStatus } from '@/components/transactions/hooks/useInconsistentStatus'
-import { CryptoSymbol, TransactionStatus, TransactionStatusType } from '@/lib/constants'
+import { useTransactionStatus } from '@/components/transactions/hooks/useTransactionStatus'
+import { CryptoSymbol } from '@/lib/constants'
 import { useTransactionQuery } from './useTransactionQuery'
 
 export function useTransactionStatusQuery(
@@ -8,27 +9,16 @@ export function useTransactionStatusQuery(
   crypto: MaybeRef<CryptoSymbol>
 ) {
   const {
-    status: fetchStatus,
+    status: queryStatus,
     isFetching,
     data: transaction,
     refetch
   } = useTransactionQuery(transactionId, unref(crypto))
   const inconsistentStatus = useInconsistentStatus(transaction, unref(crypto))
-
-  const status = computed<TransactionStatusType>(() => {
-    if (isFetching.value) return TransactionStatus.PENDING
-    if (fetchStatus.value === 'error') return TransactionStatus.REJECTED
-    if (fetchStatus.value === 'success') {
-      if (inconsistentStatus.value) return TransactionStatus.UNKNOWN
-
-      return TransactionStatus.CONFIRMED
-    }
-
-    return TransactionStatus.UNKNOWN
-  })
+  const status = useTransactionStatus(isFetching, queryStatus, inconsistentStatus)
 
   return {
-    fetchStatus,
+    queryStatus,
     inconsistentStatus,
     status,
     refetch
