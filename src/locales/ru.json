@@ -112,7 +112,7 @@
     "copy_address": "Копировать адрес",
     "copy_uri": "Копировать ссылку",
     "create_qrcode": "Создать QR-код",
-    "exchanges_on": "Биржи на { aggregator }",
+    "exchanges_on": "Биржи на {aggregator}",
     "free_adm_btn": "Бесплатные токены",
     "free_tokens_link": "https://adamant.im/ru-free-adm-tokens/",
     "send_btn": "Отправить средства",
