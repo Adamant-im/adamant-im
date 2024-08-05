@@ -119,6 +119,7 @@
     "send_crypto": "发送 {crypto}",
     "share_uri": "共享 {crypto} 地址",
     "show_qr_code": "显示二维码",
+    "stake_and_earn_btn": "质押并赚取",
     "wallet": "钱包",
     "wallet_crypto": "{crypto} 钱包"
   },
@@ -388,6 +389,7 @@
     "sec": "秒",
     "select_delegates": "选择代理人",
     "sent": "投票已发送",
+    "stake_info": "要质押 ADM 并获得奖励，请投票给您信任的活跃锻造池。阅读更多内容在 <a target=\"_blank\" href=\"https://news.adamant.im/hodl-list-of-adamant-pools-join-in-and-get-rewards-491a98610f4b\">ADAMANT 博客上</a>.",
     "summary_info": "投票成本：50 ADM。<a target=\"_blank\" href=\"https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516\">阅读有关投票和伪造的信息</a>。",
     "summary_title": "评审投票",
     "table_head_name": "名称",
