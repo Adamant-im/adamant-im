@@ -57,11 +57,7 @@
         </v-list-item-subtitle>
 
         <v-list-item-subtitle v-else :class="`${className}__subtitle`">
-          <TransactionProvider
-            v-if="!isIncomingTransaction"
-            :tx-id="transaction.hash"
-            :crypto="transaction.type"
-          >
+          <TransactionProvider :tx-id="transaction.hash" :crypto="transaction.type">
             <template #default="{ status }">
               <v-icon v-if="!isIncomingTransaction" size="15" :icon="tsIcon(status)" />
               {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
