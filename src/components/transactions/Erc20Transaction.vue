@@ -28,6 +28,7 @@ import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
 import { useErc20TransactionQuery } from '@/hooks/queries/transaction'
+import { useClearPendingTransaction } from './hooks/useClearPendingTransaction'
 import { getPartnerAddress } from './utils/getPartnerAddress'
 
 export default defineComponent({
@@ -58,6 +59,7 @@ export default defineComponent({
     } = useErc20TransactionQuery(props.crypto)(props.id)
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
     const transactionStatus = useTransactionStatus(isFetching, queryStatus, inconsistentStatus)
+    useClearPendingTransaction(props.crypto, transaction)
 
     const admTx = useFindAdmTransaction(props.id)
     const senderAdmAddress = computed(() => admTx.value?.senderId || '')
