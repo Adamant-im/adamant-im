@@ -37,9 +37,7 @@ export default defineComponent({
       return this.$store.state.options.darkTheme ? ThemeName.Dark : ThemeName.Light
     }
   },
-  created() {
-    this.setLocale()
-  },
+  created() {},
   mounted() {
     this.notifications = new Notifications(this)
     this.notifications.start()
