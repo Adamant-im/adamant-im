@@ -504,6 +504,24 @@ export function decodeChat(transaction, key) {
 }
 
 /**
+ * Decode transaction.
+ * This function must be used in favor of `decodeChat` since it also handles ADM transfers.
+ * @param transaction Transaction
+ * @param address ADM address of the current user account
+ */
+export function decodeTransaction(transaction, address) {
+  const publicKey =
+    transaction.senderId === address ? transaction.recipientPublicKey : transaction.senderPublicKey
+
+  if (transaction.type === 0) {
+    // ADM transfer transaction doesn't have `asset` property, nothing to decode
+    return transaction
+  }
+
+  return decodeChat(transaction, publicKey)
+}
+
+/**
  * Checks if the specified `message` is an auto-generated i18n message. If it is, its respective i18n code is returned.
  * Otherwise returns an empty string.
  * @param {string} message message to check

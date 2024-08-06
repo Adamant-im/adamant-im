@@ -9,3 +9,8 @@ export type NodeType = 'adm' | 'eth' | 'btc' | 'doge' | 'dash' | 'kly'
 export type NodeKind = 'node' | 'service'
 
 export type HealthcheckInterval = 'normal' | 'crucial' | 'onScreen'
+
+export type HealthcheckResult = {
+  height: number
+  ping: number
+}

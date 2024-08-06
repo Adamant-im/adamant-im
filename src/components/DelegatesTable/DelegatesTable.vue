@@ -122,6 +122,7 @@ export default defineComponent({
 
 <style lang="scss">
 @import 'vuetify/settings';
+@import '@/assets/styles/settings/_colors.scss';
 
 .delegates-table {
 }
@@ -133,7 +134,7 @@ export default defineComponent({
 
 .v-theme--dark {
   .delegates-table {
-    background-color: rgb(var(--v-theme-on-surface-variant));
+    background-color: map-get($adm-colors, 'black2');
   }
 }
 </style>

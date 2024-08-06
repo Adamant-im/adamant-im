@@ -2,7 +2,7 @@ import Web3Eth from 'web3-eth'
 import { HttpProvider } from 'web3-providers-http'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { formatEthVersion } from '@/lib/nodes/utils/nodeVersionFormatters.ts'
+import { formatEthVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests

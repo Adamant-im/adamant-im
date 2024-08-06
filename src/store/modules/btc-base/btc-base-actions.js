@@ -4,7 +4,6 @@ import { FetchStatus } from '@/lib/constants'
 import { nodes } from '../../../lib/nodes'
 import { createPendingTransaction, PendingTxStore } from '../../../lib/pending-transactions'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
-import * as tf from '../../../lib/transactionsFetching'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
@@ -24,12 +23,7 @@ const DEFAULT_CUSTOM_ACTIONS = () => ({})
  */
 function createActions(options) {
   const Api = options.apiCtor || BtcBaseApi
-  const {
-    getNewTransactions,
-    getOldTransactions,
-    customActions = DEFAULT_CUSTOM_ACTIONS,
-    fetchRetryTimeout
-  } = options
+  const { getNewTransactions, getOldTransactions, customActions = DEFAULT_CUSTOM_ACTIONS } = options
 
   /** @type {BtcBaseApi} */
   let api = null
@@ -47,10 +41,6 @@ function createActions(options) {
         const pendingTransaction = PendingTxStore.get(context.state.crypto)
         if (pendingTransaction) {
           context.commit('transactions', [pendingTransaction])
-          context.dispatch('getTransaction', {
-            hash: pendingTransaction.hash,
-            force: true
-          })
         }
       }
     },
@@ -192,112 +182,12 @@ function createActions(options) {
           }
         ])
 
-        context.dispatch('getTransaction', { hash, force: true })
-
         return hash
       } catch (error) {
         context.commit('transactions', [{ hash: signedTransaction.txid, status: 'REJECTED' }])
         PendingTxStore.remove(context.state.crypto)
         throw error
       }
-    },
-
-    /**
-     * Retrieves transaction details
-     * @param {object} context Vuex action context
-     * @param {{hash: string, force: boolean, timestamp: number, amount: number}} payload hash and timestamp of the transaction to fetch
-     */
-    async getTransaction(context, payload) {
-      if (!api) return
-      if (!payload.hash) return
-
-      let existing = context.state.transactions[payload.hash]
-      if (existing && !payload.force) return
-
-      if (!existing || payload.dropStatus) {
-        payload.updateOnly = false
-        context.commit('transactions', [
-          {
-            hash: payload.hash,
-            timestamp: (existing && existing.timestamp) || payload.timestamp || Date.now(),
-            amount: payload.amount,
-            status: 'PENDING'
-          }
-        ])
-        existing = context.state.transactions[payload.hash]
-      }
-
-      let tx = null
-      try {
-        tx = await api.getTransaction(payload.hash)
-      } catch (e) {
-        /* empty */
-      }
-
-      let retry = false
-      let retryTimeout = 0
-      const attempt = payload.attempt || 0
-
-      if (tx) {
-        context.commit('transactions', [tx])
-        // The transaction has been confirmed, we're done here
-        if (tx.status === 'CONFIRMED') return
-        // If it's not confirmed but is already registered, keep on trying to fetch its details
-        retryTimeout = tf.getRegisteredTxRetryTimeout(
-          tx.timestamp || existing.timestamp || payload.timestamp,
-          context.state.crypto,
-          fetchRetryTimeout,
-          tx.instantsend
-        )
-        retry = true
-      } else if (existing && existing.status === 'REGISTERED') {
-        // We've failed to fetch the details for some reason, but the transaction is known to be
-        // accepted by the network - keep on fetching
-        retryTimeout = tf.getRegisteredTxRetryTimeout(
-          existing.timestamp || payload.timestamp,
-          context.state.crypto,
-          fetchRetryTimeout,
-          existing.instantsend
-        )
-        retry = true
-      } else {
-        // The network does not yet know this transaction. We'll make several attempts to retrieve it.
-        retry =
-          attempt <
-          tf.getPendingTxRetryCount(existing.timestamp || payload.timestamp, context.state.crypto)
-        retryTimeout = tf.getPendingTxRetryTimeout(
-          existing.timestamp || payload.timestamp,
-          context.state.crypto
-        )
-      }
-
-      if (!retry) {
-        // If we're here, we have abandoned any hope to get the transaction details.
-        context.commit('transactions', [{ hash: payload.hash, status: 'REJECTED' }])
-      } else if (!payload.updateOnly) {
-        // Try to get the details one more time
-        const newPayload = {
-          ...payload,
-          attempt: attempt + 1,
-          force: true,
-          updateOnly: false,
-          dropStatus: false
-        }
-        setTimeout(() => context.dispatch('getTransaction', newPayload), retryTimeout)
-      }
-    },
-
-    /**
-     * Updates the transaction details
-     * @param {{ dispatch: function }} param0 Vuex context
-     * @param {{hash: string}} payload action payload
-     */
-    updateTransaction({ dispatch }, payload) {
-      return dispatch('getTransaction', {
-        ...payload,
-        force: payload.force,
-        updateOnly: payload.updateOnly
-      })
     },
 
     getNewTransactions(context) {

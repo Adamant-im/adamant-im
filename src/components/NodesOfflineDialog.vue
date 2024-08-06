@@ -1,0 +1,132 @@
+<template>
+  <v-dialog v-model="showDialog" width="500" :class="className">
+    <v-card>
+      <v-card-title class="a-text-header">
+        {{ t('chats.nodes_offline_dialog.title') }}
+      </v-card-title>
+
+      <v-divider class="a-divider" />
+
+      <v-card-text :class="`${className}__card-text`">
+        <div
+          :class="`${className}__disclaimer a-text-regular-enlarged`"
+          v-html="t('chats.nodes_offline_dialog.text', { coin: nodeType.toUpperCase() })"
+        ></div>
+      </v-card-text>
+
+      <v-col cols="12" :class="[`${className}__btn-block`, 'text-center']">
+        <v-btn
+          :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
+          to="/options/nodes"
+          variant="text"
+          prepend-icon="mdi-open-in-new"
+        >
+          <div :class="`${className}__btn-text`">
+            {{ t('chats.nodes_offline_dialog.open_nodes_button') }}
+          </div>
+        </v-btn>
+      </v-col>
+    </v-card>
+  </v-dialog>
+</template>
+
+<script lang="ts">
+import { NodeStatusResult } from '@/lib/nodes/abstract.node'
+import { computed, PropType, ref, watch } from 'vue'
+import { NodeType } from '@/lib/nodes/types'
+import { useI18n } from 'vue-i18n'
+import { useStore } from 'vuex'
+
+const className = 'all-nodes-disabled-dialog'
+const classes = {
+  root: className
+}
+
+export default {
+  props: {
+    nodeType: {
+      type: String as PropType<NodeType>,
+      required: true
+    }
+  },
+  emits: ['update:modelValue'],
+  setup() {
+    const { t } = useI18n()
+    const store = useStore()
+
+    const showDialog = ref(false)
+
+    const nodes = computed<NodeStatusResult[]>(() => store.getters['nodes/adm'])
+    const isOnline = computed<boolean>(() => store.getters['isOnline'])
+    const className = 'nodes-offline-dialog'
+
+    const offlineNodesStatus = computed(() => {
+      return {
+        allOffline: nodes.value.every(
+          (node) =>
+            !(
+              node.online &&
+              node.active &&
+              !node.outOfSync &&
+              node.hasMinNodeVersion &&
+              node.hasSupportedProtocol
+            )
+        ),
+        hasDisabled: nodes.value.some((node) => !node.active)
+      }
+    })
+
+    watch(
+      offlineNodesStatus,
+      (value) => {
+        showDialog.value = value.allOffline && value.hasDisabled && isOnline.value
+      },
+      {
+        deep: true,
+        immediate: true
+      }
+    )
+
+    return {
+      t,
+      nodes,
+      classes,
+      offlineNodesStatus,
+      showDialog,
+      className
+    }
+  }
+}
+</script>
+<style lang="scss" scoped>
+@import 'vuetify/_settings.scss';
+@import '@/assets/styles/settings/_colors.scss';
+
+.nodes-offline-dialog {
+  &__card-text {
+    padding: 16px !important;
+  }
+  &__disclaimer {
+    margin-top: 10px;
+  }
+  &__btn {
+    margin-top: 15px;
+    margin-bottom: 20px;
+  }
+  &__btn-icon {
+    margin-right: 8px;
+  }
+  &__btn-block {
+    padding: 0 0 30px 0;
+    text-align: center;
+  }
+}
+
+.v-theme--dark {
+  .nodes-offline-dialog {
+    &__disclaimer {
+      color: map-get($shades, 'white');
+    }
+  }
+}
+</style>

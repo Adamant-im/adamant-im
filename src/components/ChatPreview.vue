@@ -33,7 +33,7 @@
             'a-text-regular-enlarged-bold': true,
             [`${className}__title`]: true
           }"
-          >{{ isAdamantChat(contactId) ? $t(contactName) : contactName }}</v-list-item-title
+          >{{ chatName }}</v-list-item-title
         >
         <div v-if="!isMessageReadonly" :class="`${className}__date`">
           {{ formatDate(createdAt) }}
@@ -47,10 +47,23 @@
 
       <!-- Transaction -->
       <template v-else-if="isTransferType">
-        <v-list-item-subtitle :class="`${className}__subtitle`">
-          <v-icon v-if="!isIncomingTransaction" size="15" :icon="statusIcon" />
+        <v-list-item-subtitle
+          v-if="transaction.type === 'ADM' || transaction.type === 'UNKNOWN_CRYPTO'"
+          :class="`${className}__subtitle`"
+        >
+          <v-icon v-if="!isIncomingTransaction" size="15" :icon="admStatusIcon" />
           {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
-          <v-icon v-if="isIncomingTransaction" :icon="statusIcon" size="15" />
+          <v-icon v-if="isIncomingTransaction" size="15" :icon="admStatusIcon" />
+        </v-list-item-subtitle>
+
+        <v-list-item-subtitle v-else :class="`${className}__subtitle`">
+          <TransactionProvider :tx-id="transaction.hash" :crypto="transaction.type">
+            <template #default="{ status }">
+              <v-icon v-if="!isIncomingTransaction" size="15" :icon="tsIcon(status)" />
+              {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
+              <v-icon v-if="isIncomingTransaction" size="15" :icon="tsIcon(status)" />
+            </template>
+          </TransactionProvider>
         </v-list-item-subtitle>
       </template>
 
@@ -73,7 +86,7 @@
               size="15"
               class="mr-1"
             />
-            <v-icon v-else :icon="statusIcon" size="15" class="mr-1" />
+            <v-icon v-else :icon="admStatusIcon" size="15" class="mr-1" />
           </template>
 
           <span v-html="lastMessageTextNoFormats"></span>
@@ -83,33 +96,43 @@
   </v-list-item>
 </template>
 
-<script>
-import { formatMessage } from '@/lib/markdown'
+<script lang="ts">
+import { computed, defineComponent } from 'vue'
+import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
-import transaction from '@/mixins/transaction'
-import formatDate from '@/filters/dateBrief'
+import AdmFillIcon from '@/components/icons/AdmFill.vue'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import Icon from '@/components/icons/BaseIcon.vue'
-import AdmFillIcon from '@/components/icons/AdmFill.vue'
-import partnerName from '@/mixins/partnerName'
-import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
-import { isStringEqualCI } from '@/lib/textHelpers'
-
 import currency from '@/filters/currencyAmountWithSymbol'
+import formatDate from '@/filters/dateBrief'
+import { formatMessage } from '@/lib/markdown'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
+import { isStringEqualCI } from '@/lib/textHelpers'
+import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
+import { useChatName } from '@/components/AChat/hooks/useChatName'
+import TransactionProvider from '@/providers/TransactionProvider.vue'
 
-export default {
+const className = 'chat-brief'
+
+export default defineComponent({
   components: {
+    TransactionProvider,
     ChatAvatar,
     Icon,
     AdmFillIcon
   },
-  mixins: [transaction, partnerName],
   props: {
+    /**
+     * Account owner ID
+     */
     userId: {
       type: String,
       required: true
     },
+    /**
+     * Contact ID with whom the chat is held
+     */
     contactId: {
       type: String,
       required: true
@@ -139,108 +162,91 @@ export default {
     }
   },
   emits: ['click'],
-  data: () => ({}),
-  computed: {
-    className: () => 'chat-brief',
-    contactName() {
-      return this.getPartnerName(this.contactId) || this.contactId
-    },
+  setup(props) {
+    const store = useStore()
+    const { t } = useI18n()
 
-    isTransferType() {
-      return this.transaction.type !== 'message' && this.transaction.type !== 'reaction'
-    },
-    isReaction() {
-      return this.transaction.type === 'reaction'
-    },
-    reactedText() {
-      const reaction = this.transaction.asset.react_message
+    const contactId = computed(() => props.contactId)
+    const chatName = useChatName(contactId, true)
+
+    const isTransferType = computed(
+      () => props.transaction.type !== 'message' && props.transaction.type !== 'reaction'
+    )
+    const isReaction = computed(() => props.transaction.type === 'reaction')
+
+    const reactedText = computed(() => {
+      const reaction = props.transaction.asset.react_message
       const isRemoveReaction = !reaction
 
       if (isRemoveReaction) {
-        const label = this.isOutgoingTransaction
-          ? `${this.$t('chats.you')}: ${this.$t('chats.you_removed_reaction')}`
-          : this.$t('chats.partner_removed_reaction')
+        const label = isOutgoingTransaction.value
+          ? `${t('chats.you')}: ${t('chats.you_removed_reaction')}`
+          : t('chats.partner_removed_reaction')
 
         return label
       } else {
-        const label = this.isOutgoingTransaction
-          ? `${this.$t('chats.you')}: ${this.$t('chats.you_reacted')}`
-          : this.$t('chats.partner_reacted')
+        const label = isOutgoingTransaction.value
+          ? `${t('chats.you')}: ${t('chats.you_reacted')}`
+          : t('chats.partner_reacted')
 
         return `${label} ${reaction}`
       }
-    },
-    isNewChat() {
-      return !this.transaction.type
-    },
+    })
+    const isNewChat = computed(() => !props.transaction.type)
+    const isMessageI18n = computed(() => props.transaction.i18n)
 
-    lastMessage() {
-      return this.transaction
-    },
-    isMessageI18n() {
-      return this.transaction.i18n
-    },
-    lastMessageText() {
-      return this.transaction.message || ''
-    },
-    lastMessageTextLocalized() {
-      return this.isMessageI18n ? this.$t(this.lastMessageText) : this.lastMessageText
-    },
-    lastMessageTextNoFormats() {
-      if (this.isAdamantChat(this.contactId) || this.$store.state.options.formatMessages) {
-        return formatMessage(this.lastMessageTextLocalized)
+    const lastMessageText = computed(() => props.transaction.message || '')
+    const lastMessageTextLocalized = computed(() =>
+      isMessageI18n.value ? t(lastMessageText.value) : lastMessageText.value
+    )
+    const lastMessageTextNoFormats = computed(() => {
+      if (isAdamantChat(contactId.value) || store.state.options.formatMessages) {
+        return formatMessage(lastMessageTextLocalized.value)
       }
 
-      return this.lastMessageTextLocalized
-    },
-    transactionDirection() {
-      const direction = isStringEqualCI(this.userId, this.transaction.senderId)
-        ? this.$t('chats.sent_label')
-        : this.$t('chats.received_label')
+      return lastMessageTextLocalized.value
+    })
+    const transactionDirection = computed(() => {
+      const direction = isStringEqualCI(props.userId, props.transaction.senderId)
+        ? t('chats.sent_label')
+        : t('chats.received_label')
 
       return direction
-    },
-    isIncomingTransaction() {
-      return !isStringEqualCI(this.userId, this.transaction.senderId)
-    },
-    isOutgoingTransaction() {
-      return !this.isIncomingTransaction
-    },
-    numOfNewMessages() {
-      return this.$store.getters['chat/numOfNewMessages'](this.contactId)
-    },
-    createdAt() {
-      return this.transaction.timestamp
-    },
-    status() {
-      return this.getTransactionStatus(this.transaction)
-    },
-    statusIcon() {
-      return tsIcon(this.status.virtualStatus)
-    },
-    isConfirmed() {
-      return this.status.virtualStatus === TS.CONFIRMED
+    })
+    const isIncomingTransaction = computed(
+      () => !isStringEqualCI(props.userId, props.transaction.senderId)
+    )
+    const isOutgoingTransaction = computed(() => !isIncomingTransaction.value)
+    const numOfNewMessages = computed(() => store.getters['chat/numOfNewMessages'](contactId.value))
+    const createdAt = computed(() => props.transaction.timestamp)
+
+    const status = computed(() => props.transaction.status)
+    const admStatusIcon = computed(() => tsIcon(status.value))
+    const isConfirmed = computed(() => status.value === TS.CONFIRMED)
+
+    return {
+      className,
+      chatName,
+      createdAt,
+      currency,
+      formatDate,
+      isAdamantChat,
+      isConfirmed,
+      isIncomingTransaction,
+      isNewChat,
+      isOutgoingTransaction,
+      isReaction,
+      isTransferType,
+      isWelcomeChat,
+      lastMessageTextNoFormats,
+      numOfNewMessages,
+      reactedText,
+      admStatusIcon,
+      transactionDirection,
+      tsIcon
     }
-  },
-  watch: {
-    // fetch status when new message received
-    transaction() {
-      this.fetchTransactionStatus(this.transaction, this.contactId)
-    }
-  },
-  mounted() {
-    // fetch status if transaction is transfer
-    if (this.isTransferType) {
-      this.fetchTransactionStatus(this.transaction, this.contactId)
-    }
-  },
-  methods: {
-    formatDate,
-    currency,
-    isAdamantChat,
-    isWelcomeChat
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

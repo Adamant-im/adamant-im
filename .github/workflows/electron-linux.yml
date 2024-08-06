@@ -33,6 +33,6 @@ jobs:
       - name: Save artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: electron-release-app
+          name: linux-release-app
           path: |
             release-electron/*.AppImage

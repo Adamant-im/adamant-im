@@ -1,38 +1,35 @@
 <template>
-  <transaction-template
-    :id="transaction.id || ''"
-    :amount="currency(transaction.amount)"
-    :timestamp="transaction.timestamp || NaN"
-    :fee="currency(transaction.fee)"
-    :confirmations="transaction.confirmations || NaN"
-    :sender="sender || ''"
-    :recipient="recipient || ''"
+  <TransactionTemplate
+    :transaction="transaction"
+    :fee="fee"
+    :confirmations="confirmations || NaN"
     :sender-formatted="senderFormatted || ''"
     :recipient-formatted="recipientFormatted || ''"
     :explorer-link="explorerLink"
-    :partner="transaction.partner || ''"
-    :status="getTransactionStatus(admTx)"
-    :adm-tx="admTx"
+    :partner="partnerAdmAddress || ''"
+    :query-status="queryStatus"
+    :transaction-status="transactionStatus"
     :crypto="crypto"
+    @refetch-status="refetch"
   />
 </template>
 
-<script>
+<script lang="ts">
+import { computed, defineComponent, PropType } from 'vue'
+import { useStore } from 'vuex'
+import { useTransactionStatus } from './hooks/useTransactionStatus'
+import { useFormatADMAddress } from '@/hooks/address/useFormatADMAddress'
+import { useBlockHeight } from '@/hooks/queries/useBlockHeight'
+import { useAdmTransactionQuery } from '@/hooks/queries/transaction'
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, CryptoSymbol } from '@/lib/constants'
+import { getPartnerAddress } from './utils/getPartnerAddress'
 
-import transaction from '@/mixins/transaction'
-import partnerName from '@/mixins/partnerName'
-import { isStringEqualCI } from '@/lib/textHelpers'
-import currency from '@/filters/currencyAmountWithSymbol'
-
-export default {
-  name: 'AdmTransaction',
+export default defineComponent({
   components: {
     TransactionTemplate
   },
-  mixins: [transaction, partnerName],
   props: {
     id: {
       required: true,
@@ -40,57 +37,63 @@ export default {
     },
     crypto: {
       required: true,
-      type: String
+      type: String as PropType<CryptoSymbol>
     }
   },
-  computed: {
-    transaction() {
-      return this.$store.state.adm.transactions[this.id] || {}
-    },
-    sender() {
-      return this.transaction.senderId || ''
-    },
-    recipient() {
-      return this.transaction.recipientId || ''
-    },
-    senderFormatted() {
-      return this.formatAddress(this.transaction.senderId) || ''
-    },
-    recipientFormatted() {
-      return this.formatAddress(this.transaction.recipientId) || ''
-    },
-    admTx() {
-      return (
-        this.$store.getters['chat/messageById'](this.id) ||
-        this.$store.state.adm.transactions[this.id] ||
-        {}
-      )
-    },
-    explorerLink() {
-      return getExplorerTxUrl(Cryptos.ADM, this.id)
-    },
-    status() {
-      return this.transaction.status || ''
-    }
-  },
-  methods: {
-    formatAddress(address) {
-      let name = ''
-      if (isStringEqualCI(address, this.$store.state.address)) {
-        name = this.$t('transaction.me')
-      } else {
-        name = this.getPartnerName(address)
-      }
+  setup(props) {
+    const store = useStore()
+    const {
+      status: queryStatus,
+      isFetching,
+      data: transaction,
+      refetch
+    } = useAdmTransactionQuery(props.id)
+    const transactionStatus = useTransactionStatus(isFetching, queryStatus)
 
-      let result = ''
-      if (name !== '' && name !== undefined) {
-        result = name + ' (' + address + ')'
-      } else {
-        result = address
-      }
-      return result
-    },
-    currency
+    const partnerAdmAddress = computed(() => {
+      return transaction.value
+        ? getPartnerAddress(
+            transaction.value.senderId,
+            transaction.value.recipientId,
+            store.state.address
+          )
+        : ''
+    })
+
+    const senderId = computed(() => transaction.value?.senderId)
+    const recipientId = computed(() => transaction.value?.recipientId)
+
+    const senderFormatted = useFormatADMAddress(senderId)
+    const recipientFormatted = useFormatADMAddress(recipientId)
+
+    const explorerLink = computed(() => getExplorerTxUrl(Cryptos.ADM, props.id))
+
+    const blockHeight = useBlockHeight('ADM', {
+      enabled: () => transactionStatus.value === 'CONFIRMED'
+    })
+    const confirmations = computed(() => {
+      if (!blockHeight.value || !transaction.value) return NaN
+
+      return Math.max(
+        blockHeight.value - transaction.value.height + 1,
+        transaction.value.confirmations
+      )
+    })
+
+    const fee = computed(() => transaction.value?.fee)
+
+    return {
+      refetch,
+      transaction,
+      fee,
+      senderFormatted,
+      recipientFormatted,
+      partnerAdmAddress,
+      explorerLink,
+      confirmations,
+      queryStatus,
+      transactionStatus
+    }
   }
-}
+})
 </script>

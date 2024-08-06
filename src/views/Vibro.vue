@@ -47,7 +47,7 @@
   </div>
 </template>
 <script>
-import { vibrate } from '@/lib/vibrate.js'
+import { vibrate } from '@/lib/vibrate'
 export default {
   data: () => ({
     vibro: undefined

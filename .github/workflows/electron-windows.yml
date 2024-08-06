@@ -33,9 +33,6 @@ jobs:
       - name: Save artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: electron-release-app
+          name: windows-release-app
           path: |
             release-electron/*.exe
-            release-electron/*.blockmap
-            release-electron/*.yaml
-            release-electron/*.yml

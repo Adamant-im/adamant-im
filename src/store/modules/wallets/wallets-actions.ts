@@ -5,7 +5,6 @@ import { mapWallets } from '@/store/modules/wallets/utils'
 
 export const actions: ActionTree<WalletsState, RootState> = {
   initWalletsSymbols({ dispatch }): void {
-    dispatch('checkWalletsOrderBeforeInit')
     const walletSymbols: CoinSymbol[] = mapWallets()
     dispatch('setWalletSymbols', walletSymbols)
   },

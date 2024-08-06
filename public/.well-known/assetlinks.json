@@ -1,0 +1,19 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "im.adamant.adamantmessengerpwa",
+    "sha256_cert_fingerprints": [
+      "CC:CE:D0:DD:95:06:04:99:3B:AB:DF:97:96:07:E2:A1:C4:A6:7F:12:50:C3:F3:6E:6C:8F:10:14:11:73:20:8F"
+    ]
+  }
+}, {
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "im.adamant.adamantmessengerpwa",
+    "sha256_cert_fingerprints": [
+      "DA:FC:A3:3B:9A:41:23:ED:45:42:23:37:37:BF:96:EA:21:03:EF:F4:53:5C:F7:26:CB:E9:57:92:C4:47:C3:0F"
+    ]
+  }
+}]

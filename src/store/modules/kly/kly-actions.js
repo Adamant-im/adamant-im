@@ -3,8 +3,6 @@ import baseActions from '../kly-base/kly-base-actions'
 import { kly } from '../../../lib/nodes/kly'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
 
-const TX_FETCH_INTERVAL = 10 * 1000
-
 const customActions = (getAccount) => ({
   updateBalance: {
     root: true,
@@ -85,7 +83,6 @@ const customActions = (getAccount) => ({
 
 export default {
   ...baseActions({
-    customActions,
-    fetchRetryTimeout: TX_FETCH_INTERVAL
+    customActions
   })
 }

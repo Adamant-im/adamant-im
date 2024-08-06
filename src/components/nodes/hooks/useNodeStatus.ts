@@ -35,13 +35,13 @@ function getNodeStatusDetail(
     return null
   }
 
-  if (!node.hasMinNodeVersion) {
-    return {
-      text: t('nodes.unsupported_reason_api_version')
-    }
-  } else if (!node.hasSupportedProtocol) {
+  if (!node.hasSupportedProtocol) {
     return {
       text: t('nodes.unsupported_reason_protocol')
+    }
+  } else if (!node.hasMinNodeVersion) {
+    return {
+      text: t('nodes.unsupported_reason_api_version')
     }
   } else if (node.online) {
     return {

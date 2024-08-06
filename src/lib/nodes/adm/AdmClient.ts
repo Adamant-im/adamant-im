@@ -1,4 +1,5 @@
 import { isNodeOfflineError } from '@/lib/nodes/utils/errors'
+import { GetHeightResponseDto } from '@/lib/schema/client'
 import { AdmNode, Payload, RequestConfig } from './AdmNode'
 import { Client } from '../abstract.client'
 
@@ -41,22 +42,27 @@ export class AdmClient extends Client<AdmNode> {
    * @param {RequestConfig} config request config
    */
   async request<P extends Payload = Payload, R = any>(config: RequestConfig<P>): Promise<R> {
-    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
-    if (!node) {
-      // All nodes seem to be offline: let's refresh the statuses
-      this.checkHealth()
-      // But there's nothing we can do right now
-      return Promise.reject(new Error('No online nodes at the moment'))
-    }
+    await this.ready
 
-    return node.request(config).catch((error) => {
-      if (isNodeOfflineError(error)) {
-        // Initiate nodes status check
-        this.checkHealth()
-        // If the selected node is not available, repeat the request with another one.
-        return this.request(config)
-      }
-      throw error
+    return this.getNode()
+      .request(config)
+      .catch((error) => {
+        if (isNodeOfflineError(error)) {
+          // Initiate nodes status check
+          this.checkHealth()
+          // If the selected node is not available, repeat the request with another one.
+          return this.request(config)
+        }
+        throw error
+      })
+  }
+
+  async getHeight() {
+    const result = await this.request<Payload, GetHeightResponseDto>({
+      method: 'get',
+      url: '/api/blocks/getHeight'
     })
+
+    return result.height
   }
 }

@@ -154,7 +154,8 @@ export default defineComponent({
     }
     const onLoginError = (key) => {
       store.dispatch('snackbar/show', {
-        message: t(key)
+        message: t(key),
+        timeout: 3000
       })
     }
     const onCopyPassphrase = () => {

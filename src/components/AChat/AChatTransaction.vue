@@ -30,13 +30,24 @@
           </div>
           <div class="a-chat__status">
             <v-icon
+              v-if="crypto === 'ADM' || crypto === 'UNKNOWN_CRYPTO'"
               size="13"
-              :icon="statusIcon"
-              :title="statusTitle"
-              :color="statusColor"
-              :style="statusUpdatable ? 'cursor: pointer;' : 'cursor: default;'"
-              @click="updateStatus"
+              :icon="tsIcon(transaction.status)"
+              :title="$t(`chats.transaction_statuses.${transaction.status}`)"
+              :color="tsColor(transaction.status)"
             />
+            <TransactionProvider v-else :crypto="crypto" :tx-id="transaction.hash">
+              <template #default="{ status, refetch }">
+                <v-icon
+                  size="13"
+                  :icon="tsIcon(status)"
+                  :title="$t(`chats.transaction_statuses.${status}`)"
+                  :color="tsColor(status)"
+                  :style="tsUpdatable(status, crypto) ? 'cursor: pointer;' : 'cursor: default;'"
+                  @click="refetch"
+                />
+              </template>
+            </TransactionProvider>
           </div>
         </div>
 
@@ -87,7 +98,6 @@ import { useTransactionTime } from '@/components/AChat/hooks/useTransactionTime.
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { CryptoSymbol } from '@/lib/constants/cryptos'
 import { computed, watch, onMounted, defineComponent, PropType } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import { tsIcon, tsUpdatable, tsColor, Cryptos } from '@/lib/constants'
@@ -97,9 +107,11 @@ import { timestampInSec } from '@/filters/helpers'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import QuotedMessage from './QuotedMessage.vue'
+import TransactionProvider from '@/providers/TransactionProvider.vue'
 
 export default defineComponent({
   components: {
+    TransactionProvider,
     QuotedMessage
   },
   props: {
@@ -110,16 +122,9 @@ export default defineComponent({
     dataId: {
       type: String
     },
-    status: {
-      type: Object,
-      required: true
-    },
     crypto: {
-      type: String,
+      type: String as PropType<CryptoSymbol | 'UNKNOWN_CRYPTO'>,
       default: 'ADM'
-    },
-    txTimestamp: {
-      required: true
     },
     /**
      * Highlight the message by applying a background flash effect
@@ -138,16 +143,8 @@ export default defineComponent({
       type: Boolean
     }
   },
-  emits: [
-    'mount',
-    'click:transaction',
-    'click:transactionStatus',
-    'click:quotedMessage',
-    'swipe:left',
-    'longpress'
-  ],
+  emits: ['click:transaction', 'click:quotedMessage', 'swipe:left', 'longpress'],
   setup(props, { emit }) {
-    const { t } = useI18n()
     const store = useStore()
 
     const userId = computed(() => store.state.address)
@@ -155,20 +152,12 @@ export default defineComponent({
     const time = useTransactionTime(props.transaction)
     const isCryptoSupported = computed(() => props.transaction.type in Cryptos)
 
-    const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
-    const statusTitle = computed(() =>
-      t(`chats.transaction_statuses.${props.status.virtualStatus}`)
-    )
-    const statusUpdatable = computed(() =>
-      tsUpdatable(props.status.virtualStatus, props.crypto as CryptoSymbol)
-    )
-    const statusColor = computed(() => tsColor(props.status.virtualStatus))
     const historyRate = computed(() => {
       const amount = currencyAmount(props.transaction.amount, props.crypto)
       return (
         '~' +
         store.getters['rate/historyRate'](
-          timestampInSec(props.crypto, props.txTimestamp),
+          timestampInSec(props.crypto, props.transaction.timestamp),
           amount,
           props.crypto
         )
@@ -181,15 +170,9 @@ export default defineComponent({
       }
     }
 
-    const updateStatus = () => {
-      if (statusUpdatable.value) {
-        emit('click:transactionStatus', props.transaction.id)
-      }
-    }
-
     const getHistoryRates = () => {
       store.dispatch('rate/getHistoryRates', {
-        timestamp: timestampInSec(props.crypto, props.txTimestamp)
+        timestamp: timestampInSec(props.crypto, props.transaction.timestamp)
       })
     }
 
@@ -198,14 +181,13 @@ export default defineComponent({
     }
 
     watch(
-      () => props.txTimestamp,
+      () => props.transaction.timestamp,
       () => {
         getHistoryRates()
       }
     )
 
     onMounted(() => {
-      emit('mount')
       getHistoryRates()
     })
 
@@ -221,13 +203,11 @@ export default defineComponent({
 
       isStringEqualCI,
       currencyFormatter,
-      statusIcon,
-      statusTitle,
-      statusUpdatable,
-      statusColor,
+      tsIcon,
+      tsColor,
+      tsUpdatable,
       historyRate,
       onClickAmount,
-      updateStatus,
       onLongPress,
 
       onMove,

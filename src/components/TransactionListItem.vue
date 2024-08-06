@@ -200,13 +200,6 @@ export default {
   },
   mounted() {
     this.getHistoryRates()
-
-    if (this.isPendingTransaction) {
-      this.$store.dispatch(`${this.crypto.toLowerCase()}/getTransaction`, {
-        hash: this.id,
-        force: true
-      })
-    }
   },
   methods: {
     isStringEqualCI(string1, string2) {

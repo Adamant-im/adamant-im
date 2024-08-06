@@ -1,14 +1,11 @@
+import { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { createBtcLikeClient } from '../utils/createBtcLikeClient'
-import type { AxiosInstance } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters.ts'
-
-type FetchBtcNodeInfoResult = {
-  info: {
-    version: number
-  }
-}
+import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
+import { RpcRequest, RpcResponse } from './types/api/common'
+import { NetworkInfo } from './types/api/network-info'
+import { BlockchainInfo } from './types/api/blockchain-info'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -25,21 +22,48 @@ export class DogeNode extends Node<AxiosInstance> {
 
   protected async checkHealth() {
     const time = Date.now()
-    const height = await this.client
-      .get('/api/blocks?limit=0')
-      .then((res) => res.data.blocks[0].height)
+
+    const { blocks } = await this.invoke<BlockchainInfo>({
+      method: 'getblockchaininfo',
+      params: []
+    })
 
     return {
-      height,
+      height: Number(blocks),
       ping: Date.now() - time
     }
   }
 
   protected async fetchNodeVersion(): Promise<void> {
-    const { data } = await this.client.get<FetchBtcNodeInfoResult>('/api/status')
-    const { version } = data.info
+    const { version } = await this.invoke<NetworkInfo>({
+      method: 'getnetworkinfo',
+      params: []
+    })
+
     if (version) {
       this.version = formatDogeVersion(version)
     }
+  }
+
+  /**
+   * Performs a request to the Doge node.
+   */
+  async invoke<Response = any, Request extends RpcRequest = RpcRequest>(
+    params?: Request,
+    requestConfig?: AxiosRequestConfig
+  ): Promise<Response> {
+    return this.client
+      .request<RpcResponse<Response>>({
+        ...requestConfig,
+        url: '/',
+        method: 'POST',
+        data: params
+      })
+      .then((res) => res.data)
+      .then(({ result, error }) => {
+        if (error) throw new Error(error.message)
+
+        return result
+      })
   }
 }

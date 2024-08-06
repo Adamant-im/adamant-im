@@ -1,3 +1,5 @@
+import { AxiosRequestConfig } from 'axios'
+import { RpcRequest } from './types/api/common'
 import { DogeNode } from './DogeNode'
 import { Client } from '../abstract.client'
 
@@ -8,5 +10,15 @@ export class DogeClient extends Client<DogeNode> {
     this.minNodeVersion = minNodeVersion
 
     void this.watchNodeStatusChange()
+  }
+
+  /**
+   * Performs a request to the Doge node.
+   */
+  async request<Response = any, Params extends RpcRequest = RpcRequest>(
+    params?: Params,
+    requestConfig?: AxiosRequestConfig
+  ) {
+    return this.getNode().invoke<Response, Params>(params, requestConfig)
   }
 }

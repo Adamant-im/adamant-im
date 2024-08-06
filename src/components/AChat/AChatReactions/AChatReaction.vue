@@ -1,6 +1,13 @@
 <template>
   <div :class="classes.root">
-    <div :class="classes.emoji">{{ asset.react_message }}</div>
+    <div
+      :class="{
+        [classes.emoji]: true,
+        [classes.emojiAnimate]: animate
+      }"
+    >
+      {{ asset.react_message }}
+    </div>
 
     <div :class="classes.avatar" v-if="$slots.avatar">
       <slot name="avatar" />
@@ -16,6 +23,7 @@ const className = 'a-chat-reaction'
 const classes = {
   root: className,
   emoji: `${className}__emoji`,
+  emojiAnimate: `${className}__emoji--animate`,
   avatar: `${className}__avatar`
 }
 
@@ -23,6 +31,10 @@ export default defineComponent({
   props: {
     asset: {
       type: Object as PropType<ReactionAsset>,
+      required: true
+    },
+    animate: {
+      type: Boolean,
       required: true
     }
   },
@@ -52,10 +64,38 @@ export default defineComponent({
     font-size: 16px;
   }
 
+  &__emoji--animate {
+    animation: animate__heartBeat 1.5s ease-in-out;
+  }
+
   &__avatar {
     position: absolute;
     bottom: -9px;
     right: -9px;
+  }
+}
+
+@keyframes animate__heartBeat {
+  0% {
+    transform: scale(1);
+    transform-origin: center center;
+    transition-timing-function: ease-out;
+  }
+  20% {
+    transform: scale(1.32);
+    transition-timing-function: ease-in;
+  }
+  40% {
+    transform: scale(1);
+    transition-timing-function: ease-out;
+  }
+  60% {
+    transform: scale(1.21);
+    transition-timing-function: ease-in;
+  }
+  80% {
+    transform: scale(1);
+    transition-timing-function: ease-out;
   }
 }
 

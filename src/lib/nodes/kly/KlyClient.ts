@@ -17,15 +17,7 @@ export class KlyClient extends Client<KlyNode> {
     method: M,
     params?: RpcResults[M]['params']
   ): Promise<RpcResults[M]['result']> {
-    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
-    if (!node) {
-      // All nodes seem to be offline: let's refresh the statuses
-      this.checkHealth()
-      // But there's nothing we can do right now
-      throw new Error('No online nodes at the moment')
-    }
-
-    return node.invoke(method, params)
+    return this.getNode().invoke(method, params)
   }
 
   /**
