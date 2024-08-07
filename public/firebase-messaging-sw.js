@@ -20,14 +20,23 @@ const firebaseApp = firebase.initializeApp({
 const messaging = firebase.messaging()
 
 messaging.onBackgroundMessage((payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload)
+  console.log('[SW] BACKGROUND MESSAGE', payload)
   // Customize notification here
   const notificationTitle = payload.notification?.title
   const notificationOptions = {
-    body: payload.notification?.body,
-    icon: '/logo.png'
+    body: payload.notification?.body
   }
 
   self.registration.showNotification(notificationTitle, notificationOptions)
 })
-// eslint-enable
+
+messaging.onMessage((payload) => {
+  console.log('[SW] MESSAGE', payload)
+  // Customize notification here
+  const notificationTitle = payload.notification?.title
+  const notificationOptions = {
+    body: payload.notification?.body
+  }
+
+  self.registration.showNotification(notificationTitle, notificationOptions)
+})
