@@ -190,9 +190,9 @@
     "service": "Сервис",
     "socket": "Сокеты",
     "tabs": {
-      "adm_nodes": "ADM ноды",
-      "coin_nodes": "Coin ноды",
-      "service_nodes": "Сервис ноды"
+      "adm_nodes": "Узлы ADM",
+      "coin_nodes": "Крипто-ноды",
+      "service_nodes": "Крипто-сервисы"
     },
     "unsupported": "Не поддерживается",
     "unsupported_reason_protocol": "HTTP не поддерживается",

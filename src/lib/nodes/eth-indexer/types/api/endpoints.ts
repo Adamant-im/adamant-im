@@ -17,6 +17,7 @@ export type Endpoints = {
     result: [
       {
         max: number
+        version: string
       }
     ]
   }
