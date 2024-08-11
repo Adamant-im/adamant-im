@@ -31,9 +31,19 @@ export class RateInfoService extends Node<AxiosInstance> {
   protected async checkHealth(): Promise<HealthcheckResult> {
     const start = Date.now()
     const response = await this.getAllRates()
+    this.height = this.formatHeight(response.date)
     return {
       ping: Date.now() - start,
-      height: response.date
+      height: this.height
     }
+  }
+
+  private formatHeight(height: number) {
+    if (!height) return 0
+    return Number(
+      Math.ceil(height / 1000)
+        .toString()
+        .substring(2)
+    )
   }
 }
