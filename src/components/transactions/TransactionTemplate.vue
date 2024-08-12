@@ -152,7 +152,7 @@
 <script lang="ts">
 import type { QueryStatus } from '@tanstack/vue-query'
 import BigNumber from 'bignumber.js'
-import { computed, defineComponent, nextTick, PropType, ref, watch } from 'vue'
+import { computed, defineComponent, PropType, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -285,13 +285,6 @@ export default defineComponent({
       return store.getters['rate/rate'](transaction.value.amount, props.crypto)
     })
 
-    watch(
-      () => props.transaction,
-      () => {
-        nextTick(() => getHistoryRates())
-      }
-    )
-
     const handleCopyToClipboard = (text?: string) => {
       if (!text) return
 
@@ -329,6 +322,14 @@ export default defineComponent({
         timestamp: timestampInSec(props.crypto, transaction.value.timestamp!)
       })
     }
+
+    watch(
+      () => props.transaction,
+      () => {
+        getHistoryRates()
+      },
+      { immediate: true }
+    )
 
     const formatAmount = (amount: number) => {
       return BigNumber(amount)
