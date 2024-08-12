@@ -100,7 +100,7 @@ import { timestampInSec } from '@/filters/helpers'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import QuotedMessage from './QuotedMessage.vue'
-import TransactionProvider from '@/providers/TransactionProvider.vue'
+import { TransactionProvider } from '@/providers/TransactionProvider'
 
 export default defineComponent({
   components: {

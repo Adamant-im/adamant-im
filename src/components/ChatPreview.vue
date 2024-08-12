@@ -103,7 +103,7 @@ import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
-import TransactionProvider from '@/providers/TransactionProvider.vue'
+import { TransactionProvider } from '@/providers/TransactionProvider'
 
 const className = 'chat-brief'
 
