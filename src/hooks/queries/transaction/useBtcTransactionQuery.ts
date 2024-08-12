@@ -31,6 +31,7 @@ export function useBtcTransactionQuery(
     retryDelay: retryDelayFactory(Cryptos.BTC, unref(transactionId)),
     refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.BTC, state.status, state.data),
     refetchOnWindowFocus: false,
-    refetchOnMount: params?.refetchOnMount ?? (({ state }) => refetchOnMountFn(state.data))
+    refetchOnMount: params?.refetchOnMount ?? (({ state }) => refetchOnMountFn(state.data)),
+    enabled: params.enabled
   })
 }

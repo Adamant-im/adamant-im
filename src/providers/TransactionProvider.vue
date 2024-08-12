@@ -10,32 +10,60 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { useTransactionStatusQuery } from '@/hooks/queries/transaction'
-import { CryptoSymbol, tsIcon } from '@/lib/constants'
+import { Cryptos, CryptoSymbol, TransactionStatus, tsIcon } from '@/lib/constants'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 
 export default defineComponent({
   props: {
     /**
      * Transaction ID
      */
-    txId: {
-      type: String,
-      required: true
-    },
-    crypto: {
-      type: String as PropType<CryptoSymbol>,
+    transaction: {
+      type: Object as PropType<NormalizedChatMessageTransaction>,
       required: true
     }
   },
   setup(props) {
-    const { queryStatus, status, inconsistentStatus, refetch } = useTransactionStatusQuery(
-      props.txId,
-      props.crypto
+    const transactionId = computed(() =>
+      props.transaction.type === 'ADM' ? props.transaction.id : props.transaction.hash
     )
-    const statusIcon = computed(() => tsIcon(status.value))
+    const crypto = computed(() => props.transaction.type)
+
+    const isNotFinalized = computed(() => {
+      const { status } = props.transaction
+      return status === TransactionStatus.REGISTERED || status === TransactionStatus.PENDING
+    })
+    const isSupportedCrypto = computed(() => {
+      return props.transaction.type in Cryptos
+    })
+    const queryEnabled = computed(() => {
+      return isNotFinalized.value && isSupportedCrypto.value
+    })
+
+    const { queryStatus, status, inconsistentStatus, refetch } = useTransactionStatusQuery(
+      transactionId,
+      crypto.value as CryptoSymbol,
+      { enabled: queryEnabled }
+    )
+
+    const transactionStatus = computed(() => {
+      if (props.transaction.type === 'UNKNOWN_CRYPTO') {
+        return TransactionStatus.UNKNOWN
+      }
+
+      if (props.transaction.type === 'ADM') {
+        return props.transaction.status || status.value
+      }
+
+      // other cryptos
+      return status.value
+    })
+
+    const statusIcon = computed(() => tsIcon(transactionStatus.value))
 
     return {
       queryStatus,
-      status,
+      status: transactionStatus,
       inconsistentStatus,
       statusIcon,
       refetch

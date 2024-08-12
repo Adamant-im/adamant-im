@@ -47,24 +47,15 @@
 
       <!-- Transaction -->
       <template v-else-if="isTransferType">
-        <v-list-item-subtitle
-          v-if="transaction.type === 'ADM' || transaction.type === 'UNKNOWN_CRYPTO'"
-          :class="`${className}__subtitle`"
-        >
-          <v-icon v-if="!isIncomingTransaction" size="15" :icon="admStatusIcon" />
-          {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
-          <v-icon v-if="isIncomingTransaction" size="15" :icon="admStatusIcon" />
-        </v-list-item-subtitle>
-
-        <v-list-item-subtitle v-else :class="`${className}__subtitle`">
-          <TransactionProvider :tx-id="transaction.hash" :crypto="transaction.type">
-            <template #default="{ status }">
+        <TransactionProvider :transaction="transaction">
+          <template #default="{ status }">
+            <v-list-item-subtitle :class="`${className}__subtitle`">
               <v-icon v-if="!isIncomingTransaction" size="15" :icon="tsIcon(status)" />
               {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
               <v-icon v-if="isIncomingTransaction" size="15" :icon="tsIcon(status)" />
-            </template>
-          </TransactionProvider>
-        </v-list-item-subtitle>
+            </v-list-item-subtitle>
+          </template>
+        </TransactionProvider>
       </template>
 
       <!-- Reaction -->
@@ -97,7 +88,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
@@ -108,6 +99,7 @@ import currency from '@/filters/currencyAmountWithSymbol'
 import formatDate from '@/filters/dateBrief'
 import { formatMessage } from '@/lib/markdown'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
@@ -138,7 +130,7 @@ export default defineComponent({
       required: true
     },
     transaction: {
-      type: Object,
+      type: Object as PropType<NormalizedChatMessageTransaction>,
       required: true
     },
     isMessageReadonly: {
