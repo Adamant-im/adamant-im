@@ -50,20 +50,20 @@ export function getInconsistentStatus(
     return TransactionInconsistentReason.WRONG_AMOUNT
   }
 
-  // Don't check timestamp if there is no timestamp yet. F. e. transaction.instantsend = true for Dash
-  if (
-    transaction.timestamp &&
-    !verifyTimestamp(coin, transaction.timestamp, admTransaction.timestamp)
-  ) {
-    return TransactionInconsistentReason.WRONG_TIMESTAMP
-  }
-
   if (!isStringEqualCI(transaction.senderId, senderCryptoAddress)) {
     return TransactionInconsistentReason.SENDER_CRYPTO_ADDRESS_MISMATCH
   }
 
   if (!isStringEqualCI(transaction.recipientId, recipientCryptoAddress)) {
     return TransactionInconsistentReason.RECIPIENT_CRYPTO_ADDRESS_MISMATCH
+  }
+
+  // Don't check timestamp if there is no timestamp yet. F. e. transaction.instantsend = true for Dash
+  if (
+    transaction.timestamp &&
+    !verifyTimestamp(coin, transaction.timestamp, admTransaction.timestamp)
+  ) {
+    return TransactionInconsistentReason.WRONG_TIMESTAMP
   }
 
   return ''
