@@ -27,6 +27,7 @@ export function useKlyTransactionQuery(
     retryDelay: retryDelayFactory(Cryptos.KLY, unref(transactionId)),
     refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.KLY, state.status, state.data),
     refetchOnWindowFocus: false,
-    refetchOnMount: params?.refetchOnMount ?? (({ state }) => refetchOnMountFn(state.data))
+    refetchOnMount: params?.refetchOnMount ?? (({ state }) => refetchOnMountFn(state.data)),
+    enabled: params.enabled
   })
 }

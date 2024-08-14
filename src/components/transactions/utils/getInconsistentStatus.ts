@@ -1,3 +1,4 @@
+import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { CoinTransaction } from '@/lib/nodes/types/transaction'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -20,13 +21,18 @@ export type InconsistentStatus =
   (typeof TransactionInconsistentReason)[keyof typeof TransactionInconsistentReason]
 
 export function getInconsistentStatus(
-  transaction: CoinTransaction,
+  transaction: CoinTransaction | DecodedChatMessageTransaction,
   admTransaction: NormalizedChatMessageTransaction,
   {
     senderCryptoAddress,
     recipientCryptoAddress
   }: { senderCryptoAddress?: string; recipientCryptoAddress?: string }
 ): InconsistentStatus {
+  const isAdmTransaction = 'message' in transaction // marker that transaction is and ADM transaction
+  if (isAdmTransaction) {
+    return '' // ADM transactions are always consistent
+  }
+
   const coin = admTransaction.type as unknown as CryptoSymbol
 
   if (!recipientCryptoAddress) {
@@ -44,20 +50,20 @@ export function getInconsistentStatus(
     return TransactionInconsistentReason.WRONG_AMOUNT
   }
 
-  // Don't check timestamp if there is no timestamp yet. F. e. transaction.instantsend = true for Dash
-  if (
-    transaction.timestamp &&
-    !verifyTimestamp(coin, transaction.timestamp, admTransaction.timestamp)
-  ) {
-    return TransactionInconsistentReason.WRONG_TIMESTAMP
-  }
-
   if (!isStringEqualCI(transaction.senderId, senderCryptoAddress)) {
     return TransactionInconsistentReason.SENDER_CRYPTO_ADDRESS_MISMATCH
   }
 
   if (!isStringEqualCI(transaction.recipientId, recipientCryptoAddress)) {
     return TransactionInconsistentReason.RECIPIENT_CRYPTO_ADDRESS_MISMATCH
+  }
+
+  // Don't check timestamp if there is no timestamp yet. F. e. transaction.instantsend = true for Dash
+  if (
+    transaction.timestamp &&
+    !verifyTimestamp(coin, transaction.timestamp, admTransaction.timestamp)
+  ) {
+    return TransactionInconsistentReason.WRONG_TIMESTAMP
   }
 
   return ''

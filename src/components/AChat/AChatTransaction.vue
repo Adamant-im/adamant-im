@@ -29,22 +29,15 @@
             {{ time }}
           </div>
           <div class="a-chat__status">
-            <v-icon
-              v-if="crypto === 'ADM' || crypto === 'UNKNOWN_CRYPTO'"
-              size="13"
-              :icon="tsIcon(transaction.status)"
-              :title="$t(`chats.transaction_statuses.${transaction.status}`)"
-              :color="tsColor(transaction.status)"
-            />
-            <TransactionProvider v-else :crypto="crypto" :tx-id="transaction.hash">
+            <TransactionProvider :transaction="transaction">
               <template #default="{ status, refetch }">
                 <v-icon
                   size="13"
                   :icon="tsIcon(status)"
                   :title="$t(`chats.transaction_statuses.${status}`)"
                   :color="tsColor(status)"
-                  :style="tsUpdatable(status, crypto) ? 'cursor: pointer;' : 'cursor: default;'"
-                  @click="refetch"
+                  :style="checkStatusUpdatable(status) ? 'cursor: pointer;' : 'cursor: default;'"
+                  @click="checkStatusUpdatable(status) ? refetch() : undefined"
                 />
               </template>
             </TransactionProvider>
@@ -100,14 +93,14 @@ import { CryptoSymbol } from '@/lib/constants/cryptos'
 import { computed, watch, onMounted, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 
-import { tsIcon, tsUpdatable, tsColor, Cryptos } from '@/lib/constants'
+import { tsIcon, tsUpdatable, tsColor, Cryptos, TransactionStatusType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import QuotedMessage from './QuotedMessage.vue'
-import TransactionProvider from '@/providers/TransactionProvider.vue'
+import { TransactionProvider } from '@/providers/TransactionProvider'
 
 export default defineComponent({
   components: {
@@ -151,6 +144,9 @@ export default defineComponent({
 
     const time = useTransactionTime(props.transaction)
     const isCryptoSupported = computed(() => props.transaction.type in Cryptos)
+    const checkStatusUpdatable = (status: TransactionStatusType) => {
+      return tsUpdatable(status, props.crypto as CryptoSymbol)
+    }
 
     const historyRate = computed(() => {
       const amount = currencyAmount(props.transaction.amount, props.crypto)
@@ -200,6 +196,7 @@ export default defineComponent({
 
       time,
       isCryptoSupported,
+      checkStatusUpdatable,
 
       isStringEqualCI,
       currencyFormatter,
