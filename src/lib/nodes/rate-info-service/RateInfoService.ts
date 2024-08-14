@@ -5,6 +5,7 @@ import { NODE_LABELS } from '@/lib/nodes/constants'
 import { RateInfoResponse } from '@/lib/nodes/rate-info-service/types/RateInfoResponse'
 import { RateHistoryInfoResponse } from '@/lib/nodes/rate-info-service/types/RateHistoryInfoResponse'
 import { GetHistoryParams } from '@/lib/nodes/rate-info-service/types/GetHistoryParams'
+import { normalizeHeight } from '@/lib/nodes/rate-info-service/utils.ts'
 
 export class RateInfoService extends Node<AxiosInstance> {
   constructor(url: string) {
@@ -31,19 +32,10 @@ export class RateInfoService extends Node<AxiosInstance> {
   protected async checkHealth(): Promise<HealthcheckResult> {
     const start = Date.now()
     const response = await this.getAllRates()
-    this.height = this.formatHeight(response.date)
+    this.height = normalizeHeight(response.date)
     return {
       ping: Date.now() - start,
       height: this.height
     }
-  }
-
-  private formatHeight(height: number) {
-    if (!height) return 0
-    return Number(
-      Math.ceil(height / 1000)
-        .toString()
-        .substring(2)
-    )
   }
 }
