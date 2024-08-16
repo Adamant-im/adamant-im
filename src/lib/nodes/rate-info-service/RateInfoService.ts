@@ -5,7 +5,7 @@ import { NODE_LABELS } from '@/lib/nodes/constants'
 import { RateInfoResponse } from '@/lib/nodes/rate-info-service/types/RateInfoResponse'
 import { RateHistoryInfoResponse } from '@/lib/nodes/rate-info-service/types/RateHistoryInfoResponse'
 import { GetHistoryParams } from '@/lib/nodes/rate-info-service/types/GetHistoryParams'
-import { normalizeHeight } from '@/lib/nodes/rate-info-service/utils.ts'
+import { normalizeHeight } from './utils'
 
 export class RateInfoService extends Node<AxiosInstance> {
   constructor(url: string) {
