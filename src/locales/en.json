@@ -100,7 +100,7 @@
   "errors": {
     "something_went_wrong": "Something went wrong. Check the console for details",
     "all_nodes_offline": "All {crypto} nodes are offline. Try again later",
-    "all_nodes_disabled": "All {crypto} nodes are disabled. Please enable at least one node to continue using the Messenger"
+    "all_nodes_disabled": "No active {crypto} nodes. Enable at least one"
   },
   "home": {
     "balance": "Balance",
