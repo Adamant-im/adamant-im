@@ -22,9 +22,12 @@ function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation) {
     sync: 'nodes.sync',
     unsupported_version: 'nodes.unsupported'
   }
-  const i18nKey = i18n[node.status]
-
-  return t(i18nKey)
+  if (node.status === 'online') {
+    return i18n[node.status]
+  } else {
+    const i18nKey = i18n[node.status]
+    return t(i18nKey)
+  }
 }
 
 function getNodeStatusDetail(
