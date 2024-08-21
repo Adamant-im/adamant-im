@@ -90,7 +90,7 @@ export default defineComponent({
 
     const submit = () => {
       if (!validateMnemonic(passphrase.value)) {
-        return emit('error', 'login.invalid_passphrase')
+        return emit('error', t('login.invalid_passphrase'))
       }
 
       freeze()
