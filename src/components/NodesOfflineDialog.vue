@@ -1,8 +1,8 @@
 <template>
-  <v-dialog :model-value="true" width="500" :class="className">
+  <v-dialog v-model="showDialog" width="500" :class="className">
     <v-card>
       <v-card-title class="a-text-header">
-        {{ t('chats.nodes_offline_dialog.title') }}
+        {{ t('chats.nodes_offline_dialog.title', { coin: nodeType.toUpperCase() }) }}
       </v-card-title>
 
       <v-divider class="a-divider" />
