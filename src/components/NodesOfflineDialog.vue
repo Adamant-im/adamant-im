@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="showDialog" width="500" :class="className">
+  <v-dialog :model-value="true" width="500" :class="className">
     <v-card>
       <v-card-title class="a-text-header">
         {{ t('chats.nodes_offline_dialog.title') }}
@@ -117,7 +117,7 @@ export default {
     margin-right: 8px;
   }
   &__btn-block {
-    padding: 0 0 30px 0;
+    padding: 16px 0 32px 0;
     text-align: center;
   }
 }
