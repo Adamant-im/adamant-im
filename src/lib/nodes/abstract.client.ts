@@ -53,6 +53,9 @@ export abstract class Client<N extends Node> {
   }
 
   protected async watchNodeStatusChange() {
+    await Promise.all(this.nodes.map((node) => node.startHealthcheck()))
+    this.resolve()
+
     for (const node of this.nodes) {
       node.onStatusChange((nodeStatus) => {
         this.updateSyncStatuses()
