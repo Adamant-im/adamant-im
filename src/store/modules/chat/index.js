@@ -109,6 +109,12 @@ const getters = {
     return index === messages.length - 1
   },
 
+  isUnreadReaction: (state, getters) => (transactionId) => {
+    const messages = getters.unreadMessages
+
+    return messages.findIndex((message) => message.id === transactionId) > -1
+  },
+
   /**
    * Return message by ID.
    * @param {number} id Message Id
