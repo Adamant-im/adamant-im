@@ -22,6 +22,7 @@ import { replyMessageAsset } from '@/lib/adamant-api/asset'
 import { vibrate } from '@/lib/vibrate'
 
 import { generateAdamantChats } from './utils/generateAdamantChats'
+import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 export let interval
 
@@ -55,7 +56,8 @@ const state = () => ({
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
   animateIncomingReaction: false, // `true` - animate incoming last reaction
-  animateOutgoingReaction: false // `true` - animate outgoing last reaction
+  animateOutgoingReaction: false, // `true` - animate outgoing last reaction
+  noActiveNodesDialog: undefined // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
 })
 
 const getters = {
@@ -511,6 +513,14 @@ const mutations = {
     state.animateIncomingReaction = value
   },
 
+  setNoActiveNodesDialog(state, value) {
+    if (state.noActiveNodesDialog === false) {
+      return // do not show dialog again
+    }
+
+    state.noActiveNodesDialog = value
+  },
+
   reset(state) {
     state.chats = {}
     state.lastMessageHeight = 0
@@ -530,18 +540,26 @@ const actions = {
   loadChats({ commit, dispatch, rootState }, { perPage = 25 } = {}) {
     commit('setFulfilled', false)
 
-    return admApi.getChatRooms(rootState.address).then((result) => {
-      const { messages, lastMessageHeight } = result
+    return admApi
+      .getChatRooms(rootState.address)
+      .then((result) => {
+        const { messages, lastMessageHeight } = result
 
-      dispatch('pushMessages', messages)
+        dispatch('pushMessages', messages)
 
-      if (lastMessageHeight > 0) {
-        commit('setHeight', lastMessageHeight)
-        commit('setOffset', perPage)
-      }
+        if (lastMessageHeight > 0) {
+          commit('setHeight', lastMessageHeight)
+          commit('setOffset', perPage)
+        }
 
-      commit('setFulfilled', true)
-    })
+        commit('setFulfilled', true)
+      })
+      .catch((err) => {
+        if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
+          commit('setNoActiveNodesDialog', true)
+          setTimeout(() => dispatch('loadChats'), 5000) // retry in 5 seconds
+        }
+      })
   },
 
   loadChatsPaged({ commit, dispatch, rootState, state }, { perPage = 25 } = {}) {
@@ -592,6 +610,12 @@ const actions = {
           commit('setChatOffset', { contactId, offset })
           commit('setChatPage', { contactId, page: ++page })
         }
+      })
+      .catch((err) => {
+        if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
+          commit('setNoActiveNodesDialog', true)
+        }
+        throw err
       })
   },
 
