@@ -8,10 +8,11 @@
   >
     <a-chat-reaction
       v-for="reaction of reactions"
-      :key="reaction.id"
+      :key="reaction.senderId"
       :class="classes.reaction"
+      :reaction="reaction"
       :asset="reaction.asset"
-      :animate="shouldAnimate(reaction)"
+      :partner-id="partnerId"
     >
       <template #avatar v-if="reaction.senderId === partnerId">
         <ChatAvatar :user-id="partnerId" :size="16" />
@@ -72,18 +73,6 @@ export default defineComponent({
       return list.sort((left, right) => left.timestamp - right.timestamp)
     })
 
-    const shouldAnimate = (reaction: NormalizedChatMessageTransaction) => {
-      const isLastReaction = store.getters['chat/isLastReaction'](reaction.id, partnerId.value)
-
-      const isUnreadReaction = store.getters['chat/isUnreadReaction'](reaction.id)
-
-      return (
-        (isLastReaction &&
-          (store.state.chat.animateIncomingReaction || store.state.chat.animateOutgoingReaction)) ||
-        isUnreadReaction
-      )
-    }
-
     watch(
       () => store.getters['chat/numOfNewMessages'](partnerId.value),
       (numOfNewMessages) => {
@@ -95,8 +84,7 @@ export default defineComponent({
     return {
       classes,
       partnerId,
-      reactions,
-      shouldAnimate
+      reactions
     }
   }
 })

@@ -226,8 +226,3 @@ export const REACT_EMOJIS = {
   FLUSHED_FACE: '😳',
   PARTY_POPPER: '🎉'
 }
-
-export const AnimationReactionType = {
-  Incoming: 0,
-  Outgoing: 1
-}
