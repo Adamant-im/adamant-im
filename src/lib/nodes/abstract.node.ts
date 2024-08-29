@@ -120,8 +120,6 @@ export abstract class Node<C = unknown> {
     if (this.active) {
       void this.fetchNodeVersion()
     }
-
-    void this.startHealthcheck()
   }
 
   async startHealthcheck() {

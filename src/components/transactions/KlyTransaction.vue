@@ -12,6 +12,7 @@
     :inconsistent-status="inconsistentStatus"
     :adm-tx="admTx"
     :crypto="crypto"
+    :text-data="textData"
     @refetch-status="refetch"
   />
 </template>
@@ -105,6 +106,9 @@ export default defineComponent({
     })
 
     const fee = computed(() => transaction.value?.fee)
+    const textData = computed(() =>
+      transaction.value && 'data' in transaction.value ? transaction.value.data : ''
+    )
 
     return {
       refetch,
@@ -118,7 +122,8 @@ export default defineComponent({
       admTx,
       queryStatus,
       transactionStatus,
-      inconsistentStatus
+      inconsistentStatus,
+      textData
     }
   }
 })

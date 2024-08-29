@@ -54,6 +54,7 @@
 <script>
 import { validateMnemonic } from 'bip39'
 import { computed, ref, defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { isAxiosError } from 'axios'
@@ -70,6 +71,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const router = useRouter()
     const store = useStore()
+    const { t } = useI18n()
     const showSpinner = ref(false)
 
     const showPassphrase = ref(false)
@@ -88,7 +90,7 @@ export default defineComponent({
 
     const submit = () => {
       if (!validateMnemonic(passphrase.value)) {
-        return emit('error', 'login.invalid_passphrase')
+        return emit('error', t('login.invalid_passphrase'))
       }
 
       freeze()
@@ -103,14 +105,14 @@ export default defineComponent({
         })
         .catch((err) => {
           if (isAxiosError(err)) {
-            emit('error', 'login.invalid_passphrase')
+            emit('error', t('login.invalid_passphrase'))
           } else if (isAllNodesOfflineError(err)) {
-            emit('error', 'errors.all_nodes_offline')
+            emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
           } else if (isAllNodesDisabledError(err)) {
-            emit('error', 'errors.all_nodes_disabled')
+            emit('error', t('errors.all_nodes_disabled', { crypto: err.nodeLabel.toUpperCase() }))
             router.push({ name: 'Nodes' })
           } else {
-            emit('error', 'errors.something_went_wrong')
+            emit('error', t('errors.something_went_wrong'))
           }
           console.log(err)
         })

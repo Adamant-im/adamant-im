@@ -52,7 +52,9 @@ export default defineComponent({
       }
 
       if (props.transaction.type === 'ADM') {
-        return props.transaction.status || status.value
+        return props.transaction.status === TransactionStatus.CONFIRMED
+          ? TransactionStatus.CONFIRMED
+          : status.value
       }
 
       // other cryptos

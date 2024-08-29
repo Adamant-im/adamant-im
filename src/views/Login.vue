@@ -152,9 +152,9 @@ export default defineComponent({
 
       navigateByURI()
     }
-    const onLoginError = (key) => {
+    const onLoginError = (errorMessage) => {
       store.dispatch('snackbar/show', {
-        message: t(key),
+        message: errorMessage,
         timeout: 3000
       })
     }

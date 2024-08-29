@@ -13,3 +13,14 @@ export function sortNodesFn(left: NodeStatusResult, right: NodeStatusResult) {
 
   return left.url > right.url ? 1 : right.url > left.url ? -1 : 0
 }
+
+/**
+ * Group nodes by node label and sort them alphabetically by URL.
+ */
+export function sortCoinNodesFn(left: NodeStatusResult, right: NodeStatusResult) {
+  if (left.label !== right.label) {
+    return left.label > right.label ? 1 : -1
+  }
+
+  return sortNodesFn(left, right)
+}

@@ -65,6 +65,9 @@ export abstract class Client<N extends Node> {
         }
       })
     }
+
+    await Promise.all(this.nodes.map((node) => node.startHealthcheck()))
+    this.resolve()
   }
 
   /**

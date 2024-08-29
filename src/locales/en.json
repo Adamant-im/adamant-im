@@ -80,9 +80,9 @@
     "you_removed_reaction": "Removed reaction",
     "partner_removed_reaction": "Removed reaction",
     "nodes_offline_dialog": {
-      "title": "Nodes are offline",
-      "text": "All {coin} nodes appear to be offline or possibly disabled. To continue use the Messenger please review the <strong>Nodes list</strong> and enable any nodes that are found to be disabled.",
-      "open_nodes_button": "Open Nodes page"
+      "title": "No active {coin} nodes",
+      "text": "Unable to request new messages — No active {coin} blockchain nodes. As you've deactivated some of them, consider reviewing the node list.",
+      "open_nodes_button": "Review {coin} node list"
     },
     "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
   },
@@ -100,7 +100,7 @@
   "errors": {
     "something_went_wrong": "Something went wrong. Check the console for details",
     "all_nodes_offline": "All {crypto} nodes are offline. Try again later",
-    "all_nodes_disabled": "All {crypto} nodes are disabled. Please enable at least one node to continue using the Messenger"
+    "all_nodes_disabled": "No active {crypto} nodes. Enable at least one"
   },
   "home": {
     "balance": "Balance",

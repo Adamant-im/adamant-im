@@ -55,16 +55,16 @@ export class EthIndexerClient extends Client<EthIndexer> {
 
     const requestParams: GetTransactionsRequest = {
       and: `(${filters.join(',')})`,
-      order: 'time.desc',
-      limit: limit ? limit : undefined
+      order: 'time.desc'
+      // limit: limit ? limit : undefined
     }
-
-    if (limit) requestParams.limit = limit
 
     const transactions = await this.request('GET /ethtxs', {
       ...requestParams
     })
 
-    return transactions.map((transaction) => normalizeTransaction(transaction, address, decimals))
+    return transactions
+      .map((transaction) => normalizeTransaction(transaction, address, decimals))
+      .slice(0, limit)
   }
 }

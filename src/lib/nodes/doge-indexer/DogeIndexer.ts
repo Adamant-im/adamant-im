@@ -2,8 +2,6 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { formatDogeVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
-import { NodeStatus } from './types/api/node-status'
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -27,14 +25,6 @@ export class DogeIndexer extends Node<AxiosInstance> {
     return {
       height,
       ping: Date.now() - time
-    }
-  }
-
-  protected async fetchNodeVersion(): Promise<void> {
-    const data = await this.request<NodeStatus>('GET', '/api/status')
-    const { version } = data.info
-    if (version) {
-      this.version = formatDogeVersion(version)
     }
   }
 
