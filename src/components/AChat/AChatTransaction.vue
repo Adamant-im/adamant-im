@@ -34,7 +34,7 @@
                 <v-icon
                   size="13"
                   :icon="tsIcon(status)"
-                  :title="$t(`chats.transaction_statuses.${status}`)"
+                  :title="t(`chats.transaction_statuses.${status}`)"
                   :color="tsColor(status)"
                   :style="checkStatusUpdatable(status) ? 'cursor: pointer;' : 'cursor: default;'"
                   @click="checkStatusUpdatable(status) ? refetch() : undefined"
@@ -55,8 +55,8 @@
           <div class="a-chat__direction a-text-regular-bold">
             {{
               isStringEqualCI(transaction.senderId, userId)
-                ? $t('chats.sent_label')
-                : $t('chats.received_label')
+                ? t('chats.sent_label')
+                : t('chats.received_label')
             }}
           </div>
           <div
@@ -87,11 +87,12 @@
 </template>
 
 <script lang="ts">
-import { useTransactionTime } from '@/components/AChat/hooks/useTransactionTime.ts'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { CryptoSymbol } from '@/lib/constants/cryptos'
 import { computed, watch, onMounted, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
+import { useTransactionTime } from '@/components/AChat/hooks/useTransactionTime'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { CryptoSymbol } from '@/lib/constants/cryptos'
 
 import { tsIcon, tsUpdatable, tsColor, Cryptos, TransactionStatusType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
@@ -138,6 +139,7 @@ export default defineComponent({
   },
   emits: ['click:transaction', 'click:quotedMessage', 'swipe:left', 'longpress'],
   setup(props, { emit }) {
+    const { t } = useI18n()
     const store = useStore()
 
     const userId = computed(() => store.state.address)
@@ -192,6 +194,7 @@ export default defineComponent({
     })
 
     return {
+      t,
       userId,
 
       time,

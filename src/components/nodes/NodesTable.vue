@@ -1,9 +1,9 @@
 <template>
   <div :class="classes.root">
     <v-tabs v-model="tab" bg-color="transparent">
-      <v-tab value="adm">{{ $t('nodes.tabs.adm_nodes') }}</v-tab>
-      <v-tab value="coins">{{ $t('nodes.tabs.coin_nodes') }}</v-tab>
-      <v-tab value="services">{{ $t('nodes.tabs.service_nodes') }}</v-tab>
+      <v-tab value="adm">{{ t('nodes.tabs.adm_nodes') }}</v-tab>
+      <v-tab value="coins">{{ t('nodes.tabs.coin_nodes') }}</v-tab>
+      <v-tab value="services">{{ t('nodes.tabs.service_nodes') }}</v-tab>
     </v-tabs>
 
     <v-window v-model="tab">
@@ -21,60 +21,60 @@
       <div v-if="tab === 'coins'">
         <v-checkbox
           v-model="preferFastestCoinNodeOption"
-          :label="$t('nodes.fastest_title')"
+          :label="t('nodes.fastest_title')"
           :class="classes.checkbox"
           class="mt-4"
           color="grey darken-1"
           hide-details
         />
         <div class="a-text-explanation-enlarged">
-          {{ $t('nodes.fastest_tooltip') }}
+          {{ t('nodes.fastest_tooltip') }}
         </div>
         <div>&nbsp;<br />&nbsp;</div>
       </div>
       <div v-else-if="tab === 'services'">
         <v-checkbox
           v-model="preferFasterServiceNodeOption"
-          :label="$t('nodes.fastest_title')"
+          :label="t('nodes.fastest_title')"
           :class="classes.checkbox"
           class="mt-4"
           color="grey darken-1"
           hide-details
         />
         <div class="a-text-explanation-enlarged">
-          {{ $t('nodes.fastest_tooltip') }}
+          {{ t('nodes.fastest_tooltip') }}
         </div>
         <div>&nbsp;<br />&nbsp;</div>
       </div>
       <div v-else-if="tab === 'adm'">
         <v-checkbox
           v-model="preferFastestAdmNodeOption"
-          :label="$t('nodes.fastest_title')"
+          :label="t('nodes.fastest_title')"
           :class="classes.checkbox"
           class="mt-4"
           color="grey darken-1"
           hide-details
         />
         <div class="a-text-explanation-enlarged">
-          {{ $t('nodes.fastest_tooltip') }}
+          {{ t('nodes.fastest_tooltip') }}
         </div>
         <v-checkbox
           v-model="useSocketConnection"
-          :label="$t('nodes.use_socket_connection')"
+          :label="t('nodes.use_socket_connection')"
           :class="classes.checkbox"
           class="mt-4"
           color="grey darken-1"
           hide-details
         />
         <div class="a-text-explanation-enlarged">
-          {{ $t('nodes.use_socket_connection_tooltip') }}
+          {{ t('nodes.use_socket_connection_tooltip') }}
         </div>
 
         <!-- eslint-disable vue/no-v-html -- Safe internal content -->
         <div
           :class="classes.info"
           class="a-text-regular-enlarged mt-6"
-          v-html="$t('nodes.nodeLabelDescription')"
+          v-html="t('nodes.nodeLabelDescription')"
         />
         <!-- eslint-enable vue/no-v-html -->
 
@@ -86,6 +86,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import { AdmNodesTable } from './adm'
@@ -108,6 +109,7 @@ export default defineComponent({
     CoinNodesTable
   },
   setup() {
+    const { t } = useI18n()
     const store = useStore()
     const tab = ref<Tab>('adm')
 
@@ -150,6 +152,7 @@ export default defineComponent({
     })
 
     return {
+      t,
       tab,
       classes,
       useSocketConnection,

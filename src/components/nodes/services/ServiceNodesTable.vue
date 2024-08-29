@@ -1,6 +1,6 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead hide-socket :label="$t('nodes.service')" />
+    <NodesTableHead hide-socket :label="t('nodes.service')" />
 
     <tbody>
       <ServiceNodesTableItem
@@ -15,6 +15,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
@@ -34,6 +35,7 @@ export default defineComponent({
     ServiceNodesTableItem
   },
   setup() {
+    const { t } = useI18n()
     const store = useStore()
 
     const nodes = computed<NodeStatusResult[]>(() => {
@@ -43,6 +45,7 @@ export default defineComponent({
     })
 
     return {
+      t,
       nodes,
       classes
     }

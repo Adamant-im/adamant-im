@@ -10,7 +10,7 @@
         no-gutters
       >
         <div class="a-text-header">
-          {{ $t('scan.waiting_camera') }}
+          {{ t('scan.waiting_camera') }}
         </div>
         <v-progress-circular indeterminate color="primary" size="32" class="ml-4" />
       </v-row>
@@ -41,7 +41,7 @@
         </v-col>
         <v-col cols="12" class="pa-6">
           <h3 class="a-text-regular text-center">
-            {{ $t('scan.hold_your_device') }}
+            {{ t('scan.hold_your_device') }}
           </h3>
         </v-col>
       </v-row>
@@ -59,27 +59,27 @@
         <v-col cols="12">
           <template v-if="cameraStatus === 'nocamera'">
             <h3 class="a-text-header">
-              {{ $t('scan.no_camera_found') }}
+              {{ t('scan.no_camera_found') }}
             </h3>
             <p class="a-text-regular mt-1 mb-0">
-              {{ $t('scan.connect_camera') }}
+              {{ t('scan.connect_camera') }}
             </p>
           </template>
           <template v-else-if="cameraStatus === 'noaccess'">
             <h3 class="a-text-header">
-              {{ $t('scan.no_camera_access') }}
+              {{ t('scan.no_camera_access') }}
             </h3>
             <p class="a-text-regular mt-1 mb-0">
-              {{ $t('scan.grant_camera_permissions') }}
+              {{ t('scan.grant_camera_permissions') }}
             </p>
           </template>
           <template v-else-if="cameraStatus === 'nostream'">
             <h3 class="a-text-header">
-              {{ $t('scan.no_camera_stream') }}
+              {{ t('scan.no_camera_stream') }}
             </h3>
             <p
               class="a-text-regular mt-1 mb-0"
-              v-html="$t('scan.no_stream_details', { noStreamDetails })"
+              v-html="t('scan.no_stream_details', { noStreamDetails })"
             />
           </template>
         </v-col>
@@ -90,7 +90,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn variant="text" class="a-btn-regular" @click="show = false">
-          {{ $t('scan.close_button') }}
+          {{ t('scan.close_button') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -215,6 +215,7 @@ export default defineComponent({
     })
 
     return {
+      t,
       cameras,
       cameraStatus,
       classes,

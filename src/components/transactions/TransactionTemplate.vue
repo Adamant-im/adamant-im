@@ -35,7 +35,7 @@
         <v-list-item>
           <template #prepend>
             <v-list-item-title :class="`${className}__title`">
-              {{ $t('transaction.status') }}
+              {{ t('transaction.status') }}
               <v-icon
                 v-if="statusUpdatable || rotateAnimation"
                 :class="{
@@ -60,9 +60,9 @@
               size="20"
               style="color: #f8a061 !important"
             />
-            {{ $t(`transaction.statuses.${transactionStatus}`)
+            {{ t(`transaction.statuses.${transactionStatus}`)
             }}<span v-if="inconsistentStatus">{{
-              ': ' + $t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
+              ': ' + t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
             }}</span>
             <!--            <span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>-->
           </div>
