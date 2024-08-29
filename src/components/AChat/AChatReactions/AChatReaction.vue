@@ -3,7 +3,7 @@
     <div
       :class="{
         [classes.emoji]: true,
-        [classes.emojiAnimate]: animate
+        [classes.emojiAnimate]: animationEnabled
       }"
     >
       {{ asset.react_message }}
@@ -16,7 +16,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { computed, defineComponent, PropType, ref, watch } from 'vue'
+import { useStore } from 'vuex'
+
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { ReactionAsset } from '@/lib/adamant-api/asset'
 
 const className = 'a-chat-reaction'
@@ -33,14 +36,55 @@ export default defineComponent({
       type: Object as PropType<ReactionAsset>,
       required: true
     },
-    animate: {
-      type: Boolean,
+    reaction: {
+      type: Object as PropType<NormalizedChatMessageTransaction>,
+      required: true
+    },
+    partnerId: {
+      type: String,
       required: true
     }
   },
-  setup() {
+  setup(props) {
+    const store = useStore()
+
+    const animationEnabled = ref(false)
+    const animate = () => {
+      if (animationEnabled.value) return
+
+      animationEnabled.value = true
+      setTimeout(() => {
+        animationEnabled.value = false
+      }, 1500)
+    }
+
+    const numOfNewMessages = computed(() => store.getters['chat/numOfNewMessages'](props.partnerId))
+    const isLastReaction = computed(() =>
+      store.getters['chat/isLastReaction'](props.reaction.id, props.partnerId)
+    )
+
+    const animateIncoming = computed(() => isLastReaction.value && numOfNewMessages.value === 0)
+    const animateOutgoing = computed(() => props.reaction.status === 'PENDING')
+
+    watch(numOfNewMessages, () => {
+      if (animateIncoming.value) {
+        animate()
+      }
+    })
+
+    watch(
+      () => props.reaction,
+      () => {
+        if (animateOutgoing.value) {
+          animate()
+        }
+      },
+      { immediate: true }
+    )
+
     return {
-      classes
+      classes,
+      animationEnabled
     }
   }
 })
