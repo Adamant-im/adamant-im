@@ -148,8 +148,8 @@ export function createUnsignedTransaction(
   nonce: number | string,
   data = ''
 ) {
-  const amountString = convertBeddowsTokly((+amount).toFixed(KLY_DECIMALS))
-  const feeString = convertBeddowsTokly((+fee).toFixed(KLY_DECIMALS))
+  const amountString = transactions.convertklyToBeddows((+amount).toFixed(KLY_DECIMALS))
+  const feeString = transactions.convertklyToBeddows((+fee).toFixed(KLY_DECIMALS))
   const nonceString = nonce.toString()
 
   // Adjust the values of the unsigned transaction manually
