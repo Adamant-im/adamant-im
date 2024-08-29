@@ -1,9 +1,7 @@
-/* eslint-env node */
-require('@rushstack/eslint-patch/modern-module-resolution')
-
 /** @type import('eslint').Linter.Config **/
 module.exports = {
   root: true,
+  files: ['*.ts', '*.js', '*.vue'],
   env: {
     browser: true,
     node: true,
@@ -51,5 +49,6 @@ module.exports = {
       typescript: true,
       node: true
     }
-  }
+  },
+  ignores: ['tests/', '__tests__/']
 }
