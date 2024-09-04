@@ -25,7 +25,7 @@ const customActions = (getApi) => ({
     btcIndexer.getUnspents(context.state.address).then((utxo) => context.commit('utxo', utxo))
 
     // The estimated fee rate is also needed
-    btcIndexer.getFeeRate().then((rate) => context.commit('feeRate', rate))
+    btcIndexer.getFeeRate().then((rate) => context.commit('feeRate', rate['2']))
 
     // Last block height
     context.dispatch('updateHeight')
