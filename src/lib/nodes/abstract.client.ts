@@ -1,5 +1,5 @@
-import type { HealthcheckInterval, NodeType } from '@/lib/nodes/types'
-import { AllNodesOfflineError } from './utils/errors'
+import type { HealthcheckInterval, NodeKind, NodeType } from '@/lib/nodes/types'
+import { AllNodesDisabledError, AllNodesOfflineError } from './utils/errors'
 import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
 import { nodesStorage } from './storage'
@@ -22,23 +22,52 @@ export abstract class Client<N extends Node> {
    */
   statusUpdateCallback?: (status: ReturnType<Node['getStatus']>) => void
   /**
+   * Node kind
+   */
+  kind: NodeKind
+  /**
    * Node type
    */
   type: NodeType
 
-  constructor(type: NodeType) {
+  /**
+   * Resolves when at least one node is ready to accept requests
+   */
+  ready: Promise<void>
+  resolve = () => {}
+  initialized = false
+
+  constructor(type: NodeType, kind: NodeKind = 'node') {
     this.type = type
+    this.kind = kind
     this.useFastest = nodesStorage.getUseFastest(type)
+
+    this.ready = new Promise((resolve) => {
+      this.resolve = () => {
+        if (this.initialized) return
+
+        this.initialized = true
+        resolve()
+      }
+    })
   }
 
   protected async watchNodeStatusChange() {
     for (const node of this.nodes) {
-      node.onStatusChange((node) => {
+      node.onStatusChange((nodeStatus) => {
         this.updateSyncStatuses()
 
-        this.statusUpdateCallback?.(node)
+        this.statusUpdateCallback?.(nodeStatus)
+
+        if (this.isActiveNode(node)) {
+          // Resolve when at least one node is ready to accept requests
+          this.resolve()
+        }
       })
     }
+
+    await Promise.all(this.nodes.map((node) => node.startHealthcheck()))
+    this.resolve()
   }
 
   /**
@@ -56,17 +85,27 @@ export abstract class Client<N extends Node> {
     }
   }
 
+  // Use with caution:
+  // This method can throw an error if there are no online nodes.
+  // Better use "useClient()" method.
   getClient(): N['client'] {
-    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
+    return this.getNode().client
+  }
 
-    if (!node) {
-      console.warn(`${this.type}: No online nodes at the moment`)
+  /**
+   * Invokes a client method.
+   *
+   * eth
+   *   .useClient((client) => client.getTransactionCount(this.$store.state.eth.address))
+   *   .then(res => console.log("res", res))
+   *   .catch(err => console.log("err", err))
+   *
+   * @param cb
+   */
+  async useClient<T>(cb: (client: N['client']) => T) {
+    const node = this.getNode()
 
-      // Return a random one from the full list hopefully is online
-      return this.nodes[Math.floor(Math.random() * this.nodes.length)].client
-    }
-
-    return node.client
+    return cb(node.client)
   }
 
   /**
@@ -90,7 +129,7 @@ export abstract class Client<N extends Node> {
   setUseFastest(state: boolean) {
     this.useFastest = state
 
-    nodesStorage.setUseFastest(state, this.type)
+    nodesStorage.setUseFastest(state, this.type, this.kind)
   }
 
   /**
@@ -106,7 +145,7 @@ export abstract class Client<N extends Node> {
    * @returns {ApiNode}
    */
   protected getRandomNode() {
-    const onlineNodes = this.nodes.filter((x) => x.online && x.active && !x.outOfSync)
+    const onlineNodes = this.nodes.filter(this.isActiveNode)
     return onlineNodes[Math.floor(Math.random() * onlineNodes.length)]
   }
 
@@ -114,21 +153,25 @@ export abstract class Client<N extends Node> {
    * Returns the fastest node.
    */
   protected getFastestNode() {
-    return this.nodes.reduce((fastest, current) => {
-      if (!current.online || !current.active || current.outOfSync) {
-        return fastest
-      }
-      return !fastest || fastest.ping > current.ping ? current : fastest
-    })
+    const onlineNodes = this.nodes.filter(this.isActiveNode)
+    if (onlineNodes.length === 0) return undefined
+    return onlineNodes.reduce((fastest, current) =>
+      current.ping < fastest.ping ? current : fastest
+    )
   }
 
   protected getNode() {
+    const nodes = this.nodes.filter((node) => node.active)
+    if (nodes.length === 0) {
+      throw new AllNodesDisabledError(this.type)
+    }
+
     const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
     if (!node) {
       // All nodes seem to be offline: let's refresh the statuses
       this.checkHealth()
       // But there's nothing we can do right now
-      throw new Error('No online nodes at the moment')
+      throw new AllNodesOfflineError(this.type)
     }
 
     return node
@@ -138,7 +181,7 @@ export abstract class Client<N extends Node> {
    * Throws an error if all the nodes are offline.
    */
   assertAnyNodeOnline() {
-    const onlineNodes = this.nodes.filter((x) => x.online && x.active && !x.outOfSync)
+    const onlineNodes = this.nodes.filter(this.isActiveNode)
 
     if (onlineNodes.length === 0) {
       throw new AllNodesOfflineError(this.type)
@@ -162,5 +205,15 @@ export abstract class Client<N extends Node> {
     for (const node of nodes) {
       node.outOfSync = !nodesInSync.nodes.includes(node)
     }
+  }
+
+  protected isActiveNode(node: Node) {
+    return (
+      node.online &&
+      node.active &&
+      !node.outOfSync &&
+      node.hasMinNodeVersion() &&
+      node.hasSupportedProtocol
+    )
   }
 }

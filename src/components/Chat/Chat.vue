@@ -21,7 +21,6 @@
           <a-chat-message
             v-if="actionMessage.type === 'message'"
             :transaction="actionMessage"
-            :status="getTransactionStatus(actionMessage)"
             :data-id="'action-message'"
             html
             disable-max-width
@@ -36,8 +35,6 @@
             v-else-if="isTransaction(actionMessage.type)"
             :transaction="actionMessage"
             :crypto="actionMessage.type"
-            :tx-timestamp="getTransaction(actionMessage.type, actionMessage.hash).timestamp"
-            :status="getTransactionStatus(actionMessage)"
             :data-id="'action-message'"
             disable-max-width
             elevation
@@ -91,7 +88,6 @@
         <a-chat-message
           v-if="message.type === 'message'"
           :transaction="message"
-          :status="getTransactionStatus(message)"
           :html="true"
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
@@ -146,14 +142,10 @@
           v-else-if="isTransaction(message.type)"
           :transaction="message"
           :crypto="message.type"
-          :tx-timestamp="getTransaction(message.type, message.hash).timestamp"
-          :status="getTransactionStatus(message)"
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
           :swipe-disabled="isWelcomeMessage(message)"
           @click:transaction="openTransaction(message)"
-          @click:transactionStatus="updateTransactionStatus(message)"
-          @mount="fetchTransactionStatus(message, partnerId)"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
@@ -289,7 +281,6 @@ import {
 import ChatToolbar from '@/components/Chat/ChatToolbar.vue'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import ChatMenu from '@/components/Chat/ChatMenu.vue'
-import transaction from '@/mixins/transaction'
 import partnerName from '@/mixins/partnerName'
 import formatDate from '@/filters/date'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
@@ -372,7 +363,7 @@ export default {
     AChatReactionSelect,
     EmojiPicker
   },
-  mixins: [transaction, partnerName],
+  mixins: [partnerName],
   props: {
     partnerId: {
       type: String,
@@ -545,7 +536,6 @@ export default {
       this.closeActionsDropdown()
 
       emojiWeight.addReaction(emoji)
-      vibrate.veryShort()
 
       return this.$store.dispatch('chat/sendReaction', {
         recipientId: this.partnerId,
@@ -567,14 +557,6 @@ export default {
     },
     onEmojiSelect(transactionId, emoji) {
       this.sendReaction(transactionId, emoji)
-    },
-    updateTransactionStatus(message) {
-      this.$store.dispatch(message.type.toLowerCase() + '/updateTransaction', {
-        hash: message.hash,
-        force: true,
-        updateOnly: false,
-        dropStatus: true
-      })
     },
     markAsRead() {
       this.$store.commit('chat/markAsRead', this.partnerId)

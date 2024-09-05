@@ -1,4 +1,4 @@
-import { convertBeddowsToKLY } from '@klayr/transactions'
+import { convertBeddowsTokly } from '@klayr/transactions'
 import { KLY_TOKEN_ID } from '@/lib/klayr'
 import { RpcMethod, RpcResults } from './types/api'
 import { KlyNode } from './KlyNode'
@@ -17,15 +17,7 @@ export class KlyClient extends Client<KlyNode> {
     method: M,
     params?: RpcResults[M]['params']
   ): Promise<RpcResults[M]['result']> {
-    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
-    if (!node) {
-      // All nodes seem to be offline: let's refresh the statuses
-      this.checkHealth()
-      // But there's nothing we can do right now
-      throw new Error('No online nodes at the moment')
-    }
-
-    return node.invoke(method, params)
+    return this.getNode().invoke(method, params)
   }
 
   /**
@@ -46,7 +38,7 @@ export class KlyClient extends Client<KlyNode> {
       address
     })
 
-    return Number(convertBeddowsToKLY(availableBalance))
+    return Number(convertBeddowsTokly(availableBalance))
   }
 
   async getHeight() {

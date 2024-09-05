@@ -122,3 +122,8 @@ export declare const FetchStatus: {
 }
 
 export declare const REACT_EMOJIS: Record<string, string>
+
+export declare const AnimationReactionType = {
+  Incoming: 0,
+  Outgoing: 1
+}

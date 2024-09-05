@@ -39,9 +39,6 @@ jobs:
       - name: Save artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: electron-release-app
+          name: macos-release-app
           path: |
             release-electron/*.dmg
-            release-electron/*.blockmap
-            release-electron/*.yaml
-            release-electron/*.yml

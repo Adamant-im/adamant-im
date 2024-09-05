@@ -22,9 +22,12 @@ function getNodeStatusTitle(node: NodeStatusResult, t: VueI18nTranslation) {
     sync: 'nodes.sync',
     unsupported_version: 'nodes.unsupported'
   }
-  const i18nKey = i18n[node.status]
-
-  return t(i18nKey)
+  if (node.status === 'online') {
+    return i18n[node.status]
+  } else {
+    const i18nKey = i18n[node.status]
+    return t(i18nKey)
+  }
 }
 
 function getNodeStatusDetail(
@@ -35,13 +38,13 @@ function getNodeStatusDetail(
     return null
   }
 
-  if (!node.hasMinNodeVersion) {
-    return {
-      text: t('nodes.unsupported_reason_api_version')
-    }
-  } else if (!node.hasSupportedProtocol) {
+  if (!node.hasSupportedProtocol) {
     return {
       text: t('nodes.unsupported_reason_protocol')
+    }
+  } else if (!node.hasMinNodeVersion) {
+    return {
+      text: t('nodes.unsupported_reason_api_version')
     }
   } else if (node.online) {
     return {

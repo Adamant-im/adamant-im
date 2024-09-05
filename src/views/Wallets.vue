@@ -1,6 +1,6 @@
 <template>
   <div :class="classes.root">
-    <app-toolbar-centered app :title="$t('options.wallets_list')" :show-back="true" flat fixed />
+    <app-toolbar-centered app :title="t('options.wallets_list')" :show-back="true" flat fixed />
 
     <v-container fluid class="px-0 container--with-app-toolbar">
       <v-row justify="center" no-gutters>
@@ -25,7 +25,7 @@
             </draggable>
             <v-list-item
               v-if="!filteredWallets.length"
-              :title="$t('wallets.coins_not_found_title')"
+              :title="t('wallets.coins_not_found_title')"
               class="text-center"
             ></v-list-item>
           </div>
@@ -46,6 +46,7 @@
 </template>
 
 <script lang="ts">
+import { useI18n } from 'vue-i18n'
 import draggable from 'vuedraggable'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import { computed, defineComponent, onBeforeUnmount, ref } from 'vue'
@@ -93,6 +94,7 @@ export default defineComponent({
     draggable
   },
   setup() {
+    const { t } = useI18n()
     const store = useStore()
     const { isDarkTheme } = useTheme()
 
@@ -165,6 +167,7 @@ export default defineComponent({
 
     return {
       classes,
+      t,
       dragOptions,
       filteredWallets,
       isDarkTheme,
@@ -179,10 +182,19 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import 'vuetify/settings';
+@import '@/assets/styles/settings/_colors.scss';
+
 .wallets-view {
   &__review {
     padding-top: 15px !important;
     padding-bottom: 15px !important;
+  }
+}
+
+.v-theme--dark {
+  .v-list {
+    background-color: map-get($adm-colors, 'black2');
   }
 }
 </style>

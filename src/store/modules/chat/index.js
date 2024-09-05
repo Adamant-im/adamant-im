@@ -9,12 +9,14 @@ import {
   createReaction,
   normalizeMessage
 } from '@/lib/chat/helpers'
+import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
 import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
 
 import { generateAdamantChats } from './utils/generateAdamantChats'
+import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 export let interval
 
@@ -44,7 +46,8 @@ const state = () => ({
   chats: {},
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
-  offset: 0 // for loading chat list with pagination. -1 if all of chats loaded
+  offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
+  noActiveNodesDialog: undefined // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
 })
 
 const getters = {
@@ -63,7 +66,7 @@ const getters = {
     const chat = state.chats[senderId]
 
     if (chat) {
-      return chat.messages.sort((left, right) => left.timestamp - right.timestamp)
+      return [...chat.messages].sort((left, right) => left.timestamp - right.timestamp)
     }
 
     return []
@@ -89,6 +92,13 @@ const getters = {
     if (reactions.length === 0) return null
 
     return reactions[reactions.length - 1]
+  },
+
+  isLastReaction: (state, getters) => (transactionId, partnerId) => {
+    const messages = getters.messages(partnerId)
+    const index = messages.findIndex((message) => message.id === transactionId)
+
+    return index === messages.length - 1
   },
 
   /**
@@ -485,6 +495,14 @@ const mutations = {
     }
   },
 
+  setNoActiveNodesDialog(state, value) {
+    if (state.noActiveNodesDialog === false) {
+      return // do not show dialog again
+    }
+
+    state.noActiveNodesDialog = value
+  },
+
   reset(state) {
     state.chats = {}
     state.lastMessageHeight = 0
@@ -504,18 +522,26 @@ const actions = {
   loadChats({ commit, dispatch, rootState }, { perPage = 25 } = {}) {
     commit('setFulfilled', false)
 
-    return admApi.getChatRooms(rootState.address).then((result) => {
-      const { messages, lastMessageHeight } = result
+    return admApi
+      .getChatRooms(rootState.address)
+      .then((result) => {
+        const { messages, lastMessageHeight } = result
 
-      dispatch('pushMessages', messages)
+        dispatch('pushMessages', messages)
 
-      if (lastMessageHeight > 0) {
-        commit('setHeight', lastMessageHeight)
-        commit('setOffset', perPage)
-      }
+        if (lastMessageHeight > 0) {
+          commit('setHeight', lastMessageHeight)
+          commit('setOffset', perPage)
+        }
 
-      commit('setFulfilled', true)
-    })
+        commit('setFulfilled', true)
+      })
+      .catch((err) => {
+        if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
+          commit('setNoActiveNodesDialog', true)
+          setTimeout(() => dispatch('loadChats'), 5000) // retry in 5 seconds
+        }
+      })
   },
 
   loadChatsPaged({ commit, dispatch, rootState, state }, { perPage = 25 } = {}) {
@@ -566,6 +592,12 @@ const actions = {
           commit('setChatOffset', { contactId, offset })
           commit('setChatPage', { contactId, page: ++page })
         }
+      })
+      .catch((err) => {
+        if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
+          commit('setNoActiveNodesDialog', true)
+        }
+        throw err
       })
   },
 
@@ -696,7 +728,7 @@ const actions = {
       .then((res) => {
         // @todo this check must be performed on the server
         if (!res.success) {
-          throw new Error('Message rejected')
+          throw new Error(i18n.global.t('chats.message_rejected'))
         }
 
         // update `message.status` to 'REGISTERED'
@@ -753,7 +785,7 @@ const actions = {
       return queueMessage(messageAsset, recipientId, type)
         .then((res) => {
           if (!res.success) {
-            throw new Error('Message rejected')
+            throw new Error(i18n.global.t('chats.message_rejected'))
           }
 
           commit('updateMessage', {
@@ -806,7 +838,7 @@ const actions = {
       .then((res) => {
         // @todo this check must be performed on the server
         if (!res.success) {
-          throw new Error('Message rejected')
+          throw new Error(i18n.global.t('chats.message_rejected'))
         }
 
         // update `message.status` to 'REGISTERED'

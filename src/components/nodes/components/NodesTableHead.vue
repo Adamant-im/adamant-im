@@ -2,7 +2,9 @@
   <thead :class="classes.root">
     <tr>
       <th :class="classes.checkbox" v-if="!hideCheckbox" />
-      <th :class="classes.label" class="pl-0 pr-2" v-if="!hideLabel">{{ t('nodes.coin') }}</th>
+      <th :class="classes.label" class="pl-0 pr-2" v-if="label">
+        {{ label }}
+      </th>
       <th :class="classes.th" class="pl-0 pr-2" v-if="!hideHost">
         {{ t('nodes.host') }}
       </th>
@@ -24,9 +26,6 @@ export default {
     hideCheckbox: {
       type: Boolean
     },
-    hideLabel: {
-      type: Boolean
-    },
     hideHost: {
       type: Boolean
     },
@@ -35,6 +34,9 @@ export default {
     },
     hideSocket: {
       type: Boolean
+    },
+    label: {
+      type: String
     }
   },
   setup() {

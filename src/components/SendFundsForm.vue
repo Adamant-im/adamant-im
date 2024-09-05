@@ -189,7 +189,7 @@
 <script>
 import { adm } from '@/lib/nodes'
 import klyIndexer from '@/lib/nodes/kly-indexer'
-import { AllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { AllNodesDisabledError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 import { PendingTransactionError } from '@/lib/pending-transactions'
 import axios from 'axios'
 import { nextTick } from 'vue'
@@ -752,7 +752,11 @@ export default {
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
           } else if (error instanceof AllNodesOfflineError) {
-            message = this.$t('transfer.error_all_nodes_offline', {
+            message = this.$t('errors.all_nodes_offline', {
+              crypto: error.nodeLabel.toUpperCase()
+            })
+          } else if (error instanceof AllNodesDisabledError) {
+            message = this.$t('errors.all_nodes_disabled', {
               crypto: error.nodeLabel.toUpperCase()
             })
           } else if (error instanceof PendingTransactionError) {

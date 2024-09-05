@@ -1,5 +1,7 @@
+import type { AxiosRequestConfig } from 'axios'
 import { BtcNode } from './BtcNode'
 import { Client } from '../abstract.client'
+import { RpcRequest } from './types/api/common'
 
 /**
  * Provides methods for calling the ADAMANT API.
@@ -15,5 +17,15 @@ export class BtcClient extends Client<BtcNode> {
     this.minNodeVersion = minNodeVersion
 
     void this.watchNodeStatusChange()
+  }
+
+  /**
+   * Performs an RPC request to the Dash node.
+   */
+  async invoke<Result = any, Request extends RpcRequest = RpcRequest>(
+    params: Request,
+    requestConfig?: AxiosRequestConfig
+  ) {
+    return this.getNode().invoke<Result, Request>(params, requestConfig)
   }
 }

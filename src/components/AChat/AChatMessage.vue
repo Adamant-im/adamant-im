@@ -32,15 +32,17 @@
       </div>
       <div class="a-chat__message-card">
         <div class="a-chat__message-card-header mt-1">
-          <div v-if="status.status === 'CONFIRMED'" class="a-chat__blockchain-status">&#x26AD;</div>
+          <div v-if="transaction.status === 'CONFIRMED'" class="a-chat__blockchain-status">
+            &#x26AD;
+          </div>
           <div class="a-chat__timestamp">
             {{ time }}
           </div>
           <div v-if="isOutgoingMessage" class="a-chat__status">
             <v-icon
-              v-if="status.status === 'REJECTED'"
+              v-if="transaction.status === 'REJECTED'"
               :icon="statusIcon"
-              :title="$t('chats.retry_message')"
+              :title="t('chats.retry_message')"
               size="15"
               color="red"
               @click="$emit('resend')"
@@ -80,6 +82,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import { useFormatMessage } from './hooks/useFormatMessage'
@@ -105,10 +108,6 @@ export default defineComponent({
     dataId: {
       type: String
     },
-    status: {
-      type: Object,
-      required: true
-    },
     html: {
       type: Boolean,
       default: false
@@ -132,6 +131,7 @@ export default defineComponent({
   },
   emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress'],
   setup(props, { emit }) {
+    const { t } = useI18n()
     const store = useStore()
 
     const userId = computed(() => store.state.address)
@@ -139,7 +139,7 @@ export default defineComponent({
 
     const showAvatar = computed(() => !isWelcomeChat(partnerId.value))
 
-    const statusIcon = computed(() => tsIcon(props.status.virtualStatus))
+    const statusIcon = computed(() => tsIcon(props.transaction.status))
     const isOutgoingMessage = computed(() =>
       isStringEqualCI(props.transaction.senderId, userId.value)
     )
@@ -155,6 +155,7 @@ export default defineComponent({
     }
 
     return {
+      t,
       userId,
       statusIcon,
       isOutgoingMessage,

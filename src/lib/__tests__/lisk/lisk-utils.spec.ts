@@ -2,7 +2,7 @@
 // Some crypto libs throw errors when using `jsdom` environment
 
 import { KLY_MIN_FEE_PER_BYTE } from '@/lib/klayr'
-import { convertBeddowsToKLY } from '@klayr/transactions'
+import { convertBeddowsTokly } from '@klayr/transactions'
 import { describe, it, expect } from 'vitest'
 import { Cryptos } from '@/lib/constants'
 import { estimateFee, getAccount } from '@/lib/klayr/klayr-utils'
@@ -23,7 +23,7 @@ describe('lisk-utils', () => {
       const messageFee = BigInt(data.length) * BigInt(KLY_MIN_FEE_PER_BYTE)
       const expectedFee = minimalFee + messageFee
 
-      expect(estimateFee({ data })).toBe(convertBeddowsToKLY(expectedFee.toString()))
+      expect(estimateFee({ data })).toBe(convertBeddowsTokly(expectedFee.toString()))
     })
   })
 })

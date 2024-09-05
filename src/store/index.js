@@ -42,6 +42,8 @@ import cache from '@/store/cache'
 import rate from './modules/rate'
 import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant-api/asset'
 import { PendingTxStore } from '@/lib/pending-transactions'
+import servicesModule from './modules/services'
+import servicesPlugin from './modules/services/services-plugin'
 
 export let interval
 
@@ -58,10 +60,12 @@ const store = {
     balanceStatus: FetchStatus.Loading,
     passphrase: '',
     password: '',
-    publicKeys: {}
+    publicKeys: {},
+    isOnline: true
   }),
   getters: {
     isLogged: (state) => state.passphrase.length > 0,
+    isOnline: (state) => state.isOnline,
     getPassPhrase: (state) => state.passphrase, // compatibility getter for ERC20 modules
     publicKey: (state) => (adamantAddress) => state.publicKeys[adamantAddress],
     isAccountNew: (state) =>
@@ -113,6 +117,9 @@ const store = {
     },
     setPublicKey(state, { adamantAddress, publicKey }) {
       state.publicKeys[adamantAddress] = publicKey
+    },
+    setIsOnline(state, value) {
+      state.isOnline = value
     }
   },
   actions: {
@@ -245,6 +252,7 @@ const store = {
     identicon,
     notification,
     rate,
+    services: servicesModule,
     wallets: walletsModule // Wallets order and visibility
   }
 }
@@ -261,7 +269,8 @@ registerVuexPlugins(storeInstance, [
   navigatorOnline,
   socketsPlugin,
   botCommandsPlugin,
-  walletsPersistencePlugin
+  walletsPersistencePlugin,
+  servicesPlugin
 ])
 
 export { store } // for tests

@@ -10,25 +10,37 @@
       </v-list-item-title>
     </v-list-item>
 
-    <v-list-item v-if="isADM" @click="buyTokens">
-      <template #prepend>
-        <v-icon :class="`${className}__icon`" icon="mdi-finance" />
-      </template>
+    <template v-if="isADM">
+      <v-list-item @click="stakeAndEarn">
+        <template #prepend>
+          <icon :width="24" :height="24"><stake-icon /></icon>
+        </template>
 
-      <v-list-item-title :class="`${className}__title`">
-        {{ $t('home.buy_tokens_btn') }}
-      </v-list-item-title>
-    </v-list-item>
+        <v-list-item-title :class="`${className}__title`">
+          {{ $t('home.stake_and_earn_btn') }}
+        </v-list-item-title>
+      </v-list-item>
 
-    <v-list-item v-if="isADM && !hasAdmTokens" @click="getFreeTokens">
-      <template #prepend>
-        <v-icon :class="`${className}__icon`" icon="mdi-gift" />
-      </template>
+      <v-list-item @click="buyTokens">
+        <template #prepend>
+          <v-icon :class="`${className}__icon`" icon="mdi-finance" />
+        </template>
 
-      <v-list-item-title :class="`${className}__title`">
-        {{ $t('home.free_adm_btn') }}
-      </v-list-item-title>
-    </v-list-item>
+        <v-list-item-title :class="`${className}__title`">
+          {{ $t('home.buy_tokens_btn') }}
+        </v-list-item-title>
+      </v-list-item>
+
+      <v-list-item v-if="!hasAdmTokens" @click="getFreeTokens">
+        <template #prepend>
+          <v-icon :class="`${className}__icon`" icon="mdi-gift" />
+        </template>
+
+        <v-list-item-title :class="`${className}__title`">
+          {{ $t('home.free_adm_btn') }}
+        </v-list-item-title>
+      </v-list-item>
+    </template>
 
     <buy-tokens-dialog v-model="showBuyTokensDialog" :adamant-address="$store.state.address" />
   </v-list>
@@ -37,11 +49,15 @@
 <script>
 import { AllCryptos } from '@/lib/constants/cryptos'
 import BuyTokensDialog from '@/components/BuyTokensDialog.vue'
+import Icon from '@/components/icons/BaseIcon.vue'
+import StakeIcon from '@/components/icons/common/Stake.vue'
 import { websiteUriToOnion } from '@/lib/uri'
 
 export default {
   components: {
-    BuyTokensDialog
+    BuyTokensDialog,
+    Icon,
+    StakeIcon
   },
   props: {
     crypto: {
@@ -71,6 +87,9 @@ export default {
           cryptoCurrency: this.crypto
         }
       })
+    },
+    stakeAndEarn() {
+      this.$router.push('/votes')
     },
     buyTokens() {
       this.showBuyTokensDialog = true

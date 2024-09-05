@@ -1,0 +1,11 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "J2L77FMN46.im.adamant.adamant-messenger",
+                "paths": ["*"]
+            }
+        ]
+    }
+}
