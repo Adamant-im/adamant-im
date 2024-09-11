@@ -143,7 +143,6 @@
         <a-chat-attachment
           v-if="message.type === 'attachment'"
           :transaction="message"
-          :status="getTransactionStatus(message)"
           :html="true"
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
