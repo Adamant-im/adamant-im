@@ -1,6 +1,6 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead hide-socket />
+    <NodesTableHead hide-socket :label="t('nodes.coin')" />
 
     <tbody>
       <CoinNodesTableItem v-for="node in nodes" :key="node.url" :label="node.label" :node="node" />
@@ -10,12 +10,13 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
 import CoinNodesTableItem from './CoinNodesTableItem.vue'
 import { type NodeStatusResult } from '@/lib/nodes/abstract.node'
-import { sortNodesFn } from '@/components/nodes/utils/sortNodesFn'
+import { sortCoinNodesFn } from '@/components/nodes/utils/sortNodesFn'
 
 const className = 'nodes-table'
 const classes = {
@@ -29,15 +30,17 @@ export default defineComponent({
     CoinNodesTableItem
   },
   setup() {
+    const { t } = useI18n()
     const store = useStore()
 
     const nodes = computed<NodeStatusResult[]>(() => {
       const arr = store.getters['nodes/coins']
 
-      return [...arr].sort(sortNodesFn)
+      return [...arr].sort(sortCoinNodesFn)
     })
 
     return {
+      t,
       nodes,
       classes
     }

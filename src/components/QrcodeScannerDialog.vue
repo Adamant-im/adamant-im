@@ -10,7 +10,7 @@
         no-gutters
       >
         <div class="a-text-header">
-          {{ $t('scan.waiting_camera') }}
+          {{ t('scan.waiting_camera') }}
         </div>
         <v-progress-circular indeterminate color="primary" size="32" class="ml-4" />
       </v-row>
@@ -41,26 +41,47 @@
         </v-col>
         <v-col cols="12" class="pa-6">
           <h3 class="a-text-regular text-center">
-            {{ $t('scan.hold_your_device') }}
+            {{ t('scan.hold_your_device') }}
           </h3>
         </v-col>
       </v-row>
 
-      <!-- No Camera -->
+      <!-- No Camera || No access || No stream -->
       <v-row
-        v-if="cameraStatus === 'nocamera'"
+        v-if="
+          cameraStatus === 'nocamera' || cameraStatus === 'noaccess' || cameraStatus === 'nostream'
+        "
         justify="center"
         align="center"
         class="text-center pa-8"
         no-gutters
       >
         <v-col cols="12">
-          <h3 class="a-text-header">
-            {{ $t('scan.no_camera_found') }}
-          </h3>
-          <p class="a-text-regular mt-1 mb-0">
-            {{ $t('scan.connect_camera') }}
-          </p>
+          <template v-if="cameraStatus === 'nocamera'">
+            <h3 class="a-text-header">
+              {{ t('scan.no_camera_found') }}
+            </h3>
+            <p class="a-text-regular mt-1 mb-0">
+              {{ t('scan.connect_camera') }}
+            </p>
+          </template>
+          <template v-else-if="cameraStatus === 'noaccess'">
+            <h3 class="a-text-header">
+              {{ t('scan.no_camera_access') }}
+            </h3>
+            <p class="a-text-regular mt-1 mb-0">
+              {{ t('scan.grant_camera_permissions') }}
+            </p>
+          </template>
+          <template v-else-if="cameraStatus === 'nostream'">
+            <h3 class="a-text-header">
+              {{ t('scan.no_camera_stream') }}
+            </h3>
+            <p
+              class="a-text-regular mt-1 mb-0"
+              v-html="t('scan.no_stream_details', { noStreamDetails })"
+            />
+          </template>
         </v-col>
       </v-row>
 
@@ -69,7 +90,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn variant="text" class="a-btn-regular" @click="show = false">
-          {{ $t('scan.close_button') }}
+          {{ t('scan.close_button') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -91,7 +112,7 @@ const classes = {
   cameraSelect: `${className}__camera-select`
 }
 
-type CameraStatus = 'waiting' | 'active' | 'nocamera'
+type CameraStatus = 'waiting' | 'active' | 'nocamera' | 'noaccess' | 'nostream'
 
 export default defineComponent({
   props: {
@@ -110,6 +131,7 @@ export default defineComponent({
     const scanner = ref<Scanner | null>(null)
     const cameras = ref<MediaDeviceInfo[]>([])
     const currentCamera = ref<number | null>(null)
+    const noStreamDetails = ref<string | null>(null)
     const scannerControls = ref<IScannerControls | null>(null)
 
     const show = computed<boolean>({
@@ -131,10 +153,7 @@ export default defineComponent({
         cameras.value = await scanner.value.getCameras()
       } catch (error) {
         cameraStatus.value = 'nocamera'
-        store.dispatch('snackbar/show', {
-          message: t('scan.something_wrong')
-        })
-        console.error(error)
+        onError(error as Error)
       }
     }
 
@@ -149,6 +168,13 @@ export default defineComponent({
       show.value = false
     }
 
+    const onError = (error: Error) => {
+      store.dispatch('snackbar/show', {
+        message: t('scan.something_wrong')
+      })
+      console.error(error)
+    }
+
     watch(cameras, (cameras) => {
       if (cameras.length > 0) {
         currentCamera.value = cameras.length >= 2 ? 1 : 0
@@ -160,15 +186,24 @@ export default defineComponent({
     })
 
     watch(currentCamera, () => {
-      void scanner.value?.start(currentCamera.value, (result, _, controls) => {
-        if (result) {
-          onScan(result.getText()) // text is private field for zxing/browser
-        }
+      void scanner.value?.start(
+        currentCamera.value,
+        (result, _, controls) => {
+          if (result) onScan(result.getText()) // text is private field for zxing/browser
 
-        if (controls) {
-          scannerControls.value = controls
+          if (controls) scannerControls.value = controls
+        },
+        (error) => {
+          if (error.name === 'NotAllowedError') {
+            cameraStatus.value = 'noaccess'
+          } else {
+            cameraStatus.value = 'nostream'
+            noStreamDetails.value = `${error.name} ${error.message}`
+          }
+
+          onError(error)
         }
-      })
+      )
     })
 
     onMounted(() => {
@@ -180,10 +215,12 @@ export default defineComponent({
     })
 
     return {
+      t,
       cameras,
       cameraStatus,
       classes,
       currentCamera,
+      noStreamDetails,
       props,
       show,
       videoElement

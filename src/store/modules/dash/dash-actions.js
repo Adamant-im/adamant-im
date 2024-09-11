@@ -1,8 +1,6 @@
 import baseActions from '../btc-base/btc-base-actions'
 import DashApi from '../../../lib/bitcoin/dash-api'
 
-const TX_FETCH_INTERVAL = 30 * 1000
-
 /**
  * Fetches DASH transactions. Paging is not supported at the moment.
  *
@@ -50,7 +48,6 @@ export default {
   ...baseActions({
     apiCtor: DashApi,
     getOldTransactions,
-    getNewTransactions,
-    fetchRetryTimeout: TX_FETCH_INTERVAL
+    getNewTransactions
   })
 }

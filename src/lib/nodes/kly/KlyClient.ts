@@ -1,4 +1,4 @@
-import { convertBeddowsToKLY } from '@klayr/transactions'
+import { convertBeddowsTokly } from '@klayr/transactions'
 import { KLY_TOKEN_ID } from '@/lib/klayr'
 import { RpcMethod, RpcResults } from './types/api'
 import { KlyNode } from './KlyNode'
@@ -38,7 +38,7 @@ export class KlyClient extends Client<KlyNode> {
       address
     })
 
-    return Number(convertBeddowsToKLY(availableBalance))
+    return Number(convertBeddowsTokly(availableBalance))
   }
 
   async getHeight() {

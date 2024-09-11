@@ -1,5 +1,5 @@
 import { TypedStorage } from '@/lib/typed-storage'
-import type { NodeType } from './types'
+import { NodeKind, NodeType } from './types'
 
 type URL = string
 type Enabled = boolean
@@ -8,7 +8,8 @@ type State = Record<URL, Enabled>
 type Options = Record<
   NodeType,
   {
-    useFastest: boolean
+    node: { useFastest: boolean }
+    service: { useFastest: boolean }
   }
 >
 
@@ -17,14 +18,18 @@ const NODES_OPTIONS_STORAGE_KEY = 'NODES_OPTIONS_STORAGE' // for storing common 
 
 const stateStorage = new TypedStorage(NODES_STATE_STORAGE_KEY, {} as State, window.localStorage)
 
+const defaultConfig = {
+  node: { useFastest: false },
+  service: { useFastest: false }
+}
 const defaultOptions: Options = {
-  adm: { useFastest: false },
-  btc: { useFastest: true },
-  doge: { useFastest: true },
-  dash: { useFastest: true },
-  eth: { useFastest: true },
-  ipfs: { useFastest: true },
-  kly: { useFastest: true }
+  adm: defaultConfig,
+  btc: defaultConfig,
+  doge: defaultConfig,
+  dash: defaultConfig,
+  eth: defaultConfig,
+  kly: defaultConfig,
+  ipfs: defaultConfig
 }
 
 const optionsStorage = new TypedStorage(
@@ -45,18 +50,25 @@ export const nodesStorage = {
 
     stateStorage.setItem(state)
   },
-  getUseFastest(node: NodeType) {
+  getUseFastest(node: NodeType, kind: NodeKind = 'node') {
     const options = optionsStorage.getItem()
 
-    return !!options[node]?.useFastest
+    return !!options[node]?.[kind]?.useFastest
   },
-  setUseFastest(value: boolean, node: NodeType) {
+  setUseFastest(value: boolean, node: NodeType, kind: NodeKind = 'node') {
     const options = optionsStorage.getItem()
 
     if (!options[node]) {
-      options[node] = { useFastest: value }
+      options[node] = {
+        node: { useFastest: false },
+        service: { useFastest: true }
+      }
     }
-    options[node].useFastest = value
+    if (!options[node][kind]) {
+      options[node][kind] = { useFastest: false }
+    }
+
+    options[node][kind].useFastest = value
 
     optionsStorage.setItem(options)
   }

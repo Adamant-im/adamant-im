@@ -11,10 +11,9 @@ export function getNodeHealthcheckConfig(nodeType: NodeType): NodeHealthcheck {
 }
 
 export function getServiceHealthcheckConfig(nodeType: NodeType): ServiceHealthcheck {
-  if (nodeType === 'eth') {
+  if (!config[nodeType].services) {
     return config[nodeType].nodes.healthCheck // Workaround: there no configuration for ETH services
   }
-
   return config[nodeType].services.healthCheck
 }
 

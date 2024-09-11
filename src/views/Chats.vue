@@ -59,6 +59,8 @@
       @error="onError"
       @start-chat="openChat"
     />
+
+    <NodesOfflineDialog node-type="adm" />
   </v-row>
 </template>
 
@@ -66,6 +68,7 @@
 import ChatPreview from '@/components/ChatPreview.vue'
 import ChatStartDialog from '@/components/ChatStartDialog.vue'
 import ChatSpinner from '@/components/ChatSpinner.vue'
+import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
 
@@ -75,7 +78,8 @@ export default {
   components: {
     ChatPreview,
     ChatStartDialog,
-    ChatSpinner
+    ChatSpinner,
+    NodesOfflineDialog
   },
   mixins: [scrollPosition],
   props: {

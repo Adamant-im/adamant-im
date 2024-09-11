@@ -43,6 +43,8 @@ import cache from '@/store/cache'
 import rate from './modules/rate'
 import { cryptoTransferAsset, replyWithCryptoTransferAsset } from '@/lib/adamant-api/asset'
 import { PendingTxStore } from '@/lib/pending-transactions'
+import servicesModule from './modules/services'
+import servicesPlugin from './modules/services/services-plugin'
 
 export let interval
 
@@ -252,6 +254,7 @@ const store = {
     identicon,
     notification,
     rate,
+    services: servicesModule,
     wallets: walletsModule // Wallets order and visibility
   }
 }
@@ -268,7 +271,8 @@ registerVuexPlugins(storeInstance, [
   navigatorOnline,
   socketsPlugin,
   botCommandsPlugin,
-  walletsPersistencePlugin
+  walletsPersistencePlugin,
+  servicesPlugin
 ])
 
 export { store } // for tests
