@@ -5,7 +5,7 @@ export default {
   doge: {},
   dash: {},
   ipfs: {},
-  lsk: {},
+  kly: {},
   useFastestAdmNode: false,
   useFastestCoinNode: true,
   useFastestIpfsNode: true

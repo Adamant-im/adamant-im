@@ -1,6 +1,6 @@
 import { getRealTimestamp } from './utils/getRealTimestamp'
 import { isNumeric } from '@/lib/numericHelpers'
-import { TransactionStatus as TS } from '@/lib/constants'
+import { TransactionStatus as TS, Transactions } from '@/lib/constants'
 import { KnownCryptos, UnsupportedCryptos } from './constants'
 
 /**
@@ -51,17 +51,7 @@ export function normalizeMessage(abstract) {
       } else {
         transaction.type = 'message'
       }
-    } else if (abstract.message.reply_message.files) {
-      transaction.asset = {
-        ...abstract.message.reply_message,
-        replyto_id: abstract.message.replyto_id
-      }
-      transaction.recipientPublicKey = abstract.recipientPublicKey
-      transaction.senderPublicKey = abstract.senderPublicKey
-      transaction.message = abstract.message.reply_message.comment || ''
-      transaction.hash = abstract.id
-      transaction.type = 'attachment'
-    } else {
+    } else if (abstract.message.reply_message.type) {
       // reply with a crypto transfer
       transaction.asset = abstract.message
       transaction.message = abstract.message.reply_message.comments || ''
@@ -80,6 +70,22 @@ export function normalizeMessage(abstract) {
         transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
         transaction.status = TS.UNKNOWN
       }
+    } else if (abstract.message.reply_message.files) {
+      transaction.asset = {
+        ...abstract.message.reply_message,
+        replyto_id: abstract.message.replyto_id
+      }
+      transaction.recipientPublicKey = abstract.recipientPublicKey
+      transaction.senderPublicKey = abstract.senderPublicKey
+      transaction.message = abstract.message.reply_message.comment || ''
+      transaction.hash = abstract.id
+      transaction.type = 'attachment'
+    } else {
+      // Unsupported transaction type. May require updating the PWA version.
+      transaction.message = 'chats.unsupported_transaction_type'
+      transaction.i18n = true
+      transaction.hash = abstract.id // adm transaction id (hash)
+      transaction.type = 'message'
     }
 
     transaction.isReply = true
@@ -100,6 +106,16 @@ export function normalizeMessage(abstract) {
       transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
       transaction.status = TS.UNKNOWN
     }
+  } else if (
+    typeof abstract.message === 'string' ||
+    abstract.type === Transactions.SEND ||
+    abstract.amount > 0
+  ) {
+    // ADM transaction or Message
+    transaction.message = abstract.message || ''
+    transaction.hash = abstract.id // adm transaction id (hash)
+
+    abstract.amount > 0 ? (transaction.type = 'ADM') : (transaction.type = 'message')
   } else if (abstract.message?.files) {
     transaction.recipientPublicKey = abstract.recipientPublicKey
     transaction.senderPublicKey = abstract.senderPublicKey
@@ -108,11 +124,11 @@ export function normalizeMessage(abstract) {
     transaction.message = abstract.message.comment || ''
     transaction.type = 'attachment'
   } else {
-    // ADM transaction or Message
-    transaction.message = abstract.message || ''
+    // Unsupported transaction type. May require updating the PWA version.
+    transaction.message = 'chats.unsupported_transaction_type'
+    transaction.i18n = true
     transaction.hash = abstract.id // adm transaction id (hash)
-
-    abstract.amount > 0 ? (transaction.type = 'ADM') : (transaction.type = 'message')
+    transaction.type = 'message'
   }
 
   return transaction

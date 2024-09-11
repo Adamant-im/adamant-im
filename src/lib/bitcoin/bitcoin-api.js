@@ -28,10 +28,7 @@ export default class BitcoinApi extends BtcBaseApi {
 
   /** @override */
   sendTransaction(txHex) {
-    return btc
-      .getClient()
-      .post('/tx', txHex)
-      .then((response) => response.data)
+    return btc.useClient((client) => client.post('/tx', txHex)).then((response) => response.data)
   }
 
   /** @override */
@@ -87,9 +84,6 @@ export default class BitcoinApi extends BtcBaseApi {
 
   /** Executes a GET request to the API */
   _get(url, params) {
-    return btc
-      .getClient()
-      .get(url, { params })
-      .then((response) => response.data)
+    return btc.useClient((client) => client.get(url, { params })).then((response) => response.data)
   }
 }

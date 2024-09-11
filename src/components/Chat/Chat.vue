@@ -506,6 +506,7 @@ export default {
   beforeUnmount() {
     window.removeEventListener('keyup', this.onKeyPress)
     Visibility.unbind(this.visibilityId)
+    this.$store.dispatch('clearAnimationTimeouts')
   },
   mounted() {
     if (this.isFulfilled && this.chatPage <= 0) this.fetchChatMessages()
@@ -587,7 +588,6 @@ export default {
       this.closeActionsDropdown()
 
       emojiWeight.addReaction(emoji)
-      vibrate.veryShort()
 
       return this.$store.dispatch('chat/sendReaction', {
         recipientId: this.partnerId,

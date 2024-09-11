@@ -16,7 +16,7 @@ import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
 import IpfsNodesTableItem from './IpfsNodesTableItem.vue'
 import { sortNodesFn } from '@/components/nodes/utils/sortNodesFn'
 
-const className = 'adm-nodes-table'
+const className = 'ipfs-nodes-table'
 const classes = {
   root: className
 }

@@ -1,5 +1,5 @@
 import { isAddress as isEthAddress, isHexStrict } from 'web3-utils'
-import { validateBase32Address as isLskAddress } from '@liskhq/lisk-cryptography'
+import { validateBase32Address as isKlyAddress } from '@klayr/cryptography'
 import { Cryptos, CryptosInfo } from './constants'
 
 /**
@@ -77,10 +77,10 @@ export function parseURIasAIP(uri = getAddressBarURI()) {
       crypto = Cryptos.ETH
     }
 
-    if (crypto === Cryptos.LSK) {
+    if (crypto === Cryptos.KLY) {
       // We need to use try-catch https://github.com/LiskHQ/lisk-sdk/issues/6652
       try {
-        if (!isLskAddress(address)) {
+        if (!isKlyAddress(address)) {
           crypto = ''
         }
       } catch (e) {

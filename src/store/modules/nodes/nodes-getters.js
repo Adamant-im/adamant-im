@@ -17,10 +17,10 @@ export default {
   ipfs(state) {
     return Object.values(state.ipfs)
   },
-  lsk(state) {
-    return Object.values(state.lsk)
+  kly(state) {
+    return Object.values(state.kly)
   },
   coins(state, getters) {
-    return [...getters.eth, ...getters.btc, ...getters.doge, ...getters.dash, ...getters.lsk]
+    return [...getters.eth, ...getters.btc, ...getters.doge, ...getters.dash, ...getters.kly]
   }
 }

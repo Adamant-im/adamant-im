@@ -49,16 +49,14 @@
           "alt_ip": "http://46.250.234.248:36666"
         },
         {
-          "url": "https://tegmine.adm.im",
-          "alt_ip": "http://5.104.87.219:36666"
+          "url": "https://tegmine.adm.im"
         },
         {
           "url": "https://tauri.adm.im",
           "alt_ip": "http://154.26.159.245:36666"
         },
         {
-          "url": "https://dschubba.adm.im",
-          "alt_ip": "http://85.239.234.17:36666"
+          "url": "https://dschubba.adm.im"
         }
       ],
       "healthCheck": {
@@ -109,8 +107,8 @@
           "alt_ip": "http://176.9.38.204:44099"
         },
         {
-          "url": "https://btcnode2.adamant.im",
-          "alt_ip": "http://176.9.32.126:44099"
+          "url": "https://btcnode3.adamant.im",
+          "alt_ip": "http://195.201.242.108:44099"
         }
       ],
       "healthCheck": {
@@ -155,7 +153,7 @@
     "contractId": "0x19062190B1925b5b6689D7073fDfC8c2976EF8Cb",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
+    "defaultVisibility": false,
     "defaultGasLimit": 58000,
     "defaultOrdinalLevel": 95,
     "status": "active",
@@ -170,9 +168,9 @@
     "contractId": "0x6b175474e89094c44da98b954eedeac495271d0f",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
+    "defaultVisibility": false,
     "defaultGasLimit": 58000,
-    "defaultOrdinalLevel": 50,
+    "defaultOrdinalLevel": 80,
     "status": "active",
     "mainCoin": "ETH",
     "type": "ERC20",
@@ -216,7 +214,7 @@
       "oldPendingAttempts": 4
     },
     "txConsistencyMaxTime": 800000,
-    "defaultOrdinalLevel": 80,
+    "defaultOrdinalLevel": 70,
     "explorerTx": "https://dashblockexplorer.com/tx/${ID}"
   },
   "DOGE": {
@@ -321,7 +319,7 @@
     "contractId": "0xcf0c122c6b73ff809c693db761e7baebe62b6a2e",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
+    "defaultVisibility": false,
     "defaultGasLimit": 58000,
     "defaultOrdinalLevel": 100,
     "status": "active",
@@ -336,7 +334,7 @@
     "contractId": "0x720CD16b011b987Da3518fbf38c3071d4F0D1495",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
+    "defaultVisibility": false,
     "defaultGasLimit": 58000,
     "defaultOrdinalLevel": 90,
     "status": "active",
@@ -351,7 +349,7 @@
     "contractId": "0xe66747a101bff2dba3697199dcce5b743b454759",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
+    "defaultVisibility": false,
     "defaultGasLimit": 58000,
     "defaultOrdinalLevel": 115,
     "status": "active",
@@ -387,39 +385,22 @@
     "type": "ERC20",
     "fees": "ethereum"
   },
-  "LINK": {
-    "symbol": "LINK",
-    "name": "Chainlink",
-    "decimals": 18,
-    "contractId": "0x514910771af9ca656af840dff83e8264ecf986ca",
-    "createCoin": false,
-    "cryptoTransferDecimals": 6,
-    "defaultGasLimit": 58000,
-    "status": "active",
-    "mainCoin": "ETH",
-    "type": "ERC20",
-    "fees": "ethereum"
-  },
-  "LSK": {
-    "symbol": "LSK",
-    "name": "Lisk",
-    "qrPrefix": "lisk",
+  "KLY": {
+    "symbol": "KLY",
+    "name": "Klayr",
+    "qrPrefix": "klayr",
     "minBalance": 0.05,
-    "regexAddress": "^lsk[a-z2-9]{38}$",
+    "regexAddress": "^kly[a-z2-9]{38}$",
     "decimals": 8,
     "nodes": {
       "list": [
         {
-          "url": "https://lisknode3.adamant.im",
-          "alt_ip": "http://157.90.229.236:44099"
+          "url": "https://klynode1.adamant.im",
+          "alt_ip": "http://195.26.255.137:44099"
         },
         {
-          "url": "https://lisknode4.adamant.im",
-          "alt_ip": "http://78.47.205.206:44099"
-        },
-        {
-          "url": "https://lisknode5.adamant.im",
-          "alt_ip": "http://38.242.243.29:44099"
+          "url": "https://klynode2.adamant.im",
+          "alt_ip": "http://109.176.199.130:44099"
         }
       ],
       "healthCheck": {
@@ -441,8 +422,21 @@
       "oldPendingAttempts": 4
     },
     "txConsistencyMaxTime": 60000,
-    "defaultOrdinalLevel": 60,
-    "explorerTx": "https://liskscan.com/transaction/${ID}"
+    "defaultOrdinalLevel": 50,
+    "explorerTx": "https://explorer.klayr.xyz/transaction/${ID}"
+  },
+  "LINK": {
+    "symbol": "LINK",
+    "name": "Chainlink",
+    "decimals": 18,
+    "contractId": "0x514910771af9ca656af840dff83e8264ecf986ca",
+    "createCoin": false,
+    "cryptoTransferDecimals": 6,
+    "defaultGasLimit": 58000,
+    "status": "active",
+    "mainCoin": "ETH",
+    "type": "ERC20",
+    "fees": "ethereum"
   },
   "MANA": {
     "symbol": "MANA",
@@ -518,7 +512,7 @@
     "contractId": "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
+    "defaultVisibility": false,
     "defaultGasLimit": 58000,
     "defaultOrdinalLevel": 85,
     "status": "active",
@@ -559,7 +553,7 @@
     "contractId": "0xb64ef51c888972c908cfacf59b47c1afbc0ab8ac",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
+    "defaultVisibility": false,
     "defaultGasLimit": 58000,
     "defaultOrdinalLevel": 105,
     "status": "active",
@@ -656,7 +650,7 @@
     "contractId": "0x249cA82617eC3DfB2589c4c17ab7EC9765350a18",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
+    "defaultVisibility": false,
     "defaultGasLimit": 58000,
     "defaultOrdinalLevel": 95,
     "status": "active",
@@ -684,7 +678,7 @@
     "contractId": "0xa2cd3d43c775978a96bdbf12d733d5a1ed94fb18",
     "createCoin": false,
     "cryptoTransferDecimals": 6,
-    "defaultVisibility": true,
+    "defaultVisibility": false,
     "defaultGasLimit": 58000,
     "defaultOrdinalLevel": 110,
     "status": "active",

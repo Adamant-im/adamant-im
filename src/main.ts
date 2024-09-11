@@ -1,3 +1,5 @@
+import 'core-js/actual/object/group-by'
+
 import { createApp } from 'vue'
 
 import App from './App.vue'
