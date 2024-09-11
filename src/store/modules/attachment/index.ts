@@ -48,12 +48,11 @@ const actions: ActionTree<AttachmentsState, RootState> = {
     return attachmentApi?.getFile(cid, nonce, publicKey)
   },
   async getAttachmentUrl(
-    state,
+    { state, commit },
     { cid, publicKey, nonce }: { cid: string; publicKey: Uint8Array; nonce: string }
   ) {
-    console.log(state.state)
-    if (state.state.attachments[cid]) {
-      return state.state.attachments[cid]
+    if (state.attachments[cid]) {
+      return state.attachments[cid]
     } else {
       try {
         const fileData = await attachmentApi?.getFile(cid, nonce, publicKey)
@@ -64,7 +63,7 @@ const actions: ActionTree<AttachmentsState, RootState> = {
         const blob = new Blob([fileData], { type: 'application/octet-stream' })
         const url = URL.createObjectURL(blob)
         if (fileData !== undefined) {
-          store.commit('setAttachment', { cid, url })
+          commit('setAttachment', { cid, url })
         }
         return url
       } catch (error) {
