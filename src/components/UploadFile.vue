@@ -8,44 +8,51 @@
     @change="uploadFile"
   />
 </template>
-<script>
-export default {
+x(
+<script lang="ts">
+import { defineComponent, PropType } from 'vue'
+
+export default defineComponent({
   props: {
-    accept: String,
+    accept: {
+      type: String as PropType<string>,
+      default: ''
+    },
     partnerId: {
-      type: String,
+      type: String as PropType<string>,
       default: ''
     }
   },
   emits: ['image-selected'],
   methods: {
-    uploadFile(event) {
-      const selectedFiles = event.target.files
-      console.log('files', selectedFiles)
+    uploadFile(event: Event) {
+      const input = event.target as HTMLInputElement
+      const selectedFiles = input.files
 
-      if (selectedFiles.length > 0) {
-        for (const file of selectedFiles) {
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            const imageData = {
-              name: file.name,
-              type: file.type,
-              content: e.target.result,
-              isImage: file.type.includes('image/')
-            }
-            this.$emit('image-selected', imageData)
-            const publicKey = this.$store.getters.publicKey(this.partnerId)
-            console.log(this.partnerId)
-            console.log(publicKey)
-            this.$store.dispatch('attachment/uploadAttachment', {
-              file,
-              publicKey
-            })
+      if (!selectedFiles) {
+        console.log('No files selected')
+        return
+      }
+
+      for (const file of selectedFiles) {
+        const reader = new FileReader()
+        reader.onload = (e: ProgressEvent<FileReader>) => {
+          const imageData = {
+            name: file.name,
+            type: file.type,
+            content: e.target?.result as string,
+            isImage: file.type.includes('image/')
           }
-          reader.readAsDataURL(file)
+          this.$emit('image-selected', imageData)
+          const publicKey = this.$store.getters.publicKey(this.partnerId)
+          this.$store.dispatch('attachment/uploadAttachment', {
+            file: new Uint8Array(reader.result as ArrayBuffer),
+            publicKey
+          })
         }
+        reader.readAsDataURL(file)
       }
     }
   }
-}
+})
 </script>
