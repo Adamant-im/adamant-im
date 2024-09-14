@@ -8,7 +8,7 @@
     @change="uploadFile"
   />
 </template>
-x(
+
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 
