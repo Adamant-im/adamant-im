@@ -35,3 +35,7 @@ export function reactionAsset(reactToId, reactMessage) {
     react_message: reactMessage
   }
 }
+
+export function fileAsset(payload) {
+  return payload
+}

@@ -22,6 +22,7 @@
 import { defineComponent, ref, PropType, onMounted } from 'vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { useStore } from 'vuex'
+import { FileAsset } from '@/lib/adamant-api/asset'
 
 const className = 'a-chat-file'
 const classes = {
@@ -38,7 +39,7 @@ export default defineComponent({
       required: true
     },
     img: {
-      type: Object
+      type: Object as PropType<FileAsset>
     }
   },
   components: {},
