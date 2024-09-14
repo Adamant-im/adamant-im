@@ -1,4 +1,5 @@
 import { isNodeOfflineError } from '@/lib/nodes/utils/errors'
+import { AxiosProgressEvent } from 'axios'
 import { IpfsNode, Payload, RequestConfig } from './IpfsNode.ts'
 import { Client } from '../abstract.client'
 
@@ -16,6 +17,18 @@ export class IpfsClient extends Client<IpfsNode> {
     this.minNodeVersion = minNodeVersion
 
     void this.watchNodeStatusChange()
+  }
+
+  async upload(payload: FormData, onUploadProgress?: (progressEvent: AxiosProgressEvent) => void) {
+    return this.request({
+      method: 'post',
+      url: '/api/file/upload',
+      payload,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      onUploadProgress
+    })
   }
 
   /**
