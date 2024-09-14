@@ -52,7 +52,7 @@ export default defineComponent({
 
       const cid = props.img?.id
       const fileName = props.img?.name
-      const fileType = props.img?.type
+      const fileType = props.img?.extension
       const nonce = props.img?.nonce
 
       const publicKey =
