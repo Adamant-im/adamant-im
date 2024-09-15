@@ -14,6 +14,8 @@ import { isNumeric } from '@/lib/numericHelpers'
 import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
+import { readFile } from "../../../hooks/useUploadFile";
+import { createAttachment } from '../../../lib/chat/helpers'
 
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
@@ -727,6 +729,66 @@ const actions = {
     return queueMessage(messageAsset, recipientId, type)
       .then((res) => {
         // @todo this check must be performed on the server
+        if (!res.success) {
+          throw new Error(i18n.global.t('chats.message_rejected'))
+        }
+
+        // update `message.status` to 'REGISTERED'
+        // and `message.id` with `realId` from server
+        commit('updateMessage', {
+          id: messageObject.id,
+          realId: res.transactionId,
+          status: TS.REGISTERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
+          partnerId: recipientId
+        })
+
+        return res
+      })
+      .catch((err) => {
+        // update `message.status` to 'REJECTED'
+        commit('updateMessage', {
+          id: messageObject.id,
+          status: TS.REJECTED,
+          partnerId: recipientId
+        })
+
+        throw err // call the error again so that it can be processed inside view
+      })
+  },
+
+  /**
+   * Send files to the chat.
+   * After confirmation, `id` and `status` will be updated.
+   *
+   * @param {string} message
+   * @param {string} recipientId
+   * @param {File[]} files
+   * @param {string} replyToId Optional
+   * @returns {Promise}
+   */
+  async sendAttachment({ commit, rootState }, { files, message, recipientId, replyToId }) {
+    const messageObject = createAttachment({
+      message,
+      recipientId,
+      senderId: rootState.address,
+      files,
+      replyToId
+    })
+
+    commit('pushMessage', {
+      message: messageObject,
+      userId: rootState.address
+    })
+
+    const type = replyToId ? MessageType.RICH_CONTENT_MESSAGE : MessageType.BASIC_ENCRYPTED_MESSAGE
+
+    const promises = files.map(file => readFile(file))
+    const result = await Promise.all(promises);
+    console.log('result', result)
+
+    throw new Error('TODO')
+    return queueMessage(messageObject.asset, recipientId, type)
+      .then((res) => {
         if (!res.success) {
           throw new Error(i18n.global.t('chats.message_rejected'))
         }
