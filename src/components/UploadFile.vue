@@ -12,6 +12,14 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 
+export type FileData = {
+  name: string
+  type: string
+  content: string
+  isImage: boolean
+  file: File
+}
+
 export default defineComponent({
   props: {
     accept: {
@@ -37,13 +45,14 @@ export default defineComponent({
       for (const file of selectedFiles) {
         const reader = new FileReader()
         reader.onload = (e: ProgressEvent<FileReader>) => {
-          const imageData = {
+          const fileData: FileData = {
             name: file.name,
             type: file.type,
             content: e.target?.result as string,
-            isImage: file.type.includes('image/')
+            isImage: file.type.includes('image/'),
+            file: file
           }
-          this.$emit('image-selected', imageData)
+          this.$emit('image-selected', fileData)
           const publicKey = this.$store.getters.publicKey(this.partnerId)
           this.$store.dispatch('attachment/uploadAttachment', {
             file: new Uint8Array(reader.result as ArrayBuffer),

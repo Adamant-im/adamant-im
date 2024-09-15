@@ -2,26 +2,26 @@
   <div v-if="files.length" :class="classes.root">
     <div :class="classes.container">
       <div :class="classes.containerScrollbar">
-        <div :class="classes.containerWithElement" v-for="(imageUrl, index) in files" :key="index">
+        <div :class="classes.containerWithElement" v-for="(file, index) in files" :key="index">
           <div :class="classes.positionClose">
             <img
-              v-if="imageUrl.isImage"
+              v-if="file.isImage"
               :class="classes.img"
-              :src="imageUrl.content"
+              :src="file.content"
               alt="Selected Image"
             />
 
             <IconFile
               :class="classes.file"
-              :text="formatText(imageUrl.name)"
+              :text="formatText(file.name)"
               :height="80"
               :width="80"
               v-else
-            ></IconFile>
+            />
 
             <v-icon size="18" icon="mdi-close" @click="removeItem(index)" :class="classes.close" />
           </div>
-          <p :class="classes.fileName">{{ shortenFileName(imageUrl.name) }}</p>
+          <p :class="classes.fileName">{{ shortenFileName(file.name) }}</p>
         </div>
       </div>
 
@@ -36,9 +36,10 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { FileData } from '@/components/UploadFile.vue'
 import IconFile from '../icons/common/IconFile.vue'
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 
 const className = 'a-chat-preview-file'
 const classes = {
@@ -61,23 +62,23 @@ export default defineComponent({
   emits: ['cancel', 'remove-item'],
   props: {
     files: {
-      type: Array,
+      type: Array as PropType<Array<FileData>>,
       required: true
     }
   },
   setup(props, { emit }) {
-    const formatText = (fileName) => {
+    const formatText = (fileName: string) => {
       const regex = /[^.]+$/
-      const result = fileName.match(regex)[0]
+      const result = fileName.match(regex)?.[0]
 
       return result
     }
 
-    const removeItem = (index) => {
+    const removeItem = (index: number) => {
       emit('remove-item', index)
     }
 
-    const shortenFileName = (fileName) => {
+    const shortenFileName = (fileName: string) => {
       if (fileName.length <= 12) {
         return fileName
       } else {
@@ -87,6 +88,7 @@ export default defineComponent({
         return shortenedName.replace(/\s+/g, '')
       }
     }
+
     return {
       classes,
       shortenFileName,
