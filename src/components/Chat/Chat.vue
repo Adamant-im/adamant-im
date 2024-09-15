@@ -3,7 +3,6 @@
     <free-tokens-dialog v-model="showFreeTokensDialog" />
     <a-chat
       ref="chatRef"
-      :files="files"
       :messages="messages"
       :partners="partners"
       :user-id="userId"
@@ -285,6 +284,7 @@
 <script lang="ts" setup>
 import AChatMessageActionsList from '@/components/AChat/AChatMessageActionsList.vue'
 import AChatReactions from '@/components/AChat/AChatReactions/AChatReactions.vue'
+import { FileData } from '@/components/UploadFile.vue'
 import { emojiWeight } from '@/lib/chat/emoji-weight/emojiWeight'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { vibrate } from '@/lib/vibrate'
@@ -364,7 +364,7 @@ const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
 
-const files = ref<File[]>([])
+const files = ref<FileData[]>([])
 const loading = ref(false)
 const replyLoadingChatHistory = ref(false)
 const noMoreMessages = ref(false)
@@ -472,7 +472,7 @@ const onMessage = (message: string) => {
   nextTick(() => chatRef.value.scrollToBottom())
   replyMessageId.value = -1
 }
-const handleFiles = (filesList: File[]) => {
+const handleFiles = (filesList: FileData[]) => {
   files.value = filesList
 }
 const removeItem = (index: number) => {
@@ -508,6 +508,17 @@ const cancelReplyMessage = () => {
 const sendMessage = (message: string) => {
   store.dispatch('draftMessage/deleteDraft', { partnerId: props.partnerId })
   const replyToId = replyMessageId.value > -1 ? replyMessageId.value : undefined
+
+  if (files.value.length > 0) {
+    store.dispatch('chat/sendAttachment', {
+      files,
+      message,
+      recipientId: props.partnerId,
+      replyToId
+    })
+
+    return
+  }
 
   return store
     .dispatch('chat/sendMessage', {

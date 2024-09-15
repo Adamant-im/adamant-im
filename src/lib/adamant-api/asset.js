@@ -36,6 +36,29 @@ export function reactionAsset(reactToId, reactMessage) {
   }
 }
 
-export function fileAsset(payload) {
-  return payload
+/**
+ * AIP-18: https://github.com/Adamant-im/AIPs/pull/54/files
+ * @param {Array<File>} files
+ * @param {string} comment
+ */
+export function attachmentAsset(files, comment) {
+  return {
+    files: files.map((file) => ({
+      mimeType: file.type,
+      name: file.name,
+      extension: file.name.split('.').pop(),
+      // resolution?: [number, number] // @todo
+      // duration?: number // @todo
+      id: '',
+      size: file.size,
+      nonce: '',
+      preview: {
+        id: '',
+        nonce: '',
+        extension: ''
+      }
+    })),
+    comment,
+    storage: { id: 'ipfs' }
+  }
 }

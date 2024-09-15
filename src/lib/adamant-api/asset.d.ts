@@ -149,4 +149,13 @@ export interface FileAsset {
   }
 }
 
-export function fileAsset(payload: FileAsset): FileAsset
+export interface AttachmentAsset {
+  files: FileAsset[]
+  storage: { id: 'ipfs' }
+  /**
+   * Optional comment associated with the transaction
+   */
+  comment?: string
+}
+
+export function attachmentAsset(files: File[], comment?: string): AttachmentAsset
