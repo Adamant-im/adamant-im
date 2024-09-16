@@ -42,7 +42,7 @@
             <v-icon
               v-if="transaction.status === 'REJECTED'"
               :icon="statusIcon"
-              :title="$t('chats.retry_message')"
+              :title="t('chats.retry_message')"
               size="15"
               color="red"
               @click="$emit('resend')"
@@ -104,6 +104,7 @@
 
 <script lang="ts">
 import { ref, computed, defineComponent, PropType } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import { useFormatMessage } from './hooks/useFormatMessage'
@@ -157,6 +158,7 @@ export default defineComponent({
   },
   emits: ['resend', 'click:quotedMessage', 'swipe:left', 'longpress'],
   setup(props, { emit }) {
+    const { t } = useI18n()
     const store = useStore()
 
     const userId = computed(() => store.state.address)
@@ -190,6 +192,7 @@ export default defineComponent({
     }
 
     return {
+      t,
       userId,
       statusIcon,
       isOutgoingMessage,
