@@ -45,11 +45,11 @@ export function reactionAsset(reactToId, reactMessage) {
  */
 export function attachmentAsset(files, nonces, ids, comment) {
   return {
-    files: files.map(({ file, width, height }, index) => {
+    files: files.map(({ file, width, height, cid }, index) => {
       const [name, extension] = file.name.split('.')
       const resolution = width && height ? [width, height] : undefined
       const [nonce, previewNonce] = nonces?.[index] || []
-      const [id, previewId] = ids?.[index] || []
+      const [id, previewId] = cid ? [cid, cid] : ids?.[index] || [] // @todo cid preview
 
       return {
         mimeType: file.type,
