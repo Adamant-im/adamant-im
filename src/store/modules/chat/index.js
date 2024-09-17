@@ -16,7 +16,7 @@ import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
 import { encodeFile } from '../../../lib/adamant-api'
-import { readFileAsBuffer, uploadFiles } from '../../../lib/file'
+import { computeCID, readFileAsBuffer, uploadFiles } from '../../../lib/file'
 
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
@@ -791,11 +791,14 @@ const actions = {
       )
     )
 
-    // Updating nonces
+    // Updating CIDs and Nonces
     const nonces = encodedFiles.map((file) => [file.nonce, file.nonce]) // @todo preview nonce
+    const cidsList = await Promise.all(encodedFiles.map((file) => computeCID(file.binary))) // @todo preview cid
+    const cids = cidsList.map((cid) => [cid, cid])
+
     let newAsset = replyToId
-      ? { replyto_id: replyToId, reply_message: attachmentAsset(files, nonces, undefined, message) }
-      : attachmentAsset(files, nonces, undefined, message)
+      ? { replyto_id: replyToId, reply_message: attachmentAsset(files, nonces, cids, message) }
+      : attachmentAsset(files, nonces, cids, message)
     commit('updateMessage', {
       id: messageObject.id,
       partnerId: recipientId,
@@ -805,18 +808,6 @@ const actions = {
 
     const uploadData = await uploadFiles(files, encodedFiles)
     console.log('Files uploaded', uploadData)
-
-    // Update CIDs
-    const cids = uploadData.cids.map((cid) => [cid, cid]) // @todo preview cid
-    newAsset = replyToId
-      ? { replyto_id: replyToId, reply_message: attachmentAsset(files, nonces, cids, message) }
-      : attachmentAsset(files, nonces, cids, message)
-    commit('updateMessage', {
-      id: messageObject.id,
-      partnerId: recipientId,
-      asset: newAsset
-    })
-    console.log('Updated CIDs', newAsset)
 
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
       .then((res) => {
