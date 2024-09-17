@@ -174,7 +174,7 @@ export function sendMessage(params) {
 }
 
 /**
- * @param {ArrayBuffer} file
+ * @param {Uint8Array} file
  * @param {{ to: string }} params
  */
 export async function encodeFile(file, params) {
