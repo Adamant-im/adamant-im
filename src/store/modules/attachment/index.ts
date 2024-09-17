@@ -2,7 +2,6 @@ import { MutationTree, GetterTree, ActionTree } from 'vuex'
 import { RootState } from '@/store/types'
 import { AttachmentsState } from '@/store/modules/attachment/types.ts'
 import { AttachmentApi } from '@/lib/attachment-api'
-import { store } from '@/store'
 
 const state = (): AttachmentsState => ({
   attachments: {}
@@ -43,13 +42,13 @@ const actions: ActionTree<AttachmentsState, RootState> = {
   },
   getAttachment(
     _context,
-    { cid, publicKey, nonce }: { cid: string; publicKey: Uint8Array; nonce: string }
+    { cid, publicKey, nonce }: { cid: string; publicKey: string; nonce: string }
   ) {
     return attachmentApi?.getFile(cid, nonce, publicKey)
   },
   async getAttachmentUrl(
     { state, commit },
-    { cid, publicKey, nonce }: { cid: string; publicKey: Uint8Array; nonce: string }
+    { cid, publicKey, nonce }: { cid: string; publicKey: string; nonce: string }
   ) {
     if (state.attachments[cid]) {
       return state.attachments[cid]
@@ -72,7 +71,7 @@ const actions: ActionTree<AttachmentsState, RootState> = {
       }
     }
   },
-  async uploadAttachment(state, { file, publicKey }: { file: Uint8Array; publicKey: Uint8Array }) {
+  async uploadAttachment(state, { file, publicKey }: { file: Uint8Array; publicKey: string }) {
     return attachmentApi?.uploadFile(file, publicKey)
   },
   resetState(context) {

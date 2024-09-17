@@ -145,6 +145,7 @@
           :html="true"
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
+          :partner-id="partnerId"
           @resend="resendMessage(partnerId, message.id)"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="onSwipeLeft(message)"
@@ -511,7 +512,7 @@ const sendMessage = (message: string) => {
 
   if (files.value.length > 0) {
     store.dispatch('chat/sendAttachment', {
-      files,
+      files: files.value,
       message,
       recipientId: props.partnerId,
       replyToId

@@ -14,7 +14,6 @@ import { isNumeric } from '@/lib/numericHelpers'
 import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
-import { readFile } from "../../../hooks/useUploadFile";
 import { createAttachment } from '../../../lib/chat/helpers'
 
 import { generateAdamantChats } from './utils/generateAdamantChats'
@@ -782,9 +781,9 @@ const actions = {
 
     const type = replyToId ? MessageType.RICH_CONTENT_MESSAGE : MessageType.BASIC_ENCRYPTED_MESSAGE
 
-    const promises = files.map(file => readFile(file))
-    const result = await Promise.all(promises);
-    console.log('result', result)
+    // const promises = files.map(file => readFile(file))
+    // const result = await Promise.all(promises);
+    // console.log('result', result)
 
     throw new Error('TODO')
     return queueMessage(messageObject.asset, recipientId, type)

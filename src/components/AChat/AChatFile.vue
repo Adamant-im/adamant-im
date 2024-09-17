@@ -1,28 +1,42 @@
 <template>
   <div :class="classes.container">
-    <div :class="classes.containerWithElement">
-      <v-img
-        v-if="imageUrl"
-        :cover="false"
-        :class="classes.img"
-        :src="imageUrl"
-        alt="Selected Image"
-      >
-        <template v-slot:placeholder>
-          <div class="d-flex align-center justify-center fill-height">
-            <v-progress-circular color="grey-lighten-4" indeterminate></v-progress-circular>
-          </div>
-        </template>
-      </v-img>
-    </div>
+    <AChatFileLoader :partner-id="partnerId" :file="img" :transaction="transaction">
+      <template #default="{ isLoading, fileUrl, width, height }">
+        <v-img :src="fileUrl" :width="400" :aspect-ratio="width / height">
+          <template #placeholder>
+            <div class="d-flex align-center justify-center fill-height">
+              <v-progress-circular color="grey-lighten-4" indeterminate />
+            </div>
+          </template>
+        </v-img>
+      </template>
+    </AChatFileLoader>
   </div>
 </template>
 
 <script lang="ts">
+import { AChatFileLoader } from './AChatFileLoader.tsx'
 import { defineComponent, ref, PropType, onMounted } from 'vue'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { useStore } from 'vuex'
 import { FileAsset } from '@/lib/adamant-api/asset'
+
+function imgToDataURL(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+
+    reader.onload = (event) => {
+      const dataURL = event.target?.result as string
+      resolve(dataURL)
+    }
+
+    reader.readAsDataURL(file)
+  })
+}
+
+function isLocalFile(file: FileAsset | LocalFile): file is LocalFile {
+  return 'file' in file && file.file instanceof File
+}
 
 const className = 'a-chat-file'
 const classes = {
@@ -39,15 +53,25 @@ export default defineComponent({
       required: true
     },
     img: {
-      type: Object as PropType<FileAsset>
+      type: Object as PropType<FileAsset | LocalFile>,
+      required: true
+    },
+    partnerId: {
+      type: String,
+      required: true
     }
   },
-  components: {},
+  components: { AChatFileLoader },
   setup(props) {
     const store = useStore()
     const imageUrl = ref('')
 
     const getFileFromStorage = async () => {
+      if (isLocalFile(props.img)) {
+        imageUrl.value = await imgToDataURL(props.img.file.file)
+        return
+      }
+
       const myAddress = store.state.address
 
       const cid = props.img?.id

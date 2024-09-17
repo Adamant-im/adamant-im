@@ -74,15 +74,30 @@
           />
           <div class="a-chat_file-container">
             <div class="a-chat_fileContainerWithElement">
-              <AChatFile
-                class="a-chat_file-img"
-                v-for="(img, index) in transaction.asset.files"
-                :key="index"
-                @click="openModal(index)"
-                :transaction="transaction"
-                :img="img"
-                >{{ img }}</AChatFile
-              >
+              <template v-if="transaction.localFiles">
+                <AChatFile
+                  class="a-chat_file-img"
+                  v-for="(img, index) in transaction.localFiles"
+                  :key="index"
+                  @click="openModal(index)"
+                  :transaction="transaction"
+                  :img="img"
+                  :partner-id="partnerId"
+                  >{{ img }}</AChatFile
+                >
+              </template>
+              <template v-else>
+                <AChatFile
+                  class="a-chat_file-img"
+                  v-for="(img, index) in transaction.asset.files"
+                  :key="index"
+                  @click="openModal(index)"
+                  :transaction="transaction"
+                  :img="img"
+                  :partner-id="partnerId"
+                  >{{ img }}</AChatFile
+                >
+              </template>
             </div>
           </div>
           <AChatImageModal
@@ -130,6 +145,10 @@ export default defineComponent({
   props: {
     transaction: {
       type: Object as PropType<NormalizedChatMessageTransaction>,
+      required: true
+    },
+    partnerId: {
+      type: String,
       required: true
     },
     dataId: {

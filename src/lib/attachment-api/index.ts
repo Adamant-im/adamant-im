@@ -1,4 +1,5 @@
 import utils from '@/lib/adamant'
+import { hexToBytes } from "@/lib/hex";
 import ipfs from '@/lib/nodes/ipfs'
 import { Buffer } from 'buffer'
 
@@ -9,14 +10,14 @@ export class AttachmentApi {
     this.myKeypair = utils.makeKeypair(hash) as { publicKey: Buffer; privateKey: Buffer }
   }
 
-  async getFile(cid: string, nonce: string, publicKey: Uint8Array) {
-    const file = await ipfs.get(`api/file/${cid}`, {})
+  async getFile(cid: string, nonce: string, publicKey: string) {
+    const file = await ipfs.downloadFile(cid)
     return utils.decodeBinary(new Uint8Array(file), publicKey, this.myKeypair.privateKey, nonce)
   }
 
-  async uploadFile(file: Uint8Array, publicKey: Uint8Array) {
+  async uploadFile(file: Uint8Array, publicKey: string) {
     const formData = new FormData()
-    const { binary, nonce } = utils.encodeBinary(file, publicKey, this.myKeypair.privateKey)
+    const { binary, nonce } = utils.encodeBinary(file, hexToBytes(publicKey), this.myKeypair.privateKey)
     formData.append('file', binary)
 
     const { cids } = await ipfs.post(`api/file/upload`, formData, {
