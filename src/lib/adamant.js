@@ -470,7 +470,7 @@ adamant.encodeBinary = function (source, recipientPublicKey, privateKey) {
 /**
  * Decodes a secret binary
  * @param {string|Uint8Array} source source to decrypt
- * @param {Uint8Array} senderPublicKey sender's public key
+ * @param {string|Uint8Array} senderPublicKey sender's public key
  * @param {Uint8Array} privateKey private key
  * @param {string|Uint8Array} nonce nonce
  * @returns {string} decoded value
@@ -480,7 +480,8 @@ adamant.decodeBinary = function (source, senderPublicKey, privateKey, nonce) {
     nonce = hexToBytes(nonce)
   }
 
-  const publicKey = hexToBytes(senderPublicKey)
+  const publicKey =
+    typeof senderPublicKey === 'string' ? hexToBytes(senderPublicKey) : senderPublicKey
 
   const DHPublicKey = ed2curve.convertPublicKey(publicKey)
   const DHSecretKey = ed2curve.convertSecretKey(privateKey)
