@@ -6,7 +6,7 @@ import { FileAsset } from '@/lib/adamant-api/asset'
 import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 
 function isLocalFile(file: FileAsset | LocalFile): file is LocalFile {
-  return 'file' in file && file.file instanceof File
+  return 'file' in file && file.file?.file instanceof File
 }
 
 export const AChatFileLoader = defineComponent(
@@ -22,7 +22,7 @@ export const AChatFileLoader = defineComponent(
 
     const width = computed(() => {
       if (isLocalFile(props.file)) {
-        throw new Error('todo')
+        return props.file.file.width
       } else {
         return props.file.resolution?.[0]
       }
@@ -30,17 +30,13 @@ export const AChatFileLoader = defineComponent(
 
     const height = computed(() => {
       if (isLocalFile(props.file)) {
-        throw new Error('todo')
+        return props.file.file.height
       } else {
         return props.file.resolution?.[1]
       }
     })
 
-    const {
-      data: fileUrl,
-      isLoading,
-      error
-    } = useQuery({
+    const { data, isLoading, error } = useQuery({
       queryKey: ['file', (props.file as FileAsset).id],
       queryFn: async () => {
         const file = props.file as FileAsset
@@ -54,6 +50,14 @@ export const AChatFileLoader = defineComponent(
         return fileUrl
       },
       enabled: !isLocalFile(props.file)
+    })
+
+    const fileUrl = computed(() => {
+      if (isLocalFile(props.file)) {
+        return props.file.file.content
+      }
+
+      return data.value
     })
 
     return () => (
