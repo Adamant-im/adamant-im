@@ -54,7 +54,7 @@ export const AChatFileLoader = defineComponent(
 
     const fileUrl = computed(() => {
       if (isLocalFile(props.file)) {
-        return props.file.file.content
+        return store.getters['attachment/getImageUrl'](props.file.file.cid)
       }
 
       return data.value

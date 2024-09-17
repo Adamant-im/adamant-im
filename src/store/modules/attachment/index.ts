@@ -23,6 +23,9 @@ const mutations: MutationTree<AttachmentsState> = {
 }
 
 const getters: GetterTree<AttachmentsState, RootState> = {
+  getImageUrl: (state) => (cid: string) => {
+    return state.attachments[cid]
+  },
   getFileMessage: (state) => (id: string) => {
     const objMessage = state.attachments[id]
     if (objMessage?.files) {

@@ -11,9 +11,10 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { readFileAsDataURL } from '@/lib/file'
+import { computeCID, readFileAsBuffer, readFileAsDataURL } from '@/lib/file'
 
 export type FileData = {
+  cid: string
   name: string
   type: string
   content: string
@@ -64,9 +65,19 @@ export default defineComponent({
 
       for (const file of selectedFiles) {
         const { raw, dataURL } = await readFileAsDataURL(file)
+        const arrayBuffer = await readFileAsBuffer(file)
         const { width, height } = await getImageResolution(file)
+        const cid = await computeCID(raw)
+
+        // Cache the attachment
+        const blob = new Blob([arrayBuffer], { type: file.type })
+        const url = URL.createObjectURL(blob)
+
+        // Cache image URL
+        this.$store.commit('attachment/setAttachment', { cid, url })
 
         const fileData: FileData = {
+          cid,
           name: file.name,
           type: file.type,
           content: dataURL,

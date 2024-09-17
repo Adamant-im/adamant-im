@@ -1,4 +1,4 @@
-import { FileData } from "@/components/UploadFile.vue";
+import { FileData } from '@/components/UploadFile.vue'
 import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
 import { TransactionStatusType } from '@/lib/constants'
 import { ChatMessageTransaction } from '@/lib/schema/client'

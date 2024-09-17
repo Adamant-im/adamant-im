@@ -1,7 +1,7 @@
 <template>
   <div :class="classes.container">
     <AChatFileLoader :partner-id="partnerId" :file="img" :transaction="transaction">
-      <template #default="{ isLoading, fileUrl, width, height }">
+      <template #default="{ fileUrl, width, height }">
         <v-img :src="fileUrl" :width="400" :aspect-ratio="width / height">
           <template #placeholder>
             <div class="d-flex align-center justify-center fill-height">
@@ -16,27 +16,9 @@
 
 <script lang="ts">
 import { AChatFileLoader } from './AChatFileLoader.tsx'
-import { defineComponent, ref, PropType, onMounted } from 'vue'
+import { defineComponent, PropType } from 'vue'
 import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { useStore } from 'vuex'
 import { FileAsset } from '@/lib/adamant-api/asset'
-
-function imgToDataURL(file: File): Promise<string> {
-  return new Promise((resolve) => {
-    const reader = new FileReader()
-
-    reader.onload = (event) => {
-      const dataURL = event.target?.result as string
-      resolve(dataURL)
-    }
-
-    reader.readAsDataURL(file)
-  })
-}
-
-function isLocalFile(file: FileAsset | LocalFile): file is LocalFile {
-  return 'file' in file && file.file instanceof File
-}
 
 const className = 'a-chat-file'
 const classes = {
@@ -62,46 +44,9 @@ export default defineComponent({
     }
   },
   components: { AChatFileLoader },
-  setup(props) {
-    const store = useStore()
-    const imageUrl = ref('')
-
-    const getFileFromStorage = async () => {
-      if (isLocalFile(props.img)) {
-        imageUrl.value = await imgToDataURL(props.img.file.file)
-        return
-      }
-
-      const myAddress = store.state.address
-
-      const cid = props.img?.id
-      const fileName = props.img?.name
-      const fileType = props.img?.extension
-      const nonce = props.img?.nonce
-
-      const publicKey =
-        props.transaction.senderId === myAddress
-          ? props.transaction.recipientPublicKey
-          : props.transaction.senderPublicKey
-      imageUrl.value = await store.dispatch('attachment/getAttachmentUrl', {
-        cid,
-        publicKey,
-        nonce
-      })
-      if (!!fileName && !!fileType) {
-        // TODO: resolve MIME-type
-        // downloadFile(data, fileName, '')
-      }
-    }
-
-    onMounted(() => {
-      getFileFromStorage()
-    })
-
+  setup() {
     return {
-      classes,
-      getFileFromStorage,
-      imageUrl
+      classes
     }
   }
 })
