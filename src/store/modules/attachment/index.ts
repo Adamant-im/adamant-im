@@ -13,9 +13,8 @@ const mutations: MutationTree<AttachmentsState> = {
     state.attachments = attachments
   },
 
-  setAttachment(state, { сid, url }) {
-    state.attachments = { ...state.attachments, [сid]: url }
-    console.log(state.attachments)
+  setAttachment(state, { cid, url }) {
+    state.attachments = { ...state.attachments, [cid]: url }
   },
 
   reset(state) {
@@ -61,9 +60,7 @@ const actions: ActionTree<AttachmentsState, RootState> = {
 
         const blob = new Blob([fileData], { type: 'application/octet-stream' })
         const url = URL.createObjectURL(blob)
-        if (fileData !== undefined) {
-          commit('setAttachment', { cid, url })
-        }
+        commit('setAttachment', { cid, url })
         return url
       } catch (error) {
         console.error('Error fetching image:', error)
