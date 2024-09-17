@@ -1,3 +1,7 @@
+import { FileData } from '@/components/UploadFile.vue'
+import { EncodedFile } from '@/lib/adamant-api'
+import ipfs from '@/lib/nodes/ipfs'
+
 export function readFileAsDataURL(file: File): Promise<{ raw: Uint8Array; dataURL: string }> {
   return new Promise((resolve) => {
     const reader = new FileReader()
@@ -28,4 +32,27 @@ export function readFileAsBuffer(file: File): Promise<Uint8Array> {
 
     reader.readAsArrayBuffer(file)
   })
+}
+
+export async function uploadFiles(files: FileData[], encodedFiles: EncodedFile[]) {
+  const formData = new FormData()
+
+  for (const [index, file] of Object.entries(files)) {
+    const encodedFile = encodedFiles[+index]?.binary
+    if (!encodedFile) {
+      throw new Error(`Missing binary data for ${file.file.name}`)
+    }
+
+    const blob = new Blob([encodedFile], { type: 'application/octet-stream' })
+    formData.append('files', blob, file.file.name)
+  }
+
+  const response = await ipfs.upload(formData, (progress) => {
+    const percentCompleted = Math.round((progress.loaded * 100) / (progress.total || 0))
+
+    console.log(`Progress ${percentCompleted}%`)
+  })
+  console.log(`Uploaded CIDs`, response)
+
+  return response
 }

@@ -1,5 +1,6 @@
 import { FileData } from '@/components/UploadFile.vue'
 import utils from '@/lib/adamant'
+import { EncodedFile } from '@/lib/adamant-api'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers/normalizeMessage'
 import { TransactionStatus as TS, TransactionStatusType } from '@/lib/constants'
 import { attachmentAsset } from '@/lib/adamant-api/asset'
@@ -8,6 +9,9 @@ type Params = {
   recipientId: string
   senderId: string
   files: FileData[]
+  nonces?: [string, string]
+  ids?: [string, string]
+  encodedFiles?: EncodedFile[]
   message?: string
   replyToId?: string
   status?: TransactionStatusType
@@ -19,13 +23,14 @@ export function createAttachment({
   recipientId,
   senderId,
   files,
+  nonces,
+  ids,
   message,
   replyToId,
   status = TS.PENDING
 }: Params) {
   const timestamp = Date.now()
   const id = utils.epochTime().toString()
-  const filesList = files.map((file) => file.file)
 
   const transaction: NormalizedChatMessageTransaction = {
     id,
@@ -37,8 +42,8 @@ export function createAttachment({
     timestamp: Date.now(),
     type: 'attachment',
     asset: replyToId
-      ? { replyto_id: replyToId, reply_message: attachmentAsset(filesList) }
-      : attachmentAsset(filesList),
+      ? { replyto_id: replyToId, reply_message: attachmentAsset(files, nonces, ids, message) }
+      : attachmentAsset(files, nonces, ids, message),
     /**
      * When sending a message, we need to store the files locally.
      */

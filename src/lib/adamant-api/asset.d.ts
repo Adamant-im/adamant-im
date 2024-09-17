@@ -1,3 +1,5 @@
+import { FileData } from '@/components/UploadFile.vue'
+
 /**
  * AIP 12: Non-ADM crypto transfer messages
  * @see https://aips.adamant.im/AIPS/aip-12
@@ -158,4 +160,9 @@ export interface AttachmentAsset {
   comment?: string
 }
 
-export function attachmentAsset(files: File[], comment?: string): AttachmentAsset
+export function attachmentAsset(
+  files: FileData[],
+  nonces?: [string, string],
+  ids?: [string, string],
+  comment?: string
+): AttachmentAsset

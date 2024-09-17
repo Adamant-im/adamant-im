@@ -7,14 +7,16 @@ import {
   createMessage,
   createTransaction,
   createReaction,
-  normalizeMessage
+  normalizeMessage,
+  createAttachment
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
 import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { replyMessageAsset } from '@/lib/adamant-api/asset'
-import { createAttachment } from '../../../lib/chat/helpers'
+import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
+import { encodeFile } from '../../../lib/adamant-api'
+import { readFileAsBuffer, uploadFiles } from '../../../lib/file'
 
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
@@ -460,7 +462,7 @@ const mutations = {
    * @param {string} realId Real id (from server)
    * @param {string} status Message status
    */
-  updateMessage(state, { partnerId, id, realId, status }) {
+  updateMessage(state, { partnerId, id, realId, status, asset }) {
     const chat = state.chats[partnerId]
 
     if (chat) {
@@ -472,6 +474,9 @@ const mutations = {
         }
         if (status) {
           message.status = status
+        }
+        if (asset) {
+          message.asset = asset
         }
       }
     }
@@ -766,27 +771,54 @@ const actions = {
    * @returns {Promise}
    */
   async sendAttachment({ commit, rootState }, { files, message, recipientId, replyToId }) {
-    const messageObject = createAttachment({
+    let messageObject = createAttachment({
       message,
       recipientId,
       senderId: rootState.address,
       files,
       replyToId
     })
+    console.log('Pushed message', messageObject)
 
     commit('pushMessage', {
       message: messageObject,
       userId: rootState.address
     })
 
-    const type = replyToId ? MessageType.RICH_CONTENT_MESSAGE : MessageType.BASIC_ENCRYPTED_MESSAGE
+    const encodedFiles = await Promise.all(
+      files.map((file) =>
+        readFileAsBuffer(file.file).then((buffer) => encodeFile(buffer, { to: recipientId }))
+      )
+    )
 
-    // const promises = files.map(file => readFile(file))
-    // const result = await Promise.all(promises);
-    // console.log('result', result)
+    // Updating nonces
+    const nonces = encodedFiles.map((file) => [file.nonce, file.nonce]) // @todo preview nonce
+    let newAsset = replyToId
+      ? { replyto_id: replyToId, reply_message: attachmentAsset(files, nonces, undefined, message) }
+      : attachmentAsset(files, nonces, undefined, message)
+    commit('updateMessage', {
+      id: messageObject.id,
+      partnerId: recipientId,
+      asset: newAsset
+    })
+    console.log('Updated Nonces', newAsset)
 
-    throw new Error('TODO')
-    return queueMessage(messageObject.asset, recipientId, type)
+    const uploadData = await uploadFiles(files, encodedFiles)
+    console.log('Files uploaded', uploadData)
+
+    // Update CIDs
+    const cids = uploadData.cids.map((cid) => [cid, cid]) // @todo preview cid
+    newAsset = replyToId
+      ? { replyto_id: replyToId, reply_message: attachmentAsset(files, nonces, cids, message) }
+      : attachmentAsset(files, nonces, cids, message)
+    commit('updateMessage', {
+      id: messageObject.id,
+      partnerId: recipientId,
+      asset: newAsset
+    })
+    console.log('Updated CIDs', newAsset)
+
+    return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
       .then((res) => {
         if (!res.success) {
           throw new Error(i18n.global.t('chats.message_rejected'))
