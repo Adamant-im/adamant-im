@@ -761,7 +761,7 @@ const actions = {
    *
    * @param {string} message
    * @param {string} recipientId
-   * @param {File[]} files
+   * @param {FileData[]} files
    * @param {string} replyToId Optional
    * @returns {Promise}
    */
