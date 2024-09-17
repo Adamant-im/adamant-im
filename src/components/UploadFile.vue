@@ -11,6 +11,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
+import { readFileAsDataURL } from '@/lib/file'
 
 export type FileData = {
   name: string
@@ -21,19 +22,6 @@ export type FileData = {
   raw: Uint8Array
   width?: number
   height?: number
-}
-
-function readFile(file: File): Promise<{ raw: Uint8Array; dataURL: string }> {
-  return new Promise((resolve) => {
-    const reader = new FileReader()
-    reader.onload = (e: ProgressEvent<FileReader>) => {
-      resolve({
-        raw: new Uint8Array(reader.result as ArrayBuffer),
-        dataURL: e.target?.result as string
-      })
-    }
-    reader.readAsDataURL(file)
-  })
 }
 
 function getImageResolution(file: File): Promise<{ width?: number; height?: number }> {
@@ -75,7 +63,7 @@ export default defineComponent({
       }
 
       for (const file of selectedFiles) {
-        const { raw, dataURL } = await readFile(file)
+        const { raw, dataURL } = await readFileAsDataURL(file)
         const { width, height } = await getImageResolution(file)
 
         const fileData: FileData = {
