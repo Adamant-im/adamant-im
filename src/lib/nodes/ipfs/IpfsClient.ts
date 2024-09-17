@@ -19,6 +19,14 @@ export class IpfsClient extends Client<IpfsNode> {
     void this.watchNodeStatusChange()
   }
 
+  async downloadFile(cid: string) {
+    return this.request({
+      method: 'get',
+      url: `api/file/${cid}`,
+      responseType: 'arraybuffer'
+    })
+  }
+
   async upload(payload: FormData, onUploadProgress?: (progressEvent: AxiosProgressEvent) => void) {
     return this.request({
       method: 'post',

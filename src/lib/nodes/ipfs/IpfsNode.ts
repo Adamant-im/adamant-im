@@ -1,6 +1,6 @@
 import utils from '@/lib/adamant'
 import { NodeOfflineError } from '@/lib/nodes/utils/errors'
-import axios, { AxiosInstance, AxiosProgressEvent, AxiosRequestConfig } from 'axios'
+import axios, { AxiosInstance, AxiosProgressEvent, AxiosRequestConfig, ResponseType } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
 
@@ -24,6 +24,7 @@ export type RequestConfig<P extends Payload> = {
   method?: string
   payload?: P
   onUploadProgress?: (progress: AxiosProgressEvent) => void
+  responseType?: ResponseType
 }
 
 /**
@@ -58,6 +59,7 @@ export class IpfsNode extends Node<AxiosInstance> {
       // responseType: url.includes('file') ? 'arraybuffer' : 'json',
       [method === 'get' ? 'params' : 'data']:
         typeof payload === 'function' ? payload(this) : payload,
+      responseType: cfg.responseType,
       onUploadProgress
     }
 
