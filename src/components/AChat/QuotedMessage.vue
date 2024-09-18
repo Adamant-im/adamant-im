@@ -8,11 +8,11 @@
     <v-progress-circular v-if="loading" indeterminate size="16" />
 
     <div v-else-if="errorCode === ErrorCodes.INVALID_MESSAGE" :class="classes.invalidMessage">
-      {{ '{ ' + $t('chats.invalid_message') + ' }' }}
+      {{ '{ ' + t('chats.invalid_message') + ' }' }}
     </div>
 
     <div v-else-if="errorCode === ErrorCodes.MESSAGE_NOT_FOUND" :class="classes.messageNotFound">
-      {{ '{ ' + $t('chats.message_not_found') + ' }' }}
+      {{ '{ ' + t('chats.message_not_found') + ' }' }}
     </div>
 
     <div v-else-if="transaction" :class="classes.message">
@@ -22,7 +22,7 @@
 
       <span v-else-if="isAttachment">
         <span v-if="transaction.asset.files.length > 0">
-          [{{ transaction.asset.files.length }} {{ $t('chats.files') }}]:
+          [{{ transaction.asset.files.length }} {{ t('chats.files') }}]:
         </span>
         {{ transaction.message }}
       </span>
@@ -166,6 +166,7 @@ export default defineComponent({
 
     return {
       classes,
+      t,
       loading,
       transaction,
       isCryptoTransfer,

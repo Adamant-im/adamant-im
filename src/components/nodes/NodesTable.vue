@@ -4,7 +4,7 @@
       <v-tab value="adm">{{ t('nodes.tabs.adm_nodes') }}</v-tab>
       <v-tab value="coins">{{ t('nodes.tabs.coin_nodes') }}</v-tab>
       <v-tab value="services">{{ t('nodes.tabs.service_nodes') }}</v-tab>
-      <v-tab value="ipfs">{{ $t('nodes.tabs.ipfs_nodes') }}</v-tab>
+      <v-tab value="ipfs">{{ t('nodes.tabs.ipfs_nodes') }}</v-tab>
     </v-tabs>
 
     <v-window v-model="tab">

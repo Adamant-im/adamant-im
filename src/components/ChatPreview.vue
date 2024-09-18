@@ -60,7 +60,7 @@
       <!-- Attachment -->
       <template v-else-if="isAttachment">
         <v-list-item-subtitle :class="`${className}__subtitle`">
-          [{{ transaction.asset.files.length }} {{ $t('chats.files') }}]: {{ transaction.message }}
+          [{{ transaction.asset.files.length }} {{ t('chats.files') }}]: {{ transaction.message }}
         </v-list-item-subtitle>
       </template>
       <!-- Reaction -->
@@ -167,7 +167,10 @@ export default defineComponent({
     const chatName = useChatName(contactId, true)
 
     const isTransferType = computed(
-      () => props.transaction.type !== 'message' && props.transaction.type !== 'reaction' && props.transaction.type !== 'attachment'
+      () =>
+        props.transaction.type !== 'message' &&
+        props.transaction.type !== 'reaction' &&
+        props.transaction.type !== 'attachment'
     )
     const isAttachment = computed(() => props.transaction.type === 'attachment')
     const isReaction = computed(() => props.transaction.type === 'reaction')
@@ -225,6 +228,7 @@ export default defineComponent({
     return {
       className,
       chatName,
+      t,
       createdAt,
       currency,
       formatDate,
