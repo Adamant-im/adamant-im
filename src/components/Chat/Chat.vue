@@ -34,7 +34,6 @@
           <a-chat-transaction
             v-else-if="isTransaction(actionMessage.type)"
             :transaction="actionMessage"
-            :crypto="actionMessage.type"
             :data-id="'action-message'"
             disable-max-width
             elevation
@@ -159,7 +158,6 @@
         <a-chat-transaction
           v-else-if="isTransaction(message.type)"
           :transaction="message"
-          :crypto="message.type"
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
           :swipe-disabled="isWelcomeMessage(message)"
