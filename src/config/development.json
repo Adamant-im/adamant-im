@@ -86,7 +86,7 @@
         "normalUpdateInterval": 300000,
         "crucialUpdateInterval": 30000,
         "onScreenUpdateInterval": 10000,
-        "threshold": 100
+        "threshold": 50000
       },
       "minVersion": "0.0.1"
     },

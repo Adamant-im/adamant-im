@@ -57,7 +57,7 @@
         "normalUpdateInterval": 300000,
         "crucialUpdateInterval": 30000,
         "onScreenUpdateInterval": 10000,
-        "threshold": 10
+        "threshold": 50000
       },
       "minVersion": "0.8.0"
     },
@@ -84,7 +84,8 @@
       "healthCheck": {
         "normalUpdateInterval": 300000,
         "crucialUpdateInterval": 300000,
-        "onScreenUpdateInterval": 300000
+        "onScreenUpdateInterval": 300000,
+        "threshold": 1000
       }
     },
     "explorerTx": "https://explorer.adamant.im/tx/${ID}",
