@@ -13,6 +13,8 @@
 import { defineComponent, PropType } from 'vue'
 import { computeCID, readFileAsBuffer, readFileAsDataURL } from '@/lib/file'
 
+import { EncodedFile, encodeFile } from '@/lib/adamant-api'
+
 export type FileData = {
   cid: string
   name: string
@@ -20,7 +22,7 @@ export type FileData = {
   content: string
   isImage: boolean
   file: File
-  raw: Uint8Array
+  encoded: EncodedFile
   width?: number
   height?: number
 }
@@ -64,10 +66,11 @@ export default defineComponent({
       }
 
       for (const file of Array.from(selectedFiles)) {
-        const { raw, dataURL } = await readFileAsDataURL(file)
+        const dataURL = await readFileAsDataURL(file)
         const arrayBuffer = await readFileAsBuffer(file)
         const { width, height } = await getImageResolution(file)
-        const cid = await computeCID(raw)
+        const encodedFile = await encodeFile(arrayBuffer, { to: this.partnerId })
+        const cid = await computeCID(encodedFile.binary)
 
         // Cache the attachment
         const blob = new Blob([arrayBuffer], { type: file.type })
@@ -81,7 +84,7 @@ export default defineComponent({
           name: file.name,
           type: file.type,
           content: dataURL,
-          raw: raw,
+          encoded: encodedFile,
           isImage: file.type.includes('image/'),
           file: file,
           width,

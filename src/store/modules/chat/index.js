@@ -15,9 +15,7 @@ import { isNumeric } from '@/lib/numericHelpers'
 import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
-import { encodeFile } from '../../../lib/adamant-api'
-import { computeCID, readFileAsBuffer, uploadFiles } from '../../../lib/file'
-
+import { uploadFiles } from '../../../lib/file'
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
@@ -785,16 +783,9 @@ const actions = {
       userId: rootState.address
     })
 
-    const encodedFiles = await Promise.all(
-      files.map((file) =>
-        readFileAsBuffer(file.file).then((buffer) => encodeFile(buffer, { to: recipientId }))
-      )
-    )
-
     // Updating CIDs and Nonces
-    const nonces = encodedFiles.map((file) => [file.nonce, file.nonce]) // @todo preview nonce
-    const cidsList = await Promise.all(encodedFiles.map((file) => computeCID(file.binary))) // @todo preview cid
-    const cids = cidsList.map((cid) => [cid, cid])
+    const nonces = files.map((file) => [file.encoded.nonce, file.encoded.nonce]) // @todo preview nonce
+    const cids = files.map((file) => [file.cid, file.cid]) // @todo preview cid
 
     let newAsset = replyToId
       ? { replyto_id: replyToId, reply_message: attachmentAsset(files, nonces, cids, message) }
@@ -804,9 +795,9 @@ const actions = {
       partnerId: recipientId,
       asset: newAsset
     })
-    console.log('Updated Nonces', newAsset)
+    console.log('Updated CIDs and Nonces', newAsset)
 
-    const uploadData = await uploadFiles(files, encodedFiles)
+    const uploadData = await uploadFiles(files)
     console.log('Files uploaded', uploadData)
 
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)

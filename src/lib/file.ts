@@ -1,15 +1,11 @@
 import { FileData } from '@/components/UploadFile.vue'
-import { EncodedFile } from '@/lib/adamant-api'
 import ipfs from '@/lib/nodes/ipfs'
 
-export function readFileAsDataURL(file: File): Promise<{ raw: Uint8Array; dataURL: string }> {
+export function readFileAsDataURL(file: File): Promise<string> {
   return new Promise((resolve) => {
     const reader = new FileReader()
     reader.onload = (e: ProgressEvent<FileReader>) => {
-      resolve({
-        raw: new Uint8Array(reader.result as ArrayBuffer),
-        dataURL: e.target?.result as string
-      })
+      resolve(e.target?.result as string)
     }
     reader.readAsDataURL(file)
   })
@@ -34,16 +30,11 @@ export function readFileAsBuffer(file: File): Promise<Uint8Array> {
   })
 }
 
-export async function uploadFiles(files: FileData[], encodedFiles: EncodedFile[]) {
+export async function uploadFiles(files: FileData[]) {
   const formData = new FormData()
 
-  for (const [index, file] of Object.entries(files)) {
-    const encodedFile = encodedFiles[+index]?.binary
-    if (!encodedFile) {
-      throw new Error(`Missing binary data for ${file.file.name}`)
-    }
-
-    const blob = new Blob([encodedFile], { type: 'application/octet-stream' })
+  for (const file of files) {
+    const blob = new Blob([file.encoded.binary], { type: 'application/octet-stream' })
     formData.append('files', blob, file.file.name)
   }
 
