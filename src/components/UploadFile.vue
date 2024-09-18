@@ -63,7 +63,7 @@ export default defineComponent({
         return
       }
 
-      for (const file of selectedFiles) {
+      for (const file of Array.from(selectedFiles)) {
         const { raw, dataURL } = await readFileAsDataURL(file)
         const arrayBuffer = await readFileAsBuffer(file)
         const { width, height } = await getImageResolution(file)

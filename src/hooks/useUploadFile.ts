@@ -40,7 +40,7 @@ async function uploadFile(files: File[], to: string) {
   }
 
   const response = await ipfs.upload(formData, (progress) => {
-    const percentCompleted = Math.round((progress.loaded * 100) / progress.total)
+    const percentCompleted = Math.round((progress.loaded * 100) / progress.total!)
 
     console.log(`Progress ${percentCompleted}%`)
   })

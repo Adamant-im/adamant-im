@@ -463,7 +463,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   window.removeEventListener('keyup', onKeyPress)
-  Visibility.unbind(visibilityId.value)
+  Visibility.unbind(Number(visibilityId.value))
 })
 
 const onMessage = (message: string) => {
@@ -506,7 +506,7 @@ const cancelReplyMessage = () => {
 
 const sendMessage = (message: string) => {
   store.dispatch('draftMessage/deleteDraft', { partnerId: props.partnerId })
-  const replyToId = replyMessageId.value > -1 ? replyMessageId.value : undefined
+  const replyToId = replyMessageId.value !== -1 ? replyMessageId.value : undefined
 
   if (files.value.length > 0) {
     store.dispatch('chat/sendAttachment', {
@@ -703,7 +703,7 @@ const openTransaction = (transaction: NormalizedChatMessageTransaction) => {
         txId: transaction.hash
       },
       query: {
-        fromChat: true
+        fromChat: 'true'
       }
     })
   }
