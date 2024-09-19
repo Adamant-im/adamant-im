@@ -1,5 +1,6 @@
 <template>
   <v-app :theme="themeName" class="application--linear-gradient">
+    <button @click="throwAnError">Throw</button>
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
 
     <component :is="layout">
@@ -49,6 +50,9 @@ export default defineComponent({
     this.$store.dispatch('stopInterval')
   },
   methods: {
+    throwAnError() {
+      throw new Error('hello world')
+    },
     setLocale() {
       // Set language from `localStorage`.
       //
