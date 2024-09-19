@@ -7,6 +7,9 @@ import { manifest } from './vite-config/manifest'
 export default mergeConfig(
   viteBaseConfig,
   defineConfig({
+    build: {
+      sourcemap: true
+    },
     plugins: [
       VitePWA({
         registerType: 'autoUpdate',
