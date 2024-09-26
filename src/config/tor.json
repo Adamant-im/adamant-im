@@ -33,31 +33,45 @@
       "minVersion": "0.8.0"
     },
     "services": {
-      "list": {
-        "infoService": [
+      "infoService": {
+        "description": {
+          "software": "adamant-currencyinfo-services",
+          "github": "https://github.com/Adamant-im/adamant-currencyinfo-services",
+          "docs": "https://github.com/Adamant-im/adamant-currencyinfo-services/wiki/InfoServices-API-documentation"
+        },
+        "list": [
           {
             "url": "http://czjsawp2crjmnkliw2h2kpk7wwd3a36zvvnvqgvzmi4t4vc2yzm7j2qd.onion"
           }
         ],
-        "ipfs": [
-          {
-            "url": "https://ipfs1test.adamant.im",
-            "alt_ip": "http://194.163.154.252:4000"
-          },
-          {
-            "url": "https://ipfs2test.adamant.im",
-            "alt_ip": "http://154.26.159.245:4000"
-          },
-          {
-            "url": "https://ipfs3test.adamant.im",
-            "alt_ip": "http://109.123.240.102:4000"
-          }
-        ]
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
       },
-      "healthCheck": {
-        "normalUpdateInterval": 300000,
-        "crucialUpdateInterval": 300000,
-        "onScreenUpdateInterval": 300000
+      "ipfsNode": {
+        "description": {
+          "software": "ipfs-node",
+          "github": "https://github.com/Adamant-im/ipfs-node",
+          "docs": "https://github.com/Adamant-im/ipfs-node/blob/master/README.md"
+        },
+        "list": [
+          {
+            "url": "http://z455rax4mwcseyc7efog7czrbwdvphwocatl5sjcc6htcoj2k2vz7dad.onion"
+          },
+          {
+            "url": "http://cds45bjd7ynxkffxpzfifnm55r6vmhgocvpvonjmry3mrskuhda6z7qd.onion"
+          },
+          {
+            "url": "http://3ytwoe62bqw264v4rkaqpn5iovdg3oxly5tx2uc5qijkrdqixm6tmdyd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 300000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
       }
     },
     "explorerTx": "http://srovpmanmrbmbqe63vp5nycsa3j3g6be3bz46ksmo35u5pw7jjtjamid.onion/tx/${ID}",
@@ -68,7 +82,7 @@
     "nodes": {
       "list": [
         {
-          "url": "http://cc6ibzkfeseuwnmtjc6hlsd44bzg2sr3shbv7n35nj2rk2vm6dmtlnqd.onion"
+          "url": "http://cc6ibzkfeseuwnmtjc6hlsd44bzg2sr3shbv7n35nj2rk2vm6dmtlnqd.onion/bitcoind"
         },
         {
           "url": "http://grnpvgtlrfws3424l726td5lctsod3hq2at4lhiasmedpxygbo5u2bqd.onion"
@@ -83,7 +97,29 @@
     },
     "explorerTx": "https://explorer.btc.com/btc/transaction/${ID}",
     "explorer": "https://explorer.btc.com",
-    "explorerAddress": "https://explorer.btc.com/btc/address/${ID}"
+    "explorerAddress": "https://explorer.btc.com/btc/address/${ID}",
+    "services": {
+      "btcIndexer": {
+        "description": {
+          "software": "Esplora/Electrs",
+          "github": "https://github.com/blockstream/electrs",
+          "docs": "https://github.com/blockstream/esplora/blob/master/API.md"
+        },
+        "list": [
+          {
+            "url": "http://cc6ibzkfeseuwnmtjc6hlsd44bzg2sr3shbv7n35nj2rk2vm6dmtlnqd.onion"
+          },
+          {
+            "url": "http://grnpvgtlrfws3424l726td5lctsod3hq2at4lhiasmedpxygbo5u2bqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    }
   },
   "dash": {
     "nodes": {
@@ -114,6 +150,9 @@
         },
         {
           "url": "http://bfu3iiofsagyhi22zijfilbkzlzbalpylhhfcluqmezx2avdwcxut7yd.onion"
+        },
+        {
+          "url": "http://tdl25bmpwystxnm6hxzqdrkaxxdicknbigs5umob2nlgcbbqgidd64qd.onion"
         }
       ],
       "healthCheck": {
@@ -135,8 +174,7 @@
           "hasIndex": true
         },
         {
-          "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion",
-          "hasIndex": true
+          "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
         }
       ],
       "healthCheck": {
@@ -148,7 +186,29 @@
     },
     "explorerTx": "https://etherscan.io/tx/${ID}",
     "explorer": "https://etherscan.io",
-    "explorerAddress": "https://etherscan.io/address/${ID}"
+    "explorerAddress": "https://etherscan.io/address/${ID}",
+    "services": {
+      "ethIndexer": {
+        "description": {
+          "software": "ETH-transactions-storage",
+          "github": "https://github.com/Adamant-im/ETH-transactions-storage",
+          "docs": "https://github.com/Adamant-im/ETH-transactions-storage?tab=readme-ov-file#api-request-examples"
+        },
+        "list": [
+          {
+            "url": "http://jpbrp6xapsyfnvyosrpu5wmoi62fqotazkicjeiob32yz77rt7axobqd.onion"
+          },
+          {
+            "url": "http://rekynxikhumzsme7phumocz3mquy7y3onkw33skmvk2akjkin2iopqqd.onion"
+          }
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
+      }
+    }
   },
   "kly": {
     "explorer": "https://explorer.klayr.xyz",
@@ -157,10 +217,10 @@
     "nodes": {
       "list": [
         {
-          "url": "http://7kmdhr3x3hpy7kg3gojxznypgzcya7yxpte4zz42wtljhulg5mrzkpad.onion"
+          "url": "http://5fr7uybpxecid5gikrm65hstsfhve2772keyqdvxirsiywlyo6zap6yd.onion"
         },
         {
-          "url": "http://5fr7uybpxecid5gikrm65hstsfhve2772keyqdvxirsiywlyo6zap6yd.onion"
+          "url": "http://5rmyjfvazkg5gcyo3gwvdinykvycsleeebumdm6zlj6dhf6gshpelfid.onion"
         }
       ],
       "healthCheck": {
@@ -171,20 +231,25 @@
       }
     },
     "services": {
-      "list": {
-        "klyService": [
-          {
-            "url": "http://673swmi7y4cdsqw7rhl52mypuixfh5tryxjt4vzhaoy7my572ldidfad.onion"
-          },
+      "klyService": {
+        "description": {
+          "software": "klayr-service",
+          "github": "https://github.com/KlayrHQ/klayr-service",
+          "docs": "https://klayr.xyz/documentation/klayr-service"
+        },
+        "list": [
           {
             "url": "http://3om4mobnbppxuexwufprp4cle4fivstooqqap6yoll5qk3kikesmqgad.onion"
+          },
+          {
+            "url": "http://xif2b7cchtn27aq2qypjc6p3phamrt4fdc3gbl5e6kk2fw3ypovre5id.onion"
           }
-        ]
-      },
-      "healthCheck": {
-        "normalUpdateInterval": 330000,
-        "crucialUpdateInterval": 30000,
-        "onScreenUpdateInterval": 10000
+        ],
+        "healthCheck": {
+          "normalUpdateInterval": 330000,
+          "crucialUpdateInterval": 30000,
+          "onScreenUpdateInterval": 10000
+        }
       }
     }
   }
