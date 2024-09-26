@@ -1,5 +1,6 @@
 import { isNodeOfflineError } from '@/lib/nodes/utils/errors'
 import { AxiosProgressEvent } from 'axios'
+import { NODE_LABELS } from '@/lib/nodes/constants'
 import { IpfsNode, Payload, RequestConfig } from './IpfsNode.ts'
 import { Client } from '../abstract.client'
 
@@ -12,7 +13,7 @@ import { Client } from '../abstract.client'
  */
 export class IpfsClient extends Client<IpfsNode> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
-    super('ipfs')
+    super('ipfs', 'service', NODE_LABELS.IpfsNode)
     this.nodes = endpoints.map((endpoint) => new IpfsNode(endpoint, minNodeVersion))
     this.minNodeVersion = minNodeVersion
 
