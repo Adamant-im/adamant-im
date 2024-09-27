@@ -18,10 +18,9 @@ import { AChatFileLoader } from './AChatFileLoader.tsx'
 import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { FileAsset } from '@/lib/adamant-api/asset'
 
-const className = 'a-chat-file'
+const className = 'a-chat-image'
 const classes = {
-  root: className,
-  img: `${className}__img`
+  root: className
 }
 
 export default defineComponent({
@@ -52,7 +51,7 @@ export default defineComponent({
 @import '@/assets/styles/settings/_colors.scss';
 @import '@/assets/styles/themes/adamant/_mixins.scss';
 
-.a-chat-file {
+.a-chat-image {
 }
 
 .v-theme--light {

@@ -78,11 +78,20 @@
 
     <div class="a-chat__attachments">
       <ImageLayout
+        v-if="hasImagesOnly"
         :partnerId="partnerId"
         :images="transaction.localFiles || transaction.asset.files"
         :transaction="transaction"
         @click:image="openModal"
       />
+      <InlineLayout
+        v-else
+        :partnerId="partnerId"
+        :files="transaction.localFiles || transaction.asset.files"
+        :transaction="transaction"
+        @click:file="() => {}"
+      />
+
       <AChatImageModal
         :files="transaction.asset.files"
         :transaction="transaction"
@@ -99,6 +108,7 @@
 </template>
 
 <script lang="ts">
+import { FileAsset } from '@/lib/adamant-api/asset'
 import { ref, computed, defineComponent, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
@@ -106,7 +116,7 @@ import { useStore } from 'vuex'
 import { useFormatMessage } from '../hooks/useFormatMessage'
 import { usePartnerId } from '../hooks/usePartnerId'
 import { useTransactionTime } from '../hooks/useTransactionTime'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { downloadFile, isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
 import QuotedMessage from '../QuotedMessage.vue'
@@ -114,11 +124,17 @@ import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import formatDate from '@/filters/date'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
 import ImageLayout from './ImageLayout.vue'
+import InlineLayout from './InlineLayout.vue'
 import AChatImageModal from './AChatImageModal.vue'
+
+function isLocalFile(file: FileAsset | LocalFile): file is LocalFile {
+  return 'file' in file && file.file?.file instanceof File
+}
 
 export default defineComponent({
   methods: { downloadFile },
   components: {
+    InlineLayout,
     ImageLayout,
     QuotedMessage,
     AChatImageModal
@@ -191,6 +207,18 @@ export default defineComponent({
       emit('longpress')
     }
 
+    const hasImagesOnly = computed(() => {
+      const files = props.transaction.localFiles || (props.transaction.asset.files as FileAsset[])
+
+      return files.every((file) => {
+        if (isLocalFile(file)) {
+          return file.file.isImage
+        }
+
+        return ['jpg', 'jpeg', 'png'].includes(file.extension!)
+      })
+    })
+
     return {
       t,
       userId,
@@ -208,7 +236,8 @@ export default defineComponent({
       currentIndex,
       isModalOpen,
       openModal,
-      closeModal
+      closeModal,
+      hasImagesOnly
     }
   }
 })
