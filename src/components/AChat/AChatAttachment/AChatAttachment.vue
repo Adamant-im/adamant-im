@@ -72,45 +72,26 @@
             class="a-chat__message-text a-text-regular-enlarged"
             v-text="formattedMessage"
           />
-          <div class="a-chat_file-container">
-            <div class="a-chat_fileContainerWithElement">
-              <template v-if="transaction.localFiles">
-                <AChatFile
-                  class="a-chat_file-img"
-                  v-for="(img, index) in transaction.localFiles"
-                  :key="index"
-                  @click="openModal(index)"
-                  :transaction="transaction"
-                  :img="img"
-                  :partner-id="partnerId"
-                  >{{ img }}</AChatFile
-                >
-              </template>
-              <template v-else>
-                <AChatFile
-                  class="a-chat_file-img"
-                  v-for="(img, index) in transaction.asset.files"
-                  :key="index"
-                  @click="openModal(index)"
-                  :transaction="transaction"
-                  :img="img"
-                  :partner-id="partnerId"
-                  >{{ img }}</AChatFile
-                >
-              </template>
-            </div>
-          </div>
-          <AChatImageModal
-            :files="transaction.asset.files"
-            :transaction="transaction"
-            :index="currentIndex"
-            :modal="isModalOpen"
-            v-if="isModalOpen"
-            @close="closeModal"
-            @update:modal="closeModal"
-          />
         </div>
       </div>
+    </div>
+
+    <div class="a-chat__attachments">
+      <ImageLayout
+        :partnerId="partnerId"
+        :images="transaction.localFiles || transaction.asset.files"
+        :transaction="transaction"
+        @click:image="openModal"
+      />
+      <AChatImageModal
+        :files="transaction.asset.files"
+        :transaction="transaction"
+        :index="currentIndex"
+        :modal="isModalOpen"
+        v-if="isModalOpen"
+        @close="closeModal"
+        @update:modal="closeModal"
+      />
     </div>
 
     <slot name="actions" />
@@ -122,24 +103,24 @@ import { ref, computed, defineComponent, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
-import { useFormatMessage } from './hooks/useFormatMessage'
-import { usePartnerId } from './hooks/usePartnerId'
-import { useTransactionTime } from './hooks/useTransactionTime'
+import { useFormatMessage } from '../hooks/useFormatMessage'
+import { usePartnerId } from '../hooks/usePartnerId'
+import { useTransactionTime } from '../hooks/useTransactionTime'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { downloadFile, isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
-import QuotedMessage from './QuotedMessage.vue'
+import QuotedMessage from '../QuotedMessage.vue'
 import { useSwipeLeft } from '@/hooks/useSwipeLeft'
 import formatDate from '@/filters/date'
 import { isWelcomeChat } from '@/lib/chat/meta/utils'
-import AChatFile from './AChatFile.vue'
+import ImageLayout from './ImageLayout.vue'
 import AChatImageModal from './AChatImageModal.vue'
 
 export default defineComponent({
   methods: { downloadFile },
   components: {
+    ImageLayout,
     QuotedMessage,
-    AChatFile,
     AChatImageModal
   },
   props: {
@@ -236,8 +217,14 @@ export default defineComponent({
 @import '@/assets/styles/settings/_colors.scss';
 @import '@/assets/styles/themes/adamant/_mixins.scss';
 
+.a-chat__attachments {
+  width: 500px;
+  max-width: 100%;
+  margin-top: 4px;
+}
+
 .a-chat_file-container {
-  max-width: 230px;
+  max-width: 420px;
 }
 
 .a-chat_fileContainerWithElement {
