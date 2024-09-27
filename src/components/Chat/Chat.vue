@@ -291,7 +291,7 @@ import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, wat
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
 
-import { Cryptos, Fees } from '@/lib/constants'
+import { Cryptos, Fees, UPLOAD_MAX_FILE_COUNT } from '@/lib/constants'
 import EmojiPicker from '@/components/EmojiPicker.vue'
 
 import {
@@ -477,9 +477,17 @@ const onMessage = (message: string) => {
   sendMessage(message)
   nextTick(() => chatRef.value.scrollToBottom())
   replyMessageId.value = -1
+  files.value = []
 }
 const handleFiles = (filesList: FileData[]) => {
-  files.value = filesList
+  files.value = [...files.value, ...filesList]
+
+  if (files.value.length > UPLOAD_MAX_FILE_COUNT) {
+    files.value = files.value.slice(0, UPLOAD_MAX_FILE_COUNT)
+    store.dispatch('snackbar/show', {
+      message: t('chats.max_files')
+    })
+  }
 }
 const removeItem = (index: number) => {
   files.value = files.value.filter((_, i) => i !== index)

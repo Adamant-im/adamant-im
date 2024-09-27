@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { Cryptos, UPLOAD_MAX_FILE_COUNT } from '@/lib/constants'
+import { Cryptos } from '@/lib/constants'
 import ChatDialog from '@/components/Chat/ChatDialog.vue'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import IconBox from '@/components/icons/IconBox.vue'
@@ -96,14 +96,7 @@ export default {
   },
   methods: {
     handleImageSelected(imageData) {
-      if (this.filesList.length < UPLOAD_MAX_FILE_COUNT) {
-        this.filesList.push(imageData)
-      } else {
-        this.$store.dispatch('snackbar/show', {
-          message: this.$t('chats.max_files')
-        })
-      }
-      this.$emit('files', this.filesList)
+      this.$emit('files', [imageData])
     },
     sendFunds(crypto) {
       // check if user has crypto wallet
