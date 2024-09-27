@@ -325,31 +325,6 @@ const validationErrors = {
   notEnoughFundsNewAccount: 'NON_ENOUGH_FUNDS_NEW_ACCOUNT',
   messageTooLong: 'MESSAGE_LENGTH_EXCEED'
 }
-/**
- * Validate message before sending.
- * @param message
- * @returns If `false` then validation passed without errors.
- */
-function validateMessage(message: string): string | false {
-  // Ensure that message contains at least one non-whitespace character
-  if (!message.trim().length) {
-    return validationErrors.emptyMessage
-  }
-
-  if (store.state.balance < Fees.NOT_ADM_TRANSFER) {
-    if (store.getters.isAccountNew()) {
-      return validationErrors.notEnoughFundsNewAccount
-    } else {
-      return validationErrors.notEnoughFunds
-    }
-  }
-
-  if (message.length * 1.5 > 20000) {
-    return validationErrors.messageTooLong
-  }
-
-  return false
-}
 
 const props = defineProps({
   partnerId: {
@@ -378,6 +353,7 @@ const showEmojiPicker = ref(false)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)
+const hasAttachment = computed(() => files.value.length > 0)
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
@@ -465,6 +441,37 @@ onBeforeUnmount(() => {
   window.removeEventListener('keyup', onKeyPress)
   Visibility.unbind(Number(visibilityId.value))
 })
+
+/**
+ * Validate message before sending.
+ * @param message
+ * @returns If `false` then validation passed without errors.
+ */
+function validateMessage(message: string): string | false {
+  if (hasAttachment.value) {
+    // When attaching files, the message is not mandatory
+    return false
+  }
+
+  // Ensure that message contains at least one non-whitespace character
+  if (!message.trim().length) {
+    return validationErrors.emptyMessage
+  }
+
+  if (store.state.balance < Fees.NOT_ADM_TRANSFER) {
+    if (store.getters.isAccountNew()) {
+      return validationErrors.notEnoughFundsNewAccount
+    } else {
+      return validationErrors.notEnoughFunds
+    }
+  }
+
+  if (message.length * 1.5 > 20000) {
+    return validationErrors.messageTooLong
+  }
+
+  return false
+}
 
 const onMessage = (message: string) => {
   sendMessage(message)
