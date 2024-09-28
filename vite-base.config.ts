@@ -69,7 +69,16 @@ export default defineConfig({
       include: []
     },
     rollupOptions: {
-      external: [...excludeBip39Wordlists()]
+      external: [...excludeBip39Wordlists()],
+      output: {
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name.startsWith('materialdesignicons-webfont')) {
+            return 'assets/[name][extname]'
+          }
+
+          return 'assets/[name]-[hash][extname]'
+        }
+      }
     }
   }
 })
