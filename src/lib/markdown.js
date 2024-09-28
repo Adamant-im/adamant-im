@@ -10,11 +10,11 @@ marked.setOptions({
 
 const renderer = new marked.Renderer()
 
-renderer.image = function (_href, _title, _text) {
+renderer.image = function ({ _href, _title, _text }) {
   return ''
 }
 
-renderer.link = function (href, title, text) {
+renderer.link = function ({ href, _title, text }) {
   const linkPattern = /^(eth|bch|bitcoin|https?|s?ftp|magnet|tor|onion|tg):(.*)$/i
   const emailPattern = /^(mailto):[^@]+@[^@]+\.[^@]+$/i
 
@@ -27,9 +27,11 @@ renderer.link = function (href, title, text) {
   return text
 }
 
-renderer.heading = function (text) {
+renderer.heading = function ({ text }) {
   return `<p>${text}</p>`
 }
+
+marked.use({ renderer })
 
 /**
  * Sanitizes text to show HTML
@@ -46,7 +48,7 @@ export function sanitizeHTML(text = '') {
  * @returns {string} resulting sanitized HTML
  */
 export function renderMarkdown(text = '') {
-  return marked(DOMPurify.sanitize(text), { renderer })
+  return marked.parse(sanitizeHTML(text))
 }
 
 /**
@@ -58,7 +60,7 @@ export function renderMarkdown(text = '') {
 export function removeFormats(text = '') {
   const node = document.createElement('div')
   const textWithSymbol = text.replace(/\n/g, '↵ ')
-  node.innerHTML = marked(DOMPurify.sanitize(textWithSymbol), { renderer })
+  node.innerHTML = marked.parse(sanitizeHTML(textWithSymbol))
 
   return node.textContent || node.innerText || ''
 }
@@ -66,7 +68,7 @@ export function removeFormats(text = '') {
 export function formatMessage(text = '') {
   const node = document.createElement('div')
   const textWithSymbol = text.replace(/\n/g, '↵ ')
-  node.innerHTML = marked(DOMPurify.sanitize(textWithSymbol), { renderer })
+  node.innerHTML = marked.parse(sanitizeHTML(textWithSymbol))
 
   const textWithoutHtml = node.textContent || node.innerText || ''
   const styledText = textWithoutHtml.replace(/↵/g, '<span class="arrow-return">↵</span>')
