@@ -23,13 +23,6 @@
       }"
       :data-id="dataId"
     >
-      <div
-        v-if="showAvatar"
-        class="a-chat__message-avatar hidden-xs-only"
-        :class="{ 'a-chat__message-avatar--right': isStringEqualCI(transaction.senderId, userId) }"
-      >
-        <slot name="avatar" />
-      </div>
       <div class="a-chat__message-card">
         <div class="a-chat__message-card-header mt-1">
           <div v-if="transaction.status === 'CONFIRMED'" class="a-chat__blockchain-status">
