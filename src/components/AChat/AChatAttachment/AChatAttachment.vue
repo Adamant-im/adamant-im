@@ -69,7 +69,12 @@
       </div>
     </div>
 
-    <div class="a-chat__attachments">
+    <div
+      :class="{
+        'a-chat__attachments': true,
+        'a-chat__attachments--inline': !hasImagesOnly
+      }"
+    >
       <ImageLayout
         v-if="hasImagesOnly"
         :partnerId="partnerId"
@@ -243,6 +248,10 @@ export default defineComponent({
   width: 500px;
   max-width: 100%;
   margin-top: 4px;
+
+  &--inline {
+    width: 250px;
+  }
 }
 
 .a-chat_file-container {

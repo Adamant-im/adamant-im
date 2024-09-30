@@ -123,6 +123,8 @@ export default defineComponent({
 
 .a-chat-file {
   display: flex;
+  margin-left: auto;
+  width: 160px;
 
   &__file-info {
     margin-left: 8px;
