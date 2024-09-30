@@ -87,7 +87,7 @@
         :partnerId="partnerId"
         :files="transaction.localFiles || transaction.asset.files"
         :transaction="transaction"
-        @click:file="() => {}"
+        @click:file="openModal"
       />
 
       <AChatImageModal

@@ -6,6 +6,7 @@
       :file="file"
       :partnerId="partnerId"
       :transaction="transaction"
+      @click="handleClick(file)"
     />
   </div>
 </template>
