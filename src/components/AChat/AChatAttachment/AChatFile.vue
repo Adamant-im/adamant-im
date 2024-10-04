@@ -1,8 +1,13 @@
 <template>
   <div :class="classes.root">
     <AChatFileLoader v-if="isImage" :transaction="transaction" :partnerId="partnerId" :file="file">
-      <template #default="{ fileUrl }">
+      <template #default="{ fileUrl, error }">
+        <div v-if="error" :style="{ width: `${iconSize}px`, height: `${iconSize}px` }">
+          <div :class="classes.error">ERROR</div>
+        </div>
+
         <v-img
+          v-else
           :src="fileUrl"
           :width="iconSize"
           :height="iconSize"
@@ -65,7 +70,8 @@ const classes = {
   iconWrapper: `${className}__icon-wrapper`,
   fileInfo: `${className}__file-info`,
   name: `${className}__name`,
-  size: `${className}__size`
+  size: `${className}__size`,
+  error: `${className}__error`
 }
 
 const iconSize = 64
@@ -137,6 +143,15 @@ export default defineComponent({
   &__size {
     font-size: 14px;
   }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    height: 100%;
+    font-weight: 400;
+  }
 }
 
 .v-theme--light {
@@ -146,6 +161,10 @@ export default defineComponent({
 
     &__size {
       font-size: 14px;
+    }
+
+    &__error {
+      background-color: map-get($adm-colors, 'secondary2');
     }
   }
 }
@@ -157,6 +176,10 @@ export default defineComponent({
 
     &__size {
       color: map-get($adm-colors, 'grey');
+    }
+
+    &__error {
+      background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
     }
   }
 }
