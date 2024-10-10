@@ -6,7 +6,7 @@
 
         <div :class="classes.imageCounter">{{ slide + 1 }} of {{ files.length }}</div>
 
-        <v-btn icon="mdi-arrow-collapse-down" :class="classes.saveButton" />
+        <v-btn icon="mdi-arrow-collapse-down" :class="classes.saveButton" @click="downloadImage" />
       </v-toolbar>
 
       <v-carousel
@@ -41,9 +41,21 @@
 <script lang="ts">
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { ref, computed, onMounted, PropType } from 'vue'
+import { useStore } from 'vuex'
 
 import AChatImageModalItem from './AChatImageModalItem.vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+
+function downloadFileByUrl(url: string, filename = 'unnamed') {
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = filename
+
+  document.body.appendChild(anchor)
+  anchor.click()
+
+  document.body.removeChild(anchor)
+}
 
 const className = 'a-chat-image-modal'
 const classes = {
@@ -85,6 +97,7 @@ export default {
   },
   emits: ['close', 'update:modal'],
   setup(props, { emit }) {
+    const store = useStore()
     const slide = ref(0)
 
     onMounted(() => {
@@ -131,6 +144,31 @@ export default {
       }
     }
 
+    const publicKey = computed(() =>
+      props.transaction.senderId === store.state.address
+        ? props.transaction.recipientPublicKey
+        : props.transaction.senderPublicKey
+    )
+    const downloadImage = async () => {
+      const file = props.files[slide.value]
+      if (!file) {
+        console.warn(
+          `Failed to download the file. Reason: The file with index ${slide.value} does not exist`
+        )
+        return
+      }
+
+      const { id, nonce } = file
+      const imageUrl = await store.dispatch('attachment/getAttachmentUrl', {
+        cid: id,
+        publicKey: publicKey.value,
+        nonce
+      })
+      const fileName = file.name ? `${file.name}.${file.extension}` : undefined
+
+      downloadFileByUrl(imageUrl, fileName)
+    }
+
     return {
       slide,
       show,
@@ -139,6 +177,7 @@ export default {
       nextSlide,
       handleKeydown,
       handleClick,
+      downloadImage,
       classes
     }
   }
