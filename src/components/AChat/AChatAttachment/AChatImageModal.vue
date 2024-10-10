@@ -9,7 +9,13 @@
         <v-btn icon="mdi-arrow-collapse-down" :class="classes.saveButton" />
       </v-toolbar>
 
-      <v-carousel v-model="slide" :class="classes.carousel" height="100%" hide-delimiters>
+      <v-carousel
+        v-model="slide"
+        :class="classes.carousel"
+        height="100%"
+        hide-delimiters
+        @click="handleClick"
+      >
         <AChatImageModalItem
           v-for="(item, i) in files"
           :key="i"
@@ -117,6 +123,14 @@ export default {
       }
     }
 
+    const handleClick = (e: MouseEvent) => {
+      const clickedOutside = (e.target as HTMLElement)?.classList?.contains('v-window-item')
+
+      if (clickedOutside) {
+        emit('close')
+      }
+    }
+
     return {
       slide,
       show,
@@ -124,6 +138,7 @@ export default {
       prevSlide,
       nextSlide,
       handleKeydown,
+      handleClick,
       classes
     }
   }
