@@ -43,7 +43,7 @@ import { FileAsset } from '@/lib/adamant-api/asset'
 import { ref, computed, onMounted, PropType } from 'vue'
 
 import AChatImageModalItem from './AChatImageModalItem.vue'
-import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 
 const className = 'a-chat-image-modal'
 const classes = {
@@ -62,7 +62,7 @@ export default {
       required: true
     },
     files: {
-      type: Array as PropType<Array<FileAsset | LocalFile>>,
+      type: Array as PropType<Array<FileAsset>>,
       required: true
     },
     /**
