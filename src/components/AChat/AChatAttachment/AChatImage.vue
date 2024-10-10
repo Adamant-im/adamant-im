@@ -2,7 +2,15 @@
   <AChatFileLoader :partner-id="partnerId" :file="img" :transaction="transaction">
     <template #default="{ fileUrl, width, height, error }">
       <v-img v-if="error" :aspect-ratio="width / height" cover>
-        <div :class="classes.error">ERROR</div>
+        <div :class="classes.error">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-icon v-bind="props" :class="classes.errorIcon" icon="mdi-image-off" />
+            </template>
+
+            <span>Failed to load the image</span>
+          </v-tooltip>
+        </div>
       </v-img>
 
       <v-img v-else :src="fileUrl" :aspect-ratio="width / height" cover @click="$emit('click')">
@@ -27,7 +35,8 @@ const classes = {
   root: className,
   border: `${className}--border`,
   placeholder: `${className}__placeholder`,
-  error: `${className}__error`
+  error: `${className}__error`,
+  errorIcon: `${className}__error-icon`
 }
 
 export default defineComponent({
@@ -55,6 +64,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import 'vuetify/settings';
 @import '@/assets/styles/settings/_colors.scss';
 @import '@/assets/styles/themes/adamant/_mixins.scss';
 
@@ -81,17 +91,25 @@ export default defineComponent({
     &__error {
       background-color: map-get($adm-colors, 'secondary2');
     }
+
+    &__error-icon {
+      color: map-get($grey, 'darken-1');
+    }
   }
 }
 
 .v-theme--dark {
   .a-chat-image {
     &__placeholder {
-      background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
+      background-color: map-get($adm-colors, 'muted');
     }
 
     &__error {
-      background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
+      background-color: map-get($adm-colors, 'muted');
+    }
+
+    &__error-icon {
+      color: map-get($shades, 'white');
     }
   }
 }
