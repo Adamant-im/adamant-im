@@ -80,15 +80,42 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@import 'vuetify/settings';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/settings/_colors.scss';
+
+$gap-size: 4px;
+
 .a-chat-image-layout {
   max-width: 100%;
   width: 100%;
   border-radius: 8px;
   overflow: hidden;
+  border-width: $gap-size;
+  border-style: solid;
 
   &__row {
     display: grid;
     max-width: 100%;
+    gap: $gap-size;
+
+    & ~ & {
+      margin-top: $gap-size;
+    }
+  }
+}
+
+.v-theme--dark {
+  .a-chat-image-layout {
+    background-color: map-get($adm-colors, 'black');
+    border-color: map-get($adm-colors, 'black');
+  }
+}
+
+.v-theme--light {
+  .a-chat-image-layout {
+    background-color: map-get($shades, 'white');
+    border-color: map-get($shades, 'white');
   }
 }
 </style>
