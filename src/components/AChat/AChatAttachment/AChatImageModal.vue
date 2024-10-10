@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" fullscreen :class="classes.root">
+  <v-dialog v-model="show" fullscreen :class="classes.root" @keydown="handleKeydown">
     <v-card :class="classes.container">
       <v-toolbar color="transparent">
         <v-btn icon="mdi-close" @click="closeModal" />
@@ -14,12 +14,12 @@
           <AChatImageModalItem :transaction="transaction" :file="item" />
         </v-carousel-item>
 
-        <template v-slot:prev="{ props }">
+        <template #prev="{ props }">
           <v-btn icon variant="plain" @click="props.onClick">
             <v-icon icon="mdi-chevron-left" size="x-large" />
           </v-btn>
         </template>
-        <template v-slot:next="{ props }">
+        <template #next="{ props }">
           <v-btn icon variant="plain" @click="props.onClick">
             <v-icon icon="mdi-chevron-right" size="x-large" />
           </v-btn>
@@ -60,6 +60,7 @@ export default {
      * Index of the current image in the image slider.
      */
     index: {
+      // @todo default index
       type: Number,
       required: true
     },
@@ -82,8 +83,6 @@ export default {
       slide.value = props.index
     })
 
-    const className = computed(() => 'modal')
-
     const show = computed({
       get() {
         return props.modal
@@ -97,11 +96,19 @@ export default {
       emit('close')
     }
 
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft' && slide.value > 0) {
+        slide.value = slide.value - 1
+      } else if (e.key === 'ArrowRight' && slide.value < props.files.length - 1) {
+        slide.value = slide.value + 1
+      }
+    }
+
     return {
       slide,
-      className,
       show,
       closeModal,
+      handleKeydown,
       classes
     }
   }
