@@ -14,13 +14,13 @@
           <AChatImageModalItem :transaction="transaction" :file="item" />
         </v-carousel-item>
 
-        <template #prev="{ props }">
-          <v-btn icon variant="plain" @click="props.onClick">
+        <template #prev>
+          <v-btn icon variant="plain" @click="prevSlide">
             <v-icon icon="mdi-chevron-left" size="x-large" />
           </v-btn>
         </template>
-        <template #next="{ props }">
-          <v-btn icon variant="plain" @click="props.onClick">
+        <template #next>
+          <v-btn icon variant="plain" @click="nextSlide">
             <v-icon icon="mdi-chevron-right" size="x-large" />
           </v-btn>
         </template>
@@ -57,10 +57,9 @@ export default {
       required: true
     },
     /**
-     * Index of the current image in the image slider.
+     * Default index of the current image in the image slider.
      */
     index: {
-      // @todo default index
       type: Number,
       required: true
     },
@@ -96,11 +95,22 @@ export default {
       emit('close')
     }
 
-    const handleKeydown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft' && slide.value > 0) {
+    const prevSlide = () => {
+      if (slide.value > 0) {
         slide.value = slide.value - 1
-      } else if (e.key === 'ArrowRight' && slide.value < props.files.length - 1) {
+      }
+    }
+    const nextSlide = () => {
+      if (slide.value < props.files.length - 1) {
         slide.value = slide.value + 1
+      }
+    }
+
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        prevSlide()
+      } else if (e.key === 'ArrowRight') {
+        nextSlide()
       }
     }
 
@@ -108,6 +118,8 @@ export default {
       slide,
       show,
       closeModal,
+      prevSlide,
+      nextSlide,
       handleKeydown,
       classes
     }
