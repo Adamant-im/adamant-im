@@ -1,28 +1,50 @@
 <template>
-  <div>
-    <v-dialog :class="className" v-model="show">
-      <div :class="`${className}__container`">
-        <v-btn icon="mdi-arrow-collapse-down" :class="`${className}__btn-save`"></v-btn>
-        <v-btn
-          icon="mdi-window-close"
-          :class="`${className}__btn-close`"
-          @click="closeModal"
-        ></v-btn>
-        <p :class="`${className}__number-of-img`">{{ slide + 1 }} of {{ files.length }}</p>
-        <v-carousel v-model="slide" :class="`${className}__carousel`" hide-delimiters>
-          <v-carousel-item v-for="(item, i) in files" :key="i">
-            <AChatImageModalItem :transaction="transaction" :file="item" />
-          </v-carousel-item>
-        </v-carousel>
-      </div>
-    </v-dialog>
-  </div>
+  <v-dialog v-model="show" fullscreen :class="classes.root">
+    <v-card :class="classes.container">
+      <v-toolbar color="transparent">
+        <v-btn icon="mdi-close" @click="closeModal" />
+
+        <div :class="classes.imageCounter">{{ slide + 1 }} of {{ files.length }}</div>
+
+        <v-btn icon="mdi-arrow-collapse-down" :class="classes.saveButton" />
+      </v-toolbar>
+
+      <v-carousel v-model="slide" :class="classes.carousel" height="100%" hide-delimiters>
+        <v-carousel-item v-for="(item, i) in files" :key="i">
+          <AChatImageModalItem :transaction="transaction" :file="item" />
+        </v-carousel-item>
+
+        <template v-slot:prev="{ props }">
+          <v-btn icon variant="plain" @click="props.onClick">
+            <v-icon icon="mdi-chevron-left" size="x-large" />
+          </v-btn>
+        </template>
+        <template v-slot:next="{ props }">
+          <v-btn icon variant="plain" @click="props.onClick">
+            <v-icon icon="mdi-chevron-right" size="x-large" />
+          </v-btn>
+        </template>
+      </v-carousel>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts">
+import { FileAsset } from '@/lib/adamant-api/asset'
 import { ref, computed, onMounted, PropType } from 'vue'
+
 import AChatImageModalItem from './AChatImageModalItem.vue'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+
+const className = 'a-chat-image-modal'
+const classes = {
+  root: className,
+  container: `${className}__container`,
+  carousel: `${className}__carousel`,
+  saveButton: `${className}__save-btn`,
+  closeButton: `${className}__close-btn`,
+  imageCounter: `${className}__img-counter`
+}
 
 export default {
   props: {
@@ -31,14 +53,23 @@ export default {
       required: true
     },
     files: {
-      type: Object,
+      type: Array as PropType<Array<FileAsset | LocalFile>>,
       required: true
     },
+    /**
+     * Index of the current image in the image slider.
+     */
     index: {
       type: Number,
       required: true
     },
-    modal: Boolean
+    /**
+     * Modal visibility state
+     */
+    modal: {
+      type: Boolean,
+      required: true
+    }
   },
   components: {
     AChatImageModalItem
@@ -70,7 +101,8 @@ export default {
       slide,
       className,
       show,
-      closeModal
+      closeModal,
+      classes
     }
   }
 }
@@ -78,42 +110,42 @@ export default {
 
 <style lang="scss" scoped>
 @import 'vuetify/settings';
-.modal {
-  z-index: 9999;
-  max-width: 800px;
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/settings/_colors.scss';
 
+.a-chat-image-modal {
   &__container {
     position: relative;
-    background-color: rgba(0, 0, 0, 0.54);
-    width: 100%;
-    margin: auto;
+    padding-bottom: 32px;
   }
-  &__btn-close {
-    position: absolute;
-    right: 0;
-    top: 0;
-    margin: 4px;
-    background-color: transparent;
+  &__close-btn {
   }
-  &__btn-save {
-    position: absolute;
-    right: 0px;
-    bottom: 0;
-    margin: 4px;
-    background-color: transparent;
+  &__save-btn {
   }
   &__carousel {
-    margin-top: 40px;
-    margin-bottom: 40px;
   }
-  &__number-of-img {
+  &__img-counter {
+    @include a-text-header();
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-inline-start: 0;
     text-align: center;
-    line-height: 50px;
-    height: 50px;
   }
-  &__modal-img {
-    height: 100%;
-    width: 100%;
+}
+
+.v-theme--dark {
+  .a-chat-image-modal {
+    &__container {
+      background-color: map-get($adm-colors, 'muted');
+    }
+  }
+}
+
+.v-theme--light {
+  .a-chat-image-modal {
+    &__container {
+      background-color: map-get($adm-colors, 'grey-transparent');
+    }
   }
 }
 </style>
