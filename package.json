@@ -44,6 +44,7 @@
     "@mdi/font": "^7.4.47",
     "@stablelib/utf8": "^2.0.0",
     "@tanstack/vue-query": "^5.52.2",
+    "@vueuse/core": "^11.1.0",
     "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
     "assert": "^2.1.0",
