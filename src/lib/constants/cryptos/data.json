@@ -103,12 +103,12 @@
     "nodes": {
       "list": [
         {
-          "url": "https://btcnode1.adamant.im",
-          "alt_ip": "http://176.9.38.204:44099"
+          "url": "https://btcnode1.adamant.im/bitcoind",
+          "alt_ip": "http://176.9.38.204:44099/bitcoind"
         },
         {
-          "url": "https://btcnode3.adamant.im",
-          "alt_ip": "http://195.201.242.108:44099"
+          "url": "https://btcnode3.adamant.im/bitcoind",
+          "alt_ip": "http://195.201.242.108:44099/bitcoind"
         }
       ],
       "healthCheck": {
@@ -233,6 +233,10 @@
         {
           "url": "https://dogenode2.adamant.im",
           "alt_ip": "http://176.9.32.126:44098"
+        },
+        {
+          "url": "https://dogenode3.adm.im",
+          "alt_ip": "http://95.216.45.88:44098"
         }
       ],
       "healthCheck": {
@@ -280,13 +284,11 @@
       "list": [
         {
           "url": "https://ethnode2.adamant.im",
-          "alt_ip": "http://95.216.114.252:44099",
-          "hasIndex": true
+          "alt_ip": "http://95.216.114.252:44099"
         },
         {
           "url": "https://ethnode3.adamant.im",
-          "alt_ip": "http://46.4.37.157:44099",
-          "hasIndex": true
+          "alt_ip": "http://46.4.37.157:44099"
         }
       ],
       "healthCheck": {
@@ -300,7 +302,7 @@
     "cryptoTransferDecimals": 6,
     "defaultVisibility": true,
     "defaultGasLimit": 22000,
-    "defaultGasPriceGwei": 30,
+    "defaultGasPriceGwei": 10,
     "txFetchInfo": {
       "newPendingInterval": 4000,
       "oldPendingInterval": 3000,
@@ -395,12 +397,12 @@
     "nodes": {
       "list": [
         {
-          "url": "https://klynode1.adamant.im",
-          "alt_ip": "http://195.26.255.137:44099"
-        },
-        {
           "url": "https://klynode2.adamant.im",
           "alt_ip": "http://109.176.199.130:44099"
+        },
+        {
+          "url": "https://klynode3.adm.im",
+          "alt_ip": "http://37.27.205.78:44099"
         }
       ],
       "healthCheck": {

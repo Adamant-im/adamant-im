@@ -4,8 +4,38 @@
       <template #activator="{ props }">
         <v-icon class="chat-menu__icon" v-bind="props" icon="mdi-plus-circle-outline" size="28" />
       </template>
-
+      <UploadFile
+        :partnerId="partnerId"
+        :accept="acceptImage"
+        @image-selected="handleImageSelected"
+        ref="UploadImageRef"
+      ></UploadFile>
+      <UploadFile
+        :accept="acceptFile"
+        @image-selected="handleImageSelected"
+        ref="UploadFileRef"
+      ></UploadFile>
       <v-list class="chat-menu__list">
+        <!-- Attach Image -->
+        <v-list-item @click="$refs.UploadImageRef.$refs.fileInput.click()">
+          <template #prepend>
+            <icon-box>
+              <v-icon icon="mdi-image" />
+            </icon-box>
+          </template>
+          <v-list-item-title>{{ $t('chats.attach_image') }}</v-list-item-title>
+        </v-list-item>
+
+        <!-- Attach File -->
+        <v-list-item @click="$refs.UploadFileRef.$refs.fileInput.click()">
+          <template #prepend>
+            <icon-box>
+              <v-icon icon="mdi-file" />
+            </icon-box>
+          </template>
+          <v-list-item-title>{{ $t('chats.attach_file') }}</v-list-item-title>
+        </v-list-item>
+
         <!-- Cryptos -->
         <v-list-item v-for="c in wallets" :key="c" @click="sendFunds(c)">
           <template #prepend>
@@ -13,17 +43,6 @@
           </template>
 
           <v-list-item-title>{{ $t('chats.send_crypto', { crypto: c }) }}</v-list-item-title>
-        </v-list-item>
-
-        <!-- Actions -->
-        <v-list-item v-for="item in menuItems" :key="item.title" :disabled="item.disabled">
-          <template #prepend>
-            <icon-box>
-              <v-icon :icon="item.icon" />
-            </icon-box>
-          </template>
-
-          <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -37,13 +56,16 @@ import { Cryptos } from '@/lib/constants'
 import ChatDialog from '@/components/Chat/ChatDialog.vue'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import IconBox from '@/components/icons/IconBox.vue'
+import UploadFile from '../UploadFile.vue'
 
 export default {
   components: {
     IconBox,
     ChatDialog,
-    CryptoIcon
+    CryptoIcon,
+    UploadFile
   },
+  emits: ['files'],
   props: {
     partnerId: {
       type: String,
@@ -54,24 +76,13 @@ export default {
     }
   },
   data: () => ({
-    menuItems: [
-      {
-        type: 'action',
-        title: 'chats.attach_image',
-        icon: 'mdi-image',
-        disabled: true
-      },
-      {
-        type: 'action',
-        title: 'chats.attach_file',
-        icon: 'mdi-file',
-        disabled: true
-      }
-    ],
     dialog: false,
     dialogTitle: '',
     dialogText: '',
-    crypto: ''
+    crypto: '',
+    filesList: [],
+    acceptImage: 'image/* , video/*',
+    acceptFile: 'application/* ,text/*, audio/*'
   }),
   computed: {
     orderedVisibleWalletSymbols() {
@@ -84,6 +95,9 @@ export default {
     }
   },
   methods: {
+    handleImageSelected(imageData) {
+      this.$emit('files', [imageData])
+    },
     sendFunds(crypto) {
       // check if user has crypto wallet
       // otherwise show dialog

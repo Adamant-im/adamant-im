@@ -1,3 +1,5 @@
+import { FileData } from '@/components/UploadFile.vue'
+
 /**
  * AIP 12: Non-ADM crypto transfer messages
  * @see https://aips.adamant.im/AIPS/aip-12
@@ -93,3 +95,74 @@ export interface ReactionAsset {
 }
 
 export function reactionAsset(reactToId: string, reactMessage: string): ReactionAsset
+
+export interface FileAsset {
+  /**
+   * Specifies the MIME type of the file, e.g. "image/jpeg"
+   */
+  mimeType?: string
+  /**
+   * Specifies the name of a file (without extension).
+   */
+  name?: string
+  /**
+   * Indicates the file extension, e.g. "jpeg", "png", "pdf", etc.
+   */
+  extension?: string
+  /**
+   * File resolution as an array of float values.
+   * The first value is width, the second is height.
+   */
+  resolution?: [number, number]
+  /**
+   * Duration of the video or audio file in seconds.
+   */
+  duration?: number
+  /**
+   * Represents the unique file identifier in the `storage` network.
+   * For example, for IPFS it's CID.
+   */
+  id: string
+  /**
+   * Indicates the size of the encrypted file in bytes
+   */
+  size: number
+  /**
+   * Nonce used for encryption
+   */
+  nonce: string
+  /**
+   * Preview of the image.
+   */
+  preview?: {
+    /**
+     * Represents the unique file identifier in the `storage` network.
+     * For example, for IPFS it's CID.
+     */
+    id: string
+    /**
+     * Nonce used for encryption
+     */
+    nonce: string
+    /**
+     * Indicates the file extension, e.g. "jpeg", "png", "pdf", etc.
+     */
+    extension: string
+  }
+}
+
+export interface AttachmentAsset {
+  files: FileAsset[]
+  storage: { id: 'ipfs' }
+  /**
+   * Optional comment associated with the transaction
+   */
+  comment?: string
+}
+
+export function attachmentAsset(
+  files: FileData[],
+  nonces?: [string, string],
+  ids?: [string, string],
+  comment?: string
+): AttachmentAsset
