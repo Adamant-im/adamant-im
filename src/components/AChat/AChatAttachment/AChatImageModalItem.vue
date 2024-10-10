@@ -1,14 +1,27 @@
 <template>
-  <v-img class="img" :src="imageUrl" alt="Image" />
+  <v-carousel-item :class="classes.root" :src="imageUrl" :max-width="width" :max-height="height" />
 </template>
+
 <script lang="ts">
-import { defineComponent, PropType, ref, onMounted } from 'vue'
-import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { defineComponent, PropType, ref, onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
+
+import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { FileAsset } from '@/lib/adamant-api/asset'
+
+function isLocalFile(file: FileAsset | LocalFile): file is LocalFile {
+  return 'file' in file && file.file?.file instanceof File
+}
+
+const className = 'a-chat-image-modal-item'
+const classes = {
+  root: className
+}
+
 export default defineComponent({
   props: {
     file: {
-      type: Object,
+      type: Object as PropType<FileAsset | LocalFile>,
       required: true
     },
     transaction: {
@@ -19,6 +32,21 @@ export default defineComponent({
   setup(props) {
     const store = useStore()
     const imageUrl = ref('')
+
+    const width = computed(() => {
+      if (isLocalFile(props.file)) {
+        return props.file.file.width
+      } else {
+        return props.file.resolution?.[0]
+      }
+    })
+    const height = computed(() => {
+      if (isLocalFile(props.file)) {
+        return props.file.file.height
+      } else {
+        return props.file.resolution?.[1]
+      }
+    })
 
     const getFileFromStorage = async () => {
       const myAddress = store.state.address
@@ -48,15 +76,20 @@ export default defineComponent({
     })
 
     return {
+      classes,
       getFileFromStorage,
-      imageUrl
+      imageUrl,
+      width,
+      height
     }
   }
 })
 </script>
+
 <style scoped>
-.img {
-  height: 100%;
-  width: 100%;
+.a-chat-image-modal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 </style>

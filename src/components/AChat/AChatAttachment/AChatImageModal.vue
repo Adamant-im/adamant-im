@@ -10,9 +10,12 @@
       </v-toolbar>
 
       <v-carousel v-model="slide" :class="classes.carousel" height="100%" hide-delimiters>
-        <v-carousel-item v-for="(item, i) in files" :key="i">
-          <AChatImageModalItem :transaction="transaction" :file="item" />
-        </v-carousel-item>
+        <AChatImageModalItem
+          v-for="(item, i) in files"
+          :key="i"
+          :transaction="transaction"
+          :file="item"
+        />
 
         <template #prev>
           <v-btn icon variant="plain" @click="prevSlide">
