@@ -6,7 +6,7 @@
 
         <div :class="classes.imageCounter">{{ slide + 1 }} of {{ files.length }}</div>
 
-        <v-btn icon="mdi-arrow-collapse-down" :class="classes.saveButton" @click="downloadImage" />
+        <v-btn icon="mdi-arrow-collapse-down" :class="classes.saveButton" @click="downloadFile" />
       </v-toolbar>
 
       <v-carousel
@@ -17,12 +17,10 @@
         :show-arrows="showArrows"
         @click="handleClick"
       >
-        <AChatImageModalItem
-          v-for="(item, i) in files"
-          :key="i"
-          :transaction="transaction"
-          :file="item"
-        />
+        <template v-for="(file, i) in files" :key="i">
+          <AChatImageModalItem v-if="isTypeImage(file)" :transaction="transaction" :file="file" />
+          <AChatModalFile v-else :file="file" @download="downloadFile" />
+        </template>
 
         <template #prev>
           <v-btn icon variant="plain" @click="prevSlide">
@@ -45,6 +43,7 @@ import { useStore } from 'vuex'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 
 import AChatImageModalItem from './AChatImageModalItem.vue'
+import AChatModalFile from './AChatModalFile.vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { FileAsset } from '@/lib/adamant-api/asset'
 
@@ -95,6 +94,7 @@ export default {
     }
   },
   components: {
+    AChatModalFile,
     AChatImageModalItem
   },
   emits: ['close', 'update:modal'],
@@ -157,7 +157,7 @@ export default {
         ? props.transaction.recipientPublicKey
         : props.transaction.senderPublicKey
     )
-    const downloadImage = async () => {
+    const downloadFile = async () => {
       const file = props.files[slide.value]
       if (!file) {
         console.warn(
@@ -177,6 +177,10 @@ export default {
       downloadFileByUrl(imageUrl, fileName)
     }
 
+    const isTypeImage = (file: FileAsset) => {
+      return file.extension ? ['jpg', 'jpeg', 'png'].includes(file.extension) : false
+    }
+
     return {
       slide,
       show,
@@ -186,7 +190,8 @@ export default {
       nextSlide,
       handleKeydown,
       handleClick,
-      downloadImage,
+      downloadFile,
+      isTypeImage,
       classes
     }
   }
