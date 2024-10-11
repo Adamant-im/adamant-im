@@ -1,6 +1,6 @@
 <template>
   <AChatFileLoader :partner-id="partnerId" :file="img" :transaction="transaction">
-    <template #default="{ fileUrl, width, height, error }">
+    <template #default="{ fileUrl, width, height, error, isLoading }">
       <v-img v-if="error" :aspect-ratio="width / height" cover>
         <div :class="classes.error">
           <v-tooltip location="bottom">
@@ -13,7 +13,13 @@
         </div>
       </v-img>
 
-      <v-img v-else :src="fileUrl" :aspect-ratio="width / height" cover @click="$emit('click')">
+      <v-img
+        v-else
+        :src="fileUrl"
+        :aspect-ratio="width / height"
+        cover
+        @click="!isLoading && $emit('click')"
+      >
         <template #placeholder>
           <div :class="classes.placeholder" class="d-flex align-center justify-center fill-height">
             <v-progress-circular color="grey-lighten-4" indeterminate />
@@ -26,6 +32,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
+
 import { AChatFileLoader } from './AChatFileLoader.tsx'
 import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { FileAsset } from '@/lib/adamant-api/asset'
