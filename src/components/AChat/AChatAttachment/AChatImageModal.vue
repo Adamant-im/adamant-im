@@ -14,6 +14,7 @@
         :class="classes.carousel"
         height="100%"
         hide-delimiters
+        :show-arrows="showArrows"
         @click="handleClick"
       >
         <AChatImageModalItem
@@ -39,12 +40,13 @@
 </template>
 
 <script lang="ts">
-import { FileAsset } from '@/lib/adamant-api/asset'
 import { ref, computed, onMounted, PropType } from 'vue'
 import { useStore } from 'vuex'
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 
 import AChatImageModalItem from './AChatImageModalItem.vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { FileAsset } from '@/lib/adamant-api/asset'
 
 function downloadFileByUrl(url: string, filename = 'unnamed') {
   const anchor = document.createElement('a')
@@ -100,6 +102,9 @@ export default {
     const store = useStore()
     const slide = ref(0)
 
+    const breakpoints = useBreakpoints(breakpointsTailwind)
+    const isMobile = breakpoints.smaller('sm')
+
     onMounted(() => {
       slide.value = props.index
     })
@@ -111,6 +116,9 @@ export default {
       set(value) {
         emit('update:modal', value)
       }
+    })
+    const showArrows = computed(() => {
+      return props.files.length > 1 && !isMobile.value
     })
 
     const closeModal = () => {
@@ -172,6 +180,7 @@ export default {
     return {
       slide,
       show,
+      showArrows,
       closeModal,
       prevSlide,
       nextSlide,
