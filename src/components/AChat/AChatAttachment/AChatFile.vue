@@ -3,7 +3,15 @@
     <AChatFileLoader v-if="isImage" :transaction="transaction" :partnerId="partnerId" :file="file">
       <template #default="{ fileUrl, error }">
         <div v-if="error" :style="{ width: `${iconSize}px`, height: `${iconSize}px` }">
-          <div :class="classes.error">ERROR</div>
+          <div :class="classes.error">
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-icon v-bind="props" :class="classes.errorIcon" icon="mdi-image-off" />
+              </template>
+
+              <span>Failed to load the image</span>
+            </v-tooltip>
+          </div>
         </div>
 
         <v-img
@@ -71,7 +79,8 @@ const classes = {
   fileInfo: `${className}__file-info`,
   name: `${className}__name`,
   size: `${className}__size`,
-  error: `${className}__error`
+  error: `${className}__error`,
+  errorIcon: `${className}__error-icon`
 }
 
 const iconSize = 64
@@ -177,6 +186,10 @@ export default defineComponent({
     &__error {
       background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
     }
+
+    &__error-icon {
+      color: map-get($shades, 'white');
+    }
   }
 }
 
@@ -192,6 +205,10 @@ export default defineComponent({
 
     &__error {
       background-color: map-get($adm-colors, 'secondary2');
+    }
+
+    &__error-icon {
+      color: map-get($grey, 'darken-1');
     }
   }
 }
