@@ -100,6 +100,9 @@ export default defineComponent({
         //   publicKey
         // })
       }
+
+      // Reset the input value to allow selecting the same files again
+      input.value = ''
     }
   }
 })
