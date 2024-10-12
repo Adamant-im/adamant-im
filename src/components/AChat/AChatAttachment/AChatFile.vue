@@ -124,6 +124,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import 'vuetify/settings';
 @import '@/assets/styles/settings/_colors.scss';
 @import '@/assets/styles/themes/adamant/_mixins.scss';
 
@@ -132,12 +133,21 @@ export default defineComponent({
   margin-left: auto;
   width: 160px;
 
+  &__icon {
+    flex-shrink: 0;
+  }
+
   &__file-info {
     margin-left: 8px;
+    overflow: hidden;
   }
 
   &__name {
     font-size: 16px;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__size {
@@ -154,24 +164,10 @@ export default defineComponent({
   }
 }
 
-.v-theme--light {
-  .a-chat-file {
-    &__name {
-    }
-
-    &__size {
-      font-size: 14px;
-    }
-
-    &__error {
-      background-color: map-get($adm-colors, 'secondary2');
-    }
-  }
-}
-
 .v-theme--dark {
   .a-chat-file {
     &__name {
+      color: map-get($shades, 'white');
     }
 
     &__size {
@@ -180,6 +176,22 @@ export default defineComponent({
 
     &__error {
       background-color: map-get($adm-colors, 'secondary2-slightly-transparent');
+    }
+  }
+}
+
+.v-theme--light {
+  .a-chat-file {
+    &__name {
+      color: map-get($adm-colors, 'regular');
+    }
+
+    &__size {
+      color: map-get($adm-colors, 'muted');
+    }
+
+    &__error {
+      background-color: map-get($adm-colors, 'secondary2');
     }
   }
 }

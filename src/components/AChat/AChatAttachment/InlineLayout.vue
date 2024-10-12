@@ -53,8 +53,37 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@import 'vuetify/settings';
+@import '@/assets/styles/themes/adamant/_mixins.scss';
+@import '@/assets/styles/settings/_colors.scss';
+
 .a-chat-inline-layout {
   display: grid;
   gap: 8px;
+  border-style: solid;
+  border-width: 8px;
+  border-radius: 8px;
+}
+
+.v-theme--dark {
+  .a-chat-inline-layout {
+    background-color: map-get($adm-colors, 'black');
+    border-color: map-get($adm-colors, 'black');
+    box-shadow:
+      0 1px 10px hsla(0, 0%, 39.2%, 0.06),
+      0 1px 1px hsla(0, 0%, 39.2%, 0.04),
+      0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+  }
+}
+
+.v-theme--light {
+  .a-chat-inline-layout {
+    background-color: map-get($shades, 'white');
+    border-color: map-get($shades, 'white');
+    box-shadow:
+      0 1px 10px hsla(0, 0%, 39.2%, 0.06),
+      0 1px 1px hsla(0, 0%, 39.2%, 0.04),
+      0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
+  }
 }
 </style>

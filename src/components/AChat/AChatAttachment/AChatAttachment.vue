@@ -250,7 +250,7 @@ export default defineComponent({
   margin-top: 4px;
 
   &--inline {
-    width: 250px;
+    width: auto;
   }
 }
 
