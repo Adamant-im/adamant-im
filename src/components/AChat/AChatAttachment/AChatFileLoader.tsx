@@ -49,7 +49,10 @@ export const AChatFileLoader = defineComponent(
 
         return fileUrl
       },
-      enabled: !isLocalFile(props.file)
+      enabled: !isLocalFile(props.file),
+      retry: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false
     })
 
     const fileUrl = computed(() => {
