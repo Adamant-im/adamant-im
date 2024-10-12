@@ -26,6 +26,25 @@ export interface NodeHealthcheck {
   threshold: number
 }
 
+export interface ProjectLink {
+  name: string
+  url: string
+}
+
+export interface Service {
+  /** Service node description */
+  description: ServiceDescription
+  list: NodeInfo[]
+  healthCheck: ServiceHealthcheck
+}
+
+/** Service node description */
+export interface ServiceDescription {
+  software: string
+  github?: string
+  docs?: string
+}
+
 export interface ServiceHealthcheck {
   /** Regular node status update interval in ms */
   normalUpdateInterval: number
@@ -35,14 +54,12 @@ export interface ServiceHealthcheck {
   onScreenUpdateInterval: number
 }
 
-export interface ProjectLink {
-  name: string
-  url: string
-}
-
-export interface Service {
-  url: string
-  alt_ip?: string
+/** Timeouts when sending messages in chat. See [README.md](https://github.com/Adamant-im/adamant-wallets/blob/master/README.md#message-sending) for details. */
+export interface MessageTimeout {
+  /** Timeout for regular messages (in milliseconds) */
+  message: string
+  /** Timeout for file transfers (in milliseconds) */
+  attachment: number
 }
 
 export interface TokenGeneral {
@@ -110,6 +127,8 @@ export interface TokenGeneral {
     /** Attempts to fetch Tx when its current status is "Pending" for old transactions */
     oldPendingAttempts?: number
   }
+  /** Timeouts when sending messages in chat. See [README.md](https://github.com/Adamant-im/adamant-wallets/blob/master/README.md#message-sending) for details. */
+  timeout?: MessageTimeout
   /** Time in ms when difference between in-chat transfer and Tx timestamp considered as acceptable */
   txConsistencyMaxTime?: number
   nodes?: {
@@ -122,16 +141,7 @@ export interface TokenGeneral {
      */
     minVersion?: string
   }
-  services?: {
-    /** Service node links for API */
-    list: Record<string, Service>
-    healthCheck: ServiceHealthcheck
-    /**
-     * Minimal service node API version
-     * @example "1.0.0"
-     */
-    minVersion?: string
-  }
+  services?: Record<string, Service>
   /** Additional project links */
   links?: ProjectLink[]
   tor?: {
@@ -153,16 +163,7 @@ export interface TokenGeneral {
        */
       minVersion?: string
     }
-    services?: {
-      /** Service node links for API */
-      list: Record<string, Service>
-      healthCheck?: ServiceHealthcheck
-      /**
-       * Minimal service node API version
-       * @example "1.0.0"
-       */
-      minVersion?: string
-    }
+    services?: Record<string, Service>
     /** Additional project links (Tor) */
     links?: ProjectLink[]
   }

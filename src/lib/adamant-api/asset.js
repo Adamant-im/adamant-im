@@ -35,3 +35,39 @@ export function reactionAsset(reactToId, reactMessage) {
     react_message: reactMessage
   }
 }
+
+/**
+ * AIP-18: https://github.com/Adamant-im/AIPs/pull/54/files
+ * @param {Array<FileData>} files
+ * @param {Array<[string, string]>} [nonces] First element is the nonce of original file, second is nonce of preview
+ * @param {Array<[string, string]>} [ids] List of files IDs after uploading to IPFS. First element is the ID of original file, second is ID of preview.
+ * @param {string} [comment]
+ */
+export function attachmentAsset(files, nonces, ids, comment) {
+  return {
+    files: files.map(({ file, width, height, cid }, index) => {
+      const [name, extension] = file.name.split('.')
+      const resolution = width && height ? [width, height] : undefined
+      const [nonce, previewNonce] = nonces?.[index] || []
+      const [id, previewId] = cid ? [cid, cid] : ids?.[index] || [] // @todo cid preview
+
+      return {
+        mimeType: file.type,
+        name,
+        extension,
+        resolution,
+        duration: undefined, // @todo check if is a video or audio file
+        size: file.size,
+        id,
+        nonce,
+        preview: {
+          id: previewId,
+          nonce: previewNonce,
+          extension
+        }
+      }
+    }),
+    comment,
+    storage: { id: 'ipfs' }
+  }
+}
