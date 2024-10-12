@@ -61,6 +61,7 @@ export default defineComponent({
       required: true
     }
   },
+  emits: ['click'],
   components: { AChatFileLoader },
   setup() {
     return {

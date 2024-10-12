@@ -1,7 +1,7 @@
 <template>
   <div :class="classes.root">
     <AChatFileLoader v-if="isImage" :transaction="transaction" :partnerId="partnerId" :file="file">
-      <template #default="{ fileUrl, error }">
+      <template #default="{ fileUrl, error, isLoading }">
         <div v-if="error" :style="{ width: `${iconSize}px`, height: `${iconSize}px` }">
           <div :class="classes.error">
             <v-tooltip location="bottom">
@@ -22,7 +22,7 @@
           :max-width="iconSize"
           :max-height="iconSize"
           cover
-          @click="$emit('click')"
+          @click="!isLoading && $emit('click')"
         >
           <template #placeholder>
             <div class="d-flex align-center justify-center fill-height">
@@ -39,6 +39,7 @@
       :text="fileExtension"
       :height="iconSize"
       :width="iconSize"
+      @click="$emit('click')"
     />
 
     <div :class="classes.fileInfo">
@@ -100,6 +101,7 @@ export default defineComponent({
       required: true
     }
   },
+  emits: ['click'],
   components: { AChatFileLoader, IconFile },
   setup(props) {
     const isImage = computed(() => {
