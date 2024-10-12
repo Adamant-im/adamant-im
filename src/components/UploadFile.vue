@@ -11,6 +11,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
+import { useStore } from 'vuex'
 import { computeCID, readFileAsBuffer, readFileAsDataURL } from '@/lib/file'
 
 import { EncodedFile, encodeFile } from '@/lib/adamant-api'
@@ -51,17 +52,19 @@ export default defineComponent({
     },
     partnerId: {
       type: String as PropType<string>,
-      default: ''
+      required: true
     }
   },
-  emits: ['image-selected'],
-  methods: {
-    async uploadFile(event: Event) {
+  emits: ['file'],
+  setup(props, { emit }) {
+    const store = useStore()
+
+    const uploadFile = async (event: Event) => {
       const input = event.target as HTMLInputElement
       const selectedFiles = input.files
 
       if (!selectedFiles) {
-        console.log('No files selected')
+        console.warn('No files selected')
         return
       }
 
@@ -69,7 +72,7 @@ export default defineComponent({
         const dataURL = await readFileAsDataURL(file)
         const arrayBuffer = await readFileAsBuffer(file)
         const { width, height } = await getImageResolution(file)
-        const encodedFile = await encodeFile(arrayBuffer, { to: this.partnerId })
+        const encodedFile = await encodeFile(arrayBuffer, { to: props.partnerId })
         const cid = await computeCID(encodedFile.binary)
 
         // Cache the attachment
@@ -77,7 +80,7 @@ export default defineComponent({
         const url = URL.createObjectURL(blob)
 
         // Cache image URL
-        this.$store.commit('attachment/setAttachment', { cid, url })
+        store.commit('attachment/setAttachment', { cid, url })
 
         const fileData: FileData = {
           cid,
@@ -91,18 +94,15 @@ export default defineComponent({
           height
         }
 
-        this.$emit('image-selected', fileData)
-
-        // @todo: Implement this
-        // const publicKey = this.$store.getters.publicKey(this.partnerId)
-        // this.$store.dispatch('attachment/uploadAttachment', {
-        //   file: raw,
-        //   publicKey
-        // })
+        emit('file', fileData)
       }
 
       // Reset the input value to allow selecting the same files again
       input.value = ''
+    }
+
+    return {
+      uploadFile
     }
   }
 })

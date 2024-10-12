@@ -7,10 +7,10 @@
       <UploadFile
         :partnerId="partnerId"
         :accept="acceptImage"
-        @image-selected="handleImageSelected"
+        @file="handleFileSelected"
         ref="UploadImageRef"
       />
-      <UploadFile :accept="acceptFile" @image-selected="handleImageSelected" ref="UploadFileRef" />
+      <UploadFile :accept="acceptFile" @file="handleFileSelected" ref="UploadFileRef" />
       <v-list class="chat-menu__list">
         <!-- Attach Image -->
         <v-list-item @click="$refs.UploadImageRef.$refs.fileInput.click()">
@@ -91,8 +91,7 @@ export default {
     }
   },
   methods: {
-    handleImageSelected(imageData) {
-      console.log('HandleImageSelected', imageData)
+    handleFileSelected(imageData) {
       this.$emit('files', [imageData])
     },
     sendFunds(crypto) {
