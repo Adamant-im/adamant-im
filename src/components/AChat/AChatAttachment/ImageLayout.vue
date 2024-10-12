@@ -109,6 +109,10 @@ $gap-size: 4px;
   .a-chat-image-layout {
     background-color: map-get($adm-colors, 'black');
     border-color: map-get($adm-colors, 'black');
+    box-shadow:
+      0 1px 10px hsla(0, 0%, 39.2%, 0.06),
+      0 1px 1px hsla(0, 0%, 39.2%, 0.04),
+      0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
   }
 }
 
@@ -116,6 +120,10 @@ $gap-size: 4px;
   .a-chat-image-layout {
     background-color: map-get($shades, 'white');
     border-color: map-get($shades, 'white');
+    box-shadow:
+      0 1px 10px hsla(0, 0%, 39.2%, 0.06),
+      0 1px 1px hsla(0, 0%, 39.2%, 0.04),
+      0 2px 10px -1px hsla(0, 0%, 39.2%, 0.02);
   }
 }
 </style>
