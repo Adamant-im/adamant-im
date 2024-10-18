@@ -8,11 +8,6 @@ const state = (): AttachmentsState => ({
 })
 
 const mutations: MutationTree<AttachmentsState> = {
-  setAttachments(state, attachments) {
-    // TODO: Poor realization
-    state.attachments = attachments
-  },
-
   setAttachment(state, { cid, url }) {
     state.attachments = { ...state.attachments, [cid]: url }
   },
@@ -25,12 +20,6 @@ const mutations: MutationTree<AttachmentsState> = {
 const getters: GetterTree<AttachmentsState, RootState> = {
   getImageUrl: (state) => (cid: string) => {
     return state.attachments[cid]
-  },
-  getFileMessage: (state) => (id: string) => {
-    const objMessage = state.attachments[id]
-    if (objMessage?.files) {
-      return objMessage.files
-    }
   }
 }
 
@@ -74,8 +63,14 @@ const actions: ActionTree<AttachmentsState, RootState> = {
   async uploadAttachment(state, { file, publicKey }: { file: Uint8Array; publicKey: string }) {
     return attachmentApi?.uploadFile(file, publicKey)
   },
-  resetState(context) {
-    context.commit('reset')
+  reset: {
+    root: true,
+    handler({ state, commit }) {
+      for (const fileUrl of Object.values(state.attachments)) {
+        URL.revokeObjectURL(fileUrl)
+      }
+      commit('reset')
+    }
   }
 }
 

@@ -52,7 +52,7 @@ export const AChatFileLoader = defineComponent(
       enabled: !isLocalFile(props.file),
       retry: false,
       refetchOnWindowFocus: false,
-      refetchOnMount: false
+      refetchOnMount: true,
     })
 
     const fileUrl = computed(() => {
