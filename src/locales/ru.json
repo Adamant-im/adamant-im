@@ -16,6 +16,8 @@
     "incorrect_address": "Неправильный ADM-адрес",
     "no_public_key": "Этот адрес еще не использовался. С ним нельзя начать чат",
     "unable_to_retrieve_no_public_key": "`Не могу прочитать сообщение: нет публичного ключа собеседника`",
+    "max_files": "Вы можете загрузить максимум 6 файлов",
+    "files": "файл(ов)",
     "me": "Я",
     "message": "Введите сообщение",
     "message_rejected": "Сообщение отклонено",
@@ -192,7 +194,8 @@
     "tabs": {
       "adm_nodes": "Узлы ADM",
       "coin_nodes": "Крипто-ноды",
-      "service_nodes": "Крипто-сервисы"
+      "service_nodes": "Крипто-сервисы",
+      "ipfs_nodes": "IPFS ноды"
     },
     "unsupported": "Не поддерживается",
     "unsupported_reason_protocol": "HTTP не поддерживается",

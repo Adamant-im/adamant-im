@@ -29,6 +29,8 @@ export declare const Rates: {
 
 export declare const RatesNames: Record<FiatCurrencySymbol, string>
 
+export declare const UPLOAD_MAX_FILE_COUNT: number
+
 export declare const Fees: {
   KVS: number
   ADM_TRANSFER: number
