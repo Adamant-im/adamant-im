@@ -96,6 +96,12 @@ export default {
   }
 }
 
+.all-nodes-disabled-dialog {
+  &__btn-block {
+    padding-bottom: 16px;
+  }
+}
+
 .v-theme--dark {
   .nodes-offline-dialog {
     &__disclaimer {
