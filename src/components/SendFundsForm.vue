@@ -227,6 +227,8 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
 import { AllCryptos } from '@/lib/constants/cryptos'
 
+const KLAYR_PROTO = 'klayr'
+
 /**
  * @returns {string | boolean}
  */
@@ -701,13 +703,16 @@ export default {
      */
     onScanQrcode(uri) {
       const recipient = parseURIasAIP(uri)
-
+      const { params } = recipient
+      const isKlayrWallet = this.currency === Cryptos.KLY && !recipient.crypto && recipient.protocol === KLAYR_PROTO
       this.cryptoAddress = ''
-      if (validateAddress(this.currency, recipient.address)) {
-        this.cryptoAddress = recipient.address
-        if (recipient.params.amount) {
-          const amount = formatNumber(this.exponent)(recipient.params.amount)
-
+      let isValidAddress = false
+      if (isKlayrWallet) isValidAddress = validateAddress(this.currency, params.recipient)
+      else isValidAddress = validateAddress(this.currency, recipient.address)
+      if (isValidAddress) {
+        this.cryptoAddress = isKlayrWallet ? params.recipient : recipient.address
+        if (params.amount) {
+          const amount = formatNumber(this.exponent)(params.amount)
           if (Number(amount) <= this.maxToTransfer) {
             this.amountString = amount
           }
