@@ -112,7 +112,7 @@ export abstract class Node<C = unknown> {
     this.hostname = new URL(url).hostname
     this.minNodeVersion = minNodeVersion
     this.version = version
-    this.hasSupportedProtocol = !(this.protocol === 'http:' && appProtocol === 'https:')
+    this.hasSupportedProtocol = true // @todo add option: Enable HTTP nodes
     this.active = nodesStorage.isActive(url)
 
     this.client = this.buildClient()
