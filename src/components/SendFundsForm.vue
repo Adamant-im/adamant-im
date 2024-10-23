@@ -214,7 +214,7 @@ import {
   Fees
 } from '@/lib/constants'
 
-import { parseURIasAIP } from '@/lib/uri'
+import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
 
@@ -226,8 +226,6 @@ import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressD
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
 import { AllCryptos } from '@/lib/constants/cryptos'
-
-const KLAYR_PROTO = 'klayr'
 
 /**
  * @returns {string | boolean}
@@ -673,7 +671,7 @@ export default {
      */
     onPasteURIAddress(e) {
       const data = e.clipboardData.getData('text')
-      const address = parseURIasAIP(data).address
+      const address = parseURI(data).address
 
       if (validateAddress(this.currency, address)) {
         e.preventDefault()
@@ -689,7 +687,7 @@ export default {
      */
     onPasteURIComment(e) {
       nextTick(() => {
-        const params = parseURIasAIP(e.target.value).params
+        const params = parseURI(e.target.value).params
 
         if (params.message) {
           this.comment = params.message
@@ -702,15 +700,13 @@ export default {
      * @param {string} uri URI
      */
     onScanQrcode(uri) {
-      const recipient = parseURIasAIP(uri)
+      if (this.cryptoAddress) this.cryptoAddress = ''
+      if (this.amountString) this.amountString = ''
+      const recipient = parseURI(uri)
       const { params } = recipient
-      const isKlayrWallet = this.currency === Cryptos.KLY && !recipient.crypto && recipient.protocol === KLAYR_PROTO
-      this.cryptoAddress = ''
-      let isValidAddress = false
-      if (isKlayrWallet) isValidAddress = validateAddress(this.currency, params.recipient)
-      else isValidAddress = validateAddress(this.currency, recipient.address)
+      const isValidAddress = validateAddress(this.currency, recipient.address)
       if (isValidAddress) {
-        this.cryptoAddress = isKlayrWallet ? params.recipient : recipient.address
+        this.cryptoAddress = recipient.address
         if (params.amount) {
           const amount = formatNumber(this.exponent)(params.amount)
           if (Number(amount) <= this.maxToTransfer) {

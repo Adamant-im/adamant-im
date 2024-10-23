@@ -2,6 +2,8 @@ import { isAddress as isEthAddress, isHexStrict } from 'web3-utils'
 import { validateBase32Address as isKlyAddress } from '@klayr/cryptography'
 import { Cryptos, CryptosInfo } from './constants'
 
+const KLAYR_WALLET = 'klayr://wallet'
+
 /**
  * Get an ADAMANT URI from the address bar or argv[]
  * Complies with AIP-2, AIP-8, AIP-9
@@ -18,11 +20,64 @@ export function getAddressBarURI() {
   return aip2 || document.URL
 }
 
+const formQueryParamsObject = (query) => {
+  return query.split('&').reduce((accum, param) => {
+    const [key, value = ''] = param.split('=')
+    return key && value
+      ? {
+          ...accum,
+          [key]: window.decodeURIComponent(
+            value.includes('+') ? value.replace(/\+/g, ' ') : value
+          )
+        }
+      : accum
+  }, Object.create(null))
+}
+
+/**
+ * Parse info from an URI
+ * @param {string} uri URI. Default is address bar or argv[].
+ * @returns {
+*   {
+*     address: string,
+*     crypto: string,
+*     params: Object<string, string>,
+*     protocol: string
+*   }
+* }
+ */
+export function parseURI(uri = getAddressBarURI()) {
+  const [origin, query = ''] = uri.split('?')
+  if (origin === KLAYR_WALLET) return parseKlyURI(origin, query)
+  else return parseURIasAIP(origin, query)
+}
+
+/**
+ * Parse info from an URI of the Klayr wallet
+ * Sample: https://msg.adamant.im?address=U9821606738809290000&label=John+Doe&amount=1.12&message=Buy+a+beer
+  *   {
+  *     address: string,
+  *     crypto: string,
+  *     params: Object<string, string>,
+  *     protocol: string
+  *   }
+  * }
+*/
+function parseKlyURI(origin, query) {
+  let address = ''
+  let params = Object.create(null)
+  
+  if (query) {
+    params = formQueryParamsObject(query)
+    address = params.recipient || ''
+  }
+
+  return { address, crypto: Cryptos.KLY, params, protocol: KLAYR_WALLET }
+}
+
 /**
  * Parse info from an URI containing a cryptocurrency address
  * Complies with AIP-2, AIP-8, AIP-9
- * Sample: https://msg.adamant.im?address=U9821606738809290000&label=John+Doe&amount=1.12&message=Buy+a+beer
- * @param {string} uri URI. Default is address bar or argv[].
  * @returns {
  *   {
  *     address: string,
@@ -32,29 +87,16 @@ export function getAddressBarURI() {
  *   }
  * }
  */
-export function parseURIasAIP(uri = getAddressBarURI()) {
-  const [origin, query = ''] = uri.split('?')
+export function parseURIasAIP(origin, query) {
   let address = ''
   let crypto = ''
   let params = Object.create(null)
   let protocol = ''
 
-  if (query) {
-    params = query.split('&').reduce((accum, param) => {
-      const [key, value = ''] = param.split('=')
-      return key && value
-        ? {
-            ...accum,
-            [key]: window.decodeURIComponent(
-              value.includes('+') ? value.replace(/\+/g, ' ') : value
-            )
-          }
-        : accum
-    }, Object.create(null))
-  }
+  if (query) params = formQueryParamsObject(query)
 
   if (origin.includes(':')) {
-    ;[protocol, address] = origin.split(':')
+    [protocol, address] = origin.split(':')
     if (protocol === 'ethereum') {
       crypto = Cryptos.ETH
     } else if (/^https?$/.test(protocol) || /^app$/.test(protocol)) {
