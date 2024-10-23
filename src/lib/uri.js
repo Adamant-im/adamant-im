@@ -74,15 +74,14 @@ function parseKlyURI(query) {
     address = params.recipient || ''
   }
 
-  return { address, crypto: Cryptos.KLY, params, protocol: KLAYR_WALLET }
+  return { address, crypto: Cryptos.KLY, params, protocol: Cryptos.KLY }
 }
 
 /**
  * Parse info from an URI containing a cryptocurrency address
  * Complies with AIP-2, AIP-8, AIP-9
  * Sample: https://msg.adamant.im?address=U9821606738809290000&label=John+Doe&amount=1.12&message=Buy+a+beer
- * @param {string} URI's origin
- * @param {string} URI's query parameters
+ * @param {string} URI
  * @returns {
  *   {
  *     address: string,
