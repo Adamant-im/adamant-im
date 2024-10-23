@@ -49,7 +49,7 @@ const formQueryParamsObject = (query) => {
 export function parseURI(uri = getAddressBarURI()) {
   const [origin, query = ''] = uri.split('?')
   if (origin === KLAYR_WALLET) return parseKlyURI(query)
-  return parseURIasAIP(origin, query)
+  return parseURIasAIP(uri)
 }
 
 /**
@@ -92,7 +92,8 @@ function parseKlyURI(query) {
  *   }
  * }
  */
-export function parseURIasAIP(origin, query) {
+export function parseURIasAIP(uri = getAddressBarURI()) {
+  const [origin, query = ''] = uri.split('?')
   let address = ''
   let crypto = ''
   let params = Object.create(null)
