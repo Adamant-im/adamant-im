@@ -76,7 +76,7 @@ export default {
 @import 'vuetify/_settings.scss';
 @import '@/assets/styles/settings/_colors.scss';
 
-.nodes-offline-dialog {
+.all-nodes-disabled-dialog {
   &__card-text {
     padding: 16px !important;
   }
@@ -91,19 +91,13 @@ export default {
     margin-right: 8px;
   }
   &__btn-block {
-    padding: 16px 0 32px 0;
+    padding: 16px 0 16px 0;
     text-align: center;
   }
 }
 
-.all-nodes-disabled-dialog {
-  &__btn-block {
-    padding-bottom: 16px;
-  }
-}
-
 .v-theme--dark {
-  .nodes-offline-dialog {
+  .all-nodes-disabled-dialog {
     &__disclaimer {
       color: map-get($shades, 'white');
     }
