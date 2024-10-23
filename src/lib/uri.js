@@ -35,9 +35,9 @@ const formQueryParamsObject = (query) => {
 }
 
 /**
- * Parse info from an URI
- * @param {string} uri URI. Default is address bar or argv[].
- * @returns {
+* Parse info from an URI
+* @param {string} uri URI. Default is address bar or argv[].
+* @returns {
 *   {
 *     address: string,
 *     crypto: string,
@@ -45,25 +45,27 @@ const formQueryParamsObject = (query) => {
 *     protocol: string
 *   }
 * }
- */
+*/
 export function parseURI(uri = getAddressBarURI()) {
   const [origin, query = ''] = uri.split('?')
-  if (origin === KLAYR_WALLET) return parseKlyURI(origin, query)
-  else return parseURIasAIP(origin, query)
+  if (origin === KLAYR_WALLET) return parseKlyURI(query)
+  return parseURIasAIP(origin, query)
 }
 
 /**
- * Parse info from an URI of the Klayr wallet
- * Sample: https://msg.adamant.im?address=U9821606738809290000&label=John+Doe&amount=1.12&message=Buy+a+beer
-  *   {
-  *     address: string,
-  *     crypto: string,
-  *     params: Object<string, string>,
-  *     protocol: string
-  *   }
-  * }
+* Parse info from an URI of the Klayr wallet
+* Ex.: klayr://wallet?modal=send&recipient=klyap2bbanxn4agw286ofz85zf3y2brdzjdyoby8r&amount=123&token=0000000000000000&recipientChain=00000000
+* @param {string} URI's query parameters
+* @returns {
+*   {
+*     address: string,
+*     crypto: string,
+*     params: Object<string, string>,
+*     protocol: string
+*   }
+* }
 */
-function parseKlyURI(origin, query) {
+function parseKlyURI(query) {
   let address = ''
   let params = Object.create(null)
   
@@ -78,6 +80,9 @@ function parseKlyURI(origin, query) {
 /**
  * Parse info from an URI containing a cryptocurrency address
  * Complies with AIP-2, AIP-8, AIP-9
+ * Sample: https://msg.adamant.im?address=U9821606738809290000&label=John+Doe&amount=1.12&message=Buy+a+beer
+ * @param {string} URI's origin
+ * @param {string} URI's query parameters
  * @returns {
  *   {
  *     address: string,
