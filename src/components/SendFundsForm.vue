@@ -125,7 +125,7 @@
         v-if="isTextDataAllowed"
         v-model="textData"
         class="a-input"
-        :label="textDataLabel"
+        :label="klayrOptionalMessage ? klayrOptionalMessage : textDataLabel"
         variant="underlined"
         counter
         maxlength="64"
@@ -310,6 +310,7 @@ export default {
     increaseFee: false,
     showWarningOnPartnerAddressDialog: false,
     warningOnPartnerInfo: {},
+    klayrOptionalMessage: '',
 
     // Account exists check
     // Currently works only with KLY
@@ -700,18 +701,20 @@ export default {
      * @param {string} uri URI
      */
     onScanQrcode(uri) {
-      if (this.cryptoAddress) this.cryptoAddress = ''
-      if (this.amountString) this.amountString = ''
       const recipient = parseURI(uri)
       const { params } = recipient
       const isValidAddress = validateAddress(this.currency, recipient.address)
       if (isValidAddress) {
         this.cryptoAddress = recipient.address
-        if (params.amount) {
+        if (params.amount && !this.amountString) {
           const amount = formatNumber(this.exponent)(params.amount)
           if (Number(amount) <= this.maxToTransfer) {
             this.amountString = amount
           }
+        }
+        if (recipient.crypto === Cryptos.KLY) {
+          if (params.reference) this.klayrOptionalMessage = params.reference
+          else this.klayrOptionalMessage = ''
         }
       } else {
         this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: this.currency }))

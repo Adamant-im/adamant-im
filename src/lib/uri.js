@@ -31,7 +31,7 @@ const formQueryParamsObject = (query) => {
           )
         }
       : accum
-  }, Object.create(null))
+  }, {})
 }
 
 /**
@@ -67,7 +67,7 @@ export function parseURI(uri = getAddressBarURI()) {
 */
 function parseKlyURI(query) {
   let address = ''
-  let params = Object.create(null)
+  let params = {}
   
   if (query) {
     params = formQueryParamsObject(query)
