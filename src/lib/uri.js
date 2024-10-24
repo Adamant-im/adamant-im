@@ -74,7 +74,7 @@ function parseKlyURI(query) {
     address = params.recipient || ''
   }
 
-  return { address, crypto: Cryptos.KLY, params, protocol: Cryptos.KLY }
+  return { address, crypto: Cryptos.KLY, params, protocol: Cryptos.KLY.toLowerCase() }
 }
 
 /**
