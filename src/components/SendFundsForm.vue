@@ -713,7 +713,7 @@ export default {
           }
         }
         if (crypto === Cryptos.KLY) {
-          params.reference ? this.textData = params.reference : this.textData = ''
+          this.textData = params.reference ? params.reference : ''
         }
       } else {
         this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: this.currency }))
