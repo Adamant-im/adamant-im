@@ -214,7 +214,7 @@ import {
   Fees
 } from '@/lib/constants'
 
-import { parseURIasAIP } from '@/lib/uri'
+import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
 
@@ -310,6 +310,7 @@ export default {
     increaseFee: false,
     showWarningOnPartnerAddressDialog: false,
     warningOnPartnerInfo: {},
+    klayrOptionalMessage: '',
 
     // Account exists check
     // Currently works only with KLY
@@ -671,7 +672,7 @@ export default {
      */
     onPasteURIAddress(e) {
       const data = e.clipboardData.getData('text')
-      const address = parseURIasAIP(data).address
+      const address = parseURI(data).address
 
       if (validateAddress(this.currency, address)) {
         e.preventDefault()
@@ -687,7 +688,7 @@ export default {
      */
     onPasteURIComment(e) {
       nextTick(() => {
-        const params = parseURIasAIP(e.target.value).params
+        const params = parseURI(e.target.value).params
 
         if (params.message) {
           this.comment = params.message
@@ -700,17 +701,19 @@ export default {
      * @param {string} uri URI
      */
     onScanQrcode(uri) {
-      const recipient = parseURIasAIP(uri)
-
-      this.cryptoAddress = ''
-      if (validateAddress(this.currency, recipient.address)) {
-        this.cryptoAddress = recipient.address
-        if (recipient.params.amount) {
-          const amount = formatNumber(this.exponent)(recipient.params.amount)
-
+      const recipient = parseURI(uri)
+      const { params, address, crypto } = recipient
+      const isValidAddress = validateAddress(this.currency, address)
+      if (isValidAddress) {
+        this.cryptoAddress = address
+        if (params.amount && !this.amountString) {
+          const amount = formatNumber(this.exponent)(params.amount)
           if (Number(amount) <= this.maxToTransfer) {
             this.amountString = amount
           }
+        }
+        if (crypto === Cryptos.KLY) {
+          this.textData = params.reference ? params.reference : ''
         }
       } else {
         this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: this.currency }))
