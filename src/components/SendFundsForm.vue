@@ -125,7 +125,7 @@
         v-if="isTextDataAllowed"
         v-model="textData"
         class="a-input"
-        :label="klayrOptionalMessage ? klayrOptionalMessage : textDataLabel"
+        :label="textDataLabel"
         variant="underlined"
         counter
         maxlength="64"
@@ -702,19 +702,18 @@ export default {
      */
     onScanQrcode(uri) {
       const recipient = parseURI(uri)
-      const { params } = recipient
-      const isValidAddress = validateAddress(this.currency, recipient.address)
+      const { params, address, crypto } = recipient
+      const isValidAddress = validateAddress(this.currency, address)
       if (isValidAddress) {
-        this.cryptoAddress = recipient.address
+        this.cryptoAddress = address
         if (params.amount && !this.amountString) {
           const amount = formatNumber(this.exponent)(params.amount)
           if (Number(amount) <= this.maxToTransfer) {
             this.amountString = amount
           }
         }
-        if (recipient.crypto === Cryptos.KLY) {
-          if (params.reference) this.klayrOptionalMessage = params.reference
-          else this.klayrOptionalMessage = ''
+        if (crypto === Cryptos.KLY) {
+          params.reference ? this.textData = params.reference : this.textData = ''
         }
       } else {
         this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: this.currency }))
