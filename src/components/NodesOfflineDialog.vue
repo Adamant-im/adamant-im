@@ -77,8 +77,11 @@ export default {
 @import '@/assets/styles/settings/_colors.scss';
 
 .all-nodes-disabled-dialog {
+  &__card-title {
+    padding: 14px !important;
+  }
   &__card-text {
-    padding: 16px !important;
+    padding: 14px !important;
   }
   &__disclaimer {
     margin-top: 10px;
