@@ -79,6 +79,7 @@ export default {
 .all-nodes-disabled-dialog {
   &__card-title {
     padding-left: 24px !important;
+    padding-right: 24px !important;
   }
   &__disclaimer {
     margin-top: 10px;
