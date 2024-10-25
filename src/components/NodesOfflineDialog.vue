@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="showDialog" width="500" :class="className">
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title :class="`${className}__card-title a-text-header`">
         {{ t('chats.nodes_offline_dialog.title', { coin: nodeType.toUpperCase() }) }}
       </v-card-title>
 
@@ -77,7 +77,7 @@ export default {
 @import '@/assets/styles/settings/_colors.scss';
 
 .all-nodes-disabled-dialog {
-  .a-text-header {
+  &__card-title {
     padding-left: 24px !important;
   }
   &__disclaimer {
