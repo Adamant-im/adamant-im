@@ -81,6 +81,9 @@ export default {
     padding-left: 24px !important;
     padding-right: 24px !important;
   }
+  &__card-text {
+    padding-bottom: 16px !important;
+  }
   &__disclaimer {
     margin-top: 10px;
   }
