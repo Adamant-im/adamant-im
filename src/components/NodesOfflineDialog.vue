@@ -84,9 +84,6 @@ export default {
   &__card-text {
     padding-bottom: 16px !important;
   }
-  &__disclaimer {
-    margin-top: 10px;
-  }
   &__btn {
     margin-top: 15px;
     margin-bottom: 20px;
