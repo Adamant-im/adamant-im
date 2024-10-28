@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="showDialog" width="500" :class="className">
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title :class="`${className}__card-title a-text-header`">
         {{ t('chats.nodes_offline_dialog.title', { coin: nodeType.toUpperCase() }) }}
       </v-card-title>
 
@@ -76,12 +76,13 @@ export default {
 @import 'vuetify/_settings.scss';
 @import '@/assets/styles/settings/_colors.scss';
 
-.nodes-offline-dialog {
-  &__card-text {
-    padding: 16px !important;
+.all-nodes-disabled-dialog {
+  &__card-title {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
   }
-  &__disclaimer {
-    margin-top: 10px;
+  &__card-text {
+    padding-bottom: 16px !important;
   }
   &__btn {
     margin-top: 15px;
@@ -91,13 +92,13 @@ export default {
     margin-right: 8px;
   }
   &__btn-block {
-    padding: 16px 0 32px 0;
+    padding: 16px 0 16px 0;
     text-align: center;
   }
 }
 
 .v-theme--dark {
-  .nodes-offline-dialog {
+  .all-nodes-disabled-dialog {
     &__disclaimer {
       color: map-get($shades, 'white');
     }
