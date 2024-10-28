@@ -485,7 +485,7 @@ const handleFiles = (filesList: FileData[]) => {
   if (files.value.length > UPLOAD_MAX_FILE_COUNT) {
     files.value = files.value.slice(0, UPLOAD_MAX_FILE_COUNT)
     store.dispatch('snackbar/show', {
-      message: t('chats.max_files')
+      message: t('chats.max_files', { count: UPLOAD_MAX_FILE_COUNT })
     })
   }
 }
