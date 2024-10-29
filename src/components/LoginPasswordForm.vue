@@ -45,6 +45,7 @@
 import { clearDb } from '@/lib/idb'
 import { computed, defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
 export default defineComponent({
   props: {
@@ -56,6 +57,7 @@ export default defineComponent({
   emits: ['login', 'error', 'update:modelValue'],
   setup(props, { emit }) {
     const store = useStore()
+    const { t } = useI18n()
     const passwordField = ref(null)
     const showSpinner = ref(false)
 
@@ -77,7 +79,7 @@ export default defineComponent({
           emit('login')
         })
         .catch(() => {
-          emit('error', 'login_via_password.incorrect_password')
+          emit('error', t('login_via_password.incorrect_password'))
         })
         .finally(() => {
           showSpinner.value = false

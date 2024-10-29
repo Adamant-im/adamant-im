@@ -100,7 +100,9 @@
   "errors": {
     "something_went_wrong": "Что-то пошло не так. Детали ошибки в консоли",
     "all_nodes_offline": "Все {crypto} ноды недоступны. Попробуйте позже",
-    "all_nodes_disabled": "Нет активных узлов {crypto}. Включите хотя бы один"
+    "all_nodes_disabled": "Нет активных узлов {crypto}. Включите хотя бы один",
+    "all_adm_nodes_inactive": "Нет активных нод ADM. Посмотрите список узлов",
+    "all_adm_nodes_disabled": "Нет доступных нод ADM. Посмотрите список узлов"
   },
   "home": {
     "balance": "Баланс",

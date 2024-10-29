@@ -31,6 +31,7 @@
               v-model="passphrase"
               @login="onLogin"
               @error="onLoginError"
+              @offline="onOffline"
             />
           </v-col>
         </v-row>
@@ -87,6 +88,7 @@
         @scan="onScanQrcode"
       />
     </container>
+    <ProgressIndicator :show="isProgressIndicatorShow" />
   </v-row>
 </template>
 
@@ -104,6 +106,7 @@ import QrCodeScanIcon from '@/components/icons/common/QrCodeScan.vue'
 import FileIcon from '@/components/icons/common/File.vue'
 import LoginPasswordForm from '@/components/LoginPasswordForm.vue'
 import Logo from '@/components/icons/common/Logo.vue'
+import ProgressIndicator from '@/components/ProgressIndicator.vue'
 import { navigateByURI } from '@/router/navigationGuard'
 import { useI18n } from 'vue-i18n'
 
@@ -118,12 +121,14 @@ export default defineComponent({
     QrCodeScanIcon,
     FileIcon,
     LoginPasswordForm,
-    Logo
+    Logo,
+    ProgressIndicator
   },
   setup() {
     const passphrase = ref('')
     const password = ref('')
     const showQrcodeScanner = ref(false)
+    const isProgressIndicatorShow = ref(false)
     const logo = '/img/adamant-logo-transparent-512x512.png'
     const store = useStore()
     const { t } = useI18n()
@@ -158,6 +163,9 @@ export default defineComponent({
         timeout: 3000
       })
     }
+    const onOffline = (val) => {
+      isProgressIndicatorShow.value = val
+    }
     const onCopyPassphrase = () => {
       store.dispatch('snackbar/show', {
         message: t('home.copied'),
@@ -174,6 +182,7 @@ export default defineComponent({
       password,
       showQrcodeScanner,
       logo,
+      isProgressIndicatorShow,
       className,
       isLoginViaPassword,
       t,
@@ -182,6 +191,7 @@ export default defineComponent({
       onDetectQrcodeError,
       onLogin,
       onLoginError,
+      onOffline,
       onCopyPassphrase,
       onScanQrcode
     }

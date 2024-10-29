@@ -53,7 +53,7 @@
 
 <script>
 import { validateMnemonic } from 'bip39'
-import { computed, ref, defineComponent } from 'vue'
+import { computed, ref, defineComponent, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -88,17 +88,31 @@ export default defineComponent({
       }
     })
 
+    const isOnline = computed(() => store.getters['isOnline'])
+    watch(isOnline, (val) => {
+      emit('offline', !val)
+    })
+
+    const isAdmNodesNotActive = computed(() => {
+      return !store.getters['nodes/adm'].find(node => node.active)
+    })
+    const isAdmNodesDisabled = computed(() => {
+      return !store.getters['nodes/adm'].find(node => node.status === 'online' || node.status === 'sync')
+    })
+    const isCoinNodesDisabled = computed(() => {
+      return !store.getters['nodes/coins'].find(node => node.status !== 'disabled')
+    })
+    
     const submit = () => {
+      if (!isOnline.value) return emit('error', t('connection.offline'))
       if (!validateMnemonic(passphrase.value)) {
         return emit('error', t('login.invalid_passphrase'))
       }
-
       freeze()
       login()
     }
     const login = () => {
       const promise = store.dispatch('login', passphrase.value)
-
       promise
         .then(() => {
           emit('login')
@@ -106,6 +120,14 @@ export default defineComponent({
         .catch((err) => {
           if (isAxiosError(err)) {
             emit('error', t('login.invalid_passphrase'))
+          } else if (isAdmNodesNotActive.value) {
+            emit('error', t('errors.all_adm_nodes_inactive'))
+            router.push({ name: 'Nodes' })
+          } else if (isAdmNodesDisabled.value) {
+            emit('error', t('errors.all_adm_nodes_disabled'))
+            router.push({ name: 'Nodes' })
+          } else if (isCoinNodesDisabled.value) {
+            router.push({ name: 'Nodes' })
           } else if (isAllNodesOfflineError(err)) {
             emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
           } else if (isAllNodesDisabledError(err)) {
