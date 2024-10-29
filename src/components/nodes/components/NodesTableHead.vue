@@ -60,6 +60,7 @@ export default {
 
 <style lang="scss">
 @import 'vuetify/settings';
+@import '@/assets/styles/settings/_colors.scss';
 
 .nodes-table-head {
   &__th {
@@ -74,6 +75,22 @@ export default {
   &__label {
     font-size: 12px;
     width: 104px;
+  }
+}
+
+/** Themes **/
+.v-theme--light {
+  .nodes-table-head {
+    &__th {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
+.v-theme--dark {
+  .nodes-table-head {
+    &__th {
+      color: map-get($adm-colors, 'white');
+    }
   }
 }
 </style>

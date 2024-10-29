@@ -1,13 +1,13 @@
 <template>
-  <v-form ref="form" class="login-form" @submit.prevent="submit">
+  <v-form ref="form" :class="className" @submit.prevent="submit">
     <v-row no-gutters>
       <slot>
         <v-text-field
           v-model="passphrase"
           :label="$t('login.password_label')"
           autocomplete="current-password"
+          :class="`${className}__textfield`"
           class="text-center"
-          color="white"
           :type="showPassphrase ? 'text' : 'password'"
           variant="underlined"
         >
@@ -72,6 +72,7 @@ export default defineComponent({
     const router = useRouter()
     const store = useStore()
     const { t } = useI18n()
+    const className = 'login-form'
     const showSpinner = ref(false)
 
     const showPassphrase = ref(false)
@@ -133,6 +134,7 @@ export default defineComponent({
       showSpinner,
       passphrase,
       showPassphrase,
+      className,
       togglePassphraseVisibility,
       submit,
       freeze,
@@ -142,3 +144,25 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss" scoped>
+@import 'vuetify/settings';
+@import '@/assets/styles/settings/_colors.scss';
+
+/** Themes **/
+.v-theme--light {
+  .login-form {
+    &__textfield {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
+.v-theme--dark {
+  .login-form {
+    &__textfield {
+      color: map-get($shades, 'white');
+    }
+  }
+}
+
+</style>
