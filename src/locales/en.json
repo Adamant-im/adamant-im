@@ -99,10 +99,8 @@
   "error": "Error",
   "errors": {
     "something_went_wrong": "Something went wrong. Check the console for details",
-    "all_nodes_offline": "All {crypto} nodes are offline. Try again later",
-    "all_nodes_disabled": "No active {crypto} nodes. Enable at least one",
-    "all_adm_nodes_inactive": "No active ADM nodes. Review the node list",
-    "all_adm_nodes_disabled": "All ADM nodes are disabled. Review the node list"
+    "all_nodes_offline": "No online ADM nodes. Review the node list",
+    "all_nodes_disabled": "No active ADM nodes. Enable at least one"
   },
   "home": {
     "balance": "Balance",
