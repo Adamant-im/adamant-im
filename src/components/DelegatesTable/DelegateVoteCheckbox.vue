@@ -93,13 +93,14 @@ export default {
   .delegate-vote-checkbox {
     &__icon {
       color: map-get($adm-colors, 'muted');
-    }
-  }
-}
 
-.dark {
-  .delegate-vote-checkbox {
-    &__icon {
+      &--good {
+        color: map-get($adm-colors, 'good');
+      }
+
+      &--danger {
+        color: map-get($adm-colors, 'danger');
+      }
     }
   }
 }
