@@ -46,13 +46,15 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue'
+
 const className = 'icon-file'
 const classes = {
   root: className,
   text: `${className}__text`
 }
 
-export default {
+export default defineComponent({
   props: {
     text: {
       type: String
@@ -71,7 +73,7 @@ export default {
       classes
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
