@@ -236,10 +236,11 @@
           </template>
 
           <template #preview-file>
-            <a-chat-preview-file
-              @cancel="cancelPreviewFile"
-              @remove-item="removeItem"
+            <FilesPreview
+              v-if="files.length > 0"
               :files="files"
+              @remove-item="removeItem"
+              @cancel="cancelPreviewFile"
             />
           </template>
 
@@ -304,7 +305,7 @@ import {
   AChatMessageActionsDropdown,
   AChatActionsOverlay,
   AChatReactionSelect,
-  AChatPreviewFile
+  FilesPreview
 } from '@/components/AChat'
 import ChatToolbar from '@/components/Chat/ChatToolbar.vue'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'

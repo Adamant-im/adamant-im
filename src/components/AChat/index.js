@@ -8,7 +8,7 @@ import AChatMessageActionsList from './AChatMessageActionsList.vue'
 import AChatMessageActionsMenu from './AChatMessageActionsMenu.vue'
 import AChatReactionSelect from './AChatReactionSelect/AChatReactionSelect.vue'
 import AChatActionsOverlay from './AChatActionsOverlay.vue'
-import AChatPreviewFile from './AChatPreviewFile.vue'
+import FilesPreview from './FilesPreview/FilesPreview.vue'
 
 export {
   AChat,
@@ -21,5 +21,5 @@ export {
   AChatMessageActionsMenu,
   AChatReactionSelect,
   AChatActionsOverlay,
-  AChatPreviewFile
+  FilesPreview
 }
