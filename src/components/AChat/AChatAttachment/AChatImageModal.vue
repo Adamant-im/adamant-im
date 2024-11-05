@@ -16,6 +16,7 @@
         hide-delimiters
         :show-arrows="showArrows"
         @click="handleClick"
+        :continuous="false"
       >
         <template v-for="(file, i) in files" :key="i">
           <AChatImageModalItem v-if="isTypeImage(file)" :transaction="transaction" :file="file" />
