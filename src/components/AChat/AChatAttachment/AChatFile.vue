@@ -36,7 +36,7 @@
     <IconFile
       v-else
       :class="classes.icon"
-      :text="fileExtension"
+      :text="fileExtension?.toUpperCase()"
       :height="iconSize"
       :width="iconSize"
       @click="$emit('click')"
