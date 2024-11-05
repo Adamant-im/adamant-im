@@ -1,18 +1,13 @@
 <template>
   <svg
+    :class="classes.root"
     :height="height"
     :width="width"
-    version="1.1"
-    id="_x36_"
     xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
     viewBox="0 0 512 512"
-    xml:space="preserve"
     fill="#000000"
   >
-    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-    <g id="SVGRepo_iconCarrier">
+    <g id="SVGRepo_iconCarrier" transform="translate(40)">
       <g>
         <g>
           <g>
@@ -36,24 +31,55 @@
         ></path>
       </g>
     </g>
-    <text x="40%" y="65%" class="textSvg" dominant-baseline="middle" text-anchor="middle">
+
+    <text
+      v-if="text"
+      x="50%"
+      y="65%"
+      :class="classes.text"
+      text-anchor="middle"
+      dominant-baseline="middle"
+    >
       {{ text }}
     </text>
   </svg>
 </template>
-<script>
+
+<script lang="ts">
+const className = 'icon-file'
+const classes = {
+  root: className,
+  text: `${className}__text`
+}
+
 export default {
   props: {
-    text: String,
-    width: String,
-    height: String
+    text: {
+      type: String
+    },
+    width: {
+      type: Number,
+      required: true
+    },
+    height: {
+      type: Number,
+      required: true
+    }
+  },
+  setup() {
+    return {
+      classes
+    }
   }
 }
 </script>
-<style scoped>
-.textSvg {
-  font-size: 7em;
-  font-weight: 900;
-  fill: rgb(0, 63, 158);
+
+<style lang="scss" scoped>
+.icon-file {
+  &__text {
+    font-size: 112px;
+    font-weight: 900;
+    fill: rgb(0, 63, 158);
+  }
 }
 </style>
