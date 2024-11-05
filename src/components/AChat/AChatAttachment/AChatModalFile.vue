@@ -2,7 +2,7 @@
   <v-carousel-item :class="classes.root" :max-width="500" :max-height="250">
     <v-card :class="classes.card" width="100%" height="100%">
       <div :class="classes.container">
-        <IconFile width="128" height="128" :text="fileExtension?.toUpperCase()" />
+        <IconFile :width="128" :height="128" :text="fileExtension?.toUpperCase()" />
 
         <div>
           <div :class="classes.fileName">{{ fileName }}</div>
