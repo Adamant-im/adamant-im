@@ -1,12 +1,12 @@
 <template>
-  <v-form ref="form" :class="className" @submit.prevent="submit">
+  <v-form ref="form" :class="classes.root" @submit.prevent="submit">
     <v-row no-gutters>
       <slot>
         <v-text-field
           v-model="passphrase"
           :label="$t('login.password_label')"
           autocomplete="current-password"
-          :class="`${className}__textfield`"
+          :class="classes.textField"
           class="text-center"
           :type="showPassphrase ? 'text' : 'password'"
           variant="underlined"
@@ -72,8 +72,12 @@ export default defineComponent({
     const router = useRouter()
     const store = useStore()
     const { t } = useI18n()
-    const className = 'login-form'
     const showSpinner = ref(false)
+    const className = 'login-form'
+    const classes = {
+      root: className,
+      textField: `${className}__textfield`
+    }
 
     const showPassphrase = ref(false)
     const togglePassphraseVisibility = () => {
@@ -134,7 +138,7 @@ export default defineComponent({
       showSpinner,
       passphrase,
       showPassphrase,
-      className,
+      classes,
       togglePassphraseVisibility,
       submit,
       freeze,
