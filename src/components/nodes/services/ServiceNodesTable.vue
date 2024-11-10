@@ -1,6 +1,6 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead hide-socket :label="t('nodes.service')" />
+    <NodesTableHead v-model="isAllChecked" hide-socket :label="t('nodes.service')" />
 
     <tbody>
       <ServiceNodesTableItem
@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { ref, computed, watch, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
@@ -44,10 +44,25 @@ export default defineComponent({
       return [...arr].sort(sortCoinNodesFn)
     })
 
+    const isAllChecked = ref(false)
+
+    const isAllNodesEnabled = !nodes.value.some(node => node.active === false)
+    if (isAllNodesEnabled) isAllChecked.value = true
+
+    watch(isAllChecked, (value) => {
+      nodes.value.forEach((node) => {
+        if (node && node.active !== value) {
+          const { label, url } = node
+          store.dispatch('services/toggle', {type: label, url, active: value})
+        }
+      })
+    })      
+
     return {
       t,
       nodes,
-      classes
+      classes,
+      isAllChecked
     }
   }
 })

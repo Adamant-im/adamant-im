@@ -1,7 +1,9 @@
 <template>
   <thead :class="classes.root">
     <tr>
-      <th :class="classes.checkbox" v-if="!hideCheckbox" />
+      <th :class="classes.checkbox" v-if="!hideCheckbox">
+        <NodeStatusCheckbox v-model="isAllEnabled" />
+      </th>
       <th :class="classes.label" class="pl-0 pr-2" v-if="label">
         {{ label }}
       </th>
@@ -19,10 +21,18 @@
 </template>
 
 <script>
+import { computed } from 'vue'
+import NodeStatusCheckbox from './NodeStatusCheckbox.vue'
 import { useI18n } from 'vue-i18n'
 
 export default {
+  components: {
+    NodeStatusCheckbox
+  },
   props: {
+    modelValue: {
+      type: Boolean,
+    },
     hideCheckbox: {
       type: Boolean
     },
@@ -39,9 +49,9 @@ export default {
       type: String
     }
   },
-  setup() {
+  setup(props, { emit }) {
     const { t } = useI18n()
-
+    
     const className = 'nodes-table-head'
     const classes = {
       root: className,
@@ -49,10 +59,20 @@ export default {
       checkbox: `${className}__checkbox`,
       label: `${className}__label`
     }
-
+    
+    const isAllEnabled = computed({
+      get() {
+        return props.modelValue
+      },
+      set(value) {
+        emit('update:modelValue', value)
+      }
+    })
+    
     return {
       classes,
-      t
+      t,
+      isAllEnabled
     }
   }
 }

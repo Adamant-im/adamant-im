@@ -1,6 +1,6 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead />
+    <NodesTableHead v-model="isAllChecked" />
 
     <tbody>
       <AdmNodesTableItem v-for="node in admNodes" :key="node.url" blockchain="adm" :node="node" />
@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { ref, computed, watch, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
@@ -29,23 +29,33 @@ export default defineComponent({
   },
   setup() {
     const store = useStore()
+
     const admNodes = computed(() => {
       const arr = store.getters['nodes/adm']
 
       return [...arr].sort(sortNodesFn)
     })
 
+    const isAllChecked = ref(false)
+
+    const isAllNodesEnabled = !admNodes.value.some(node => node.active === false)
+    if (isAllNodesEnabled) isAllChecked.value = true
+
+    watch(isAllChecked, (value) => {
+      admNodes.value.forEach((admNode) => {
+        if (admNode && admNode.active !== value) {
+          store.dispatch('nodes/toggle', {...admNode, active: value})
+        }
+      })
+    })
+
     return {
       admNodes,
-      classes
+      classes,
+      isAllChecked
     }
   }
 })
 </script>
 
-<style lang="scss">
-@import 'vuetify/settings';
-
-.adm-nodes-table {
-}
-</style>
+<style lang="scss"></style>
