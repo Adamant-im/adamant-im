@@ -1,9 +1,14 @@
+import { MessageType } from '@/lib/constants'
 import { FileData } from '@/components/UploadFile.vue'
 
-/**
- * AIP 12: Non-ADM crypto transfer messages
- * @see https://aips.adamant.im/AIPS/aip-12
- */
+interface CryptoTransferPayload {
+  cryptoSymbol: string
+  amount: string
+  hash: string
+  comments: string
+  text_fallback?: string
+}
+
 export interface CryptoTransferAsset {
   /**
    * Represents token's network and looks like `tickerSymbol_transaction`,
@@ -31,8 +36,37 @@ export interface CryptoTransferAsset {
 }
 
 /**
+ * AIP 12: Non-ADM crypto transfer messages
+ * @see https://aips.adamant.im/AIPS/aip-12
+ */
+export function cryptoTransferAsset({
+  cryptoSymbol,
+  amount,
+  hash,
+  comments,
+  text_fallback
+}: CryptoTransferPayload): CryptoTransferAsset {
+  const asset: CryptoTransferAsset = {
+    type: MessageType.cryptoTransferMessage(cryptoSymbol),
+    amount,
+    hash,
+    comments
+  }
+
+  if (text_fallback) {
+    asset.text_fallback = text_fallback
+  }
+
+  return asset
+}
+
+interface ReplyMessagePayload {
+  replyToId: string
+  replyMessage: string
+}
+
+/**
  * Reply to a message
- *
  * @see https://aips.adamant.im/AIPS/aip-16
  */
 export interface ReplyMessageAsset {
@@ -48,7 +82,6 @@ export interface ReplyMessageAsset {
 
 /**
  * Reply to a message with a crypto transfer
- *
  * @see https://aips.adamant.im/AIPS/aip-16
  */
 export interface ReplyWithCryptoTransferAsset {
@@ -62,26 +95,25 @@ export interface ReplyWithCryptoTransferAsset {
   reply_message: CryptoTransferAsset
 }
 
-interface CryptoTransferPayload {
-  cryptoSymbol: string
-  amount: string
-  hash: string
-  comments: string
+export function replyMessageAsset({
+  replyToId,
+  replyMessage
+}: ReplyMessagePayload): ReplyMessageAsset {
+  return {
+    replyto_id: replyToId,
+    reply_message: replyMessage
+  }
 }
-
-export function cryptoTransferAsset(payload: CryptoTransferPayload): CryptoTransferAsset
-
-interface ReplyMessagePayload {
-  replyToId: string
-  replyMessage: string
-}
-
-export function replyMessageAsset(payload: ReplyMessagePayload): ReplyMessageAsset
 
 export function replyWithCryptoTransferAsset(
   replyToId: string,
   transferPayload: CryptoTransferPayload
-): ReplyWithCryptoTransferAsset
+): ReplyWithCryptoTransferAsset {
+  return {
+    replyto_id: replyToId,
+    reply_message: cryptoTransferAsset(transferPayload)
+  }
+}
 
 export interface ReactionAsset {
   /**
@@ -94,7 +126,12 @@ export interface ReactionAsset {
   react_message: string
 }
 
-export function reactionAsset(reactToId: string, reactMessage: string): ReactionAsset
+export function reactionAsset(reactToId: string, reactMessage: string): ReactionAsset {
+  return {
+    reactto_id: reactToId,
+    react_message: reactMessage
+  }
+}
 
 export interface FileAsset {
   /**
@@ -160,9 +197,43 @@ export interface AttachmentAsset {
   comment?: string
 }
 
+/**
+ * AIP-18: https://github.com/Adamant-im/AIPs/pull/54/files
+ * @param {Array<FileData>} files
+ * @param {Array<[string, string]>} [nonces] First element is the nonce of original file, second is nonce of preview
+ * @param {Array<[string, string]>} [ids] List of files IDs after uploading to IPFS. First element is the ID of original file, second is ID of preview.
+ * @param {string} [comment]
+ */
 export function attachmentAsset(
   files: FileData[],
   nonces?: [nonce: string, previewNonce: string],
   ids?: [id: string, previewId: string],
   comment?: string
-): AttachmentAsset
+): AttachmentAsset {
+  return {
+    files: files.map(({ file, width, height, cid, preview }, index) => {
+      const [name, extension] = file.name.split('.')
+      const resolution: FileAsset['resolution'] = width && height ? [width, height] : undefined
+      const [nonce, previewNonce] = nonces?.[index] || []
+      const [id, previewId] = cid ? [cid, preview?.cid] : ids?.[index] || []
+
+      return {
+        mimeType: file.type,
+        name,
+        extension,
+        resolution,
+        duration: undefined, // @todo check if is a video or audio file
+        size: file.size,
+        id: id!,
+        nonce,
+        preview: {
+          id: previewId!,
+          nonce: previewNonce,
+          extension
+        }
+      }
+    }),
+    comment,
+    storage: { id: 'ipfs' }
+  }
+}
