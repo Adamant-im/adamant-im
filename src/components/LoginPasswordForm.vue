@@ -70,6 +70,8 @@ export default defineComponent({
       }
     })
 
+    const isOnline = computed(() => store.getters['isOnline'])
+
     const submit = () => {
       showSpinner.value = true
 
@@ -78,8 +80,21 @@ export default defineComponent({
         .then(() => {
           emit('login')
         })
-        .catch(() => {
-          emit('error', t('login_via_password.incorrect_password'))
+        .catch((err) => {
+          if (!isOnline.value) {
+            emit('error', t('connection.offline'))
+            router.push({ name: 'Nodes' })
+          } else if (isAxiosError(err)) {
+            emit('error', t('login.invalid_passphrase'))
+          } else if (isAllNodesOfflineError(err)) {
+            emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
+          } else if (isAllNodesDisabledError(err)) {
+            emit('error', t('errors.all_nodes_disabled', { crypto: err.nodeLabel.toUpperCase() }))
+            router.push({ name: 'Nodes' })
+          } else {
+            emit('error', t('errors.something_went_wrong'))
+          }
+          console.log(err)
         })
         .finally(() => {
           showSpinner.value = false

@@ -105,8 +105,8 @@ export default defineComponent({
         })
         .catch((err) => {
           if (!isOnline.value) {
+            emit('error', t('connection.offline'))
             router.push({ name: 'Nodes' })
-            return emit('error', t('connection.offline'))
           } else if (isAxiosError(err)) {
             emit('error', t('login.invalid_passphrase'))
           } else if (isAllNodesOfflineError(err)) {
