@@ -12,7 +12,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
-import { computeCID, readFileAsBuffer, readFileAsDataURL } from '@/lib/file'
+import { computeCID, cropImage, readFileAsBuffer, readFileAsDataURL } from '@/lib/file'
 
 import { EncodedFile, encodeFile } from '@/lib/adamant-api'
 
@@ -26,6 +26,14 @@ export type FileData = {
   encoded: EncodedFile
   width?: number
   height?: number
+  preview?: {
+    cid: string
+    file: File
+    encoded: EncodedFile
+    content: string
+    width: number
+    height: number
+  }
 }
 
 function getImageResolution(file: File): Promise<{ width?: number; height?: number }> {
@@ -92,6 +100,32 @@ export default defineComponent({
           file: file,
           width,
           height
+        }
+
+        if (file.type.startsWith('image/')) {
+          // Preview
+          const previewFile = await cropImage(file)
+          const previewDataURL = await readFileAsDataURL(previewFile)
+          const previewArrayBuffer = await readFileAsBuffer(previewFile)
+          const { width: previewWidth, height: previewHeight } =
+            await getImageResolution(previewFile)
+          const previewEncodedFile = await encodeFile(arrayBuffer, { to: props.partnerId })
+          const previewCid = await computeCID(previewEncodedFile.binary)
+
+          // Cache the attachment
+          const previewBlob = new Blob([previewArrayBuffer], { type: previewFile.type })
+          const previewUrl = URL.createObjectURL(previewBlob)
+
+          fileData.preview = {
+            cid: previewCid,
+            file: previewFile,
+            encoded: previewEncodedFile,
+            content: previewDataURL,
+            width: previewWidth!,
+            height: previewHeight!
+          }
+
+          store.commit('attachment/setAttachment', { cid: previewCid, url: previewUrl })
         }
 
         emit('file', fileData)

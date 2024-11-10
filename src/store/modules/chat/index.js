@@ -798,7 +798,7 @@ const actions = {
     console.log('Updated CIDs and Nonces', newAsset)
 
     const uploadData = await uploadFiles(files, (progress) => {
-      for (const [, cid] of cids) {
+      for (const [cid] of cids) {
         commit('attachment/setUploadProgress', { cid, progress }, { root: true })
       }
     })
