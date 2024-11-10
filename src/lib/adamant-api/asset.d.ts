@@ -162,7 +162,7 @@ export interface AttachmentAsset {
 
 export function attachmentAsset(
   files: FileData[],
-  nonces?: [string, string],
-  ids?: [string, string],
+  nonces?: [nonce: string, previewNonce: string],
+  ids?: [id: string, previewId: string],
   comment?: string
 ): AttachmentAsset
