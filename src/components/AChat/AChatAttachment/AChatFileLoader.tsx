@@ -52,7 +52,7 @@ export const AChatFileLoader = defineComponent(
       enabled: !isLocalFile(props.file),
       retry: false,
       refetchOnWindowFocus: false,
-      refetchOnMount: true,
+      refetchOnMount: true
     })
 
     const fileUrl = computed(() => {
@@ -63,10 +63,19 @@ export const AChatFileLoader = defineComponent(
       return data.value
     })
 
+    const uploadProgress = computed(() => {
+      if (isLocalFile(props.file)) {
+        return store.getters['attachment/getUploadProgress'](props.file.file.cid)
+      }
+
+      return 100
+    })
+
     return () => (
       <>
         {slots.default?.({
           isLoading: unref(isLoading),
+          uploadProgress: unref(uploadProgress),
           fileUrl: unref(fileUrl),
           error: unref(error),
           width: unref(width),

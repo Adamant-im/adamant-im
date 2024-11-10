@@ -797,7 +797,11 @@ const actions = {
     })
     console.log('Updated CIDs and Nonces', newAsset)
 
-    const uploadData = await uploadFiles(files)
+    const uploadData = await uploadFiles(files, (progress) => {
+      for (const [, cid] of cids) {
+        commit('attachment/setUploadProgress', { cid, progress }, { root: true })
+      }
+    })
     console.log('Files uploaded', uploadData)
 
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)

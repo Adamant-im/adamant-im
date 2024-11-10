@@ -1,6 +1,6 @@
 <template>
   <AChatFileLoader :partner-id="partnerId" :file="img" :transaction="transaction">
-    <template #default="{ fileUrl, width, height, error, isLoading }">
+    <template #default="{ fileUrl, width, height, error, isLoading, uploadProgress }">
       <v-img v-if="error" :aspect-ratio="width / height" cover>
         <div :class="classes.error">
           <v-tooltip location="bottom">
@@ -20,8 +20,17 @@
         cover
         @click="!isLoading && $emit('click')"
       >
+        <v-fade-transition>
+          <div
+            v-show="uploadProgress < 100"
+            :class="[classes.placeholder, classes.placeholderTransparent]"
+          >
+            <v-progress-circular color="grey-lighten-4" :model-value="uploadProgress" />
+          </div>
+        </v-fade-transition>
+
         <template #placeholder>
-          <div :class="classes.placeholder" class="d-flex align-center justify-center fill-height">
+          <div :class="classes.placeholder">
             <v-progress-circular color="grey-lighten-4" indeterminate />
           </div>
         </template>
@@ -42,6 +51,7 @@ const classes = {
   root: className,
   border: `${className}--border`,
   placeholder: `${className}__placeholder`,
+  placeholderTransparent: `${className}__placeholder--transparent`,
   error: `${className}__error`,
   errorIcon: `${className}__error-icon`
 }
@@ -78,6 +88,10 @@ export default defineComponent({
 
 .a-chat-image {
   &__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
   }
 
   &__error {
@@ -94,6 +108,10 @@ export default defineComponent({
   .a-chat-image {
     &__placeholder {
       background-color: map-get($adm-colors, 'secondary2');
+
+      &--transparent {
+        background-color: rgba(map-get($adm-colors, 'grey'), 0.35);
+      }
     }
 
     &__error {
@@ -110,6 +128,10 @@ export default defineComponent({
   .a-chat-image {
     &__placeholder {
       background-color: map-get($adm-colors, 'muted');
+
+      &--transparent {
+        background-color: map-get($adm-colors, 'muted');
+      }
     }
 
     &__error {

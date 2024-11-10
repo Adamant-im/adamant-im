@@ -30,7 +30,10 @@ export function readFileAsBuffer(file: File): Promise<Uint8Array> {
   })
 }
 
-export async function uploadFiles(files: FileData[]) {
+export async function uploadFiles(
+  files: FileData[],
+  onUploadProgress?: (progress: number) => void
+) {
   const formData = new FormData()
 
   for (const file of files) {
@@ -41,9 +44,8 @@ export async function uploadFiles(files: FileData[]) {
   const response = await ipfs.upload(formData, (progress) => {
     const percentCompleted = Math.round((progress.loaded * 100) / (progress.total || 0))
 
-    console.log(`Progress ${percentCompleted}%`)
+    onUploadProgress?.(percentCompleted)
   })
-  console.log(`Uploaded CIDs`, response)
 
   return response
 }

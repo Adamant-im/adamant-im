@@ -1,7 +1,7 @@
 <template>
   <div :class="classes.root">
     <AChatFileLoader v-if="isImage" :transaction="transaction" :partnerId="partnerId" :file="file">
-      <template #default="{ fileUrl, error, isLoading }">
+      <template #default="{ fileUrl, error, isLoading, uploadProgress }">
         <div v-if="error" :style="{ width: `${iconSize}px`, height: `${iconSize}px` }">
           <div :class="classes.error">
             <v-tooltip location="bottom">
@@ -24,8 +24,17 @@
           cover
           @click="!isLoading && $emit('click')"
         >
+          <v-fade-transition>
+            <div
+              v-show="uploadProgress < 100"
+              :class="[classes.placeholder, classes.placeholderTransparent]"
+            >
+              <v-progress-circular color="grey-lighten-4" :model-value="uploadProgress" />
+            </div>
+          </v-fade-transition>
+
           <template #placeholder>
-            <div class="d-flex align-center justify-center fill-height">
+            <div :class="classes.placeholder">
               <v-progress-circular color="grey-lighten-4" indeterminate />
             </div>
           </template>
@@ -75,6 +84,8 @@ function formatBytes(size: number) {
 const className = 'a-chat-file'
 const classes = {
   root: className,
+  placeholder: `${className}__placeholder`,
+  placeholderTransparent: `${className}__placeholder--transparent`,
   icon: `${className}__icon`,
   iconWrapper: `${className}__icon-wrapper`,
   fileInfo: `${className}__file-info`,
@@ -144,6 +155,13 @@ export default defineComponent({
   margin-left: auto;
   width: 160px;
 
+  &__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
   &__icon {
     flex-shrink: 0;
   }
@@ -177,6 +195,14 @@ export default defineComponent({
 
 .v-theme--dark {
   .a-chat-file {
+    &__placeholder {
+      background-color: map-get($adm-colors, 'muted');
+
+      &--transparent {
+        background-color: map-get($adm-colors, 'muted');
+      }
+    }
+
     &__name {
       color: map-get($shades, 'white');
     }
@@ -197,6 +223,14 @@ export default defineComponent({
 
 .v-theme--light {
   .a-chat-file {
+    &__placeholder {
+      background-color: map-get($adm-colors, 'secondary2');
+
+      &--transparent {
+        background-color: rgba(map-get($adm-colors, 'grey'), 0.35);
+      }
+    }
+
     &__name {
       color: map-get($adm-colors, 'regular');
     }

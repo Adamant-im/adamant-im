@@ -1,15 +1,20 @@
 import { MutationTree, GetterTree, ActionTree } from 'vuex'
 import { RootState } from '@/store/types'
-import { AttachmentsState } from '@/store/modules/attachment/types.ts'
+import { AttachmentsState } from '@/store/modules/attachment/types'
 import { AttachmentApi } from '@/lib/attachment-api'
 
 const state = (): AttachmentsState => ({
-  attachments: {}
+  attachments: {},
+  uploadProgress: {}
 })
 
 const mutations: MutationTree<AttachmentsState> = {
   setAttachment(state, { cid, url }) {
     state.attachments = { ...state.attachments, [cid]: url }
+  },
+
+  setUploadProgress(state, { cid, progress }: { cid: string; progress: number }) {
+    state.uploadProgress[cid] = progress
   },
 
   reset(state) {
@@ -20,6 +25,9 @@ const mutations: MutationTree<AttachmentsState> = {
 const getters: GetterTree<AttachmentsState, RootState> = {
   getImageUrl: (state) => (cid: string) => {
     return state.attachments[cid]
+  },
+  getUploadProgress: (state) => (cid: string) => {
+    return state.uploadProgress[cid] ?? 100
   }
 }
 
