@@ -49,7 +49,7 @@ export const RatesNames: Record<FiatCurrencySymbol, string> = {
   JPY: 'JPY (¥)' // Japanese Yen
 }
 
-export const UPLOAD_MAX_FILE_COUNT = 10
+export const UPLOAD_MAX_FILE_COUNT = 5
 
 /** Fees for the misc ADM operations */
 export const Fees = {

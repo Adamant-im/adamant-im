@@ -39,6 +39,11 @@ export async function uploadFiles(
   for (const file of files) {
     const blob = new Blob([file.encoded.binary], { type: 'application/octet-stream' })
     formData.append('files', blob, file.file.name)
+
+    if (file.preview) {
+      const blob = new Blob([file.preview.encoded.binary], { type: 'application/octet-stream' })
+      formData.append('files', blob, 'preview-' + file.file.name)
+    }
   }
 
   const response = await ipfs.upload(formData, (progress) => {
