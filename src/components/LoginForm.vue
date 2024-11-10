@@ -60,6 +60,12 @@ import { useRouter } from 'vue-router'
 import { isAxiosError } from 'axios'
 import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
 
+const className = 'login-form'
+const classes = {
+  root: className,
+  textField: `${className}__textfield`
+}
+
 export default defineComponent({
   props: {
     modelValue: {
@@ -73,12 +79,6 @@ export default defineComponent({
     const store = useStore()
     const { t } = useI18n()
     const showSpinner = ref(false)
-    const className = 'login-form'
-    const classes = {
-      root: className,
-      textField: `${className}__textfield`
-    }
-
     const showPassphrase = ref(false)
     const togglePassphraseVisibility = () => {
       showPassphrase.value = !showPassphrase.value
