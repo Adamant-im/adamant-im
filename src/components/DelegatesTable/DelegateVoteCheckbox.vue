@@ -85,6 +85,7 @@ export default {
 .v-theme--light {
   .delegate-vote-checkbox {
     &__icon {
+      color: map-get($adm-colors, 'muted');
       &--good {
         color: map-get($adm-colors, 'good');
       }
