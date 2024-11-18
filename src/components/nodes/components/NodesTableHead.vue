@@ -81,14 +81,14 @@ export default {
 /** Themes **/
 .v-theme--light {
   .nodes-table-head {
-    &__th {
+    &__th, &__label {
       color: map-get($adm-colors, 'regular');
     }
   }
 }
 .v-theme--dark {
   .nodes-table-head {
-    &__th {
+    &__th, &__label {
       color: map-get($adm-colors, 'white');
     }
   }
