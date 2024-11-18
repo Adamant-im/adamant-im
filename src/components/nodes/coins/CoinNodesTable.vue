@@ -1,6 +1,6 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead v-model="isAllChecked" hide-socket :label="t('nodes.coin')" />
+    <NodesTableHead v-model="isAllNodesChecked" :indeterminate="isPartiallyChecked" hide-socket :label="t('nodes.coin')" />
 
     <tbody>
       <CoinNodesTableItem v-for="node in nodes" :key="node.url" :label="node.label" :node="node" />
@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, watch, defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
@@ -39,24 +39,29 @@ export default defineComponent({
       return [...arr].sort(sortCoinNodesFn)
     })
 
-    const isAllChecked = ref(false)
+    const isAllNodesChecked = computed({
+      get() {
+        return !nodes.value.some(node => node.active === false)
+      },
+      set(value) {
+        nodes.value.forEach((node) => {
+          if (node && node.active !== value) {
+            store.dispatch('nodes/toggle', {...node, active: value})
+          }
+        })
+      }
+    })
 
-    const isAllNodesEnabled = !nodes.value.some(node => node.active === false)
-    if (isAllNodesEnabled) isAllChecked.value = true
-
-    watch(isAllChecked, (value) => {
-      nodes.value.forEach((node) => {
-        if (node && node.active !== value) {
-          store.dispatch('nodes/toggle', {...node, active: value})
-        }
-      })
-    })    
+    const isPartiallyChecked = computed(() => {
+      return nodes.value.some(node => node.active) && nodes.value.some(node => !node.active)
+    })
 
     return {
       t,
       nodes,
       classes,
-      isAllChecked
+      isAllNodesChecked,
+      isPartiallyChecked
     }
   }
 })

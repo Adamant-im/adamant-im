@@ -1,6 +1,6 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead v-model="isAllChecked" />
+    <NodesTableHead v-model="isAllNodesChecked" :indeterminate="isPartiallyChecked" />
 
     <tbody>
       <AdmNodesTableItem v-for="node in admNodes" :key="node.url" blockchain="adm" :node="node" />
@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, watch, defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
@@ -36,23 +36,28 @@ export default defineComponent({
       return [...arr].sort(sortNodesFn)
     })
 
-    const isAllChecked = ref(false)
+    const isAllNodesChecked = computed({
+      get() {
+        return !admNodes.value.some(node => node.active === false)
+      },
+      set(value) {
+        admNodes.value.forEach((admNode) => {
+          if (admNode && admNode.active !== value) {
+            store.dispatch('nodes/toggle', {...admNode, active: value})
+          }
+        })
+      }
+    })
 
-    const isAllNodesEnabled = !admNodes.value.some(node => node.active === false)
-    if (isAllNodesEnabled) isAllChecked.value = true
-
-    watch(isAllChecked, (value) => {
-      admNodes.value.forEach((admNode) => {
-        if (admNode && admNode.active !== value) {
-          store.dispatch('nodes/toggle', {...admNode, active: value})
-        }
-      })
+    const isPartiallyChecked = computed(() => {
+      return admNodes.value.some(node => node.active) && admNodes.value.some(node => !node.active)
     })
 
     return {
       admNodes,
       classes,
-      isAllChecked
+      isAllNodesChecked,
+      isPartiallyChecked
     }
   }
 })
