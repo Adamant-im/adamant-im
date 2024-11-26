@@ -1,13 +1,13 @@
 <template>
-  <v-form ref="form" class="login-form" @submit.prevent="submit">
+  <v-form ref="form" :class="classes.root" @submit.prevent="submit">
     <v-row no-gutters>
       <slot>
         <v-text-field
           v-model="passphrase"
           :label="$t('login.password_label')"
           autocomplete="current-password"
+          :class="classes.textField"
           class="text-center"
-          color="white"
           :type="showPassphrase ? 'text' : 'password'"
           variant="underlined"
         >
@@ -60,6 +60,12 @@ import { useRouter } from 'vue-router'
 import { isAxiosError } from 'axios'
 import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
 
+const className = 'login-form'
+const classes = {
+  root: className,
+  textField: `${className}__textfield`
+}
+
 export default defineComponent({
   props: {
     modelValue: {
@@ -73,7 +79,6 @@ export default defineComponent({
     const store = useStore()
     const { t } = useI18n()
     const showSpinner = ref(false)
-
     const showPassphrase = ref(false)
     const togglePassphraseVisibility = () => {
       showPassphrase.value = !showPassphrase.value
@@ -133,6 +138,7 @@ export default defineComponent({
       showSpinner,
       passphrase,
       showPassphrase,
+      classes,
       togglePassphraseVisibility,
       submit,
       freeze,
@@ -142,3 +148,25 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss" scoped>
+@import 'vuetify/settings';
+@import '@/assets/styles/settings/_colors.scss';
+
+/** Themes **/
+.v-theme--light {
+  .login-form {
+    &__textfield {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
+.v-theme--dark {
+  .login-form {
+    &__textfield {
+      color: map-get($shades, 'white');
+    }
+  }
+}
+
+</style>

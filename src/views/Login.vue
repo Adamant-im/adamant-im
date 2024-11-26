@@ -229,7 +229,8 @@ export default defineComponent({
   .login-page {
     &__icon,
     &__title,
-    &__subtitle {
+    &__subtitle,
+    &__settings-button {
       color: map-get($adm-colors, 'regular');
     }
   }

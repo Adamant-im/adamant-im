@@ -78,28 +78,35 @@ export default {
   &__icon {
     font-size: 24px !important;
     height: 24px !important;
-
-    &--good {
-      color: map-get($adm-colors, 'good');
-    }
-
-    &--danger {
-      color: map-get($adm-colors, 'danger');
-    }
   }
 }
 
+/** Themes **/
 .v-theme--light {
   .delegate-vote-checkbox {
     &__icon {
       color: map-get($adm-colors, 'muted');
+      &--good {
+        color: map-get($adm-colors, 'good');
+      }
+
+      &--danger {
+        color: map-get($adm-colors, 'danger');
+      }
     }
   }
 }
 
-.dark {
+.v-theme--dark {
   .delegate-vote-checkbox {
     &__icon {
+      &--good {
+        color: map-get($adm-colors, 'good');
+      }
+      
+      &--danger {
+        color: map-get($adm-colors, 'danger');
+      }
     }
   }
 }

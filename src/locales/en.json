@@ -180,7 +180,7 @@
     "label": "Type",
     "host": "Host",
     "inactive": "Inactive",
-    "sync": "Sync",
+    "sync": "Syncing",
     "ms": "ms",
     "nodeLabelDescription": "Support decentralization and enhance privacy level—<a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">run your own ADAMANT node</a>. To add your nodes to the list, you need <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">to deploy web application on separate domain</a>. This limitation refers to Content Security Policy (CSP).",
     "offline": "Offline",
