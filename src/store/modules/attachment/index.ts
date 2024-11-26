@@ -17,6 +17,10 @@ const mutations: MutationTree<AttachmentsState> = {
     state.uploadProgress[cid] = progress
   },
 
+  resetUploadProgress(state, { cid }: { cid: string }) {
+    delete state.uploadProgress[cid]
+  },
+
   reset(state) {
     state.attachments = {}
   }
@@ -28,6 +32,13 @@ const getters: GetterTree<AttachmentsState, RootState> = {
   },
   getUploadProgress: (state) => (cid: string) => {
     return state.uploadProgress[cid] ?? 100
+  },
+  isUploadInProgress(state) {
+    for (const progress of Object.values(state.uploadProgress)) {
+      if (progress < 100) return true
+    }
+
+    return false
   }
 }
 

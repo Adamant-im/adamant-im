@@ -811,7 +811,15 @@ const actions = {
         partnerId: recipientId
       })
 
+      for (const [cid] of cids) {
+        commit('attachment/resetUploadProgress', { cid }, { root: true })
+      }
+
       throw err
+    }
+
+    for (const [cid] of cids) {
+      commit('attachment/resetUploadProgress', { cid }, { root: true })
     }
 
     return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
