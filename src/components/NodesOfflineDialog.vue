@@ -78,11 +78,10 @@ export default {
 
 .all-nodes-disabled-dialog {
   &__card-title {
-    padding-left: 24px !important;
-    padding-right: 24px !important;
+    padding: 14px !important;
   }
   &__card-text {
-    padding-bottom: 16px !important;
+    padding: 14px !important;
   }
   &__btn {
     margin-top: 15px;
