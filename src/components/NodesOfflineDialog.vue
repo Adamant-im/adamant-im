@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="showDialog" width="500" :class="className">
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title :class="`${className}__card-title a-text-header`">
         {{ t('chats.nodes_offline_dialog.title', { coin: nodeType.toUpperCase() }) }}
       </v-card-title>
 
@@ -82,9 +82,6 @@ export default {
   }
   &__card-text {
     padding: 14px !important;
-  }
-  &__disclaimer {
-    margin-top: 10px;
   }
   &__btn {
     margin-top: 15px;

@@ -22,6 +22,7 @@ import { useStore } from 'vuex'
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { Cryptos, CryptoSymbol } from '@/lib/constants'
+import { AllCryptos } from '@/lib/constants/cryptos'
 import { useCryptoAddressPretty } from './hooks/address'
 import { useBlockHeight } from '@/hooks/queries/useBlockHeight'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
@@ -96,7 +97,13 @@ export default defineComponent({
 
       return transaction.value?.confirmations
     })
-    const fee = computed(() => transaction.value?.fee)
+    const fee = computed(() => {
+      const ethFee = transaction.value?.fee || 0
+      const currentCurrency = store.state.options.currentRate
+      const currentRate = store.state.rate.rates[`${AllCryptos.ETH}/${currentCurrency}`]
+      const feeRate = (ethFee * currentRate).toFixed(2)
+      return +feeRate
+    })
 
     return {
       refetch,
