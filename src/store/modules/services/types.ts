@@ -21,3 +21,4 @@ export type StatusPayload = {
   status: { url: string; active: boolean }
 }
 export type TogglePayload = { type: AvailableService; url: string; active: boolean }
+export type ToggleAllPayload = { active: boolean }

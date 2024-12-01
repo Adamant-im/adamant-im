@@ -38,14 +38,10 @@ export default defineComponent({
 
     const isAllNodesChecked = computed({
       get() {
-        return !admNodes.value.some(node => node.active === false)
+        return admNodes.value.every(node => node.active)
       },
       set(value) {
-        admNodes.value.forEach((admNode) => {
-          if (admNode && admNode.active !== value) {
-            store.dispatch('nodes/toggle', {...admNode, active: value})
-          }
-        })
+        store.dispatch('nodes/toggleAll', {nodesType: 'adm', active: value})
       }
     })
 

@@ -41,14 +41,10 @@ export default defineComponent({
 
     const isAllNodesChecked = computed({
       get() {
-        return !nodes.value.some(node => node.active === false)
+        return nodes.value.every(node => node.active)
       },
       set(value) {
-        nodes.value.forEach((node) => {
-          if (node && node.active !== value) {
-            store.dispatch('nodes/toggle', {...node, active: value})
-          }
-        })
+        store.dispatch('nodes/toggleAll', {nodesType: 'coins', active: value})
       }
     })
 
