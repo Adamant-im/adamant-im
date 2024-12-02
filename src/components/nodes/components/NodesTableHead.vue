@@ -60,6 +60,7 @@ export default {
       type: Boolean
     },
   },
+  emits: ['update:modelValue'],
   setup(props, { emit }) {
     const { t } = useI18n()
     

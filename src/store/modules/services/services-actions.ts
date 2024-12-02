@@ -1,7 +1,7 @@
 import { services } from '@/lib/nodes/services'
 import { ActionTree } from 'vuex'
 import { RootState } from '@/store/types'
-import { ServicesState, TogglePayload, ToggleAllPayload } from '@/store/modules/services/types'
+import { ServicesState, TogglePayload, ToggleAllPayload, Node } from '@/store/modules/services/types'
 
 export const actions: ActionTree<ServicesState, RootState> = {
   updateStatus() {
@@ -17,11 +17,10 @@ export const actions: ActionTree<ServicesState, RootState> = {
   toggleAll(context, payload: ToggleAllPayload) {
     const { active } = payload
     const nodes = context.getters['services']
-    Object.keys(nodes).forEach(key => {
-      const node = nodes[key]
-      const { label, url } = node
-      context.dispatch('toggle', {type: label, url, active})
-    })   
+    for (const node of Object.values(nodes)) {
+      const { label, url } = node as Node
+      context.commit('toggle', { type: label, url, active })
+    }
   },
 
   useFastestService(context, payload: boolean) {

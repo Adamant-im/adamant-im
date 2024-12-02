@@ -44,7 +44,7 @@ export default defineComponent({
         return nodes.value.every(node => node.active)
       },
       set(value) {
-        store.dispatch('nodes/toggleAll', {nodesType: 'coins', active: value})
+        store.dispatch('nodes/toggleAll', { nodesType: 'coins', active: value })
       }
     })
 

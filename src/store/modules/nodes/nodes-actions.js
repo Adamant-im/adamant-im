@@ -12,13 +12,12 @@ export default {
   },
 
   toggleAll(context, payload) {
-    const {nodesType, active} = payload
+    const { nodesType, active } = payload
     const nodes = context.getters[nodesType]
-    Object.keys(nodes).forEach(key => {
-      const node = nodes[key]
-      const {type, url} = node
-      context.dispatch('toggle', {type, url, active})
-    })
+    for (const node of Object.values(nodes)) {
+      const { type, url } = node
+      context.commit('toggle', { type, url, active })
+    }
   },
 
   setUseFastestAdmNode(context, payload) {

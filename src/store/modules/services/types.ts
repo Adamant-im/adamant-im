@@ -22,3 +22,4 @@ export type StatusPayload = {
 }
 export type TogglePayload = { type: AvailableService; url: string; active: boolean }
 export type ToggleAllPayload = { active: boolean }
+export type Node = { label: string, url: string }

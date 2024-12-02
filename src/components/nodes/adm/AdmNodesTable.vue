@@ -41,7 +41,7 @@ export default defineComponent({
         return admNodes.value.every(node => node.active)
       },
       set(value) {
-        store.dispatch('nodes/toggleAll', {nodesType: 'adm', active: value})
+        store.dispatch('nodes/toggleAll', { nodesType: 'adm', active: value })
       }
     })
 
