@@ -330,7 +330,7 @@ export default {
           return
         }
 
-        const result = await sendSignalMessage(signalAsset(token, 'fcm', 'add'))
+        const result = await sendSignalMessage(signalAsset(token, 'FCM', 'add'))
         console.log('Sent signal message transaction (action: add)', result)
 
         if (!result.success) {
@@ -357,7 +357,7 @@ export default {
           return
         }
 
-        const result = await sendSignalMessage(signalAsset(token, 'fcm', 'remove'))
+        const result = await sendSignalMessage(signalAsset(token, 'FCM', 'remove'))
         console.log('Sent signal message transaction (action: remove)', result)
 
         if (!result.success) {

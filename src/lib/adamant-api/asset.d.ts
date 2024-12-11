@@ -96,6 +96,6 @@ export function reactionAsset(reactToId: string, reactMessage: string): Reaction
 
 export function signalAsset(
   token: string,
-  provider: 'apns' | 'fcm',
+  provider: 'APNS' | 'FCM',
   action: 'add' | 'remove'
 ): SignalMessagePayload
