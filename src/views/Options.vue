@@ -212,6 +212,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
+import { getDeviceId } from '@/firebase'
 import { sendSignalMessage } from '@/lib/adamant-api'
 import { signalAsset } from '@/lib/adamant-api/asset'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
@@ -319,6 +320,8 @@ export default {
   },
   methods: {
     async handlePushNotificationsCheckbox(checked) {
+      const deviceId = await getDeviceId()
+
       if (checked) {
         const token = await requestToken()
 
@@ -330,7 +333,7 @@ export default {
           return
         }
 
-        const result = await sendSignalMessage(signalAsset(token, 'FCM', 'add'))
+        const result = await sendSignalMessage(signalAsset(deviceId, token, 'FCM', 'add'))
         console.log('Sent signal message transaction (action: add)', result)
 
         if (!result.success) {
@@ -357,7 +360,7 @@ export default {
           return
         }
 
-        const result = await sendSignalMessage(signalAsset(token, 'FCM', 'remove'))
+        const result = await sendSignalMessage(signalAsset(deviceId, token, 'FCM', 'remove'))
         console.log('Sent signal message transaction (action: remove)', result)
 
         if (!result.success) {

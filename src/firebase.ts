@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getMessaging } from 'firebase/messaging'
+import { getId, getInstallations } from 'firebase/installations'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDgtB_hqwL1SS_YMYepRMmXYhmc7154wmU',
@@ -19,5 +20,9 @@ console.log('FCM instance initialized', fcm)
 
 window.firebaseApp = firebaseApp
 window.fcm = fcm
+
+export function getDeviceId() {
+  return getId(getInstallations(firebaseApp))
+}
 
 export { firebaseApp, fcm }

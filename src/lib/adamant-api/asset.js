@@ -36,8 +36,9 @@ export function reactionAsset(reactToId, reactMessage) {
   }
 }
 
-export function signalAsset(token, provider, action) {
+export function signalAsset(deviceId, token, provider, action) {
   return {
+    deviceId,
     token,
     provider,
     action
