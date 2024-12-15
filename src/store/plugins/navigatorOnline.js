@@ -1,7 +1,7 @@
 import { i18n } from '@/i18n'
 import axios from 'axios'
 
-const checkUrl = 'https://ipv4.icanhazip.com'
+const checkUrl = 'robots.txt'
 
 export default (store) => {
   // window.addEventListener('online', handleEvent)
@@ -14,18 +14,20 @@ export default (store) => {
   //     store.commit('setIsOnline', false)
   //   }
 
-  setInterval(async () => {
-    const res = Boolean(await inetConnectionCheck())
-    const storeVal = store.getters['isOnline']
-    if (storeVal !== res) {
-      store.commit('setIsOnline', res)
-      const snackMsg = res ? 'online' : 'offline'
-      store.dispatch('snackbar/show', {
-        message: i18n.global.t(`connection.${snackMsg}`),
-        timeout: 3000
-      })
-    }
-  }, 1000)
+  window.onload = () => {
+    setInterval(async () => {
+      const res = Boolean(await inetConnectionCheck())
+      const storeVal = store.getters['isOnline']
+      if (storeVal !== res) {
+        store.commit('setIsOnline', res)
+        const snackMsg = res ? 'online' : 'offline'
+        store.dispatch('snackbar/show', {
+          message: i18n.global.t(`connection.${snackMsg}`),
+          timeout: 3000
+        })
+      }
+    }, 1000)
+  }
 }
 
 const inetConnectionCheck = async () => {
