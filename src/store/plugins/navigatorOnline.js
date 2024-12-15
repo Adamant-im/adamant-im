@@ -1,7 +1,8 @@
 import { i18n } from '@/i18n'
 import axios from 'axios'
 
-const checkUrl = 'robots.txt'
+const checkUrlLocal = 'robots.txt'
+const checkUrlRemote = 'https://ipv4.icanhazip.com'
 
 export default (store) => {
   // window.addEventListener('online', handleEvent)
@@ -32,15 +33,28 @@ export default (store) => {
 
 const inetConnectionCheck = async () => {
   try {
-    const res = await axios.get(`${checkUrl}`, {
+    const reqLocal = await axios.get(`${checkUrlLocal}`, {
       headers: {
         'Cache-Control': 'no-cache',
         Pragma: 'no-cache',
         Expires: '0'
       }
     })
-    return res.status >= 200 && res.status < 300
+    return reqLocal.status >= 200 && reqLocal.status < 300
   } catch (err) {
-    if (err.code === 'ERR_NETWORK') return false
+    if (err.code === 'ERR_NETWORK') {
+      try {
+        const reqRemote = await axios.get(`${checkUrlRemote}`, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache',
+            Expires: '0'
+          }
+        })
+        return reqRemote.status >= 200 && reqRemote.status < 300
+      } catch (err) {
+        if (err.code === 'ERR_NETWORK') return false
+      }
+    }
   }
 }
