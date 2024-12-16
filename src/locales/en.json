@@ -122,7 +122,8 @@
     "show_qr_code": "Show QR code",
     "stake_and_earn_btn": "Stake and earn",
     "wallet": "wallet",
-    "wallet_crypto": "{crypto} wallet"
+    "wallet_crypto": "{crypto} wallet",
+    "explorer": "Open in Explorer"
   },
   "warning_on_addresses": {
     "warning": "Warning",

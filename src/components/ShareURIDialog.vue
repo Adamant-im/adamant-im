@@ -22,6 +22,14 @@
               {{ $t('home.show_qr_code') }}
             </v-list-item-title>
           </v-list-item>
+          <v-list-item
+            v-if="crypto !== cryptos.USDT && crypto !== cryptos.USDC"
+            @click="openInExplorer"
+          >
+            <v-list-item-title :class="`${className}__list-item-title`">
+              {{ $t('home.explorer') }}
+            </v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-card-text>
     </v-card>
@@ -32,7 +40,9 @@
 <script>
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
 import copyToClipboard from 'copy-to-clipboard'
-import { generateURI } from '@/lib/uri'
+import { generateURI, websiteUriToOnion } from '@/lib/uri'
+import { Cryptos } from '@/lib/constants'
+import config from '@/config/index'
 
 export default {
   components: { QrcodeRendererDialog },
@@ -57,7 +67,8 @@ export default {
   emits: ['update:modelValue'],
   data: () => ({
     className: 'share-uri-dialog',
-    showQrcodeRendererDialog: false
+    showQrcodeRendererDialog: false,
+    cryptos: Cryptos
   }),
   computed: {
     show: {
@@ -86,6 +97,14 @@ export default {
     openQRCodeRenderer() {
       this.showQrcodeRendererDialog = true
       this.show = false
+    },
+    openInExplorer() {
+      const explorerUri = config[this.crypto.toLowerCase()].explorerAddress.replace(
+        /\${([a-zA-Z_]+?)}/,
+        this.address
+      )
+      const explorerLink = this.isADM ? websiteUriToOnion(explorerUri) : explorerUri
+      window.open(explorerLink, '_blank', 'resizable,scrollbars,status,noopener')
     }
   }
 }
