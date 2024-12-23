@@ -90,9 +90,6 @@ export default defineComponent({
 
     const isOnline = computed(() => store.getters['isOnline'])
 
-    const admNodes = computed(() => store.getters['nodes/adm'])
-    const activeOnlineAdmNode = admNodes.value.some(node => node.active && node.online)
-
     const submit = () => {
       if (!validateMnemonic(passphrase.value)) {
         return emit('error', t('login.invalid_passphrase'))
@@ -112,8 +109,6 @@ export default defineComponent({
             router.push({ name: 'Nodes' })
           } else if (isAxiosError(err)) {
             emit('error', t('login.invalid_passphrase'))
-          } else if (activeOnlineAdmNode) {
-            router.push({ name: 'Home' })
           } else if (isAllNodesOfflineError(err)) {
             emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
           } else if (isAllNodesDisabledError(err)) {
@@ -145,8 +140,7 @@ export default defineComponent({
       submit,
       freeze,
       antiFreeze,
-      login,
-      admNodes
+      login
     }
   }
 })
