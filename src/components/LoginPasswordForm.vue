@@ -42,10 +42,14 @@
 </template>
 
 <script>
-import { clearDb } from '@/lib/idb'
+import { isAxiosError } from 'axios'
 import { computed, defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+
+import { clearDb } from '@/lib/idb'
+import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 export default defineComponent({
   props: {
@@ -56,6 +60,7 @@ export default defineComponent({
   },
   emits: ['login', 'error', 'update:modelValue'],
   setup(props, { emit }) {
+    const router = useRouter()
     const store = useStore()
     const { t } = useI18n()
     const passwordField = ref(null)
