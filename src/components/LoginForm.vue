@@ -137,10 +137,7 @@ export default defineComponent({
       passphrase,
       showPassphrase,
       togglePassphraseVisibility,
-      submit,
-      freeze,
-      antiFreeze,
-      login
+      submit
     }
   }
 })
