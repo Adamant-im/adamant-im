@@ -93,23 +93,26 @@ export default defineComponent({
       }
     })
 
+    const isOnline = computed(() => store.getters['isOnline'])
+
     const submit = () => {
       if (!validateMnemonic(passphrase.value)) {
         return emit('error', t('login.invalid_passphrase'))
       }
-
       freeze()
       login()
     }
     const login = () => {
       const promise = store.dispatch('login', passphrase.value)
-
       promise
         .then(() => {
           emit('login')
         })
         .catch((err) => {
-          if (isAxiosError(err)) {
+          if (!isOnline.value) {
+            emit('error', t('connection.offline'))
+            router.push({ name: 'Nodes' })
+          } else if (isAxiosError(err)) {
             emit('error', t('login.invalid_passphrase'))
           } else if (isAllNodesOfflineError(err)) {
             emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
@@ -140,10 +143,7 @@ export default defineComponent({
       showPassphrase,
       classes,
       togglePassphraseVisibility,
-      submit,
-      freeze,
-      antiFreeze,
-      login
+      submit
     }
   }
 })
