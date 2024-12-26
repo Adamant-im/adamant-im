@@ -232,32 +232,37 @@ type EstimateFeeParams = {
  * @param params Transaction params
  */
 export function estimateFee(params?: EstimateFeeParams) {
-  const {
-    amount = '1',
-    keyPair = KLY_DEMO_ACCOUNT.keyPair,
-    recipientAddress = KLY_DEMO_ACCOUNT.address,
-    data = '',
-    nonce = 0,
-    isNewAccount
-  } = params || {}
+  try {
+    const {
+      amount = '1',
+      keyPair = KLY_DEMO_ACCOUNT.keyPair,
+      recipientAddress = KLY_DEMO_ACCOUNT.address,
+      data = '',
+      nonce = 0,
+      isNewAccount
+    } = params || {}
 
-  const transaction = createTransaction(
-    {
-      publicKey: Buffer.from(keyPair.publicKey, 'hex'),
-      secretKey: Buffer.from(keyPair.secretKey, 'hex')
-    },
-    recipientAddress,
-    amount,
-    1,
-    nonce,
-    data
-  )
-  const transactionBytes = hexToBytes(transaction.hex)
+    const transaction = createTransaction(
+      {
+        publicKey: Buffer.from(keyPair.publicKey, 'hex'),
+        secretKey: Buffer.from(keyPair.secretKey, 'hex')
+      },
+      recipientAddress,
+      amount,
+      1,
+      nonce,
+      data
+    )
+    const transactionBytes = hexToBytes(transaction.hex)
 
-  const fee = BigInt(transactionBytes.length) * KLY_MIN_FEE_PER_BYTE
-  const transferToNewAccountFee = isNewAccount ? KLY_TRANSFER_TO_NEW_ACCOUNT_FEE : BigInt(0)
+    const fee = BigInt(transactionBytes.length) * KLY_MIN_FEE_PER_BYTE
+    const transferToNewAccountFee = isNewAccount ? KLY_TRANSFER_TO_NEW_ACCOUNT_FEE : BigInt(0)
 
-  const totalFee = fee + transferToNewAccountFee
+    const totalFee = fee + transferToNewAccountFee
 
-  return convertBeddowsTokly(totalFee.toString())
+    return convertBeddowsTokly(totalFee.toString())
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (err) {
+    return 0
+  }
 }

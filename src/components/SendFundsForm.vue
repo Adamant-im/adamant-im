@@ -527,7 +527,14 @@ export default {
           () =>
             isErc20(this.currency)
               ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
-              : true
+              : true,
+          (v) => {
+            const isKlyTransfer = this.currency === Cryptos.KLY
+            if (!isKlyTransfer) return true
+            const MAX_UINT64 = BigInt('18446744073709551615')
+            const isKlyTransferAllowed = isKlyTransfer && this.transferFee && v < MAX_UINT64
+            return isKlyTransferAllowed || this.$t('transfer.error_incorrect_amount')
+          }
         ]
       }
     },
