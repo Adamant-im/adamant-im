@@ -198,6 +198,8 @@ import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
+import * as transactions from '@klayr/transactions'
+import { KLY_DECIMALS } from '@/lib/klayr/klayr-constants'
 
 import {
   INCREASE_FEE_MULTIPLIER,
@@ -532,7 +534,9 @@ export default {
             const isKlyTransfer = this.currency === Cryptos.KLY
             if (!isKlyTransfer) return true
             const MAX_UINT64 = BigInt('18446744073709551615')
-            const isKlyTransferAllowed = isKlyTransfer && this.transferFee && v < MAX_UINT64
+            const isKlyTransferAllowed =
+              this.transferFee &&
+              transactions.convertklyToBeddows(v.toFixed(KLY_DECIMALS)) < MAX_UINT64
             return isKlyTransferAllowed || this.$t('transfer.error_incorrect_amount')
           }
         ]
