@@ -12,8 +12,7 @@ export default {
         isNewAccount,
         nonce: state.nonce
       })
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       return 0
     }
   },
