@@ -229,6 +229,8 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
 import { AllCryptos } from '@/lib/constants/cryptos'
 
+import { MAX_UINT64 } from '@klayr/validator'
+
 /**
  * @returns {string | boolean}
  */
@@ -533,7 +535,6 @@ export default {
           (v) => {
             const isKlyTransfer = this.currency === Cryptos.KLY
             if (!isKlyTransfer) return true
-            const MAX_UINT64 = BigInt('18446744073709551615')
             const isKlyTransferAllowed =
               this.transferFee &&
               transactions.convertklyToBeddows(v.toFixed(KLY_DECIMALS)) < MAX_UINT64

@@ -5,12 +5,17 @@ export default {
   ...baseGetters,
 
   fee: (state) => (amount, recipientAddress, data, isNewAccount) => {
-    return estimateFee({
-      amount,
-      data,
-      isNewAccount,
-      nonce: state.nonce
-    })
+    try {
+      return estimateFee({
+        amount,
+        data,
+        isNewAccount,
+        nonce: state.nonce
+      })
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      return 0
+    }
   },
 
   height(state) {
