@@ -22,7 +22,7 @@
               {{ t('home.show_qr_code') }}
             </v-list-item-title>
           </v-list-item>
-          <v-list-item v-if="!isErc" @click="openInExplorer">
+          <v-list-item @click="openInExplorer">
             <v-list-item-title :class="classes.listItemTitle">
               {{ t('home.explorer') }}
             </v-list-item-title>
@@ -39,7 +39,7 @@ import { ref, computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
-import { CryptoSymbol, isErc20 } from '@/lib/constants'
+import { CryptoSymbol, Cryptos, isErc20 } from '@/lib/constants'
 
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
 import copyToClipboard from 'copy-to-clipboard'
@@ -110,7 +110,8 @@ export default defineComponent({
     }
 
     const openInExplorer = () => {
-      const explorerLink = getExplorerAddressUrl(props.crypto, props.address)
+      const crypto = isErc.value ? Cryptos.ETH : props.crypto
+      const explorerLink = getExplorerAddressUrl(crypto, props.address)
       window.open(explorerLink, '_blank', 'resizable,scrollbars,status,noopener')
     }
 
