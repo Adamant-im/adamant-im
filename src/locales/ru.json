@@ -123,7 +123,8 @@
     "show_qr_code": "Показать QR-код",
     "stake_and_earn_btn": "Застейкать и заработать",
     "wallet": "кошелек",
-    "wallet_crypto": "Кошелек {crypto}"
+    "wallet_crypto": "Кошелек {crypto}",
+    "explorer": "Посмотреть в Explorer'е"
   },
   "warning_on_addresses": {
     "warning": "Внимание",
