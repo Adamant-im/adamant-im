@@ -292,7 +292,7 @@ import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, wat
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
 
-import { Cryptos, Fees, UPLOAD_MAX_FILE_COUNT } from '@/lib/constants'
+import { Cryptos, Fees, UPLOAD_MAX_FILE_COUNT, UPLOAD_MAX_FILE_SIZE } from '@/lib/constants'
 import EmojiPicker from '@/components/EmojiPicker.vue'
 
 import {
@@ -483,8 +483,18 @@ const onMessage = (message: string) => {
 const handleFiles = (filesList: FileData[]) => {
   files.value = [...files.value, ...filesList]
 
-  if (files.value.length > UPLOAD_MAX_FILE_COUNT) {
+  const maxFileSizeExceeded = files.value.some(({ file }) => file.size >= UPLOAD_MAX_FILE_SIZE)
+  files.value = files.value.filter((file) => file.file.size < UPLOAD_MAX_FILE_SIZE)
+
+  if (maxFileSizeExceeded) {
     files.value = files.value.slice(0, UPLOAD_MAX_FILE_COUNT)
+
+    store.dispatch('snackbar/show', {
+      message: t('chats.max_file_size', { count: UPLOAD_MAX_FILE_COUNT })
+    })
+  } else if (files.value.length > UPLOAD_MAX_FILE_COUNT) {
+    files.value = files.value.slice(0, UPLOAD_MAX_FILE_COUNT)
+
     store.dispatch('snackbar/show', {
       message: t('chats.max_files', { count: UPLOAD_MAX_FILE_COUNT })
     })
