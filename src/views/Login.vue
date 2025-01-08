@@ -6,7 +6,7 @@
           <language-switcher prepend-icon="mdi-chevron-right" />
         </div>
         <div :class="`${className}__settings-button`">
-          <v-btn @click="$router.push('/options/nodes')" icon variant="flat" :size="32">
+          <v-btn @click="$router.push('/options/nodes')" icon variant="plain" :size="32">
             <v-icon icon="mdi-cog" />
           </v-btn>
         </div>
@@ -229,7 +229,8 @@ export default defineComponent({
   .login-page {
     &__icon,
     &__title,
-    &__subtitle {
+    &__subtitle,
+    &__settings-button {
       color: map-get($adm-colors, 'regular');
     }
   }

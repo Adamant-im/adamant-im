@@ -92,8 +92,7 @@ function createActions(options) {
           commit('setBalanceStatus', FetchStatus.Success)
         } catch (err) {
           commit('setBalanceStatus', FetchStatus.Error)
-
-          throw err
+          console.warn(err)
         }
       }
     },
@@ -112,7 +111,7 @@ function createActions(options) {
         })
         .catch((err) => {
           context.commit('setBalanceStatus', FetchStatus.Error)
-          throw err
+          console.warn(err)
         })
     },
 

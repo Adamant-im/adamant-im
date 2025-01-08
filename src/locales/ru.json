@@ -102,8 +102,8 @@
   "error": "Ошибка",
   "errors": {
     "something_went_wrong": "Что-то пошло не так. Детали ошибки в консоли",
-    "all_nodes_offline": "Все {crypto} ноды недоступны. Попробуйте позже",
-    "all_nodes_disabled": "Нет активных узлов {crypto}. Включите хотя бы один"
+    "all_nodes_offline": "Все {crypto} ноды недоступны. Посмотрите список узлов",
+    "all_nodes_disabled": "Нет активных {crypto} нод. Включите хотя бы одну"
   },
   "home": {
     "balance": "Баланс",
@@ -126,7 +126,8 @@
     "show_qr_code": "Показать QR-код",
     "stake_and_earn_btn": "Застейкать и заработать",
     "wallet": "кошелек",
-    "wallet_crypto": "Кошелек {crypto}"
+    "wallet_crypto": "Кошелек {crypto}",
+    "explorer": "Посмотреть в Explorer'е"
   },
   "warning_on_addresses": {
     "warning": "Внимание",

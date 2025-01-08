@@ -78,11 +78,9 @@ export default {
 
 .all-nodes-disabled-dialog {
   &__card-title {
-    padding-left: 24px !important;
-    padding-right: 24px !important;
   }
   &__card-text {
-    padding-bottom: 16px !important;
+    padding: 16px !important;
   }
   &__btn {
     margin-top: 15px;
@@ -92,7 +90,7 @@ export default {
     margin-right: 8px;
   }
   &__btn-block {
-    padding: 16px 0 16px 0;
+    padding: 12px 0 24px 0;
     text-align: center;
   }
 }
