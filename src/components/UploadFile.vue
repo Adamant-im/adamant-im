@@ -29,7 +29,7 @@ function getImageResolution(file: File): Promise<{ width?: number; height?: numb
       resolve({ width: img.width, height: img.height })
     }
     img.onerror = (err) => {
-      console.log('Error loading image:', err)
+      console.warn('Error loading image:', err)
       resolve({})
       URL.revokeObjectURL(img.src)
     }

@@ -776,7 +776,7 @@ const actions = {
       files,
       replyToId
     })
-    console.log('Pushed message', messageObject)
+    console.debug('Message', messageObject)
 
     commit('pushMessage', {
       message: messageObject,
@@ -795,7 +795,7 @@ const actions = {
       partnerId: recipientId,
       asset: newAsset
     })
-    console.log('Updated CIDs and Nonces', newAsset)
+    console.debug('Updated CIDs and Nonces', newAsset)
 
     try {
       const uploadData = await uploadFiles(files, (progress) => {
@@ -803,7 +803,7 @@ const actions = {
           commit('attachment/setUploadProgress', { cid, progress }, { root: true })
         }
       })
-      console.log('Files uploaded', uploadData)
+      console.debug('Files uploaded', uploadData)
     } catch (err) {
       commit('updateMessage', {
         id: messageObject.id,
