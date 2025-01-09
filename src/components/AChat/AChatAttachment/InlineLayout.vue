@@ -14,7 +14,8 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { FileAsset } from '@/lib/adamant-api/asset'
-import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { LocalFile } from '@/lib/files'
 import AChatFile from './AChatFile.vue'
 
 const className = 'a-chat-inline-layout'

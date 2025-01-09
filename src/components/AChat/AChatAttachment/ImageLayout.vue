@@ -23,7 +23,8 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { FileAsset } from '@/lib/adamant-api/asset'
-import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { LocalFile } from '@/lib/files'
 import AChatImage from './AChatImage.vue'
 
 function groupImages(images: Array<FileAsset | LocalFile>): Array<Array<FileAsset | LocalFile>> {

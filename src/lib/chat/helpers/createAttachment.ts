@@ -1,4 +1,4 @@
-import { FileData } from '@/components/UploadFile.vue'
+import { FileData } from '@/lib/files'
 import utils from '@/lib/adamant'
 import { EncodedFile } from '@/lib/adamant-api'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers/normalizeMessage'

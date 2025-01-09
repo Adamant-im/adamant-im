@@ -284,7 +284,7 @@
 <script lang="ts" setup>
 import AChatMessageActionsList from '@/components/AChat/AChatMessageActionsList.vue'
 import AChatReactions from '@/components/AChat/AChatReactions/AChatReactions.vue'
-import { FileData } from '@/components/UploadFile.vue'
+import { FileData } from '@/lib/files'
 import { emojiWeight } from '@/lib/chat/emoji-weight/emojiWeight'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { vibrate } from '@/lib/vibrate'

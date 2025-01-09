@@ -43,7 +43,8 @@
 import { defineComponent, PropType } from 'vue'
 
 import { AChatFileLoader } from './AChatFileLoader.tsx'
-import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { LocalFile } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
 
 const className = 'a-chat-image'

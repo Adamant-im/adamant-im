@@ -15,7 +15,7 @@ import { isNumeric } from '@/lib/numericHelpers'
 import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
-import { uploadFiles } from '../../../lib/file'
+import { uploadFiles } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 

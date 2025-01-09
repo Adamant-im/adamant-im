@@ -1,13 +1,7 @@
-import { FileData } from '@/components/UploadFile.vue'
+import { LocalFile } from '@/lib/files'
 import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
 import { TransactionStatusType } from '@/lib/constants'
 import { ChatMessageTransaction } from '@/lib/schema/client'
-
-export type LocalFile = {
-  file: FileData
-  loading: boolean
-  error: string | null
-}
 
 export type NormalizedChatMessageTransaction = Pick<
   DecodedChatMessageTransaction,

@@ -1,5 +1,5 @@
 import { MessageType } from '@/lib/constants'
-import { FileData } from '@/components/UploadFile.vue'
+import { FileData } from '@/lib/files'
 
 interface CryptoTransferPayload {
   cryptoSymbol: string

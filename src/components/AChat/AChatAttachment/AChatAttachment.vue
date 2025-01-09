@@ -114,7 +114,8 @@ import { useStore } from 'vuex'
 import { useFormatMessage } from '../hooks/useFormatMessage'
 import { usePartnerId } from '../hooks/usePartnerId'
 import { useTransactionTime } from '../hooks/useTransactionTime'
-import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { isLocalFile } from '@/lib/files'
 import { downloadFile, isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon } from '@/lib/constants'
 import QuotedMessage from '../QuotedMessage.vue'
@@ -124,10 +125,6 @@ import { isWelcomeChat } from '@/lib/chat/meta/utils'
 import ImageLayout from './ImageLayout.vue'
 import InlineLayout from './InlineLayout.vue'
 import AChatImageModal from './AChatImageModal.vue'
-
-function isLocalFile(file: FileAsset | LocalFile): file is LocalFile {
-  return 'file' in file && file.file?.file instanceof File
-}
 
 export default defineComponent({
   methods: { downloadFile },

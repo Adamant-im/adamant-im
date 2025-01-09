@@ -12,29 +12,15 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
-import { computeCID, cropImage, readFileAsBuffer, readFileAsDataURL } from '@/lib/file'
+import {
+  computeCID,
+  cropImage,
+  readFileAsBuffer,
+  readFileAsDataURL,
+  type FileData
+} from '@/lib/files'
 
-import { EncodedFile, encodeFile } from '@/lib/adamant-api'
-
-export type FileData = {
-  cid: string
-  name: string
-  type: string
-  content: string
-  isImage: boolean
-  file: File
-  encoded: EncodedFile
-  width?: number
-  height?: number
-  preview?: {
-    cid: string
-    file: File
-    encoded: EncodedFile
-    content: string
-    width: number
-    height: number
-  }
-}
+import { encodeFile } from '@/lib/adamant-api'
 
 function getImageResolution(file: File): Promise<{ width?: number; height?: number }> {
   return new Promise((resolve) => {

@@ -3,11 +3,8 @@ import { useStore } from 'vuex'
 import { useQuery } from '@tanstack/vue-query'
 
 import { FileAsset } from '@/lib/adamant-api/asset'
-import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-
-function isLocalFile(file: FileAsset | LocalFile): file is LocalFile {
-  return 'file' in file && file.file?.file instanceof File
-}
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { LocalFile, isLocalFile } from '@/lib/files'
 
 export const AChatFileLoader = defineComponent(
   (props, { slots }) => {

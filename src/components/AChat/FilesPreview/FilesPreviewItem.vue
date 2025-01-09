@@ -20,7 +20,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 
-import type { FileData } from '@/components/UploadFile.vue'
+import type { FileData } from '@/lib/files'
 import IconFile from '@/components/icons/common/IconFile.vue'
 
 const className = 'preview-file'

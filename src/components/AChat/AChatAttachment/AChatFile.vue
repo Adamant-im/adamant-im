@@ -60,26 +60,11 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import { LocalFile, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { LocalFile, isLocalFile, formatBytes } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { AChatFileLoader } from './AChatFileLoader.tsx'
-
-function isLocalFile(file: FileAsset | LocalFile): file is LocalFile {
-  return 'file' in file && file.file?.file instanceof File
-}
-
-function formatBytes(size: number) {
-  if (size < 1024) {
-    return size + ' B'
-  } else if (size < 1024 ** 2) {
-    return Math.floor(size / 1024) + ' KB'
-  } else if (size < 1024 ** 3) {
-    return Math.floor(size / 1024 ** 2) + ' MB'
-  } else {
-    return parseFloat((size / 1024 ** 3).toFixed(2)) + ' GB'
-  }
-}
 
 const className = 'a-chat-file'
 const classes = {
