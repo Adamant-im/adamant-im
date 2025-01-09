@@ -60,7 +60,7 @@
       <!-- Attachment -->
       <template v-else-if="isAttachment">
         <v-list-item-subtitle :class="`${className}__subtitle`">
-          [{{ transaction.asset.files.length }} {{ t('chats.files') }}]: {{ transaction.message }}
+          {{ attachmentText }}
         </v-list-item-subtitle>
       </template>
       <!-- Reaction -->
@@ -173,6 +173,16 @@ export default defineComponent({
         props.transaction.type !== 'attachment'
     )
     const isAttachment = computed(() => props.transaction.type === 'attachment')
+    const attachmentText = computed(() => {
+      if (!isAttachment.value) return ''
+      const filesCount = props.transaction.asset.files.length
+
+      if (props.transaction.message) {
+        return `[${t('chats.file', filesCount)}]: ${props.transaction.message}`
+      }
+
+      return `[${t('chats.file', filesCount)}]`
+    })
     const isReaction = computed(() => props.transaction.type === 'reaction')
 
     const reactedText = computed(() => {
@@ -238,6 +248,7 @@ export default defineComponent({
       isNewChat,
       isOutgoingTransaction,
       isAttachment,
+      attachmentText,
       isReaction,
       isTransferType,
       isWelcomeChat,

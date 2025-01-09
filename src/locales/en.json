@@ -18,6 +18,7 @@
     "unable_to_retrieve_no_public_key": "`Unable to decrypt message: no partner's public key`",
     "max_files": "You can upload max {count} files",
     "max_file_size": "Max file size allowed: 10MB",
+    "file": "0 files | 1 file | {n} files | {n} files",
     "files": "file(s)",
     "me": "Me",
     "message": "Type a message",
