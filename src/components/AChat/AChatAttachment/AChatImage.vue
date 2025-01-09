@@ -8,7 +8,7 @@
               <v-icon v-bind="props" :class="classes.errorIcon" icon="mdi-image-off" />
             </template>
 
-            <span>Failed to load the image</span>
+            <span>{{ t('chats.image_loading_error') }}</span>
           </v-tooltip>
         </div>
       </v-img>
@@ -41,6 +41,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { AChatFileLoader } from './AChatFileLoader.tsx'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
@@ -75,7 +76,10 @@ export default defineComponent({
   emits: ['click'],
   components: { AChatFileLoader },
   setup() {
+    const { t } = useI18n()
+
     return {
+      t,
       classes
     }
   }

@@ -20,6 +20,8 @@
     "max_file_size": "Max file size allowed: 10MB",
     "file": "0 files | 1 file | {n} files | {n} files",
     "files": "file(s)",
+    "file_loading_error": "Failed to load the file",
+    "image_loading_error": "Failed to load the image",
     "me": "Me",
     "message": "Type a message",
     "message_rejected": "Message rejected",

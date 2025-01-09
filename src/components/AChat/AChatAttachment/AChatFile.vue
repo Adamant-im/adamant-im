@@ -9,7 +9,7 @@
                 <v-icon v-bind="props" :class="classes.errorIcon" icon="mdi-image-off" />
               </template>
 
-              <span>Failed to load the image</span>
+              <span>{{ t('chats.file_loading_error') }}</span>
             </v-tooltip>
           </div>
         </div>
@@ -60,6 +60,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { LocalFile, isLocalFile, formatBytes } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
@@ -100,6 +101,8 @@ export default defineComponent({
   emits: ['click'],
   components: { AChatFileLoader, IconFile },
   setup(props) {
+    const { t } = useI18n()
+
     const isImage = computed(() => {
       if (isLocalFile(props.file)) {
         return props.file.file.isImage
@@ -118,6 +121,7 @@ export default defineComponent({
     })
 
     return {
+      t,
       classes,
       isImage,
       fileName,
