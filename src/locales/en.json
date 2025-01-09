@@ -16,6 +16,12 @@
     "incorrect_address": "Incorrect ADM address",
     "no_public_key": "This address is not active yet. Unable to start a chat",
     "unable_to_retrieve_no_public_key": "`Unable to decrypt message: no partner's public key`",
+    "max_files": "You can upload max {count} files",
+    "max_file_size": "Max file size allowed: 10MB",
+    "file": "0 files | 1 file | {n} files | {n} files",
+    "files": "file(s)",
+    "file_loading_error": "Failed to load the file",
+    "image_loading_error": "Failed to load the image",
     "me": "Me",
     "message": "Type a message",
     "message_rejected": "Message rejected",
@@ -192,7 +198,8 @@
     "tabs": {
       "adm_nodes": "ADM nodes",
       "coin_nodes": "Coin nodes",
-      "service_nodes": "Service nodes"
+      "service_nodes": "Service nodes",
+      "ipfs_nodes": "IPFS nodes"
     },
     "unsupported": "Unsupported",
     "unsupported_reason_protocol": "HTTP is not allowed",

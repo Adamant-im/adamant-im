@@ -142,11 +142,7 @@ export abstract class Node<C = unknown> {
 
     this.timer = setTimeout(
       () => this.startHealthcheck(),
-      getHealthCheckInterval(
-        this.type,
-        this.kind,
-        this.online ? this.healthCheckInterval : 'crucial'
-      )
+      getHealthCheckInterval(this.label, this.online ? this.healthCheckInterval : 'crucial')
     )
   }
 

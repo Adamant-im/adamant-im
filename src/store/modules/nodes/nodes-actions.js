@@ -25,5 +25,8 @@ export default {
   },
   setUseFastestCoinNode(context, payload) {
     context.commit('useFastestCoinNode', payload)
+  },
+  setUseFastestIpfsNode(context, payload) {
+    context.commit('useFastestIpfsNode', payload)
   }
 }

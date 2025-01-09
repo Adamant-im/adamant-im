@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 import wasm from 'vite-plugin-wasm'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import path from 'path'
@@ -16,6 +17,7 @@ export default defineConfig({
     wasm(),
     topLevelAwait(),
     vue(),
+    vueJsx(),
     commonjs(),
     inject({
       Buffer: ['buffer', 'Buffer']

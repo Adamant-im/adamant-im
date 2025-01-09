@@ -57,7 +57,12 @@
           </template>
         </TransactionProvider>
       </template>
-
+      <!-- Attachment -->
+      <template v-else-if="isAttachment">
+        <v-list-item-subtitle :class="`${className}__subtitle`">
+          {{ attachmentText }}
+        </v-list-item-subtitle>
+      </template>
       <!-- Reaction -->
       <template v-else-if="isReaction">
         <v-list-item-subtitle :class="`${className}__subtitle`">
@@ -162,8 +167,22 @@ export default defineComponent({
     const chatName = useChatName(contactId, true)
 
     const isTransferType = computed(
-      () => props.transaction.type !== 'message' && props.transaction.type !== 'reaction'
+      () =>
+        props.transaction.type !== 'message' &&
+        props.transaction.type !== 'reaction' &&
+        props.transaction.type !== 'attachment'
     )
+    const isAttachment = computed(() => props.transaction.type === 'attachment')
+    const attachmentText = computed(() => {
+      if (!isAttachment.value) return ''
+      const filesCount = props.transaction.asset.files.length
+
+      if (props.transaction.message) {
+        return `[${t('chats.file', filesCount)}]: ${props.transaction.message}`
+      }
+
+      return `[${t('chats.file', filesCount)}]`
+    })
     const isReaction = computed(() => props.transaction.type === 'reaction')
 
     const reactedText = computed(() => {
@@ -219,6 +238,7 @@ export default defineComponent({
     return {
       className,
       chatName,
+      t,
       createdAt,
       currency,
       formatDate,
@@ -227,6 +247,8 @@ export default defineComponent({
       isIncomingTransaction,
       isNewChat,
       isOutgoingTransaction,
+      isAttachment,
+      attachmentText,
       isReaction,
       isTransferType,
       isWelcomeChat,
