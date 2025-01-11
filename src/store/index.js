@@ -48,8 +48,8 @@ import servicesPlugin from './modules/services/services-plugin'
 
 export let interval
 
-const UPDATE_BALANCE_INTERVAL = 10000
-const UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT = 2500
+const UPDATE_BALANCE_INTERVAL = 5000
+const UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT = 1500
 
 /**
  * @type { import("vuex").StoreOptions } store
