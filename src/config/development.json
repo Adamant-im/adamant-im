@@ -52,6 +52,18 @@
         },
         {
           "url": "https://dschubba.adm.im"
+        },
+        {
+          "url": "http://ec2-54-197-36-175.compute-1.amazonaws.com:36666"
+        },
+        {
+          "url": "http://54.197.36.175:36666"
+        },
+        {
+          "url": "http://54.197.36.175:46666"
+        },
+        {
+          "url": "http://54.197.36.175:56666"
         }
       ],
       "healthCheck": {
