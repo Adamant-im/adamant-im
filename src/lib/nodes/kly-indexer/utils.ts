@@ -1,5 +1,5 @@
 import { getMillisTimestamp } from '@/lib/klayr/klayr-utils'
-import { convertBeddowsToKLY } from '@klayr/transactions'
+import { convertBeddowsTokly } from '@klayr/transactions'
 import { TransactionStatus, TransactionStatusType } from '@/lib/constants'
 import { Transaction } from './types/api/transactions/transaction'
 import { KlyTransaction } from '@/lib/nodes/types/transaction'
@@ -19,14 +19,14 @@ export function normalizeTransaction(
   return {
     id: transaction.id,
     hash: transaction.id,
-    fee: Number(convertBeddowsToKLY(transaction.fee)),
+    fee: Number(convertBeddowsTokly(transaction.fee)),
     status: mapStatus(transaction.executionStatus),
     data: transaction.params.data,
     timestamp: isFinalized ? getMillisTimestamp(transaction.block.timestamp) : undefined, // block timestamp
     direction,
     senderId: transaction.sender.address,
     recipientId: transaction.params.recipientAddress,
-    amount: Number(convertBeddowsToKLY(transaction.params.amount)),
+    amount: Number(convertBeddowsTokly(transaction.params.amount)),
     height: isFinalized ? transaction.block.height : undefined,
     nonce: transaction.nonce,
     module: 'token',

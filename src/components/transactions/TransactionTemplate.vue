@@ -32,33 +32,41 @@
 
         <v-divider />
 
-        <TransactionListItem :title="t('transaction.status')">
-          <template #append>
-            <v-icon
-              v-if="statusUpdatable || rotateAnimation"
-              :class="{
-                [`${className}__update-status-icon--rotate`]: rotateAnimation
-              }"
-              icon="mdi-refresh"
-              size="20"
-              @click="updateStatus()"
-            />
+        <v-list-item>
+          <template #prepend>
+            <v-list-item-title :class="`${className}__title`">
+              {{ t('transaction.status') }}
+              <v-icon
+                v-if="statusUpdatable || rotateAnimation"
+                :class="{
+                  [`${className}__update-status-icon--rotate`]: rotateAnimation
+                }"
+                icon="mdi-refresh"
+                size="20"
+                @click="updateStatus()"
+              />
+            </v-list-item-title>
           </template>
 
-          <div :class="`${className}__value-${transactionStatus}`">
+          <div
+            :class="[
+              `${className}__inconsistent-status`,
+              `${className}__inconsistent-status--${transactionStatus}`
+            ]"
+          >
             <v-icon
-              v-if="inconsistentStatus === 'INVALID'"
+              v-if="transactionStatus === 'INVALID'"
               icon="mdi-alert-outline"
               size="20"
               style="color: #f8a061 !important"
             />
-            {{ $t(`transaction.statuses.${transactionStatus}`)
+            {{ t(`transaction.statuses.${transactionStatus}`)
             }}<span v-if="inconsistentStatus">{{
-              ': ' + $t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
+              ': ' + t(`transaction.inconsistent_reasons.${inconsistentStatus}`, { crypto })
             }}</span>
             <!--            <span v-if="status.addStatus">{{ ': ' + status.addDescription }}</span>-->
           </div>
-        </TransactionListItem>
+        </v-list-item>
 
         <v-divider />
 
@@ -144,7 +152,7 @@
 <script lang="ts">
 import type { QueryStatus } from '@tanstack/vue-query'
 import BigNumber from 'bignumber.js'
-import { computed, defineComponent, nextTick, PropType, ref, watch } from 'vue'
+import { computed, defineComponent, PropType, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -277,13 +285,6 @@ export default defineComponent({
       return store.getters['rate/rate'](transaction.value.amount, props.crypto)
     })
 
-    watch(
-      () => props.transaction,
-      () => {
-        nextTick(() => getHistoryRates())
-      }
-    )
-
     const handleCopyToClipboard = (text?: string) => {
       if (!text) return
 
@@ -321,6 +322,14 @@ export default defineComponent({
         timestamp: timestampInSec(props.crypto, transaction.value.timestamp!)
       })
     }
+
+    watch(
+      () => props.transaction,
+      () => {
+        getHistoryRates()
+      },
+      { immediate: true }
+    )
 
     const formatAmount = (amount: number) => {
       return BigNumber(amount)
@@ -372,6 +381,15 @@ export default defineComponent({
       transition-duration: 1s;
     }
   }
+  &__inconsistent-status {
+    font-weight: 300;
+    font-size: 14px;
+    text-align: right;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+    width: 100%;
+  }
 }
 
 /** Themes **/
@@ -385,22 +403,22 @@ export default defineComponent({
 .v-theme--light,
 .v-theme--dark {
   .transaction-view {
-    &__value-REJECTED {
+    &__inconsistent-status--REJECTED {
       color: map-get($adm-colors, 'danger') !important;
     }
-    &__value-PENDING {
+    &__inconsistent-status--PENDING {
       color: map-get($adm-colors, 'attention') !important;
     }
-    &__value-REGISTERED {
+    &__inconsistent-status--REGISTERED {
       color: map-get($adm-colors, 'attention') !important;
     }
-    &__value-CONFIRMED {
+    &__inconsistent-status--CONFIRMED {
       color: map-get($adm-colors, 'good') !important;
     }
-    &__value-INVALID {
+    &__inconsistent-status--INVALID {
       color: map-get($adm-colors, 'attention') !important;
     }
-    &__value-UNKNOWN {
+    &__inconsistent-status--UNKNOWN {
       color: map-get($adm-colors, 'attention') !important;
     }
   }

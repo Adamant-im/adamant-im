@@ -3,17 +3,19 @@ import { useInconsistentStatus } from '@/components/transactions/hooks/useIncons
 import { useTransactionStatus } from '@/components/transactions/hooks/useTransactionStatus'
 import { CryptoSymbol } from '@/lib/constants'
 import { useTransactionQuery } from './useTransactionQuery'
+import { UseTransactionQueryParams } from './types'
 
 export function useTransactionStatusQuery(
   transactionId: MaybeRef<string>,
-  crypto: MaybeRef<CryptoSymbol>
+  crypto: MaybeRef<CryptoSymbol>,
+  params: UseTransactionQueryParams = {}
 ) {
   const {
     status: queryStatus,
     isFetching,
     data: transaction,
     refetch
-  } = useTransactionQuery(transactionId, unref(crypto))
+  } = useTransactionQuery(transactionId, unref(crypto), params)
   const inconsistentStatus = useInconsistentStatus(transaction, unref(crypto))
   const status = useTransactionStatus(isFetching, queryStatus, inconsistentStatus)
 

@@ -22,12 +22,14 @@ import { useStore } from 'vuex'
 import TransactionTemplate from './TransactionTemplate.vue'
 import { getExplorerTxUrl } from '@/config/utils'
 import { Cryptos, CryptoSymbol } from '@/lib/constants'
+import { AllCryptos } from '@/lib/constants/cryptos'
 import { useCryptoAddressPretty } from './hooks/address'
 import { useBlockHeight } from '@/hooks/queries/useBlockHeight'
 import { useTransactionStatus } from './hooks/useTransactionStatus'
 import { useInconsistentStatus } from './hooks/useInconsistentStatus'
 import { useFindAdmTransaction } from './hooks/useFindAdmTransaction'
 import { useErc20TransactionQuery } from '@/hooks/queries/transaction'
+import { useClearPendingTransaction } from './hooks/useClearPendingTransaction'
 import { getPartnerAddress } from './utils/getPartnerAddress'
 
 export default defineComponent({
@@ -58,6 +60,7 @@ export default defineComponent({
     } = useErc20TransactionQuery(props.crypto)(props.id)
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
     const transactionStatus = useTransactionStatus(isFetching, queryStatus, inconsistentStatus)
+    useClearPendingTransaction(props.crypto, transaction)
 
     const admTx = useFindAdmTransaction(props.id)
     const senderAdmAddress = computed(() => admTx.value?.senderId || '')
@@ -94,7 +97,13 @@ export default defineComponent({
 
       return transaction.value?.confirmations
     })
-    const fee = computed(() => transaction.value?.fee)
+    const fee = computed(() => {
+      const ethFee = transaction.value?.fee || 0
+      const currentCurrency = store.state.options.currentRate
+      const currentRate = store.state.rate.rates[`${AllCryptos.ETH}/${currentCurrency}`]
+      const feeRate = (ethFee * currentRate).toFixed(2)
+      return +feeRate
+    })
 
     return {
       refetch,

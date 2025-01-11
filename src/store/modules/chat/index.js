@@ -7,25 +7,19 @@ import {
   createMessage,
   createTransaction,
   createReaction,
-  normalizeMessage
+  normalizeMessage,
+  createAttachment
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
-import {
-  Cryptos,
-  TransactionStatus as TS,
-  MessageType,
-  AnimationReactionType as ART
-} from '@/lib/constants'
+import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { replyMessageAsset } from '@/lib/adamant-api/asset'
-import { vibrate } from '@/lib/vibrate'
-
+import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
+import { uploadFiles } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
+import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 export let interval
-
-export let timeouts = []
 
 const SOCKET_ENABLED_TIMEOUT = 10000
 const SOCKET_DISABLED_TIMEOUT = 3000
@@ -54,8 +48,7 @@ const state = () => ({
   lastMessageHeight: 0, // `height` value of the last message
   isFulfilled: false, // false - getChats did not start or in progress, true - getChats finished
   offset: 0, // for loading chat list with pagination. -1 if all of chats loaded
-  animateIncomingReaction: false, // `true` - animate incoming last reaction
-  animateOutgoingReaction: false // `true` - animate outgoing last reaction
+  noActiveNodesDialog: undefined // true - visible dialog, false - hidden dialog, but shown before, undefined - not shown
 })
 
 const getters = {
@@ -74,7 +67,7 @@ const getters = {
     const chat = state.chats[senderId]
 
     if (chat) {
-      return chat.messages.sort((left, right) => left.timestamp - right.timestamp)
+      return [...chat.messages].sort((left, right) => left.timestamp - right.timestamp)
     }
 
     return []
@@ -467,7 +460,7 @@ const mutations = {
    * @param {string} realId Real id (from server)
    * @param {string} status Message status
    */
-  updateMessage(state, { partnerId, id, realId, status }) {
+  updateMessage(state, { partnerId, id, realId, status, asset }) {
     const chat = state.chats[partnerId]
 
     if (chat) {
@@ -479,6 +472,9 @@ const mutations = {
         }
         if (status) {
           message.status = status
+        }
+        if (asset) {
+          message.asset = asset
         }
       }
     }
@@ -503,12 +499,12 @@ const mutations = {
     }
   },
 
-  updateAnimateOutgoingReaction(state, value) {
-    state.animateOutgoingReaction = value
-  },
+  setNoActiveNodesDialog(state, value) {
+    if (state.noActiveNodesDialog === false) {
+      return // do not show dialog again
+    }
 
-  updateAnimateIncomingReaction(state, value) {
-    state.animateIncomingReaction = value
+    state.noActiveNodesDialog = value
   },
 
   reset(state) {
@@ -530,18 +526,26 @@ const actions = {
   loadChats({ commit, dispatch, rootState }, { perPage = 25 } = {}) {
     commit('setFulfilled', false)
 
-    return admApi.getChatRooms(rootState.address).then((result) => {
-      const { messages, lastMessageHeight } = result
+    return admApi
+      .getChatRooms(rootState.address)
+      .then((result) => {
+        const { messages, lastMessageHeight } = result
 
-      dispatch('pushMessages', messages)
+        dispatch('pushMessages', messages)
 
-      if (lastMessageHeight > 0) {
-        commit('setHeight', lastMessageHeight)
-        commit('setOffset', perPage)
-      }
+        if (lastMessageHeight > 0) {
+          commit('setHeight', lastMessageHeight)
+          commit('setOffset', perPage)
+        }
 
-      commit('setFulfilled', true)
-    })
+        commit('setFulfilled', true)
+      })
+      .catch((err) => {
+        if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
+          commit('setNoActiveNodesDialog', true)
+          setTimeout(() => dispatch('loadChats'), 5000) // retry in 5 seconds
+        }
+      })
   },
 
   loadChatsPaged({ commit, dispatch, rootState, state }, { perPage = 25 } = {}) {
@@ -593,6 +597,12 @@ const actions = {
           commit('setChatPage', { contactId, page: ++page })
         }
       })
+      .catch((err) => {
+        if (isAllNodesDisabledError(err) || isAllNodesOfflineError(err)) {
+          commit('setNoActiveNodesDialog', true)
+        }
+        throw err
+      })
   },
 
   /**
@@ -628,7 +638,7 @@ const actions = {
    * This is a temporary solution until the sockets are implemented.
    * @returns {Promise}
    */
-  getNewMessages({ state, commit, dispatch, rootState }) {
+  getNewMessages({ state, commit, dispatch }) {
     if (!state.isFulfilled) {
       return Promise.reject(new Error('Chat is not fulfilled'))
     }
@@ -637,10 +647,6 @@ const actions = {
       const { messages, lastMessageHeight } = result
 
       dispatch('pushMessages', messages)
-
-      if (!rootState.options.useSocketConnection && messages.length > 0) {
-        dispatch('animateLastReaction', ART.Incoming)
-      }
 
       if (lastMessageHeight > 0) {
         commit('setHeight', lastMessageHeight)
@@ -753,6 +759,99 @@ const actions = {
   },
 
   /**
+   * Send files to the chat.
+   * After confirmation, `id` and `status` will be updated.
+   *
+   * @param {string} message
+   * @param {string} recipientId
+   * @param {FileData[]} files
+   * @param {string} replyToId Optional
+   * @returns {Promise}
+   */
+  async sendAttachment({ commit, rootState }, { files, message, recipientId, replyToId }) {
+    let messageObject = createAttachment({
+      message,
+      recipientId,
+      senderId: rootState.address,
+      files,
+      replyToId
+    })
+    console.debug('Message', messageObject)
+
+    commit('pushMessage', {
+      message: messageObject,
+      userId: rootState.address
+    })
+
+    // Updating CIDs and Nonces
+    const nonces = files.map((file) => [file.encoded.nonce, file.preview.encoded?.nonce])
+    const cids = files.map((file) => [file.cid, file.preview?.cid])
+
+    let newAsset = replyToId
+      ? { replyto_id: replyToId, reply_message: attachmentAsset(files, nonces, cids, message) }
+      : attachmentAsset(files, nonces, cids, message)
+    commit('updateMessage', {
+      id: messageObject.id,
+      partnerId: recipientId,
+      asset: newAsset
+    })
+    console.debug('Updated CIDs and Nonces', newAsset)
+
+    try {
+      const uploadData = await uploadFiles(files, (progress) => {
+        for (const [cid] of cids) {
+          commit('attachment/setUploadProgress', { cid, progress }, { root: true })
+        }
+      })
+      console.debug('Files uploaded', uploadData)
+    } catch (err) {
+      commit('updateMessage', {
+        id: messageObject.id,
+        status: TS.REJECTED,
+        partnerId: recipientId
+      })
+
+      for (const [cid] of cids) {
+        commit('attachment/resetUploadProgress', { cid }, { root: true })
+      }
+
+      throw err
+    }
+
+    for (const [cid] of cids) {
+      commit('attachment/resetUploadProgress', { cid }, { root: true })
+    }
+
+    return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
+      .then((res) => {
+        if (!res.success) {
+          throw new Error(i18n.global.t('chats.message_rejected'))
+        }
+
+        // update `message.status` to 'REGISTERED'
+        // and `message.id` with `realId` from server
+        commit('updateMessage', {
+          id: messageObject.id,
+          realId: res.transactionId,
+          status: TS.REGISTERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
+          partnerId: recipientId
+        })
+
+        return res
+      })
+      .catch((err) => {
+        // update `message.status` to 'REJECTED'
+        commit('updateMessage', {
+          id: messageObject.id,
+          status: TS.REJECTED,
+          partnerId: recipientId
+        })
+
+        throw err // call the error again so that it can be processed inside view
+      })
+  },
+
+  /**
    * Resend message, in case the connection fails.
    * @param {string} id Recipient Id
    * @param {number} id Message Id
@@ -818,15 +917,13 @@ const actions = {
    * @param {string} reactMessage Emoji
    * @returns {Promise}
    */
-  sendReaction({ dispatch, commit, rootState }, { recipientId, reactToId, reactMessage }) {
+  sendReaction({ commit, rootState }, { recipientId, reactToId, reactMessage }) {
     const messageObject = createReaction({
       recipientId,
       senderId: rootState.address,
       reactToId,
       reactMessage
     })
-
-    dispatch('animateLastReaction', ART.Outgoing)
 
     commit('pushMessage', {
       message: messageObject,
@@ -862,22 +959,6 @@ const actions = {
 
         throw err // call the error again so that it can be processed inside view
       })
-  },
-
-  /**
-   * Animation of last reaction with vibro
-   * @param {ART} type - animation reaction type - incoming or outgoing
-   */
-  animateLastReaction({ commit }, type) {
-    const updateFn =
-      type === ART.Incoming ? 'updateAnimateIncomingReaction' : 'updateAnimateOutgoingReaction'
-
-    vibrate.veryShort()
-
-    commit(updateFn, true)
-    const timeout = setTimeout(() => commit(updateFn, false), 1500)
-
-    timeouts.push(timeout)
   },
 
   /**
@@ -952,13 +1033,6 @@ const actions = {
     root: true,
     handler() {
       clearTimeout(interval)
-    }
-  },
-
-  clearAnimationTimeouts: {
-    root: true,
-    handler() {
-      timeouts.forEach((timeout) => clearTimeout(timeout))
     }
   },
 

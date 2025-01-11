@@ -39,8 +39,9 @@ export class EthIndexer extends Node<AxiosInstance> {
   }
 
   private async fetchServiceInfo(): Promise<{ height: number }> {
-    const [{ max }] = await this.request('GET /max_block')
+    const [{ max, version }] = await this.request('GET /max_block')
     this.height = max
+    this.version = version
 
     return {
       height: this.height

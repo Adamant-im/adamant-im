@@ -3,6 +3,7 @@
     <v-divider v-if="showDivider" class="a-chat__divider" />
 
     <slot name="reply-preview" />
+    <slot name="preview-file" />
 
     <v-textarea
       ref="messageTextarea"

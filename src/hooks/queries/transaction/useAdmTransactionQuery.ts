@@ -35,6 +35,7 @@ export function useAdmTransactionQuery(
     retryDelay: retryDelayFactory(Cryptos.ADM, unref(transactionId)),
     refetchInterval: false,
     refetchOnWindowFocus: false,
-    refetchOnMount: params?.refetchOnMount
+    refetchOnMount: params?.refetchOnMount,
+    enabled: params.enabled
   })
 }

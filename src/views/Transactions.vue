@@ -43,6 +43,7 @@ import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import InlineSpinner from '@/components/InlineSpinner.vue'
 import TransactionListItem from '@/components/TransactionListItem.vue'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { AllNodesDisabledError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 export default {
   components: {
@@ -183,8 +184,18 @@ export default {
           })
           .catch((err) => {
             this.isRejected = true
+            let message = err.message
+            if (err instanceof AllNodesOfflineError) {
+              message = this.$t('errors.all_nodes_offline', {
+                crypto: err.nodeLabel.toUpperCase()
+              })
+            } else if (err instanceof AllNodesDisabledError) {
+              message = this.$t('errors.all_nodes_disabled', {
+                crypto: err.nodeLabel.toUpperCase()
+              })
+            }
             this.$store.dispatch('snackbar/show', {
-              message: err.message
+              message: message
             })
           })
       }

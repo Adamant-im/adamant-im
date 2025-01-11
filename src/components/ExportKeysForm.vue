@@ -181,7 +181,7 @@ export default defineComponent({
         }
 
         const bitcoin = getBtcKey(Cryptos.BTC, passphrase.value, true)
-        const dash = getBtcKey(Cryptos.DASH, passphrase.value, false)
+        const dash = getBtcKey(Cryptos.DASH, passphrase.value, true)
         const doge = getBtcKey(Cryptos.DOGE, passphrase.value, true)
 
         const kly = getKlyKey(Cryptos.KLY, passphrase.value)

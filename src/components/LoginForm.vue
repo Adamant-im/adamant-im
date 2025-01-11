@@ -1,13 +1,13 @@
 <template>
-  <v-form ref="form" class="login-form" @submit.prevent="submit">
+  <v-form ref="form" :class="classes.root" @submit.prevent="submit">
     <v-row no-gutters>
       <slot>
         <v-text-field
           v-model="passphrase"
           :label="$t('login.password_label')"
           autocomplete="current-password"
+          :class="classes.textField"
           class="text-center"
-          color="white"
           :type="showPassphrase ? 'text' : 'password'"
           variant="underlined"
         >
@@ -54,10 +54,17 @@
 <script>
 import { validateMnemonic } from 'bip39'
 import { computed, ref, defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { isAxiosError } from 'axios'
 import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
+
+const className = 'login-form'
+const classes = {
+  root: className,
+  textField: `${className}__textfield`
+}
 
 export default defineComponent({
   props: {
@@ -70,8 +77,8 @@ export default defineComponent({
   setup(props, { emit }) {
     const router = useRouter()
     const store = useStore()
+    const { t } = useI18n()
     const showSpinner = ref(false)
-
     const showPassphrase = ref(false)
     const togglePassphraseVisibility = () => {
       showPassphrase.value = !showPassphrase.value
@@ -86,31 +93,34 @@ export default defineComponent({
       }
     })
 
+    const isOnline = computed(() => store.getters['isOnline'])
+
     const submit = () => {
       if (!validateMnemonic(passphrase.value)) {
-        return emit('error', 'login.invalid_passphrase')
+        return emit('error', t('login.invalid_passphrase'))
       }
-
       freeze()
       login()
     }
     const login = () => {
       const promise = store.dispatch('login', passphrase.value)
-
       promise
         .then(() => {
           emit('login')
         })
         .catch((err) => {
-          if (isAxiosError(err)) {
-            emit('error', 'login.invalid_passphrase')
+          if (!isOnline.value) {
+            emit('error', t('connection.offline'))
+            router.push({ name: 'Nodes' })
+          } else if (isAxiosError(err)) {
+            emit('error', t('login.invalid_passphrase'))
           } else if (isAllNodesOfflineError(err)) {
-            emit('error', 'errors.all_nodes_offline')
+            emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
           } else if (isAllNodesDisabledError(err)) {
-            emit('error', 'errors.all_nodes_disabled')
+            emit('error', t('errors.all_nodes_disabled', { crypto: err.nodeLabel.toUpperCase() }))
             router.push({ name: 'Nodes' })
           } else {
-            emit('error', 'errors.something_went_wrong')
+            emit('error', t('errors.something_went_wrong'))
           }
           console.log(err)
         })
@@ -131,12 +141,32 @@ export default defineComponent({
       showSpinner,
       passphrase,
       showPassphrase,
+      classes,
       togglePassphraseVisibility,
-      submit,
-      freeze,
-      antiFreeze,
-      login
+      submit
     }
   }
 })
 </script>
+
+<style lang="scss" scoped>
+@import 'vuetify/settings';
+@import '@/assets/styles/settings/_colors.scss';
+
+/** Themes **/
+.v-theme--light {
+  .login-form {
+    &__textfield {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
+.v-theme--dark {
+  .login-form {
+    &__textfield {
+      color: map-get($shades, 'white');
+    }
+  }
+}
+
+</style>
