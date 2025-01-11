@@ -3,6 +3,7 @@ import { NodeOfflineError } from '@/lib/nodes/utils/errors'
 import axios, { AxiosInstance, AxiosProgressEvent, AxiosRequestConfig, ResponseType } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
+import { normalizeHeight } from './utils'
 
 type FetchNodeInfoResult = {
   availableSizeInMb: number
@@ -117,9 +118,10 @@ export class IpfsNode extends Node<AxiosInstance> {
   protected async checkHealth() {
     const time = Date.now()
     const { timestamp } = await this.fetchNodeInfo()
+    this.height = normalizeHeight(timestamp)
 
     return {
-      height: timestamp,
+      height: this.height,
       ping: Date.now() - time
     }
   }
