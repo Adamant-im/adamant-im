@@ -459,8 +459,11 @@ function validateMessage(message: string): string | false {
     return validationErrors.emptyMessage
   }
 
-  if (store.state.balance < Fees.NOT_ADM_TRANSFER) {
-    if (store.getters.isAccountNew()) {
+  const isNewAccount = store.getters.isAccountNew()
+  const balance = isNewAccount ? store.state.unconfirmedBalance : store.state.balance
+
+  if (balance < Fees.NOT_ADM_TRANSFER) {
+    if (isNewAccount) {
       return validationErrors.notEnoughFundsNewAccount
     } else {
       return validationErrors.notEnoughFunds

@@ -48,7 +48,8 @@ import servicesPlugin from './modules/services/services-plugin'
 
 export let interval
 
-const UPDATE_BALANCE_INTERVAL = 10000
+const UPDATE_BALANCE_INTERVAL = 5000
+const UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT = 1500
 
 /**
  * @type { import("vuex").StoreOptions } store
@@ -58,6 +59,7 @@ const store = {
     IDBReady: false, // set `true` when state has been saved in IDB
     address: '',
     balance: 0,
+    unconfirmedBalance: 0,
     balanceStatus: FetchStatus.Loading,
     passphrase: '',
     password: '',
@@ -80,6 +82,7 @@ const store = {
       */
         return (
           state.balance === 0 &&
+          state.unconfirmedBalance === 0 &&
           state.chat.lastMessageHeight === 0 &&
           Object.keys(state.adm.transactions).length === 0
         )
@@ -91,6 +94,9 @@ const store = {
     },
     setBalance(state, balance) {
       state.balance = balance
+    },
+    setUnconfirmedBalance(state, balance) {
+      state.unconfirmedBalance = balance
     },
     setBalanceStatus(state, status) {
       state.balanceStatus = status
@@ -131,6 +137,7 @@ const store = {
       return loginOrRegister(passphrase).then((account) => {
         commit('setAddress', account.address)
         commit('setBalance', account.balance)
+        commit('setUnconfirmedBalance', account.unconfirmedBalance)
         commit('setPassphrase', passphrase)
 
         // retrieve wallet data
@@ -204,6 +211,7 @@ const store = {
       return getCurrentAccount()
         .then((account) => {
           commit('setBalance', account.balance)
+          commit('setUnconfirmedBalance', account.unconfirmedBalance)
           commit('setBalanceStatus', FetchStatus.Success)
           if (account.balance > Fees.KVS) {
             flushCryptoAddresses()
@@ -217,12 +225,20 @@ const store = {
 
     startInterval: {
       root: true,
-      handler({ dispatch }) {
+      handler({ dispatch, getters }) {
         function repeat() {
           validateStoredCryptoAddresses()
           dispatch('updateBalance')
             .catch((err) => console.error(err))
-            .then(() => (interval = setTimeout(repeat, UPDATE_BALANCE_INTERVAL)))
+            .then(
+              () =>
+                (interval = setTimeout(
+                  repeat,
+                  getters.isAccountNew()
+                    ? UPDATE_BALANCE_INTERVAL_FOR_NEW_ACCOUNT
+                    : UPDATE_BALANCE_INTERVAL
+                ))
+            )
         }
         repeat()
       }
