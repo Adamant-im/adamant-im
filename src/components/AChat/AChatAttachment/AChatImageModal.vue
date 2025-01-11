@@ -6,7 +6,12 @@
 
         <div :class="classes.imageCounter">{{ slide + 1 }} of {{ files.length }}</div>
 
-        <v-btn icon="mdi-arrow-collapse-down" :class="classes.saveButton" @click="downloadFile" />
+        <v-btn
+          icon="mdi-arrow-collapse-down"
+          :class="classes.saveButton"
+          @click="downloadFile"
+          :loading="downloading"
+        />
       </v-toolbar>
 
       <v-carousel
@@ -20,7 +25,17 @@
       >
         <template v-for="(file, i) in files" :key="i">
           <AChatImageModalItem v-if="isTypeImage(file)" :transaction="transaction" :file="file" />
-          <AChatModalFile v-else :file="file" @download="downloadFile" />
+          <AChatModalFile v-else :file="file">
+            <v-btn
+              class="mt-3"
+              color="primary"
+              variant="flat"
+              @click="downloadFile"
+              :loading="downloading"
+            >
+              Download
+            </v-btn>
+          </AChatModalFile>
         </template>
 
         <template #prev>
@@ -40,6 +55,7 @@
 
 <script lang="ts">
 import { ref, computed, onMounted, PropType } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 
@@ -47,6 +63,10 @@ import AChatImageModalItem from './AChatImageModalItem.vue'
 import AChatModalFile from './AChatModalFile.vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { FileAsset } from '@/lib/adamant-api/asset'
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 function downloadFileByUrl(url: string, filename = 'unnamed') {
   const anchor = document.createElement('a')
@@ -101,6 +121,7 @@ export default {
   emits: ['close', 'update:modal'],
   setup(props, { emit }) {
     const store = useStore()
+    const { t } = useI18n()
     const slide = ref(0)
 
     const breakpoints = useBreakpoints(breakpointsTailwind)
@@ -158,6 +179,8 @@ export default {
         ? props.transaction.recipientPublicKey
         : props.transaction.senderPublicKey
     )
+
+    const downloading = ref(false)
     const downloadFile = async () => {
       const file = props.files[slide.value]
       if (!file) {
@@ -167,15 +190,24 @@ export default {
         return
       }
 
-      const { id, nonce } = file
-      const imageUrl = await store.dispatch('attachment/getAttachmentUrl', {
-        cid: id,
-        publicKey: publicKey.value,
-        nonce
-      })
-      const fileName = file.name ? `${file.name}.${file.extension}` : undefined
+      try {
+        downloading.value = true
+        const imageUrl = await store.dispatch('attachment/getAttachmentUrl', {
+          cid: file.id,
+          publicKey: publicKey.value,
+          nonce: file.nonce
+        })
 
-      downloadFileByUrl(imageUrl, fileName)
+        const fileName = file.name ? `${file.name}.${file.extension}` : undefined
+        downloadFileByUrl(imageUrl, fileName)
+      } catch {
+        void store.dispatch('snackbar/show', {
+          message: t('chats.file_not_found')
+        })
+      } finally {
+        await delay(200) // show loading spinner at least 200ms for smoother UI
+        downloading.value = false
+      }
     }
 
     const isTypeImage = (file: FileAsset) => {
@@ -192,6 +224,7 @@ export default {
       handleKeydown,
       handleClick,
       downloadFile,
+      downloading,
       isTypeImage,
       classes
     }

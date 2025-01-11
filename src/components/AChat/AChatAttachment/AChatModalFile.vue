@@ -8,9 +8,7 @@
           <div :class="classes.fileName">{{ fileName }}</div>
           <div :class="classes.fileSize">{{ formatBytes(fileSize) }}</div>
 
-          <v-btn class="mt-3" color="primary" variant="flat" @click="$emit('download')">
-            Download
-          </v-btn>
+          <slot />
         </div>
       </div>
     </v-card>
@@ -41,7 +39,6 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['download'],
   setup(props) {
     const fileExtension = computed(() => props.file.extension)
 
