@@ -16,6 +16,13 @@
     "incorrect_address": "Incorrect ADM address",
     "no_public_key": "This address is not active yet. Unable to start a chat",
     "unable_to_retrieve_no_public_key": "`Unable to decrypt message: no partner's public key`",
+    "max_files": "You can upload max {count} files",
+    "max_file_size": "Max file size allowed: 10MB",
+    "file": "0 files | 1 file | {n} files | {n} files",
+    "files": "file(s)",
+    "file_loading_error": "Failed to load the file",
+    "image_loading_error": "Failed to load the image",
+    "file_not_found": "File not found",
     "me": "Me",
     "message": "Type a message",
     "message_rejected": "Message rejected",
@@ -80,9 +87,9 @@
     "you_removed_reaction": "Removed reaction",
     "partner_removed_reaction": "Removed reaction",
     "nodes_offline_dialog": {
-      "title": "Nodes are offline",
-      "text": "All {coin} nodes appear to be offline or possibly disabled. To continue use the Messenger please review the <strong>Nodes list</strong> and enable any nodes that are found to be disabled.",
-      "open_nodes_button": "Open Nodes page"
+      "title": "No active {coin} nodes",
+      "text": "Unable to request new messages — No active {coin} blockchain nodes. As you've deactivated some of them, consider reviewing the node list.",
+      "open_nodes_button": "Review {coin} node list"
     },
     "unsupported_transaction_type": "This transaction type is not supported. Please refresh the page or install the latest version of the app."
   },
@@ -99,27 +106,31 @@
   "error": "Error",
   "errors": {
     "something_went_wrong": "Something went wrong. Check the console for details",
-    "all_nodes_offline": "All {crypto} nodes are offline. Try again later"
+    "all_nodes_offline": "No online {crypto} nodes. Review the node list",
+    "all_nodes_disabled": "No active {crypto} nodes. Enable at least one"
   },
   "home": {
     "balance": "Balance",
     "buy_tokens_anonymously": "Anonymously on website",
+    "buy_tokens_btn": "Buy & sell coins",
+    "buy_tokens_btn_link": "https://adamant.im/buy-tokens/",
     "buy_tokens_exchanger": "In-chat Exchanger",
     "copied": "Copied",
     "copy": "Copy",
     "copy_address": "Copy address",
     "copy_uri": "Copy Share link",
     "create_qrcode": "Create a QR code",
+    "exchanges_on": "Exchanges on {aggregator}",
     "free_adm_btn": "Free ADM tokens",
-    "buy_tokens_btn": "Buy & sell tokens",
-    "buy_tokens_btn_link": "https://adamant.im/buy-tokens/",
     "free_tokens_link": "https://adamant.im/free-adm-tokens/",
     "send_btn": "Send funds",
     "send_crypto": "Send {crypto}",
     "share_uri": "Share {crypto} address",
     "show_qr_code": "Show QR code",
+    "stake_and_earn_btn": "Stake and earn",
     "wallet": "wallet",
-    "wallet_crypto": "{crypto} wallet"
+    "wallet_crypto": "{crypto} wallet",
+    "explorer": "Open in Explorer"
   },
   "warning_on_addresses": {
     "warning": "Warning",
@@ -177,7 +188,7 @@
     "label": "Type",
     "host": "Host",
     "inactive": "Inactive",
-    "sync": "Sync",
+    "sync": "Syncing",
     "ms": "ms",
     "nodeLabelDescription": "Support decentralization and enhance privacy level—<a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">run your own ADAMANT node</a>. To add your nodes to the list, you need <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">to deploy web application on separate domain</a>. This limitation refers to Content Security Policy (CSP).",
     "offline": "Offline",
@@ -188,7 +199,8 @@
     "tabs": {
       "adm_nodes": "ADM nodes",
       "coin_nodes": "Coin nodes",
-      "service_nodes": "Service nodes"
+      "service_nodes": "Service nodes",
+      "ipfs_nodes": "IPFS nodes"
     },
     "unsupported": "Unsupported",
     "unsupported_reason_protocol": "HTTP is not allowed",
@@ -251,6 +263,7 @@
     "camera_button": "Camera",
     "close_button": "Close",
     "connect_camera": "Switch on camera and try again",
+    "grant_camera_permissions": "Grant camera permissions in browser settings and try again",
     "hold_your_device": "Hold your device steady for 2-3 seconds to scan the QR code",
     "login": {
       "modal_header": "Scan the QR code containing a passphrase"
@@ -258,7 +271,10 @@
     "new-chat": {
       "modal_header": "Scan the QR code contain an ADAMANT address"
     },
+    "no_camera_access": "No camera access",
     "no_camera_found": "No camera found",
+    "no_camera_stream": "No camera video stream",
+    "no_stream_details": "Details:<br /><code><small>{ noStreamDetails }</small></code>",
     "something_wrong": "Something went wrong",
     "waiting_camera": "Waiting for camera…"
   },
@@ -383,6 +399,7 @@
     "sec": "sec",
     "select_delegates": "Choose delegates",
     "sent": "Votes have been sent",
+    "stake_info": "To stake ADM and get rewards, vote for an active forging pool you trust. Read more in the <a target=\"_blank\" href=\"https://news.adamant.im/hodl-list-of-adamant-pools-join-in-and-get-rewards-491a98610f4b\">ADAMANT blog</a>.",
     "summary_info": "Voting cost: 50 ADM. <a target=\"_blank\" href=\"https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516\">Read about voting and forging</a>.",
     "summary_title": "Review voting",
     "table_head_name": "Name",

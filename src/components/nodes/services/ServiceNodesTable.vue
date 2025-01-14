@@ -1,7 +1,12 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead hide-socket :label="$t('nodes.service')" />
-
+    <NodesTableHead 
+      v-model="isAllNodesChecked" 
+      :indeterminate="isPartiallyChecked" 
+      hide-socket 
+      :label="t('nodes.service')"
+    />
+    
     <tbody>
       <ServiceNodesTableItem
         v-for="node in nodes"
@@ -15,12 +20,13 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
 import ServiceNodesTableItem from './ServiceNodesTableItem.vue'
 import { type NodeStatusResult } from '@/lib/nodes/abstract.node'
-import { sortNodesFn } from '@/components/nodes/utils/sortNodesFn'
+import { sortCoinNodesFn } from '@/components/nodes/utils/sortNodesFn'
 
 const className = 'nodes-table'
 const classes = {
@@ -34,17 +40,34 @@ export default defineComponent({
     ServiceNodesTableItem
   },
   setup() {
+    const { t } = useI18n()
     const store = useStore()
 
     const nodes = computed<NodeStatusResult[]>(() => {
       const arr = store.getters['services/services']
 
-      return [...arr].sort(sortNodesFn)
+      return [...arr].sort(sortCoinNodesFn)
+    })
+
+    const isAllNodesChecked = computed({
+      get() {
+        return nodes.value.every(node => node.active)
+      },
+      set(value) {
+        store.dispatch('services/toggleAll', {active: value})
+      }
+    })
+
+    const isPartiallyChecked = computed(() => {
+      return nodes.value.some(node => node.active) && nodes.value.some(node => !node.active)
     })
 
     return {
+      t,
       nodes,
-      classes
+      classes,
+      isAllNodesChecked,
+      isPartiallyChecked
     }
   }
 })

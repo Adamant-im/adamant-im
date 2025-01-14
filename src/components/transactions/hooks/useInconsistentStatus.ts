@@ -3,6 +3,7 @@ import { useStore } from 'vuex'
 import { useFindAdmTransaction } from './useFindAdmTransaction'
 import { useKVSCryptoAddress } from '@/hooks/queries/useKVSCryptoAddress.ts'
 import { CryptoSymbol, isErc20 } from '@/lib/constants'
+import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
 import { getInconsistentStatus, InconsistentStatus } from '../utils/getInconsistentStatus'
 import {
   BtcTransaction,
@@ -23,6 +24,7 @@ export function useInconsistentStatus(
     | EthTransaction
     | Erc20Transaction
     | PendingTransaction
+    | DecodedChatMessageTransaction
     | undefined
   >,
   crypto: CryptoSymbol

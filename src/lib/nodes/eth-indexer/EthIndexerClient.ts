@@ -1,4 +1,5 @@
 import { AxiosRequestConfig } from 'axios'
+import { NODE_LABELS } from '@/lib/nodes/constants'
 import { GetTransactionsParams } from './types/client/get-transactions-params'
 import { GetTransactionsRequest } from './types/api/get-transactions/get-transactions.request'
 import { Endpoints } from './types/api/endpoints'
@@ -8,7 +9,7 @@ import { Client } from '../abstract.client'
 
 export class EthIndexerClient extends Client<EthIndexer> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
-    super('eth')
+    super('eth', 'service', NODE_LABELS.EthIndexer)
     this.nodes = endpoints.map((endpoint) => new EthIndexer(endpoint))
     this.minNodeVersion = minNodeVersion
 
@@ -55,16 +56,16 @@ export class EthIndexerClient extends Client<EthIndexer> {
 
     const requestParams: GetTransactionsRequest = {
       and: `(${filters.join(',')})`,
-      order: 'time.desc',
-      limit: limit ? limit : undefined
+      order: 'time.desc'
+      // limit: limit ? limit : undefined
     }
-
-    if (limit) requestParams.limit = limit
 
     const transactions = await this.request('GET /ethtxs', {
       ...requestParams
     })
 
-    return transactions.map((transaction) => normalizeTransaction(transaction, address, decimals))
+    return transactions
+      .map((transaction) => normalizeTransaction(transaction, address, decimals))
+      .slice(0, limit)
   }
 }

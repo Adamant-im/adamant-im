@@ -8,10 +8,11 @@
   >
     <a-chat-reaction
       v-for="reaction of reactions"
-      :key="reaction.id"
+      :key="reaction.senderId"
       :class="classes.reaction"
+      :reaction="reaction"
       :asset="reaction.asset"
-      :animate="shouldAnimate(reaction)"
+      :partner-id="partnerId"
     >
       <template #avatar v-if="reaction.senderId === partnerId">
         <ChatAvatar :user-id="partnerId" :size="16" />
@@ -24,8 +25,9 @@
 import { usePartnerId } from '@/components/AChat/hooks/usePartnerId.ts'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import { isEmptyReaction, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { computed, defineComponent, PropType } from 'vue'
+import { computed, defineComponent, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
+import { vibrate } from '@/lib/vibrate'
 import AChatReaction from './AChatReaction.vue'
 
 const className = 'a-chat-reactions'
@@ -71,20 +73,18 @@ export default defineComponent({
       return list.sort((left, right) => left.timestamp - right.timestamp)
     })
 
-    const shouldAnimate = (reaction: NormalizedChatMessageTransaction) => {
-      const isLastReaction = store.getters['chat/isLastReaction'](reaction.id, partnerId.value)
-
-      return (
-        isLastReaction &&
-        (store.state.chat.animateIncomingReaction || store.state.chat.animateOutgoingReaction)
-      )
-    }
+    watch(
+      () => store.getters['chat/numOfNewMessages'](partnerId.value),
+      (numOfNewMessages) => {
+        if (numOfNewMessages > 0) vibrate.veryShort()
+      },
+      { immediate: true }
+    )
 
     return {
       classes,
       partnerId,
-      reactions,
-      shouldAnimate
+      reactions
     }
   }
 })

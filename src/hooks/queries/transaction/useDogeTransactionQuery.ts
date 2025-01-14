@@ -31,6 +31,7 @@ export function useDogeTransactionQuery(
     retryDelay: retryDelayFactory(Cryptos.DOGE, unref(transactionId)),
     refetchInterval: ({ state }) => refetchIntervalFactory(Cryptos.DOGE, state.status, state.data),
     refetchOnWindowFocus: false,
-    refetchOnMount: params?.refetchOnMount ?? (({ state }) => refetchOnMountFn(state.data))
+    refetchOnMount: params?.refetchOnMount ?? (({ state }) => refetchOnMountFn(state.data)),
+    enabled: params.enabled
   })
 }

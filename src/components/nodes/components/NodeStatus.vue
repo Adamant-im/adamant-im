@@ -3,7 +3,7 @@
     <span>
       {{ nodeStatusTitle
       }}<span v-if="node.status === 'online'" :class="classes.textMs">{{
-        $t('nodes.ms')
+        t('nodes.ms')
       }}</span></span
     >
 
@@ -29,6 +29,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, toRefs } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useNodeStatus } from '@/components/nodes/hooks'
 
@@ -52,11 +53,13 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const { t } = useI18n()
     const { node } = toRefs(props)
 
     const { nodeStatusTitle, nodeStatusDetail, nodeStatusColor } = useNodeStatus(node)
 
     return {
+      t,
       nodeStatusTitle,
       nodeStatusDetail,
       nodeStatusColor,

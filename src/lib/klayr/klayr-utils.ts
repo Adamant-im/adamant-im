@@ -8,7 +8,7 @@ import { DecodedTransaction, Transaction } from './types/klayr'
 import { codec } from '@klayr/codec'
 import * as cryptography from '@klayr/cryptography'
 import networks from '@/lib/klayr/networks'
-import { convertBeddowsToKLY } from '@klayr/transactions'
+import { convertBeddowsTokly } from '@klayr/transactions'
 import * as transactions from '@klayr/transactions'
 import { Buffer } from 'buffer'
 import pbkdf2 from 'pbkdf2'
@@ -148,8 +148,8 @@ export function createUnsignedTransaction(
   nonce: number | string,
   data = ''
 ) {
-  const amountString = transactions.convertKLYToBeddows((+amount).toFixed(KLY_DECIMALS))
-  const feeString = transactions.convertKLYToBeddows((+fee).toFixed(KLY_DECIMALS))
+  const amountString = transactions.convertklyToBeddows((+amount).toFixed(KLY_DECIMALS))
+  const feeString = transactions.convertklyToBeddows((+fee).toFixed(KLY_DECIMALS))
   const nonceString = nonce.toString()
 
   // Adjust the values of the unsigned transaction manually
@@ -259,5 +259,5 @@ export function estimateFee(params?: EstimateFeeParams) {
 
   const totalFee = fee + transferToNewAccountFee
 
-  return convertBeddowsToKLY(totalFee.toString())
+  return convertBeddowsTokly(totalFee.toString())
 }

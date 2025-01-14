@@ -47,30 +47,22 @@
 
       <!-- Transaction -->
       <template v-else-if="isTransferType">
-        <v-list-item-subtitle
-          v-if="transaction.type === 'ADM' || transaction.type === 'UNKNOWN_CRYPTO'"
-          :class="`${className}__subtitle`"
-        >
-          <v-icon v-if="!isIncomingTransaction" size="15" :icon="admStatusIcon" />
-          {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
-          <v-icon v-if="isIncomingTransaction" size="15" :icon="admStatusIcon" />
-        </v-list-item-subtitle>
-
-        <v-list-item-subtitle v-else :class="`${className}__subtitle`">
-          <TransactionProvider
-            v-if="!isIncomingTransaction"
-            :tx-id="transaction.hash"
-            :crypto="transaction.type"
-          >
-            <template #default="{ status }">
+        <TransactionProvider :transaction="transaction">
+          <template #default="{ status }">
+            <v-list-item-subtitle :class="`${className}__subtitle`">
               <v-icon v-if="!isIncomingTransaction" size="15" :icon="tsIcon(status)" />
               {{ transactionDirection }} {{ currency(transaction.amount, transaction.type) }}
               <v-icon v-if="isIncomingTransaction" size="15" :icon="tsIcon(status)" />
-            </template>
-          </TransactionProvider>
+            </v-list-item-subtitle>
+          </template>
+        </TransactionProvider>
+      </template>
+      <!-- Attachment -->
+      <template v-else-if="isAttachment">
+        <v-list-item-subtitle :class="`${className}__subtitle`">
+          {{ attachmentText }}
         </v-list-item-subtitle>
       </template>
-
       <!-- Reaction -->
       <template v-else-if="isReaction">
         <v-list-item-subtitle :class="`${className}__subtitle`">
@@ -101,7 +93,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
@@ -112,10 +104,11 @@ import currency from '@/filters/currencyAmountWithSymbol'
 import formatDate from '@/filters/dateBrief'
 import { formatMessage } from '@/lib/markdown'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
-import TransactionProvider from '@/providers/TransactionProvider.vue'
+import { TransactionProvider } from '@/providers/TransactionProvider'
 
 const className = 'chat-brief'
 
@@ -142,7 +135,7 @@ export default defineComponent({
       required: true
     },
     transaction: {
-      type: Object,
+      type: Object as PropType<NormalizedChatMessageTransaction>,
       required: true
     },
     isMessageReadonly: {
@@ -174,8 +167,22 @@ export default defineComponent({
     const chatName = useChatName(contactId, true)
 
     const isTransferType = computed(
-      () => props.transaction.type !== 'message' && props.transaction.type !== 'reaction'
+      () =>
+        props.transaction.type !== 'message' &&
+        props.transaction.type !== 'reaction' &&
+        props.transaction.type !== 'attachment'
     )
+    const isAttachment = computed(() => props.transaction.type === 'attachment')
+    const attachmentText = computed(() => {
+      if (!isAttachment.value) return ''
+      const filesCount = props.transaction.asset.files.length
+
+      if (props.transaction.message) {
+        return `[${t('chats.file', filesCount)}]: ${props.transaction.message}`
+      }
+
+      return `[${t('chats.file', filesCount)}]`
+    })
     const isReaction = computed(() => props.transaction.type === 'reaction')
 
     const reactedText = computed(() => {
@@ -231,6 +238,7 @@ export default defineComponent({
     return {
       className,
       chatName,
+      t,
       createdAt,
       currency,
       formatDate,
@@ -239,6 +247,8 @@ export default defineComponent({
       isIncomingTransaction,
       isNewChat,
       isOutgoingTransaction,
+      isAttachment,
+      attachmentText,
       isReaction,
       isTransferType,
       isWelcomeChat,

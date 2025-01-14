@@ -17,7 +17,7 @@
               class="a-input"
               color="primary"
             />
-            <div :class="`${className}__spacer`" />
+            <div :class="`${className}__info`" v-html="t('votes.stake_info')" />
             <delegates-table
               :page="pagination.page"
               :per-page="pagination.rowsPerPage"
@@ -265,6 +265,16 @@ export default defineComponent({
       }
     }
   }
+  &__info {
+    @include a-text-explanation-enlarged();
+    padding: 20px 16px !important;
+    :deep(a) {
+      text-decoration-line: none;
+      &:hover {
+        text-decoration-line: underline;
+      }
+    }
+  }
   &__review {
     padding-top: 15px !important;
     padding-bottom: 15px !important;
@@ -274,10 +284,6 @@ export default defineComponent({
       padding-left: 16px;
       padding-right: 16px;
     }
-  }
-  &__spacer {
-    height: 20px;
-    margin-top: 5px;
   }
 }
 

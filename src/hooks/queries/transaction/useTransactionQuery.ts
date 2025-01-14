@@ -6,9 +6,11 @@ import { useDashTransactionQuery } from './useDashTransactionQuery'
 import { useEthTransactionQuery } from './useEthTransactionQuery'
 import { useErc20TransactionQuery } from './useErc20TransactionQuery'
 import { useKlyTransactionQuery } from './useKlyTransactionQuery'
+import { useAdmTransactionQuery } from './useAdmTransactionQuery'
 import { UseTransactionQueryParams } from './types'
 
 const query = {
+  ADM: useAdmTransactionQuery,
   BTC: useBtcTransactionQuery,
   DOGE: useDogeTransactionQuery,
   DASH: useDashTransactionQuery,
@@ -26,6 +28,7 @@ export function useTransactionQuery(
   }
 
   switch (crypto) {
+    case 'ADM':
     case 'BTC':
     case 'DOGE':
     case 'DASH':

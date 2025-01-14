@@ -2,7 +2,8 @@ import { NodeType } from '@/lib/nodes/types'
 
 const CODES = {
   NODE_OFFLINE: 'NODE_OFFLINE',
-  ALL_NODES_OFFLINE: 'ALL_NODES_OFFLINE'
+  ALL_NODES_OFFLINE: 'ALL_NODES_OFFLINE',
+  ALL_NODES_DISABLED: 'ALL_NODES_DISABLED'
 } as const
 
 /**
@@ -46,4 +47,19 @@ export class AllNodesOfflineError extends Error {
 
 export function isAllNodesOfflineError(error: Error): error is AllNodesOfflineError {
   return (error as AllNodesOfflineError).code === CODES.ALL_NODES_OFFLINE
+}
+
+export class AllNodesDisabledError extends Error {
+  code = CODES.ALL_NODES_DISABLED
+  nodeLabel: NodeType
+
+  constructor(label: NodeType) {
+    super(`${label}: All nodes are disabled`)
+
+    this.nodeLabel = label
+  }
+}
+
+export function isAllNodesDisabledError(error: Error): error is AllNodesDisabledError {
+  return (error as AllNodesDisabledError).code === CODES.ALL_NODES_DISABLED
 }

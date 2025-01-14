@@ -174,6 +174,17 @@ export function sendMessage(params) {
 }
 
 /**
+ * @param {Uint8Array} file
+ * @param {{ to: string }} params
+ */
+export async function encodeFile(file, params) {
+  const publicKey = await getPublicKey(params.to)
+  const { binary, nonce } = utils.encodeBinary(file, publicKey, myKeypair.privateKey)
+
+  return { binary, nonce }
+}
+
+/**
  * Sends special message with the specified payload
  * @param {string} to recipient address
  * @param {object} payload message payload

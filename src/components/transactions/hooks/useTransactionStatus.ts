@@ -12,7 +12,7 @@ export function useTransactionStatus(
     if (isFetching.value) return TransactionStatus.PENDING
     if (queryStatus.value === 'error') return TransactionStatus.REJECTED
     if (queryStatus.value === 'success') {
-      if (inconsistentStatus?.value) return TransactionStatus.UNKNOWN
+      if (inconsistentStatus?.value) return TransactionStatus.INVALID
 
       return TransactionStatus.CONFIRMED
     }

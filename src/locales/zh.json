@@ -104,20 +104,22 @@
   "home": {
     "balance": "余额",
     "buy_tokens_anonymously": "在网站上匿名",
+    "buy_tokens_btn": "购买和出售硬币",
+    "buy_tokens_btn_link": "https://adamant.im/buy-tokens/",
     "buy_tokens_exchanger": "聊天内交换器",
     "copied": "已复制",
     "copy": "复制",
     "copy_address": "复制地址",
     "copy_uri": "复制共享链接",
     "create_qrcode": "创建二维码",
+    "exchanges_on": "{aggregator} 上的交易所",
     "free_adm_btn": "释放ADM令牌",
-    "buy_tokens_btn": "买卖代币",
-    "buy_tokens_btn_link": "https://adamant.im/buy-tokens/",
     "free_tokens_link": "https://adamant.im/free-adm-tokens/",
     "send_btn": "发送资金",
     "send_crypto": "发送 {crypto}",
     "share_uri": "共享 {crypto} 地址",
     "show_qr_code": "显示二维码",
+    "stake_and_earn_btn": "质押并赚取",
     "wallet": "钱包",
     "wallet_crypto": "{crypto} 钱包"
   },
@@ -188,7 +190,8 @@
     "tabs": {
       "adm_nodes": "ADM节点",
       "coin_nodes": "硬币节点",
-      "service_nodes": "服务节点"
+      "service_nodes": "服务节点",
+      "ipfs_nodes": "IPFS节点"
     },
     "unsupported": "不受欢迎",
     "unsupported_reason_protocol": "不允许HTTP",
@@ -251,6 +254,7 @@
     "camera_button": "相机",
     "close_button": "关闭",
     "connect_camera": "打开相机，再试一次",
+    "grant_camera_permissions": "在浏览器设置中授予相机权限并重试",
     "hold_your_device": "保持设备稳定 2-3 秒以扫描二维码",
     "login": {
       "modal_header": "扫描包含密码短语的二维码"
@@ -258,7 +262,10 @@
     "new-chat": {
       "modal_header": "扫描包含ADAMANT地址的二维码"
     },
+    "no_camera_access": "没有相机访问权限",
     "no_camera_found": "未找到摄像头",
+    "no_camera_stream": "没有来自摄像头的视频流",
+    "no_stream_details": "详情:<br /><code><small>{ noStreamDetails }</small></code>",
     "something_wrong": "出了问题",
     "waiting_camera": "正在等待相机…"
   },
@@ -383,6 +390,7 @@
     "sec": "秒",
     "select_delegates": "选择代理人",
     "sent": "投票已发送",
+    "stake_info": "要质押 ADM 并获得奖励，请投票给您信任的活跃锻造池。阅读更多内容在 <a target=\"_blank\" href=\"https://news.adamant.im/hodl-list-of-adamant-pools-join-in-and-get-rewards-491a98610f4b\">ADAMANT 博客上</a>.",
     "summary_info": "投票成本：50 ADM。<a target=\"_blank\" href=\"https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516\">阅读有关投票和伪造的信息</a>。",
     "summary_title": "评审投票",
     "table_head_name": "名称",

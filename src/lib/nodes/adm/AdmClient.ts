@@ -1,9 +1,8 @@
 import { isNodeOfflineError } from '@/lib/nodes/utils/errors'
 import { GetHeightResponseDto } from '@/lib/schema/client'
+import { NODE_LABELS } from '@/lib/nodes/constants'
 import { AdmNode, Payload, RequestConfig } from './AdmNode'
 import { Client } from '../abstract.client'
-
-const CHECK_ONLINE_NODE_INTERVAL = 10000
 
 /**
  * Provides methods for calling the ADAMANT API.
@@ -14,7 +13,7 @@ const CHECK_ONLINE_NODE_INTERVAL = 10000
  */
 export class AdmClient extends Client<AdmNode> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
-    super('adm')
+    super('adm', 'node', NODE_LABELS.AdmNode)
     this.nodes = endpoints.map((endpoint) => new AdmNode(endpoint, minNodeVersion))
     this.minNodeVersion = minNodeVersion
 
@@ -44,39 +43,19 @@ export class AdmClient extends Client<AdmNode> {
    * @param {RequestConfig} config request config
    */
   async request<P extends Payload = Payload, R = any>(config: RequestConfig<P>): Promise<R> {
-    const node = await this.fetchAvailableNode()
+    await this.ready
 
-    return node.request(config).catch((error) => {
-      if (isNodeOfflineError(error)) {
-        // Initiate nodes status check
-        this.checkHealth()
-        // If the selected node is not available, repeat the request with another one.
-        return this.request(config)
-      }
-      throw error
-    })
-  }
-
-  async fetchAvailableNode() {
-    const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
-    if (node) {
-      return node
-    }
-
-    return await new Promise<AdmNode>((resolve) => {
-      const ticker = setInterval(() => {
-        let node
-        try {
-          node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
-          if (node) {
-            clearInterval(ticker)
-            resolve(node)
-          }
-        } catch (e) {
-          console.error(e)
+    return this.getNode()
+      .request(config)
+      .catch((error) => {
+        if (isNodeOfflineError(error)) {
+          // Initiate nodes status check
+          this.checkHealth()
+          // If the selected node is not available, repeat the request with another one.
+          return this.request(config)
         }
-      }, CHECK_ONLINE_NODE_INTERVAL)
-    })
+        throw error
+      })
   }
 
   async getHeight() {

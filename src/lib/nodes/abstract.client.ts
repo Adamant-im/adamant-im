@@ -1,5 +1,6 @@
 import type { HealthcheckInterval, NodeKind, NodeType } from '@/lib/nodes/types'
-import { AllNodesOfflineError } from './utils/errors'
+import { TNodeLabel } from '@/lib/nodes/constants'
+import { AllNodesDisabledError, AllNodesOfflineError } from './utils/errors'
 import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
 import { nodesStorage } from './storage'
@@ -29,21 +30,50 @@ export abstract class Client<N extends Node> {
    * Node type
    */
   type: NodeType
+  /**
+   * Node label
+   */
+  label: TNodeLabel
 
-  constructor(type: NodeType, kind: NodeKind = 'node') {
+  /**
+   * Resolves when at least one node is ready to accept requests
+   */
+  ready: Promise<void>
+  resolve = () => {}
+  initialized = false
+
+  constructor(type: NodeType, kind: NodeKind, label: TNodeLabel) {
     this.type = type
     this.kind = kind
+    this.label = label
     this.useFastest = nodesStorage.getUseFastest(type)
+
+    this.ready = new Promise((resolve) => {
+      this.resolve = () => {
+        if (this.initialized) return
+
+        this.initialized = true
+        resolve()
+      }
+    })
   }
 
   protected async watchNodeStatusChange() {
     for (const node of this.nodes) {
-      node.onStatusChange((node) => {
+      node.onStatusChange((nodeStatus) => {
         this.updateSyncStatuses()
 
-        this.statusUpdateCallback?.(node)
+        this.statusUpdateCallback?.(nodeStatus)
+
+        if (this.isActiveNode(node)) {
+          // Resolve when at least one node is ready to accept requests
+          this.resolve()
+        }
       })
     }
+
+    await Promise.all(this.nodes.map((node) => node.startHealthcheck()))
+    this.resolve()
   }
 
   /**
@@ -137,6 +167,11 @@ export abstract class Client<N extends Node> {
   }
 
   protected getNode() {
+    const nodes = this.nodes.filter((node) => node.active)
+    if (nodes.length === 0) {
+      throw new AllNodesDisabledError(this.type)
+    }
+
     const node = this.useFastest ? this.getFastestNode() : this.getRandomNode()
     if (!node) {
       // All nodes seem to be offline: let's refresh the statuses
@@ -169,7 +204,7 @@ export abstract class Client<N extends Node> {
   protected updateSyncStatuses() {
     const nodes = this.nodes.filter((x) => x.online && x.active)
 
-    const nodesInSync = filterSyncedNodes(nodes, this.type)
+    const nodesInSync = filterSyncedNodes(nodes, this.label)
 
     // Finally, all the nodes from the winner list are considered to be in sync, all the
     // others are not

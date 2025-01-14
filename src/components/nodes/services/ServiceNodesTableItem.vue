@@ -10,6 +10,7 @@
 
     <NodeColumn>
       <NodeUrl :node="node" />
+      <NodeVersion v-if="node.version && active" :node="node" />
     </NodeColumn>
 
     <NodeColumn ping :colspan="isUnsupported ? 2 : 1">
@@ -28,6 +29,7 @@ import NodeColumn from '@/components/nodes/components/NodeColumn.vue'
 import NodeLabel from '@/components/nodes/components/NodeLabel.vue'
 import NodeStatus from '@/components/nodes/components/NodeStatus.vue'
 import NodeStatusCheckbox from '@/components/nodes/components/NodeStatusCheckbox.vue'
+import NodeVersion from '@/components/nodes/components/NodeVersion.vue'
 
 const className = 'nodes-table-item'
 const classes = {
@@ -39,6 +41,7 @@ const classes = {
 
 export default {
   components: {
+    NodeVersion,
     NodeColumn,
     NodeStatus,
     NodeLabel,

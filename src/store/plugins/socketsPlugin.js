@@ -1,5 +1,4 @@
 import socketClient from '@/lib/sockets'
-import { AnimationReactionType as ART } from '@/lib/constants'
 import { decodeChat, getPublicKey } from '@/lib/adamant-api'
 import { isStringEqualCI } from '@/lib/textHelpers'
 
@@ -16,8 +15,6 @@ function subscribe(store) {
       // Currently, we don't update confirmations for direct transfers, see getChats() in adamant-api.js
       // So we'll update confirmations in getTransactionStatus()
       store.dispatch('chat/pushMessages', [decoded])
-
-      store.dispatch('chat/animateLastReaction', ART.Incoming)
     })
   })
 }

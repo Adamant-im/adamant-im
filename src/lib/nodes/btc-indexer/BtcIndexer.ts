@@ -2,14 +2,6 @@ import { createBtcLikeClient } from '../utils/createBtcLikeClient'
 import { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Node } from '@/lib/nodes/abstract.node'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { formatBtcVersion } from '@/lib/nodes/utils/nodeVersionFormatters'
-
-type FetchBtcNodeInfoResult = {
-  error: string
-  result: {
-    version: number
-  }
-}
 
 /**
  * Encapsulates a node. Provides methods to send API-requests
@@ -33,20 +25,6 @@ export class BtcIndexer extends Node<AxiosInstance> {
     return {
       height: Number(blockNumber),
       ping: Date.now() - time
-    }
-  }
-
-  // @todo fetch version from the indexer, not node
-  protected async fetchNodeVersion(): Promise<void> {
-    const { data } = await this.client.post<FetchBtcNodeInfoResult>('/bitcoind', {
-      jsonrpc: '1.0',
-      id: 'adm',
-      method: 'getnetworkinfo',
-      params: []
-    })
-    const { version } = data.result
-    if (version) {
-      this.version = formatBtcVersion(version)
     }
   }
 

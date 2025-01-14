@@ -3,7 +3,7 @@
     <v-list lines="two" :class="classes.walletCardList">
       <v-list-item :class="classes.walletCardTile" @click="showShareURIDialog = true">
         <v-list-item-title :class="classes.walletCardTitle">
-          {{ $t('home.wallet_crypto', { crypto: cryptoName }) }}
+          {{ t('home.wallet_crypto', { crypto: cryptoName }) }}
         </v-list-item-title>
         <v-list-item-subtitle :class="classes.walletCardSubtitle">
           {{ address }}
@@ -18,7 +18,7 @@
 
       <v-list-item @click="$emit('click:balance', crypto)">
         <v-list-item-title :class="classes.walletCardTitle">
-          {{ $t('home.balance') }}
+          {{ t('home.balance') }}
         </v-list-item-title>
         <v-list-item-subtitle :class="classes.walletCardSubtitle">
           <p>
@@ -56,10 +56,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref, PropType } from 'vue'
+import { useI18n } from 'vue-i18n'
 import ShareURIDialog from '@/components/ShareURIDialog.vue'
 import WalletCardListActions from '@/components/WalletCardListActions.vue'
-import { Cryptos } from '@/lib/constants'
+import { Cryptos, CryptoSymbol } from '@/lib/constants'
 import { useDisplay } from 'vuetify'
 import smartNumber from '@/lib/smartNumber'
 import currencyAmount from '@/filters/currencyAmount'
@@ -85,7 +86,7 @@ export default defineComponent({
       required: true
     },
     crypto: {
-      type: String,
+      type: String as PropType<CryptoSymbol>,
       default: 'ADM'
     },
     cryptoName: {
@@ -106,6 +107,7 @@ export default defineComponent({
     WalletCardListActions
   },
   setup(props) {
+    const { t } = useI18n()
     const store = useStore()
     const { xs } = useDisplay()
     const key = props.crypto.toLowerCase()
@@ -132,6 +134,7 @@ export default defineComponent({
     })
 
     return {
+      t,
       SIGNIFICANT_DIGITS,
       classes,
       calculatedBalance,

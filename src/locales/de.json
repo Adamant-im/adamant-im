@@ -73,17 +73,20 @@
   "error": "Error",
   "home": {
     "balance": "Balance",
+    "buy_tokens_btn": "Buy & sell coins",
+    "buy_tokens_btn_link": "https://adamant.im/de-buy-tokens/",
     "copied": "Kopiert",
     "copy": "Copy",
     "copy_address": "Copy address",
     "copy_uri": "Copy Share link",
     "create_qrcode": "Create QR code",
+    "exchanges_on": "Exchanges on {aggregator}",
     "free_adm_btn": "Free ADM tokens",
-    "buy_tokens_btn_link": "https://adamant.im/de-buy-tokens/",
     "free_tokens_link": "https://adamant.im/de-free-adm-tokens/",
     "send_btn": "Send funds",
     "share_uri": "Share {crypto} address",
-    "show_qr_code": "Show QR code"
+    "show_qr_code": "Show QR code",
+    "stake_and_earn_btn": "Setzen und verdienen"
   },
   "login": {
     "brand_title": "ADAMANT",
@@ -132,7 +135,8 @@
     "tabs": {
       "adm_nodes": "ADM Knooppunten",
       "coin_nodes": "Munt Knooppunten",
-      "service_nodes": "Service Knooppunten"
+      "service_nodes": "Service Knooppunten",
+      "ipfs_nodes": "IPFS-Knoten"
     }
   },
   "notifications": {
@@ -176,6 +180,7 @@
     "camera_button": "Camera",
     "close_button": "Close",
     "connect_camera": "Connect the camera and try again",
+    "grant_camera_permissions": "Erteilen Sie Kamera Berechtigungen in den Browsereinstellungen und versuchen Sie es erneut",
     "hold_your_device": "Hold your device steady for 2-3 seconds towards the QR code you want to scan",
     "login": {
       "modal_header": "Scan QR code with a passphrase"
@@ -183,7 +188,10 @@
     "new-chat": {
       "modal_header": "Scan QR code with ADM wallet address"
     },
+    "no_camera_access": "Kein zugriff auf die kamera",
     "no_camera_found": "No camera found",
+    "no_camera_stream": "Kein Video Stream von Kamera",
+    "no_stream_details": "Einzelheiten:<br /><code><small>{ noStreamDetails }</small></code>",
     "something_wrong": "Unexpected error. Check the adm console application",
     "waiting_camera": "Waiting camera"
   },
@@ -265,6 +273,7 @@
     "sec": "sec",
     "select_delegates": "First select delegates",
     "sent": "Votes have been sent",
+    "stake_info": "Um ADM einzusetzen und belohnungen zu erhalten, stimmen sie für einen aktiven Forging-Pool, dem sie vertrauen. Mehr dazu lesen sie im <a target=\"_blank\" href=\"https://news.adamant.im/hodl-list-of-adamant-pools-join-in-and-get-rewards-491a98610f4b\">ADAMANT blog</a>.",
     "summary_info": "Voting cost: 50 ADM. <a target=\"_blank\" href=\"https://medium.com/adamant-im/earning-money-on-adm-forging-4c7b6eb15516\">Read about voting and forging</a>.",
     "summary_title": "Review voting",
     "table_head_name": "Name",
