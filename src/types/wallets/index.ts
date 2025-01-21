@@ -36,6 +36,7 @@ export interface Service {
   description: ServiceDescription
   list: NodeInfo[]
   healthCheck: ServiceHealthcheck
+  displayName: string
 }
 
 /** Service node description */
@@ -135,6 +136,7 @@ export interface TokenGeneral {
     /** Node links for API */
     list: NodeInfo[]
     healthCheck: NodeHealthcheck
+    displayName: string
     /**
      * Minimal node API version
      * @example "0.8.0"
@@ -157,6 +159,7 @@ export interface TokenGeneral {
       /** Node links for API */
       list: NodeInfo[]
       healthCheck: NodeHealthcheck
+      displayName: string
       /**
        * Minimal node API version
        * @example "0.8.0"
