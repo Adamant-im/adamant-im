@@ -10,7 +10,7 @@
         @file="handleFileSelected"
         ref="UploadImageRef"
       />
-      <UploadFile @file="handleFileSelected" ref="UploadFileRef" />
+      <UploadFile :partnerId="partnerId" @file="handleFileSelected" ref="UploadFileRef" />
       <v-list class="chat-menu__list">
         <!-- Attach Image -->
         <v-list-item @click="$refs.UploadImageRef.$refs.fileInput.click()">
