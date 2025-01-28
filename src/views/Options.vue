@@ -47,9 +47,9 @@
                 :label="$t('options.stay_logged_in')"
                 color="grey darken-1"
                 :modelValue="stayLoggedIn"
-                @update:modelValue="onCheckStayLoggedIn"
                 density="comfortable"
                 hide-details
+                @click.prevent="onCheckStayLoggedIn"
               />
 
               <div class="a-text-explanation-enlarged">
