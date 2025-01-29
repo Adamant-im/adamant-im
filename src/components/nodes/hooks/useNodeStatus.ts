@@ -3,7 +3,6 @@ import { useI18n, VueI18nTranslation } from 'vue-i18n'
 
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { NodeStatus } from '@/lib/nodes/types'
-import { formatHeight } from '@/components/nodes/utils/formatHeight'
 
 type StatusColor = 'green' | 'red' | 'grey' | 'orange'
 type NodeStatusDetail = {
@@ -48,7 +47,7 @@ function getNodeStatusDetail(
     }
   } else if (node.online) {
     return {
-      text: formatHeight(node.height),
+      text: node.formatHeight,
       icon: 'mdi-cube-outline'
     }
   }
