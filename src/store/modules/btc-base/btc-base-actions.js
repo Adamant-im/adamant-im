@@ -135,12 +135,8 @@ function createActions(options) {
 
       // 2. Invalidate previous pending transaction if finalized
       await invalidatePendingTransaction(crypto, async (hashLocal) => {
-        try {
-          const transaction = await api.getTransaction(hashLocal)
-          return !!transaction && transaction.confirmations > 0
-        } catch {
-          return true
-        }
+        const transaction = await api.getTransaction(hashLocal)
+        return !!transaction && transaction.confirmations > 0
       })
 
       // 3. Sign transaction offline
