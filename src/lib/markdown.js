@@ -48,7 +48,7 @@ export function sanitizeHTML(text = '') {
  * @returns {string} resulting sanitized HTML
  */
 export function renderMarkdown(text = '') {
-  return marked.parse(sanitizeHTML(text))
+  return marked.parse(sanitizeHTML(text.replace(/\u2028/g, "\n")))
 }
 
 /**
