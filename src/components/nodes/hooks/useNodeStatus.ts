@@ -47,7 +47,7 @@ function getNodeStatusDetail(
     }
   } else if (node.online) {
     return {
-      text: node.formatHeight,
+      text: node.formattedHeight,
       icon: 'mdi-cube-outline'
     }
   }

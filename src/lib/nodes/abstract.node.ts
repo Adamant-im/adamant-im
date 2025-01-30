@@ -181,7 +181,7 @@ export abstract class Node<C = unknown> {
       status: this.getNodeStatus(),
       type: this.type,
       label: this.label,
-      formatHeight: this.formatHeight(this.height)
+      formattedHeight: this.formatHeight(this.height)
     }
   }
 
