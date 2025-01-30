@@ -117,7 +117,7 @@ export class IpfsNode extends Node<AxiosInstance> {
   protected async checkHealth() {
     const time = Date.now()
     const { timestamp } = await this.fetchNodeInfo()
-    this.height = timestamp || 0;
+    this.height = timestamp;
 
     return {
       height: this.height,
