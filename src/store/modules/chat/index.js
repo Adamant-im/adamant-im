@@ -783,13 +783,10 @@ const actions = {
       userId: rootState.address
     })
 
-    // Updating CIDs and Nonces
-    const nonces = files.map((file) => [file.encoded.nonce, file.preview.encoded?.nonce])
-    const cids = files.map((file) => [file.cid, file.preview?.cid])
-
-    let newAsset = replyToId
-      ? { replyto_id: replyToId, reply_message: attachmentAsset(files, nonces, cids, message) }
-      : attachmentAsset(files, nonces, cids, message)
+    const cids = files.map((file) => [file.cid, file.preview?.cid]).filter((cid) => !!cid)
+    const newAsset = replyToId
+      ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message) }
+      : attachmentAsset(files, message)
     commit('updateMessage', {
       id: messageObject.id,
       partnerId: recipientId,
