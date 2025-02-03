@@ -613,10 +613,15 @@ const actions = {
     const normalizedMessages = messages.map(normalizeMessage)
     dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
     normalizedMessages.forEach((message) => {
-      commit('pushMessage', {
-        message: message,
-        userId: rootState.address
-      })
+
+      const { recipientId, senderId } = message
+
+      if (recipientId === rootState.address || senderId === rootState.address) {
+        commit('pushMessage', {
+          message: message,
+          userId: rootState.address
+        })
+      }
     })
   },
 
