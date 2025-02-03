@@ -83,6 +83,11 @@ export default {
     currentScrollTop: 0,
     currentClientHeight: 0
   }),
+  computed: {
+    isWelcomeChat() {
+      return this.partners.map((item) => item.id).includes('chats.virtual.welcome_message_title')
+    }
+  },
   mounted() {
     this.attachScrollListener()
 
@@ -149,8 +154,12 @@ export default {
     // Fix scroll position after unshift new messages.
     // Called from parent component.
     maintainScrollPosition() {
-      this.$refs.messages.scrollTop =
-        this.$refs.messages.scrollHeight - this.currentScrollHeight + this.currentScrollTop
+      if (this.isWelcomeChat) {
+        this.$refs.messages.scrollTop = 0
+      } else {
+        this.$refs.messages.scrollTop =
+          this.$refs.messages.scrollHeight - this.currentScrollHeight + this.currentScrollTop
+      }
     },
 
     // Scroll to Bottom when new message.
