@@ -28,6 +28,7 @@ export const Transactions = {
 export const MessageType = {
   BASIC_ENCRYPTED_MESSAGE: 1,
   RICH_CONTENT_MESSAGE: 2,
+  SIGNAL_MESSAGE: 3,
   cryptoTransferMessage: (cryptoSymbol: string) => `${cryptoSymbol.toLowerCase()}_transaction`
 } as const
 

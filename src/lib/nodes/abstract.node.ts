@@ -180,7 +180,8 @@ export abstract class Node<C = unknown> {
       height: this.height,
       status: this.getNodeStatus(),
       type: this.type,
-      label: this.label
+      label: this.label,
+      formattedHeight: this.formatHeight(this.height)
     }
   }
 
@@ -223,6 +224,10 @@ export abstract class Node<C = unknown> {
 
   displayVersion() {
     return this.version ? `v${this.version}` : ''
+  }
+
+  formatHeight(height: number) {
+    return height.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
 
   // This method is not abstract because Not all nodes need version checking (For example: indexers) or some nodes receive version information from healthcheck requests.
