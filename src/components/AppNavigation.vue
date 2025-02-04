@@ -48,17 +48,14 @@ export default defineComponent({
       {
         title: 'wallet',
         link: '/home',
-        icon: 'mdi-wallet'
       },
       {
         title: 'chats',
         link: '/chats',
-        icon: 'mdi-forum'
       },
       {
         title: 'settings',
         link: '/options',
-        icon: 'mdi-cog'
       }
     ]
     const currentPageIndex = ref(0)
@@ -87,7 +84,6 @@ export default defineComponent({
     })
 
     return {
-      pages,
       currentPageIndex,
       numOfNewMessages,
       walletShouldBeVisible,
