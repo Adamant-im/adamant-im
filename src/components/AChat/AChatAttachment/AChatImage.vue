@@ -5,7 +5,7 @@
         <div :class="classes.error">
           <v-tooltip location="bottom">
             <template #activator="{ props }">
-              <v-icon v-bind="props" :class="classes.errorIcon" icon="mdi-image-off" />
+              <v-icon v-bind="props" :class="classes.errorIcon" :icon="mdiImageOff" />
             </template>
 
             <span>{{ t('chats.image_loading_error') }}</span>
@@ -47,6 +47,8 @@ import { AChatFileLoader } from './AChatFileLoader.tsx'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { LocalFile } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
+import { mdiImageOff } from '@mdi/js'
+
 
 const className = 'a-chat-image'
 const classes = {
@@ -80,7 +82,8 @@ export default defineComponent({
 
     return {
       t,
-      classes
+      classes,
+      mdiImageOff
     }
   }
 })

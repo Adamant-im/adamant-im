@@ -6,7 +6,7 @@
           <div :class="classes.error">
             <v-tooltip location="bottom">
               <template #activator="{ props }">
-                <v-icon v-bind="props" :class="classes.errorIcon" icon="mdi-image-off" />
+                <v-icon v-bind="props" :class="classes.errorIcon" :icon="mdiImageOff" />
               </template>
 
               <span>{{ t('chats.file_loading_error') }}</span>
@@ -66,6 +66,8 @@ import { LocalFile, isLocalFile, formatBytes } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { AChatFileLoader } from './AChatFileLoader.tsx'
+import { mdiImageOff } from '@mdi/js'
+
 
 const className = 'a-chat-file'
 const classes = {
@@ -127,6 +129,7 @@ export default defineComponent({
       fileName,
       fileExtension,
       fileSize,
+      mdiImageOff,
       formatBytes,
       iconSize
     }
