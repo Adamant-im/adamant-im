@@ -204,18 +204,11 @@ export interface AttachmentAsset {
  * @param {Array<[string, string]>} [ids] List of files IDs after uploading to IPFS. First element is the ID of original file, second is ID of preview.
  * @param {string} [comment]
  */
-export function attachmentAsset(
-  files: FileData[],
-  nonces?: [nonce: string, previewNonce: string],
-  ids?: [id: string, previewId: string],
-  comment?: string
-): AttachmentAsset {
+export function attachmentAsset(files: FileData[], comment?: string): AttachmentAsset {
   return {
-    files: files.map(({ file, width, height, cid, preview }, index) => {
+    files: files.map(({ file, width, height, cid, preview, encoded }) => {
       const [name, extension] = file.name.split('.')
       const resolution: FileAsset['resolution'] = width && height ? [width, height] : undefined
-      const [nonce, previewNonce] = nonces?.[index] || []
-      const [id, previewId] = cid ? [cid, preview?.cid] : ids?.[index] || []
 
       return {
         mimeType: file.type,
@@ -224,13 +217,15 @@ export function attachmentAsset(
         resolution,
         duration: undefined, // @todo check if is a video or audio file
         size: file.size,
-        id: id!,
-        nonce,
-        preview: {
-          id: previewId!,
-          nonce: previewNonce,
-          extension
-        }
+        id: cid,
+        nonce: encoded.nonce,
+        preview: preview
+          ? {
+              id: preview.cid,
+              nonce: preview.encoded.nonce,
+              extension
+            }
+          : undefined
       }
     }),
     comment,
