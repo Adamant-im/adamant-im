@@ -5,7 +5,7 @@
       [classes.icon]: true,
       [classes.iconGood]: !originalVoted
     }"
-    :icon="originalVoted ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'"
+    :icon="originalVoted ? mdiThumbUp : mdiThumbUpOutline"
     size="large"
     @click="handleDownVote"
   />
@@ -16,7 +16,7 @@
       [classes.icon]: true,
       [classes.iconDanger]: originalVoted
     }"
-    :icon="originalVoted ? 'mdi-thumb-down-outline' : 'mdi-thumb-up-outline'"
+    :icon="originalVoted ? mdiThumbDownOutline : mdiThumbUpOutline"
     size="large"
     @click="handleUpVote"
   />
@@ -25,6 +25,9 @@
 <script>
 import { computed, toRefs } from 'vue'
 import { useStore } from 'vuex'
+
+import { mdiThumbUp, mdiThumbUpOutline, mdiThumbDownOutline } from '@mdi/js'
+
 
 const className = 'delegate-vote-checkbox'
 const classes = {
@@ -63,7 +66,10 @@ export default {
       voted,
       handleUpVote,
       handleDownVote,
-      classes
+      classes,
+      mdiThumbDownOutline,
+      mdiThumbUp,
+      mdiThumbUpOutline
     }
   }
 }
