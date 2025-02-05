@@ -10,7 +10,7 @@
         v-else
       />
 
-      <v-icon size="18" icon="mdi-close" @click="$emit('remove')" :class="classes.removeIcon" />
+      <v-icon size="18" :icon="mdiClose" @click="$emit('remove')" :class="classes.removeIcon" />
     </div>
 
     <p :class="classes.fileName">{{ file.name }}</p>
@@ -22,6 +22,7 @@ import { defineComponent, PropType } from 'vue'
 
 import type { FileData } from '@/lib/files'
 import IconFile from '@/components/icons/common/IconFile.vue'
+import { mdiClose } from '@mdi/js'
 
 const className = 'preview-file'
 const classes = {
@@ -54,6 +55,7 @@ export default defineComponent({
 
     return {
       classes,
+      mdiClose,
       formatText
     }
   }
