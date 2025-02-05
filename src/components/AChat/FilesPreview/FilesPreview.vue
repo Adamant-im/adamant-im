@@ -12,7 +12,7 @@
     <v-btn
       @click="$emit('cancel')"
       :class="classes.closeButton"
-      icon="mdi-close"
+      :icon="mdiClose"
       size="24"
       variant="plain"
     />
@@ -24,6 +24,8 @@ import { defineComponent, PropType } from 'vue'
 
 import type { FileData } from '@/lib/files'
 import FilesPreviewItem from './FilesPreviewItem.vue'
+import { mdiClose } from '@mdi/js'
+
 
 const className = 'files-preview'
 const classes = {
@@ -45,7 +47,8 @@ export default defineComponent({
   },
   setup() {
     return {
-      classes
+      classes,
+      mdiClose
     }
   }
 })
