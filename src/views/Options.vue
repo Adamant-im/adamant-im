@@ -16,7 +16,7 @@
               </v-list-subheader>
             </v-col>
             <v-col cols="6" class="text-right">
-              <language-switcher append-icon="mdi-chevron-down" />
+              <language-switcher :append-icon="mdiChevronDown" />
             </v-col>
             <v-col cols="6">
               <v-list-subheader :class="`${className}__label`">
@@ -24,7 +24,7 @@
               </v-list-subheader>
             </v-col>
             <v-col cols="6" class="text-right">
-              <currency-switcher append-icon="mdi-chevron-down" />
+              <currency-switcher :append-icon="mdiChevronDown" />
             </v-col>
             <v-col cols="12">
               <v-checkbox
@@ -213,7 +213,7 @@ import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import scrollPosition from '@/mixins/scrollPosition'
-import { mdiChevronRight } from '@mdi/js'
+import { mdiChevronRight, mdiChevronDown } from '@mdi/js'
 
 
 export default {
@@ -226,6 +226,7 @@ export default {
   mixins: [scrollPosition],
   setup() {
     return {
+      mdiChevronDown,
       mdiChevronRight
     }
   },
