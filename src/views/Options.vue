@@ -189,7 +189,7 @@
 
                 <v-list-item
                   :title="$t('bottom.exit_button')"
-                  append-icon="mdi-logout-variant"
+                  :append-icon="mdiLogoutVariant"
                   @click="logout"
                 />
               </v-list>
@@ -213,7 +213,7 @@ import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import scrollPosition from '@/mixins/scrollPosition'
-import { mdiChevronRight, mdiChevronDown } from '@mdi/js'
+import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
 
 
 export default {
@@ -227,7 +227,8 @@ export default {
   setup() {
     return {
       mdiChevronDown,
-      mdiChevronRight
+      mdiChevronRight,
+      mdiLogoutVariant
     }
   },
   data: () => ({
