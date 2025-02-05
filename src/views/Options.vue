@@ -163,25 +163,25 @@
               <v-list class="actions-list">
                 <v-list-item
                   :title="$t('options.nodes_list')"
-                  append-icon="mdi-chevron-right"
+                  :append-icon="mdiChevronRight"
                   @click="$router.push('/options/nodes')"
                 />
 
                 <v-list-item
                   :title="$t('options.wallets_list')"
-                  append-icon="mdi-chevron-right"
+                  :append-icon="mdiChevronRight"
                   @click="$router.push('/options/wallets')"
                 />
 
                 <v-list-item
                   :title="$t('options.export_keys.title')"
-                  append-icon="mdi-chevron-right"
+                  :append-icon="mdiChevronRight"
                   @click="$router.push('/options/export-keys')"
                 />
 
                 <v-list-item
                   :title="$t('options.vote_for_delegates_button')"
-                  append-icon="mdi-chevron-right"
+                  :append-icon="mdiChevronRight"
                   @click="$router.push('/votes')"
                 />
 
@@ -213,6 +213,8 @@ import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import scrollPosition from '@/mixins/scrollPosition'
+import { mdiChevronRight } from '@mdi/js'
+
 
 export default {
   components: {
@@ -222,6 +224,11 @@ export default {
     PasswordSetDialog
   },
   mixins: [scrollPosition],
+  setup() {
+    return {
+      mdiChevronRight
+    }
+  },
   data: () => ({
     passwordDialog: false
   }),
