@@ -4,7 +4,7 @@
       <v-icon
         ref="loadingDots"
         :class="{ kmove: isLoadingSeparatorActive }"
-        icon="mdi-dots-horizontal"
+        :icon="mdiDotsHorizontal"
       />
     </div>
   </v-list-item>
@@ -78,7 +78,7 @@
           <template v-if="isOutgoingTransaction">
             <v-icon
               v-if="transaction.isReply && isConfirmed"
-              icon="mdi-arrow-left-top"
+              :icon="mdiArrowLeftTop"
               size="15"
               class="mr-1"
             />
@@ -109,6 +109,8 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { TransactionProvider } from '@/providers/TransactionProvider'
+import { mdiArrowLeftTop, mdiDotsHorizontal } from '@mdi/js'
+
 
 const className = 'chat-brief'
 
@@ -257,6 +259,8 @@ export default defineComponent({
       reactedText,
       admStatusIcon,
       transactionDirection,
+      mdiArrowLeftTop,
+      mdiDotsHorizontal,
       tsIcon
     }
   }
