@@ -62,7 +62,7 @@ export default defineComponent({
       emit('open:change', state, props.transaction)
     }
 
-    return { t, classes, mdiChevronDown,toggleMenu }
+    return { t, classes, mdiChevronDown, toggleMenu }
   }
 })
 </script>
