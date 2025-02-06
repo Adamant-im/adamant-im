@@ -16,7 +16,7 @@
           />
         </div>
 
-        <div ref="messages" class="a-chat__body-messages">
+        <div ref="messagesRef" class="a-chat__body-messages">
           <template v-for="message in messages" :key="message.id">
             <slot
               name="message"
@@ -43,17 +43,14 @@
 </template>
 
 <script>
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import throttle from 'lodash/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
 import { animate } from 'popmotion'
-
 import { SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
-
-const emitScroll = throttle(function () {
-  this.$emit('scroll', this.currentScrollTop, this.isScrolledToBottom())
-}, 200)
+import { isWelcomeChat } from '@/lib/chat/meta/utils/isWelcomeChat'
 
 export default {
   props: {
@@ -78,123 +75,83 @@ export default {
     }
   },
   emits: ['scroll', 'scroll:bottom', 'scroll:top'],
-  data: () => ({
-    currentScrollHeight: 0,
-    currentScrollTop: 0,
-    currentClientHeight: 0
-  }),
-  computed: {
-    isWelcomeChat() {
-      return this.partners.map((item) => item.id).includes('chats.virtual.welcome_message_title')
-    }
-  },
-  mounted() {
-    this.attachScrollListener()
+  setup(props, { emit }) {
+    const messagesRef = ref(null)
+    const currentScrollHeight = ref(0)
+    const currentScrollTop = ref(0)
+    const currentClientHeight = ref(0)
+    const resizeObserver = ref(null)
 
-    this.currentClientHeight = this.$refs.messages.clientHeight
-    const resizeHandler = () => {
-      const clientHeightDelta = this.currentClientHeight - this.$refs.messages.clientHeight
+    const isWelcome = computed(() => {
+      return props.partners
+        .map((item) => item.id)
+        .map(isWelcomeChat)
+        .reduce((previous, current) => previous || current, false)
+    })
 
-      const nonVisibleClientHeight =
-        this.$refs.messages.scrollHeight -
-        this.$refs.messages.clientHeight -
-        Math.ceil(this.$refs.messages.scrollTop)
-      const scrolledToBottom = nonVisibleClientHeight === 0
+    const emitScroll = throttle(function () {
+      emit('scroll', currentScrollTop.value, isScrolledToBottom())
+    }, 200)
 
-      if (scrolledToBottom) {
-        // Browser updates Element.scrollTop by itself
-      } else {
-        this.$refs.messages.scrollTop += clientHeightDelta
-      }
-
-      this.currentClientHeight = this.$refs.messages.clientHeight
+    const attachScrollListener = () => {
+      messagesRef.value.addEventListener('scroll', onScroll)
     }
 
-    this.resizeObserver = new ResizeObserver(resizeHandler)
-    this.resizeObserver.observe(this.$refs.messages)
-  },
-  beforeUnmount() {
-    this.destroyScrollListener()
-    this.resizeObserver?.unobserve(this.$refs.messages)
-  },
-  methods: {
-    attachScrollListener() {
-      this.$refs.messages.addEventListener('scroll', this.onScroll)
-    },
+    const destroyScrollListener = () => {
+      messagesRef.value.removeEventListener('scroll', onScroll)
+    }
 
-    destroyScrollListener() {
-      this.$refs.messages.removeEventListener('scroll', this.onScroll)
-    },
+    const onScroll = () => {
+      const scrollHeight = messagesRef.value.scrollHeight
+      const scrollTop = Math.ceil(messagesRef.value.scrollTop)
+      const clientHeight = messagesRef.value.clientHeight
 
-    onScroll() {
-      const scrollHeight = this.$refs.messages.scrollHeight
-      const scrollTop = Math.ceil(this.$refs.messages.scrollTop)
-      const clientHeight = this.$refs.messages.clientHeight
-
-      // Scrolled to Bottom
       if (scrollHeight - scrollTop === clientHeight) {
-        this.$emit('scroll:bottom')
+        emit('scroll:bottom')
       } else if (scrollTop === 0) {
-        // Scrolled to Top
-        // Save current `scrollHeight` to maintain scroll
-        // position when unshift new messages
-        this.currentScrollHeight = scrollHeight
-        this.$emit('scroll:top')
+        currentScrollHeight.value = scrollHeight
+        emit('scroll:top')
       }
 
-      // Save previous values of `scrollTop` and `scrollHeight`
-      // Needed for keeping the same scroll position when prepending
-      // new messages to the chat
-      this.currentScrollTop = scrollTop
-      this.currentScrollHeight = scrollHeight
+      currentScrollTop.value = scrollTop
+      currentScrollHeight.value = scrollHeight
 
-      emitScroll.call(this)
-    },
+      emitScroll()
+    }
 
-    // Fix scroll position after unshift new messages.
-    // Called from parent component.
-    maintainScrollPosition() {
-      if (this.isWelcomeChat) {
-        this.$refs.messages.scrollTop = 0
+    const maintainScrollPosition = () => {
+      if (isWelcome.value) {
+        messagesRef.value.scrollTop = 0
       } else {
-        this.$refs.messages.scrollTop =
-          this.$refs.messages.scrollHeight - this.currentScrollHeight + this.currentScrollTop
+        messagesRef.value.scrollTop =
+          messagesRef.value.scrollHeight - currentScrollHeight.value + currentScrollTop.value
       }
-    },
+    }
 
-    // Scroll to Bottom when new message.
-    // Called from parent component.
-    scrollToBottom() {
-      this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
-    },
+    const scrollToBottom = () => {
+      messagesRef.value.scrollTop = messagesRef.value.scrollHeight
+    }
 
-    scrollTo(position) {
-      this.$refs.messages.scrollTop = position
-    },
+    const scrollTo = (position) => {
+      messagesRef.value.scrollTop = position
+    }
 
-    /**
-     * Scroll to message by index, starting with the last.
-     */
-    scrollToMessage(index) {
-      const elements = this.$refs.messages.children
+    const scrollToMessage = (index) => {
+      const elements = messagesRef.value.children
 
       if (!elements) return
 
       const element = elements[elements.length - 1 - index]
 
       if (element) {
-        this.$refs.messages.scrollTop = element.offsetTop - 16
+        messagesRef.value.scrollTop = element.offsetTop - 16
       } else {
-        this.scrollToBottom()
+        scrollToBottom()
       }
-    },
+    }
 
-    /**
-     * Smooth scroll to message by index (starting with the last).
-     * @returns Promise<boolean> If `true` then scrolling has been applied.
-     */
-    scrollToMessageEasy(index) {
-      const elements = this.$refs.messages.children
+    const scrollToMessageEasy = (index) => {
+      const elements = messagesRef.value.children
 
       if (!elements) return Promise.resolve(false)
 
@@ -208,7 +165,6 @@ export default {
             const [{ el, top }] = instructions
             const styler = Styler(el)
 
-            // do nothing if the element is already scrolled at target position
             if (el.scrollTop === top) {
               resolve(false)
               return
@@ -225,24 +181,59 @@ export default {
           block: 'center'
         })
       })
-    },
+    }
 
-    isScrolledToBottom() {
+    const isScrolledToBottom = () => {
       const scrollOffset =
-        this.$refs.messages.scrollHeight -
-        Math.ceil(this.$refs.messages.scrollTop) -
-        this.$refs.messages.clientHeight
+        messagesRef.value.scrollHeight -
+        Math.ceil(messagesRef.value.scrollTop) -
+        messagesRef.value.clientHeight
 
       return scrollOffset <= 60
-    },
+    }
 
-    /**
-     * Returns sender address and name.
-     * @param {string} senderId Sender address
-     * @returns {{ id: string, name: string }}
-     */
-    getSenderMeta(senderId) {
-      return this.partners.find((partner) => isStringEqualCI(partner.id, senderId))
+    const getSenderMeta = (senderId) => {
+      return props.partners.find((partner) => isStringEqualCI(partner.id, senderId))
+    }
+
+    onMounted(() => {
+      attachScrollListener()
+
+      currentClientHeight.value = messagesRef.value.clientHeight
+      const resizeHandler = () => {
+        const clientHeightDelta = currentClientHeight.value - messagesRef.value.clientHeight
+
+        const nonVisibleClientHeight =
+          messagesRef.value.scrollHeight -
+          messagesRef.value.clientHeight -
+          Math.ceil(messagesRef.value.scrollTop)
+        const scrolledToBottom = nonVisibleClientHeight === 0
+
+        if (!scrolledToBottom) {
+          messagesRef.value.scrollTop += clientHeightDelta
+        }
+
+        currentClientHeight.value = messagesRef.value.clientHeight
+      }
+
+      resizeObserver.value = new ResizeObserver(resizeHandler)
+      resizeObserver.value.observe(messagesRef.value)
+    })
+
+    onBeforeUnmount(() => {
+      destroyScrollListener()
+      resizeObserver.value?.unobserve(messagesRef.value)
+    })
+
+    return {
+      messagesRef,
+      maintainScrollPosition,
+      scrollToBottom,
+      scrollTo,
+      scrollToMessage,
+      scrollToMessageEasy,
+      getSenderMeta,
+      isScrolledToBottom
     }
   }
 }
