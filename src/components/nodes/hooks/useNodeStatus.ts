@@ -4,6 +4,8 @@ import { useI18n, VueI18nTranslation } from 'vue-i18n'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { NodeStatus } from '@/lib/nodes/types'
 
+import { mdiCubeOutline } from '@mdi/js'
+
 type StatusColor = 'green' | 'red' | 'grey' | 'orange'
 type NodeStatusDetail = {
   text: string | number
@@ -48,7 +50,7 @@ function getNodeStatusDetail(
   } else if (node.online) {
     return {
       text: node.formattedHeight,
-      icon: 'mdi-cube-outline'
+      icon: mdiCubeOutline
     }
   }
 

@@ -2,6 +2,7 @@
   <v-form ref="form" :class="classes.root" @submit.prevent="submit">
     <v-row no-gutters>
       <slot>
+        <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->
         <v-text-field
           v-model="passphrase"
           :label="$t('login.password_label')"
@@ -19,7 +20,7 @@
               :size="28"
               variant="plain"
             >
-              <v-icon :icon="showPassphrase ? 'mdi-eye' : 'mdi-eye-off'" :size="24" />
+              <v-icon :icon="showPassphrase ? mdiEye : mdiEyeOff" :size="24" />
             </v-btn>
           </template>
         </v-text-field>
@@ -59,6 +60,8 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { isAxiosError } from 'axios'
 import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
+import { mdiEye, mdiEyeOff } from '@mdi/js'
+
 
 const className = 'login-form'
 const classes = {
@@ -142,6 +145,8 @@ export default defineComponent({
       passphrase,
       showPassphrase,
       classes,
+      mdiEye,
+      mdiEyeOff,
       togglePassphraseVisibility,
       submit
     }
