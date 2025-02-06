@@ -42,8 +42,8 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+<script lang="ts">
+import { ref, onMounted, onBeforeUnmount, computed, Ref, defineComponent } from 'vue'
 import throttle from 'lodash/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
@@ -51,19 +51,22 @@ import { animate } from 'popmotion'
 import { SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { isWelcomeChat } from '@/lib/chat/meta/utils/isWelcomeChat'
+import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
+import { User } from '@/components/AChat/types.ts'
 
-export default {
+export default defineComponent({
   props: {
     messages: {
-      type: Array,
+      type: Array as () => NormalizedChatMessageTransaction[],
       default: () => []
     },
     partners: {
-      type: Array,
+      type: Array as () => User[],
       default: () => []
     },
     userId: {
-      type: String
+      type: String,
+      required: true
     },
     loading: {
       type: Boolean,
@@ -76,11 +79,11 @@ export default {
   },
   emits: ['scroll', 'scroll:bottom', 'scroll:top'],
   setup(props, { emit }) {
-    const messagesRef = ref(null)
+    const messagesRef: Ref<HTMLDivElement | null> = ref(null)
     const currentScrollHeight = ref(0)
     const currentScrollTop = ref(0)
     const currentClientHeight = ref(0)
-    const resizeObserver = ref(null)
+    const resizeObserver: Ref<ResizeObserver | null> = ref(null)
 
     const isWelcome = computed(() => {
       return props.partners
@@ -89,19 +92,22 @@ export default {
         .reduce((previous, current) => previous || current, false)
     })
 
-    const emitScroll = throttle(function () {
-      emit('scroll', currentScrollTop.value, isScrolledToBottom())
-    }, 200)
+    const emitScroll = throttle(
+      () => emit('scroll', currentScrollTop.value, isScrolledToBottom()),
+      200
+    )
 
     const attachScrollListener = () => {
-      messagesRef.value.addEventListener('scroll', onScroll)
+      messagesRef.value?.addEventListener('scroll', onScroll)
     }
 
     const destroyScrollListener = () => {
-      messagesRef.value.removeEventListener('scroll', onScroll)
+      messagesRef.value?.removeEventListener('scroll', onScroll)
     }
 
     const onScroll = () => {
+      if (!messagesRef.value) return
+
       const scrollHeight = messagesRef.value.scrollHeight
       const scrollTop = Math.ceil(messagesRef.value.scrollTop)
       const clientHeight = messagesRef.value.clientHeight
@@ -120,28 +126,37 @@ export default {
     }
 
     const maintainScrollPosition = () => {
+      if (!messagesRef.value) return
+
       if (isWelcome.value) {
         messagesRef.value.scrollTop = 0
-      } else {
-        messagesRef.value.scrollTop =
-          messagesRef.value.scrollHeight - currentScrollHeight.value + currentScrollTop.value
+        return
       }
+
+      messagesRef.value.scrollTop =
+        messagesRef.value.scrollHeight - currentScrollHeight.value + currentScrollTop.value
     }
 
     const scrollToBottom = () => {
-      messagesRef.value.scrollTop = messagesRef.value.scrollHeight
+      if (messagesRef.value) {
+        messagesRef.value.scrollTop = messagesRef.value.scrollHeight
+      }
     }
 
-    const scrollTo = (position) => {
-      messagesRef.value.scrollTop = position
+    const scrollTo = (position: number) => {
+      if (messagesRef.value) {
+        messagesRef.value.scrollTop = position
+      }
     }
 
-    const scrollToMessage = (index) => {
+    const scrollToMessage = (index: number) => {
+      if (!messagesRef.value) return
+
       const elements = messagesRef.value.children
 
       if (!elements) return
 
-      const element = elements[elements.length - 1 - index]
+      const element = elements[elements.length - 1 - index] as HTMLElement
 
       if (element) {
         messagesRef.value.scrollTop = element.offsetTop - 16
@@ -150,12 +165,14 @@ export default {
       }
     }
 
-    const scrollToMessageEasy = (index) => {
+    const scrollToMessageEasy = (index: number): Promise<boolean> => {
+      if (!messagesRef.value) return Promise.resolve(false)
+
       const elements = messagesRef.value.children
 
       if (!elements) return Promise.resolve(false)
 
-      const element = elements[elements.length - 1 - index]
+      const element = elements[elements.length - 1 - index] as HTMLElement
 
       if (!element) return Promise.resolve(false)
 
@@ -184,6 +201,8 @@ export default {
     }
 
     const isScrolledToBottom = () => {
+      if (!messagesRef.value) return false
+
       const scrollOffset =
         messagesRef.value.scrollHeight -
         Math.ceil(messagesRef.value.scrollTop) -
@@ -192,37 +211,43 @@ export default {
       return scrollOffset <= 60
     }
 
-    const getSenderMeta = (senderId) => {
+    const getSenderMeta = (senderId: string) => {
       return props.partners.find((partner) => isStringEqualCI(partner.id, senderId))
     }
 
     onMounted(() => {
       attachScrollListener()
 
-      currentClientHeight.value = messagesRef.value.clientHeight
-      const resizeHandler = () => {
-        const clientHeightDelta = currentClientHeight.value - messagesRef.value.clientHeight
+      if (messagesRef.value) {
+        currentClientHeight.value = messagesRef.value.clientHeight
+        const resizeHandler = () => {
+          if (!messagesRef.value) return
 
-        const nonVisibleClientHeight =
-          messagesRef.value.scrollHeight -
-          messagesRef.value.clientHeight -
-          Math.ceil(messagesRef.value.scrollTop)
-        const scrolledToBottom = nonVisibleClientHeight === 0
+          const clientHeightDelta = currentClientHeight.value - messagesRef.value.clientHeight
 
-        if (!scrolledToBottom) {
-          messagesRef.value.scrollTop += clientHeightDelta
+          const nonVisibleClientHeight =
+            messagesRef.value.scrollHeight -
+            messagesRef.value.clientHeight -
+            Math.ceil(messagesRef.value.scrollTop)
+          const scrolledToBottom = nonVisibleClientHeight === 0
+
+          if (!scrolledToBottom) {
+            messagesRef.value.scrollTop += clientHeightDelta
+          }
+
+          currentClientHeight.value = messagesRef.value.clientHeight
         }
 
-        currentClientHeight.value = messagesRef.value.clientHeight
+        resizeObserver.value = new ResizeObserver(resizeHandler)
+        resizeObserver.value.observe(messagesRef.value)
       }
-
-      resizeObserver.value = new ResizeObserver(resizeHandler)
-      resizeObserver.value.observe(messagesRef.value)
     })
 
     onBeforeUnmount(() => {
       destroyScrollListener()
-      resizeObserver.value?.unobserve(messagesRef.value)
+      if (messagesRef.value) {
+        resizeObserver.value?.unobserve(messagesRef.value)
+      }
     })
 
     return {
@@ -236,5 +261,5 @@ export default {
       isScrolledToBottom
     }
   }
-}
+})
 </script>
