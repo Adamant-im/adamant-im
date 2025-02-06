@@ -71,6 +71,6 @@ export function formatMessage(text = '') {
   node.innerHTML = marked.parse(sanitizeHTML(textWithSymbol))
 
   const textWithoutHtml = node.textContent || node.innerText || ''
-  const styledText = textWithoutHtml.replace(/↵/g, '<span class="arrow-return">↵</span>')
+  const styledText = textWithoutHtml.replace(/↵/g, '<span class="arrow-return">↵</span>').replace(/\u2028/g, '<span class="arrow-return">↵</span>')
   return styledText
 }
