@@ -23,8 +23,6 @@ export function createAttachment({
   recipientId,
   senderId,
   files,
-  nonces,
-  ids,
   message,
   replyToId,
   status = TS.PENDING
@@ -42,8 +40,8 @@ export function createAttachment({
     timestamp: Date.now(),
     type: 'attachment',
     asset: replyToId
-      ? { replyto_id: replyToId, reply_message: attachmentAsset(files, nonces, ids, message) }
-      : attachmentAsset(files, nonces, ids, message),
+      ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message) }
+      : attachmentAsset(files, message),
     /**
      * When sending a message, we need to store the files locally.
      */
