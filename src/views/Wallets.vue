@@ -49,15 +49,15 @@
 import { useI18n } from 'vue-i18n'
 import draggable from 'vuedraggable'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
-import { computed, defineComponent, onBeforeUnmount, ref } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { CryptosInfo, CryptoSymbol, isErc20 } from '@/lib/constants'
 import { useStore } from 'vuex'
 import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
 import WalletsListItem from '@/components/wallets/WalletsListItem.vue'
 import WalletResetDialog from '@/components/wallets/WalletResetDialog.vue'
-import { Timer } from 'web3-utils'
 import { CoinSymbol } from '@/store/modules/wallets/types.ts'
 import { useTheme } from '@/hooks/useTheme'
+import { useTimeoutPoll } from '@vueuse/core'
 
 const BALANCE_UPDATE_INTERVAL_MS = 30000
 
@@ -152,20 +152,18 @@ export default defineComponent({
         store.dispatch('wallets/setWalletSymbols', mappedValue)
       }
     })
+    const { resume, pause } = useTimeoutPoll(async () => {
+      await store.dispatch('updateBalance', {
+        requestedByUser: true
+      })
+    }, BALANCE_UPDATE_INTERVAL_MS)
 
-    let timer = ref<Timer>()
-    ;(async () => {
-      const updateBalances = async () => {
-        await store.dispatch('updateBalance', {
-          requestedByUser: true
-        })
-        timer.value = setTimeout(() => updateBalances(), BALANCE_UPDATE_INTERVAL_MS)
-      }
-      await updateBalances()
-    })()
+    onMounted(() => {
+      resume()
+    })
 
     onBeforeUnmount(() => {
-      clearTimeout(timer.value)
+      pause()
     })
 
     return {
