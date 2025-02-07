@@ -43,25 +43,25 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed, Ref, defineComponent } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, defineComponent, PropType } from 'vue'
 import throttle from 'lodash/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
 import { animate } from 'popmotion'
 import { SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { isWelcomeChat } from '@/lib/chat/meta/utils/isWelcomeChat'
+import { isWelcomeChat as checkIsWelcomeChat } from '@/lib/chat/meta/utils/isWelcomeChat'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { User } from '@/components/AChat/types.ts'
+import { User } from '@/components/AChat/types'
 
 export default defineComponent({
   props: {
     messages: {
-      type: Array as () => NormalizedChatMessageTransaction[],
+      type: Array as PropType<NormalizedChatMessageTransaction[]>,
       default: () => []
     },
     partners: {
-      type: Array as () => User[],
+      type: Array as PropType<User[]>,
       default: () => []
     },
     userId: {
@@ -79,16 +79,16 @@ export default defineComponent({
   },
   emits: ['scroll', 'scroll:bottom', 'scroll:top'],
   setup(props, { emit }) {
-    const messagesRef: Ref<HTMLDivElement | null> = ref(null)
+    const messagesRef = ref<HTMLDivElement | null>(null)
     const currentScrollHeight = ref(0)
     const currentScrollTop = ref(0)
     const currentClientHeight = ref(0)
-    const resizeObserver: Ref<ResizeObserver | null> = ref(null)
+    const resizeObserver = ref<ResizeObserver | null>(null)
 
     const isWelcome = computed(() => {
       return props.partners
         .map((item) => item.id)
-        .map(isWelcomeChat)
+        .map(checkIsWelcomeChat)
         .reduce((previous, current) => previous || current, false)
     })
 
@@ -165,16 +165,16 @@ export default defineComponent({
       }
     }
 
-    const scrollToMessageEasy = (index: number): Promise<boolean> => {
-      if (!messagesRef.value) return Promise.resolve(false)
+    const scrollToMessageEasy = async (index: number): Promise<boolean> => {
+      if (!messagesRef.value) return false
 
       const elements = messagesRef.value.children
 
-      if (!elements) return Promise.resolve(false)
+      if (!elements) return false
 
       const element = elements[elements.length - 1 - index] as HTMLElement
 
-      if (!element) return Promise.resolve(false)
+      if (!element) return false
 
       return new Promise((resolve) => {
         scrollIntoView(element, {
