@@ -2,7 +2,7 @@
   <div>
     <v-menu eager>
       <template #activator="{ props }">
-        <v-icon class="chat-menu__icon" v-bind="props" icon="mdi-plus-circle-outline" size="28" />
+        <v-icon class="chat-menu__icon" v-bind="props" :icon="mdiPlusCircleOutline" size="28" />
       </template>
       <UploadFile
         :partnerId="partnerId"
@@ -10,13 +10,13 @@
         @file="handleFileSelected"
         ref="UploadImageRef"
       />
-      <UploadFile :accept="acceptFile" @file="handleFileSelected" ref="UploadFileRef" />
+      <UploadFile :partnerId="partnerId" @file="handleFileSelected" ref="UploadFileRef" />
       <v-list class="chat-menu__list">
         <!-- Attach Image -->
         <v-list-item @click="$refs.UploadImageRef.$refs.fileInput.click()">
           <template #prepend>
             <icon-box>
-              <v-icon icon="mdi-image" />
+              <v-icon :icon="mdiImage" />
             </icon-box>
           </template>
           <v-list-item-title>{{ $t('chats.attach_image') }}</v-list-item-title>
@@ -26,7 +26,7 @@
         <v-list-item @click="$refs.UploadFileRef.$refs.fileInput.click()">
           <template #prepend>
             <icon-box>
-              <v-icon icon="mdi-file" />
+              <v-icon :icon="mdiFile" />
             </icon-box>
           </template>
           <v-list-item-title>{{ $t('chats.attach_file') }}</v-list-item-title>
@@ -53,6 +53,8 @@ import ChatDialog from '@/components/Chat/ChatDialog.vue'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import IconBox from '@/components/icons/IconBox.vue'
 import UploadFile from '../UploadFile.vue'
+import { mdiFile, mdiImage, mdiPlusCircleOutline } from '@mdi/js'
+
 
 export default {
   components: {
@@ -69,6 +71,13 @@ export default {
     },
     replyToId: {
       type: String
+    }
+  },
+  setup() {
+    return {
+      mdiFile,
+      mdiImage,
+      mdiPlusCircleOutline
     }
   },
   data: () => ({

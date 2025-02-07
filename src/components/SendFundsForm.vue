@@ -12,7 +12,7 @@
         variant="underlined"
         :items="cryptoList"
         :disabled="addressReadonly"
-        :menu-icon="addressReadonly ? '' : 'mdi-menu-down'"
+        :menu-icon="addressReadonly ? '' : mdiMenuDown"
       />
 
       <v-text-field
@@ -35,7 +35,7 @@
         <template v-if="!addressReadonly" #append-inner>
           <v-menu :offset-overflow="true" :offset-y="false" left eager>
             <template #activator="{ props }">
-              <v-icon v-bind="props" icon="mdi-dots-vertical" />
+              <v-icon v-bind="props" :icon="mdiDotsVertical" />
             </template>
             <v-list>
               <v-list-item @click="showQrcodeScanner = true">
@@ -73,7 +73,7 @@
         <template #append-inner>
           <v-menu :offset-overflow="true" :offset-y="false" left>
             <template #activator="{ props }">
-              <v-icon v-bind="props" icon="mdi-dots-vertical" />
+              <v-icon v-bind="props" :icon="mdiDotsVertical" />
             </template>
             <v-list>
               <v-list-item
@@ -231,6 +231,9 @@ import { AllCryptos } from '@/lib/constants/cryptos'
 
 import { MAX_UINT64 } from '@klayr/validator'
 
+import { mdiDotsVertical, mdiMenuDown } from '@mdi/js'
+
+
 /**
  * @returns {string | boolean}
  */
@@ -279,6 +282,12 @@ export default {
     }
   },
   emits: ['send', 'error'],
+  setup() {
+    return {
+      mdiDotsVertical,
+      mdiMenuDown
+    }
+  },
   data: () => ({
     currency: '',
     address: '',

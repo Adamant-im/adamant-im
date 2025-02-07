@@ -20,7 +20,7 @@
           :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
           to="/options/nodes"
           variant="text"
-          prepend-icon="mdi-open-in-new"
+          :prepend-icon="mdiOpenInNew"
         >
           <div :class="`${className}__btn-text`">
             {{ t('chats.nodes_offline_dialog.open_nodes_button') }}
@@ -36,6 +36,7 @@ import { computed, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { NodeType } from '@/lib/nodes/types'
+import { mdiOpenInNew } from '@mdi/js'
 
 const className = 'all-nodes-disabled-dialog'
 const classes = {
@@ -67,7 +68,8 @@ export default {
       t,
       classes,
       showDialog,
-      className
+      className,
+      mdiOpenInNew
     }
   }
 }
