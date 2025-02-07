@@ -7,6 +7,9 @@ import {
   CryptoSymbol
 } from './cryptos'
 
+import { mdiCheck, mdiClockOutline, mdiCloseCircleOutline, mdiAlertOutline, mdiHelpCircleOutline } from '@mdi/js'
+
+
 export const EPOCH = Date.UTC(2017, 8, 2, 17, 0, 0, 0)
 
 export const Transactions = {
@@ -156,15 +159,23 @@ export const TransactionAdditionalStatus = {
 
 export const tsIcon = function (status: TransactionStatusType) {
   if (status === TransactionStatus.CONFIRMED) {
-    return 'mdi-check'
-  } else if (status === TransactionStatus.PENDING || status === TransactionStatus.REGISTERED) {
-    return 'mdi-clock-outline'
-  } else if (status === TransactionStatus.REJECTED) {
-    return 'mdi-close-circle-outline'
-  } else if (status === TransactionStatus.INVALID) {
-    return 'mdi-alert-outline'
-  } else if (status === TransactionStatus.UNKNOWN) {
-    return 'mdi-help-circle-outline'
+    return mdiCheck
+  }
+
+  if (status === TransactionStatus.PENDING || status === TransactionStatus.REGISTERED) {
+    return mdiClockOutline
+  }
+
+  if (status === TransactionStatus.REJECTED) {
+    return mdiCloseCircleOutline
+  }
+
+  if (status === TransactionStatus.INVALID) {
+    return mdiAlertOutline
+  }
+
+  if (status === TransactionStatus.UNKNOWN) {
+    return mdiHelpCircleOutline
   }
 }
 

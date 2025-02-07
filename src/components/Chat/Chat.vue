@@ -272,7 +272,7 @@
             size="small"
             @click="chatRef.scrollToBottom()"
           >
-            <v-icon icon="mdi-chevron-down" size="x-large" />
+            <v-icon :icon="mdiChevronDown" size="x-large" />
           </v-btn>
         </v-badge>
       </template>
@@ -294,6 +294,8 @@ import copyToClipboard from 'copy-to-clipboard'
 
 import { Cryptos, Fees, UPLOAD_MAX_FILE_COUNT, UPLOAD_MAX_FILE_SIZE } from '@/lib/constants'
 import EmojiPicker from '@/components/EmojiPicker.vue'
+
+import { mdiChevronDown } from '@mdi/js'
 
 import {
   AChat,

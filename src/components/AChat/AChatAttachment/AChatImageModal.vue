@@ -2,12 +2,12 @@
   <v-dialog v-model="show" fullscreen :class="classes.root" @keydown="handleKeydown">
     <v-card :class="classes.container">
       <v-toolbar color="transparent">
-        <v-btn icon="mdi-close" @click="closeModal" />
+        <v-btn :icon="mdiClose" @click="closeModal" />
 
         <div :class="classes.imageCounter">{{ slide + 1 }} of {{ files.length }}</div>
 
         <v-btn
-          icon="mdi-arrow-collapse-down"
+          :icon="mdiArrowCollapseDown"
           :class="classes.saveButton"
           @click="downloadFile"
           :loading="downloading"
@@ -40,12 +40,12 @@
 
         <template #prev>
           <v-btn icon variant="plain" @click="prevSlide">
-            <v-icon icon="mdi-chevron-left" size="x-large" />
+            <v-icon :icon="mdiChevronLeft" size="x-large" />
           </v-btn>
         </template>
         <template #next>
           <v-btn icon variant="plain" @click="nextSlide">
-            <v-icon icon="mdi-chevron-right" size="x-large" />
+            <v-icon :icon="mdiChevronRight" size="x-large" />
           </v-btn>
         </template>
       </v-carousel>
@@ -63,6 +63,8 @@ import AChatImageModalItem from './AChatImageModalItem.vue'
 import AChatModalFile from './AChatModalFile.vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { FileAsset } from '@/lib/adamant-api/asset'
+import { mdiArrowCollapseDown,  mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
+
 
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -218,6 +220,10 @@ export default {
       slide,
       show,
       showArrows,
+      mdiArrowCollapseDown,
+      mdiChevronLeft,
+      mdiChevronRight,
+      mdiClose,
       closeModal,
       prevSlide,
       nextSlide,

@@ -11,7 +11,7 @@
 
         <template #append>
           <v-btn icon ripple variant="text" :class="classes.walletCardAction">
-            <v-icon :class="classes.walletCardIcon" icon="mdi-share-variant" size="small" />
+            <v-icon :class="classes.walletCardIcon" :icon="mdiShareVariant" size="small" />
           </v-btn>
         </template>
       </v-list-item>
@@ -38,7 +38,7 @@
 
         <template #append>
           <v-btn icon ripple variant="text" :class="classes.walletCardAction">
-            <v-icon :class="classes.walletCardIcon" icon="mdi-chevron-right" size="small" />
+            <v-icon :class="classes.walletCardIcon" :icon="mdiChevronRight" size="small" />
           </v-btn>
         </template>
       </v-list-item>
@@ -65,6 +65,7 @@ import { useDisplay } from 'vuetify'
 import smartNumber from '@/lib/smartNumber'
 import currencyAmount from '@/filters/currencyAmount'
 import { useStore } from 'vuex'
+import { mdiShareVariant, mdiChevronRight } from '@mdi/js'
 
 const SIGNIFICANT_DIGITS = 7
 const className = 'wallet-card'
@@ -141,7 +142,9 @@ export default defineComponent({
       calculatedFullBalance,
       isADM,
       showShareURIDialog,
-      xs
+      xs,
+      mdiChevronRight,
+      mdiShareVariant
     }
   }
 })

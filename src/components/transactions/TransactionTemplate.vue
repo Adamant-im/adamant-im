@@ -41,7 +41,7 @@
                 :class="{
                   [`${className}__update-status-icon--rotate`]: rotateAnimation
                 }"
-                icon="mdi-refresh"
+                :icon="mdiRefresh"
                 size="20"
                 @click="updateStatus()"
               />
@@ -56,7 +56,7 @@
           >
             <v-icon
               v-if="transactionStatus === 'INVALID'"
-              icon="mdi-alert-outline"
+              :icon="mdiAlertOutline"
               size="20"
               style="color: #f8a061 !important"
             />
@@ -132,7 +132,7 @@
           :title="t('transaction.explorer')"
           @click="openInExplorer"
         >
-          <v-icon icon="mdi-chevron-right" size="20" />
+          <v-icon :icon="mdiChevronRight" size="20" />
         </TransactionListItem>
 
         <v-divider v-if="partner && !ifComeFromChat" />
@@ -142,7 +142,7 @@
           :title="hasMessages ? t('transaction.continueChat') : t('transaction.startChat')"
           @click="openChat"
         >
-          <v-icon :icon="hasMessages ? 'mdi-comment' : 'mdi-comment-outline'" size="20" />
+          <v-icon :icon="hasMessages ? mdiComment : mdiCommentOutline" size="20" />
         </TransactionListItem>
       </v-list>
     </container>
@@ -173,6 +173,7 @@ import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import TransactionListItem from './TransactionListItem.vue'
 import { timestampInSec } from '@/filters/helpers'
 import { formatDate } from '@/lib/formatters'
+import { mdiAlertOutline, mdiChevronRight, mdiComment, mdiCommentOutline, mdiRefresh } from '@mdi/js'
 
 const className = 'transaction-view'
 
@@ -355,7 +356,12 @@ export default defineComponent({
       statusUpdatable,
       historyRate,
       rate,
-      formatAmount
+      formatAmount,
+      mdiAlertOutline,
+      mdiChevronRight,
+      mdiComment,
+      mdiCommentOutline,
+      mdiRefresh
     }
   }
 })
