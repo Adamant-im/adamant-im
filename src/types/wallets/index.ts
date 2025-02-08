@@ -142,6 +142,11 @@ export interface TokenGeneral {
      * @example "0.8.0"
      */
     minVersion?: string
+    /**
+     * A time correction for the message transactions on ADM
+     * @example 500
+     */
+    nodeTimeCorrection?: number
   }
   services?: Record<string, Service>
   /** Additional project links */
@@ -165,6 +170,11 @@ export interface TokenGeneral {
        * @example "0.8.0"
        */
       minVersion?: string
+      /**
+       * A time correction for the message transactions on ADM
+       * @example 500
+       */
+      nodeTimeCorrection?: number
     }
     services?: Record<string, Service>
     /** Additional project links (Tor) */
