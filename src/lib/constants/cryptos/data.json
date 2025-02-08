@@ -78,7 +78,8 @@
         "onScreenUpdateInterval": 10000,
         "threshold": 10
       },
-      "minVersion": "0.8.0"
+      "minVersion": "0.8.0",
+      "nodeTimeCorrection": 500
     },
     "createCoin": true,
     "cryptoTransferDecimals": 8,
