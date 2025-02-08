@@ -112,7 +112,7 @@ export default defineComponent({
       currentClientHeight.value = messagesRef.value.clientHeight
     }
 
-    const resizeObserver = ref<ResizeObserver>(new ResizeObserver(resizeHandler))
+    const resizeObserver = ref(new ResizeObserver(resizeHandler))
 
     const isWelcomeChat = computed(() => {
       return props.partners
