@@ -1,11 +1,11 @@
 <template>
-  <div class="a-chat">
-    <div class="a-chat__content">
+  <div :class="classes.root">
+    <div :class="classes.content">
       <slot name="header" />
 
       <v-divider />
 
-      <div class="a-chat__body">
+      <div :class="classes.body">
         <div class="text-center py-2">
           <v-progress-circular
             v-show="loading"
@@ -16,7 +16,7 @@
           />
         </div>
 
-        <div ref="messagesRef" class="a-chat__body-messages">
+        <div ref="messagesRef" :class="classes.bodyMessages">
           <template v-for="message in messages" :key="message.id">
             <slot
               name="message"
@@ -28,7 +28,7 @@
           </template>
         </div>
 
-        <div class="a-chat__fab">
+        <div :class="classes.fab">
           <slot name="fab" />
         </div>
       </div>
@@ -36,7 +36,7 @@
       <slot name="form" />
     </div>
 
-    <div v-if="$slots.overlay" class="a-chat__overlay">
+    <div v-if="$slots.overlay" :class="classes.overlay">
       <slot name="overlay" />
     </div>
   </div>
@@ -53,6 +53,16 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { isWelcomeChat as checkIsWelcomeChat } from '@/lib/chat/meta/utils/isWelcomeChat'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { User } from '@/components/AChat/types'
+
+const className = 'a-chat'
+const classes = {
+  root: className,
+  content: `${className}__content`,
+  body: `${className}__body`,
+  bodyMessages: `${className}__body-messages`,
+  fab: `${className}__fab`,
+  overlay: `${className}__overlay`
+}
 
 export default defineComponent({
   props: {
@@ -83,9 +93,28 @@ export default defineComponent({
     const currentScrollHeight = ref(0)
     const currentScrollTop = ref(0)
     const currentClientHeight = ref(0)
-    const resizeObserver = ref<ResizeObserver | null>(null)
 
-    const isWelcome = computed(() => {
+    const resizeHandler = () => {
+      if (!messagesRef.value) return
+
+      const clientHeightDelta = currentClientHeight.value - messagesRef.value.clientHeight
+
+      const nonVisibleClientHeight =
+        messagesRef.value.scrollHeight -
+        messagesRef.value.clientHeight -
+        Math.ceil(messagesRef.value.scrollTop)
+      const scrolledToBottom = nonVisibleClientHeight === 0
+
+      if (!scrolledToBottom) {
+        messagesRef.value.scrollTop += clientHeightDelta
+      }
+
+      currentClientHeight.value = messagesRef.value.clientHeight
+    }
+
+    const resizeObserver = ref<ResizeObserver>(new ResizeObserver(resizeHandler))
+
+    const isWelcomeChat = computed(() => {
       return props.partners
         .map((item) => item.id)
         .map(checkIsWelcomeChat)
@@ -128,7 +157,7 @@ export default defineComponent({
     const maintainScrollPosition = () => {
       if (!messagesRef.value) return
 
-      if (isWelcome.value) {
+      if (isWelcomeChat.value) {
         messagesRef.value.scrollTop = 0
         return
       }
@@ -220,25 +249,6 @@ export default defineComponent({
 
       if (messagesRef.value) {
         currentClientHeight.value = messagesRef.value.clientHeight
-        const resizeHandler = () => {
-          if (!messagesRef.value) return
-
-          const clientHeightDelta = currentClientHeight.value - messagesRef.value.clientHeight
-
-          const nonVisibleClientHeight =
-            messagesRef.value.scrollHeight -
-            messagesRef.value.clientHeight -
-            Math.ceil(messagesRef.value.scrollTop)
-          const scrolledToBottom = nonVisibleClientHeight === 0
-
-          if (!scrolledToBottom) {
-            messagesRef.value.scrollTop += clientHeightDelta
-          }
-
-          currentClientHeight.value = messagesRef.value.clientHeight
-        }
-
-        resizeObserver.value = new ResizeObserver(resizeHandler)
         resizeObserver.value.observe(messagesRef.value)
       }
     })
@@ -251,6 +261,7 @@ export default defineComponent({
     })
 
     return {
+      classes,
       messagesRef,
       maintainScrollPosition,
       scrollToBottom,
