@@ -160,7 +160,7 @@
     "sass": "^1.77.8",
     "sass-loader": "^16.0.1",
     "sinon": "^18.0.0",
-    "swagger-typescript-api": "^13.0.22",
+    "swagger-typescript-api": "^13.0.23",
     "typescript": "^5.5.4",
     "user-agent-data-types": "^0.4.2",
     "uuid": "^10.0.0",
