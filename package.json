@@ -141,7 +141,7 @@
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.20",
     "cross-env": "^7.0.3",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "electron": "^32.0.1",
     "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^3.2.0",
