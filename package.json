@@ -158,7 +158,7 @@
     "postcss": "latest",
     "prettier": "^3.3.3",
     "sass": "^1.77.8",
-    "sass-loader": "^16.0.1",
+    "sass-loader": "^16.0.4",
     "sinon": "^18.0.0",
     "swagger-typescript-api": "^13.0.23",
     "typescript": "^5.5.4",
