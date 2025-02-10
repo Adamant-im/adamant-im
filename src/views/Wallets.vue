@@ -56,7 +56,7 @@ import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
 import WalletsListItem from '@/components/wallets/WalletsListItem.vue'
 import WalletResetDialog from '@/components/wallets/WalletResetDialog.vue'
 import { Timer } from 'web3-utils'
-import { CoinSymbol } from '@/store/modules/wallets/types.ts'
+import { CoinSymbol } from '@/store/modules/wallets/types'
 import { useTheme } from '@/hooks/useTheme'
 
 const BALANCE_UPDATE_INTERVAL_MS = 30000
