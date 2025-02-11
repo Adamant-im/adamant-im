@@ -72,12 +72,15 @@ export function removeFormats(text = '') {
 
 export function formatMessage(text = '') {
   const node = document.createElement('div')
-  const textWithSymbol = text.replace(/\n/g, '↵ ')
+
+  const replaceValue = '↵ '
+
+  const textWithSymbol = text.replace(/\n/g, replaceValue)
   node.innerHTML = marked.parse(sanitizeHTML(textWithSymbol))
 
   const textWithoutHtml = node.textContent || node.innerText || ''
 
   return textWithoutHtml
-    .replace(LINE_SEPARATOR, '↵')
+    .replace(LINE_SEPARATOR, replaceValue)
     .replace(/↵/g, '<span class="arrow-return">↵</span>')
 }
