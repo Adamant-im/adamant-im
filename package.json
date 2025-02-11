@@ -118,7 +118,7 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.1.2",
-    "@commitlint/cli": "^19.4.1",
+    "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.4.1",
     "@electron/notarize": "^2.5.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
