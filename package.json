@@ -127,7 +127,7 @@
     "@rollup/plugin-inject": "^5.0.5",
     "@rushstack/eslint-patch": "^1.10.5",
     "@types/core-js": "^2.5.8",
-    "@types/dompurify": "^3.0.5",
+    "@types/dompurify": "^3.2.0",
     "@types/emoji-mart": "^3.0.14",
     "@types/eslint": "^8.56.10",
     "@types/lodash": "^4.17.15",
