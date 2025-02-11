@@ -88,7 +88,7 @@
     "qs": "^6.13.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "scroll-into-view-if-needed": "^3.1.0",
-    "semver": "^7.6.3",
+    "semver": "^7.7.1",
     "simple-audio": "^1.0.1",
     "socket.io-client": "^4.7.5",
     "sodium-browserify-tweetnacl": "^0.2.6",
