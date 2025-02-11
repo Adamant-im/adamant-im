@@ -174,7 +174,7 @@
     "vue-cli-plugin-vuetify": "~2.5.8",
     "vue-eslint-parser": "^9.4.3",
     "vue-template-compiler": "^2.7.16",
-    "vue-tsc": "^2.1.2",
+    "vue-tsc": "^2.2.0",
     "web3-types": "^1.7.0"
   },
   "main": "dist-electron/main.js",
