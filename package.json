@@ -154,7 +154,7 @@
     "lint-staged": "^15.4.3",
     "lorem-ipsum": "^2.0.8",
     "postcss": "latest",
-    "prettier": "^3.3.3",
+    "prettier": "^3.5.0",
     "sass": "^1.77.8",
     "sass-loader": "^16.0.4",
     "sinon": "^18.0.0",
