@@ -58,7 +58,7 @@
     "bytebuffer": "^5.0.1",
     "coininfo": "^5.2.1",
     "copy-to-clipboard": "^3.3.3",
-    "core-js": "^3.38.1",
+    "core-js": "^3.40.0",
     "crypto-browserify": "^3.12.0",
     "dayjs": "^1.11.13",
     "deepmerge": "^4.3.1",
