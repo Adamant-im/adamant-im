@@ -1,4 +1,4 @@
-import { isAddress as isEthAddress, isHexStrict } from 'web3-utils'
+import { isAddress as isEthAddress, isHexStrict } from 'web3-validator'
 import { isValidAddress as isValidBtcAddress } from './bitcoin/bitcoin-utils'
 import * as klayrCryptography from '@klayr/cryptography'
 import { Cryptos, CryptosInfo, isEthBased } from './constants'
