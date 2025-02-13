@@ -35,7 +35,7 @@ function getNodeStatusDetail(
   node: NodeStatusResult,
   t: VueI18nTranslation
 ): NodeStatusDetail | null {
-  if (!node.active) {
+  if (!node.active || !node.online) {
     return null
   }
 
