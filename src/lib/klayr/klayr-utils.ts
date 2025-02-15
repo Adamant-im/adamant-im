@@ -111,7 +111,7 @@ export function createTransaction(
 ) {
   const unsignedTransaction = createUnsignedTransaction(
     address,
-    Buffer.from(keyPair.publicKey as unknown as Uint8Array).toString('hex'),
+    Buffer.from(keyPair.publicKey.buffer).toString('hex'),
     amount,
     fee,
     nonce,
