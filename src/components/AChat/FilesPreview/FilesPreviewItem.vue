@@ -2,13 +2,7 @@
   <div :class="classes.root">
     <div :class="classes.preview">
       <img v-if="file.isImage" :class="classes.img" :alt="file.name" :src="file.content" />
-      <IconFile
-        :class="classes.icon"
-        :text="formatText(file.name)"
-        :height="80"
-        :width="80"
-        v-else
-      />
+      <IconFile :class="classes.icon" :height="80" :width="80" v-else />
 
       <v-icon size="18" :icon="mdiClose" @click="$emit('remove')" :class="classes.removeIcon" />
     </div>
