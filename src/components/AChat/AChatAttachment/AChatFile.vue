@@ -66,7 +66,7 @@ import { LocalFile, isLocalFile, formatBytes, extractFileExtension } from '@/lib
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { MAX_FILE_EXTENSION_DISPLAY_LENGTH } from '@/lib/constants'
 import IconFile from '@/components/icons/common/IconFile.vue'
-import { AChatFileLoader } from './AChatFileLoader.tsx'
+import { AChatFileLoader } from './AChatFileLoader'
 import { mdiImageOff } from '@mdi/js'
 
 const className = 'a-chat-file'

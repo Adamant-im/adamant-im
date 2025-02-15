@@ -1,7 +1,7 @@
 import { isNodeOfflineError } from '@/lib/nodes/utils/errors'
 import { AxiosProgressEvent } from 'axios'
 import { NODE_LABELS } from '@/lib/nodes/constants'
-import { IpfsNode, Payload, RequestConfig } from './IpfsNode.ts'
+import { IpfsNode, Payload, RequestConfig } from './IpfsNode'
 import { Client } from '../abstract.client'
 
 /**
