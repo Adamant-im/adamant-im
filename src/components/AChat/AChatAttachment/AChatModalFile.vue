@@ -43,8 +43,12 @@ export default defineComponent({
     const fileExtension = computed(() => props.file.extension)
 
     const fileName = computed(() => {
-      if (props.file.name) {
-        return props.file.extension ? `${props.file.name}.${props.file.extension}` : props.file.name
+      const { name = '', extension } = props.file
+
+      if (extension) {
+        return `${name}.${extension}`
+      } else if (name) {
+        return `${name}`
       }
 
       return 'UNNAMED'
@@ -72,6 +76,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-around;
+  flex-grow: unset;
 
   :deep(.v-responsive__content) {
     display: flex;
@@ -93,6 +98,10 @@ export default defineComponent({
 
   &__file-name {
     @include a-text-caption();
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
   }
 
   &__file-size {

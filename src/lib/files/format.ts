@@ -19,8 +19,14 @@ export function formatBytes(size: number) {
  * @param fileName
  * @returns Returns `undefined` if the file has no extension
  */
-export function extractFileExtension(fileName: string): string | undefined {
-  const [, extension] = fileName.split('.')
+export function extractFileExtension(fileName: string) {
+  return fileName.split('.').at(-1)
+}
 
-  return extension
+/**
+ * Extract filename omitting extension
+ * @param fileName
+ */
+export function extractFileName(fileName: string) {
+  return fileName.split('.').slice(0, -1).join('.')
 }
