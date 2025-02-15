@@ -46,7 +46,7 @@ export default defineComponent({
         props.file.extension &&
         props.file.extension.length <= MAX_FILE_EXTENSION_DISPLAY_LENGTH
       ) {
-        return props.file.extension
+        return props.file.extension.toUpperCase()
       } else {
         return 'File'
       }
