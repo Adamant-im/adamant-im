@@ -40,17 +40,9 @@ export default defineComponent({
     }
   },
   setup() {
-    const formatText = (fileName: string) => {
-      const regex = /[^.]+$/
-      const result = fileName.match(regex)?.[0]
-
-      return result
-    }
-
     return {
       classes,
-      mdiClose,
-      formatText
+      mdiClose
     }
   }
 })

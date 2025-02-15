@@ -13,3 +13,14 @@ export function formatBytes(size: number) {
     return parseFloat((size / 1024 ** 3).toFixed(2)) + ' GB'
   }
 }
+
+/**
+ * Extract extension from filename.
+ * @param fileName
+ * @returns Returns `undefined` if the file has no extension
+ */
+export function extractFileExtension(fileName: string): string | undefined {
+  const [, extension] = fileName.split('.')
+
+  return extension
+}

@@ -62,12 +62,11 @@
 import { computed, defineComponent, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { LocalFile, isLocalFile, formatBytes } from '@/lib/files'
+import { LocalFile, isLocalFile, formatBytes, extractFileExtension } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { AChatFileLoader } from './AChatFileLoader.tsx'
 import { mdiImageOff } from '@mdi/js'
-
 
 const className = 'a-chat-file'
 const classes = {
@@ -115,9 +114,13 @@ export default defineComponent({
     const fileName = computed(() =>
       isLocalFile(props.file) ? props.file.file.name : props.file.name || 'UNNAMED'
     )
-    const fileExtension = computed(() =>
-      isLocalFile(props.file) ? props.file.file.type : props.file.extension
-    )
+    const fileExtension = computed(() => {
+      if (isLocalFile(props.file)) {
+        return extractFileExtension(props.file.file.name)
+      } else {
+        return props.file.extension
+      }
+    })
     const fileSize = computed(() => {
       return isLocalFile(props.file) ? props.file.file.encoded.binary.length : props.file.size
     })
