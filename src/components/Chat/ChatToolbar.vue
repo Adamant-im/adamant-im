@@ -45,7 +45,6 @@ import partnerName from '@/mixins/partnerName'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
 import { mdiArrowLeft } from '@mdi/js'
 
-
 export default {
   mixins: [partnerName],
   props: {

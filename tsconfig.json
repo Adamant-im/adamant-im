@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",

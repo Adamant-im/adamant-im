@@ -1,15 +1,15 @@
 import BigNumber from '@/lib/bignumber'
-import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
+import BtcBaseApi from '@/lib/bitcoin/btc-base-api'
 import { FetchStatus } from '@/lib/constants'
-import { nodes } from '../../../lib/nodes'
+import { nodes } from '@/lib/nodes'
 import {
   assertNoPendingTransaction,
   createPendingTransaction,
   invalidatePendingTransaction,
   PendingTxStore
-} from '../../../lib/pending-transactions'
-import { storeCryptoAddress } from '../../../lib/store-crypto-address'
-import shouldUpdate from '../../utils/coinUpdatesGuard'
+} from '@/lib/pending-transactions'
+import { storeCryptoAddress } from '@/lib/store-crypto-address'
+import shouldUpdate from '@/store/utils/coinUpdatesGuard'
 
 const DEFAULT_CUSTOM_ACTIONS = () => ({})
 

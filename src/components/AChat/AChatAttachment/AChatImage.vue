@@ -43,12 +43,11 @@
 import { defineComponent, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { AChatFileLoader } from './AChatFileLoader.tsx'
+import { AChatFileLoader } from './AChatFileLoader'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { LocalFile } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { mdiImageOff } from '@mdi/js'
-
 
 const className = 'a-chat-image'
 const classes = {

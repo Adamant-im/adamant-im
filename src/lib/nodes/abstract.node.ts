@@ -133,7 +133,7 @@ export abstract class Node<C = unknown> {
         this.height = health.height
         this.ping = health.ping
         this.online = true
-      } catch (err) {
+      } catch {
         this.online = false
       }
 
