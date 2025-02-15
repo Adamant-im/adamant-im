@@ -2,7 +2,7 @@
   <v-carousel-item :class="classes.root" :max-width="500" :max-height="250">
     <v-card :class="classes.card" width="100%" height="100%">
       <div :class="classes.container">
-        <IconFile :width="128" :height="128" :text="fileExtension?.toUpperCase()" />
+        <IconFile :width="128" :height="128" :text="fileExtension" />
 
         <div>
           <div :class="classes.fileName">{{ fileName }}</div>
@@ -21,6 +21,7 @@ import { computed, defineComponent, PropType } from 'vue'
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { formatBytes } from '@/lib/files'
+import { MAX_FILE_EXTENSION_DISPLAY_LENGTH } from '@/lib/constants'
 
 const className = 'a-chat-modal-file'
 const classes = {
@@ -40,7 +41,16 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const fileExtension = computed(() => props.file.extension)
+    const fileExtension = computed(() => {
+      if (
+        props.file.extension &&
+        props.file.extension.length <= MAX_FILE_EXTENSION_DISPLAY_LENGTH
+      ) {
+        return props.file.extension
+      } else {
+        return 'File'
+      }
+    })
 
     const fileName = computed(() => {
       const { name = '', extension } = props.file

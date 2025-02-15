@@ -45,7 +45,7 @@
     <IconFile
       v-else
       :class="classes.icon"
-      :text="fileExtension?.toUpperCase()"
+      :text="fileExtensionDisplay"
       :height="iconSize"
       :width="iconSize"
       @click="$emit('click')"
@@ -64,6 +64,7 @@ import { useI18n } from 'vue-i18n'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { LocalFile, isLocalFile, formatBytes, extractFileExtension } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
+import { MAX_FILE_EXTENSION_DISPLAY_LENGTH } from '@/lib/constants'
 import IconFile from '@/components/icons/common/IconFile.vue'
 import { AChatFileLoader } from './AChatFileLoader.tsx'
 import { mdiImageOff } from '@mdi/js'
@@ -121,6 +122,13 @@ export default defineComponent({
         return props.file.extension
       }
     })
+    const fileExtensionDisplay = computed(() => {
+      if (fileExtension.value && fileExtension.value.length <= MAX_FILE_EXTENSION_DISPLAY_LENGTH) {
+        return fileExtension.value.toUpperCase()
+      } else {
+        return 'File'
+      }
+    })
     const fileSize = computed(() => {
       return isLocalFile(props.file) ? props.file.file.encoded.binary.length : props.file.size
     })
@@ -131,6 +139,7 @@ export default defineComponent({
       isImage,
       fileName,
       fileExtension,
+      fileExtensionDisplay,
       fileSize,
       mdiImageOff,
       formatBytes,
