@@ -447,7 +447,7 @@ adamant.decodeValue = function (source, privateKey, nonce) {
  * Encodes a secret binary (available for the owner only)
  * @param {Uint8Array} source value to encode
  * @param {Uint8Array} recipientPublicKey sender's public key
- * @param {Uint8Array} privateKey private key
+ * @param {Uint8Array|Buffer} privateKey private key
  * @returns {{binary: string, nonce: string}} encoded binary and nonce (both as HEX-strings)
  */
 adamant.encodeBinary = function (source, recipientPublicKey, privateKey) {
@@ -471,7 +471,7 @@ adamant.encodeBinary = function (source, recipientPublicKey, privateKey) {
  * Decodes a secret binary
  * @param {string|Uint8Array} source source to decrypt
  * @param {string|Uint8Array} senderPublicKey sender's public key
- * @param {Uint8Array} privateKey private key
+ * @param {Uint8Array|Buffer} privateKey private key
  * @param {string|Uint8Array} nonce nonce
  * @returns {string} decoded value
  */

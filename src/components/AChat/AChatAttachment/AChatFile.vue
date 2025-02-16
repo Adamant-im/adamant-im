@@ -65,9 +65,8 @@ import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { LocalFile, isLocalFile, formatBytes } from '@/lib/files'
 import { FileAsset } from '@/lib/adamant-api/asset'
 import IconFile from '@/components/icons/common/IconFile.vue'
-import { AChatFileLoader } from './AChatFileLoader.tsx'
+import { AChatFileLoader } from './AChatFileLoader'
 import { mdiImageOff } from '@mdi/js'
-
 
 const className = 'a-chat-file'
 const classes = {

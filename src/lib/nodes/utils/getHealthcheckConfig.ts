@@ -1,5 +1,5 @@
 import config from '@/config'
-import { TNodeLabel } from '@/lib/nodes/constants.ts'
+import { TNodeLabel } from '@/lib/nodes/constants'
 import { HealthcheckInterval } from '@/lib/nodes/types'
 import type { NodeHealthcheck } from '@/types/wallets'
 
