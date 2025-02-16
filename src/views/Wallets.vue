@@ -55,7 +55,7 @@ import { useStore } from 'vuex'
 import WalletsSearchInput from '@/components/wallets/WalletsSearchInput.vue'
 import WalletsListItem from '@/components/wallets/WalletsListItem.vue'
 import WalletResetDialog from '@/components/wallets/WalletResetDialog.vue'
-import { CoinSymbol } from '@/store/modules/wallets/types.ts'
+import { CoinSymbol } from '@/store/modules/wallets/types'
 import { useTheme } from '@/hooks/useTheme'
 import { useTimeoutPoll } from '@vueuse/core'
 

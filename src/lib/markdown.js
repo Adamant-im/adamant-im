@@ -1,14 +1,13 @@
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 
-
 // The U+2028 character (LINE SEPARATOR) is sometimes used as a line break, but it is treated as a space in some web environments,
 // causing unexpected rendering issues. To avoid this, it's recommended to replace it with a standard line break character such as `\n`.
 const LINE_SEPARATOR = /\u2028/g
 
 // LINE_BREAK_VISUAL is used for formatting when the message is displayed as a single line in a preview.
 // It replaces line breaks with a visual symbol (↵) to indicate where new lines exist in the original text.
-const LINE_BREAK_VISUAL =  '↵ '
+const LINE_BREAK_VISUAL = '↵ '
 
 marked.setOptions({
   // marked sanitize is deprecated, using DOMPurify
@@ -57,7 +56,7 @@ export function sanitizeHTML(text = '') {
  * @returns {string} resulting sanitized HTML
  */
 export function renderMarkdown(text = '') {
-  return marked.parse(sanitizeHTML(text.replace(LINE_SEPARATOR,  "\n")))
+  return marked.parse(sanitizeHTML(text.replace(LINE_SEPARATOR, '\n')))
 }
 
 /**
