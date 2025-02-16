@@ -20,6 +20,10 @@ export function formatBytes(size: number) {
  * @returns Returns `undefined` if the file has no extension
  */
 export function extractFileExtension(fileName: string) {
+  if (!fileName.includes('.')) {
+    return
+  }
+
   return fileName.split('.').at(-1)
 }
 
@@ -28,5 +32,9 @@ export function extractFileExtension(fileName: string) {
  * @param fileName
  */
 export function extractFileName(fileName: string) {
+  if (!fileName.includes('.')) {
+    return fileName
+  }
+
   return fileName.split('.').slice(0, -1).join('.')
 }
