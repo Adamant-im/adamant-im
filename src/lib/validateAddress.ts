@@ -4,11 +4,11 @@ import * as klayrCryptography from '@klayr/cryptography'
 import { Cryptos, CryptosInfo, CryptoSymbol, isEthBased } from './constants'
 
 /**
- * Checks if `address` is a valid address for the specified `crypto`.
+ * Checks address validity for a specified `crypto`.
  *
- * @param {string} crypto like 'ADM' or 'ETH'
- * @param {string} address value to check
- * @returns {boolean} `true` if address is valid, `false` otherwise
+ * @param crypto - like 'ADM' or 'ETH'
+ * @param address - value to check
+ * @returns Returns `true` if address is valid, `false` otherwise
  */
 export default function validateAddress(crypto: CryptoSymbol, address: string) {
   if (isEthBased(crypto)) {
@@ -19,7 +19,7 @@ export default function validateAddress(crypto: CryptoSymbol, address: string) {
     // We need to use try-catch https://github.com/LiskHQ/lisk-sdk/issues/6652
     try {
       return klayrCryptography.address.validateKlayr32Address(address)
-    } catch (e) {
+    } catch {
       return false
     }
   }
