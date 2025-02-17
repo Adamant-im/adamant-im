@@ -28,7 +28,7 @@ describe('validateAddress', () => {
     expect(validateAddress(Cryptos.BTC, 'invalid_btc_address')).toBe(false)
   })
 
-  it('validates eth based cryptos', () => {
+  it('validates ETH based cryptos', () => {
     expect(validateAddress(Cryptos.USDT, '0x0000000000000000000000000000000000000000')).toBe(true)
     expect(validateAddress(Cryptos.USDT, '0x1234567890abcdef')).toBe(false)
 
