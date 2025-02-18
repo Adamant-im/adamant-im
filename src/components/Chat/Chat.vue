@@ -358,6 +358,8 @@ const handleAttachments = (files: FileData[]) => {
       message: t('chats.max_file_size', { count: UPLOAD_MAX_FILE_SIZE })
     })
   }
+
+  chatFormRef.value.focus()
 }
 const hasAttachment = computed(() => attachments.list.length > 0)
 
