@@ -776,7 +776,7 @@ export default {
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
           } else if (error instanceof AllNodesOfflineError) {
-            if (this.currency !== Cryptos.ADM && error.nodeLabel.toUpperCase() === Cryptos.ADM.toUpperCase()) {
+            if (this.currency !== Cryptos.ADM && error.nodeLabel === 'adm') {
               message = this.$t('errors.all_adm_nodes_offline')
             } else {
               message = this.$t('errors.all_nodes_offline', {
