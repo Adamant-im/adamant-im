@@ -76,7 +76,7 @@ export default {
     margin: 0 auto;
     border-radius: 0;
     max-width: 300px;
-    border: 2px solid transparent;
+    border: 1px solid transparent;
   }
 
   :deep(.v-snackbar__content) {
