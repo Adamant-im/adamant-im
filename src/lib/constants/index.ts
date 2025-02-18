@@ -59,7 +59,7 @@ export const RatesNames: Record<FiatCurrencySymbol, string> = {
 }
 
 export const UPLOAD_MAX_FILE_COUNT = 5
-export const UPLOAD_MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+export const UPLOAD_MAX_FILE_SIZE = 250 * 1024 * 1024 // 250MB
 export const MAX_FILE_EXTENSION_DISPLAY_LENGTH = 4
 
 /** Fees for the misc ADM operations */

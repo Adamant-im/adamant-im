@@ -17,7 +17,7 @@
     "no_public_key": "This address is not active yet. Unable to start a chat",
     "unable_to_retrieve_no_public_key": "`Unable to decrypt message: no partner's public key`",
     "max_files": "You can upload max {count} files",
-    "max_file_size": "Max file size allowed: 10MB",
+    "max_file_size": "Max file size allowed: 250MB",
     "file": "0 files | 1 file | {n} files | {n} files",
     "files": "file(s)",
     "file_loading_error": "Failed to load the file",
