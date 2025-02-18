@@ -82,6 +82,7 @@
     "pull_down_actions": {
       "update_balances": "Update balances"
     },
+    "attached": "Attached",
     "you_reacted": "Reacted",
     "partner_reacted": "Reacted",
     "you_removed_reaction": "Removed reaction",

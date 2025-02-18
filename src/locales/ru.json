@@ -82,6 +82,7 @@
     "pull_down_actions": {
       "update_balances": "Обновить балансы"
     },
+    "attached": "Прикреплено",
     "you_reacted": "Отреагировали",
     "partner_reacted": "Отреагировал",
     "you_removed_reaction": "Убрали реакцию",
