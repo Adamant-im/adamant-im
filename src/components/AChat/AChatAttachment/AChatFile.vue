@@ -42,14 +42,25 @@
       </template>
     </AChatFileLoader>
 
-    <IconFile
-      v-else
-      :class="classes.icon"
-      :text="fileExtensionDisplay"
-      :height="iconSize"
-      :width="iconSize"
-      @click="$emit('click')"
-    />
+    <div v-else :class="classes.fileIcon">
+      <v-fade-transition>
+        <div
+          v-show="uploadProgress < 100"
+          :class="[classes.placeholder, classes.placeholderTransparent, classes.uploadFileProgress]"
+          style=""
+        >
+          <v-progress-circular color="grey-lighten-4" :model-value="uploadProgress" />
+        </div>
+      </v-fade-transition>
+
+      <IconFile
+        :class="classes.icon"
+        :text="fileExtensionDisplay"
+        :height="iconSize"
+        :width="iconSize"
+        @click="$emit('click')"
+      />
+    </div>
 
     <div :class="classes.fileInfo">
       <div :class="classes.name">{{ fileName }}</div>
@@ -66,6 +77,7 @@ import { LocalFile, isLocalFile, formatBytes, extractFileExtension } from '@/lib
 import { FileAsset } from '@/lib/adamant-api/asset'
 import { MAX_FILE_EXTENSION_DISPLAY_LENGTH } from '@/lib/constants'
 import IconFile from '@/components/icons/common/IconFile.vue'
+import { useStore } from 'vuex'
 import { AChatFileLoader } from './AChatFileLoader'
 import { mdiImageOff } from '@mdi/js'
 
@@ -73,6 +85,8 @@ const className = 'a-chat-file'
 const classes = {
   root: className,
   placeholder: `${className}__placeholder`,
+  fileIcon: `${className}__file-icon`,
+  uploadFileProgress: `${className}__upload-file-progress`,
   placeholderTransparent: `${className}__placeholder--transparent`,
   icon: `${className}__icon`,
   iconWrapper: `${className}__icon-wrapper`,
@@ -104,6 +118,7 @@ export default defineComponent({
   components: { AChatFileLoader, IconFile },
   setup(props) {
     const { t } = useI18n()
+    const store = useStore()
 
     const isImage = computed(() => {
       if (isLocalFile(props.file)) {
@@ -133,6 +148,14 @@ export default defineComponent({
       return isLocalFile(props.file) ? props.file.file.encoded.binary.length : props.file.size
     })
 
+    const uploadProgress = computed(() => {
+      if (isLocalFile(props.file)) {
+        return store.getters['attachment/getUploadProgress'](props.file.file.cid)
+      }
+
+      return 100
+    })
+
     return {
       t,
       classes,
@@ -143,7 +166,8 @@ export default defineComponent({
       fileSize,
       mdiImageOff,
       formatBytes,
-      iconSize
+      iconSize,
+      uploadProgress
     }
   }
 })
@@ -164,6 +188,21 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
     height: 100%;
+  }
+
+  &__file-icon {
+    position: relative;
+    width: 64px;
+    height: 64px;
+  }
+
+  &__upload-file-progress {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 8px;
   }
 
   &__icon {
