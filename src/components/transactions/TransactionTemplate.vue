@@ -83,7 +83,7 @@
         <v-divider />
 
         <TransactionListItem :title="t('transaction.commission')">
-          {{ typeof fee === 'number' ? formatAmount(fee) + ` ${crypto}` : placeholder }}
+          {{ typeof fee === 'number' ? formatAmount(fee) + ` ${feeCrypto ?? crypto}` : placeholder }}
         </TransactionListItem>
 
         <v-divider />
@@ -236,7 +236,10 @@ export default defineComponent({
     },
     recipientFormatted: {
       type: String
-    }
+    },
+    feeCrypto: {
+      type: String
+    },
   },
   emits: ['refetch-status'],
   setup(props, { emit }) {
