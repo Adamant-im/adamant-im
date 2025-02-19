@@ -65,7 +65,7 @@ export function normalizeErc20Transaction(
 ): Erc20Transaction {
   const gasPrice = 'gasPrice' in transaction ? transaction.gasPrice : 0
   const effectiveGasPrice = 'effectiveGasPrice' in transaction ? transaction.effectiveGasPrice : 0
-  const fee = utils.calculateFee(transaction.gas, gasPrice.toString())
+  const fee = utils.calculateFee(receipt.gasUsed, gasPrice.toString())
   const direction = transaction.from.toLowerCase() === address.toLowerCase() ? 'from' : 'to'
   const confirmations =
     blockTimestamp && receipt?.blockNumber

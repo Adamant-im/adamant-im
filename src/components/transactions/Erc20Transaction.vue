@@ -12,6 +12,7 @@
     :inconsistent-status="inconsistentStatus"
     :adm-tx="admTx"
     :crypto="crypto"
+    :feeCrypto="AllCryptos.ETH"
     @refetch-status="refetch"
   />
 </template>
@@ -97,13 +98,8 @@ export default defineComponent({
 
       return transaction.value?.confirmations
     })
-    const fee = computed(() => {
-      const ethFee = transaction.value?.fee || 0
-      const currentCurrency = store.state.options.currentRate
-      const currentRate = store.state.rate.rates[`${AllCryptos.ETH}/${currentCurrency}`]
-      const feeRate = (ethFee * currentRate).toFixed(2)
-      return +feeRate
-    })
+
+    const fee = computed(() => transaction.value?.fee)
 
     return {
       refetch,
@@ -117,7 +113,8 @@ export default defineComponent({
       admTx,
       queryStatus,
       transactionStatus,
-      inconsistentStatus
+      inconsistentStatus,
+      AllCryptos
     }
   }
 })
