@@ -83,7 +83,7 @@
         <v-divider />
 
         <TransactionListItem :title="t('transaction.commission')">
-          {{ typeof fee === 'number' ? formatAmount(fee) + ` ${feeCrypto ?? crypto}` : placeholder }}
+          {{ calculatedFee }}
         </TransactionListItem>
 
         <v-divider />
@@ -289,6 +289,33 @@ export default defineComponent({
       return store.getters['rate/rate'](transaction.value.amount, props.crypto)
     })
 
+    const calculatedTimestampInSec = computed(() => {
+      if (!transaction.value) {
+        return null;
+      }
+
+      return timestampInSec(props.crypto, transaction.value.timestamp!)
+    })
+
+    const calculatedFee = computed(() => {
+      const commissionTokenLabel = props.feeCrypto ?? props.crypto;
+      const tokenFee = typeof props.fee === 'number' ? formatAmount(props.fee) + ` ${commissionTokenLabel}` : placeholder.value;
+
+      if (calculatedTimestampInSec.value) {
+        const usdTokenRate = store.state.rate.historyRates?.[calculatedTimestampInSec.value]?.[`${commissionTokenLabel}/USD`];
+
+        if (usdTokenRate) {
+          const usdCommission = formatAmount(usdTokenRate * props.fee, 2);
+
+          if (usdCommission) {
+            return tokenFee + ` ~$${usdCommission}`
+          }
+        }
+      }
+
+      return tokenFee;
+    })
+
     const handleCopyToClipboard = (text?: string) => {
       if (!text) return
 
@@ -320,24 +347,24 @@ export default defineComponent({
     }
 
     const getHistoryRates = () => {
-      if (!transaction.value) return
+      if (!calculatedTimestampInSec.value) return
 
       store.dispatch('rate/getHistoryRates', {
-        timestamp: timestampInSec(props.crypto, transaction.value.timestamp!)
+        timestamp: calculatedTimestampInSec.value
       })
     }
 
     watch(
-      () => props.transaction,
+      calculatedTimestampInSec,
       () => {
         getHistoryRates()
       },
       { immediate: true }
     )
 
-    const formatAmount = (amount: number) => {
+    const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decimals) => {
       return BigNumber(amount)
-        .decimalPlaces(CryptosInfo[props.crypto].decimals, BigNumber.ROUND_DOWN)
+        .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
         .toFixed()
     }
 
@@ -359,6 +386,7 @@ export default defineComponent({
       statusUpdatable,
       historyRate,
       rate,
+      calculatedFee,
       formatAmount,
       mdiAlertOutline,
       mdiChevronRight,
