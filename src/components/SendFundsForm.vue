@@ -803,8 +803,6 @@ export default {
         })
     },
     async sendFunds() {
-      console.log('navigator.onLine', navigator.onLine)
-
       if (!navigator.onLine) {
         throw new NoInternetConnectionError()
       }
