@@ -299,7 +299,7 @@ export default defineComponent({
 
     const calculatedFee = computed(() => {
       const commissionTokenLabel = props.feeCrypto ?? props.crypto;
-      const tokenFee = typeof props.fee === 'number' ? formatAmount(props.fee) + ` ${commissionTokenLabel}` : placeholder.value;
+      const tokenFee = props.fee && typeof props.fee === 'number' ? formatAmount(props.fee) + ` ${commissionTokenLabel}` : placeholder.value;
 
       if (calculatedTimestampInSec.value) {
         const usdTokenRate = store.state.rate.historyRates?.[calculatedTimestampInSec.value]?.[`${commissionTokenLabel}/USD`];
