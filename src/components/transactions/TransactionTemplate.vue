@@ -278,7 +278,7 @@ export default defineComponent({
       if (!transaction.value) return
 
       return store.getters['rate/historyRate'](
-        timestampInSec(props.crypto, transaction.value.timestamp),
+        calculatedTimestampInSec.value,
         transaction.value.amount,
         props.crypto
       )
@@ -299,22 +299,25 @@ export default defineComponent({
 
     const calculatedFee = computed(() => {
       const commissionTokenLabel = props.feeCrypto ?? props.crypto;
-      const tokenFee = typeof props.fee === 'number' ? formatAmount(props.fee) + ` ${commissionTokenLabel}` : placeholder.value;
 
-      if (props.fee && calculatedTimestampInSec.value) {
-        const usdTokenRate = store.state.rate.historyRates?.[calculatedTimestampInSec.value]?.[`${commissionTokenLabel}/USD`];
+      const tokenFee = typeof props.fee === 'number'
+        ? `${formatAmount(props.fee)} ${commissionTokenLabel}`
+        : placeholder.value;
 
-        if (usdTokenRate) {
-          const usdCommission = formatAmount(usdTokenRate * props.fee, 2);
+      if (!props.fee || !calculatedTimestampInSec.value) return tokenFee;
 
-          if (usdCommission) {
-            return tokenFee + ` ~$${usdCommission}`
-          }
-        }
-      }
+      const commissionUsdAmount = store.getters['rate/historyRateAmount'](
+        calculatedTimestampInSec.value,
+        props.fee,
+        commissionTokenLabel,
+        'USD'
+      );
 
-      return tokenFee;
-    })
+      if (!commissionUsdAmount) return tokenFee;
+
+      return tokenFee  + `~$${formatAmount(commissionUsdAmount, 2)}`;
+    });
+
 
     const handleCopyToClipboard = (text?: string) => {
       if (!text) return
