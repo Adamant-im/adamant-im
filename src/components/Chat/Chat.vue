@@ -538,9 +538,9 @@ function validateMessage(message: string): string | false {
 
 const onMessage = (message: string) => {
   sendMessage(message)
-  nextTick(() => chatRef.value.scrollToBottom())
   replyMessageId.value = -1
   attachments.$reset()
+  setTimeout(() => chatRef.value.scrollToBottom())
 }
 const cancelPreviewFile = () => {
   attachments.$reset()
