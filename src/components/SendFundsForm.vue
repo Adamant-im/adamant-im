@@ -189,7 +189,7 @@
 <script>
 import { adm } from '@/lib/nodes'
 import klyIndexer from '@/lib/nodes/kly-indexer'
-import { AllNodesDisabledError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { AllNodesDisabledError, AllNodesOfflineError, NoInternetConnectionError } from '@/lib/nodes/utils/errors'
 import { PendingTransactionError } from '@/lib/pending-transactions'
 import axios from 'axios'
 import { nextTick } from 'vue'
@@ -791,6 +791,8 @@ export default {
             message = this.$t('transfer.error_pending_transaction', {
               crypto: error.crypto
             })
+          } else if (error instanceof NoInternetConnectionError) {
+            message = this.$t('connection.offline')
           }
           this.$emit('error', message)
         })
@@ -801,6 +803,10 @@ export default {
         })
     },
     async sendFunds() {
+      if (!navigator.onLine) {
+        throw new NoInternetConnectionError()
+      }
+
       if (this.currency === Cryptos.ADM) {
         let promise
         // 1. if come from Chat then sendMessage
