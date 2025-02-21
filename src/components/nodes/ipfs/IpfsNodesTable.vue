@@ -1,6 +1,11 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead hide-label hide-socket />
+    <NodesTableHead
+      v-model="isAllNodesChecked"
+      :indeterminate="isPartiallyChecked"
+      hide-label
+      hide-socket
+    />
 
     <tbody>
       <IpfsNodesTableItem v-for="node in ipfsNodes" :key="node.url" blockchain="adm" :node="node" />
@@ -14,6 +19,7 @@ import { useStore } from 'vuex'
 import NodesTableContainer from '@/components/nodes/components/NodesTableContainer.vue'
 import NodesTableHead from '@/components/nodes/components/NodesTableHead.vue'
 import IpfsNodesTableItem from './IpfsNodesTableItem.vue'
+import { type NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { sortNodesFn } from '@/components/nodes/utils/sortNodesFn'
 
 const className = 'ipfs-nodes-table'
@@ -35,9 +41,30 @@ export default defineComponent({
       return [...arr].sort(sortNodesFn)
     })
 
+    const nodes = computed<NodeStatusResult[]>(() => {
+      const arr = store.getters['nodes/ipfs']
+
+      return [...arr].sort(sortNodesFn)
+    })
+
+    const isAllNodesChecked = computed({
+      get() {
+        return nodes.value.every((node) => node.active)
+      },
+      set(value) {
+        store.dispatch('nodes/toggleAll', { nodesType: 'ipfs', active: value })
+      }
+    })
+
+    const isPartiallyChecked = computed(() => {
+      return nodes.value.some((node) => node.active) && nodes.value.some((node) => !node.active)
+    })
+
     return {
       ipfsNodes,
-      classes
+      classes,
+      isAllNodesChecked,
+      isPartiallyChecked
     }
   }
 })

@@ -43,14 +43,13 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed, defineComponent, PropType } from 'vue'
+import { ref, onMounted, onBeforeUnmount, defineComponent, PropType } from 'vue'
 import throttle from 'lodash/throttle'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Styler from 'stylefire'
 import { animate } from 'popmotion'
 import { SCROLL_TO_REPLIED_MESSAGE_ANIMATION_DURATION } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { isWelcomeChat as checkIsWelcomeChat } from '@/lib/chat/meta/utils/isWelcomeChat'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { User } from '@/components/AChat/types'
 
@@ -114,13 +113,6 @@ export default defineComponent({
 
     const resizeObserver = ref(new ResizeObserver(resizeHandler))
 
-    const isWelcomeChat = computed(() => {
-      return props.partners
-        .map((item) => item.id)
-        .map(checkIsWelcomeChat)
-        .reduce((previous, current) => previous || current, false)
-    })
-
     const emitScroll = throttle(
       () => emit('scroll', currentScrollTop.value, isScrolledToBottom()),
       200
@@ -156,11 +148,6 @@ export default defineComponent({
 
     const maintainScrollPosition = () => {
       if (!messagesRef.value) return
-
-      if (isWelcomeChat.value) {
-        messagesRef.value.scrollTop = 0
-        return
-      }
 
       messagesRef.value.scrollTop =
         messagesRef.value.scrollHeight - currentScrollHeight.value + currentScrollTop.value

@@ -107,7 +107,8 @@
   "error": "Error",
   "errors": {
     "something_went_wrong": "Something went wrong. Check the console for details",
-    "all_nodes_offline": "No online {crypto} nodes. Review the node list",
+    "all_nodes_offline": "No active {crypto} nodes. Review the node list",
+    "all_adm_nodes_offline": "No active ADM nodes to send a message. Review the node list",
     "all_nodes_disabled": "No active {crypto} nodes. Enable at least one"
   },
   "home": {
