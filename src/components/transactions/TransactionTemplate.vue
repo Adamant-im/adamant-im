@@ -85,7 +85,9 @@
         <v-divider />
 
         <TransactionListItem :title="t('transaction.commission')">
-          {{ typeof fee === 'number' ? formatAmount(fee) + ` ${crypto}` : placeholder }}
+          {{
+            typeof fee === 'number' ? formatAmount(fee) + ` ${feeCrypto ?? crypto}` : placeholder
+          }}
         </TransactionListItem>
 
         <v-divider />
@@ -198,18 +200,47 @@ export default defineComponent({
     /**
      * ADM address
      */
-    partner: { type: String },
-    admTx: { type: Object as PropType<NormalizedChatMessageTransaction> },
-    queryStatus: { type: String as PropType<QueryStatus>, required: true },
-    transactionStatus: { type: String as PropType<TransactionStatusType>, required: true },
-    inconsistentStatus: { type: String as PropType<InconsistentStatus> },
-    confirmations: { type: Number },
-    fee: { type: Number },
-    textData: { type: String },
-    senders: { type: Array as PropType<string[]> },
-    recipients: { type: Array as PropType<string[]> },
-    senderFormatted: { type: String },
-    recipientFormatted: { type: String }
+    partner: {
+      type: String
+    },
+    admTx: {
+      type: Object as PropType<NormalizedChatMessageTransaction>
+    },
+    queryStatus: {
+      type: String as PropType<QueryStatus>,
+      required: true
+    },
+    transactionStatus: {
+      type: String as PropType<TransactionStatusType>,
+      required: true
+    },
+    inconsistentStatus: {
+      type: String as PropType<InconsistentStatus>
+    },
+    confirmations: {
+      type: Number
+    },
+    fee: {
+      type: Number
+    },
+    textData: {
+      type: String
+    },
+    senders: {
+      type: Array as PropType<string[]>
+    },
+    recipients: {
+      type: Array as PropType<string[]>
+    },
+    senderFormatted: {
+      type: String
+    },
+    recipientFormatted: {
+      type: String
+    },
+    feeCrypto: {
+      type: String
+    }
   },
   emits: ['refetch-status'],
   setup(props, { emit }) {
