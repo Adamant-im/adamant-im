@@ -145,7 +145,7 @@
           :flashing="flashingMessageId === message.id"
           :data-id="message.id"
           :partner-id="partnerId"
-          @resend="resendMessage(partnerId, message.id)"
+          @resend="() => console.debug('Not implemented')"
           @click:quoted-message="onQuotedMessageClick"
           @swipe:left="onSwipeLeft(message)"
           @longpress="onMessageLongPress(message)"
