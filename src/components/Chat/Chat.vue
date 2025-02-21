@@ -151,7 +151,44 @@
           @longpress="onMessageLongPress(message)"
         >
           <template #avatar>
-            <ChatAvatar :user-id="partnerId" use-public-key @click="onClickAvatar(partnerId)" />
+            <ChatAvatar :user-id="sender.id" use-public-key @click="onClickAvatar(sender.id)" />
+          </template>
+
+          <template #actions v-if="isRealMessage(message)">
+            <AChatReactions @click="handleClickReactions(message)" :transaction="message" />
+
+            <AChatMessageActionsDropdown
+              :transaction="message"
+              :open="actionsDropdownMessageId === message.id"
+              @open:change="toggleActionsDropdown"
+              @click:reply="openReplyPreview(message)"
+              @click:copy="copyMessageToClipboard(message)"
+            >
+              <template #top>
+                <EmojiPicker
+                  v-if="showEmojiPicker"
+                  @emoji:select="(emoji) => onEmojiSelect(message.id, emoji)"
+                  elevation
+                  position="absolute"
+                />
+
+                <AChatReactionSelect
+                  v-else
+                  :transaction="message"
+                  @reaction:add="sendReaction"
+                  @reaction:remove="removeReaction"
+                  @click:emoji-picker="showEmojiPicker = true"
+                />
+              </template>
+
+              <template #bottom>
+                <AChatMessageActionsList
+                  v-if="!showEmojiPicker"
+                  @click:reply="openReplyPreview(message)"
+                  @click:copy="copyMessageToClipboard(message)"
+                />
+              </template>
+            </AChatMessageActionsDropdown>
           </template>
         </a-chat-attachment>
 
