@@ -5,11 +5,5 @@ export default function shouldUpdate(isVisibleCallback: Callback) {
     return true
   }
 
-  const isVisible = isVisibleCallback()
-
-  if (isVisible === undefined) {
-    return true;
-  }
-
-  return isVisible
+  return isVisibleCallback()
 }
