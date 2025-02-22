@@ -38,9 +38,7 @@
               {{ t('transaction.status') }}
               <v-icon
                 v-if="statusUpdatable || rotateAnimation"
-                :class="{
-                  [`${className}__update-status-icon--rotate`]: rotateAnimation
-                }"
+                :class="{ [`${className}__update-status-icon--rotate`]: rotateAnimation }"
                 :icon="mdiRefresh"
                 size="20"
                 @click="updateStatus()"
@@ -71,7 +69,11 @@
         <v-divider />
 
         <TransactionListItem :title="t('transaction.date')">
-          {{ transaction?.timestamp ? formatDate(transaction.timestamp) : placeholder }}
+          {{
+            confirmations && transaction?.timestamp
+              ? formatDate(transaction.timestamp)
+              : placeholder
+          }}
         </TransactionListItem>
 
         <v-divider />
@@ -173,24 +175,21 @@ import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import TransactionListItem from './TransactionListItem.vue'
 import { timestampInSec } from '@/filters/helpers'
 import { formatDate } from '@/lib/formatters'
-import { mdiAlertOutline, mdiChevronRight, mdiComment, mdiCommentOutline, mdiRefresh } from '@mdi/js'
+import {
+  mdiAlertOutline,
+  mdiChevronRight,
+  mdiComment,
+  mdiCommentOutline,
+  mdiRefresh
+} from '@mdi/js'
 
 const className = 'transaction-view'
 
 export default defineComponent({
-  components: {
-    AppToolbarCentered,
-    TransactionListItem
-  },
+  components: { AppToolbarCentered, TransactionListItem },
   props: {
-    crypto: {
-      type: String as PropType<CryptoSymbol>,
-      required: true
-    },
-    explorerLink: {
-      type: String,
-      required: true
-    },
+    crypto: { type: String as PropType<CryptoSymbol>, required: true },
+    explorerLink: { type: String, required: true },
     transaction: {
       type: Object as PropType<
         AnyCoinTransaction | DecodedChatMessageTransaction | PendingTransaction
@@ -239,7 +238,7 @@ export default defineComponent({
     },
     feeCrypto: {
       type: String
-    },
+    }
   },
   emits: ['refetch-status'],
   setup(props, { emit }) {
@@ -323,10 +322,7 @@ export default defineComponent({
       if (!text) return
 
       copyToClipboard(text)
-      store.dispatch('snackbar/show', {
-        message: t('home.copied'),
-        timeout: 2000
-      })
+      store.dispatch('snackbar/show', { message: t('home.copied'), timeout: 2000 })
     }
 
     const openInExplorer = () => {

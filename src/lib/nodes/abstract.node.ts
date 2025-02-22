@@ -94,6 +94,7 @@ export abstract class Node<C = unknown> {
   timer?: NodeJS.Timeout
   healthCheckInterval: HealthcheckInterval = 'normal'
   client: C
+  healthcheckInProgress = false
 
   constructor(
     url: string,
@@ -125,9 +126,9 @@ export abstract class Node<C = unknown> {
   async startHealthcheck() {
     clearInterval(this.timer)
 
-    // Check health only for enabled nodes
-    if (this.active) {
+    if (this.active && !this.healthcheckInProgress) {
       try {
+        this.healthcheckInProgress = true
         const health = await this.checkHealth()
 
         this.height = health.height
@@ -135,6 +136,8 @@ export abstract class Node<C = unknown> {
         this.online = true
       } catch {
         this.online = false
+      } finally {
+        this.healthcheckInProgress = false
       }
 
       this.fireStatusChange()

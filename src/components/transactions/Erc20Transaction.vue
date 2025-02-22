@@ -8,7 +8,7 @@
     :explorer-link="explorerLink"
     :partner="partnerAdmAddress || ''"
     :query-status="queryStatus"
-    :transaction-status="transactionStatus"
+    :transaction-status="status"
     :inconsistent-status="inconsistentStatus"
     :adm-tx="admTx"
     :crypto="crypto"
@@ -55,7 +55,8 @@ const {
   refetch
 } = useErc20TransactionQuery(props.crypto)(props.id)
 const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
-const transactionStatus = useTransactionStatus(isFetching, queryStatus, inconsistentStatus)
+const transactionStatus = computed(() => transaction.value?.status)
+const status = useTransactionStatus(isFetching, queryStatus, transactionStatus, inconsistentStatus)
 useClearPendingTransaction(props.crypto, transaction)
 
 const admTx = useFindAdmTransaction(props.id)
