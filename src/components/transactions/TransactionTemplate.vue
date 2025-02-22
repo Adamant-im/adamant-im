@@ -297,7 +297,7 @@ export default defineComponent({
     })
 
     const calculatedFee = computed(() => {
-      const commissionTokenLabel = props.feeCrypto ?? props.crypto as CryptoSymbol;
+      const commissionTokenLabel = (props.feeCrypto ?? props.crypto) as CryptoSymbol;
 
       const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
 
