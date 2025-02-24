@@ -213,7 +213,8 @@ import {
   CryptosInfo,
   isTextDataAllowed,
   MessageType,
-  Fees
+  Fees,
+  Symbols
 } from '@/lib/constants'
 
 import { parseURI } from '@/lib/uri'
@@ -571,7 +572,7 @@ export default {
         this.$store.state.rate.rates[`${this.transferFeeCurrency}/${this.currentCurrency}`]
 
       if (currentRate === undefined) {
-        return ''
+        return Symbols.HOURGLASS
       }
 
       const feeRate = (this.transferFeeFixed * currentRate).toFixed(2)
@@ -582,7 +583,7 @@ export default {
       const currentRate = this.$store.state.rate.rates[`${this.currency}/${this.currentCurrency}`]
 
       if (currentRate === undefined) {
-        return ''
+        return Symbols.HOURGLASS
       }
 
       const amountRate = (this.finalAmountFixed * currentRate).toFixed(2)
