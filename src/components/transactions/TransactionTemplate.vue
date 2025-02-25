@@ -85,9 +85,7 @@
         <v-divider />
 
         <TransactionListItem :title="t('transaction.commission')">
-          {{
-            typeof fee === 'number' ? formatAmount(fee) + ` ${feeCrypto ?? crypto}` : placeholder
-          }}
+          {{ calculatedFee }}
         </TransactionListItem>
 
         <v-divider />
@@ -279,7 +277,7 @@ export default defineComponent({
       if (!transaction.value) return
 
       return store.getters['rate/historyRate'](
-        timestampInSec(props.crypto, transaction.value.timestamp),
+        calculatedTimestampInSec.value,
         transaction.value.amount,
         props.crypto
       )
@@ -289,6 +287,39 @@ export default defineComponent({
 
       return store.getters['rate/rate'](transaction.value.amount, props.crypto)
     })
+
+    const calculatedTimestampInSec = computed(() => {
+      if (!transaction.value) {
+        return null;
+      }
+
+      return timestampInSec(props.crypto, transaction.value.timestamp!)
+    })
+
+    const calculatedFee = computed(() => {
+      const commissionTokenLabel = (props.feeCrypto ?? props.crypto) as CryptoSymbol;
+
+      const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
+
+      const tokenFee = typeof props.fee === 'number'
+        ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
+        : placeholder.value;
+
+      if (!props.fee || !calculatedTimestampInSec.value) return tokenFee;
+
+
+      const commissionUsdAmount = store.getters['rate/historyRate'](
+        calculatedTimestampInSec.value,
+        props.fee,
+        commissionTokenLabel,
+      );
+
+
+      if (!commissionUsdAmount) return tokenFee;
+
+      return tokenFee  + ` ~${commissionUsdAmount}`;
+    });
+
 
     const handleCopyToClipboard = (text?: string) => {
       if (!text) return
@@ -318,24 +349,24 @@ export default defineComponent({
     }
 
     const getHistoryRates = () => {
-      if (!transaction.value) return
+      if (!calculatedTimestampInSec.value) return
 
       store.dispatch('rate/getHistoryRates', {
-        timestamp: timestampInSec(props.crypto, transaction.value.timestamp!)
+        timestamp: calculatedTimestampInSec.value
       })
     }
 
     watch(
-      () => props.transaction,
+      calculatedTimestampInSec,
       () => {
         getHistoryRates()
       },
       { immediate: true }
     )
 
-    const formatAmount = (amount: number) => {
+    const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decimals) => {
       return BigNumber(amount)
-        .decimalPlaces(CryptosInfo[props.crypto].decimals, BigNumber.ROUND_DOWN)
+        .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
         .toFixed()
     }
 
@@ -357,6 +388,7 @@ export default defineComponent({
       statusUpdatable,
       historyRate,
       rate,
+      calculatedFee,
       formatAmount,
       mdiAlertOutline,
       mdiChevronRight,
