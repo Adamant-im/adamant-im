@@ -286,11 +286,9 @@ export default {
   setup() {
     const store = useStore()
 
-    const isOnline = computed(() => {
-      return store.getters['isOnline']
-    })
+    const isOnline = computed(() => store.getters['isOnline'])
 
-    const checkIsOnline =  () => {
+    const checkIsOnline = () => {
       return navigator.onLine || isOnline.value;
     }
 
